@@ -18,7 +18,7 @@ INCLUDES = -I. \
 
 EXTRA_DIST =	rpminject.c rpmsort.c rpmxml.c rpmxp.c rpmxp.h hashtab.h
 
-EXTRA_PROGRAMS = convertdb1 rpminject rpmsort rpmtool rpmxml
+EXTRA_PROGRAMS = debugedit convertdb1 rpminject rpmsort rpmtool rpmxml
 
 LDADD = \
 	$(top_builddir)/lib/librpm.la
