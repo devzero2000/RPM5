@@ -17,7 +17,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.71
+Release: 0.72
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -439,6 +439,10 @@ fi
 * Mon Jul 16 2001 Jeff Johnson <jbj@redhat.com>
 - fix: don't total hard linked file size multiple times (#46286).
 - add %dev(type,major,minor) directive to permit non-root dev build.
+- fix: _smp_flags macro broken.
+- python: bind rhnUnload differently.
+- fix: rescusitate --querytags.
+- fix: short aliases broken (#49213).
 
 * Fri Jul 13 2001 Jeff Johnson <jbj@redhat.com>
 - isolate cdb access configuration (experimental, use at your own risk).
