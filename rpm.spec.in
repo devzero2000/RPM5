@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.36
+Release: 0.37
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -412,6 +412,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jun 13 2001 Jeff Johnson <jbj@redhat.com>
+- add rpmdbSetIteratorRE() for regex matching in database iterators.
+- permit rpm -qa to take RE args applied to name tag.
+- permit dbiFindMatches() to use version/release patterns.
+- eliminate all uses of rpmdbSetIterator{Version,Release}.
+
 * Tue Jun 12 2001 Jeff Johnson <jbj@redhat.com>
 - remove rpmrc Provides: Yet Again, use virtual packages.
 - dump cursor debugging wrappers.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-06-12 12:22-0400\n"
+"POT-Creation-Date: 2001-06-13 16:35-0400\n"
 "PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -1097,15 +1097,15 @@ msgstr "--sign 옵션은 패키지 제작시에만 사용할 수 있습니다"
 msgid "exec failed\n"
 msgstr "실행에 실패했습니다\n"
 
-#: rpm.c:1116 rpmqv.c:980
+#: rpm.c:1116 rpmqv.c:985
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags 옵션에 올바르지 못한 인수가 지정되었습니다 "
 
-#: rpm.c:1127 rpmqv.c:989
+#: rpm.c:1127 rpmqv.c:994
 msgid "no packages given for signature check"
 msgstr "서명 검사를 위해 주어진 패키지가 없습니다"
 
-#: rpm.c:1138 rpmqv.c:998
+#: rpm.c:1138 rpmqv.c:1003
 msgid "no packages given for signing"
 msgstr "서명을 위해 주어진 패키지가 없습니다"
 
@@ -1117,19 +1117,19 @@ msgstr "설치된 패키지를 제거(uninstall)하기 위해 주어진 패키지가 없습니다"
 msgid "no packages given for install"
 msgstr "설치를 위해 주어진 패키지가 없습니다"
 
-#: rpm.c:1267 rpmqv.c:947
+#: rpm.c:1267 rpmqv.c:948
 msgid "extra arguments given for query of all packages"
 msgstr "모든 패키지에 대해 질의하는데 필요 이상의 인수가 주어졌습니다"
 
-#: rpm.c:1272 rpmqv.c:952
+#: rpm.c:1272 rpmqv.c:957
 msgid "no arguments given for query"
 msgstr "질의를 위해 주어진 인수가 없습니다"
 
-#: rpm.c:1289 rpmqv.c:968
+#: rpm.c:1289 rpmqv.c:973
 msgid "extra arguments given for verify of all packages"
 msgstr "모든 패키지에 대해 검증하는데 필요 이상의 인수가 주어졌습니다"
 
-#: rpm.c:1293 rpmqv.c:972
+#: rpm.c:1293 rpmqv.c:977
 msgid "no arguments given for verify"
 msgstr "검증을 위해 주어진 인수가 없습니다"
 
@@ -1622,7 +1622,7 @@ msgstr "서명 생성중: %d\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s (을)를 열 수 없음: %s\n"
 
-#: build/pack.c:536 lib/psm.c:1500
+#: build/pack.c:536 lib/psm.c:1505
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
@@ -1652,7 +1652,7 @@ msgstr "%s 에서 payload 를 읽을 수 없음: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s 에 payload 를 작성할 수 없음: %s\n"
 
-#: build/pack.c:617 lib/psm.c:1759
+#: build/pack.c:617 lib/psm.c:1764
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
@@ -2822,31 +2822,31 @@ msgstr ""
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s (이)가 갖는 파일 %d 개, 테스트 = %d\n"
 
-#: lib/psm.c:1429
+#: lib/psm.c:1434
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr "%s: %s 스크립트(scriptlet) 실패 (%d), %s-%s-%s (을)를 생략합니다\n"
 
-#: lib/psm.c:1537
+#: lib/psm.c:1542
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "사용자 %s (이)가 존재하지 않습니다 - root 계정을 이용하십시요\n"
 
-#: lib/psm.c:1546
+#: lib/psm.c:1551
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "그룹 %s (이)가 존재하지 않습니다 - root 계정을 이용하십시요\n"
 
-#: lib/psm.c:1585
+#: lib/psm.c:1590
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: lib/psm.c:1586
+#: lib/psm.c:1591
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1846
+#: lib/psm.c:1851
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "%s: %s 스크립트를 실행합니다 (있을 경우)\n"
@@ -2922,52 +2922,52 @@ msgstr "%s spec 파일을 질의하는데 실패했습니다, 파일을 분석할 수 없습니다\n"
 msgid "no packages\n"
 msgstr "패키지가 없습니다\n"
 
-#: lib/query.c:643
+#: lib/query.c:651
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s 그룹은 어떤 패키지에도 포함되어 있지 않습니다\n"
 
-#: lib/query.c:653
+#: lib/query.c:661
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s (을)를 발생시키는 패키지가 없습니다\n"
 
-#: lib/query.c:663
+#: lib/query.c:671
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s (을)를 필요로 하는 패키지가 없습니다\n"
 
-#: lib/query.c:674
+#: lib/query.c:682
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s (을)를 제공하는 패키지가 없습니다\n"
 
-#: lib/query.c:709
+#: lib/query.c:717
 #, c-format
 msgid "file %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: lib/query.c:713
+#: lib/query.c:721
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s 파일은 어떤 패키지에도 속해 있지 않습니다\n"
 
-#: lib/query.c:739
+#: lib/query.c:747
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "올바르지 못한 패키지 번호: %s\n"
 
-#: lib/query.c:742
+#: lib/query.c:750
 #, c-format
 msgid "package record number: %u\n"
 msgstr "패키지 기록(record) 번호: %u\n"
 
-#: lib/query.c:747
+#: lib/query.c:755
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u (은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:758 lib/rpminstall.c:603
+#: lib/query.c:766 lib/rpminstall.c:603
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지는 설치되어 있지 않습니다\n"
@@ -3584,41 +3584,41 @@ msgstr ""
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "rpm[23] 패키징과 호환하는 헤더를 생성합니다"
 
-#: rpmdb/rpmdb.c:101
+#: rpmdb/rpmdb.c:103
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:346
+#: rpmdb/rpmdb.c:348
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:366
+#: rpmdb/rpmdb.c:368
 #, c-format
 msgid "cannot open %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:457
+#: rpmdb/rpmdb.c:459
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:585
+#: rpmdb/rpmdb.c:587
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:595
+#: rpmdb/rpmdb.c:597
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:853
+#: rpmdb/rpmdb.c:843
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:960
+#: rpmdb/rpmdb.c:950
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3626,114 +3626,114 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1192
+#: rpmdb/rpmdb.c:1182
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1250 rpmdb/rpmdb.c:1854
-#, c-format
-msgid "%s: cannot read header at 0x%x\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:1537 rpmdb/rpmdb.c:2703
+#: rpmdb/rpmdb.c:1735 rpmdb/rpmdb.c:2899
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1588
+#: rpmdb/rpmdb.c:1786
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1921
+#: rpmdb/rpmdb.c:2050
+#, c-format
+msgid "%s: cannot read header at 0x%x\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:2117
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1930
+#: rpmdb/rpmdb.c:2126
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2121
+#: rpmdb/rpmdb.c:2317
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2199
+#: rpmdb/rpmdb.c:2395
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2210
+#: rpmdb/rpmdb.c:2406
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2592
+#: rpmdb/rpmdb.c:2788
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2622
+#: rpmdb/rpmdb.c:2818
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2649
+#: rpmdb/rpmdb.c:2845
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2653
+#: rpmdb/rpmdb.c:2849
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2659
+#: rpmdb/rpmdb.c:2855
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2661
+#: rpmdb/rpmdb.c:2857
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2668
+#: rpmdb/rpmdb.c:2864
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2679
+#: rpmdb/rpmdb.c:2875
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2741
+#: rpmdb/rpmdb.c:2942
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2759
+#: rpmdb/rpmdb.c:2960
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2767
+#: rpmdb/rpmdb.c:2968
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2769
+#: rpmdb/rpmdb.c:2970
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2779
+#: rpmdb/rpmdb.c:2980
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2781
+#: rpmdb/rpmdb.c:2982
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
