@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-06-05 09:50-0400\n"
+"POT-Creation-Date: 2003-07-01 11:41-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -114,7 +114,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "datoteka %s: %s\n"
 
-#: rpmqv.c:129 lib/poptALL.c:102
+#: rpmqv.c:129 lib/poptALL.c:105
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM razlièica %s\n"
@@ -1268,19 +1268,19 @@ msgstr "brez preverjanja soodvisnosti paketa"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:223 lib/poptI.c:254 lib/poptQV.c:329
+#: build/poptBT.c:229 lib/poptALL.c:226 lib/poptI.c:254 lib/poptQV.c:329
 #: lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: build/poptBT.c:231 lib/poptALL.c:225 lib/poptI.c:256 lib/poptQV.c:332
+#: build/poptBT.c:231 lib/poptALL.c:228 lib/poptI.c:256 lib/poptQV.c:332
 #: lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "brez preverjanja arhitekture paketa"
 
-#: build/poptBT.c:233 lib/poptALL.c:231 lib/poptI.c:258 lib/poptQV.c:335
+#: build/poptBT.c:233 lib/poptALL.c:234 lib/poptI.c:258 lib/poptQV.c:335
 #: lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1673,106 +1673,106 @@ msgstr "%s: readLead je bil neuspe¹en\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:213
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:211 lib/poptALL.c:214
+#: lib/poptALL.c:214 lib/poptALL.c:217
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:213
+#: lib/poptALL.c:216
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:216
+#: lib/poptALL.c:219
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "uporabljana razlièica rpm"
 
-#: lib/poptALL.c:217
+#: lib/poptALL.c:220
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:219 lib/poptALL.c:238 lib/poptALL.c:242
+#: lib/poptALL.c:222 lib/poptALL.c:241 lib/poptALL.c:245
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:220 lib/poptALL.c:239 lib/poptALL.c:243
+#: lib/poptALL.c:223 lib/poptALL.c:242 lib/poptALL.c:246
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:228 lib/poptALL.c:262
+#: lib/poptALL.c:231 lib/poptALL.c:265
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:237
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "standardni izhod preusmerjen na <ukaz>"
 
-#: lib/poptALL.c:235
+#: lib/poptALL.c:238
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:249
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "uporabi <imenik> za korenski imenik"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:250
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:250
+#: lib/poptALL.c:253
 msgid "display known query tags"
 msgstr "prika¾i znane znaèke za poizvedovanje"
 
-#: lib/poptALL.c:252
+#: lib/poptALL.c:255
 msgid "display final rpmrc and macro configuration"
 msgstr "prika¾i konèni rpmrc in nastavitev makra"
 
-#: lib/poptALL.c:254
+#: lib/poptALL.c:257
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:256
+#: lib/poptALL.c:259
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:258
+#: lib/poptALL.c:261
 msgid "print the version of rpm being used"
 msgstr "razlièica rpm, ki jo uporabljate"
 
-#: lib/poptALL.c:271
+#: lib/poptALL.c:274
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/poptALL.c:273
+#: lib/poptALL.c:276
 msgid "debug protocol data stream"
 msgstr ""
 
-#: lib/poptALL.c:278
+#: lib/poptALL.c:281
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Notranja napaka pri obdelavi argumentov (%d) :-\n"
 
-#: lib/poptALL.c:281
+#: lib/poptALL.c:286
 #, fuzzy
 msgid "debug package state machine"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/poptALL.c:293
+#: lib/poptALL.c:298
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:303
+#: lib/poptALL.c:308
 msgid "debug URL cache handling"
 msgstr ""
 
 #. @-nullpass@
-#: lib/poptALL.c:373
+#: lib/poptALL.c:378
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""

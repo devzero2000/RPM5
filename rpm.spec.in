@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.17
+Release: 0.18
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -206,10 +206,10 @@ Please install rpm-4.0.4 first, and do
 	rpm --rebuilddb
 to convert your database from db1 to db3 format.
 "
-#    exit 1
+    exit 1
 fi
 /usr/sbin/groupadd -g 37 @RPMGROUP@				> /dev/null 2>&1
-/usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 @RPMUSER@	> /dev/null 2>&1
+/usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 @RPMUSER@ -s /sbin/nologin	> /dev/null 2>&1
 %endif
 exit 0
 
@@ -224,8 +224,8 @@ exit 0
 %postun
 /sbin/ldconfig
 if [ $1 = 0 ]; then
-    /usr/sbin/userdel rpm
-    /usr/sbin/groupdel rpm
+    /usr/sbin/userdel @RPMUSER@
+    /usr/sbin/groupdel @RPMGROUP@
 fi
 exit 0
 
@@ -476,6 +476,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Tue Jul  1 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.18
+- rebuild.
+
 * Tue Jun 24 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.17
 - update for fr.po (#97829).
 
