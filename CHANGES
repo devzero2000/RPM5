@@ -121,6 +121,7 @@
 	- preliminary abstraction to support per-header methods.
 	- finalize per-header methods, accessing headerFoo through vector.
 	- make package ordering loop messages debug, not warning.
+	- remove {ia64,sparc}-linux.{prov,req}, changes merged into linux.*.
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
