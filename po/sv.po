@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2001-09-06 10:40-0400\n"
-"PO-Revision-Date: 2001-08-23 21:34+0200\n"
+"PO-Revision-Date: 2001-09-10 12:33+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -489,8 +489,8 @@ msgstr "visa enbart konfigurationsfiler (implicerar -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or -"
-"d)"
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
 msgstr ""
 "visa all verifierbar information för varje fil (måste användas med -l, -c "
 "eller -d)"
@@ -584,8 +584,7 @@ msgstr "kortform för --replacepkgs --replacefiles"
 #: lib/poptI.c:124 rpm.c:447
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
-"skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med -"
-"v)"
+"skriv ut brädgårdar allteftersom paketet installeras (bra tillsammans med -v)"
 
 #: lib/poptI.c:89 rpm.c:449
 msgid "install all files, even configurations which might otherwise be skipped"
@@ -670,7 +669,7 @@ msgstr "    -e <paketfil>         "
 
 #: lib/poptI.c:109 rpm.c:489
 msgid "erase (uninstall) package"
-msgstr "ta bort (avinstallera) paket"
+msgstr "radera (avinstallera) paket"
 
 #: lib/poptI.c:93 rpm.c:491
 msgid ""
@@ -977,7 +976,7 @@ msgstr "--ignoresize kan enbart användas vid paketinstallation"
 
 #: rpm.c:963 rpmqv.c:759
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches kan enbart användas när paket tas bort"
+msgstr "--allmatches kan enbart användas när paket raderas"
 
 #: rpm.c:967 rpmqv.c:763
 msgid "--allfiles may only be specified during package installation"
@@ -985,16 +984,15 @@ msgstr "--allfiles kan enbart användas vid paketinstallation"
 
 #: rpm.c:971 rpmqv.c:768
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr ""
-"--justdb kan enbart användas vid installation och avinstallation av paket"
+msgstr "--justdb kan enbart användas när paket installeras eller raderas"
 
 #: rpm.c:978
 msgid ""
 "script disabling options may only be specified during package installation, "
 "erasure, and verification"
 msgstr ""
-"skriptdeaktiveringsflaggor kan enbart användas vid paketinstallation, "
-"avinstallation och verifiering"
+"skriptdeaktiveringsflaggor kan enbart användas när paket installeras, "
+"raderas eller verifieras"
 
 #: rpm.c:982
 msgid "--apply may only be specified during package installation"
@@ -1005,31 +1003,30 @@ msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"utlösardeaktiveringsflaggor kan enbart användas vid installation och "
-"avinstallation av paket"
+"utlösardeaktiveringsflaggor kan enbart användas när paket installeras eller "
+"raderas"
 
 #: rpm.c:991 rpmqv.c:782
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
-"--nodeps kan enbart användas vid tillverkning, omtillverkning, "
-"omkompilering, installation, avinstallation, och verifiering"
+"--nodeps kan enbart användas när paket byggs, byggs om, kompileras om, "
+"installeras, raderas eller verifieras"
 
 #: rpm.c:996 rpmqv.c:787
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
-msgstr ""
-"--test kan enbart användas vid installation, avinstallation och tillverkning"
+msgstr "--test kan enbart användas när paket installeras, raderas eller byggs"
 
 #: rpm.c:1000 rpmqv.c:792
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
-"--root (-r) kan enbart användas vid installation, avinstallation, förfrågan, "
-"och databasombyggnad"
+"--root (-r) kan enbart användas när paket installeras, raderas, frågas eller "
+"databasen byggs om"
 
 #: rpm.c:1012 rpmqv.c:804
 msgid "arguments to --root (-r) must begin with a /"
@@ -1246,8 +1243,8 @@ msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"skriptdeaktiveringsflaggor kan enbart användas vid installation och "
-"avinstallation av paket"
+"skriptdeaktiveringsflaggor kan enbart användas när paket installeras eller "
+"raderas"
 
 #: rpmqv.c:918
 msgid "no packages files given for rebuild"
@@ -1255,7 +1252,7 @@ msgstr "inga paketfiler angivna för omtillverkning"
 
 #: rpmqv.c:987
 msgid "no spec files given for build"
-msgstr "ingen specfiler angivna för tillverkning"
+msgstr "inga specfiler angivna för tillverkning"
 
 #: rpmqv.c:989
 msgid "no tar files given for build"
@@ -1626,18 +1623,16 @@ msgid "Unable to create immutable header region.\n"
 msgstr "Kan inte skapa oföränderlig huvudregion.\n"
 
 #: build/pack.c:453
-#, fuzzy
 msgid "Unable to write temp header\n"
-msgstr "Kan inte skriva %s-huvud\n"
+msgstr "Kan inte skriva temporärhuvud\n"
 
 #: build/pack.c:461
 msgid "Bad CSA data\n"
 msgstr "Felaktig CSA-data\n"
 
 #: build/pack.c:496
-#, fuzzy
 msgid "Unable to write final header\n"
-msgstr "Kan inte skriva %s-huvud\n"
+msgstr "Kan inte skriva slutligt huvud\n"
 
 #: build/pack.c:514
 #, c-format
@@ -1645,9 +1640,8 @@ msgid "Generating signature: %d\n"
 msgstr "Genererar signatur: %d\n"
 
 #: build/pack.c:527
-#, fuzzy
 msgid "Unable to reload signature header.\n"
-msgstr "Kan inte läsa om %s-huvud.\n"
+msgstr "Kan inte läsa om signaturhuvud.\n"
 
 #: build/pack.c:535
 #, c-format
@@ -2438,8 +2432,8 @@ msgstr "bygg endast källpaket från <specfil>"
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
-"bygg till och med %prep (packa upp källkod samt applicera patchar) från <tar-"
-"arkiv>"
+"bygg till och med %prep (packa upp källkod samt applicera patchar) från "
+"<tar-arkiv>"
 
 #: lib/poptBT.c:149 lib/poptBT.c:152 lib/poptBT.c:155 lib/poptBT.c:158
 #: lib/poptBT.c:161 lib/poptBT.c:164 lib/poptBT.c:167
@@ -2532,7 +2526,7 @@ msgstr "slå upp översatta strängar i specfilkatalog"
 
 #: lib/poptI.c:75
 msgid "malformed rollback time"
-msgstr "felformatterat återgångstid"
+msgstr "felformaterad återgångstid"
 
 #: lib/poptI.c:99 lib/poptI.c:150
 msgid "do not execute package scriptlet(s)"
@@ -2540,7 +2534,7 @@ msgstr "kör inte paketskript"
 
 #: lib/poptI.c:106
 msgid "save erased package files by renaming into sub-directory"
-msgstr "sparade raderade paketfiler genom att spara dem i underkatalog"
+msgstr "spara raderade paketfiler genom att spara dem i underkatalog"
 
 #: lib/poptI.c:109
 msgid "<package>+"
@@ -2620,7 +2614,8 @@ msgstr "spara raderade paketfiler genom ompaketering"
 
 #: lib/poptI.c:203
 msgid "deinstall new package(s), reinstall old package(s), back to date"
-msgstr "avinstallera nya paket, ominstallera gamla paket, tillbaka till datum"
+msgstr ""
+"avinstallera nya paket och ominstallera gamla paket tillbaka till datum"
 
 #: lib/poptI.c:204
 msgid "<date>"
@@ -2751,7 +2746,7 @@ msgstr "verifiera inte ägare till filer"
 
 #: lib/poptQV.c:205
 msgid "don't verify group of files"
-msgstr "verifiera inte grupper till filerna"
+msgstr "verifiera inte grupper till filer"
 
 #: lib/poptQV.c:208
 msgid "don't verify modification time of files"
@@ -2901,14 +2896,14 @@ msgid " on file "
 msgstr " vid fil "
 
 #: lib/psm.c:1788
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed on file %s: %s\n"
-msgstr "kunde inte öppna %s: %s\n"
+msgstr "%s misslyckades på fil %s: %s\n"
 
 #: lib/psm.c:1791
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed: %s\n"
-msgstr "%s misslyckades\n"
+msgstr "%s misslyckades: %s\n"
 
 #: lib/psm.c:1883
 #, c-format
@@ -3240,7 +3235,7 @@ msgstr "För många argument i datarad vid %s:%d\n"
 #: lib/rpmrc.c:338
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
-msgstr "Felaktigt arkitektur-/osnummer: %s (%s:%d)\n"
+msgstr "Felaktigt arkitektur-/os-nummer: %s (%s:%d)\n"
 
 #: lib/rpmrc.c:378
 #, c-format
@@ -3320,8 +3315,8 @@ msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
-"Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
-"d)\n"
+"Förväntad storlek: %12d = "
+"inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%d)\n"
 
 #: lib/signature.c:139
 #, c-format
@@ -3627,8 +3622,8 @@ msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the rpm-list@redhat."
-"com mailing list\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "frilistan trasig (%u)- var god kör\n"
@@ -3700,7 +3695,7 @@ msgstr "fel(%d) när paket räknades\n"
 #: rpmdb/rpmdb.c:1936 rpmdb/rpmdb.c:3118
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
-msgstr "post nummer %u i databasen är felaktig -- hoppar över den.\n"
+msgstr "post nummer %u i databasen är felaktig -- hoppar över.\n"
 
 #: rpmdb/rpmdb.c:1987
 #, c-format
@@ -3933,7 +3928,7 @@ msgstr "I/O-fel mot lokal fil"
 
 #: rpmio/rpmio.c:624
 msgid "Error setting remote server to passive mode"
-msgstr "Fel när den fjärrservern sattes i passivt läge"
+msgstr "Fel när fjärrservern sattes i passivt läge"
 
 #: rpmio/rpmio.c:627
 msgid "File not found on server"
