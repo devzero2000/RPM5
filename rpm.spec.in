@@ -521,12 +521,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Tue Sep  3 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.06
+* Wed Sep  4 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.06
+- fix: parse pgp packets more carefully.
+- fix: parse header data more carefully.
+- fix: register SIGCHLD handler before forking (#73134).
+
+* Tue Sep  3 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.05
 - fix: always do rpmalMakeIndex.
 - fix: resurrect --triggers (#73330).
 - python: typo in NOKEY exception string.
-- fix: parse pgp packets more carefully.
-- fix: parse header data more carefully.
 
 * Sat Aug 31 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.04
 - fix: SIGCHLD reaper race (#73134).
