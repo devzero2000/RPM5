@@ -1146,9 +1146,6 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 	sx = rpmsxFree(sx);
     } 
 
- 
- if (_rpmts_debug)
- fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
