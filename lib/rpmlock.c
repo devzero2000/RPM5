@@ -38,10 +38,18 @@ static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
 	/* XXX oneshot to determine path for fcntl lock. */
 	if (rpmlock_path == NULL) {
 	    char * t = rpmExpand(rpmlock_path_default, NULL);
-	    if (t == NULL || *t == '\0' || *t == '%')
+	    int freeT = 1;
+
+	    rpmMessage(RPMMESS_DEBUG,
+		_("Generating path to transaction lock file\n"));
+	    if (t == NULL || *t == '\0' || *t == '%') {
+		freeT = 0;
 		t = RPMLOCK_PATH;
+	    }
 	    rpmlock_path = xstrdup(t);
-	    t = _free(t);
+	    rpmMessage(RPMMESS_DEBUG,
+		_("\tLOCK FILE: %s\n"), rpmlock_path);
+	    if(freeT) t = _free(t);
 	}
 	if (lock != NULL) {
 		mode_t oldmask = umask(022);
@@ -50,6 +58,8 @@ static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
 
 /*@-branchstate@*/
 		if (lock->fd == -1) {
+			rpmMessage(RPMMESS_ERROR,
+			    _("Could not aquire transaction lock\n"));
 			lock->fd = open(rpmlock_path, O_RDONLY);
 			if (lock->fd == -1) {
 				free(lock);
