@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2001-09-06 10:40-0400\n"
-"PO-Revision-Date: 2001-09-10 12:33+0200\n"
+"PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1516,27 +1516,27 @@ msgstr "Bearbetar filer: %s-%s-%s\n"
 
 #: build/names.c:42
 msgid "getUname: too many uid's\n"
-msgstr "getUname: för många uid:er\n"
+msgstr "getUname: för många uid\n"
 
 #: build/names.c:63
 msgid "getUnameS: too many uid's\n"
-msgstr "getUnameS: för många uid:er\n"
+msgstr "getUnameS: för många uid\n"
 
 #: build/names.c:84
 msgid "getUidS: too many uid's\n"
-msgstr "getUidS: för många uid:er\n"
+msgstr "getUidS: för många uid\n"
 
 #: build/names.c:105
 msgid "getGname: too many gid's\n"
-msgstr "getGname: för många gid:er\n"
+msgstr "getGname: för många gid\n"
 
 #: build/names.c:126
 msgid "getGnameS: too many gid's\n"
-msgstr "getGnameS: för många gid:er\n"
+msgstr "getGnameS: för många gid\n"
 
 #: build/names.c:147
 msgid "getGidS: too many gid's\n"
-msgstr "getGidS: för många gid:er\n"
+msgstr "getGidS: för många gid\n"
 
 #: build/names.c:178
 #, c-format
