@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-01 12:56-0400\n"
+"POT-Creation-Date: 2004-06-08 13:03-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1478,7 +1478,7 @@ msgstr "mntctl()에서 마운트할 지점을 반환하는데 실패함: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "%s의 상태(stat)를 표시하는데 실패함: %s\n"
 
-#: lib/fs.c:157 rpmio/url.c:523
+#: lib/fs.c:157 rpmio/url.c:519
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
@@ -3239,7 +3239,7 @@ msgstr ""
 
 #: lib/verify.c:321
 #, fuzzy, c-format
-msgid "missing  %c %s"
+msgid "missing   %c %s"
 msgstr "다음을 찾을 수 없음    %s"
 
 #: lib/verify.c:437
@@ -3608,93 +3608,93 @@ msgstr "%s 디렉토리를 삭제합니다\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: rpmio/macro.c:232
+#: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d 활성 %d 비어있음\n"
 
 #. XXX just in case
-#: rpmio/macro.c:370
+#: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(비어있음)"
 
-#: rpmio/macro.c:413
+#: rpmio/macro.c:438
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(비어있음)\n"
 
-#: rpmio/macro.c:651
+#: rpmio/macro.c:665 rpmio/macro.c:706
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "매크로 %%%s에 종료되지 않은 내용(body)이 있습니다\n"
 
-#: rpmio/macro.c:684
+#: rpmio/macro.c:728
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "매크로 %%%s에 부적합한 이름이 있습니다 (%%define)\n"
 
-#: rpmio/macro.c:690
+#: rpmio/macro.c:734
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "매크로 %%%s에 종료되지 않은 옵션이 있습니다\n"
 
-#: rpmio/macro.c:695
+#: rpmio/macro.c:739
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "매크로 %%%s에 비어있는 내용(body)이 있습니다\n"
 
-#: rpmio/macro.c:701
+#: rpmio/macro.c:745
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "매크로 %%%s(을)를 확장(expand)하는데 실패했습니다\n"
 
-#: rpmio/macro.c:736
+#: rpmio/macro.c:780
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "매크로 %%%s에 부적합한 이름이 있습니다 (%%undefine)\n"
 
-#: rpmio/macro.c:854
+#: rpmio/macro.c:898
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "매크로 %%%s (%s)는 레벨 %d 이하에서는 사용할 수 없습니다\n"
 
-#: rpmio/macro.c:981
+#: rpmio/macro.c:1025
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%2$s(%3$s)에 알 수 없는 옵션 %1$c(이)가 있습니다\n"
 
-#: rpmio/macro.c:1181
+#: rpmio/macro.c:1225
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "반복 횟수(%d)가 최대치(%d) 보다 큽니다\n"
 
-#: rpmio/macro.c:1252 rpmio/macro.c:1269
+#: rpmio/macro.c:1296 rpmio/macro.c:1313
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c(이)가 종료되지 않음: %s\n"
 
-#: rpmio/macro.c:1310
+#: rpmio/macro.c:1354
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "'%%' 다음에 처리할 수 없는(unparseable) 매크로가 있습니다\n"
 
-#: rpmio/macro.c:1439
+#: rpmio/macro.c:1511
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "매크로 %%%.*s를 찾을 수 없습니다, 생략합니다\n"
 
-#: rpmio/macro.c:1739
+#: rpmio/macro.c:1844
 msgid "Target buffer overflow\n"
 msgstr "목표대상(Target) 버퍼 오버플로우\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1944 rpmio/macro.c:1950
+#: rpmio/macro.c:2050 rpmio/macro.c:2056
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: rpmio/macro.c:1953
+#: rpmio/macro.c:2059
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
@@ -3782,37 +3782,37 @@ msgstr "경고: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "메모리 할당 값 (%u 바이트)이 NULL을 반환하였습니다.\n"
 
-#: rpmio/url.c:122
+#: rpmio/url.c:118
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "경고: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:142
+#: rpmio/url.c:138
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "경고: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:171
+#: rpmio/url.c:167
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "경고: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:267
+#: rpmio/url.c:263
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "%s@%s의 패스워드: "
 
-#: rpmio/url.c:295 rpmio/url.c:321
+#: rpmio/url.c:291 rpmio/url.c:317
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "오류: %s 포트는 반드시 숫자이어야 합니다\n"
 
-#: rpmio/url.c:476
+#: rpmio/url.c:472
 msgid "url port must be a number\n"
 msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:543
+#: rpmio/url.c:539
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s(을)를 생성하는데 실패함: %s\n"

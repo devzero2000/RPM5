@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-01 12:56-0400\n"
+"POT-Creation-Date: 2004-06-08 13:03-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1506,7 +1506,7 @@ msgstr "mntctl() sonuçlanan hatalý baðlantý yerleri nedeniyle baþarýsýz: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s baþarýsýz: %s\n"
 
-#: lib/fs.c:157 rpmio/url.c:523
+#: lib/fs.c:157 rpmio/url.c:519
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -3262,7 +3262,7 @@ msgstr ""
 
 #: lib/verify.c:321
 #, fuzzy, c-format
-msgid "missing  %c %s"
+msgid "missing   %c %s"
 msgstr "eksik      %s"
 
 #: lib/verify.c:437
@@ -3625,93 +3625,93 @@ msgstr "%s dizini siliniyor\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s dizininin silinmesi baþarýsýz: %s\n"
 
-#: rpmio/macro.c:232
+#: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d etkin %d boþ\n"
 
 #. XXX just in case
-#: rpmio/macro.c:370
+#: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(boþ)"
 
-#: rpmio/macro.c:413
+#: rpmio/macro.c:438
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(boþ)\n"
 
-#: rpmio/macro.c:651
+#: rpmio/macro.c:665 rpmio/macro.c:706
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "%%%s makrosunun gövdesi sonlandýrýlmamýþ\n"
 
-#: rpmio/macro.c:684
+#: rpmio/macro.c:728
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "%%%s makrosunun ismi kuraldýþý (%%define)\n"
 
-#: rpmio/macro.c:690
+#: rpmio/macro.c:734
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "%%%s makrosunu seçenekleri sonlandýrýlmamýþ\n"
 
-#: rpmio/macro.c:695
+#: rpmio/macro.c:739
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "%%%s makrosu boþ\n"
 
-#: rpmio/macro.c:701
+#: rpmio/macro.c:745
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "%%%s makrosu geniþletmede baþarýsýz\n"
 
-#: rpmio/macro.c:736
+#: rpmio/macro.c:780
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "%%%s makrosunun ismi kuraldýþý (%%define)\n"
 
-#: rpmio/macro.c:854
+#: rpmio/macro.c:898
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "%%%s (%s) makrosu %d seviyenin altýnda kullanýlmadý\n"
 
-#: rpmio/macro.c:981
+#: rpmio/macro.c:1025
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c seçeneði %s(%s) de anlaþýlamadý\n"
 
-#: rpmio/macro.c:1181
+#: rpmio/macro.c:1225
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Yineleme derinliði(%d) mümkün miktardan(%d) büyük\n"
 
-#: rpmio/macro.c:1252 rpmio/macro.c:1269
+#: rpmio/macro.c:1296 rpmio/macro.c:1313
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sonlandýrýlmamýþ: %s\n"
 
-#: rpmio/macro.c:1310
+#: rpmio/macro.c:1354
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrýþtýrýlamayan makro tarafýndan bir %% izlendi\n"
 
-#: rpmio/macro.c:1439
+#: rpmio/macro.c:1511
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadý, atlanýyor\n"
 
-#: rpmio/macro.c:1739
+#: rpmio/macro.c:1844
 msgid "Target buffer overflow\n"
 msgstr "Hedef tampon bellek taþtý\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1944 rpmio/macro.c:1950
+#: rpmio/macro.c:2050 rpmio/macro.c:2056
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyasý: %s\n"
 
-#: rpmio/macro.c:1953
+#: rpmio/macro.c:2059
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
@@ -3798,37 +3798,37 @@ msgstr "uyarý: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "bellek ayrýlýrken (%u bayt) NULL döndü.\n"
 
-#: rpmio/url.c:122
+#: rpmio/url.c:118
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "uyarý: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:142
+#: rpmio/url.c:138
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "uyarý: u %p veri %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:171
+#: rpmio/url.c:167
 #, fuzzy, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "uyarý: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:267
+#: rpmio/url.c:263
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "%s@%s için parola: "
 
-#: rpmio/url.c:295 rpmio/url.c:321
+#: rpmio/url.c:291 rpmio/url.c:317
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "hata: %sport bir sayý olmalý\n"
 
-#: rpmio/url.c:476
+#: rpmio/url.c:472
 msgid "url port must be a number\n"
 msgstr "url portu bir sayý olmalý\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:543
+#: rpmio/url.c:539
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"

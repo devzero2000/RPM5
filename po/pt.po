@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-01 12:56-0400\n"
+"POT-Creation-Date: 2004-06-08 13:03-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1492,7 +1492,7 @@ msgstr "o mntctl() falhou ao devolver o número de pontos de montagem: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "Não consegui analisar o %s: %s\n"
 
-#: lib/fs.c:157 rpmio/url.c:523
+#: lib/fs.c:157 rpmio/url.c:519
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "falhei ao aceder ao %s: %s\n"
@@ -3250,7 +3250,7 @@ msgstr ""
 
 #: lib/verify.c:321
 #, fuzzy, c-format
-msgid "missing  %c %s"
+msgid "missing   %c %s"
 msgstr "falta     %s"
 
 #: lib/verify.c:437
@@ -3614,93 +3614,93 @@ msgstr "a remover a directoria %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "falhou a remoção da directoria %s: %s\n"
 
-#: rpmio/macro.c:232
+#: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== activo %d vazio %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:370
+#: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(vazio)"
 
-#: rpmio/macro.c:413
+#: rpmio/macro.c:438
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(vazio)\n"
 
-#: rpmio/macro.c:651
+#: rpmio/macro.c:665 rpmio/macro.c:706
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "A macro %%%s tem o conteúdo incompleto\n"
 
-#: rpmio/macro.c:684
+#: rpmio/macro.c:728
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "A macro %%%s tem um nome inválido (%%define)\n"
 
-#: rpmio/macro.c:690
+#: rpmio/macro.c:734
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "A macro %%%s tem as opções incompletas\n"
 
-#: rpmio/macro.c:695
+#: rpmio/macro.c:739
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "A macro %%%s tem o conteúdo em branco\n"
 
-#: rpmio/macro.c:701
+#: rpmio/macro.c:745
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "A macro %%%s não conseguiu ser expandida\n"
 
-#: rpmio/macro.c:736
+#: rpmio/macro.c:780
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "A macro %%%s tem um nome ilegal (%%undefine)\n"
 
-#: rpmio/macro.c:854
+#: rpmio/macro.c:898
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "A macro %%%s (%s) não foi usada abaixo do nível %d\n"
 
-#: rpmio/macro.c:981
+#: rpmio/macro.c:1025
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Opção desconhecida %c em %s(%s)\n"
 
-#: rpmio/macro.c:1181
+#: rpmio/macro.c:1225
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Nível de recursividade(%d) maior que o máximo(%d)\n"
 
-#: rpmio/macro.c:1252 rpmio/macro.c:1269
+#: rpmio/macro.c:1296 rpmio/macro.c:1313
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c não terminado: %s\n"
 
-#: rpmio/macro.c:1310
+#: rpmio/macro.c:1354
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Segue-se uma macro impossível de analisar ao %%\n"
 
-#: rpmio/macro.c:1439
+#: rpmio/macro.c:1511
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "A macro %%%.*s não foi encontrada, por isso foi ignorada\n"
 
-#: rpmio/macro.c:1739
+#: rpmio/macro.c:1844
 msgid "Target buffer overflow\n"
 msgstr "Sobrecarga do tampão de destino\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1944 rpmio/macro.c:1950
+#: rpmio/macro.c:2050 rpmio/macro.c:2056
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Ficheiro %s: %s\n"
 
-#: rpmio/macro.c:1953
+#: rpmio/macro.c:2059
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"
@@ -3787,37 +3787,37 @@ msgstr "aviso: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "a alocação de memória (%u bytes) devolveu NULL.\n"
 
-#: rpmio/url.c:122
+#: rpmio/url.c:118
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "aviso: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:142
+#: rpmio/url.c:138
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "aviso: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:171
+#: rpmio/url.c:167
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "aviso: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:267
+#: rpmio/url.c:263
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Senha para o %s@%s: "
 
-#: rpmio/url.c:295 rpmio/url.c:321
+#: rpmio/url.c:291 rpmio/url.c:317
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "erro: o %sport tem de ser um número\n"
 
-#: rpmio/url.c:476
+#: rpmio/url.c:472
 msgid "url port must be a number\n"
 msgstr "o porto do URL tem de ser um número\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:543
+#: rpmio/url.c:539
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"
