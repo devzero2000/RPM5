@@ -19,6 +19,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 
     /* close and reset *fdp to NULL */
     if (*fdp && (fnp == NULL || *fnp == NULL)) {
+fprintf(stderr, "*** Fclose(%p)\n", *fdp);
 	Fclose(*fdp);
 	*fdp = NULL;
 	return 0;
@@ -33,6 +34,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 	    return 1;
 	}
 	*fdp = fd;
+fprintf(stderr, "*** Fopen(%s) fd %p\n", *fnp, *fdp);
 	return 0;
     }
 
@@ -45,6 +47,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 	if (fnp)
 		*fnp = fn;
 	*fdp = fd;
+fprintf(stderr, "*** makeTempFile(%s) fd %p\n", fn, *fdp);
 	return 0;
     }
 

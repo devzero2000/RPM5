@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-11-16 17:47-0500\n"
+"POT-Creation-Date: 2000-11-17 14:52-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2132,55 +2132,55 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:444
+#: lib/cpio.c:445
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:450
+#: lib/cpio.c:451
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:756
+#: lib/cpio.c:758
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1242
+#: lib/cpio.c:1244
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1245
+#: lib/cpio.c:1247
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1246
+#: lib/cpio.c:1248
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1264
+#: lib/cpio.c:1266
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1265
+#: lib/cpio.c:1267
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1266
+#: lib/cpio.c:1268
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1267
+#: lib/cpio.c:1269
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1270
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1277
+#: lib/cpio.c:1279
 msgid " failed - "
 msgstr ""
 
@@ -2986,86 +2986,86 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:31
+#: lib/rpmchecksig.c:32
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:42
+#: lib/rpmchecksig.c:44
 msgid "makeTempFile failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:74
+#: lib/rpmchecksig.c:77
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:80
+#: lib/rpmchecksig.c:83
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:125 lib/rpmchecksig.c:259
+#: lib/rpmchecksig.c:128 lib/rpmchecksig.c:262
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:130
+#: lib/rpmchecksig.c:133
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:134
+#: lib/rpmchecksig.c:137
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:142 lib/rpmchecksig.c:274
+#: lib/rpmchecksig.c:145 lib/rpmchecksig.c:277
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:146 lib/rpmchecksig.c:280
+#: lib/rpmchecksig.c:149 lib/rpmchecksig.c:283
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:179
+#: lib/rpmchecksig.c:182
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:186
+#: lib/rpmchecksig.c:189
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:265
+#: lib/rpmchecksig.c:268
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:430
+#: lib/rpmchecksig.c:433
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:431 lib/rpmchecksig.c:445
+#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:433 lib/rpmchecksig.c:447
+#: lib/rpmchecksig.c:436 lib/rpmchecksig.c:450
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
+#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:436 lib/rpmchecksig.c:450
+#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:444
+#: lib/rpmchecksig.c:447
 msgid "OK"
 msgstr ""
 
