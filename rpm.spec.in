@@ -12,7 +12,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.18
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -129,13 +129,16 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
-%%_dbapi_rebuild	1
 E_O_F
 
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
   strip .%{__prefix}/bin/rpm2cpio
 }
+
+%if %{with_apidocs}
+gzip -9n apidocs/man/* || :
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -155,9 +158,15 @@ fi
 %ifos linux
 /sbin/ldconfig
 %endif
-/bin/rpm --initdb
-if [ -f /var/lib/rpm/Packages ]; then
+if [ -f /var/lib/rpm/packages.rpm ]; then
+    : # do nothing
+elif [ -f /var/lib/rpm/Packages ]; then
+    # undo db1 configuration
     rm -f /etc/rpm/macros.db1
+else
+    # initialize db3 database
+    rm -f /etc/rpm/macros.db1
+    /bin/rpm --initdb
 fi
 
 %ifos linux
@@ -221,13 +230,6 @@ fi
 %{__prefix}/lib/rpm/armv[34][lb]*
 %endif
 
-%dir %{__prefix}/src/redhat
-%dir %{__prefix}/src/redhat/BUILD
-%dir %{__prefix}/src/redhat/SPECS
-%dir %{__prefix}/src/redhat/SOURCES
-%dir %{__prefix}/src/redhat/SRPMS
-%dir %{__prefix}/src/redhat/RPMS
-%{__prefix}/src/redhat/RPMS/*
 %{__prefix}/*/locale/*/LC_MESSAGES/rpm.mo
 %{__prefix}%{__share}/man/man[18]/*.[18]*
 %lang(pl) %{__prefix}%{__share}/man/pl/man[18]/*.[18]*
@@ -236,6 +238,13 @@ fi
 
 %files build
 %defattr(-,root,root)
+%dir %{__prefix}/src/redhat
+%dir %{__prefix}/src/redhat/BUILD
+%dir %{__prefix}/src/redhat/SPECS
+%dir %{__prefix}/src/redhat/SOURCES
+%dir %{__prefix}/src/redhat/SRPMS
+%dir %{__prefix}/src/redhat/RPMS
+%{__prefix}/src/redhat/RPMS/*
 %{__prefix}/bin/rpmbuild
 %{__prefix}/lib/rpm/brp-*
 %{__prefix}/lib/rpm/check-prereqs
@@ -297,6 +306,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Dec  9 2000 Jeff Johnson <jbj@redhat.com>
+- handle added dirtoken tags (mostly) correctly with header regions.
+- add FHS doc/man/info dirs, diddle autoconf goo.
+
 * Thu Dec  7 2000 Jeff Johnson <jbj@redhat.com>
 - add rpmtransGetKeys() to retrieve transaction keys in tsort'ed order.
 - python bindings for rpmtransGetKeys().

@@ -354,6 +354,11 @@ void compressFilelist(Header h)
      * a bit faster.
      */
 
+    if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
+	headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
+	return;		/* Already converted. */
+    }
+
     if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL,
 			(void **) &fileNames, &count))
 	return;		/* no file list */
@@ -396,12 +401,12 @@ void compressFilelist(Header h)
     }
 
 exit:
-    headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
-			dirNames, dirIndex + 1);
     headerAddEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			dirIndexes, count);
     headerAddEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			baseNames, count);
+    headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+			dirNames, dirIndex + 1);
 
     free((void *)fileNames);
 
@@ -457,19 +462,18 @@ void expandFilelist(Header h)
     const char ** fileNames = NULL;
     int count = 0;
 
-    doBuildFileList(h, &fileNames, &count, RPMTAG_BASENAMES,
+    if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
+	doBuildFileList(h, &fileNames, &count, RPMTAG_BASENAMES,
 			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
-
-    if (fileNames == NULL || count <= 0)
-	return;
-
-    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+	if (fileNames == NULL || count <= 0)
+	    return;
+	headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			fileNames, count);
+	free((void *)fileNames);
+    }
 
-    free((void *)fileNames);
-
-    headerRemoveEntry(h, RPMTAG_BASENAMES);
     headerRemoveEntry(h, RPMTAG_DIRNAMES);
+    headerRemoveEntry(h, RPMTAG_BASENAMES);
     headerRemoveEntry(h, RPMTAG_DIRINDEXES);
 }
 

@@ -1424,7 +1424,7 @@ top:
     } while (mi->mi_offset == 0);
 
     if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset)
-	return mi->mi_h;
+	goto exit;
 
     /* Retrieve next header */
     if (uh == NULL) {
@@ -1459,6 +1459,14 @@ top:
 
     mi->mi_prevoffset = mi->mi_offset;
     mi->mi_modified = 0;
+
+exit:
+    if (mi->mi_h) {
+	const char *n, *v, *r;
+	headerNVR(mi->mi_h, &n, &v, &r);
+	rpmMessage(RPMMESS_DEBUG, "%s-%s-%s at 0x%x, h %p\n", n, v, r,
+		mi->mi_offset, mi->mi_h);
+    }
     return mi->mi_h;
 }
 

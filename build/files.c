@@ -1286,6 +1286,9 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/man");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/info");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/X11R6/man");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/doc");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/man");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/info");
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_docdir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_mandir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_infodir}", NULL);

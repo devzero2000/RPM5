@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-07 17:55-0500\n"
+"POT-Creation-Date: 2000-12-09 12:13-0500\n"
 "PO-Revision-Date: 2000-08-17 20:22+02:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1695,48 +1695,48 @@ msgstr ""
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1568
+#: build/files.c:1571
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr ""
 
-#: build/files.c:1580 build/parsePrep.c:41
+#: build/files.c:1583 build/parsePrep.c:41
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1635
+#: build/files.c:1638
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1640
+#: build/files.c:1643
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1722
+#: build/files.c:1725
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1726
+#: build/files.c:1729
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1847
+#: build/files.c:1850
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1875 build/files.c:1889
+#: build/files.c:1878 build/files.c:1892
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1998
+#: build/files.c:2001
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2505,7 +2505,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2456 lib/header.c:2473 lib/header.c:2493
+#: lib/header.c:2461 lib/header.c:2478 lib/header.c:2498
 msgid "(not a number)"
 msgstr ""
 
@@ -2538,88 +2538,88 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:247 lib/header.c:941 lib/install.c:380
+#: lib/header.c:247 lib/header.c:947 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1367
+#: lib/header.c:1372
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1809
+#: lib/header.c:1814
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1839
+#: lib/header.c:1844
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1853
+#: lib/header.c:1858
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1865
+#: lib/header.c:1870
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1882
+#: lib/header.c:1887
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1909
+#: lib/header.c:1914
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1927
+#: lib/header.c:1932
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1931
+#: lib/header.c:1936
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1991
+#: lib/header.c:1996
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2000
+#: lib/header.c:2005
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2013 lib/header.c:2054
+#: lib/header.c:2018 lib/header.c:2059
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2023
+#: lib/header.c:2028
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2039
+#: lib/header.c:2044
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2064
+#: lib/header.c:2069
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2235
+#: lib/header.c:2240
 msgid "(unknown type)"
 msgstr ""
 
@@ -3250,7 +3250,7 @@ msgstr ""
 msgid "error(%d) removing record %s from %s"
 msgstr ""
 
-#: lib/rpmdb.c:771 lib/rpmdb.c:2340
+#: lib/rpmdb.c:771 lib/rpmdb.c:2348
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -3266,105 +3266,105 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr ""
 
-#: lib/rpmdb.c:1141 lib/rpmdb.c:1675
+#: lib/rpmdb.c:1141 lib/rpmdb.c:1683
 #, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:1728
+#: lib/rpmdb.c:1736
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1739
+#: lib/rpmdb.c:1747
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1748
+#: lib/rpmdb.c:1756
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1890
+#: lib/rpmdb.c:1898
 #, c-format
 msgid "error(%d) allocating new package instance"
 msgstr ""
 
-#: lib/rpmdb.c:1953
+#: lib/rpmdb.c:1961
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1969
+#: lib/rpmdb.c:1977
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1978
+#: lib/rpmdb.c:1986
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2365
+#: lib/rpmdb.c:2373
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2369
+#: lib/rpmdb.c:2377
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rpmdb.c:2375
+#: lib/rpmdb.c:2383
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2377
+#: lib/rpmdb.c:2385
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:2384
+#: lib/rpmdb.c:2392
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2395
+#: lib/rpmdb.c:2403
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2418
+#: lib/rpmdb.c:2426
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:2450
+#: lib/rpmdb.c:2458
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:2468
+#: lib/rpmdb.c:2476
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2476
+#: lib/rpmdb.c:2484
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2478
+#: lib/rpmdb.c:2486
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2488
+#: lib/rpmdb.c:2496
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2490
+#: lib/rpmdb.c:2498
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
