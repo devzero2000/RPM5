@@ -20,6 +20,8 @@ Requires: popt, bzip2 >= 0.9.0c-2
 # XXX linked binaries like /bin/rpm.
 %ifnarch ia64
 Requires: glibc >= 2.1.92
+# XXX needed to avoid libdb.so.2 satisfied by compat/libc5 provides.
+Requires: db1 = 1.85
 %endif
 BuildRequires: db3-devel
 BuildRequires: bzip2 >= 0.9.0c-2
