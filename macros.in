@@ -705,7 +705,7 @@ cd %{u2p:%{_builddir}}\
 CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
 CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
 FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
-%{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} ; \
+%{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force ;} \
 ./configure \\\
 	--target=%{_target_platform} \\\
  	--prefix=%{_prefix} \\\
