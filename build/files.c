@@ -1,4 +1,5 @@
 #include "config.h"
+#include "miscfn.h"
 
 #ifdef HAVE_GLOB_H
 #  include <glob.h>

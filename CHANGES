@@ -1,4 +1,5 @@
 2.5.4 -> 2.5.5:
+	- miscellaneous portability cruft (Eugene Kanter).
 	- Makefile: don't use ln -sf.
 	- getOutputFrom(): fix race between last read on pipe and child death
 	  (exacerbated in 2.5.4).
