@@ -2196,8 +2196,13 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi @*/
 {
     if (mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0) {
-	qsort(mi->mi_set->recs, mi->mi_set->count, sizeof(*mi->mi_set->recs),
-		hdrNumCmp);
+#ifdef DYING
+	qsort(mi->mi_set->recs, mi->mi_set->count,
+		sizeof(*mi->mi_set->recs), hdrNumCmp);
+#else
+	mergesort(mi->mi_set->recs, mi->mi_set->count,
+		sizeof(*mi->mi_set->recs), hdrNumCmp);
+#endif
 	mi->mi_sorted = 1;
     }
 }

@@ -1917,7 +1917,7 @@ int rpmdepOrder(rpmTransactionSet ts)
 #ifdef	DYING
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
 #else
-    int chainsaw = 1;
+    int chainsaw = 0;
 #endif
     struct availablePackage * p;
     struct availablePackage * q;

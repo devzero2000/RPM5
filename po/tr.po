@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-27 14:46-0500\n"
+"POT-Creation-Date: 2002-04-04 18:06-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2393,7 +2393,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2937 lib/header.c:2958 lib/header.c:2980
+#: lib/header.c:2950 lib/header.c:2971 lib/header.c:2993
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -2562,10 +2562,6 @@ msgstr "ifade içersinde : den sonra { gerekli"
 #: lib/header.c:2458
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
-
-#: lib/header.c:2681
-msgid "(unknown type)"
-msgstr "(bilinmeyen tür)"
 
 #: lib/misc.c:236 lib/misc.c:241 lib/misc.c:247
 #, c-format
@@ -3797,7 +3793,7 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "paketler taranýrken hata(%d)\n"
 
-#: rpmdb/rpmdb.c:2110 rpmdb/rpmdb.c:3468
+#: rpmdb/rpmdb.c:2110 rpmdb/rpmdb.c:3473
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "veritabanýndaki %u. kayýt hatalý -- atlanýyor\n"
@@ -3807,101 +3803,101 @@ msgstr "veritabanýndaki %u. kayýt hatalý -- atlanýyor\n"
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: bozuk baþlýk örneði #%u alýndý, atlanýyor.\n"
 
-#: rpmdb/rpmdb.c:2433
+#: rpmdb/rpmdb.c:2438
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x de baþlýk okunamadý\n"
 
-#: rpmdb/rpmdb.c:2596
+#: rpmdb/rpmdb.c:2601
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "\"%s\" %s indeksinden siliniyor.\n"
 
-#: rpmdb/rpmdb.c:2600
+#: rpmdb/rpmdb.c:2605
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%d girdi %s indeksinden siliniyor.\n"
 
-#: rpmdb/rpmdb.c:2770
+#: rpmdb/rpmdb.c:2775
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "yeni paket örneðini tutma hatasý(%d)\n"
 
-#: rpmdb/rpmdb.c:2969
+#: rpmdb/rpmdb.c:2974
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "\"%s\" %s indeksine ekleniyor.\n"
 
-#: rpmdb/rpmdb.c:2973
+#: rpmdb/rpmdb.c:2978
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%d girdi %s indeksine ekleniyor.\n"
 
-#: rpmdb/rpmdb.c:3354
+#: rpmdb/rpmdb.c:3359
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "baþarýlý db3 yeniden oluþturma ertesinde %s kaldýrýlýyor\n"
 
-#: rpmdb/rpmdb.c:3387
+#: rpmdb/rpmdb.c:3392
 msgid "no dbpath has been set"
 msgstr "belirtilmiþ bir dbpath yok"
 
-#: rpmdb/rpmdb.c:3414
+#: rpmdb/rpmdb.c:3419
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%s veritabaný %s içinde yeniden oluþturuluyor\n"
 
-#: rpmdb/rpmdb.c:3418
+#: rpmdb/rpmdb.c:3423
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "geçici veritabaný %s zaten mevcut\n"
 
-#: rpmdb/rpmdb.c:3424
+#: rpmdb/rpmdb.c:3429
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s dizini oluþturuluyor\n"
 
-#: rpmdb/rpmdb.c:3426
+#: rpmdb/rpmdb.c:3431
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s dizini oluþturuluyor: %s\n"
 
-#: rpmdb/rpmdb.c:3433
+#: rpmdb/rpmdb.c:3438
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "eski veritabaný dbapi %d ile açýlýyor\n"
 
-#: rpmdb/rpmdb.c:3444
+#: rpmdb/rpmdb.c:3449
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "yeni veritabaný dbapi %d ile açýlýyor\n"
 
-#: rpmdb/rpmdb.c:3508
+#: rpmdb/rpmdb.c:3513
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kayýt özgün olarak %u e eklenemedi\n"
 
-#: rpmdb/rpmdb.c:3526
+#: rpmdb/rpmdb.c:3531
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "veritabaný yeniden oluþturulamadý: mevcut veritabaný deðiþmeden\n"
 "yerinde býrakýldý\n"
 
-#: rpmdb/rpmdb.c:3534
+#: rpmdb/rpmdb.c:3539
 msgid "failed to replace old database with new database!\n"
 msgstr "eski veritabanýnýn yenisiyle deðiþtirilirmesi baþarýsýz!\n"
 
-#: rpmdb/rpmdb.c:3536
+#: rpmdb/rpmdb.c:3541
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "kurtarmak için %s içindeki dosyalar %s deki dosyalarla deðiþtiriliyor"
 
-#: rpmdb/rpmdb.c:3546
+#: rpmdb/rpmdb.c:3551
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s dizini siliniyor\n"
 
-#: rpmdb/rpmdb.c:3548
+#: rpmdb/rpmdb.c:3553
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s dizininin silinmesi baþarýsýz: %s\n"
@@ -4112,6 +4108,9 @@ msgstr "url portu bir sayý olmalý\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(bilinmeyen tür)"
 
 #~ msgid "getting list of mounted filesystems\n"
 #~ msgstr "baðlý dosya sistemlerinin listesi alýnýyor\n"

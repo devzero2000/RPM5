@@ -71,6 +71,9 @@
 	- solaris: save main() envp in global environ for use with gpg.
 	- don't add empty md5 strings to Filemd5's index.
 	- create Filemd5 index with binary, not ascii, keys.
+	- speedup large queries by ~50%.
+	- revert to presentation ordering Yet Again (#62158).
+	- rpmdbSortIterator: on upgrade, mergesort faster than quicksort (~7%).
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

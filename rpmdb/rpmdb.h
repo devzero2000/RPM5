@@ -554,6 +554,12 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 	/*@*/;
 
+/**
+ * Mergesort, same arguments as qsort(2).
+ */
+int mergesort(void *base, size_t nmemb, size_t size,
+                int (*cmp) (const void *, const void *));
+
 #ifdef __cplusplus
 }
 #endif

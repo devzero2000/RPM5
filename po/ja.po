@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-27 14:46-0500\n"
+"POT-Creation-Date: 2002-04-04 18:06-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2461,7 +2461,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2937 lib/header.c:2958 lib/header.c:2980
+#: lib/header.c:2950 lib/header.c:2971 lib/header.c:2993
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -2631,10 +2631,6 @@ msgstr "式中で : の後に { が期待されます"
 #: lib/header.c:2458
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
-
-#: lib/header.c:2681
-msgid "(unknown type)"
-msgstr "(不明なタイプ)"
 
 #: lib/misc.c:236 lib/misc.c:241 lib/misc.c:247
 #, fuzzy, c-format
@@ -3930,7 +3926,7 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: rpmdb/rpmdb.c:2110 rpmdb/rpmdb.c:3468
+#: rpmdb/rpmdb.c:2110 rpmdb/rpmdb.c:3473
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
@@ -3940,101 +3936,101 @@ msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2433
+#: rpmdb/rpmdb.c:2438
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: rpmdb/rpmdb.c:2596
+#: rpmdb/rpmdb.c:2601
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: rpmdb/rpmdb.c:2600
+#: rpmdb/rpmdb.c:2605
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "name インデックス削除します\n"
 
-#: rpmdb/rpmdb.c:2770
+#: rpmdb/rpmdb.c:2775
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: rpmdb/rpmdb.c:2969
+#: rpmdb/rpmdb.c:2974
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: rpmdb/rpmdb.c:2973
+#: rpmdb/rpmdb.c:2978
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: rpmdb/rpmdb.c:3354
+#: rpmdb/rpmdb.c:3359
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3387
+#: rpmdb/rpmdb.c:3392
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
-#: rpmdb/rpmdb.c:3414
+#: rpmdb/rpmdb.c:3419
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: rpmdb/rpmdb.c:3418
+#: rpmdb/rpmdb.c:3423
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: rpmdb/rpmdb.c:3424
+#: rpmdb/rpmdb.c:3429
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3426
+#: rpmdb/rpmdb.c:3431
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3433
+#: rpmdb/rpmdb.c:3438
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: rpmdb/rpmdb.c:3444
+#: rpmdb/rpmdb.c:3449
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: rpmdb/rpmdb.c:3508
+#: rpmdb/rpmdb.c:3513
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: rpmdb/rpmdb.c:3526
+#: rpmdb/rpmdb.c:3531
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: rpmdb/rpmdb.c:3534
+#: rpmdb/rpmdb.c:3539
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:3536
+#: rpmdb/rpmdb.c:3541
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: rpmdb/rpmdb.c:3546
+#: rpmdb/rpmdb.c:3551
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3548
+#: rpmdb/rpmdb.c:3553
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -4257,6 +4253,9 @@ msgstr "url ポートは数字でなければなりません\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(不明なタイプ)"
 
 #~ msgid "getting list of mounted filesystems\n"
 #~ msgstr "マウントされたファイルシステムのリストを取得しています\n"
