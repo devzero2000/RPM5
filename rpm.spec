@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 0.2
+Release: 0.3
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -229,8 +229,17 @@ fi
 
 %changelog
 * Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
+- handle version 4 packaging as input.
+- builds against bzip2 1.0
+- fix: resurrect symlink unique'ifying property of finger prints.
+- fix: broken glob test with empty build directory (Geoff Keating).
+- fix: create per-platform directories correctly.
 - update brp-* scripts from rpm-4.0, enable in per-platform config.
 - alpha: add -mieee to default optflags.
+- add RPMTAG_OPTFLAGS, configured optflags when package was built.
+- add RPMTAG_DISTURL for rpmfind-like tools (content unknown yet).
+- teach brp-compress about /usr/info and /usr/share/info as well.
+- update macros.in from rpm-4.0 (w/o dbi configuration).
 
 * Thu Mar 15 2000 Jeff Johnson <jbj@redhat.com>
 - portability: skip bzip2 if not available.

@@ -81,7 +81,7 @@
 %_buildshell		/bin/sh
 %_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
-%_rebuilddbpath		%{_dbpath}
+%_dbpath_rebuild	%{_dbpath}
 %_defaultdocdir		%{_usr}/doc
 #
 %__find_provides	@FINDPROVIDES@
@@ -128,10 +128,20 @@
 #
 #%buildsubdir
 
-#	Configurable distribution information, same as Distribution: in a
+#	Configurable distribution information, same as Distribution: tag in a
 #	specfile.
 #
 #%distribution
+
+#	Configurable distribution URL, same as DistURL: tag in a specfile.
+#	The URL will be used to supply reliable information to tools like
+#	rpmfind.
+#
+# Note: You should not configure with disturl (or build packages with
+# the DistURL: tag) unless you are willing to supply content in a
+# yet-to-be-determined format at the URL specified.
+#
+#%disturl
 
 #	Boolean (i.e. 1 == "yes", 0 == "no") that controls whether files
 #	marked as %doc should be installed.
@@ -213,6 +223,9 @@
 # XXX use the rpmrc instantiated macro for now
 #%optflags		-O2
 
+%__arch_install_post	%{nil}
+%__os_install_post	%{___build_post}
+
 #==============================================================================
 # ---- Scriptlet template templates.
 #	Global defaults used for building scriptlet templates.
@@ -269,9 +282,6 @@ cd %{u2p:%{_builddir}}\
 #%{___build_post}\
 #%{nil}
 
-%__arch_install_post    %{nil}
-%__os_install_post	%{___build_post}
-
 #==============================================================================
 # ---- Scriptlet templates.
 #	Macro(s) that expand to a command and script that is executed.
@@ -312,8 +322,8 @@ cd %{u2p:%{_builddir}}\
 %__spec_install_body	%{___build_body}
 %__spec_install_post\
 %{__arch_install_post}\
-%{__os_install_post}
-
+%{__os_install_post}\
+%{nil}
 %__spec_install_template	#!%{__spec_install_shell}\
 %{__spec_install_pre}\
 %{nil}
@@ -435,31 +445,50 @@ cd %{u2p:%{_builddir}}\
 # gotcha is that arguments, if present, should be on the same line as the
 # %configure.
 #
-%configure	\
-  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
-  CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}
-
-#------------------------------------------------------------------------------
-# This is an improved version of %configure that may replace the above
-# macro at some point (from PLD team).
+# This is the version of %configure used throuugh rpm-3.0.4.
+#%configure	\
+#  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
+#  CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}
 #
-#%configure { CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
-# CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
-# FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
-# ./configure %{_target_platform} \
-# 	--prefix=%{_prefix} \
-#	--exec-prefix=%{_exec_prefix} \
-#	--bindir=%{_bindir} \
-#	--sbindir=%{_sbindir} \
-#	--sysconfdir=%{_sysconfdir} \
-#	--datadir=%{_datadir} \
-#	--includedir=%{_includedir} \
-#	--libdir=%{_libdir} \
-#	--libexecdir=%{_libexecdir} \
-#	--localstatedir=%{_localstatedir} \
-#	--sharedstatedir=%{_sharedstatedir} \
-#	--mandir=%{_mandir} \
-#	--infodir=%{_infodir} }
+#------------------------------------------------------------------------------
+# This is an improved version of %configure (from PLD team).
+%configure \
+CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
+CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
+FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
+%{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} ; \
+./configure %{_target_platform} \\\
+ 	--prefix=%{_prefix} \\\
+	--exec-prefix=%{_exec_prefix} \\\
+	--bindir=%{_bindir} \\\
+	--sbindir=%{_sbindir} \\\
+	--sysconfdir=%{_sysconfdir} \\\
+	--datadir=%{_datadir} \\\
+	--includedir=%{_includedir} \\\
+	--libdir=%{_libdir} \\\
+	--libexecdir=%{_libexecdir} \\\
+	--localstatedir=%{_localstatedir} \\\
+	--sharedstatedir=%{_sharedstatedir} \\\
+	--mandir=%{_mandir} \\\
+	--infodir=%{_infodir}
+#------------------------------------------------------------------------------
+# The make install analogue of %configure:
+%makeinstall \
+   make \\\
+	prefix=%{?buildroot:%{buildroot}}%{_prefix} \\\
+	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \\\
+	bindir=%{?buildroot:%{buildroot}}%{_bindir} \\\
+	sbindir=%{?buildroot:%{buildroot}}%{_sbindir} \\\
+	sysconfdir=%{?buildroot:%{buildroot}}%{_sysconfdir} \\\
+	datadir=%{?buildroot:%{buildroot}}%{_datadir} \\\
+	includedir=%{?buildroot:%{buildroot}}%{_includedir} \\\
+	libdir=%{?buildroot:%{buildroot}}%{_libdir} \\\
+	libexecdir=%{?buildroot:%{buildroot}}%{_libexecdir} \\\
+	localstatedir=%{?buildroot:%{buildroot}}%{_localstatedir} \\\
+	sharedstatedir=%{?buildroot:%{buildroot}}%{_sharedstatedir} \\\
+	mandir=%{?buildroot:%{buildroot}}%{_mandir} \\\
+	infodir=%{?buildroot:%{buildroot}}%{_infodir} \\\
+   install
 
 #------------------------------------------------------------------------------
 # The GNUconfigure macro does the following:
@@ -561,4 +590,3 @@ done \
 # %files -f %{name}.lang
 #
 %find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
-

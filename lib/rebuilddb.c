@@ -32,7 +32,7 @@ int rpmdbRebuild(const char * rootdir)
 	dbpath += strlen(rootdir);
     xfree(tfn);
 
-    tfn = rpmGetPath("%{_rebuilddbpath}", NULL);
+    tfn = rpmGetPath("%{_dbpath_rebuild}", NULL);
     if (!(tfn && tfn[0] != '%' && strcmp(tfn, dbpath))) {
 	char pidbuf[20];
 	char *t;
