@@ -55,6 +55,7 @@
 %__sed			@__SED@
 %__ssh			@__SSH@
 %__tar			@__TAR@
+%__unzip		%{_unzipbin}
 
 #==============================================================================
 # ---- Build system path macros.
@@ -117,6 +118,7 @@
 %_srcrpmdir		%{_topdir}/SRPMS
 %_tmppath		%{_var}/tmp
 %_topdir		%{_usrsrc}/redhat
+%_unzipbin		@UNZIPBIN@
 
 #==============================================================================
 # ---- Optional rpmrc macros.
