@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.42
+Release: 0.43
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -425,6 +425,7 @@ fi
 - popt: add POPT_CONTEXT_ARG_OPTS for all opts to return 1 (#30912).
 - fix: fsm reads/writes now return error on partial I/O.
 - fix: Ferror returned spurious error for gzdio/bzdio.
+- check for API/ABI creep, diddle up some compatibility.
 
 * Thu Jun 14 2001 Jeff Johnson <jbj@redhat.com>
 - fix: db1 end-of-file not detected in legacy compatible way.

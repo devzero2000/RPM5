@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-06-17 11:02-0400\n"
+"POT-Creation-Date: 2001-06-17 17:45-0400\n"
 "PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -1133,11 +1133,6 @@ msgstr "모든 패키지에 대해 검증하는데 필요 이상의 인수가 주어졌습니다"
 msgid "no arguments given for verify"
 msgstr "검증을 위해 주어진 인수가 없습니다"
 
-#: rpm2cpio.c:24
-#, c-format
-msgid "cannot open package: %s\n"
-msgstr "패키지를 열 수 없음: %s\n"
-
 #: rpm2cpio.c:34
 msgid "argument is not an RPM package\n"
 msgstr "인수로 지정된 값이 RPM 패키지가 아닙니다\n"
@@ -2178,7 +2173,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2758 lib/header.c:2777 lib/header.c:2797
+#: lib/header.c:2519 lib/header.c:2538 lib/header.c:2558
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
@@ -2251,91 +2246,91 @@ msgid "%s created as %s\n"
 msgstr "%s (이)가 %s (으)로 생성되었습니다\n"
 
 #. This should not be allowed
-#: lib/header.c:186
+#: lib/header.c:90
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() 의 RPM_STRING_TYPE 카운트는 반드시 1 이어야 합니다.\n"
 
-#: lib/header.c:221 lib/header.c:1174 lib/psm.c:390
+#: lib/header.c:125 lib/header_internal.c:139 lib/psm.c:390
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "자료 유형 %d (은)는 사용할 수 없습니다\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2089
+#: lib/header.c:1850
 #, c-format
 msgid "missing { after %"
 msgstr "% 뒤에 { 를 찾을 수 없습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2119
+#: lib/header.c:1880
 msgid "missing } after %{"
 msgstr "%{ 뒤에 } 를 찾을 수 없습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2133
+#: lib/header.c:1894
 msgid "empty tag format"
 msgstr "빈(empty) 태그 형식입니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2145
+#: lib/header.c:1906
 msgid "empty tag name"
 msgstr "빈(empty) 태그 이름입니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2162
+#: lib/header.c:1923
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2189
+#: lib/header.c:1950
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2207
+#: lib/header.c:1968
 msgid "unexpected ]"
 msgstr "']' 가 잘못 사용되고 있습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2211
+#: lib/header.c:1972
 msgid "unexpected }"
 msgstr "'}' 가 잘못 사용되고 있습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2276
+#: lib/header.c:2037
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2285
+#: lib/header.c:2046
 msgid "{ expected after ? in expression"
 msgstr "표현식의 ? 뒤에 { 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2298 lib/header.c:2340
+#: lib/header.c:2059 lib/header.c:2101
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2308
+#: lib/header.c:2069
 msgid ": expected following ? subexpression"
 msgstr "하부 표현식(subexpression)의 ? 다음에 : 이 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2325
+#: lib/header.c:2086
 msgid "{ expected after : in expression"
 msgstr "표현식의 : 뒤에 { 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2350
+#: lib/header.c:2111
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 필요합니다"
 
-#: lib/header.c:2526
+#: lib/header.c:2287
 msgid "(unknown type)"
 msgstr "(알 수 없는 유형)"
 
-#: lib/misc.c:333 lib/misc.c:338 lib/misc.c:344
+#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "임시 파일 %s (을)를 생성하는 도중 오류가 발생했습니다\n"
@@ -3631,109 +3626,109 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1907 rpmdb/rpmdb.c:3071
+#: rpmdb/rpmdb.c:1913 rpmdb/rpmdb.c:3077
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1958
+#: rpmdb/rpmdb.c:1964
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2222
+#: rpmdb/rpmdb.c:2228
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2289
+#: rpmdb/rpmdb.c:2295
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2298
+#: rpmdb/rpmdb.c:2304
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2489
+#: rpmdb/rpmdb.c:2495
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2573
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2578
+#: rpmdb/rpmdb.c:2584
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2960
+#: rpmdb/rpmdb.c:2966
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2990
+#: rpmdb/rpmdb.c:2996
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3017
+#: rpmdb/rpmdb.c:3023
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3021
+#: rpmdb/rpmdb.c:3027
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3027
+#: rpmdb/rpmdb.c:3033
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3029
+#: rpmdb/rpmdb.c:3035
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3036
+#: rpmdb/rpmdb.c:3042
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3047
+#: rpmdb/rpmdb.c:3053
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3111
+#: rpmdb/rpmdb.c:3117
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3129
+#: rpmdb/rpmdb.c:3135
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3137
+#: rpmdb/rpmdb.c:3143
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3139
+#: rpmdb/rpmdb.c:3145
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3149
+#: rpmdb/rpmdb.c:3155
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3151
+#: rpmdb/rpmdb.c:3157
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3947,6 +3942,9 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s (을)를 생성하는데 실패함: %s\n"
+
+#~ msgid "cannot open package: %s\n"
+#~ msgstr "패키지를 열 수 없음: %s\n"
 
 #~ msgid "Bad count for headerAddEntry(): %d\n"
 #~ msgstr "headerAddEntry() 의 잘못된 카운트: %d\n"

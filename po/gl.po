@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-17 11:02-0400\n"
+"POT-Creation-Date: 2001-06-17 17:45-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1086,11 +1086,6 @@ msgstr ""
 msgid "no arguments given for verify"
 msgstr ""
 
-#: rpm2cpio.c:24
-#, c-format
-msgid "cannot open package: %s\n"
-msgstr ""
-
 #: rpm2cpio.c:34
 msgid "argument is not an RPM package\n"
 msgstr ""
@@ -2125,7 +2120,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2758 lib/header.c:2777 lib/header.c:2797
+#: lib/header.c:2519 lib/header.c:2538 lib/header.c:2558
 msgid "(not a number)"
 msgstr ""
 
@@ -2198,91 +2193,91 @@ msgid "%s created as %s\n"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:186
+#: lib/header.c:90
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:221 lib/header.c:1174 lib/psm.c:390
+#: lib/header.c:125 lib/header_internal.c:139 lib/psm.c:390
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2089
+#: lib/header.c:1850
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2119
+#: lib/header.c:1880
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2133
+#: lib/header.c:1894
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2145
+#: lib/header.c:1906
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2162
+#: lib/header.c:1923
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2189
+#: lib/header.c:1950
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2207
+#: lib/header.c:1968
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2211
+#: lib/header.c:1972
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2276
+#: lib/header.c:2037
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2285
+#: lib/header.c:2046
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2298 lib/header.c:2340
+#: lib/header.c:2059 lib/header.c:2101
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2308
+#: lib/header.c:2069
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2325
+#: lib/header.c:2086
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2350
+#: lib/header.c:2111
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2526
+#: lib/header.c:2287
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/misc.c:333 lib/misc.c:338 lib/misc.c:344
+#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr ""
@@ -3539,109 +3534,109 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1907 rpmdb/rpmdb.c:3071
+#: rpmdb/rpmdb.c:1913 rpmdb/rpmdb.c:3077
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1958
+#: rpmdb/rpmdb.c:1964
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2222
+#: rpmdb/rpmdb.c:2228
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2289
+#: rpmdb/rpmdb.c:2295
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2298
+#: rpmdb/rpmdb.c:2304
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2489
+#: rpmdb/rpmdb.c:2495
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2573
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2578
+#: rpmdb/rpmdb.c:2584
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2960
+#: rpmdb/rpmdb.c:2966
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2990
+#: rpmdb/rpmdb.c:2996
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3017
+#: rpmdb/rpmdb.c:3023
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3021
+#: rpmdb/rpmdb.c:3027
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3027
+#: rpmdb/rpmdb.c:3033
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3029
+#: rpmdb/rpmdb.c:3035
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3036
+#: rpmdb/rpmdb.c:3042
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3047
+#: rpmdb/rpmdb.c:3053
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3111
+#: rpmdb/rpmdb.c:3117
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3129
+#: rpmdb/rpmdb.c:3135
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3137
+#: rpmdb/rpmdb.c:3143
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3139
+#: rpmdb/rpmdb.c:3145
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3149
+#: rpmdb/rpmdb.c:3155
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3151
+#: rpmdb/rpmdb.c:3157
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

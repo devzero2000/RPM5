@@ -47,11 +47,6 @@ void freeSplitString( /*@only@*/ char ** list)
 int rpmfileexists(const char * urlfn)
 	/*@modifies fileSystem @*/;
 
-/**
- */
-int rpmvercmp(const char * a, const char * b)
-	/*@*/;
-
 /*
  * These are like the libc functions, but they malloc() the space which
  * is needed.
@@ -72,7 +67,7 @@ int doputenv(const char * str)
  * A unique temporaray file path will be generated using
  *	rpmGenPath(prefix, "%{_tmppath}/", "rpm-tmp.XXXXX")
  * where "XXXXXX" is filled in using rand(3). The file is opened, and
- * the link count and (dev,ino) location are * verified after opening.
+ * the link count and (dev,ino) location are verified after opening.
  * The file name and the open file handle are returned.
  *
  * @param prefix	leading part of temp file path
@@ -86,7 +81,8 @@ int makeTempFile(/*@null@*/ const char * prefix,
 	/*@modifies *fnptr, *fdptr, fileSystem @*/;
 
 /**
- * @return		cureent working directory (malloc'ed)
+ * Return (malloc'd) current working directory.
+ * @return		current working directory (malloc'ed)
  */
 /*@only@*/ char * currentDirectory(void)
 	/*@modifies fileSystem @*/;
