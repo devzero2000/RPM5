@@ -1,9 +1,9 @@
 # Perl specific macro definitions.
 # To make use of these macros insert the following line into your spec file:
-# %include /usr/lib/rpm/macros.perl
+# %include /opt/local/lib/rpm/macros.perl
 
-%define		__find_requires	/usr/lib/rpm/find-perl-requires
-%define		__find_provides	/usr/lib/rpm/find-perl-provides
+%define		__find_requires	/opt/local/lib/rpm/find-perl-requires
+%define		__find_provides	/opt/local/lib/rpm/find-perl-provides
 
 %define		perl_sitelib	%(eval "`perl -V:installsitelib`"; echo $installsitelib)
 %define		perl_sitearch	%(eval "`perl -V:installsitearch`"; echo $installsitearch)
