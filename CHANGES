@@ -1,3 +1,6 @@
+4.2.3 -> 4.2.4:
+	- generate debuginfo for setuid binaries (#100963).
+
 4.2.2 -> 4.2.3:
 	- bump rpm and popt versions to insure "newer".
 	- change default behavior to resolve file conflicts as LIFO.
