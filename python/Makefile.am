@@ -6,7 +6,9 @@ LINT = splint
 
 PYVER= @WITH_PYTHON_VERSION@
 
-pylibdir = $(shell python -c 'import sys; print sys.path[1]')
+# XXX good idea, but doesn't work with /usr/bin/python2 on Red Hat 7.x
+# pylibdir = $(shell python -c 'import sys; print sys.path[1]')
+pylibdir = $(prefix)/lib@MARK64@/python${PYVER}
 pyincdir = $(prefix)/include/python${PYVER}
 
 SUBDIRS = rpmdb test

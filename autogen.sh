@@ -29,9 +29,6 @@ fi
 if [ -d beecrypt ]; then
     (echo "--- beecrypt"; cd beecrypt; ./autogen.sh --noconfigure "$@")
 fi
-#if [ -d libelf ]; then
-#    (echo "--- libelf"; cd libelf; ./autogen.sh --noconfigure "$@")
-#fi
 if [ -d elfutils ]; then
     (echo "--- elfutils"; cd elfutils; ./autogen.sh --noconfigure "$@")
 fi
@@ -58,11 +55,11 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
 	mandir=/usr/man
 	infodir=/usr/info
     fi
-    if [ -d /usr/lib/nptl ]; then
-	enable_posixmutexes="--enable-posixmutexes"
-    else
+#    if [ -d /usr/lib/nptl ]; then
+#	enable_posixmutexes="--enable-posixmutexes"
+#    else
 	enable_posixmutexes=
-    fi
+#    fi
     ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} --without-javaglue ${enable_posixmutexes} "$@"
 else
     ./configure "$@"

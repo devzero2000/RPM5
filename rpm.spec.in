@@ -113,7 +113,7 @@ shell-like rules.
 %build
 
 # XXX rpm needs functioning nptl for configure tests
-unset LD_ASSUME_KERNEL
+unset LD_ASSUME_KERNEL || :
 
 %if %{with_python_subpackage}
 WITH_PYTHON="--with-python=%{with_python_version}"
@@ -140,7 +140,7 @@ make
 
 %install
 # XXX rpm needs functioning nptl for configure tests
-unset LD_ASSUME_KERNEL
+unset LD_ASSUME_KERNEL || :
 
 rm -rf $RPM_BUILD_ROOT
 
@@ -238,9 +238,9 @@ exit 0
 %files
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY BETA-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
-%pubkey RPM-PGP-KEY
-%pubkey RPM-GPG-KEY
-%pubkey BETA-GPG-KEY
+#%pubkey RPM-PGP-KEY
+#%pubkey RPM-GPG-KEY
+#%pubkey BETA-GPG-KEY
 %attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
 
 %ifos linux
@@ -356,6 +356,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs
 %rpmattr	%{__prefix}/lib/rpm/config.site
 %rpmattr	%{__prefix}/lib/rpm/cross-build
+%rpmattr	%{__prefix}/lib/rpm/debugedit
 %rpmattr	%{__prefix}/lib/rpm/find-debuginfo.sh
 %rpmattr	%{__prefix}/lib/rpm/find-lang.sh
 %rpmattr	%{__prefix}/lib/rpm/find-prov.pl
@@ -380,15 +381,13 @@ exit 0
 
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
 %rpmattr	%{__prefix}/lib/rpm/rpmdeps
-%rpmattr	%{__prefix}/lib/rpm/striptofile
 %rpmattr	%{__prefix}/lib/rpm/trpm
 %rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
-%rpmattr	%{__prefix}/lib/rpm/unstripfile
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
 %{__mandir}/man8/rpmbuild.8*
-%{__mandir}/man8/rpmdesp.8*
+%{__mandir}/man8/rpmdeps.8*
 
 %if %{with_python_subpackage}
 %files python

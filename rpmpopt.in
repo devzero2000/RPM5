@@ -1,4 +1,4 @@
-#/*! \page config_rpmpopt Default configuration: /usr/lib/rpm/rpmpopt-@VERSION@
+#/*! \page config_rpmpopt Default configuration: /usr/lib/rpm/rpmpopt-4.1
 # \verbatim
 #
 # This file *should not be modified*. Local customizations

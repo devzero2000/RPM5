@@ -4,10 +4,7 @@
 
 #include "system.h"
 
-#if HAVE_LIBELF_GELF_H
-#define	__LIBELF_INTERNAL__	1
-#  undef __P
-#  define __P(protos)   protos
+#if HAVE_GELF_H
 
 #include <gelf.h>
 
@@ -71,7 +68,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	return fdno;
 /*@=boundsread@*/
 
-#if HAVE_LIBELF_GELF_H && HAVE_LIBELF
+#if HAVE_GELF_H && HAVE_LIBELF
  {  Elf *elf = NULL;
     Elf_Scn *scn = NULL;
     Elf_Data *data = NULL;
@@ -475,8 +472,7 @@ void expandFilelist(Header h)
 
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
-	doBuildFileList(h, &fileNames, &count, RPMTAG_BASENAMES,
-			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
+	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
 	if (fileNames == NULL || count <= 0)
 	    return;
 	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,

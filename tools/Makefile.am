@@ -11,11 +11,12 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_ZLIB_INCLUDE@ \
+	@WITH_LIBDWARF_INCLUDE@ \
 	-I$(top_srcdir)/file \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpminject.c rpmsort.c sections.h utils.h
+EXTRA_DIST =	rpminject.c rpmsort.c hashtab.h
 
 EXTRA_PROGRAMS = rpminject rpmsort
 
@@ -27,12 +28,16 @@ LDADD = \
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
 noinst_PROGRAMS = \
-	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
+	convertdb1 dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = javadeps rpmcache rpmdeps rpmfile striptofile unstripfile
+pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps rpmfile
 
 bin_PROGRAMS =	rpmgraph
+
+convertdb1_SOURCES =	convertdb1.c
+
+debugedit_SOURCES =	debugedit.c hashtab.c
 
 javadeps_SOURCES =	javadeps.c
 
@@ -59,11 +64,5 @@ rpminject_SOURCES =	rpminject.c
 
 rpmsort_SOURCES =	rpmsort.c
 #rpmsort_LDFLAGS =	$(staticLDFLAGS)
-
-striptofile_SOURCES =	striptofile.c sections.c utils.c
-striptofile_LDFLAGS =	-lelf
-
-unstripfile_SOURCES =	unstripfile.c sections.c utils.c
-unstripfile_LDFLAGS =	-lelf
 
 $(PROGRAMS): $(LDADD)
