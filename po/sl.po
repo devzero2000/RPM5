@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-14 19:19-0500\n"
+"POT-Creation-Date: 2001-02-22 15:37-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2430,55 +2430,55 @@ msgstr "vrstica %d: Napaèno ¹tevilo no%s: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "vrstica %d: Napaèno ¹tevilo %s: %s\n"
 
-#: lib/cpio.c:445
+#: lib/cpio.c:450
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "ni mo¾no preimenovati %s v %s: %s\n"
 
-#: lib/cpio.c:451
+#: lib/cpio.c:456
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "ni mo¾no izbrisati %s: %s\n"
 
-#: lib/cpio.c:758
+#: lib/cpio.c:763
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1245
+#: lib/cpio.c:1250
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(napaka 0x%x)"
 
-#: lib/cpio.c:1248
+#: lib/cpio.c:1253
 msgid "Bad magic"
 msgstr "Napaèno magièno ¹tevilo"
 
-#: lib/cpio.c:1249
+#: lib/cpio.c:1254
 msgid "Bad/unreadable  header"
 msgstr "Po¹kodovana/neberljiva glava"
 
-#: lib/cpio.c:1267
+#: lib/cpio.c:1272
 msgid "Header size too big"
 msgstr "Glava je predolga"
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1273
 msgid "Unknown file type"
 msgstr "Neznan tip datoteke"
 
-#: lib/cpio.c:1269
+#: lib/cpio.c:1274
 msgid "Missing hard link"
 msgstr "Trda povezava manjka"
 
-#: lib/cpio.c:1270
+#: lib/cpio.c:1275
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1271
+#: lib/cpio.c:1276
 msgid "Internal error"
 msgstr "Notranja napaka"
 
-#: lib/cpio.c:1280
+#: lib/cpio.c:1285
 msgid " failed - "
 msgstr " neuspe¹no - "
 
@@ -3295,7 +3295,7 @@ msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:563 lib/rpminstall.c:314
+#: lib/query.c:563 lib/rpminstall.c:315
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s najverjetneje ni paket RPM\n"
@@ -3360,7 +3360,7 @@ msgstr "¹tevilka zapisa paketa: %d\n"
 msgid "record %d could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:746 lib/rpminstall.c:555
+#: lib/query.c:746 lib/rpminstall.c:556
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -3384,67 +3384,67 @@ msgstr "%s: pisanje Fwrite je bilo neuspe¹no: %s\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:136 lib/rpmchecksig.c:270
+#: lib/rpmchecksig.c:120 lib/rpmchecksig.c:250
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/rpmchecksig.c:141
+#: lib/rpmchecksig.c:125
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Podpis RPM v1.0 ni mo¾en\n"
 
-#: lib/rpmchecksig.c:145
+#: lib/rpmchecksig.c:129
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Sprememba podpisa RPM v2.0 ni mo¾na\n"
 
-#: lib/rpmchecksig.c:153 lib/rpmchecksig.c:284
+#: lib/rpmchecksig.c:137 lib/rpmchecksig.c:264
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature je bil neuspe¹en\n"
 
-#: lib/rpmchecksig.c:157 lib/rpmchecksig.c:289
+#: lib/rpmchecksig.c:141 lib/rpmchecksig.c:269
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis ni na voljo\n"
 
-#: lib/rpmchecksig.c:190
+#: lib/rpmchecksig.c:174
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead je bil neuspe¹en: %s\n"
 
-#: lib/rpmchecksig.c:196
+#: lib/rpmchecksig.c:180
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:276
+#: lib/rpmchecksig.c:256
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Podpis ni na voljo (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:438
+#: lib/rpmchecksig.c:418
 msgid "NOT OK"
 msgstr "NI DOBRO"
 
-#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:419 lib/rpmchecksig.c:433
 msgid " (MISSING KEYS:"
 msgstr " (MANJKAJOÈI KLJUÈI:"
 
-#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
+#: lib/rpmchecksig.c:421 lib/rpmchecksig.c:435
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:442 lib/rpmchecksig.c:456
+#: lib/rpmchecksig.c:422 lib/rpmchecksig.c:436
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEPREVERJENI KLJUÈI:"
 
-#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
+#: lib/rpmchecksig.c:424 lib/rpmchecksig.c:438
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:452
+#: lib/rpmchecksig.c:432
 msgid "OK"
 msgstr "V REDU"
 
@@ -3602,118 +3602,118 @@ msgstr "odstranjevanje imenika: %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
 
-#: lib/rpminstall.c:142
+#: lib/rpminstall.c:143
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:145
+#: lib/rpminstall.c:146
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "paketi za namestitev niso navedeni"
 
-#: lib/rpminstall.c:206
+#: lib/rpminstall.c:207
 msgid "counting packages to install\n"
 msgstr "¹tetje paketov za namestitev\n"
 
-#: lib/rpminstall.c:210
+#: lib/rpminstall.c:211
 #, c-format
 msgid "found %d packages\n"
 msgstr "najdeno %d paketov\n"
 
-#: lib/rpminstall.c:215
+#: lib/rpminstall.c:216
 msgid "looking for packages to download\n"
 msgstr "iskanje paketov za prenos po omre¾ju\n"
 
-#: lib/rpminstall.c:230
+#: lib/rpminstall.c:231
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "preskoèeno - %s - rpmGlob neuspe¹en(%d)\n"
 
-#: lib/rpminstall.c:245
+#: lib/rpminstall.c:246
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prena¹anje %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:255
+#: lib/rpminstall.c:256
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... kot %s\n"
 
-#: lib/rpminstall.c:259
+#: lib/rpminstall.c:260
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "preskoèeno - %s - prenos neuspe¹en - %s\n"
 
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:287
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "prene¹enih je bilo %d paketov\n"
 
-#: lib/rpminstall.c:300 lib/rpminstall.c:478
+#: lib/rpminstall.c:301 lib/rpminstall.c:479
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:320 lib/rpminstall.c:620
+#: lib/rpminstall.c:321 lib/rpminstall.c:621
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
-#: lib/rpminstall.c:335
+#: lib/rpminstall.c:336
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
-#: lib/rpminstall.c:357
+#: lib/rpminstall.c:358
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:402
+#: lib/rpminstall.c:403
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "napaka pri branju iz datoteke %s\n"
 
-#: lib/rpminstall.c:407
+#: lib/rpminstall.c:408
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:426
+#: lib/rpminstall.c:427
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "najdeno %d izvornih in %d binarnih paketov\n"
 
-#: lib/rpminstall.c:437
+#: lib/rpminstall.c:438
 msgid "failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpminstall.c:458
+#: lib/rpminstall.c:459
 msgid "installing binary packages\n"
 msgstr "name¹èanje binarnih paketov\n"
 
-#: lib/rpminstall.c:542
+#: lib/rpminstall.c:543
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "datoteke %s/packages.rpm ni mo¾no odpreti\n"
 
-#: lib/rpminstall.c:558
+#: lib/rpminstall.c:559
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:582
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranitev teh paketov bi podrla soodvisnosti:\n"
 
-#: lib/rpminstall.c:609
+#: lib/rpminstall.c:610
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:615
+#: lib/rpminstall.c:616
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
@@ -3832,124 +3832,124 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:148
+#: lib/signature.c:143
 msgid "No signature\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:152
+#: lib/signature.c:147
 msgid "Old PGP signature\n"
 msgstr "Stari podpis PGP\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Podpis v (interni) stari obliki! Kje ste ga dobili?"
 
-#: lib/signature.c:213
+#: lib/signature.c:208
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:214
+#: lib/signature.c:209
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Dol¾. polnila : %d\n"
 
-#: lib/signature.c:276
+#: lib/signature.c:271
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Ni mo¾no pognati pgp (%s)"
 
-#: lib/signature.c:287
+#: lib/signature.c:282
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp je bil neuspe¹en"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:294
+#: lib/signature.c:289
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp je bil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:299
+#: lib/signature.c:294
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Dol¾. podpisa PGP: %d\n"
 
-#: lib/signature.c:310 lib/signature.c:387
+#: lib/signature.c:305 lib/signature.c:382
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "branje podpisa je bilo neuspe¹no"
 
-#: lib/signature.c:315
+#: lib/signature.c:310
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Prebrano %d bajtov podpisa PGP\n"
 
-#: lib/signature.c:353 lib/signature.c:696
+#: lib/signature.c:348 lib/signature.c:691
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Ni mo¾no pognati gpg"
 
-#: lib/signature.c:364
+#: lib/signature.c:359
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg je bil neuspe¹en"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:371
+#: lib/signature.c:366
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg je boil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:376
+#: lib/signature.c:371
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Dol¾. podpisa GnuPG: %d\n"
 
-#: lib/signature.c:392
+#: lib/signature.c:387
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Prebrano %d bajtov podpisa GnuPG\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:414
 msgid "Generating signature using PGP.\n"
 msgstr "Ustvarjanje podpisa s PGP.\n"
 
-#: lib/signature.c:425
+#: lib/signature.c:420
 msgid "Generating signature using GPG.\n"
 msgstr "Ustvarjanje podpisa z GnuPG.\n"
 
-#: lib/signature.c:504 lib/signature.c:565
+#: lib/signature.c:499 lib/signature.c:560
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Ni mo¾no pognati pgp. Preverjanja PGP lahko preskoèite z --nopgp"
 
-#: lib/signature.c:637
+#: lib/signature.c:632
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Ni mo¾no pognati gpg. Preverjanja GnuPG lahko preskoèite z --nogpg"
 
-#: lib/signature.c:725
+#: lib/signature.c:720
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Ni mo¾no pognati pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:729 lib/signature.c:782
+#: lib/signature.c:724 lib/signature.c:777
 #, fuzzy
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Neveljaven %%_signature v makro-datoteki.\n"
 
-#: lib/signature.c:762
+#: lib/signature.c:757
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:774
+#: lib/signature.c:769
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""

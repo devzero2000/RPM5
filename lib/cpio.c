@@ -355,10 +355,15 @@ static int setInfo(struct cpioHeader * hdr)
 	if (!rc && utime(hdr->path, &stamp))
 	    rc = CPIOERR_UTIME_FAILED;
     } else {
-#       if ! CHOWN_FOLLOWS_SYMLINK
+#if ! CHOWN_FOLLOWS_SYMLINK
 	    if (!getuid() && !rc && lchown(hdr->path, st->st_uid, st->st_gid))
+/* XXX Red Hat 5.2 with kernel-2.0.38 has unimplemented lchown() */
+#if defined(__linux__)
+		rc = 0;
+#else
 		rc = CPIOERR_CHOWN_FAILED;
-#       endif
+#endif
+#endif
     }
 
     return rc;

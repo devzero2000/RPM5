@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-14 19:19-0500\n"
+"POT-Creation-Date: 2001-02-22 15:37-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2435,55 +2435,55 @@ msgstr "linia %d: b³êdny numer no%s: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "linia %d: B³êdny numer %s: %s\n"
 
-#: lib/cpio.c:445
+#: lib/cpio.c:450
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "nie mo¿na zmieniæ nazwy %s na %s: %s\n"
 
-#: lib/cpio.c:451
+#: lib/cpio.c:456
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 
-#: lib/cpio.c:758
+#: lib/cpio.c:763
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1245
+#: lib/cpio.c:1250
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(b³±d 0x%x)"
 
-#: lib/cpio.c:1248
+#: lib/cpio.c:1253
 msgid "Bad magic"
 msgstr "B³êdny magic"
 
-#: lib/cpio.c:1249
+#: lib/cpio.c:1254
 msgid "Bad/unreadable  header"
 msgstr "B³êdny/nieczytelny nag³ówek"
 
-#: lib/cpio.c:1267
+#: lib/cpio.c:1272
 msgid "Header size too big"
 msgstr "Rozmiar nag³ówka jest zbyt du¿y"
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1273
 msgid "Unknown file type"
 msgstr "Nieznany typ pliku"
 
-#: lib/cpio.c:1269
+#: lib/cpio.c:1274
 msgid "Missing hard link"
 msgstr "Brak twardego dowi±zania"
 
-#: lib/cpio.c:1270
+#: lib/cpio.c:1275
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1271
+#: lib/cpio.c:1276
 msgid "Internal error"
 msgstr "B³±d wewnêtrzny"
 
-#: lib/cpio.c:1280
+#: lib/cpio.c:1285
 msgid " failed - "
 msgstr " nie powiod³o siê -"
 
@@ -3293,7 +3293,7 @@ msgstr "otwarcie %s nie powiod³o siê\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
-#: lib/query.c:563 lib/rpminstall.c:314
+#: lib/query.c:563 lib/rpminstall.c:315
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s nie wygl±da na pakiet RPM\n"
@@ -3358,7 +3358,7 @@ msgstr "numer rekordu pakietu: %d\n"
 msgid "record %d could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:746 lib/rpminstall.c:555
+#: lib/query.c:746 lib/rpminstall.c:556
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -3383,67 +3383,67 @@ msgstr "%s: readLead nie powiod³o siê\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:136 lib/rpmchecksig.c:270
+#: lib/rpmchecksig.c:120 lib/rpmchecksig.c:250
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:141
+#: lib/rpmchecksig.c:125
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Nie mo¿na podpisaæ v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:145
+#: lib/rpmchecksig.c:129
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Nie mo¿na ponownie podpisaæ v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:153 lib/rpmchecksig.c:284
+#: lib/rpmchecksig.c:137 lib/rpmchecksig.c:264
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:157 lib/rpmchecksig.c:289
+#: lib/rpmchecksig.c:141 lib/rpmchecksig.c:269
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Sygnatura nie jest dostêpna\n"
 
-#: lib/rpmchecksig.c:190
+#: lib/rpmchecksig.c:174
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:196
+#: lib/rpmchecksig.c:180
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmReadSignature nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:276
+#: lib/rpmchecksig.c:256
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Sygnatura nie jest dostêpna (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:438
+#: lib/rpmchecksig.c:418
 msgid "NOT OK"
 msgstr "NIE DOBRZE"
 
-#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:419 lib/rpmchecksig.c:433
 msgid " (MISSING KEYS:"
 msgstr " (BRAK KLUCZY:"
 
-#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
+#: lib/rpmchecksig.c:421 lib/rpmchecksig.c:435
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:442 lib/rpmchecksig.c:456
+#: lib/rpmchecksig.c:422 lib/rpmchecksig.c:436
 msgid " (UNTRUSTED KEYS:"
 msgstr "(NIEWIARYGODNE KLUCZE:"
 
-#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
+#: lib/rpmchecksig.c:424 lib/rpmchecksig.c:438
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:452
+#: lib/rpmchecksig.c:432
 msgid "OK"
 msgstr "OK"
 
@@ -3600,118 +3600,118 @@ msgstr "tworzenie katalogu: %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
 
-#: lib/rpminstall.c:142
+#: lib/rpminstall.c:143
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:145
+#: lib/rpminstall.c:146
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "nie podano nazw plików do zainstalowania"
 
-#: lib/rpminstall.c:206
+#: lib/rpminstall.c:207
 msgid "counting packages to install\n"
 msgstr "zliczanie pakietów do zainstalowania\n"
 
-#: lib/rpminstall.c:210
+#: lib/rpminstall.c:211
 #, c-format
 msgid "found %d packages\n"
 msgstr "znaleziono %d pakietów\n"
 
-#: lib/rpminstall.c:215
+#: lib/rpminstall.c:216
 msgid "looking for packages to download\n"
 msgstr "szukanie pakietów do ¶ci±gniêcia\n"
 
-#: lib/rpminstall.c:230
+#: lib/rpminstall.c:231
 #, fuzzy, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:245
+#: lib/rpminstall.c:246
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "¦ci±ganie %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:255
+#: lib/rpminstall.c:256
 #, c-format
 msgid " ... as %s\n"
 msgstr "... jako %s\n"
 
-#: lib/rpminstall.c:259
+#: lib/rpminstall.c:260
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:287
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "¶ci±gniêto %d pakietów\n"
 
-#: lib/rpminstall.c:300 lib/rpminstall.c:478
+#: lib/rpminstall.c:301 lib/rpminstall.c:479
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
 
-#: lib/rpminstall.c:320 lib/rpminstall.c:620
+#: lib/rpminstall.c:321 lib/rpminstall.c:621
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
 
-#: lib/rpminstall.c:335
+#: lib/rpminstall.c:336
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/rpminstall.c:357
+#: lib/rpminstall.c:358
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:402
+#: lib/rpminstall.c:403
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "b³±d czytania z pliku %s\n"
 
-#: lib/rpminstall.c:407
+#: lib/rpminstall.c:408
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "plik %s wymaga nowszej wersji RPM\n"
 
-#: lib/rpminstall.c:426
+#: lib/rpminstall.c:427
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "znaleziono %d pakietów ¼ród³owych i %d binarnych\n"
 
-#: lib/rpminstall.c:437
+#: lib/rpminstall.c:438
 msgid "failed dependencies:\n"
 msgstr "niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:458
+#: lib/rpminstall.c:459
 msgid "installing binary packages\n"
 msgstr "instalacja pakietów binarnych\n"
 
-#: lib/rpminstall.c:542
+#: lib/rpminstall.c:543
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/rpminstall.c:558
+#: lib/rpminstall.c:559
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:582
 msgid "removing these packages would break dependencies:\n"
 msgstr "usuniêcie tych pakietów zerwie zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:609
+#: lib/rpminstall.c:610
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: lib/rpminstall.c:615
+#: lib/rpminstall.c:616
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
@@ -3830,126 +3830,126 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr "Rozmiar sygnatury: %d\n"
 
-#: lib/signature.c:148
+#: lib/signature.c:143
 msgid "No signature\n"
 msgstr "Brak sygnatury\n"
 
-#: lib/signature.c:152
+#: lib/signature.c:147
 msgid "Old PGP signature\n"
 msgstr "Stara sygnatura PGP\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Stara (tylko wewnêtrzna) sygnatura! Sk±d Ty to wzi±³e¶!?"
 
-#: lib/signature.c:213
+#: lib/signature.c:208
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Rozmiar sygnatury: %d\n"
 
-#: lib/signature.c:214
+#: lib/signature.c:209
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Blok sygnatury: %d\n"
 
-#: lib/signature.c:276
+#: lib/signature.c:271
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Nie mo¿na uruchomiæ pgp"
 
-#: lib/signature.c:287
+#: lib/signature.c:282
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp nie powiod³o siê"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:294
+#: lib/signature.c:289
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "zapisanie sygnatury przez pgp nie powiod³o siê"
 
-#: lib/signature.c:299
+#: lib/signature.c:294
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "rozmiar sygnatury PGP: %d\n"
 
-#: lib/signature.c:310 lib/signature.c:387
+#: lib/signature.c:305 lib/signature.c:382
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "nie mo¿na odczytaæ sygnatury"
 
-#: lib/signature.c:315
+#: lib/signature.c:310
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Mam %d bajtów sygnatury PGP\n"
 
-#: lib/signature.c:353 lib/signature.c:696
+#: lib/signature.c:348 lib/signature.c:691
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Nie mo¿na uruchomiæ gpg"
 
-#: lib/signature.c:364
+#: lib/signature.c:359
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg nie powiod³o siê"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:371
+#: lib/signature.c:366
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "zapisanie sygnatury przez gpg nie powiod³o siê"
 
-#: lib/signature.c:376
+#: lib/signature.c:371
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "rozmiar sygnatury GPG: %d\n"
 
-#: lib/signature.c:392
+#: lib/signature.c:387
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Mam %d bajtów sygnatury GPG\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:414
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "Generowanie sygnatury: %d\n"
 
-#: lib/signature.c:425
+#: lib/signature.c:420
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "Generowanie sygnatury: %d\n"
 
-#: lib/signature.c:504 lib/signature.c:565
+#: lib/signature.c:499 lib/signature.c:560
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Nie mo¿na uruchomiæ pgp. U¿yj --nopgp aby pomin±æ sprawdz. PGP"
 
-#: lib/signature.c:637
+#: lib/signature.c:632
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Nie mo¿na uruchomiæ gpg. U¿yj --nopgp aby pomin±æ sprawdz. GPG"
 
-#: lib/signature.c:725
+#: lib/signature.c:720
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Nie mo¿na uruchomiæ pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:729 lib/signature.c:782
+#: lib/signature.c:724 lib/signature.c:777
 #, fuzzy
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "B³êdny %%_signature spec w pliku makra.\n"
 
-#: lib/signature.c:762
+#: lib/signature.c:757
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musisz ustawiæ \"%%_gpg_name\" w pliku swego makra"
 
-#: lib/signature.c:774
+#: lib/signature.c:769
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musisz ustawiæ \"%%_pgp_name\" w pliku swego makra"
