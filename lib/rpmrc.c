@@ -489,11 +489,11 @@ int rpmReadRC(char * file) {
 	rc = doReadRC(fd, LIBRPMRC_FILENAME);
 	close(fd);
 	if (rc) return rc;
-    } /* else {
+    } else {
 	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."), 
 		 LIBRPMRC_FILENAME, strerror(errno));
 	return 1;
-    } */
+    }
     
     if (file) 
 	fn = file;
