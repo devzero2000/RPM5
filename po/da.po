@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-02-10 09:07-0500\n"
-"PO-Revision-Date: 2001-01-31 23:05GMT\n"
+"PO-Revision-Date: 2001-02-11 19:31GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: dansk <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
@@ -3878,12 +3878,13 @@ msgid "running postuninstall script (if any)\n"
 msgstr "kører skriptet postuninstall (hvis det findes)\n"
 
 #: lib/uninstall.c:436
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
 msgstr ""
-"kørsel af småskriptet %s fra %s-%s-%s mislykkedes, waitpid returnerede %s\n"
+"modtagelse af returkode på %s småskript fra %s-%s-%s mislykkedes, waitpid "
+"returnerede %s\n"
 
 #: lib/uninstall.c:443
 #, c-format
