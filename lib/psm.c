@@ -1813,19 +1813,19 @@ psm->te->h = headerFree(psm->te->h);
 	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')
 	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
 	{
-#if !defined(__ia64__)
-	    static int _loaded = 0;
+	    static int _pw_loaded = 0;
+	    static int _gr_loaded = 0;
 
-	    /*
-	     * This loads all of the name services libraries, in case we
-	     * don't have access to them in the chroot().
-	     */
-	    if (!_loaded) {
+	    if (!_pw_loaded) {
 		(void)getpwnam("root");
 		endpwent();
-		_loaded++;
+		_pw_loaded++;
 	    }
-#endif
+	    if (!_gr_loaded) {
+		(void)getgrnam("root");
+		endgrent();
+		_gr_loaded++;
+	    }
 
 	    xx = chdir("/");
 	    /*@-superuser@*/

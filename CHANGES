@@ -14,6 +14,7 @@
 	- ia64: relocate all scriptlet interpreters.
 	- ia64: don't bother trying to preload autorelocated modules.
 	- fix: filesystem package needs mail/lock w/o getgrnam.
+	- fix: do getpwnam/getgrnam to load correct modules before chroot.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

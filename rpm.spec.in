@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 8
+Release: 9
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -495,6 +495,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Aug 25 2004 Jeff Johnson <jbj@redhat.com> 4.2.3-9
+- fix: do getpwnam/getgrnam to load correct modules before chroot.
+
 * Tue Aug 24 2004 Jeff Johnson <jbj@redhat.com> 4.2.3-8
 - ia64: make sure that autorelocated file dependencies are satisfied.
 - ia64: relocate all scriptlet interpreters.
