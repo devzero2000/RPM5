@@ -22,14 +22,15 @@ LIBS =
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	cpio.c $(DBLIBOBJS) depends.c \
+	cpio.c $(DBLIBSRCS) depends.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
 	md5.c md5sum.c misc.c package.c problems.c \
 	poptBT.c poptQV.c query.c rpmchecksig.c rpmdb.c rpminstall.c \
 	rpmlead.c rpmlibprov.c rpmrc.c signature.c stringbuf.c stubs.c \
 	tagName.c tagtable.c transaction.c uninstall.c verify.c
 librpm_la_LDFLAGS = @libdb3@ @libdb2@ @libdb1@
-librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
+librpm_la_LIBADD = $(DBLIBOBJS)
+librpm_la_DEPENDENCIES = $(DBLIBOBJS)
 
 # XXX Add internal libtool dependence
 install-data-local:
