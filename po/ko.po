@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
 "POT-Creation-Date: 2001-05-12 14:48-0400\n"
-"PO-Revision-Date: 2001-05-14 01:34+0900\n"
+"PO-Revision-Date: 2001-05-15 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
 "MIME-Version: 1.0\n"
@@ -305,7 +305,7 @@ msgstr "    --define '<이름> <본문>'"
 
 #: rpm.c:336 rpmqv.c:137 rpmqv.c:488
 msgid "define macro <name> with value <body>"
-msgstr "<본문> 의 내용을 <이름> 매크로로 정의합니다"
+msgstr "<본문> 의 내용(value)으로 <이름> 매크로를 정의합니다"
 
 #: rpm.c:337
 msgid "    --eval '<name>+'      "
@@ -816,7 +816,7 @@ msgstr "    -K <패키지>+          "
 
 #: rpm.c:547 rpmqv.c:204 rpmqv.c:670
 msgid "verify package signature"
-msgstr "패키지에 서명된 내용을 검사합니다"
+msgstr "패키지의 서명을 검사합니다"
 
 #: rpm.c:549 rpmqv.c:206 rpmqv.c:672
 msgid "skip any PGP signatures"
@@ -1594,15 +1594,15 @@ msgstr ""
 
 #: build/expression.c:216
 msgid "syntax error while parsing ==\n"
-msgstr "== 내용에서 구문 오류가 발생했습니다\n"
+msgstr "== 에서 구문 오류가 발생했습니다\n"
 
 #: build/expression.c:246
 msgid "syntax error while parsing &&\n"
-msgstr "&& 내용에서 구문 오류가 발생했습니다\n"
+msgstr "&& 에서 구문 오류가 발생했습니다\n"
 
 #: build/expression.c:255
 msgid "syntax error while parsing ||\n"
-msgstr "|| 내용에서 구문 오류가 발생했습니다\n"
+msgstr "|| 에서 구문 오류가 발생했습니다\n"
 
 #: build/expression.c:295
 msgid "parse error in expression\n"
@@ -1950,319 +1950,321 @@ msgstr "%s (을)를 생성할 수 없음: %s\n"
 #: build/parseBuildInstallClean.c:30
 #, c-format
 msgid "line %d: second %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 두번째 %s\n"
 
 #: build/parseChangelog.c:123
 msgid "%%changelog entries must start with *\n"
-msgstr ""
+msgstr "%%changelog 항목(entry)은 반드시 * 로 시작해야 합니다\n"
 
 #: build/parseChangelog.c:131
 msgid "incomplete %%changelog entry\n"
-msgstr ""
+msgstr "%%changelog 항목(entry)이 완전하지 않습니다\n"
 
 #: build/parseChangelog.c:148
 msgid "bad date in %%changelog: %s\n"
-msgstr ""
+msgstr "%%changelog 에 잘못된 날짜: %s\n"
 
 #: build/parseChangelog.c:153
 msgid "%%changelog not in decending chronological order\n"
-msgstr ""
+msgstr "%%changelog 가 날짜순으로 되어 있지 않습니다\n"
 
 #: build/parseChangelog.c:161 build/parseChangelog.c:172
 msgid "missing name in %%changelog\n"
-msgstr ""
+msgstr "%%changelog 에서 이름을 찾을 수 없습니다\n"
 
 #: build/parseChangelog.c:179
 msgid "no description in %%changelog\n"
-msgstr ""
+msgstr "%%changelog 에 내용(description)이 없습니다\n"
 
 #: build/parseDescription.c:39
 msgid "line %d: Error parsing %%description: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %%description 을 분석하는 도중 오류가 발생함: %s\n"
 
 #: build/parseDescription.c:52 build/parseFiles.c:50 build/parseScript.c:190
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 잘못된 옵션 %s: %s\n"
 
 #: build/parseDescription.c:65 build/parseFiles.c:62 build/parseScript.c:202
 #, c-format
 msgid "line %d: Too many names: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 많은 수의 이름이 지정됨: %s\n"
 
 #: build/parseDescription.c:75 build/parseFiles.c:71 build/parseScript.c:211
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 패키지가 존재하지 않음: %s\n"
 
 #: build/parseDescription.c:87
 #, c-format
 msgid "line %d: Second description\n"
-msgstr ""
+msgstr "%d 번째 줄: 두번째 내용(description)\n"
 
 #: build/parseFiles.c:36
 msgid "line %d: Error parsing %%files: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %%files 를 분석하는 도중 오류가 발생함: %s\n"
 
 #: build/parseFiles.c:78
 msgid "line %d: Second %%files list\n"
-msgstr ""
+msgstr "%d 번째 줄: 두번째 %%files 목록\n"
 
 #: build/parsePreamble.c:218
 #, c-format
 msgid "Architecture is excluded: %s\n"
-msgstr ""
+msgstr "아키텍쳐가 제외됨: %s\n"
 
 #: build/parsePreamble.c:223
 #, c-format
 msgid "Architecture is not included: %s\n"
-msgstr ""
+msgstr "아키텍쳐가 포함되지 않음: %s\n"
 
 #: build/parsePreamble.c:228
 #, c-format
 msgid "OS is excluded: %s\n"
-msgstr ""
+msgstr "운영체제가 제외됨: %s\n"
 
 #: build/parsePreamble.c:233
 #, c-format
 msgid "OS is not included: %s\n"
-msgstr ""
+msgstr "운영체제가 포함되지 않음: %s\n"
 
 #: build/parsePreamble.c:250
 #, c-format
 msgid "%s field must be present in package: %s\n"
-msgstr ""
+msgstr "%s 항목(field)은 반드시 패키지 안에 있어야함: %s\n"
 
 #: build/parsePreamble.c:277
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
-msgstr ""
+msgstr "패키지 안에 %s 항목(entry)이 중복되어 있음: %s\n"
 
 #: build/parsePreamble.c:331
 #, c-format
 msgid "Unable to open icon %s: %s\n"
-msgstr ""
+msgstr "%s 아이콘을 열 수 없음: %s\n"
 
 #: build/parsePreamble.c:349
 #, c-format
 msgid "Unable to read icon %s: %s\n"
-msgstr ""
+msgstr "%s 아이콘을 읽을 수 없음: %s\n"
 
 #: build/parsePreamble.c:362
 #, c-format
 msgid "Unknown icon type: %s\n"
-msgstr ""
+msgstr "알 수 없는 아이콘 유형: %s\n"
 
 #: build/parsePreamble.c:435
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 올바르지 못한 태그: %s\n"
 
 #. Empty field
 #: build/parsePreamble.c:443
 #, c-format
 msgid "line %d: Empty tag: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 태그가 비어있음: %s\n"
 
 #: build/parsePreamble.c:465 build/parsePreamble.c:472
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %s 에 올바르지 못한 '-' 문자가 있음: %s\n"
 
 #: build/parsePreamble.c:529 build/parseSpec.c:389
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
-msgstr ""
+msgstr "BuildRoot 를 \"/\" 로 지정할 수 없음: %s\n"
 
 #: build/parsePreamble.c:542
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
-msgstr ""
+msgstr "%d 번째 줄: Prefixes 는 절대 \"/\" 로 끝나면 안됨: %s\n"
 
 #: build/parsePreamble.c:554
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
-msgstr ""
+msgstr "%d 번째 줄: Docdir 은 반드시 '/' 로 시작해야함: %s\n"
 
 #: build/parsePreamble.c:566
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: Epoch/Serial 항목(field)은 반드시 숫자이어야함: %s\n"
 
 #: build/parsePreamble.c:606 build/parsePreamble.c:617
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 잘못된 %s: 수식자(qualifier): %s\n"
 
 #: build/parsePreamble.c:643
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 잘못된 BuildArchitecture 형식: %s\n"
 
 #: build/parsePreamble.c:652
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
-msgstr ""
+msgstr "내부 오류 발생: 보거스(Bogus) 태그 %d\n"
 
 #: build/parsePreamble.c:802
 #, c-format
 msgid "Bad package specification: %s\n"
-msgstr ""
+msgstr "잘못된 패키지 지정: %s\n"
 
 #: build/parsePreamble.c:808
 #, c-format
 msgid "Package already exists: %s\n"
-msgstr ""
+msgstr "패키지가 이미 존재함: %s\n"
 
 #: build/parsePreamble.c:835
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 알 수 없는 태그: %s\n"
 
 #: build/parsePreamble.c:857
 msgid "Spec file can't use BuildRoot\n"
-msgstr ""
+msgstr "Spec 파일은 BuildRoot 를 사용할 수 없습니다\n"
 
 #: build/parsePrep.c:39
 #, c-format
 msgid "Bad source: %s: %s\n"
-msgstr ""
+msgstr "잘못된 소스: %s: %s\n"
 
 #: build/parsePrep.c:77
 #, c-format
 msgid "No patch number %d\n"
-msgstr ""
+msgstr "패치 번호 %d 가 없습니다\n"
 
 #: build/parsePrep.c:168
 #, c-format
 msgid "No source number %d\n"
-msgstr ""
+msgstr "소스 번호 %d 가 없습니다\n"
 
 #: build/parsePrep.c:188
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
-msgstr ""
+msgstr "nosource %s (을)를 다운로드 할 수 없음: %s\n"
 
 #: build/parsePrep.c:283
 msgid "Error parsing %%setup: %s\n"
-msgstr ""
+msgstr "%%setup 을 분석하는 도중 오류가 발생함: %s\n"
 
 #: build/parsePrep.c:298
 msgid "line %d: Bad arg to %%setup: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %%setup 에 잘못된 인수값: %s\n"
 
 #: build/parsePrep.c:316
 msgid "line %d: Bad %%setup option %s: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 잘못된 %%setup 옵션 %s: %s\n"
 
 #: build/parsePrep.c:450
 msgid "line %d: Need arg to %%patch -b: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %%patch -b 에 인수가 필요함: %s\n"
 
 #: build/parsePrep.c:459
 msgid "line %d: Need arg to %%patch -z: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %%patch -z 에 인수가 필요함: %s\n"
 
 #: build/parsePrep.c:471
 msgid "line %d: Need arg to %%patch -p: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %%patch -p 에 인수가 필요함: %s\n"
 
 #: build/parsePrep.c:478
 msgid "line %d: Bad arg to %%patch -p: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %%patch -p 에 잘못된 인수값: %s\n"
 
 #: build/parsePrep.c:485
 msgid "Too many patches!\n"
-msgstr ""
+msgstr "패치가 너무 많습니다!\n"
 
 #: build/parsePrep.c:489
 msgid "line %d: Bad arg to %%patch: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %%patch 에 잘못된 인수값: %s\n"
 
 #: build/parsePrep.c:523
 msgid "line %d: second %%prep\n"
-msgstr ""
+msgstr "%d 번째 줄: 두번째 %%prep\n"
 
 #: build/parseReqs.c:100
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
+"%d 번째 줄: 의존성 토큰(token)은 반드시 '문자-숫자의조합', '_' 또는 '/' 로 "
+"시작해야함: %s\n"
 
 #: build/parseReqs.c:111
 #, c-format
 msgid "line %d: File name not permitted: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 파일 이름이 허가되지 않음: %s\n"
 
 #: build/parseReqs.c:143
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 버전이 명시된 파일 이름이 허가되지 않음: %s\n"
 
 #: build/parseReqs.c:173
 #, c-format
 msgid "line %d: Version required: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 버전이 필요함: %s\n"
 
 #: build/parseScript.c:156
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 트리거는 반드시 -- 를 포함해야함: %s\n"
 
 #: build/parseScript.c:166 build/parseScript.c:227
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %s (을)를 분석하는 도중 오류가 발생함: %s\n"
 
 #: build/parseScript.c:177
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 스크립트 프로그램은 반드시 '/' 로 시작해야함: %s\n"
 
 #: build/parseScript.c:219
 #, c-format
 msgid "line %d: Second %s\n"
-msgstr ""
+msgstr "%d 번째 줄: 두번째 %s\n"
 
 #: build/parseSpec.c:138
 #, c-format
 msgid "line %d: %s\n"
-msgstr ""
+msgstr "%d 번째 줄: %s\n"
 
 #. XXX Fstrerror
 #: build/parseSpec.c:187
 #, c-format
 msgid "Unable to open %s: %s\n"
-msgstr ""
+msgstr "%s (을)를 열 수 없음: %s\n"
 
 #: build/parseSpec.c:200
 msgid "Unclosed %%if\n"
-msgstr ""
+msgstr "%%if 가 닫혀지지 않았습니다\n"
 
 #: build/parseSpec.c:272
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
-msgstr ""
+msgstr "%s:%d: parseExpressionBoolean 에서 %d 값이 반환되었습니다\n"
 
 #: build/parseSpec.c:281
 msgid "%s:%d: Got a %%else with no %%if\n"
-msgstr ""
+msgstr "%s:%d: %%if 없이 %%else 가 사용되었습니다\n"
 
 #: build/parseSpec.c:293
 msgid "%s:%d: Got a %%endif with no %%if\n"
-msgstr ""
+msgstr "%s:%d: %%if 없이 %%endif 가 사용되었습니다\n"
 
 #: build/parseSpec.c:307 build/parseSpec.c:316
 msgid "malformed %%include statement\n"
-msgstr ""
+msgstr "%%include 문이 올바르지 않습니다\n"
 
 #: build/parseSpec.c:505
 msgid "No compatible architectures found for build\n"
-msgstr ""
+msgstr "패키지 제작에 호환하는 아키텍쳐를 찾을 수 없습니다\n"
 
 #: build/parseSpec.c:559
 msgid "Package has no %%description: %s\n"
-msgstr ""
+msgstr "패키지에 %%description 이 없음: %s\n"
 
 #: build/spec.c:225
 #, c-format
@@ -2529,12 +2531,12 @@ msgstr "%{ 뒤에 } 를 찾을 수 없습니다"
 #. @-observertrans@
 #: lib/header.c:2106
 msgid "empty tag format"
-msgstr "태그 형식이 없습니다"
+msgstr "빈(empty) 태그 형식입니다"
 
 #. @-observertrans@
 #: lib/header.c:2118
 msgid "empty tag name"
-msgstr "태그 이름이 없습니다"
+msgstr "빈(empty) 태그 이름입니다"
 
 #. @-observertrans@
 #: lib/header.c:2135
@@ -2634,7 +2636,7 @@ msgstr ""
 #: lib/poptBT.c:133
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "<spec파일> 의 %files 항목을 검사합니다"
+msgstr "<spec파일> 의 %files 항목(section)을 검사합니다"
 
 #: lib/poptBT.c:136
 msgid "build source and binary packages from <specfile>"
@@ -2671,7 +2673,7 @@ msgstr ""
 #: lib/poptBT.c:155
 #, c-format
 msgid "verify %files section from <tarball>"
-msgstr "<tar파일> 의 %files 항목을 검사합니다"
+msgstr "<tar파일> 의 %files 항목(section)을 검사합니다"
 
 #: lib/poptBT.c:158
 msgid "build source and binary packages from <tarball>"
@@ -2806,7 +2808,7 @@ msgstr "다음의 질의 형식을 사용하십시요"
 
 #: lib/poptQV.c:146
 msgid "substitute i18n sections into spec file"
-msgstr "spec 파일 안의 i18n 항목을 대체합니다"
+msgstr "spec 파일 안의 i18n 항목(section)을 교체(substitute)합니다"
 
 #: lib/poptQV.c:148
 msgid "display the states of the listed files"
@@ -3080,7 +3082,7 @@ msgstr "%s: 여는데 실패함: %s\n"
 
 #: lib/rpmchecksig.c:51
 msgid "makeTempFile failed\n"
-msgstr "임시파일 생성에 실패했습니다\n"
+msgstr "makeTempFile 에 실패했습니다\n"
 
 #: lib/rpmchecksig.c:84
 #, c-format
@@ -3095,7 +3097,7 @@ msgstr "%s: Fread 에 실패함: %s\n"
 #: lib/rpmchecksig.c:127 lib/rpmchecksig.c:262
 #, c-format
 msgid "%s: readLead failed\n"
-msgstr "%s: Lead 읽기에 실패했습니다\n"
+msgstr "%s: readLead 에 실패했습니다\n"
 
 #: lib/rpmchecksig.c:132
 #, c-format
@@ -3110,7 +3112,7 @@ msgstr "%s: RPM v2.0 에 재-서명할 수 없습니다\n"
 #: lib/rpmchecksig.c:145 lib/rpmchecksig.c:278
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
-msgstr "%s: rpm 서명 읽기에 실패했습니다\n"
+msgstr "%s: rrpmReadSignature 에 실패했습니다\n"
 
 #: lib/rpmchecksig.c:149 lib/rpmchecksig.c:283
 #, c-format
@@ -3120,12 +3122,12 @@ msgstr "%s: 사용 가능한 서명이 존재하지 않습니다\n"
 #: lib/rpmchecksig.c:182
 #, c-format
 msgid "%s: writeLead failed: %s\n"
-msgstr "%s: Lead 작성에 실패함: %s\n"
+msgstr "%s: writeLead 에 실패함: %s\n"
 
 #: lib/rpmchecksig.c:188
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
-msgstr "%s: rpm 서명 작성에 실패함: %s\n"
+msgstr "%s: rpmWriteSignature 에 실패함: %s\n"
 
 #: lib/rpmchecksig.c:268
 #, c-format
@@ -3827,7 +3829,7 @@ msgstr "%3d<%*s(비어있음)\n"
 
 #: rpmio/macro.c:576
 msgid "Macro %%%s has unterminated body\n"
-msgstr "매크로 %%%s 에 종료되지 않은 내용이 있습니다\n"
+msgstr "매크로 %%%s 에 종료되지 않은 내용(body)이 있습니다\n"
 
 #: rpmio/macro.c:603
 msgid "Macro %%%s has illegal name (%%define)\n"
@@ -3839,7 +3841,7 @@ msgstr "매크로 %%%s 에 종료되지 않은 옵션이 있습니다\n"
 
 #: rpmio/macro.c:615
 msgid "Macro %%%s has empty body\n"
-msgstr "매크로 %%%s 에 빈(empty) 내용이 있습니다\n"
+msgstr "매크로 %%%s 에 빈 내용(body)이 있습니다\n"
 
 #: rpmio/macro.c:620
 msgid "Macro %%%s failed to expand\n"
