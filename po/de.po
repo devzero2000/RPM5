@@ -36,8 +36,8 @@
 # ### sollte »query« nicht besser mit Abfrage üs werden (statt Anfrage)? -ke-
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-07-12 15:44-0400\n"
+"Project-Id-Version: rpm 4.0.3\n"
+"POT-Creation-Date: 2001-07-14 15:53-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3782,11 +3782,11 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "cannot get %s lock on database\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1057
+#: rpmdb/db1.c:562 rpmdb/db3.c:1060
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1057
+#: rpmdb/db1.c:562 rpmdb/db3.c:1060
 msgid "shared"
 msgstr "geteilt"
 
@@ -3820,12 +3820,12 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1055
+#: rpmdb/db3.c:1058
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db3.c:1062
+#: rpmdb/db3.c:1064
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
@@ -3909,7 +3909,7 @@ msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 msgid "no dbpath has been set\n"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: rpmdb/rpmdb.c:964
+#: rpmdb/rpmdb.c:975
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3917,119 +3917,119 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1196
+#: rpmdb/rpmdb.c:1207
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: rpmdb/rpmdb.c:1926 rpmdb/rpmdb.c:3092
+#: rpmdb/rpmdb.c:1937 rpmdb/rpmdb.c:3103
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: rpmdb/rpmdb.c:1977
+#: rpmdb/rpmdb.c:1988
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2241
+#: rpmdb/rpmdb.c:2252
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
 # FIXME
-#: rpmdb/rpmdb.c:2310
+#: rpmdb/rpmdb.c:2321
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: rpmdb/rpmdb.c:2319
+#: rpmdb/rpmdb.c:2330
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:2510
+#: rpmdb/rpmdb.c:2521
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: rpmdb/rpmdb.c:2588
+#: rpmdb/rpmdb.c:2599
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # FIXME
-#: rpmdb/rpmdb.c:2599
+#: rpmdb/rpmdb.c:2610
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:2981
+#: rpmdb/rpmdb.c:2992
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3011
+#: rpmdb/rpmdb.c:3022
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: rpmdb/rpmdb.c:3038
+#: rpmdb/rpmdb.c:3049
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3042
+#: rpmdb/rpmdb.c:3053
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: rpmdb/rpmdb.c:3048
+#: rpmdb/rpmdb.c:3059
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3050
+#: rpmdb/rpmdb.c:3061
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3057
+#: rpmdb/rpmdb.c:3068
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3068
+#: rpmdb/rpmdb.c:3079
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3132
+#: rpmdb/rpmdb.c:3143
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: rpmdb/rpmdb.c:3150
+#: rpmdb/rpmdb.c:3161
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3158
+#: rpmdb/rpmdb.c:3169
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3160
+#: rpmdb/rpmdb.c:3171
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3170
+#: rpmdb/rpmdb.c:3181
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
 # , c-format
-#: rpmdb/rpmdb.c:3172
+#: rpmdb/rpmdb.c:3183
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"

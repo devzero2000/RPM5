@@ -4,6 +4,9 @@
 %define with_internal_db	1 %{nil}
 %define strip_binaries		1
 
+# XXX enable at your own risk, CDB access to rpmdb isn't cooked yet.
+%define	enable_cdb		create cdb
+
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
 
@@ -14,7 +17,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.69
+Release: 0.70
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -148,12 +151,16 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
+cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.cdb
+%{?enable_cdb:#%%__dbi_cdb	%{enable_cdb}}
+E_O_F
 
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
 for dbi in \
 	Basenames Conflictname Dirnames Group Installtid Name Providename \
 	Provideversion Removetid Requirename Requireversion Triggername \
-	Packages __db.001 __db.002 __db.003 __db.004
+	Packages __db.001 __db.002 __db.003 __db.004 __db.005 __db.006 __db.007 \
+	__db.008 __db.009
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
@@ -239,14 +246,13 @@ fi
 %config(noreplace,missingok)	/etc/cron.daily/rpm
 %config(noreplace,missingok)	/etc/logrotate.d/rpm
 %dir				/etc/rpm
-%config(noreplace,missingok)	/etc/rpm/macros.db1
+%config(noreplace,missingok)	/etc/rpm/macros.*
 %attr(0755, rpm, rpm)	%dir /var/lib/rpm
 
 %define	rpmdbattr %attr(0644, rpm, rpm) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 %rpmdbattr	/var/lib/rpm/Basenames
 %rpmdbattr	/var/lib/rpm/Conflictname
-%rpmdbattr	/var/lib/rpm/__db.001
-%rpmdbattr	/var/lib/rpm/__db.002
+%rpmdbattr	/var/lib/rpm/__db.0*
 %rpmdbattr	/var/lib/rpm/Dirnames
 %rpmdbattr	/var/lib/rpm/Group
 %rpmdbattr	/var/lib/rpm/Installtid
@@ -430,6 +436,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jul 13 2001 Jeff Johnson <jbj@redhat.com>
+- isolate cdb access configuration (experimental, use at your own risk).
+- fix: hard fail on locked dbopen if CDB locking not in use.
+- fix: dbconfig with mp_mmapsize=16Mb/mp_size=1Mb for
+  "everything ENOSPC" failure check.
+
 * Thu Jul 12 2001 Jeff Johnson <jbj@redhat.com>
 - fix: scope multi-mode options like --nodeps correctly (#48825).
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-07-12 15:44-0400\n"
+"Project-Id-Version: rpm 4.0.3\n"
+"POT-Creation-Date: 2001-07-14 15:53-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -3536,11 +3536,11 @@ msgstr "åbner db-fil      %s modus 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kunne ikke opnå %s lås på database\n"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1057
+#: rpmdb/db1.c:562 rpmdb/db3.c:1060
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1057
+#: rpmdb/db1.c:562 rpmdb/db3.c:1060
 msgid "shared"
 msgstr "delt"
 
@@ -3574,12 +3574,12 @@ msgstr "lukkede db-indeks %s/%s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1055
+#: rpmdb/db3.c:1058
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1062
+#: rpmdb/db3.c:1064
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste   db-index  %s/%s\n"
@@ -3666,7 +3666,7 @@ msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
-#: rpmdb/rpmdb.c:964
+#: rpmdb/rpmdb.c:975
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3676,118 +3676,118 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1196
+#: rpmdb/rpmdb.c:1207
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "fejl(%d) ved optælling af pakker\n"
 
-#: rpmdb/rpmdb.c:1926 rpmdb/rpmdb.c:3092
+#: rpmdb/rpmdb.c:1937 rpmdb/rpmdb.c:3103
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:1977
+#: rpmdb/rpmdb.c:1988
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2241
+#: rpmdb/rpmdb.c:2252
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:2310
+#: rpmdb/rpmdb.c:2321
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2319
+#: rpmdb/rpmdb.c:2330
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2510
+#: rpmdb/rpmdb.c:2521
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:2588
+#: rpmdb/rpmdb.c:2599
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:2599
+#: rpmdb/rpmdb.c:2610
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:2981
+#: rpmdb/rpmdb.c:2992
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:3011
+#: rpmdb/rpmdb.c:3022
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:3038
+#: rpmdb/rpmdb.c:3049
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:3042
+#: rpmdb/rpmdb.c:3053
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:3048
+#: rpmdb/rpmdb.c:3059
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3050
+#: rpmdb/rpmdb.c:3061
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:3057
+#: rpmdb/rpmdb.c:3068
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3068
+#: rpmdb/rpmdb.c:3079
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3132
+#: rpmdb/rpmdb.c:3143
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:3150
+#: rpmdb/rpmdb.c:3161
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:3158
+#: rpmdb/rpmdb.c:3169
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:3160
+#: rpmdb/rpmdb.c:3171
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:3170
+#: rpmdb/rpmdb.c:3181
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:3172
+#: rpmdb/rpmdb.c:3183
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"

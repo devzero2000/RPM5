@@ -385,8 +385,11 @@
 #%__dbi_other			usedbenv create joinenv mpool txn log \
 #				mp_mmapsize=8Mb mp_size=512Kb verify usecursors
 
+# XXX enable at your own risk, CDB access to rpmdb isn't cooked yet.
+#%__dbi_cdb			create joinenv cdb mpool
+
 # XXX The "traditional" rpmdb shared/exclusive fcntl(2) lock on Packages model:
-%__dbi_other			verify usecursors
+%__dbi_other			verify usecursors %{?__dbi_cdb}
 
 # Note: adding nofsync here speeds up --rebuilddb a lot.
 %__dbi_rebuild			nofsync !log !txn !cdb
