@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-03 00:55-0400\n"
+"POT-Creation-Date: 2001-08-03 09:33-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -1501,12 +1501,12 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:80 lib/psm.c:1782
+#: build/pack.c:80 lib/psm.c:1785
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:83 lib/psm.c:1785
+#: build/pack.c:83 lib/psm.c:1788
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr ""
@@ -1604,7 +1604,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:571 lib/psm.c:1518
+#: build/pack.c:571 lib/psm.c:1521
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1634,7 +1634,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:651 lib/psm.c:1777
+#: build/pack.c:651 lib/psm.c:1780
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2162,7 +2162,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2586 lib/header.c:2605 lib/header.c:2625
+#: lib/header.c:2590 lib/header.c:2609 lib/header.c:2629
 msgid "(not a number)"
 msgstr ""
 
@@ -2244,83 +2244,83 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:397
+#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:400
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1902
+#: lib/header.c:1906
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1932
+#: lib/header.c:1936
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1946
+#: lib/header.c:1950
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1960
+#: lib/header.c:1964
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1977
+#: lib/header.c:1981
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2004
+#: lib/header.c:2008
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2022
+#: lib/header.c:2026
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2026
+#: lib/header.c:2030
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2092
+#: lib/header.c:2096
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2101
+#: lib/header.c:2105
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2114 lib/header.c:2156
+#: lib/header.c:2118 lib/header.c:2160
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2124
+#: lib/header.c:2128
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2141
+#: lib/header.c:2145
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2166
+#: lib/header.c:2170
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2346
+#: lib/header.c:2350
 msgid "(unknown type)"
 msgstr ""
 
@@ -2782,64 +2782,64 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:591
+#: lib/psm.c:594
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:597
+#: lib/psm.c:600
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:635
+#: lib/psm.c:638
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:742
+#: lib/psm.c:745
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:998
+#: lib/psm.c:1001
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1005
+#: lib/psm.c:1008
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1323
+#: lib/psm.c:1326
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1440
+#: lib/psm.c:1443
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1555
+#: lib/psm.c:1558
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1564
+#: lib/psm.c:1567
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1603
+#: lib/psm.c:1606
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1604
+#: lib/psm.c:1607
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1877
+#: lib/psm.c:1882
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
@@ -3362,46 +3362,46 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:441
+#: lib/transaction.c:443
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:445
+#: lib/transaction.c:447
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/transaction.c:448
+#: lib/transaction.c:450
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/transaction.c:518
+#: lib/transaction.c:520
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:581
+#: lib/transaction.c:583
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/transaction.c:591
+#: lib/transaction.c:593
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:669
+#: lib/transaction.c:671
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:803
+#: lib/transaction.c:805
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/transaction.c:1401
+#: lib/transaction.c:1403
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
@@ -3607,114 +3607,114 @@ msgid ""
 msgstr ""
 
 #. error
-#: rpmdb/rpmdb.c:1203
+#: rpmdb/rpmdb.c:1206
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1933 rpmdb/rpmdb.c:3109
+#: rpmdb/rpmdb.c:1936 rpmdb/rpmdb.c:3118
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1984
+#: rpmdb/rpmdb.c:1987
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2252
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2315
+#: rpmdb/rpmdb.c:2321
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2324
+#: rpmdb/rpmdb.c:2330
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2516
+#: rpmdb/rpmdb.c:2525
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2594
+#: rpmdb/rpmdb.c:2603
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2605
+#: rpmdb/rpmdb.c:2614
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2998
+#: rpmdb/rpmdb.c:3007
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3028
+#: rpmdb/rpmdb.c:3037
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3055
+#: rpmdb/rpmdb.c:3064
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3059
+#: rpmdb/rpmdb.c:3068
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3065
+#: rpmdb/rpmdb.c:3074
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3067
+#: rpmdb/rpmdb.c:3076
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3074
+#: rpmdb/rpmdb.c:3083
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3085
+#: rpmdb/rpmdb.c:3094
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3149
+#: rpmdb/rpmdb.c:3158
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3167
+#: rpmdb/rpmdb.c:3176
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3175
+#: rpmdb/rpmdb.c:3184
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3177
+#: rpmdb/rpmdb.c:3186
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3187
+#: rpmdb/rpmdb.c:3196
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3189
+#: rpmdb/rpmdb.c:3198
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
