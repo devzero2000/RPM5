@@ -306,12 +306,20 @@ static int processPackageFiles(Spec spec, Package pkg,
 {
     struct FileList fl;
     char *s, **files, **fp, *fileName;
+    char brbuf[BUFSIZ], *buildRoot;
     char buf[BUFSIZ];
     FILE *f;
 
     struct AttrRec specialDocAttrRec;
     char *specialDoc = NULL;
     
+    if (spec->buildRoot) {
+	strcpy(brbuf, spec->buildRoot);
+	expandMacros(&spec->macros, brbuf);
+	buildRoot = brbuf;
+    } else
+	buildRoot = NULL;
+
     pkg->cpioList = NULL;
     pkg->cpioCount = 0;
 
@@ -340,7 +348,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     
     /* Init the file list structure */
     
-    fl.buildRoot = spec->buildRoot ? spec->buildRoot : "";
+    fl.buildRoot = buildRoot ? buildRoot : "";
     if (headerGetEntry(pkg->header, RPMTAG_DEFAULTPREFIX,
 		       NULL, (void *)&fl.prefix, NULL)) {
 	fl.prefix = strdup(fl.prefix);

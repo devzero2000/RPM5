@@ -200,6 +200,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 
 static int writeVars(Spec spec, FILE *f)
 {
+    char buf[BUFSIZ];
     char *arch, *os, *s;
     
     rpmGetArchInfo(&arch, NULL);
@@ -215,7 +216,9 @@ static int writeVars(Spec spec, FILE *f)
 	    "RPM_OPT_FLAGS RPM_ARCH RPM_OS\n");
 
     if (spec->buildRoot) {
-	fprintf(f, "RPM_BUILD_ROOT=\"%s\"\n", spec->buildRoot);
+	strcpy(buf, spec->buildRoot);
+	expandMacros(&spec->macros, buf);
+	fprintf(f, "RPM_BUILD_ROOT=\"%s\"\n", buf);
 	fprintf(f, "export RPM_BUILD_ROOT\n");
 	/* This could really be checked internally */
 	fprintf(f, "if [ -z \"$RPM_BUILD_ROOT\" -o -z \"`echo $RPM_BUILD_ROOT | sed -e 's#/##g'`\" ]; then\n");
