@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -495,7 +495,7 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sat Sep  4 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-1
+* Sat Sep  4 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-2
 - ia64: make sure that autorelocated file dependencies are satisfied.
 - ia64: relocate all scriptlet interpreters.
 - ia64: don't bother trying to preload autorelocated modules.
