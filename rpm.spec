@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.68
+Release: 0.69
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -266,6 +266,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Aug 18 2000 Jeff Johnson <jbj@redhat.com>
+- python bindings to query and verify signatures.
+
 * Wed Aug 16 2000 Jeff Johnson <jbj@redhat.com>
 - fix: rebuild db1 -> db3 ate 1st header (#16263).
 
