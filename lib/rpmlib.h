@@ -24,7 +24,7 @@ typedef	enum rpmRC_e {
     RPMRC_BADMAGIC	= 1,
     RPMRC_FAIL		= 2,
     RPMRC_BADSIZE	= 3,
-    RPMRC_SHORTREAD	= 4,
+    RPMRC_SHORTREAD	= 4
 } rpmRC;
 
 #ifdef __cplusplus
@@ -1144,7 +1144,7 @@ typedef enum fileAction_e {
     FA_ERASE,		/*!< ... to be removed. */
     FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
     FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
-    FA_SKIPMULTILIB,	/*!< ... untouched. @todo state "multilib" ???. */
+    FA_SKIPMULTILIB	/*!< ... untouched. @todo state "multilib" ???. */
 } fileAction;
 
 #define XFA_SKIPPING(_a)	\
@@ -1164,7 +1164,7 @@ typedef enum fileTypes_e {
     BDEV	=  6,	/*!< block device */
     REG		=  8,	/*!< regular file */
     LINK	= 10,	/*!< hard link */
-    SOCK	= 12,	/*!< socket */
+    SOCK	= 12	/*!< socket */
 } fileTypes;
 
 /** \ingroup payload
@@ -1365,7 +1365,7 @@ typedef enum rpmtransFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
-    RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
+    RPMTRANS_FLAG_CHAINSAW	= (1 << 26)
 } rpmtransFlags;
 
 #define	_noTransScripts		\

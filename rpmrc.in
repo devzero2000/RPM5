@@ -318,6 +318,10 @@ buildarch_compat: armv3l: noarch
 buildarch_compat: armv4b: noarch
 buildarch_compat: armv4l: noarch
 
+buildarch_compat: hppa2.0: hppa1.2
+buildarch_compat: hppa1.2: hppa1.1
+buildarch_compat: hppa1.1: hppa1.0
+buildarch_compat: hppa1.0: parisc
 buildarch_compat: parisc: noarch
 
 buildarch_compat: atarist: m68kmint noarch

@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -191,7 +191,7 @@ mkdir -p ${RPM_BUILD_ROOT}/etc/cron.daily
 install -m 755 scripts/rpm.daily ${RPM_BUILD_ROOT}/etc/cron.daily/rpm
 
 mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
-install -m 755 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
+install -m 644 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
@@ -512,6 +512,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Dec 20 2001 Jeff Johnson <jbj@redhat.com>
+- tru64 compiler message cleanup.
+- add buildarch lines for hppa (#57728).
+
 * Wed Dec 19 2001 Jeff Johnson <jbj@redhat.com>
 - look for PY_VERSION 2.2c1.
 - fix: typo in find-requires.
