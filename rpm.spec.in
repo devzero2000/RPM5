@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.4
+Release: 0.6
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -485,6 +485,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Jul  9 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.6
+- fix: evaluate rather than default file_contexts path. (#127501).
+
 * Mon Jul  5 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.5
 - change default behavior to resolve file conflicts as LIFO.
 - add --fileconflicts to recover rpm traditional behavior.

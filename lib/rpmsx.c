@@ -4,6 +4,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmmacro.h>	/* for rpmGetPath() */
 
 #define	_RPMSX_INTERNAL
 #include "rpmsx.h"
@@ -327,12 +328,18 @@ int rpmsxParse(rpmsx sx, const char * fn)
 
 /*@-branchstate@*/
     if (fn == NULL)
-	fn = "/etc/security/selinux/file_contexts";
+	fn = "%{?__file_context_path}";
 /*@=branchstate@*/
 
-    if ((fp = fopen(fn, "r")) == NULL) {
-	perror(fn);
-	return -1;
+    {	const char * myfn = rpmGetPath(fn, NULL);
+
+	if (myfn == NULL || *myfn == '\0'
+	 || (fp = fopen(myfn, "r")) == NULL)
+	{
+	    myfn = _free(myfn);
+	    return -1;
+	}
+	myfn = _free(myfn);
     }
 
     /* 
@@ -472,12 +479,16 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	    }
 	}
 
-	if (nerr)
+	if (nerr) {
+	    (void) fclose(fp);
 	    return -1;
+	}
 
 	if (pass == 0) {
-	    if (sx->Count == 0)
+	    if (sx->Count == 0) {
+		(void) fclose(fp);
 		return 0;
+	    }
 	    sx->sxp = xcalloc(sx->Count, sizeof(*sx->sxp));
 	    rewind(fp);
 	}
@@ -493,6 +504,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	return -1;
 
     return 0;
+
 }
 
 rpmsx rpmsxNew(const char * fn)
