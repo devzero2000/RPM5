@@ -344,6 +344,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Mar 12 2001 Jeff Johnson <jbj@redhat.com>
+- fix: adjust for libio breakage in Red Hat 5.x with glibc-2.0.7-29.4.
+
 * Wed Mar  7 2001 Jeff Johnson <jbj@redhat.com>
 - remove mozilla dependency white out, no longer needed.
 
