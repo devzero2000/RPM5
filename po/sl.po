@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-13 12:23-0500\n"
+"POT-Creation-Date: 2001-02-14 19:19-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2586,12 +2586,12 @@ msgstr ""
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/db1.c:92 lib/db2.c:112 lib/db3.c:456
+#: lib/db1.c:92 lib/db2.c:117 lib/db3.c:102
 #, fuzzy, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d napaka(%d)"
 
-#: lib/db1.c:95 lib/db2.c:115 lib/db3.c:459
+#: lib/db1.c:95 lib/db2.c:120 lib/db3.c:105
 #, fuzzy, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d napaka(%d)"
@@ -2622,95 +2622,70 @@ msgstr "odpiranje datoteke %s v naèinu 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: lib/db1.c:450 lib/db3.c:1120
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: lib/db1.c:450 lib/db3.c:1120
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
 msgid "shared"
 msgstr "skupno"
 
-#: lib/db2.c:141
-#, c-format
-msgid "closed  db environment %s/%s(%s)\n"
-msgstr "zaprto  db okolje %s/%s(%s)\n"
+#: lib/db2.c:145 lib/db3.c:130
+#, fuzzy, c-format
+msgid "closed  db environment %s/%s\n"
+msgstr "zaprto  db okolje %s/%s\n"
 
-#: lib/db2.c:153
-#, c-format
-msgid "removed db environment %s/%s(%s)\n"
-msgstr "odstranjeno db okolje %s/%s(%s)\n"
+#: lib/db2.c:161 lib/db3.c:146
+#, fuzzy, c-format
+msgid "removed db environment %s/%s\n"
+msgstr "odstranjeno db okolje %s/%s\n"
 
-#: lib/db2.c:190
+#: lib/db2.c:198 lib/db3.c:183
 #, c-format
-msgid "opening db environment %s/%s(%s) %s\n"
-msgstr "odpiranje db okolja %s/%s(%s) %s\n"
+msgid "opening db environment %s/%s %s\n"
+msgstr "odpiranje db okolja %s/%s %s\n"
 
-#: lib/db2.c:565
-#, c-format
-msgid "closed  db index       %s/%s(%s)\n"
-msgstr "zaprto  db kazalo       %s/%s(%s)\n"
+#: lib/db2.c:588 lib/db3.c:569
+#, fuzzy, c-format
+msgid "closed  db index       %s/%s\n"
+msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: lib/db2.c:643
-#, c-format
-msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-msgstr "odpiranje db kazala       %s/%s(%s) %s naèin=0x%x\n"
+#: lib/db2.c:678 lib/db3.c:659
+#, fuzzy, c-format
+msgid "opening db index       %s/%s %s mode=0x%x\n"
+msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
 
-#: lib/db3.c:268
+#: lib/db2.c:784 lib/db3.c:764
+#, fuzzy, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
+
+#: lib/db2.c:791 lib/db3.c:771
+#, fuzzy, c-format
+msgid "locked  db index       %s/%s\n"
+msgstr "zaklenjeno  db kazalo       %s/%s\n"
+
+#: lib/dbconfig.c:258
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored\n"
 msgstr "dbiSetConfig: neprepoznana izbira db: \"%s\" prezrto\n"
 
-#: lib/db3.c:297
+#: lib/dbconfig.c:287
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s ima neveljavno ¹tevilèno vrednost, prezrto\n"
 
-#: lib/db3.c:306
+#: lib/dbconfig.c:296
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ima preveliko ali premajhno dolgo (long) vrednost, prezrto\n"
 
-#: lib/db3.c:315
+#: lib/dbconfig.c:305
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 "%s ima preveliko ali premajhno vrednost malega (small) celega\n"
 "¹tevila, prezrto\n"
-
-#: lib/db3.c:484
-#, fuzzy, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr "zaprto  db okolje %s/%s\n"
-
-#: lib/db3.c:500
-#, fuzzy, c-format
-msgid "removed db environment %s/%s\n"
-msgstr "odstranjeno db okolje %s/%s\n"
-
-#: lib/db3.c:537
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr "odpiranje db okolja %s/%s %s\n"
-
-#: lib/db3.c:923
-#, fuzzy, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr "zaprto  db kazalo       %s/%s\n"
-
-#: lib/db3.c:1013
-#, fuzzy, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
-
-#: lib/db3.c:1118
-#, fuzzy, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
-
-#: lib/db3.c:1125
-#, fuzzy, c-format
-msgid "locked  db index       %s/%s\n"
-msgstr "zaklenjeno  db kazalo       %s/%s\n"
 
 #: lib/falloc.c:141
 #, c-format
@@ -2727,7 +2702,7 @@ msgstr ""
 "na strani http://www.rpm.org ali po dopisni listi rpm-list@redhat.com.\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2549 lib/header.c:2566 lib/header.c:2586
+#: lib/header.c:2596 lib/header.c:2613 lib/header.c:2633
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -2766,88 +2741,88 @@ msgstr "datoteka %s se nahaja na neznani napravi"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "¹tevec grabData() RPM_STRING_TYPE mora biti 1.\n"
 
-#: lib/header.c:207 lib/header.c:1034 lib/install.c:365
+#: lib/header.c:207 lib/header.c:1081 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Tip podatkov %d ni podprt\n"
 
-#: lib/header.c:1457
+#: lib/header.c:1504
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Nepravilno stanje ¹tevca za headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1902
+#: lib/header.c:1949
 #, c-format
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 
 #. @-observertrans@
-#: lib/header.c:1932
+#: lib/header.c:1979
 msgid "missing } after %{"
 msgstr "manjkajoèi } za %{"
 
 #. @-observertrans@
-#: lib/header.c:1946
+#: lib/header.c:1993
 msgid "empty tag format"
 msgstr "oblika znaèke manjka"
 
 #. @-observertrans@
-#: lib/header.c:1958
+#: lib/header.c:2005
 msgid "empty tag name"
 msgstr "ime znaèke manjka"
 
 #. @-observertrans@
-#: lib/header.c:1975
+#: lib/header.c:2022
 msgid "unknown tag"
 msgstr "neznana znaèka"
 
 #. @-observertrans@
-#: lib/header.c:2002
+#: lib/header.c:2049
 msgid "] expected at end of array"
 msgstr "na koncu polja je prièakovan ]"
 
 #. @-observertrans@
-#: lib/header.c:2020
+#: lib/header.c:2067
 msgid "unexpected ]"
 msgstr "neprièakovan ]"
 
 #. @-observertrans@
-#: lib/header.c:2024
+#: lib/header.c:2071
 msgid "unexpected }"
 msgstr "neprièakovan }"
 
 #. @-observertrans@
-#: lib/header.c:2084
+#: lib/header.c:2131
 msgid "? expected in expression"
 msgstr "v izrazu je prièakovan ?"
 
 #. @-observertrans@
-#: lib/header.c:2093
+#: lib/header.c:2140
 msgid "{ expected after ? in expression"
 msgstr "v izrazu je za { prièakovan ?"
 
 #. @-observertrans@
-#: lib/header.c:2106 lib/header.c:2147
+#: lib/header.c:2153 lib/header.c:2194
 msgid "} expected in expression"
 msgstr "v izrazu je prièakovan }"
 
 #. @-observertrans@
-#: lib/header.c:2116
+#: lib/header.c:2163
 msgid ": expected following ? subexpression"
 msgstr "za podizrazom ? je prièakovano :"
 
 #. @-observertrans@
-#: lib/header.c:2132
+#: lib/header.c:2179
 msgid "{ expected after : in expression"
 msgstr "v izrazu je za : prièakovan {"
 
 #. @-observertrans@
-#: lib/header.c:2157
+#: lib/header.c:2204
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
-#: lib/header.c:2328
+#: lib/header.c:2375
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
@@ -3857,124 +3832,124 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:147
+#: lib/signature.c:148
 msgid "No signature\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:151
+#: lib/signature.c:152
 msgid "Old PGP signature\n"
 msgstr "Stari podpis PGP\n"
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Podpis v (interni) stari obliki! Kje ste ga dobili?"
 
-#: lib/signature.c:211
+#: lib/signature.c:213
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:212
+#: lib/signature.c:214
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Dol¾. polnila : %d\n"
 
-#: lib/signature.c:274
+#: lib/signature.c:276
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Ni mo¾no pognati pgp (%s)"
 
-#: lib/signature.c:285
+#: lib/signature.c:287
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp je bil neuspe¹en"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:292
+#: lib/signature.c:294
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp je bil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:297
+#: lib/signature.c:299
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Dol¾. podpisa PGP: %d\n"
 
-#: lib/signature.c:308 lib/signature.c:385
+#: lib/signature.c:310 lib/signature.c:387
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "branje podpisa je bilo neuspe¹no"
 
-#: lib/signature.c:313
+#: lib/signature.c:315
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Prebrano %d bajtov podpisa PGP\n"
 
-#: lib/signature.c:351 lib/signature.c:694
+#: lib/signature.c:353 lib/signature.c:696
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Ni mo¾no pognati gpg"
 
-#: lib/signature.c:362
+#: lib/signature.c:364
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg je bil neuspe¹en"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:369
+#: lib/signature.c:371
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg je boil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:374
+#: lib/signature.c:376
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Dol¾. podpisa GnuPG: %d\n"
 
-#: lib/signature.c:390
+#: lib/signature.c:392
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Prebrano %d bajtov podpisa GnuPG\n"
 
-#: lib/signature.c:417
+#: lib/signature.c:419
 msgid "Generating signature using PGP.\n"
 msgstr "Ustvarjanje podpisa s PGP.\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:425
 msgid "Generating signature using GPG.\n"
 msgstr "Ustvarjanje podpisa z GnuPG.\n"
 
-#: lib/signature.c:502 lib/signature.c:563
+#: lib/signature.c:504 lib/signature.c:565
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Ni mo¾no pognati pgp. Preverjanja PGP lahko preskoèite z --nopgp"
 
-#: lib/signature.c:635
+#: lib/signature.c:637
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Ni mo¾no pognati gpg. Preverjanja GnuPG lahko preskoèite z --nogpg"
 
-#: lib/signature.c:723
+#: lib/signature.c:725
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Ni mo¾no pognati pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:727 lib/signature.c:780
+#: lib/signature.c:729 lib/signature.c:782
 #, fuzzy
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Neveljaven %%_signature v makro-datoteki.\n"
 
-#: lib/signature.c:760
+#: lib/signature.c:762
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:772
+#: lib/signature.c:774
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
@@ -4300,6 +4275,21 @@ msgstr "vrata URL morajo biti ¹tevilka\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#~ msgid "closed  db environment %s/%s(%s)\n"
+#~ msgstr "zaprto  db okolje %s/%s(%s)\n"
+
+#~ msgid "removed db environment %s/%s(%s)\n"
+#~ msgstr "odstranjeno db okolje %s/%s(%s)\n"
+
+#~ msgid "opening db environment %s/%s(%s) %s\n"
+#~ msgstr "odpiranje db okolja %s/%s(%s) %s\n"
+
+#~ msgid "closed  db index       %s/%s(%s)\n"
+#~ msgstr "zaprto  db kazalo       %s/%s(%s)\n"
+
+#~ msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
+#~ msgstr "odpiranje db kazala       %s/%s(%s) %s naèin=0x%x\n"
 
 #, fuzzy
 #~ msgid "   --rcfile <file>        "

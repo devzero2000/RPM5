@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-13 12:23-0500\n"
+"POT-Creation-Date: 2001-02-14 19:19-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -2392,12 +2392,12 @@ msgstr ""
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/db1.c:92 lib/db2.c:112 lib/db3.c:456
+#: lib/db1.c:92 lib/db2.c:117 lib/db3.c:102
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: lib/db1.c:95 lib/db2.c:115 lib/db3.c:459
+#: lib/db1.c:95 lib/db2.c:120 lib/db3.c:105
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
@@ -2428,92 +2428,67 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: lib/db1.c:450 lib/db3.c:1120
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
 msgid "exclusive"
 msgstr ""
 
-#: lib/db1.c:450 lib/db3.c:1120
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
 msgid "shared"
 msgstr ""
 
-#: lib/db2.c:141
-#, c-format
-msgid "closed  db environment %s/%s(%s)\n"
-msgstr ""
-
-#: lib/db2.c:153
-#, c-format
-msgid "removed db environment %s/%s(%s)\n"
-msgstr ""
-
-#: lib/db2.c:190
-#, c-format
-msgid "opening db environment %s/%s(%s) %s\n"
-msgstr ""
-
-#: lib/db2.c:565
-#, c-format
-msgid "closed  db index       %s/%s(%s)\n"
-msgstr ""
-
-#: lib/db2.c:643
-#, c-format
-msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-msgstr ""
-
-#: lib/db3.c:268
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored\n"
-msgstr ""
-
-#: lib/db3.c:297
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr ""
-
-#: lib/db3.c:306
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr ""
-
-#: lib/db3.c:315
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr ""
-
-#: lib/db3.c:484
+#: lib/db2.c:145 lib/db3.c:130
 #, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:500
+#: lib/db2.c:161 lib/db3.c:146
 #, c-format
 msgid "removed db environment %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:537
+#: lib/db2.c:198 lib/db3.c:183
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:923
+#: lib/db2.c:588 lib/db3.c:569
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:1013
+#: lib/db2.c:678 lib/db3.c:659
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: lib/db3.c:1118
+#: lib/db2.c:784 lib/db3.c:764
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:1125
+#: lib/db2.c:791 lib/db3.c:771
 #, c-format
 msgid "locked  db index       %s/%s\n"
+msgstr ""
+
+#: lib/dbconfig.c:258
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored\n"
+msgstr ""
+
+#: lib/dbconfig.c:287
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr ""
+
+#: lib/dbconfig.c:296
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr ""
+
+#: lib/dbconfig.c:305
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
 #: lib/falloc.c:141
@@ -2527,7 +2502,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2549 lib/header.c:2566 lib/header.c:2586
+#: lib/header.c:2596 lib/header.c:2613 lib/header.c:2633
 msgid "(not a number)"
 msgstr ""
 
@@ -2565,88 +2540,88 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1034 lib/install.c:365
+#: lib/header.c:207 lib/header.c:1081 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1457
+#: lib/header.c:1504
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1902
+#: lib/header.c:1949
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1932
+#: lib/header.c:1979
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1946
+#: lib/header.c:1993
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1958
+#: lib/header.c:2005
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1975
+#: lib/header.c:2022
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2002
+#: lib/header.c:2049
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2020
+#: lib/header.c:2067
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2024
+#: lib/header.c:2071
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2084
+#: lib/header.c:2131
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2093
+#: lib/header.c:2140
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2106 lib/header.c:2147
+#: lib/header.c:2153 lib/header.c:2194
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2116
+#: lib/header.c:2163
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2132
+#: lib/header.c:2179
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2157
+#: lib/header.c:2204
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2328
+#: lib/header.c:2375
 msgid "(unknown type)"
 msgstr ""
 
@@ -3616,112 +3591,112 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:147
+#: lib/signature.c:148
 msgid "No signature\n"
 msgstr ""
 
-#: lib/signature.c:151
+#: lib/signature.c:152
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 
-#: lib/signature.c:211
+#: lib/signature.c:213
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: lib/signature.c:212
+#: lib/signature.c:214
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: lib/signature.c:274
+#: lib/signature.c:276
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr ""
 
-#: lib/signature.c:285
+#: lib/signature.c:287
 msgid "pgp failed\n"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:292
+#: lib/signature.c:294
 msgid "pgp failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:297
+#: lib/signature.c:299
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:308 lib/signature.c:385
+#: lib/signature.c:310 lib/signature.c:387
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: lib/signature.c:313
+#: lib/signature.c:315
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:351 lib/signature.c:694
+#: lib/signature.c:353 lib/signature.c:696
 msgid "Couldn't exec gpg\n"
 msgstr ""
 
-#: lib/signature.c:362
+#: lib/signature.c:364
 msgid "gpg failed\n"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:369
+#: lib/signature.c:371
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:374
+#: lib/signature.c:376
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:390
+#: lib/signature.c:392
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:417
+#: lib/signature.c:419
 msgid "Generating signature using PGP.\n"
 msgstr ""
 
-#: lib/signature.c:423
+#: lib/signature.c:425
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:502 lib/signature.c:563
+#: lib/signature.c:504 lib/signature.c:565
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 
-#: lib/signature.c:635
+#: lib/signature.c:637
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 
-#: lib/signature.c:723
+#: lib/signature.c:725
 msgid "Couldn't exec pgp\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:727 lib/signature.c:780
+#: lib/signature.c:729 lib/signature.c:782
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:760
+#: lib/signature.c:762
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:772
+#: lib/signature.c:774
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-13 12:23-0500\n"
+"POT-Creation-Date: 2001-02-14 19:19-0500\n"
 "PO-Revision-Date: 2001-01-21 16:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2474,12 +2474,12 @@ msgstr "ЦИКЛ:\n"
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
-#: lib/db1.c:92 lib/db2.c:112 lib/db3.c:456
+#: lib/db1.c:92 lib/db2.c:117 lib/db3.c:102
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "ошибка(%d) db%d из %s: %s\n"
 
-#: lib/db1.c:95 lib/db2.c:115 lib/db3.c:459
+#: lib/db1.c:95 lib/db2.c:120 lib/db3.c:105
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "ошибка(%d) db%d: %s\n"
@@ -2510,94 +2510,69 @@ msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных\n"
 
-#: lib/db1.c:450 lib/db3.c:1120
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
 msgid "exclusive"
 msgstr "исключительный"
 
-#: lib/db1.c:450 lib/db3.c:1120
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
 msgid "shared"
 msgstr "разделяемый"
 
-#: lib/db2.c:141
-#, c-format
-msgid "closed  db environment %s/%s(%s)\n"
-msgstr "закрыто окружение базы данных %s/%s(%s)\n"
-
-#: lib/db2.c:153
-#, c-format
-msgid "removed db environment %s/%s(%s)\n"
-msgstr "удалено окружение базы данных %s/%s(%s)\n"
-
-#: lib/db2.c:190
-#, c-format
-msgid "opening db environment %s/%s(%s) %s\n"
-msgstr "открывается окружение базы данных %s/%s(%s) %s\n"
-
-#: lib/db2.c:565
-#, c-format
-msgid "closed  db index       %s/%s(%s)\n"
-msgstr "закрыт индекс базы данных %s/%s(%s)\n"
-
-#: lib/db2.c:643
-#, c-format
-msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-msgstr "открывается индекс базы данных %s/%s(%s) %s mode=0x%x\n"
-
-#: lib/db3.c:268
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored\n"
-msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
-
-#: lib/db3.c:297
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "неверное числовое значение %s, пропущено\n"
-
-#: lib/db3.c:306
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s имеет слишком малую или слишком большую величину long, пропущено\n"
-
-#: lib/db3.c:315
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr ""
-"%s имеет слишком малую или слишком большую величину integer, пропущено\n"
-
-#: lib/db3.c:484
+#: lib/db2.c:145 lib/db3.c:130
 #, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr "закрыто окружение базы данных %s/%s\n"
 
-#: lib/db3.c:500
+#: lib/db2.c:161 lib/db3.c:146
 #, c-format
 msgid "removed db environment %s/%s\n"
 msgstr "удалено окружение базы данных %s/%s\n"
 
-#: lib/db3.c:537
+#: lib/db2.c:198 lib/db3.c:183
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr "открывается окружение базы данных %s/%s %s\n"
 
-#: lib/db3.c:923
+#: lib/db2.c:588 lib/db3.c:569
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "закрыт индекс базы данных %s/%s\n"
 
-#: lib/db3.c:1013
+#: lib/db2.c:678 lib/db3.c:659
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: lib/db3.c:1118
+#: lib/db2.c:784 lib/db3.c:764
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: lib/db3.c:1125
+#: lib/db2.c:791 lib/db3.c:771
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"
+
+#: lib/dbconfig.c:258
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored\n"
+msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
+
+#: lib/dbconfig.c:287
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr "неверное числовое значение %s, пропущено\n"
+
+#: lib/dbconfig.c:296
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr "%s имеет слишком малую или слишком большую величину long, пропущено\n"
+
+#: lib/dbconfig.c:305
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr ""
+"%s имеет слишком малую или слишком большую величину integer, пропущено\n"
 
 #: lib/falloc.c:141
 #, c-format
@@ -2614,7 +2589,7 @@ msgstr ""
 "рассылки rpm-list@redhat.com\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2549 lib/header.c:2566 lib/header.c:2586
+#: lib/header.c:2596 lib/header.c:2613 lib/header.c:2633
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -2652,88 +2627,88 @@ msgstr "файл %s - на неизвестном устройстве\n"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() допустим только один элемент типа RPM_STRING_TYPE\n"
 
-#: lib/header.c:207 lib/header.c:1034 lib/install.c:365
+#: lib/header.c:207 lib/header.c:1081 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
 
-#: lib/header.c:1457
+#: lib/header.c:1504
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Неверное число для headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1902
+#: lib/header.c:1949
 #, c-format
 msgid "missing { after %"
 msgstr "отсутствует \"{\" после \"%\""
 
 #. @-observertrans@
-#: lib/header.c:1932
+#: lib/header.c:1979
 msgid "missing } after %{"
 msgstr "отсутствует \"}\" после \"%{\""
 
 #. @-observertrans@
-#: lib/header.c:1946
+#: lib/header.c:1993
 msgid "empty tag format"
 msgstr "пустой формат тэга"
 
 #. @-observertrans@
-#: lib/header.c:1958
+#: lib/header.c:2005
 msgid "empty tag name"
 msgstr "пустое имя тэга"
 
 #. @-observertrans@
-#: lib/header.c:1975
+#: lib/header.c:2022
 msgid "unknown tag"
 msgstr "неизвестный тэг"
 
 #. @-observertrans@
-#: lib/header.c:2002
+#: lib/header.c:2049
 msgid "] expected at end of array"
 msgstr "в конце массива ожидалась \"]\""
 
 #. @-observertrans@
-#: lib/header.c:2020
+#: lib/header.c:2067
 msgid "unexpected ]"
 msgstr "неожиданная \"]\""
 
 #. @-observertrans@
-#: lib/header.c:2024
+#: lib/header.c:2071
 msgid "unexpected }"
 msgstr "неожиданная \"}\""
 
 #. @-observertrans@
-#: lib/header.c:2084
+#: lib/header.c:2131
 msgid "? expected in expression"
 msgstr "в выражении ожидалось \"?\""
 
 #. @-observertrans@
-#: lib/header.c:2093
+#: lib/header.c:2140
 msgid "{ expected after ? in expression"
 msgstr "в выражении после \"?\" ожидалось \"{\""
 
 #. @-observertrans@
-#: lib/header.c:2106 lib/header.c:2147
+#: lib/header.c:2153 lib/header.c:2194
 msgid "} expected in expression"
 msgstr "в выражении ожидалось \"}\""
 
 #. @-observertrans@
-#: lib/header.c:2116
+#: lib/header.c:2163
 msgid ": expected following ? subexpression"
 msgstr "в выражении после \"?\" ожидалось \":\""
 
 #. @-observertrans@
-#: lib/header.c:2132
+#: lib/header.c:2179
 msgid "{ expected after : in expression"
 msgstr "в выражении после \":\" ожидалось \"{\""
 
 #. @-observertrans@
-#: lib/header.c:2157
+#: lib/header.c:2204
 msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
-#: lib/header.c:2328
+#: lib/header.c:2375
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
@@ -3718,117 +3693,117 @@ msgstr "Ожидаемый размер: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgid "  Actual size: %12d\n"
 msgstr "Фактический размер: %12d\n"
 
-#: lib/signature.c:147
+#: lib/signature.c:148
 msgid "No signature\n"
 msgstr "Подписи нет\n"
 
-#: lib/signature.c:151
+#: lib/signature.c:152
 msgid "Old PGP signature\n"
 msgstr "Старая подпись PGP\n"
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 "Старая (только для внутреннего использования) подпись! Где вы ЭТО взяли!?\n"
 
-#: lib/signature.c:211
+#: lib/signature.c:213
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Размер подписи: %d\n"
 
-#: lib/signature.c:212
+#: lib/signature.c:214
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Заполнитель подписи : %d\n"
 
-#: lib/signature.c:274
+#: lib/signature.c:276
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Нвозможно запустить pgp (%s)\n"
 
-#: lib/signature.c:285
+#: lib/signature.c:287
 msgid "pgp failed\n"
 msgstr "ошибка pgp\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:292
+#: lib/signature.c:294
 msgid "pgp failed to write signature\n"
 msgstr "ошибка pgp при записи подписи\n"
 
-#: lib/signature.c:297
+#: lib/signature.c:299
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
-#: lib/signature.c:308 lib/signature.c:385
+#: lib/signature.c:310 lib/signature.c:387
 msgid "unable to read the signature\n"
 msgstr "невозможно прочесть подпись\n"
 
-#: lib/signature.c:313
+#: lib/signature.c:315
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
-#: lib/signature.c:351 lib/signature.c:694
+#: lib/signature.c:353 lib/signature.c:696
 msgid "Couldn't exec gpg\n"
 msgstr "Невозможно запустить gpg\n"
 
-#: lib/signature.c:362
+#: lib/signature.c:364
 msgid "gpg failed\n"
 msgstr "ошибка gpg\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:369
+#: lib/signature.c:371
 msgid "gpg failed to write signature\n"
 msgstr "ошибка gpg при записи подписи\n"
 
-#: lib/signature.c:374
+#: lib/signature.c:376
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Размер подписи GPG: %d\n"
 
-#: lib/signature.c:390
+#: lib/signature.c:392
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Получено %d байт подписи GPG\n"
 
-#: lib/signature.c:417
+#: lib/signature.c:419
 msgid "Generating signature using PGP.\n"
 msgstr "Генерируется подпись PGP.\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:425
 msgid "Generating signature using GPG.\n"
 msgstr "Генерируется подпись GPG.\n"
 
-#: lib/signature.c:502 lib/signature.c:563
+#: lib/signature.c:504 lib/signature.c:565
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "Нвозможно запустить pgp. Используйте --nopgp чтобы пропустить проверку PGP "
 "подписей.\n"
 
-#: lib/signature.c:635
+#: lib/signature.c:637
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "Невозможно запустить gpg. Используйте --nogpg чтобы пропустить проверку GPG "
 "подписей.\n"
 
-#: lib/signature.c:723
+#: lib/signature.c:725
 msgid "Couldn't exec pgp\n"
 msgstr "Невозможно запустить pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:727 lib/signature.c:780
+#: lib/signature.c:729 lib/signature.c:782
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Неверная спецификация %%_signature в макрофайле\n"
 
-#: lib/signature.c:760
+#: lib/signature.c:762
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:772
+#: lib/signature.c:774
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле\n"
 
@@ -4140,3 +4115,18 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "closed  db environment %s/%s(%s)\n"
+#~ msgstr "закрыто окружение базы данных %s/%s(%s)\n"
+
+#~ msgid "removed db environment %s/%s(%s)\n"
+#~ msgstr "удалено окружение базы данных %s/%s(%s)\n"
+
+#~ msgid "opening db environment %s/%s(%s) %s\n"
+#~ msgstr "открывается окружение базы данных %s/%s(%s) %s\n"
+
+#~ msgid "closed  db index       %s/%s(%s)\n"
+#~ msgstr "закрыт индекс базы данных %s/%s(%s)\n"
+
+#~ msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
+#~ msgstr "открывается индекс базы данных %s/%s(%s) %s mode=0x%x\n"
