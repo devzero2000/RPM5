@@ -17,7 +17,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.75
+Release: 0.76
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -437,6 +437,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jul 19 2001 Jeff Johnson <jbj@redhat.com>
+- fix: 4 memory leaks eliminated.
+
 * Wed Jul 18 2001 Jeff Johnson <jbj@redhat.com>
 - fix: %%dev(...) needs to map rdev and mtime from metadata.
 - resurrect --specedit for i18n.
