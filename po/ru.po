@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-09-13 13:17-0400\n"
+"POT-Creation-Date: 2000-09-13 13:41-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3219,12 +3219,12 @@ msgstr "отсутствует архитектура для %s в %s:%d"
 msgid "bad option '%s' at %s:%d"
 msgstr "неверная опция '%s' в %s:%d"
 
-#: lib/rpmrc.c:1162
+#: lib/rpmrc.c:1188
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1163
+#: lib/rpmrc.c:1189
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 

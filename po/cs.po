@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-09-13 13:17-0400\n"
+"POT-Creation-Date: 2000-09-13 13:41-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -3280,12 +3280,12 @@ msgstr "chybí architektura pro %s u %s:%d"
 msgid "bad option '%s' at %s:%d"
 msgstr "chybná volba '%s' u %s:%d"
 
-#: lib/rpmrc.c:1162
+#: lib/rpmrc.c:1188
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámý systém: %s\n"
 
-#: lib/rpmrc.c:1163
+#: lib/rpmrc.c:1189
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Zkontaktujte rpm-list@redhat.com\n"
 
