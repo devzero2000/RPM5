@@ -3111,17 +3111,17 @@ msgstr "%s: readLead 에 실패했습니다\n"
 #: lib/rpmchecksig.c:132
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
-msgstr "%s: RPM v1.0 에 서명할 수 없습니다\n"
+msgstr "%s: RPM v1.0 은 서명할 수 없습니다\n"
 
 #: lib/rpmchecksig.c:136
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
-msgstr "%s: RPM v2.0 에 재-서명할 수 없습니다\n"
+msgstr "%s: RPM v2.0 은 재-서명할 수 없습니다\n"
 
 #: lib/rpmchecksig.c:145 lib/rpmchecksig.c:276
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
-msgstr "%s: rrpmReadSignature 에 실패했습니다\n"
+msgstr "%s: rpmReadSignature 에 실패했습니다\n"
 
 #: lib/rpmchecksig.c:149 lib/rpmchecksig.c:281
 #, c-format
