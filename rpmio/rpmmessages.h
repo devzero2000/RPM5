@@ -31,6 +31,10 @@
 #define	rpmIsDebug()		\
 	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMMESS_DEBUG ))
 
+/*@-redef@*/ /* LCL: ??? */
+typedef /*@abstract@*/ const void * fnpyKey;
+/*@=redef@*/
+
 /**
  */
 typedef enum rpmCallbackType_e {
@@ -56,14 +60,15 @@ extern "C" {
 
 /**
  */
-typedef /*@only@*/ /*@null@*/
-    void * (*rpmCallbackFunction)
+typedef void * (*rpmCallbackFunction)
 		(/*@null@*/ const void * h, 
 		const rpmCallbackType what, 
 		const unsigned long amount, 
 		const unsigned long total,
-		/*@null@*/ const void * pkgKey,
-		/*@null@*/ rpmCallbackData data);
+		/*@null@*/ fnpyKey key,
+		/*@null@*/ rpmCallbackData data)
+	/*@globals internalState@*/
+	/*@modifies internalState@*/;
 
 /**
  */

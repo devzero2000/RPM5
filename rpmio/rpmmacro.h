@@ -18,9 +18,27 @@ typedef /*@abstract@*/ struct MacroEntry_s {
 /*! The structure used to store the set of macros in a context. */
 typedef /*@abstract@*/ struct MacroContext_s {
 /*@owned@*//*@null@*/ MacroEntry *macroTable;	/*!< Macro entry table for context. */
-    int		macrosAllocated;/*!< No. of allocated macros. */
-    int		firstFree;	/*!< No. of macros. */
+    int	macrosAllocated;/*!< No. of allocated macros. */
+    int	firstFree;	/*!< No. of macros. */
 } * MacroContext;
+
+/*@-redecl@*/
+/*@checked@*/
+extern MacroContext rpmGlobalMacroContext;
+
+/*@checked@*/
+extern MacroContext rpmCLIMacroContext;
+/*@=redecl@*/
+
+/** \ingroup rpmrc
+ * List of macro files to read when configuring rpm.
+ * This is a colon separated list of files. URI's are permitted as well,
+ * identified by the token '://', so file paths must not begin with '//'.
+ */
+/*@-redecl@*/
+/*@observer@*/ /*@checked@*/
+extern const char * macrofiles;
+/*@=redecl@*/
 
 /**
  * Markers for sources of macros added throughout rpm.
@@ -46,6 +64,8 @@ extern "C" {
  */
 void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
 					/*@null@*/ FILE * fp)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
@@ -55,13 +75,15 @@ void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
  * @param spec		cookie (unused)
  * @param mc		macro context (NULL uses global context).
  * @retval sbuf		input macro to expand, output expansion
- * @param sbuflen	size of buffer
+ * @param slen		size of buffer
  * @return		0 on success
  */
 int	expandMacros	(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
 				/*@in@*/ /*@out@*/ char * sbuf,
-				size_t sbuflen)
-	/*@modifies *sbuf, internalState @*/;
+				size_t slen)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
+	/*@modifies *sbuf, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Add macro to context.
@@ -75,7 +97,8 @@ int	expandMacros	(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
 void	addMacro	(/*@null@*/ MacroContext mc, const char * n,
 				/*@null@*/ const char * o,
 				/*@null@*/ const char * b, int level)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
  * Delete macro from context.
@@ -83,7 +106,8 @@ void	addMacro	(/*@null@*/ MacroContext mc, const char * n,
  * @param n		macro name
  */
 void	delMacro	(/*@null@*/ MacroContext mc, const char * n)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
  * Define macro in context.
@@ -94,30 +118,35 @@ void	delMacro	(/*@null@*/ MacroContext mc, const char * n)
  */
 int	rpmDefineMacro	(/*@null@*/ MacroContext mc, const char * macro,
 				int level)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
- * Load macros from context into global context.
+ * Load macros from specific context into global context.
  * @param mc		macro context (NULL does nothing).
  * @param level		macro recursion level (0 is entry API)
  */
 void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /**
- * Initialize macro context from set of macrofile(s).
- * @param mc		macro context (NULL uses global context).
+ * Initialize global macro context from set of macrofile(s).
+ * @param mc		(unused)
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
 void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)
-	/*@modifies mc, internalState, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
+		fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Destroy macro context.
  * @param mc		macro context (NULL uses global context).
  */
 void	rpmFreeMacros	(/*@null@*/ MacroContext mc)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 typedef enum rpmCompressedMagic_e {
     COMPRESSED_NOT		= 0,	/*!< not compressed */
@@ -134,6 +163,7 @@ typedef enum rpmCompressedMagic_e {
  */
 int	isCompressed	(const char * file,
 				/*@out@*/ rpmCompressedMagic * compressed)
+	/*@globals fileSystem@*/
 	/*@modifies *compressed, fileSystem @*/;
 
 /**
@@ -141,8 +171,9 @@ int	isCompressed	(const char * file,
  * @param arg		macro(s) to expand (NULL terminates list)
  * @return		macro expansion (malloc'ed)
  */
-char *	rpmExpand	(/*@null@*/ const char * arg, ...)
-	/*@*/;
+char * rpmExpand	(/*@null@*/ const char * arg, ...)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /**
  * Canonicalize file path.
@@ -157,26 +188,28 @@ char *	rpmExpand	(/*@null@*/ const char * arg, ...)
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */
-/*@-redecl@*/
+/*@-redecl@*/ /* LCL: shrug */
 const char * rpmGetPath	(/*@null@*/ const char * path, ...)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 /*@=redecl@*/
 
 /**
  * Merge 3 args into path, any or all of which may be a url.
  * The leading part of the first URL encountered is used
- * for the result, other URL's are discarded, permitting
- * a primitive form of inheiritance.
- * @param root		root URL (often path to chroot, or NULL)
- * @param mdir		directory URL (often a directory, or NULL)
- * @param file		file URL (often a file, or NULL)
+ * for the result, other URL prefixes are discarded, permitting
+ * a primitive form of URL inheiritance.
+ * @param urlroot	root URL (often path to chroot, or NULL)
+ * @param urlmdir	directory URL (often a directory, or NULL)
+ * @param urlfile	file URL (often a file, or NULL)
  * @return		expanded, merged, canonicalized path (malloc'ed)
  */
-/*@-redecl@*/
-const char * rpmGenPath	(/*@null@*/ const char * root,
-			/*@null@*/ const char * mdir,
-			/*@null@*/ const char * file)
-	/*@*/;
+/*@-redecl@*/ /* LCL: shrug */
+const char * rpmGenPath	(/*@null@*/ const char * urlroot,
+			/*@null@*/ const char * urlmdir,
+			/*@null@*/ const char * urlfile)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 /*@=redecl@*/
 
 /**
@@ -187,7 +220,8 @@ const char * rpmGenPath	(/*@null@*/ const char * root,
  * @return		numeric value
  */
 int	rpmExpandNumeric (const char * arg)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 #ifdef __cplusplus
 }

@@ -14,6 +14,11 @@
 
 +checks			# lclint level
 
+# --- splint is pickier yet
+-compdestroy
+-mustdefine
+-shiftimplementation	# <ctype.h> pain
+
 # --- lclint-3.0.0.15 is pickier than lclint-2.5r
 #-formatconst
 #-compdef

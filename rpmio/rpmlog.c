@@ -21,7 +21,9 @@
 
 /*@access rpmlogRec @*/
 
+/*@unchecked@*/
 static int nrecs = 0;
+/*@unchecked@*/
 static /*@only@*/ /*@null@*/ rpmlogRec recs = NULL;
 
 /**
@@ -30,7 +32,7 @@ static /*@only@*/ /*@null@*/ rpmlogRec recs = NULL;
  * @retval		NULL always
  */
 /*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies p@*/
 {
     if (p != NULL)	free((void *)p);
     return NULL;
@@ -56,6 +58,7 @@ const char * rpmlogMessage(void)
     return _("(no error)");
 }
 
+/*@-modfilesys@*/
 void rpmlogPrint(FILE *f)
 {
     int i;
@@ -70,8 +73,11 @@ void rpmlogPrint(FILE *f)
 	    fprintf(f, "    %s", rec->message);
     }
 }
+/*@=modfilesys@*/
 
 void rpmlogClose (void)
+	/*@globals recs, nrecs @*/
+	/*@modifies recs, nrecs @*/
 {
     int i;
 
@@ -89,10 +95,15 @@ void rpmlogOpen (/*@unused@*/ const char *ident, /*@unused@*/ int option,
 {
 }
 
-static int rpmlogMask = RPMLOG_UPTO( RPMLOG_NOTICE );
-static /*@unused@*/ int rpmlogFacility = RPMLOG_USER;
+/*@unchecked@*/
+static unsigned rpmlogMask = RPMLOG_UPTO( RPMLOG_NOTICE );
+
+/*@unchecked@*/
+static /*@unused@*/ unsigned rpmlogFacility = RPMLOG_USER;
 
 int rpmlogSetMask (int mask)
+	/*@globals rpmlogMask @*/
+	/*@modifies rpmlogMask @*/
 {
     int omask = rpmlogMask;
     if (mask)
@@ -100,17 +111,21 @@ int rpmlogSetMask (int mask)
     return omask;
 }
 
+/*@unchecked@*/
 static /*@null@*/ rpmlogCallback _rpmlogCallback = NULL;
 
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
+	/*@globals _rpmlogCallback @*/
+	/*@modifies _rpmlogCallback @*/
 {
     rpmlogCallback ocb = _rpmlogCallback;
     _rpmlogCallback = cb;
     return ocb;
 }
 
-/*@-readonlytrans@*/	/* FIX: double indeirection. */
-/*@observer@*/ static char *rpmlogMsgPrefix[] = {
+/*@-readonlytrans@*/	/* FIX: double indirection. */
+/*@observer@*/ /*@unchecked@*/
+static char *rpmlogMsgPrefix[] = {
     N_("fatal error: "),/*!< RPMLOG_EMERG */
     N_("fatal error: "),/*!< RPMLOG_ALERT */
     N_("fatal error: "),/*!< RPMLOG_CRIT */
@@ -130,14 +145,16 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 }
 #endif
 
+/*@-modfilesys@*/
 /*@-compmempass@*/ /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
 /*@-nullstate@*/ /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)
-	/*@modifies internalState @*/
+	/*@globals nrecs, recs, internalState @*/
+	/*@modifies nrecs, recs, internalState @*/
 {
-    int pri = RPMLOG_PRI(code);
-    int mask = RPMLOG_MASK(pri);
-    /*@unused@*/ int fac = RPMLOG_FAC(code);
+    unsigned pri = RPMLOG_PRI(code);
+    unsigned mask = RPMLOG_MASK(pri);
+    /*@unused@*/ unsigned fac = RPMLOG_FAC(code);
     char *msgbuf, *msg;
     int msgnb = BUFSIZ, nb;
     FILE * msgout = stderr;
@@ -152,10 +169,10 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     while (1) {
 	va_list apc;
 	/*@-sysunrecog -usedef@*/ va_copy(apc, ap); /*@=sysunrecog =usedef@*/
-	/*@-unrecog@*/ nb = vsnprintf(msgbuf, msgnb, fmt, apc); /*@=unrecog@*/
+	nb = vsnprintf(msgbuf, msgnb, fmt, apc);
 	if (nb > -1 && nb < msgnb)
 	    break;
-	if (nb > -1)		/* glibc 2.1 */
+	if (nb > -1)		/* glibc 2.1 (and later) */
 	    msgnb = nb+1;
 	else			/* glibc 2.0 */
 	    msgnb *= 2;
@@ -165,6 +182,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     msg = msgbuf;
 
     /* Save copy of all messages at warning (or below == "more important"). */
+    /*@-branchstate@*/
     if (pri <= RPMLOG_WARNING) {
 
 	if (recs == NULL)
@@ -179,10 +197,13 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	++nrecs;
 
 	if (_rpmlogCallback) {
+	    /*@-noeffectuncon@*/ /* FIX: useless callback */
 	    _rpmlogCallback();
+	    /*@=noeffectuncon@*/
 	    return;	/* XXX Preserve legacy rpmError behavior. */
 	}
     }
+    /*@=branchstate@*/
 
     /* rpmMessage behavior */
 
@@ -211,13 +232,16 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	exit(EXIT_FAILURE);
 }
 /*@=compmempass =nullstate@*/
+/*@=modfilesys@*/
 
 void rpmlog (int code, const char *fmt, ...)
 {
     va_list ap;
 
     va_start(ap, fmt);
+    /*@-internalglobs@*/ /* FIX: shrug */
     vrpmlog(code, fmt, ap);
+    /*@=internalglobs@*/
     va_end(ap);
 }
 

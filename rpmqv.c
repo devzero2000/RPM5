@@ -88,7 +88,6 @@ extern int _url_debug;
 extern int rpmFLAGS;
 /*@=varuse@*/
 
-extern struct MacroContext_s rpmCLIMacroContext;
 /*@=exportheadervar@*/
 
 /* options for all executables */
@@ -550,7 +549,7 @@ int main(int argc, const char ** argv)
 	case GETOPT_DEFINEMACRO:
 	    if (optArg) {
 		(void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
-		(void) rpmDefineMacro(&rpmCLIMacroContext, optArg,RMIL_CMDLINE);
+		(void) rpmDefineMacro(rpmCLIMacroContext, optArg,RMIL_CMDLINE);
 	    }
 	    noUsageMsg = 1;
 	    break;
@@ -1161,7 +1160,7 @@ exit:
 #endif	/* IAM_RPMBT || IAM_RPMK */
     optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
-    rpmFreeMacros(&rpmCLIMacroContext);
+    rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
 
     if (pipeChild) {

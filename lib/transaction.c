@@ -4,13 +4,12 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "psm.h"
+
 #include "fprint.h"
 #include "rpmhash.h"
-#include "md5.h"
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 #include "rpmdb.h"
 
@@ -787,7 +786,7 @@ static fileAction decideFileFate(const char * dirName,
 			const char * baseName, short dbMode,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
-			int brokenMd5, rpmtransFlags transFlags)
+			rpmtransFlags transFlags)
 	/*@*/
 {
     char buffer[1024];
@@ -836,11 +835,7 @@ static fileAction decideFileFate(const char * dirName,
     }
 
     if (dbWhat == REG) {
-	if (brokenMd5)
-	    rc = mdfileBroken(filespec, buffer);
-	else
-	    rc = mdfile(filespec, buffer);
-
+	rc = domd5(filespec, buffer, 0);
 	if (rc) {
 	    /* assume the file has been removed, don't freak */
 	    return FA_CREATE;
@@ -976,7 +971,6 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum],
 			fi->fflags[fileNum],
-			!headerIsEntry(h, RPMTAG_RPMVERSION),
 			transFlags);
 	}
 

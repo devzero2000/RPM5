@@ -15,9 +15,9 @@
 #include <time.h>
 
 #include "Python.h"
+#include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 #include "misc.h"
-#include "rpmio_internal.h"
 #include "header_internal.h"
 #include "upgrade.h"
 
@@ -485,7 +485,7 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args) {
 
 	headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, (void **)&uh, &uhc);
 
-	ctx = rpmDigestInit(RPMDIGEST_SHA1);
+	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
         rpmDigestUpdate(ctx, uh, uhc);
         rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 

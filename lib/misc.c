@@ -6,6 +6,7 @@
 
 static int _debug = 0;
 
+#include "rpmio_internal.h"
 #include <rpmlib.h>
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
@@ -768,4 +769,35 @@ exit:
 	(void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 		&pEVR, 1);
     }
+}
+
+int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii)
+	/*@modifies digest, fileSystem @*/
+{
+    int rc;
+    FD_t fd = Fopen(fn, "r.ufdio");
+    unsigned char buf[BUFSIZ];
+    unsigned char * md5sum = NULL;
+    size_t md5len;
+
+    if (fd == NULL || Ferror(fd)) {
+	if (fd)
+	    Fclose(fd);
+	return 1;
+    }
+
+    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+    while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	;
+    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, 1);
+
+    if (Ferror(fd))
+	rc = 1;
+    Fclose(fd);
+
+    if (!rc)
+	memcpy(digest, md5sum, md5len);
+    md5sum = _free(md5sum);
+
+    return rc;
 }

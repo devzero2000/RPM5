@@ -13,10 +13,7 @@
 
 #include "system.h"
 
-#if HAVE_ASM_BYTEORDER_H
-#include <asm/byteorder.h>
-#endif
-
+#include "rpmio_internal.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 
@@ -28,8 +25,6 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
-
-typedef	unsigned char byte;
 
 typedef int (*md5func)(const char * fn, /*@out@*/ byte * digest);
 
@@ -915,28 +910,31 @@ rpmVerifySignatureReturn
 rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
 		int count, char * result)
 {
+     rpmVerifySignatureReturn res;
+
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
-	return verifySizeSignature(file, *(int_32 *)sig, result);
-	/*@notreached@*/ break;
+	res = verifySizeSignature(file, *(int_32 *)sig, result);
+	break;
     case RPMSIGTAG_MD5:
-	return verifyMD5Signature(file, sig, result, mdbinfile);
-	/*@notreached@*/ break;
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_LEMD5_2:
-	return verifyMD5Signature(file, sig, result, mdbinfileBroken);
-	/*@notreached@*/ break;
+	res = verifyMD5Signature(file, sig, result, mdbinfile);
+	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	return verifyPGPSignature(file, sig, count, result);
-	/*@notreached@*/ break;
+	res = verifyPGPSignature(file, sig, count, result);
+	break;
     case RPMSIGTAG_GPG:
-	return verifyGPGSignature(file, sig, count, result);
-	/*@notreached@*/ break;
+	res = verifyGPGSignature(file, sig, count, result);
+	break;
+    case RPMSIGTAG_LEMD5_1:
+    case RPMSIGTAG_LEMD5_2:
+	sprintf(result, _("Broken MD5 digest: UNSUPPORTED\n"));
+	res = RPMSIG_UNKNOWN;
+	break;
     default:
 	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
-	return RPMSIG_UNKNOWN;
+	res = RPMSIG_UNKNOWN;
+	break;
     }
-    /*@notreached@*/
-    return RPMSIG_OK;
+    return res;
 }

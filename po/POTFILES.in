@@ -32,8 +32,6 @@ lib/fsm.c
 lib/header.c
 lib/header_internal.c
 lib/manifest.c
-lib/md5.c
-lib/md5sum.c
 lib/misc.c
 lib/package.c
 lib/poptBT.c
@@ -60,12 +58,12 @@ rpmdb/fprint.c
 rpmdb/poptDB.c
 rpmdb/rpmhash.c
 rpmdb/rpmdb.c
-rpmio/base64.c
 rpmio/digest.c
 rpmio/macro.c
 rpmio/rpmio.c
 rpmio/rpmlog.c
 rpmio/rpmmalloc.c
+rpmio/rpmpgp.c
 rpmio/rpmrpc.c
 rpmio/ugid.c
 rpmio/url.c

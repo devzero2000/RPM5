@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-17 11:27-0500\n"
+"POT-Creation-Date: 2002-01-19 12:09-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -77,17 +77,17 @@ msgstr "Budowanie dla %s\n"
 msgid "rpm: %s\n"
 msgstr "rpm: %s\n"
 
-#: rpm.c:238 rpmqv.c:224
+#: rpm.c:238 rpmqv.c:223
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM wersja %s\n"
 
-#: rpm.c:242 rpmqv.c:230
+#: rpm.c:242 rpmqv.c:229
 #, fuzzy
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr "Copyright (C) 1998 - Red Hat Software"
 
-#: rpm.c:243 rpmqv.c:231
+#: rpm.c:243 rpmqv.c:230
 #, fuzzy
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "Program mo¿e byæ swobodnie rozpowszechniany na warunkach licencji GNU"
@@ -318,7 +318,7 @@ msgstr "u¿ycie:"
 msgid "print this message"
 msgstr "wy¶wietl ten tekst"
 
-#: rpm.c:335 rpmqv.c:107
+#: rpm.c:335 rpmqv.c:106
 msgid "print the version of rpm being used"
 msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
 
@@ -331,7 +331,7 @@ msgstr "   wszystkie tryby pracy pozwalaj± u¿yæ nastêpuj±cych argumentów:"
 msgid "    --define '<name> <body>'"
 msgstr ""
 
-#: rpm.c:340 rpmqv.c:114
+#: rpm.c:340 rpmqv.c:113
 msgid "define macro <name> with value <body>"
 msgstr ""
 
@@ -349,7 +349,7 @@ msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
 msgid "    --pipe <cmd>          "
 msgstr "    --pipe <komenda>      "
 
-#: rpm.c:344 rpmqv.c:120
+#: rpm.c:344 rpmqv.c:119
 msgid "send stdout to <cmd>"
 msgstr "przeka¿ standartowe wyj¶cie do <komenda>"
 
@@ -362,7 +362,7 @@ msgstr "      --rcfile <plik>     "
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "u¿yj <plik> zamiast /etc/rpmrc i $HOME/.rpmrc"
 
-#: rpm.c:348 rpmqv.c:138
+#: rpm.c:348 rpmqv.c:137
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
@@ -444,7 +444,7 @@ msgstr "u¿yj <format zapytania> jako formatu nag³ówka (dotyczy -i)"
 msgid "      --root <dir>        "
 msgstr "      --root <katalog>        "
 
-#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:123
+#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:122
 msgid "use <dir> as the top level directory"
 msgstr "u¿yj <katalogu> jako katalogu najwy¿szego poziomu"
 
@@ -892,8 +892,8 @@ msgstr ""
 "samych opcji co -q)"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:617 rpmqv.c:623 rpmqv.c:629
-#: rpmqv.c:667
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:616 rpmqv.c:622 rpmqv.c:628
+#: rpmqv.c:666
 msgid "only one major mode may be specified"
 msgstr "tylko jeden g³ówny tryb pracy mo¿e byæ podany"
 
@@ -921,7 +921,7 @@ msgstr "specyfikacja przesuniêcia musi zawieraæ / po ="
 msgid "exclude paths must begin with a /"
 msgstr "¶cie¿ki wy³±czeñ musz± siê zaczynaæ od /"
 
-#: rpm.c:850 rpmqv.c:569
+#: rpm.c:850 rpmqv.c:568
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -929,103 +929,103 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:856 rpmqv.c:576
+#: rpm.c:856 rpmqv.c:575
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "B³±d wewnêtrzny w przetwarzaniu argumentu (%d) :-(\n"
 
-#: rpm.c:891 rpmqv.c:646
+#: rpm.c:891 rpmqv.c:645
 msgid "one type of query/verify may be performed at a time"
 msgstr "tylko jeden typ odpytywania/sprawdzania mo¿na wykonaæ na raz"
 
-#: rpm.c:896 rpmqv.c:650
+#: rpm.c:896 rpmqv.c:649
 msgid "unexpected query flags"
 msgstr "b³êdna konstrukcja argumentów odpytywania"
 
-#: rpm.c:899 rpmqv.c:653
+#: rpm.c:899 rpmqv.c:652
 msgid "unexpected query format"
 msgstr "b³êdna konstrukcja argumentów odpytywania"
 
-#: rpm.c:902 rpmqv.c:656
+#: rpm.c:902 rpmqv.c:655
 msgid "unexpected query source"
 msgstr "b³êdna konstrukcja argumentów odpytywania"
 
-#: rpm.c:905 rpmqv.c:700
+#: rpm.c:905 rpmqv.c:699
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "tylko instalacjê, uaktualnienie i usuwanie ¼róde³ mo¿na wymusiæ"
 
-#: rpm.c:908 rpmqv.c:702
+#: rpm.c:908 rpmqv.c:701
 msgid "files may only be relocated during package installation"
 msgstr "przesuwania plików mo¿na dokonaæ tylko w trakcie instalacji"
 
-#: rpm.c:911 rpmqv.c:705
+#: rpm.c:911 rpmqv.c:704
 msgid "only one of --prefix or --relocate may be used"
 msgstr "nie mo¿na jednocze¶nie u¿yæ --prefix i --relocate"
 
-#: rpm.c:914 rpmqv.c:708
+#: rpm.c:914 rpmqv.c:707
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate i --excludepath mo¿na u¿yæ tylko w trakcie instalacji nowych "
 "pakietów"
 
-#: rpm.c:917 rpmqv.c:711
+#: rpm.c:917 rpmqv.c:710
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix mo¿na u¿yæ tylko w trakcie instalacji nowych pakietów"
 
-#: rpm.c:920 rpmqv.c:714
+#: rpm.c:920 rpmqv.c:713
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumenty dla --prefix musz± siê rozpoczynaæ od /"
 
-#: rpm.c:923 rpmqv.c:717
+#: rpm.c:923 rpmqv.c:716
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:927 rpmqv.c:721
+#: rpm.c:927 rpmqv.c:720
 msgid "--percent may only be specified during package installation"
 msgstr "--percent mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:931 rpmqv.c:726
+#: rpm.c:931 rpmqv.c:725
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:935 rpmqv.c:730
+#: rpm.c:935 rpmqv.c:729
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:939 rpmqv.c:734
+#: rpm.c:939 rpmqv.c:733
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:943 rpmqv.c:738
+#: rpm.c:943 rpmqv.c:737
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:947 rpmqv.c:742
+#: rpm.c:947 rpmqv.c:741
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "nie mo¿na jednocze¶nie u¿yæ --excludedocs i --includedocs"
 
-#: rpm.c:951 rpmqv.c:746
+#: rpm.c:951 rpmqv.c:745
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:955 rpmqv.c:750
+#: rpm.c:955 rpmqv.c:749
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:959 rpmqv.c:755
+#: rpm.c:959 rpmqv.c:754
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:963 rpmqv.c:759
+#: rpm.c:963 rpmqv.c:758
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches mo¿na u¿yæ tylko w trakcie usuwania pakietów"
 
-#: rpm.c:967 rpmqv.c:763
+#: rpm.c:967 rpmqv.c:762
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:971 rpmqv.c:768
+#: rpm.c:971 rpmqv.c:767
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb mo¿na u¿yæ tylko w trakcie instalacji lub usuwania pakietów"
 
@@ -1043,14 +1043,14 @@ msgstr ""
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:987 rpmqv.c:778
+#: rpm.c:987 rpmqv.c:777
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb mo¿na u¿yæ tylko w trakcie instalacji lub usuwania pakietów"
 
-#: rpm.c:991 rpmqv.c:782
+#: rpm.c:991 rpmqv.c:781
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1059,14 +1059,14 @@ msgstr ""
 "--nodeps mo¿na u¿yæ tylko w trakcie budowania, instalacji, usuwania lub "
 "sprawdzania pakietów"
 
-#: rpm.c:996 rpmqv.c:787
+#: rpm.c:996 rpmqv.c:786
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test mo¿na u¿yæ tylko w trakcie instalacji, usuwania lub budowania pakietów"
 
-#: rpm.c:1000 rpmqv.c:792
+#: rpm.c:1000 rpmqv.c:791
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1074,7 +1074,7 @@ msgstr ""
 "--root (-r) mo¿na u¿yæ tylko w trakcie instalacji, usuwania, sprawdzania "
 "pakietów lub przebudowywania bazy"
 
-#: rpm.c:1012 rpmqv.c:804
+#: rpm.c:1012 rpmqv.c:803
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty dla --root (-r) musz± siê rozpoczynaæ od /"
 
@@ -1096,77 +1096,77 @@ msgid ""
 msgstr ""
 "--nomd5 mo¿na u¿yæ tylko podczas sprawdzania sygnatury i weryfkiacji pakietu"
 
-#: rpm.c:1038 rpmqv.c:825
+#: rpm.c:1038 rpmqv.c:824
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1043 rpmqv.c:830
+#: rpm.c:1043 rpmqv.c:829
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "brak dostêpu do pliku %s\n"
 
-#: rpm.c:1058 rpmqv.c:849
+#: rpm.c:1058 rpmqv.c:848
 msgid "pgp not found: "
 msgstr "nie znaleziono pgp: "
 
-#: rpm.c:1062 rpmqv.c:854
+#: rpm.c:1062 rpmqv.c:853
 msgid "Enter pass phrase: "
 msgstr "Podaj has³o: "
 
-#: rpm.c:1064 rpmqv.c:856
+#: rpm.c:1064 rpmqv.c:855
 msgid "Pass phrase check failed\n"
 msgstr "Weryfikacja has³a nieudana\n"
 
-#: rpm.c:1067 rpmqv.c:860
+#: rpm.c:1067 rpmqv.c:859
 msgid "Pass phrase is good.\n"
 msgstr "Has³o jest prawid³owe.\n"
 
-#: rpm.c:1072 rpmqv.c:865
+#: rpm.c:1072 rpmqv.c:864
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "B³êdny %%_signature spec w pliku makra.\n"
 
-#: rpm.c:1078 rpmqv.c:872
+#: rpm.c:1078 rpmqv.c:871
 msgid "--sign may only be used during package building"
 msgstr "--sign mo¿na u¿yæ tylko w trakcie budowania pakietu"
 
-#: rpm.c:1093 rpmqv.c:888
+#: rpm.c:1093 rpmqv.c:887
 msgid "exec failed\n"
 msgstr "wykonanie nie powiod³o siê\n"
 
-#: rpm.c:1116 rpmqv.c:1103
+#: rpm.c:1116 rpmqv.c:1102
 msgid "unexpected arguments to --querytags "
 msgstr "nieoczekiwane argumenty dla --querytags "
 
-#: rpm.c:1127 rpmqv.c:1112
+#: rpm.c:1127 rpmqv.c:1111
 msgid "no packages given for signature check"
 msgstr "nie podano nazwy pakietu do sprawdzenia sygnatury"
 
-#: rpm.c:1138 rpmqv.c:1121
+#: rpm.c:1138 rpmqv.c:1120
 msgid "no packages given for signing"
 msgstr "nie podano nazwy pakietu do podpisania"
 
-#: rpm.c:1154 rpmqv.c:1006
+#: rpm.c:1154 rpmqv.c:1005
 msgid "no packages given for uninstall"
 msgstr "nie podano nazw plików do usuniêcia"
 
-#: rpm.c:1243 rpmqv.c:1017
+#: rpm.c:1243 rpmqv.c:1016
 msgid "no packages given for install"
 msgstr "nie podano nazw plików do zainstalowania"
 
-#: rpm.c:1267 rpmqv.c:1066
+#: rpm.c:1267 rpmqv.c:1065
 msgid "extra arguments given for query of all packages"
 msgstr "zbyt wiele argumentów dla odpytywania wszystkich pakietów"
 
-#: rpm.c:1272 rpmqv.c:1075
+#: rpm.c:1272 rpmqv.c:1074
 msgid "no arguments given for query"
 msgstr "nie podano argumentów dla trybu zapytañ"
 
-#: rpm.c:1289 rpmqv.c:1091
+#: rpm.c:1289 rpmqv.c:1090
 msgid "extra arguments given for verify of all packages"
 msgstr "zbyt wiele argumentów dla weryfikacji wszystkich pakietów"
 
-#: rpm.c:1293 rpmqv.c:1095
+#: rpm.c:1293 rpmqv.c:1094
 msgid "no arguments given for verify"
 msgstr "nie podano argumentów dla sprawdzania"
 
@@ -1183,127 +1183,127 @@ msgstr "b³±d odczytu nag³ówka z pakietu\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s\n"
 
-#: rpmqv.c:110
+#: rpmqv.c:109
 msgid "provide less detailed output"
 msgstr ""
 
-#: rpmqv.c:112
+#: rpmqv.c:111
 msgid "provide more detailed output"
 msgstr ""
 
-#: rpmqv.c:115
+#: rpmqv.c:114
 msgid "'<name> <body>'"
 msgstr ""
 
-#: rpmqv.c:117
+#: rpmqv.c:116
 #, fuzzy
 msgid "print macro expansion of <expr>+"
 msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
 
-#: rpmqv.c:118
+#: rpmqv.c:117
 msgid "<expr>+"
 msgstr ""
 
-#: rpmqv.c:121
+#: rpmqv.c:120
 msgid "<cmd>"
 msgstr ""
 
-#: lib/poptI.c:189 rpmqv.c:124
+#: lib/poptI.c:189 rpmqv.c:123
 msgid "<dir>"
 msgstr ""
 
-#: rpmqv.c:126
+#: rpmqv.c:125
 msgid "read <file:...> instead of default macro file(s)"
 msgstr ""
 
-#: rpmqv.c:127 rpmqv.c:131 rpmqv.c:135
+#: rpmqv.c:126 rpmqv.c:130 rpmqv.c:134
 msgid "<file:...>"
 msgstr ""
 
-#: rpmqv.c:130 rpmqv.c:134
+#: rpmqv.c:129 rpmqv.c:133
 msgid "read <file:...> instead of default rpmrc file(s)"
 msgstr ""
 
-#: rpmqv.c:143
+#: rpmqv.c:142
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: rpmqv.c:146
+#: rpmqv.c:145
 msgid "debug protocol data stream"
 msgstr ""
 
-#: rpmqv.c:148
+#: rpmqv.c:147
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: rpmqv.c:150
+#: rpmqv.c:149
 msgid "debug URL cache handling"
 msgstr ""
 
-#: rpmqv.c:169
+#: rpmqv.c:168
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:172
+#: rpmqv.c:171
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:178
+#: rpmqv.c:177
 #, fuzzy
 msgid "Signature options:"
 msgstr "Rozmiar sygnatury: %d\n"
 
-#: rpmqv.c:184
+#: rpmqv.c:183
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:190
+#: rpmqv.c:189
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmqv.c:196
+#: rpmqv.c:195
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:201
+#: rpmqv.c:200
 msgid "Common options for all rpm modes:"
 msgstr ""
 
-#: lib/poptI.c:25 rpmqv.c:217
+#: lib/poptI.c:25 rpmqv.c:216
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: rpmqv.c:242
+#: rpmqv.c:241
 #, fuzzy, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "U¿ycie: rpm {--help}"
 
-#: rpmqv.c:570
+#: rpmqv.c:569
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "U¿yj -e lub --erase\n"
 
-#: rpmqv.c:694
+#: rpmqv.c:693
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath podano dla operacji nie u¿ywaj±cej bazy"
 
-#: rpmqv.c:773
+#: rpmqv.c:772
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb mo¿na u¿yæ tylko w trakcie instalacji lub usuwania pakietów"
 
-#: rpmqv.c:918
+#: rpmqv.c:917
 msgid "no packages files given for rebuild"
 msgstr "nie podano nazw pakietów do przebudowania"
 
-#: rpmqv.c:987
+#: rpmqv.c:986
 msgid "no spec files given for build"
 msgstr "nie podano nazw plików spec do budowania"
 
-#: rpmqv.c:989
+#: rpmqv.c:988
 msgid "no tar files given for build"
 msgstr "nie podano nazw plików tar do budowania"
 
@@ -1712,7 +1712,7 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s\n"
 
-#: build/pack.c:571 lib/psm.c:1525
+#: build/pack.c:571 lib/psm.c:1526
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s"
@@ -1742,7 +1742,7 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s"
 
-#: build/pack.c:651 lib/psm.c:1784
+#: build/pack.c:651 lib/psm.c:1785
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -2106,60 +2106,60 @@ msgstr "Nie mo¿na budowaæ na takie architektury"
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie ma %%description: %s"
 
-#: build/spec.c:228
+#: build/spec.c:224
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "linia %d: B³êdny numer: %s"
 
-#: build/spec.c:234
+#: build/spec.c:230
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "linia %d: b³êdny numer no%s: %d"
 
-#: build/spec.c:293
+#: build/spec.c:289
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "linia %d: B³êdny numer %s: %s\n"
 
-#: lib/cpio.c:187
+#: lib/cpio.c:186
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(b³±d 0x%x)"
 
-#: lib/cpio.c:190
+#: lib/cpio.c:189
 msgid "Bad magic"
 msgstr "B³êdny magic"
 
-#: lib/cpio.c:191
+#: lib/cpio.c:190
 msgid "Bad/unreadable  header"
 msgstr "B³êdny/nieczytelny nag³ówek"
 
-#: lib/cpio.c:212
+#: lib/cpio.c:211
 msgid "Header size too big"
 msgstr "Rozmiar nag³ówka jest zbyt du¿y"
 
-#: lib/cpio.c:213
+#: lib/cpio.c:212
 msgid "Unknown file type"
 msgstr "Nieznany typ pliku"
 
-#: lib/cpio.c:214
+#: lib/cpio.c:213
 #, fuzzy
 msgid "Missing hard link(s)"
 msgstr "Brak twardego dowi±zania"
 
-#: lib/cpio.c:215
+#: lib/cpio.c:214
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:216
+#: lib/cpio.c:215
 msgid "Internal error"
 msgstr "B³±d wewnêtrzny"
 
-#: lib/cpio.c:217
+#: lib/cpio.c:216
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:226
+#: lib/cpio.c:225
 msgid " failed - "
 msgstr " nie powiod³o siê -"
 
@@ -2300,7 +2300,7 @@ msgstr "stat nie powiod³o siê %s: %s"
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/fs.c:153 rpmio/url.c:477
+#: lib/fs.c:153 rpmio/url.c:509
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
@@ -2360,7 +2360,7 @@ msgstr "ostrze¿enie: %s utworzony jako %s"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
 
-#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:402
+#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:403
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ danych %d nie jest obs³ugiwany\n"
@@ -2440,7 +2440,7 @@ msgstr "spodziewany | na koñcu wyra¿enia"
 msgid "(unknown type)"
 msgstr "(nieznany typ)"
 
-#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
+#: lib/misc.c:230 lib/misc.c:235 lib/misc.c:241
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "b³±d w tworzeniu pliku tymczasowego %s"
@@ -2948,76 +2948,76 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s-%s-%s"
 
-#: lib/psm.c:596
+#: lib/psm.c:597
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "nie mo¿na utworzyæ %s"
 
-#: lib/psm.c:602
+#: lib/psm.c:603
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nie mo¿na zapisaæ do %s"
 
-#: lib/psm.c:640
+#: lib/psm.c:641
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "spodziewany pakiet ¼ród³owy a nie binarny"
 
-#: lib/psm.c:747
+#: lib/psm.c:748
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "pakiet ¼ród³owy nie zawiera pliku .spec"
 
-#: lib/psm.c:1005
+#: lib/psm.c:1006
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "wykonanie skryptu nie powiod³o siê"
 
-#: lib/psm.c:1012
+#: lib/psm.c:1013
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "wykonanie skryptu nie powiod³o siê"
 
-#: lib/psm.c:1330
+#: lib/psm.c:1331
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "pakiet: %s-%s-%s test plików = %d\n"
 
-#: lib/psm.c:1447
+#: lib/psm.c:1448
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1562
+#: lib/psm.c:1563
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root"
 
-#: lib/psm.c:1571
+#: lib/psm.c:1572
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - u¿yto grupy root"
 
-#: lib/psm.c:1610
+#: lib/psm.c:1611
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozpakowanie archiwum nie powiod³o siê %s%s: %s"
 
-#: lib/psm.c:1611
+#: lib/psm.c:1612
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:1792
+#: lib/psm.c:1793
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
 
-#: lib/psm.c:1795
+#: lib/psm.c:1796
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê"
 
-#: lib/psm.c:1891
+#: lib/psm.c:1892
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "uruchamianie skryptu postinstall (je¶li istnieje)\n"
@@ -3423,189 +3423,193 @@ msgstr "Nieznany system: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Skontaktuj siê, proszê, z rpm-list@redhat.com\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr "plik nieregularny -- sprawdzanie rozmiaru pominiête\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:130
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:139
+#: lib/signature.c:134
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Rozmiar sygnatury: %d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:154
 msgid "No signature\n"
 msgstr "Brak sygnatury\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 msgid "Old PGP signature\n"
 msgstr "Stara sygnatura PGP\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:169
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Stara (tylko wewnêtrzna) sygnatura! Sk±d Ty to wzi±³e¶!?"
 
-#: lib/signature.c:230
+#: lib/signature.c:225
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Rozmiar sygnatury: %d\n"
 
-#: lib/signature.c:300 lib/signature.c:392 lib/signature.c:638
-#: lib/signature.c:738 lib/signature.c:810 lib/signature.c:843
+#: lib/signature.c:295 lib/signature.c:387 lib/signature.c:633
+#: lib/signature.c:733 lib/signature.c:805 lib/signature.c:838
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Nie mo¿na uruchomiæ %s"
 
-#: lib/signature.c:316
+#: lib/signature.c:311
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp nie powiod³o siê"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:323
+#: lib/signature.c:318
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "zapisanie sygnatury przez pgp nie powiod³o siê"
 
-#: lib/signature.c:328
+#: lib/signature.c:323
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "rozmiar sygnatury PGP: %d\n"
 
-#: lib/signature.c:341 lib/signature.c:434
+#: lib/signature.c:336 lib/signature.c:429
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "nie mo¿na odczytaæ sygnatury"
 
-#: lib/signature.c:346
+#: lib/signature.c:341
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Mam %d bajtów sygnatury PGP\n"
 
-#: lib/signature.c:409
+#: lib/signature.c:404
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg nie powiod³o siê"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:416
+#: lib/signature.c:411
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "zapisanie sygnatury przez gpg nie powiod³o siê"
 
-#: lib/signature.c:421
+#: lib/signature.c:416
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "rozmiar sygnatury GPG: %d\n"
 
-#: lib/signature.c:439
+#: lib/signature.c:434
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Mam %d bajtów sygnatury GPG\n"
 
-#: lib/signature.c:467
+#: lib/signature.c:462
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "Generowanie sygnatury: %d\n"
 
-#: lib/signature.c:473
+#: lib/signature.c:468
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "Generowanie sygnatury: %d\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:848 lib/signature.c:901
+#: lib/signature.c:843 lib/signature.c:896
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "B³êdny %%_signature spec w pliku makra.\n"
 
-#: lib/signature.c:881
+#: lib/signature.c:876
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musisz ustawiæ \"%%_gpg_name\" w pliku swego makra"
 
-#: lib/signature.c:893
+#: lib/signature.c:888
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musisz ustawiæ \"%%_pgp_name\" w pliku swego makra"
 
-#: lib/transaction.c:448
+#: lib/signature.c:931
+msgid "Broken MD5 digest: UNSUPPORTED\n"
+msgstr ""
+
+#: lib/transaction.c:447
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:452
+#: lib/transaction.c:451
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Ten OS nie jest wspierany: %s"
 
-#: lib/transaction.c:455
+#: lib/transaction.c:454
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/transaction.c:525
+#: lib/transaction.c:524
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "wy³±czanie %s\n"
 
-#: lib/transaction.c:588
+#: lib/transaction.c:587
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "wy³±czanie %s\n"
 
-#: lib/transaction.c:598
+#: lib/transaction.c:597
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/transaction.c:676
+#: lib/transaction.c:675
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/transaction.c:810
+#: lib/transaction.c:809
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pominiêty z powodu flagi missingok\n"
 
-#: lib/transaction.c:1408
+#: lib/transaction.c:1402
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/verify.c:274
+#: lib/verify.c:269
 #, fuzzy
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "pakiet nie specyfikuje ani nazwy u¿ytkownika ani list id (to nie powinno siê "
 "zdarzyæ)"
 
-#: lib/verify.c:295
+#: lib/verify.c:290
 #, fuzzy
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "pakiet nie specyfikuje ani nazwy grupy ani list id (to nie powinno siê "
 "zdarzyæ)"
 
-#: lib/verify.c:430
+#: lib/verify.c:423
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "brak    %s\n"
 
-#: lib/verify.c:523
+#: lib/verify.c:516
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Niespe³nione zale¿no¶ci dla %s-%s-%s: "
 
-#: lib/verify.c:562
+#: lib/verify.c:555
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3725,7 +3729,7 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/falloc.c:147
+#: rpmdb/falloc.c:177
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -3906,215 +3910,213 @@ msgstr "tworzenie katalogu: %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
 
-#: rpmio/macro.c:208
+#: rpmio/macro.c:228
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktywny %d pusty %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:330
+#: rpmio/macro.c:355
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(pusty)"
 
-#: rpmio/macro.c:372
+#: rpmio/macro.c:398
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(pusty)\n"
 
-#: rpmio/macro.c:593
+#: rpmio/macro.c:633
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s ma niezakoñczon± strukturê"
 
-#: rpmio/macro.c:620
+#: rpmio/macro.c:662
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%define)"
 
-#: rpmio/macro.c:626
+#: rpmio/macro.c:668
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s ma niezakoñczone opcje"
 
-#: rpmio/macro.c:631
+#: rpmio/macro.c:673
 #, fuzzy, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s nie zawiera ¿adnych poleceñ"
 
-#: rpmio/macro.c:636
+#: rpmio/macro.c:679
 #, fuzzy, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Rozwiniêcie makra %%%s nie powiod³o siê"
 
-#: rpmio/macro.c:669
+#: rpmio/macro.c:716
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)"
 
-#: rpmio/macro.c:780
+#: rpmio/macro.c:828
 #, fuzzy, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d"
 
-#: rpmio/macro.c:895
+#: rpmio/macro.c:948
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c in %s(%s)"
 
-#: rpmio/macro.c:1083
+#: rpmio/macro.c:1149
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "G³êboko¶æ(%d) rekursji wiêksza mi¿ maks(%d)"
 
-#: rpmio/macro.c:1150 rpmio/macro.c:1167
+#: rpmio/macro.c:1218 rpmio/macro.c:1235
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakoñczone %c: %s"
 
-#: rpmio/macro.c:1208
+#: rpmio/macro.c:1276
 #, fuzzy, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%"
 
-#: rpmio/macro.c:1335
+#: rpmio/macro.c:1405
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête"
 
-#: rpmio/macro.c:1411
+#: rpmio/macro.c:1481
 #, fuzzy
 msgid "Target buffer overflow\n"
 msgstr "Przepe³nienie bufora docelowego"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1600 rpmio/macro.c:1606
+#: rpmio/macro.c:1680 rpmio/macro.c:1686
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s"
 
-#: rpmio/macro.c:1609
+#: rpmio/macro.c:1689
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %d bajtów"
 
-#: rpmio/rpmio.c:599
+#: rpmio/rpmio.c:656
 msgid "Success"
 msgstr "Sukces"
 
-#: rpmio/rpmio.c:602
+#: rpmio/rpmio.c:659
 msgid "Bad server response"
 msgstr "B³êdna odpowied¼ serwera"
 
-#: rpmio/rpmio.c:605
+#: rpmio/rpmio.c:662
 #, fuzzy
 msgid "Server I/O error"
 msgstr "B³±d WE/WY(IO) serwera"
 
-#: rpmio/rpmio.c:608
+#: rpmio/rpmio.c:665
 msgid "Server timeout"
 msgstr "Przekroczony limit czasu serwera"
 
-#: rpmio/rpmio.c:611
+#: rpmio/rpmio.c:668
 msgid "Unable to lookup server host address"
 msgstr "Nie mo¿na znale¼æ adresu serwera"
 
-#: rpmio/rpmio.c:614
+#: rpmio/rpmio.c:671
 msgid "Unable to lookup server host name"
 msgstr "Nie mo¿na znale¼æ nazwy serwera"
 
-#: rpmio/rpmio.c:617
+#: rpmio/rpmio.c:674
 msgid "Failed to connect to server"
 msgstr "Po³±czenie z serwerem nie powiod³o siê"
 
-#: rpmio/rpmio.c:620
+#: rpmio/rpmio.c:677
 msgid "Failed to establish data connection to server"
 msgstr "Otwarcie transmisji danych z serwera nie powiod³o siê"
 
-#: rpmio/rpmio.c:623
+#: rpmio/rpmio.c:680
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "B³±d WE/WY(IO) na lokalnym pliku"
 
-#: rpmio/rpmio.c:626
+#: rpmio/rpmio.c:683
 msgid "Error setting remote server to passive mode"
 msgstr "B³±d: ustawienie zdalnego serwera w tryb pasywny nie powiod³o siê"
 
-#: rpmio/rpmio.c:629
+#: rpmio/rpmio.c:686
 msgid "File not found on server"
 msgstr "Plik nie zosta³ znaleziony na serwerze"
 
-#: rpmio/rpmio.c:632
+#: rpmio/rpmio.c:689
 msgid "Abort in progress"
 msgstr "Przerywanie ..."
 
-#: rpmio/rpmio.c:636
+#: rpmio/rpmio.c:693
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:1259
+#: rpmio/rpmio.c:1365
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logowanie do %s jako %s, has³o %s\n"
 
-#: rpmio/rpmlog.c:56
+#: rpmio/rpmlog.c:58
 #, fuzzy
 msgid "(no error)"
 msgstr "(b³±d 0x%x)"
 
-#. @-readonlytrans@
-#. FIX: double indeirection.
-#. @observer@
-#: rpmio/rpmlog.c:114 rpmio/rpmlog.c:115 rpmio/rpmlog.c:116
+#. !< RPMLOG_EMERG
+#: rpmio/rpmlog.c:129 rpmio/rpmlog.c:130 rpmio/rpmlog.c:131
 msgid "fatal error: "
 msgstr "fatalny b³±d: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:117
+#: rpmio/rpmlog.c:132
 msgid "error: "
 msgstr "b³±d: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:118
+#: rpmio/rpmlog.c:133
 msgid "warning: "
 msgstr "ostrze¿enie: "
 
-#: rpmio/rpmmalloc.c:14
+#: rpmio/rpmmalloc.c:15
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:103
+#: rpmio/url.c:119
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:123
+#: rpmio/url.c:139
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:151
+#: rpmio/url.c:167
 #, c-format
-msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:244
+#: rpmio/url.c:264
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Has³o dla %s@%s: "
 
-#: rpmio/url.c:269 rpmio/url.c:295
+#: rpmio/url.c:289 rpmio/url.c:315
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "b³±d: %sport musi byæ liczb±\n"
 
-#: rpmio/url.c:434
+#: rpmio/url.c:463
 msgid "url port must be a number\n"
 msgstr "port musi byæ liczb±\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:497
+#: rpmio/url.c:529
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"

@@ -9,17 +9,18 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	Perl-RPM po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
-SUBDIRS = intl po @WITH_DB_SUBDIR@ popt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
+SUBDIRS = intl po @WITH_DB_SUBDIR@ popt beecrypt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
-LIBS =
+LIBS = -lrt -lpthread
 
 myLDFLAGS = # @LDFLAGS_STATIC@
 
@@ -105,6 +106,7 @@ lclint:
 		`make -s sources -C lib` \
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` \
+		`make -s sources -C beecrypt` \
 		`make -s sources -C popt`
 
 CVSTAG = r$(subst .,-,$(VERSION))

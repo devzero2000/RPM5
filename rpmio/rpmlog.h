@@ -133,8 +133,8 @@ CODE facilitynames[] =
 /*
  * arguments to setlogmask.
  */
-#define	RPMLOG_MASK(pri) (1 << (pri))		/*!< mask for one priority */
-#define	RPMLOG_UPTO(pri) ((1 << ((pri)+1)) - 1)	/*!< all priorities through pri */
+#define	RPMLOG_MASK(pri) (1 << ((unsigned)(pri)))	/*!< mask for one priority */
+#define	RPMLOG_UPTO(pri) ((1 << (((unsigned)(pri))+1)) - 1)	/*!< all priorities through pri */
 
 /*
  * Option flags for openlog.
@@ -184,6 +184,7 @@ void rpmlogPrint(FILE *f)
  */
 /*@unused@*/
 void rpmlogClose (void)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /**
@@ -192,19 +193,21 @@ void rpmlogClose (void)
  */
 /*@unused@*/
 void rpmlogOpen (const char * ident, int option, int facility)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /**
  * Set the log mask level.
  */
 int rpmlogSetMask (int mask)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /**
  * Generate a log message using FMT string and option arguments.
  */
-/*@mayexit@*/ /*@printflike@*/ void rpmlog (int pri, const char *fmt, ...)
-	/*@modifies internalState @*/;
+/*@mayexit@*/ /*@printflike@*/ void rpmlog (int code, const char *fmt, ...)
+	/*@*/;
 
 /*@-exportlocal@*/
 /**
@@ -228,6 +231,7 @@ int rpmlogCode(void)	/*@*/;
  * Set rpmlog callback function.
  */
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 /*@=exportlocal@*/
 
@@ -236,6 +240,7 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
  * @deprecated gnorpm needs, use rpmlogSetCallback() instead.
  */
 extern rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /**

@@ -5,10 +5,9 @@
 
 #include "system.h"
 
+#include "psm.h"
 #include <rpmcli.h>
 
-#include "psm.h"
-#include "md5.h"
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
@@ -175,11 +174,7 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	if (!hge(h, RPMTAG_FILEMD5S, &mdt, (void **) &md5List, NULL))
 	    *result |= RPMVERIFY_MD5;
 	else {
-	    if (useBrokenMd5)
-		rc = mdfileBroken(filespec, md5sum);
-	    else
-		rc = mdfile(filespec, md5sum);
-
+	    rc = domd5(filespec, md5sum, 1);
 	    if (rc)
 		*result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	    else if (strcmp(md5sum, md5List[filenum]))
@@ -344,7 +339,6 @@ int rpmVerifyDigest(Header h)
     int_32 uhc;
     const char * hdigest;
     rpmTagType hdt;
-    int flags = RPMDIGEST_SHA1;
     int ec = 0;		/* assume no problems */
 
     /* Retrieve header digest. */
@@ -352,10 +346,9 @@ int rpmVerifyDigest(Header h)
     &&	!hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
     {
 	if (hge(h, RPMTAG_BADSHA1HEADER, &hdt, (void **) &hdigest, NULL))
-	    flags |= (RPMDIGEST_REVERSE|RPMDIGEST_BCSWAP);
-	else
 	    return 0;
     }
+
     /* Regenerate original header. */
     if (!hge(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	return 0;
@@ -364,12 +357,12 @@ int rpmVerifyDigest(Header h)
 	return 0;
 
     /* Compute header digest. */
-    {	DIGEST_CTX ctx = rpmDigestInit(flags);
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	const char * digest;
 	size_t digestlen;
 
-	rpmDigestUpdate(ctx, uh, uhc);
-	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
+	(void) rpmDigestUpdate(ctx, uh, uhc);
+	(void) rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
 	/* XXX can't happen: report NULL malloc return as a digest failure. */
 	ec = (digest == NULL || strcmp(hdigest, digest)) ? 1 : 0;

@@ -1,18 +1,10 @@
+/*@-type@*/ /* LCL: function typedefs */
 /** \ingroup rpmio
  * \file rpmio/rpmio.c
  */
 
 #include "system.h"
 #include <stdarg.h>
-
-#ifdef	__LCLINT__
-/*@-incondefs@*/
-typedef	unsigned int		uint32_t;
-/*@=incondefs@*/
-#define	INADDR_ANY		((uint32_t) 0x00000000)
-#define	IPPROTO_IP		0
-
-#else	/* __LCLINT__ */
 
 #if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
@@ -23,6 +15,18 @@ typedef	unsigned int		uint32_t;
 
 #if HAVE_NETINET_IN_SYSTM_H
 # include <sys/types.h>
+
+#if defined(__LCLINT__)
+/*@-redef@*/ /* FIX: rpmdb/db3.c also declares */
+typedef unsigned int u_int32_t;
+typedef unsigned short u_int16_t;
+typedef unsigned char u_int8_t;
+/*@-incondefs@*/        /* LCLint 3.0.0.15 */
+typedef int int32_t;
+/*@=incondefs@*/
+/*@=redef@*/
+#endif
+
 # include <netinet/in_systm.h>
 #endif
 
@@ -30,9 +34,8 @@ typedef	unsigned int		uint32_t;
 #define	_USE_LIBIO	1
 #endif
 
-#endif	/* __LCLINT__ */
-
 #if !defined(HAVE_HERRNO) && defined(__hpux) /* XXX HP-UX w/o -D_XOPEN_SOURCE needs */
+/*@unchecked@*/
 extern int h_errno;
 #endif
 
@@ -45,6 +48,7 @@ extern int h_errno;
 
 #if !defined(HAVE_INET_ATON)
 static int inet_aton(const char *cp, struct in_addr *inp)
+	/*@modifies *inp @*/
 {
     long addr;
 
@@ -87,6 +91,9 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 
 #define	fdGetFILE(_fd)	((FILE *)fdGetFp(_fd))
 
+/**
+ */
+/*@unchecked@*/
 #if _USE_LIBIO
 int noLibio = 0;
 #else
@@ -94,10 +101,25 @@ int noLibio = 1;
 #endif
 
 #define TIMEOUT_SECS 60
+
+/**
+ */
+/*@unchecked@*/
 static int ftpTimeoutSecs = TIMEOUT_SECS;
+
+/**
+ */
+/*@unchecked@*/
 static int httpTimeoutSecs = TIMEOUT_SECS;
 
+/**
+ */
+/*@unchecked@*/
 int _ftp_debug = 0;
+
+/**
+ */
+/*@unchecked@*/
 int _rpmio_debug = 0;
 
 /**
@@ -106,7 +128,7 @@ int _rpmio_debug = 0;
  * @retval		NULL always
  */
 /*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p)
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 	/*@modifies p@*/
 {
     if (p != NULL)	free((void *)p);
@@ -115,8 +137,9 @@ _free(/*@only@*/ /*@null@*/ const void * p)
 
 /* =============================================================== */
 
+/*@-modfilesys@*/
 static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     static char buf[BUFSIZ];
     char *be = buf;
@@ -175,6 +198,7 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
     }
     return buf;
 }
+/*@=modfilesys@*/
 
 /* =============================================================== */
 off_t fdSize(FD_t fd)
@@ -211,7 +235,9 @@ FD_t fdDup(int fdno)
 	return NULL;
     fd = fdNew("open (fdDup)");
     fdSetFdno(fd, nfdno);
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
+/*@=modfilesys@*/
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
@@ -235,7 +261,9 @@ FILE *fdFdopen(void * cookie, const char *fmode)
     fdno = fdFileno(fd);
     if (fdno < 0) return NULL;
     fp = fdopen(fdno, fmode);
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie, fmode, fdno, fp, fileno(fp)));
+/*@=modfilesys@*/
     fd = fdFree(fd, "open (fdFdopen)");
     return fp;
 }
@@ -248,9 +276,11 @@ DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie,
 #endif
 
 /* =============================================================== */
+/*@-modfilesys@*/
+/*@-mustmod@*/ /* FIX: cookie is modified */
 static inline /*@null@*/ FD_t XfdLink(void * cookie, const char * msg,
 		const char * file, unsigned line)
-	/*@modifies internalState @*/
+	/*@modifies *cookie @*/
 {
     FD_t fd;
 if (cookie == NULL)
@@ -264,11 +294,16 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
     }
     return fd;
 }
+/*@=mustmod@*/
+/*@=modfilesys@*/
 
+/*@-modfilesys@*/
 static inline /*@null@*/ FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 		const char *file, unsigned line)
 	/*@modifies fd @*/
 {
+	int i;
+
 if (fd == NULL)
 DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, FDNREFS(fd), msg, file, line));
     FDSANE(fd);
@@ -277,17 +312,25 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	if (--fd->nrefs > 0)
 	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 	fd->stats = _free(fd->stats);
-	fd->digest = _free(fd->digest);
+	for (i = fd->ndigests - 1; i >= 0; i--) {
+	    FDDIGEST_t fddig = fd->digests + i;
+	    if (fddig->hashctx == NULL)
+		continue;
+	    (void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
+	    fddig->hashctx = NULL;
+	}
+	fd->ndigests = 0;
 	/*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
     }
     return NULL;
 }
+/*@=modfilesys@*/
 
 static inline /*@null@*/ FD_t XfdNew(const char * msg,
 		const char * file, unsigned line)
 	/*@*/
 {
-    FD_t fd = (FD_t) xmalloc(sizeof(struct _FD_s));
+    FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
 	return NULL;
     fd->nrefs = 0;
@@ -311,7 +354,10 @@ static inline /*@null@*/ FD_t XfdNew(const char * msg,
     fd->syserrno = 0;
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
-    fd->digest = NULL;
+
+    fd->ndigests = 0;
+    memset(fd->digests, 0, sizeof(fd->digests));
+
     (void) gettimeofday(&fd->stats->create, NULL);
     fd->stats->begin = fd->stats->create;	/* structure assignment */
 
@@ -336,9 +382,11 @@ ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->digest && rc > 0) rpmDigestUpdate(fd->digest, buf, rc);
+    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
 
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+/*@=modfilesys@*/
 
     return rc;
 }
@@ -353,7 +401,7 @@ ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
 
     if (fd->wr_chunked) {
 	char chunksize[20];
@@ -373,13 +421,16 @@ ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 	if (ec == -1)	fd->syserrno = errno;
     }
 
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+/*@=modfilesys@*/
 
     return rc;
 }
 
 static inline int fdSeek(void * cookie, _libio_pos_t pos, int whence)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 #ifdef USE_COOKIE_SEEK_POINTER
     _IO_off64_t p = *pos;
@@ -394,7 +445,9 @@ static inline int fdSeek(void * cookie, _libio_pos_t pos, int whence)
     rc = lseek(fdFileno(fd), p, whence);
     fdstat_exit(fd, FDSTAT_SEEK, rc);
 
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
+/*@=modfilesys@*/
 
     return rc;
 }
@@ -417,7 +470,9 @@ int fdClose( /*@only@*/ void * cookie)
     rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
+/*@=modfilesys@*/
 
     fd = fdFree(fd, "open (fdClose)");
     return rc;
@@ -435,7 +490,9 @@ DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned l
     fd = fdNew("open (fdOpen)");
     fdSetFdno(fd, fdno);
     fd->flags = flags;
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
+/*@=modfilesys@*/
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
@@ -478,10 +535,10 @@ fprintf(stderr, "*** fdWritable fdno %d rc %d %s\n", fdno, rc, strerror(errno));
 	    switch (errno) {
 	    case EINTR:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
 		return rc;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 	}
 	return rc;
@@ -516,10 +573,10 @@ int fdReadable(FD_t fd, int secs)
 	    switch (errno) {
 	    case EINTR:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
 		return rc;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 	}
 	return rc;
@@ -548,13 +605,13 @@ int fdFgets(FD_t fd, char * buf, size_t len)
 	case -1:	/* error */
 	    ec = -1;
 	    continue;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case  0:	/* timeout */
 	    ec = -1;
 	    continue;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to read */
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	errno = 0;
@@ -568,9 +625,9 @@ int fdFgets(FD_t fd, char * buf, size_t len)
 	    switch (errno) {
 	    case EWOULDBLOCK:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 if (_rpmio_debug)
 fprintf(stderr, "*** read: fd %p rc %d errno %d %s \"%s\"\n", fd, rc, errno, strerror(errno), buf);
@@ -640,6 +697,7 @@ const char *const ftpStrerror(int errorNumber) {
 const char *urlStrerror(const char *url)
 {
     const char *retstr;
+    /*@-branchstate@*/
     switch (urlIsURL(url)) {
     case URL_IS_FTP:
     case URL_IS_HTTP:
@@ -654,18 +712,21 @@ const char *urlStrerror(const char *url)
 	retstr = strerror(errno);
 	break;
     }
+    /*@=branchstate@*/
     return retstr;
 }
 
 #if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
 static int mygethostbyname(const char * host,
 		/*@out@*/ struct in_addr * address)
-	/*@modifies *address, fileSystem @*/
+	/*@modifies *address @*/
 {
     struct hostent * hostinfo;
 
     /*@-unrecog -multithreaded @*/
+    /*@-globs@*/ /* FIX: h_errno access */
     hostinfo = gethostbyname(host);
+    /*@=globs@*/
     /*@=unrecog =multithreaded @*/
     if (!hostinfo) return 1;
 
@@ -676,23 +737,31 @@ static int mygethostbyname(const char * host,
 }
 #endif
 
+/*@-compdef@*/	/* FIX: address->s_addr undefined. */
 static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
-	/*@modifies *address, fileSystem @*/
+	/*@globals errno @*/
+	/*@modifies *address, errno @*/
 {
     if (xisdigit(host[0])) {
-	if (! /*@-unrecog@*/ inet_aton(host, address) /*@=unrecog@*/ )
+	/*@-unrecog -moduncon @*/
+	if (!inet_aton(host, address))
 	    return FTPERR_BAD_HOST_ADDR;
+	/*@=unrecog =moduncon @*/
     } else {
+	/*@-globs@*/ /* FIX: h_errno access */
 	if (mygethostbyname(host, address)) {
 	    errno = /*@-unrecog@*/ h_errno /*@=unrecog@*/;
 	    return FTPERR_BAD_HOSTNAME;
 	}
+	/*@=globs@*/
     }
     
     return 0;
 }
+/*@=compdef@*/
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
+	/*@globals fileSystem @*/
 	/*@modifies ctrl, fileSystem @*/
 {
     struct sockaddr_in sin;
@@ -713,10 +782,12 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 	break;
     }
 
+    /*@-internalglobs@*/
     if (connect(fdno, (struct sockaddr *) &sin, sizeof(sin))) {
 	rc = FTPERR_FAILED_CONNECT;
 	break;
     }
+    /*@=internalglobs@*/
   } while (0);
 
     if (rc < 0)
@@ -724,7 +795,9 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 
 if (_ftp_debug)
 fprintf(stderr,"++ connect %s:%d on fdno %d\n",
-/*@-unrecog@*/ inet_ntoa(sin.sin_addr) /*@=unrecog@*/ ,
+/*@-unrecog -moduncon -evalorderuncon @*/
+inet_ntoa(sin.sin_addr)
+/*@=unrecog =moduncon =evalorderuncon @*/ ,
 (int)ntohs(sin.sin_port), fdno);
 
     fdSetFdno(ctrl, (fdno >= 0 ? fdno : -1));
@@ -741,6 +814,7 @@ errxit:
 
 static int checkResponse(void * uu, FD_t ctrl,
 		/*@out@*/ int *ecp, /*@out@*/ char ** str)
+	/*@globals fileSystem @*/
 	/*@modifies ctrl, *ecp, *str, fileSystem @*/
 {
     urlinfo u = uu;
@@ -755,8 +829,8 @@ static int checkResponse(void * uu, FD_t ctrl,
  
     URLSANE(u);
     if (u->bufAlloced == 0 || u->buf == NULL) {
-	u->bufAlloced = url_iobuf_size;
-	u->buf = xcalloc(u->bufAlloced, sizeof(char));
+	u->bufAlloced = _url_iobuf_size;
+	u->buf = xcalloc(u->bufAlloced, sizeof(u->buf[0]));
     }
     buf = u->buf;
     bufAlloced = u->bufAlloced;
@@ -819,7 +893,7 @@ fprintf(stderr, "<- %s\n", s);
 			    strncpy(errorCode, e, 3);
 			errorCode[3] = '\0';
 		    }
-		    continue;
+		    /*@innercontinue@*/ continue;
 		}
 
 		/* HTTP: look for "token: ..." */
@@ -865,7 +939,7 @@ fprintf(stderr, "<- %s\n", s);
 		    if (!strncmp(s, "Allow:", ne)) {
 		    }
 #endif
-		    continue;
+		    /*@innercontinue@*/ continue;
 		}
 
 		/* HTTP: look for "<TITLE>501 ... </TITLE>" */
@@ -902,6 +976,7 @@ fprintf(stderr, "<- %s\n", s);
 }
 
 static int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
+	/*@globals fileSystem @*/
 	/*@modifies u, *str, fileSystem @*/
 {
     int ec = 0;
@@ -927,6 +1002,7 @@ static int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
 }
 
 static int ftpCommand(urlinfo u, char ** str, ...)
+	/*@globals fileSystem @*/
 	/*@modifies u, *str, fileSystem @*/
 {
     va_list ap;
@@ -964,6 +1040,7 @@ fprintf(stderr, "-> %s", t);
 }
 
 static int ftpLogin(urlinfo u)
+	/*@globals fileSystem @*/
 	/*@modifies u, fileSystem @*/
 {
     const char * host;
@@ -982,9 +1059,12 @@ static int ftpLogin(urlinfo u)
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = IPPORT_FTP;
 
+    /*@-branchstate@*/
     if ((user = (u->proxyu ? u->proxyu : u->user)) == NULL)
 	user = "anonymous";
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if ((password = u->password) == NULL) {
  	uid_t uid = getuid();
 	struct passwd * pw;
@@ -997,9 +1077,12 @@ static int ftpLogin(urlinfo u)
 	    password = "root@";
 	}
     }
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if (fdFileno(u->ctrl) >= 0 && fdWritable(u->ctrl, 0) < 1)
 	/*@-refcounttrans@*/ (void) fdClose(u->ctrl); /*@=refcounttrans@*/
+    /*@=branchstate@*/
 
 /*@-usereleased@*/
     if (fdFileno(u->ctrl) < 0) {
@@ -1029,8 +1112,10 @@ errxit:
     fdSetSyserrno(u->ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
 errxit2:
+    /*@-branchstate@*/
     if (fdFileno(u->ctrl) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(u->ctrl); /*@=refcounttrans@*/
+    /*@=branchstate@*/
     /*@-compdef@*/
     return rc;
     /*@=compdef@*/
@@ -1120,10 +1205,12 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	if (*chptr == ',') *chptr = '.';
     }
 
+    /*@-moduncon@*/
     if (!inet_aton(passReply, &dataAddress.sin_addr)) {
 	rc = FTPERR_PASSIVE_ERROR;
 	goto errxit;
     }
+    /*@=moduncon@*/
 
     rc = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     fdSetFdno(data, (rc >= 0 ? rc : -1));
@@ -1137,13 +1224,16 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     /* XXX setsockopt SO_KEEPALIVE */
     /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
 
+    /*@-internalglobs@*/
     while (connect(fdFileno(data), (struct sockaddr *) &dataAddress, 
-	        sizeof(dataAddress)) < 0) {
+	        sizeof(dataAddress)) < 0)
+    {
 	if (errno == EINTR)
 	    continue;
 	rc = FTPERR_FAILED_DATA_CONNECT;
 	goto errxit;
     }
+    /*@=internalglobs@*/
 
 if (_ftp_debug)
 fprintf(stderr, "-> %s", cmd);
@@ -1165,13 +1255,20 @@ errxit:
     /*@-observertrans@*/
     fdSetSyserrno(u->ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
+    /*@-branchstate@*/
     if (fdFileno(data) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(data); /*@=refcounttrans@*/
+    /*@=branchstate@*/
     return rc;
 }
 
-/*@null@*/ static rpmCallbackFunction	urlNotify = NULL;
-/*@null@*/ static void *	urlNotifyData = NULL;
+/*@unchecked@*/ /*@null@*/
+static rpmCallbackFunction	urlNotify = NULL;
+
+/*@unchecked@*/ /*@null@*/
+static void *			urlNotifyData = NULL;
+
+/*@unchecked@*/
 static int			urlNotifyCount = -1;
 
 void urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount) {
@@ -1189,8 +1286,10 @@ int ufdCopy(FD_t sfd, FD_t tfd)
     int notifier = -1;
 
     if (urlNotify) {
+	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		0, 0, NULL, urlNotifyData);
+	/*@=noeffectuncon @*/
     }
     
     while (1) {
@@ -1214,25 +1313,32 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	if (urlNotify && urlNotifyCount > 0) {
 	    int n = itemsCopied/urlNotifyCount;
 	    if (n != notifier) {
+		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)(*urlNotify) (NULL, RPMCALLBACK_INST_PROGRESS,
 			itemsCopied, 0, NULL, urlNotifyData);
+		/*@=noeffectuncon @*/
 		notifier = n;
 	    }
 	}
     }
 
+/*@-modfilesys@*/
     DBGIO(sfd, (stderr, "++ copied %d bytes: %s\n", itemsCopied,
 	ftpStrerror(rc)));
+/*@=modfilesys@*/
 
     if (urlNotify) {
+	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		itemsCopied, itemsCopied, NULL, urlNotifyData);
+	/*@=noeffectuncon @*/
     }
     
     return rc;
 }
 
 static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
+	/*@globals fileSystem @*/
 	/*@modifies *uret, fileSystem @*/
 {
     urlinfo u;
@@ -1319,6 +1425,7 @@ int ftpCmd(const char * cmd, const char * url, const char * arg2)
 #endif
 
 static int ftpAbort(urlinfo u, FD_t data)
+	/*@globals fileSystem @*/
 	/*@modifies u, data, fileSystem @*/
 {
     static unsigned char ipbuf[3] = { IAC, IP, IAC };
@@ -1336,7 +1443,9 @@ static int ftpAbort(urlinfo u, FD_t data)
     }
     ctrl = u->ctrl;
 
+/*@-modfilesys@*/
     DBGIO(0, (stderr, "-> ABOR\n"));
+/*@=modfilesys@*/
 
 /*@-usereleased -compdef@*/
     if (send(fdFileno(ctrl), ipbuf, sizeof(ipbuf), MSG_OOB) != sizeof(ipbuf)) {
@@ -1379,6 +1488,7 @@ static int ftpAbort(urlinfo u, FD_t data)
 }
 
 static int ftpFileDone(urlinfo u, FD_t data)
+	/*@globals fileSystem @*/
 	/*@modifies u, data, fileSystem @*/
 {
     int rc = 0;
@@ -1396,6 +1506,7 @@ static int ftpFileDone(urlinfo u, FD_t data)
 }
 
 static int httpResp(urlinfo u, FD_t ctrl, /*@out@*/ char ** str)
+	/*@globals fileSystem @*/
 	/*@modifies ctrl, *str, fileSystem @*/
 {
     int ec = 0;
@@ -1419,6 +1530,7 @@ fprintf(stderr, "*** httpResp: rc %d ec %d\n", rc, ec);
 }
 
 static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
+	/*@globals fileSystem @*/
 	/*@modifies ctrl, fileSystem @*/
 {
     urlinfo u = ctrl->url;
@@ -1438,12 +1550,16 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
     path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
+    /*@-branchstate@*/
     if (path == NULL) path = "";
+    /*@=branchstate@*/
 
 reopen:
+    /*@-branchstate@*/
     if (fdFileno(ctrl) >= 0 && (rc = fdWritable(ctrl, 0)) < 1) {
 	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
     }
+    /*@=branchstate@*/
 
 /*@-usereleased@*/
     if (fdFileno(ctrl) < 0) {
@@ -1493,6 +1609,7 @@ fprintf(stderr, "-> %s", req);
 	goto errxit;
     }
 
+    /*@-branchstate@*/
     if (!strcmp(httpCmd, "PUT")) {
 	ctrl->wr_chunked = 1;
     } else {
@@ -1508,6 +1625,7 @@ fprintf(stderr, "-> %s", req);
 	    goto errxit;
 	}
     }
+    /*@=branchstate@*/
 
     ctrl = fdLink(ctrl, "open data (httpReq)");
     return 0;
@@ -1517,8 +1635,10 @@ errxit:
     fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
 errxit2:
+    /*@-branchstate@*/
     if (fdFileno(ctrl) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
+    /*@=branchstate@*/
     return rc;
 /*@=usereleased@*/
 }
@@ -1534,7 +1654,8 @@ void * ufdGetUrlinfo(FD_t fd)
 
 /* =============================================================== */
 static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
-	/*@modifies internalState, *buf, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     int bytesRead;
@@ -1567,9 +1688,9 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	case -1:	/* error */
 	case  0:	/* timeout */
 	    return total;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to read */
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	rc = fdRead(fd, buf + total, count - total);
@@ -1578,9 +1699,9 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	    switch (errno) {
 	    case EWOULDBLOCK:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 if (_rpmio_debug)
 fprintf(stderr, "*** read: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(errno), buf);
@@ -1597,7 +1718,8 @@ fprintf(stderr, "*** read: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(errn
 }
 
 static ssize_t ufdWrite(void * cookie, const char * buf, size_t count)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     int bytesWritten;
@@ -1631,9 +1753,9 @@ fprintf(stderr, "*** ufdWrite fd %p WRITE PAST END OF CONTENT\n", fd);
 	case -1:	/* error */
 	case  0:	/* timeout */
 	    return total;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to write */
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	rc = fdWrite(fd, buf + total, count - total);
@@ -1642,9 +1764,9 @@ fprintf(stderr, "*** ufdWrite fd %p WRITE PAST END OF CONTENT\n", fd);
 	    switch (errno) {
 	    case EWOULDBLOCK:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 if (_rpmio_debug)
 fprintf(stderr, "*** write: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(errno), buf);
@@ -1661,7 +1783,8 @@ fprintf(stderr, "*** write: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(err
 }
 
 static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
 
@@ -1679,6 +1802,7 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     return fdSeek(cookie, pos, whence);
 }
 
+/*@-branchstate@*/
 /*@-usereleased@*/	/* LCL: fd handling is tricky here. */
 int ufdClose( /*@only@*/ void * cookie)
 {
@@ -1686,6 +1810,7 @@ int ufdClose( /*@only@*/ void * cookie)
 
     UFDONLY(fd);
 
+    /*@-branchstate@*/
     if (fd->url) {
 	urlinfo u = fd->url;
 
@@ -1732,12 +1857,16 @@ int ufdClose( /*@only@*/ void * cookie)
 	    } else {
 		int rc;
 		/* XXX STOR et al require close before ftpFileDone */
+		/*@-refcounttrans@*/
 		rc = fdClose(fd);
+		/*@=refcounttrans@*/
 #if 0	/* XXX error exit from ufdOpen does not have this set */
 		assert(fd->ftpFileDoneNeeded != 0);
 #endif
+		/*@-compdef@*/ /* FIX: u->data undefined */
 		if (fd->ftpFileDoneNeeded)
 		    (void) ftpFileDone(u, fd);
+		/*@=compdef@*/
 		return rc;
 	    }
 	}
@@ -1793,11 +1922,12 @@ fprintf(stderr, "-> \r\n");
     return fdClose(fd);
 }
 /*@=usereleased@*/
+/*@=branchstate@*/
 
 /*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
-	/*@modifies *uret, fileSystem @*/
+	/*@modifies *uret @*/
 {
     urlinfo u = NULL;
     FD_t fd = NULL;
@@ -1828,14 +1958,16 @@ fprintf(stderr, "-> \r\n");
 exit:
     if (uret)
 	*uret = u;
+    /*@-refcounttrans@*/
     return fd;
+    /*@=refcounttrans@*/
 }
 /*@=nullstate@*/
 
 /*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
-	/*@modifies *uret, fileSystem @*/
+	/*@modifies *uret @*/
 {
     urlinfo u = NULL;
     FD_t fd = NULL;
@@ -1871,11 +2003,14 @@ static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 exit:
     if (uret)
 	*uret = u;
+    /*@-refcounttrans@*/
     return fd;
+    /*@=refcounttrans@*/
 }
 /*@=nullstate@*/
 
 static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     FD_t fd = NULL;
@@ -1887,6 +2022,7 @@ static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
 if (_rpmio_debug)
 fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mode);
 
+    /*@-branchstate@*/
     switch (urlType) {
     case URL_IS_FTP:
 	fd = ftpOpen(url, flags, mode, &u);
@@ -1949,6 +2085,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	}
 	break;
     }
+    /*@=branchstate@*/
 
     if (fd == NULL) return NULL;
     fd->urlType = urlType;
@@ -1956,7 +2093,9 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	(void) ufdClose(fd);
 	return NULL;
     }
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (unsigned)mode, fdbg(fd)));
+/*@=modfilesys@*/
     return fd;
 }
 
@@ -1970,8 +2109,11 @@ FDIO_t ufdio = /*@-compmempass@*/ &ufdio_s /*@=compmempass@*/ ;
 /* Support for GZIP library.
  */
 #ifdef	HAVE_ZLIB_H
+/*@-moduncon@*/
 
+/*@-noparams@*/
 #include <zlib.h>
+/*@=noparams@*/
 
 static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
 	/*@*/
@@ -1992,6 +2134,7 @@ static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
 }
 
 static /*@null@*/ FD_t gzdOpen(const char * path, const char * fmode)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     FD_t fd;
@@ -2001,12 +2144,16 @@ static /*@null@*/ FD_t gzdOpen(const char * path, const char * fmode)
     fd = fdNew("open (gzdOpen)");
     fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
     
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
+/*@=modfilesys@*/
     return fdLink(fd, "gzdOpen");
 }
 
+/*@-globuse@*/
 static /*@null@*/ FD_t gzdFdopen(void * cookie, const char *fmode)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     int fdno;
@@ -2023,28 +2170,41 @@ static /*@null@*/ FD_t gzdFdopen(void * cookie, const char *fmode)
 
     return fdLink(fd, "gzdFdopen");
 }
+/*@=globuse@*/
 
+/*@-globuse@*/
 static int gzdFlush(FD_t fd)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    return gzflush(gzdFileno(fd), Z_SYNC_FLUSH);	/* XXX W2DO? */
+    gzFile *gzfile;
+    gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;
+    return gzflush(gzfile, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
+/*@=globuse@*/
 
 /* =============================================================== */
 /*@-mustmod@*/		/* LCL: *buf is modified */
 static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
-	/*@modifies internalState, *buf, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     gzFile *gzfile;
     ssize_t rc;
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+
     gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;	/* XXX can't happen */
+
     fdstat_enter(fd, FDSTAT_READ);
+    /*@-compdef@*/ /* LCL: *buf is undefined */
     rc = gzread(gzfile, buf, count);
-    /*@-compdef@*/
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
+/*@=modfilesys@*/
     /*@=compdef@*/
     if (rc < 0) {
 	int zerror = 0;
@@ -2056,7 +2216,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->digest && rc > 0) rpmDigestUpdate(fd->digest, buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -2064,7 +2224,8 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 /*@=mustmod@*/
 
 static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     gzFile *gzfile;
@@ -2072,12 +2233,16 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
 
     gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;	/* XXX can't happen */
+
     fdstat_enter(fd, FDSTAT_WRITE);
     rc = gzwrite(gzfile, (void *)buf, count);
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
+/*@=modfilesys@*/
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -2093,7 +2258,8 @@ DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
 
 /* XXX zlib-1.0.4 has not */
 static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 #ifdef USE_COOKIE_SEEK_POINTER
     _IO_off64_t p = *pos;
@@ -2107,10 +2273,15 @@ static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
 
     if (fd == NULL) return -2;
     assert(fd->bytesRemain == -1);	/* XXX FIXME */
+
     gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;	/* XXX can't happen */
+
     fdstat_enter(fd, FDSTAT_SEEK);
     rc = gzseek(gzfile, p, whence);
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
+/*@=modfilesys@*/
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -2128,24 +2299,31 @@ DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whenc
 }
 
 static int gzdClose( /*@only@*/ void * cookie)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     gzFile *gzfile;
     int rc;
 
     gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;	/* XXX can't happen */
 
-    if (gzfile == NULL) return -2;
     fdstat_enter(fd, FDSTAT_CLOSE);
+    /*@-dependenttrans@*/
     rc = gzclose(gzfile);
+    /*@=dependenttrans@*/
 
     /* XXX TODO: preserve fd if errors */
 
     if (fd) {
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", cookie, rc, fdbg(fd)));
+/*@=modfilesys@*/
 	if (rc < 0) {
+	    /*@-usereleased@*/
 	    fd->errcookie = gzerror(gzfile, &rc);
+	    /*@=usereleased@*/
 	    if (rc == Z_ERRNO) {
 		fd->syserrno = errno;
 		fd->errcookie = strerror(fd->syserrno);
@@ -2155,11 +2333,15 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", cookie, rc, fdbg(fd)));
 	}
     }
 
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
+/*@=modfilesys@*/
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
+    /*@-branchstate@*/
     if (rc == 0)
 	fd = fdFree(fd, "open (gzdClose)");
+    /*@=branchstate@*/
     return rc;
 }
 
@@ -2169,12 +2351,14 @@ static struct FDIO_s gzdio_s = {
 };
 FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 
+/*@=moduncon@*/
 #endif	/* HAVE_ZLIB_H */
 
 /* =============================================================== */
 /* Support for BZIP2 library.
  */
 #if HAVE_BZLIB_H
+/*@-moduncon@*/
 
 #include <bzlib.h>
 
@@ -2206,7 +2390,9 @@ static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
     return rc;
 }
 
+/*@-globuse@*/
 static /*@null@*/ FD_t bzdOpen(const char * path, const char * mode)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     FD_t fd;
@@ -2217,9 +2403,12 @@ static /*@null@*/ FD_t bzdOpen(const char * path, const char * mode)
     fdPop(fd); fdPush(fd, bzdio, bzfile, -1);
     return fdLink(fd, "bzdOpen");
 }
+/*@=globuse@*/
 
+/*@-globuse@*/
 static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     int fdno;
@@ -2236,17 +2425,23 @@ static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
 
     return fdLink(fd, "bzdFdopen");
 }
+/*@=globuse@*/
 
+/*@-globuse@*/
 static int bzdFlush(FD_t fd)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     return bzflush(bzdFileno(fd));
 }
+/*@=globuse@*/
 
 /* =============================================================== */
+/*@-globuse@*/
 /*@-mustmod@*/		/* LCL: *buf is modified */
 static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
-	/*@modifies internalState, *buf, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     BZFILE *bzfile;
@@ -2266,15 +2461,18 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->digest && rc > 0) rpmDigestUpdate(fd->digest, buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
 	/*@=compdef@*/
     }
     return rc;
 }
 /*@=mustmod@*/
+/*@=globuse@*/
 
+/*@-globuse@*/
 static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     BZFILE *bzfile;
@@ -2282,7 +2480,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -2295,6 +2493,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
     }
     return rc;
 }
+/*@=globuse@*/
 
 static inline int bzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
 			/*@unused@*/ int whence)
@@ -2307,7 +2506,8 @@ static inline int bzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
 }
 
 static int bzdClose( /*@only@*/ void * cookie)
-	/*@modifies internalState, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     BZFILE *bzfile;
@@ -2317,7 +2517,9 @@ static int bzdClose( /*@only@*/ void * cookie)
 
     if (bzfile == NULL) return -2;
     fdstat_enter(fd, FDSTAT_CLOSE);
+    /*@-noeffectuncon@*/ /* FIX: check rc */
     bzclose(bzfile);
+    /*@=noeffectuncon@*/
     rc = 0;	/* XXX FIXME */
 
     /* XXX TODO: preserve fd if errors */
@@ -2331,11 +2533,15 @@ static int bzdClose( /*@only@*/ void * cookie)
 	}
     }
 
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
+/*@=modfilesys@*/
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
+    /*@-branchstate@*/
     if (rc == 0)
 	fd = fdFree(fd, "open (bzdClose)");
+    /*@=branchstate@*/
     return rc;
 }
 
@@ -2345,6 +2551,7 @@ static struct FDIO_s bzdio_s = {
 };
 FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 
+/*@=moduncon@*/
 #endif	/* HAVE_BZLIB_H */
 
 /* =============================================================== */
@@ -2386,14 +2593,16 @@ const char *Fstrerror(FD_t fd)
   ((fdGetIo(_fd) && fdGetIo(_fd)->_vec) ? fdGetIo(_fd)->_vec : NULL)
 
 size_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
-    fdio_read_function_t *_read;
+    fdio_read_function_t _read;
     int rc;
 
     FDSANE(fd);
 #ifdef __LCLINT__
     *(char *)buf = '\0';
 #endif
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, (fd ? fd : NULL), fdbg(fd)));
+/*@=modfilesys@*/
 
     if (fdGetIo(fd) == fpio) {
 	/*@+voidabstract -nullpass@*/
@@ -2412,11 +2621,13 @@ DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned
 
 size_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 {
-    fdio_write_function_t *_write;
+    fdio_write_function_t _write;
     int rc;
 
     FDSANE(fd);
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, (fd ? fd : NULL), fdbg(fd)));
+/*@=modfilesys@*/
 
     if (fdGetIo(fd) == fpio) {
 	/*@+voidabstract -nullpass@*/
@@ -2434,7 +2645,7 @@ DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigne
 }
 
 int Fseek(FD_t fd, _libio_off_t offset, int whence) {
-    fdio_seek_function_t *_seek;
+    fdio_seek_function_t _seek;
 #ifdef USE_COOKIE_SEEK_POINTER
     _IO_off64_t o64 = offset;
     _libio_pos_t pos = &o64;
@@ -2445,7 +2656,9 @@ int Fseek(FD_t fd, _libio_off_t offset, int whence) {
     long int rc;
 
     FDSANE(fd);
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Fseek(%p,%ld,%d) %s\n", fd, (long)offset, whence, fdbg(fd)));
+/*@=modfilesys@*/
 
     if (fdGetIo(fd) == fpio) {
 	FILE *fp;
@@ -2470,9 +2683,12 @@ int Fclose(FD_t fd)
     int rc = 0, ec = 0;
 
     FDSANE(fd);
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
+/*@=modfilesys@*/
 
     fd = fdLink(fd, "Fclose");
+    /*@-branchstate@*/
     while (fd->nfps >= 0) {
 	FDSTACK_t * fps = &fd->fps[fd->nfps];
 	
@@ -2516,7 +2732,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    }
 	} else {
 	    /*@-nullderef@*/
-	    fdio_close_function_t * _close = FDIOVEC(fd, close);
+	    fdio_close_function_t _close = FDIOVEC(fd, close);
 	    /*@=nullderef@*/
 	    rc = _close(fd);
 	}
@@ -2526,21 +2742,22 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    ec = rc;
 	fdPop(fd);
     }
+    /*@=branchstate@*/
     fd = fdFree(fd, "Fclose");
     return ec;
 /*@=usereleased@*/
 }
 
-/*
+/**
  * Convert stdio fmode to open(2) mode, filtering out zlib/bzlib flags.
  *	returns stdio[0] = '\0' on error.
  *
- * gzopen:	[0-9] is compession level
- * gzopen:	'f' is filtered (Z_FILTERED)
- * gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
- * bzopen:	[1-9] is block size (modulo 100K)
- * bzopen:	's' is smallmode
- * HACK:	'.' terminates, rest is type of I/O
+ * - gzopen:	[0-9] is compession level
+ * - gzopen:	'f' is filtered (Z_FILTERED)
+ * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
+ * - bzopen:	[1-9] is block size (modulo 100K)
+ * - bzopen:	's' is smallmode
+ * - HACK:	'.' terminates, rest is type of I/O
  */
 static inline void cvtfmode (const char *m,
 				/*@out@*/ char *stdio, size_t nstdio,
@@ -2574,22 +2791,26 @@ static inline void cvtfmode (const char *m,
     while ((c = *m++) != '\0') {
 	switch (c) {
 	case '.':
-	    break;
+	    /*@switchbreak@*/ break;
 	case '+':
 	    flags &= ~(O_RDONLY|O_WRONLY);
 	    flags |= O_RDWR;
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 'b':
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 'x':
 	    flags |= O_EXCL;
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
 	    if (--nother > 0) *other++ = c;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 	break;
     }
@@ -2632,16 +2853,21 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (end == NULL && other[0] == '\0')
 	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 
+    /*@-branchstate@*/
     if (end && *end) {
 	if (!strcmp(end, "fdio")) {
 	    iof = fdio;
 	} else if (!strcmp(end, "gzdio")) {
 	    iof = gzdio;
+	    /*@-internalglobs@*/
 	    fd = gzdFdopen(fd, zstdio);
+	    /*@=internalglobs@*/
 #if HAVE_BZLIB_H
 	} else if (!strcmp(end, "bzdio")) {
 	    iof = bzdio;
+	    /*@-internalglobs@*/
 	    fd = bzdFdopen(fd, zstdio);
+	    /*@=internalglobs@*/
 #endif
 	} else if (!strcmp(end, "ufdio")) {
 	    iof = ufdio;
@@ -2671,9 +2897,12 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 	    {};
 	if (*end == '\0') {
 	    iof = gzdio;
+	    /*@-internalglobs@*/
 	    fd = gzdFdopen(fd, zstdio);
+	    /*@=internalglobs@*/
 	}
     }
+    /*@=branchstate@*/
     if (iof == NULL)
 	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 
@@ -2687,10 +2916,13 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 	    ciof.seek = iof->seek;
 	    ciof.close = iof->close;
 	    fp = fopencookie(fd, stdio, ciof);
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, iof, fp));
+/*@=modfilesys@*/
 	}
 #endif
 
+	/*@-branchstate@*/
 	if (fp) {
 	    /* XXX gzdio/bzdio use fp for private data */
 	    /*@+voidabstract -nullpass@*/
@@ -2700,9 +2932,12 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
 	    /*@=voidabstract =nullpass@*/
 	    fd = fdLink(fd, "fopencookie");
 	}
+	/*@=branchstate@*/
     }
 
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
+/*@=modfilesys@*/
     /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 }
 
@@ -2721,6 +2956,7 @@ FD_t Fopen(const char *path, const char *fmode)
     if (stdio[0] == '\0')
 	return NULL;
 
+    /*@-branchstate@*/
     if (end == NULL || !strcmp(end, "fdio")) {
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
@@ -2773,9 +3009,12 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 	    return fd;
 	}
     }
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if (fd)
 	fd = Fdopen(fd, fmode);
+    /*@=branchstate@*/
     return fd;
 }
 
@@ -2828,7 +3067,9 @@ int Ferror(FD_t fd)
 	if (rc == 0 && ec)
 	    rc = ec;
     }
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Ferror(%p) rc %d %s\n", fd, rc, fdbg(fd)));
+/*@=modfilesys@*/
     return rc;
 }
 
@@ -2839,7 +3080,9 @@ int Fileno(FD_t fd)
     for (i = fd->nfps ; rc == -1 && i >= 0; i--) {
 	rc = fd->fps[i].fdno;
     }
+/*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
+/*@=modfilesys@*/
     return rc;
 }
 
@@ -2853,19 +3096,56 @@ int Fcntl(FD_t fd, int op, void *lip)
 /* Helper routines that may be generally useful.
  */
 
-/* XXX falloc.c: analogues to pread(3)/pwrite(3). */
-ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset)
+int rpmioSlurp(const char * fn, const byte ** bp, ssize_t * blenp)
 {
-    if (Fseek(fd, offset, SEEK_SET) < 0)
-	return -1;
-    return Fread(buf, sizeof(char), count, fd);
-}
+    static ssize_t blenmax = (8 * BUFSIZ);
+    ssize_t blen = 0;
+    byte * b = NULL;
+    ssize_t size;
+    FD_t fd;
+    int rc = 0;
 
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset)
-{
-    if (Fseek(fd, offset, SEEK_SET) < 0)
-	return -1;
-    return Fwrite(buf, sizeof(char), count, fd);
+    fd = Fopen(fn, "r.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rc = 2;
+	goto exit;
+    }
+
+    size = fdSize(fd);
+    blen = (size >= 0 ? size : blenmax);
+    /*@-branchstate@*/
+    if (blen) {
+	int nb;
+	b = xmalloc(blen+1);
+	b[0] = '\0';
+	nb = Fread(b, sizeof(*b), blen, fd);
+	if (Ferror(fd) || (size > 0 && nb != blen)) {
+	    rc = 1;
+	    goto exit;
+	}
+	if (blen == blenmax && nb < blen) {
+	    blen = nb;
+	    b = xrealloc(b, blen+1);
+	}
+	b[blen] = '\0';
+    }
+    /*@=branchstate@*/
+
+exit:
+    if (fd) (void) Fclose(fd);
+	
+    if (rc) {
+	if (b) free(b);
+	b = NULL;
+	blen = 0;
+    }
+
+    if (bp) *bp = b;
+    else if (b) free(b);
+
+    if (blenp) *blenp = blen;
+
+    return rc;
 }
 
 static struct FDIO_s fpio_s = {
@@ -2873,3 +3153,4 @@ static struct FDIO_s fpio_s = {
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
 FDIO_t fpio = /*@-compmempass@*/ &fpio_s /*@=compmempass@*/ ;
+/*@=type@*/

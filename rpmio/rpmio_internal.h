@@ -7,9 +7,8 @@
 
 
 #include <rpmio.h>
-#undef	fdFileno
-
 #include <rpmurl.h>
+#include <rpmpgp.h>
 
 /** \ingroup rpmio
  */
@@ -35,7 +34,7 @@ enum FDSTAT_e {
     FDSTAT_READ		= 0,	/*!< Read statistics index. */
     FDSTAT_WRITE	= 1,	/*!< Write statistics index. */
     FDSTAT_SEEK		= 2,	/*!< Seek statistics index. */
-    FDSTAT_CLOSE	= 3	/*!< Close statistics. index */
+    FDSTAT_CLOSE	= 3	/*!< Close statistics index */
 };
 
 /** \ingroup rpmio
@@ -51,30 +50,43 @@ typedef	/*@abstract@*/ struct {
  * Bit(s) to control digest operation.
  */
 typedef enum rpmDigestFlags_e {
-    RPMDIGEST_MD5	= (1 <<  0),	/*!< MD5 digest. */
-    RPMDIGEST_SHA1	= (1 <<  1),	/*!< SHA1 digest. */
-    RPMDIGEST_REVERSE	= (1 << 16),	/*!< Should bytes be reversed? */
-    RPMDIGEST_BCSWAP	= (1 << 17)	/*!< Should bit count be reversed? */
+    RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
 
-typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
+/** \ingroup rpmio
+ */
+typedef struct _FDDIGEST_s {
+    pgpHashAlgo		hashalgo;
+    DIGEST_CTX		hashctx;
+} * FDDIGEST_t;
+
+/** \ingroup rpmio
+ * Duplicate a digest context.
+ * @param ctx		existing digest context
+ * @return		duplicated digest context
+ */
+/*@only@*/
+DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
+	/*@*/;
 
 /** \ingroup rpmio
  * Initialize digest.
  * Set bit count to 0 and buffer to mysterious initialization constants.
  * @param flags		bit(s) to control digest operation
- * @return		digest private data
+ * @return		digest context
  */
-DIGEST_CTX rpmDigestInit(rpmDigestFlags flags)
+/*@only@*/
+DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	/*@*/;
 
 /** \ingroup rpmio
- * Update context to with next plain text buffer.
- * @param private	private data
+ * Update context with next plain text buffer.
+ * @param ctx		digest context
  * @param data		next data buffer
  * @param len		no. bytes of data
+ * @return		0 on success
  */
-void rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
+int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 	/*@modifies ctx @*/;
 
 /** \ingroup rpmio
@@ -82,12 +94,13 @@ void rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
  * Final wrapup - pad to 64-byte boundary with the bit pattern 
  * 1 0* (64-bit count of bits processed, MSB-first)
  *
- * @param private	private data
+ * @param ctx		digest context
  * @retval datap	address of returned digest
  * @retval lenp		address of digest length
  * @param asAscii	return digest as ascii string?
+ * @return		0 on success
  */
-void rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx,
+int rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx,
 	/*@null@*/ /*@out@*/ void ** datap,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
@@ -117,7 +130,10 @@ struct _FD_s {
 /*@observer@*/ const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
     FDSTAT_t	stats;		/* I/O statistics */
-/*@owned@*/ /*@null@*/ DIGEST_CTX digest;	/* Digest private data */
+
+    int		ndigests;
+#define	FDDIGEST_MAX	4
+    struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */
     unsigned int firstFree;	/* fadio: */
@@ -129,6 +145,7 @@ struct _FD_s {
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int _rpmio_debug;
 /*@=redecl@*/
 
@@ -142,19 +159,36 @@ extern int _rpmio_debug;
 extern "C" {
 #endif
 
+/** \ingroup rpmio
+ */
 int fdFgets(FD_t fd, char * buf, size_t len)
-	/*@modifies *buf, fd, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *buf, fd, errno, fileSystem @*/;
 
+/** \ingroup rpmio
+ */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
                 /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
+	/*@globals fileSystem @*/
 	/*@modifies *uret, fileSystem @*/;
+
+/** \ingroup rpmio
+ */
 int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
+	/*@globals fileSystem @*/
 	/*@modifies data, fileSystem @*/;
+
+/** \ingroup rpmio
+ */
 int ftpCmd(const char * cmd, const char * url, const char * arg2)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
+/** \ingroup rpmio
+ */
 int ufdClose( /*@only@*/ void * cookie)
-	/*@modified cookie, fileSystem @*/;
+	/*@globals fileSystem @*/
+	/*@modifies cookie, fileSystem @*/;
 
 /** \ingroup rpmio
  */
@@ -183,25 +217,23 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-/*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd)
+/*@exposed@*/ /*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
-    /*@+voidabstract -retexpose@*/
+    /*@+voidabstract@*/
     return ((FILE *)fd->fps[fd->nfps].fp);
-    /*@=voidabstract =retexpose@*/
+    /*@=voidabstract@*/
 }
 
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-/*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd)
+/*@exposed@*/ /*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
-    /*@-retexpose@*/
     return fd->fps[fd->nfps].fp;
-    /*@=retexpose@*/
 }
 
 /** \ingroup rpmio
@@ -331,6 +363,7 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
  */
 /*@unused@*/ static inline
 void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     int opx;
@@ -344,17 +377,17 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%03d secs\n",
 		ops->count, (long)ops->bytes,
 		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
-	    break;
+	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
 	    if (msg) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%03d secs\n",
 		ops->count, (long)ops->bytes,
 		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
-	    break;
+	    /*@switchbreak@*/ break;
 	case FDSTAT_SEEK:
-	    break;
+	    /*@switchbreak@*/ break;
 	case FDSTAT_CLOSE:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
 }
@@ -416,65 +449,69 @@ FD_t c2f(/*@null@*/ void * cookie)
 }
 
 /** \ingroup rpmio
+ * Attach digest to fd.
  */
 /*@unused@*/ static inline
-void fdInitMD5(FD_t fd, int flags)
+void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 	/*@modifies fd @*/
 {
-    if (flags) flags = RPMDIGEST_REVERSE;
-    flags |= RPMDIGEST_MD5;
-    fd->digest = rpmDigestInit(flags);
+    FDDIGEST_t fddig = fd->digests + fd->ndigests;
+    if (fddig != (fd->digests + FDDIGEST_MAX)) {
+	fd->ndigests++;
+	fddig->hashalgo = hashalgo;
+	fddig->hashctx = rpmDigestInit(hashalgo, flags);
+    }
+}
+
+/** \ingroup rpmio
+ * Update digest(s) attached to fd.
+ */
+/*@unused@*/ static inline
+void fdUpdateDigests(FD_t fd, const byte * buf, ssize_t buflen)
+	/*@modifies fd @*/
+{
+    int i;
+
+    if (buf != NULL && buflen > 0)
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	(void) rpmDigestUpdate(fddig->hashctx, buf, buflen);
+    }
 }
 
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-void fdInitSHA1(FD_t fd, int flags)
-	/*@modifies fd @*/
-{
-    if (flags) flags = RPMDIGEST_REVERSE;
-    flags |= RPMDIGEST_SHA1;
-    fd->digest = rpmDigestInit(flags);
-}
-
-/** \ingroup rpmio
- */
-/*@unused@*/ static inline
-void fdFiniMD5(FD_t fd,
+void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 		/*@null@*/ /*@out@*/ void ** datap,
 		/*@null@*/ /*@out@*/ size_t * lenp,
 		int asAscii)
 	/*@modifies fd, *datap, *lenp @*/
 {
-    if (fd->digest == NULL) {
-	if (datap) *datap = NULL;
-	if (lenp) *lenp = 0;
-	return;
-    }
-    /*@-mayaliasunique@*/
-    rpmDigestFinal(fd->digest, datap, lenp, asAscii);
-    /*@=mayaliasunique@*/
-    fd->digest = NULL;
-}
+    int imax = -1;
+    int i;
 
-/** \ingroup rpmio
- */
-/*@unused@*/ static inline
-void fdFiniSHA1(FD_t fd,
-		/*@null@*/ /*@out@*/ void ** datap,
-		/*@null@*/ /*@out@*/ size_t * lenp,
-		int asAscii)
-	/*@modifies fd, *datap, *lenp @*/
-{
-    if (fd->digest == NULL) {
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	if (i > imax) imax = i;
+	if (fddig->hashalgo != hashalgo)
+	    continue;
+	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
+	fddig->hashctx = NULL;
+	break;
+    }
+    if (i < 0) {
 	if (datap) *datap = NULL;
 	if (lenp) *lenp = 0;
 	return;
-    }
-    /*@-mayaliasunique@*/
-    rpmDigestFinal(fd->digest, datap, lenp, asAscii);
-    /*@=mayaliasunique@*/
-    fd->digest = NULL;
+    } else if (i == imax)
+	fd->ndigests = imax - 1;
+    else
+	fd->ndigests = imax;
 }
 
 /*@-shadow@*/
@@ -490,6 +527,13 @@ int fdFileno(/*@null@*/ void * cookie)
     return fd->fps[0].fdno;
 }
 /*@=shadow@*/
+
+/**
+ */
+int rpmioSlurp(const char * fn,
+                /*@out@*/ const byte ** bp, /*@out@*/ ssize_t * blenp)
+        /*@globals fileSystem @*/
+        /*@modifies *bp, *blenp, fileSystem @*/;
 
 #ifdef __cplusplus
 }

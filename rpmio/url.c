@@ -1,12 +1,11 @@
+/*@-type@*/ /* LCL: function typedefs */
 /** \ingroup rpmio
  * \file rpmio/url.c
  */
 
 #include "system.h"
 
-#if !defined(__LCLINT__)
 #include <netinet/in.h>
-#endif	/* __LCLINT__ */
 
 #include <rpmmacro.h>
 #include <rpmmessages.h>
@@ -24,20 +23,31 @@
 #define	IPPORT_HTTP	80
 #endif
 
-#define	URL_IOBUF_SIZE	4096
-int url_iobuf_size = URL_IOBUF_SIZE;
+/**
+ */
+/*@unchecked@*/
+int _url_iobuf_size = RPMURL_IOBUF_SIZE;
 
-#define	RPMURL_DEBUG_IO		0x40000000
-#define	RPMURL_DEBUG_REFS	0x20000000
-
+/**
+ */
+/*@unchecked@*/
 int _url_debug = 0;
+
 #define	URLDBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
 
 #define URLDBGIO(_f, _x)	URLDBG((_f), RPMURL_DEBUG_IO, _x)
 #define URLDBGREFS(_f, _x)	URLDBG((_f), RPMURL_DEBUG_REFS, _x)
 
-/*@only@*/ /*@null@*/ static urlinfo *uCache = NULL;
-static int uCount = 0;
+/**
+ */
+/*@unchecked@*/
+/*@only@*/ /*@null@*/
+urlinfo *_url_cache = NULL;
+
+/**
+ */
+/*@unchecked@*/
+int _url_count = 0;
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
@@ -55,7 +65,9 @@ urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
     URLSANE(u);
     u->nrefs++;
+/*@-modfilesys@*/
 URLDBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
+/*@=modfilesys@*/
     /*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
 }
 
@@ -81,6 +93,8 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
 
 urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 {
+    int xx;
+
     URLSANE(u);
 URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
@@ -88,11 +102,13 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
+	/*@-branchstate@*/
 	if (fp) {
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->ctrl);
 	} else if (fdio->_fileno(u->ctrl) >= 0)
-	    fdio->close(u->ctrl);
+	    xx = fdio->close(u->ctrl);
+	/*@=branchstate@*/
 #else
 	(void) Fclose(u->ctrl);
 #endif
@@ -112,7 +128,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	    fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->data);
 	} else if (fdio->_fileno(u->data) >= 0)
-	    fdio->close(u->data);
+	    xx = fdio->close(u->data);
 #else
 	(void) Fclose(u->ctrl);
 #endif
@@ -141,21 +157,21 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 
 void urlFreeCache(void)
 {
-    if (uCache) {
+    if (_url_cache) {
 	int i;
-	for (i = 0; i < uCount; i++) {
-	    if (uCache[i] == NULL) continue;
-	    uCache[i] = urlFree(uCache[i], "uCache");
-	    if (uCache[i])
+	for (i = 0; i < _url_count; i++) {
+	    if (_url_cache[i] == NULL) continue;
+	    _url_cache[i] = urlFree(_url_cache[i], "_url_cache");
+	    if (_url_cache[i])
 		fprintf(stderr,
-			_("warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
-			i, uCache[i], uCache[i]->nrefs,
-			(uCache[i]->host ? uCache[i]->host : ""),
-			(uCache[i]->service ? uCache[i]->service : ""));
+			_("warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
+			i, _url_cache[i], _url_cache[i]->nrefs,
+			(_url_cache[i]->host ? _url_cache[i]->host : ""),
+			(_url_cache[i]->service ? _url_cache[i]->service : ""));
 	}
     }
-    uCache = _free(uCache);
-    uCount = 0;
+    _url_cache = _free(_url_cache);
+    _url_count = 0;
 }
 
 static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
@@ -170,8 +186,12 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
     return 0;
 }
 
+/*@-mods@*/
 static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
-	/*@modifies *uret @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies *uret, rpmGlobalMacroContext,
+		fileSystem @*/
 {
     urlinfo u;
     int ucx;
@@ -184,9 +204,9 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     URLSANE(u);
 
     ucx = -1;
-    for (i = 0; i < uCount; i++) {
+    for (i = 0; i < _url_count; i++) {
 	urlinfo ou = NULL;
-	if (uCache == NULL || (ou = uCache[i]) == NULL) {
+	if (_url_cache == NULL || (ou = _url_cache[i]) == NULL) {
 	    if (ucx < 0)
 		ucx = i;
 	    continue;
@@ -207,13 +227,13 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	break;	/* Found item in cache */
     }
 
-    if (i == uCount) {
+    if (i == _url_count) {
 	if (ucx < 0) {
-	    ucx = uCount++;
-	    uCache = xrealloc(uCache, sizeof(*uCache) * uCount);
+	    ucx = _url_count++;
+	    _url_cache = xrealloc(_url_cache, sizeof(*_url_cache) * _url_count);
 	}
-	if (uCache)		/* XXX always true */
-	    uCache[ucx] = urlLink(u, "uCache (miss)");
+	if (_url_cache)		/* XXX always true */
+	    _url_cache[ucx] = urlLink(u, "_url_cache (miss)");
 	u = urlFree(u, "urlSplit (urlFind miss)");
     } else {
 	ucx = i;
@@ -222,11 +242,11 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 
     /* This URL is now cached. */
 
-    if (uCache)		/* XXX always true */
-	u = urlLink(uCache[ucx], "uCache");
+    if (_url_cache)		/* XXX always true */
+	u = urlLink(_url_cache[ucx], "_url_cache");
     *uret = u;
     /*@-usereleased@*/
-    u = urlFree(u, "uCache (urlFind)");
+    u = urlFree(u, "_url_cache (urlFind)");
     /*@=usereleased@*/
 
     /* Zap proxy host and port in case they have been reset */
@@ -305,7 +325,11 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 
     return;
 }
+/*@=mods@*/
 
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
 static struct urlstring {
 /*@observer@*/ /*@null@*/ const char * leadin;
     urltype	ret;
@@ -340,6 +364,7 @@ urltype urlPath(const char * url, const char ** pathp)
 
     path = url;
     urltype = urlIsURL(url);
+    /*@-branchstate@*/
     switch (urltype) {
     case URL_IS_FTP:
 	url += sizeof("ftp://") - 1;
@@ -359,6 +384,7 @@ urltype urlPath(const char * url, const char ** pathp)
 	path = "";
 	break;
     }
+    /*@=branchstate@*/
     if (pathp)
 	/*@-observertrans@*/
 	*pathp = path;
@@ -370,6 +396,7 @@ urltype urlPath(const char * url, const char ** pathp)
  * Split URL into components. The URL can look like
  *	service://user:password@host:port/path
  */
+/*@-modfilesys@*/
 int urlSplit(const char * url, urlinfo *uret)
 {
     urlinfo u;
@@ -409,6 +436,7 @@ int urlSplit(const char * url, urlinfo *uret)
     /* Look for ...@host... */
     fe = f = s;
     while (*fe && *fe != '@') fe++;
+    /*@-branchstate@*/
     if (*fe == '@') {
 	s = fe + 1;
 	*fe = '\0';
@@ -420,6 +448,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	}
 	u->user = xstrdup(f);
     }
+    /*@=branchstate@*/
 
     /* Look for ...host:port */
     fe = f = s;
@@ -442,9 +471,9 @@ int urlSplit(const char * url, urlinfo *uret)
 
     if (u->port < 0 && u->service != NULL) {
 	struct servent *serv;
-	/*@-unrecog -multithreaded @*/
+	/*@-unrecog -multithreaded -moduncon @*/
 	serv = getservbyname(u->service, "tcp");
-	/*@=unrecog =multithreaded @*/
+	/*@=unrecog =multithreaded =moduncon @*/
 	if (serv != NULL)
 	    u->port = ntohs(serv->s_port);
 	else if (u->urltype == URL_IS_FTP)
@@ -456,10 +485,13 @@ int urlSplit(const char * url, urlinfo *uret)
     myurl = _free(myurl);
     if (uret) {
 	*uret = u;
+/*@-globs -mods @*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	urlFind(uret, 0);
+/*@=globs =mods @*/
     }
     return 0;
 }
+/*@=modfilesys@*/
 
 int urlGetFile(const char * url, const char * dest)
 {
@@ -525,3 +557,4 @@ exit:
 
     return rc;
 }
+/*@=type@*/
