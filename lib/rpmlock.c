@@ -34,7 +34,7 @@ static rpmlock *rpmlock_new(const char *rootdir)
 	if (lock) {
 		mode_t oldmask = umask(022);
 		char *path = (char *)malloc(strlen(rootdir)+
-					    strlen(RPMLOCK_FILE)+2);
+					    strlen(RPMLOCK_FILE));
 		if (!path) {
 			free(lock);
 			return NULL;
@@ -105,8 +105,10 @@ static void rpmlock_release(rpmlock *lock)
 
 void *rpmtsAcquireLock(rpmts ts)
 {
+	rpmlock *lock = NULL;
+#if NOTYET
 	const char *rootDir = rpmtsRootDir(ts);
-	rpmlock *lock;
+
 	if (!rootDir)
 		rootDir = "/";
 	lock = rpmlock_new(rootDir);
@@ -123,12 +125,15 @@ void *rpmtsAcquireLock(rpmts ts)
 			lock = NULL;
 		}
 	}
+#endif
 	return lock;
 }
 
 void rpmtsFreeLock(void *lock)
 {
+#if NOTYET
 	rpmlock_release((rpmlock *)lock); /* Not really needed here. */
+#endif
 	rpmlock_free((rpmlock *)lock);
 }
 
