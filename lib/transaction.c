@@ -803,17 +803,17 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     }
 
     headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
-			    (void **) &otherMd5s, NULL);
+			    (const void **) &otherMd5s, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILELINKTOS, NULL,
-			    (void **) &otherLinks, NULL);
+			    (const void **) &otherLinks, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-			    (void **) &otherStates, NULL);
+			    (const void **) &otherStates, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
-			    (void **) &otherModes, NULL);
+			    (const void **) &otherModes, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
-			    (void **) &otherFlags, NULL);
+			    (const void **) &otherFlags, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILESIZES, NULL,
-			    (void **) &otherSizes, NULL);
+			    (const void **) &otherSizes, NULL);
 
     fi->replaced = xmalloc(sizeof(*fi->replaced) * sharedCount);
 
@@ -892,7 +892,7 @@ static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
     }
 
     headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-			    (void **) &otherStates, NULL);
+			    (const void **) &otherStates, NULL);
 
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
@@ -1484,9 +1484,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    break;
 	case TR_ADDED:
 	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL,
-				    (void **) &fi->fmd5s, NULL);
+				    (const void **) &fi->fmd5s, NULL);
 	    headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL,
-				    (void **) &fi->flinks, NULL);
+				    (const void **) &fi->flinks, NULL);
 
 	    /* 0 makes for noops */
 	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));

@@ -1011,11 +1011,11 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	}
 
 	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
-				(void **) &baseNames, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
-				(void **) &dirIndexes, NULL);
+				(const void **) &baseNames, NULL);
 	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
-				(void **) &dirNames, NULL);
+				(const void **) &dirNames, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
+				(const void **) &dirIndexes, NULL);
 
 	do {
 	    fingerPrint fp2;
@@ -2096,12 +2096,12 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 	num = end - start;
 
 	/* Compute fingerprints for this header's matches */
-	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
-			    (void **) &dirNames, NULL);
 	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
-			    (void **) &fullBaseNames, NULL);
+			    (const void **) &fullBaseNames, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
+			    (const void **) &dirNames, NULL);
 	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
-			    (void **) &fullDirIndexes, NULL);
+			    (const void **) &fullDirIndexes, NULL);
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));

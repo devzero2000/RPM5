@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-11-22 15:31-0500\n"
+"POT-Creation-Date: 2000-11-27 11:28-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1660,48 +1660,48 @@ msgstr ""
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1571
+#: build/files.c:1567
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr ""
 
-#: build/files.c:1583 build/parsePrep.c:40
+#: build/files.c:1579 build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1638
+#: build/files.c:1634
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1643
+#: build/files.c:1639
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1725
+#: build/files.c:1721
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1729
+#: build/files.c:1725
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1849
+#: build/files.c:1846
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1877 build/files.c:1891
+#: build/files.c:1874 build/files.c:1888
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:2001
+#: build/files.c:1997
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2466,7 +2466,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2434 lib/header.c:2451 lib/header.c:2471
+#: lib/header.c:2410 lib/header.c:2427 lib/header.c:2447
 msgid "(not a number)"
 msgstr ""
 
@@ -2495,92 +2495,92 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:269
-msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+#: lib/header.c:213
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:304 lib/header.c:901 lib/install.c:380
+#: lib/header.c:248 lib/header.c:899 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1335
+#: lib/header.c:1321
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1787
+#: lib/header.c:1763
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1817
+#: lib/header.c:1793
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1831
+#: lib/header.c:1807
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1843
+#: lib/header.c:1819
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1860
+#: lib/header.c:1836
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1887
+#: lib/header.c:1863
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1905
+#: lib/header.c:1881
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1909
+#: lib/header.c:1885
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1969
+#: lib/header.c:1945
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1978
+#: lib/header.c:1954
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1991 lib/header.c:2032
+#: lib/header.c:1967 lib/header.c:2008
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2001
+#: lib/header.c:1977
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2017
+#: lib/header.c:1993
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2042
+#: lib/header.c:2018
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2213
+#: lib/header.c:2189
 msgid "(unknown type)"
 msgstr ""
 

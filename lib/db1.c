@@ -161,7 +161,7 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
      * list.
      */
     if (!headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
-			   (void **) &fileNames, &fileCount)) goto exit;
+			   (const void **) &fileNames, &fileCount)) goto exit;
 
     for (i = 0; i < fileCount; i++) 
 	if (*fileNames[i] != '/') break;

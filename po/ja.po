@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-11-21 16:37-0500\n"
+"POT-Creation-Date: 2000-11-27 11:28-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1796,48 +1796,48 @@ msgstr "%%files をオープンできません: %s"
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1571
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1583 build/parsePrep.c:40
+#: build/files.c:1579 build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1638
+#: build/files.c:1634
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1643
+#: build/files.c:1639
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1725
+#: build/files.c:1721
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1729
+#: build/files.c:1725
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1849
+#: build/files.c:1846
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1877 build/files.c:1891
+#: build/files.c:1874 build/files.c:1888
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:2001
+#: build/files.c:1997
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -2381,7 +2381,7 @@ msgid " failed - "
 msgstr "失敗 - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:553
+#: lib/depends.c:554
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2390,88 +2390,88 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします(\"A\"と同じであると仮定して)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:582
+#: lib/depends.c:583
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:936
+#: lib/depends.c:937
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
 
-#: lib/depends.c:995
+#: lib/depends.c:996
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s は provide に加えることによって満されます。\n"
 
-#: lib/depends.c:1047
+#: lib/depends.c:1048
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1066
+#: lib/depends.c:1067
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1083
+#: lib/depends.c:1084
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1105
+#: lib/depends.c:1106
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1118
+#: lib/depends.c:1119
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:1132
+#: lib/depends.c:1133
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1153
+#: lib/depends.c:1154
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1211
+#: lib/depends.c:1212
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1278
+#: lib/depends.c:1279
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1504
+#: lib/depends.c:1505
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1608
+#: lib/depends.c:1609
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1658
+#: lib/depends.c:1659
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1761
+#: lib/depends.c:1762
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1792
+#: lib/depends.c:1793
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2615,7 +2615,7 @@ msgstr ""
 "詳細な情報が取得できます。\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2308 lib/header.c:2325 lib/header.c:2345
+#: lib/header.c:2410 lib/header.c:2427 lib/header.c:2447
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -2644,92 +2644,93 @@ msgid "file %s is on an unknown device"
 msgstr "ファイル %s は不明なデバイスです"
 
 #. This should not be allowed
-#: lib/header.c:257
-msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+#: lib/header.c:213
+#, fuzzy
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
-#: lib/header.c:288 lib/header.c:831 lib/install.c:382
+#: lib/header.c:248 lib/header.c:899 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
 
-#: lib/header.c:1218
+#: lib/header.c:1321
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "headerAddEntry() の不正なカウント: %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1661
+#: lib/header.c:1763
 #, c-format
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
 #. @-observertrans@
-#: lib/header.c:1691
+#: lib/header.c:1793
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
 #. @-observertrans@
-#: lib/header.c:1705
+#: lib/header.c:1807
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
 #. @-observertrans@
-#: lib/header.c:1717
+#: lib/header.c:1819
 msgid "empty tag name"
 msgstr "空のタグ名"
 
 #. @-observertrans@
-#: lib/header.c:1734
+#: lib/header.c:1836
 msgid "unknown tag"
 msgstr "不明なタグ"
 
 #. @-observertrans@
-#: lib/header.c:1761
+#: lib/header.c:1863
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:1779
+#: lib/header.c:1881
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
 #. @-observertrans@
-#: lib/header.c:1783
+#: lib/header.c:1885
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
 #. @-observertrans@
-#: lib/header.c:1843
+#: lib/header.c:1945
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:1852
+#: lib/header.c:1954
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:1865 lib/header.c:1906
+#: lib/header.c:1967 lib/header.c:2008
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:1875
+#: lib/header.c:1977
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:1891
+#: lib/header.c:1993
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:1916
+#: lib/header.c:2018
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
-#: lib/header.c:2087
+#: lib/header.c:2189
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
@@ -3784,115 +3785,115 @@ msgid "New Header signature\n"
 msgstr "新しいヘッダ署名\n"
 
 #. 8-byte pad
-#: lib/signature.c:166 lib/signature.c:203
+#: lib/signature.c:171 lib/signature.c:208
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:167 lib/signature.c:204
+#: lib/signature.c:172 lib/signature.c:209
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "署名パッド: %d\n"
 
-#: lib/signature.c:266
+#: lib/signature.c:271
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "pgp を実行できません(%s)"
 
-#: lib/signature.c:277
+#: lib/signature.c:282
 msgid "pgp failed"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:284
+#: lib/signature.c:289
 msgid "pgp failed to write signature"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:289
+#: lib/signature.c:294
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:300 lib/signature.c:377
+#: lib/signature.c:305 lib/signature.c:382
 msgid "unable to read the signature"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:305
+#: lib/signature.c:310
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:343 lib/signature.c:688
+#: lib/signature.c:348 lib/signature.c:693
 #, fuzzy
 msgid "Couldn't exec gpg"
 msgstr "gpg を実行できません"
 
-#: lib/signature.c:354
+#: lib/signature.c:359
 #, fuzzy
 msgid "gpg failed"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:361
+#: lib/signature.c:366
 #, fuzzy
 msgid "gpg failed to write signature"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:366
+#: lib/signature.c:371
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:382
+#: lib/signature.c:387
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
-#: lib/signature.c:409
+#: lib/signature.c:414
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "PGP を使用して署名の生成中\n"
 
-#: lib/signature.c:415
+#: lib/signature.c:420
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "GPG を使用して署名の生成中\n"
 
-#: lib/signature.c:494 lib/signature.c:556
+#: lib/signature.c:499 lib/signature.c:561
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 "pgp を実行できませんでした。\n"
 "PGP チェックをスキップするために --nopgp を使用してください。"
 
-#: lib/signature.c:554 lib/signature.c:627
+#: lib/signature.c:559 lib/signature.c:632
 msgid "exec failed!\n"
 msgstr "実行失敗!\n"
 
-#: lib/signature.c:629
+#: lib/signature.c:634
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 "gpg を実行できませんでした。\n"
 "GPG チェックをスキップするために --nogpg を使用してください。"
 
-#: lib/signature.c:717
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr "pgp を実行できません"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:721 lib/signature.c:774
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr "マクロファイル中で無効な %%_signature スペック"
 
-#: lib/signature.c:754
+#: lib/signature.c:759
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:766
+#: lib/signature.c:771
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"

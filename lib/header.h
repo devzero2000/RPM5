@@ -242,7 +242,7 @@ Header headerLink(Header h)
  * Dereference a header instance.
  * @param h		header
  */
-void headerFree( /*@killref@*/ Header h);
+void headerFree( /*@only@*/ /*@null@*/ /*@killref@*/ Header h);
 
 /** \ingroup header
  * Return header reference count.
@@ -516,6 +516,23 @@ typedef enum rpmTagType_e {
     RPM_I18NSTRING_TYPE		=  9
 #define	RPM_MAX_TYPE		9
 } rpmTagType;
+
+/** \ingroup header
+ * Free data allocated when retrieved from header.
+ * @param data		address of data
+ * @param type		type of data
+ * @return		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * headerFreeData(
+			/*@only@*/ const void * data, rpmTagType type)
+{
+    if (type == RPM_STRING_ARRAY_TYPE ||
+	type == RPM_I18NSTRING_TYPE ||
+	type == RPM_BIN_TYPE) {
+	if (data) free((void *)data);
+    }
+    return NULL;
+}
 
 /** \ingroup header
  * New rpm data types under consideration/development.

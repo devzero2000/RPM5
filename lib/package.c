@@ -25,10 +25,12 @@ void headerMergeLegacySigs(Header h, const Header sig)
 {
     HeaderIterator hi;
     int_32 tag, type, count;
-    const void *ptr;
+    const void * ptr;
 
-    hi = headerInitIterator(sig);
-    while (headerNextIterator(hi, &tag, &type, &ptr, &count)) {
+    for (hi = headerInitIterator(sig);
+        headerNextIterator(hi, &tag, &type, &ptr, &count);
+        ptr = headerFreeData(ptr, type))
+    {
 	if (tag < RPMSIGTAG_SIZE)
 	    continue;
 	switch (tag) {
@@ -43,8 +45,6 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	}
 	if (!headerIsEntry(h, tag))
 	    headerAddEntry(h, tag, type, ptr, count);
-	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
-	    free((void *)ptr);
     }
     headerFreeIterator(hi);
 }

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-11-21 16:37-0500\n"
+"POT-Creation-Date: 2000-11-27 11:28-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1715,48 +1715,48 @@ msgstr "Nemohu otevøít %%files soubor %s: %s"
 msgid "line: %s"
 msgstr "øádek: %s"
 
-#: build/files.c:1571
+#: build/files.c:1567
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "©patný soubor: %s: %s"
 
-#: build/files.c:1583 build/parsePrep.c:40
+#: build/files.c:1579 build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "©patný vlastník/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1638
+#: build/files.c:1634
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nemohu spustit %s: %s"
 
-#: build/files.c:1643
+#: build/files.c:1639
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nemohu provést fork %s: %s"
 
-#: build/files.c:1725
+#: build/files.c:1721
 #, c-format
 msgid "%s failed"
 msgstr "%s selhalo"
 
-#: build/files.c:1729
+#: build/files.c:1725
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "Nemohu zapsat v¹echna data do %s"
 
-#: build/files.c:1849
+#: build/files.c:1846
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: build/files.c:1877 build/files.c:1891
+#: build/files.c:1874 build/files.c:1888
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Selhalo vyhledání %s:"
 
-#: build/files.c:2001
+#: build/files.c:1997
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Zpracovávám soubory: %s-%s-%s\n"
@@ -2296,7 +2296,7 @@ msgid " failed - "
 msgstr "selhal - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:553
+#: lib/depends.c:554
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2305,88 +2305,88 @@ msgstr ""
 "Závislost \"B\" potøebuje období (pøedpokládáno stejné jako \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:582
+#: lib/depends.c:583
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:936
+#: lib/depends.c:937
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s ANO (pøidány soubory)\n"
 
-#: lib/depends.c:995
+#: lib/depends.c:996
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s ANO (pøidáno poskytuje)\n"
 
-#: lib/depends.c:1047
+#: lib/depends.c:1048
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr "%s: %-45s %-3s (ke¹ováno)\n"
 
-#: lib/depends.c:1066
+#: lib/depends.c:1067
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
-#: lib/depends.c:1083
+#: lib/depends.c:1084
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:1105
+#: lib/depends.c:1106
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s ANO (db soubory)\n"
 
-#: lib/depends.c:1118
+#: lib/depends.c:1119
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:1132
+#: lib/depends.c:1133
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NE\n"
 
-#: lib/depends.c:1153
+#: lib/depends.c:1154
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) pøidáno do ke¹e závislostí.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1211
+#: lib/depends.c:1212
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1278
+#: lib/depends.c:1279
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balíèek %s koliduje: %s\n"
 
-#: lib/depends.c:1504
+#: lib/depends.c:1505
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
 #. Record all relations.
-#: lib/depends.c:1608
+#: lib/depends.c:1609
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1658
+#: lib/depends.c:1659
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1761
+#: lib/depends.c:1762
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1792
+#: lib/depends.c:1793
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2529,7 +2529,7 @@ msgstr ""
 "na http://www.rpm.org nebo v diskuzním listu rpm-list@redhat.com.\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2308 lib/header.c:2325 lib/header.c:2345
+#: lib/header.c:2410 lib/header.c:2427 lib/header.c:2447
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
@@ -2558,92 +2558,93 @@ msgid "file %s is on an unknown device"
 msgstr "soubor %s je na neznámém zaøízení"
 
 #. This should not be allowed
-#: lib/header.c:257
-msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+#: lib/header.c:213
+#, fuzzy
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "Poèet RPM_STRING_TYPE pro grabData() musí být 1.\n"
 
-#: lib/header.c:288 lib/header.c:831 lib/install.c:382
+#: lib/header.c:248 lib/header.c:899 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datový typ %d není podporován\n"
 
-#: lib/header.c:1218
+#: lib/header.c:1321
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Chybný poèet pro headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1661
+#: lib/header.c:1763
 #, c-format
 msgid "missing { after %"
 msgstr "chybí { po %"
 
 #. @-observertrans@
-#: lib/header.c:1691
+#: lib/header.c:1793
 msgid "missing } after %{"
 msgstr "po %{ chybí }"
 
 #. @-observertrans@
-#: lib/header.c:1705
+#: lib/header.c:1807
 msgid "empty tag format"
 msgstr "prázdný formát znaèky"
 
 #. @-observertrans@
-#: lib/header.c:1717
+#: lib/header.c:1819
 msgid "empty tag name"
 msgstr "prázdné jméno znaèky"
 
 #. @-observertrans@
-#: lib/header.c:1734
+#: lib/header.c:1836
 msgid "unknown tag"
 msgstr "neznámá znaèka"
 
 #. @-observertrans@
-#: lib/header.c:1761
+#: lib/header.c:1863
 msgid "] expected at end of array"
 msgstr "na konci pole oèekáváno ]"
 
 #. @-observertrans@
-#: lib/header.c:1779
+#: lib/header.c:1881
 msgid "unexpected ]"
 msgstr "neoèekávaná ]"
 
 #. @-observertrans@
-#: lib/header.c:1783
+#: lib/header.c:1885
 msgid "unexpected }"
 msgstr "neoèekávaná }"
 
 #. @-observertrans@
-#: lib/header.c:1843
+#: lib/header.c:1945
 msgid "? expected in expression"
 msgstr "ve výrazu oèekáván ?"
 
 #. @-observertrans@
-#: lib/header.c:1852
+#: lib/header.c:1954
 msgid "{ expected after ? in expression"
 msgstr "ve výrazu je po ? oèekávána {"
 
 #. @-observertrans@
-#: lib/header.c:1865 lib/header.c:1906
+#: lib/header.c:1967 lib/header.c:2008
 msgid "} expected in expression"
 msgstr "ve výrazu je oèekávána }"
 
 #. @-observertrans@
-#: lib/header.c:1875
+#: lib/header.c:1977
 msgid ": expected following ? subexpression"
 msgstr "v podvýrazu je po ? oèekávána :"
 
 #. @-observertrans@
-#: lib/header.c:1891
+#: lib/header.c:1993
 msgid "{ expected after : in expression"
 msgstr "ve výrazu je po : oèekávána {"
 
 #. @-observertrans@
-#: lib/header.c:1916
+#: lib/header.c:2018
 msgid "| expected at end of expression"
 msgstr "na konci výrazu je oèekáváno |"
 
-#: lib/header.c:2087
+#: lib/header.c:2189
 msgid "(unknown type)"
 msgstr "(neznámý typ)"
 
@@ -3672,104 +3673,104 @@ msgid "New Header signature\n"
 msgstr "Nový podpis hlavièky\n"
 
 #. 8-byte pad
-#: lib/signature.c:166 lib/signature.c:203
+#: lib/signature.c:171 lib/signature.c:208
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Velikost podpisu: %d\n"
 
-#: lib/signature.c:167 lib/signature.c:204
+#: lib/signature.c:172 lib/signature.c:209
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Podpisový blok: %d\n"
 
-#: lib/signature.c:266
+#: lib/signature.c:271
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Nemohu spustit pgp (%s)"
 
-#: lib/signature.c:277
+#: lib/signature.c:282
 msgid "pgp failed"
 msgstr "pgp selhalo"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:284
+#: lib/signature.c:289
 msgid "pgp failed to write signature"
 msgstr "pgp selhalo pøi zápisu podpisu"
 
-#: lib/signature.c:289
+#: lib/signature.c:294
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Velikost podpisu PGP: %d\n"
 
-#: lib/signature.c:300 lib/signature.c:377
+#: lib/signature.c:305 lib/signature.c:382
 msgid "unable to read the signature"
 msgstr "nemohu èíst podpis"
 
-#: lib/signature.c:305
+#: lib/signature.c:310
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Pøeèteno %d bajtù PGP podpisu\n"
 
-#: lib/signature.c:343 lib/signature.c:688
+#: lib/signature.c:348 lib/signature.c:693
 msgid "Couldn't exec gpg"
 msgstr "Nemohu spustit gpg"
 
-#: lib/signature.c:354
+#: lib/signature.c:359
 msgid "gpg failed"
 msgstr "gpg selhalo"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:361
+#: lib/signature.c:366
 msgid "gpg failed to write signature"
 msgstr "gpg selhalo pøi zápisu podpisu"
 
-#: lib/signature.c:366
+#: lib/signature.c:371
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Velikost GPG podpisu: %d\n"
 
-#: lib/signature.c:382
+#: lib/signature.c:387
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Pøeèteno %d bajtù GPG podpisu\n"
 
-#: lib/signature.c:409
+#: lib/signature.c:414
 msgid "Generating signature using PGP.\n"
 msgstr "Generuji PGP podpis.\n"
 
-#: lib/signature.c:415
+#: lib/signature.c:420
 msgid "Generating signature using GPG.\n"
 msgstr "Generuji GPG podpis.\n"
 
-#: lib/signature.c:494 lib/signature.c:556
+#: lib/signature.c:499 lib/signature.c:561
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Nemohu spustit pgp. Vynechte kontroly PGP pomocí --nopgp."
 
-#: lib/signature.c:554 lib/signature.c:627
+#: lib/signature.c:559 lib/signature.c:632
 msgid "exec failed!\n"
 msgstr "spu¹tìní selhalo!\n"
 
-#: lib/signature.c:629
+#: lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Nelze spustit gpg. Vynechte kontroly GPG pomocí --nogpg."
 
-#: lib/signature.c:717
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr "Nemohu spustit pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:721 lib/signature.c:774
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Neplatná %%_signature v makro souboru"
 
-#: lib/signature.c:754
+#: lib/signature.c:759
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "Musíte nastavit \"%%_gpg_name\" ve svém makro souboru"
 
-#: lib/signature.c:766
+#: lib/signature.c:771
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Musíte nastavit \"%%_pgp_name\" ve svém makro souboru"
 
