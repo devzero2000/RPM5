@@ -19,6 +19,7 @@
 	- fixed --triggers alias (Michael Andres)
 	- added :hex query format
 	- fixed --querytags to display virtual tags
+	- added --triggers and --triggered by to man page, help, and usage
 
 2.5.1 -> 2.5.2:
 	- added -bs to build just a source package

@@ -73,8 +73,8 @@ int packageSources(Spec spec)
     headerAddEntry(spec->sourceHeader, RPMTAG_BUILDTIME,
 		   RPM_INT32_TYPE, getBuildTime(), 1);
 
-    {	int capabilty = 0;
-	headerAddEntry(pkg->header, RPMTAG_CAPABILITY, RPM_INT32_TYPE,
+    {	int capability = 0;
+	headerAddEntry(spec->sourceHeader, RPMTAG_CAPABILITY, RPM_INT32_TYPE,
 			&capability, 1);
     }
 
@@ -132,7 +132,7 @@ int packageBinaries(Spec spec)
 	headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
 
-    {	int capabilty = 0;
+    {	int capability = 0;
 	headerAddEntry(pkg->header, RPMTAG_CAPABILITY, RPM_INT32_TYPE,
 			&capability, 1);
     }
