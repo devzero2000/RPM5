@@ -18,7 +18,7 @@ int timedRead(int fd, void * bufptr, int length) {
 	FD_ZERO(&readSet);
 	FD_SET(fd, &readSet);
 
-	tv.tv_sec = 5;			/* FIXME: this should be configurable */
+	tv.tv_sec = 30;			/* FIXME: this should be configurable */
 	tv.tv_usec = 0;
 
 	if (select(fd + 1, &readSet, NULL, NULL, &tv) != 1) 
