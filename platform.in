@@ -7,7 +7,7 @@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_gnu			@RPMRC_GNU@
-%_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}%{?_gnu}
+%_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
 %optflags		@RPMRC_OPTFLAGS@
 
 #==============================================================================
@@ -35,15 +35,13 @@
 #==============================================================================
 # ---- configure and makeinstall.
 #
-%configure %{?_gnu: %undefine _gnu} \
-CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
-CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
-FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
-%{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force ;} \
-  ./configure \\\
-	%{?_gnu: --host=%{_host} --target=%{_target_platform}} \\\
-	%{!?_gnu: %{_target_platform}} \\\
-	--prefix=%{_prefix} \\\
+%configure \
+  CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
+  CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
+  FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
+  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} ; \
+  ./configure %{_target_platform} \\\
+ 	--prefix=%{_prefix} \\\
 	--exec-prefix=%{_exec_prefix} \\\
 	--bindir=%{_bindir} \\\
 	--sbindir=%{_sbindir} \\\
