@@ -1174,6 +1174,17 @@ enum rpmVerifyAttrs_e {
 int rpmVerifyFile(const char * root, Header h, int filenum,
 	/*@out@*/ int * result, int omitMask);
 
+/**
+ * Return exit code from running verify script in header.
+ * @todo kpackage prevents static, should be using VERIFY_SCRIPT flag.
+ * @param rootDir	path to top of install tree
+ * @param rpmdb		rpm database
+ * @param h		header
+ * @param scriptFd	file handle to use for stderr
+ * @return		0 on success
+ */
+int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd);
+
 /** \ingroup rpmcli
  * The command line argument will be used to retrieve header(s) ...
  */
