@@ -255,10 +255,5 @@ buildarch_compat: atariclone: m68kmint noarch
 buildarch_compat: milan: m68kmint noarch
 buildarch_compat: hades: m68kmint noarch
 
-#############################################################
-#macrofiles:	@RPMCONFIGDIR@/macros:@SYSCONFIGDIR@/macros:~/.rpmmacros
-
-macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
-
-#include: @RPMCONFIGDIR@/%{_target}/rpmrc
+macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros.specspo:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 
