@@ -790,7 +790,9 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	    rdbuf = fsm->rdbuf;
 	    fsm->rdbuf = (char *) mapped;
 	    fsm->rdlen = nmapped = st->st_size;
+#if defined(MADV_DONTNEED)
 	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
+#endif
 	}
 #endif
 
@@ -817,7 +819,9 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 
 #if HAVE_MMAP
 	if (mapped != (void *)-1) {
+#if defined(MADV_DONTNEED)
 	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
+#endif
 	    /*@-noeffect@*/ (void) munmap(mapped, nmapped) /*@=noeffect@*/;
 	    fsm->rdbuf = rdbuf;
 	}

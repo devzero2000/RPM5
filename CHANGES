@@ -36,6 +36,8 @@
 	- rpm-perl: force numeric comparison on rpm version (#58882).
 	- fix: fancy hash fiddles if not a tty.
 	- fix: handle /.../ correctly in rpmCleanPath().
+	- transaction rollback code in rpmRollback().
+	- Red Hat 6.2 portability cruft.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
