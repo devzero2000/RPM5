@@ -169,6 +169,9 @@ fi
 %ifarch ia64
 /usr/lib/rpm/ia64*
 %endif
+%ifarch powerpc ppc
+/usr/lib/rpm/ppc*
+%endif
 
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
