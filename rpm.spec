@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.23
+Release: 0.24
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -516,6 +516,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jan 31 2002 Jeff Johnson <jbj@redhat.com>
+- permit args to be hidden within %%__find_{requires,provides}.
+- a couple more perl.{prov,req} fiddles.
+
 * Wed Jan 30 2002 Jeff Johnson <jbj@redhat.com>
 - legacy: configurable whiteout for known Red Hat dependency loops.
 - perl.req: don't mis-generate dependencies like perl(::path/to/foo.pl).

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-01-30 17:05-0500\n"
+"POT-Creation-Date: 2002-01-31 16:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1466,17 +1466,17 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2462
+#: build/files.c:2482
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2488 build/files.c:2502
+#: build/files.c:2511 build/files.c:2525
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2623
+#: build/files.c:2647
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""

@@ -8,10 +8,10 @@
 
 #include "psm.h"
 
+#include "rpmdb.h"
 #include "fprint.h"
 #include "rpmhash.h"
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
-#include "rpmdb.h"
 
 #ifdef	DYING
 /*@-redecl -exportheadervar@*/

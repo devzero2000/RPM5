@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-30 16:04-0500\n"
+"POT-Creation-Date: 2002-01-31 16:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1466,17 +1466,17 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2462
+#: build/files.c:2482
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2488 build/files.c:2502
+#: build/files.c:2511 build/files.c:2525
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2623
+#: build/files.c:2647
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2276,37 +2276,37 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1681
+#: lib/depends.c:1688
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1785
+#: lib/depends.c:1792
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1941
+#: lib/depends.c:1948
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2001
+#: lib/depends.c:2008
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:2066
+#: lib/depends.c:2073
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2130
+#: lib/depends.c:2137
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2159
+#: lib/depends.c:2166
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
