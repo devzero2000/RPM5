@@ -270,8 +270,17 @@ static struct machEquivInfo * machEquivSearch(
 		struct machEquivTable * table, char * name) {
     int i;
 
+/*
+ * XXX The strcasecmp below is necessary so the old (rpm < 2.90) style
+ * XXX os-from-uname (e.g. "Linux") is compatible with the new
+ * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
+ * XXX A copy of this string is embedded in headers and is
+ * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->.
+ * XXX to verify correct arch/os from headers.
+ */
+
     for (i = 0; i < table->count; i++)
-	if (!strcmp(table->list[i].name, name)) 
+	if (!strcasecmp(table->list[i].name, name)) 
 	    return table->list + i;
 
     return NULL;

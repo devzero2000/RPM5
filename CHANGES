@@ -1,4 +1,5 @@
 2.5.4 -> 2.5.5:
+	- arch/os compare from install is case insensitive.
 	- permit rpm to be built in a sub-directory (--srcdir=DIR).
 	- return CPIO_BAD_HEADER instead of exiting. (Scott M. Stone)
 	- untranslate "(none)" for auto relocating script wrappers.
