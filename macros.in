@@ -165,7 +165,7 @@
 %_libdir		%{_exec_prefix}/lib
 %_includedir		%{_prefix}/include
 %_oldincludedir		/usr/include
-%_infodir		%{_prefix}/include
+%_infodir		%{_prefix}/info
 %_mandir		%{_prefix}/man
 
 #==============================================================================
