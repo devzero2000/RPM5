@@ -161,11 +161,11 @@ msgstr "Benutzung:"
 
 #: ../rpm.c:144
 msgid "print this message"
-msgstr ""
+msgstr "Gibr diesen Text aus"
 
 #: ../rpm.c:146
 msgid "print the version of rpm being used"
-msgstr ""
+msgstr "Die benutzte RPM Version anzeigen"
 
 #: ../rpm.c:147
 msgid "   all modes support the following arguments:"
@@ -173,15 +173,15 @@ msgstr "   alle Modi unterstützen folgende Argumente"
 
 #: ../rpm.c:149
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-msgstr "benutze <file> anstelle von /etc/rpmrc and $HOME/.rpmrc"
+msgstr "<file> anstelle von /etc/rpmrc und $HOME/.rpmrc benutzen"
 
 #: ../rpm.c:151
 msgid "be a little more verbose"
-msgstr "etwas ausführlichere Ausgabe"
+msgstr "Ausgabe etwas ausführlichere gestalten"
 
 #: ../rpm.c:153
 msgid "be incredibly verbose (for debugging)"
-msgstr "extrem ausführliche Ausgabe (zum Entwanzen)"
+msgstr "extrem ausführliche Ausgabe (fürs Entwanzen)"
 
 #: ../rpm.c:155
 msgid "query mode"
@@ -189,31 +189,31 @@ msgstr "Anfrage Modus"
 
 #: ../rpm.c:157 ../rpm.c:211 ../rpm.c:248 ../rpm.c:268 ../rpm.c:319
 msgid "use <dir> as the top level directory"
-msgstr "benutze <dir> als Stammverzeichnis"
+msgstr "<dir> als Stammverzeichnis benutzen"
 
 #: ../rpm.c:159 ../rpm.c:209 ../rpm.c:223 ../rpm.c:262 ../rpm.c:317
 msgid "use <dir> as the directory for the database"
-msgstr "benutze <dir> als Verzeichnis für die Datenbank"
+msgstr "<dir> als Datenbankverzeichnis benutzen"
 
 #: ../rpm.c:161
 msgid "use s as the header format (implies -i)"
-msgstr "benutze s als Headerformat (impliziert -i)"
+msgstr "s als Headerformat benutzen (impliziert -i)"
 
 #: ../rpm.c:162
 msgid "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
-msgstr "   Beim Installieren, Aktualisieren und Anfragen (mit -p) ist es erlaunt"
+msgstr "   Beim Installieren, Aktualisieren und Anfragen (mit -p) ist es erlaubt ftp URLs anstelle"
 
 #: ../rpm.c:163
 msgid "   of file names as well as the following options:\n"
-msgstr ""
+msgstr "   von Dateinamen zu benutzen. Außerdem die folgenden Optionen:"
 
 #: ../rpm.c:165
 msgid "hostname or IP of ftp proxy"
-msgstr "hostname oder IP des ftp proxy"
+msgstr "hostname oder IP des ftp proxys"
 
 #: ../rpm.c:167
 msgid "port number of ftp server (or proxy)"
-msgstr "port Nummer des ftp server (oder proxy)"
+msgstr "Portnummer des ftp servers (oder proxy)"
 
 #: ../rpm.c:168
 msgid "      Package specification options:"
@@ -221,31 +221,31 @@ msgstr "      Optionen der Paketauswahl:"
 
 #: ../rpm.c:170
 msgid "query all packages"
-msgstr ""
+msgstr "Anfrage an alle Pakete"
 
 #: ../rpm.c:172
 msgid "query package owning <file>"
-msgstr ""
+msgstr "Anfrage nach Paket, das das File <file> besitzt"
 
 #: ../rpm.c:174
 msgid "like -f, but read file names from stdin"
-msgstr ""
+msgstr "wie -f, aber Dateinamen aus der Standardeingabe lesen"
 
 #: ../rpm.c:176
 msgid "query (uninstalled) package <packagefile>"
-msgstr ""
+msgstr "Anfrage nach (nicht installiertem) Paket <packagefile>"
 
 #: ../rpm.c:178
 msgid "like -p, but read package names from stdin"
-msgstr ""
+msgstr "wie -p, aber Paketnamen aus der Standardeingabe lesen"
 
 #: ../rpm.c:180
 msgid "query packages which provide <i> capability"
-msgstr ""
+msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
 #: ../rpm.c:182
 msgid "query packages which require <i> capability"
-msgstr ""
+msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
 #: ../rpm.c:183
 msgid "      Information selection options:"
@@ -253,31 +253,31 @@ msgstr "      Optionen der Informationsauswahl:"
 
 #: ../rpm.c:185
 msgid "display package information"
-msgstr ""
+msgstr "Paketinformationen anzeigen"
 
 #: ../rpm.c:187
 msgid "display package file list"
-msgstr ""
+msgstr "Dateiliste des Pakets anzeigen"
 
 #: ../rpm.c:189
 msgid "show file states (implies -l)"
-msgstr ""
+msgstr "Status der Dateien anzeigen (impliziert -l)"
 
 #: ../rpm.c:191
 msgid "list only documentation files (implies -l)"
-msgstr ""
+msgstr "Nur Dokumentationsdateien auflisten (impliziert -l)"
 
 #: ../rpm.c:193
 msgid "list only configuration files (implies -l)"
-msgstr ""
+msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
 #: ../rpm.c:195
 msgid "show all verifiable information for each file (must be used with -l, -c, or -d)"
-msgstr ""
+msgstr "Alle überprüfbaren Informationen zu jedem File anzeigen (muß zusammen mit -l, -c oder -d benutzt werden)"
 
 #: ../rpm.c:197
 msgid "list capabilbities package provides"
-msgstr ""
+msgstr "Fähigkeiten des Pakets auflisten"
 
 #: ../rpm.c:198
 msgid "        --requires"
@@ -285,183 +285,183 @@ msgstr ""
 
 #: ../rpm.c:200
 msgid "list package dependencies"
-msgstr ""
+msgstr "Paketabhängigkeiten ausgeben"
 
 #: ../rpm.c:202
 msgid "print the various [un]install scripts"
-msgstr ""
+msgstr "Die diversen (De-)Installationsscripts ausgeben"
 
 #: ../rpm.c:207
 msgid "verify a package installation using the same same package specification options as -q"
-msgstr ""
+msgstr "Ein Paket mit den selben Paketspezifikationsoptionen wie bei -q überprüfen"
 
 #: ../rpm.c:213 ../rpm.c:238 ../rpm.c:264
 msgid "do not verify package dependencies"
-msgstr ""
+msgstr "Dateiabhängigkeiten nicht überprüfen"
 
 #: ../rpm.c:215
 msgid "do not verify file attributes"
-msgstr ""
+msgstr "Dateiattribute nicht überprüfen"
 
 #: ../rpm.c:219
 msgid "install package"
-msgstr ""
+msgstr "Paket installieren"
 
 #: ../rpm.c:221
 msgid "relocate the package to <dir>, if relocatable"
-msgstr ""
+msgstr "Verschiebe das Paket, wenn es verschiebbar ist, in das Verzeichnis <dir>"
 
 #: ../rpm.c:225
 msgid "do not install documentation"
-msgstr ""
+msgstr "Dokumentation nicht installieren"
 
 #: ../rpm.c:227
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr ""
+msgstr "Abkürzung für --replacepkgs --replacefiles"
 
 #: ../rpm.c:230
 msgid "print hash marks as package installs (good with -v)"
-msgstr ""
+msgstr "Fortschrittsanzeige bei der Paketinstallation (gut zusammen mit -v)"
 
 #: ../rpm.c:232
 msgid "don't verify package architecure"
-msgstr ""
+msgstr "Paket-Architektur nicht überprüfen"
 
 #: ../rpm.c:234
 msgid "don't verify package operating system"
-msgstr ""
+msgstr "Paket-Betriebssystem nicht überprüfen"
 
 #: ../rpm.c:236
 msgid "install documentation"
-msgstr ""
+msgstr "Dokumentation installieren"
 
 #: ../rpm.c:240
 msgid "don't execute any installation scripts"
-msgstr ""
+msgstr "Keine Installationsscripts ausführen"
 
 #: ../rpm.c:242
 msgid "print percentages as package installs"
-msgstr ""
+msgstr "Prozentangabe bei der Paketinstallation ausgeben"
 
 #: ../rpm.c:244
 msgid "install even if the package replaces installed files"
-msgstr ""
+msgstr "Auch dann installieren, wenn das Paket installierte Dateien ersetzt"
 
 #: ../rpm.c:246
 msgid "reinstall if the package is already present"
-msgstr ""
+msgstr "Neuinstallation wenn das Paket schon vorhanden ist"
 
 #: ../rpm.c:250
 msgid "don't install, but tell if it would work or not"
-msgstr ""
+msgstr "Nicht installieren - nur anzeigen ob es funktionieren würde"
 
 #: ../rpm.c:254
 msgid "upgrade package (same options as --install, plus)"
-msgstr ""
+msgstr "Paket aktualisieren (dieselben Optionen wie --install, außerdem)"
 
 #: ../rpm.c:256
 msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
-msgstr ""
+msgstr "Aktualisierung auf eine alte Version des Pakets (--force macht das bei Aktualisierungen automatisch)"
 
 #: ../rpm.c:260
 msgid "erase (uninstall) package"
-msgstr ""
+msgstr "Paket löschen (deinstallieren)"
 
 #: ../rpm.c:266
 msgid "do not execute any package specific scripts"
-msgstr ""
+msgstr "Keine paketspezifische Scripts ausführen"
 
 #: ../rpm.c:271
 msgid "build package, where <stage> is one of:"
-msgstr ""
+msgstr "Paket erstellen, <stage> ist einer der Buchstaben:"
 
 #: ../rpm.c:273
 msgid "prep (unpack sources and apply patches)"
-msgstr ""
+msgstr "präparieren (Quellen entpacken und Patch-Dateien anwenden"
 
 #: ../rpm.c:275
 msgid "list check (do some cursory checks on %files)"
-msgstr ""
+msgstr "kontrollieren (oberflächliche Überprüfung der %files)"
 
 #: ../rpm.c:277
 msgid "compile (prep and compile)"
-msgstr ""
+msgstr "kompilieren (präparieren und kompilieren"
 
 #: ../rpm.c:279
 msgid "install (prep, compile, install)"
-msgstr ""
+msgstr "installieren (präparieren, kompilieren, installieren)"
 
 #: ../rpm.c:281
 msgid "binary package (prep, compile, install, package)"
-msgstr ""
+msgstr "Binärpaket erstellen (präparieren, kompilieren, installieren und paketieren)"
 
 #: ../rpm.c:283
 msgid "bin/src package (prep, compile, install, package)"
-msgstr ""
+msgstr "Binär- und Quellpaket erstellen (präparieren, kompilieren, installieren und Paketieren"
 
 #: ../rpm.c:285
 msgid "skip straight to specified stage (only for c,i)"
-msgstr ""
+msgstr "Direkt zur angegeben Stufe springen (nur für c und i)"
 
 #: ../rpm.c:287
 msgid "remove build tree when done"
-msgstr ""
+msgstr "Erstellungsdateibaum nach Beendigung löschen"
 
 #: ../rpm.c:289
 msgid "generate PGP signature"
-msgstr ""
+msgstr "PGP Signatur generieren"
 
 #: ../rpm.c:291
 msgid "use s as the build root"
-msgstr ""
+msgstr "Benutze s als Stammverzeichnis der Erstellung"
 
 #: ../rpm.c:293
 msgid "do not execute any stages"
-msgstr ""
+msgstr "Keine Stufen ausführen"
 
 #: ../rpm.c:295
 msgid "set the time check to S seconds (0 disables it)"
-msgstr ""
+msgstr "Die Zeitüberprüfung auf S Sekunden setzen (0 zum Ausschalten)"
 
 #: ../rpm.c:298
 msgid "install source package, build binary package and remove spec file, sources, patches, and icons."
-msgstr ""
+msgstr "Quellpaket installieren, Binarypaket erstellen und spec-Datei, Quellen, Patch-Dateien und Icons löschen"
 
 #: ../rpm.c:300
 msgid "like --rebuild, but don't build any package"
-msgstr ""
+msgstr "wie --rebuild aber kein Paket erstellen"
 
 #: ../rpm.c:302
 msgid "sign a package (discard current signature)"
-msgstr ""
+msgstr "Ein Paket signieren (die aktuelle Signature wird verworfen)"
 
 #: ../rpm.c:304
 msgid "add a signature to a package"
-msgstr ""
+msgstr "Signatur einem Paket hinzufügen"
 
 #: ../rpm.c:307
 msgid "verify package signature"
-msgstr ""
+msgstr "Paketsignatur überprüfen"
 
 #: ../rpm.c:309
 msgid "skip any PGP signatures (MD5 only)"
-msgstr ""
+msgstr "alle PGP Signaturen (nur MD5) überspringen"
 
 #: ../rpm.c:311
 msgid "list the tags that can be used in a query format"
-msgstr ""
+msgstr "Tags auflisten, die im Anfragenformat benutzt werden können"
 
 #: ../rpm.c:313
 msgid "make sure a valid database exists"
-msgstr ""
+msgstr "Sicherstellen, daß eine gültige Datenbank vorhanden ist"
 
 #: ../rpm.c:315
 msgid "rebuild database from existing database"
-msgstr ""
+msgstr "Datenbank, aus der vorhandenen, neu erstellen"
 
 #: ../rpm.c:347
 msgid "unable to open: %s\n"
-msgstr "Kann Datei nicht öffnen: %s\n"
+msgstr "Datei kann nicht geöffnet werden: %s\n"
 
 #: ../rpm.c:360 ../rpm.c:371
 msgid "Build failed.\n"
@@ -521,15 +521,15 @@ msgstr "--dbpath wurde für eine Operation angeben, die keine Datenbank benutzt"
 
 #: ../rpm.c:866
 msgid "unexpected query specifiers"
-msgstr "Unerwartete Anfrageangaben"
+msgstr "Unerwartete Angaben für die Anfrage"
 
 #: ../rpm.c:870
 msgid "unexpected query source"
-msgstr "Unerwartete Anfragequelle"
+msgstr "Unerwartete Quelle der Anfrage"
 
 #: ../rpm.c:873
 msgid "only installation and upgrading may be forced"
-msgstr "nur die Installation und Aktualisierung (upgrade) darf erzwungen werden"
+msgstr "nur die Installation und Aktualisierung darf erzwungen werden"
 
 #: ../rpm.c:876
 msgid "--prefix may only be used when installing new packages"
@@ -561,7 +561,7 @@ msgstr "--includedocs darf nur während der Paketinstallation angegeben werden"
 
 #: ../rpm.c:903
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "es darf nur eines, --excludedocs oder --includedocs, angegeben werden"
+msgstr "es darf nur eines der Argumente --excludedocs und --includedocs angegeben werden"
 
 #: ../rpm.c:907
 msgid "--ignorearch may only be specified during package installation"
@@ -605,7 +605,7 @@ msgstr "--short-circuit darf nur zusammen mit -bc oder -bi benutzt werden"
 
 #: ../rpm.c:950
 msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage darf nur während Aktualisierungen (upgrades) benutzt werden"
+msgstr "--oldpackage darf nur während Aktualisierungen benutzt werden"
 
 #: ../rpm.c:953
 msgid "--dump may only be used during queryies"
@@ -613,7 +613,7 @@ msgstr "--dump darf nur während Anfragen benutzt werden"
 
 #: ../rpm.c:956
 msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "--dump der Anfragen muß mit  -l, -c, or -d benutzt werden"
+msgstr "--dump der Anfragen muß zusammen mit  -l, -c, or -d benutzt werden"
 
 #: ../rpm.c:961
 msgid "ftp options can only be used during package queries, installs, and upgrades"
@@ -621,11 +621,11 @@ msgstr "ftp Optionen können nur während Paketanfragen, -installationen und -aktu
 
 #: ../rpm.c:977
 msgid "Pass phrase check failed\n"
-msgstr "Passwortüberprüfung fehlgeschlagen\n"
+msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
 
 #: ../rpm.c:980
 msgid "Pass phrase is good.\n"
-msgstr "Das Passwort ist korrekt.\n"
+msgstr "Das Passwort ist richtig.\n"
 
 #: ../rpm.c:992
 msgid "--sign may only be used during package building"
@@ -633,250 +633,40 @@ msgstr "--sign darf nur während der Paketerstellung benutzt werden"
 
 #: ../rpm.c:1010
 msgid "unexpected arguments to --querytags "
-msgstr "Unerwartete Argumente für --querytags "
+msgstr "Unerwartete Argumente zu --querytags "
 
 #: ../rpm.c:1021
 msgid "no packages given for signature check"
-msgstr "Keine Pakete für die Signaturüberprüfung angegeben"
+msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
 
 #: ../rpm.c:1026
 msgid "no packages given for signing"
-msgstr "Keine Pakete für die Signatur angeben"
+msgstr "Es wurden keine Pakete für die Signatur angeben"
 
 #: ../rpm.c:1035
 msgid "no packages files given for rebuild"
-msgstr "Keine Paketdateien für die Neuerstellung angegeben"
+msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
 
 #: ../rpm.c:1087
 msgid "no spec files given for build"
-msgstr "Keine spec-Datei für die Erstellung angegeben"
+msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
 
 #: ../rpm.c:1098
 msgid "no packages given for uninstall"
-msgstr "Keine Pakete für die Deinstallation angegeben"
+msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
 
 #: ../rpm.c:1130
 msgid "no packages given for install"
-msgstr "Kein Pakete für die Installation angegeben"
+msgstr "Es wurden keine Pakete für die Installation angegeben"
 
 #: ../rpm.c:1141
 msgid "extra arguments given for query of all packages"
-msgstr "Zusätzliche Argumente für Anfrage aller Pakete angegeben"
+msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
 #: ../rpm.c:1159
 msgid "no arguments given for query"
-msgstr "Kein Argument für die Anfrage angegeben"
+msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
 #: ../rpm.c:1189
 msgid "no arguments given for verify"
-msgstr "Kein Argument für die Überprüfung angegeben"
-# msgid "                        - install source package, build binary package,"
-# msgstr "                        - installiere das Quellpaket, erzeuge das Binärpaket"
-# 
-# msgid "\t\t\t  p - prep (unpack sources and apply patches)"
-# msgstr "\t\t\t  p - vorbereiten (Quelltexte entpacken und Patchdateien\n"
-# 
-# msgid "\t   --whatprovides <i> - query packages which provide <i> capability"
-# msgstr "\t   --whatprovides <i> - bestimme die Pakete, die die Fähigkeit <i>\n"
-# 
-# msgid "\t\t\t  same package specification options as -q"
-# msgstr "\t\t\t  dieselben Paketeauswahloptionen wie bei -q"
-# 
-# msgid "      --oldpackage      - upgrade to an old version of the package (--force"
-# msgstr "      --oldpackage      - aktualisiere auf alte Version des Pakets (--force"
-# 
-# msgid "        -d                - list only documentation files (implies -l)"
-# msgstr "        -d                - liste nur Dokumentationsdateien auf (impliziert -l)"
-# 
-# msgid "    -e <package>        - erase (uninstall) package"
-# msgstr "    -e <package>        - lösche (deinstalliere) das Paket"
-# 
-# msgid "\t\t\t  c - compile (prep and compile)"
-# msgstr "\t\t\t  c - kompiliere (vorbereiten, kompilieren)"
-# 
-# msgid "    -b<stage> <spec>    - build package, where <stage> is one of:"
-# msgstr "    -b<stage> <spec>    - erstelle ein Paket. <stage> ist eine Buchstabe aus:"
-# 
-# msgid "      --buildroot <s>   - use s as the build root"
-# msgstr "      --buildroot <s>   - benutze s als Stammverzeichnis für die Erstellung"
-# 
-# msgid "    --resign <pkg>+     - sign a package (discard current signature)"
-# msgstr "    --resign <pkg>+     - signiere ein Paket (löscht die aktuelle Signatur)"
-# 
-# msgid "   --help                 - print this message"
-# msgstr "   --help                 - zeige diesen Text an"
-# 
-# msgid "        -c                - list only configuration files (implies -l)"
-# msgstr "        -c                - liste nur Konfigurationsdateien auf (impliziert -l)"
-# 
-# msgid "    --rebuilddb         - rebuild database from existing database"
-# msgstr "    --rebuilddb         - erzeuge eine Datenbank aus einer existierenden"
-# 
-# msgid "        -l                - display package file list"
-# msgstr "        -l                - zeige Dateiliste des Pakets an"
-# 
-# msgid "      --timecheck <s>   - set the time check to s seconds (0 disables it)"
-# msgstr "      --timecheck <s>   - setze die Zeitüberprüfung auf s Sekunden (0 schaltet\n"
-# 
-# msgid "    -i <packagefile>    - install package"
-# msgstr "    -i <packagefile>    - installiere ein Paket"
-# 
-# msgid "\t  --prefix <dir>    - relocate the package to <dir>, if relocatable"
-# msgstr "\t  --prefix <dir>    - verschiebe das Pakete in das Verzeichnis <dir>,\n"
-# 
-# msgid "        -P                - like -p, but read package names from stdin"
-# msgstr "        -P                - wie -p, liest den Paketnamen aber aus stdin"
-# 
-# msgid "      --nofiles         - do not verify file attributes"
-# msgstr "      --nofiles         - überprüfe die Dateiattribute nicht"
-# 
-# msgid "\t\t\t  l - list check (do some cursory checks on %files)"
-# msgstr "\t\t\t  l - kontrollieren (oberflächliche Überprüfung der\n"
-# 
-# msgid "                          on upgrades does this automatically)"
-# msgstr "                          macht das beim Aktualisieren automatisch)"
-# 
-# msgid "      --percent         - print percentages as package installs"
-# msgstr "      --percent         - Prozentangabe während der Paketinstallation"
-# 
-# msgid "      --test            - don't install, but tell if it would work or not"
-# msgstr "      --test            - nicht installieren, nur zeigen ob es funktionieren\n"
-# 
-# msgid "    --verify            - verify a package installation"
-# msgstr "    --verify            - überprüfe die Paketinstallation"
-# 
-# msgid "                        - like --rebuild, but don't package"
-# msgstr "                        - wie --rebuild, aber nicht paketieren"
-# 
-# msgid "                          and remove spec file, sources, patches, and icons."
-# msgstr "                          und lösche die spec-Datei, Quelltexte, Patchdateien\n"
-# 
-# msgid "      --replacefiles    - install even if the package replaces installed files"
-# msgstr "      --replacefiles    - installiere auch, wenn das Paket ein installiertes\n"
-# 
-# msgid "      --noscripts       - don't execute any installation scripts"
-# msgstr "      --noscripts       - führe keine Installationsscripts aus"
-# 
-# msgid "        --scripts         - print the various [un]install scripts"
-# msgstr "        --scripts         - zeige die diversen (De-)Installationsscripts"
-# 
-# msgid "    --initdb            - make sure a valid database exists"
-# msgstr "    --initdb            - stelle sicher, daß eine gültige Datenbank vorhanden\n"
-# 
-# msgid "\t\t\t  b - binary package (prep, compile, install, package)"
-# msgstr "\t\t\t  b - Binärpaket paketieren (vorbereiten, kompilieren,\n"
-# 
-# msgid "        -a                - query all packages"
-# msgstr "        -a                - Anfrage betrifft alle Pakete"
-# 
-# msgid "    --querytags         - list the tags that can be used in a query format"
-# msgstr "    --querytags         - liste die Tags die in einem Anfrageformat benutzt\n"
-# 
-# msgid "        -i                - display package information"
-# msgstr "        -i                - zeige Paketinformationen an"
-# 
-# msgid "    -U <packagefile>\t- upgrade package (same options as --install, plus)"
-# msgstr "    -U <packagefile>\t- aktualisiere ein Paket (gleiche Optionen wie\n"
-# 
-# msgid "   file names as well as the following options:\n"
-# msgstr " "
-# 
-# msgid "    --addsign <pkg>+    - add a signature to a package"
-# msgstr "    --addsign <pkg>+    - füge eine Signatur an das Paket an"
-# 
-# msgid "        -F                - like -f, but read file names from stdin"
-# msgstr "        -F                - wie -f, liest den Dateinamen aber aus stdin"
-# 
-# msgid "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-# msgstr "        -p <packagefile>+ - Anfrage bezieht sich auf (nicht installiertes)\n"
-# 
-# msgid "      --sign            - generate PGP signature"
-# msgstr "      --sign            - erzeuge eine PGP Signatur"
-# 
-# msgid "\t\t\t  i - install (prep, compile, install)"
-# msgstr "\t\t\t  i - installiere (vorbereiten, kompilieren,\n"
-# 
-# msgid "\t   --whatrequires <i> - query packages which require <i> capability"
-# msgstr "\t   --whatrequires <i> - bestimme die Pakete, die die Fähigkeit <i>\n"
-# 
-# msgid "      --test            - do not execute any stages"
-# msgstr "      --test            - keine der Stufen wirklich ausführen"
-# 
-# msgid "        --dump            - show all verifiable information for each file"
-# msgstr "        --dump            - zeige zu jedem File alle überprüfbaren\n"
-# 
-# msgid "      --clean           - remove build tree when done"
-# msgstr "      --clean           - entferne den Erstellungsdateibaum nach Beendigung"
-# 
-# msgid "        -R                - list package dependencies"
-# msgstr "        -R                - liste Paketabhängigkeiten auf"
-# 
-# msgid "      --force           - short hand for --replacepkgs --replacefiles"
-# msgstr "      --force           - Abkürzung für --replacepkgs --replacefiles"
-# 
-# msgid "      --hash            - print hash marks as package installs (good with -v)"
-# msgstr "      --hash            - Fortschrittsanzeige während der Paketinstallation"
-# 
-# msgid "        -s                - show file states (implies -l)"
-# msgstr "        -s                - zeige Status der Dateien (impliziert -l)"
-# 
-# msgid "      --includedocs     - install documentation"
-# msgstr "      --includedocs     - installiere die Dokumentation"
-# 
-# msgid "      --short-circuit   - skip straight to specified stage (only for c,i)"
-# msgstr "      --short-circuit   - springe direkt zur angegebenen Stufe (nur für c,i)"
-# 
-# msgid "      --excludedocs     - do not install documentation"
-# msgstr "      --excludedocs     - installiere die Dokumentation nicht"
-# 
-# msgid "\t\t\t  a - bin/src package (prep, compile, install, package)"
-# msgstr "\t\t\t  a - Binär- und Quellpaket paketieren (vorbereiten,\n"
-# 
-# msgid "      --replacepkgs     - reinstall if the package is already present"
-# msgstr "      --replacepkgs     - installiere neu, wenn das Paket schon vorhanden ist"
-# 
-# msgid "                            (must be used with -l, -c, or -d)"
-# msgstr "                            (muß zusammen mit -l, -c, or -d benutzt werden)"
-# 
-# msgid "    --checksig <pkg>+   - verify package signature"
-# msgstr "    --checksig <pkg>+   - überprüfe die Paketsignatur"
-# 
-# msgid "      --nopgp           - skip any PGP signatures (MD5 only)"
-# msgstr "      --nopgp           - überspringe alle PGP Signaturen (nur MD5)"
-# 
-# msgid "        --provides        - list capabilbities package provides"
-# msgstr "        --provides        - liste die Fähigkeiten, die das Paket bereitstellt"
-# 
-# msgid "        -f <file>+        - query package owning <file>"
-# msgstr "        -f <file>+        - bestimme das Paket, zu dem <file> gehört"
-# 
-# msgid "      --ignorearch      - don't verify package architecure"
-# msgstr "      --ignorearch      - überprüfe die Paketarchitektur nicht"
-# 
-# msgid "      --ignoreos        - don't verify package operating system"
-# msgstr "      --ignoreos        - überprüfe das Paketbetriebssystem nicht"
-# 
-# msgid "        --requires        - list capabilbities package requires"
-# msgstr "        --requires        - liste die Fähigkeiten, die das Paket benötigt"
-# 
-# msgid "   --version              - print the version of rpm being used"
-# msgstr "   --version              - zeige die benutzte rpm Version an"
-# 
-# msgid "      --nodeps          - do not verify package dependencies"
-# msgstr "      --nodeps          - überprüfe die Paketabhängigkeiten nicht"
-# 
-# msgid "      --root <dir>      - use <dir> as the top level directory"
-# msgstr "      --root <dir>      - benutze <dir> als Stammverzeichnis"
-# 
-# msgid "      --dbpath <dir>    - use <dir> as the directory for the database"
-# msgstr "      --dbpath <dir>    - benutze <dir> als Verzeichnis für die Datenbank"
-# 
-# msgid "      --noscripts       - do not execute any package specific scripts"
-# msgstr "      --noscripts       - keine paketspezifischen Scripts ausführen"
-# 
-# msgid "      --root <dir>\t- use <dir> as the top level directory"
-# msgstr "      --root <dir>\t- benutze <dir> als Stammverzeichnis"
-# 
-# msgid "      --root <dir>\t    - use <dir> as the top level directory"
-# msgstr "      --root <dir>\t    - benutze <dir> als Stammverzeichnis"
-# 
+msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
