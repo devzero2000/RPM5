@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-06 16:25-0400\n"
+"POT-Creation-Date: 2004-10-08 14:39-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -63,12 +63,10 @@ msgid "Building for target %s\n"
 msgstr "Sestavuji pro cíl %s\n"
 
 #: rpm2cpio.c:55
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "parametr není RPM balíèek\n"
 
 #: rpm2cpio.c:60
-#, c-format
 msgid "error reading header from package\n"
 msgstr "chyba pøi pøi ètení hlavièky balíèku\n"
 
@@ -118,12 +116,12 @@ msgid "RPM version %s\n"
 msgstr "RPM verze %s\n"
 
 #: rpmqv.c:136
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (c) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:137
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Tento program lze volnì ¹íøit podle podmínek GNU GPL."
@@ -272,7 +270,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametry pro --root (-r) musejí zaèínat znakem /"
 
 #: rpmqv.c:536
-#, c-format
 msgid "no files to sign\n"
 msgstr "¾ádné soubory k podepsání\n"
 
@@ -282,7 +279,6 @@ msgid "cannot access file %s\n"
 msgstr "pøístup k souboru %s se nezdaøil\n"
 
 #: rpmqv.c:560
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp nenalezeno: "
 
@@ -291,12 +287,10 @@ msgid "Enter pass phrase: "
 msgstr "Vlo¾te heslovou frázi: "
 
 #: rpmqv.c:567
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Chybná heslová fráze\n"
 
 #: rpmqv.c:571
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Heslová fráze je v poøádku.\n"
 
@@ -310,7 +304,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign mù¾e být pou¾it jen pøi sestavování balíèkù"
 
 #: rpmqv.c:600
-#, c-format
 msgid "exec failed\n"
 msgstr "spu¹tìní selhalo\n"
 
@@ -1604,12 +1597,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:473
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1625,7 +1616,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:672
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1645,7 +1635,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:716
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -3056,7 +3045,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3081,7 +3069,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3154,9 +3141,6 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3201,12 +3185,10 @@ msgid "V3 DSA signature: "
 msgstr "generovat PGP/GPG podpis"
 
 #: lib/signature.c:1362
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1389
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3775,7 +3757,6 @@ msgid "(no error)"
 msgstr "(chyba: 0x%x)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 #, fuzzy
 msgid "fatal error: "

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 9
+Release: 11
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -494,6 +494,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Oct  8 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-11
+- honor inherited SIG_IGN when establishing rpmdb signal exit (#134474).
+
 * Wed Oct  6 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-10
 - display caught signals to diagnose #134474 (gonna be SIGPIPE).
 - display N-V-R.A in dependency failure messages.
