@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-14 10:39-0400\n"
+"POT-Creation-Date: 2002-08-14 20:49-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2619,7 +2619,7 @@ msgstr "virhe: %s ei voida asentaa\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "ryhmässä %s ei ole paketteja\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1190
+#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1193
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2654,7 +2654,7 @@ msgstr "virhe: en voi avata %s\n"
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
 
-#: lib/rpminstall.c:1184
+#: lib/rpminstall.c:1187
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

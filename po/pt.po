@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-08-14 10:39-0400\n"
+"POT-Creation-Date: 2002-08-14 20:49-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -2564,7 +2564,7 @@ msgstr "o %s não pode ser instalado\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "encontrados %d pacotes com código-fonte e %d binários\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1190
+#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1193
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2598,7 +2598,7 @@ msgstr "não consigo aceder ao %s: %s\n"
 msgid "Installing %s\n"
 msgstr "A instalar o %s\n"
 
-#: lib/rpminstall.c:1184
+#: lib/rpminstall.c:1187
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

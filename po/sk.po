@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-14 10:39-0400\n"
+"POT-Creation-Date: 2002-08-14 20:49-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2618,7 +2618,7 @@ msgstr "%s nie je mo¾né nain¹talova»\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1190
+#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1193
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2652,7 +2652,7 @@ msgstr "nie je mo¾né otvori» %s\n"
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpminstall.c:1184
+#: lib/rpminstall.c:1187
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

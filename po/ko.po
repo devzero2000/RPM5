@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-08-14 10:39-0400\n"
+"POT-Creation-Date: 2002-08-14 20:49-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2553,7 +2553,7 @@ msgstr "%s(은)는 설치할 수 없습니다\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d의 소스와 %d의 바이너리 패키지가 검색되었습니다\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1190
+#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1193
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2587,7 +2587,7 @@ msgstr "%s(을)를 열 수 없음: %s\n"
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1184
+#: lib/rpminstall.c:1187
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
