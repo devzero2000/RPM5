@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.26
+Release: 0.27
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -391,6 +391,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri May 25 2001 Jeff Johnson <jbj@redhat.com>
+- perform db->verify when closing db files.
+
 * Wed May 23 2001 Jeff Johnson <jbj@redhat.com>
 - headerFree() returns NULL, _free is C++ safe.
 - remove all header region assertion failures, return NULL instead.
