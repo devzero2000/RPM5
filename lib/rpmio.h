@@ -129,18 +129,13 @@ extern /*@null@*/ FD_t fdDup(int fdno);
 extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #endif
 
-/* XXX legacy interface used in rpm2html */
-#define	fdClose		fdio->close
-#define	fdOpen		fdio->_open
+/* Legacy interfaces needed by gnorpm, rpmfind et al */
 
-/* XXX legacy interface used in gnorpm */
-#define	fdRead		fdio->read
-#define	fdWrite		fdio->write
-#define	fdFileno	fdio->_fileno
-
-#if 0
-#define	fdSeek		fdio->seek
-#endif
+int	fdFileno(void * cookie);
+/*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode);
+ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count);
+ssize_t	fdWrite(void * cookie, const char * buf, size_t count);
+int	fdClose( /*@only@*/ void * cookie);
 
 #define	fdLink(_fd, _msg)	fdio->_fdref(_fd, _msg, __FILE__, __LINE__)
 #define	fdFree(_fd, _msg)	fdio->_fdderef(_fd, _msg, __FILE__, __LINE__)
@@ -174,26 +169,6 @@ int	fdReadable(FD_t fd, int secs);
 int	ufdCopy(FD_t sfd, FD_t tfd);
 int	ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 /*@observer@*/ const char *const ftpStrerror(int errorNumber);
-
-#if 0
-#define	ufdRead		ufdio->read
-#define	ufdWrite	ufdio->write
-#define	ufdSeek		ufdio->seek
-#define	ufdClose	ufdio->close
-#define	ufdLink		ufdio->_fdref
-#define	ufdFree		ufdio->_fdderef
-#define	ufdNew		ufdio->_fdnew
-#define	ufdFileno	ufdio->_fileno
-#define	ufdOpen		ufdio->_open
-#define	ufdFopen	ufdio->_fopen
-#define	ufdFfileno	ufdio->_ffileno
-#define	ufdFflush	ufdio->_fflush
-#define	ufdMkdir	ufdio->_mkdir
-#define	ufdChdir	ufdio->_chdir
-#define	ufdRmdir	ufdio->_rmdir
-#define	ufdRename	ufdio->_rename
-#define	ufdUnlink	ufdio->_unlink
-#endif
 
 int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 #define	timedRead	ufdio->read

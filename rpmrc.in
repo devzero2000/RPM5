@@ -9,7 +9,10 @@
 
 optflags: i386 -O2 -m486 -fno-strength-reduce
 optflags: ia64 -O2
-optflags: alpha -O2
+
+# XXX Please note that -mieee has been added in rpm-3.0.5.
+optflags: alpha -O2 -mieee
+
 optflags: sparc -O2
 optflags: sparcv9 -O2 -mv8 -mtune=ultrasparc
 optflags: sparc64 -O2

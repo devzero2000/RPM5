@@ -229,7 +229,8 @@ fi
 
 %changelog
 * Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
-- update brp-* scripts from rpm-4.0.
+- update brp-* scripts from rpm-4.0, enable in per-platform config.
+- alpha: add -mieee to default optflags.
 
 * Thu Mar 15 2000 Jeff Johnson <jbj@redhat.com>
 - portability: skip bzip2 if not available.
