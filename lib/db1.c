@@ -194,7 +194,7 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
 
 	free(fileNames);
 
-	headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, 
+	(void) headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, 
 			  newFileNames, fileCount);
     }
 
@@ -497,7 +497,7 @@ exit:
 	dbi->dbi_vec = &db1vec;
 	*dbip = dbi;
     } else
-	db1close(dbi, 0);
+	(void) db1close(dbi, 0);
 
     base = _free(base);
     urlfn = _free(urlfn);
