@@ -19,7 +19,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-%{expand: %%1efine rpm_version %{version}}
+%{expand: %%define rpm_version %{version}}
 Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
