@@ -15,7 +15,8 @@
 static void setStandardMacros(Spec spec, char *arch, char *os);
 
 int parseSpec(Spec *specp, char *specFile, char *buildRoot,
-	      int inBuildArch, char *passPhrase, char *cookie)
+	      int inBuildArch, char *passPhrase, char *cookie,
+	      int anyarch)
 {
     int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -65,7 +66,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     while (parsePart != PART_NONE) {
 	switch (parsePart) {
 	  case PART_PREAMBLE:
-	    parsePart = parsePreamble(spec, initialPackage);
+	    parsePart = parsePreamble(spec, initialPackage, anyarch);
 	    initialPackage = 0;
 	    break;
 	  case PART_PREP:
@@ -118,7 +119,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 		    rpmSetMachine(spec->buildArchitectures[x], NULL);
 		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
 				  specFile, buildRoot, 1,
-				  passPhrase, cookie)) {
+				  passPhrase, cookie, anyarch)) {
 			spec->buildArchitectureCount = index;
 			freeSpec(spec);
 			return RPMERR_BADSPEC;

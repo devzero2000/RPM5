@@ -56,7 +56,7 @@ static int checkForValidArchitectures(Spec spec);
 static int isMemberInEntry(Header header, char *name, int tag);
 static int readIcon(Header h, char *file);
     
-int parsePreamble(Spec spec, int initialPackage)
+int parsePreamble(Spec spec, int initialPackage, int anyarch)
 {
     int nextPart;
     int tag, rc;
@@ -135,8 +135,9 @@ int parsePreamble(Spec spec, int initialPackage)
 	return RPMERR_BADSPEC;
     }
 
-    if (checkForValidArchitectures(spec)) {
-	return RPMERR_BADSPEC;
+    /* XXX Skip valid arch check if only doing -bs processing */
+    if (!anyarch && checkForValidArchitectures(spec)) {
+	    return RPMERR_BADSPEC;
     }
 
     if (pkg == spec->packages) {
