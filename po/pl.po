@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-09 18:19+0000\n"
+"POT-Creation-Date: 2004-03-13 02:35+0000\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -2320,92 +2320,92 @@ msgstr "pakiet nie ma list w³a¶cicieli/grup plików\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "pakiet nie ma list w³a¶cicieli ani id plików\n"
 
-#: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:476
+#: lib/query.c:430 lib/query.c:477 lib/rpminstall.c:123 lib/rpminstall.c:476
 #: lib/rpminstall.c:607 lib/rpminstall.c:1032 lib/rpmts.c:586
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê: %s\n"
 
-#: lib/query.c:443
+#: lib/query.c:445
 #, c-format
 msgid "query of %s failed\n"
 msgstr "odpytywanie %s nie powiod³o siê\n"
 
-#: lib/query.c:453
+#: lib/query.c:455
 msgid "old format source packages cannot be queried\n"
 msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
-#: lib/query.c:488 lib/rpminstall.c:622
+#: lib/query.c:490 lib/rpminstall.c:622
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: nie jest pakietem rpm (ani \"manifestem\" pakietu): %s\n"
 
-#: lib/query.c:517
+#: lib/query.c:519
 msgid "no packages\n"
 msgstr "brak pakietów\n"
 
-#: lib/query.c:535
+#: lib/query.c:537
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "nieznana etykieta: \"%s\"\n"
 
-#: lib/query.c:561
+#: lib/query.c:563
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:570
+#: lib/query.c:572
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:583 lib/query.c:604 lib/query.c:624 lib/query.c:658
+#: lib/query.c:585 lib/query.c:606 lib/query.c:626 lib/query.c:660
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "b³êdne sformu³owanie %s: %s\n"
 
-#: lib/query.c:593 lib/query.c:610 lib/query.c:634 lib/query.c:663
+#: lib/query.c:595 lib/query.c:612 lib/query.c:636 lib/query.c:665
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¿aden pakiet nie pasuje do %s: %s\n"
 
-#: lib/query.c:673
+#: lib/query.c:675
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:684
+#: lib/query.c:686
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:719
+#: lib/query.c:721
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:723
+#: lib/query.c:725
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:748
+#: lib/query.c:750
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:751
+#: lib/query.c:753
 #, c-format
 msgid "package record number: %u\n"
 msgstr "numer rekordu pakietu: %u\n"
 
-#: lib/query.c:756
+#: lib/query.c:758
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:766 lib/rpminstall.c:792
+#: lib/query.c:768 lib/rpminstall.c:792
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2915,17 +2915,17 @@ msgstr ""
 msgid "%s:  line number %d is missing fields (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:406
+#: lib/rpmsx.c:408
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
 
-#: lib/rpmsx.c:421 lib/rpmsx.c:436
+#: lib/rpmsx.c:423 lib/rpmsx.c:438
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmsx.c:449
+#: lib/rpmsx.c:451
 #, c-format
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
