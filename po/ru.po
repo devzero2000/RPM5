@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 1.1\n"
 "POT-Creation-Date: 2000-08-16 09:09-0400\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
-"Last-Translator: Leon Kanter <leon@blackcatlinux.com>\n"
+"Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
@@ -54,7 +54,7 @@ msgstr "Файл %s не похож на spec файл.\n"
 #: build.c:284
 #, c-format
 msgid "Building target platforms: %s\n"
-msgstr "Целевые платформы: %s\n"
+msgstr "Целевые платформы для сборки: %s\n"
 
 #: build.c:299
 #, c-format
@@ -331,7 +331,7 @@ msgstr "использовать <файл> вместо /etc/rpmrc и $HOME/.rpmrc"
 
 #: rpm.c:298 rpmqv.c:403
 msgid "display final rpmrc and macro configuration"
-msgstr "показать текущее значение ресурсов и макросов"
+msgstr "показать текущее значение rpmrc и макросов"
 
 #: rpm.c:300 rpmqv.c:411
 msgid "be a little more verbose"
@@ -631,15 +631,15 @@ msgstr "выводить процент готовности по мере установки пакета"
 
 #: rpm.c:422 rpmqv.c:537
 msgid "install even if the package replaces installed files"
-msgstr "устанавливать даже если пакет перепишет уже установленные файлы"
+msgstr "устанавливать, даже если пакет перепишет уже установленные файлы"
 
 #: rpm.c:424 rpmqv.c:539
 msgid "reinstall if the package is already present"
-msgstr "переустановить если пакет уже установлен"
+msgstr "переустановить, если пакет уже установлен"
 
 #: rpm.c:428 rpmqv.c:541
 msgid "don't install, but tell if it would work or not"
-msgstr "не устанавливать, а только сообщить удастся ли установка"
+msgstr "не устанавливать, а только сообщить, удастся ли установка"
 
 #: rpm.c:431
 msgid "    --upgrade <packagefile>"
@@ -695,7 +695,7 @@ msgstr "собрать пакет, где <stage> - одно из:"
 
 #: rpm.c:461 rpmqv.c:572
 msgid "prep (unpack sources and apply patches)"
-msgstr "prep (исполнить %prep)"
+msgstr "prep (секция %prep, развернуть исходники и наложить заплаты)"
 
 #: rpm.c:463 rpmqv.c:574
 #, c-format
@@ -729,7 +729,7 @@ msgstr "после завершения удалить дерево исходников"
 
 #: lib/poptBT.c:151 rpm.c:477 rpmqv.c:590
 msgid "remove sources when done"
-msgstr "после завершения удалить исходникb"
+msgstr "после завершения удалить исходники"
 
 #: rpm.c:479 rpmqv.c:592
 msgid "remove spec file when done"
@@ -753,7 +753,7 @@ msgstr "      --target=<платформа>+"
 
 #: rpm.c:485 rpmqv.c:598
 msgid "build the packages for the build targets platform1...platformN."
-msgstr "построить пакеты для целевых платформ платформа1...платформаN"
+msgstr "собрать пакеты для целевых платформ платформа1...платформаN"
 
 #: rpm.c:487 rpmqv.c:600
 msgid "do not execute any stages"
@@ -776,8 +776,8 @@ msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
-"установить SRPM, собрать RPM и удалить spec-файл, файлы с исходными "
-"текстами, патчи и пиктограммы."
+"установить исходный пакет, собрать двоичный пакет и удалить spec-файл, файлы "
+"с исходными текстами, заплаты и пиктограммы."
 
 #: rpm.c:493
 msgid "    --recompile <src_pkg> "
@@ -893,11 +893,11 @@ msgstr "за один раз может быть исполнен только один тип проверки или запроса"
 
 #: rpm.c:820 rpmqv.c:977
 msgid "unexpected query flags"
-msgstr "неожиданный источник запроса"
+msgstr "неожиданные флаги запроса"
 
 #: rpm.c:823 rpmqv.c:980
 msgid "unexpected query format"
-msgstr "неожиданный источник запроса"
+msgstr "неожиданный формат запроса"
 
 #: rpm.c:826 rpmqv.c:983
 msgid "unexpected query source"
@@ -1061,19 +1061,19 @@ msgstr "нет доступа к файлу %s\n"
 
 #: rpm.c:975 rpmqv.c:1166
 msgid "pgp not found: "
-msgstr "pgp не найден: "
+msgstr "pgp не найдена: "
 
 #: rpm.c:979 rpmqv.c:1170
 msgid "Enter pass phrase: "
-msgstr "Введите пароль: "
+msgstr "Введите ключевую фразу: "
 
 #: rpm.c:981 rpmqv.c:1172
 msgid "Pass phrase check failed\n"
-msgstr "Неверный пароль\n"
+msgstr "Неверная ключевая фраза\n"
 
 #: rpm.c:984 rpmqv.c:1175
 msgid "Pass phrase is good.\n"
-msgstr "Пароль принят.\n"
+msgstr "Ключевая фраза принята.\n"
 
 #: rpm.c:989 rpmqv.c:1180
 msgid "Invalid %%_signature spec in macro file.\n"
@@ -1126,20 +1126,20 @@ msgstr "не заданы аргументы для верификации"
 #: rpm2cpio.c:23
 #, c-format
 msgid "cannot open package: %s\n"
-msgstr "не могу открыть %s/packages.rpm\n"
+msgstr "невозможно открыть пакет: %s\n"
 
 #: rpm2cpio.c:33
 msgid "argument is not an RPM package\n"
-msgstr "заданный аргумент - не пакет RPM\n"
+msgstr "заданный аргумент не является пакетом RPM\n"
 
 #: rpm2cpio.c:37
 msgid "error reading header from package\n"
-msgstr "ошибка чтения хедера из пакета\n"
+msgstr "ошибка чтения заголовка из пакета\n"
 
 #: rpm2cpio.c:59
 #, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr "не могу открыть файл %s\n"
+msgstr "невозможно повторно открыть payload: %s\n"
 
 #: rpmqv.c:284
 #, c-format
@@ -1444,7 +1444,7 @@ msgstr "   --recompile <src_pkg>  "
 
 #: rpmqv.c:610
 msgid "   --resign <pkg>+        "
-msgstr "   --resign <пакет>+      "
+msgstr "   --resign <pkg>+      "
 
 #: rpmqv.c:612
 msgid "   --addsign <pkg>+       "
@@ -1474,7 +1474,8 @@ msgstr "опция --dbpath задана для операции, не использующей базу данных"
 msgid ""
 "--notriggers may only be specified during package installation and erasure"
 msgstr ""
-"опция --justdb может быть указана только при установке или удалении пакета"
+"опция --notriggers может быть указана только при установке или удалении "
+"пакета"
 
 #: rpmqv.c:1242
 msgid "no packages files given for rebuild"
@@ -1495,12 +1496,12 @@ msgstr "Невозможно открыть временный файл"
 #: build/build.c:189
 #, c-format
 msgid "Executing(%s): %s\n"
-msgstr "Исполняется %s: %s\n"
+msgstr "Выполняется(%s): %s\n"
 
 #: build/build.c:195
 #, c-format
 msgid "Exec of %s failed (%s): %s"
-msgstr "Исполнить %s не удалось (%s): %s"
+msgstr "Выполнить %s не удалось (%s): %s"
 
 #: build/build.c:203
 #, c-format
@@ -1610,7 +1611,7 @@ msgstr "Дубликат locale %.*s в %%lang(%s)"
 
 #: build/files.c:666
 msgid "Hit limit for %%docdir"
-msgstr "Лимит для %%docdir превзойден"
+msgstr "Лимит для %%docdir превышен"
 
 #: build/files.c:672
 msgid "Only one arg for %%docdir"
@@ -1620,7 +1621,7 @@ msgstr "Только один аргумент для %%docdir"
 #: build/files.c:700
 #, c-format
 msgid "Two files on one line: %s"
-msgstr "Два файла на одной строке: %s"
+msgstr "Два файла в одной строке: %s"
 
 #: build/files.c:713
 #, c-format
@@ -1688,13 +1689,13 @@ msgstr "Неверный файл %s: %s"
 #: build/files.c:1578 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
-msgstr "Неверная пара хозяин/группа: %s"
+msgstr "Неверная пара владелец/группа: %s"
 
 #. XXX this error message is probably not seen.
 #: build/files.c:1633
 #, c-format
 msgid "Couldn't exec %s: %s"
-msgstr "Не могу исполнить %s: %s"
+msgstr "Невозможно вылнить %s: %s"
 
 #: build/files.c:1638
 #, c-format
@@ -1719,7 +1720,7 @@ msgstr "Поиск %s (используя %s): ...\n"
 #: build/files.c:1848 build/files.c:1858
 #, c-format
 msgid "Failed to find %s:"
-msgstr "Невозможно найти %s"
+msgstr "Невозможно найти %s:"
 
 #: build/files.c:1968
 #, c-format
@@ -1737,7 +1738,7 @@ msgstr "RPMERR_INTERNAL: Достигнут предел в getGname()\n"
 #: build/names.c:186
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
-msgstr "Не могу канонизировать имя компьютера: %s\n"
+msgstr "Невозможно канонизировать имя компьютера: %s\n"
 
 #: build/pack.c:48
 #, c-format
@@ -1797,7 +1798,7 @@ msgstr "readRPM: чтение %s: %s\n"
 #: build/pack.c:257
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
-msgstr "readRPM: %s - не пакет RPM\n"
+msgstr "readRPM: %s  не является пакетом RPM\n"
 
 #: build/pack.c:263
 #, c-format
@@ -1826,7 +1827,7 @@ msgstr "Генерируется подпись: %d\n"
 #: build/pack.c:465
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
-msgstr "Невозможно прочитать цель подписи %s: %s"
+msgstr "Невозможно открыть цель подписи %s: %s"
 
 #: build/pack.c:475
 #, c-format
@@ -1962,13 +1963,13 @@ msgstr "Неизвестный тип пиктограммы: %s"
 #: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
-msgstr "строка %d: Неверный формат ярлыка: %s"
+msgstr "строка %d: Неверный тэг: %s"
 
 #. Empty field
 #: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
-msgstr "строка %d: Пустой ярлык: %s"
+msgstr "строка %d: Пустой тэг: %s"
 
 #: build/parsePreamble.c:368 build/parsePreamble.c:375
 #, c-format
@@ -2018,7 +2019,7 @@ msgstr "Пакет уже существует: %s"
 #: build/parsePreamble.c:708
 #, c-format
 msgid "line %d: Unknown tag: %s"
-msgstr "строка %d: Неизвестный ярлык: %s"
+msgstr "строка %d: Неизвестный тэг: %s"
 
 #: build/parsePreamble.c:733
 msgid "Spec file can't use BuildRoot"
@@ -2163,7 +2164,7 @@ msgstr "неверное объявление %%include"
 
 #: build/parseSpec.c:471
 msgid "No buildable architectures"
-msgstr "Нет архитектур, которые можно построить"
+msgstr "Нет архитектур, для которых возможна сборка"
 
 #: build/parseSpec.c:520
 msgid "Package has no %%description: %s"
@@ -2295,7 +2296,7 @@ msgstr "%s: %-45s NO\n"
 #: lib/depends.c:1019
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
-msgstr "%s: (%s, %s) добавлено к каш зависимостей\n"
+msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
 #. requirements are not satisfied.
 #: lib/depends.c:1073
@@ -2361,32 +2362,32 @@ msgstr "разделяемый"
 #: lib/db2.c:133
 #, c-format
 msgid "closed  db environment %s/%s(%s)\n"
-msgstr "закрыто окружение db %s/%s(%s)\n"
+msgstr "закрыто окружение базы данных %s/%s(%s)\n"
 
 #: lib/db2.c:145
 #, c-format
 msgid "removed db environment %s/%s(%s)\n"
-msgstr "удалено окружение db %s/%s(%s)\n"
+msgstr "удалено окружение базы данных %s/%s(%s)\n"
 
 #: lib/db2.c:182
 #, c-format
 msgid "opening db environment %s/%s(%s) %s\n"
-msgstr "открывается окружение db %s/%s(%s) %s\n"
+msgstr "открывается окружение базы данных %s/%s(%s) %s\n"
 
 #: lib/db2.c:557
 #, c-format
 msgid "closed  db index       %s/%s(%s)\n"
-msgstr "закрыт индекс db       %s/%s(%s)\n"
+msgstr "закрыт индекс базы данных %s/%s(%s)\n"
 
 #: lib/db2.c:635
 #, c-format
 msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-msgstr "открывается индекс db  %s/%s(%s) %s mode=0x%x\n"
+msgstr "открывается индекс базы данных %s/%s(%s) %s mode=0x%x\n"
 
 #: lib/db3.c:257
 #, c-format
 msgid "dbiSetConfig: unrecognized db option: \"%s\" ignored\n"
-msgstr "dbiSetConfig: неопознанная опция db: \"%s\" проигнорирована\n"
+msgstr "dbiSetConfig: неопознанная опция базы данных: \"%s\" проигнорирована\n"
 
 #: lib/db3.c:285
 #, c-format
@@ -2407,27 +2408,27 @@ msgstr ""
 #: lib/db3.c:468
 #, c-format
 msgid "closed  db environment %s/%s\n"
-msgstr "закрыто окружение db %s/%s\n"
+msgstr "закрыто окружение базы данных %s/%s\n"
 
 #: lib/db3.c:484
 #, c-format
 msgid "removed db environment %s/%s\n"
-msgstr "удалено окружение db %s/%s\n"
+msgstr "удалено окружение базы данных %s/%s\n"
 
 #: lib/db3.c:521
 #, c-format
 msgid "opening db environment %s/%s %s\n"
-msgstr "открывается окружение db %s/%s %s\n"
+msgstr "открывается окружение базы данных %s/%s %s\n"
 
 #: lib/db3.c:907
 #, c-format
 msgid "closed  db index       %s/%s\n"
-msgstr "закрыт индекс db       %s/%s\n"
+msgstr "закрыт индекс базы данных %s/%s\n"
 
 #: lib/db3.c:997
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "открывается индекс db  %s/%s %s mode=0x%x\n"
+msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
 #: lib/db3.c:1102
 #, c-format
@@ -2437,7 +2438,7 @@ msgstr "невозможно получить блокировку %s на %s/%s\n"
 #: lib/db3.c:1109
 #, c-format
 msgid "locked  db index       %s/%s\n"
-msgstr "заблокирован индекс db %s/%s\n"
+msgstr "заблокирован индекс базы данных %s/%s\n"
 
 #: lib/falloc.c:135
 #, c-format
@@ -2450,7 +2451,7 @@ msgid ""
 msgstr ""
 "поврежден список свободных записей (%u) - пожалуйста запустите\n"
 "\t\"rpm --rebuilddb\"\n"
-"Более подробная информация доступна на http://www.rpm.org илина списке "
+"Более подробная информация доступна на http://www.rpm.org или в списке "
 "рассылки rpm-list@redhat.com\n"
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
@@ -2461,12 +2462,12 @@ msgstr "(не число)"
 #: lib/fs.c:56
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
-msgstr "mntctl() не возвратил размера fugger(??): %s"
+msgstr "mntctl() не возвратил значение размера fugger: %s"
 
 #: lib/fs.c:91 lib/fs.c:261
 #, c-format
 msgid "failed to stat %s: %s"
-msgstr "не могу получить информацию об %s: %s"
+msgstr "невозможно получить информацию о %s: %s"
 
 #: lib/fs.c:127
 msgid "getting list of mounted filesystems\n"
@@ -2475,7 +2476,7 @@ msgstr "получение списка смонтированных файловых систем\n"
 #: lib/fs.c:132
 #, c-format
 msgid "failed to open %s: %s"
-msgstr "не могу открыть %s: %s"
+msgstr "невозможно открыть %s: %s"
 
 #: lib/fs.c:283
 #, c-format
@@ -2646,7 +2647,7 @@ msgstr "установка прекращается, т.к. мы исполняем --test\n"
 
 #: lib/install.c:978
 msgid "running preinstall script (if any)\n"
-msgstr "исполняю скрипт preinstall (если есть)\n"
+msgstr "исполняется скрипт preinstall (если есть)\n"
 
 #: lib/install.c:1003
 #, c-format
@@ -2698,15 +2699,15 @@ msgstr "проверить раздел %%files файла спецификации"
 
 #: lib/poptBT.c:116
 msgid "build source and binary package from spec file"
-msgstr "собрать исходный и двоичный пакеты файла спецификации"
+msgstr "собрать исходный и двоичный пакеты по файлу спецификации"
 
 #: lib/poptBT.c:118
 msgid "build binary package from spec file"
-msgstr "собрать двоичный пакет файла спецификации"
+msgstr "собрать двоичный пакет по файлу спецификации"
 
 #: lib/poptBT.c:120
 msgid "build source package from spec file"
-msgstr "собрать исходный пакет файла спецификации"
+msgstr "собрать исходный пакет по файлу спецификации"
 
 #: lib/poptBT.c:123
 msgid "build through %%prep stage from tar ball"
@@ -2766,23 +2767,23 @@ msgstr "переопределить целевую платформу"
 
 #: lib/poptBT.c:159
 msgid "lookup I18N strings in specfile catalog"
-msgstr "искать строки I18N в каталоге с файлом спецификации"
+msgstr "искать строки I18N в каталоге файла спецификации"
 
 #: lib/poptQV.c:64
 msgid "query/verify package owning file"
-msgstr "найти пакет, которому принадлежит файл"
+msgstr "запросить/проверить пакет, которому принадлежит файл"
 
 #: lib/poptQV.c:66
 msgid "query/verify packages in group"
-msgstr "запрос пакетов в группе"
+msgstr "запросить/проверить пакеты в группе"
 
 #: lib/poptQV.c:68
 msgid "query/verify a package file"
-msgstr "запросить файл пакета"
+msgstr "запросить/проверить файл пакета"
 
 #: lib/poptQV.c:70
 msgid "rpm query mode"
-msgstr "режим запроса"
+msgstr "режим запроса rpm"
 
 #: lib/poptQV.c:74
 msgid "display known query tags"
@@ -2806,11 +2807,11 @@ msgstr "режим проверки rpm (старый)"
 
 #: lib/poptQV.c:84
 msgid "query the packages which require a capability"
-msgstr "найти пакеты, требующие сервис"
+msgstr "запросить пакеты, требующие сервис"
 
 #: lib/poptQV.c:86
 msgid "query the packages which provide a capability"
-msgstr "найти пакеты, предоставляющие сервис"
+msgstr "запросить пакеты, предоставляющие сервис"
 
 #: lib/poptQV.c:126
 msgid "list all configuration files"
@@ -2834,15 +2835,15 @@ msgstr "используйте следующий формат запроса"
 
 #: lib/poptQV.c:138
 msgid "substitute i18n sections into spec file"
-msgstr "подставить секции i18n из следующего каталога"
+msgstr "заменить секции i18n в файле спецификации"
 
 #: lib/poptQV.c:140
 msgid "display the states of the listed files"
-msgstr "показать состояние списка файлов"
+msgstr "показать состояние перечисленных файлов"
 
 #: lib/poptQV.c:142
 msgid "display a verbose file listing"
-msgstr "показать детальный список файлов пакета"
+msgstr "показать детальный список файлов"
 
 #: lib/problems.c:76
 #, c-format
@@ -2946,7 +2947,7 @@ msgstr "пакет не содержит списков ни хозяев файлов, ни их ID"
 #: lib/query.c:376
 #, c-format
 msgid "can't query %s: %s\n"
-msgstr "не могу запросить %s: %s\n"
+msgstr "невозможно запросить %s: %s\n"
 
 #. XXX Fstrerror
 #: lib/query.c:493
@@ -3069,7 +3070,7 @@ msgstr "%s: ошибка rpmReadSignature\n"
 #: lib/rpmchecksig.c:134 lib/rpmchecksig.c:262
 #, c-format
 msgid "%s: No signature available\n"
-msgstr "%s: Подпись не доступна\n"
+msgstr "%s: Подпись недоступна\n"
 
 #: lib/rpmchecksig.c:167
 #, c-format
@@ -3246,7 +3247,7 @@ msgstr "удаляется %d записей из индекса %s.\n"
 #: lib/rpmdb.c:1885
 #, c-format
 msgid "error(%d) allocating new package instance"
-msgstr "ошибка(%d) резервирования памяти для instance нового пакета"
+msgstr "ошибка(%d) резервирования памяти для образа нового пакета"
 
 #: lib/rpmdb.c:1942
 #, c-format
@@ -3276,7 +3277,7 @@ msgstr "временная база данных %s уже существует"
 #: lib/rpmdb.c:2335
 #, c-format
 msgid "creating directory %s\n"
-msgstr "создаётся каталог: %s\n"
+msgstr "создаётся каталог %s\n"
 
 #: lib/rpmdb.c:2337
 #, c-format
@@ -3296,7 +3297,7 @@ msgstr "открывается новая база данных через dbapi %d\n"
 #: lib/rpmdb.c:2378
 #, c-format
 msgid "record number %d in database is bad -- skipping."
-msgstr "запись номер %d в базе данных неверна, пропускается"
+msgstr "запись номер %d в базе данных неверна, пропускается."
 
 #: lib/rpmdb.c:2410
 #, c-format
@@ -3315,7 +3316,7 @@ msgstr "невозможно заменить старую базу данных на новую!\n"
 #: lib/rpmdb.c:2438
 #, c-format
 msgid "replace files in %s with files from %s to recover"
-msgstr "заменяются файлы в %s файлами из %s для восстановления"
+msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
 #: lib/rpmdb.c:2448
 #, c-format
@@ -3380,7 +3381,7 @@ msgstr "%s не может быть установлен\n"
 #: lib/rpminstall.c:253
 #, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "не могу открыть базу данных \"Packages\" в %s\n"
+msgstr "не могу открыть базу данных Packages в %s\n"
 
 #: lib/rpminstall.c:273
 #, c-format
@@ -3546,7 +3547,7 @@ msgstr "ожидаемый размер: %d\n"
 
 #: lib/signature.c:113
 msgid "file is not regular -- skipping size check\n"
-msgstr "не обычный файл -- пропускаю проверку размера\n"
+msgstr "необычный файл -- пропускаю проверку размера\n"
 
 #: lib/signature.c:135
 msgid "No signature\n"
@@ -3554,7 +3555,7 @@ msgstr "Подписи нет\n"
 
 #: lib/signature.c:138
 msgid "Old PGP signature\n"
-msgstr "Старая PGP-подпись\n"
+msgstr "Старая подпись PGP\n"
 
 #: lib/signature.c:150
 msgid "Old (internal-only) signature!  How did you get that!?"
@@ -3631,7 +3632,7 @@ msgstr "Получено %d байт подписи GPG\n"
 
 #: lib/signature.c:410
 msgid "Generating signature using PGP.\n"
-msgstr "Генерируется PGP подпись.\n"
+msgstr "Генерируется подпись PGP.\n"
 
 #: lib/signature.c:416
 msgid "Generating signature using GPG.\n"
@@ -3679,17 +3680,17 @@ msgstr "исключаю файл %s%s\n"
 #: lib/transaction.c:439 lib/transaction.c:522
 #, c-format
 msgid "excluding directory %s\n"
-msgstr "создаю каталог: %s\n"
+msgstr "исключается каталог %s\n"
 
 #: lib/transaction.c:444
 #, c-format
 msgid "relocating %s to %s\n"
-msgstr "перемещаю %s в %s\n"
+msgstr "перемещается %s в %s\n"
 
 #: lib/transaction.c:515
 #, c-format
 msgid "relocating directory %s to %s\n"
-msgstr "перемещаю каталог %s в %s\n"
+msgstr "перемещается каталог %s в %s\n"
 
 #: lib/transaction.c:667
 #, c-format
@@ -3699,7 +3700,7 @@ msgstr "%s пропущен из-за флага missingok\n"
 #: lib/uninstall.c:42
 #, c-format
 msgid "cannot remove %s - directory not empty"
-msgstr "не могу удалить %s - каталог не пуст"
+msgstr "невозможно удалить %s - каталог не пуст"
 
 #: lib/uninstall.c:46
 #, c-format
@@ -3749,7 +3750,7 @@ msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
 #: rpmio/rpmio.c:529
 msgid "Success"
-msgstr "Успех"
+msgstr "Выполнено"
 
 #: rpmio/rpmio.c:532
 msgid "Bad server response"
@@ -3930,7 +3931,7 @@ msgstr "Пароль для %s@%s: "
 #: rpmio/url.c:243 rpmio/url.c:269
 #, c-format
 msgid "error: %sport must be a number\n"
-msgstr "ошибка: %sпорт должен быть числом\n"
+msgstr "ошибка: %s порт должен быть числом\n"
 
 #: rpmio/url.c:405
 msgid "url port must be a number\n"
