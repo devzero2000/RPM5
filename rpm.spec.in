@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.47
+Release: 0.48
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -114,6 +114,13 @@ capabilities.
 %setup -q
 
 %build
+
+#
+# XXX work around a (possible) compiler problem on ia64
+%ifarch ia64
+RPM_OPT_FLAGS="-O0"
+#endif
+
 %ifos linux
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man'
 %else
@@ -418,8 +425,9 @@ fi
 
 %changelog
 * Wed Jun 20 2001 Jeff Johnson <jbj@redhat.com>
-- fix: partial sets of hardlinked files forbidden in payload.
+- fix: partial sets of hardlinked files permitted in payload.
 - fix: mark rpmdb files with %config to prevent erasure on downgrade.
+- work around a (possible) compiler problem on ia64.
 
 * Tue Jun 19 2001 Jeff Johnson <jbj@redhat.com>
 - finalize per-header methods, accessing headerFoo through vector.
