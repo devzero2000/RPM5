@@ -56,8 +56,8 @@
 %_defaultdocdir		%{_usr}/doc
 #
 # XXX fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
-#%_fixowner		chown -R root
-#%_fixgroup		chgrp -R @ROOT_GROUP@
+%_fixowner		[ `id -u` = '0' ] && chown -R root
+%_fixgroup		[ `id -u` = '0' ] && chgrp -R @ROOT_GROUP@
 %_fixperms		chmod -R @FIXPERMS@
 #
 %_gzipbin		@GZIPBIN@
