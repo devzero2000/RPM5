@@ -359,8 +359,9 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 		      case RPMSIGTAG_PGP5:	/* XXX legacy */
 		      case RPMSIGTAG_PGP:
 			switch (res3) {
-			/* Do not consider these a failure */
 			case RPMSIG_NOKEY:
+			    res2 = 1;
+			    /*@fallthrough@*/
 			case RPMSIG_NOTTRUSTED:
 			{   int offset = 7;
 			    strcat(buffer, "(PGP) ");
@@ -400,6 +401,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 				/*@-compdef@*/
 				strncat(missingKeys, tempKey+7, 8);
 				/*@=compdef@*/
+			    res2 = 1;
 			    break;
 			default:
 			    strcat(buffer, "GPG ");

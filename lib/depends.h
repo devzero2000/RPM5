@@ -8,18 +8,23 @@
 
 #include <header.h>
 
+typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
+typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
+
 /** \ingroup rpmdep
  * Dependncy ordering information.
  */
-struct tsortInfo {
+struct tsortInfo_s {
     union {
 	int	count;
 	/*@kept@*/ /*@null@*/ struct availablePackage * suc;
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
-/*@owned@*/ /*@null@*/ struct tsortInfo * tsi_next;
-/*@kept@*/ /*@null@*/ struct availablePackage * tsi_pkg;
+/*@owned@*/ /*@null@*/
+    tsortInfo tsi_next;
+/*@kept@*/ /*@null@*/
+    struct availablePackage * tsi_pkg;
     int		tsi_reqx;
     int		tsi_qcnt;
 } ;
@@ -43,9 +48,14 @@ struct availablePackage {
     int providesCount;			/*!< No. of Provide:'s in header. */
     int requiresCount;			/*!< No. of Require:'s in header. */
     int filesCount;			/*!< No. of files in header. */
-    int npreds;				/*!< No. of predecessors. */
+
+    transactionElement parent;		/*!< Parent transaction element. */
+    int degree;				/*!< No. of immediate children. */
     int depth;				/*!< Max. depth in dependency tree. */
-    struct tsortInfo tsi;		/*!< Dependency tsort data. */
+    int npreds;				/*!< No. of predecessors. */
+    int tree;				/*!< Tree index. */
+    struct tsortInfo_s tsi;		/*!< Dependency tsort data. */
+
     uint_32 multiLib;	/* MULTILIB */
 /*@kept@*//*@null@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
 /*@null@*/ rpmRelocation * relocs;
@@ -108,7 +118,7 @@ typedef /*@abstract@*/ struct availableList_s {
 /** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.
  */
-struct transactionElement {
+struct transactionElement_s {
     enum rpmTransactionType {
 	TR_ADDED,	/*!< Package will be installed. */
 	TR_REMOVED	/*!< Package will be removed. */
@@ -143,7 +153,7 @@ struct rpmTransactionSet_s {
 				/*!< Set of packages being installed. */
     struct availableList_s availablePackages;
 				/*!< Universe of possible packages. */
-/*@only@*/ struct transactionElement * order;
+/*@only@*/ transactionElement order;
 				/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */

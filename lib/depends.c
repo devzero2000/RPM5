@@ -169,7 +169,7 @@ static void alFree(availableList al)
     if ((p = al->list) != NULL)
     for (i = 0; i < al->size; i++, p++) {
 
-	{   struct tsortInfo * tsi;
+	{   tsortInfo tsi;
 	    while ((tsi = p->tsi.tsi_next) != NULL) {
 		p->tsi.tsi_next = tsi->tsi_next;
 		tsi->tsi_next = NULL;
@@ -1614,7 +1614,7 @@ static int checkDependentConflicts(rpmTransactionSet ts,
  * XXX Hack to remove known Red Hat dependency loops, will be removed
  * as soon as rpm's legacy permits.
  */
-#define	DEPENDENCY_WHITEOUT
+#undef	DEPENDENCY_WHITEOUT
 
 #if defined(DEPENDENCY_WHITEOUT)
 static struct badDeps_s {
@@ -1666,7 +1666,7 @@ static int ignoreDep(const struct availablePackage * p,
  * @param tsi		successor chain
  * @param q		predecessor
  */
-static void markLoop(/*@special@*/ struct tsortInfo * tsi,
+static void markLoop(/*@special@*/ tsortInfo tsi,
 		struct availablePackage * q)
 	/*@uses tsi @*/
 	/*@modifies internalState @*/
@@ -1719,8 +1719,8 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps)
 	/*@modifies q, p, *nzaps @*/
 {
-    struct tsortInfo * tsi_prev;
-    struct tsortInfo * tsi;
+    tsortInfo tsi_prev;
+    tsortInfo tsi;
     const char *dp = NULL;
 
     for (tsi_prev = &q->tsi, tsi = q->tsi.tsi_next;
@@ -1778,7 +1778,7 @@ static inline int addRelation( const rpmTransactionSet ts,
 	/*@modifies p->tsi.tsi_u.count, p->depth, *selected @*/
 {
     struct availablePackage * q;
-    struct tsortInfo * tsi;
+    tsortInfo tsi;
     int matchNum;
 
     if (!p->requires || !p->requiresEVR || !p->requireFlags)
@@ -1875,17 +1875,19 @@ int rpmdepOrder(rpmTransactionSet ts)
     struct availablePackage * p;
     struct availablePackage * q;
     struct availablePackage * r;
-    struct tsortInfo * tsi;
-    struct tsortInfo * tsi_next;
+    tsortInfo tsi;
+    tsortInfo tsi_next;
     int * ordering = alloca(sizeof(*ordering) * (npkgs + 1));
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (npkgs + 1));
     int loopcheck;
-    struct transactionElement * newOrder;
+    transactionElement newOrder;
     int newOrderCount = 0;
     struct orderListIndex * orderList;
     int nrescans = 10;
     int _printed = 0;
+    int treex;
+    int depth;
     int qlen;
     int i, j;
 
@@ -1947,14 +1949,16 @@ int rpmdepOrder(rpmTransactionSet ts)
 	}
     }
 
-    /* Save predecessor count. */
+    /* Save predecessor count and mark tree roots. */
+    treex = 0;
     if ((p = ts->addedPackages.list) != NULL)
     for (i = 0; i < npkgs; i++, p++) {
 	p->npreds = p->tsi.tsi_count;
+	p->tree = (p->npreds == 0 ? treex++ : -1);
     }
 
     /* T4. Scan for zeroes. */
-    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, depth)\n"));
+    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth)\n"));
 
 rescan:
     q = r = NULL;
@@ -1976,10 +1980,16 @@ rescan:
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = q->tsi.tsi_suc) {
 
-	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%3d %*s %s-%s-%s\n",
-			orderingCount, q->npreds, q->tsi.tsi_qcnt, q->depth,
+	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%5d%5d %*s %s-%s-%s\n",
+			orderingCount, q->npreds, q->tsi.tsi_qcnt,
+			q->tree, q->depth,
 			2*q->depth, "",
 			q->name, q->version, q->release);
+
+	treex = q->tree;
+	depth = q->depth;
+	q->degree = 0;
+
 	ordering[orderingCount++] = q - ts->addedPackages.list;
 	qlen--;
 	loopcheck--;
@@ -1992,6 +2002,12 @@ rescan:
 	    tsi->tsi_next = NULL;
 	    p = tsi->tsi_suc;
 	    if (p && (--p->tsi.tsi_count) <= 0) {
+
+		p->tree = treex;
+		p->depth = depth + 1;
+		p->parent = q;
+		q->degree++;
+
 		/* XXX TODO: add control bit. */
 		p->tsi.tsi_suc = NULL;
 		/*@-nullstate@*/	/* FIX: q->tsi.tsi_u.suc may be NULL */

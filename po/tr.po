@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-11 14:45-0500\n"
+"POT-Creation-Date: 2002-01-17 11:27-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2211,26 +2211,28 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1899
+#: lib/depends.c:1901
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1957
+#: lib/depends.c:1961
+#, fuzzy
 msgid ""
-"========== tsorting packages (order, #predecessors, #succesors, depth)\n"
+"========== tsorting packages (order, #predecessors, #succesors, tree, "
+"depth)\n"
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:2007
+#: lib/depends.c:2023
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:2059
+#: lib/depends.c:2075
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:2088
+#: lib/depends.c:2104
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
@@ -3129,27 +3131,27 @@ msgstr "%s: rpmWriteSignature baþarýsýz: %s\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ýmza bulundurmuyor (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:455
 msgid "NOT OK"
 msgstr "TAMAM DEÐÝL"
 
-#: lib/rpmchecksig.c:454 lib/rpmchecksig.c:468
+#: lib/rpmchecksig.c:456 lib/rpmchecksig.c:470
 msgid " (MISSING KEYS:"
 msgstr " (EKSÝK ANAHTARLAR:"
 
-#: lib/rpmchecksig.c:456 lib/rpmchecksig.c:470
+#: lib/rpmchecksig.c:458 lib/rpmchecksig.c:472
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:457 lib/rpmchecksig.c:471
+#: lib/rpmchecksig.c:459 lib/rpmchecksig.c:473
 msgid " (UNTRUSTED KEYS:"
 msgstr " (GÜVENCESÝZ ANAHTARLAR:"
 
-#: lib/rpmchecksig.c:459 lib/rpmchecksig.c:473
+#: lib/rpmchecksig.c:461 lib/rpmchecksig.c:475
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:467
+#: lib/rpmchecksig.c:469
 msgid "OK"
 msgstr "Tamam"
 
