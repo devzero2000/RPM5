@@ -1281,7 +1281,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
     *chptr++ = '\0';;
 
     if (*chptr != '{') {
-	*error = _("{ exected after ? in expression");
+	*error = _("{ expected after ? in expression");
 	return 1;
     }
 
