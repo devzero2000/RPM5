@@ -167,8 +167,13 @@ static int offsetCmp(const void * avp, const void * bvp) /*@*/
     /*@=castexpose@*/
     int rc = (ap->info.offset - bp->info.offset);
 
-    if (rc == 0)
-	rc = (ap->info.tag - bp->info.tag);
+    if (rc == 0) {
+	/* Within a region, entries sort by address. Added drips sort by tag. */
+	if (ap->info.offset < 0)
+	    rc = (((char *)ap->data) - ((char *)bp->data));
+	else
+	    rc = (ap->info.tag - bp->info.tag);
+    }
     return rc;
 }
 
@@ -409,10 +414,6 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
      */
     if (tl+REGION_TAG_COUNT == dl)
 	tl += REGION_TAG_COUNT;
-#if 0
-    if (tl > dl)
-	dl = tl;
-#endif
 
     return dl;
 }

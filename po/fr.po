@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-24 11:23-0400\n"
+"POT-Creation-Date: 2001-08-24 21:39-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2327,7 +2327,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2617 lib/header.c:2636 lib/header.c:2656
+#: lib/header.c:2614 lib/header.c:2633 lib/header.c:2653
 msgid "(not a number)"
 msgstr ""
 
@@ -2405,89 +2405,89 @@ msgid "%s created as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. This should not be allowed
-#: lib/header.c:256
+#: lib/header.c:261
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:291 lib/header_internal.c:139 lib/psm.c:400
+#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:400
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1933
+#: lib/header.c:1930
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1963
+#: lib/header.c:1960
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1977
+#: lib/header.c:1974
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1991
+#: lib/header.c:1988
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2008
+#: lib/header.c:2005
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2035
+#: lib/header.c:2032
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2053
+#: lib/header.c:2050
 #, fuzzy
 msgid "unexpected ]"
 msgstr "source de requte inattendue"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2057
+#: lib/header.c:2054
 #, fuzzy
 msgid "unexpected }"
 msgstr "source de requte inattendue"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2123
+#: lib/header.c:2120
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2132
+#: lib/header.c:2129
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2145 lib/header.c:2187
+#: lib/header.c:2142 lib/header.c:2184
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2155
+#: lib/header.c:2152
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2172
+#: lib/header.c:2169
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2197
+#: lib/header.c:2194
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2377
+#: lib/header.c:2374
 msgid "(unknown type)"
 msgstr ""
 
