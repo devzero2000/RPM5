@@ -213,6 +213,7 @@
 #
 #%_gpg_name
 #%_gpg_path
+%_gpg_pubkey	/usr/lib/rpm/RPM-GPG-KEY
 
 #	The port and machine name of an HTTP proxy host.
 #
@@ -265,6 +266,7 @@
 #
 #%_pgp_name
 #%_pgp_path
+%_pgp_pubkey	/usr/lib/rpm/RPM-PGP-KEY
 
 #	Configurable virtual provides (unimplemented, use Provides: ...
 #	in an rpmrc file).
