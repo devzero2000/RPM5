@@ -1,9 +1,9 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "system.h"
 
 #include "sections.h"
 #include "utils.h"
+
+#include "debug.h"
 
 typedef struct {
   Elf32_Word debug_section; 

@@ -1,10 +1,5 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "system.h"
+
 #include <elf.h>
 #include <libelf/libelf.h>
 #include <libelf/gelf.h>
@@ -12,6 +7,8 @@
 
 #include "sections.h"
 #include "utils.h"
+
+#include "debug.h"
 
 char *output_dir = NULL;
 int keep_strtab = 0;
@@ -240,7 +237,7 @@ copy_debuginfo_to_file(Elf *elf, Elf *out_elf)
   
   if (gelf_getehdr (elf, &ehdr) == NULL)
     {
-      printf ("Not an elf binary, exiting\n");
+      fprintf (stderr, "Not an elf binary, exiting\n");
       exit (1);
     }
 
@@ -420,7 +417,7 @@ main (int argc, char *argv[])
 
   if (nextopt != -1)
     {
-      printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+      fprintf (stderr, "Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
 	      poptBadOption (optCon, 0),
 	      poptStrerror (nextopt),
 	      argv[0]);
@@ -436,30 +433,35 @@ main (int argc, char *argv[])
   
   origname = args[0];
 
-  if (output_dir)
-    debugname = strconcat (output_dir, "/", origname, ".debug", NULL);
-  else
+  if (output_dir) {
+    const char * bn = strrchr(origname, '/');
+    if ((bn = strrchr(origname, '/')) != NULL)
+	bn++;
+    else
+	bn = origname;
+    debugname = strconcat (output_dir, "/", bn, ".debug", NULL);
+  } else
     debugname = strconcat (origname, ".debug", NULL);
   
   strippedname = strconcat (origname, ".XXXXXX", NULL);
   
   if (elf_version(EV_CURRENT) == EV_NONE)
     {
-      printf ("library out of date\n");
+      fprintf (stderr, "library out of date\n");
       exit (1);
     }
 
   fd = open (origname, O_RDONLY);
   if (fd < 0)
     {
-      printf ("Failed to open input file\n");
+      fprintf (stderr, "Failed to open input file: %s\n", origname);
       exit (1);
     }
   
   elf = elf_begin (fd, ELF_C_READ, NULL);
   if (elf == NULL)
     {
-      printf ("Failed to elf_begin input file\n");
+      fprintf (stderr, "Failed to elf_begin input file: %s\n", origname);
       exit (1);
     }
 
@@ -467,14 +469,14 @@ main (int argc, char *argv[])
   out = open (debugname, O_RDWR | O_TRUNC | O_CREAT, 0644);
   if (out < 0)
     {
-      printf ("Failed to open output file\n");
+      fprintf (stderr, "Failed to open output file: %s\n", debugname);
       exit (1);
     }
 
   out_elf = elf_begin (out, ELF_C_WRITE, NULL);
   if (out_elf == NULL)
     {
-      printf ("Failed to elf_begin output file\n");
+      fprintf (stderr, "Failed to elf_begin output file: %s\n", debugname);
       exit (1);
     }
 
@@ -492,7 +494,7 @@ main (int argc, char *argv[])
   out = mkstemp (strippedname);
   if (out < 0)
     {
-      printf ("Failed to open output file\n");
+      fprintf (stderr, "Failed to open output file: %s\n", strippedname);
       exit (1);
     }
 
@@ -503,7 +505,7 @@ main (int argc, char *argv[])
   out_elf = elf_begin (out, ELF_C_WRITE, NULL);
   if (out_elf == NULL)
     {
-      printf ("Failed to elf_begin output file\n");
+      fprintf (stderr, "Failed to elf_begin output file: %s\n", strippedname);
       exit (1);
     }
 
@@ -518,7 +520,7 @@ main (int argc, char *argv[])
 
   
   if (rename (strippedname, origname) != 0)
-    printf("unable to write to %s\n", origname);
+    fprintf(stderr, "unable to write to %s\n", origname);
 
   unlink (strippedname);
   

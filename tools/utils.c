@@ -1,10 +1,10 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
+#include "system.h"
+
 #include <stdarg.h>
 
 #include "utils.h"
+
+#include "debug.h"
 
 char *
 my_stpcpy (char       *dest,

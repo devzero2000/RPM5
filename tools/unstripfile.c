@@ -1,16 +1,13 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "system.h"
+
 #include <elf.h>
 #include <libelf/libelf.h>
 #include <libelf/gelf.h>
 
 #include "sections.h"
 #include "utils.h"
+
+#include "debug.h"
 
 DebugLink *
 read_debuglink (Elf *elf)
