@@ -1,4 +1,5 @@
 2.5.5 -> 2.5.6:
+	- fix incorrect directory permissions using %attr/%defattr.
 	- permit "rpm -q --specfile ... file.spec" queries.
 	- strncasecmp on spec file separators (KDE has %Description).
 	- remove redundant md5 computation on uninstall.

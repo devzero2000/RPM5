@@ -838,13 +838,13 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	fileGid = statp->st_gid;
 	
 	/* %attr ? */
-	if (S_ISDIR(fileMode) && fl->current.PdirmodeString) {
-	    if (fl->current.PdirmodeString[0] != '-') {
+	if (S_ISDIR(fileMode)) {
+	    if (fl->current.PdirmodeString && fl->current.PdirmodeString[0] != '-') {
 		fileMode &= S_IFMT;
 		fileMode |= fl->current.Pdirmode;
 	    }
 	} else {
-	    if (fl->current.PmodeString) {
+	    if (fl->current.PmodeString && fl->current.PmodeString[0] != '-') {
 		fileMode &= S_IFMT;
 		fileMode |= fl->current.Pmode;
 	    }
