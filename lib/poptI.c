@@ -33,6 +33,7 @@ struct rpmInstallArguments_s rpmIArgs = {
 #define	POPT_RELOCATE		-1021
 #define	POPT_EXCLUDEPATH	-1022
 #define	POPT_ROLLBACK		-1023
+#define	POPT_ROLLBACK_EXCLUDE	-1024
 
 /*@exits@*/
 static void argerror(const char * desc)
@@ -99,6 +100,36 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 /*@=kepttrans =usereleased @*/
 	ia->numRelocations++;
       }	break;
+
+    case POPT_ROLLBACK_EXCLUDE:
+    {	time_t tid;
+	char ** excludes = NULL;
+	char ** tid_str;
+
+	/* Make sure we were given the proper number of args */
+	if (arg == NULL)
+	    argerror(_("rbexclude takes a Transaction I.D. argument"));
+
+	/* First lets split the space delimited args */
+	excludes = splitString(arg, strlen(arg), ' ');
+
+	/* Iterate across the excludes */
+	for(tid_str == excludes; tid_str && *tid_str; tid_str++) {	
+	    /* Convert arg to TID which happens to be time_t */
+	    /* XXX: Need check for arg to be an integer      */
+	    tid = (time_t) strtol(*tid_str, NULL, 10);
+
+	    /* Allocate space for new exclude tid */
+	    ia->rbtidExcludes = xrealloc(ia->rbtidExcludes, 
+		sizeof(*ia->rbtidExcludes) * (ia->numrbtidExcludes + 1));
+
+	    /* Add it to the list and iterate count*/
+/*@-temptrans@*/
+	    ia->rbtidExcludes[ia->numrbtidExcludes] = tid;
+/*@=temptrans@*/
+	    ia->numrbtidExcludes++;
+	}
+    } break;
 
     case POPT_ROLLBACK:
       {	time_t tid;
@@ -323,9 +354,12 @@ struct poptOption rpmInstallPoptTable[] = {
  { "replacepkgs", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_REPLACEPKG,
 	N_("reinstall if the package is already present"), NULL},
- { "rollback", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_ROLLBACK,
+ { "rollback", '\0', POPT_ARG_STRING, 0, POPT_ROLLBACK,
 	N_("deinstall new, reinstall old, package(s), back to <date>"),
 	N_("<date>") },
+ { "rbexclude", '\0', POPT_ARG_STRING, 0, POPT_ROLLBACK_EXCLUDE,
+	N_("Exclude Transaction I.D. from rollback"),
+	N_("<tid>") },
  { "test", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_TEST,
 	N_("don't install, but tell if it would work or not"), NULL},
  { "upgrade", 'U', POPT_BIT_SET,

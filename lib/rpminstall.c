@@ -1104,6 +1104,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
     int vsflags, ovsflags;
     int numAdded;
     int numRemoved;
+    int excluded;
     rpmps ps;
     int _unsafe_rollbacks = 0;
     rpmtransFlags transFlags = ia->transFlags;
@@ -1189,30 +1190,51 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	if (_unsafe_rollbacks && thistid <= _unsafe_rollbacks)
 	    break;
 
+	/* Make sure this tid is not excluded */
+	excluded = 0;	/* Assume its not */
+	{
+	    uint_32 *excludedTID;
+	    for(excludedTID = ia->rbtidExcludes; 
+		excludedTID < ia->rbtidExcludes + ia->numrbtidExcludes;
+		excludedTID++) {
+		if(thistid == *excludedTID) {
+		    rpmMessage(RPMMESS_NORMAL,
+			_("Excluding TID %d from rollback\n"), thistid);
+		    excluded = 1;
+		    break;	
+		}
+	    }	
+	}
+
 	rpmtsEmpty(ts);
 	(void) rpmtsSetFlags(ts, transFlags);
 
-	/* Install the previously erased packages for this transaction. */
+	/* Install the previously erased packages for this transaction. 
+	 * Provided this transaction is not excluded from the rollback.
+	 */
 	while (rp != NULL && rp->val.u32 == thistid) {
-
-	    rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
+	    if(!excluded) {
+		rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
 			(rp->key ? rp->key : "???"));
 
 /*@-abstract@*/
-	    rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
+		rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
 			       0, ia->relocations);
 /*@=abstract@*/
-	    if (rc != 0)
-		goto exit;
+		if (rc != 0)
+		    goto exit;
 
-	    numAdded++;
-	    rpmcliPackagesTotal++;
-	    if (!(ia->installInterfaceFlags & ifmask))
-		ia->installInterfaceFlags |= INSTALL_UPGRADE;
+		numAdded++;
+		rpmcliPackagesTotal++;
+		if (!(ia->installInterfaceFlags & ifmask))
+		    ia->installInterfaceFlags |= INSTALL_UPGRADE;
 
 #ifdef	NOTYET
-	    rp->h = headerFree(rp->h);
+	    	rp->h = headerFree(rp->h);
 #endif
+	    }
+
+	    /* Go to the next repackaged package */
 	    nrids--;
 	    if (nrids > 0)
 		rp++;
@@ -1220,35 +1242,43 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		rp = NULL;
 	}
 
-	/* Erase the previously installed packages for this transaction. */
+	/* Erase the previously installed packages for this transaction. 
+	 * Provided this transaction is not excluded from the rollback.
+	 */
 	while (ip != NULL && ip->val.u32 == thistid) {
+	    if(!excluded) {
+		rpmMessage(RPMMESS_DEBUG,
+		    "\t--- erase h#%u\n", ip->instance);
 
-	    rpmMessage(RPMMESS_DEBUG,
-			"\t--- erase h#%u\n", ip->instance);
+		rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
+		if (rc != 0)
+		    goto exit;
 
-	    rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
-	    if (rc != 0)
-		goto exit;
+		numRemoved++;
 
-	    numRemoved++;
+		if (_unsafe_rollbacks)
+		    rpmcliPackagesTotal++;
 
-	    if (_unsafe_rollbacks)
-		rpmcliPackagesTotal++;
-
-	    if (!(ia->installInterfaceFlags & ifmask)) {
-		ia->installInterfaceFlags |= INSTALL_ERASE;
-		(void) rpmtsSetFlags(ts, (transFlags | RPMTRANS_FLAG_REVERSE));
-	    }
+		if (!(ia->installInterfaceFlags & ifmask)) {
+		    ia->installInterfaceFlags |= INSTALL_ERASE;
+		    (void) rpmtsSetFlags(ts, (transFlags | RPMTRANS_FLAG_REVERSE));
+		}
 
 #ifdef	NOTYET
-	    ip->instance = 0;
+		ip->instance = 0;
 #endif
+	    }
+
+	    /* Go to the next header in the rpmdb */
 	    niids--;
 	    if (niids > 0)
 		ip++;
 	    else
 		ip = NULL;
 	}
+
+	/* If this transaction is excluded then continue */
+	if(excluded) continue;
 
 	/* Anything to do? */
 	if (rpmcliPackagesTotal <= 0)
