@@ -36,7 +36,7 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
 	mandir=/usr/man
 	infodir=/usr/info
     fi
-    ./configure --enable-db1 --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} "$@"
+    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} "$@"
 else
     ./configure "$@"
 fi

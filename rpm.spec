@@ -1,6 +1,7 @@
-%define	with_python_subpackage	1
-%define	with_bzip2		1
-%define	with_apidocs		1
+%define	with_python_subpackage	1 %{nil}
+%define	with_bzip2		1 %{nil}
+%define	with_apidocs		1 %{nil}
+%define with_internal_db	1 %{nil}
 %define strip_binaries		1
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
@@ -13,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.16
+Release: 0.17
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -23,6 +24,7 @@ Prereq: gawk fileutils textutils mktemp
 Requires: popt
 %endif
 
+%if !%{with_internal_db}
 BuildRequires: db3-devel
 
 # XXX glibc-2.1.92 has incompatible locale changes that affect statically
@@ -31,6 +33,7 @@ BuildRequires: db3-devel
 Requires: glibc >= 2.1.92
 # XXX needed to avoid libdb.so.2 satisfied by compat/libc5 provides.
 Requires: db1 = 1.85
+%endif
 %endif
 
 # XXX Red Hat 5.2 has not bzip2 or python
@@ -116,9 +119,9 @@ capabilities.
 
 %build
 %ifos linux
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man'
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man' # --enable-db1
 %else
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --enable-db1
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} # --enable-db1
 %endif
 
 make
@@ -345,6 +348,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon May  7 2001 Jeff Johnson <jbj@redhat.com>
+- use internal db-3.2.9 sources to build by default.
+- don't build db1 by default.
+
 * Sun May  6 2001 Jeff Johnson <jbj@redhat.com>
 - fix: specfile queries with BuildArch: (#27589).
 
