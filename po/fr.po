@@ -11,7 +11,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
-"POT-Creation-Date: 2004-07-06 21:20-0400\n"
+"POT-Creation-Date: 2004-07-26 17:19-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -115,7 +115,7 @@ msgid "Common options for all rpm modes:"
 msgstr "Options communes à tous les modes de rpm:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:121 lib/poptI.c:43
+#: rpmqv.c:121 lib/poptI.c:42
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
@@ -1260,17 +1260,17 @@ msgstr "ne pas vérifier les dépendances de construction"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "générer un(des) entête(s) compatible(s) avec l'emballage rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:235 lib/poptI.c:271 lib/poptQV.c:329
+#: build/poptBT.c:229 lib/poptALL.c:235 lib/poptI.c:270 lib/poptQV.c:329
 #: lib/poptQV.c:338 lib/poptQV.c:377
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: build/poptBT.c:231 lib/poptALL.c:237 lib/poptI.c:273 lib/poptQV.c:332
+#: build/poptBT.c:231 lib/poptALL.c:237 lib/poptI.c:272 lib/poptQV.c:332
 #: lib/poptQV.c:340 lib/poptQV.c:380
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier l'entête de la base de données à la récupération"
 
-#: build/poptBT.c:233 lib/poptALL.c:243 lib/poptI.c:275 lib/poptQV.c:335
+#: build/poptBT.c:233 lib/poptALL.c:243 lib/poptI.c:274 lib/poptQV.c:335
 #: lib/poptQV.c:342 lib/poptQV.c:382
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la(les) signature(s) du paquetage"
@@ -1777,40 +1777,40 @@ msgstr "déboguer la manipulation de cache d'URL"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: table d'option mal configurée (%d)\n"
 
-#: lib/poptI.c:71
+#: lib/poptI.c:70
 msgid "exclude paths must begin with a /"
 msgstr "les chemins d'exclusions doivent commencer par un /"
 
-#: lib/poptI.c:85
+#: lib/poptI.c:84
 msgid "relocations must begin with a /"
 msgstr "les relogements doivent commencer par un /"
 
-#: lib/poptI.c:88
+#: lib/poptI.c:87
 msgid "relocations must contain a ="
 msgstr "les relogement doivent contenir un ="
 
-#: lib/poptI.c:91
+#: lib/poptI.c:90
 msgid "relocations must have a / following the ="
 msgstr "dans les relogements un / doit suivre le ="
 
-#: lib/poptI.c:106
+#: lib/poptI.c:105
 msgid "rollback takes a time/date stamp argument"
 msgstr "le roulement arrière prend comme argument une date"
 
-#: lib/poptI.c:113
+#: lib/poptI.c:112
 msgid "malformed rollback time/date stamp argument"
 msgstr "argument date du roulement arrière malformé"
 
-#: lib/poptI.c:165
+#: lib/poptI.c:164
 msgid "add suggested packages to transaction"
 msgstr "rajouter à la transaction les paquetages suggérés"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:168
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installer tous les fichiers, meme si les configurations disent le contraire"
 
-#: lib/poptI.c:173
+#: lib/poptI.c:172
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1818,160 +1818,160 @@ msgstr ""
 "retirer tous les paquetages qui correspondent à <paquetage> (normalement on "
 "retourne une erreur si le <paquetage> correspond à plusieurs paquetages"
 
-#: lib/poptI.c:178 tools/rpmgraph.c:273
+#: lib/poptI.c:177 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr "utiliser la \"présentation\" d'anaconda"
 
-#: lib/poptI.c:183 lib/poptI.c:255
+#: lib/poptI.c:182 lib/poptI.c:254
 msgid "do not execute package scriptlet(s)"
 msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
 
-#: lib/poptI.c:187
+#: lib/poptI.c:186
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:189
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 "sauver les fichiers du paquetage désinstallé en les renommant dans un sous-"
 "répertoire"
 
-#: lib/poptI.c:193
+#: lib/poptI.c:192
 msgid "erase (uninstall) package"
 msgstr "désinstaller un paquetage"
 
-#: lib/poptI.c:193
+#: lib/poptI.c:192
 msgid "<package>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:196 lib/poptI.c:236
+#: lib/poptI.c:195 lib/poptI.c:235
 msgid "do not install configuration files"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:199 lib/poptI.c:241
+#: lib/poptI.c:198 lib/poptI.c:240
 msgid "do not install documentation"
 msgstr "ne pas installer la documentation"
 
-#: lib/poptI.c:201
+#: lib/poptI.c:200
 msgid "skip files with leading component <path> "
 msgstr "sauter les fichiers commence par le <chemin> indiqué"
 
-#: lib/poptI.c:202
+#: lib/poptI.c:201
 msgid "<path>"
 msgstr "<chemin>"
 
-#: lib/poptI.c:206
+#: lib/poptI.c:205
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:207
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "raccourci pour --replacepkgs --replacefiles"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:211
 msgid "upgrade package(s) if already installed"
 msgstr "met à jour le(s) paquetage(s) déjà installé(s)"
 
-#: lib/poptI.c:213 lib/poptI.c:229 lib/poptI.c:322
+#: lib/poptI.c:212 lib/poptI.c:228 lib/poptI.c:321
 msgid "<packagefile>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:215
+#: lib/poptI.c:214
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "afficher des marqueurs au fur et à mesure que le paquetage s'installe (avec -"
 "v c'est bien(tm))"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:217
 msgid "don't verify package architecture"
 msgstr "ne pas vérifier l'architecture du paquetage"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:220
 msgid "don't verify package operating system"
 msgstr "ne pas vérifier le système d'exploitation du paquetage"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:223
 msgid "don't check disk space before installing"
 msgstr "ne pas vérifier l'espace disque avant l'installation"
 
-#: lib/poptI.c:226
+#: lib/poptI.c:225
 msgid "install documentation"
 msgstr "installer la documentation"
 
-#: lib/poptI.c:229
+#: lib/poptI.c:228
 msgid "install package(s)"
 msgstr "installer le(s) paquetage(s)"
 
-#: lib/poptI.c:232
+#: lib/poptI.c:231
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 "mettre à jour la base données, mais ne pas modifier le système de fichiers"
 
-#: lib/poptI.c:238
+#: lib/poptI.c:237
 msgid "do not verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquetage"
 
-#: lib/poptI.c:244 lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptI.c:243 lib/poptQV.c:275 lib/poptQV.c:278
 msgid "don't verify MD5 digest of files"
 msgstr "ne pas vérifier les sommes MD5 des fichiers"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:246
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "ne pas ré-arranger l'ordre d'installation des paquetages pour satisfaire les "
 "dépendances"
 
-#: lib/poptI.c:252
+#: lib/poptI.c:251
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "ne pas suggérer de résolution pour les dépendances manquantes"
 
-#: lib/poptI.c:259
+#: lib/poptI.c:258
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%pre (s'il existe)"
 
-#: lib/poptI.c:262
+#: lib/poptI.c:261
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%post (s'il existe)"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:264
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%preun (s'il existe)"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:267
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%postun (s'il existe)"
 
-#: lib/poptI.c:278
+#: lib/poptI.c:277
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "n'exécuter aucun scriptlet trigger activé par ce paquetage"
 
-#: lib/poptI.c:281
+#: lib/poptI.c:280
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerprein"
 
-#: lib/poptI.c:284
+#: lib/poptI.c:283
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerin"
 
-#: lib/poptI.c:287
+#: lib/poptI.c:286
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerun"
 
-#: lib/poptI.c:290
+#: lib/poptI.c:289
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerpostun"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:293
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1979,54 +1979,54 @@ msgstr ""
 "mettre à jour avec un paquetage plus ancien (une m-à-j avec --force fait ça "
 "automatiquement"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:297
 msgid "print percentages as package installs"
 msgstr "afficher le pourcentage d'installation du paquetage"
 
-#: lib/poptI.c:300
+#: lib/poptI.c:299
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "reloge le paquetage vers <rep>, si relogeable"
 
-#: lib/poptI.c:301
+#: lib/poptI.c:300
 msgid "<dir>"
 msgstr "<rep>"
 
-#: lib/poptI.c:303
+#: lib/poptI.c:302
 msgid "relocate files from path <old> to <new>"
 msgstr "reloge les fichiers du <vieux> chemin vers <nouveau>"
 
-#: lib/poptI.c:304
+#: lib/poptI.c:303
 msgid "<old>=<new>"
 msgstr "<vieux>=<nouveau>"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:306
 msgid "save erased package files by repackaging"
 msgstr ""
 "sauvegarder les fichiers du paquetage désinstallé en les ré-empaquetant"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:309
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:313
+#: lib/poptI.c:312
 msgid "reinstall if the package is already present"
 msgstr "réinstalle si le paquetage est déjà installé"
 
-#: lib/poptI.c:315
+#: lib/poptI.c:314
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 "désinstaller le(s) nouveau(x), ré-installer le(s) vieux paquetages, comme "
 "c'était le cas pour cette <date>"
 
-#: lib/poptI.c:316
+#: lib/poptI.c:315
 msgid "<date>"
 msgstr "<date>"
 
-#: lib/poptI.c:318
+#: lib/poptI.c:317
 msgid "don't install, but tell if it would work or not"
 msgstr "n'installe pas, mais dit si ça marcherait ou pas"
 
-#: lib/poptI.c:321
+#: lib/poptI.c:320
 msgid "upgrade package(s)"
 msgstr "mises à jour des paquetages"
 

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2004-07-06 21:20-0400\n"
+"POT-Creation-Date: 2004-07-26 17:19-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -147,7 +147,7 @@ msgstr ""
 
 # , c-format
 #. @-modfilesys -globs @
-#: rpmqv.c:121 lib/poptI.c:43
+#: rpmqv.c:121 lib/poptI.c:42
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -1360,19 +1360,19 @@ msgstr "Dateiabhängigkeiten nicht überprüfen"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:235 lib/poptI.c:271 lib/poptQV.c:329
+#: build/poptBT.c:229 lib/poptALL.c:235 lib/poptI.c:270 lib/poptQV.c:329
 #: lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "Dateiabhängigkeiten nicht überprüfen"
 
-#: build/poptBT.c:231 lib/poptALL.c:237 lib/poptI.c:273 lib/poptQV.c:332
+#: build/poptBT.c:231 lib/poptALL.c:237 lib/poptI.c:272 lib/poptQV.c:332
 #: lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: build/poptBT.c:233 lib/poptALL.c:243 lib/poptI.c:275 lib/poptQV.c:335
+#: build/poptBT.c:233 lib/poptALL.c:243 lib/poptI.c:274 lib/poptQV.c:335
 #: lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1903,43 +1903,43 @@ msgstr ""
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
 
-#: lib/poptI.c:71
+#: lib/poptI.c:70
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: lib/poptI.c:85
+#: lib/poptI.c:84
 msgid "relocations must begin with a /"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: lib/poptI.c:88
+#: lib/poptI.c:87
 msgid "relocations must contain a ="
 msgstr "Verschiebungen müssen ein »=« beinhalten"
 
-#: lib/poptI.c:91
+#: lib/poptI.c:90
 msgid "relocations must have a / following the ="
 msgstr "bei Verschiebungen muss ein »/« dem »=« folgen"
 
-#: lib/poptI.c:106
+#: lib/poptI.c:105
 msgid "rollback takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:113
+#: lib/poptI.c:112
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:165
+#: lib/poptI.c:164
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "Paket hat keinen Namen"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:168
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "alle Dateien installieren, auch die config-Dateien, die sonst übergangen "
 "würden"
 
-#: lib/poptI.c:173
+#: lib/poptI.c:172
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1947,162 +1947,162 @@ msgstr ""
 "Alle Pakete entfernen, die mit <PAKET> übereinstimmen (normalerweise wird "
 "ein Fehler angezeigt, wenn <PAKET> mehrere Pakete bezeichnet)"
 
-#: lib/poptI.c:178 tools/rpmgraph.c:273
+#: lib/poptI.c:177 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptI.c:183 lib/poptI.c:255
+#: lib/poptI.c:182 lib/poptI.c:254
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "Keine paketspezifischen Skripte ausführen"
 
-#: lib/poptI.c:187
+#: lib/poptI.c:186
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:189
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:193
+#: lib/poptI.c:192
 msgid "erase (uninstall) package"
 msgstr "Paket löschen (deinstallieren)"
 
-#: lib/poptI.c:193
+#: lib/poptI.c:192
 #, fuzzy
 msgid "<package>+"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/poptI.c:196 lib/poptI.c:236
+#: lib/poptI.c:195 lib/poptI.c:235
 #, fuzzy
 msgid "do not install configuration files"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
-#: lib/poptI.c:199 lib/poptI.c:241
+#: lib/poptI.c:198 lib/poptI.c:240
 msgid "do not install documentation"
 msgstr "Dokumentation nicht installieren"
 
-#: lib/poptI.c:201
+#: lib/poptI.c:200
 msgid "skip files with leading component <path> "
 msgstr ""
 
-#: lib/poptI.c:202
+#: lib/poptI.c:201
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:206
+#: lib/poptI.c:205
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:207
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "Abkürzung für --replacepkgs --replacefiles"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:211
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/poptI.c:213 lib/poptI.c:229 lib/poptI.c:322
+#: lib/poptI.c:212 lib/poptI.c:228 lib/poptI.c:321
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "    -b<STUFE> <SPEC>      "
 
-#: lib/poptI.c:215
+#: lib/poptI.c:214
 msgid "print hash marks as package installs (good with -v)"
 msgstr "Fortschrittsanzeige bei der Paketinstallation (gut zusammen mit -v)"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:217
 msgid "don't verify package architecture"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:220
 msgid "don't verify package operating system"
 msgstr "Paket-Betriebssystem nicht überprüfen"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:223
 msgid "don't check disk space before installing"
 msgstr ""
 
-#: lib/poptI.c:226
+#: lib/poptI.c:225
 msgid "install documentation"
 msgstr "Dokumentation installieren"
 
-#: lib/poptI.c:229
+#: lib/poptI.c:228
 #, fuzzy
 msgid "install package(s)"
 msgstr "Paket installieren"
 
-#: lib/poptI.c:232
+#: lib/poptI.c:231
 msgid "update the database, but do not modify the filesystem"
 msgstr "Datenbank erneuern, aber das Dateisystem nicht verändern"
 
-#: lib/poptI.c:238
+#: lib/poptI.c:237
 msgid "do not verify package dependencies"
 msgstr "Dateiabhängigkeiten nicht überprüfen"
 
-#: lib/poptI.c:244 lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptI.c:243 lib/poptQV.c:275 lib/poptQV.c:278
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "Paket installieren"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:246
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "Paket-Installation nicht neu sortieren, um den Abhängigkeiten zu genügen"
 
-#: lib/poptI.c:252
+#: lib/poptI.c:251
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:259
+#: lib/poptI.c:258
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "Keine Stufen ausführen"
 
-#: lib/poptI.c:262
+#: lib/poptI.c:261
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "Keine Stufen ausführen"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:264
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "Keine Stufen ausführen"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:267
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "Keine Stufen ausführen"
 
-#: lib/poptI.c:278
+#: lib/poptI.c:277
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "kein Skript ausführen, das durch dieses Paket veranlasst wurde"
 
-#: lib/poptI.c:281
+#: lib/poptI.c:280
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "Keine paketspezifischen Skripte ausführen"
 
-#: lib/poptI.c:284
+#: lib/poptI.c:283
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "Keine Installations-Skripte ausführen"
 
-#: lib/poptI.c:287
+#: lib/poptI.c:286
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "Keine Installations-Skripte ausführen"
 
-#: lib/poptI.c:290
+#: lib/poptI.c:289
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "Keine Installations-Skripte ausführen"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:293
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2110,54 +2110,54 @@ msgstr ""
 "Aktualisierung auf eine alte Version des Pakets (--force macht das bei "
 "Aktualisierungen automatisch)"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:297
 msgid "print percentages as package installs"
 msgstr "Prozentangabe bei der Paketinstallation ausgeben"
 
-#: lib/poptI.c:300
+#: lib/poptI.c:299
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 "Verschiebe das Paket, wenn es verschiebbar ist, in das Verzeichnis <VERZ>"
 
-#: lib/poptI.c:301
+#: lib/poptI.c:300
 msgid "<dir>"
 msgstr ""
 
-#: lib/poptI.c:303
+#: lib/poptI.c:302
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "verschiebe Dateien von <alter_Pfad> nach <neuer_Pfad>"
 
-#: lib/poptI.c:304
+#: lib/poptI.c:303
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "verschiebe Dateien von <alter_Pfad> nach <neuer_Pfad>"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:306
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:310
+#: lib/poptI.c:309
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:313
+#: lib/poptI.c:312
 msgid "reinstall if the package is already present"
 msgstr "Neuinstallation, wenn das Paket schon vorhanden ist"
 
-#: lib/poptI.c:315
+#: lib/poptI.c:314
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:316
+#: lib/poptI.c:315
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:318
+#: lib/poptI.c:317
 msgid "don't install, but tell if it would work or not"
 msgstr "Nicht installieren - nur anzeigen, ob es funktionieren würde"
 
-#: lib/poptI.c:321
+#: lib/poptI.c:320
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "Paket installieren"

@@ -5,6 +5,8 @@
 	- prefer elf64 over elf32 files, everywhere and always (#126853).
 	- ia64: auto-relocate entire, not partial, directory contents (#126905).
 	- ia64: auto-relocate glibc.ix86 interpreter path (#100563).
+	- restore file conflict detection traditional behavior.
+	- fix: PIE executables have basename-as-soname provides (#123697).
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -485,6 +485,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Jul 26 2004 Jeff Johnson <jbj@redhat.com> 4.2.3-2
+- restore file conflict detection traditional behavior.
+- fix: PIE executables have basename-as-soname provides (#123697).
+
 * Mon Jul  5 2004 Jeff Johnson <jbj@jbj.org> 4.2.3-1
 - bump rpm and popt versions to insure "newer".
 - change default behavior to resolve file conflicts as LIFO.
