@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-09-16 16:11-0400\n"
+"POT-Creation-Date: 2002-09-17 11:18-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -777,7 +777,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:629 lib/psm.c:1843
+#: build/pack.c:629 lib/psm.c:1848
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -807,7 +807,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:710 lib/psm.c:2148
+#: build/pack.c:710 lib/psm.c:2153
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1491,7 +1491,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:386
-#: rpmdb/header.c:3226 rpmdb/header.c:3249 rpmdb/header.c:3273
+#: rpmdb/header.c:3236 rpmdb/header.c:3259 rpmdb/header.c:3283
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -1598,102 +1598,102 @@ msgstr "%s へ書き込めません"
 msgid "error creating temporary file %s\n"
 msgstr "一時ファイル %s の作成エラー"
 
-#: lib/package.c:357
+#: lib/package.c:362
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:366 lib/package.c:430 lib/package.c:495 lib/signature.c:213
+#: lib/package.c:371 lib/package.c:435 lib/package.c:502 lib/signature.c:226
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:386 lib/signature.c:229
+#: lib/package.c:391 lib/signature.c:242
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:407 lib/signature.c:250
+#: lib/package.c:412 lib/signature.c:263
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:421 lib/signature.c:264
+#: lib/package.c:426 lib/signature.c:277
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:449
+#: lib/package.c:454
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
-#: lib/package.c:467
+#: lib/package.c:472
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:527 lib/package.c:567 lib/package.c:854 lib/package.c:878
-#: lib/package.c:908 lib/rpmchecksig.c:806
+#: lib/package.c:536 lib/package.c:576 lib/package.c:877 lib/package.c:901
+#: lib/package.c:931 lib/rpmchecksig.c:806
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:643
+#: lib/package.c:655
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:647
+#: lib/package.c:659
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:653
+#: lib/package.c:667
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:660
+#: lib/package.c:676
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:671
+#: lib/package.c:690
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:683
+#: lib/package.c:703
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:745
+#: lib/package.c:768
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:753
+#: lib/package.c:776
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:764 lib/rpmchecksig.c:230 lib/rpmchecksig.c:721
+#: lib/package.c:787 lib/rpmchecksig.c:230 lib/rpmchecksig.c:721
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/package.c:771 lib/rpmchecksig.c:237 lib/rpmchecksig.c:729
+#: lib/package.c:794 lib/rpmchecksig.c:237 lib/rpmchecksig.c:729
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
 
-#: lib/package.c:818
+#: lib/package.c:841
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:921 lib/rpmchecksig.c:118 lib/rpmchecksig.c:644
+#: lib/package.c:944 lib/rpmchecksig.c:118 lib/rpmchecksig.c:644
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2281,77 +2281,77 @@ msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/psm.c:937
+#: lib/psm.c:939
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x\n"
 msgstr ""
 
-#: lib/psm.c:1015
+#: lib/psm.c:1018
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:1023
+#: lib/psm.c:1026
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:1185
+#: lib/psm.c:1190
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:1208
+#: lib/psm.c:1213
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/psm.c:1214
+#: lib/psm.c:1219
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1621
+#: lib/psm.c:1626
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:1746
+#: lib/psm.c:1751
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1855
+#: lib/psm.c:1860
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: lib/psm.c:1901
+#: lib/psm.c:1906
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1910
+#: lib/psm.c:1915
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1958
+#: lib/psm.c:1963
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1964
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:2156
+#: lib/psm.c:2161
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:2159
+#: lib/psm.c:2164
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2401,98 +2401,98 @@ msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:406
+#: lib/query.c:408
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/query.c:567 lib/query.c:614 lib/rpminstall.c:123 lib/rpminstall.c:455
+#: lib/query.c:569 lib/query.c:616 lib/rpminstall.c:123 lib/rpminstall.c:455
 #: lib/rpminstall.c:586 lib/rpminstall.c:995 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:582
+#: lib/query.c:584
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:592
+#: lib/query.c:594
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:625 lib/rpminstall.c:599
+#: lib/query.c:627 lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:669
+#: lib/query.c:671
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:690
+#: lib/query.c:692
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:710
+#: lib/query.c:712
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:720
+#: lib/query.c:722
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:734 lib/query.c:756 lib/query.c:777 lib/query.c:812
+#: lib/query.c:736 lib/query.c:758 lib/query.c:779 lib/query.c:814
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s を読むのに失敗: $s。"
 
-#: lib/query.c:744 lib/query.c:762 lib/query.c:787 lib/query.c:817
+#: lib/query.c:746 lib/query.c:764 lib/query.c:789 lib/query.c:819
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:828
+#: lib/query.c:830
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:839
+#: lib/query.c:841
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:873
+#: lib/query.c:875
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:877
+#: lib/query.c:879
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:904
+#: lib/query.c:906
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:907
+#: lib/query.c:909
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:912
+#: lib/query.c:914
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:923 lib/rpminstall.c:771
+#: lib/query.c:925 lib/rpminstall.c:771
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -3023,170 +3023,170 @@ msgstr "ソースは: %s\n"
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 
-#: lib/signature.c:131
+#: lib/signature.c:133
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:136
+#: lib/signature.c:138
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:176
+#: lib/signature.c:181
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:181
+#: lib/signature.c:186
 msgid "sigh magic: BAD\n"
 msgstr ""
 
-#: lib/signature.c:187
+#: lib/signature.c:194
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/signature.c:193
+#: lib/signature.c:202
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/signature.c:205
+#: lib/signature.c:218
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:275
+#: lib/signature.c:290
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/signature.c:285
+#: lib/signature.c:300
 msgid "sigh load: BAD\n"
 msgstr ""
 
-#: lib/signature.c:297
+#: lib/signature.c:312
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr ""
 
-#: lib/signature.c:339
+#: lib/signature.c:354
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名サイズ: %d\n"
 
 #. @=boundsread@
-#: lib/signature.c:431 lib/signature.c:545 lib/signature.c:820
-#: lib/signature.c:859
+#: lib/signature.c:446 lib/signature.c:560 lib/signature.c:835
+#: lib/signature.c:874
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: lib/signature.c:447
+#: lib/signature.c:462
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:454
+#: lib/signature.c:469
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:460
+#: lib/signature.c:475
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:478 lib/signature.c:593
+#: lib/signature.c:493 lib/signature.c:608
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:483
+#: lib/signature.c:498
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:562
+#: lib/signature.c:577
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:569
+#: lib/signature.c:584
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:575
+#: lib/signature.c:590
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:598
+#: lib/signature.c:613
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:864 lib/signature.c:919
+#: lib/signature.c:879 lib/signature.c:934
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: lib/signature.c:896
+#: lib/signature.c:911
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:911
+#: lib/signature.c:926
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:960
+#: lib/signature.c:975
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/signature.c:1000
+#: lib/signature.c:1015
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1056
+#: lib/signature.c:1071
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/signature.c:1131
+#: lib/signature.c:1146
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "MD5 署名をスキップします"
 
-#: lib/signature.c:1248
+#: lib/signature.c:1263
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1249
+#: lib/signature.c:1264
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
-#: lib/signature.c:1328
+#: lib/signature.c:1343
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1355
+#: lib/signature.c:1370
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1359
+#: lib/signature.c:1374
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
@@ -3324,72 +3324,72 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2398
+#: rpmdb/header.c:2408
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2428
+#: rpmdb/header.c:2438
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2442
+#: rpmdb/header.c:2452
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2456
+#: rpmdb/header.c:2466
 msgid "empty tag name"
 msgstr "空のタグ名"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2473
+#: rpmdb/header.c:2483
 msgid "unknown tag"
 msgstr "不明なタグ"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2500
+#: rpmdb/header.c:2510
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2518
+#: rpmdb/header.c:2528
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2522
+#: rpmdb/header.c:2532
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2591
+#: rpmdb/header.c:2601
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2600
+#: rpmdb/header.c:2610
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2614 rpmdb/header.c:2661
+#: rpmdb/header.c:2624 rpmdb/header.c:2671
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2624
+#: rpmdb/header.c:2634
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2644
+#: rpmdb/header.c:2654
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2671
+#: rpmdb/header.c:2681
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
@@ -3588,94 +3588,94 @@ msgstr "ディレクトリの作成: %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
 
-#: rpmio/macro.c:230
+#: rpmio/macro.c:236
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== アクティブ %d エンプティ %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:367
+#: rpmio/macro.c:373
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:410
+#: rpmio/macro.c:416
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:648
+#: rpmio/macro.c:654
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "マクロ %%%s はボディが終端されていません"
 
-#: rpmio/macro.c:681
+#: rpmio/macro.c:687
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "マクロ %%%s は違法な名前です(%%define)"
 
-#: rpmio/macro.c:687
+#: rpmio/macro.c:693
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "マクロ %%%s は opts が終端されていません"
 
-#: rpmio/macro.c:692
+#: rpmio/macro.c:698
 #, fuzzy, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "マクロ %%%s は空のボディです"
 
-#: rpmio/macro.c:698
+#: rpmio/macro.c:704
 #, fuzzy, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s は伸長に失敗しました"
 
-#: rpmio/macro.c:733
+#: rpmio/macro.c:739
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "マクロ %%%s は違法な名前です(%%undefine)"
 
-#: rpmio/macro.c:851
+#: rpmio/macro.c:857
 #, fuzzy, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "マクロ %%%s (%s) はレベル %d 以下で使用されませんでした"
 
-#: rpmio/macro.c:972
+#: rpmio/macro.c:978
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)"
 
-#: rpmio/macro.c:1170
+#: rpmio/macro.c:1176
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ(%d)が最大値(%d)よりも大きい"
 
-#: rpmio/macro.c:1240 rpmio/macro.c:1257
+#: rpmio/macro.c:1246 rpmio/macro.c:1263
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s"
 
-#: rpmio/macro.c:1298
+#: rpmio/macro.c:1304
 #, fuzzy, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "A %% は構文解析できないマクロが続いています"
 
-#: rpmio/macro.c:1427
+#: rpmio/macro.c:1433
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません、スキップします"
 
-#: rpmio/macro.c:1498
+#: rpmio/macro.c:1504
 #, fuzzy
 msgid "Target buffer overflow\n"
 msgstr "ターゲットバッファオーバーフロー"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1693 rpmio/macro.c:1699
+#: rpmio/macro.c:1699 rpmio/macro.c:1705
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s"
 
-#: rpmio/macro.c:1702
+#: rpmio/macro.c:1708
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s: は %d バイトより小さいです"

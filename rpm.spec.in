@@ -521,8 +521,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Mon Sep 16 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.07
+* Tue Sep 17 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.07
 - better diagnostics on failed header parsing.
+- lclint clean.
 
 * Wed Sep  4 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.06
 - fix: parse pgp packets more carefully.
