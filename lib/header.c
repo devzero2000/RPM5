@@ -433,6 +433,9 @@ Header headerLoad(void *pv)
 	}
     }
 
+    h->sorted = 0;
+    headerSort(h);
+
     return h;
 }
 

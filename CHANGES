@@ -10,6 +10,7 @@
 	- improved find-{requires,provides} for aix4/hpux/irix6/osf.
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 	- fix: synthesized callbacks for removed packages have not a pkgkey.
+	- always do headerSort after loading.
 
 3.0.5 -> 3.0.6
 	- python bindings to query and verify signatures.

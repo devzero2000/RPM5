@@ -16,6 +16,8 @@ static struct rpmlibProvides {
 	"package payload compressed using bzip2." },
     { "rpmlib(PayloadFilesHavePrefix)",	"4.0-1",	RPMSENSE_EQUAL,
 	"package payload files have \"./\" prefix." },
+    { "rpmlib(HeaderLoadSortsTags)",	"4.0.1-1",	RPMSENSE_EQUAL,
+	"header tags are always sorted after being loaded." },
     { NULL,				NULL,	0 }
 };
 

@@ -356,7 +356,7 @@ int showVerifyPackage(QVA_t *qva, rpmdb db, Header h)
 	    ec = rc;
     if ((qva->qva_flags & VERIFY_FILES) &&
 	(rc = verifyHeader(qva, h)) != 0)
-	    ec = rc;;
+	    ec = rc;
     fdo = fdDup(STDOUT_FILENO);
     if ((qva->qva_flags & VERIFY_SCRIPT) &&
 	(rc = rpmVerifyScript(qva->qva_prefix, h, fdo)) != 0)
