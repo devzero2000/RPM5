@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-18 22:23-0500\n"
+"POT-Creation-Date: 2002-03-21 23:57-0500\n"
 "PO-Revision-Date: 2002-03-05 13:51-0500\n"
 "Last-Translator: Eugene Kanter, <ekanter@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2449,27 +2449,27 @@ msgstr "каталог %s создан с правами доступа %04o.\n"
 msgid "archive file %s was not found in header file list\n"
 msgstr "файл архива %s не найден в списке файлов заголовка\n"
 
-#: lib/fsm.c:1543 lib/fsm.c:1670
+#: lib/fsm.c:1545 lib/fsm.c:1674
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s сохранен как %s\n"
 
-#: lib/fsm.c:1696
+#: lib/fsm.c:1700
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s невозможно удалить %s: каталог не пуст\n"
 
-#: lib/fsm.c:1702
+#: lib/fsm.c:1706
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s ошибка удаления каталога %s: %s\n"
 
-#: lib/fsm.c:1712
+#: lib/fsm.c:1716
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s невозможно удалить %s: %s\n"
 
-#: lib/fsm.c:1734
+#: lib/fsm.c:1738
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s создан как %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-18 22:23-0500\n"
+"POT-Creation-Date: 2002-03-21 23:57-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2503,27 +2503,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1543 lib/fsm.c:1670
+#: lib/fsm.c:1545 lib/fsm.c:1674
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/fsm.c:1696
+#: lib/fsm.c:1700
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "nie je mo¾né odstráni» %s - adresár nie je prázdny"
 
-#: lib/fsm.c:1702
+#: lib/fsm.c:1706
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "rmdir %s zlyhalo: %s"
 
-#: lib/fsm.c:1712
+#: lib/fsm.c:1716
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
 
-#: lib/fsm.c:1734
+#: lib/fsm.c:1738
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "varovanie: %s vytvorené ako %s"

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-18 22:23-0500\n"
+"POT-Creation-Date: 2002-03-21 23:57-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2495,27 +2495,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1543 lib/fsm.c:1670
+#: lib/fsm.c:1545 lib/fsm.c:1674
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "ostrze¿enie: %s zapisany jako %s"
 
-#: lib/fsm.c:1696
+#: lib/fsm.c:1700
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "nie mo¿na usun±æ %s - katalog nie jest pusty"
 
-#: lib/fsm.c:1702
+#: lib/fsm.c:1706
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "skasowanie katalogu %s nie powiod³o siê"
 
-#: lib/fsm.c:1712
+#: lib/fsm.c:1716
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê\n"
 
-#: lib/fsm.c:1734
+#: lib/fsm.c:1738
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "ostrze¿enie: %s utworzony jako %s"

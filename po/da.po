@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-18 22:23-0500\n"
+"POT-Creation-Date: 2002-03-21 23:57-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2439,27 +2439,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1543 lib/fsm.c:1670
+#: lib/fsm.c:1545 lib/fsm.c:1674
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gemt som %s\n"
 
-#: lib/fsm.c:1696
+#: lib/fsm.c:1700
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kan ikke fjerne %s - katalog ikke tomt\n"
 
-#: lib/fsm.c:1702
+#: lib/fsm.c:1706
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 
-#: lib/fsm.c:1712
+#: lib/fsm.c:1716
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/fsm.c:1734
+#: lib/fsm.c:1738
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"

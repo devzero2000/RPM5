@@ -64,6 +64,7 @@
 	- make --addsign and --resign behave exactly the same.
 	- *really* dump signature header immutable region.
 	- fix: don't overflow result buffer if gpg/pgp gives copious output.
+	- fix: make sure that .rpmsave files are created (#57078).
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

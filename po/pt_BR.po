@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-18 22:23-0500\n"
+"POT-Creation-Date: 2002-03-21 23:57-0500\n"
 
 # , c-format
 #: build.c:39
@@ -2655,29 +2655,29 @@ msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:1543 lib/fsm.c:1670
+#: lib/fsm.c:1545 lib/fsm.c:1674
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/fsm.c:1696
+#: lib/fsm.c:1700
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/fsm.c:1702
+#: lib/fsm.c:1706
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/fsm.c:1712
+#: lib/fsm.c:1716
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: lib/fsm.c:1734
+#: lib/fsm.c:1738
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "No consegui abrir: %s\n"
