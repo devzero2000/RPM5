@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.5
+Release: 0.6
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -272,6 +272,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Oct 11 2000 Jeff Johnson <jbj@redhat.com>
+- fix: rpm2cpio error check wrong on non-libio platforms.
+- work around alpha miscompilation?
+
 * Fri Sep 29 2000 Jeff Johnson <jbj@redhat.com>
 - fix: more (possible) xstrdup side effects.
 

@@ -89,11 +89,22 @@ exit:
     return rc;
 }
 
+#ifdef	ALPHA_LOSSAGE
+static void dumpLead(struct rpmlead *l)
+{
+    fprintf(stderr, "\t%02x%02x%02x%02x %x.%x type %x arch %x os %x sig %x %s\n",
+	(l->magic[0] & 0xff), (l->magic[1] & 0xff),
+	(l->magic[2] & 0xff), (l->magic[3] & 0xff),
+	l->major, l->minor, l->type, l->archnum, l->osnum, l->signature_type,
+	l->name);
+}
+#endif
+
 int rpmReSign(int add, char *passPhrase, const char **argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
-    struct rpmlead lead;
+    struct rpmlead lead, *l = &lead;
     unsigned short sigtype;
     const char *rpm, *trpm;
     const char *sigtarget = NULL;
@@ -101,6 +112,9 @@ int rpmReSign(int add, char *passPhrase, const char **argv)
     Header sig = NULL;
     int rc = EXIT_FAILURE;
     
+#ifndef	ALPHA_LOSSAGE
+l = malloc(sizeof(*l));
+#endif
     tmprpm[0] = '\0';
     while ((rpm = *argv++) != NULL) {
 
@@ -109,11 +123,11 @@ int rpmReSign(int add, char *passPhrase, const char **argv)
 	if (manageFile(&fd, &rpm, O_RDONLY, 0))
 	    goto exit;
 
-	if (readLead(fd, &lead)) {
+	if (readLead(fd, l)) {
 	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
 	    goto exit;
 	}
-	switch (lead.major) {
+	switch (l->major) {
 	case 1:
 	    fprintf(stderr, _("%s: Can't sign v1.0 RPM\n"), rpm);
 	    goto exit;
@@ -126,7 +140,10 @@ int rpmReSign(int add, char *passPhrase, const char **argv)
 	    break;
 	}
 
-	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
+#ifdef	ALPHA_LOSSAGE
+dumpLead(l);
+#endif
+	if (rpmReadSignature(fd, &sig, l->signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    goto exit;
 	}
@@ -162,12 +179,13 @@ int rpmReSign(int add, char *passPhrase, const char **argv)
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	    goto exit;
 
-	lead.signature_type = RPMSIG_HEADERSIG;
-	if (writeLead(ofd, &lead)) {
+	l->signature_type = RPMSIG_HEADERSIG;
+	if (writeLead(ofd, l)) {
 	    fprintf(stderr, _("%s: writeLead failed: %s\n"), trpm,
 		Fstrerror(ofd));
 	    goto exit;
 	}
+if (l != &lead) free(l);
 
 	if (rpmWriteSignature(ofd, sig)) {
 	    fprintf(stderr, _("%s: rpmWriteSignature failed: %s\n"), trpm,
@@ -219,7 +237,7 @@ int rpmCheckSig(int flags, const char **argv)
     FD_t fd = NULL;
     FD_t ofd = NULL;
     int res2, res3;
-    struct rpmlead lead;
+    struct rpmlead lead, *l = &lead;
     const char *rpm = NULL;
     char result[1024];
     const char * sigtarget = NULL;
@@ -232,6 +250,9 @@ int rpmCheckSig(int flags, const char **argv)
     void *ptr;
     int res = 0;
 
+#ifndef	ALPHA_LOSSAGE
+l = malloc(sizeof(*l));
+#endif
     while ((rpm = *argv++) != NULL) {
 
 	if (manageFile(&fd, &rpm, O_RDONLY, 0)) {
@@ -239,12 +260,12 @@ int rpmCheckSig(int flags, const char **argv)
 	    goto bottom;
 	}
 
-	if (readLead(fd, &lead)) {
+	if (readLead(fd, l)) {
 	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
 	    res++;
 	    goto bottom;
 	}
-	switch (lead.major) {
+	switch (l->major) {
 	case 1:
 	    fprintf(stderr, _("%s: No signature available (v1.0 RPM)\n"), rpm);
 	    res++;
@@ -253,11 +274,15 @@ int rpmCheckSig(int flags, const char **argv)
 	default:
 	    break;
 	}
-	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
+#ifdef	ALPHA_LOSSAGE
+dumpLead(l);
+#endif
+	if (rpmReadSignature(fd, &sig, l->signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
 	    goto bottom;
 	}
+if (l != &lead) free(l);
 	if (sig == NULL) {
 	    fprintf(stderr, _("%s: No signature available\n"), rpm);
 	    res++;
