@@ -542,8 +542,12 @@ assert(otherFi != NULL);
 		if (tscolor != 0) {
 		    if (FColor & 0x2) {
 			/* ... last Elf64 file is installed ... */
-			if (!XFA_SKIPPING(fi->actions[i]))
-			    otherFi->actions[otherFileNum] = FA_SKIP;
+			if (!XFA_SKIPPING(fi->actions[i])) {
+			    /* XXX static helpers are order dependent. Ick. */
+			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
+			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
+				otherFi->actions[otherFileNum] = FA_SKIP;
+			}
 			fi->actions[i] = FA_CREATE;
 			rConflicts = 0;
 		    } else

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 3
+Release: 4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -497,6 +497,7 @@ exit 0
 %changelog
 * Fri Aug 20 2004 Jeff Johnson <jbj@jbj.org> 4.2.3-4
 - fix: defattr for rpm-libs (#130461).
+- fix: static glibc/libgcc helpers always installed (#127522).
 
 * Thu Aug 19 2004 Jeff Johnson <jbj@jbj.org> 4.2.3-3
 - shared libraries in separate rpm-libs package.
