@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-17 22:22-0400\n"
+"POT-Creation-Date: 2003-07-21 17:11-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
@@ -2763,19 +2763,19 @@ msgstr "No consegui abrir: %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmfi.c:919
+#: lib/rpmfi.c:920
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "RPM verso %s\n"
 
 # , c-format
-#: lib/rpmfi.c:929
+#: lib/rpmfi.c:930
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmfi.c:1019
+#: lib/rpmfi.c:1020
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "No consegui abrir: %s\n"

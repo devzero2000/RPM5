@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2003-07-17 22:22-0400\n"
+"POT-Creation-Date: 2003-07-21 17:11-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -2469,17 +2469,17 @@ msgstr ""
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:919
+#: lib/rpmfi.c:920
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:929
+#: lib/rpmfi.c:930
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:1019
+#: lib/rpmfi.c:1020
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""

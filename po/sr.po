@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-17 22:22-0400\n"
+"POT-Creation-Date: 2003-07-21 17:11-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2598,17 +2598,17 @@ msgstr "Pribavljam %s\n"
 msgid "%5d relocate %s -> %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpmfi.c:919
+#: lib/rpmfi.c:920
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/rpmfi.c:929
+#: lib/rpmfi.c:930
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmfi.c:1019
+#: lib/rpmfi.c:1020
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"

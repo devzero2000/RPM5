@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-17 22:22-0400\n"
+"POT-Creation-Date: 2003-07-21 17:11-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2552,17 +2552,17 @@ msgstr "OS je vyøazen: %s\n"
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s vytvoøen jako %s\n"
 
-#: lib/rpmfi.c:919
+#: lib/rpmfi.c:920
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:929
+#: lib/rpmfi.c:930
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:1019
+#: lib/rpmfi.c:1020
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
