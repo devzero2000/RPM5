@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-21 11:20-0400\n"
+"POT-Creation-Date: 2001-11-05 15:12-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1426,93 +1426,93 @@ msgstr "Kan ikke blande spesiell %%doc med andre skjema: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Fil listet to ganger: %s\n"
 
-#: build/files.c:1263
+#: build/files.c:1276
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lenke peker til BuildRoot: %s -> %s\n"
 
-#: build/files.c:1461
+#: build/files.c:1474
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1485
+#: build/files.c:1498
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke funnet: %s\n"
 
-#: build/files.c:1528 build/files.c:2126 build/parsePrep.c:45
+#: build/files.c:1541 build/files.c:2139 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig eier/gruppe: %s\n"
 
-#: build/files.c:1540
+#: build/files.c:1553
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1641
+#: build/files.c:1654
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1664
+#: build/files.c:1677
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linje %d: Filnavn ikke tillatt: %s\n"
 
-#: build/files.c:1678
+#: build/files.c:1691
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1736
+#: build/files.c:1749
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
 
-#: build/files.c:1747 build/pack.c:142
+#: build/files.c:1760 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "Installerer %s\n"
 
-#: build/files.c:2114
+#: build/files.c:2127
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2185
+#: build/files.c:2198
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunne ikke kjøre %s: %s\n"
 
-#: build/files.c:2190
+#: build/files.c:2203
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "klarte ikke å åpne %s: %s\n"
 
-#: build/files.c:2272
+#: build/files.c:2285
 #, c-format
 msgid "%s failed\n"
 msgstr "%s feilet\n"
 
-#: build/files.c:2276
+#: build/files.c:2289
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/files.c:2408
+#: build/files.c:2421
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2434 build/files.c:2448
+#: build/files.c:2447 build/files.c:2461
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Klarte ikke å finne %s:\n"
 
-#: build/files.c:2567
+#: build/files.c:2580
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1770,123 +1770,123 @@ msgstr "linje %d: Feil under lesing av %%filer: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr ""
 
-#: build/parsePreamble.c:227
+#: build/parsePreamble.c:228
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:232
+#: build/parsePreamble.c:233
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:237
+#: build/parsePreamble.c:238
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:243
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:264
+#: build/parsePreamble.c:265
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "%s-felt må være tilstede i pakken: %s\n"
 
-#: build/parsePreamble.c:292
+#: build/parsePreamble.c:293
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:348
+#: build/parsePreamble.c:349
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kunne ikke åpne ikon %s: %s\n"
 
-#: build/parsePreamble.c:366
+#: build/parsePreamble.c:367
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kan ikke lese ikon %s: %s\n"
 
-#: build/parsePreamble.c:379
+#: build/parsePreamble.c:380
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Ukjent ikontype: %s\n"
 
-#: build/parsePreamble.c:423
+#: build/parsePreamble.c:424
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "linje %d: Tagg tar kun et enkelt tegn: %s\n"
 
-#: build/parsePreamble.c:459
+#: build/parsePreamble.c:460
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "linje %d: Feilutformet tagg: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:467
+#: build/parsePreamble.c:468
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linje %d: Tom tagg: %s\n"
 
-#: build/parsePreamble.c:489 build/parsePreamble.c:496
+#: build/parsePreamble.c:491 build/parsePreamble.c:498
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linje %d: Ugyldig tegn '-' i %s: %s\n"
 
-#: build/parsePreamble.c:553 build/parseSpec.c:391
+#: build/parsePreamble.c:555 build/parseSpec.c:391
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan ikke være \"/\": %s\n"
 
-#: build/parsePreamble.c:566
+#: build/parsePreamble.c:568
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linje %d: Prefiks må ikke slutte på \"/\": %s\n"
 
-#: build/parsePreamble.c:578
+#: build/parsePreamble.c:580
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linje %d: Docdir må begynne med '/': %s\n"
 
-#: build/parsePreamble.c:590
+#: build/parsePreamble.c:592
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "linje %d: Epoch/serienummer må være et tall: %s\n"
 
-#: build/parsePreamble.c:630 build/parsePreamble.c:641
+#: build/parsePreamble.c:632 build/parsePreamble.c:643
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linje %d: Ugyldig %s: kvalifikatorer: %s\n"
 
-#: build/parsePreamble.c:667
+#: build/parsePreamble.c:669
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linje %d: Ugyldig BuildArchitecture format: %s\n"
 
-#: build/parsePreamble.c:676
+#: build/parsePreamble.c:678
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Intern feil: Ugyldig tag %d\n"
 
-#: build/parsePreamble.c:828
+#: build/parsePreamble.c:831
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ugyldig pakkespesifikasjon: %s\n"
 
-#: build/parsePreamble.c:834
+#: build/parsePreamble.c:837
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Pakke eksisterer allerede: %s\n"
 
-#: build/parsePreamble.c:861
+#: build/parsePreamble.c:864
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linje %d: Ukjent tagg: %s\n"
 
-#: build/parsePreamble.c:883
+#: build/parsePreamble.c:886
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-fil kan ikke bruke BuildRoot\n"
 
@@ -2042,7 +2042,7 @@ msgstr "ugyldig %%include utsagn\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Ingen kompatible arkitekturer funnet for bygging\n"
 
-#: build/parseSpec.c:563
+#: build/parseSpec.c:564
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakken har ingen %%description: %s\n"

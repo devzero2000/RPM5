@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-21 11:20-0400\n"
+"POT-Creation-Date: 2001-11-05 15:12-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1543,93 +1543,93 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1263
+#: build/files.c:1276
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1461
+#: build/files.c:1474
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1485
+#: build/files.c:1498
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1528 build/files.c:2126 build/parsePrep.c:45
+#: build/files.c:1541 build/files.c:2139 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1540
+#: build/files.c:1553
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1641
+#: build/files.c:1654
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/files.c:1664
+#: build/files.c:1677
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1678
+#: build/files.c:1691
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1736
+#: build/files.c:1749
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1747 build/pack.c:142
+#: build/files.c:1760 build/pack.c:142
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2114
+#: build/files.c:2127
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2185
+#: build/files.c:2198
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2190
+#: build/files.c:2203
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2272
+#: build/files.c:2285
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "La construction a chou.\n"
 
-#: build/files.c:2276
+#: build/files.c:2289
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2408
+#: build/files.c:2421
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2434 build/files.c:2448
+#: build/files.c:2447 build/files.c:2461
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2567
+#: build/files.c:2580
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1887,123 +1887,123 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:227
+#: build/parsePreamble.c:228
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:232
+#: build/parsePreamble.c:233
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:237
+#: build/parsePreamble.c:238
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:243
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:264
+#: build/parsePreamble.c:265
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:292
+#: build/parsePreamble.c:293
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:348
+#: build/parsePreamble.c:349
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:366
+#: build/parsePreamble.c:367
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:379
+#: build/parsePreamble.c:380
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:423
+#: build/parsePreamble.c:424
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:459
+#: build/parsePreamble.c:460
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:467
+#: build/parsePreamble.c:468
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:489 build/parsePreamble.c:496
+#: build/parsePreamble.c:491 build/parsePreamble.c:498
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:553 build/parseSpec.c:391
+#: build/parsePreamble.c:555 build/parseSpec.c:391
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:566
+#: build/parsePreamble.c:568
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/parsePreamble.c:578
+#: build/parsePreamble.c:580
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/parsePreamble.c:590
+#: build/parsePreamble.c:592
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:630 build/parsePreamble.c:641
+#: build/parsePreamble.c:632 build/parsePreamble.c:643
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:667
+#: build/parsePreamble.c:669
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:676
+#: build/parsePreamble.c:678
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
-#: build/parsePreamble.c:828
+#: build/parsePreamble.c:831
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Options de spcification de package:"
 
-#: build/parsePreamble.c:834
+#: build/parsePreamble.c:837
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: build/parsePreamble.c:861
+#: build/parsePreamble.c:864
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:883
+#: build/parsePreamble.c:886
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -2158,7 +2158,7 @@ msgstr ""
 msgid "No compatible architectures found for build\n"
 msgstr "%s ne peut tre construit sur cette architecture\n"
 
-#: build/parseSpec.c:563
+#: build/parseSpec.c:564
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
