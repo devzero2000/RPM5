@@ -86,7 +86,7 @@ rpm2cpio_SOURCES =	rpm2cpio.c
 rpm2cpio_LDFLAGS =	@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
-$(PROGRAMS): 		$(myLDADD)
+$(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
 .PHONY:	lclint
 lclint:
@@ -178,10 +178,10 @@ archive:
 nextsrpm: all archive
 	@sudo ./rpm -ta rpm-$(VERSION).tar.gz
 
-.PHONY: doxygen
-doxygen: Doxyfile
-	rm -rf doxygen
-	mkdir -p doxygen
+.PHONY:	doxygen
+doxygen @WITH_APIDOCS_TARGET@: Doxyfile
+	rm -rf $@
+	mkdir -p $@
 	doxygen
 
 ctags:

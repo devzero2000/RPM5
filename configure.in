@@ -720,18 +720,21 @@ if test $rpm_cv_glob = yes; then
     LIBOBJS="$LIBOBJS glob.o fnmatch.o"
 fi
 
+dnl
+dnl Auto-detect whether python bindings should be built.
+dnl
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ],
-    rpm_cv_python=yes, rpm_cv_python=no)
+  rpm_cv_python=yes, rpm_cv_python=no)
 
 if test $rpm_cv_python = no ; then
-    AC_MSG_CHECKING(for python 1.5.2)
-    AC_TRY_RUN([
+  AC_MSG_CHECKING(for python 1.5.2)
+  AC_TRY_RUN([
 #include <python1.5/Python.h>
 main() {
   exit(strcmp("1.5.2", PY_VERSION));
 } ],
-    rpm_cv_python=yes, rpm_cv_python=no, rpm_cv_python=no)
-    AC_MSG_RESULT([$rpm_cv_python])
+  rpm_cv_python=yes, rpm_cv_python=no, rpm_cv_python=no)
+  AC_MSG_RESULT([$rpm_cv_python])
 fi
 
 if test $rpm_cv_python = yes; then
@@ -743,6 +746,33 @@ else
 fi
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
+
+AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
+dnl
+dnl Auto-detect whether doxygen generated API docs should be included.
+dnl
+AC_ARG_WITH(apidocs, [  --with-apidocs           build rpm API docs ],
+  [ if test __DOXYGEN = no; then
+      AC_MSG_ERROR(--> rpm API docs need doxygen in PATH)
+    fi
+    rpm_cv_apidocs=yes
+  ],
+  [ if test __DOXYGEN = no; then
+      rpm_cv_apidocs=no
+    else
+      rpm_cv_apidocs=yes
+    fi
+  ]
+)
+
+if test $rpm_cv_apidocs = yes; then
+  WITH_APIDOCS_TARGET=apidocs
+  WITH_APIDOCS=1
+else
+  WITH_APIDOCS=0
+fi
+AC_SUBST(WITH_APIDOCS_TARGET)
+AC_SUBST(WITH_APIDOCS)
 
 AC_CHECK_FUNCS(setlocale)
 

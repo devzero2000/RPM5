@@ -1,5 +1,6 @@
 %define	with_python_subpackage	1
 %define	with_bzip2		1
+%define	with_apidocs		1
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -19,6 +20,7 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils sh-utils mktemp
 Requires: popt
+%endif
 
 BuildRequires: db3-devel
 
@@ -251,6 +253,7 @@ fi
 %{__prefix}/lib/rpm/get_magic.pl
 %{__prefix}/lib/rpm/getpo.sh
 %{__prefix}/lib/rpm/http.req
+%{__prefix}/lib/rpm/javadeps
 %{__prefix}/lib/rpm/magic.prov
 %{__prefix}/lib/rpm/magic.req
 %{__prefix}/lib/rpm/perl.prov
@@ -270,6 +273,9 @@ fi
 
 %files devel
 %defattr(-,root,root)
+%if %{with_apidocs}
+%doc apidocs
+%endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a
 %{__prefix}/lib/librpm.la

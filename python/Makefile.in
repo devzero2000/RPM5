@@ -130,6 +130,8 @@ UNZIPBIN = @UNZIPBIN@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
+WITH_APIDOCS = @WITH_APIDOCS@
+WITH_APIDOCS_TARGET = @WITH_APIDOCS_TARGET@
 WITH_BZIP2 = @WITH_BZIP2@
 WITH_PYTHON_SUBDIR = @WITH_PYTHON_SUBDIR@
 WITH_PYTHON_SUBPACKAGE = @WITH_PYTHON_SUBPACKAGE@
@@ -141,6 +143,7 @@ __CHOWN = @__CHOWN@
 __CHOWN_RHF = @__CHOWN_RHF@
 __CP = @__CP@
 __CPIO = @__CPIO@
+__DOXYGEN = @__DOXYGEN@
 __GREP = @__GREP@
 __ID = @__ID@
 __ID_U = @__ID_U@
@@ -218,6 +221,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
+DEP_FILES =  .deps/hash.P .deps/rpmmodule.P .deps/upgrade.P
 SOURCES = $(librpmmodule_la_SOURCES) $(rpmmodule_so_SOURCES)
 OBJECTS = $(librpmmodule_la_OBJECTS) $(rpmmodule_so_OBJECTS)
 
@@ -225,9 +229,9 @@ all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .lo .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign --include-deps python/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign python/Makefile
 
-Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
@@ -240,9 +244,6 @@ clean-noinstLTLIBRARIES:
 distclean-noinstLTLIBRARIES:
 
 maintainer-clean-noinstLTLIBRARIES:
-
-.c.o:
-	$(COMPILE) -c $<
 
 .s.o:
 	$(COMPILE) -c $<
@@ -259,9 +260,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 maintainer-clean-compile:
-
-.c.lo:
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
 .s.lo:
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
@@ -341,6 +339,11 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = python
 
 distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign python/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -351,15 +354,38 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-hash.lo hash.o : hash.c hash.h
-rpmmodule.lo rpmmodule.o : rpmmodule.c ../lib/rpmlib.h ../rpmio/rpmio.h \
-	../rpmio/rpmmessages.h ../rpmio/rpmerr.h ../lib/header.h \
-	../popt/popt.h ../lib/misc.h ../rpmio/ugid.h \
-	../rpmio/rpmmacro.h upgrade.h
-upgrade.lo upgrade.o : upgrade.c ../lib/rpmlib.h ../rpmio/rpmio.h \
-	../rpmio/rpmmessages.h ../rpmio/rpmerr.h ../lib/header.h \
-	../popt/popt.h hash.h upgrade.h
 
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
 info-am:
 info: info-am
 dvi-am:
@@ -398,19 +424,20 @@ distclean-generic:
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-noinstLTLIBRARIES mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-pythonPROGRAMS \
-		mostlyclean-tags mostlyclean-generic
+		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
 clean-am:  clean-noinstLTLIBRARIES clean-compile clean-libtool \
-		clean-pythonPROGRAMS clean-tags clean-generic \
-		mostlyclean-am
+		clean-pythonPROGRAMS clean-tags clean-depend \
+		clean-generic mostlyclean-am
 
 clean: clean-am
 
 distclean-am:  distclean-noinstLTLIBRARIES distclean-compile \
 		distclean-libtool distclean-pythonPROGRAMS \
-		distclean-tags distclean-generic clean-am
+		distclean-tags distclean-depend distclean-generic \
+		clean-am
 	-rm -f libtool
 
 distclean: distclean-am
@@ -418,7 +445,8 @@ distclean: distclean-am
 maintainer-clean-am:  maintainer-clean-noinstLTLIBRARIES \
 		maintainer-clean-compile maintainer-clean-libtool \
 		maintainer-clean-pythonPROGRAMS maintainer-clean-tags \
-		maintainer-clean-generic distclean-am
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
@@ -432,8 +460,9 @@ clean-libtool maintainer-clean-libtool mostlyclean-pythonPROGRAMS \
 distclean-pythonPROGRAMS clean-pythonPROGRAMS \
 maintainer-clean-pythonPROGRAMS uninstall-pythonPROGRAMS \
 install-pythonPROGRAMS tags mostlyclean-tags distclean-tags clean-tags \
-maintainer-clean-tags distdir info-am info dvi-am dvi check check-am \
-installcheck-am installcheck install-exec-am install-exec \
+maintainer-clean-tags distdir mostlyclean-depend distclean-depend \
+clean-depend maintainer-clean-depend info-am info dvi-am dvi check \
+check-am installcheck-am installcheck install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
 all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
