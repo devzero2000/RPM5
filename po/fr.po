@@ -11,7 +11,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
-"POT-Creation-Date: 2003-07-16 16:07-0400\n"
+"POT-Creation-Date: 2003-07-17 22:22-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
