@@ -579,6 +579,13 @@ package or when debugging this package.\
 #		2	Elf64 permitted
 %_transaction_color	@RPMCANONCOLOR@
 
+#	A default autorelocation path prefixed to file paths of packages
+#	that have an incompatible arch. This is used on ia64 to prefix
+#	/emul/ia32 to i386 file paths, and nowhere else (yet).
+#
+# XXX	Note: escaped %% for use in headerSprintf()
+%_autorelocate_path	@autorelocate_path@
+
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-redhat location. The macro is usually defined in
 #	/etc/rpm/macros.solve, installed with the rpmdb-redhat package.
