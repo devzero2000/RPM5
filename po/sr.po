@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-04 18:06-0500\n"
+"POT-Creation-Date: 2002-04-05 11:24-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -3852,7 +3852,7 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: rpmdb/rpmdb.c:2110 rpmdb/rpmdb.c:3473
+#: rpmdb/rpmdb.c:2110 rpmdb/rpmdb.c:3477
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "slog broj %d u bazi podataka je neispravan -- preskaèem ga"
@@ -3862,99 +3862,99 @@ msgstr "slog broj %d u bazi podataka je neispravan -- preskaèem ga"
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2438
+#: rpmdb/rpmdb.c:2442
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "ne mogu da proèitam zaglavlje na %d za proveru"
 
-#: rpmdb/rpmdb.c:2601
+#: rpmdb/rpmdb.c:2605
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: rpmdb/rpmdb.c:2605
+#: rpmdb/rpmdb.c:2609
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: rpmdb/rpmdb.c:2775
+#: rpmdb/rpmdb.c:2779
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: rpmdb/rpmdb.c:2974
+#: rpmdb/rpmdb.c:2978
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2978
+#: rpmdb/rpmdb.c:2982
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: rpmdb/rpmdb.c:3359
+#: rpmdb/rpmdb.c:3363
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3392
+#: rpmdb/rpmdb.c:3396
 msgid "no dbpath has been set"
 msgstr "dbpath nije odreðen"
 
-#: rpmdb/rpmdb.c:3419
+#: rpmdb/rpmdb.c:3423
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/rpmdb.c:3423
+#: rpmdb/rpmdb.c:3427
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: rpmdb/rpmdb.c:3429
+#: rpmdb/rpmdb.c:3433
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: rpmdb/rpmdb.c:3431
+#: rpmdb/rpmdb.c:3435
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: rpmdb/rpmdb.c:3438
+#: rpmdb/rpmdb.c:3442
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/rpmdb.c:3449
+#: rpmdb/rpmdb.c:3453
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/rpmdb.c:3513
+#: rpmdb/rpmdb.c:3517
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "ne mogu da dodam slog originalno na %d"
 
-#: rpmdb/rpmdb.c:3531
+#: rpmdb/rpmdb.c:3535
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3539
+#: rpmdb/rpmdb.c:3543
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3541
+#: rpmdb/rpmdb.c:3545
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3551
+#: rpmdb/rpmdb.c:3555
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: rpmdb/rpmdb.c:3553
+#: rpmdb/rpmdb.c:3557
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
