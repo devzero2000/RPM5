@@ -453,6 +453,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	default:
 	    str = _free(str);
 	    break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
 	case RPMRC_OK:
 	    if (h != NULL &&
 	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
