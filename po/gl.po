@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-08-24 21:39-0400\n"
+"POT-Creation-Date: 2001-08-27 14:16-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1501,12 +1501,12 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:80 lib/psm.c:1785
+#: build/pack.c:80
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:83 lib/psm.c:1788
+#: build/pack.c:83
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr ""
@@ -1580,13 +1580,16 @@ msgstr ""
 msgid "Unable to create immutable header region.\n"
 msgstr ""
 
-#: build/pack.c:453 build/pack.c:496
-#, c-format
-msgid "Unable to write %s header\n"
+#: build/pack.c:453
+msgid "Unable to write temp header\n"
 msgstr ""
 
 #: build/pack.c:461
 msgid "Bad CSA data\n"
+msgstr ""
+
+#: build/pack.c:496
+msgid "Unable to write final header\n"
 msgstr ""
 
 #: build/pack.c:514
@@ -1595,8 +1598,7 @@ msgid "Generating signature: %d\n"
 msgstr ""
 
 #: build/pack.c:527
-#, c-format
-msgid "Unable to reload %s header.\n"
+msgid "Unable to reload signature header.\n"
 msgstr ""
 
 #: build/pack.c:535
@@ -2063,11 +2065,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 msgid "NO "
 msgstr ""
 
@@ -2076,88 +2078,88 @@ msgstr ""
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1124
+#: lib/depends.c:1131
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1216
+#: lib/depends.c:1223
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1245
+#: lib/depends.c:1252
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1262
+#: lib/depends.c:1269
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1286
+#: lib/depends.c:1293
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1299
+#: lib/depends.c:1306
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1313
+#: lib/depends.c:1320
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1329
+#: lib/depends.c:1336
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1350
+#: lib/depends.c:1357
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1422
+#: lib/depends.c:1429
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1501
+#: lib/depends.c:1508
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1744
+#: lib/depends.c:1751
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1893
+#: lib/depends.c:1900
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1951
+#: lib/depends.c:1958
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2001
+#: lib/depends.c:2008
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2053
+#: lib/depends.c:2060
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2082
+#: lib/depends.c:2089
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2204,37 +2206,37 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1128
+#: lib/fsm.c:1130
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1403
+#: lib/fsm.c:1407
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1522 lib/fsm.c:1647
+#: lib/fsm.c:1526 lib/fsm.c:1651
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1673
+#: lib/fsm.c:1677
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1679
+#: lib/fsm.c:1683
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1693
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1708
+#: lib/fsm.c:1712
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2839,7 +2841,17 @@ msgstr ""
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1882
+#: lib/psm.c:1788
+#, c-format
+msgid "%s failed on file %s: %s\n"
+msgstr ""
+
+#: lib/psm.c:1791
+#, c-format
+msgid "%s failed: %s\n"
+msgstr ""
+
+#: lib/psm.c:1883
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
@@ -3414,17 +3426,17 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:427
+#: lib/verify.c:429
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:520
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: lib/verify.c:559
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-24 21:39-0400\n"
+"POT-Creation-Date: 2001-08-27 14:16-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -1534,12 +1534,12 @@ msgstr "getGnameS: demasiados gid's\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Não consegui canonizar o nome da máquina: %s\n"
 
-#: build/pack.c:80 lib/psm.c:1785
+#: build/pack.c:80
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "a criação do pacote falhou no ficheiro %s: %s\n"
 
-#: build/pack.c:83 lib/psm.c:1788
+#: build/pack.c:83
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "a criação do pacote falhou no ficheiro %s: %s\n"
@@ -1614,14 +1614,19 @@ msgstr "readRPM: a ler o cabeçalho do %s\n"
 msgid "Unable to create immutable header region.\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:453 build/pack.c:496
-#, fuzzy, c-format
-msgid "Unable to write %s header\n"
+#: build/pack.c:453
+#, fuzzy
+msgid "Unable to write temp header\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
 #: build/pack.c:461
 msgid "Bad CSA data\n"
 msgstr "Dados de CSA inválidos\n"
+
+#: build/pack.c:496
+#, fuzzy
+msgid "Unable to write final header\n"
+msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
 #: build/pack.c:514
 #, c-format
@@ -1629,8 +1634,8 @@ msgid "Generating signature: %d\n"
 msgstr "A gerar a assinatura: %d\n"
 
 #: build/pack.c:527
-#, fuzzy, c-format
-msgid "Unable to reload %s header.\n"
+#, fuzzy
+msgid "Unable to reload signature header.\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
 #: build/pack.c:535
@@ -2101,11 +2106,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s     A %s\tB %s\n"
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 #, fuzzy
 msgid "NO "
 msgstr "NÃO-OK"
@@ -2115,88 +2120,88 @@ msgstr "NÃO-OK"
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s SIM (ficheiros adicionados)\n"
 
-#: lib/depends.c:1124
+#: lib/depends.c:1131
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:1216
+#: lib/depends.c:1223
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (em cache)\n"
 
-#: lib/depends.c:1245
+#: lib/depends.c:1252
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:1262
+#: lib/depends.c:1269
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:1286
+#: lib/depends.c:1293
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s SIM (ficheiros db)\n"
 
-#: lib/depends.c:1299
+#: lib/depends.c:1306
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:1313
+#: lib/depends.c:1320
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s SIM (pacote db)\n"
 
-#: lib/depends.c:1329
+#: lib/depends.c:1336
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NÃO\n"
 
-#: lib/depends.c:1350
+#: lib/depends.c:1357
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) adicionado à cache de dependências.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1422
+#: lib/depends.c:1429
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1501
+#: lib/depends.c:1508
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "o pacote %s está em conflito: %s\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1751
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1893
+#: lib/depends.c:1900
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1951
+#: lib/depends.c:1958
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2001
+#: lib/depends.c:2008
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:2053
+#: lib/depends.c:2060
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:2082
+#: lib/depends.c:2089
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
@@ -2243,37 +2248,37 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "linha %d: %s\n"
 
-#: lib/fsm.c:1128
+#: lib/fsm.c:1130
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1403
+#: lib/fsm.c:1407
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1522 lib/fsm.c:1647
+#: lib/fsm.c:1526 lib/fsm.c:1651
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gravado como %s\n"
 
-#: lib/fsm.c:1673
+#: lib/fsm.c:1677
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "não consigo remover a %s - a directoria não está vazia\n"
 
-#: lib/fsm.c:1679
+#: lib/fsm.c:1683
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "o rmdir da %s falhou: %s\n"
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1693
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
 
-#: lib/fsm.c:1708
+#: lib/fsm.c:1712
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"
@@ -2896,7 +2901,17 @@ msgstr "a abertura do pacote falhou%s%s: %s\n"
 msgid " on file "
 msgstr " no ficheiro "
 
-#: lib/psm.c:1882
+#: lib/psm.c:1788
+#, fuzzy, c-format
+msgid "%s failed on file %s: %s\n"
+msgstr "falhei ao aceder ao %s: %s\n"
+
+#: lib/psm.c:1791
+#, fuzzy, c-format
+msgid "%s failed: %s\n"
+msgstr "O %s falhou\n"
+
+#: lib/psm.c:1883
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "a correr os programas de pós-instalação (se existirem)\n"
@@ -3471,17 +3486,17 @@ msgstr "o pacote não tem o nome de utilizador nem as listas de IDs (nunca deve o
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr "o pacote não tem o nome do grupo nem as listas de IDs (nunca deve ocorrer)\n"
 
-#: lib/verify.c:427
+#: lib/verify.c:429
 #, c-format
 msgid "missing    %s"
 msgstr "falta     %s"
 
-#: lib/verify.c:520
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Dependências não satisfeitas para o %s-%s-%s: "
 
-#: lib/verify.c:559
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

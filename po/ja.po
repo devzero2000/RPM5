@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-24 21:39-0400\n"
+"POT-Creation-Date: 2001-08-27 14:16-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1623,12 +1623,12 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "ホスト名を正式なものにできません: %s\n"
 
-#: build/pack.c:80 lib/psm.c:1785
+#: build/pack.c:80
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "ファイル %s でアーカイブの作成に失敗: %s"
 
-#: build/pack.c:83 lib/psm.c:1788
+#: build/pack.c:83
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "ファイル %s でアーカイブの作成に失敗: %s"
@@ -1703,9 +1703,9 @@ msgstr "readRPM: %s からのヘッダの読み込み\n"
 msgid "Unable to create immutable header region.\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:453 build/pack.c:496
-#, fuzzy, c-format
-msgid "Unable to write %s header\n"
+#: build/pack.c:453
+#, fuzzy
+msgid "Unable to write temp header\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
 #: build/pack.c:461
@@ -1713,14 +1713,19 @@ msgstr "パッケージの書き込みに失敗しました: %s"
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ"
 
+#: build/pack.c:496
+#, fuzzy
+msgid "Unable to write final header\n"
+msgstr "パッケージの書き込みに失敗しました: %s"
+
 #: build/pack.c:514
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の生成中: %d\n"
 
 #: build/pack.c:527
-#, fuzzy, c-format
-msgid "Unable to reload %s header.\n"
+#, fuzzy
+msgid "Unable to reload signature header.\n"
 msgstr "アイコンを読むことができません: %s"
 
 #: build/pack.c:535
@@ -2197,11 +2202,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 msgid "NO "
 msgstr ""
 
@@ -2210,88 +2215,88 @@ msgstr ""
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
 
-#: lib/depends.c:1124
+#: lib/depends.c:1131
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s は provide に加えることによって満されます。\n"
 
-#: lib/depends.c:1216
+#: lib/depends.c:1223
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:1245
+#: lib/depends.c:1252
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1262
+#: lib/depends.c:1269
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1286
+#: lib/depends.c:1293
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1299
+#: lib/depends.c:1306
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:1313
+#: lib/depends.c:1320
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:1329
+#: lib/depends.c:1336
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1350
+#: lib/depends.c:1357
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1422
+#: lib/depends.c:1429
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1501
+#: lib/depends.c:1508
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1751
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1893
+#: lib/depends.c:1900
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1951
+#: lib/depends.c:1958
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2001
+#: lib/depends.c:2008
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2053
+#: lib/depends.c:2060
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2082
+#: lib/depends.c:2089
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2338,37 +2343,37 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "%d 行目: %s"
 
-#: lib/fsm.c:1128
+#: lib/fsm.c:1130
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1403
+#: lib/fsm.c:1407
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1522 lib/fsm.c:1647
+#: lib/fsm.c:1526 lib/fsm.c:1651
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/fsm.c:1673
+#: lib/fsm.c:1677
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s を削除できません - ディレクトリが空でありません"
 
-#: lib/fsm.c:1679
+#: lib/fsm.c:1683
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s の rmdir に失敗: %s"
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1693
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/fsm.c:1708
+#: lib/fsm.c:1712
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
@@ -3048,7 +3053,17 @@ msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:1882
+#: lib/psm.c:1788
+#, fuzzy, c-format
+msgid "%s failed on file %s: %s\n"
+msgstr "%s のオープンに失敗: %s"
+
+#: lib/psm.c:1791
+#, fuzzy, c-format
+msgid "%s failed: %s\n"
+msgstr "%s 失敗"
+
+#: lib/psm.c:1883
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
@@ -3651,17 +3666,17 @@ msgstr ""
 "パッケージはグループ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:427
+#: lib/verify.c:429
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:520
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: lib/verify.c:559
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

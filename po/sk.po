@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-24 21:39-0400\n"
+"POT-Creation-Date: 2001-08-27 14:16-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1610,12 +1610,12 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Nie je mo¾né kanonizova» názov poèítaèa: %s\n"
 
-#: build/pack.c:80 lib/psm.c:1785
+#: build/pack.c:80
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
 
-#: build/pack.c:83 lib/psm.c:1788
+#: build/pack.c:83
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
@@ -1690,9 +1690,9 @@ msgstr "readRPM: èítanie hlavièky %s\n"
 msgid "Unable to create immutable header region.\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/pack.c:453 build/pack.c:496
-#, fuzzy, c-format
-msgid "Unable to write %s header\n"
+#: build/pack.c:453
+#, fuzzy
+msgid "Unable to write temp header\n"
 msgstr "Nie je mo¾né zapísa» %s"
 
 #: build/pack.c:461
@@ -1700,14 +1700,19 @@ msgstr "Nie je mo¾né zapísa» %s"
 msgid "Bad CSA data\n"
 msgstr "Chybné CSA dáta"
 
+#: build/pack.c:496
+#, fuzzy
+msgid "Unable to write final header\n"
+msgstr "Nie je mo¾né zapísa» %s"
+
 #: build/pack.c:514
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
 #: build/pack.c:527
-#, fuzzy, c-format
-msgid "Unable to reload %s header.\n"
+#, fuzzy
+msgid "Unable to reload signature header.\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
 #: build/pack.c:535
@@ -2178,11 +2183,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 #, fuzzy
 msgid "NO "
 msgstr "NIE JE V PORIADKU"
@@ -2192,88 +2197,88 @@ msgstr "NIE JE V PORIADKU"
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1124
+#: lib/depends.c:1131
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1216
+#: lib/depends.c:1223
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:1245
+#: lib/depends.c:1252
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1262
+#: lib/depends.c:1269
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:1286
+#: lib/depends.c:1293
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1299
+#: lib/depends.c:1306
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1313
+#: lib/depends.c:1320
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:1329
+#: lib/depends.c:1336
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1350
+#: lib/depends.c:1357
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1422
+#: lib/depends.c:1429
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1501
+#: lib/depends.c:1508
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1751
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuje sa index skupín\n"
 
 #. Record all relations.
-#: lib/depends.c:1893
+#: lib/depends.c:1900
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1951
+#: lib/depends.c:1958
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2001
+#: lib/depends.c:2008
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2053
+#: lib/depends.c:2060
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2082
+#: lib/depends.c:2089
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2320,37 +2325,37 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "riadok %d: %s"
 
-#: lib/fsm.c:1128
+#: lib/fsm.c:1130
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1403
+#: lib/fsm.c:1407
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1522 lib/fsm.c:1647
+#: lib/fsm.c:1526 lib/fsm.c:1651
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/fsm.c:1673
+#: lib/fsm.c:1677
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "nie je mo¾né odstráni» %s - adresár nie je prázdny"
 
-#: lib/fsm.c:1679
+#: lib/fsm.c:1683
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "rmdir %s zlyhalo: %s"
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1693
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
 
-#: lib/fsm.c:1708
+#: lib/fsm.c:1712
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "varovanie: %s vytvorené ako %s"
@@ -3007,7 +3012,17 @@ msgstr "rozbalenie archívu zlyhalo%s%s: %s"
 msgid " on file "
 msgstr " pre súbor "
 
-#: lib/psm.c:1882
+#: lib/psm.c:1788
+#, fuzzy, c-format
+msgid "%s failed on file %s: %s\n"
+msgstr "nepodarilo sa otvori» %s: %s"
+
+#: lib/psm.c:1791
+#, fuzzy, c-format
+msgid "%s failed: %s\n"
+msgstr "%s zlyhalo"
+
+#: lib/psm.c:1883
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "vykonávajú sa poin¹talaèné skripty (ak existujú)\n"
@@ -3604,17 +3619,17 @@ msgstr ""
 "v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by sa "
 "nikdy sta»)"
 
-#: lib/verify.c:427
+#: lib/verify.c:429
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "chýbajúce    %s\n"
 
-#: lib/verify.c:520
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: lib/verify.c:559
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

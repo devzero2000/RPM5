@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-24 21:39-0400\n"
+"POT-Creation-Date: 2001-08-27 14:16-0400\n"
 "PO-Revision-Date: 2001-08-17 18:25-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1567,12 +1567,12 @@ msgstr "getGidS: слишком много идентификаторов групп.\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Невозможно канонизировать имя компьютера: %s\n"
 
-#: build/pack.c:80 lib/psm.c:1785
+#: build/pack.c:80
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "ошибка создания архива на файле %s: %s\n"
 
-#: build/pack.c:83 lib/psm.c:1788
+#: build/pack.c:83
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "ошибка создания архива: %s\n"
@@ -1646,14 +1646,19 @@ msgstr "readRPM: читается заголовок из %s\n"
 msgid "Unable to create immutable header region.\n"
 msgstr "Невозможно поместить заголовок в нерперывную область памяти.\n"
 
-#: build/pack.c:453 build/pack.c:496
-#, c-format
-msgid "Unable to write %s header\n"
+#: build/pack.c:453
+#, fuzzy
+msgid "Unable to write temp header\n"
 msgstr "Невозможно записать %s заголовок\n"
 
 #: build/pack.c:461
 msgid "Bad CSA data\n"
 msgstr "Неверные данные CSA\n"
+
+#: build/pack.c:496
+#, fuzzy
+msgid "Unable to write final header\n"
+msgstr "Невозможно записать %s заголовок\n"
 
 #: build/pack.c:514
 #, c-format
@@ -1661,8 +1666,8 @@ msgid "Generating signature: %d\n"
 msgstr "Генерируется подпись: %d\n"
 
 #: build/pack.c:527
-#, c-format
-msgid "Unable to reload %s header.\n"
+#, fuzzy
+msgid "Unable to reload signature header.\n"
 msgstr "Невозможно прочитать %s заголовок.\n"
 
 #: build/pack.c:535
@@ -2133,11 +2138,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
+#: lib/depends.c:594 lib/depends.c:1224 lib/depends.c:1357
 msgid "NO "
 msgstr "НЕT"
 
@@ -2146,90 +2151,90 @@ msgstr "НЕT"
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:1124
+#: lib/depends.c:1131
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:1216
+#: lib/depends.c:1223
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cached)\n"
 
-#: lib/depends.c:1245
+#: lib/depends.c:1252
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:1262
+#: lib/depends.c:1269
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:1286
+#: lib/depends.c:1293
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1299
+#: lib/depends.c:1306
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:1313
+#: lib/depends.c:1320
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db package)\n"
 
-#: lib/depends.c:1329
+#: lib/depends.c:1336
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1350
+#: lib/depends.c:1357
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1422
+#: lib/depends.c:1429
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1501
+#: lib/depends.c:1508
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1751
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1893
+#: lib/depends.c:1900
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1951
+#: lib/depends.c:1958
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:2001
+#: lib/depends.c:2008
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:2053
+#: lib/depends.c:2060
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:2082
+#: lib/depends.c:2089
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
@@ -2276,37 +2281,37 @@ msgstr "========= Каталоги, которые не включены в пакет явно:\n"
 msgid "%9d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1128
+#: lib/fsm.c:1130
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "каталог %s создан с правами доступа %04o.\n"
 
-#: lib/fsm.c:1403
+#: lib/fsm.c:1407
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "файл архива %s не найден в списке файлов заголовка\n"
 
-#: lib/fsm.c:1522 lib/fsm.c:1647
+#: lib/fsm.c:1526 lib/fsm.c:1651
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s сохранен как %s\n"
 
-#: lib/fsm.c:1673
+#: lib/fsm.c:1677
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s невозможно удалить %s: каталог не пуст\n"
 
-#: lib/fsm.c:1679
+#: lib/fsm.c:1683
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s ошибка удаления каталога %s: %s\n"
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1693
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s невозможно удалить %s: %s\n"
 
-#: lib/fsm.c:1708
+#: lib/fsm.c:1712
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s создан как %s\n"
@@ -2924,7 +2929,17 @@ msgstr "распаковка архива не удалась%s%s: %s\n"
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:1882
+#: lib/psm.c:1788
+#, fuzzy, c-format
+msgid "%s failed on file %s: %s\n"
+msgstr "невозможно открыть %s: %s\n"
+
+#: lib/psm.c:1791
+#, fuzzy, c-format
+msgid "%s failed: %s\n"
+msgstr "%s не удалось\n"
+
+#: lib/psm.c:1883
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "%s: выполняется сценарий %s (если есть)\n"
@@ -3508,17 +3523,17 @@ msgstr ""
 "в пакете нет ни имен групп, ни списка их идентификаторов (такого не должно "
 "быть)\n"
 
-#: lib/verify.c:427
+#: lib/verify.c:429
 #, c-format
 msgid "missing    %s"
 msgstr "отсутствует %s"
 
-#: lib/verify.c:520
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: lib/verify.c:559
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"

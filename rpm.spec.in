@@ -19,7 +19,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.97
+Release: 0.99
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Aug 27 2001 Jeff Johnson <jbj@redhat.com>
+- fix: error message on failed package installs resurrected.
+- python: memory leaks in headerLoad/headerunload bindings.
+- python: retrofit sha1 digest using RPMTAG_SHA1RHN.
+- python: change rhnUnload bindings.
+
 * Fri Aug 24 2001 Jeff Johnson <jbj@redhat.com>
 - headers without RPMTAG_NAME are skipped when retrieved.
 - within a region, entries sort by address; added drips sort by tag.
