@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-25 15:32-0400\n"
+"POT-Creation-Date: 2001-05-29 09:15-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -860,9 +860,9 @@ msgstr ""
 "pakkeangivelses-tilvalg som -q"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:882 rpmqv.c:888 rpmqv.c:895
-#: rpmqv.c:901 rpmqv.c:943 rpmqv.c:948 rpmqv.c:956 rpmqv.c:962 rpmqv.c:970
-#: rpmqv.c:1043
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:891 rpmqv.c:897 rpmqv.c:904
+#: rpmqv.c:910 rpmqv.c:948 rpmqv.c:953 rpmqv.c:961 rpmqv.c:967 rpmqv.c:975
+#: rpmqv.c:1048
 msgid "only one major mode may be specified"
 msgstr "kun ét hovedtilvalg kan angives"
 
@@ -874,23 +874,23 @@ msgstr "-u og --uninstall er forældede og virker ikke længere.\n"
 msgid "Use -e or --erase instead.\n"
 msgstr "Brug -e eller --erase i stedet.\n"
 
-#: rpm.c:827 rpmqv.c:924
+#: rpm.c:827 rpmqv.c:930
 msgid "relocations must begin with a /"
 msgstr "omrokeringer skal starte med et /"
 
-#: rpm.c:829 rpmqv.c:926
+#: rpm.c:829 rpmqv.c:932
 msgid "relocations must contain a ="
 msgstr "omrokeringer skal indeholde et ="
 
-#: rpm.c:832 rpmqv.c:930
+#: rpm.c:832 rpmqv.c:935
 msgid "relocations must have a / following the ="
 msgstr "i omrokeringer skal = efterfølges af /"
 
-#: rpm.c:841 rpmqv.c:909
+#: rpm.c:841 rpmqv.c:917
 msgid "exclude paths must begin with a /"
 msgstr "udeladte stier skal begynde med et /"
 
-#: rpm.c:850 rpmqv.c:996
+#: rpm.c:850 rpmqv.c:1001
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "Tilvalget --rcfile er fjernet.\n"
 
@@ -900,101 +900,101 @@ msgstr ""
 "Brug --macros med en kolonsepareret liste over de makrofiler, der skal "
 "indlæses.\n"
 
-#: rpm.c:856 rpmqv.c:1003
+#: rpm.c:856 rpmqv.c:1008
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Intern fejl i parameterfortolkningen (%d) :-(\n"
 
-#: rpm.c:891 rpmqv.c:1058
+#: rpm.c:891 rpmqv.c:1063
 msgid "one type of query/verify may be performed at a time"
 msgstr "kun én af forespørgsel/verificér kan udføres ad gangen"
 
-#: rpm.c:896 rpmqv.c:1062
+#: rpm.c:896 rpmqv.c:1067
 msgid "unexpected query flags"
 msgstr "uventet forespørgselsflag"
 
-#: rpm.c:899 rpmqv.c:1065
+#: rpm.c:899 rpmqv.c:1070
 msgid "unexpected query format"
 msgstr "uventet forespørgselsformat"
 
-#: rpm.c:902 rpmqv.c:1068
+#: rpm.c:902 rpmqv.c:1073
 msgid "unexpected query source"
 msgstr "uventet forespørgselskilde"
 
-#: rpm.c:905 rpmqv.c:1078
+#: rpm.c:905 rpmqv.c:1083
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "kun installation, opgradering, rmsource og rmspec kan tvinges igennem"
 
-#: rpm.c:908 rpmqv.c:1083
+#: rpm.c:908 rpmqv.c:1088
 msgid "files may only be relocated during package installation"
 msgstr "filer kan kun omrokeres under installation"
 
-#: rpm.c:911 rpmqv.c:1086
+#: rpm.c:911 rpmqv.c:1091
 msgid "only one of --prefix or --relocate may be used"
 msgstr "kun én af --prefix eller --relocate kan bruges"
 
-#: rpm.c:914 rpmqv.c:1089
+#: rpm.c:914 rpmqv.c:1094
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate og --excludepath kan kun bruges, når nye pakker installeres"
 
-#: rpm.c:917 rpmqv.c:1092
+#: rpm.c:917 rpmqv.c:1097
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan kun bruges, når nye pakker installeres"
 
-#: rpm.c:920 rpmqv.c:1095
+#: rpm.c:920 rpmqv.c:1100
 msgid "arguments to --prefix must begin with a /"
 msgstr "parametre til --prefix skal starte med et /"
 
-#: rpm.c:923 rpmqv.c:1098
+#: rpm.c:923 rpmqv.c:1103
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan kun angives ved installation"
 
-#: rpm.c:927 rpmqv.c:1102
+#: rpm.c:927 rpmqv.c:1107
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan kun angives ved installation"
 
-#: rpm.c:931 rpmqv.c:1107
+#: rpm.c:931 rpmqv.c:1112
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles kan kun angives ved installation"
 
-#: rpm.c:935 rpmqv.c:1111
+#: rpm.c:935 rpmqv.c:1116
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan kun angives ved installation"
 
-#: rpm.c:939 rpmqv.c:1115
+#: rpm.c:939 rpmqv.c:1120
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs kan kun angives ved installation"
 
-#: rpm.c:943 rpmqv.c:1119
+#: rpm.c:943 rpmqv.c:1124
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs kan kun angives ved installation"
 
-#: rpm.c:947 rpmqv.c:1123
+#: rpm.c:947 rpmqv.c:1128
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "kun én af --excludedocs og --includedocs kan angives"
 
-#: rpm.c:951 rpmqv.c:1127
+#: rpm.c:951 rpmqv.c:1132
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch kan kun angives ved installation"
 
-#: rpm.c:955 rpmqv.c:1131
+#: rpm.c:955 rpmqv.c:1136
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos kan kun angives ved installation"
 
-#: rpm.c:959 rpmqv.c:1136
+#: rpm.c:959 rpmqv.c:1141
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize kan kun angives ved installation"
 
-#: rpm.c:963 rpmqv.c:1140
+#: rpm.c:963 rpmqv.c:1145
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches kan kun angives ved installation"
 
-#: rpm.c:967 rpmqv.c:1144
+#: rpm.c:967 rpmqv.c:1149
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles kan kun angives ved installation"
 
-#: rpm.c:971 rpmqv.c:1149
+#: rpm.c:971 rpmqv.c:1154
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb kan kun angives ved installation og sletning"
 
@@ -1010,14 +1010,14 @@ msgstr "--noscripts kan kun angives ved installation, sletning og verifikation"
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles kan kun angives ved installation"
 
-#: rpm.c:987 rpmqv.c:1161
+#: rpm.c:987 rpmqv.c:1166
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--notriggers kan kun angives ved installation og sletning af pakker"
 
-#: rpm.c:991 rpmqv.c:1165
+#: rpm.c:991 rpmqv.c:1170
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1025,13 +1025,13 @@ msgstr ""
 "--nodeps kan kun angives ved opbygning, genopbygning, genoversættelse, "
 "installation, sletning og verifikation"
 
-#: rpm.c:996 rpmqv.c:1170
+#: rpm.c:996 rpmqv.c:1175
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test kan kun angives ved installation, sletning og opbygning"
 
-#: rpm.c:1000 rpmqv.c:1175
+#: rpm.c:1000 rpmqv.c:1180
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1039,7 +1039,7 @@ msgstr ""
 "--root (-r) kan kun angives ved installation, sletning, forespørgsel og "
 "genopbygning af databasen"
 
-#: rpm.c:1012 rpmqv.c:1187
+#: rpm.c:1012 rpmqv.c:1192
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parameteren til --root (-r) skal starte med et /"
 
@@ -1047,89 +1047,89 @@ msgstr "parameteren til --root (-r) skal starte med et /"
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage kan kun bruges ved opgraderinger"
 
-#: rpm.c:1021 rpmqv.c:1194
+#: rpm.c:1021 rpmqv.c:1199
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp kan kun bruges ved signaturkontrol"
 
-#: rpm.c:1024 rpmqv.c:1197
+#: rpm.c:1024 rpmqv.c:1202
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg kan kun bruges ved signaturkontrol"
 
-#: rpm.c:1027 rpmqv.c:1202
+#: rpm.c:1027 rpmqv.c:1207
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 kan kun bruges ved signaturkontrol og pakkeverifikation"
 
-#: rpm.c:1038 rpmqv.c:1218
+#: rpm.c:1038 rpmqv.c:1223
 msgid "no files to sign\n"
 msgstr "ingen filer at underskrive\n"
 
-#: rpm.c:1043 rpmqv.c:1223
+#: rpm.c:1043 rpmqv.c:1228
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "kan ikke tilgå filen %s\n"
 
-#: rpm.c:1058 rpmqv.c:1242
+#: rpm.c:1058 rpmqv.c:1247
 msgid "pgp not found: "
 msgstr "pgp ikke fundet: "
 
-#: rpm.c:1062 rpmqv.c:1247
+#: rpm.c:1062 rpmqv.c:1252
 msgid "Enter pass phrase: "
 msgstr "Indtast adgangskode: "
 
-#: rpm.c:1064 rpmqv.c:1249
+#: rpm.c:1064 rpmqv.c:1254
 msgid "Pass phrase check failed\n"
 msgstr "Adgangskode ikke godkendt\n"
 
-#: rpm.c:1067 rpmqv.c:1253
+#: rpm.c:1067 rpmqv.c:1258
 msgid "Pass phrase is good.\n"
 msgstr "Adgangskode godkendt.\n"
 
-#: rpm.c:1072 rpmqv.c:1258
+#: rpm.c:1072 rpmqv.c:1263
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Ugyldig angivelse af %%_signature i makrofil.\n"
 
-#: rpm.c:1078 rpmqv.c:1265
+#: rpm.c:1078 rpmqv.c:1270
 msgid "--sign may only be used during package building"
 msgstr "--sign kan kun bruges ved pakkeopbygning"
 
-#: rpm.c:1093 rpmqv.c:1281
+#: rpm.c:1093 rpmqv.c:1286
 msgid "exec failed\n"
 msgstr "eksekvering mislykkedes\n"
 
-#: rpm.c:1116 rpmqv.c:1536
+#: rpm.c:1116 rpmqv.c:1541
 msgid "unexpected arguments to --querytags "
 msgstr "uventede parametre til --querytags "
 
-#: rpm.c:1127 rpmqv.c:1561
+#: rpm.c:1127 rpmqv.c:1566
 msgid "no packages given for signature check"
 msgstr "ingen pakker angivet ved signatur-tjek"
 
-#: rpm.c:1138 rpmqv.c:1572
+#: rpm.c:1138 rpmqv.c:1577
 msgid "no packages given for signing"
 msgstr "ingen pakker angivet ved signering"
 
-#: rpm.c:1154 rpmqv.c:1429
+#: rpm.c:1154 rpmqv.c:1434
 msgid "no packages given for uninstall"
 msgstr "ingen pakker angivet ved afinstallation"
 
-#: rpm.c:1243 rpmqv.c:1458
+#: rpm.c:1243 rpmqv.c:1463
 msgid "no packages given for install"
 msgstr "ingen pakker angivet ved installation"
 
-#: rpm.c:1267 rpmqv.c:1502
+#: rpm.c:1267 rpmqv.c:1507
 msgid "extra arguments given for query of all packages"
 msgstr "ekstra parametre angivet ved forespørgsel på alle pakker"
 
-#: rpm.c:1272 rpmqv.c:1507
+#: rpm.c:1272 rpmqv.c:1512
 msgid "no arguments given for query"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: rpm.c:1289 rpmqv.c:1524
+#: rpm.c:1289 rpmqv.c:1529
 msgid "extra arguments given for verify of all packages"
 msgstr "ekstra parametre angivet ved verifikation af alle pakker"
 
-#: rpm.c:1293 rpmqv.c:1528
+#: rpm.c:1293 rpmqv.c:1533
 msgid "no arguments given for verify"
 msgstr "ingen parametre angivet ved verifikation"
 
@@ -1558,30 +1558,30 @@ msgstr "forbereder database (unødvendigt, gammelt brug)"
 msgid "rebuild database indices from existing database headers"
 msgstr "genopbyg databaseindekser ud fra eksisterende databasehoveder"
 
-#: rpmqv.c:997
+#: rpmqv.c:1002
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Brug \"--macros <fil:...>\" i stedet..\n"
 
-#: rpmqv.c:1072
+#: rpmqv.c:1077
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath angivet ved en operation, der ikke benytter en database"
 
-#: rpmqv.c:1156
+#: rpmqv.c:1161
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb kan kun angives ved installation og sletning"
 
-#: rpmqv.c:1326
+#: rpmqv.c:1331
 msgid "no packages files given for rebuild"
 msgstr "ingen pakkefiler angivet til genopbygning"
 
-#: rpmqv.c:1395
+#: rpmqv.c:1400
 msgid "no spec files given for build"
 msgstr "ingen spec-fil angivet til opbygning"
 
-#: rpmqv.c:1397
+#: rpmqv.c:1402
 msgid "no tar files given for build"
 msgstr "ingen tar-arkiver angivet til opbygning"
 
@@ -3564,111 +3564,86 @@ msgstr "manglende  %s"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
 
-#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:152
+#: rpmdb/db1.c:98 rpmdb/db3.c:145
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d fejl(%d) fra %s: %s\n"
 
-#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:155
+#: rpmdb/db1.c:101 rpmdb/db3.c:148
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d fejl(%d): %s\n"
 
-#: rpmdb/db1.c:430
+#: rpmdb/db1.c:453
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "lukket  db-fil    %s\n"
 
-#: rpmdb/db1.c:433
+#: rpmdb/db1.c:456
 #, c-format
 msgid "removed db file        %s\n"
 msgstr "fjernet db-fil    %s\n"
 
-#: rpmdb/db1.c:464
+#: rpmdb/db1.c:487
 #, c-format
 msgid "bad db file %s\n"
 msgstr "ugyldig db-fil %s\n"
 
-#: rpmdb/db1.c:469
+#: rpmdb/db1.c:492
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "åbner db-fil      %s modus 0x%x\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:492
+#: rpmdb/db1.c:515
 #, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "kunne ikke opnå %s lås på database\n"
 
-#: rpmdb/db1.c:493 rpmdb/db2.c:799 rpmdb/db3.c:1105
+#: rpmdb/db1.c:516 rpmdb/db3.c:1098
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db1.c:493 rpmdb/db2.c:799 rpmdb/db3.c:1105
+#: rpmdb/db1.c:516 rpmdb/db3.c:1098
 msgid "shared"
 msgstr "delt"
 
-#: rpmdb/db2.c:145
-#, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr "lukkede db-miljø  %s/%s\n"
-
-#: rpmdb/db2.c:161
-#, c-format
-msgid "removed db environment %s/%s\n"
-msgstr "fjernede db-miljø  %s/%s\n"
-
-#: rpmdb/db2.c:198 rpmdb/db3.c:236
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr "åbner   db-miljø  %s/%s %s\n"
-
-#: rpmdb/db2.c:600
-#, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr "lukkede db-indeks %s/%s\n"
-
-#: rpmdb/db2.c:691
-#, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
-
-#: rpmdb/db2.c:797 rpmdb/db3.c:1103
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "kan ikke opnå %s lås på %s/%s\n"
-
-#: rpmdb/db2.c:804
-#, c-format
-msgid "locked  db index       %s/%s\n"
-msgstr "låste   db-index  %s/%s\n"
-
-#: rpmdb/db3.c:181
+#: rpmdb/db3.c:174
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "lukkede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:197
+#: rpmdb/db3.c:190
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "fjernede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:710
+#: rpmdb/db3.c:229
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr "åbner   db-miljø  %s/%s %s\n"
+
+#: rpmdb/db3.c:703
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:746
+#: rpmdb/db3.c:739
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:923
+#: rpmdb/db3.c:916
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1110
+#: rpmdb/db3.c:1096
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "kan ikke opnå %s lås på %s/%s\n"
+
+#: rpmdb/db3.c:1103
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste   db-index  %s/%s\n"
@@ -3713,36 +3688,36 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: ukendt mærkenavn: \"%s\" ignoreret\n"
 
-#: rpmdb/rpmdb.c:343
+#: rpmdb/rpmdb.c:342
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "kan ikke åbne '%s'-indeks ved brug af db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:363
+#: rpmdb/rpmdb.c:362
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "kan ikke åbne '%s'-indeks\n"
 
-#: rpmdb/rpmdb.c:447
+#: rpmdb/rpmdb.c:446
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:572
+#: rpmdb/rpmdb.c:571
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:582
+#: rpmdb/rpmdb.c:581
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:824
+#: rpmdb/rpmdb.c:823
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
-#: rpmdb/rpmdb.c:929
+#: rpmdb/rpmdb.c:928
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3752,118 +3727,118 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1163
+#: rpmdb/rpmdb.c:1162
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "fejl(%d) ved optælling af pakker\n"
 
-#: rpmdb/rpmdb.c:1221 rpmdb/rpmdb.c:1814
+#: rpmdb/rpmdb.c:1220 rpmdb/rpmdb.c:1813
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:1503 rpmdb/rpmdb.c:2656
+#: rpmdb/rpmdb.c:1502 rpmdb/rpmdb.c:2655
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:1554
+#: rpmdb/rpmdb.c:1553
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1881
+#: rpmdb/rpmdb.c:1880
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:1890
+#: rpmdb/rpmdb.c:1889
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2077
+#: rpmdb/rpmdb.c:2076
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:2155
+#: rpmdb/rpmdb.c:2154
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:2166
+#: rpmdb/rpmdb.c:2165
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:2545
+#: rpmdb/rpmdb.c:2544
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:2575
+#: rpmdb/rpmdb.c:2574
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:2602
+#: rpmdb/rpmdb.c:2601
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:2606
+#: rpmdb/rpmdb.c:2605
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:2612
+#: rpmdb/rpmdb.c:2611
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:2614
+#: rpmdb/rpmdb.c:2613
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:2621
+#: rpmdb/rpmdb.c:2620
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2632
+#: rpmdb/rpmdb.c:2631
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2694
+#: rpmdb/rpmdb.c:2693
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:2712
+#: rpmdb/rpmdb.c:2711
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:2720
+#: rpmdb/rpmdb.c:2719
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:2722
+#: rpmdb/rpmdb.c:2721
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:2732
+#: rpmdb/rpmdb.c:2731
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:2734
+#: rpmdb/rpmdb.c:2733
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
@@ -4065,6 +4040,21 @@ msgstr "url-port skal være et tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
+
+#~ msgid "closed  db environment %s/%s\n"
+#~ msgstr "lukkede db-miljø  %s/%s\n"
+
+#~ msgid "removed db environment %s/%s\n"
+#~ msgstr "fjernede db-miljø  %s/%s\n"
+
+#~ msgid "closed  db index       %s/%s\n"
+#~ msgstr "lukkede db-indeks %s/%s\n"
+
+#~ msgid "opening db index       %s/%s %s mode=0x%x\n"
+#~ msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
+
+#~ msgid "locked  db index       %s/%s\n"
+#~ msgstr "låste   db-index  %s/%s\n"
 
 #~ msgid "========== tsorting packages\n"
 #~ msgstr "========== tsort'er pakker\n"

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-25 15:32-0400\n"
+"POT-Creation-Date: 2001-05-29 09:15-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -893,9 +893,9 @@ msgstr ""
 "samych opcji co -q)"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:882 rpmqv.c:888 rpmqv.c:895
-#: rpmqv.c:901 rpmqv.c:943 rpmqv.c:948 rpmqv.c:956 rpmqv.c:962 rpmqv.c:970
-#: rpmqv.c:1043
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:891 rpmqv.c:897 rpmqv.c:904
+#: rpmqv.c:910 rpmqv.c:948 rpmqv.c:953 rpmqv.c:961 rpmqv.c:967 rpmqv.c:975
+#: rpmqv.c:1048
 msgid "only one major mode may be specified"
 msgstr "tylko jeden g³ówny tryb pracy mo¿e byæ podany"
 
@@ -907,23 +907,23 @@ msgstr "-u i --uninstall nie s± ju¿ obs³ugiwane i nie pracuj±.\n"
 msgid "Use -e or --erase instead.\n"
 msgstr "U¿yj -e lub --erase\n"
 
-#: rpm.c:827 rpmqv.c:924
+#: rpm.c:827 rpmqv.c:930
 msgid "relocations must begin with a /"
 msgstr "drzewa przesuniêæ musz± zaczynaæ sie od /"
 
-#: rpm.c:829 rpmqv.c:926
+#: rpm.c:829 rpmqv.c:932
 msgid "relocations must contain a ="
 msgstr "specyfikacja przesuniêcia musi zawieraæ ="
 
-#: rpm.c:832 rpmqv.c:930
+#: rpm.c:832 rpmqv.c:935
 msgid "relocations must have a / following the ="
 msgstr "specyfikacja przesuniêcia musi zawieraæ / po ="
 
-#: rpm.c:841 rpmqv.c:909
+#: rpm.c:841 rpmqv.c:917
 msgid "exclude paths must begin with a /"
 msgstr "¶cie¿ki wy³±czeñ musz± siê zaczynaæ od /"
 
-#: rpm.c:850 rpmqv.c:996
+#: rpm.c:850 rpmqv.c:1001
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -931,103 +931,103 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:856 rpmqv.c:1003
+#: rpm.c:856 rpmqv.c:1008
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "B³±d wewnêtrzny w przetwarzaniu argumentu (%d) :-(\n"
 
-#: rpm.c:891 rpmqv.c:1058
+#: rpm.c:891 rpmqv.c:1063
 msgid "one type of query/verify may be performed at a time"
 msgstr "tylko jeden typ odpytywania/sprawdzania mo¿na wykonaæ na raz"
 
-#: rpm.c:896 rpmqv.c:1062
+#: rpm.c:896 rpmqv.c:1067
 msgid "unexpected query flags"
 msgstr "b³êdna konstrukcja argumentów odpytywania"
 
-#: rpm.c:899 rpmqv.c:1065
+#: rpm.c:899 rpmqv.c:1070
 msgid "unexpected query format"
 msgstr "b³êdna konstrukcja argumentów odpytywania"
 
-#: rpm.c:902 rpmqv.c:1068
+#: rpm.c:902 rpmqv.c:1073
 msgid "unexpected query source"
 msgstr "b³êdna konstrukcja argumentów odpytywania"
 
-#: rpm.c:905 rpmqv.c:1078
+#: rpm.c:905 rpmqv.c:1083
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "tylko instalacjê, uaktualnienie i usuwanie ¼róde³ mo¿na wymusiæ"
 
-#: rpm.c:908 rpmqv.c:1083
+#: rpm.c:908 rpmqv.c:1088
 msgid "files may only be relocated during package installation"
 msgstr "przesuwania plików mo¿na dokonaæ tylko w trakcie instalacji"
 
-#: rpm.c:911 rpmqv.c:1086
+#: rpm.c:911 rpmqv.c:1091
 msgid "only one of --prefix or --relocate may be used"
 msgstr "nie mo¿na jednocze¶nie u¿yæ --prefix i --relocate"
 
-#: rpm.c:914 rpmqv.c:1089
+#: rpm.c:914 rpmqv.c:1094
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate i --excludepath mo¿na u¿yæ tylko w trakcie instalacji nowych "
 "pakietów"
 
-#: rpm.c:917 rpmqv.c:1092
+#: rpm.c:917 rpmqv.c:1097
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix mo¿na u¿yæ tylko w trakcie instalacji nowych pakietów"
 
-#: rpm.c:920 rpmqv.c:1095
+#: rpm.c:920 rpmqv.c:1100
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumenty dla --prefix musz± siê rozpoczynaæ od /"
 
-#: rpm.c:923 rpmqv.c:1098
+#: rpm.c:923 rpmqv.c:1103
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:927 rpmqv.c:1102
+#: rpm.c:927 rpmqv.c:1107
 msgid "--percent may only be specified during package installation"
 msgstr "--percent mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:931 rpmqv.c:1107
+#: rpm.c:931 rpmqv.c:1112
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:935 rpmqv.c:1111
+#: rpm.c:935 rpmqv.c:1116
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:939 rpmqv.c:1115
+#: rpm.c:939 rpmqv.c:1120
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:943 rpmqv.c:1119
+#: rpm.c:943 rpmqv.c:1124
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:947 rpmqv.c:1123
+#: rpm.c:947 rpmqv.c:1128
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "nie mo¿na jednocze¶nie u¿yæ --excludedocs i --includedocs"
 
-#: rpm.c:951 rpmqv.c:1127
+#: rpm.c:951 rpmqv.c:1132
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:955 rpmqv.c:1131
+#: rpm.c:955 rpmqv.c:1136
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:959 rpmqv.c:1136
+#: rpm.c:959 rpmqv.c:1141
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:963 rpmqv.c:1140
+#: rpm.c:963 rpmqv.c:1145
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches mo¿na u¿yæ tylko w trakcie usuwania pakietów"
 
-#: rpm.c:967 rpmqv.c:1144
+#: rpm.c:967 rpmqv.c:1149
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:971 rpmqv.c:1149
+#: rpm.c:971 rpmqv.c:1154
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb mo¿na u¿yæ tylko w trakcie instalacji lub usuwania pakietów"
 
@@ -1045,14 +1045,14 @@ msgstr ""
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles mo¿na u¿yæ tylko w trakcie instalacji pakietów"
 
-#: rpm.c:987 rpmqv.c:1161
+#: rpm.c:987 rpmqv.c:1166
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb mo¿na u¿yæ tylko w trakcie instalacji lub usuwania pakietów"
 
-#: rpm.c:991 rpmqv.c:1165
+#: rpm.c:991 rpmqv.c:1170
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1061,14 +1061,14 @@ msgstr ""
 "--nodeps mo¿na u¿yæ tylko w trakcie budowania, instalacji, usuwania lub "
 "sprawdzania pakietów"
 
-#: rpm.c:996 rpmqv.c:1170
+#: rpm.c:996 rpmqv.c:1175
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test mo¿na u¿yæ tylko w trakcie instalacji, usuwania lub budowania pakietów"
 
-#: rpm.c:1000 rpmqv.c:1175
+#: rpm.c:1000 rpmqv.c:1180
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1076,7 +1076,7 @@ msgstr ""
 "--root (-r) mo¿na u¿yæ tylko w trakcie instalacji, usuwania, sprawdzania "
 "pakietów lub przebudowywania bazy"
 
-#: rpm.c:1012 rpmqv.c:1187
+#: rpm.c:1012 rpmqv.c:1192
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty dla --root (-r) musz± siê rozpoczynaæ od /"
 
@@ -1084,90 +1084,90 @@ msgstr "argumenty dla --root (-r) musz± siê rozpoczynaæ od /"
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage mo¿na u¿yæ tylko podczas aktualizacji"
 
-#: rpm.c:1021 rpmqv.c:1194
+#: rpm.c:1021 rpmqv.c:1199
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp mo¿na u¿yæ tylko w trakcie sprawdzania sygnatury"
 
-#: rpm.c:1024 rpmqv.c:1197
+#: rpm.c:1024 rpmqv.c:1202
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg mo¿na u¿yæ tylko podczas sprawdzania sygnatury"
 
-#: rpm.c:1027 rpmqv.c:1202
+#: rpm.c:1027 rpmqv.c:1207
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 "--nomd5 mo¿na u¿yæ tylko podczas sprawdzania sygnatury i weryfkiacji pakietu"
 
-#: rpm.c:1038 rpmqv.c:1218
+#: rpm.c:1038 rpmqv.c:1223
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1043 rpmqv.c:1223
+#: rpm.c:1043 rpmqv.c:1228
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "brak dostêpu do pliku %s\n"
 
-#: rpm.c:1058 rpmqv.c:1242
+#: rpm.c:1058 rpmqv.c:1247
 msgid "pgp not found: "
 msgstr "nie znaleziono pgp: "
 
-#: rpm.c:1062 rpmqv.c:1247
+#: rpm.c:1062 rpmqv.c:1252
 msgid "Enter pass phrase: "
 msgstr "Podaj has³o: "
 
-#: rpm.c:1064 rpmqv.c:1249
+#: rpm.c:1064 rpmqv.c:1254
 msgid "Pass phrase check failed\n"
 msgstr "Weryfikacja has³a nieudana\n"
 
-#: rpm.c:1067 rpmqv.c:1253
+#: rpm.c:1067 rpmqv.c:1258
 msgid "Pass phrase is good.\n"
 msgstr "Has³o jest prawid³owe.\n"
 
-#: rpm.c:1072 rpmqv.c:1258
+#: rpm.c:1072 rpmqv.c:1263
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "B³êdny %%_signature spec w pliku makra.\n"
 
-#: rpm.c:1078 rpmqv.c:1265
+#: rpm.c:1078 rpmqv.c:1270
 msgid "--sign may only be used during package building"
 msgstr "--sign mo¿na u¿yæ tylko w trakcie budowania pakietu"
 
-#: rpm.c:1093 rpmqv.c:1281
+#: rpm.c:1093 rpmqv.c:1286
 msgid "exec failed\n"
 msgstr "wykonanie nie powiod³o siê\n"
 
-#: rpm.c:1116 rpmqv.c:1536
+#: rpm.c:1116 rpmqv.c:1541
 msgid "unexpected arguments to --querytags "
 msgstr "nieoczekiwane argumenty dla --querytags "
 
-#: rpm.c:1127 rpmqv.c:1561
+#: rpm.c:1127 rpmqv.c:1566
 msgid "no packages given for signature check"
 msgstr "nie podano nazwy pakietu do sprawdzenia sygnatury"
 
-#: rpm.c:1138 rpmqv.c:1572
+#: rpm.c:1138 rpmqv.c:1577
 msgid "no packages given for signing"
 msgstr "nie podano nazwy pakietu do podpisania"
 
-#: rpm.c:1154 rpmqv.c:1429
+#: rpm.c:1154 rpmqv.c:1434
 msgid "no packages given for uninstall"
 msgstr "nie podano nazw plików do usuniêcia"
 
-#: rpm.c:1243 rpmqv.c:1458
+#: rpm.c:1243 rpmqv.c:1463
 msgid "no packages given for install"
 msgstr "nie podano nazw plików do zainstalowania"
 
-#: rpm.c:1267 rpmqv.c:1502
+#: rpm.c:1267 rpmqv.c:1507
 msgid "extra arguments given for query of all packages"
 msgstr "zbyt wiele argumentów dla odpytywania wszystkich pakietów"
 
-#: rpm.c:1272 rpmqv.c:1507
+#: rpm.c:1272 rpmqv.c:1512
 msgid "no arguments given for query"
 msgstr "nie podano argumentów dla trybu zapytañ"
 
-#: rpm.c:1289 rpmqv.c:1524
+#: rpm.c:1289 rpmqv.c:1529
 msgid "extra arguments given for verify of all packages"
 msgstr "zbyt wiele argumentów dla weryfikacji wszystkich pakietów"
 
-#: rpm.c:1293 rpmqv.c:1528
+#: rpm.c:1293 rpmqv.c:1533
 msgid "no arguments given for verify"
 msgstr "nie podano argumentów dla sprawdzania"
 
@@ -1649,31 +1649,31 @@ msgstr ""
 msgid "rebuild database indices from existing database headers"
 msgstr "przebuduj istniej±c± bazê"
 
-#: rpmqv.c:997
+#: rpmqv.c:1002
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "U¿yj -e lub --erase\n"
 
-#: rpmqv.c:1072
+#: rpmqv.c:1077
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath podano dla operacji nie u¿ywaj±cej bazy"
 
-#: rpmqv.c:1156
+#: rpmqv.c:1161
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb mo¿na u¿yæ tylko w trakcie instalacji lub usuwania pakietów"
 
-#: rpmqv.c:1326
+#: rpmqv.c:1331
 msgid "no packages files given for rebuild"
 msgstr "nie podano nazw pakietów do przebudowania"
 
-#: rpmqv.c:1395
+#: rpmqv.c:1400
 msgid "no spec files given for build"
 msgstr "nie podano nazw plików spec do budowania"
 
-#: rpmqv.c:1397
+#: rpmqv.c:1402
 msgid "no tar files given for build"
 msgstr "nie podano nazw plików tar do budowania"
 
@@ -3736,111 +3736,86 @@ msgstr "brak    %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Niespe³nione zale¿no¶ci dla %s-%s-%s: "
 
-#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:152
+#: rpmdb/db1.c:98 rpmdb/db3.c:145
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:155
+#: rpmdb/db1.c:101 rpmdb/db3.c:148
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:430
+#: rpmdb/db1.c:453
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:433
+#: rpmdb/db1.c:456
 #, fuzzy, c-format
 msgid "removed db file        %s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db1.c:464
+#: rpmdb/db1.c:487
 #, fuzzy, c-format
 msgid "bad db file %s\n"
 msgstr "b³êdny status pliku: %s"
 
-#: rpmdb/db1.c:469
+#: rpmdb/db1.c:492
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:492
+#: rpmdb/db1.c:515
 #, fuzzy, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db1.c:493 rpmdb/db2.c:799 rpmdb/db3.c:1105
+#: rpmdb/db1.c:516 rpmdb/db3.c:1098
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:493 rpmdb/db2.c:799 rpmdb/db3.c:1105
+#: rpmdb/db1.c:516 rpmdb/db3.c:1098
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db2.c:145
-#, fuzzy, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr "usuwanie indeksu plików dla %s\n"
-
-#: rpmdb/db2.c:161
-#, fuzzy, c-format
-msgid "removed db environment %s/%s\n"
-msgstr "usuwanie indeksu plików dla %s\n"
-
-#: rpmdb/db2.c:198 rpmdb/db3.c:236
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr ""
-
-#: rpmdb/db2.c:600
-#, fuzzy, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr "usuwanie indeksu plików dla %s\n"
-
-#: rpmdb/db2.c:691
-#, fuzzy, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
-
-#: rpmdb/db2.c:797 rpmdb/db3.c:1103
-#, fuzzy, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
-
-#: rpmdb/db2.c:804
-#, fuzzy, c-format
-msgid "locked  db index       %s/%s\n"
-msgstr "usuwanie indeksu plików dla %s\n"
-
-#: rpmdb/db3.c:181
+#: rpmdb/db3.c:174
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:197
+#: rpmdb/db3.c:190
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:710
+#: rpmdb/db3.c:229
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr ""
+
+#: rpmdb/db3.c:703
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:746
+#: rpmdb/db3.c:739
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:923
+#: rpmdb/db3.c:916
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: rpmdb/db3.c:1110
+#: rpmdb/db3.c:1096
+#, fuzzy, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
+
+#: rpmdb/db3.c:1103
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
@@ -3880,37 +3855,37 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:343
+#: rpmdb/rpmdb.c:342
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "nie mo¿na otworzyæ %s przy %s:%d"
 
-#: rpmdb/rpmdb.c:363
+#: rpmdb/rpmdb.c:362
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: rpmdb/rpmdb.c:447
+#: rpmdb/rpmdb.c:446
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "b³±d pobierania rekordu %s z %s"
 
-#: rpmdb/rpmdb.c:572
+#: rpmdb/rpmdb.c:571
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "b³±d zapisywania rekordu %s do %s"
 
-#: rpmdb/rpmdb.c:582
+#: rpmdb/rpmdb.c:581
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "b³±d usuwania rekordu %s z %s"
 
-#: rpmdb/rpmdb.c:824
+#: rpmdb/rpmdb.c:823
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: rpmdb/rpmdb.c:929
+#: rpmdb/rpmdb.c:928
 #, fuzzy
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
@@ -3921,115 +3896,115 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1163
+#: rpmdb/rpmdb.c:1162
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: rpmdb/rpmdb.c:1221 rpmdb/rpmdb.c:1814
+#: rpmdb/rpmdb.c:1220 rpmdb/rpmdb.c:1813
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla poszukiwania"
 
-#: rpmdb/rpmdb.c:1503 rpmdb/rpmdb.c:2656
+#: rpmdb/rpmdb.c:1502 rpmdb/rpmdb.c:2655
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "rekord numer %d w bazie danych jest b³êdny -- rekord pominiêto"
 
-#: rpmdb/rpmdb.c:1554
+#: rpmdb/rpmdb.c:1553
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1881
+#: rpmdb/rpmdb.c:1880
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "usuwanie indeksu grupy\n"
 
-#: rpmdb/rpmdb.c:1890
+#: rpmdb/rpmdb.c:1889
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "usuwanie indeksu nazw\n"
 
-#: rpmdb/rpmdb.c:2077
+#: rpmdb/rpmdb.c:2076
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: rpmdb/rpmdb.c:2155
+#: rpmdb/rpmdb.c:2154
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: rpmdb/rpmdb.c:2166
+#: rpmdb/rpmdb.c:2165
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: rpmdb/rpmdb.c:2545
+#: rpmdb/rpmdb.c:2544
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2575
+#: rpmdb/rpmdb.c:2574
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: rpmdb/rpmdb.c:2602
+#: rpmdb/rpmdb.c:2601
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "odbudowywujê bazê danych w rootdir %s\n"
 
-#: rpmdb/rpmdb.c:2606
+#: rpmdb/rpmdb.c:2605
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tymczasowa baza danych %s ju¿ istnieje"
 
-#: rpmdb/rpmdb.c:2612
+#: rpmdb/rpmdb.c:2611
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:2614
+#: rpmdb/rpmdb.c:2613
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:2621
+#: rpmdb/rpmdb.c:2620
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otwieranie starej bazy danych\n"
 
-#: rpmdb/rpmdb.c:2632
+#: rpmdb/rpmdb.c:2631
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otwieranie nowej bazy danych\n"
 
-#: rpmdb/rpmdb.c:2694
+#: rpmdb/rpmdb.c:2693
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie mo¿na dodaæ rekordu oryginalnie przy %d"
 
-#: rpmdb/rpmdb.c:2712
+#: rpmdb/rpmdb.c:2711
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: rpmdb/rpmdb.c:2720
+#: rpmdb/rpmdb.c:2719
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: rpmdb/rpmdb.c:2722
+#: rpmdb/rpmdb.c:2721
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "naprawcze zastêpowanie plików w %s plikami z %s"
 
-#: rpmdb/rpmdb.c:2732
+#: rpmdb/rpmdb.c:2731
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:2734
+#: rpmdb/rpmdb.c:2733
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
@@ -4244,6 +4219,26 @@ msgstr "port musi byæ liczb±\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"
+
+#, fuzzy
+#~ msgid "closed  db environment %s/%s\n"
+#~ msgstr "usuwanie indeksu plików dla %s\n"
+
+#, fuzzy
+#~ msgid "removed db environment %s/%s\n"
+#~ msgstr "usuwanie indeksu plików dla %s\n"
+
+#, fuzzy
+#~ msgid "closed  db index       %s/%s\n"
+#~ msgstr "usuwanie indeksu plików dla %s\n"
+
+#, fuzzy
+#~ msgid "opening db index       %s/%s %s mode=0x%x\n"
+#~ msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
+
+#, fuzzy
+#~ msgid "locked  db index       %s/%s\n"
+#~ msgstr "usuwanie indeksu plików dla %s\n"
 
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, and "

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-25 15:32-0400\n"
+"POT-Creation-Date: 2001-05-29 09:15-0400\n"
 "PO-Revision-Date: 2001-02-24 02:47+0200\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -865,9 +865,9 @@ msgstr ""
 "paket veri tabanýnda bunlara günceller"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:882 rpmqv.c:888 rpmqv.c:895
-#: rpmqv.c:901 rpmqv.c:943 rpmqv.c:948 rpmqv.c:956 rpmqv.c:962 rpmqv.c:970
-#: rpmqv.c:1043
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:891 rpmqv.c:897 rpmqv.c:904
+#: rpmqv.c:910 rpmqv.c:948 rpmqv.c:953 rpmqv.c:961 rpmqv.c:967 rpmqv.c:975
+#: rpmqv.c:1048
 msgid "only one major mode may be specified"
 msgstr "sadece bir ana kip (major mode) belirtilebilir"
 
@@ -879,23 +879,23 @@ msgstr "-u ve --uninstall komutlarý eskidirler ve çalýþmamaktadýrlar.\n"
 msgid "Use -e or --erase instead.\n"
 msgstr "Yerine  -e veya --erase kullanýn.\n"
 
-#: rpm.c:827 rpmqv.c:924
+#: rpm.c:827 rpmqv.c:930
 msgid "relocations must begin with a /"
 msgstr "yeniden konumlandýrma iþlemleri / ile baþlamalý"
 
-#: rpm.c:829 rpmqv.c:926
+#: rpm.c:829 rpmqv.c:932
 msgid "relocations must contain a ="
 msgstr "yeniden konumlandýrma iþlemleri = içermelidir"
 
-#: rpm.c:832 rpmqv.c:930
+#: rpm.c:832 rpmqv.c:935
 msgid "relocations must have a / following the ="
 msgstr "yeniden konumlandýrma için = den sonra bir / gerekir"
 
-#: rpm.c:841 rpmqv.c:909
+#: rpm.c:841 rpmqv.c:917
 msgid "exclude paths must begin with a /"
 msgstr "dýþlanan dosya yolu / ile baþlamalý"
 
-#: rpm.c:850 rpmqv.c:996
+#: rpm.c:850 rpmqv.c:1001
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "--rcfile seçeneði kaldýrýlmýþtý.\n"
 
@@ -905,104 +905,104 @@ msgstr ""
 "--macros ile okunacak makro dosyalarýný iki nokta üstüstelerle ayrýlmýþ bir "
 "liste olarak verin.\n"
 
-#: rpm.c:856 rpmqv.c:1003
+#: rpm.c:856 rpmqv.c:1008
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "(%d) argümaný iþlenirken iç hata oluþtu :-(\n"
 
-#: rpm.c:891 rpmqv.c:1058
+#: rpm.c:891 rpmqv.c:1063
 msgid "one type of query/verify may be performed at a time"
 msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
 
-#: rpm.c:896 rpmqv.c:1062
+#: rpm.c:896 rpmqv.c:1067
 msgid "unexpected query flags"
 msgstr "beklenmeyen sorgulama bayraklarý"
 
-#: rpm.c:899 rpmqv.c:1065
+#: rpm.c:899 rpmqv.c:1070
 msgid "unexpected query format"
 msgstr "beklenmeyen sorgulama biçimi"
 
-#: rpm.c:902 rpmqv.c:1068
+#: rpm.c:902 rpmqv.c:1073
 msgid "unexpected query source"
 msgstr "beklenmeyen sorgulama kaynaðý"
 
-#: rpm.c:905 rpmqv.c:1078
+#: rpm.c:905 rpmqv.c:1083
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "sadece  kaynak ve spec silme iþlemleri, yükleme, güncelleme iþlemleri için "
 "zorlanabilir"
 
-#: rpm.c:908 rpmqv.c:1083
+#: rpm.c:908 rpmqv.c:1088
 msgid "files may only be relocated during package installation"
 msgstr "dosyalar sadece paket yüklemesi sýrasýnda yeni yerlerine yerleþtirilir"
 
-#: rpm.c:911 rpmqv.c:1086
+#: rpm.c:911 rpmqv.c:1091
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
 
-#: rpm.c:914 rpmqv.c:1089
+#: rpm.c:914 rpmqv.c:1094
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate ve --excludepath sadece yeni paketler yüklenirken kullanýlýr"
 
-#: rpm.c:917 rpmqv.c:1092
+#: rpm.c:917 rpmqv.c:1097
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:920 rpmqv.c:1095
+#: rpm.c:920 rpmqv.c:1100
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix deðiþkenleri '/' ile baþlamalý"
 
-#: rpm.c:923 rpmqv.c:1098
+#: rpm.c:923 rpmqv.c:1103
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:927 rpmqv.c:1102
+#: rpm.c:927 rpmqv.c:1107
 msgid "--percent may only be specified during package installation"
 msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:931 rpmqv.c:1107
+#: rpm.c:931 rpmqv.c:1112
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:935 rpmqv.c:1111
+#: rpm.c:935 rpmqv.c:1116
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:939 rpmqv.c:1115
+#: rpm.c:939 rpmqv.c:1120
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:943 rpmqv.c:1119
+#: rpm.c:943 rpmqv.c:1124
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:947 rpmqv.c:1123
+#: rpm.c:947 rpmqv.c:1128
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs ve --includedocs bir arada kullanýlamaz"
 
-#: rpm.c:951 rpmqv.c:1127
+#: rpm.c:951 rpmqv.c:1132
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:955 rpmqv.c:1131
+#: rpm.c:955 rpmqv.c:1136
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:959 rpmqv.c:1136
+#: rpm.c:959 rpmqv.c:1141
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:963 rpmqv.c:1140
+#: rpm.c:963 rpmqv.c:1145
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches sadece paket silinmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:967 rpmqv.c:1144
+#: rpm.c:967 rpmqv.c:1149
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:971 rpmqv.c:1149
+#: rpm.c:971 rpmqv.c:1154
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb sadece paket yükleme ve silmeleri sýrasýnda kullanýlabilir"
 
@@ -1020,14 +1020,14 @@ msgstr ""
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:987 rpmqv.c:1161
+#: rpm.c:987 rpmqv.c:1166
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--notriggers sadece paket yükleme ve silme iþlemlerinde kullanýlýr"
 
-#: rpm.c:991 rpmqv.c:1165
+#: rpm.c:991 rpmqv.c:1170
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1035,13 +1035,13 @@ msgstr ""
 "--nodeps sadece paket yükleme, yeniden yükleme, yeniden derleme, silme ve "
 "doðrulamalarda kullanýlýr"
 
-#: rpm.c:996 rpmqv.c:1170
+#: rpm.c:996 rpmqv.c:1175
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test sadece paket yüklemelerinde, silme ve derlemelerinde kullanýlýr"
 
-#: rpm.c:1000 rpmqv.c:1175
+#: rpm.c:1000 rpmqv.c:1180
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1049,7 +1049,7 @@ msgstr ""
 "--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde "
 "kullanýlýr"
 
-#: rpm.c:1012 rpmqv.c:1187
+#: rpm.c:1012 rpmqv.c:1192
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) argümanlarý '/' ile baþlamalý"
 
@@ -1057,90 +1057,90 @@ msgstr "--root (-r) argümanlarý '/' ile baþlamalý"
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
 
-#: rpm.c:1021 rpmqv.c:1194
+#: rpm.c:1021 rpmqv.c:1199
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp sadece imza kontrolü sýrasýnda kullanýlabilir"
 
-#: rpm.c:1024 rpmqv.c:1197
+#: rpm.c:1024 rpmqv.c:1202
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg sadece imza kontrolü sýrasýnda kullanýlabilir"
 
-#: rpm.c:1027 rpmqv.c:1202
+#: rpm.c:1027 rpmqv.c:1207
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 "--nomd5 sadece imza kontrolü veya paket doðrulamasý sýrasýnda kullanýlýr"
 
-#: rpm.c:1038 rpmqv.c:1218
+#: rpm.c:1038 rpmqv.c:1223
 msgid "no files to sign\n"
 msgstr "imzalanacak dosya yok\n"
 
-#: rpm.c:1043 rpmqv.c:1223
+#: rpm.c:1043 rpmqv.c:1228
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "%s dosyasý bulunamýyor\n"
 
-#: rpm.c:1058 rpmqv.c:1242
+#: rpm.c:1058 rpmqv.c:1247
 msgid "pgp not found: "
 msgstr "pgp bulunamadý: "
 
-#: rpm.c:1062 rpmqv.c:1247
+#: rpm.c:1062 rpmqv.c:1252
 msgid "Enter pass phrase: "
 msgstr "Anahtar parolasýný girin: "
 
-#: rpm.c:1064 rpmqv.c:1249
+#: rpm.c:1064 rpmqv.c:1254
 msgid "Pass phrase check failed\n"
 msgstr "Anahtar parolasý kontrolü baþarýsýz\n"
 
-#: rpm.c:1067 rpmqv.c:1253
+#: rpm.c:1067 rpmqv.c:1258
 msgid "Pass phrase is good.\n"
 msgstr "Anahtar parolasý doðru.\n"
 
-#: rpm.c:1072 rpmqv.c:1258
+#: rpm.c:1072 rpmqv.c:1263
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Makro dosyasýndaki %%_signature spec geçersiz.\n"
 
-#: rpm.c:1078 rpmqv.c:1265
+#: rpm.c:1078 rpmqv.c:1270
 msgid "--sign may only be used during package building"
 msgstr "--sign sadece paket oluþturulurken kullanýlabilir"
 
-#: rpm.c:1093 rpmqv.c:1281
+#: rpm.c:1093 rpmqv.c:1286
 msgid "exec failed\n"
 msgstr "icra baþarýsýz\n"
 
-#: rpm.c:1116 rpmqv.c:1536
+#: rpm.c:1116 rpmqv.c:1541
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags için beklenmeyen argümanlar"
 
-#: rpm.c:1127 rpmqv.c:1561
+#: rpm.c:1127 rpmqv.c:1566
 msgid "no packages given for signature check"
 msgstr "imzasý kontrol edilecek paketler belirtilmedi"
 
-#: rpm.c:1138 rpmqv.c:1572
+#: rpm.c:1138 rpmqv.c:1577
 msgid "no packages given for signing"
 msgstr "imzalanacak paketler belirtilmedi"
 
-#: rpm.c:1154 rpmqv.c:1429
+#: rpm.c:1154 rpmqv.c:1434
 msgid "no packages given for uninstall"
 msgstr "sistemden silinecek paketler belirtilmedi"
 
-#: rpm.c:1243 rpmqv.c:1458
+#: rpm.c:1243 rpmqv.c:1463
 msgid "no packages given for install"
 msgstr "yüklenecek paketler belirtilmedi"
 
-#: rpm.c:1267 rpmqv.c:1502
+#: rpm.c:1267 rpmqv.c:1507
 msgid "extra arguments given for query of all packages"
 msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
 
-#: rpm.c:1272 rpmqv.c:1507
+#: rpm.c:1272 rpmqv.c:1512
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: rpm.c:1289 rpmqv.c:1524
+#: rpm.c:1289 rpmqv.c:1529
 msgid "extra arguments given for verify of all packages"
 msgstr "tüm paketlerin doðrulanmasý için fazladan argümanlar belirtildi"
 
-#: rpm.c:1293 rpmqv.c:1528
+#: rpm.c:1293 rpmqv.c:1533
 msgid "no arguments given for verify"
 msgstr "doðrulama için hiç argüman belirtilmedi"
 
@@ -1573,30 +1573,30 @@ msgid "rebuild database indices from existing database headers"
 msgstr ""
 "mevcut veritabaný baþlýklarýndan veritabaný baþvurularýný yeniden oluþturur"
 
-#: rpmqv.c:997
+#: rpmqv.c:1002
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Yerine \"--macros <dosya:...>\" kullanýn.\n"
 
-#: rpmqv.c:1072
+#: rpmqv.c:1077
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath bir veritabaný kullanmayan iþlemler için verilmiþ"
 
-#: rpmqv.c:1156
+#: rpmqv.c:1161
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb sadece paket yükleme ve silmeleri sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:1326
+#: rpmqv.c:1331
 msgid "no packages files given for rebuild"
 msgstr "yeniden oluþturmak için paket dosyalarý belirtilmemiþ"
 
-#: rpmqv.c:1395
+#: rpmqv.c:1400
 msgid "no spec files given for build"
 msgstr "oluþturma için gerekli spec dosyasý belirtilmemiþ"
 
-#: rpmqv.c:1397
+#: rpmqv.c:1402
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirttilmemiþ"
 
@@ -3585,111 +3585,86 @@ msgstr "eksik      %s"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s için tatmin edici olmayan baðýmlýlýklar: "
 
-#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:152
+#: rpmdb/db1.c:98 rpmdb/db3.c:145
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d hata(%d) %s'den: %s\n"
 
-#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:155
+#: rpmdb/db1.c:101 rpmdb/db3.c:148
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d hata(%d): %s\n"
 
-#: rpmdb/db1.c:430
+#: rpmdb/db1.c:453
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "kapanan db dosyasý     %s\n"
 
-#: rpmdb/db1.c:433
+#: rpmdb/db1.c:456
 #, c-format
 msgid "removed db file        %s\n"
 msgstr "silinen db dosyasý     %s\n"
 
-#: rpmdb/db1.c:464
+#: rpmdb/db1.c:487
 #, c-format
 msgid "bad db file %s\n"
 msgstr "db dosyasý %s hatalý\n"
 
-#: rpmdb/db1.c:469
+#: rpmdb/db1.c:492
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "açýlan db dosyasý      %s kip 0x%x\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:492
+#: rpmdb/db1.c:515
 #, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "Veritabaný için %s kilit (lock) alýnamadý\n"
 
-#: rpmdb/db1.c:493 rpmdb/db2.c:799 rpmdb/db3.c:1105
+#: rpmdb/db1.c:516 rpmdb/db3.c:1098
 msgid "exclusive"
 msgstr "özel"
 
-#: rpmdb/db1.c:493 rpmdb/db2.c:799 rpmdb/db3.c:1105
+#: rpmdb/db1.c:516 rpmdb/db3.c:1098
 msgid "shared"
 msgstr "paylaþýmlý"
 
-#: rpmdb/db2.c:145
-#, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr "kapanan db ortamý      %s/%s\n"
-
-#: rpmdb/db2.c:161
-#, c-format
-msgid "removed db environment %s/%s\n"
-msgstr "silinen db ortamý      %s/%s\n"
-
-#: rpmdb/db2.c:198 rpmdb/db3.c:236
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr "açýlan  db ortamý      %s/%s %s\n"
-
-#: rpmdb/db2.c:600
-#, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr "kapanan db endeks      %s/%s\n"
-
-#: rpmdb/db2.c:691
-#, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "açýlan  db endeks      %s/%s %s kip=0x%x\n"
-
-#: rpmdb/db2.c:797 rpmdb/db3.c:1103
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "%s kilit  %s/%s'den alýnamadý\n"
-
-#: rpmdb/db2.c:804
-#, c-format
-msgid "locked  db index       %s/%s\n"
-msgstr "kilitli db endeks      %s/%s\n"
-
-#: rpmdb/db3.c:181
+#: rpmdb/db3.c:174
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "kapanan db ortamý      %s/%s\n"
 
-#: rpmdb/db3.c:197
+#: rpmdb/db3.c:190
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "silinen db ortamý      %s/%s\n"
 
-#: rpmdb/db3.c:710
+#: rpmdb/db3.c:229
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr "açýlan  db ortamý      %s/%s %s\n"
+
+#: rpmdb/db3.c:703
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kapanan db endeks      %s/%s\n"
 
-#: rpmdb/db3.c:746
+#: rpmdb/db3.c:739
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "kapanan db endeks      %s/%s\n"
 
-#: rpmdb/db3.c:923
+#: rpmdb/db3.c:916
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlan  db endeks      %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1110
+#: rpmdb/db3.c:1096
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "%s kilit  %s/%s'den alýnamadý\n"
+
+#: rpmdb/db3.c:1103
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli db endeks      %s/%s\n"
@@ -3733,36 +3708,36 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: tanýmlanmamýþ etiket adý: \"%s\" yoksayýldý\n"
 
-#: rpmdb/rpmdb.c:343
+#: rpmdb/rpmdb.c:342
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s indeksi db%d - %s (%d) kullanarak açýlamadý\n"
 
-#: rpmdb/rpmdb.c:363
+#: rpmdb/rpmdb.c:362
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "%s indeksi açýlamadý\n"
 
-#: rpmdb/rpmdb.c:447
+#: rpmdb/rpmdb.c:446
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "hata(%d): \"%s\" kayýt %s endeksinden alýnamýyor\n"
 
-#: rpmdb/rpmdb.c:572
+#: rpmdb/rpmdb.c:571
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "hata(%d): %s kayýt %s içine yazýlamýyor\n"
 
-#: rpmdb/rpmdb.c:582
+#: rpmdb/rpmdb.c:581
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr " %s kayýt %s dosyasýndan silinirken hata(%d)\n"
 
-#: rpmdb/rpmdb.c:824
+#: rpmdb/rpmdb.c:823
 msgid "no dbpath has been set\n"
 msgstr "hiç bir dbpath deðeri girilmemiþti\n"
 
-#: rpmdb/rpmdb.c:929
+#: rpmdb/rpmdb.c:928
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3772,116 +3747,116 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1163
+#: rpmdb/rpmdb.c:1162
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "paketler taranýrken hata(%d)\n"
 
-#: rpmdb/rpmdb.c:1221 rpmdb/rpmdb.c:1814
+#: rpmdb/rpmdb.c:1220 rpmdb/rpmdb.c:1813
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x de baþlýk okunamadý\n"
 
-#: rpmdb/rpmdb.c:1503 rpmdb/rpmdb.c:2656
+#: rpmdb/rpmdb.c:1502 rpmdb/rpmdb.c:2655
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor\n"
 
-#: rpmdb/rpmdb.c:1554
+#: rpmdb/rpmdb.c:1553
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1881
+#: rpmdb/rpmdb.c:1880
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "\"%s\" %s endeksinden siliniyor.\n"
 
-#: rpmdb/rpmdb.c:1890
+#: rpmdb/rpmdb.c:1889
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%s endeksinden %d girdi siliniyor.\n"
 
-#: rpmdb/rpmdb.c:2077
+#: rpmdb/rpmdb.c:2076
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "yeni paket örneðini tutma hatasý(%d)\n"
 
-#: rpmdb/rpmdb.c:2155
+#: rpmdb/rpmdb.c:2154
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "\"%s\" %s endeksine ekleniyor.\n"
 
-#: rpmdb/rpmdb.c:2166
+#: rpmdb/rpmdb.c:2165
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%s endeksine %d girdi eklendi.\n"
 
-#: rpmdb/rpmdb.c:2545
+#: rpmdb/rpmdb.c:2544
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "baþarýlý db3 yeniden oluþturma ertesinde %s kaldýrýlýyor\n"
 
-#: rpmdb/rpmdb.c:2575
+#: rpmdb/rpmdb.c:2574
 msgid "no dbpath has been set"
 msgstr "hiç bir dbpath deðeri girilmemiþti"
 
-#: rpmdb/rpmdb.c:2602
+#: rpmdb/rpmdb.c:2601
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%s veritabaný %s içinde yeniden oluþturuluyor\n"
 
-#: rpmdb/rpmdb.c:2606
+#: rpmdb/rpmdb.c:2605
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "geçici veritabaný %s zaten mevcut\n"
 
-#: rpmdb/rpmdb.c:2612
+#: rpmdb/rpmdb.c:2611
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s dizini oluþturuluyor\n"
 
-#: rpmdb/rpmdb.c:2614
+#: rpmdb/rpmdb.c:2613
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s dizini oluþturuluyor: %s\n"
 
-#: rpmdb/rpmdb.c:2621
+#: rpmdb/rpmdb.c:2620
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "eski veritabanýný dbapi %d ile açýyor\n"
 
-#: rpmdb/rpmdb.c:2632
+#: rpmdb/rpmdb.c:2631
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "yeni veritabanýný dbapi %d ile açýyor\n"
 
-#: rpmdb/rpmdb.c:2694
+#: rpmdb/rpmdb.c:2693
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kayýt özgün olarak %d de eklenemedi\n"
 
-#: rpmdb/rpmdb.c:2712
+#: rpmdb/rpmdb.c:2711
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "veritabaný yeniden oluþturulurken hata: mevcut veritabaný deðiþmeden\n"
 "yerinde býrakýldý\n"
 
-#: rpmdb/rpmdb.c:2720
+#: rpmdb/rpmdb.c:2719
 msgid "failed to replace old database with new database!\n"
 msgstr "eski veritabanýnýn yenisiyle deðiþtirilirmesi baþarýsýz!\n"
 
-#: rpmdb/rpmdb.c:2722
+#: rpmdb/rpmdb.c:2721
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "kurtarmak için %s içindeki dosyalar %s deki dosyalarla deðiþtiriliyor"
 
-#: rpmdb/rpmdb.c:2732
+#: rpmdb/rpmdb.c:2731
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s dizini siliniyor\n"
 
-#: rpmdb/rpmdb.c:2734
+#: rpmdb/rpmdb.c:2733
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s dizininin silinmesi baþarýsýz: %s\n"
@@ -4083,6 +4058,21 @@ msgstr "url portu bir sayý olmalý\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"
+
+#~ msgid "closed  db environment %s/%s\n"
+#~ msgstr "kapanan db ortamý      %s/%s\n"
+
+#~ msgid "removed db environment %s/%s\n"
+#~ msgstr "silinen db ortamý      %s/%s\n"
+
+#~ msgid "closed  db index       %s/%s\n"
+#~ msgstr "kapanan db endeks      %s/%s\n"
+
+#~ msgid "opening db index       %s/%s %s mode=0x%x\n"
+#~ msgstr "açýlan  db endeks      %s/%s %s kip=0x%x\n"
+
+#~ msgid "locked  db index       %s/%s\n"
+#~ msgstr "kilitli db endeks      %s/%s\n"
 
 #~ msgid "========== tsorting packages\n"
 #~ msgstr "========== tsortlama paketleri\n"

@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.27
+Release: 0.28
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -391,6 +391,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue May 29 2001 Jeff Johnson <jbj@redhat.com>
+- eliminate db-1.85 and db-2.x configuration.
+- fix: popt arg sanity checks broken, optarg != optArg.
+- fix: popt range checks on floats/doubles broken.
+- popt: return POPT_ERROR_ERRNO on config open/read/close failure.
+
 * Fri May 25 2001 Jeff Johnson <jbj@redhat.com>
 - perform db->verify when closing db files.
 

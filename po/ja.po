@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-25 15:32-0400\n"
+"POT-Creation-Date: 2001-05-29 09:15-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -905,9 +905,9 @@ msgstr ""
 "¥Ç¡¼¥¿¥Ù¡¼¥¹Ãæ¤Î½êÍ­¼Ô¤È¥°¥ë¡¼¥×¤ËÀßÄê¤·¤Þ¤¹"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:882 rpmqv.c:888 rpmqv.c:895
-#: rpmqv.c:901 rpmqv.c:943 rpmqv.c:948 rpmqv.c:956 rpmqv.c:962 rpmqv.c:970
-#: rpmqv.c:1043
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:891 rpmqv.c:897 rpmqv.c:904
+#: rpmqv.c:910 rpmqv.c:948 rpmqv.c:953 rpmqv.c:961 rpmqv.c:967 rpmqv.c:975
+#: rpmqv.c:1048
 msgid "only one major mode may be specified"
 msgstr "°ì¤Ä¤Î¥á¥¸¥ã¡¼¥â¡¼¥É¤Î¤ß¤ò»ØÄê¤·¤Æ¤¯¤À¤µ¤¤"
 
@@ -919,24 +919,24 @@ msgstr "-u ¤È --uninstall ¤Ï¤â¤Ï¤äÆ°ºî¤·¤Þ¤»¤ó\n"
 msgid "Use -e or --erase instead.\n"
 msgstr "-e ¤« --erase ¤ò»È¤Ã¤Æ¤¯¤À¤µ¤¤\n"
 
-#: rpm.c:827 rpmqv.c:924
+#: rpm.c:827 rpmqv.c:930
 msgid "relocations must begin with a /"
 msgstr "ºÆÇÛÃÖ¤Ï / ¤«¤é»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:829 rpmqv.c:926
+#: rpm.c:829 rpmqv.c:932
 msgid "relocations must contain a ="
 msgstr "ºÆÇÛÃÖ¤Ï = ¤ò´Þ¤ó¤Ç¤¤¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:832 rpmqv.c:930
+#: rpm.c:832 rpmqv.c:935
 msgid "relocations must have a / following the ="
 msgstr "ºÆÇÛÃÖ¤Ï = ¤Î¼¡¤Ë / ¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:841 rpmqv.c:909
+#: rpm.c:841 rpmqv.c:917
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "½ü³°¤¹¤ë¥Ñ¥¹¤Ï / ¤«¤é»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:850 rpmqv.c:996
+#: rpm.c:850 rpmqv.c:1001
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -944,45 +944,45 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:856 rpmqv.c:1003
+#: rpm.c:856 rpmqv.c:1008
 #, fuzzy, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "°ú¿ô½èÍý(%d)¤Ç¤ÎÆâÉô¥¨¥é¡¼ :-(\n"
 
-#: rpm.c:891 rpmqv.c:1058
+#: rpm.c:891 rpmqv.c:1063
 msgid "one type of query/verify may be performed at a time"
 msgstr "Ìä¤¤¹ç¤ï¤»/¸¡¾Ú¤Ï°ìÅÙ¤Ë°ì¤Ä¤·¤«¼Â¹Ô¤Ç¤­¤Þ¤»¤ó"
 
-#: rpm.c:896 rpmqv.c:1062
+#: rpm.c:896 rpmqv.c:1067
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥Õ¥é¥°"
 
-#: rpm.c:899 rpmqv.c:1065
+#: rpm.c:899 rpmqv.c:1070
 #, fuzzy
 msgid "unexpected query format"
 msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥Õ¥©¡¼¥Þ¥Ã¥È"
 
-#: rpm.c:902 rpmqv.c:1068
+#: rpm.c:902 rpmqv.c:1073
 msgid "unexpected query source"
 msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥½¡¼¥¹"
 
-#: rpm.c:905 rpmqv.c:1078
+#: rpm.c:905 rpmqv.c:1083
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "¥¤¥ó¥¹¥È¡¼¥ë¡¢¥¢¥Ã¥×¥°¥ì¡¼¥É¡¢¥½¡¼¥¹ºï½ü¡¢¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ëºï½ü»þ¤Î¤ß¶¯À©¤Ç¤­¤"
 "Þ¤¹"
 
-#: rpm.c:908 rpmqv.c:1083
+#: rpm.c:908 rpmqv.c:1088
 msgid "files may only be relocated during package installation"
 msgstr "¥Õ¥¡¥¤¥ë¤Ï¥Ñ¥Ã¥±¡¼¥¸¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ßºÆÇÛÃÖ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:911 rpmqv.c:1086
+#: rpm.c:911 rpmqv.c:1091
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix ¤â¤·¤¯¤Ï --relocate ¤Î¤¤¤º¤ì¤«¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:914 rpmqv.c:1089
+#: rpm.c:914 rpmqv.c:1094
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
@@ -990,64 +990,64 @@ msgstr ""
 "--relocate ¤È --excludepath "
 "¤Ï¿·¤·¤¤¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¤È¤­¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:917 rpmqv.c:1092
+#: rpm.c:917 rpmqv.c:1097
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix ¤Ï¿·µ¬¤Ë¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¤È¤­¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:920 rpmqv.c:1095
+#: rpm.c:920 rpmqv.c:1100
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix ¤Ø¤Î°ú¿ô¤Ï / ¤«¤é»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:923 rpmqv.c:1098
+#: rpm.c:923 rpmqv.c:1103
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:927 rpmqv.c:1102
+#: rpm.c:927 rpmqv.c:1107
 msgid "--percent may only be specified during package installation"
 msgstr "--percent ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:931 rpmqv.c:1107
+#: rpm.c:931 rpmqv.c:1112
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:935 rpmqv.c:1111
+#: rpm.c:935 rpmqv.c:1116
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:939 rpmqv.c:1115
+#: rpm.c:939 rpmqv.c:1120
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:943 rpmqv.c:1119
+#: rpm.c:943 rpmqv.c:1124
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:947 rpmqv.c:1123
+#: rpm.c:947 rpmqv.c:1128
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs ¤È --includedocs ¤Ï¤É¤Á¤é¤«°ìÊý¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:951 rpmqv.c:1127
+#: rpm.c:951 rpmqv.c:1132
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:955 rpmqv.c:1131
+#: rpm.c:955 rpmqv.c:1136
 msgid "--ignoreos may only be specified during package installation"
 msgstr "-ignoreos ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:959 rpmqv.c:1136
+#: rpm.c:959 rpmqv.c:1141
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "-ignoresize ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:963 rpmqv.c:1140
+#: rpm.c:963 rpmqv.c:1145
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Îºï½ü»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:967 rpmqv.c:1144
+#: rpm.c:967 rpmqv.c:1149
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:971 rpmqv.c:1149
+#: rpm.c:971 rpmqv.c:1154
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
@@ -1063,14 +1063,14 @@ msgstr "--noscripts ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢¸¡¾Ú»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:987 rpmqv.c:1161
+#: rpm.c:987 rpmqv.c:1166
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:991 rpmqv.c:1165
+#: rpm.c:991 rpmqv.c:1170
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1078,13 +1078,13 @@ msgid ""
 msgstr ""
 "--nodeps ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤ÎºîÀ®¡¢¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢¸¡¾Ú»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:996 rpmqv.c:1170
+#: rpm.c:996 rpmqv.c:1175
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢ºîÀ®»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:1000 rpmqv.c:1175
+#: rpm.c:1000 rpmqv.c:1180
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1092,7 +1092,7 @@ msgstr ""
 "--root (-r) "
 "¤Ï¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢Ìä¤¤¹ç¤ï¤»¡¢¥Ç¡¼¥¿¥Ù¡¼¥¹ºÆ¹½ÃÛ»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:1012 rpmqv.c:1187
+#: rpm.c:1012 rpmqv.c:1192
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) ¤Î°ú¿ô¤Ï / ¤«¤é»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
@@ -1100,93 +1100,93 @@ msgstr "--root (-r) ¤Î°ú¿ô¤Ï / ¤«¤é»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage ¤Ï¥¢¥Ã¥×¥°¥ì¡¼¥É»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:1021 rpmqv.c:1194
+#: rpm.c:1021 rpmqv.c:1199
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp ¤Ï½ðÌ¾¸¡ºº»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:1024 rpmqv.c:1197
+#: rpm.c:1024 rpmqv.c:1202
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg ¤Ï½ðÌ¾¸¡ºº»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:1027 rpmqv.c:1202
+#: rpm.c:1027 rpmqv.c:1207
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 ¤Ï½ðÌ¾¸¡ºº¤È¥Ñ¥Ã¥±¡¼¥¸¸¡¾Ú»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:1038 rpmqv.c:1218
+#: rpm.c:1038 rpmqv.c:1223
 msgid "no files to sign\n"
 msgstr "½ðÌ¾¤¹¤ë¤¿¤á¤Î¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó\n"
 
-#: rpm.c:1043 rpmqv.c:1223
+#: rpm.c:1043 rpmqv.c:1228
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "¥Õ¥¡¥¤¥ë %s ¤Ë¥¢¥¯¥»¥¹¤Ç¤­¤Þ¤»¤ó\n"
 
-#: rpm.c:1058 rpmqv.c:1242
+#: rpm.c:1058 rpmqv.c:1247
 #, fuzzy
 msgid "pgp not found: "
 msgstr "pgp ¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó: "
 
-#: rpm.c:1062 rpmqv.c:1247
+#: rpm.c:1062 rpmqv.c:1252
 msgid "Enter pass phrase: "
 msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¤òÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤: "
 
-#: rpm.c:1064 rpmqv.c:1249
+#: rpm.c:1064 rpmqv.c:1254
 msgid "Pass phrase check failed\n"
 msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¥Á¥§¥Ã¥¯¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
 
-#: rpm.c:1067 rpmqv.c:1253
+#: rpm.c:1067 rpmqv.c:1258
 msgid "Pass phrase is good.\n"
 msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¤ÏÀµ¾ï¤Ç¤¹¡¥\n"
 
-#: rpm.c:1072 rpmqv.c:1258
+#: rpm.c:1072 rpmqv.c:1263
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "¥Þ¥¯¥í¥Õ¥¡¥¤¥ëÃæ¤ÎÌµ¸ú¤Ê %%_signature ¡£\n"
 
-#: rpm.c:1078 rpmqv.c:1265
+#: rpm.c:1078 rpmqv.c:1270
 msgid "--sign may only be used during package building"
 msgstr "--sign ¤Ï¥Ñ¥Ã¥±¡¼¥¸ºîÀ®»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:1093 rpmqv.c:1281
+#: rpm.c:1093 rpmqv.c:1286
 msgid "exec failed\n"
 msgstr "¼Â¹Ô¼ºÇÔ\n"
 
-#: rpm.c:1116 rpmqv.c:1536
+#: rpm.c:1116 rpmqv.c:1541
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags ¤Î°ú¿ô¤¬´Ö°ã¤Ã¤Æ¤¤¤Þ¤¹"
 
-#: rpm.c:1127 rpmqv.c:1561
+#: rpm.c:1127 rpmqv.c:1566
 msgid "no packages given for signature check"
 msgstr "½ðÌ¾¸¡ºº¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1138 rpmqv.c:1572
+#: rpm.c:1138 rpmqv.c:1577
 msgid "no packages given for signing"
 msgstr "½ðÌ¾¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1154 rpmqv.c:1429
+#: rpm.c:1154 rpmqv.c:1434
 msgid "no packages given for uninstall"
 msgstr "¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1243 rpmqv.c:1458
+#: rpm.c:1243 rpmqv.c:1463
 msgid "no packages given for install"
 msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1267 rpmqv.c:1502
+#: rpm.c:1267 rpmqv.c:1507
 msgid "extra arguments given for query of all packages"
 msgstr "Á´¥Ñ¥Ã¥±¡¼¥¸¤ÎÌä¤¤¹ç¤ï¤»¤Î¤¿¤á¤ËÍ¾Ê¬¤Ê°ú¿ô¤¬¤¢¤ê¤Þ¤¹"
 
-#: rpm.c:1272 rpmqv.c:1507
+#: rpm.c:1272 rpmqv.c:1512
 msgid "no arguments given for query"
 msgstr "Ìä¤¤¹ç¤ï¤»¤Î¤¿¤á¤Î°ú¿ô¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1289 rpmqv.c:1524
+#: rpm.c:1289 rpmqv.c:1529
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "Á´¥Ñ¥Ã¥±¡¼¥¸¤Î¸¡¾Ú¤Î¤¿¤á¤ËÍ¾Ê¬¤Ê°ú¿ô¤¬¤¢¤ê¤Þ¤¹"
 
-#: rpm.c:1293 rpmqv.c:1528
+#: rpm.c:1293 rpmqv.c:1533
 msgid "no arguments given for verify"
 msgstr "¸¡¾Ú¤Î¤¿¤á¤Î°ú¿ô¤¬¤¢¤ê¤Þ¤»¤ó"
 
@@ -1656,31 +1656,31 @@ msgstr ""
 msgid "rebuild database indices from existing database headers"
 msgstr "´ûÂ¸¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹¤«¤é¥Ç¡¼¥¿¥Ù¡¼¥¹¤òºÆ¹½ÃÛ¤·¤Þ¤¹"
 
-#: rpmqv.c:997
+#: rpmqv.c:1002
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "-e ¤« --erase ¤ò»È¤Ã¤Æ¤¯¤À¤µ¤¤\n"
 
-#: rpmqv.c:1072
+#: rpmqv.c:1077
 msgid "--dbpath given for operation that does not use a database"
 msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò»ÈÍÑ¤·¤Ê¤¤¤Î¤Ë --dbpath ¤¬Í¿¤¨¤é¤ì¤Æ¤¤¤Þ¤¹"
 
-#: rpmqv.c:1156
+#: rpmqv.c:1161
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpmqv.c:1326
+#: rpmqv.c:1331
 msgid "no packages files given for rebuild"
 msgstr "ºÆºîÀ®¤¹¤ë¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpmqv.c:1395
+#: rpmqv.c:1400
 msgid "no spec files given for build"
 msgstr "ºîÀ®¤Î¤¿¤á¤Î spec ¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpmqv.c:1397
+#: rpmqv.c:1402
 msgid "no tar files given for build"
 msgstr "ºîÀ®(build)¤Î¤¿¤á¤Î tar ¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó"
 
@@ -3773,111 +3773,86 @@ msgstr "%s ¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s ¤Î¤¿¤á¤Î°ÍÂ¸À­¤òËþ¤¿¤·¤Æ¤¤¤Þ¤»¤ó:"
 
-#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:152
+#: rpmdb/db1.c:98 rpmdb/db3.c:145
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:155
+#: rpmdb/db1.c:101 rpmdb/db3.c:148
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:430
+#: rpmdb/db1.c:453
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:433
+#: rpmdb/db1.c:456
 #, fuzzy, c-format
 msgid "removed db file        %s\n"
 msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
 
-#: rpmdb/db1.c:464
+#: rpmdb/db1.c:487
 #, fuzzy, c-format
 msgid "bad db file %s\n"
 msgstr "ÉÔÀµ¤Ê¥Õ¥¡¥¤¥ë¤Î¾õÂÖ: %s"
 
-#: rpmdb/db1.c:469
+#: rpmdb/db1.c:492
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¥â¡¼¥É 0x%x ¤Î¥ª¡¼¥×¥ó (%s)\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:492
+#: rpmdb/db1.c:515
 #, fuzzy, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î %s ¤ò¥í¥Ã¥¯¤Ç¤­¤Þ¤»¤ó"
 
-#: rpmdb/db1.c:493 rpmdb/db2.c:799 rpmdb/db3.c:1105
+#: rpmdb/db1.c:516 rpmdb/db3.c:1098
 msgid "exclusive"
 msgstr "½ü³°"
 
-#: rpmdb/db1.c:493 rpmdb/db2.c:799 rpmdb/db3.c:1105
+#: rpmdb/db1.c:516 rpmdb/db3.c:1098
 msgid "shared"
 msgstr "¶¦Í­"
 
-#: rpmdb/db2.c:145
-#, fuzzy, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
-
-#: rpmdb/db2.c:161
-#, fuzzy, c-format
-msgid "removed db environment %s/%s\n"
-msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
-
-#: rpmdb/db2.c:198 rpmdb/db3.c:236
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr ""
-
-#: rpmdb/db2.c:600
-#, fuzzy, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
-
-#: rpmdb/db2.c:691
-#, fuzzy, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¥â¡¼¥É 0x%x ¤Î¥ª¡¼¥×¥ó (%s)\n"
-
-#: rpmdb/db2.c:797 rpmdb/db3.c:1103
-#, fuzzy, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î %s ¤ò¥í¥Ã¥¯¤Ç¤­¤Þ¤»¤ó"
-
-#: rpmdb/db2.c:804
-#, fuzzy, c-format
-msgid "locked  db index       %s/%s\n"
-msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
-
-#: rpmdb/db3.c:181
+#: rpmdb/db3.c:174
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
 
-#: rpmdb/db3.c:197
+#: rpmdb/db3.c:190
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
 
-#: rpmdb/db3.c:710
+#: rpmdb/db3.c:229
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr ""
+
+#: rpmdb/db3.c:703
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
 
-#: rpmdb/db3.c:746
+#: rpmdb/db3.c:739
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
 
-#: rpmdb/db3.c:923
+#: rpmdb/db3.c:916
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¥â¡¼¥É 0x%x ¤Î¥ª¡¼¥×¥ó (%s)\n"
 
-#: rpmdb/db3.c:1110
+#: rpmdb/db3.c:1096
+#, fuzzy, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î %s ¤ò¥í¥Ã¥¯¤Ç¤­¤Þ¤»¤ó"
+
+#: rpmdb/db3.c:1103
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
@@ -3922,37 +3897,37 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:343
+#: rpmdb/rpmdb.c:342
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó  %s:%d"
 
-#: rpmdb/rpmdb.c:363
+#: rpmdb/rpmdb.c:362
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "%s ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó\n"
 
-#: rpmdb/rpmdb.c:447
+#: rpmdb/rpmdb.c:446
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "¥ì¥³¡¼¥É %s ¤Î¼èÆÀ¤Î¥¨¥é¡¼ (%s ¤«¤é)"
 
-#: rpmdb/rpmdb.c:572
+#: rpmdb/rpmdb.c:571
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "¥ì¥³¡¼¥É %s ¤ò %s ¤Ë¥¹¥È¥¢¤Ç¥¨¥é¡¼ "
 
-#: rpmdb/rpmdb.c:582
+#: rpmdb/rpmdb.c:581
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "¥ì¥³¡¼¥É %s ¤ò %s ¤Ëºï½ü¤Ç¥¨¥é¡¼"
 
-#: rpmdb/rpmdb.c:824
+#: rpmdb/rpmdb.c:823
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath ¤¬ÀßÄê¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
 
-#: rpmdb/rpmdb.c:929
+#: rpmdb/rpmdb.c:928
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3960,116 +3935,116 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1163
+#: rpmdb/rpmdb.c:1162
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤ÎÃµº÷¥¨¥é¡¼\n"
 
-#: rpmdb/rpmdb.c:1221 rpmdb/rpmdb.c:1814
+#: rpmdb/rpmdb.c:1220 rpmdb/rpmdb.c:1813
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "¸¡º÷¤Î¤¿¤á¤Î %d ¤Ç ¥Ø¥Ã¥À¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó"
 
-#: rpmdb/rpmdb.c:1503 rpmdb/rpmdb.c:2656
+#: rpmdb/rpmdb.c:1502 rpmdb/rpmdb.c:2655
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹Ãæ¤Î¥ì¥³¡¼¥ÉÈÖ¹æ %d ¤ÏÉÔÀµ¤Ç¤¹ -- ¥¹¥­¥Ã¥×¤·¤Þ¤¹"
 
-#: rpmdb/rpmdb.c:1554
+#: rpmdb/rpmdb.c:1553
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1881
+#: rpmdb/rpmdb.c:1880
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
 
-#: rpmdb/rpmdb.c:1890
+#: rpmdb/rpmdb.c:1889
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "name ¥¤¥ó¥Ç¥Ã¥¯¥¹ºï½ü¤·¤Þ¤¹\n"
 
-#: rpmdb/rpmdb.c:2077
+#: rpmdb/rpmdb.c:2076
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤ÎÃµº÷¥¨¥é¡¼\n"
 
-#: rpmdb/rpmdb.c:2155
+#: rpmdb/rpmdb.c:2154
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s ¤ò %s ¤ØÌ¾Á°¤òÊÑ¹¹¤·¤Þ¤¹\n"
 
-#: rpmdb/rpmdb.c:2166
+#: rpmdb/rpmdb.c:2165
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%s ¤ò %s ¤ØÌ¾Á°¤òÊÑ¹¹¤·¤Þ¤¹\n"
 
-#: rpmdb/rpmdb.c:2545
+#: rpmdb/rpmdb.c:2544
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2575
+#: rpmdb/rpmdb.c:2574
 msgid "no dbpath has been set"
 msgstr "dbpath ¤¬ÀßÄê¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
 
-#: rpmdb/rpmdb.c:2602
+#: rpmdb/rpmdb.c:2601
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s Ãæ¤Ç¥Ç¡¼¥¿¥Ù¡¼¥¹¤òºÆ¹½ÃÛ¤·¤Þ¤¹\n"
 
-#: rpmdb/rpmdb.c:2606
+#: rpmdb/rpmdb.c:2605
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "°ì»þÅª¤Ê¥Ç¡¼¥¿¥Ù¡¼¥¹ %s ¤Ï¤¹¤Ç¤ËÂ¸ºß¤·¤Æ¤¤¤Þ¤¹"
 
-#: rpmdb/rpmdb.c:2612
+#: rpmdb/rpmdb.c:2611
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "¥Ç¥£¥ì¥¯¥È¥ê¤ÎºîÀ®: %s\n"
 
-#: rpmdb/rpmdb.c:2614
+#: rpmdb/rpmdb.c:2613
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "¥Ç¥£¥ì¥¯¥È¥ê¤ÎºîÀ®: %s\n"
 
-#: rpmdb/rpmdb.c:2621
+#: rpmdb/rpmdb.c:2620
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "¸Å¤¤¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î¥ª¡¼¥×¥ó\n"
 
-#: rpmdb/rpmdb.c:2632
+#: rpmdb/rpmdb.c:2631
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "¿·¤·¤¤¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î¥ª¡¼¥×¥ó\n"
 
-#: rpmdb/rpmdb.c:2694
+#: rpmdb/rpmdb.c:2693
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%d ¤Ë ¥ª¥ê¥¸¥Ê¥ë¤Î¥ì¥³¡¼¥É¤òÉÕ²Ã¤Ç¤­¤Þ¤»¤ó"
 
-#: rpmdb/rpmdb.c:2712
+#: rpmdb/rpmdb.c:2711
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "¥Ç¡¼¥¿¥Ù¡¼¥¹¤ÎºÆ¹½ÃÛ¤Ë¼ºÇÔ; ¥ª¥ê¥¸¥Ê¥ë¥Ç¡¼¥¿¥Ù¡¼¥¹¤¬¤Þ¤À¤½¤³¤Ë»Ä¤Ã¤Æ¤¤¤Þ¤¹\n"
 
-#: rpmdb/rpmdb.c:2720
+#: rpmdb/rpmdb.c:2719
 msgid "failed to replace old database with new database!\n"
 msgstr "¸Å¤¤¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò¿·¤·¤¤¥Ç¡¼¥¿¥Ù¡¼¥¹¤ËÃÖ¤­´¹¤¨¤ë¤Î¤Ë¼ºÇÔ!\n"
 
-#: rpmdb/rpmdb.c:2722
+#: rpmdb/rpmdb.c:2721
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s Ãæ¤Î¥Õ¥¡¥¤¥ë¤ò¥ê¥«¥Ð¡¼¤¹¤ë¤¿¤á¤Ë %s ¤«¤é¥Õ¥¡¥¤¥ë¤ÈÃÖ¤­´¹¤¨¤Þ¤¹"
 
-#: rpmdb/rpmdb.c:2732
+#: rpmdb/rpmdb.c:2731
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "¥Ç¥£¥ì¥¯¥È¥ê¤ÎºîÀ®: %s\n"
 
-#: rpmdb/rpmdb.c:2734
+#: rpmdb/rpmdb.c:2733
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "¥Ç¥£¥ì¥¯¥È¥ê %s ¤Îºï½ü¼ºÇÔ: %s\n"
@@ -4292,6 +4267,26 @@ msgstr "url ¥Ý¡¼¥È¤Ï¿ô»ú¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s ¤ÎºîÀ®¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#, fuzzy
+#~ msgid "closed  db environment %s/%s\n"
+#~ msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#, fuzzy
+#~ msgid "removed db environment %s/%s\n"
+#~ msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#, fuzzy
+#~ msgid "closed  db index       %s/%s\n"
+#~ msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#, fuzzy
+#~ msgid "opening db index       %s/%s %s mode=0x%x\n"
+#~ msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¥â¡¼¥É 0x%x ¤Î¥ª¡¼¥×¥ó (%s)\n"
+
+#, fuzzy
+#~ msgid "locked  db index       %s/%s\n"
+#~ msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
 
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, and "
