@@ -15,6 +15,7 @@
 	- fdCLose typo (#97257).
 	- brp-python-bytecompile to automagically bytecode compile python.
 	- update for fr.po (#97829).
+	- don't attempt to remove dbenv on --rebuilddb.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

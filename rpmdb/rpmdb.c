@@ -3849,10 +3849,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     }
 
-    if (!nocleanup) {
-	olddb->db_remove_env = 1;
-	newdb->db_remove_env = 1;
-    }
     xx = rpmdbClose(olddb);
     xx = rpmdbClose(newdb);
 
