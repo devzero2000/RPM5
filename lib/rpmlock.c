@@ -1,21 +1,21 @@
 
 #include "system.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-
 #include <rpmlib.h>
+#include <rpmmacro.h>
 
 #include "rpmts.h"
-
 #include "rpmlock.h"
+
+#include "debug.h"
 
 /* Internal interface */
 
-#define RPMLOCK_FILE "/var/lock/rpm/transaction"
+#define RPMLOCK_PATH "/var/lock/rpm/transaction"
+/*@unchecked@*/ /*@observer@*/
+static const char * rpmlock_path_default = "%{?_rpmlock_path}";
+/*@unchecked@*/
+static const char * rpmlock_path = NULL;
 
 enum {
 	RPMLOCK_READ   = 1 << 0,
@@ -29,14 +29,24 @@ typedef struct {
 } rpmlock;
 
 static rpmlock *rpmlock_new(const char *rootdir)
+	/*@*/
 {
 	rpmlock *lock = (rpmlock *)malloc(sizeof(rpmlock));
-	if (lock) {
+
+	/* XXX oneshot to determine path for fcntl lock. */
+	if (rpmlock_path == NULL) {
+	    char * t = rpmExpand(rpmlock_path_default, NULL);
+	    if (t == NULL || *t == '\0' || *t == '%')
+		t = RPMLOCK_PATH;
+	    rpmlock_path = xstrdup(t);
+	    t = _free(t);
+	}
+	if (lock != NULL) {
 		mode_t oldmask = umask(022);
-		lock->fd = open(RPMLOCK_FILE, O_RDWR|O_CREAT, 0644);
+		lock->fd = open(rpmlock_path, O_RDWR|O_CREAT, 0644);
 		umask(oldmask);
 		if (lock->fd == -1) {
-			lock->fd = open(RPMLOCK_FILE, O_RDONLY);
+			lock->fd = open(rpmlock_path, O_RDONLY);
 			if (lock->fd == -1) {
 				free(lock);
 				lock = NULL;
@@ -50,7 +60,8 @@ static rpmlock *rpmlock_new(const char *rootdir)
 	return lock;
 }
 
-static void rpmlock_free(rpmlock *lock)
+static void rpmlock_free(/*@only@*/ /*@null@*/ rpmlock *lock)
+	/*@*/
 {
 	if (lock) {
 		close(lock->fd);
@@ -59,6 +70,7 @@ static void rpmlock_free(rpmlock *lock)
 }
 
 static int rpmlock_acquire(rpmlock *lock, int mode)
+	/*@*/
 {
 	int res = 0;
 	if (lock && (mode & lock->openmode)) {
@@ -82,6 +94,7 @@ static int rpmlock_acquire(rpmlock *lock, int mode)
 }
 
 static void rpmlock_release(rpmlock *lock)
+	/*@*/
 {
 	if (lock) {
 		struct flock info;
@@ -98,21 +111,21 @@ static void rpmlock_release(rpmlock *lock)
 
 void *rpmtsAcquireLock(rpmts ts)
 {
-	rpmlock *lock = NULL;
 	const char *rootDir = rpmtsRootDir(ts);
+	rpmlock *lock = NULL;
 
 	if (!rootDir)
 		rootDir = "/";
 	lock = rpmlock_new(rootDir);
 	if (!lock) {
-		rpmMessage(RPMMESS_ERROR, _("can't create transaction lock\n"));
+		rpmMessage(RPMMESS_ERROR, _("can't create transaction lock on %s\n"), rpmlock_path);
 	} else if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
 		if (lock->openmode & RPMLOCK_WRITE)
 			rpmMessage(RPMMESS_WARNING,
-				   _("waiting for transaction lock\n"));
+				   _("waiting for transaction fcntl lock on %s\n"), rpmlock_path);
 		if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
 			rpmMessage(RPMMESS_ERROR,
-				   _("can't create transaction lock\n"));
+				   _("can't create transaction fcntl lock on %s\n"), rpmlock_path);
 			rpmlock_free(lock);
 			lock = NULL;
 		}

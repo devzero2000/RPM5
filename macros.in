@@ -745,6 +745,18 @@ print (t)\
 # XXX	Note: escaped %% for use in headerSprintf()
 %_query_all_fmt		%%{name}-%%{version}-%%{release}
 
+#
+# Default path to the file used for transaction fcmtl lock.
+#
+# The previous, FHS clompliant, name was /var/lock/run/transaction,
+# but the transaction lock needs to be per-database, not global, for
+# some rpmdb operations.
+#
+# XXX Note: the file name is chosesn as __db.000 to expedite
+# support issues, many users are doing "rm -f /var/lib/rpm/__db*"
+# these days.
+%_rpmlock_path	%{_dbpath}/__db.000
+
 #==============================================================================
 # ---- Cache configuration macros.
 #	Macro(s) used to configure the universe of headers used to

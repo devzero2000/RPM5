@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2004-10-31 13:24-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-12-06 23:03-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -63,10 +63,12 @@ msgid "Building for target %s\n"
 msgstr "A construir para o alvo %s\n"
 
 #: rpm2cpio.c:55
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "o argumento não é um pacote RPM\n"
 
 #: rpm2cpio.c:60
+#, c-format
 msgid "error reading header from package\n"
 msgstr "erro ao ler o cabeçalho do pacote\n"
 
@@ -115,12 +117,12 @@ msgid "RPM version %s\n"
 msgstr "RPM versão %s\n"
 
 #: rpmqv.c:136
-#, fuzzy
+#, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:137
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -273,6 +275,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "os argumentos do --root (-r) têm de começar por /"
 
 #: rpmqv.c:536
+#, c-format
 msgid "no files to sign\n"
 msgstr "não existem ficheiros a assinar\n"
 
@@ -282,6 +285,7 @@ msgid "cannot access file %s\n"
 msgstr "não consigo aceder ao ficheiro %s\n"
 
 #: rpmqv.c:560
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp não encontrado: "
 
@@ -290,10 +294,12 @@ msgid "Enter pass phrase: "
 msgstr "Indique a palavra-chave: "
 
 #: rpmqv.c:567
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "A verificação da palavra-chave falhou\n"
 
 #: rpmqv.c:571
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "A palavra-chave está correcta.\n"
 
@@ -307,6 +313,7 @@ msgid "--sign may only be used during package building"
 msgstr "o --sign só pode ser usado na criação do pacote"
 
 #: rpmqv.c:600
+#, c-format
 msgid "exec failed\n"
 msgstr "o exec falhou\n"
 
@@ -732,7 +739,7 @@ msgstr "Não consegui reler o cabeçalho do assinatura.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Não consigo aceder ao %s: %s\n"
 
-#: build/pack.c:632 lib/psm.c:1561
+#: build/pack.c:632 lib/psm.c:1478
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Não consegui gravar o pacote: %s\n"
@@ -762,7 +769,7 @@ msgstr "Não consegui ler o conteúdo de %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Não consegui escrever o conteúdo de %s: %s\n"
 
-#: build/pack.c:725 lib/psm.c:1830
+#: build/pack.c:725 lib/psm.c:1747
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravei: %s\n"
@@ -1599,10 +1606,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:473
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1618,6 +1627,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:672
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1637,6 +1647,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:716
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2245,74 +2256,62 @@ msgstr "o pacote de código-fonte não contem um ficheiro .spec\n"
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
 
-#: lib/psm.c:541
-#, c-format
-msgid "setexeccon(%s) fails from context \"%s\": %s\n"
-msgstr ""
-
-#: lib/psm.c:545
-#, c-format
-msgid ""
-"setexeccon(%s) fails from context \"%s\": %s\n"
-"Continuing ...\n"
-msgstr ""
-
-#: lib/psm.c:632
+#: lib/psm.c:555
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:640
+#: lib/psm.c:563
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:852
+#: lib/psm.c:775
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:891
+#: lib/psm.c:808
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s: %s script falhou (%d), a saltar %s-%s-%s\n"
 
-#: lib/psm.c:897
+#: lib/psm.c:814
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr ""
 "a execução do 'scriptlet' %s do %s-%s-%s falhou com código de erro %d\n"
 
-#: lib/psm.c:1329
+#: lib/psm.c:1246
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s tem %d ficheiros, teste = %d\n"
 
-#: lib/psm.c:1464
+#: lib/psm.c:1381
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s script falhou (%d), a saltar %s-%s-%s\n"
 
-#: lib/psm.c:1573
+#: lib/psm.c:1490
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Não consegui reler o cabeçalho do assinatura.\n"
 
-#: lib/psm.c:1651
+#: lib/psm.c:1568
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "a abertura do pacote falhou%s%s: %s\n"
 
-#: lib/psm.c:1652
+#: lib/psm.c:1569
 msgid " on file "
 msgstr " no ficheiro "
 
-#: lib/psm.c:1838
+#: lib/psm.c:1755
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s falhou no ficheiro %s: %s\n"
 
-#: lib/psm.c:1841
+#: lib/psm.c:1758
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
@@ -2592,31 +2591,31 @@ msgstr "o pacote %s tem requisitos não satisfeitos: %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido à opção missingok\n"
 
-#: lib/rpmfi.c:800
+#: lib/rpmfi.c:802
 msgid "========== relocations\n"
 msgstr "========== mudanças de local\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:806
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d excluir o %s\n"
 
-#: lib/rpmfi.c:807
+#: lib/rpmfi.c:809
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d mudar de local %s -> %s\n"
 
-#: lib/rpmfi.c:941
+#: lib/rpmfi.c:943
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "a excluir o %s %s\n"
 
-#: lib/rpmfi.c:951
+#: lib/rpmfi.c:953
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "a mudar o %s para %s\n"
 
-#: lib/rpmfi.c:1043
+#: lib/rpmfi.c:1045
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "a mudar a directoria %s para %s\n"
@@ -3049,6 +3048,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3073,6 +3073,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3140,6 +3141,9 @@ msgstr "Obtive %d bytes da assinatura do GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3184,10 +3188,12 @@ msgid "V3 DSA signature: "
 msgstr "Sem assinatura\n"
 
 #: lib/signature.c:1362
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1389
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "'Digest' MD5 estragado: NÃO SUPORTADO\n"
 
@@ -3197,7 +3203,7 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Assinatura: tamanho(%d)+pad(%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:900
+#: lib/transaction.c:902
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "a excluir a directoria %s\n"
@@ -3210,7 +3216,7 @@ msgstr "a excluir a directoria %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1023
+#: lib/transaction.c:1025
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3223,7 +3229,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1111
+#: lib/transaction.c:1113
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3231,7 +3237,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1192
+#: lib/transaction.c:1194
 msgid "computing file dispositions\n"
 msgstr ""
 
@@ -3280,30 +3286,30 @@ msgstr "fechei o índice do db   %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "verifiquei o índice do db %s/%s\n"
 
-#: rpmdb/db3.c:989
+#: rpmdb/db3.c:987
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1093
+#: rpmdb/db3.c:1091
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "a abrir o índice do db  %s/%s %s modo=0x%x\n"
 
-#: rpmdb/db3.c:1331
+#: rpmdb/db3.c:1329
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "não consigo trancar o %s no %s/%s\n"
 
-#: rpmdb/db3.c:1333
+#: rpmdb/db3.c:1331
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:1333
+#: rpmdb/db3.c:1331
 msgid "shared"
 msgstr "partilhado"
 
-#: rpmdb/db3.c:1337
+#: rpmdb/db3.c:1335
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "tranquei o índice do db %s/%s\n"
@@ -3754,6 +3760,7 @@ msgid "(no error)"
 msgstr "(nenhum erro)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "erro fatal: "

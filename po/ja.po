@@ -6,14 +6,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2004-10-31 13:24-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-12-06 23:03-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: EUC-JP\n"
-"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -68,12 +68,12 @@ msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
 
 #: rpm2cpio.c:55
-#, fuzzy
+#, fuzzy, c-format
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません\n"
 
 #: rpm2cpio.c:60
-#, fuzzy
+#, fuzzy, c-format
 msgid "error reading header from package\n"
 msgstr "パッケージからヘッダの読み込みのエラー\n"
 
@@ -123,7 +123,7 @@ msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
 
 #: rpmqv.c:136
-#, fuzzy
+#, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 "著作権 (C) 1998 - Red Hat Software\n"
@@ -131,7 +131,7 @@ msgstr ""
 "誤訳等は神田まで"
 
 #: rpmqv.c:137
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "GNU一般公有使用許諾書の下で自由に配布できます"
@@ -284,6 +284,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらねばなりません"
 
 #: rpmqv.c:536
+#, c-format
 msgid "no files to sign\n"
 msgstr "署名するためのファイルがありません\n"
 
@@ -293,7 +294,7 @@ msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません\n"
 
 #: rpmqv.c:560
-#, fuzzy
+#, fuzzy, c-format
 msgid "pgp not found: "
 msgstr "pgp が見つかりません: "
 
@@ -302,10 +303,12 @@ msgid "Enter pass phrase: "
 msgstr "パスフレーズを入力してください: "
 
 #: rpmqv.c:567
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズチェックに失敗しました\n"
 
 #: rpmqv.c:571
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です．\n"
 
@@ -319,6 +322,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ使用できます"
 
 #: rpmqv.c:600
+#, c-format
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
@@ -758,7 +762,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:632 lib/psm.c:1561
+#: build/pack.c:632 lib/psm.c:1478
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -788,7 +792,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:725 lib/psm.c:1830
+#: build/pack.c:725 lib/psm.c:1747
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1640,10 +1644,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:473
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1659,6 +1665,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:672
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1678,6 +1685,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:716
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2333,74 +2341,62 @@ msgstr "ソースパッケージは .spec ファイルを含んでいません"
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
 
-#: lib/psm.c:541
-#, c-format
-msgid "setexeccon(%s) fails from context \"%s\": %s\n"
-msgstr ""
-
-#: lib/psm.c:545
-#, c-format
-msgid ""
-"setexeccon(%s) fails from context \"%s\": %s\n"
-"Continuing ...\n"
-msgstr ""
-
-#: lib/psm.c:632
+#: lib/psm.c:555
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:640
+#: lib/psm.c:563
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:852
+#: lib/psm.c:775
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:891
+#: lib/psm.c:808
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/psm.c:897
+#: lib/psm.c:814
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1329
+#: lib/psm.c:1246
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:1464
+#: lib/psm.c:1381
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1573
+#: lib/psm.c:1490
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: lib/psm.c:1651
+#: lib/psm.c:1568
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:1652
+#: lib/psm.c:1569
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:1838
+#: lib/psm.c:1755
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:1841
+#: lib/psm.c:1758
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2683,31 +2679,31 @@ msgstr "パッケージ %s は require が満たされていません: %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
-#: lib/rpmfi.c:800
+#: lib/rpmfi.c:802
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:806
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS は除外されています: %s"
 
-#: lib/rpmfi.c:807
+#: lib/rpmfi.c:809
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/rpmfi.c:941
+#: lib/rpmfi.c:943
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/rpmfi.c:951
+#: lib/rpmfi.c:953
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/rpmfi.c:1043
+#: lib/rpmfi.c:1045
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
@@ -3145,6 +3141,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3169,6 +3166,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3241,6 +3239,9 @@ msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3285,10 +3286,12 @@ msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
 #: lib/signature.c:1362
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1389
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3298,7 +3301,7 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
 
 #. @innercontinue@
-#: lib/transaction.c:900
+#: lib/transaction.c:902
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
@@ -3311,7 +3314,7 @@ msgstr "ディレクトリの除外: %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1023
+#: lib/transaction.c:1025
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3324,7 +3327,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1111
+#: lib/transaction.c:1113
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3332,7 +3335,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1192
+#: lib/transaction.c:1194
 msgid "computing file dispositions\n"
 msgstr ""
 
@@ -3381,30 +3384,30 @@ msgstr "%s 用の file インデックスを削除します\n"
 msgid "verified db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:989
+#: rpmdb/db3.c:987
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1093
+#: rpmdb/db3.c:1091
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: rpmdb/db3.c:1331
+#: rpmdb/db3.c:1329
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db3.c:1333
+#: rpmdb/db3.c:1331
 msgid "exclusive"
 msgstr "除外"
 
-#: rpmdb/db3.c:1333
+#: rpmdb/db3.c:1331
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/db3.c:1337
+#: rpmdb/db3.c:1335
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
@@ -3867,6 +3870,7 @@ msgid "(no error)"
 msgstr "(エラー 0x%x)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "致命的なエラー: "
