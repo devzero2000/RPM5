@@ -811,12 +811,13 @@ static void freeBadDeps(void)
 /**
  * Check for dependency relations to be ignored.
  *
- * @param p	successor element (i.e. with Requires: )
- * @param q	predecessor element (i.e. with Provides: )
- * @return	1 if dependency is to be ignored.
+ * @param ts		transaction set
+ * @param p		successor element (i.e. with Requires: )
+ * @param q		predecessor element (i.e. with Provides: )
+ * @return		1 if dependency is to be ignored.
  */
 /*@-boundsread@*/
-static int ignoreDep(const rpmte p, const rpmte q)
+static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	/*@globals badDeps, badDepsInitialized,
 		rpmGlobalMacroContext, h_errno @*/
 	/*@modifies badDeps, badDepsInitialized,
@@ -827,6 +828,9 @@ static int ignoreDep(const rpmte p, const rpmte q)
     if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
+	int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
+	int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+			? RPMMESS_WARNING : RPMMESS_DEBUG;
 	int ac = 0;
 	int i;
 
@@ -847,7 +851,7 @@ static int ignoreDep(const rpmte p, const rpmte q)
 		/*@-usereleased@*/
 		bdp->qname = qname;
 		/*@=usereleased@*/
-		rpmMessage(RPMMESS_DEBUG,
+		rpmMessage(msglvl,
 			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
 			i, bdp->pname, (bdp->qname ? bdp->qname : "???"));
 	    }
@@ -1048,7 +1052,7 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
     /* Avoid certain dependency relations. */
-    if (ignoreDep(p, q))
+    if (ignoreDep(ts, p, q))
 	return 0;
 
     /* Avoid redundant relations. */
