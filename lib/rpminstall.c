@@ -777,7 +777,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
     {	int notifyFlags;
 	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
-			rpmShowProgress, (void *) ((long)notifyFlags)
+			rpmShowProgress, (void *) ((long)notifyFlags);
     }
 #endif
 
@@ -811,6 +811,8 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	}
 	mi = rpmdbFreeIterator(mi);
     }
+
+    if (numFailed) goto exit;
 
     if (!(ia->eraseInterfaceFlags & UNINSTALL_NODEPS)) {
 
@@ -853,6 +855,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	ps = rpmpsFree(ps);
     }
 
+exit:
     rpmtsEmpty(ts);
 
     return numFailed;
