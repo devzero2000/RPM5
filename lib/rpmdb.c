@@ -500,6 +500,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
     char ** conflictList, ** triggerList;
     int i;
 
+fprintf(stderr, "*** rpmdbRemove(%p,%d,%d)\n", db, offset, tolerant);
     /* structure assignment */
     rec = dbiReturnIndexRecordInstance(offset, 0);
 
@@ -642,6 +643,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     int newSize;
     int rc = 0;
 
+fprintf(stderr, "*** rpmdbAdd(%p,%p)\n", db, dbentry);
     headerGetEntry(dbentry, RPMTAG_NAME, &type, (void **) &name, &count);
     headerGetEntry(dbentry, RPMTAG_GROUP, &type, (void **) &group, &count);
 
@@ -697,6 +699,8 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 	goto exit;
     }
 
+fprintf(stderr, "*** rpmdbAdd(%p,%p) offset %d\n", db, dbentry, dboffset);
+
     /* Now update the appropriate indexes */
     if (addIndexEntry(db->nameIndex, name, dboffset, 0))
 	rc = 1;
@@ -750,6 +754,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
     int oldSize, newSize;
     int rc = 0;
 
+fprintf(stderr, "*** rpmdbUpdate(%p,%d,%p)\n", db, offset, newHeader);
     oldHeader = doGetRecord(db, offset, 1);
     if (oldHeader == NULL) {
 	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for update"),

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-03-15 07:36-0500\n"
+"POT-Creation-Date: 2000-04-11 09:04-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2892,66 +2892,66 @@ msgstr ""
 msgid "package %s not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:508 lib/uninstall.c:90
+#: lib/rpmdb.c:509 lib/uninstall.c:90
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: lib/rpmdb.c:516
+#: lib/rpmdb.c:517
 msgid "package has no name"
 msgstr ""
 
-#: lib/rpmdb.c:518
+#: lib/rpmdb.c:519
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:523
+#: lib/rpmdb.c:524
 msgid "package has no group\n"
 msgstr ""
 
-#: lib/rpmdb.c:525
+#: lib/rpmdb.c:526
 msgid "removing group index\n"
 msgstr ""
 
-#: lib/rpmdb.c:532
+#: lib/rpmdb.c:533
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:547
+#: lib/rpmdb.c:548
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:559
+#: lib/rpmdb.c:560
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:570
+#: lib/rpmdb.c:571
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:581
+#: lib/rpmdb.c:582
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:590
+#: lib/rpmdb.c:591
 msgid "package has no files\n"
 msgstr ""
 
-#: lib/rpmdb.c:696
+#: lib/rpmdb.c:698
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:755
+#: lib/rpmdb.c:760
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:768
+#: lib/rpmdb.c:773
 msgid "header changed size!"
 msgstr ""
 

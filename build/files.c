@@ -1153,14 +1153,16 @@ static int processPackageFiles(Spec spec, Package pkg,
 		"/", pkg->fileFile, NULL);
 	}
 	fd = Fopen(ffn, "r.fpio");
-	xfree(ffn);
 
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_BADFILENAME,
 		_("Could not open %%files file %s: %s"),
 		ffn, Fstrerror(fd));
+	    xfree(ffn);
 	    return RPMERR_BADFILENAME;
 	}
+	xfree(ffn);
+
 	while (fgets(buf, sizeof(buf), (FILE *)fdGetFp(fd))) {
 	    handleComments(buf);
 	    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
