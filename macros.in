@@ -653,6 +653,11 @@ print (t)\
 #	library file path.
 #%__prelink_undo_cmd     /usr/sbin/prelink prelink -y library
 
+# Horowitz Key Protocol server configuration
+#
+%_hkp_keyserver         hkp://pgp.mit.edu
+%_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=0x
+
 #==============================================================================
 # ---- Transaction macros.
 #	Macro(s) used to parameterize transactions.
