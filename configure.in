@@ -852,6 +852,7 @@ fi
 dnl Determine the canonical arch-vendor-os for the build machine
 case "${build_cpu}" in
 i386|i486|i586|i686|ix86)	RPMCANONARCH=i386 ;;
+ia64*)		RPMCANONARCH=ia64 ;;
 alpha*)		RPMCANONARCH=alpha ;;
 sparc*)		RPMCANONARCH=sparc ;;
 powerpc*)	RPMCANONARCH=ppc ;;
