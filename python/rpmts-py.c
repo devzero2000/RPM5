@@ -1072,8 +1072,8 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 	fd = fdDup(fdno);
 if (_rpmts_debug)
 fprintf(stderr, "\t%p = fdDup(%d)\n", fd, fdno);
- 
- 	fcntl(Fileno(fd), F_SETFD, FD_CLOEXEC);
+
+	fcntl(Fileno(fd), F_SETFD, FD_CLOEXEC);
 
 	return fd;
     } else

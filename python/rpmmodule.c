@@ -32,7 +32,6 @@
 #define	PyObject_HEAD	int _PyObjectHead
 #endif
 
-
 /** \ingroup python
  * \name Module: rpm
  */

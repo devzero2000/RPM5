@@ -1243,7 +1243,6 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 	else
 	    te++;
 
-
 	switch (pstate) {
 	case 0:
 	    armortype = NULL;

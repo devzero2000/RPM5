@@ -1,5 +1,4 @@
 4.4.1 -> ???:
-	- add https://svn.uhulinux.hu/packages/dev/zlib/patches/02-rsync.patch
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
@@ -11,6 +10,10 @@
 	- upgrade to file-4.12 internal.
 	- mac os x patches (#131943,#131944,#132924,#132926).
 	- mac os x patches (#133611, #133612, #134637).
+	- build against external/internal neon.
+	- add https://svn.uhulinux.hu/packages/dev/zlib/patches/02-rsync.patch
+	- changes to build on Mac OS X using darwinports neon/beecrypt.
+	- blueprint rpm-4_4 and HEAD to minimize diff spew.
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).
