@@ -1,3 +1,5 @@
+2.5.5 -> 2.5.6:
+
 2.5.4 -> 2.5.5:
 	- fix install relocate for prefix=/ (Eugene Kanter).
 	- updated cs translation.
