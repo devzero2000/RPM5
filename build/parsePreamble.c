@@ -346,8 +346,18 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	SINGLE_TOKEN_ONLY;
 	/* These are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
+	    if (strchr(field, '-') != NULL) {
+		rpmError(RPMERR_BADSPEC, _("line %d: Illegal char '-' in %s: %s"),
+		    "version", spec->lineNum, spec->line);
+		return RPMERR_BADSPEC;
+	    }
 	    addMacro(&spec->macros, "PACKAGE_VERSION", field);
 	} else if (tag == RPMTAG_RELEASE) {
+	    if (strchr(field, '-') != NULL) {
+		rpmError(RPMERR_BADSPEC, _("line %d: Illegal char '-' in %s: %s"),
+		    "release", spec->lineNum, spec->line);
+		return RPMERR_BADSPEC;
+	    }
 	    addMacro(&spec->macros, "PACKAGE_RELEASE", field);
 	}
 	/* fall through */
