@@ -263,6 +263,21 @@ addlib() {
   esac
 }
 
+WITH_ZLIB_SUBDIR=
+WITH_ZLIB_INCLUDE=
+WITH_ZLIB_LIB=
+if test -d zlib ; then
+  WITH_ZLIB_SUBDIR=zlib
+  addlib \${top_builddir}/zlib
+  WITH_ZLIB_INCLUDE="-I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
+  INCPATH="$INCPATH -I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
+  WITH_ZLIB_LIB="\${top_builddir}/${WITH_ZLIB_SUBDIR}/libz.la"
+  AC_DEFINE(HAVE_GZSEEK)
+fi
+AC_SUBST(WITH_ZLIB_SUBDIR)
+AC_SUBST(WITH_ZLIB_INCLUDE)
+AC_SUBST(WITH_ZLIB_LIB)
+
 localdone=
 
 dirs=$prefix
@@ -445,6 +460,7 @@ dnl AmigaOS and IXEmul have a fork() dummy
 esac
 
 
+if test -z "${WITH_ZLIB_LIB}" ; then
 for zlib in z gz ; do
    AC_CHECK_LIB(${zlib}, gzread, 
 	[LIBS="$LIBS -l${zlib}"; break], 
@@ -456,6 +472,7 @@ done
 
 dnl zlib-1.0.4 has not gzseek
 AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK)])
+fi
 
 AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
    AC_CHECK_LIB(bz2, BZ2_bzread, [
@@ -1144,7 +1161,7 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt beecrypt $WITH_DB_SUBDIR)
+AC_CONFIG_SUBDIRS(popt beecrypt zlib $WITH_DB_SUBDIR)
 
 AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
@@ -1155,6 +1172,7 @@ AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	doc/ja/Makefile doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
 	python/Makefile ],
   [	echo timestamp > popt/stamp-h.in
+	echo timestamp > beecrypt/stamp-h.in
 	echo timestamp > stamp-h.in
   ]
 )

@@ -12,6 +12,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
+	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@
 
 pkgincdir = $(pkgincludedir)

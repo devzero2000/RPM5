@@ -30,6 +30,7 @@
 	- fix: query format qualifiers needed header.c merge.
 	- ppc64 arch added (#58634,#58636).
 	- turn on auto-generated perl requirements (#58519, #58536, #58537).
+	- add internal (customized) version of zlib.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
