@@ -1,6 +1,6 @@
 2.5.2 -> 2.5.3:
 	- fix infinite recursion on non-ERANGE return from getcwd() during
-	  install.
+	  install (Matt Wilson).
 	- rm .depend for multiple builds in same tree (Will Partain)
 	- addFile: fix special case of "/" in %files.
 	- better query semantics with symlinks (Tim Mooney)
