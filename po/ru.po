@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-07-18 05:59-0400\n"
+"Project-Id-Version: rpm 4.0.3\n"
+"POT-Creation-Date: 2001-07-18 18:09-0400\n"
 "PO-Revision-Date: 2001-07-18 17:10-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -122,8 +122,8 @@ msgstr ""
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                        [--prefix <кат.>] [--ignoreos] [--nodeps] "
-"[--allfiles]"
+"                        [--prefix <кат.>] [--ignoreos] [--nodeps] [--"
+"allfiles]"
 
 #: rpm.c:259 rpm.c:268 rpm.c:278
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
@@ -137,8 +137,9 @@ msgstr "                        [--httpproxy <адрес>] [--httpport <порт>]"
 msgid ""
 "                        [--justdb] [--noorder] [--relocate oldpath=newpath]"
 msgstr ""
-"                        [--justdb] [--noorder] [--relocate                   "
-"                                    старыйпуть=новыйпуть]"
+"                        [--justdb] [--noorder] [--"
+"relocate                                                       "
+"старыйпуть=новыйпуть]"
 
 #: rpm.c:262
 msgid ""
@@ -499,8 +500,8 @@ msgstr "вывести только файлы конфигурации пакета (подразумевает -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or "
-"-d)"
+"show all verifiable information for each file (must be used with -l, -c, or -"
+"d)"
 msgstr ""
 "показать всю контрольную информацию для каждого файла пакета (должно "
 "использоваться с -l, -c или -d)"
@@ -978,8 +979,8 @@ msgstr "--includedocs может быть указан только при установке пакета"
 #: rpm.c:947 rpmqv.c:723
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
-"может быть использован только один из параметров --excludedocs или "
-"--includedocs"
+"может быть использован только один из параметров --excludedocs или --"
+"includedocs"
 
 #: rpm.c:951 rpmqv.c:727
 msgid "--ignorearch may only be specified during package installation"
@@ -2939,86 +2940,86 @@ msgstr "(сост. нет)   "
 msgid "package has neither file owner or id lists\n"
 msgstr "пакет не содержит списков ни хозяев файлов, ни их ID\n"
 
-#: lib/query.c:411
+#: lib/query.c:438
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
-#: lib/query.c:542 lib/query.c:576 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:323 lib/rpminstall.c:456
 #: lib/rpminstall.c:816
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/query.c:555
+#: lib/query.c:587
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:561
+#: lib/query.c:593
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
-#: lib/query.c:586 lib/rpminstall.c:466
+#: lib/query.c:618 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: ошибка чтения списка файлов: %s\n"
 
-#: lib/query.c:628
+#: lib/query.c:660
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос файла спецификации %s не удался, невозможно разобрать файл\n"
 
-#: lib/query.c:650
+#: lib/query.c:682
 msgid "no packages\n"
 msgstr "нет пакетов\n"
 
-#: lib/query.c:669
+#: lib/query.c:701
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:679
+#: lib/query.c:711
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:689
+#: lib/query.c:721
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:700
+#: lib/query.c:732
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:735
+#: lib/query.c:767
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:739
+#: lib/query.c:771
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:765
+#: lib/query.c:797
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:768
+#: lib/query.c:800
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер записи пакета: %u\n"
 
-#: lib/query.c:773
+#: lib/query.c:805
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:784 lib/rpminstall.c:604
+#: lib/query.c:816 lib/rpminstall.c:604
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -3617,8 +3618,8 @@ msgstr ""
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
+"More information is available from http://www.rpm.org or the rpm-list@redhat."
+"com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "поврежден список свободных записей (%u) - пожалуйста запустите\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-18 05:59-0400\n"
+"POT-Creation-Date: 2001-07-18 18:09-0400\n"
 "PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -2944,86 +2944,86 @@ msgstr "(상태를 알 수 없음) "
 msgid "package has neither file owner or id lists\n"
 msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 
-#: lib/query.c:411
+#: lib/query.c:438
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s (을)를 질의할 수 없음: %s\n"
 
-#: lib/query.c:542 lib/query.c:576 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:323 lib/rpminstall.c:456
 #: lib/rpminstall.c:816
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s (을)를 여는데 실패함: %s\n"
 
-#: lib/query.c:555
+#: lib/query.c:587
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s 질의에 실패했습니다\n"
 
-#: lib/query.c:561
+#: lib/query.c:593
 msgid "old format source packages cannot be queried\n"
 msgstr "이전 형식의 소스 패키지는 질의할 수 없습니다\n"
 
-#: lib/query.c:586 lib/rpminstall.c:466
+#: lib/query.c:618 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 읽기에 실패함: %s\n"
 
-#: lib/query.c:628
+#: lib/query.c:660
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s spec 파일을 질의하는데 실패했습니다, 파일을 분석할 수 없습니다\n"
 
-#: lib/query.c:650
+#: lib/query.c:682
 msgid "no packages\n"
 msgstr "패키지가 없습니다\n"
 
-#: lib/query.c:669
+#: lib/query.c:701
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s 그룹은 어떤 패키지에도 포함되어 있지 않습니다\n"
 
-#: lib/query.c:679
+#: lib/query.c:711
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s (을)를 발생시키는 패키지가 없습니다\n"
 
-#: lib/query.c:689
+#: lib/query.c:721
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s (을)를 필요로 하는 패키지가 없습니다\n"
 
-#: lib/query.c:700
+#: lib/query.c:732
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s (을)를 제공하는 패키지가 없습니다\n"
 
-#: lib/query.c:735
+#: lib/query.c:767
 #, c-format
 msgid "file %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: lib/query.c:739
+#: lib/query.c:771
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s 파일은 어떤 패키지에도 속해 있지 않습니다\n"
 
-#: lib/query.c:765
+#: lib/query.c:797
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "올바르지 못한 패키지 번호: %s\n"
 
-#: lib/query.c:768
+#: lib/query.c:800
 #, c-format
 msgid "package record number: %u\n"
 msgstr "패키지 기록(record) 번호: %u\n"
 
-#: lib/query.c:773
+#: lib/query.c:805
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u (은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:784 lib/rpminstall.c:604
+#: lib/query.c:816 lib/rpminstall.c:604
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지는 설치되어 있지 않습니다\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-18 05:59-0400\n"
+"POT-Creation-Date: 2001-07-18 18:09-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2915,86 +2915,86 @@ msgstr "(sem estado)  "
 msgid "package has neither file owner or id lists\n"
 msgstr "o pacote nem tem um dono do ficheiro ou as listas de IDs\n"
 
-#: lib/query.c:411
+#: lib/query.c:438
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "não consigo pesquisar o %s: %s\n"
 
-#: lib/query.c:542 lib/query.c:576 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:323 lib/rpminstall.c:456
 #: lib/rpminstall.c:816
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
 
-#: lib/query.c:555
+#: lib/query.c:587
 #, c-format
 msgid "query of %s failed\n"
 msgstr "a pesquisa do %s falhou\n"
 
-#: lib/query.c:561
+#: lib/query.c:593
 msgid "old format source packages cannot be queried\n"
 msgstr "os pacotes com código-fonte no formato antigo não podem ser pesquisados\n"
 
-#: lib/query.c:586 lib/rpminstall.c:466
+#: lib/query.c:618 lib/rpminstall.c:466
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
 
-#: lib/query.c:628
+#: lib/query.c:660
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "a pesquisa do ficheiro spec %s falhou, não consigo analisar\n"
 
-#: lib/query.c:650
+#: lib/query.c:682
 msgid "no packages\n"
 msgstr "nenhum pacote\n"
 
-#: lib/query.c:669
+#: lib/query.c:701
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "o grupo %s não contém nenhum pacote\n"
 
-#: lib/query.c:679
+#: lib/query.c:711
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "nenhum pacote activa o %s\n"
 
-#: lib/query.c:689
+#: lib/query.c:721
 #, c-format
 msgid "no package requires %s\n"
 msgstr "nenhum pacote precisa do %s\n"
 
-#: lib/query.c:700
+#: lib/query.c:732
 #, c-format
 msgid "no package provides %s\n"
 msgstr "nenhum pacote oferece o %s\n"
 
-#: lib/query.c:735
+#: lib/query.c:767
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ficheiro %s: %s\n"
 
-#: lib/query.c:739
+#: lib/query.c:771
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "o ficheiro %s não pertence a nenhum pacote\n"
 
-#: lib/query.c:765
+#: lib/query.c:797
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "número de pacote inválido: %s\n"
 
-#: lib/query.c:768
+#: lib/query.c:800
 #, c-format
 msgid "package record number: %u\n"
 msgstr "número de registo do pacote: %u\n"
 
-#: lib/query.c:773
+#: lib/query.c:805
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "o registo %d não pôde ser lido\n"
 
-#: lib/query.c:784 lib/rpminstall.c:604
+#: lib/query.c:816 lib/rpminstall.c:604
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
