@@ -21,7 +21,7 @@ struct availablePackage {
     char ** files;
     char * name, * version, * release;
     int epoch, hasEpoch, providesCount, filesCount;
-    void * key;
+    const void * key;
 } ;
 
 enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
@@ -60,7 +60,7 @@ static void alMakeIndex(struct availableList * al);
 static void alCreate(struct availableList * al);
 static void alFreeIndex(struct availableList * al);
 static void alFree(struct availableList * al);
-static void alAddPackage(struct availableList * al, Header h, void * key);
+static void alAddPackage(struct availableList * al, Header h, const void * key);
 
 static int intcmp(const void * a, const void *b);
 static int indexcmp(const void * a, const void *b);
@@ -117,7 +117,7 @@ static void alFree(struct availableList * al) {
     alFreeIndex(al);
 }
 
-static void alAddPackage(struct availableList * al, Header h, void * key) {
+static void alAddPackage(struct availableList * al, Header h, const void * key) {
     struct availablePackage * p;
 
     if (al->size == al->alloced) {
@@ -248,7 +248,7 @@ rpmDependencies rpmdepDependencies(rpmdb db) {
     return rpmdep;
 }
 
-void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
+void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, const void * key) {
     /* this is an install followed by uninstalls */
     dbiIndexSet matches;
     char * name;
@@ -285,11 +285,11 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
     }
 }
 
-void rpmdepAddPackage(rpmDependencies rpmdep, Header h, void * key) {
+void rpmdepAddPackage(rpmDependencies rpmdep, Header h, const void * key) {
     alAddPackage(&rpmdep->addedPackages, h, key);
 }
 
-void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key) {
+void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, const void * key) {
     alAddPackage(&rpmdep->availablePackages, h, key);
 }
 
@@ -646,7 +646,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_REQUIRES;
 
 	    if (suggestion)
-		psp->problems[psp->num].suggestedPackage = suggestion->key;
+		psp->problems[psp->num].suggestedPackage = (void *)suggestion->key;
 	    else
 		psp->problems[psp->num].suggestedPackage = NULL;
 
@@ -873,7 +873,7 @@ static int addOrderedPack(rpmDependencies rpmdep,
     }
 
     /* whew -- add this package */
-    ordering[(*orderNumPtr)++] = package->key;
+    ordering[(*orderNumPtr)++] = (void *)package->key;
     selected[packageNum] = -1;
 
     return 0;

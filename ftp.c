@@ -64,7 +64,7 @@ extern int h_errno;
 
 #include "ftp.h"
 
-static int ftpDebug = 0;
+static int ftpDebug = 1;
 static int ftpTimeoutSecs = TIMEOUT_SECS;
 
 static int ftpCheckResponse(int sock, char ** str);
@@ -194,7 +194,7 @@ int ftpCommand(int sock, char * command, ...) {
     buf[len - 2] = '\r';
     buf[len - 1] = '\n';
     buf[len] = '\0';
-     
+
 if (ftpDebug)
 fprintf(stderr, "-> %s", buf);
     if (write(sock, buf, len) != len) {
@@ -251,7 +251,7 @@ int ftpOpen(const char * host, const char * name, const char * password,
     if (!password) {
 	if (getuid()) {
 	    struct passwd * pw = getpwuid(getuid());
-	    char *myp = alloca(strlen(pw->pw_name) + 2);
+	    char *myp = alloca(strlen(pw->pw_name) + sizeof("@") + 1);
 	    strcpy(myp, pw->pw_name);
 	    strcat(myp, "@");
 	    password = myp;
@@ -261,7 +261,7 @@ int ftpOpen(const char * host, const char * name, const char * password,
     }
 
     if (proxy) {
-	buf = alloca(strlen(name) + strlen(host) + 5);
+	buf = alloca(strlen(name) + strlen(host) + sizeof("@") + 1);
 	sprintf(buf, "%s@%s", name, host);
 	name = buf;
 	host = proxy;
@@ -315,7 +315,8 @@ int ftpReadData(int sock, int out) {
     char buf[BUFFER_SIZE];
     fd_set emptySet, readSet;
     struct timeval timeout;
-    int bytesRead, rc;
+    int bytesRead;
+    int rc;
     
     while (1) {
 	FD_ZERO(&emptySet);

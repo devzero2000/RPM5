@@ -36,9 +36,9 @@ int	urlSplit(const char *url, urlinfo **u);
 
 int	urlGetFile(const char * url, const char * dest);
 
-int urlGetFd(const char * url, void **xx);
-int urlAbortFd(void *x, int fd);
-int urlFinishedFd(void *x);
+int	urlGetFd(const char * url, void **xx);
+int	urlAbortFd(void *x, int fd);
+int	urlFinishedFd(void *x);
 
 #ifdef __cplusplus
 }

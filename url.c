@@ -30,7 +30,7 @@ static int urlConnect(const char * url, urlinfo **uret);
 
 void freeUrlinfo(urlinfo *u)
 {
-    if (u->ftpControl)
+    if (u->ftpControl >= 0)
 	urlFinishedFd(u);
     FREE(u->service);
     FREE(u->user);
@@ -201,7 +201,8 @@ int urlSplit(const char * url, urlinfo **uret)
     return 0;
 }
 
-static int urlConnect(const char * url, urlinfo **uret) {
+static int urlConnect(const char * url, urlinfo **uret)
+{
     urlinfo *u;
    
     rpmMessage(RPMMESS_DEBUG, _("getting %s\n"), url);
@@ -244,7 +245,8 @@ static int urlConnect(const char * url, urlinfo **uret) {
     return 0;
 }
 
-int urlGetFd(const char * url, void **xx) {
+int urlGetFd(const char * url, void **xx)
+{
     urlinfo **uret = (urlinfo **)xx;
     urlinfo *u;
     int fd;
@@ -266,7 +268,8 @@ int urlGetFd(const char * url, void **xx) {
     return fd;
 }
 
-int urlAbortFd(void *x, int fd) {
+int urlAbortFd(void *x, int fd)
+{
     urlinfo *u = (urlinfo *)x;
     if (u->ftpControl) {
 	ftpAbort(u->ftpControl, fd);
@@ -275,7 +278,8 @@ int urlAbortFd(void *x, int fd) {
     return 0;
 }
 
-int urlFinishedFd(void *x) {
+int urlFinishedFd(void *x)
+{
     urlinfo *u = (urlinfo *)x;
     if (u->ftpControl) {
 	ftpClose(u->ftpControl);
@@ -284,7 +288,8 @@ int urlFinishedFd(void *x) {
     return 0;
 }
 
-int urlGetFile(const char * url, const char * dest) {
+int urlGetFile(const char * url, const char * dest)
+{
     urlinfo *u;
     int rc;
     int fd;
@@ -306,7 +311,8 @@ int urlGetFile(const char * url, const char * dest) {
     return rc;
 }
 
-urltype urlIsURL(const char * url) {
+urltype urlIsURL(const char * url)
+{
     if (!strncmp(url, "ftp://", 6))
 	return URL_IS_FTP;
     return URL_IS_UNKNOWN;

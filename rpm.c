@@ -1291,8 +1291,8 @@ int main(int argc, char ** argv) {
 	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
 	if (allMatches) interfaceFlags |= UNINSTALL_ALLMATCHES;
 
-	ec = doUninstall(rootdir, poptGetArgs(optCon), uninstallFlags, 
-		interfaceFlags);
+	ec = doUninstall(rootdir, poptGetArgs(optCon),
+		uninstallFlags, interfaceFlags);
 	break;
 
       case MODE_INSTALL:
@@ -1336,9 +1336,8 @@ int main(int argc, char ** argv) {
 	    relocations[numRelocations].oldPath = NULL;
 	    relocations[numRelocations].newPath = NULL;
 	}
-
-	ec += doInstall(rootdir, poptGetArgs(optCon), installFlags, 
-			interfaceFlags, relocations);
+	ec += doInstall(rootdir, poptGetArgs(optCon),
+		installFlags, interfaceFlags, relocations);
 	break;
 
       case MODE_QUERY:

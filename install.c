@@ -50,15 +50,15 @@ static void printPercent(const unsigned long amount, const unsigned long total)
     fflush(stdout);
 }
 
-static int installPackages(char * rootdir, char ** packages, 
+static int installPackages(const char * rootdir, const char ** packages, 
 			    int numPackages, int installFlags, 
 			    int interfaceFlags, rpmdb db,
 			    struct rpmRelocation * relocations) {
     int i, fd;
     int numFailed = 0;
-    char ** filename;
-    char * printFormat = NULL;
-    char * chptr;
+    const char ** filename;
+    const char * printFormat = NULL;
+    const char * chptr;
     int rc;
     rpmNotifyFunction fn;
 
@@ -76,7 +76,7 @@ static int installPackages(char * rootdir, char ** packages,
 
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
-	    fprintf(stderr, _("error: cannot open file %s\n"), *filename);
+	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), *filename);
 	    numFailed++;
 	    *filename = NULL;
 	    continue;
@@ -109,15 +109,18 @@ static int installPackages(char * rootdir, char ** packages,
 	    }
 	} 
 
-	if (rc == 1) {
-	    fprintf(stderr, 
-		    _("error: %s does not appear to be a RPM package\n"), 
+	switch (rc) {
+	case 1:
+	    rpmMessage(RPMMESS_ERROR, 
+		    _("%s does not appear to be a RPM package\n"), 
 		    *filename);
-	}
-	    
-	if (rc) {
-	    fprintf(stderr, _("error: %s cannot be installed\n"), *filename);
+	    /* fall thru */
+	default:
+	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *filename);
 	    numFailed++;
+	    break;
+	case 0:
+	    break;
 	}
 
 	close(fd);
@@ -126,13 +129,14 @@ static int installPackages(char * rootdir, char ** packages,
     return numFailed;
 }
 
-int doInstall(char * rootdir, char ** argv, int installFlags, 
+int doInstall(const char * rootdir, const char ** argv, int installFlags, 
 	      int interfaceFlags, struct rpmRelocation * relocations) {
     rpmdb db;
     int fd, i;
     int mode, rc;
-    char ** packages, ** tmpPackages;
-    char ** filename;
+    const char ** packages;
+    const char ** tmpPackages;
+    const char ** filename;
     int numPackages;
     int numTmpPackages = 0, numBinaryPackages = 0, numSourcePackages = 0;
     int numFailed = 0;
@@ -145,6 +149,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     int stopInstall = 0;
     size_t nb;
     const char *tmppath = rpmGetVar(RPMVAR_TMPPATH);
+    const char *myroot;
 
     if (installFlags & RPMINSTALL_TEST) 
 	mode = O_RDONLY;
@@ -166,26 +171,29 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     binaryHeaders = alloca(nb);
     memset(binaryHeaders, 0, nb);
 
+    myroot = rootdir;
+    if (myroot[0] == '/' && myroot[1] == '\0' && tmppath[0] == '/')
+	myroot = "";
+
     rpmMessage(RPMMESS_DEBUG, _("looking for packages to download\n"));
     for (filename = argv, i = 0; *filename; filename++) {
 
 	if (urlIsURL(*filename)) {
 	    char *tfn;
 
-	    if (rpmIsVerbose()) {
+	    if (rpmIsVerbose())
 		fprintf(stdout, _("Retrieving %s\n"), *filename);
-	    }
 	    
-	    nb = strlen(rootdir) + strlen(tmppath) +
+	    nb = strlen(myroot) + strlen(tmppath) +
 		sizeof("/rpm-ftp-12345-12345.tmp");
 	    tfn = malloc(nb);
-	    sprintf(tfn, "%s%s/rpm-ftp-%.5u-%.5u.tmp", rootdir, 
+	    sprintf(tfn, "%s%s/rpm-ftp-%.5u-%.5u.tmp", myroot, 
 		    tmppath, tmpnum++, (int) getpid());
-	    rpmMessage(RPMMESS_DEBUG, _("getting %s as %s\n"), *filename, tfn);
+	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
 	    rc = urlGetFile(*filename, tfn);
 	    if (rc < 0) {
-		fprintf(stderr, 
-			_("error: skipping %s - transfer failed - %s\n"), 
+		rpmMessage(RPMMESS_ERROR, 
+			_("skipping %s - transfer failed - %s\n"), 
 			*filename, ftpStrerror(rc));
 		numFailed++;
 		packages[i] = NULL;
@@ -204,7 +212,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     for (filename = packages, i = 0; *filename; filename++, i++) {
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
-	    fprintf(stderr, _("error: cannot open file %s\n"), *filename);
+	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), *filename);
 	    numFailed++;
 	    packages[i] = NULL;
 	    continue;
@@ -215,24 +223,27 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 
 	close(fd);
 	
-	if (rc == 1) {
-	    fprintf(stderr, 
-			_("error: %s does not appear to be a RPM package\n"), 
+	switch (rc) {
+	case 1:
+	    rpmMessage(RPMMESS_ERROR, 
+			_("%s does not appear to be a RPM package\n"), 
 			*filename);
-	}
-	    
-	if (rc) {
-	    fprintf(stderr, _("error: %s cannot be installed\n"), *filename);
+	    /* fall thru */
+	default:
+	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *filename);
 	    numFailed++;
 	    packages[i] = NULL;
-	} else if (isSource) {
-	    /* the header will be NULL if this is a v1 source package */
-	    if (binaryHeaders[numBinaryPackages])
-		headerFree(binaryHeaders[numBinaryPackages]);
-
-	    numSourcePackages++;
-	} else {
-	    numBinaryPackages++;
+	    break;
+	case 0:
+	    if (isSource) {
+	/* the header will be NULL if this is a v1 source package */
+		if (binaryHeaders[numBinaryPackages])
+		    headerFree(binaryHeaders[numBinaryPackages]);
+		numSourcePackages++;
+	    } else {
+		numBinaryPackages++;
+	    }
+	    break;
 	}
     }
 
@@ -242,7 +253,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     if (numBinaryPackages) {
 	rpmMessage(RPMMESS_DEBUG, _("opening database mode: 0%o\n"), mode);
 	if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	    fprintf(stderr, _("error: cannot open %s%s/packages.rpm\n"), 
+	    rpmMessage(RPMMESS_ERROR, _("cannot open %s%s/packages.rpm\n"), 
 			rootdir, rpmGetVar(RPMVAR_DBPATH));
 	    exit(1);
 	}
@@ -263,7 +274,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	    }
 
 	    if (!stopInstall && conflicts) {
-		fprintf(stderr, _("failed dependencies:\n"));
+		rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
 		printDepProblems(stderr, conflicts, numConflicts);
 		rpmdepFreeConflicts(conflicts, numConflicts);
 		numFailed = numPackages;
@@ -292,7 +303,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 
     for (i = 0; i < numTmpPackages; i++) {
 	unlink(tmpPackages[i]);
-	free(tmpPackages[i]);
+	free((void *)tmpPackages[i]);
     }
 
     for (i = 0; i < numBinaryPackages; i++) 
@@ -303,7 +314,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     return numFailed;
 }
 
-int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
+int doUninstall(const char * rootdir, const char ** argv, int uninstallFlags,
 		 int interfaceFlags) {
     rpmdb db;
     dbiIndexSet matches;
@@ -313,7 +324,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     int count;
     int numPackages, packageOffsetsAlloced;
     int * packageOffsets;
-    char ** arg;
+    const char ** arg;
     int numFailed = 0;
     rpmDependencies rpmdep;
     struct rpmDependencyConflict * conflicts;
@@ -333,7 +344,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	mode = O_RDWR | O_EXCL;
 	
     if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	fprintf(stderr, _("error: cannot open %s%s/packages.rpm\n"), 
+	rpmMessage(RPMMESS_ERROR, _("cannot open %s%s/packages.rpm\n"), 
 		rootdir, rpmGetVar(RPMVAR_DBPATH));
 	exit(1);
     }
@@ -343,10 +354,10 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     for (arg = argv; *arg; arg++) {
 	rc = rpmdbFindByLabel(db, *arg, &matches);
 	if (rc == 1) {
-	    fprintf(stderr, _("package %s is not installed\n"), *arg);
+	    rpmMessage(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
 	    numFailed++;
 	} else if (rc == 2) {
-	    fprintf(stderr, _("error searching for package %s\n"), *arg);
+	    rpmMessage(RPMMESS_ERROR, _("error searching for package %s\n"), *arg);
 	    numFailed++;
 	} else {
 	    count = 0;
@@ -354,7 +365,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 		if (matches.recs[i].recOffset) count++;
 
 	    if (count > 1 && !(interfaceFlags & UNINSTALL_ALLMATCHES)) {
-		fprintf(stderr, _("\"%s\" specifies multiple packages\n"), 
+		rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"), 
 			*arg);
 		numFailed++;
 	    }
@@ -391,7 +402,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	rpmdepDone(rpmdep);
 
 	if (!stopUninstall && conflicts) {
-	    fprintf(stderr, _("removing these packages would break "
+	    rpmMessage(RPMMESS_ERROR, _("removing these packages would break "
 			      "dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
 	    rpmdepFreeConflicts(conflicts, numConflicts);
@@ -417,14 +428,14 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     return numFailed;
 }
 
-int doSourceInstall(char * rootdir, char * arg, char ** specFile,
+int doSourceInstall(const char * rootdir, const char * arg, char ** specFile,
 		    char ** cookie) {
     int fd;
     int rc;
 
     fd = open(arg, O_RDONLY);
     if (fd < 0) {
-	fprintf(stderr, _("error: cannot open %s\n"), arg);
+	rpmMessage(RPMMESS_ERROR, _("cannot open %s\n"), arg);
 	return 1;
     }
 
@@ -433,7 +444,7 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile,
 
     rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL, cookie);
     if (rc == 1) {
-	fprintf(stderr, _("error: %s cannot be installed\n"), arg);
+	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
 	if (specFile) free(*specFile);
 	if (cookie) free(*cookie);
     }

@@ -83,9 +83,9 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 				 struct fileInfo * files,
 				 int fileCount, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags);
-static int installSources(Header h, char * rootdir, int fd, 
+static int installSources(Header h, const char * rootdir, int fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
-			  char * labelFormat);
+			  const char * labelFormat);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int archOkay(Header h);
 static int osOkay(Header h);
@@ -102,8 +102,8 @@ static void trimChangelog(Header h);
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
-			    rpmNotifyFunction notify, char * labelFormat,
+int rpmInstallSourcePackage(const char * rootdir, int fd, char ** specFile,
+			    rpmNotifyFunction notify, const char * labelFormat,
 			    char ** cookie) {
     int rc, isSource;
     Header h;
@@ -432,9 +432,9 @@ static void trimChangelog(Header h) {
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
+int rpmInstallPackage(const char * rootdir, rpmdb db, int fd,
 		      struct rpmRelocation * relocations,
-		      int flags, rpmNotifyFunction notify, char * labelFormat) {
+		      int flags, rpmNotifyFunction notify, const char * labelFormat) {
     int rc, isSource, major, minor;
     char * name, * version, * release;
     Header h;
@@ -1396,11 +1396,12 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-static int installSources(Header h, char * rootdir, int fd, 
+static int installSources(Header h, const char * rootdir, int fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
-			  char * labelFormat) {
+			  const char * labelFormat) {
     char * specFile;
-    char * sourceDir, * specDir;
+    const char * sourceDir;
+    const char * specDir;
     int specFileIndex = -1;
     char * realSourceDir, * realSpecDir;
     char * instSpecFile, * correctSpecFile;

@@ -46,11 +46,11 @@ void dbiSyncIndex(dbiIndex * dbi) {
     dbi->db->sync(dbi->db, 0);
 }
 
-int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
+int dbiSearchIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set) {
     DBT key, data;
     int rc;
 
-    key.data = str;
+    key.data = (void *)str;
     key.size = strlen(str);
 
     rc = dbi->db->get(dbi->db, &key, &data, 0);
@@ -69,12 +69,12 @@ int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
     return 0;
 }
 
-int dbiUpdateIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
+int dbiUpdateIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set) {
    /* 0 on success */
     DBT key, data;
     int rc;
 
-    key.data = str;
+    key.data = (void *)str;
     key.size = strlen(str);
 
     if (set->count) {

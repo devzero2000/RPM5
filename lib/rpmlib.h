@@ -289,7 +289,7 @@ typedef struct rpmdb_s * rpmdb;
 typedef void (*rpmNotifyFunction)(const unsigned long amount,
 			       const unsigned long total);
 
-int rpmdbOpen (char * root, rpmdb * dbp, int mode, int perms);
+int rpmdbOpen (const char * root, rpmdb * dbp, int mode, int perms);
     /* 0 on error */
 int rpmdbInit(char * root, int perms);
     /* nonzero on error */
@@ -300,16 +300,16 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
     /* 0 at end, -1 on error */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
-int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches);
-int rpmdbFindByGroup(rpmdb db, char * group, dbiIndexSet * matches);
-int rpmdbFindPackage(rpmdb db, char * name, dbiIndexSet * matches);
-int rpmdbFindByProvides(rpmdb db, char * provides, dbiIndexSet * matches);
-int rpmdbFindByRequiredBy(rpmdb db, char * requires, dbiIndexSet * matches);
-int rpmdbFindByConflicts(rpmdb db, char * conflicts, dbiIndexSet * matches);
-int rpmdbFindByTriggeredBy(rpmdb db, char * package, dbiIndexSet * matches);
+int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches);
+int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches);
+int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches);
+int rpmdbFindByProvides(rpmdb db, const char * provides, dbiIndexSet * matches);
+int rpmdbFindByRequiredBy(rpmdb db, const char * requires, dbiIndexSet * matches);
+int rpmdbFindByConflicts(rpmdb db, const char * conflicts, dbiIndexSet * matches);
+int rpmdbFindByTriggeredBy(rpmdb db, const char * package, dbiIndexSet * matches);
 
-/* these are just convience functions */
-int rpmdbFindByLabel(rpmdb db, char * label, dbiIndexSet * matches);
+/* these are just convenience functions */
+int rpmdbFindByLabel(rpmdb db, const char * label, dbiIndexSet * matches);
 int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
 
 /* we pass these aroung as an array with a sentinel */
@@ -318,14 +318,14 @@ struct rpmRelocation {
     char * newPath;     /* odd behavior is only for backwards compatibility */
 };
 
-int rpmInstallSourcePackage(char * root, int fd, char ** specFile,
-			    rpmNotifyFunction notify, char * labelFormat,
+int rpmInstallSourcePackage(const char * root, int fd, char ** specFile,
+			    rpmNotifyFunction notify, const char * labelFormat,
 			    char ** cookie);
-int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
+int rpmInstallPackage(const char * rootdir, rpmdb db, int fd,
 		      struct rpmRelocation * relocations,
-		      int flags, rpmNotifyFunction notify, char * labelFormat);
+		      int flags, rpmNotifyFunction notify, const char * labelFormat);
 int rpmVersionCompare(Header first, Header second);
-int rpmRemovePackage(char * root, rpmdb db, unsigned int offset, int flags);
+int rpmRemovePackage(const char * root, rpmdb db, unsigned int offset, int flags);
 int rpmdbRebuild(char * root);
 
 int rpmVerifyFile(char * root, Header h, int filenum, int * result, 
@@ -346,9 +346,9 @@ struct rpmDependencyConflict {
 } ;
 
 rpmDependencies rpmdepDependencies(rpmdb db); 	       /* db may be NULL */
-void rpmdepAddPackage(rpmDependencies rpmdep, Header h, void * key);
-void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key);
-void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key);
+void rpmdepAddPackage(rpmDependencies rpmdep, Header h, const void * key);
+void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, const void * key);
+void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, const void * key);
 void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset);
 
 /* this checks for dependency satisfaction, but *not* ordering */

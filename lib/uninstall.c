@@ -38,8 +38,8 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
 		      short mode, enum fileActions action, 
 		      int brokenMd5, int test);
-static int runScript(Header h, char * root, int progArgc, char ** progArgv, 
-		     char * script, int arg1, int arg2, int errfd);
+static int runScript(Header h, const char * root, int progArgc, const char ** progArgv, 
+		     const char * script, int arg1, int arg2, int errfd);
 
 static int sharedFileCmp(const void * one, const void * two) {
     if (((struct sharedFile *) one)->secRecOffset <
@@ -210,7 +210,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     return rc;
 }
 
-int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
+int rpmRemovePackage(const char * prefix, rpmdb db, unsigned int offset, int flags) {
     Header h;
     int i, j;
     int fileCount;
@@ -378,9 +378,9 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     return 0;
 }
 
-static int runScript(Header h, char * root, int progArgc, char ** progArgv, 
-		     char * script, int arg1, int arg2, int errfd) {
-    char ** argv;
+static int runScript(Header h, const char * root, int progArgc, const char ** progArgv, 
+		     const char * script, int arg1, int arg2, int errfd) {
+    const char ** argv;
     int argc;
     char ** prefixes = NULL;
     int numPrefixes;
@@ -445,12 +445,14 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 
 	argv[argc++] = fn + strlen(root);
 	if (arg1 >= 0) {
-	    argv[argc] = alloca(20);
-	    sprintf(argv[argc++], "%d", arg1);
+	    char *s = alloca(20);
+	    sprintf(s, "%d", arg1);
+	    argv[argc++] = s;
 	}
 	if (arg2 >= 0) {
-	    argv[argc] = alloca(20);
-	    sprintf(argv[argc++], "%d", arg2);
+	    char *s = alloca(20);
+	    sprintf(s, "%d", arg2);
+	    argv[argc++] = s;
 	}
     }
 
@@ -501,7 +503,7 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 
 	chdir("/");
 
-	execv(argv[0], argv);
+	execv(argv[0], (char *const *)argv);
  	_exit(-1);
     }
 
@@ -527,13 +529,13 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
     return 0;
 }
 
-int runInstScript(char * root, Header h, int scriptTag, int progTag,
+int runInstScript(const char * root, Header h, int scriptTag, int progTag,
 	          int arg, int norunScripts, int err) {
     void ** programArgv;
     int programArgc;
-    char ** argv;
+    const char ** argv;
     int programType;
-    char * script;
+    const char * script;
     int rc;
 
     if (norunScripts) return 0;
@@ -548,7 +550,7 @@ int runInstScript(char * root, Header h, int scriptTag, int progTag,
 	argv = alloca(sizeof(char *));
 	*argv = (char *) programArgv;
     } else {
-	argv = (char **) programArgv;
+	argv = (const char **) programArgv;
     }
 
     rc = runScript(h, root, programArgc, argv, script, arg, -1, err);
@@ -647,11 +649,12 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
     return 0;
 }
 
-static int handleOneTrigger(char * root, rpmdb db, int sense, Header sourceH,
+static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourceH,
 			    Header triggeredH, int arg1correction, int arg2,
 			    char * triggersAlreadyRun) {
     char ** triggerNames, ** triggerVersions;
-    char ** triggerScripts, ** triggerProgs;
+    char ** triggerScripts;
+    const char ** triggerProgs;
     int_32 * triggerFlags, * triggerIndices;
     char * triggerPackageName, * sourceName;
     int numTriggers;
@@ -725,7 +728,7 @@ static int handleOneTrigger(char * root, rpmdb db, int sense, Header sourceH,
     return rc;
 }
 
-int runTriggers(char * root, rpmdb db, int sense, Header h,
+int runTriggers(const char * root, rpmdb db, int sense, Header h,
 		int countCorrection) {
     char * packageName;
     dbiIndexSet matches, otherMatches;
@@ -762,7 +765,7 @@ int runTriggers(char * root, rpmdb db, int sense, Header h,
     
 }
 
-int runImmedTriggers(char * root, rpmdb db, int sense, Header h,
+int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		     int countCorrection) {
     int rc = 0;
     dbiIndexSet matches;

@@ -9,14 +9,15 @@
 #include "intl.h"
 #include "rpmlib.h"
 
-static int findMatches(rpmdb db, char * name, char * version, char * release,
-		       dbiIndexSet * matches);
+static int findMatches(rpmdb db,
+		const char * name, const char * version, const char * release,
+		dbiIndexSet * matches);
 
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
 int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches) {
-    char * name, * version, * release;
+    const char * name, * version, * release;
 
     headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
     headerGetEntry(h, RPMTAG_VERSION, NULL, (void **) &version, NULL);
@@ -28,9 +29,9 @@ int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches) {
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
-int rpmdbFindByLabel(rpmdb db, char * arg, dbiIndexSet * matches) {
+int rpmdbFindByLabel(rpmdb db, const char * arg, dbiIndexSet * matches) {
     char * localarg, * chptr;
-    char * release;
+    const char * release;
     int rc;
  
     if (!strlen(arg)) return 1;
@@ -64,8 +65,9 @@ int rpmdbFindByLabel(rpmdb db, char * arg, dbiIndexSet * matches) {
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
-static int findMatches(rpmdb db, char * name, char * version, char * release,
-		       dbiIndexSet * matches) {
+static int findMatches(rpmdb db,
+		const char * name, const char * version, const char * release,
+		dbiIndexSet * matches) {
     int gotMatches;
     int rc;
     int i;
@@ -120,4 +122,3 @@ static int findMatches(rpmdb db, char * name, char * version, char * release,
     
     return 0;
 }
-

@@ -35,9 +35,9 @@ typedef struct {
 dbiIndex * dbiOpenIndex(char * filename, int flags, int perms);
 void dbiCloseIndex(dbiIndex * dbi);
 void dbiSyncIndex(dbiIndex * dbi);
-int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set);
+int dbiSearchIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set);
    /* -1 error, 0 success, 1 not found */
-int dbiUpdateIndex(dbiIndex * dbi, char * str, dbiIndexSet * set);
+int dbiUpdateIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set);
    /* 0 on success */
 int dbiAppendIndexRecord(dbiIndexSet * set, dbiIndexRecord rec);
    /* 0 on success - should never fail */

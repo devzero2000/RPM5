@@ -47,8 +47,8 @@ static void unblockSignals(void);
 
 static sigset_t signalMask;
 
-int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
-    char * dbpath;
+int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms) {
+    const char * dbpath;
 
     dbpath = rpmGetVar(RPMVAR_DBPATH);
     if (!dbpath) {
@@ -72,7 +72,7 @@ int rpmdbInit (char * prefix, int perms) {
     return openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 1);
 }
 
-static int openDbFile(char * prefix, char * dbpath, char * shortName, 
+static int openDbFile(const char * prefix, const char * dbpath, const char * shortName, 
 		      int justCheck, int perms, dbiIndex ** db){
     char * filename = alloca(strlen(prefix) + strlen(dbpath) + 
 			     strlen(shortName) + 20);
@@ -93,7 +93,7 @@ static int openDbFile(char * prefix, char * dbpath, char * shortName,
     return 0;
 }
 
-int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode, 
+int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mode, 
 		 int perms, int justcheck) {
     char * filename;
     struct rpmdb_s db;
@@ -226,9 +226,10 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset) {
     return headerRead(db->pkgs->fd, HEADER_MAGIC_NO);
 }
 
-int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     char * fs;
-    char * src, * dst;
+    const char * src;
+    char * dst;
 
     /* we try and canonicalize the filespec a bit before doing the search */
 
@@ -250,27 +251,27 @@ int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->fileIndex, fs, matches);
 }
 
-int rpmdbFindByProvides(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByProvides(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->providesIndex, filespec, matches);
 }
 
-int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByRequiredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->requiredbyIndex, filespec, matches);
 }
 
-int rpmdbFindByConflicts(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByConflicts(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->conflictsIndex, filespec, matches);
 }
 
-int rpmdbFindByTriggeredBy(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByTriggeredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->triggerIndex, filespec, matches);
 }
 
-int rpmdbFindByGroup(rpmdb db, char * group, dbiIndexSet * matches) {
+int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches) {
     return dbiSearchIndex(db->groupIndex, group, matches);
 }
 
-int rpmdbFindPackage(rpmdb db, char * name, dbiIndexSet * matches) {
+int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
     return dbiSearchIndex(db->nameIndex, name, matches);
 }
 
@@ -573,7 +574,7 @@ static void unblockSignals(void) {
     sigprocmask(SIG_SETMASK, &signalMask, NULL);
 }
 
-void rpmdbRemoveDatabase(char * rootdir, char * dbpath) { 
+void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath) { 
     int i;
     char * filename;
 
@@ -610,7 +611,7 @@ void rpmdbRemoveDatabase(char * rootdir, char * dbpath) {
     unlink(filename);
 }
 
-int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath) {
+int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath) {
     int i;
     char * ofilename, * nfilename;
     int rc = 0;

@@ -331,11 +331,11 @@ char * gidToGname(gid_t gid) {
     }
 }
 
-int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
+int makeTempFile(const char * prefix, char ** fnptr, int * fdptr) {
     char * fn;
     int fd;
     int ran;
-    char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
+    const char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
     struct stat sb, sb2;
 
     if (!prefix) prefix = "";

@@ -5,12 +5,13 @@
 
 /* for RPM's internal use only */
 
-int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode, 
-		 int perms, int justcheck);
+int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp,
+		int mode, int perms, int justcheck);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
-void rpmdbRemoveDatabase(char * rootdir, char * dbpath);
-int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath);
+void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath);
+int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath,
+	const char * newdbpath);
 
 #endif
