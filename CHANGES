@@ -27,6 +27,7 @@
 	- display N-V-R.A in dependency failure messages.
 	- selinux: set "rpm_script_t" always, not just for /bin/sh.
 	- honor inherited SIG_IGN when establishing rpmdb signal exit (#134474).
+	- python: remove ".A" from creaky ts.check() tuple return (#135008).
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).
