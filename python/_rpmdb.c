@@ -1888,7 +1888,6 @@ DB_stat(DBObject* self, PyObject* args)
         MAKE_HASH_ENTRY(dup);
         MAKE_HASH_ENTRY(dup_free);
         break;
-#endif
 
     case DB_BTREE:
     case DB_RECNO:
