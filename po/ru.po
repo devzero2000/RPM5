@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-16 12:09-0400\n"
+"POT-Creation-Date: 2001-05-16 15:53-0400\n"
 "PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2352,7 +2352,7 @@ msgid " failed - "
 msgstr "не удалось - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:566
+#: lib/depends.c:552
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2361,107 +2361,107 @@ msgstr ""
 "для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:595
+#: lib/depends.c:581
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:596 lib/depends.c:1083 lib/depends.c:1211
+#: lib/depends.c:582 lib/depends.c:1087 lib/depends.c:1215
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:596 lib/depends.c:1083 lib/depends.c:1211
+#: lib/depends.c:582 lib/depends.c:1087 lib/depends.c:1215
 #, fuzzy
 msgid "NO "
 msgstr "НЕ OК"
 
-#: lib/depends.c:972
+#: lib/depends.c:976
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:1030
+#: lib/depends.c:1034
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:1082
+#: lib/depends.c:1086
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (cached)\n"
 
-#: lib/depends.c:1106
+#: lib/depends.c:1110
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:1123
+#: lib/depends.c:1127
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:1145
+#: lib/depends.c:1149
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1158
+#: lib/depends.c:1162
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:1172
+#: lib/depends.c:1176
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db package)\n"
 
-#: lib/depends.c:1190
+#: lib/depends.c:1194
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1211
+#: lib/depends.c:1215
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1272
+#: lib/depends.c:1276
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1340
+#: lib/depends.c:1344
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1560
+#: lib/depends.c:1564
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1708
+#: lib/depends.c:1712
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1766
+#: lib/depends.c:1770
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1818
+#: lib/depends.c:1822
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1870
+#: lib/depends.c:1874
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1899
+#: lib/depends.c:1903
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
