@@ -141,7 +141,8 @@ arch_compat: powerppc: ppc
 arch_compat: usparc: sparc
 arch_compat: sparc: noarch
 
-arch_compat: ppc: noarch
+arch_compat: ppc: rs6000
+arch_compat: rs6000: noarch
 arch_compat: mipseb: noarch
 arch_compat: mipsel: noarch
 
