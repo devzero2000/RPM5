@@ -1,3 +1,7 @@
+4.1 -> 4.1.1:
+	- backport rpm-4.2 changes.
+	- fix: close db cursors to remove rpmdb references on signal exit.
+
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
 	- drop rpmio/base64.[ch] in favor of beecrypt.

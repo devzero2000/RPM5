@@ -246,7 +246,7 @@ nextsrpm: all archive
 	@sudo ./rpm -ta rpm-$(VERSION).tar.gz
 
 .PHONY:	doxygen
-doxygen @WITH_APIDOCS_TARGET@: Doxyfile
+doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-4.1
 	rm -rf $@
 	mkdir -p $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@

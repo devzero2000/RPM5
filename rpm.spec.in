@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -465,7 +465,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Tue Mar  4 2003 Jeff Johnson <jbj@redhat.com> 4.1.1-1
+* Thu Mar 13 2003 Jeff Johnson <jbj@redhat.com> 4.1.1-0.2
+- fix: close db cursors to remove rpmdb references on signal exit.
+
+* Tue Mar  4 2003 Jeff Johnson <jbj@redhat.com> 4.1.1-0.1
 - backport rpm-4.2 changes.
 
 * Wed Nov  6 2002 Jeff Johnson <jbj@redhat.com> 4.1-11
