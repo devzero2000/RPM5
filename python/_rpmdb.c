@@ -1,4 +1,4 @@
-/** \ingroup python
+/** \ingroup py_c
  * \file python/_rpmdb.c
  */
 
@@ -3999,7 +3999,13 @@ DL_EXPORT(void) init_rpmdb(void)
     ADD_INT(d, DB_MAX_PAGES);
     ADD_INT(d, DB_MAX_RECORDS);
 
+#if defined(DB_CLIENT)
     ADD_INT(d, DB_CLIENT);
+#endif
+#if defined(DB_RPCCLIENT)
+    ADD_INT(d, DB_RPCCLIENT);
+#endif
+
     ADD_INT(d, DB_XA_CREATE);
 
     ADD_INT(d, DB_CREATE);
@@ -4145,7 +4151,9 @@ DL_EXPORT(void) init_rpmdb(void)
     ADD_INT(d, DB_CHECKPOINT);
 #endif
 #if (DBVER >= 33)
+#if defined(DB_COMMIT)
     ADD_INT(d, DB_COMMIT);
+#endif
 #endif
     ADD_INT(d, DB_CONSUME);
 #if (DBVER >= 32)

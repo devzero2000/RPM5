@@ -75,8 +75,8 @@ rpmd.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c rpmqv.c
 
 rpmi_SOURCES =
-rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-rpmi_LDADD =		rpmi.o $(myLDADD) @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
+rpmi_LDFLAGS =		$(myLDFLAGS)
+rpmi_LDADD =		rpmi.o $(myLDADD)
 rpmi.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMEIU -o $@ -c rpmqv.c
 

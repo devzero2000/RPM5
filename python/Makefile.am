@@ -58,15 +58,16 @@ noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c header-py.c \
 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
 	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c
+librpmmodule_OBJECTS = $(subst .c,.o,$(librpmmodule_la_SOURCES))
 
-rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
-	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
+rpmmodule.so$(EXEEXT): librpmmodule.la
+	$(CC) -o $@ $(librpmmodule_OBJECTS) $(rpmmodule_so_LDFLAGS)
 
-_rpmdb.so$(EXEEXT): _rpmdb.lo
-	$(CC) -o $@ _rpmdb.lo $(_rpmdb_so_LDFLAGS)
+_rpmdb.so$(EXEEXT): _rpmdb.o
+	$(CC) -o $@ _rpmdb.o $(_rpmdb_so_LDFLAGS)
 
-poptmodule.so$(EXEEXT): poptmodule.lo
-	$(CC) -o $@ poptmodule.lo $(poptmodule_so_LDFLAGS)
+poptmodule.so$(EXEEXT): poptmodule.o
+	$(CC) -o $@ poptmodule.o $(poptmodule_so_LDFLAGS)
 
 # rpmmodule.c header-py.c \
 # 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \

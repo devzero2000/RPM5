@@ -7,7 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2003-09-09 17:09-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-09-24 19:39-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3065,85 +3066,85 @@ msgstr ""
 msgid "Unsatisfied dependencies for %s: "
 msgstr ""
 
-#: rpmdb/db3.c:156
+#: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:159
+#: rpmdb/db3.c:163
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:185
+#: rpmdb/db3.c:189
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:203
+#: rpmdb/db3.c:207
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:292
+#: rpmdb/db3.c:296
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:779
+#: rpmdb/db3.c:782
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:846
+#: rpmdb/db3.c:849
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:986
+#: rpmdb/db3.c:989
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1090
+#: rpmdb/db3.c:1093
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1328
+#: rpmdb/db3.c:1331
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1330
+#: rpmdb/db3.c:1333
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1330
+#: rpmdb/db3.c:1333
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1334
+#: rpmdb/db3.c:1337
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:329
+#: rpmdb/dbconfig.c:337
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:369
+#: rpmdb/dbconfig.c:377
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:378
+#: rpmdb/dbconfig.c:386
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:387
+#: rpmdb/dbconfig.c:395
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
