@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2003-07-09 15:47-0400\n"
+"POT-Creation-Date: 2003-07-16 16:07-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2456,36 +2456,36 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:546
+#: lib/rpmfi.c:547
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:783
+#: lib/rpmfi.c:785
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:787
+#: lib/rpmfi.c:789
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:790
+#: lib/rpmfi.c:792
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:918
+#: lib/rpmfi.c:919
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:928
+#: lib/rpmfi.c:929
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1019
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-09 15:47-0400\n"
+"POT-Creation-Date: 2003-07-16 16:07-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2710,38 +2710,38 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/rpmfi.c:546
+#: lib/rpmfi.c:547
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:783
+#: lib/rpmfi.c:785
 msgid "========== relocations\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmfi.c:787
+#: lib/rpmfi.c:789
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Hole %s heraus\n"
 
-#: lib/rpmfi.c:790
+#: lib/rpmfi.c:792
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
 # , c-format
-#: lib/rpmfi.c:918
+#: lib/rpmfi.c:919
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Hole %s heraus\n"
 
-#: lib/rpmfi.c:928
+#: lib/rpmfi.c:929
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1019
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"

@@ -23,6 +23,7 @@
 	- resolve elf32/elf64 file conflicts to prefer elf64.
 	- apply debugedit patch necessary to produce kernel -debuginfo files.
 	- ia64: autorelocate only colored, not every, file when installing.
+	- repair find-debuginfo.sh to avoid recursing in /usr/lib/debug.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.
