@@ -35,7 +35,7 @@ static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args);
 static int rpmdbLength(rpmdbObject * s);
 static hdrObject * rpmdbSubscript(rpmdbObject * s, PyObject * key);
 
-* header functions */
+/* header functions */
 static void hdrDealloc(hdrObject * s);
 static PyObject * hdrGetAttr(hdrObject * s, char * name);
 static PyObject * hdrSubscript(hdrObject * s, PyObject * item);
@@ -1670,6 +1670,7 @@ struct FDlist_t {
     FDlist *next;
 } ;
 
+#ifdef	DISABLED
 static FDlist *fdhead = NULL;
 static FDlist *fdtail = NULL;
 
@@ -1698,6 +1699,7 @@ static int closeCallback(FILE * f) {
     }
     return 0; 
 }
+#endif
 
 static PyObject * checkSig (PyObject * self, PyObject * args) {
     char * filename;
@@ -1725,13 +1727,13 @@ static PyObject * getTsHeader (PyObject * self, PyObject * args) {
 	h->fileList = h->linkList = h->md5list = NULL;
 	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
 	h->modes = h->rdevs = NULL;
-	return h;
+	return (PyObject *) h;
     }
     Py_INCREF(Py_None);
-    return (hdrObject *) Py_None;
+    return Py_None;
 }
 
-/* disable
+#ifdef	DISABLED
 static PyObject * doFopen(PyObject * self, PyObject * args) {
     char * path, * mode;
     FDlist *node;
@@ -1775,4 +1777,4 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
     
     return PyFile_FromFile (node->f, path, mode, closeCallback);
 }
-*/
+#endif
