@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-21 19:14-0500\n"
-"PO-Revision-Date: 2001-02-08 17:48+0100\n"
+"PO-Revision-Date: 2001-02-08 18:51+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -885,11 +885,11 @@ msgstr "vynechané cesty musí zaèínat znakem /"
 
 #: rpm.c:787 rpmqv.c:995
 msgid "The --rcfile option has been eliminated.\n"
-msgstr ""
+msgstr "Volba --rcfile byla odstranìna.\n"
 
 #: rpm.c:788
 msgid "Use --macros with a colon separated list of macro files to read.\n"
-msgstr ""
+msgstr "Pou¾ijte --macros se seznamem makro souborù oddìlených kolonou.\n"
 
 #: rpm.c:793 rpmqv.c:1001
 #, c-format
@@ -1144,11 +1144,11 @@ msgstr "nemohu znovu otevøít payload: %s\n"
 
 #: rpmqv.c:152
 msgid "provide less detailed output"
-msgstr ""
+msgstr "poskytnout výstu s ménì detaily"
 
 #: rpmqv.c:154
 msgid "provide more detailed output"
-msgstr ""
+msgstr "poskytnout detailnìj¹í výstup"
 
 #: rpmqv.c:157
 msgid "'<name> <body>'"
@@ -1204,15 +1204,15 @@ msgstr "inicializovat databázi"
 
 #: rpmqv.c:202
 msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
+msgstr "znovusestavení databáze z instalovaných hlavièek balíèkù"
 
 #: rpmqv.c:205
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
-msgstr ""
+msgstr "generovat hlavièky kompatibilní RPM verze 2 a 3"
 
 #: lib/poptBT.c:174 rpmqv.c:208
 msgid "generate headers compatible with rpm4 packaging"
-msgstr ""
+msgstr "generovat hlavièky kompatibilní s RPM verze 4"
 
 #: rpmqv.c:256
 msgid "<package>"
@@ -1224,15 +1224,15 @@ msgstr "pøeskoèit soubory s úvodní cestou <cesta> "
 
 #: rpmqv.c:267
 msgid "upgrade package if already installed"
-msgstr "balíèek %s-%s-%s je ji¾ nainstalován"
+msgstr "aktualizace balíèku jestli¾e je ji¾ nainstalován"
 
 #: rpmqv.c:268 rpmqv.c:286 rpmqv.c:325
 msgid "<packagefile>+"
-msgstr "        -p <soubor_balíèku>+ "
+msgstr "<soubor_balíèku>+"
 
 #: rpmqv.c:297 rpmqv.c:601
 msgid "do not execute scripts (if any)"
-msgstr "nespou¹tìt ¾ádné etapy"
+msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
 #: rpmqv.c:300 rpmqv.c:649
 msgid "don't execute any scriptlets triggered by this package"
@@ -1240,35 +1240,36 @@ msgstr "nespou¹tìt ¾ádné skripty aktivované tímto balíèkem"
 
 #: rpmqv.c:313
 msgid "<oldpath>=<newpath>"
-msgstr "     --relocate <stará_cesta>=<nová_cesta>"
+msgstr "<stará_cesta>=<nová_cesta>"
 
 #: rpmqv.c:324
 msgid "upgrade package"
-msgstr "   --upgrade <balíèek>"
+msgstr "aktualizace balíèku"
 
 #: rpmqv.c:347
 msgid "Query options (with -q or --query):"
-msgstr ""
+msgstr "Volby dotazù (s -q or --query):"
 
 #: rpmqv.c:350
 msgid "Verify options (with -V or --verify):"
-msgstr ""
+msgstr "Vollby kontroly (s -V or --verify):"
 
 #: rpmqv.c:356
 msgid "Signature options:"
-msgstr "Velikost podpisu: %d\n"
+msgstr "Volby signatury:"
 
 #: rpmqv.c:362
 msgid "Database options:"
-msgstr ""
+msgstr "Volby databáze:"
 
 #: rpmqv.c:368
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
+"Sestavovací volby s [ <spec_soubor> | <tar_soubor> | <zdrojový_balíèek> ]:"
 
 #: rpmqv.c:373
 msgid "Common options for all rpm modes:"
-msgstr ""
+msgstr "Spoleèné volby pro v¹echny módy:"
 
 #: rpmqv.c:413
 #, c-format
@@ -1283,7 +1284,7 @@ msgstr "       %s {--initdb}   [--dbpath <adr>]\n"
 #: rpmqv.c:418
 #, c-format
 msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-msgstr "       %s {--rebuilddb} [--rcfile <soubor>] [--dbpath <adr>]\n"
+msgstr "       %s {--rebuilddb} [--rcfile <soubor:...>] [--dbpath <adr>]\n"
 
 #: rpmqv.c:422
 #, c-format
@@ -1296,32 +1297,35 @@ msgstr ""
 msgid ""
 "                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                        [--rcfile <soubor>] [--ignorearch] [--dbpath <adr>]"
+"                        [--rcfile <soubor:...>] [--ignorearch] [--dbpath "
+"<adr>]"
 
 #: rpmqv.c:434
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file:...>]"
 msgstr ""
-"                        [--excludedocs] [--includedocs] [--rcfile <soubor>]"
+"                        [--excludedocs] [--includedocs] [--rcfile "
+"<soubor:...>]"
 
 #: rpmqv.c:442
 #, c-format
 msgid ""
 "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:...>]\n"
 msgstr ""
-"       %s {--erase -e} [--root <adr>] [--noscripts] [--rcfile <soubor>]\n"
+"       %s {--erase -e} [--root <adr>] [--noscripts] [--rcfile <soubor:...>]\n"
 
 #: rpmqv.c:449
 msgid ""
 "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
-msgstr "                        [--scripts] [--root <adr>] [--rcfile <soubor>]"
+msgstr ""
+"                        [--scripts] [--root <adr>] [--rcfile <soubor:...>]"
 
 #: rpmqv.c:456
 #, c-format
 msgid ""
 "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
 msgstr ""
-"       %s {--verify -V -y} [-afpg] [--root <adr>] [--rcfile <soubor>]\n"
+"       %s {--verify -V -y} [-afpg] [--root <adr>] [--rcfile <soubor:...>]\n"
 
 #: rpmqv.c:460
 #, c-format
@@ -1338,14 +1342,14 @@ msgstr "       %s {--setugids} [-afpg] [cíl]\n"
 msgid ""
 "       %s {--resign} [--rcfile <file:...>] package1 package2 ... packageN\n"
 msgstr ""
-"       %s {--resign} [--rcfile <soubor>] balíèek1 balíèek2 ... balíèekN\n"
+"       %s {--resign} [--rcfile <soubor:...>] balíèek1 balíèek2 ... balíèekN\n"
 
 #: rpmqv.c:466
 #, c-format
 msgid ""
 "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
 msgstr ""
-"       %s {--addsign} [--rcfile <soubor>] balíèek1 balíèek2 ... balíèekN"
+"       %s {--addsign} [--rcfile <soubor:...>] balíèek1 balíèek2 ... balíèekN"
 
 #: rpmqv.c:467
 #, c-format
@@ -1353,7 +1357,8 @@ msgid ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
 "<file:...>]\n"
 msgstr ""
-"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <soubor>]\n"
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
+"<soubor:..>]\n"
 
 #: rpmqv.c:511
 msgid "  All modes support the following options:"
@@ -1365,31 +1370,31 @@ msgstr "   --define '<jméno> <tìlo>'"
 
 #: rpmqv.c:514
 msgid "   --eval '<expr>+'       "
-msgstr "   --eval '<pøíkaz>+'     "
+msgstr "   --eval '<výraz>+'     "
 
 #: rpmqv.c:515
 msgid "print the expansion of macro <expr> to stdout"
-msgstr "vypsat pou¾ívanou verzi rpm"
+msgstr "vypsat expanzi makra <výraz> na standardní výstup"
 
 #: rpmqv.c:516
 msgid "   --pipe <cmd>           "
-msgstr "    --pipe <pøíkaz>       "
+msgstr "   --pipe <pøíkaz>        "
 
 #: rpmqv.c:518
 msgid "   --rcfile <file:...>    "
-msgstr "      --rcfile <soubor>    "
+msgstr "   --rcfile <soubor:...>  "
 
 #: rpmqv.c:519
 msgid "use <file:...> instead of default list of macro files"
-msgstr ""
+msgstr "pou¾ijte <soubor:...> místo implicitního seznamu makro souborù"
 
 #: rpmqv.c:523
 msgid "   --dbpath <dir>         "
-msgstr "      --dbpath <adr>      "
+msgstr "   --dbpath <adr>         "
 
 #: rpmqv.c:525
 msgid "   --root <dir>           "
-msgstr "      --root <adr>        "
+msgstr "   --root <adr>           "
 
 #: rpmqv.c:535
 msgid ""
@@ -1551,7 +1556,7 @@ msgstr "znovu vytvoøit databázi z existujících databázových hlavièek"
 
 #: rpmqv.c:996
 msgid "Use \"--macros <file:...>\" instead.\n"
-msgstr "Pou¾ijte volbu -e nebo --erase.\n"
+msgstr "Pou¾ijte volbu \"--macros <soubor:...>\".\n"
 
 #: rpmqv.c:1071
 msgid "--dbpath given for operation that does not use a database"
@@ -1576,7 +1581,7 @@ msgstr "pro sestavení nezadány ¾ádné tar soubory"
 
 #: build/build.c:114 build/pack.c:370
 msgid "Unable to open temp file.\n"
-msgstr "Nelze otevøít doèasný soubor."
+msgstr "Nelze otevøít doèasný soubor.\n"
 
 #: build/build.c:193
 #, c-format
@@ -1586,12 +1591,12 @@ msgstr "Provádìní(%s): %s\n"
 #: build/build.c:199
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
-msgstr "Spu¹tìní %s selhalo (%s): %s"
+msgstr "Spu¹tìní %s selhalo (%s): %s\n"
 
 #: build/build.c:208
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
-msgstr "Návratový kód chyby ze %s: (%s)"
+msgstr "©patný návratový kód z %s (%s)\n"
 
 #: build/build.c:307
 msgid ""
@@ -1599,55 +1604,58 @@ msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
+"\n"
+"\n"
+"chyby sestavení RPM:\n"
 
 #: build/expression.c:215
 msgid "syntax error while parsing ==\n"
-msgstr "chyba syntaxe pøi zpracování =="
+msgstr "chyba syntaxe pøi zpracování ==\n"
 
 #: build/expression.c:245
 msgid "syntax error while parsing &&\n"
-msgstr "chyba syntaxe pøi zpracování &&"
+msgstr "chyba syntaxe pøi zpracování &&\n"
 
 #: build/expression.c:254
 msgid "syntax error while parsing ||\n"
-msgstr "chyba syntaxe pøi zpracování ||"
+msgstr "chyba syntaxe pøi zpracování ||\n"
 
 #: build/expression.c:294
 msgid "parse error in expression\n"
-msgstr "chyba pøi parsování ve výrazu"
+msgstr "chyba pøi parsování ve výrazu\n"
 
 #: build/expression.c:326
 msgid "unmatched (\n"
-msgstr "nedoplnìná ("
+msgstr "nedoplnìná (\n"
 
 #: build/expression.c:356
 msgid "- only on numbers\n"
-msgstr "- jen s èísly"
+msgstr "- jen na èíslech\n"
 
 #: build/expression.c:372
 msgid "! only on numbers\n"
-msgstr "! jen s èísly"
+msgstr "! jen na èíslech\n"
 
 #: build/expression.c:414 build/expression.c:462 build/expression.c:520
 #: build/expression.c:612
 msgid "types must match\n"
-msgstr "typy musí souhlasit"
+msgstr "typy musí souhlasit\n"
 
 #: build/expression.c:427
 msgid "* / not suported for strings\n"
-msgstr "* / nejsou podporovány pro øetìzce"
+msgstr "* / nejsou podporovány pro øetìzce\n"
 
 #: build/expression.c:478
 msgid "- not suported for strings\n"
-msgstr "- není podporováno pro øetìzce"
+msgstr "- není podporováno pro øetìzce\n"
 
 #: build/expression.c:625
 msgid "&& and || not suported for strings\n"
-msgstr "&& a || není podporováno pro øetìzce"
+msgstr "&& a || není podporováno pro øetìzce\n"
 
 #: build/expression.c:658 build/expression.c:705
 msgid "syntax error in expression\n"
-msgstr "chyba syntaxe ve výrazu"
+msgstr "chyba syntaxe ve výrazu\n"
 
 #: build/files.c:227
 #, c-format
@@ -1657,88 +1665,88 @@ msgstr "TIMECHECK selhal: %s\n"
 #: build/files.c:278 build/files.c:363 build/files.c:538
 #, c-format
 msgid "Missing '(' in %s %s\n"
-msgstr "Chybí '(' v %s %s"
+msgstr "Chybí '(' v %s %s\n"
 
 #: build/files.c:289 build/files.c:483 build/files.c:549
 #, c-format
 msgid "Missing ')' in %s(%s\n"
-msgstr "Chybí ')' v %s(%s"
+msgstr "Chybí ')' v %s(%s\n"
 
 #: build/files.c:327 build/files.c:508
 #, c-format
 msgid "Invalid %s token: %s\n"
-msgstr "Neplatný %s token: %s"
+msgstr "Neplatný %s token: %s\n"
 
 #: build/files.c:379
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
-msgstr "Neprázdný znak následuje %s(): %s"
+msgstr "Následuje neprázdný znak %s(): %s\n"
 
 #: build/files.c:417
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
-msgstr "©patná syntaxe: %s(%s)"
+msgstr "©patná syntaxe: %s(%s)\n"
 
 #: build/files.c:427
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
-msgstr "©patná práva: %s(%s)"
+msgstr "©patná práva spec: %s(%s)\n"
 
 #: build/files.c:439
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
-msgstr "©patná práva adresáøe: %s(%s)"
+msgstr "©patná práva adresáøe: %s(%s)\n"
 
 #: build/files.c:576
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
-msgstr "Neobvyklá délka locale: \"%.*s\" v %%lang(%s)"
+msgstr "Neobvyklá délka locale: \"%.*s\" v %%lang(%s)\n"
 
 #: build/files.c:586
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
-msgstr "Duplicitní locale %.*s v %%lang(%s)"
+msgstr "Duplicitní locale %.*s v %%lang(%s)\n"
 
 #: build/files.c:723
 msgid "Hit limit for %%docdir\n"
-msgstr "Dosa¾en limit pro %%docdir"
+msgstr "Dosa¾en limit pro %%docdir\n"
 
 #: build/files.c:729
 msgid "Only one arg for %%docdir\n"
-msgstr "Jen jeden parametr pro %%docdir"
+msgstr "Jen jeden parametr pro %%docdir\n"
 
 #. We already got a file -- error
 #: build/files.c:757
 #, c-format
 msgid "Two files on one line: %s\n"
-msgstr "Dav soubory na jednom øádku: %s"
+msgstr "Dva soubory na jednom øádku: %s\n"
 
 #: build/files.c:771
 #, c-format
 msgid "File must begin with \"/\": %s\n"
-msgstr "Soubor musí zaèínat \"/\": %s"
+msgstr "Soubor musí zaèínat na \"/\": %s\n"
 
 #: build/files.c:783
 msgid "Can't mix special %%doc with other forms: %s\n"
-msgstr "Nelze míchat speciální %%doc s ostatnímí formáty: %s"
+msgstr "Nelze míchat speciální %%doc s ostatnímí formami: %s\n"
 
 #: build/files.c:949
 #, c-format
 msgid "File listed twice: %s\n"
-msgstr "Soubor uveden dvakrát: %s"
+msgstr "Soubor uveden dvakrát: %s\n"
 
 #: build/files.c:1060
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
-msgstr "Symbolická linka ukazuje na BuildRoot: %s -> %s"
+msgstr "Symbolická linka ukazuje na BuildRoot: %s -> %s\n"
 
 #: build/files.c:1155
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
-msgstr "Soubor nesouhlasí s prefixem (%s): %s"
+msgstr "Soubor nesouhlasí s prefixem (%s): %s\n"
 
 #: build/files.c:1165
 #, c-format
 msgid "File not found: %s\n"
-msgstr "Soubor nenalezen: %s"
+msgstr "Soubor nenalezen: %s\n"
 
 #: build/files.c:1208 build/files.c:1732 build/parsePrep.c:42
 #, c-format
@@ -1753,47 +1761,47 @@ msgstr "Soubor %4d: %07o %s.%s\t %s\n"
 #: build/files.c:1297
 #, c-format
 msgid "File needs leading \"/\": %s\n"
-msgstr "Soubor potøebuje úvodní \"/\": %s"
+msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 
 #: build/files.c:1327
 #, c-format
 msgid "File not found by glob: %s\n"
-msgstr "Soubor nenalezen: %s"
+msgstr "Soubor nenalezen globem: %s\n"
 
 #: build/files.c:1382
 msgid "Could not open %%files file %s: %s\n"
-msgstr "Nemohu otevøít %%files soubor %s: %s"
+msgstr "Nemohu otevøít %%files soubor %s: %s\n"
 
 #: build/files.c:1391 build/pack.c:108
 #, c-format
 msgid "line: %s\n"
-msgstr "øádek: %s"
+msgstr "øádek: %s\n"
 
 #: build/files.c:1720
 #, c-format
 msgid "Bad file: %s: %s\n"
-msgstr "©patný soubor: %s: %s"
+msgstr "©patný soubor: %s: %s\n"
 
 #. XXX this error message is probably not seen.
 #: build/files.c:1789
 #, c-format
 msgid "Couldn't exec %s: %s\n"
-msgstr "Nemohu spustit %s: %s"
+msgstr "Nemohu spustit %s: %s\n"
 
 #: build/files.c:1794
 #, c-format
 msgid "Couldn't fork %s: %s\n"
-msgstr "Nemohu provést fork %s: %s"
+msgstr "Nemohu provést fork %s: %s\n"
 
 #: build/files.c:1876
 #, c-format
 msgid "%s failed\n"
-msgstr "%s selhalo"
+msgstr "%s selhalo\n"
 
 #: build/files.c:1880
 #, c-format
 msgid "failed to write all data to %s\n"
-msgstr "Nemohu zapsat v¹echna data do %s"
+msgstr "Nemohu zapsat v¹echna data do %s\n"
 
 #: build/files.c:2005
 #, c-format
@@ -1803,7 +1811,7 @@ msgstr "Hledám   %s: (pou¾it %s)...\n"
 #: build/files.c:2033 build/files.c:2047
 #, c-format
 msgid "Failed to find %s:\n"
-msgstr "Selhalo vyhledání %s:"
+msgstr "Selhalo vyhledání %s:\n"
 
 #: build/files.c:2160
 #, c-format
@@ -1812,19 +1820,19 @@ msgstr "Zpracovávám soubory: %s-%s-%s\n"
 
 #: build/names.c:42
 msgid "getUname: too many uid's\n"
-msgstr ""
+msgstr "getUname: pøíli¹ mnoho UID\n"
 
 #: build/names.c:68
 msgid "getUnameS: too many uid's\n"
-msgstr ""
+msgstr "getUnameS: pøíli¹ mnoho UID\n"
 
 #: build/names.c:95
 msgid "getGname: too many gid's\n"
-msgstr ""
+msgstr "getGname: pøíli¹ mnoho GID\n"
 
 #: build/names.c:121
 msgid "getGnameS: too many gid's\n"
-msgstr ""
+msgstr "getGnameS: pøíli¹ mnoho GID\n"
 
 #: build/names.c:155
 #, c-format
@@ -1834,47 +1842,47 @@ msgstr "Nemohu získat jméno poèítaèe: %s\n"
 #: build/pack.c:52
 #, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr "vytváøení archívu selhalo na souboru %s: %s"
+msgstr "vytváøení archívu selhalo na souboru %s: %s\n"
 
 #: build/pack.c:74
 #, c-format
 msgid "cpio_copy write failed: %s\n"
-msgstr "zápis cpio_copy selhal: %s"
+msgstr "zápis cpio_copy selhal: %s\n"
 
 #: build/pack.c:81
 #, c-format
 msgid "cpio_copy read failed: %s\n"
-msgstr "ètení cpio_copy selhalo: %s"
+msgstr "ètení cpio_copy selhalo: %s\n"
 
 #: build/pack.c:165
 #, c-format
 msgid "Could not open PreIn file: %s\n"
-msgstr "Nemohu otevøít PreIn soubor: %s"
+msgstr "Nemohu otevøít PreIn soubor: %s\n"
 
 #: build/pack.c:172
 #, c-format
 msgid "Could not open PreUn file: %s\n"
-msgstr "Nemohu otevøít PreUn soubor: %s"
+msgstr "Nemohu otevøít PreUn soubor: %s\n"
 
 #: build/pack.c:179
 #, c-format
 msgid "Could not open PostIn file: %s\n"
-msgstr "Nemohu otevøít PostIn soubor: %s"
+msgstr "Nemohu otevøít PostIn soubor: %s\n"
 
 #: build/pack.c:186
 #, c-format
 msgid "Could not open PostUn file: %s\n"
-msgstr "Nemohu otevøít PostUn soubor: %s"
+msgstr "Nemohu otevøít PostUn soubor: %s\n"
 
 #: build/pack.c:194
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
-msgstr "Nemohu otevøít VerifyScript soubor: %s"
+msgstr "Nemohu otevøít VerifyScript soubor: %s\n"
 
 #: build/pack.c:209
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
-msgstr "Nemohu otevøít soubor se spu¹tí (trigger): %s"
+msgstr "Nemohu otevøít soubor se spu¹tí (trigger): %s\n"
 
 #: build/pack.c:235
 #, c-format
@@ -1898,7 +1906,7 @@ msgstr "readRPM: ètení hlavièky z %s\n"
 
 #: build/pack.c:382
 msgid "Bad CSA data\n"
-msgstr "©patná CSA data"
+msgstr "©patná CSA data\n"
 
 #: build/pack.c:423
 #, c-format
@@ -1913,32 +1921,32 @@ msgstr "Nemohu otevøít %s: %s\n"
 #: build/pack.c:470
 #, c-format
 msgid "Unable to write package: %s\n"
-msgstr "Nemohu zapsat balíèek: %s"
+msgstr "Nemohu zapsat balíèek: %s\n"
 
 #: build/pack.c:485
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
-msgstr "Nemohu otevøít cíl pro podepsání %s: %s"
+msgstr "Nemohu otevøít cíl pro podepsání %s: %s\n"
 
 #: build/pack.c:495
 #, c-format
 msgid "Unable to read header from %s: %s\n"
-msgstr "Nemohu pøeèíst ikonu %s: %s"
+msgstr "Nemohu pøeèíst hlavièku z %s: %s\n"
 
 #: build/pack.c:509
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr "Nemohu zapsat balíèek %s: %s"
+msgstr "Nemohu zapsat hlavièku do %s: %s\n"
 
 #: build/pack.c:519
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
-msgstr "Nemohu pøeèíst ikonu %s: %s"
+msgstr "Nemohu pøeèíst payload z %s: %s\n"
 
 #: build/pack.c:525
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
-msgstr "Nemohu zapsat balíèek %s: %s"
+msgstr "Nemohu zapsat payload do %s: %s\n"
 
 #: build/pack.c:552
 #, c-format
@@ -1958,238 +1966,238 @@ msgstr "nemohu vytvoøit %s: %s\n"
 #: build/parseBuildInstallClean.c:28
 #, c-format
 msgid "line %d: second %s\n"
-msgstr "øádek: %d: druhý %s"
+msgstr "øádek: %d: druhý %s\n"
 
 #: build/parseChangelog.c:121
 msgid "%%changelog entries must start with *\n"
-msgstr "Polo¾ky %%changelog musí zaèínat znakem *"
+msgstr "Polo¾ky v %%changelog musí zaèínat znakem *\n"
 
 #: build/parseChangelog.c:129
 msgid "incomplete %%changelog entry\n"
-msgstr "nekompletní polo¾ka %%changelog"
+msgstr "nekompletní polo¾ka v %%changelog\n"
 
 #: build/parseChangelog.c:144
 msgid "bad date in %%changelog: %s\n"
-msgstr "¹patný datum v %%changelog: %s"
+msgstr "¹patný datum v %%changelog: %s\n"
 
 #: build/parseChangelog.c:149
 msgid "%%changelog not in decending chronological order\n"
-msgstr "%%changelog není seøazen sestupnì podle èasu"
+msgstr "%%changelog není seøazen sestupnì podle èasu\n"
 
 #: build/parseChangelog.c:157 build/parseChangelog.c:168
 msgid "missing name in %%changelog\n"
-msgstr "chybìjící jméno v %%changelog"
+msgstr "chybìjící jméno v %%changelog\n"
 
 #: build/parseChangelog.c:175
 msgid "no description in %%changelog\n"
-msgstr "¾ádný popis v %%changelog"
+msgstr "¾ádný popis v %%changelog\n"
 
 #: build/parseDescription.c:39
 msgid "line %d: Error parsing %%description: %s\n"
-msgstr "øádek %d: Chyba pøi parsování %%description: %s"
+msgstr "øádek %d: Chyba pøi parsování %%description: %s\n"
 
 #: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:187
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
-msgstr "øádek %d: ¹patná volba %s: %s"
+msgstr "øádek %d: ¹patná volba %s: %s\n"
 
 #: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:199
 #, c-format
 msgid "line %d: Too many names: %s\n"
-msgstr "øádek %d: Pøíli¹ mnoho jmen: %s"
+msgstr "øádek %d: Pøíli¹ mnoho jmen: %s\n"
 
 #: build/parseDescription.c:75 build/parseFiles.c:68 build/parseScript.c:208
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
-msgstr "øádek %d: Balíèek neexistuje: %s"
+msgstr "øádek %d: Balíèek neexistuje: %s\n"
 
 #: build/parseDescription.c:87
 #, c-format
 msgid "line %d: Second description\n"
-msgstr "øádek %d: Druhé description"
+msgstr "øádek %d: Druhé description\n"
 
 #: build/parseFiles.c:33
 msgid "line %d: Error parsing %%files: %s\n"
-msgstr "øádek %d: Chyba pøi parsování %%files: %s"
+msgstr "øádek %d: Chyba pøi parsování %%files: %s\n"
 
 #: build/parseFiles.c:75
 msgid "line %d: Second %%files list\n"
-msgstr "øádek %d: Druhý %%files seznam"
+msgstr "øádek %d: Druhý seznam %%files\n"
 
 #: build/parsePreamble.c:211
 #, c-format
 msgid "Architecture is excluded: %s\n"
-msgstr "Architektura je vyøazena: %s"
+msgstr "Architektura je vyøazena: %s\n"
 
 #: build/parsePreamble.c:216
 #, c-format
 msgid "Architecture is not included: %s\n"
-msgstr "Architektura není vyøazena: %s"
+msgstr "Architektura není zahrnuta: %s\n"
 
 #: build/parsePreamble.c:221
 #, c-format
 msgid "OS is excluded: %s\n"
-msgstr "OS je vyøazen: %s"
+msgstr "OS je vyøazen: %s\n"
 
 #: build/parsePreamble.c:226
 #, c-format
 msgid "OS is not included: %s\n"
-msgstr "OS není vyøazen: %s"
+msgstr "OS není zahrnut: %s\n"
 
 #: build/parsePreamble.c:243
 #, c-format
 msgid "%s field must be present in package: %s\n"
-msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s"
+msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s\n"
 
 #: build/parsePreamble.c:270
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
-msgstr "Duplikovaná polo¾ka %s v balíèku: %s"
+msgstr "Duplikovaná polo¾ka %s v balíèku: %s\n"
 
 #: build/parsePreamble.c:324
 #, c-format
 msgid "Unable to open icon %s: %s\n"
-msgstr "Nemohu otevøít ikonu %s: %s"
+msgstr "Nemohu otevøít ikonu %s: %s\n"
 
 #: build/parsePreamble.c:342
 #, c-format
 msgid "Unable to read icon %s: %s\n"
-msgstr "Nemohu pøeèíst ikonu %s: %s"
+msgstr "Nemohu pøeèíst ikonu %s: %s\n"
 
 #: build/parsePreamble.c:355
 #, c-format
 msgid "Unknown icon type: %s\n"
-msgstr "Neznámý typ ikony: %s"
+msgstr "Neznámý typ ikony: %s\n"
 
 #: build/parsePreamble.c:422
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
-msgstr "øádek %d: Poèkozená znaèka: %s"
+msgstr "øádek %d: Poèkozená znaèka: %s\n"
 
 #. Empty field
 #: build/parsePreamble.c:430
 #, c-format
 msgid "line %d: Empty tag: %s\n"
-msgstr "øádek %d: Prázdná znaèka: %s"
+msgstr "øádek %d: Prázdná znaèka: %s\n"
 
 #: build/parsePreamble.c:452 build/parsePreamble.c:459
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
-msgstr "øádek %d: Nepøípustný znak '-' v %s: %s"
+msgstr "øádek %d: Nepøípustný znak '-' v %s: %s\n"
 
 #: build/parsePreamble.c:516 build/parseSpec.c:386
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
-msgstr "BuildRoot nemù¾e být \"/\": %s"
+msgstr "BuildRoot nemù¾e být \"/\": %s\n"
 
 #: build/parsePreamble.c:529
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
-msgstr "øádek %d: Prefixy nesmí konèit znakem \"/\": %s"
+msgstr "øádek %d: Prefixy nesmí konèit znakem \"/\": %s\n"
 
 #: build/parsePreamble.c:541
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
-msgstr "øádek %d: Docdir musí zaèínat '/': %s"
+msgstr "øádek %d: Docdir musí zaèínat na '/': %s\n"
 
 #: build/parsePreamble.c:553
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
-msgstr "øádek %d: Polo¾ka Epoch/Serial musí být èíslo: %s"
+msgstr "øádek %d: Polo¾ka Epoch/Serial musí být èíslo: %s\n"
 
 #: build/parsePreamble.c:593 build/parsePreamble.c:604
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
-msgstr "øádek %d: ©patné èíslo %s: %s\n"
+msgstr "øádek %d: ©patné urèení %s: %s\n"
 
 #: build/parsePreamble.c:630
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
-msgstr "øádek %d: ©patný formát BuildArchitecture: %s"
+msgstr "øádek %d: ©patný formát BuildArchitecture: %s\n"
 
 #: build/parsePreamble.c:639
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
-msgstr "Interní chyba: ©patná znaèka: %d"
+msgstr "Interní chyba: ©patná znaèka: %d\n"
 
 #: build/parsePreamble.c:783
 #, c-format
 msgid "Bad package specification: %s\n"
-msgstr "¹patná specifikace balíèku: %s"
+msgstr "©patná specifikace balíèku: %s\n"
 
 #: build/parsePreamble.c:789
 #, c-format
 msgid "Package already exists: %s\n"
-msgstr "Balíèek ji¾ existuje: %s"
+msgstr "Balíèek ji¾ existuje: %s\n"
 
 #: build/parsePreamble.c:815
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
-msgstr "øádek %d: Neznámá znaèka: %s"
+msgstr "øádek %d: Neznámá znaèka: %s\n"
 
 #: build/parsePreamble.c:837
 msgid "Spec file can't use BuildRoot\n"
-msgstr "Spec soubor nemù¾e pou¾ít BuildRoot"
+msgstr "Spec soubor nemù¾e pou¾ít BuildRoot\n"
 
 #: build/parsePrep.c:37
 #, c-format
 msgid "Bad source: %s: %s\n"
-msgstr "©patný zdroj: %s: %s"
+msgstr "©patný zdrojový soubor: %s: %s\n"
 
 #: build/parsePrep.c:75
 #, c-format
 msgid "No patch number %d\n"
-msgstr "Patch èíslo %d neexistuje"
+msgstr "Patch èíslo %d neexistuje\n"
 
 #: build/parsePrep.c:165
 #, c-format
 msgid "No source number %d\n"
-msgstr "Zdroj èíslo %d neexistuje"
+msgstr "Zdroj èíslo %d neexistuje\n"
 
 #: build/parsePrep.c:185
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
-msgstr "Nemohu naèíst nosource %s: %s"
+msgstr "Nemohu naèíst nosource %s: %s\n"
 
 #: build/parsePrep.c:279
 msgid "Error parsing %%setup: %s\n"
-msgstr "Chyba pøi parsování %%setup: %s"
+msgstr "Chyba pøi parsování %%setup: %s\n"
 
 #: build/parsePrep.c:294
 msgid "line %d: Bad arg to %%setup %c: %s\n"
-msgstr "øádek %d: ©patný parametr v %%setup %c: %s"
+msgstr "øádek %d: ©patný parametr v %%setup %c: %s\n"
 
 #: build/parsePrep.c:312
 msgid "line %d: Bad %%setup option %s: %s\n"
-msgstr "øádek %d: ©patná volba v %%setup %s: %s"
+msgstr "øádek %d: ©patná volba v %%setup %s: %s\n"
 
 #: build/parsePrep.c:446
 msgid "line %d: Need arg to %%patch -b: %s\n"
-msgstr "øádek %d: K %%patch -b potøebuji parametr: %s"
+msgstr "øádek %d: K %%patch -b potøebuji parametr: %s\n"
 
 #: build/parsePrep.c:455
 msgid "line %d: Need arg to %%patch -z: %s\n"
-msgstr "øádek %d: K %%patch -z potøebuji parametr: %s"
+msgstr "øádek %d: K %%patch -z potøebuji parametr: %s\n"
 
 #: build/parsePrep.c:467
 msgid "line %d: Need arg to %%patch -p: %s\n"
-msgstr "øádek %d: K %%patch -p potøebuji parametr: %s"
+msgstr "øádek %d: K %%patch -p potøebuji parametr: %s\n"
 
 #: build/parsePrep.c:474
 msgid "line %d: Bad arg to %%patch -p: %s\n"
-msgstr "øádek %d: ©patný parametr pro %%patch -p: %s"
+msgstr "øádek %d: ©patný parametr pro %%patch -p: %s\n"
 
 #: build/parsePrep.c:481
 msgid "Too many patches!\n"
-msgstr "Pøíli¹ mnoho patchù!"
+msgstr "Pøíli¹ mnoho patchù!\n"
 
 #: build/parsePrep.c:485
 msgid "line %d: Bad arg to %%patch: %s\n"
-msgstr "øádek %d: ©patný parametr pro %%patch: %s"
+msgstr "øádek %d: ©patný parametr pro %%patch: %s\n"
 
 #: build/parsePrep.c:521
 msgid "line %d: second %%prep\n"
-msgstr "øádek %d: druhý %%prep"
+msgstr "øádek %d: druhý %%prep\n"
 
 #: build/parseReqs.c:100
 #, c-format
@@ -2197,47 +2205,47 @@ msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "øádek %d: Polo¾ky v závislostech musí zaèínat alfanumerickým znakem, '_' "
-"nebo '/': %s"
+"nebo '/': %s\n"
 
 #: build/parseReqs.c:111
 #, c-format
 msgid "line %d: File name not permitted: %s\n"
-msgstr "øádek %d: Jméno souboru není dovoleno: %s"
+msgstr "øádek %d: Jméno souboru není dovoleno: %s\n"
 
 #: build/parseReqs.c:143
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
-msgstr "øádek %d: Jméno s verzí není dovoleno: %s"
+msgstr "øádek %d: Jméno s verzí není dovoleno: %s\n"
 
 #: build/parseReqs.c:173
 #, c-format
 msgid "line %d: Version required: %s\n"
-msgstr "øádek %d: Vy¾adována verze: %s"
+msgstr "øádek %d: Vy¾adována verze: %s\n"
 
 #: build/parseScript.c:153
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
-msgstr "øádek %d: spou¹tì (triggery) musí mít --: %s"
+msgstr "øádek %d: spou¹tì (triggery) musí mít --: %s\n"
 
 #: build/parseScript.c:163 build/parseScript.c:224
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
-msgstr "øádek %d: Chyba pøi parsování %s: %s"
+msgstr "øádek %d: Chyba pøi parsování %s: %s\n"
 
 #: build/parseScript.c:174
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
-msgstr "øádek %d: jméno skriptu musí zaèínat '/': %s"
+msgstr "øádek %d: jméno skriptu musí zaèínat na '/': %s\n"
 
 #: build/parseScript.c:216
 #, c-format
 msgid "line %d: Second %s\n"
-msgstr "øádek %d: Druhý %s"
+msgstr "øádek %d: Druhý %s\n"
 
 #: build/parseSpec.c:136
 #, c-format
 msgid "line %d: %s\n"
-msgstr "øádek %d: %s"
+msgstr "øádek %d: %s\n"
 
 #. XXX Fstrerror
 #: build/parseSpec.c:185
@@ -2247,32 +2255,32 @@ msgstr "Nemohu otevøít %s: %s\n"
 
 #: build/parseSpec.c:197
 msgid "Unclosed %%if\n"
-msgstr "Neuzavøený %%if"
+msgstr "Neuzavøený %%if\n"
 
 #: build/parseSpec.c:269
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
-msgstr "%s:%d: parseExpressionBoolean vrátil %d"
+msgstr "%s:%d: parseExpressionBoolean vrátil %d\n"
 
 #: build/parseSpec.c:278
 msgid "%s:%d: Got a %%else with no %%if\n"
-msgstr "%s:%d: %%else bez poèíteèního if"
+msgstr "%s:%d: %%else bez poèíteèního %%if\n"
 
 #: build/parseSpec.c:290
 msgid "%s:%d: Got a %%endif with no %%if\n"
-msgstr "%s:%d: %%endif bez poèáteèního if"
+msgstr "%s:%d: %%endif bez poèáteèního %%if\n"
 
 #: build/parseSpec.c:304 build/parseSpec.c:313
 msgid "malformed %%include statement\n"
-msgstr "po¹kozený pøíkaz %%include"
+msgstr "po¹kozený pøíkaz %%include\n"
 
 #: build/parseSpec.c:493
 msgid "No buildable architectures\n"
-msgstr "®ádné architektury pro sestavení"
+msgstr "®ádné dostupné architektury pro sestavení\n"
 
 #: build/parseSpec.c:548
 msgid "Package has no %%description: %s\n"
-msgstr "Balíèek nemá ¾ádné %%description: %s"
+msgstr "Balíèek nemá ¾ádné %%description: %s\n"
 
 #: build/spec.c:41
 #, c-format
@@ -2282,12 +2290,12 @@ msgstr "archive = %s, fs = %s\n"
 #: build/spec.c:228
 #, c-format
 msgid "line %d: Bad number: %s\n"
-msgstr "øádek %d: ©patné èíslo: %s"
+msgstr "øádek %d: ©patné èíslo: %s\n"
 
 #: build/spec.c:234
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
-msgstr "øádek %d: ©patné èíslo %s: %d"
+msgstr "øádek %d: ©patné èíslo %s: %d\n"
 
 #: build/spec.c:292
 #, c-format
@@ -2336,7 +2344,7 @@ msgstr "Chybìjící hardlink"
 
 #: lib/cpio.c:1270
 msgid "MD5 sum mismatch"
-msgstr ""
+msgstr "MD5 souèet nesouhlasí"
 
 #: lib/cpio.c:1271
 msgid "Internal error"
@@ -2399,7 +2407,7 @@ msgstr "%s: %-45s ANO (db poskytuje)\n"
 #: lib/depends.c:1145
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
-msgstr "%s: %-45s ANO (db soubory)\n"
+msgstr "%s: %-45s ANO (db balíèek)\n"
 
 #: lib/depends.c:1161
 #, c-format
@@ -2426,39 +2434,39 @@ msgstr "balíèek %s koliduje: %s\n"
 #: lib/depends.c:1523
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
-msgstr "odstraòuji \"%s\" z indexu %s.\n"
+msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
 #: lib/depends.c:1662
 msgid "========== recording tsort relations\n"
-msgstr ""
+msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
 #: lib/depends.c:1709
 msgid "========== tsorting packages\n"
-msgstr ""
+msgstr "========== tøídìní balíèkù\n"
 
 #: lib/depends.c:1754
 msgid "========== successors only (presentation order)\n"
-msgstr ""
+msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
 #: lib/depends.c:1803
 msgid "LOOP:\n"
-msgstr ""
+msgstr "SMYÈKA:\n"
 
 #: lib/depends.c:1834
 msgid "========== continuing tsort ...\n"
-msgstr ""
+msgstr "========== pokraèuje tsort ...\n"
 
 #: lib/db1.c:92 lib/db2.c:112 lib/db3.c:456
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
-msgstr "db%d error(%d)"
+msgstr "db%d chyba (%d) z %s: %s\n"
 
 #: lib/db1.c:95 lib/db2.c:115 lib/db3.c:459
 #, c-format
 msgid "db%d error(%d): %s\n"
-msgstr "db%d error(%d)"
+msgstr "db%d chyba (%d): %s\n"
 
 #: lib/db1.c:387
 #, c-format
@@ -2473,7 +2481,7 @@ msgstr "odstranìn db soubor    %s\n"
 #: lib/db1.c:421
 #, c-format
 msgid "bad db file %s\n"
-msgstr "¹patný db soubor %s"
+msgstr "¹patný db soubor %s\n"
 
 #: lib/db1.c:426
 #, c-format
@@ -2484,7 +2492,7 @@ msgstr "otevírám db soubor     %s mode 0x%x\n"
 #: lib/db1.c:449
 #, c-format
 msgid "cannot get %s lock on database\n"
-msgstr "nemohu zamknout databázi %s"
+msgstr "nemohu vytvoøit zámek %s na databázi\n"
 
 #: lib/db1.c:450 lib/db3.c:1120
 msgid "exclusive"
@@ -2522,7 +2530,7 @@ msgstr "otevøen db index       %s/%s(%s) %s mode=0x%x\n"
 #: lib/db3.c:268
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored\n"
-msgstr "dbiSetConfig: ignorována neznámá db volba: \"%s\"\n"
+msgstr "neznámá db volba: \"%s\" ignorována\n"
 
 #: lib/db3.c:297
 #, c-format
@@ -2596,17 +2604,17 @@ msgstr "(není èíslo)"
 #: lib/fs.c:69
 #, c-format
 msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl() nevrátil velikost polo¾ky fugger: %s"
+msgstr "mntctl() nevrátil velikost: %s\n"
 
 #: lib/fs.c:84
 #, c-format
 msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() nevrátil velikost polo¾ky fugger: %s"
+msgstr "mntctl() nevrátil pøípojné body: %s\n"
 
 #: lib/fs.c:104 lib/fs.c:184 lib/fs.c:287
 #, c-format
 msgid "failed to stat %s: %s\n"
-msgstr "nemohu zjistit stav %s: %s"
+msgstr "nemohu zjistit stav %s: %s\n"
 
 #: lib/fs.c:147
 msgid "getting list of mounted filesystems\n"
@@ -2620,12 +2628,12 @@ msgstr "nemohu otevøít %s: %s\n"
 #: lib/fs.c:309
 #, c-format
 msgid "file %s is on an unknown device\n"
-msgstr "soubor %s je na neznámém zaøízení"
+msgstr "soubor %s je na neznámém zaøízení\n"
 
 #. This should not be allowed
 #: lib/header.c:172
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "Poèet RPM_STRING_TYPE pro grabData() musí být 1.\n"
+msgstr "Poèet dataLength() RPM_STRING_TYPE musí být 1.\n"
 
 #: lib/header.c:207 lib/header.c:1015 lib/install.c:365
 #, c-format
@@ -2720,12 +2728,12 @@ msgstr "   soubor: %s akce: %s\n"
 #: lib/install.c:215
 #, c-format
 msgid "user %s does not exist - using root\n"
-msgstr "u¾ivatel %s neexistuje - pou¾it u¾ivatel root"
+msgstr "u¾ivatel %s neexistuje - pou¾it u¾ivatel root\n"
 
 #: lib/install.c:223
 #, c-format
 msgid "group %s does not exist - using root\n"
-msgstr "skupina %s neexistuje - pou¾ita skupina root"
+msgstr "skupina %s neexistuje - pou¾ita skupina root\n"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
@@ -2733,7 +2741,7 @@ msgstr "skupina %s neexistuje - pou¾ita skupina root"
 #: lib/install.c:651
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
-msgstr "rozbalování archívu selhalo %s%s: %s"
+msgstr "rozbalování archívu selhalo %s%s: %s\n"
 
 #: lib/install.c:652
 msgid " on file "
@@ -2746,12 +2754,12 @@ msgstr "instaluji zdrojový balíèek\n"
 #: lib/install.c:721
 #, c-format
 msgid "cannot create sourcedir %s\n"
-msgstr "nemohu vytvoøir adresáø pro zdrojové soubory: %s"
+msgstr "nemohu vytvoøir adresáø pro zdrojové soubory: %s\n"
 
 #: lib/install.c:728 lib/install.c:759
 #, c-format
 msgid "cannot write to %s\n"
-msgstr "nemohu zapsat do %s"
+msgstr "nemohu zapsat do %s\n"
 
 #: lib/install.c:732
 #, c-format
@@ -2761,7 +2769,7 @@ msgstr "zdrojové soubory v: %s\n"
 #: lib/install.c:752
 #, c-format
 msgid "cannot create specdir %s\n"
-msgstr "nemohu vytvoøit adresáø pro spec soubory: %s"
+msgstr "nemohu vytvoøit adresáø pro spec soubory: %s\n"
 
 #: lib/install.c:763
 #, c-format
@@ -2770,7 +2778,7 @@ msgstr "spec soubor v: %s\n"
 
 #: lib/install.c:796 lib/install.c:825
 msgid "source package contains no .spec file\n"
-msgstr "zdrojový balíèek neobsahuje spec soubor"
+msgstr "zdrojový balíèek neobsahuje .spec soubor\n"
 
 #: lib/install.c:843
 #, c-format
@@ -2780,11 +2788,11 @@ msgstr "pøejmenovávám %s na %s\n"
 #: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
-msgstr "pøejmenování %s na %s selhalo: %s"
+msgstr "pøejmenování %s na %s selhalo: %s\n"
 
 #: lib/install.c:935
 msgid "source package expected, binary found\n"
-msgstr "oèekávám balíèek se zdrojovými kódy, nalezen v¹ak binární"
+msgstr "oèekávám balíèek se zdrojovými kódy, nalezen v¹ak binární\n"
 
 #: lib/install.c:979
 #, c-format
@@ -2801,17 +2809,17 @@ msgstr "spou¹tím pøípadný pøedinstalaèní skript\n"
 
 #: lib/install.c:1036
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
-msgstr "pøeskakuji %s - pøenos selhal - %s\n"
+msgstr "pøeskakuji instalaci %s-%s-%s - %%pre scriptlet selhal rc %d\n"
 
 #: lib/install.c:1069
 #, c-format
 msgid "%s created as %s\n"
-msgstr "varování: %s vytvoøeno jako %s"
+msgstr "%s vytvoøen jako %s\n"
 
 #: lib/install.c:1105
 #, c-format
 msgid "%s saved as %s\n"
-msgstr "varování: %s ulo¾eno jako %s"
+msgstr "%s ulo¾eno jako %s\n"
 
 #: lib/install.c:1199
 msgid "running postinstall scripts (if any)\n"
@@ -2820,104 +2828,109 @@ msgstr "spou¹tím pøípadný postinstalaèní skript\n"
 #: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
 #, c-format
 msgid "error creating temporary file %s\n"
-msgstr "chyba pøi vytváøení doèasného souboru %s"
+msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
 #: lib/package.c:88
 msgid "packaging version 1 is not supported by this version of RPM\n"
-msgstr "práce s balíèky verze 1 není podporována touto verzí RPM"
+msgstr "práce s balíèky verze 1 není podporována touto verzí RPM\n"
 
 #: lib/package.c:143
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
-msgstr "tato verze RPM podporuje práci s balíèky s hlavním (major) èíslem <= 4"
+msgstr "tato verze RPM podporuje práci s balíèky s verzí <= 4\n"
 
 #: lib/poptBT.c:94
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
-msgstr "buildroot ji¾ byl nastaven"
+msgstr "buildroot byl ji¾ nastaven, ignoruji %s\n"
 
 #: lib/poptBT.c:119
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "pøíprava (rozbalí zdroje a aplikuje záplaty)"
+msgstr ""
+"sestavení podle %prep (rozbalení zdrojových kódù a aplikace patchù) podle "
+"<spec_soubor>"
 
 #: lib/poptBT.c:120 lib/poptBT.c:123 lib/poptBT.c:126 lib/poptBT.c:129
 #: lib/poptBT.c:132 lib/poptBT.c:135 lib/poptBT.c:138
 msgid "<specfile>"
-msgstr ""
+msgstr "<spec_soubor>"
 
 #: lib/poptBT.c:122
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "provádím %%prep èást podle spec souboru"
+msgstr "sestavení podle %build (%prep, pak kompilace) podle <spec_soubor>"
 
 #: lib/poptBT.c:125
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "provádím %%install èást podle spec souboru"
+msgstr ""
+"sestavení podle %install (%prep, %build, pak install) podle <spec_soubor>"
 
 #: lib/poptBT.c:128
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "kontrola èásti %%files ve spec souboru"
+msgstr "kontrola èásti %files ve <spec_soubor>"
 
 #: lib/poptBT.c:131
 msgid "build source and binary packages from <specfile>"
-msgstr "vytvoøení zdrojového a binárního balíèku podle spec souboru"
+msgstr "vytvoøení zdrojového a binárního balíèku podle <spec_soubor>"
 
 #: lib/poptBT.c:134
 msgid "build binary package only from <specfile>"
-msgstr "vytvoøení binárního balíèku podle spec souboru"
+msgstr "vytvoøení pouze binárního balíèku podle <spec_soubor>"
 
 #: lib/poptBT.c:137
 msgid "build source package only from <specfile>"
-msgstr "vytvoøení zdrojového balíèku podle spec souboru"
+msgstr "vytvoøení zdrojového balíèku podle <spec_soubor>"
 
 #: lib/poptBT.c:141
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr "pøíprava (rozbalí zdroje a aplikuje záplaty)"
+msgstr ""
+"sestavení podle %prep (rozbalení zdrojových kódù, aplikace patchù) z "
+"<tar_soubor>"
 
 #: lib/poptBT.c:142 lib/poptBT.c:145 lib/poptBT.c:148 lib/poptBT.c:151
 #: lib/poptBT.c:154 lib/poptBT.c:157 lib/poptBT.c:160
 msgid "<tarball>"
-msgstr ""
+msgstr "<tar_soubor>"
 
 #: lib/poptBT.c:144
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "provádím %%prep èást z tar souboru"
+msgstr "sestavení podle %build (%prep, pak kompilace) z <tar_soubor>"
 
 #: lib/poptBT.c:147
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "provádím %%install èást z tar souboru"
+msgstr "sestavení podle %%install (%prep, %build, pak install) z <tar_soubor>"
 
 #: lib/poptBT.c:150
 #, c-format
 msgid "verify %files section from <tarball>"
-msgstr "kontrola èásti %%files z tar souboru"
+msgstr "kontrola èásti %files z <tar_soubor>"
 
 #: lib/poptBT.c:153
 msgid "build source and binary packages from <tarball>"
-msgstr "vytvoøení zdrojového a binárního balíèku z tar souboru"
+msgstr "vytvoøení zdrojového a binárního balíèku z <tar_soubor>"
 
 #: lib/poptBT.c:156
 msgid "build binary package only from <tarball>"
-msgstr "vytvoøení binárního balíèku z tar souboru"
+msgstr "vytvoøení pouze binárního balíèku z <tar_soubor>"
 
 #: lib/poptBT.c:159
 msgid "build source package only from <tarball>"
-msgstr "vytvoøení zdrojového balíèku z tar souboru"
+msgstr "vytvoøení pouze zdrojového balíèku z <tar_soubor>"
 
 #: lib/poptBT.c:163
 msgid "build binary package from <source package>"
-msgstr "vytvoøení binárního balíèku ze zdrojového"
+msgstr "vytvoøení binárního balíèku ze <zdrojový balíèek>"
 
 #: lib/poptBT.c:164 lib/poptBT.c:167
 msgid "<source package>"
-msgstr "¾ádné balíèky\n"
+msgstr "<zdrojový balíèek>"
 
 #: lib/poptBT.c:166
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr "provádím %%install èást ze zdrojového balíèku"
+msgstr "sestavení podle %%install (vèetnì %prep, %build) ze <zdrojový balíèek>"
 
 #: lib/poptBT.c:170
 msgid "override build root"
@@ -2925,7 +2938,7 @@ msgstr "build root pøedefinován"
 
 #: lib/poptBT.c:176
 msgid "ignore ExcludeArch: directives from spec file"
-msgstr ""
+msgstr "ignorovat ExcludeArch: direktivy ve spec souboru"
 
 #: lib/poptBT.c:178
 msgid "do not execute any stages of the build"
@@ -2933,11 +2946,11 @@ msgstr "nespou¹tìt ¾ádné etapy vytváøení balíèku"
 
 #: lib/poptBT.c:182
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
+msgstr "generovat hlavièky balíèkù kompatibilní s RPM verze 2 a 3"
 
 #: lib/poptBT.c:185
 msgid "do not accept i18N msgstr's from specfile"
-msgstr "ignorovat I18N zprávy ve spec souboru"
+msgstr "neakceptovat i18N popisky ze spec souboru"
 
 #: lib/poptBT.c:189
 msgid "remove specfile when done"
@@ -2949,11 +2962,11 @@ msgstr "cílová platforma pøedefinována"
 
 #: lib/poptBT.c:197
 msgid "lookup i18N strings in specfile catalog"
-msgstr "vyhledat I18N øetìzce katalogu spec souboru"
+msgstr "vyhledat i18N øetìzce ve specfile katalogu"
 
 #: lib/poptQV.c:70
 msgid "query/verify package(s) owning file"
-msgstr "dotaz/ovìøení balíèku vlastnícího <soubor>"
+msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 
 #: lib/poptQV.c:72
 msgid "query/verify package(s) in group"
@@ -2961,7 +2974,7 @@ msgstr "dotaz/ovìøení balíèkù ve skupinì"
 
 #: lib/poptQV.c:74
 msgid "query/verify a package file (i.e. a binary *.rpm file)"
-msgstr "dotaz/ovìøení souboru s balíèkem"
+msgstr "dotaz/ovìøení souboru s balíèkem (tj. binárního RPM souboru)"
 
 #: lib/poptQV.c:76
 msgid "rpm query mode"
@@ -4029,7 +4042,7 @@ msgstr "Cílový buffer pøetekl\n"
 #: rpmio/macro.c:1502 rpmio/macro.c:1508
 #, c-format
 msgid "File %s: %s\n"
-msgstr "Soubor %s: %s"
+msgstr "Soubor %s: %s\n"
 
 #: rpmio/macro.c:1511
 #, c-format
