@@ -3901,11 +3901,12 @@ msgid "running postuninstall script (if any)\n"
 msgstr "выполняется скрипт postuninstall (если есть)\n"
 
 #: lib/uninstall.c:436
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
-msgstr "ошибка выполнения скрипта %s из %s-%s-%s, код возврата waitpid %s\n"
+msgstr ""
+"ошибка получения кода возврата скрипта %s из %s-%s-%s, waitpid вернул %s\n"
 
 #: lib/uninstall.c:443
 #, c-format
