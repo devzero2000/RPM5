@@ -569,6 +569,13 @@ package or when debugging this package.\
 # XXX	Note: escaped %% for use in headerSprintf()
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
+#	The default transaction color. This value is a set of bits to
+#	determine file and dependency affinity for this arch.
+#		0	uncolored (i.e. use only arch as install hint)
+#		1	Elf32 permitted
+#		2	Elf64 permitted
+%_transaction_color	@RPMCANONCOLOR@
+
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-redhat location. The macro is usually defined in
 #	/etc/rpm/macros.solve, installed with the rpmdb-redhat package.
