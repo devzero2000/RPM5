@@ -858,8 +858,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
 	    /* Set "rpm_script_t" identity for scriptlets under selinux. */
 	    if (rpmtsSELinuxEnabled(ts) == 1) {	
-		/* Set rpm_script_t for /bin/sh, default /sbin/ldconfig et al */
-		xx = switchExecType(psm, "rpm_script_t");
+		/* Set "ldconfig_t" for /sbin/ldconfig else "rpm_script_t" */
+		xx = switchExecType(psm,
+	(!strcmp(argv[0],"/sbin/ldconfig") ? "ldconfig_t" : "rpm_script_t"));
 		if (xx != 0)
 		    break;
 	    }
