@@ -344,6 +344,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Mar 13 2001 Jeff Johnson <jbj@redhat.com>
+- map i686-like (i.e. w/o CMOV) platforms to better alternatives.
+
 * Mon Mar 12 2001 Jeff Johnson <jbj@redhat.com>
 - fix: adjust for libio breakage in Red Hat 5.x with glibc-2.0.7-29.4.
 

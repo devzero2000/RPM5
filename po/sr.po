@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-03-12 13:20-0500\n"
+"POT-Creation-Date: 2001-03-13 07:55-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -3784,12 +3784,12 @@ msgstr "nedostaje arhitektura za %s na %s:%d"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "lo¹a opcija '%s' na %s:%d"
 
-#: lib/rpmrc.c:1198
+#: lib/rpmrc.c:1321
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1199
+#: lib/rpmrc.c:1322
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

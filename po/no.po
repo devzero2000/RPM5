@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-12 13:20-0500\n"
+"POT-Creation-Date: 2001-03-13 07:55-0500\n"
 "PO-Revision-Date: 2001-01-24 00:05+01:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -3611,12 +3611,12 @@ msgstr "manglende arkitektur for %s ved %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "ugyldig flagg '%s' ved %s:%d\n"
 
-#: lib/rpmrc.c:1198
+#: lib/rpmrc.c:1321
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1199
+#: lib/rpmrc.c:1322
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

@@ -134,6 +134,7 @@
 	- (db1) plug largish memory leak in simulated interface for falloc.c.
 	- remove mozilla dependency white out, no longer needed.
 	- fix: adjust for libio breakage in Red Hat 5.x with glibc-2.0.7-29.4.
+	- map i686-like (i.e. w/o CMOV) platforms to better alternatives.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

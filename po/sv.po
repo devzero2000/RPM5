@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-12 13:20-0500\n"
+"POT-Creation-Date: 2001-03-13 07:55-0500\n"
 "PO-Revision-Date: 2001-02-12 10:15+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3639,12 +3639,12 @@ msgstr "arkitektur saknas för %s vid %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "okänd flagga \"%s\" vid %s:%d\n"
 
-#: lib/rpmrc.c:1198
+#: lib/rpmrc.c:1321
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Okänt system: %s\n"
 
-#: lib/rpmrc.c:1199
+#: lib/rpmrc.c:1322
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
 
