@@ -289,6 +289,8 @@
 	- rpm-4.1 release.
 	- fix: make sure that psm->child pid is set before SIGCHLD is handled.
 	- fix: use size_t consistently, avoid segfault on ia64.
+	- use %%{_lib} for libraries.
+	- fix: permit build with --disable-nls (#76258).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

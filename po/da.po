@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-08 13:05-0400\n"
+"POT-Creation-Date: 2002-10-10 12:18-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -3121,7 +3121,7 @@ msgstr "ekskluderer kataloget %s\n"
 #.
 #: lib/transaction.c:1021
 #, c-format
-msgid "sanity checking %d elments\n"
+msgid "sanity checking %d elements\n"
 msgstr ""
 
 #. ===============================================

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-08 13:05-0400\n"
+"POT-Creation-Date: 2002-10-10 12:18-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3302,7 +3302,7 @@ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 #.
 #: lib/transaction.c:1021
 #, c-format
-msgid "sanity checking %d elments\n"
+msgid "sanity checking %d elements\n"
 msgstr ""
 
 #. ===============================================

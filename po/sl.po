@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-08 13:05-0400\n"
+"POT-Creation-Date: 2002-10-10 12:18-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3165,7 +3165,7 @@ msgstr "izkljuèevanje imenika %s\n"
 #.
 #: lib/transaction.c:1021
 #, c-format
-msgid "sanity checking %d elments\n"
+msgid "sanity checking %d elements\n"
 msgstr ""
 
 #. ===============================================
