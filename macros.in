@@ -281,7 +281,9 @@
 #%vendor
 
 #==============================================================================
-# ---- Package version macro.
+# ---- Build configuration macros.
+#
+# Package version macro.
 #	The type of package to produce, for compatibility with legacy
 #	versions of rpm.
 #
@@ -292,6 +294,12 @@
 # rpmlead, so there's little need to use any value greater than 30005.
 #
 %_package_version	30005
+
+#
+# Should missing %doc files terminate a build?
+#
+# Note: The default value is 0 for legacy compatibility.
+%_missing_doc_files_terminate_build	0
 
 #==============================================================================
 # ---- Database configuration macros.
