@@ -1163,8 +1163,6 @@ exit:
     }
     if (fileMem)
 	freeFileMemory(fileMem);
-    if (rc)
-	headerFree(h);
     if (oldH)
 	headerFree(oldH);
     return rc;
