@@ -1,3 +1,10 @@
+#ifndef RPMPYTHON_HEADER
+#define RPMPYTHON_HEADER
+
+/** \ingroup python
+ * \file python/header-py.h
+ */
+
 /** \ingroup python
  */
 typedef struct hdrObject_s hdrObject;
@@ -20,3 +27,5 @@ PyObject * rhnLoad(PyObject * self, PyObject * args);
 PyObject * hdrLoad(PyObject * self, PyObject * args);
 PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args);
 long tagNumFromPyObject (PyObject *item);
+
+#endif

@@ -1,3 +1,7 @@
+/** \ingroup python
+ * \file python/header-py.c
+ */
+
 #include "Python.h"
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
