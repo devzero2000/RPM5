@@ -46,6 +46,8 @@ rpmdbMINext(rpmdbMIObject * s, PyObject * args) {
     Header h;
     hdrObject * ho;
 
+    if (!PyArg_ParseTuple (args, "")) return NULL;
+
     h = rpmdbNextIterator(s->mi);
     if (!h) {
 	Py_INCREF(Py_None);
@@ -59,8 +61,35 @@ rpmdbMINext(rpmdbMIObject * s, PyObject * args) {
 
 /** \ingroup python
  */
+static PyObject *
+rpmdbMIpattern(rpmdbMIObject * s, PyObject * args) {
+    PyObject *index = NULL;
+    int type;
+    char * pattern;
+    int tag;
+    
+    if (!PyArg_ParseTuple(args, "Ois", &index, &type, &pattern))
+	return NULL;
+
+    if (index == NULL)
+	tag = 0;
+    else if ((tag = tagNumFromPyObject (index)) == -1) {
+	PyErr_SetString(PyExc_TypeError, "unknown tag type");
+	return NULL;
+    }
+
+    rpmdbSetIteratorRE(s->mi, tag, type, pattern);
+
+    Py_INCREF (Py_None);
+    return Py_None;
+    
+}
+
+/** \ingroup python
+ */
 static struct PyMethodDef rpmdbMIMethods[] = {
 	{"next",	    (PyCFunction) rpmdbMINext,	1 },
+	{"pattern",	    (PyCFunction) rpmdbMIpattern, 1 },
 	{NULL,		NULL}		/* sentinel */
 };
 
@@ -385,7 +414,7 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
     ho = createHeaderObject(h);
     headerFree(h);
 
-    return createHeaderObject(h);
+    return ho;
 }
 
 /**
