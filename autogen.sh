@@ -32,9 +32,9 @@ fi
 #if [ -d libelf ]; then
 #    (echo "--- libelf"; cd libelf; ./autogen.sh --noconfigure "$@")
 #fi
-#if [ -d elfutils ]; then
-#    (echo "--- elfutils"; cd elfutils; ./autogen.sh --noconfigure "$@")
-#fi
+if [ -d elfutils ]; then
+    (echo "--- elfutils"; cd elfutils; ./autogen.sh --noconfigure "$@")
+fi
 if [ -d file ]; then
     (echo "--- file"; cd file; ./autogen.sh --noconfigure "$@")
 fi

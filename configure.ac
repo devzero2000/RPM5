@@ -16,26 +16,31 @@ dnl XXX AM_MAINTAINER_MODE
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr"
 
-# echo "
-# ****************************************************************************
-# *                                                                          *
-# *                   *** WARNING WARNING WARNING ***                        *
-# *                                                                          *
-# * This is source code from the development branch of rpm-4.1.              *
-# *                                                                          *
-# * If you want the "production" rpm-4.0.4 code, then you should either use  *
-# * an rpm-4.0.4 src.rpm, or, if using a CVS checkout, do the following:     *
-# *                                                                          *
-# *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
-# *       (no password, just carriage return)                                *
-# *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
-# *       cd rpm                                                             *
-# *       cvs up -r rpm-4_0                                                  *
-# *                                                                          *
-# ****************************************************************************
-# 
-# "
-# sleep 10
+dnl echo "
+dnl ****************************************************************************
+dnl *                                                                          *
+dnl *                   *** WARNING WARNING WARNING ***                        *
+dnl *                                                                          *
+dnl * This is source code from the development branch of rpm-4.2.              *
+dnl *                                                                          *
+dnl * If you want the "production" rpm-4.0.4 or rpm-4.1 code, then you should  *
+dnl * either use an rpm-4.0.4 or rpm-4.1 src.rpm. Alternatively, if using a    *
+dnl * CVS checkout, do the following:                                          *
+dnl *                                                                          *
+dnl *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
+dnl *       (no password, just carriage return)                                *
+dnl *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
+dnl *       cd rpm                                                             *
+dnl *                                                                          *
+dnl * Here's the rpm-4_1 branch:                                               *
+dnl *       cvs up -r rpm-4_1                                                  *
+dnl *                                                                          *
+dnl * Here's the rpm-4_0 branch:                                               *
+dnl *       cvs up -r rpm-4_0                                                  *
+dnl *                                                                          *
+dnl ****************************************************************************
+dnl "
+dnl sleep 10
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -137,6 +142,16 @@ fi
 LDFLAGS_STATIC="${LDFLAGS} ${LDFLAGS_STATIC}"	# libtool format
 AC_MSG_RESULT($LDFLAGS_STATIC)
 AC_SUBST(LDFLAGS_STATIC)
+
+dnl
+dnl XXX Test for libpthread.a that is NPTL aware (static link only).
+dnl
+LDFLAGS_NPTL=
+if test -f /usr/lib/nptl/libpthread.a ; then
+    LDFLAGS_NPTL="-L/usr/lib/nptl"
+#    INCPATH="$INCPATH -I/usr/include/nptl"
+fi
+AC_SUBST(LDFLAGS_NPTL)
 
 dnl
 dnl look for POSIX chmod attributes
@@ -358,31 +373,39 @@ dnl
 
 dnl Checks for libraries.
 
-WITH_LIBELF_SUBDIR=
+WITH_ELFUTILS_SUBDIR=
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
-WITH_LIBELF_ARCHIVE=
-AC_CHECK_HEADER([libelf/gelf.h], [
-	AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
-	WITH_LIBELF_INCLUDE="-I/usr/include/libelf"
-	AC_CHECK_FUNC(gelf_getdyn, [],
-	    AC_CHECK_LIB(elf, gelf_getdyn)
-	)
-	WITH_LIBELF_LIB="-lelf"
-    ], [
-	if test -d libelf ; then
-	    AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
+AC_CHECK_HEADER([libelf.h])
+AC_CHECK_HEADER([gelf.h], [
+	AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
+	AC_CHECK_LIB(elf, gelf_getvernaux, [
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
-	    WITH_LIBELF_SUBDIR=libelf
-	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_LIBELF_SUBDIR}/lib"
-	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/libelf.la"
-	    WITH_LIBELF_ARCHIVE="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/.libs/libelf.a"
+	    WITH_LIBELF_LIB="-lelf"
+	])
+    ], [
+	if test -d elfutils/libelf ; then
+	    AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
+	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
+	    WITH_ELFUTILS_SUBDIR=elfutils
+	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libelf"
+	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_ELFUTILS_SUBDIR}/libelf/libelf.a"
 	fi
 ])
-AC_SUBST(WITH_LIBELF_SUBDIR)
+AC_SUBST(WITH_ELFUTILS_SUBDIR)
 AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
-AC_SUBST(WITH_LIBELF_ARCHIVE)
+
+WITH_LIBDWARF_INCLUDE=
+AC_CHECK_HEADER([dwarf.h], [
+	AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
+    ], [
+	if test -d elfutils/libdwarf ; then
+	    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
+	    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libdwarf"
+	fi
+])
+AC_SUBST(WITH_LIBDWARF_INCLUDE)
 
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
@@ -1203,7 +1226,7 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt beecrypt zlib libelf file db3)
+AC_CONFIG_SUBDIRS(popt beecrypt zlib elfutils file db3)
 
 AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
