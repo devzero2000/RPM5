@@ -951,8 +951,5 @@ exit:
 	chdir(currDir);
     }
     if (fileMem) freeFileMemory(fileMem);
-    if (rc) {
-	headerFree(h);
-    }
     return rc;
 }

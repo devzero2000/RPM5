@@ -545,7 +545,12 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
     int rc;
     int i;
 
-    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &packageName, NULL);
+    if (!headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &packageName, NULL)) {
+#if 0
+fprintf(stderr, "*** runTriggers: can't get package name from header %p\n", h);
+#endif
+	return 0;	/* XXX WRONG */
+    }
 
     if ((rc = rpmdbFindByTriggeredBy(db, packageName, &matches)) < 0)
 	return 1;
