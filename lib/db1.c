@@ -139,6 +139,9 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
     if (h == NULL)
 	goto exit;
 
+    /* Retrofit "Provide: name = EVR" for binary packages. */
+    providePackageNVR(h);
+
     /*
      * The RPM used to build much of RH 5.1 could produce packages whose
      * file lists did not have leading /'s. Now is a good time to fix that.

@@ -26,6 +26,7 @@ static int _debug = 0;
 
 extern int _noDirTokens;
 static int _rebuildinprogress = 0;
+static int _db_filter_dups = 0;
 
 int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 
@@ -2429,7 +2430,7 @@ int rpmdbRebuild(const char * rootdir)
 	    }
 
 	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
-	    if (newdb->db_filter_dups) {
+	    if (_db_filter_dups || newdb->db_filter_dups) {
 		const char * name, * version, * release;
 		int skip = 0;
 
@@ -2450,10 +2451,11 @@ int rpmdbRebuild(const char * rootdir)
 		    continue;
 	    }
 
-	    /* Retrofit "Provide: name = EVR" for binary packages. */
-	    providePackageNVR(h);
+	    /* Deleted entries are eliminated in legacy headers by copy. */
+	    rc = rpmdbAdd(newdb, (headerIsEntry(h, RPMTAG_HEADERIMAGE)
+				? headerCopy(h) : h));
 
-	    if (rpmdbAdd(newdb, h)) {
+	    if (rc) {
 		rpmError(RPMERR_INTERNAL,
 			_("cannot add record originally at %d"), _RECNUM);
 		failed = 1;

@@ -64,6 +64,7 @@
 	- fix: include alignment in count when swabbing header region.
 	- handle added dirtoken tags (mostly) correctly with header regions.
 	- add FHS doc/man/info dirs, diddle autoconf goo.
+	- fix: headerUnload handles headers w/o regions correctly on rebuilddb.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

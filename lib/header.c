@@ -23,6 +23,12 @@
 /* XXX avoid rpmlib.h, need for debugging. */
 /*@observer@*/ const char *const tagName(int tag)	/*@*/;
 
+/*
+ * Teach header.c about legacy tags.
+ */
+#define	HEADER_OLDFILENAMES	1027
+#define	HEADER_BASENAMES	1117
+
 #define INDEX_MALLOC_SIZE 8
 
 #define PARSER_BEGIN 	0
@@ -272,7 +278,7 @@ static int regionSwab(struct indexEntry * entry, int il, int dl,
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
-assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
+	assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
 	ie.info.count = ntohl(pe->count);
 	ie.info.offset = ntohl(pe->offset);
 	ie.data = t = dataStart + ie.info.offset;
@@ -526,7 +532,8 @@ assert(rdlen == dl);
 	entry++;
 	h->indexUsed++;
     } else {
-	int_32 * stei = memcpy(alloca(ntohl(pe->count)), dataStart + ntohl(pe->offset), ntohl(pe->count));
+	int nb = ntohl(pe->count);
+	int_32 * stei = memcpy(alloca(nb), dataStart + ntohl(pe->offset), nb);
 	int_32 rdl = -ntohl(stei[2]);	/* negative offset */
 	int_32 ril = rdl/sizeof(*pe);
 
@@ -543,8 +550,35 @@ assert(rdlen == dl);
 	rdlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, entry->info.offset);
 	entry->rdlen = rdlen;
 
-	if (ril < h->indexUsed)
-	    rdlen += regionSwab(entry+ril, h->indexUsed-ril, 0, pe+ril, dataStart, entry->info.offset+1);
+	if (ril < h->indexUsed) {
+	    struct indexEntry * newEntry = entry + ril;
+	    int ne = (h->indexUsed - ril);
+	    int rid = entry->info.offset+1;
+
+	    /* Load dribble entries from region. */
+	    rdlen += regionSwab(newEntry, ne, 0, pe+ril, dataStart, rid);
+
+	  { struct indexEntry * firstEntry = newEntry;
+	    int save = h->indexUsed;
+	    int j;
+
+	    /* Dribble entries replace duplicate region entries. */
+	    h->indexUsed -= ne;
+	    for (j = 0; j < ne; j++, newEntry++) {
+		headerRemoveEntry(h, newEntry->info.tag);
+		if (newEntry->info.tag == HEADER_BASENAMES)
+		    headerRemoveEntry(h, HEADER_OLDFILENAMES);
+	    }
+
+	    /* If any duplicate entries were replaced, move new entries down. */
+	    if (h->indexUsed < (save - ne)) {
+		memmove(h->index + h->indexUsed, firstEntry,
+			(ne * sizeof(*entry)));
+	    }
+	    h->indexUsed += ne;
+	  }
+
+	}
 
     }
 
@@ -568,27 +602,52 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
     struct indexEntry * entry; 
     int_32 type;
     int i;
-    int nil;
+    int drlen, ndribbles;
+    int driplen, ndrips;
+    int legacy = 0;
 
     /* Sort entries by (offset,tag). */
     headerUnsort(h);
 
-    /* Compute (il,dl) for all tags, including those unused in region. */
+    /* Compute (il,dl) for all tags, including those deleted in region. */
     pad = 0;
-    nil = 0;
+    drlen = ndribbles = driplen = ndrips = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	if (ENTRY_IS_REGION(entry)) {
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
+	    int rid = entry->info.offset;
 
-	    dl += entry->rdlen + entry->info.count;	/* ZZZ */
 	    il += ril;
+	    dl += entry->rdlen + entry->info.count;
 	    /* XXX Legacy regions do not include the region tag and data. */
-	    if (i == 0 && h->legacy) {
+	    if (i == 0 && h->legacy)
+		il += 1;
+
+	    /* Skip rest of entries in region, but account for dribbles. */
+	    for (; i < h->indexUsed && entry->info.offset <= rid+1; i++, entry++) {
+		if (entry->info.offset <= rid)
+		    continue;
+
+		/* Alignment */
+		type = entry->info.type;
+		if (typeSizes[type] > 1) {
+		    unsigned diff;
+		    diff = typeSizes[type] - (dl % typeSizes[type]);
+		    if (diff != typeSizes[type]) {
+			drlen += diff;
+			pad += diff;
+			dl += diff;
+		    }
+		}
+
+		ndribbles++;
 		il++;
+		drlen += entry->length;
+		dl += entry->length;
 	    }
-	    i += (ril-1);
-	    entry += (ril-1);
+	    i--;
+	    entry--;
 	    continue;
 	}
 
@@ -598,13 +657,16 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	    unsigned diff;
 	    diff = typeSizes[type] - (dl % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
-		dl += diff;
+		driplen += diff;
 		pad += diff;
-	    }
+		dl += diff;
+	    } else
+		diff = 0;
 	}
-	if (!ENTRY_IN_REGION(entry))
-	    nil++;
+
+	ndrips++;
 	il++;
+	driplen += entry->length;
 	dl += entry->length;
     }
     len = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
@@ -617,9 +679,9 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
     dataStart = te = (char *) (pe + il);
 
     pad = 0;
-    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++, pe++) {
-const char *t;
+    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	const char * src;
+char *t;
 	int count;
 	int rdlen;
 
@@ -630,40 +692,54 @@ t = te;
 
 	if (ENTRY_IS_REGION(entry)) {
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
-	    int_32 ril = rdl/sizeof(*pe);
-	    int_32 stei[4];
+	    int_32 ril = rdl/sizeof(*pe) + ndribbles;
+	    int rid = entry->info.offset;
 
-src = (char *)entry->data;
-rdlen = entry->rdlen;
-	    stei[0] = pe->tag;
-	    stei[1] = pe->type;
-	    stei[3] = pe->count;
+	    src = (char *)entry->data;
+	    rdlen = entry->rdlen;
 
 	    /* XXX Legacy regions do not include the region tag and data. */
 	    if (i == 0 && h->legacy) {
+		int_32 stei[4];
+
+		legacy = 1;
 		memcpy(pe+1, src, rdl);
 		memcpy(te, src + rdl, rdlen);
-		count = regionSwab(NULL, ril, 0, pe+1, te, 0);
-assert(count == rdlen);
 		te += rdlen;
-		pe->offset = htonl(te - dataStart);
-		pe++;
-		rdl += entry->info.count;
-	    } else {
-		memcpy(pe+1, src + sizeof(*pe), rdl - sizeof(*pe));
-		memcpy(te, src + ((il-nil) * sizeof(*pe)), rdlen);
-		count = regionSwab(NULL, ril-1, 0, pe+1, te, 0);
-assert(count == rdlen);
-		te += rdlen;
-		pe->offset = htonl(te - dataStart);
-	    }
-	    stei[2] = htonl(-rdl);
-	    memcpy(te, stei, entry->info.count);
-	    te += entry->info.count;
 
-	    i += (ril-1);
-	    entry += (ril-1);
-	    pe += (ril-1);
+		pe->offset = htonl(te - dataStart);
+		stei[0] = pe->tag;
+		stei[1] = pe->type;
+		stei[2] = htonl(-rdl-entry->info.count);
+		stei[3] = pe->count;
+		memcpy(te, stei, entry->info.count);
+		te += entry->info.count;
+		ril++;
+		rdlen += entry->info.count;
+
+		count = regionSwab(NULL, ril, 0, pe, t, 0);
+		assert(count == rdlen);
+
+	    } else {
+
+		memcpy(pe+1, src + sizeof(*pe), ((ril-1) * sizeof(*pe)));
+		memcpy(te, src + (ril * sizeof(*pe)), rdlen+entry->info.count+drlen);
+		te += rdlen;
+		pe->offset = htonl(te - dataStart);
+		te += entry->info.count + drlen;
+
+		count = regionSwab(NULL, ril, 0, pe, t, 0);
+		assert(count == rdlen+entry->info.count+drlen);
+	    }
+
+	    /* Skip rest of entries in region. */
+	    while (i < h->indexUsed && entry->info.offset <= rid+1) {
+		i++;
+		entry++;
+	    }
+	    i--;
+	    entry--;
+	    pe += ril;
 	    continue;
 	}
 
@@ -708,9 +784,10 @@ assert(count == rdlen);
 	    te += entry->length;
 	    break;
 	}
+	pe++;
     }
    
-    /* Insure that there are no memcpy dribbles. */
+    /* Insure that there are no memcpy underruns/overruns. */
     assert(((char *)pe) == dataStart);
     assert((((char *)ei)+len) == te);
 
@@ -754,9 +831,9 @@ Header headerReload(Header h, int tag)
 
 int headerWrite(FD_t fd, Header h, enum hMagic magicp)
 {
+    ssize_t nb;
     int length;
     const void * uh = doHeaderUnload(h, &length);
-    ssize_t nb;
 
     switch (magicp) {
     case HEADER_MAGIC_YES:

@@ -306,9 +306,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Sat Dec  9 2000 Jeff Johnson <jbj@redhat.com>
+* Sun Dec 10 2000 Jeff Johnson <jbj@redhat.com>
 - handle added dirtoken tags (mostly) correctly with header regions.
 - add FHS doc/man/info dirs, diddle autoconf goo.
+- fix: headerUnload handles headers w/o regions correctly on rebuilddb.
 
 * Thu Dec  7 2000 Jeff Johnson <jbj@redhat.com>
 - add rpmtransGetKeys() to retrieve transaction keys in tsort'ed order.
