@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2004-09-04 16:43-0400\n"
+"POT-Creation-Date: 2004-09-15 13:05-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -105,7 +105,7 @@ msgid "Common options for all rpm modes:"
 msgstr "Fælles tilvalg for alle rpm-tilstande:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:121 lib/poptI.c:42
+#: rpmqv.c:121 lib/poptI.c:43
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "fil %s: %s\n"
@@ -1249,19 +1249,19 @@ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 "generér pakkehoved(er), der er kompatible med (gamle) rpm[23]-indpakninger"
 
-#: build/poptBT.c:229 lib/poptALL.c:240 lib/poptI.c:277 lib/poptQV.c:335
+#: build/poptBT.c:229 lib/poptALL.c:240 lib/poptI.c:283 lib/poptQV.c:335
 #: lib/poptQV.c:344 lib/poptQV.c:383
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: build/poptBT.c:231 lib/poptALL.c:242 lib/poptI.c:279 lib/poptQV.c:338
+#: build/poptBT.c:231 lib/poptALL.c:242 lib/poptI.c:285 lib/poptQV.c:338
 #: lib/poptQV.c:346 lib/poptQV.c:386
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "tjek ikke pakkens arkitektur"
 
-#: build/poptBT.c:233 lib/poptALL.c:248 lib/poptI.c:281 lib/poptQV.c:341
+#: build/poptBT.c:233 lib/poptALL.c:248 lib/poptI.c:287 lib/poptQV.c:341
 #: lib/poptQV.c:348 lib/poptQV.c:388
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1423,16 +1423,16 @@ msgstr ""
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1451
+#: lib/depends.c:1454
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1486
+#: lib/depends.c:1489
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1491
+#: lib/depends.c:1494
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1777,42 +1777,42 @@ msgstr "aflus URL-bufferhåndtering"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
 
-#: lib/poptI.c:70
+#: lib/poptI.c:71
 msgid "exclude paths must begin with a /"
 msgstr "udeladte stier skal begynde med et /"
 
-#: lib/poptI.c:84
+#: lib/poptI.c:85
 msgid "relocations must begin with a /"
 msgstr "omrokeringer skal starte med et /"
 
-#: lib/poptI.c:87
+#: lib/poptI.c:88
 msgid "relocations must contain a ="
 msgstr "omrokeringer skal indeholde et ="
 
-#: lib/poptI.c:90
+#: lib/poptI.c:91
 msgid "relocations must have a / following the ="
 msgstr "i omrokeringer skal = efterfølges af /"
 
-#: lib/poptI.c:105
+#: lib/poptI.c:106
 msgid "rollback takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:112
+#: lib/poptI.c:113
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:168
+#: lib/poptI.c:169
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "forespørg/verificér pakke(r) i gruppen"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:173
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installér alle filer -- også konfigurationsfiler, der ellers skulle "
 "overspringes"
 
-#: lib/poptI.c:176
+#: lib/poptI.c:177
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1820,166 +1820,170 @@ msgstr ""
 "fjern alle pakker, som passer med <pakke> (normalt ville det medføre en "
 "fejl, hvis <pakke> angav flere pakker)"
 
-#: lib/poptI.c:181 tools/rpmgraph.c:273
+#: lib/poptI.c:182 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptI.c:186 lib/poptI.c:261
+#: lib/poptI.c:187 lib/poptI.c:267
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "udfør ingen pakkespecifikke skripter"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:191
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "omdirigér filer i ikke-omdirigérbar pakke"
 
-#: lib/poptI.c:193
+#: lib/poptI.c:195
+msgid "print dependency loops as warning"
+msgstr ""
+
+#: lib/poptI.c:199
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:196
+#: lib/poptI.c:202
 msgid "erase (uninstall) package"
 msgstr "slet (afinstallér) pakke"
 
-#: lib/poptI.c:196
+#: lib/poptI.c:202
 #, fuzzy
 msgid "<package>+"
 msgstr "<pakke>"
 
-#: lib/poptI.c:199 lib/poptI.c:239
+#: lib/poptI.c:205 lib/poptI.c:245
 #, fuzzy
 msgid "do not install configuration files"
 msgstr "vis alle konfigurationsfiler"
 
-#: lib/poptI.c:202 lib/poptI.c:244
+#: lib/poptI.c:208 lib/poptI.c:250
 msgid "do not install documentation"
 msgstr "installér ikke dokumentation"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:210
 msgid "skip files with leading component <path> "
 msgstr "overspring filer med foranstillet komponent <sti> "
 
-#: lib/poptI.c:205
+#: lib/poptI.c:211
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:209
+#: lib/poptI.c:215
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "omdirigér filer i ikke-omdirigérbar pakke"
 
-#: lib/poptI.c:211
+#: lib/poptI.c:217
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "forkortelse for --replacepkgs --replacefiles"
 
-#: lib/poptI.c:215
+#: lib/poptI.c:221
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "opgradér pakke, hvis den allerede er installeret"
 
-#: lib/poptI.c:216 lib/poptI.c:232 lib/poptI.c:328
+#: lib/poptI.c:222 lib/poptI.c:238 lib/poptI.c:334
 msgid "<packagefile>+"
 msgstr "<pakkefil>+"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:224
 msgid "print hash marks as package installs (good with -v)"
 msgstr "udlæs #'er efterhånden som pakken installeres (virker sammen med -v)"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:227
 msgid "don't verify package architecture"
 msgstr "tjek ikke pakkens arkitektur"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:230
 msgid "don't verify package operating system"
 msgstr "tjek ikke pakkens operativsystem"
 
-#: lib/poptI.c:227
+#: lib/poptI.c:233
 msgid "don't check disk space before installing"
 msgstr "tjek ikke om der er diskplads, før der installeres"
 
-#: lib/poptI.c:229
+#: lib/poptI.c:235
 msgid "install documentation"
 msgstr "installér dokumentation"
 
-#: lib/poptI.c:232
+#: lib/poptI.c:238
 #, fuzzy
 msgid "install package(s)"
 msgstr "installér pakke"
 
-#: lib/poptI.c:235
+#: lib/poptI.c:241
 msgid "update the database, but do not modify the filesystem"
 msgstr "opdatér databasen, men rør ikke filsystemet"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:247
 msgid "do not verify package dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: lib/poptI.c:247 lib/poptQV.c:279 lib/poptQV.c:282
+#: lib/poptI.c:253 lib/poptQV.c:279 lib/poptQV.c:282
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptI.c:249
+#: lib/poptI.c:255
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "vis alle konfigurationsfiler"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:259
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "ændr ikke pakkernes installationsrækkefølge for at opfylde afhængigheder"
 
-#: lib/poptI.c:258
+#: lib/poptI.c:264
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:265
+#: lib/poptI.c:271
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "udfør ikke eventuelle skripter"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:274
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "udfør ikke eventuelle skripter"
 
-#: lib/poptI.c:271
+#: lib/poptI.c:277
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "udfør ikke eventuelle skripter"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:280
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "udfør ikke eventuelle skripter"
 
-#: lib/poptI.c:284
+#: lib/poptI.c:290
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "udfør ikke småskripter, der måtte udløses af denne pakke"
 
-#: lib/poptI.c:287
+#: lib/poptI.c:293
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "udfør ingen pakkespecifikke skripter"
 
-#: lib/poptI.c:290
+#: lib/poptI.c:296
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "udfør ingen installations-småskripter"
 
-#: lib/poptI.c:293
+#: lib/poptI.c:299
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "udfør ingen installations-småskripter"
 
-#: lib/poptI.c:296
+#: lib/poptI.c:302
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "udfør ingen installations-småskripter"
 
-#: lib/poptI.c:300
+#: lib/poptI.c:306
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1987,53 +1991,53 @@ msgstr ""
 "opgradér til en ældre version af pakken (--force gør ikke dette automatisk "
 "ved opgraderinger)"
 
-#: lib/poptI.c:304
+#: lib/poptI.c:310
 msgid "print percentages as package installs"
 msgstr "vis procenter efterhånden som pakken installeres"
 
-#: lib/poptI.c:306
+#: lib/poptI.c:312
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "omdirigér pakken til <katalog>, hvis omdirigérbar"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:313
 msgid "<dir>"
 msgstr "<katalog>"
 
-#: lib/poptI.c:309
+#: lib/poptI.c:315
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "omdirigér filer fra <gammelsti> til <nysti>"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:316
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "<gammelsti>=<nysti>"
 
-#: lib/poptI.c:313
+#: lib/poptI.c:319
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:316
+#: lib/poptI.c:322
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:319
+#: lib/poptI.c:325
 msgid "reinstall if the package is already present"
 msgstr "geninstallér hvis pakken allerede er installeret"
 
-#: lib/poptI.c:321
+#: lib/poptI.c:327
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:322
+#: lib/poptI.c:328
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:324
+#: lib/poptI.c:330
 msgid "don't install, but tell if it would work or not"
 msgstr "installér ikke, men fortæl om det ville lykkes eller ej"
 
-#: lib/poptI.c:327
+#: lib/poptI.c:333
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "opgradér pakke"

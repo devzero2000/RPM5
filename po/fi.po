@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2004-09-04 16:43-0400\n"
+"POT-Creation-Date: 2004-09-15 13:05-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -105,7 +105,7 @@ msgid "Common options for all rpm modes:"
 msgstr ""
 
 #. @-modfilesys -globs @
-#: rpmqv.c:121 lib/poptI.c:42
+#: rpmqv.c:121 lib/poptI.c:43
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -1267,19 +1267,19 @@ msgstr "‰l‰ tarkista paketin riippuvuuksia"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:240 lib/poptI.c:277 lib/poptQV.c:335
+#: build/poptBT.c:229 lib/poptALL.c:240 lib/poptI.c:283 lib/poptQV.c:335
 #: lib/poptQV.c:344 lib/poptQV.c:383
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "‰l‰ tarkista paketin riippuvuuksia"
 
-#: build/poptBT.c:231 lib/poptALL.c:242 lib/poptI.c:279 lib/poptQV.c:338
+#: build/poptBT.c:231 lib/poptALL.c:242 lib/poptI.c:285 lib/poptQV.c:338
 #: lib/poptQV.c:346 lib/poptQV.c:386
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "‰l‰ tarkista paketin arkkitehtuuria"
 
-#: build/poptBT.c:233 lib/poptALL.c:248 lib/poptI.c:281 lib/poptQV.c:341
+#: build/poptBT.c:233 lib/poptALL.c:248 lib/poptI.c:287 lib/poptQV.c:341
 #: lib/poptQV.c:348 lib/poptQV.c:388
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1445,16 +1445,16 @@ msgstr ""
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1451
+#: lib/depends.c:1454
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1486
+#: lib/depends.c:1489
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1491
+#: lib/depends.c:1494
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1804,42 +1804,42 @@ msgstr ""
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
 
-#: lib/poptI.c:70
+#: lib/poptI.c:71
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: lib/poptI.c:84
+#: lib/poptI.c:85
 msgid "relocations must begin with a /"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: lib/poptI.c:87
+#: lib/poptI.c:88
 msgid "relocations must contain a ="
 msgstr "siirroissa pit‰‰ olla =-merkki"
 
-#: lib/poptI.c:90
+#: lib/poptI.c:91
 msgid "relocations must have a / following the ="
 msgstr "siirroissa pit‰‰ olla / =-merkin j‰lkeen"
 
-#: lib/poptI.c:105
+#: lib/poptI.c:106
 msgid "rollback takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:112
+#: lib/poptI.c:113
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:168
+#: lib/poptI.c:169
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "paketilla ei ole nime‰"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:173
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "asenna kaikki tiedostot, myˆs konfiguraatiot, jotka muuten ehk‰ ohitettaisiin"
 
-#: lib/poptI.c:176
+#: lib/poptI.c:177
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1847,166 +1847,170 @@ msgstr ""
 "poista kaikki paketit, joiden nime‰ vastaa  <paketti> (tavallisesti, jos  "
 "<paketti> m‰‰ritt‰‰ useita paketteja, tulee virhe)"
 
-#: lib/poptI.c:181 tools/rpmgraph.c:273
+#: lib/poptI.c:182 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptI.c:186 lib/poptI.c:261
+#: lib/poptI.c:187 lib/poptI.c:267
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "‰l‰ aja mit‰‰n pakettikohtaisia skriptej‰"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:191
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/poptI.c:193
+#: lib/poptI.c:195
+msgid "print dependency loops as warning"
+msgstr ""
+
+#: lib/poptI.c:199
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:196
+#: lib/poptI.c:202
 msgid "erase (uninstall) package"
 msgstr "poista paketti"
 
-#: lib/poptI.c:196
+#: lib/poptI.c:202
 #, fuzzy
 msgid "<package>+"
 msgstr "kysele kaikki paketit"
 
-#: lib/poptI.c:199 lib/poptI.c:239
+#: lib/poptI.c:205 lib/poptI.c:245
 #, fuzzy
 msgid "do not install configuration files"
 msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
 
-#: lib/poptI.c:202 lib/poptI.c:244
+#: lib/poptI.c:208 lib/poptI.c:250
 msgid "do not install documentation"
 msgstr "‰l‰ asenna dokumentointia"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:210
 msgid "skip files with leading component <path> "
 msgstr ""
 
-#: lib/poptI.c:205
+#: lib/poptI.c:211
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:209
+#: lib/poptI.c:215
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/poptI.c:211
+#: lib/poptI.c:217
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "lyhenne parametreille --replacepkgs --replacefiles"
 
-#: lib/poptI.c:215
+#: lib/poptI.c:221
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/poptI.c:216 lib/poptI.c:232 lib/poptI.c:328
+#: lib/poptI.c:222 lib/poptI.c:238 lib/poptI.c:334
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "    -b<vaihe> <m‰‰rittely> "
 
-#: lib/poptI.c:218
+#: lib/poptI.c:224
 msgid "print hash marks as package installs (good with -v)"
 msgstr "tulosta risuaitaa paketin asentuessa (-v:n kanssa hyv‰)"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:227
 msgid "don't verify package architecture"
 msgstr "‰l‰ tarkista paketin arkkitehtuuria"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:230
 msgid "don't verify package operating system"
 msgstr "‰l‰ tarkista paketin k‰yttˆj‰rjestelm‰‰"
 
-#: lib/poptI.c:227
+#: lib/poptI.c:233
 msgid "don't check disk space before installing"
 msgstr ""
 
-#: lib/poptI.c:229
+#: lib/poptI.c:235
 msgid "install documentation"
 msgstr "asenna dokumentaatio"
 
-#: lib/poptI.c:232
+#: lib/poptI.c:238
 #, fuzzy
 msgid "install package(s)"
 msgstr "asenna paketti"
 
-#: lib/poptI.c:235
+#: lib/poptI.c:241
 msgid "update the database, but do not modify the filesystem"
 msgstr "p‰ivit‰ tietokanta, mutta ‰l‰ muuta tiedostoj‰rjestelm‰‰"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:247
 msgid "do not verify package dependencies"
 msgstr "‰l‰ tarkista paketin riippuvuuksia"
 
-#: lib/poptI.c:247 lib/poptQV.c:279 lib/poptQV.c:282
+#: lib/poptI.c:253 lib/poptQV.c:279 lib/poptQV.c:282
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "asenna paketti"
 
-#: lib/poptI.c:249
+#: lib/poptI.c:255
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:259
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "‰l‰ muuta asennusj‰rjestyst‰ riippuvuuksien tyydytt‰miseksi"
 
-#: lib/poptI.c:258
+#: lib/poptI.c:264
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:265
+#: lib/poptI.c:271
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "‰l‰ suorita mit‰‰n vaiheita"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:274
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "‰l‰ suorita mit‰‰n vaiheita"
 
-#: lib/poptI.c:271
+#: lib/poptI.c:277
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "‰l‰ suorita mit‰‰n vaiheita"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:280
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "‰l‰ suorita mit‰‰n vaiheita"
 
-#: lib/poptI.c:284
+#: lib/poptI.c:290
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/poptI.c:287
+#: lib/poptI.c:293
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "‰l‰ aja mit‰‰n pakettikohtaisia skriptej‰"
 
-#: lib/poptI.c:290
+#: lib/poptI.c:296
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "‰l‰ suorita asennusskriptej‰"
 
-#: lib/poptI.c:293
+#: lib/poptI.c:299
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "‰l‰ suorita asennusskriptej‰"
 
-#: lib/poptI.c:296
+#: lib/poptI.c:302
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "‰l‰ suorita asennusskriptej‰"
 
-#: lib/poptI.c:300
+#: lib/poptI.c:306
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2014,53 +2018,53 @@ msgstr ""
 "p‰ivit‰ vanhempaan versioon (--force p‰ivitett‰ess‰ tekee t‰m‰n "
 "automaattisesti)"
 
-#: lib/poptI.c:304
+#: lib/poptI.c:310
 msgid "print percentages as package installs"
 msgstr "tulosta asennuksen eteneminen prosentteina"
 
-#: lib/poptI.c:306
+#: lib/poptI.c:312
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "siirr‰ paketti hakemistoon <hakem>, jos siirrett‰viss‰"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:313
 msgid "<dir>"
 msgstr ""
 
-#: lib/poptI.c:309
+#: lib/poptI.c:315
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "siirr‰ tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:316
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "siirr‰ tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
 
-#: lib/poptI.c:313
+#: lib/poptI.c:319
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:316
+#: lib/poptI.c:322
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:319
+#: lib/poptI.c:325
 msgid "reinstall if the package is already present"
 msgstr "asenna uudelleen, jos paketti on jo asennettu"
 
-#: lib/poptI.c:321
+#: lib/poptI.c:327
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:322
+#: lib/poptI.c:328
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:324
+#: lib/poptI.c:330
 msgid "don't install, but tell if it would work or not"
 msgstr "‰l‰ asenna, mutta kerro onnistuisiko se"
 
-#: lib/poptI.c:327
+#: lib/poptI.c:333
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "asenna paketti"

@@ -16,7 +16,8 @@ extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@unchecked@*/
 struct rpmInstallArguments_s rpmIArgs = {
     0,			/* transFlags */
-    0,			/* probFilter */
+			/* probFilter */
+    (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
     0,			/* installInterfaceFlags */
     0,			/* eraseInterfaceFlags */
     0,			/* qva_flags */
@@ -177,7 +178,7 @@ struct poptOption rpmInstallPoptTable[] = {
 	NULL},
 
  { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
- 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ANACONDA,
+ 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ANACONDA|RPMTRANS_FLAG_DEPLOOPS,
 	N_("use anaconda \"presentation order\""), NULL},
 
  { "apply", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
@@ -188,6 +189,11 @@ struct poptOption rpmInstallPoptTable[] = {
  { "badreloc", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_FORCERELOCATE,
 	N_("relocate files in non-relocatable package"), NULL},
+
+ { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&rpmIArgs.transFlags, RPMTRANS_FLAG_DEPLOOPS,
+	N_("print dependency loops as warning"), NULL},
+
  { "dirstash", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_DIRSTASH,
 	N_("save erased package files by renaming into sub-directory"), NULL},

@@ -934,7 +934,7 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(rpmte q, rpmte p,
 		/*@null@*/ rpmds requires,
-		int zap, /*@in@*/ /*@out@*/ int * nzaps)
+		int zap, /*@in@*/ /*@out@*/ int * nzaps, int msglvl)
 	/*@modifies q, p, requires, *nzaps @*/
 {
     tsortInfo tsi_prev;
@@ -968,7 +968,7 @@ zapRelation(rpmte q, rpmte p,
 	 */
 	/*@-branchstate@*/
 	if (zap && !(Flags & RPMSENSE_PREREQ)) {
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmMessage(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(rpmteNEVR(p) ?  rpmteNEVR(p) : "???"), dp);
 	    rpmteTSI(p)->tsi_count--;
@@ -1443,12 +1443,15 @@ rescan:
 	    while ((p = q) != NULL && (q = rpmteTSI(p)->tsi_chain) != NULL) {
 		const char * dp;
 		char buf[4096];
+		int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+			? RPMMESS_WARNING : RPMMESS_DEBUG;
+;
 
 		/* Unchain predecessor loop. */
 		rpmteTSI(p)->tsi_chain = NULL;
 
 		if (!printed) {
-		    rpmMessage(RPMMESS_DEBUG, _("LOOP:\n"));
+		    rpmMessage(msglvl, _("LOOP:\n"));
 		    printed = 1;
 		}
 
@@ -1457,13 +1460,13 @@ rescan:
 		requires = rpmdsInit(requires);
 		if (requires == NULL)
 		    /*@innercontinue@*/ continue;	/* XXX can't happen */
-		dp = zapRelation(q, p, requires, 1, &nzaps);
+		dp = zapRelation(q, p, requires, 1, &nzaps, msglvl);
 
 		/* Print next member of loop. */
 		buf[0] = '\0';
 		if (rpmteNEVR(p) != NULL)
 		    (void) stpcpy(buf, rpmteNEVR(p));
-		rpmMessage(RPMMESS_DEBUG, "    %-40s %s\n", buf,
+		rpmMessage(msglvl, "    %-40s %s\n", buf,
 			(dp ? dp : "not found!?!"));
 
 		dp = _free(dp);
