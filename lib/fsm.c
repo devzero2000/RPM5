@@ -1295,18 +1295,26 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	/* Flush partial sets of hard linked files. */
 	if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) {
-	    int nlink;
+	    int nlink, j;
 	    while ((fsm->li = fsm->links) != NULL) {
 		fsm->links = fsm->li->next;
 		fsm->li->next = NULL;
 
 		/* Re-calculate link count for archive header. */
-		for (nlink = 0, i = 0; i < fsm->li->nlink; i++) {
+		for (j = -1, nlink = 0, i = 0; i < fsm->li->nlink; i++) {
 		    if (fsm->li->filex[i] < 0) continue;
 		    nlink++;
+		    if (j == -1) j = i;
+		}
+		/* XXX force the contents out as well. */
+		if (j != 0) {
+		    fsm->li->filex[0] = fsm->li->filex[j];
+		    fsm->li->filex[j] = -1;
 		}
 		fsm->li->sb.st_nlink = nlink;
+
 		fsm->sb = fsm->li->sb;	/* structure assignment */
+		fsm->osb = fsm->sb;	/* structure assignment */
 
 		if (!rc) rc = writeLinkedFile(fsm);
 
