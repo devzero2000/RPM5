@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-21 19:14-0500\n"
-"PO-Revision-Date: 2001-01-28 20:22+01:00\n"
+"PO-Revision-Date: 2001-01-28 22:51+01:00\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
@@ -13,7 +13,7 @@ msgstr ""
 #: build.c:26
 #, c-format
 msgid "cannot open rpm database in %s\n"
-msgstr "Kan ikke åbne rpm-database i %s\n"
+msgstr "kan ikke åbne rpm-database i %s\n"
 
 #: build.c:36
 msgid "failed build dependencies:\n"
@@ -3878,7 +3878,7 @@ msgid "running postuninstall script (if any)\n"
 msgstr "kører skriptet postuninstall (hvis det findes)\n"
 
 #: lib/uninstall.c:436
-#, fuzzy, c-format
+#, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
