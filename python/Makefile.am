@@ -26,13 +26,13 @@ LDADD =
 pythondir = $(prefix)/lib/python${PYVER}/site-packages
 python_PROGRAMS = rpmmodule.so poptmodule.so
 
-rpmmodule_so_SOURCES =
+rpmmodule_so_SOURCES = rpmmodule.c
 rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
 poptmodule_so_SOURCES = poptmodule.c
 poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
-librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
+librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c python.oc
 
 rpmmodule.so: $(librpmmodule_la_OBJECTS)
 	$(LINK) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
