@@ -507,9 +507,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Aug  3 2001 Jeff Johnson <jbj@redhat.com>
+* Sat Aug  4 2001 Jeff Johnson <jbj@redhat.com>
 - fix: i18n tags not terminated correctly with NUL (#50304).
 - add explicit casts to work around a s390 compiler problem.
+- fix: autoconf glob tests (#50845).
 
 * Tue Jul 31 2001 Jeff Johnson <jbj@redhat.com>
 - detailed build package error messages.
