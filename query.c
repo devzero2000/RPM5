@@ -83,6 +83,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 		 &count)) {
 		fputs(_("(contains no files)"), stdout);
+		fputs("\n", stdout);
 	    } else {
 		if (!headerGetEntry(h, RPMTAG_FILESTATES, &type, 
 			 (void **) &fileStatesList, &count)) {
@@ -178,6 +179,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 
 			} else if (!rpmIsVerbose()) {
 			    fputs(fileList[i], stdout);
+			    fputs("\n", stdout);
 			} else if (fileOwnerList) 
 			    printFileInfo(fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
