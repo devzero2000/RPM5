@@ -14,6 +14,7 @@
 	- add ppc8[25]60 arches.
 	- fix: evaluate rather than default file_contexts path. (#127501).
 	- avoid "can't happen" recursion while retrieving pubkeys.
+	- add ppc32dy4 arch.
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).

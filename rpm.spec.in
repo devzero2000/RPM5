@@ -495,8 +495,9 @@ exit 0
 
 %changelog
 * Thu Aug 19 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.7
-- avoid "can't happen" recursion while retrieving pubkeys.
 - shared libraries in separate rpm-libs package.
+- avoid "can't happen" recursion while retrieving pubkeys.
+- add ppc32dy4 arch.
 
 * Fri Jul  9 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.6
 - fix: evaluate rather than default file_contexts path. (#127501).
