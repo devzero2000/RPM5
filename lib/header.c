@@ -771,12 +771,13 @@ static void copyEntry(struct indexEntry * entry,
 int headerGetRawEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c) {
     struct indexEntry * entry;
 
-    if (!p) return headerIsEntry(h, tag);
+    if (p == NULL) return headerIsEntry(h, tag);
 
     /* First find the tag */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
     if (!entry) {
-	*p = NULL;
+	if (p) *p = NULL;
+	if (c) *c = 0;
 	return 0;
     }
 
