@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-21 19:14-0500\n"
-"PO-Revision-Date: 2001-01-18 22:46+01:00\n"
-"Last-Translator: K. Christiansen <kenneth@gnu.org>\n"
-"Language-Team: Danish/Dansk <dansk@klid.dk>\n"
+"PO-Revision-Date: 2001-01-28 20:22+01:00\n"
+"Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
+"Language-Team: Danish <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -555,7 +555,7 @@ msgstr "      --excludepath <sti> "
 
 #: rpm.c:390
 msgid "skip files in path <path>"
-msgstr "overspring filer i stien <sti>"
+msgstr "spring filer i stien <sti> over"
 
 #: rpm.c:391
 msgid "      --relocate <oldpath>=<newpath>"
@@ -686,15 +686,15 @@ msgstr "udfør ingen pakkespecifikke skripter"
 
 #: rpm.c:464
 msgid "    -b<stage> <spec>      "
-msgstr "    -b<stadie> <spec>     "
+msgstr "    -b<stadium> <spec>    "
 
 #: rpm.c:465
 msgid "    -t<stage> <tarball>   "
-msgstr "    -t<stadie> <tarfil>   "
+msgstr "    -t<stadium> <tarfil>  "
 
 #: rpm.c:466
 msgid "build package, where <stage> is one of:"
-msgstr "opbyg pakke, hvor <stadie> er en af:"
+msgstr "opbyg pakke, hvor <stadium> er en af:"
 
 #: rpm.c:468
 msgid "prep (unpack sources and apply patches)"
@@ -723,7 +723,7 @@ msgstr "binær og kilde-pakke (forbered, oversæt, installér, pak)"
 
 #: lib/poptBT.c:191 rpm.c:480
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "spring direkte til angivet stadie (kun for c,i)"
+msgstr "spring direkte til angivet stadium (kun for c,i)"
 
 #: lib/poptBT.c:172 rpm.c:482
 msgid "remove build tree when done"
