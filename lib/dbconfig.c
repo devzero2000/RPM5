@@ -1,5 +1,5 @@
 /** \ingroup db3
- * \file lib/db3.c
+ * \file lib/dbconfig.c
  */
 
 #include "system.h"
