@@ -16,7 +16,6 @@
 
 #include "debug.h"
 
-/*@access fmagic @*/
 /*@access rpmds @*/
 
 /**
@@ -447,10 +446,17 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { " compressed",		RPMFC_COMPRESSED },
 
-  { "troff or preprocessor input",		RPMFC_MANPAGE },
+  { "troff or preprocessor input",	RPMFC_MANPAGE|RPMFC_INCLUDE },
+  { "GNU Info",			RPMFC_MANPAGE|RPMFC_INCLUDE },
 
   { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
   { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
+
+  { " /usr/bin/python",		RPMFC_PYTHON|RPMFC_INCLUDE },
+
+  /* XXX "a /usr/bin/python -t script text executable" */
+  /* XXX "python 2.3 byte-compiled" */
+  { "python ",			RPMFC_PYTHON|RPMFC_INCLUDE },
 
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
@@ -458,6 +464,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { "tar archive",		RPMFC_ARCHIVE|RPMFC_INCLUDE },
   { "cpio archive",		RPMFC_ARCHIVE|RPMFC_INCLUDE },
   { "RPM v3",			RPMFC_ARCHIVE|RPMFC_INCLUDE },
+  { "RPM v4",			RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { " image",			RPMFC_IMAGE|RPMFC_INCLUDE },
   { " font",			RPMFC_FONT|RPMFC_INCLUDE },
@@ -465,8 +472,6 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { " commands",		RPMFC_SCRIPT|RPMFC_INCLUDE },
   { " script",			RPMFC_SCRIPT|RPMFC_INCLUDE },
-
-  { "python compiled",		RPMFC_WHITE|RPMFC_INCLUDE },
 
   { "empty",			RPMFC_WHITE|RPMFC_INCLUDE },
 
@@ -721,7 +726,9 @@ static int rpmfcSCRIPT(rpmfc fc)
     }
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
 	xx = rpmfcHelper(fc, 'P', "python");
+#ifdef	NOTYET
 	if (is_executable)
+#endif
 	    xx = rpmfcHelper(fc, 'R', "python");
     }
 
@@ -1051,6 +1058,7 @@ typedef struct rpmfcApplyTbl_s {
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PYTHON) },
     { NULL, 0 }
 };
 
@@ -1074,6 +1082,18 @@ int rpmfcApply(rpmfc fc)
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
+
+	/* XXX Insure that /usr/lib{,64}/python files are marked RPMFC_PYTHON */
+	/* XXX HACK: classification by path is intrinsically stupid. */
+	{   const char *fn = strstr(fc->fn[fc->ix], "/usr/lib");
+	    if (fn) {
+		fn += sizeof("/usr/lib")-1;
+		if (fn[0] == '6' && fn[1] == '4')
+		    fn += 2;
+		if (!strncmp(fn, "/python", sizeof("/python")-1))
+		    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
+	    }
+	}
 
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
@@ -1151,9 +1171,9 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     size_t slen;
     int fcolor;
     int xx;
-fmagic fm = global_fmagic;
-int action = 0;
-int wid = 0;	/* XXX don't prepend filename: */
+    static const char * magicfile = "/usr/lib/rpm/magic";
+    int msflags = MAGIC_COMPRESS|MAGIC_CHECK;	/* XXX what MAGIC_FOO flags? */
+    magic_t ms = NULL;
 
     if (fc == NULL || argv == NULL)
 	return 0;
@@ -1168,30 +1188,51 @@ int wid = 0;	/* XXX don't prepend filename: */
     xx = argvAdd(&fc->cdict, "");
     xx = argvAdd(&fc->cdict, "directory");
 
-/*@-assignexpose@*/
-    fm->magicfile = default_magicfile;
-/*@=assignexpose@*/
-    /* XXX TODO fm->flags = ??? */
+    ms = magic_open(msflags);
+    if (ms == NULL) {
+	xx = RPMERR_EXEC;
+	rpmError(xx, _("magic_open(0x%x) failed: %s\n"),
+		msflags, strerror(errno));
+assert(ms != NULL);	/* XXX figger a proper return path. */
+    }
 
-    xx = fmagicSetup(fm, fm->magicfile, action);
+    xx = magic_load(ms, magicfile);
+    if (xx == -1) {
+	xx = RPMERR_EXEC;
+	rpmError(xx, _("magic_load(ms, \"%s\") failed: %s\n"),
+		magicfile, magic_error(ms));
+assert(xx != -1);	/* XXX figger a proper return path. */
+    }
+
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
+	const char * ftype;
+
 	s = argv[fc->ix];
 assert(s != NULL);
 	slen = strlen(s);
 
-	fm->obp = fm->obuf;
-	*fm->obp = '\0';
-	fm->nob = sizeof(fm->obuf);
-	xx = fmagicProcess(fm, s, wid);
-
 	/* XXX all files with extension ".pm" are perl modules for now. */
+/*@-branchstate@*/
 	if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
-	    strcpy(fm->obuf, "Perl5 module source text");
+	    ftype = "Perl5 module source text";
+	else {
+	    ftype = magic_file(ms, s);
+	    if (ftype == NULL) {
+		xx = RPMERR_EXEC;
+		rpmError(xx, _("magic_file(ms, \"%s\") faileds: %s\n"),
+			s, magic_error(ms));
+assert(ftype != NULL);	/* XXX figger a proper return path. */
+	    }
+	}
+/*@=branchstate@*/
 
-	se = fm->obuf;
+	se = ftype;
         rpmMessage(RPMMESS_DEBUG, "%s: %s\n", s, se);
 
+	/* Save the path. */
 	xx = argvAdd(&fc->fn, s);
+
+	/* Save the file type string. */
 	xx = argvAdd(&fcav, se);
 
 	/* Add (filtered) entry to sorted class dictionary. */
@@ -1222,7 +1263,8 @@ assert(se != NULL);
 
     fcav = argvFree(fcav);
 
-    /* XXX TODO dump fmagic baggage. */
+    if (ms != NULL)
+	magic_close(ms);
 
     return 0;
 }
