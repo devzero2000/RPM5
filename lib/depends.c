@@ -78,8 +78,8 @@ static int intcmp(const void * a, const void * b)
  */
 static int removePackage(rpmts ts, Header h, int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
-	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/
 {
     rpmte p;
 
@@ -818,7 +818,7 @@ static void freeBadDeps(void)
 /*@-boundsread@*/
 static int ignoreDep(const rpmte p, const rpmte q)
 	/*@globals badDeps, badDepsInitialized,
-		rpmGlobalMacroContext, h_errno @*/
+		rpmGlobalMacroContext @*/
 	/*@modifies badDeps, badDepsInitialized,
 		rpmGlobalMacroContext @*/
 {
@@ -1003,7 +1003,7 @@ static inline int addRelation(rpmts ts,
 		/*@dependent@*/ rpmte p,
 		unsigned char * selected,
 		rpmds requires)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, p, *selected, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {

@@ -1129,7 +1129,7 @@ static inline unsigned char nibble(char c)
 static rpmRC
 verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
     const void * sig = rpmtsSig(ts);
@@ -1245,7 +1245,7 @@ exit:
 static rpmRC
 verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
     const void * sig = rpmtsSig(ts);

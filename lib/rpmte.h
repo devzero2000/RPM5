@@ -151,8 +151,8 @@ extern "C" {
  */
 /*@null@*/
 rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
-	/*@globals fileSystem @*/
-	/*@modifies te, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies te, fileSystem, internalState @*/;
 
 /**
  * Create a transaction element.
@@ -171,8 +171,8 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@null@*/ rpmRelocation * relocs,
 		int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
-	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Retrieve type of transaction element.
@@ -496,8 +496,8 @@ int rpmtsiOc(rpmtsi tsi)
  */
 /*@unused@*/ /*@null@*/
 rpmtsi rpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Destroy transaction element iterator.
@@ -509,8 +509,8 @@ rpmtsi rpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi)
 /*@null@*/
 rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 		const char * fn, unsigned int ln)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 #define	rpmtsiFree(_tsi)	XrpmtsiFree(_tsi, __FILE__, __LINE__)
 
 /**

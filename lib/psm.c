@@ -155,7 +155,7 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
  */
 /*@-bounds@*/
 static rpmRC markReplacedFiles(const rpmpsm psm)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
@@ -1190,10 +1190,8 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
  * @return		0 on success
  */
 static rpmRC runTriggers(rpmpsm psm)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies psm, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
@@ -1231,10 +1229,8 @@ static rpmRC runTriggers(rpmpsm psm)
  * @return		0 on success
  */
 static rpmRC runImmedTriggers(rpmpsm psm)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies psm, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;

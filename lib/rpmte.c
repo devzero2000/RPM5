@@ -36,8 +36,8 @@ void rpmteCleanDS(rpmte te)
  * @param p		transaction element
  */
 static void delTE(rpmte p)
-	/*@globals fileSystem @*/
-	/*@modifies p, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies p, fileSystem, internalState @*/
 {
     rpmRelocation * r;
 
@@ -85,8 +85,8 @@ static void delTE(rpmte p)
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals fileSystem @*/
-	/*@modifies ts, p, h, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies ts, p, h, rpmGlobalMacroContext, fileSystem @*/
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;

@@ -872,7 +872,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
  */
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
 		/*@out@*/ /*@null@*/ const char ** msg)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *msg, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
@@ -886,7 +886,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
  */
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
 		/*@out@*/ /*@null@*/ const char ** msg)
-        /*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+        /*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
         /*@modifies ts, *hdrp, *msg, rpmGlobalMacroContext,
                 fileSystem, internalState @*/;
 
@@ -900,7 +900,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
  */
 int rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fd, *hdrp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
@@ -915,7 +915,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
 			/*@null@*/ /*@out@*/ const char ** cookie)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
@@ -1183,7 +1183,7 @@ enum rpmtagSignature {
  */
 rpmRC rpmVerifySignature(const rpmts ts,
 		/*@out@*/ char * result)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *result, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 

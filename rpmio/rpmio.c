@@ -999,8 +999,8 @@ static int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
 }
 
 static int ftpCommand(urlinfo u, char ** str, ...)
-	/*@globals fileSystem @*/
-	/*@modifies u, *str, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies u, *str, fileSystem, internalState @*/
 {
     va_list ap;
     int len = 0;

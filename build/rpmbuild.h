@@ -377,8 +377,8 @@ Package newPackage(Spec spec)
  */
 /*@null@*/
 Package freePackages(/*@only@*/ /*@null@*/ Package packages)
-	/*@globals fileSystem @*/
-	/*@modifies packages, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies packages, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  * Destroy package control structure.
@@ -387,8 +387,8 @@ Package freePackages(/*@only@*/ /*@null@*/ Package packages)
  */
 /*@null@*/
 Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
-	/*@globals fileSystem @*/
-	/*@modifies pkg, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies pkg, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  * Add dependency to header, filtering duplicates.

@@ -100,8 +100,8 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
  * @retval		NULL always
  */
 static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FSMI_t iter = p;
     if (iter) {

@@ -38,6 +38,8 @@
 	- changes for python 2.3
 	- changes for libtool-1.5
 	- changes for automake-1.7.8
+	- changes for db-4.2.42.
+	- splint fiddles.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

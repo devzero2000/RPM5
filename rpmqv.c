@@ -159,7 +159,7 @@ int main(int argc, const char ** argv, /*@unused@*/ char ** envp)
 int main(int argc, const char ** argv)
 #endif
 	/*@globals __assert_program_name, rpmEVR, RPMVERSION,
-		rpmGlobalMacroContext, rpmCLIMacroContext,
+		rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies __assert_program_name,
 		fileSystem, internalState@*/

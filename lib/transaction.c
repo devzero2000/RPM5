@@ -93,7 +93,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 		rpmte p, rpmfi fi,
 		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     uint_32 tscolor = rpmtsColor(ts);
@@ -221,7 +221,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 /* XXX only ts->rpmdb modified */
 static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 		sharedFileInfo shared, int sharedCount)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = fi->hge;

@@ -1,9 +1,8 @@
--I. -I.. -I/usr/include/beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I./beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 +forcehints
 
-#-warnunixlib
 -warnposix
 
 +unixlib

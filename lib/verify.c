@@ -251,7 +251,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
  * @return		0 no problems, 1 problems found
  */
 static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies fi, fileSystem, internalState  @*/
 {
     char buf[BUFSIZ];

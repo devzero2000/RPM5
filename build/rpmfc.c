@@ -733,8 +733,8 @@ static int rpmfcSCRIPT(rpmfc fc)
  * @return		0 on success
  */
 static int rpmfcELF(rpmfc fc)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fc, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 #if HAVE_GELF_H && HAVE_LIBELF
     const char * fn = fc->fn[fc->ix];

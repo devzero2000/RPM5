@@ -39,7 +39,7 @@ extern "C" {
 		/*@out@*/ struct rpmlead * lead,
 		/*@out@*/ Header * sigs,
 		CSA_t csa)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *specp, *lead, *sigs, csa, csa->cpioFdIn,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

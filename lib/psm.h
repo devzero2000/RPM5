@@ -155,8 +155,8 @@ rpmpsm XrpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg,
  */
 /*@null@*/
 rpmpsm rpmpsmFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm)
-	/*@globals fileSystem @*/
-	/*@modifies psm, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/;
 
 /**
  * Create and load a package state machine.
@@ -175,7 +175,7 @@ rpmpsm rpmpsmNew(rpmts ts, /*@null@*/ rpmte te, rpmfi fi)
  * @return		0 on success
  */
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus

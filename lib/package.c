@@ -28,8 +28,10 @@
 /*@access indexEntry @*/	/* XXX headerCheck */
 /*@access FD_t @*/		/* XXX stealing digests */
 
+/*@-exportheadervar@*/
 /*@unchecked@*/
 int _print_pkts = 0;
+/*@=exportheadervar@*/
 
 /*@unchecked@*/
 static unsigned int nkeyids_max = 256;

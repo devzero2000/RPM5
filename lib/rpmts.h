@@ -264,7 +264,7 @@ int rpmtsCheck(rpmts ts)
  * @return		no. of (added) packages that could not be ordered
  */
 int rpmtsOrder(rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -331,7 +331,7 @@ int rpmtsCloseDB(rpmts ts)
  * @return		0 on success
  */
 int rpmtsOpenDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -342,7 +342,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
  * @return		0 on success
  */
 int rpmtsInitDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -351,7 +351,7 @@ int rpmtsInitDB(rpmts ts, int dbmode)
  * @return		0 on success
  */
 int rpmtsRebuildDB(rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -360,7 +360,7 @@ int rpmtsRebuildDB(rpmts ts)
  * @return		0 on success
  */
 int rpmtsVerifyDB(rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -405,7 +405,7 @@ int rpmtsCloseSDB(rpmts ts)
  */
 /*@-exportlocal@*/
 int rpmtsOpenSDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
@@ -857,7 +857,7 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmts
@@ -889,8 +889,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  * @return		0 on success
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
-	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmts
  * Retrieve keys from ordered transaction set.

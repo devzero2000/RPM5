@@ -483,8 +483,8 @@ rpmfi rpmfiInitD(/*@null@*/ rpmfi fi, int dx)
  */
 /*@null@*/
 rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
-	/*@globals fileSystem @*/
-	/*@modifies fi, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fi, fileSystem, internalState @*/;
 
 /**
  * Create and load a file info set.
@@ -496,8 +496,8 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
  */
 /*@null@*/
 rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
-	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Retrieve file classes from header.
@@ -510,8 +510,9 @@ rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
  */
 void rpmfiBuildFClasses(Header h,
 		/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
-	/*@globals fileSystem @*/
-	/*@modifies h, *fclassp, *fcp, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies h, *fclassp, *fcp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Retrieve per-file dependencies from header.
@@ -525,8 +526,9 @@ void rpmfiBuildFClasses(Header h,
  */
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
-	/*@globals fileSystem @*/
-	/*@modifies h, *fdepsp, *fcp, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies h, *fdepsp, *fcp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Return file type from mode_t.
