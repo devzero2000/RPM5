@@ -72,6 +72,9 @@ static int rpmtransSetAttr(rpmtransObject * o, char * name,
 			   PyObject * val);
 static PyObject * doFopen(PyObject * self, PyObject * args);
 
+/* signature verification */
+static PyObject * checkSig (PyObject * self, PyObject * args);
+
 /* Types */
 
 static PyMethodDef rpmModuleMethods[] = {
@@ -91,6 +94,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
+    { "checksig", (PyCFunction) checkSig, METH_VARARGS, NULL },
     /* don't use me yet
     { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL },
     */
@@ -113,6 +117,7 @@ struct rpmtransObject_s {
 struct hdrObject_s {
     PyObject_HEAD;
     Header h;
+    Header sigs;
     char ** md5list;
     char ** fileList;
     char ** linkList;
@@ -225,7 +230,7 @@ int mdfile(const char *fn, unsigned char *digest);
 extern int _rpmio_debug;
 
 void initrpm(void) {
-    PyObject * m, * d, * tag, * dict;
+    PyObject * m, * d, * tag = NULL, * dict;
     int i;
     const struct headerSprintfExtension * extensions = rpmHeaderFormats;
     struct headerSprintfExtension * ext;
@@ -365,6 +370,13 @@ void initrpm(void) {
 			 PyInt_FromLong(RPMPROB_OLDPACKAGE));
     PyDict_SetItemString(d, "RPMPROB_DISKSPACE",
 			 PyInt_FromLong(RPMPROB_DISKSPACE));
+
+    PyDict_SetItemString(d, "CHECKSIG_PGP",
+			 PyInt_FromLong(CHECKSIG_PGP));
+    PyDict_SetItemString(d, "CHECKSIG_GPG",
+			 PyInt_FromLong(CHECKSIG_GPG));
+    PyDict_SetItemString(d, "CHECKSIG_MD5",
+			 PyInt_FromLong(CHECKSIG_MD5));
 }
 
 /* make a header with _all_ the tags we need */
@@ -751,24 +763,28 @@ static PyObject * labelCompare (PyObject * self, PyObject * args) {
 static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     hdrObject * h;
     Header header;
+    Header sigs;
     int rc;
     FD_t fd;
     int rawFd;
-    int isSource;
+    int isSource = 0;
 
     if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
     fd = fdDup(rawFd);
 
-    rc = rpmReadPackageHeader(fd, &header, &isSource, NULL, NULL);
+    rc = rpmReadPackageInfo(fd, &sigs, &header);
     Fclose(fd);
 
     switch (rc) {
       case 0:
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
 	h->h = header;
+	h->sigs = sigs;
 	h->fileList = h->linkList = h->md5list = NULL;
 	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
 	h->modes = h->rdevs = NULL;
+	if (headerIsEntry(header, RPMTAG_SOURCEPACKAGE))
+	    isSource = 1;
 	break;
 
       case 1:
@@ -925,6 +941,7 @@ static hdrObject * rpmdbSubscript(rpmdbObject * s, PyObject * key) {
 
 static void hdrDealloc(hdrObject * s) {
     if (s->h) headerFree(s->h);
+    if (s->sigs) headerFree(s->sigs);
     if (s->md5list) free(s->md5list);
     if (s->fileList) free(s->fileList);
     if (s->linkList) free(s->linkList);
@@ -975,7 +992,8 @@ static PyObject * hdrSubscript(hdrObject * s, PyObject * item) {
             return NULL;
         }
         
-        if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
+        if (!rpmPackageGetEntry(NULL, s->sigs, s->h, tag, &type, &data, &count))
+	{
             Py_INCREF(Py_None);
             return Py_None;
         }
@@ -1091,6 +1109,20 @@ static PyObject * hdrSubscript(hdrObject * s, PyObject * item) {
     }
 
     return o;
+}
+
+static PyObject * checkSig (PyObject * self, PyObject * args) {
+    char * filename;
+    int flags;
+    int rc = 255;
+
+    if (PyArg_ParseTuple(args, "si", &filename, &flags)) {
+	const char *av[2];
+	av[0] = filename;
+	av[1] = NULL;
+	rc = rpmCheckSig(flags, av);
+    }
+    return Py_BuildValue("i", rc);
 }
 
 static PyObject * hdrKeyList(hdrObject * s, PyObject * args) {
