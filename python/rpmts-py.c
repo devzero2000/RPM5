@@ -412,7 +412,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 			       conflicts[i].sense);
 #else
 	    char * byName, * byVersion, * byRelease;
-	    char * needsName, * needsOP, * needsVersion;
+	    char * needsName = NULL, * needsOP = NULL, * needsVersion = NULL;
 	    int needsFlags, sense;
 	    fnpyKey key;
 	    
@@ -427,17 +427,19 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    key = p->key;
 
 	    needsName = p->altNEVR;
-	    if (needsName[1] == ' ') {
+	    if ((p->altNEVR != NULL) && needsName[1] == ' ') {
 		sense = (needsName[0] == 'C')
 			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
 		needsName += 2;
 	    } else
 		sense = RPMDEP_SENSE_REQUIRES;
-	    if ((needsVersion = strrchr(needsName, ' ')) != NULL)
+	    if ((p->altNEVR != NULL) && 
+                (needsVersion = strrchr(needsName, ' ')) != NULL)
 		*needsVersion++ = '\0';
 
 	    needsFlags = 0;
-	    if ((needsOP = strrchr(needsName, ' ')) != NULL) {
+	    if ((p->altNEVR != NULL) && 
+                (needsOP = strrchr(needsName, ' ')) != NULL) {
 		for (*needsOP++ = '\0'; *needsOP != '\0'; needsOP++) {
 		    if (*needsOP == '<')	needsFlags |= RPMSENSE_LESS;
 		    else if (*needsOP == '>')	needsFlags |= RPMSENSE_GREATER;

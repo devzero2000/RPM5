@@ -28,6 +28,8 @@
 	- fix: debuginfo: -not -path /usr/lib/debug needed -prune too.
 	- fix: packages w/o file colors segfault.
 	- add amd64 as alias for x86_64 (#99553).
+	- fix: add -n to brp-compress to avoid needless file conflicts.
+	- fix: ia32 on ia64 segfaults because of automagic file relocations.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

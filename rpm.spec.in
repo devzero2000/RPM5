@@ -36,8 +36,8 @@ BuildRequires: elfutils-libelf
 
 BuildRequires: zlib-devel
 
-BuildRequires: beecrypt-devel >= 0:3.0.0-2
-Requires: beecrypt >= 0:3.0.0-2
+BuildRequires: beecrypt-devel >= 3.0.1
+Requires: beecrypt >= 3.0.1
 
 # XXX Red Hat 5.2 has not bzip2 or python
 %if %{with_bzip2}
@@ -476,6 +476,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Tue Sep  9 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-2
+- fix: add -n to brp-compress to avoid needless file conflicts.
+- fix: ia32 on ia64 segfaults because of automagic file relocations.
+
 * Wed Jul 23 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-1
 - release candidate.
 
