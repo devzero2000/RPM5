@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2000-12-21 16:05-0500\n"
-"PO-Revision-Date: 2000-12-22 22:08+0100\n"
+"PO-Revision-Date: 2000-12-26 12:27+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -76,14 +76,12 @@ msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: rpm.c:200 rpmqv.c:284
-#, fuzzy
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
-msgstr "Copyright (C) 1998 - Red Hat Software"
+msgstr "Copyright © 1998-2000 - Red Hat, Inc."
 
 #: rpm.c:201 rpmqv.c:285
-#, fuzzy
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
-msgstr "Den här programvaran kan distribueras fritt med hänsyn till GNU GPL"
+msgstr "Det här programmet kan distribueras fritt enligt villkoren i GNU GPL"
 
 #: rpm.c:209
 msgid "Usage: rpm {--help}"
@@ -318,7 +316,7 @@ msgstr "    --pipe <kommando>     "
 
 #: rpm.c:301 rpmqv.c:411
 msgid "send stdout to <cmd>"
-msgstr "skicka stdut till <kommando>"
+msgstr "skicka standard ut till <kommando>"
 
 #: rpm.c:302
 msgid "    --rcfile <file>       "
@@ -745,11 +743,11 @@ msgstr "använd <kat> som tillverkningsrot"
 
 #: rpm.c:491
 msgid "      --target=<platform>+"
-msgstr "      --target=<plattfrm>+"
+msgstr "      --target=<plattform>+"
 
 #: rpm.c:492 rpmqv.c:612
 msgid "build the packages for the build targets platform1...platformN."
-msgstr "tillverka paketen för målen plattfrm1...plattfrmN."
+msgstr "tillverka paketen för målen plattform1...plattformN."
 
 #: rpm.c:494 rpmqv.c:614
 msgid "do not execute any stages"
@@ -844,8 +842,8 @@ msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
-"sätt filägare och -grupp till de i paketdatabasen med samma "
-"paketspcifikationsflaggor som -q"
+"sätt filägare och -gruppf till de i paketdatabasen med samma "
+"paketspecifikationsflaggor som -q"
 
 #: rpm.c:671 rpm.c:677 rpm.c:686 rpm.c:708 rpm.c:714 rpm.c:721 rpm.c:729
 #: rpm.c:737 rpm.c:758 rpm.c:821 rpmqv.c:825 rpmqv.c:834 rpmqv.c:840
@@ -884,7 +882,7 @@ msgstr "Flaggan --rcfile har tagits bort.\n"
 
 #: rpm.c:788
 msgid "Use --macros with a colon separated list of macro files to read.\n"
-msgstr "Använd --macros med en kolonseparerad lista av makrofiler att läsa.\n"
+msgstr "Använd --macros med en kolonseparerad lista med makrofiler att läsa.\n"
 
 #: rpm.c:793 rpmqv.c:937
 #, c-format
@@ -960,7 +958,7 @@ msgstr "--includedocs kan enbart användas vid paketinstallation"
 
 #: rpm.c:884 rpmqv.c:1067
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "enbart en av --excludedocs och --includedocs läge kan specifieras"
+msgstr "enbart en av --excludedocs och --includedocs kan specifieras"
 
 #: rpm.c:888 rpmqv.c:1071
 msgid "--ignorearch may only be specified during package installation"
@@ -1540,15 +1538,15 @@ msgstr ""
 
 #: build/expression.c:208
 msgid "syntax error while parsing =="
-msgstr "syntaxfel vid parsning av =="
+msgstr "syntaxfel vid tolkning av =="
 
 #: build/expression.c:238
 msgid "syntax error while parsing &&"
-msgstr "syntaxfel vid parsning av &&"
+msgstr "syntaxfel vid tolkning av &&"
 
 #: build/expression.c:247
 msgid "syntax error while parsing ||"
-msgstr "syntaxfel vid parsning av ||"
+msgstr "syntaxfel vid tolkning av ||"
 
 #: build/expression.c:287
 msgid "parse error in expression"
@@ -1929,7 +1927,7 @@ msgstr "ingen beskrivning i %%changelog"
 
 #: build/parseDescription.c:40
 msgid "line %d: Error parsing %%description: %s"
-msgstr "rad %d: Fel i parsning av %%description: %s"
+msgstr "rad %d: Fel i tolkning av %%description: %s"
 
 #: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:182
 #, c-format
@@ -1953,7 +1951,7 @@ msgstr "rad %d: En andra beskrivning"
 
 #: build/parseFiles.c:33
 msgid "line %d: Error parsing %%files: %s"
-msgstr "rad %d: Fel i parsning av %%files: %s"
+msgstr "rad %d: Fel i tolkning av %%files: %s"
 
 #: build/parseFiles.c:75
 msgid "line %d: Second %%files list"
@@ -2096,7 +2094,7 @@ msgstr "Kunde inte hämta nosource %s: %s"
 
 #: build/parsePrep.c:277
 msgid "Error parsing %%setup: %s"
-msgstr "Fel i parsning av %%setup: %s"
+msgstr "Fel i tolkning av %%setup: %s"
 
 #: build/parsePrep.c:292
 msgid "line %d: Bad arg to %%setup %c: %s"
@@ -2148,7 +2146,7 @@ msgstr "rad %d: Filnamn inte tillåtna: %s"
 #: build/parseReqs.c:142
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s"
-msgstr "rad %d: Versionsfilnamn inte tillåtet: %s"
+msgstr "rad %d: Filnamn med version inte tillåtet: %s"
 
 #: build/parseReqs.c:172
 #, c-format
@@ -2163,7 +2161,7 @@ msgstr "rad %d: utlösare måste ha --: %s"
 #: build/parseScript.c:161 build/parseScript.c:219
 #, c-format
 msgid "line %d: Error parsing %s: %s"
-msgstr "rad %d: Fel vid parsning av %s: %s"
+msgstr "rad %d: Fel vid tolkning av %s: %s"
 
 #: build/parseScript.c:171
 #, c-format
@@ -2279,7 +2277,7 @@ msgstr "Saknad hårdlänk"
 
 #: lib/cpio.c:1268
 msgid "MD5 sum mismatch"
-msgstr "MD5-summa stämmer inte"
+msgstr "MD5-summan stämmer inte"
 
 #: lib/cpio.c:1269
 msgid "Internal error"
@@ -2339,7 +2337,7 @@ msgstr "%s: %-45s JA (db-filer)\n"
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db tillhandahållande)\n"
 
-#: lib/depends.c:1143
+#: lib/depends.c:1144
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s JA (db-paket)\n"
@@ -2366,7 +2364,7 @@ msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1531
+#: lib/depends.c:1522
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
@@ -2402,7 +2400,7 @@ msgstr " utför %s"
 #: lib/db1.c:388
 #, c-format
 msgid "closed  db file        %s\n"
-msgstr "stängde  db fil        %s\n"
+msgstr "stängde  db-fil        %s\n"
 
 #: lib/db1.c:391
 #, c-format
@@ -2558,7 +2556,7 @@ msgid "file %s is on an unknown device"
 msgstr "filen %s är på en okänd enhet"
 
 #. This should not be allowed
-#: lib/header.c:215
+#: lib/header.c:220
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE antal måste vara 1.\n"
 
@@ -2732,22 +2730,22 @@ msgstr "avbryter installation eftersom vi kör --test\n"
 
 #: lib/install.c:1023
 msgid "running preinstall script (if any)\n"
-msgstr "kör (eventuellt) preinstalltionsskript\n"
+msgstr "kör (eventuellt) preinstallationsskript\n"
 
 #: lib/install.c:1030
-#, fuzzy
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
-msgstr "hoppar över %s - överföring misslyckades - %s\n"
+msgstr ""
+"hoppar över %s-%s-%s installation, %%pre-skriptet misslyckades med kod %d\n"
 
 #: lib/install.c:1062
-#, fuzzy, c-format
+#, c-format
 msgid "%s created as %s"
-msgstr "varning: %s skapades som %s"
+msgstr "%s skapades som %s"
 
 #: lib/install.c:1098
-#, fuzzy, c-format
+#, c-format
 msgid "%s saved as %s"
-msgstr "varning: %s sparades som %s"
+msgstr "%s sparades som %s"
 
 #: lib/install.c:1189
 msgid "running postinstall scripts (if any)\n"
@@ -2968,13 +2966,12 @@ msgstr "sökväg %s i paket %s är inte relokerbar"
 #: lib/problems.c:116
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
-msgstr "filen %s är en konflikt mellan installationsförsök av %s och %s"
+msgstr "fil %s är en konflikt mellan installationsförsök av %s och %s"
 
 #: lib/problems.c:121
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr ""
-"filen %s från installation av %s står i konflikt med filen från paket %s"
+msgstr "fil %s från installation av %s står i konflikt med filen från paket %s"
 
 #: lib/problems.c:126
 #, c-format
@@ -3048,11 +3045,11 @@ msgstr "kan inte fråga om %s: %s\n"
 #: lib/query.c:504
 #, c-format
 msgid "open of %s failed: %s\n"
-msgstr "misslyckades öppna %s: %s\n"
+msgstr "misslyckades med att öppna %s: %s\n"
 
 #: lib/query.c:522
 msgid "old format source packages cannot be queried\n"
-msgstr "källpaket i gammalt format går ej att fråga om\n"
+msgstr "källpaket i gammalt format går inte att fråga om\n"
 
 #: lib/query.c:531 lib/rpminstall.c:312
 #, c-format
@@ -3361,7 +3358,7 @@ msgstr "lägger till %d poster till %s-indexet.\n"
 #: lib/rpmdb.c:2342
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
-msgstr ""
+msgstr "tar bort %s efter lyckad db3-ombyggnad.\n"
 
 #: lib/rpmdb.c:2393
 #, c-format
@@ -3432,7 +3429,7 @@ msgstr "Förbereder..."
 
 #: lib/rpminstall.c:145
 msgid "Preparing packages for installation..."
-msgstr "Förbereder paket för installation"
+msgstr "Förbereder paket för installation ..."
 
 #: lib/rpminstall.c:206
 msgid "counting packages to install\n"
@@ -3574,12 +3571,12 @@ msgstr "Felaktigt arkitektur-/osnummer: %s (%s:%d)"
 #: lib/rpmrc.c:359
 #, c-format
 msgid "Incomplete default line at %s:%d"
-msgstr "Ofullständig skönsfallsrad vid %s:%d"
+msgstr "Ofullständig standardvärdesrad vid %s:%d"
 
 #: lib/rpmrc.c:364
 #, c-format
 msgid "Too many args in default line at %s:%d"
-msgstr "För många argument i skönsfallsrad vid %s:%d"
+msgstr "För många argument i standardvärdesrad vid %s:%d"
 
 #: lib/rpmrc.c:554
 #, c-format
@@ -3742,7 +3739,7 @@ msgstr "Genererar signatur med GPG.\n"
 
 #: lib/signature.c:501 lib/signature.c:563
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
-msgstr "Kunde inte köra pgp.  Använd --nopgp för att hoppa över PGPkontroll."
+msgstr "Kunde inte köra pgp.  Använd --nopgp för att hoppa över PGP-kontroll."
 
 #: lib/signature.c:561 lib/signature.c:634
 msgid "exec failed!\n"
@@ -3750,7 +3747,7 @@ msgstr "exec misslyckades!\n"
 
 #: lib/signature.c:636
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
-msgstr "Kunde inte köra gpg.  Använd --nogpg för att hoppa över GPGkontroll."
+msgstr "Kunde inte köra gpg.  Använd --nogpg för att hoppa över GPG-kontroll."
 
 #: lib/signature.c:724
 msgid "Couldn't exec pgp"
@@ -3820,9 +3817,9 @@ msgid "running postuninstall script (if any)\n"
 msgstr "kör (eventuellt) postavinstallationsskript\n"
 
 #: lib/uninstall.c:448
-#, fuzzy, c-format
+#, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d"
-msgstr "körning av skript från %s-%s-%s misslyckades, slutstatus %d"
+msgstr "körning av %s-skript från %s-%s-%s misslyckades, slutstatus %d"
 
 #: lib/verify.c:44
 msgid "don't verify files in package"
@@ -3947,7 +3944,7 @@ msgstr "Makro %%%s har otillåtet namn (%%undefine)"
 
 #: rpmio/macro.c:721
 msgid "Macro %%%s (%s) was not used below level %d"
-msgstr "Makro %%%s (%s) var inte använd under nivå %d"
+msgstr "Makro %%%s (%s) användes inte under nivå %d"
 
 #: rpmio/macro.c:814
 #, c-format
@@ -3994,7 +3991,7 @@ msgstr "(inget fel)"
 #. !< RPMLOG_EMERG
 #: rpmio/rpmlog.c:83 rpmio/rpmlog.c:84 rpmio/rpmlog.c:85
 msgid "fatal error: "
-msgstr "fatalt fel: "
+msgstr "ödesdigert fel: "
 
 #. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:86
