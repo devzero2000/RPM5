@@ -1,3 +1,4 @@
+/*@-bounds@*/
 /*@-mods@*/
 #include "system.h"
 
@@ -23,14 +24,14 @@
 /*@access FD_t@*/		/* compared with NULL */
 
 /*@observer@*/ /*@unchecked@*/
-static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
+static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
 
 /*@observer@*/ /*@checked@*/
 const char * macrofiles = MACROFILES;
 
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
-/*@only@*/ /*@unchecked@*/
+/*@only@*/ /*@relnul@*/ /*@unchecked@*/
 static const char ** platpat = NULL;
 /*@unchecked@*/
 static int nplatpat = 0;
@@ -781,6 +782,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 
 /**
  */
+/*@-bounds@*/
 static int rpmPlatform(const char * platform)
 	/*@globals nplatpat, platpat,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -882,6 +884,7 @@ exit:
 /*@=modobserver@*/
     return rc;
 }
+/*@=bounds@*/
 
 
 #	if defined(__linux__) && defined(__i386__)
@@ -891,7 +894,7 @@ exit:
 /*
  * Generic CPUID function
  */
-static inline void cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
+static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx)
 	/*@modifies *eax, *ebx, *ecx, *edx @*/
 {
 #ifdef	__LCLINT__
@@ -987,24 +990,30 @@ static inline int RPMClass(void)
 	/*@modifies internalState @*/
 {
 	int cpu;
-	unsigned int tfms, junk, cap;
+	unsigned int tfms, junk, cap, capamd;
 	
 	signal(SIGILL, model3);
 	
-	if(sigsetjmp(jenv, 1))
+	if (sigsetjmp(jenv, 1))
 		return 3;
 		
-	if(cpuid_eax(0x000000000)==0)
+	if (cpuid_eax(0x000000000)==0)
 		return 4;
-	cpuid(0x000000001, &tfms, &junk, &junk, &cap);
+
+	cpuid(0x00000001, &tfms, &junk, &junk, &cap);
+	cpuid(0x80000001, &junk, &junk, &junk, &capamd);
 	
 	cpu = (tfms>>8)&15;
 	
-	if(cpu < 6)
+	if (cpu < 6)
 		return cpu;
 		
-	if(cap & (1<<15))
+	if (cap & (1<<15)) {
+		/* CMOV supported? */
+		if (capamd & (1<<30))
+			return 7;	/* 3DNOWEXT supported */
 		return 6;
+	}
 		
 	return 5;
 }
@@ -1030,7 +1039,7 @@ static int is_athlon(void)
  	for (i=0; i<4; i++)
  		vendor[8+i] = (unsigned char) (ecx >>(8*i));
  		
- 	if (strcmp(vendor, "AuthenticAMD") != 0)  
+ 	if (strncmp(vendor, "AuthenticAMD", 12) != 0)  
  		return 0;
 
 	return 1;
@@ -1217,7 +1226,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	}
 #	endif	/* hpux */
 
-#	if HAVE_PERSONALITY && defined(__linux__) && defined(__sparc__)
+#	if defined(__linux__) && defined(__sparc__)
 	if (!strcmp(un.machine, "sparc")) {
 	    #define PERS_LINUX		0x00000000
 	    #define PERS_LINUX_32BIT	0x00800000
@@ -1270,7 +1279,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	{
 	    char class = (char) (RPMClass() | '0');
 
-	    if (class == '6' && is_athlon())
+	    if ((class == '6' && is_athlon()) || class == '7')
 	    	strcpy(un.machine, "athlon");
 	    else if (strchr("3456", un.machine[1]) && un.machine[1] != class)
 		un.machine[1] = class;
@@ -1636,6 +1645,14 @@ void rpmFreeRpmrc(void)
 {
     int i, j, k;
 
+/*@-onlyunqglobaltrans -unqualifiedtrans @*/
+    if (platpat)
+    for (i = 0; i < nplatpat; i++)
+	platpat[i] = _free(platpat[i]);
+    platpat = _free(platpat);
+/*@-onlyunqglobaltrans =unqualifiedtrans @*/
+    nplatpat = 0;
+
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
 	tableType t;
 	t = tables + i;
@@ -1693,9 +1710,9 @@ void rpmFreeRpmrc(void)
     current[OS] = _free(current[OS]);
     current[ARCH] = _free(current[ARCH]);
     defaultsInitialized = 0;
-/*@-nullstate@*/ /* FIX: current may be NULL */
+/*@-globstate -nullstate@*/ /* FIX: platpat/current may be NULL */
     return;
-/*@=nullstate@*/
+/*@=globstate =nullstate@*/
 }
 
 /** \ingroup rpmrc
@@ -1878,3 +1895,4 @@ int rpmShowRC(FILE * fp)
     return 0;
 }
 /*@=mods@*/
+/*@=bounds@*/

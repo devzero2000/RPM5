@@ -85,6 +85,8 @@
 	- use /etc/rpm/platform (if it exists), rather than uname(2), for arch.
 	- add /usr/lib/rpm/redhat/* per-vendor configuration.
 	- beecrypt: revert cpu/arch compile option mixup (#66752).
+	- backport /etc/rpm/platform changes.
+	- backport db-4.1.17 changes.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

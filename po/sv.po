@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-07 17:27-0400\n"
+"POT-Creation-Date: 2002-11-05 13:33-0500\n"
 "PO-Revision-Date: 2002-02-18 21:13+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3276,97 +3276,97 @@ msgstr "återställer (+%d,-%d) paket till %s"
 msgid "read failed: %s (%d)\n"
 msgstr "läsning misslyckades: %s (%d)\n"
 
-#: lib/rpmrc.c:200
+#: lib/rpmrc.c:201
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "andra \":\" saknas vid %s:%d\n"
 
-#: lib/rpmrc.c:203
+#: lib/rpmrc.c:204
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "arkitekturnamn saknas vid %s:%d\n"
 
-#: lib/rpmrc.c:357
+#: lib/rpmrc.c:358
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Ofullständig datarad vid %s:%d\n"
 
-#: lib/rpmrc.c:362
+#: lib/rpmrc.c:363
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "För många argument i datarad vid %s:%d\n"
 
-#: lib/rpmrc.c:370
+#: lib/rpmrc.c:371
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Felaktigt arkitektur-/os-nummer: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:407
+#: lib/rpmrc.c:408
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Ofullständig standardvärdesrad vid %s:%d\n"
 
-#: lib/rpmrc.c:412
+#: lib/rpmrc.c:413
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "För många argument i standardvärdesrad vid %s:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:582
+#: lib/rpmrc.c:583
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Misslyckades med att läsa %s: %s.\n"
 
-#: lib/rpmrc.c:620
+#: lib/rpmrc.c:621
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "\":\" saknas (hittade 0x%02x) vid %s:%d\n"
 
-#: lib/rpmrc.c:637 lib/rpmrc.c:711
+#: lib/rpmrc.c:638 lib/rpmrc.c:712
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "argument till %s saknas vid %s:%d\n"
 
-#: lib/rpmrc.c:654 lib/rpmrc.c:676
+#: lib/rpmrc.c:655 lib/rpmrc.c:677
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s expansion misslyckades vid %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:663
+#: lib/rpmrc.c:664
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "kan inte öppna %s vid %s:%d: %s\n"
 
-#: lib/rpmrc.c:703
+#: lib/rpmrc.c:704
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "arkitektur saknas för %s vid %s:%d\n"
 
-#: lib/rpmrc.c:770
+#: lib/rpmrc.c:771
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "okänd flagga \"%s\" vid %s:%d\n"
 
-#: lib/rpmrc.c:1521
+#: lib/rpmrc.c:1530
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Okänt system: %s\n"
 
-#: lib/rpmrc.c:1522
+#: lib/rpmrc.c:1531
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1747
+#: lib/rpmrc.c:1764
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Kan inte expandera %s\n"
 
-#: lib/rpmrc.c:1752
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Kan inte läsa %s, HOME är för stor.\n"
 
-#: lib/rpmrc.c:1769
+#: lib/rpmrc.c:1786
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kan inte öppna %s för läsning: %s.\n"
@@ -3601,11 +3601,11 @@ msgstr "öppnar db-fil          %s rättighet 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kan inte få %s lås på databas\n"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1228
+#: rpmdb/db1.c:576 rpmdb/db3.c:1232
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1228
+#: rpmdb/db1.c:576 rpmdb/db3.c:1232
 msgid "shared"
 msgstr "delat"
 
@@ -3624,27 +3624,27 @@ msgstr "tog bort    db-miljö %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "öppnar      db-miljö %s/%s %s\n"
 
-#: rpmdb/db3.c:711
+#: rpmdb/db3.c:715
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "stängde     db-index %s/%s\n"
 
-#: rpmdb/db3.c:778
+#: rpmdb/db3.c:782
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "verifierade db-index %s/%s\n"
 
-#: rpmdb/db3.c:1001
+#: rpmdb/db3.c:1007
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"
 
-#: rpmdb/db3.c:1226
+#: rpmdb/db3.c:1230
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1232
+#: rpmdb/db3.c:1236
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste       db-index %s/%s\n"

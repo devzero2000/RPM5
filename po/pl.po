@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-07 17:27-0400\n"
+"POT-Creation-Date: 2002-11-05 13:33-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3398,97 +3398,97 @@ msgstr ""
 msgid "read failed: %s (%d)\n"
 msgstr "odczyt nie powiód³ siê: %s (%d)"
 
-#: lib/rpmrc.c:200
+#: lib/rpmrc.c:201
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "brak drugiego ':' przy %s:%d"
 
-#: lib/rpmrc.c:203
+#: lib/rpmrc.c:204
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "brak nazwy architektury przy %s:%d"
 
-#: lib/rpmrc.c:357
+#: lib/rpmrc.c:358
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Niekompletna linia danych przy %s:%d"
 
-#: lib/rpmrc.c:362
+#: lib/rpmrc.c:363
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Zbyt wiele argumentów w linii danych przy %s:%d"
 
-#: lib/rpmrc.c:370
+#: lib/rpmrc.c:371
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "B³êdny numer arch/os: %s (%s:%d)"
 
-#: lib/rpmrc.c:407
+#: lib/rpmrc.c:408
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Niekompletna domy¶lna linia przy %s:%d"
 
-#: lib/rpmrc.c:412
+#: lib/rpmrc.c:413
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Zbyt wiele argumentów w linii domy¶lnej przy %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:582
+#: lib/rpmrc.c:583
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Odczytanie %s nie powiod³o siê: %s."
 
-#: lib/rpmrc.c:620
+#: lib/rpmrc.c:621
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "brak ':' przy %s:%d"
 
-#: lib/rpmrc.c:637 lib/rpmrc.c:711
+#: lib/rpmrc.c:638 lib/rpmrc.c:712
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "brak argumentu dla %s przy %s:%d"
 
-#: lib/rpmrc.c:654 lib/rpmrc.c:676
+#: lib/rpmrc.c:655 lib/rpmrc.c:677
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s: Open nie powiod³o siê\n"
 
-#: lib/rpmrc.c:663
+#: lib/rpmrc.c:664
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nie mo¿na otworzyæ %s przy %s:%d"
 
-#: lib/rpmrc.c:703
+#: lib/rpmrc.c:704
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "brak architektury dla %s przy %s:%d"
 
-#: lib/rpmrc.c:770
+#: lib/rpmrc.c:771
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "b³êdna opcja '%s' przy %s:%d"
 
-#: lib/rpmrc.c:1521
+#: lib/rpmrc.c:1530
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Nieznany system: %s\n"
 
-#: lib/rpmrc.c:1522
+#: lib/rpmrc.c:1531
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Skontaktuj siê, proszê, z rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1747
+#: lib/rpmrc.c:1764
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie mo¿na rozszerzyæ %s"
 
-#: lib/rpmrc.c:1752
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1769
+#: lib/rpmrc.c:1786
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s."
@@ -3732,11 +3732,11 @@ msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 msgid "cannot get %s lock on database\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1228
+#: rpmdb/db1.c:576 rpmdb/db3.c:1232
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1228
+#: rpmdb/db1.c:576 rpmdb/db3.c:1232
 msgid "shared"
 msgstr ""
 
@@ -3755,27 +3755,27 @@ msgstr "usuwanie indeksu plików dla %s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:711
+#: rpmdb/db3.c:715
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:778
+#: rpmdb/db3.c:782
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:1001
+#: rpmdb/db3.c:1007
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: rpmdb/db3.c:1226
+#: rpmdb/db3.c:1230
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db3.c:1232
+#: rpmdb/db3.c:1236
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-07 17:27-0400\n"
+"POT-Creation-Date: 2002-11-05 13:33-0500\n"
 
 # , c-format
 #: build.c:39
@@ -3588,103 +3588,103 @@ msgstr "no foi passado pacote para desinstalao"
 msgid "read failed: %s (%d)\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmrc.c:200
+#: lib/rpmrc.c:201
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:203
+#: lib/rpmrc.c:204
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:357
+#: lib/rpmrc.c:358
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:362
+#: lib/rpmrc.c:363
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:370
+#: lib/rpmrc.c:371
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:407
+#: lib/rpmrc.c:408
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:412
+#: lib/rpmrc.c:413
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
 # , c-format
 #. XXX Feof(fd)
-#: lib/rpmrc.c:582
+#: lib/rpmrc.c:583
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/rpmrc.c:620
+#: lib/rpmrc.c:621
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:637 lib/rpmrc.c:711
+#: lib/rpmrc.c:638 lib/rpmrc.c:712
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmrc.c:654 lib/rpmrc.c:676
+#: lib/rpmrc.c:655 lib/rpmrc.c:677
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmrc.c:663
+#: lib/rpmrc.c:664
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmrc.c:703
+#: lib/rpmrc.c:704
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmrc.c:770
+#: lib/rpmrc.c:771
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmrc.c:1521
+#: lib/rpmrc.c:1530
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1522
+#: lib/rpmrc.c:1531
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmrc.c:1747
+#: lib/rpmrc.c:1764
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmrc.c:1752
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmrc.c:1769
+#: lib/rpmrc.c:1786
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "No consegui abrir: %s\n"
@@ -3958,11 +3958,11 @@ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 msgid "cannot get %s lock on database\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1228
+#: rpmdb/db1.c:576 rpmdb/db3.c:1232
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1228
+#: rpmdb/db1.c:576 rpmdb/db3.c:1232
 msgid "shared"
 msgstr ""
 
@@ -3981,27 +3981,27 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:711
+#: rpmdb/db3.c:715
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:778
+#: rpmdb/db3.c:782
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:1001
+#: rpmdb/db3.c:1007
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:1226
+#: rpmdb/db3.c:1230
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: rpmdb/db3.c:1232
+#: rpmdb/db3.c:1236
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"

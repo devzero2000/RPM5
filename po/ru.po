@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-07 17:27-0400\n"
+"POT-Creation-Date: 2002-11-05 13:33-0500\n"
 "PO-Revision-Date: 2002-04-09 16:44-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3308,97 +3308,97 @@ msgstr "откатить (+%d,-%d) пакеты к %s"
 msgid "read failed: %s (%d)\n"
 msgstr "ошибка чтения: %s (%d)\n"
 
-#: lib/rpmrc.c:200
+#: lib/rpmrc.c:201
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "отсутствует второе ':' в %s:%d\n"
 
-#: lib/rpmrc.c:203
+#: lib/rpmrc.c:204
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "отсутствует название архитектуры в %s:%d\n"
 
-#: lib/rpmrc.c:357
+#: lib/rpmrc.c:358
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Неполная строка данных в %s:%d\n"
 
-#: lib/rpmrc.c:362
+#: lib/rpmrc.c:363
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Слишком много аргументов в строке данных в %s:%d\n"
 
-#: lib/rpmrc.c:370
+#: lib/rpmrc.c:371
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Неверный номер arch/os: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:407
+#: lib/rpmrc.c:408
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Неполная строка по умолчанию в %s:%d\n"
 
-#: lib/rpmrc.c:412
+#: lib/rpmrc.c:413
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Слишком много аргументов в строке по умолчанию в %s:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:582
+#: lib/rpmrc.c:583
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Невозможно прочесть %s: %s.\n"
 
-#: lib/rpmrc.c:620
+#: lib/rpmrc.c:621
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "отсутствует ':' (найден 0x%02x) в %s:%d\n"
 
-#: lib/rpmrc.c:637 lib/rpmrc.c:711
+#: lib/rpmrc.c:638 lib/rpmrc.c:712
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "отсутствует аргумент для %s в %s:%d\n"
 
-#: lib/rpmrc.c:654 lib/rpmrc.c:676
+#: lib/rpmrc.c:655 lib/rpmrc.c:677
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "ошибка раскрытия %s на %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:663
+#: lib/rpmrc.c:664
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "невозможно открыть %s в %s:%d %s\n"
 
-#: lib/rpmrc.c:703
+#: lib/rpmrc.c:704
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "отсутствует архитектура для %s в %s:%d\n"
 
-#: lib/rpmrc.c:770
+#: lib/rpmrc.c:771
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "неверный параметр '%s' в %s:%d\n"
 
-#: lib/rpmrc.c:1521
+#: lib/rpmrc.c:1530
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1522
+#: lib/rpmrc.c:1531
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1747
+#: lib/rpmrc.c:1764
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Невозможно раскрыть %s\n"
 
-#: lib/rpmrc.c:1752
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Невозможно прочитать %s, значение HOME слишком велико.\n"
 
-#: lib/rpmrc.c:1769
+#: lib/rpmrc.c:1786
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
@@ -3634,11 +3634,11 @@ msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных\n"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1228
+#: rpmdb/db1.c:576 rpmdb/db3.c:1232
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1228
+#: rpmdb/db1.c:576 rpmdb/db3.c:1232
 msgid "shared"
 msgstr "разделяемый"
 
@@ -3657,27 +3657,27 @@ msgstr "удалено окружение базы данных %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "открывается окружение базы данных %s/%s %s\n"
 
-#: rpmdb/db3.c:711
+#: rpmdb/db3.c:715
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "закрыт индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:778
+#: rpmdb/db3.c:782
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "проверен индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:1001
+#: rpmdb/db3.c:1007
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1226
+#: rpmdb/db3.c:1230
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:1232
+#: rpmdb/db3.c:1236
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"

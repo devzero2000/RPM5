@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 7x.24
+Release: 7x.25
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -522,6 +522,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Nov  5 2002 Jeff Johnson <jbj@redhat.com> 4.0.4-7x.25
+- backport /etc/rpm/platform changes.
+- backport db-4.1.17 changes.
+
 * Sat Jun 15 2002 Jeff Johnson <jbj@redhat.com> 4.0.4-7x.24
 - beecrypt: revert cpu/arch compile option mixup (#66752).
 
