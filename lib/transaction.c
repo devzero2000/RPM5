@@ -998,6 +998,130 @@ static void _rpmtsCleanupAutorollback(rpmts rollbackTransaction)
 /**
  * This is not a generalized function to be called from outside
  * librpm.  It is called internally by rpmtsRun() to rollback
+ * passed a failed transaction to the autorollback goal.
+ * @param rollbackTransaction		rollback transaction
+ * @param failedTransaction		Failed transaction
+ * @param ignoreSet			Problems to ignore
+ * @return 				RPMRC_OK, or RPMRC_FAIL
+ */
+static rpmRC _rpmtsARBGoal(rpmts rollbackTransaction, rpmts failedTransaction, 
+    rpmprobFilterFlags ignoreSet)
+{
+    uint_32 arbgoal;
+    int rc         = 0;
+    uint_32 tid;
+    uint_32 failedtid;
+    rpmts ts;
+    rpmtransFlags tsFlags;
+    rpmVSFlags ovsflags;
+    struct rpmInstallArguments_s ia;
+    int xx;
+
+    rpmMessage(RPMMESS_DEBUG , _("Rollback to Autorollback goal requested.\n"));
+
+    /*
+     * Gather information for the arbgoal transactions
+     *    1) Get tid, failedtid and autorollback goal (if any)
+     */
+    if(rollbackTransaction == NULL) 
+       tid       = rpmtsGetTid(rollbackTransaction);
+    failedtid = rpmtsGetTid(failedTransaction);
+    arbgoal   = rpmtsGetARBGoal(failedTransaction);
+
+    /* If arbgoal is the sentinal for "none given", then just return */
+    if(arbgoal == 0xffffffff) {
+	rpmMessage(RPMMESS_DEBUG , _("No Autorollback goal set.\n"));
+	return RPMRC_OK;
+    }
+
+    /* All right lets start the autorollback goal games.
+     * XXX: What I am about to do twists up the API a bit.  I am
+     *      going to call a function in rpminstall.c to handle
+     *      the rollback goal.  Long term what I need to do is
+     *      take the kernel of the code in rpminstall.c along with all
+     *      all the IDTX stuff and put in something like rollback.c and
+     *      create the complimentary header. 
+     */
+    rpmMessage(RPMMESS_NORMAL, _("Autorollback Goal: %-24.24s\n"),
+	ctime((const time_t *) &arbgoal));
+    rpmMessage(RPMMESS_NORMAL, 
+	_("Rolling back successful transactions to %s.\n"), 
+	ctime((const time_t *) &arbgoal));
+
+    /* Create transaction for rpmRollback(). */
+    rpmMessage(RPMMESS_DEBUG, 
+	_("Creating rollback transaction to achieve goal\n"));
+    ts = rpmtsCreate();
+
+    /* Set the verify signature flags to that of rollback transaction */
+    ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(rollbackTransaction)); 
+
+    /* Set transaction flags to be the same as the rollback transaction */
+    tsFlags = rpmtsFlags(rollbackTransaction);
+    tsFlags = rpmtsSetFlags(ts, tsFlags); 
+
+    /* Set root dir to be the same as the rollback transaction */
+    rpmtsSetRootDir(ts, rpmtsRootDir(rollbackTransaction));
+
+    /* Setup the notify of the call back to be the same as the rollback 
+     * transaction 
+     */ 
+    xx = rpmtsSetNotifyCallback(ts, rollbackTransaction->notify, 
+	rollbackTransaction->notifyData); 
+
+    /* Create install arguments structure */ 	
+    ia.rbtid      = arbgoal;
+    ia.transFlags = rpmtsFlags(ts);
+    ia.probFilter = ignoreSet;
+    ia.qva_flags  = 0;
+
+    /* Setup the install interface flags.  
+     * XXX: This is an utter hack.
+     * I haven't quite figured out how to get these from a transaction.
+     */
+    ia.installInterfaceFlags = INSTALL_UPGRADE | INSTALL_HASH ;
+
+    /* XXX: HACK 2.  The rollback goal will be without relocations.
+     * Don't know what the right thing to do, but a hint for the 
+     * next I look at this code, is that the te's all have the same
+     * relocs from CLI.  100% correct would be to iterate over the 
+     * trasaction elements and build a new list of relocations (ahhh!).
+     */
+    ia.relocations = NULL;
+    ia.numRelocations = 0;
+
+    /* Add our tid and the failed transaction tid */
+    ia.rbtidExcludes = xcalloc(2, sizeof(*ia.rbtidExcludes));
+    ia.rbtidExcludes[0] = failedtid;
+    if(rollbackTransaction != NULL) { 	
+	/* We were given an an autorollback transaction so exclude
+	 * that also.
+	 */
+	ia.rbtidExcludes[1] = tid;
+	ia.numrbtidExcludes = 2;
+    } else {
+	/* No autorollback transaction given, so only one exclude set */
+	ia.numrbtidExcludes = 1;
+    }
+
+    /* All right, lets start the rollbacks going 
+     * XXX: Need to move core of rpmRollback() and IDTXglob stuff to 
+     *  seperate file/module.
+     */
+    rc = rpmRollback(ts, &ia, NULL);
+
+    /* Free arbgoal transaction */
+    ts = rpmtsFree(ts);
+
+    /* Free tid excludes memory */
+    _free(ia.rbtidExcludes);
+
+    return rc;
+}
+
+/**
+ * This is not a generalized function to be called from outside
+ * librpm.  It is called internally by rpmtsRun() to rollback
  * a failed transaction.
  * @param rollbackTransaction		rollback transaction
  * @param failedTransaction		Failed transaction
@@ -1010,24 +1134,22 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 	/*@modifies rollbackTransaction,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int rc         = 0;
+    rpmRC rc       = 0;
     int numAdded   = 0;
     int numRemoved = 0;
     int unlinked   = 0;
     uint_32 tid;
     uint_32 failedtid;
-    uint_32 arbgoal;
     rpmtsi tsi;
     rpmte  te;
     rpmps  ps;
 
     /*
      * Gather information about this rollback transaction for reporting.
-     *    1) Get tid, failedtid and autorollback goal (if any)
+     *    1) Get tid, failedtid.
      */
     tid       = rpmtsGetTid(rollbackTransaction);
     failedtid = rpmtsGetTid(failedTransaction);
-    arbgoal   = rpmtsGetARBGoal(rollbackTransaction);
 
     /*
      *    2) Get number of install elments and erase elements
@@ -1048,10 +1170,6 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
     tsi = rpmtsiFree(tsi);
 
     rpmMessage(RPMMESS_NORMAL, _("Transaction failed...rolling back\n"));
-    if(arbgoal != 0xffffffff) {
-	rpmMessage(RPMMESS_NORMAL, _("Autorollback Goal: %-24.24s\n"),
-	    ctime((const time_t *) &arbgoal));
-    }
     rpmMessage(RPMMESS_NORMAL,
 	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 	numAdded, numRemoved, ctime((const time_t *)&tid), tid);
@@ -1128,83 +1246,20 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
     }
     tsi = rpmtsiFree(tsi);
 
-    /* Handle autorollback goal if one was given. 
-     * XXX: What I am about to do twists up the API a bit.  I am
-     *      going to call a function in rpminstall.c to handle
-     *      the rollback goal.  Long term what I need to do is
-     *      take the kernel of the code in rpminstall.c along with all
-     *      all the IDTX stuff and put in something like rollback.c and
-     *      create the complimentary header. 
+cleanup:
+    /* Now perform the autorollback goal.  
+     * NOTE: We try this even if an error occurs in the autorollback 
+     *       transaction, because rollbacks are best effort.
      */
-    if(arbgoal != 0xffffffff) {
-	rpmts ts;
-	rpmtransFlags tsFlags;
-	rpmVSFlags ovsflags;
-	struct rpmInstallArguments_s ia;
-	int xx;
+    { 
+        rpmRC arbgoalRC;
 
-	rpmMessage(RPMMESS_NORMAL, 
-	    _("Rolling back successful transactions to %s.\n"), 
-	    ctime((const time_t *) &arbgoal));
-
-	/* Create transaction for rpmRollback() */
-	rpmMessage(RPMMESS_DEBUG, 
-	    _("Creating rollback transaction to achieve goal\n"));
-	ts = rpmtsCreate();
-
-	/* Set the verify signature flags to that of rollback transaction */
-	ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(rollbackTransaction)); 
-
-	/* Set transaction flags to be the same as the rollback transaction */
-	tsFlags = rpmtsFlags(rollbackTransaction);
-	tsFlags = rpmtsSetFlags(ts, tsFlags); 
-
-	/* Set root dir to be the same as the rollback transaction */
-	rpmtsSetRootDir(ts, rpmtsRootDir(rollbackTransaction));
-
-	/* Setup the notify of the call back to be the same as the rollback 
-	 * transaction 
-	 */ 
-	xx = rpmtsSetNotifyCallback(ts, 
-		rollbackTransaction->notify, rollbackTransaction->notifyData);
-
-	/* Create install arguments structure */ 	
-	ia.rbtid      = arbgoal;
-	ia.transFlags = rpmtsFlags(ts);
-	ia.probFilter = ignoreSet;
-	ia.qva_flags  = 0;
-
-	/* Setup the install interface flags.  XXX: This is an utter hack.
-	 * I haven't quite figured out how to get these from a transaction.
-	 */
-	ia.installInterfaceFlags = INSTALL_UPGRADE | INSTALL_HASH ;
-
-	/* XXX: HACK 2.  The rollback goal will be without relocations.
-	 * Don't know what the right thing to do, but a hint for the 
-	 * next I look at this code, is that the te's all have the same
-	 * relocs from CLI.  100% correct would be to iterate over the 
-	 * trasaction elements and build a new list of relocations (ahhh!).
-	 */
-	ia.relocations = NULL;
-	ia.numRelocations = 0;
-
-	/* Add our tid and the failed transaction tid */
-	ia.rbtidExcludes = xcalloc(2, sizeof(*ia.rbtidExcludes));
-	ia.rbtidExcludes[0] = tid;
-	ia.rbtidExcludes[1] = failedtid;
-	ia.numrbtidExcludes = 2;
-
-	/* Segfault here we go... */
-	rc = rpmRollback(ts, &ia, NULL);
-
-	/* Free arbgoal transaction */
-	ts = rpmtsFree(ts);
-
-	/* Free tid excludes memory */
-	_free(ia.rbtidExcludes);
+	arbgoalRC = _rpmtsARBGoal(rollbackTransaction, failedTransaction, 
+	    ignoreSet);
+	if(arbgoalRC != RPMRC_OK) 
+	    rc = arbgoalRC;
     }
 
-cleanup:
     return rc;
 }
 
@@ -1612,8 +1667,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     int xx;
 
     /* XXX programmer error segfault avoidance. */
-    if (rpmtsNElements(ts) <= 0)
+    if (rpmtsNElements(ts) <= 0) {
+	/* JOO: ARBGOAL */
 	return -1;
+    }
 
     /* See if we need to rollback on failure */
     rollbackOnFailure = rpmExpandNumeric(
@@ -1631,8 +1688,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	rollbackOnFailure = 0;
     } else {
 	lock = rpmtsAcquireLock(ts);
-	if (lock == NULL)
+	if (lock == NULL) {
+	    /* JOO: ARBGOAL */
 	    return -1;	/* XXX W2DO? */
+	}
     }
 /*@=branchstate@*/
 
@@ -1654,6 +1713,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	/* Open database RDWR for installing packages. */
 	if (rpmtsOpenDB(ts, dbmode)) {
 	    rpmtsFreeLock(lock);
+	    /* JOO: ARBGOAL */
 	    return -1;	/* XXX W2DO? */
 	}
     }
@@ -1949,6 +2009,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
 	    ps = rpmpsFree(ps);
 	    rpmtsFreeLock(lock);
+	    /* JOO: ARBGOAL */
 	    return 1;	/* XXX WTFO? */
 	}
 
@@ -2133,6 +2194,9 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	 * we were given one to begin with.
 	 */
 	if(rpmtsGetARBGoal(ts) != 0xffffffff) {
+	    /* XXX: I get this from the original transaction now, so its not
+	     * strictly needed here.
+	     */ 
 	    rpmtsSetARBGoal(rollbackTransaction, rpmtsGetARBGoal(ts));
 	}
 
