@@ -4,6 +4,8 @@
 	- fix: add u+w to FIXPERMS.
 	- add buildtime to rpmds, methods to retrieve.
 	- python: hide labelCompare() underneath ds.cmp(a,b).
+	- fix: segfault on --recontext if file_contexts unreadable (#117374).
+	- fix: /etc/security/selinux/file_contexts is default path.
 
 4.2.2 -> 4.3:
 	- upgrade to zlib-1.2.beta7.
