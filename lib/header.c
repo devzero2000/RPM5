@@ -282,13 +282,17 @@ assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
 	case RPM_INT32_TYPE:
-	    for (; ie.info.count > 0; ie.info.count--, ((int_32 *)t) += 1)
-		*((int_32 *)t) = htonl(*((int_32 *)t));
-	    break;
+	{   int_32 * it = (int_32 *)t;
+	    for (; ie.info.count > 0; ie.info.count--, it += 1)
+		*it = htonl(*it);
+	    t = (char *) it;
+	}   break;
 	case RPM_INT16_TYPE:
-	    for (; ie.info.count > 0; ie.info.count--, ((int_16 *)t) += 1)
-		*((int_16 *)t) = htons(*((int_16 *)t));
-	    break;
+	{   int_16 * it = (int_16 *) t;
+	    for (; ie.info.count > 0; ie.info.count--, it += 1)
+		*it = htons(*it);
+	    t = (char *) it;
+	}   break;
 	default:
 	    t += ie.length;
 	    break;
@@ -329,7 +333,8 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 
 	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) +
 			entry->rdlen + REGION_TAG_COUNT;
-	    ei = (int_32 *) *p = xmalloc(count);
+	    *p = xmalloc(count);
+	    ei = (int_32 *) *p;
 	    ei[0] = htonl(ril);
 	    ei[1] = htonl(entry->rdlen + REGION_TAG_COUNT);
 	    pe = (struct entryInfo *) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
