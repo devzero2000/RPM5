@@ -1,0 +1,19 @@
+#
+# XXX:  This is a hack to make sure that the query is
+# ran from the test directory.  The problem is that 
+# we get called in the directory where the spec files are.
+TESTDIR=$(cd $(dirname $0); pwd)
+cd $TESTDIR
+. ./conf.sh
+
+#
+# Figure out if we need to do a -qa.
+if [ $# = 0 ] 
+then 
+	QUERY=a
+else
+	QUERY=$1
+	shift
+fi
+
+$RPM -q${QUERY} --define "${DBPATH_OPT}" $@

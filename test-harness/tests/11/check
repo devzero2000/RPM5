@@ -1,0 +1,11 @@
+NOTINSTALLED works-1-2
+NOTINSTALLED broken-1-2
+INSTALLED works-1-1
+INSTALLED broken-1-1
+FILE /tmp/broken_ran_preun_in_rollback
+FILE /tmp/broken_ran_postun_in_rollback
+FILE /tmp/broken-1-1_ran_pre_in_rollback
+FILE /tmp/broken-1-1_ran_post_in_rollback
+FILE /tmp/works-1-1_ran_pre_in_rollback
+FILE /tmp/works-1-1_ran_post_in_rollback
+

@@ -1,0 +1,21 @@
+#
+# Test should install works-1-1, install works-1-2 and try to install
+# broken-1-1 which fails in post.  This means no erase scriptlets get
+# ran from works-1-1.  Once broken fails, will rollback to 
+# works-1-1 (meaning run 1-1 install, and 1-2 erase), and erase
+# broken-1-1.
+INSTALLED works-1-1
+NOTINSTALLED works-1-2
+NOTINSTALLED broken-1-1
+FILE /tmp/broken_ran_in_autorollback
+FILE /tmp/works_erases_in_arb
+FILE /tmp/works-1-1_pre_icount          2
+FILE /tmp/works-1-1_post_icount         2
+FILE /tmp/works-1-2_pre_icount          2
+FILE /tmp/works-1-2_post_icount         2
+FILE /tmp/works-1-2_preun_icount        1
+FILE /tmp/works-1-2_postun_icount       1
+FILE /tmp/broken-1-1_pre_icount         1
+FILE /tmp/broken-1-1_preun_icount       0
+FILE /tmp/broken-1-1_postun_icount      0
+

@@ -1,0 +1,27 @@
+INSTALLED test-1-1
+INSTALLED test2-1-1
+INSTALLED test3-1-1
+NOTINSTALLED test-1-2
+NOTINSTALLED test2-1-2
+NOTINSTALLED test3-1-2
+FILE /tmp/test-1-1_pre_icount          2
+FILE /tmp/test-1-1_post_icount         2
+FILE /tmp/test-1-2_pre_icount          2
+FILE /tmp/test-1-2_post_icount         2
+FILE /tmp/test-1-2_preun_icount        1
+FILE /tmp/test-1-2_postun_icount       1
+
+FILE /tmp/test2-1-1_pre_icount          2
+FILE /tmp/test2-1-1_post_icount         2
+FILE /tmp/test2-1-2_pre_icount          2
+FILE /tmp/test2-1-2_post_icount         2
+FILE /tmp/test2-1-2_preun_icount        1
+FILE /tmp/test2-1-2_postun_icount       1
+
+FILE /tmp/test3-1-1_pre_icount          2
+FILE /tmp/test3-1-1_post_icount         2
+FILE /tmp/test3-1-2_pre_icount          2
+FILE /tmp/test3-1-2_post_icount         2
+FILE /tmp/test3-1-2_preun_icount        1
+FILE /tmp/test3-1-2_postun_icount       1
+

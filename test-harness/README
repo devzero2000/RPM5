@@ -1,0 +1,153 @@
+I. Introduction
+This is a tiny test engine for RPM.  Most tests at the moment
+are designed to test the auto-rollback feature of RPM, though
+it could probably be used for testing non-failing installs also.
+The tests provided are listed in CATALOGUE, which gives them a
+test I.D. (not be confused with a an RPM transaction I.D. both
+abreviated TID), and a description of what is being tested.
+
+II. Running the Tests
+To run one of these tests, then type:
+
+	./test (test_id)
+
+For instance, to run test 1, you would type:
+
+	./test 1
+
+If you want to see rpm's verbose output then just specify a
+second option of 'v':
+
+	./test 1 v
+
+If you wish to run a test (or tests) over and over again,
+then use the re-test program.  For instance this would run
+test 4 over and over again:
+
+	./re-test 4
+
+This would continue running test 4 over and over again,
+until it failed or you pressed CTRL-C.  Alternatively,
+you can test several tests repeatedly, by listing each
+one, as in:
+
+	./re-test 1 2 3 4
+
+Which would run test 1, 2, 3 and 4 in the order listed, over and 
+over again.
+
+Note, when running re-test you won't see the output from the test.
+If a test fails you can see that test's output in:
+
+	testlog
+
+
+III. Initializing the Test Environment
+Before you run any tests, you will want to initialize the test
+environment.  To do so type:
+
+	./init
+
+This will grab the local rpm database, and make a copy of it.
+This copy will be used by all the tests, so you don't have to
+worry about your system's rpm db getting munged.  
+
+IV. Configuration File
+There is a configuration file for this test engine called
+conf.sh.  It is a actually a shell script with a few tunable
+paramters at the top:
+
+	TESTDIR		This is the location of the test suite.
+			It defaults to the the current working 
+			directory.  You probably won't need to 
+			change this.
+
+	DB		This is where to put the test rpm database.
+
+	RPDIR		This is where to put repackaged packages.
+
+	USE_BUILD_RPM	Set this to 1 if you want to use an uninstalled 
+			just built rpm. 
+
+	BUILD_DIR 	Path to rpm build directory (e.g. 
+			/usr/src/redhat/BUILD/rpm-4.2).
+
+
+V.  Querying the Test RPM Database
+You probably won't need to do this, but if you find a failure, and
+your trying to trouble shoot it the myquery command could come 
+in handy.  It essentially reads the config file to determine
+where the Test RPM Database is located, and then performs a query
+on it.  It has strange syntax (not really meant for humans):
+
+	myquery <rpm_query_options> <remaining_rpm_options>
+
+The <rpm_query_options> are essentially things stuck on the
+end of rpm's -q option.  The <remaining_rpm_options> are usually
+a list of rpms, but you could do things like specify --queryformat
+and so forth.  Mainly, it makes it so you don't have to 
+explictly do the --dbpath option, and it also handles in the
+case of a build rpm the lack of popt aliases (an uninstalled
+rpm does not take --dpath, instead it takes "--define '_dbpath /some/path'"
+...you don't want ot have to type that).
+
+
+VI. Creating New Tests
+
+A test is made up of:
+
+	- A set of initially installed rpm's.
+	- A set of rpm's to install.
+	- A check file that specifies what the results 
+	  should look like.
+
+The rpm's to install, are actually built from spec files.  
+If you want to have a particular rpm installed, then you 
+would place its specfile in:
+
+	tests/<test_id>
+
+For instance if you had a rpm called blah then you would create the
+file:
+
+	tests/8/blah.spec
+
+Of course this is assuming test I.D. 8 is not in use.
+
+Once you have defined you spec files, then you need to specify
+what the database should look like after the test is ran.  You
+would using the example above create a file called:
+
+	tests/8/check
+
+The check file has a very simple syntax.  There are no comments, 
+and blank lines are not allowed.  Each line consists of:
+
+	<command> <argument>
+
+Where the <command> could be INSTALL or NOTINSTALLED (hmm...wonder
+what they mean).  The argument is just the NVR of the rpm.  So 
+say blah was really blah-1-1 and we expected it to be around after 
+our test, then our check file would look like:
+
+	INSTALLED blah-1-1
+
+If we did not expect it to be around it would have been:
+
+	NOTINSTALLED blah-1-1
+
+Now, upgrade tests require that a previous version be around before
+you can upgrade to the newer version.  This is handled by specify
+spec files in the directory:
+
+	setup/<test_id>
+
+Note, since the spec files give all the information about the resulting
+rpm, if you get the spec files right, then the test can do the rest.
+
+FINAL NOTE
+========================================================================
+This purely hacked togethor test frame work.  Don't expect beuatiful
+elegant code.  As a matter of fact if it does not work, I would not
+be suprised.  All patches gleefully accepted (-;
+

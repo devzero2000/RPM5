@@ -1,0 +1,6 @@
+INSTALLED works-1-1
+INSTALLED broken-1-1
+FILE /tmp/works_ran_pre_in_rollback
+FILE /tmp/works_ran_post_in_rollback
+FILE /tmp/broken_ran_pre_in_rollback
+FILE /tmp/broken_ran_post_in_rollback

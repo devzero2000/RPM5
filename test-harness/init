@@ -1,0 +1,69 @@
+. conf.sh
+
+echo "Cleaning up generated config files..."
+rm -f "${RPM_MACRO_FILE}"
+rm -f "${RPM_RC_FILE}"
+rm -f "testlog"
+
+echo "Removing test cache directory..."
+rm -rf "${TEST_CACHE_DIR}"
+
+echo "Removing old test rpms..."
+rm -rf "${PKG_BUILD_DIR}"
+
+echo "Cleaning out old repackage directory..."
+rm -rf ${RPDIR}/*.rpm
+
+echo "Removing old database ${DB}..."
+rm -f "${DB}"/*
+[ -d "${DB}" ] && rmdir "${DB}"
+
+echo "Cleaning up directories..."
+rm -rf "${RPDIR}"
+rm -rf "${TMPDIR}"
+
+[ "$1" = "clean" ] && exit 0
+
+echo "Creating test rpm macro file (${RPM_MACRO_FILE})..."
+echo "${RPM_MACROS}" > $RPM_MACRO_FILE
+                                                                                
+echo "Creating test rpmrc file (${RPM_RC_FILE})..."
+cat > $RPM_RC_FILE <<EOF
+include: /usr/lib/rpm/rpmrc
+macrofiles: ${RPM_MACRO_PATH}
+EOF
+
+echo "Making test directories..."
+mkdir -p "${DB}"
+mkdir -p "${RPDIR}"
+mkdir -p "${TMPDIR}"
+mkdir -p $(rpm --rcfile "${RPM_RC_FILE}" --eval "%{_topdir}")
+mkdir -p $(rpm --rcfile "${RPM_RC_FILE}" --eval "%{_builddir}")
+mkdir -p $(rpm --rcfile "${RPM_RC_FILE}" --eval "%{_rpmdir}")
+mkdir -p $(rpm --rcfile "${RPM_RC_FILE}" --eval "%{_srcrpmdir}")
+
+echo "Copying system database to ${DB}..."
+cp -r /var/lib/rpm/* "${DB}"
+rm -rf "${DB}"/__db*
+
+#
+# Get rpm version and do things based on the version
+V=$($RPM --version | awk '{ print $3 }')
+case $V in
+4.3)
+    #
+    # Make lock file directory...presently, this is per root
+    # not db (YUCH!)
+    echo "Making rpmlock directory..."
+    mkdir -p /var/lock/rpm
+    chown rpm.rpm /var/lock/rpm
+    ;;
+*)
+    :
+    ;;
+esac
+
+exit 0
+
+
+exit 0 

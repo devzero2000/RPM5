@@ -1,0 +1,13 @@
+INSTALLED t2-1-2
+INSTALLED t2-1-2
+NOTINSTALLED t1-1-1
+NOTINSTALLED t2-1-1
+
+#
+# Check instance counts
+FILE /tmp/t1-1-1_trigger_myicount 1
+FILE /tmp/t1-1-1_trigger_ticount  2
+FILE /tmp/t1-1-2_trigger_myicount 2
+FILE /tmp/t1-1-2_trigger_ticount  2
+
+
