@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-07-18 05:59-0400\n"
-"PO-Revision-Date: 2001-07-18 16:42-0400\n"
+"PO-Revision-Date: 2001-07-18 17:10-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
-"Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
+"Language-Team:  <Black Cat Linux Team <blackcat-support@blackcatlinux.com>>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=KOI8-R\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1380,9 +1380,9 @@ msgid "Invalid %s token: %s\n"
 msgstr "Неверный токен %s: %s\n"
 
 #: build/files.c:479
-#, fuzzy, c-format
+#, c-format
 msgid "Missing %s in %s %s\n"
-msgstr "Отсутствует '(' в %s %s\n"
+msgstr "Отсутствует %s в %s %s\n"
 
 #: build/files.c:532
 #, c-format
@@ -1477,9 +1477,9 @@ msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
 #: build/files.c:1661
-#, fuzzy, c-format
+#, c-format
 msgid "Glob not permitted: %s\n"
-msgstr "строка %d: Имена файлов не разрешаются: %s\n"
+msgstr "Glob не разрешаются: %s\n"
 
 #: build/files.c:1675
 #, c-format
@@ -2621,7 +2621,7 @@ msgstr ""
 
 #: lib/poptI.c:204
 msgid "<date>"
-msgstr ""
+msgstr "<дата>"
 
 #: lib/poptI.c:209
 msgid "upgrade package(s)"
