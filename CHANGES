@@ -267,6 +267,8 @@
 	- update ru.po.
 	- fix: handle NOKEY/NOTTRUSTED returns as if OK, always return header.
 	- portability: carry libelf in src rpm, include signal.h.
+	- fix: segfault with --checksig, plug memory leak (#72455).
+	- rpm-4.1 release candidate.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
