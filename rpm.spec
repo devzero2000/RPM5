@@ -232,6 +232,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Thu Jun 22 2000 Jeff Johnson <jbj@redhat.com>
+- internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
+
 * Wed Jun 21 2000 Jeff Johnson <jbj@redhat.com>
 - fix: don't expand macros in false branch of %if (kasal@suse.cz).
 - fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).

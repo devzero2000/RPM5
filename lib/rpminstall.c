@@ -273,6 +273,20 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 			/*@notreached@*/
 		    }
 		}
+		/* If this is a freshen operation, verify an older package is installed */
+		if (interfaceFlags & INSTALL_FRESHEN) {
+		    dbiIndexSet matches;
+		    const char * name;
+		    int count;
+
+		    headerNVR(h, &name, NULL, NULL);
+		
+		    if (rpmdbFindPackage(db, name, &matches) != 0)
+			break;
+
+		    /* Package exists, OK to freshen */
+		    dbiFreeIndexRecord(matches);
+		}
 
 		rc = rpmtransAddPackage(rpmdep, h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,

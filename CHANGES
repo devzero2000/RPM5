@@ -14,6 +14,7 @@
         - fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).
 	- uname on i370 has s390 as arch (#11456).
 	- python: initdb binding (Dan Burcaw <dburcaw@terraplex.com>).
+	- internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
