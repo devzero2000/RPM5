@@ -345,6 +345,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Apr 25 2001 Jeff Johnson <jbj@redhat.com>
+- fix: readlink return value clobbered by header write.
+
 * Mon Apr 23 2001 Jeff Johnson <jbj@redhat.com>
 - regenerate rpm.8 man page from docbook glop (in max-rpm).
 - lib/depends.c: diddle debugging messages.
