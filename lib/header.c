@@ -2921,6 +2921,7 @@ char * headerSprintf(Header h, const char * fmt,
 
     extCache = allocateExtensionCache(exts);
 
+    val = xstrdup("");
     for (i = 0; i < numTokens; i++) {
 	/*@-mods@*/
 	t = singleSprintf(h, format + i, exts, extCache, 0,
