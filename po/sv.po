@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-05-09 18:15-0400\n"
-"PO-Revision-Date: 2001-05-08 12:27+0200\n"
+"PO-Revision-Date: 2001-05-10 22:34+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1582,7 +1582,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"RPM byggfel:\n"
+"RPM-byggfel:\n"
 
 #: build/expression.c:216
 msgid "syntax error while parsing ==\n"
@@ -1742,7 +1742,7 @@ msgstr "Filen behöver inledande \"/\": %s\n"
 #: build/files.c:1530
 #, c-format
 msgid "File not found by glob: %s\n"
-msgstr "Ingen file hittades vid matchningen: %s\n"
+msgstr "Hittade ingen fil vid matchningen: %s\n"
 
 #: build/files.c:1588
 msgid "Could not open %%files file %s: %s\n"
@@ -1946,7 +1946,7 @@ msgstr "rad %d: andra %s\n"
 
 #: build/parseChangelog.c:123
 msgid "%%changelog entries must start with *\n"
-msgstr "%%changlog-poster måste starta med *\n"
+msgstr "%%changelog-poster måste starta med *\n"
 
 #: build/parseChangelog.c:131
 msgid "incomplete %%changelog entry\n"
@@ -1958,7 +1958,7 @@ msgstr "felaktigt datum i %%changelog: %s\n"
 
 #: build/parseChangelog.c:153
 msgid "%%changelog not in decending chronological order\n"
-msgstr "%%changlog är inte i fallande kronologisk ordning\n"
+msgstr "%%changelog är inte i fallande kronologisk ordning\n"
 
 #: build/parseChangelog.c:161 build/parseChangelog.c:172
 msgid "missing name in %%changelog\n"
