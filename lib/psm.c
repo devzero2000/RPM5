@@ -616,7 +616,7 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     const char * specFile = NULL;
     HGE_t hge;
     HFD_t hfd;
-    Header h;
+    Header h = NULL;
     struct psm_s psmbuf;
     PSM_t psm = &psmbuf;
     int isSource;
@@ -766,7 +766,7 @@ exit:
     _specdir = _free(_specdir);
     _sourcedir = _free(_sourcedir);
 
-    h = headerFree(h);
+    if (h) h = headerFree(h);
 
     if (fi) {
 	freeFi(fi);
