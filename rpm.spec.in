@@ -496,6 +496,7 @@ exit 0
 %changelog
 * Tue Oct  5 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-9
 - fix: revert Obsoletes: "fix" (#134497).
+- fix: work around for dangling symlinks not globbed (#134362).
 
 * Fri Oct  1 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-8
 - disable static linking until libc*.a provides symbols.
