@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2002-01-21 11:05-0500\n"
+"POT-Creation-Date: 2002-01-22 12:11-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1387,88 +1387,88 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1464
+#: build/files.c:1481
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1488
+#: build/files.c:1505
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1531 build/files.c:2145 build/parsePrep.c:50
+#: build/files.c:1548 build/files.c:2162 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1543
+#: build/files.c:1560
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1647
+#: build/files.c:1664
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1670
+#: build/files.c:1687
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:1685
+#: build/files.c:1702
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1747
+#: build/files.c:1764
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1758 build/pack.c:149
+#: build/files.c:1775 build/pack.c:149
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:2133
+#: build/files.c:2150
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2207
+#: build/files.c:2224
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:2212
+#: build/files.c:2229
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:2296
+#: build/files.c:2313
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:2300
+#: build/files.c:2317
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2436
+#: build/files.c:2453
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2462 build/files.c:2476
+#: build/files.c:2479 build/files.c:2493
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2597
+#: build/files.c:2614
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2298,7 +2298,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2621 lib/header.c:2642 lib/header.c:2664
+#: lib/header.c:2923 lib/header.c:2944 lib/header.c:2966
 msgid "(not a number)"
 msgstr ""
 
@@ -2384,87 +2384,89 @@ msgid "%s created as %s\n"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:261
+#. @-modfilesys@
+#: lib/header.c:332
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:403
+#. @-modfilesys@
+#: lib/header.c:369 lib/header_internal.c:139 lib/psm.c:403
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1930
+#: lib/header.c:2180
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1960
+#: lib/header.c:2210
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1974
+#: lib/header.c:2224
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1988
+#: lib/header.c:2238
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2005
+#: lib/header.c:2255
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2032
+#: lib/header.c:2282
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2050
+#: lib/header.c:2300
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2054
+#: lib/header.c:2304
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2120
+#: lib/header.c:2370
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2129
+#: lib/header.c:2379
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2142 lib/header.c:2184
+#: lib/header.c:2392 lib/header.c:2434
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2152
+#: lib/header.c:2402
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2169
+#: lib/header.c:2419
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2194
+#: lib/header.c:2444
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2381
+#: lib/header.c:2667
 msgid "(unknown type)"
 msgstr ""
 
@@ -3249,26 +3251,26 @@ msgstr ""
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1368
+#: lib/rpmrc.c:1369
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1369
+#: lib/rpmrc.c:1370
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1594
+#: lib/rpmrc.c:1595
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1599
+#: lib/rpmrc.c:1600
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1616
+#: lib/rpmrc.c:1617
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr ""

@@ -27,6 +27,8 @@
 	- sync popt and rpmio with rpm-4.1, rpmio has OpenPGP API.
 	- sync rpmdb and build with rpm-4.1, lots of splint annotations.
 	- add :armor and :base64 query format qualifiers for binary signatures.
+	- fix: query format qualifiers needed header.c merge.
+	- ppc64 arch added (#58634,#58636).
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

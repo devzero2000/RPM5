@@ -1132,6 +1132,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 #	endif
 
 #	if defined(__linux__) && defined(__powerpc__)
+	if (strcmp(un.machine, "ppc64"))
 	{
 	    unsigned pvr;
 	    __asm__ __volatile__ ("mfspr %0, 287" : "=r" (pvr));

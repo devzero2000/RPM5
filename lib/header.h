@@ -182,9 +182,11 @@ typedef int (*headerTagTagFunction) (Header h,
 typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
 struct headerSprintfExtension_s {
     enum headerSprintfExtenstionType type;	/*!< Type of extension. */
-/*@observer@*/ /*@null@*/ const char * name;	/*!< Name of extension. */
+/*@observer@*/ /*@null@*/
+    const char * name;				/*!< Name of extension. */
     union {
-/*@unused@*/ void * generic;			/*!< Private extension. */
+/*@observer@*/ /*@null@*/
+	void * generic;				/*!< Private extension. */
 	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
 	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
 	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
@@ -195,6 +197,7 @@ struct headerSprintfExtension_s {
  * Supported default header tag output formats.
  */
 /*@-redecl@*/
+/*@observer@*/
 extern const struct headerSprintfExtension_s headerDefaultFormats[];
 /*@=redecl@*/
 
@@ -312,6 +315,15 @@ Header (*HDRlink) (Header h)
         /*@modifies h @*/;
 
 /** \ingroup header
+ * Dereference a header instance.
+ * @param h		header
+ * @return		NULL always
+ */
+typedef
+Header (*HDRunlink) (/*@killref@*/ /*@null@*/ Header h)
+         /*@modifies h @*/;
+
+/** \ingroup header
  * Sort tags in header.
  * @todo Eliminate from API.
  * @param h		header
@@ -394,7 +406,7 @@ typedef
  */
 typedef
 /*@null@*/ Header (*HDRhdrread) (FD_t fd, enum hMagic magicp)
-	/*@modifies fd, fileSystem @*/;
+	/*@modifies fd @*/;
 
 /** \ingroup header
  * Write (with unload) header to file handle.
@@ -405,6 +417,7 @@ typedef
  */
 typedef
 int (*HDRhdrwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/;
 
 /** \ingroup header
@@ -666,7 +679,10 @@ struct HV_s {
     HDRfreeiter	hdrfreeiter;
     HDRinititer	hdrinititer;
     HDRnextiter	hdrnextiter;
+    HDRunlink	hdrunlink;
+/*@null@*/
     void *	hdrvecs;
+/*@null@*/
     void *	hdrdata;
     int		hdrversion;
 };
@@ -696,9 +712,7 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
     return NULL;
 }
 
-#if defined(__HEADER_PROTOTYPES__)
-#include <hdrproto.h>
-#else
+#if !defined(__HEADER_PROTOTYPES__)
 #include <hdrinline.h>
 #endif
 

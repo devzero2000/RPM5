@@ -65,6 +65,21 @@ Header headerLink(Header h)
     return (h2hv(h)->hdrlink) (h);
 }
 
+/** \ingroup header
+ * Dereference a header instance.
+ * @param h		header
+ * @return		new header reference
+ */
+/*@unused@*/ static inline
+Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
+	/*@modifies h @*/
+{
+    /*@-abstract@*/
+    if (h == NULL) return NULL;
+    /*@=abstract@*/
+    return (h2hv(h)->hdrunlink) (h);
+}
+
 /*@-exportlocal@*/
 /** \ingroup header
  * Sort tags in header.
