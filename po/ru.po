@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-20 15:37-0400\n"
+"POT-Creation-Date: 2001-06-21 10:12-0400\n"
 "PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3835,42 +3835,42 @@ msgstr "Недопустимое имя (%%undefine) макроса %%%s\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Макрос %%%s (%s) не был использован ниже уровня %d\n"
 
-#: rpmio/macro.c:875
+#: rpmio/macro.c:895
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Неизвестный параметр %c в %s(%s)\n"
 
-#: rpmio/macro.c:1063
+#: rpmio/macro.c:1083
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Глубина рекурсии(%d) больше допустимой(%d)\n"
 
-#: rpmio/macro.c:1130 rpmio/macro.c:1147
+#: rpmio/macro.c:1150 rpmio/macro.c:1167
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Незакрытая %c: %s\n"
 
-#: rpmio/macro.c:1188
+#: rpmio/macro.c:1208
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "непонятный макрос после %%\n"
 
-#: rpmio/macro.c:1315
+#: rpmio/macro.c:1335
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Макрос %%%.*s не найден, пропускаю\n"
 
-#: rpmio/macro.c:1391
+#: rpmio/macro.c:1411
 msgid "Target buffer overflow\n"
 msgstr "Переполнение целевого буфера\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1580 rpmio/macro.c:1586
+#: rpmio/macro.c:1600 rpmio/macro.c:1606
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: rpmio/macro.c:1589
+#: rpmio/macro.c:1609
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Длина файла %s меньше чем %u байт\n"

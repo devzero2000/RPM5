@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-20 15:37-0400\n"
+"POT-Creation-Date: 2001-06-21 10:12-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3900,43 +3900,43 @@ msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d"
 
-#: rpmio/macro.c:875
+#: rpmio/macro.c:895
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c in %s(%s)"
 
-#: rpmio/macro.c:1063
+#: rpmio/macro.c:1083
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "G³êboko¶æ(%d) rekursji wiêksza mi¿ maks(%d)"
 
-#: rpmio/macro.c:1130 rpmio/macro.c:1147
+#: rpmio/macro.c:1150 rpmio/macro.c:1167
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakoñczone %c: %s"
 
-#: rpmio/macro.c:1188
+#: rpmio/macro.c:1208
 #, fuzzy, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%"
 
-#: rpmio/macro.c:1315
+#: rpmio/macro.c:1335
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête"
 
-#: rpmio/macro.c:1391
+#: rpmio/macro.c:1411
 #, fuzzy
 msgid "Target buffer overflow\n"
 msgstr "Przepe³nienie bufora docelowego"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1580 rpmio/macro.c:1586
+#: rpmio/macro.c:1600 rpmio/macro.c:1606
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s"
 
-#: rpmio/macro.c:1589
+#: rpmio/macro.c:1609
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %d bajtów"

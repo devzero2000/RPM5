@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-20 15:37-0400\n"
+"POT-Creation-Date: 2001-06-21 10:12-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -3712,42 +3712,42 @@ msgstr ""
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:875
+#: rpmio/macro.c:895
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:1063
+#: rpmio/macro.c:1083
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1130 rpmio/macro.c:1147
+#: rpmio/macro.c:1150 rpmio/macro.c:1167
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1188
+#: rpmio/macro.c:1208
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1315
+#: rpmio/macro.c:1335
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr ""
 
-#: rpmio/macro.c:1391
+#: rpmio/macro.c:1411
 msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1580 rpmio/macro.c:1586
+#: rpmio/macro.c:1600 rpmio/macro.c:1606
 #, c-format
 msgid "File %s: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1589
+#: rpmio/macro.c:1609
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-20 15:37-0400\n"
+"POT-Creation-Date: 2001-06-21 10:12-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -3814,42 +3814,42 @@ msgstr "Makroen %%%s har ugyldigt navn (%%undefine)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) blev ikke brugt under niveau %d\n"
 
-#: rpmio/macro.c:875
+#: rpmio/macro.c:895
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Ukendt tilvalg %c i %s(%s)\n"
 
-#: rpmio/macro.c:1063
+#: rpmio/macro.c:1083
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdybde(%d) overskrider maks(%d)\n"
 
-#: rpmio/macro.c:1130 rpmio/macro.c:1147
+#: rpmio/macro.c:1150 rpmio/macro.c:1167
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Uafsluttet %c: %s\n"
 
-#: rpmio/macro.c:1188
+#: rpmio/macro.c:1208
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Et %% efterfølges af en makro, der ikke kan tolkes\n"
 
-#: rpmio/macro.c:1315
+#: rpmio/macro.c:1335
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makroen %%%.*s blev ikke fundet, overspringer\n"
 
-#: rpmio/macro.c:1391
+#: rpmio/macro.c:1411
 msgid "Target buffer overflow\n"
 msgstr "Overløb i målbuffer\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1580 rpmio/macro.c:1586
+#: rpmio/macro.c:1600 rpmio/macro.c:1606
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:1589
+#: rpmio/macro.c:1609
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
