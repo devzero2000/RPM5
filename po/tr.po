@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-06 08:21-0400\n"
+"POT-Creation-Date: 2001-06-06 15:41-0400\n"
 "PO-Revision-Date: 2001-02-24 02:47+0200\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -66,21 +66,21 @@ msgstr "Hedef platformlarda derleniyor: %s\n"
 msgid "Building for target %s\n"
 msgstr "%s için derleniyor\n"
 
-#: rpm.c:227 rpmqv.c:406
+#: rpm.c:227 rpmqv.c:407
 #, c-format
 msgid "rpm: %s\n"
 msgstr "rpm: %s\n"
 
-#: rpm.c:238 rpmqv.c:413
+#: rpm.c:238 rpmqv.c:414
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Sürüm %s\n"
 
-#: rpm.c:242 rpmqv.c:419
+#: rpm.c:242 rpmqv.c:420
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr "Copyright (C) 1998 - 2000 - Red Hat, Inc."
 
-#: rpm.c:243 rpmqv.c:420
+#: rpm.c:243 rpmqv.c:421
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "Bu program GNU GPL koþullarýna uygun olarak serbestçe daðýtýlabilir."
 
@@ -292,15 +292,15 @@ msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
 msgid "       rpm {--querytags}"
 msgstr "       rpm {--querytags}"
 
-#: rpm.c:331 rpmqv.c:499
+#: rpm.c:331 rpmqv.c:500
 msgid "Usage:"
 msgstr "Kullanýmý:"
 
-#: rpm.c:333 rpmqv.c:501
+#: rpm.c:333 rpmqv.c:502
 msgid "print this message"
 msgstr "Bu bilgiyi verir"
 
-#: rpm.c:335 rpmqv.c:138 rpmqv.c:503
+#: rpm.c:335 rpmqv.c:138 rpmqv.c:504
 msgid "print the version of rpm being used"
 msgstr "Kullanýlan RPM sürümünü verir"
 
@@ -312,7 +312,7 @@ msgstr "   Tüm kipler aþaðýdaki argümanlarý destekler:"
 msgid "    --define '<name> <body>'"
 msgstr "    --define '<isim> <gövde>'"
 
-#: rpm.c:340 rpmqv.c:145 rpmqv.c:508
+#: rpm.c:340 rpmqv.c:145 rpmqv.c:509
 msgid "define macro <name> with value <body>"
 msgstr "<isim> makrosunu <gövde> deðeriyle tanýmlar"
 
@@ -328,7 +328,7 @@ msgstr "<isim> makrosunun açýlýmýný gösterir"
 msgid "    --pipe <cmd>          "
 msgstr "    --pipe <komut>        "
 
-#: rpm.c:344 rpmqv.c:151 rpmqv.c:512
+#: rpm.c:344 rpmqv.c:151 rpmqv.c:513
 msgid "send stdout to <cmd>"
 msgstr "standart çýktýyý <KOMUT>'a gönderir"
 
@@ -340,15 +340,15 @@ msgstr "    --rcfile <dosya>      "
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "/etc/rpmrc ve $HOME/.rpmrc yerine <dosya> kullanýlýr"
 
-#: rpm.c:348 rpmqv.c:169 rpmqv.c:516
+#: rpm.c:348 rpmqv.c:169 rpmqv.c:517
 msgid "display final rpmrc and macro configuration"
 msgstr "son rpmrc ve makro yapýlandýrmasýný gösterir"
 
-#: rpm.c:350 rpmqv.c:524
+#: rpm.c:350 rpmqv.c:525
 msgid "be a little more verbose"
 msgstr "daha çok açýklama verir"
 
-#: rpm.c:352 rpmqv.c:526
+#: rpm.c:352 rpmqv.c:527
 msgid "be incredibly verbose (for debugging)"
 msgstr "çok fazla açýklama verir (hata ayýklama için)"
 
@@ -366,7 +366,7 @@ msgstr "   dosya isimleriyle  aþaðýdaki seçenekler:"
 msgid "      --ftpproxy <host>   "
 msgstr "      --ftpproxy <makina>   "
 
-#: rpm.c:358 rpmqv.c:533
+#: rpm.c:358 rpmqv.c:534
 msgid "hostname or IP of ftp proxy"
 msgstr "ftp proxy'nin adý ya da IP numarasý"
 
@@ -374,7 +374,7 @@ msgstr "ftp proxy'nin adý ya da IP numarasý"
 msgid "      --ftpport <port>    "
 msgstr "      --ftpport <port>    "
 
-#: rpm.c:360 rpmqv.c:535
+#: rpm.c:360 rpmqv.c:536
 msgid "port number of ftp server (or proxy)"
 msgstr "FTP sunucusunun (ya da Proxy'nin) port numarasý"
 
@@ -382,7 +382,7 @@ msgstr "FTP sunucusunun (ya da Proxy'nin) port numarasý"
 msgid "      --httpproxy <host>  "
 msgstr "      --httpport <port>   "
 
-#: rpm.c:362 rpmqv.c:537
+#: rpm.c:362 rpmqv.c:538
 msgid "hostname or IP of http proxy"
 msgstr "Makina ismi veya http proxy'nin IP numarasý"
 
@@ -390,11 +390,11 @@ msgstr "Makina ismi veya http proxy'nin IP numarasý"
 msgid "      --httpport <port>   "
 msgstr "      --httpport <port>   "
 
-#: rpm.c:364 rpmqv.c:539
+#: rpm.c:364 rpmqv.c:540
 msgid "port number of http server (or proxy)"
 msgstr "http sunucusunun (ya da proxy'nin) port numarasý"
 
-#: rpm.c:368 rpmqv.c:559
+#: rpm.c:368 rpmqv.c:560
 msgid "query mode"
 msgstr "Sorgulama kipi"
 
@@ -402,7 +402,7 @@ msgstr "Sorgulama kipi"
 msgid "      --dbpath <dir>      "
 msgstr "      --dbpath <dizin>    "
 
-#: rpm.c:370 rpm.c:416 rpm.c:441 rpm.c:493 rpm.c:567 rpmqv.c:519
+#: rpm.c:370 rpm.c:416 rpm.c:441 rpm.c:493 rpm.c:567 rpmqv.c:520
 msgid "use <dir> as the directory for the database"
 msgstr "Veritabaný dizini olarak <dizin> kullanýlýr"
 
@@ -410,7 +410,7 @@ msgstr "Veritabaný dizini olarak <dizin> kullanýlýr"
 msgid "      --queryformat <qfmt>"
 msgstr "      --queryformat <sorbçm>"
 
-#: rpm.c:372 rpmqv.c:561
+#: rpm.c:372 rpmqv.c:562
 msgid "use <qfmt> as the header format (implies --info)"
 msgstr "baþlýk biçimi olarak <sbçm> kullanýlýr (--info içerir)"
 
@@ -418,7 +418,7 @@ msgstr "baþlýk biçimi olarak <sbçm> kullanýlýr (--info içerir)"
 msgid "      --root <dir>        "
 msgstr "      --root <dizin>      "
 
-#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:154 rpmqv.c:521
+#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:154 rpmqv.c:522
 msgid "use <dir> as the top level directory"
 msgstr "Üst düzey dizin olarak <dizin> kullanýlýr"
 
@@ -474,31 +474,31 @@ msgstr "<ytnk> yeteneðini gerektiren paketleri sorgular"
 msgid "      Information selection options:"
 msgstr "      Bilgilendirme seçim seçenekleri:"
 
-#: rpm.c:390 rpmqv.c:565
+#: rpm.c:390 rpmqv.c:566
 msgid "display package information"
 msgstr "paket bilgisini gösterir"
 
-#: rpm.c:392 rpmqv.c:567
+#: rpm.c:392 rpmqv.c:568
 msgid "display the package's change log"
 msgstr "Paketin 'Change Log' (deðiþiklik) bilgisini gösterir"
 
-#: rpm.c:394 rpmqv.c:569
+#: rpm.c:394 rpmqv.c:570
 msgid "display package file list"
 msgstr "Paketin içerdiði dosyalarý gösterir"
 
-#: rpm.c:396 rpmqv.c:571
+#: rpm.c:396 rpmqv.c:572
 msgid "show file states (implies -l)"
 msgstr "dosya durumlarýný gösterir (-l içerir)"
 
-#: rpm.c:398 rpmqv.c:573
+#: rpm.c:398 rpmqv.c:574
 msgid "list only documentation files (implies -l)"
 msgstr "sadece belge dosyalarýný gösterir (-l içerir)"
 
-#: rpm.c:400 rpmqv.c:575
+#: rpm.c:400 rpmqv.c:576
 msgid "list only configuration files (implies -l)"
 msgstr "sadece yapýlandýrma dosyalarýný gösterir (-l ile)"
 
-#: rpm.c:402 rpmqv.c:577
+#: rpm.c:402 rpmqv.c:578
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
@@ -522,7 +522,7 @@ msgstr "paketin çeþitli yükleme, silme betiklerini gösterir"
 msgid "show the trigger scripts contained in the package"
 msgstr "paketin içerdiði tetikleme betiklerini gösterir"
 
-#: rpm.c:414 rpmqv.c:588
+#: rpm.c:414 rpmqv.c:589
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
@@ -530,20 +530,20 @@ msgstr ""
 "bir paketin yüklemesini -q ile belirtilen paket parametrelerini kullanarak "
 "doðrular"
 
-#: lib/poptBT.c:189 lib/verify.c:64 rpm.c:420 rpm.c:462 rpm.c:497 rpmqv.c:281
-#: rpmqv.c:590 rpmqv.c:638 rpmqv.c:672
+#: lib/poptBT.c:189 lib/verify.c:64 rpm.c:420 rpm.c:462 rpm.c:497 rpmqv.c:282
+#: rpmqv.c:591 rpmqv.c:639 rpmqv.c:673
 msgid "do not verify package dependencies"
 msgstr "paket baðýmlýlýklarýný doðrulamaz"
 
-#: lib/verify.c:70 rpm.c:422 rpmqv.c:221 rpmqv.c:594
+#: lib/verify.c:70 rpm.c:422 rpmqv.c:221 rpmqv.c:595
 msgid "do not verify file md5 checksums"
 msgstr "dosyalarýn 'md5-checksum' larýný doðrulamaz"
 
-#: rpm.c:424 rpmqv.c:592
+#: rpm.c:424 rpmqv.c:593
 msgid "do not verify file attributes"
 msgstr "dosya niteleyicilerini doðrulamaz"
 
-#: rpm.c:426 rpmqv.c:599
+#: rpm.c:426 rpmqv.c:600
 msgid "list the tags that can be used in a query format"
 msgstr "sorgulama sýrasýnda kullanýlabilecek etiketleri gösterir"
 
@@ -555,7 +555,7 @@ msgstr "    --install <paketDosyasý>"
 msgid "    -i <packagefile>      "
 msgstr "    -i <paketDosyasý>     "
 
-#: rpm.c:431 rpmqv.c:277 rpmqv.c:613
+#: rpm.c:431 rpmqv.c:278 rpmqv.c:614
 msgid "install package"
 msgstr "paketi yükler"
 
@@ -571,11 +571,11 @@ msgstr "<dizin> yolunda bulunan dosyalarý atlar"
 msgid "      --relocate <oldpath>=<newpath>"
 msgstr "   --relocate <eskidizin>=<yenidizin>"
 
-#: rpm.c:435 rpmqv.c:650
+#: rpm.c:435 rpmqv.c:651
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr "dosyalarý <eskidizin> den <yenidizin> e yerleþtirir"
 
-#: rpm.c:437 rpmqv.c:249 rpmqv.c:618
+#: rpm.c:437 rpmqv.c:249 rpmqv.c:619
 msgid "relocate files in non-relocateable package"
 msgstr "yeniden konumlanamayan paketin dosyalarýný yeniden konumlandýrýr"
 
@@ -583,47 +583,47 @@ msgstr "yeniden konumlanamayan paketin dosyalarýný yeniden konumlandýrýr"
 msgid "      --prefix <dir>      "
 msgstr "      --prefix <dizin>    "
 
-#: rpm.c:439 rpmqv.c:324 rpmqv.c:648
+#: rpm.c:439 rpmqv.c:325 rpmqv.c:649
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "eðer deðitirilebiliyorsa paketin yerini <dizin>'e deðiþtirir"
 
-#: rpm.c:443 rpmqv.c:255 rpmqv.c:620
+#: rpm.c:443 rpmqv.c:256 rpmqv.c:621
 msgid "do not install documentation"
 msgstr "yazýlýmýn belgelerini yüklemez"
 
-#: rpm.c:445 rpmqv.c:260 rpmqv.c:624
+#: rpm.c:445 rpmqv.c:261 rpmqv.c:625
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs --replacefiles için kýsaltma"
 
-#: rpm.c:447 rpmqv.c:266 rpmqv.c:626
+#: rpm.c:447 rpmqv.c:267 rpmqv.c:627
 msgid "print hash marks as package installs (good with -v)"
 msgstr "paketin yükleme sürecini gösteren imler basar (-v ile uygun)"
 
-#: rpm.c:449 rpmqv.c:237 rpmqv.c:615
+#: rpm.c:449 rpmqv.c:237 rpmqv.c:616
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr "yapýlandýrmalarda atlanmýþ bile olsa tüm dosyalarý yükler"
 
-#: rpm.c:452 rpmqv.c:268 rpmqv.c:628
+#: rpm.c:452 rpmqv.c:269 rpmqv.c:629
 msgid "don't verify package architecture"
 msgstr "paket mimarisini doðrulamaz"
 
-#: rpm.c:454 rpmqv.c:273 rpmqv.c:630
+#: rpm.c:454 rpmqv.c:274 rpmqv.c:631
 msgid "don't check disk space before installing"
 msgstr "yüklemeden önce yeterli disk alaný kontrolu yapmaz"
 
-#: rpm.c:456 rpmqv.c:270 rpmqv.c:632
+#: rpm.c:456 rpmqv.c:271 rpmqv.c:633
 msgid "don't verify package operating system"
 msgstr "paketin ait olduðu iþletim sistemini doðrulamaz"
 
-#: rpm.c:458 rpmqv.c:275 rpmqv.c:634
+#: rpm.c:458 rpmqv.c:276 rpmqv.c:635
 msgid "install documentation"
 msgstr "paket ile gelen belgeleri de yükler"
 
-#: rpm.c:460 rpm.c:495 rpmqv.c:279 rpmqv.c:636 rpmqv.c:670
+#: rpm.c:460 rpm.c:495 rpmqv.c:280 rpmqv.c:637 rpmqv.c:671
 msgid "update the database, but do not modify the filesystem"
 msgstr "veri tabanýný günceller, ama dosya sistemini deðiþtirmez"
 
-#: rpm.c:464 rpm.c:499 rpmqv.c:283 rpmqv.c:640 rpmqv.c:674
+#: rpm.c:464 rpm.c:499 rpmqv.c:284 rpmqv.c:641 rpmqv.c:675
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "paket yükleme sýrasýný baðýmlýlýklara göre düzenlemez"
 
@@ -631,23 +631,23 @@ msgstr "paket yükleme sýrasýný baðýmlýlýklara göre düzenlemez"
 msgid "don't execute any installation scripts"
 msgstr "yükleme betiklerini çalýþtýrmaz."
 
-#: rpm.c:468 rpm.c:503 rpmqv.c:678
+#: rpm.c:468 rpm.c:503 rpmqv.c:679
 msgid "don't execute any scripts triggered by this package"
 msgstr "bu paket tarafýndan tetiklenen betikleri çalýþtýrmaz"
 
-#: rpm.c:470 rpmqv.c:322 rpmqv.c:646
+#: rpm.c:470 rpmqv.c:323 rpmqv.c:647
 msgid "print percentages as package installs"
 msgstr "yükleme sýrasýnda geliþme yüzde olarak gösterilir"
 
-#: rpm.c:472 rpmqv.c:333 rpmqv.c:652
+#: rpm.c:472 rpmqv.c:334 rpmqv.c:653
 msgid "install even if the package replaces installed files"
 msgstr "paket mevcut dosyalarý silse bile paketi yükler"
 
-#: rpm.c:474 rpmqv.c:335 rpmqv.c:654
+#: rpm.c:474 rpmqv.c:336 rpmqv.c:655
 msgid "reinstall if the package is already present"
 msgstr "paket mevcutsa yeniden yükler"
 
-#: rpm.c:478 rpmqv.c:337 rpmqv.c:656
+#: rpm.c:478 rpmqv.c:338 rpmqv.c:657
 msgid "don't install, but tell if it would work or not"
 msgstr "yükleme yapmaz, sadece çalýþýp çalýþmayacaðýný belirtir"
 
@@ -659,11 +659,11 @@ msgstr "   --upgrade <paketDosyasý>"
 msgid "    -U <packagefile>      "
 msgstr "    -U <paketDosyasý>     "
 
-#: rpm.c:483 rpmqv.c:660
+#: rpm.c:483 rpmqv.c:661
 msgid "upgrade package (same options as --install, plus)"
 msgstr "Paketi günceller (seçenekler --install ile ayný, ek olarak)"
 
-#: rpm.c:485 rpmqv.c:319 rpmqv.c:662
+#: rpm.c:485 rpmqv.c:320 rpmqv.c:663
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -680,11 +680,11 @@ msgstr "    --erase <paket>  "
 msgid "    -e <package>          "
 msgstr "    -i <paketDosyasý>     "
 
-#: rpm.c:489 rpmqv.c:253 rpmqv.c:666
+#: rpm.c:489 rpmqv.c:254 rpmqv.c:667
 msgid "erase (uninstall) package"
 msgstr "paketi sistemden siler"
 
-#: rpm.c:491 rpmqv.c:240 rpmqv.c:668
+#: rpm.c:491 rpmqv.c:240 rpmqv.c:669
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -692,7 +692,7 @@ msgstr ""
 "<paket> ile eþlenen tüm paketleri siler (<paket> birden fazla paket "
 "belirtmiþse normalde bir hata oluþur)"
 
-#: rpm.c:501 rpmqv.c:676
+#: rpm.c:501 rpmqv.c:677
 msgid "do not execute any package specific scripts"
 msgstr "pakete özgü hiçbir betik çalýþtýrýlmaz"
 
@@ -799,7 +799,7 @@ msgstr "--rebuild gibi, ama paket yaratmaz"
 msgid "    --resign <pkg>+       "
 msgstr "    --resign <pkt>+       "
 
-#: rpm.c:546 rpmqv.c:211 rpmqv.c:684
+#: rpm.c:546 rpmqv.c:211 rpmqv.c:685
 msgid "sign a package (discard current signature)"
 msgstr "paketi imzalar (mevcut imza kaldýrýlýr)"
 
@@ -807,7 +807,7 @@ msgstr "paketi imzalar (mevcut imza kaldýrýlýr)"
 msgid "    --addsign <pkg>+      "
 msgstr "    --addsign <pkt>+      "
 
-#: rpm.c:548 rpmqv.c:209 rpmqv.c:686
+#: rpm.c:548 rpmqv.c:209 rpmqv.c:687
 msgid "add a signature to a package"
 msgstr "pakete bir imza ekler"
 
@@ -819,19 +819,19 @@ msgstr "    --checksig <pkt>+"
 msgid "    -K <pkg>+             "
 msgstr "    -K <pkt>+             "
 
-#: rpm.c:551 rpmqv.c:215 rpmqv.c:690
+#: rpm.c:551 rpmqv.c:215 rpmqv.c:691
 msgid "verify package signature"
 msgstr "paket imzasýný doðrular"
 
-#: rpm.c:553 rpmqv.c:217 rpmqv.c:692
+#: rpm.c:553 rpmqv.c:219 rpmqv.c:693
 msgid "skip any PGP signatures"
 msgstr "tüm PGP imzalarýný atlar"
 
-#: rpm.c:555 rpmqv.c:219 rpmqv.c:694
+#: rpm.c:555 rpmqv.c:217 rpmqv.c:695
 msgid "skip any GPG signatures"
 msgstr "tüm GPG imzalarýný atlar"
 
-#: rpm.c:557 rpmqv.c:696
+#: rpm.c:557 rpmqv.c:697
 msgid "skip any MD5 signatures"
 msgstr "tüm MD5 imzalarýný atlar"
 
@@ -848,7 +848,7 @@ msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 msgid "verify database files"
 msgstr "bir spec dosyasýný sorgular"
 
-#: rpm.c:573 rpmqv.c:601
+#: rpm.c:573 rpmqv.c:602
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
@@ -856,7 +856,7 @@ msgstr ""
 "ayný paket özellik seçeneklerini -q ile kullanarak dosya eriþim haklarýný "
 "paket veri tabanýnda bunlara günceller"
 
-#: rpm.c:576 rpmqv.c:604
+#: rpm.c:576 rpmqv.c:605
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
@@ -865,9 +865,9 @@ msgstr ""
 "paket veri tabanýnda bunlara günceller"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:897 rpmqv.c:903 rpmqv.c:910
-#: rpmqv.c:916 rpmqv.c:954 rpmqv.c:959 rpmqv.c:967 rpmqv.c:973 rpmqv.c:981
-#: rpmqv.c:1054
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:898 rpmqv.c:904 rpmqv.c:911
+#: rpmqv.c:917 rpmqv.c:955 rpmqv.c:960 rpmqv.c:968 rpmqv.c:974 rpmqv.c:982
+#: rpmqv.c:1055
 msgid "only one major mode may be specified"
 msgstr "sadece bir ana kip (major mode) belirtilebilir"
 
@@ -879,23 +879,23 @@ msgstr "-u ve --uninstall komutlarý eskidirler ve çalýþmamaktadýrlar.\n"
 msgid "Use -e or --erase instead.\n"
 msgstr "Yerine  -e veya --erase kullanýn.\n"
 
-#: rpm.c:827 rpmqv.c:936
+#: rpm.c:827 rpmqv.c:937
 msgid "relocations must begin with a /"
 msgstr "yeniden konumlandýrma iþlemleri / ile baþlamalý"
 
-#: rpm.c:829 rpmqv.c:938
+#: rpm.c:829 rpmqv.c:939
 msgid "relocations must contain a ="
 msgstr "yeniden konumlandýrma iþlemleri = içermelidir"
 
-#: rpm.c:832 rpmqv.c:941
+#: rpm.c:832 rpmqv.c:942
 msgid "relocations must have a / following the ="
 msgstr "yeniden konumlandýrma için = den sonra bir / gerekir"
 
-#: rpm.c:841 rpmqv.c:923
+#: rpm.c:841 rpmqv.c:924
 msgid "exclude paths must begin with a /"
 msgstr "dýþlanan dosya yolu / ile baþlamalý"
 
-#: rpm.c:850 rpmqv.c:1007
+#: rpm.c:850 rpmqv.c:1008
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "--rcfile seçeneði kaldýrýlmýþtý.\n"
 
@@ -905,104 +905,104 @@ msgstr ""
 "--macros ile okunacak makro dosyalarýný iki nokta üstüstelerle ayrýlmýþ bir "
 "liste olarak verin.\n"
 
-#: rpm.c:856 rpmqv.c:1014
+#: rpm.c:856 rpmqv.c:1015
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "(%d) argümaný iþlenirken iç hata oluþtu :-(\n"
 
-#: rpm.c:891 rpmqv.c:1069
+#: rpm.c:891 rpmqv.c:1070
 msgid "one type of query/verify may be performed at a time"
 msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
 
-#: rpm.c:896 rpmqv.c:1073
+#: rpm.c:896 rpmqv.c:1074
 msgid "unexpected query flags"
 msgstr "beklenmeyen sorgulama bayraklarý"
 
-#: rpm.c:899 rpmqv.c:1076
+#: rpm.c:899 rpmqv.c:1077
 msgid "unexpected query format"
 msgstr "beklenmeyen sorgulama biçimi"
 
-#: rpm.c:902 rpmqv.c:1079
+#: rpm.c:902 rpmqv.c:1080
 msgid "unexpected query source"
 msgstr "beklenmeyen sorgulama kaynaðý"
 
-#: rpm.c:905 rpmqv.c:1089
+#: rpm.c:905 rpmqv.c:1090
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "sadece  kaynak ve spec silme iþlemleri, yükleme, güncelleme iþlemleri için "
 "zorlanabilir"
 
-#: rpm.c:908 rpmqv.c:1094
+#: rpm.c:908 rpmqv.c:1095
 msgid "files may only be relocated during package installation"
 msgstr "dosyalar sadece paket yüklemesi sýrasýnda yeni yerlerine yerleþtirilir"
 
-#: rpm.c:911 rpmqv.c:1097
+#: rpm.c:911 rpmqv.c:1098
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
 
-#: rpm.c:914 rpmqv.c:1100
+#: rpm.c:914 rpmqv.c:1101
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate ve --excludepath sadece yeni paketler yüklenirken kullanýlýr"
 
-#: rpm.c:917 rpmqv.c:1103
+#: rpm.c:917 rpmqv.c:1104
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:920 rpmqv.c:1106
+#: rpm.c:920 rpmqv.c:1107
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix deðiþkenleri '/' ile baþlamalý"
 
-#: rpm.c:923 rpmqv.c:1109
+#: rpm.c:923 rpmqv.c:1110
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:927 rpmqv.c:1113
+#: rpm.c:927 rpmqv.c:1114
 msgid "--percent may only be specified during package installation"
 msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:931 rpmqv.c:1118
+#: rpm.c:931 rpmqv.c:1119
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:935 rpmqv.c:1122
+#: rpm.c:935 rpmqv.c:1123
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:939 rpmqv.c:1126
+#: rpm.c:939 rpmqv.c:1127
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:943 rpmqv.c:1130
+#: rpm.c:943 rpmqv.c:1131
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:947 rpmqv.c:1134
+#: rpm.c:947 rpmqv.c:1135
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs ve --includedocs bir arada kullanýlamaz"
 
-#: rpm.c:951 rpmqv.c:1138
+#: rpm.c:951 rpmqv.c:1139
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:955 rpmqv.c:1142
+#: rpm.c:955 rpmqv.c:1143
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:959 rpmqv.c:1147
+#: rpm.c:959 rpmqv.c:1148
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:963 rpmqv.c:1151
+#: rpm.c:963 rpmqv.c:1152
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches sadece paket silinmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:967 rpmqv.c:1155
+#: rpm.c:967 rpmqv.c:1156
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:971 rpmqv.c:1160
+#: rpm.c:971 rpmqv.c:1161
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb sadece paket yükleme ve silmeleri sýrasýnda kullanýlabilir"
 
@@ -1020,14 +1020,14 @@ msgstr ""
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:987 rpmqv.c:1172
+#: rpm.c:987 rpmqv.c:1173
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--notriggers sadece paket yükleme ve silme iþlemlerinde kullanýlýr"
 
-#: rpm.c:991 rpmqv.c:1176
+#: rpm.c:991 rpmqv.c:1177
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1035,13 +1035,13 @@ msgstr ""
 "--nodeps sadece paket yükleme, yeniden yükleme, yeniden derleme, silme ve "
 "doðrulamalarda kullanýlýr"
 
-#: rpm.c:996 rpmqv.c:1181
+#: rpm.c:996 rpmqv.c:1182
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test sadece paket yüklemelerinde, silme ve derlemelerinde kullanýlýr"
 
-#: rpm.c:1000 rpmqv.c:1186
+#: rpm.c:1000 rpmqv.c:1187
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1049,7 +1049,7 @@ msgstr ""
 "--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde "
 "kullanýlýr"
 
-#: rpm.c:1012 rpmqv.c:1198
+#: rpm.c:1012 rpmqv.c:1199
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) argümanlarý '/' ile baþlamalý"
 
@@ -1057,90 +1057,90 @@ msgstr "--root (-r) argümanlarý '/' ile baþlamalý"
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
 
-#: rpm.c:1021 rpmqv.c:1205
+#: rpm.c:1021 rpmqv.c:1206
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp sadece imza kontrolü sýrasýnda kullanýlabilir"
 
-#: rpm.c:1024 rpmqv.c:1208
+#: rpm.c:1024 rpmqv.c:1209
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg sadece imza kontrolü sýrasýnda kullanýlabilir"
 
-#: rpm.c:1027 rpmqv.c:1213
+#: rpm.c:1027 rpmqv.c:1214
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 "--nomd5 sadece imza kontrolü veya paket doðrulamasý sýrasýnda kullanýlýr"
 
-#: rpm.c:1038 rpmqv.c:1229
+#: rpm.c:1038 rpmqv.c:1230
 msgid "no files to sign\n"
 msgstr "imzalanacak dosya yok\n"
 
-#: rpm.c:1043 rpmqv.c:1234
+#: rpm.c:1043 rpmqv.c:1235
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "%s dosyasý bulunamýyor\n"
 
-#: rpm.c:1058 rpmqv.c:1253
+#: rpm.c:1058 rpmqv.c:1254
 msgid "pgp not found: "
 msgstr "pgp bulunamadý: "
 
-#: rpm.c:1062 rpmqv.c:1258
+#: rpm.c:1062 rpmqv.c:1259
 msgid "Enter pass phrase: "
 msgstr "Anahtar parolasýný girin: "
 
-#: rpm.c:1064 rpmqv.c:1260
+#: rpm.c:1064 rpmqv.c:1261
 msgid "Pass phrase check failed\n"
 msgstr "Anahtar parolasý kontrolü baþarýsýz\n"
 
-#: rpm.c:1067 rpmqv.c:1264
+#: rpm.c:1067 rpmqv.c:1265
 msgid "Pass phrase is good.\n"
 msgstr "Anahtar parolasý doðru.\n"
 
-#: rpm.c:1072 rpmqv.c:1269
+#: rpm.c:1072 rpmqv.c:1270
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Makro dosyasýndaki %%_signature spec geçersiz.\n"
 
-#: rpm.c:1078 rpmqv.c:1276
+#: rpm.c:1078 rpmqv.c:1277
 msgid "--sign may only be used during package building"
 msgstr "--sign sadece paket oluþturulurken kullanýlabilir"
 
-#: rpm.c:1093 rpmqv.c:1292
+#: rpm.c:1093 rpmqv.c:1293
 msgid "exec failed\n"
 msgstr "icra baþarýsýz\n"
 
-#: rpm.c:1116 rpmqv.c:1547
+#: rpm.c:1116 rpmqv.c:1502
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags için beklenmeyen argümanlar"
 
-#: rpm.c:1127 rpmqv.c:1572
+#: rpm.c:1127 rpmqv.c:1511
 msgid "no packages given for signature check"
 msgstr "imzasý kontrol edilecek paketler belirtilmedi"
 
-#: rpm.c:1138 rpmqv.c:1583
+#: rpm.c:1138 rpmqv.c:1522
 msgid "no packages given for signing"
 msgstr "imzalanacak paketler belirtilmedi"
 
-#: rpm.c:1154 rpmqv.c:1440
+#: rpm.c:1154 rpmqv.c:1411
 msgid "no packages given for uninstall"
 msgstr "sistemden silinecek paketler belirtilmedi"
 
-#: rpm.c:1243 rpmqv.c:1469
+#: rpm.c:1243 rpmqv.c:1440
 msgid "no packages given for install"
 msgstr "yüklenecek paketler belirtilmedi"
 
-#: rpm.c:1267 rpmqv.c:1513
+#: rpm.c:1267 rpmqv.c:1468
 msgid "extra arguments given for query of all packages"
 msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
 
-#: rpm.c:1272 rpmqv.c:1518
+#: rpm.c:1272 rpmqv.c:1473
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: rpm.c:1289 rpmqv.c:1535
+#: rpm.c:1289 rpmqv.c:1490
 msgid "extra arguments given for verify of all packages"
 msgstr "tüm paketlerin doðrulanmasý için fazladan argümanlar belirtildi"
 
-#: rpm.c:1293 rpmqv.c:1539
+#: rpm.c:1293 rpmqv.c:1494
 msgid "no arguments given for verify"
 msgstr "doðrulama için hiç argüman belirtilmedi"
 
@@ -1186,7 +1186,7 @@ msgstr "<ifade>+"
 msgid "<cmd>"
 msgstr "<kmt>"
 
-#: rpmqv.c:155 rpmqv.c:325
+#: rpmqv.c:155 rpmqv.c:326
 msgid "<dir>"
 msgstr "<dizin>"
 
@@ -1235,368 +1235,368 @@ msgstr "(eski) rpm[23] paketleme ile uyumlu baþlýklarý üretir"
 msgid "generate headers compatible with rpm4 packaging"
 msgstr "rpm4 paketleme ile uyumlu baþlýklarý üretir"
 
-#: rpmqv.c:246 rpmqv.c:288
+#: rpmqv.c:246 rpmqv.c:289
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "pakete özgü hiçbir betik çalýþtýrýlmaz"
 
-#: rpmqv.c:251
+#: rpmqv.c:252
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: rpmqv.c:253
+#: rpmqv.c:254
 #, fuzzy
 msgid "<package>+"
 msgstr "<paket>"
 
-#: rpmqv.c:257 rpmqv.c:622
+#: rpmqv.c:258 rpmqv.c:623
 msgid "skip files with leading component <path> "
 msgstr "<dosyayolu> ile baþlayan dosyalarý atlar "
 
-#: rpmqv.c:258
+#: rpmqv.c:259
 msgid "<path>"
 msgstr ""
 
-#: rpmqv.c:263
+#: rpmqv.c:264
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "paket yüklüyse ise günceller"
 
-#: rpmqv.c:264 rpmqv.c:277 rpmqv.c:340
+#: rpmqv.c:265 rpmqv.c:278 rpmqv.c:341
 msgid "<packagefile>+"
 msgstr "<paketDosyasý>+"
 
-#: rpmqv.c:291
+#: rpmqv.c:292
 #, fuzzy
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "betikleri (varsa) çalýþtýrma"
 
-#: rpmqv.c:294
+#: rpmqv.c:295
 #, fuzzy
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "betikleri (varsa) çalýþtýrma"
 
-#: rpmqv.c:297
+#: rpmqv.c:298
 #, fuzzy
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "betikleri (varsa) çalýþtýrma"
 
-#: rpmqv.c:300
+#: rpmqv.c:301
 #, fuzzy
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "betikleri (varsa) çalýþtýrma"
 
-#: rpmqv.c:304
+#: rpmqv.c:305
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "bu paket tarafýndan tetiklenen hiç bir betik çalýþtýrýlmaz"
 
-#: rpmqv.c:307
+#: rpmqv.c:308
 #, fuzzy
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "pakete özgü hiçbir betik çalýþtýrýlmaz"
 
-#: rpmqv.c:310
+#: rpmqv.c:311
 #, fuzzy
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "hiçbir yükleme betiði çalýþtýrýlmaz."
 
-#: rpmqv.c:313
+#: rpmqv.c:314
 #, fuzzy
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "hiçbir yükleme betiði çalýþtýrýlmaz."
 
-#: rpmqv.c:316
+#: rpmqv.c:317
 #, fuzzy
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "hiçbir yükleme betiði çalýþtýrýlmaz."
 
-#: rpmqv.c:327
+#: rpmqv.c:328
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "dosyalarý <eskidizin> den <yenidizin> e yerleþtirir"
 
-#: rpmqv.c:328
+#: rpmqv.c:329
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "<eskiDosyaYolu>=<yeniDosyaYolu>"
 
-#: rpmqv.c:330
+#: rpmqv.c:331
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: rpmqv.c:339
+#: rpmqv.c:340
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "paket günceller"
 
-#: rpmqv.c:359
+#: rpmqv.c:360
 msgid "Query options (with -q or --query):"
 msgstr "Sorgulama seçenekleri (-q ya da --query ile)"
 
-#: rpmqv.c:362
+#: rpmqv.c:363
 msgid "Verify options (with -V or --verify):"
 msgstr "Doðrulama seçenekleri (-V ya da --verify ile)"
 
-#: rpmqv.c:368
+#: rpmqv.c:369
 msgid "Signature options:"
 msgstr "Ýmza seçenekleri:"
 
-#: rpmqv.c:374
+#: rpmqv.c:375
 msgid "Database options:"
 msgstr "Veritabaný seçenekleri:"
 
-#: rpmqv.c:380
+#: rpmqv.c:381
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "[ <specDosyasý> | <tarball> | <kaynak paketi> ] ile derleme seçenekleri:"
 
-#: rpmqv.c:386
+#: rpmqv.c:387
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:391
+#: rpmqv.c:392
 msgid "Common options for all rpm modes:"
 msgstr "Tüm rpm kipleri için ortak seçenekler:"
 
-#: rpmqv.c:433
+#: rpmqv.c:434
 #, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "Kullaným: %s {--help}\n"
 
-#: rpmqv.c:506
+#: rpmqv.c:507
 msgid "  All modes support the following options:"
 msgstr "  Tüm kipler aþaðýdaki seçenekleri destekler:"
 
-#: rpmqv.c:507
+#: rpmqv.c:508
 msgid "   --define '<name> <body>'"
 msgstr "   --define '<isim> <gövde>'"
 
-#: rpmqv.c:509
+#: rpmqv.c:510
 msgid "   --eval '<expr>+'       "
 msgstr "   --eval '<isim>+'       "
 
-#: rpmqv.c:510
+#: rpmqv.c:511
 msgid "print the expansion of macro <expr> to stdout"
 msgstr "<ifade>+ için makro açýlýmýný standart çýktýya basar"
 
-#: rpmqv.c:511
+#: rpmqv.c:512
 msgid "   --pipe <cmd>           "
 msgstr "   --pipe <komut>         "
 
-#: rpmqv.c:513
+#: rpmqv.c:514
 msgid "   --rcfile <file:...>    "
 msgstr "   --rcfile <dosya:...>   "
 
-#: rpmqv.c:514
+#: rpmqv.c:515
 msgid "use <file:...> instead of default list of macro files"
 msgstr "makro dosyalarýnýn öntanýmlý listesi yerine <dosya:...> kullanýlýr"
 
-#: rpmqv.c:518
+#: rpmqv.c:519
 msgid "   --dbpath <dir>         "
 msgstr "   --dbpath <dizin>       "
 
-#: rpmqv.c:520
+#: rpmqv.c:521
 msgid "   --root <dir>           "
 msgstr "   --root <dizin>         "
 
-#: rpmqv.c:530
+#: rpmqv.c:531
 msgid ""
 "  Install, upgrade and query (with -p) modes allow URL's to be used in place"
 msgstr ""
 "   (-p ile) URL'lerde yerinde iþlem için yükleme, güncelleme ve sorgulama "
 "kiplerine izin verir"
 
-#: rpmqv.c:531
+#: rpmqv.c:532
 msgid "  of file names as well as the following options:"
 msgstr "  dosya isimleriyle  aþaðýdaki seçenekler:"
 
-#: rpmqv.c:532
+#: rpmqv.c:533
 msgid "     --ftpproxy <host>    "
 msgstr "     --ftpproxy <makina>  "
 
-#: rpmqv.c:534
+#: rpmqv.c:535
 msgid "     --ftpport <port>     "
 msgstr "     --ftpport <port>     "
 
-#: rpmqv.c:536
+#: rpmqv.c:537
 msgid "     --httpproxy <host>   "
 msgstr "     --httpproxy <makina> "
 
-#: rpmqv.c:538
+#: rpmqv.c:539
 msgid "     --httpport <port>    "
 msgstr "     --httpport <port>    "
 
-#: rpmqv.c:544
+#: rpmqv.c:545
 msgid "  Package specification options:"
 msgstr "  Paket özellik seçenekleri:"
 
-#: lib/poptQV.c:68 rpmqv.c:546
+#: lib/poptQV.c:68 rpmqv.c:547
 msgid "query/verify all packages"
 msgstr "tüm paketleri sorgular/doðrular"
 
-#: rpmqv.c:547
+#: rpmqv.c:548
 msgid "     -f <file>+           "
 msgstr "     -f <dosya>+          "
 
-#: rpmqv.c:548
+#: rpmqv.c:549
 msgid "query/verify package owning <file>"
 msgstr "<dosya> içeren paketi sorgular/doðrular"
 
-#: rpmqv.c:549
+#: rpmqv.c:550
 msgid "     -p <packagefile>+    "
 msgstr "     -p <paketDosyasý>+   "
 
-#: rpmqv.c:550
+#: rpmqv.c:551
 msgid "query/verify (uninstalled) package <packagefile>"
 msgstr "(henüz yüklenmemiþ) <paketDosyasý> paketini sorgular/doðrular"
 
-#: rpmqv.c:551
+#: rpmqv.c:552
 msgid "     --triggeredby <pkg>  "
 msgstr "     --triggeredby <pkt>  "
 
-#: rpmqv.c:552
+#: rpmqv.c:553
 msgid "query/verify packages triggered by <pkg>"
 msgstr "<pkt> tarafýndan tetiklenen paketleri sorgular/doðrular"
 
-#: rpmqv.c:553
+#: rpmqv.c:554
 msgid "     --whatprovides <cap> "
 msgstr "     --whatprovides <ytnk>"
 
-#: rpmqv.c:554
+#: rpmqv.c:555
 msgid "query/verify packages which provide <cap> capability"
 msgstr "<ytnk> yeteneði saðlayan paketleri sorgular/doðrular"
 
-#: rpmqv.c:555
+#: rpmqv.c:556
 msgid "     --whatrequires <cap> "
 msgstr "     --whatrequires <ytnk>"
 
-#: rpmqv.c:556
+#: rpmqv.c:557
 msgid "query/verify packages which require <cap> capability"
 msgstr "<ytnk> yeteneðine gerektiren paketleri sorgular/doðrular"
 
-#: rpmqv.c:560
+#: rpmqv.c:561
 msgid "     --queryformat <qfmt> "
 msgstr "     --queryformat <sbçm> "
 
-#: rpmqv.c:563
+#: rpmqv.c:564
 msgid "    Information selection options:"
 msgstr "    Bilgilendirme seçimi seçenekleri:"
 
-#: rpmqv.c:579
+#: rpmqv.c:580
 msgid "list capabilities provided by package"
 msgstr "paketin saðladýðý yetenekleri gösterir"
 
-#: rpmqv.c:581
+#: rpmqv.c:582
 msgid "list capabilities required by package"
 msgstr "paket için gerekli yetenekleri gösterir"
 
-#: rpmqv.c:583
+#: rpmqv.c:584
 msgid "print the various [un]install scriptlets"
 msgstr "çeþitli yükleme/kaldýrma betiklerini gösterir"
 
-#: rpmqv.c:585
+#: rpmqv.c:586
 msgid "show the trigger scriptlets contained in the package"
 msgstr "paketin çeþitli yükleme, silme betiklerini gösterir"
 
-#: rpmqv.c:596
+#: rpmqv.c:597
 msgid "do not execute scripts (if any)"
 msgstr "betikleri (varsa) çalýþtýrma"
 
-#: rpmqv.c:611
+#: rpmqv.c:612
 msgid "   --install <packagefile>"
 msgstr "   --install <paketDosyasý>"
 
-#: rpmqv.c:612
+#: rpmqv.c:613
 msgid "   -i <packagefile>       "
 msgstr "   -i <paketDosyasý>      "
 
-#: rpmqv.c:621
+#: rpmqv.c:622
 msgid "     --excludepath <path> "
 msgstr "     --excludepath <dizin>"
 
-#: rpmqv.c:642
+#: rpmqv.c:643
 msgid "don't execute any installation scriptlets"
 msgstr "hiçbir yükleme betiði çalýþtýrýlmaz."
 
-#: rpmqv.c:644
+#: rpmqv.c:645
 msgid "don't execute any scriptlets triggered by this package"
 msgstr "bu paket tarafýndan tetiklenen hiç bir betik çalýþtýrýlmaz"
 
-#: rpmqv.c:647
+#: rpmqv.c:648
 msgid "     --prefix <dir>       "
 msgstr "     --prefix <dizin>     "
 
-#: rpmqv.c:649
+#: rpmqv.c:650
 msgid "     --relocate <oldpath>=<newpath>"
 msgstr "     --relocate <eskiDosyaYolu>=<yeniDosyaYolu>"
 
-#: rpmqv.c:658
+#: rpmqv.c:659
 msgid "   --upgrade <packagefile>"
 msgstr "  --upgrade <paketDosyasý>"
 
-#: rpmqv.c:659
+#: rpmqv.c:660
 msgid "   -U <packagefile>       "
 msgstr "   -U <paketDosyasý>      "
 
-#: rpmqv.c:664
+#: rpmqv.c:665
 msgid "   --erase <package>"
 msgstr "   --erase <paket>  "
 
-#: rpmqv.c:665
+#: rpmqv.c:666
 #, fuzzy
 msgid "   -e <package>           "
 msgstr "   -K <pkt>+             "
 
-#: rpmqv.c:683
+#: rpmqv.c:684
 msgid "   --resign <pkg>+        "
 msgstr "   --resign <pkt>+        "
 
-#: rpmqv.c:685
+#: rpmqv.c:686
 msgid "   --addsign <pkg>+       "
 msgstr "   --addsign <pkt>+       "
 
-#: rpmqv.c:688
+#: rpmqv.c:689
 msgid "   --checksig <pkg>+"
 msgstr "   --checksig <pkt>+"
 
-#: rpmqv.c:689
+#: rpmqv.c:690
 msgid "   -K <pkg>+             "
 msgstr "   -K <pkt>+             "
 
-#: rpmqv.c:702
+#: rpmqv.c:703
 msgid "initalize database (unnecessary, legacy use)"
 msgstr "veritabanýný baþlangýçdaki duruma getirir (gereksiz, mevcudu kullan)"
 
-#: rpmqv.c:704
+#: rpmqv.c:705
 msgid "rebuild database indices from existing database headers"
 msgstr ""
 "mevcut veritabaný baþlýklarýndan veritabaný baþvurularýný yeniden oluþturur"
 
-#: rpmqv.c:1008
+#: rpmqv.c:1009
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Yerine \"--macros <dosya:...>\" kullanýn.\n"
 
-#: rpmqv.c:1083
+#: rpmqv.c:1084
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath bir veritabaný kullanmayan iþlemler için verilmiþ"
 
-#: rpmqv.c:1167
+#: rpmqv.c:1168
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb sadece paket yükleme ve silmeleri sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:1337
+#: rpmqv.c:1323
 msgid "no packages files given for rebuild"
 msgstr "yeniden oluþturmak için paket dosyalarý belirtilmemiþ"
 
-#: rpmqv.c:1406
+#: rpmqv.c:1392
 msgid "no spec files given for build"
 msgstr "oluþturma için gerekli spec dosyasý belirtilmemiþ"
 
-#: rpmqv.c:1408
+#: rpmqv.c:1394
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirttilmemiþ"
 
@@ -3585,12 +3585,12 @@ msgstr "eksik      %s"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s için tatmin edici olmayan baðýmlýlýklar: "
 
-#: rpmdb/db1.c:100 rpmdb/db3.c:150
+#: rpmdb/db1.c:100 rpmdb/db3.c:84
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d hata(%d) %s'den: %s\n"
 
-#: rpmdb/db1.c:103 rpmdb/db3.c:153
+#: rpmdb/db1.c:103 rpmdb/db3.c:87
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d hata(%d): %s\n"
@@ -3632,50 +3632,50 @@ msgstr "açýlan db dosyasý      %s kip 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "Veritabaný için %s kilit (lock) alýnamadý\n"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1162
+#: rpmdb/db1.c:557 rpmdb/db3.c:1051
 msgid "exclusive"
 msgstr "özel"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1162
+#: rpmdb/db1.c:557 rpmdb/db3.c:1051
 msgid "shared"
 msgstr "paylaþýmlý"
 
-#: rpmdb/db3.c:180
+#: rpmdb/db3.c:112
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "kapanan db ortamý      %s/%s\n"
 
-#: rpmdb/db3.c:196
+#: rpmdb/db3.c:128
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "silinen db ortamý      %s/%s\n"
 
-#: rpmdb/db3.c:240
+#: rpmdb/db3.c:166
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr "açýlan  db ortamý      %s/%s %s\n"
 
-#: rpmdb/db3.c:738
+#: rpmdb/db3.c:629
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kapanan db endeks      %s/%s\n"
 
-#: rpmdb/db3.c:774
+#: rpmdb/db3.c:665
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "kapanan db endeks      %s/%s\n"
 
-#: rpmdb/db3.c:952
+#: rpmdb/db3.c:842
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlan  db endeks      %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1160
+#: rpmdb/db3.c:1049
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1167
+#: rpmdb/db3.c:1056
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli db endeks      %s/%s\n"
