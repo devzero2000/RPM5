@@ -18,7 +18,8 @@ INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/rpmio \
 LIBS =
 
 myLDFLAGS = # -L$(top_builddir)/build/.libs -L$(top_builddir)/lib/.libs \
-	-L$(top_builddir)/rpmio/.libs -L$(top_builddir)/popt/.libs
+	-L$(top_builddir)/rpmio/.libs -L$(top_builddir)/popt/.libs \
+	@LIBMISC@
 
 # XXX libtool can/should generate dependent libs.
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
@@ -40,7 +41,7 @@ pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub
 
 rpmpopt-$(VERSION): rpmpopt
-	cp $< $@
+	cp rpmpopt $@
 
 noinst_HEADERS = \
 	acconfig.h	build.h		debug.h		system.h
