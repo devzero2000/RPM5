@@ -1170,7 +1170,7 @@ alSatisfiesDepend(const availableList al,
 	return ret;
     }
     return NULL;
- }
+}
 
 /**
  * Check key for an unsatisfied dependency.

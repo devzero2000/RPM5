@@ -10,21 +10,243 @@
 #include "misc.h"
 #include "debug.h"
 
-extern int _depends_debug;
+static int _depends_debug;
 
-static int noAvailable = 0;
+static int noAvailable = 1;
 static const char * avdbpath =
 	"/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat";
 static int noChainsaw = 0;
 static int noDeps = 0;
 
 /**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
+ * Compare two available index entries by name (qsort/bsearch).
+ * @param one		1st available index entry
+ * @param two		2nd available index entry
+ * @return		result of comparison
  */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)   free((void *)this);
+static int indexcmp(const void * one, const void * two)		/*@*/
+{
+    const struct availableIndexEntry * a = one;
+    const struct availableIndexEntry * b = two;
+    int lenchk = a->entryLen - b->entryLen;
+
+    if (lenchk)
+	return lenchk;
+
+    return strcmp(a->entry, b->entry);
+}
+
+/**
+ * Compare two directory info entries by name (qsort/bsearch).
+ * @param one		1st directory info
+ * @param two		2nd directory info
+ * @return		result of comparison
+ */
+static int dirInfoCompare(const void * one, const void * two)	/*@*/
+{
+    const dirInfo a = (const dirInfo) one;
+    const dirInfo b = (const dirInfo) two;
+    int lenchk = a->dirNameLen - b->dirNameLen;
+
+    if (lenchk)
+	return lenchk;
+
+    /* XXX FIXME: this might do "backward" strcmp for speed */
+    return strcmp(a->dirName, b->dirName);
+}
+
+/**
+ * Check added package file lists for package(s) that provide a file.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param fileName	file name to search for
+ * @return		available package pointer
+ */
+static /*@only@*/ /*@null@*/ struct availablePackage **
+alAllFileSatisfiesDepend(const availableList al,
+		const char * keyType, const char * fileName)
+	/*@*/
+{
+    int i, found;
+    const char * dirName;
+    const char * baseName;
+    struct dirInfo_s dirNeedle;
+    dirInfo dirMatch;
+    struct availablePackage ** ret;
+
+    /* Solaris 2.6 bsearch sucks down on this. */
+    if (al->numDirs == 0 || al->dirs == NULL || al->list == NULL)
+	return NULL;
+
+    {	char * t;
+	dirName = t = xstrdup(fileName);
+	if ((t = strrchr(t, '/')) != NULL) {
+	    t++;		/* leave the trailing '/' */
+	    *t = '\0';
+	}
+    }
+
+    dirNeedle.dirName = (char *) dirName;
+    dirNeedle.dirNameLen = strlen(dirName);
+    dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
+		       sizeof(dirNeedle), dirInfoCompare);
+    if (dirMatch == NULL) {
+	dirName = _free(dirName);
+	return NULL;
+    }
+
+    /* rewind to the first match */
+    while (dirMatch > al->dirs && dirInfoCompare(dirMatch-1, &dirNeedle) == 0)
+	dirMatch--;
+
+    /*@-nullptrarith@*/		/* FIX: fileName NULL ??? */
+    baseName = strrchr(fileName, '/') + 1;
+    /*@=nullptrarith@*/
+
+    for (found = 0, ret = NULL;
+	 dirMatch <= al->dirs + al->numDirs &&
+		dirInfoCompare(dirMatch, &dirNeedle) == 0;
+	 dirMatch++)
+    {
+	/* XXX FIXME: these file lists should be sorted and bsearched */
+	for (i = 0; i < dirMatch->numFiles; i++) {
+	    if (dirMatch->files[i].baseName == NULL ||
+			strcmp(dirMatch->files[i].baseName, baseName))
+		continue;
+
+	    /*
+	     * If a file dependency would be satisfied by a file
+	     * we are not going to install, skip it.
+	     */
+	    if (al->list[dirMatch->files[i].pkgNum].multiLib &&
+			!isFileMULTILIB(dirMatch->files[i].fileFlags))
+	        continue;
+
+	    if (keyType)
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added files)\n"),
+			keyType, fileName);
+
+	    ret = xrealloc(ret, (found+2) * sizeof(*ret));
+	    if (ret)	/* can't happen */
+		ret[found++] = al->list + dirMatch->files[i].pkgNum;
+	    /*@innerbreak@*/ break;
+	}
+    }
+
+    dirName = _free(dirName);
+    /*@-mods@*/		/* FIX: al->list might be modified. */
+    if (ret)
+	ret[found] = NULL;
+    /*@=mods@*/
+    return ret;
+}
+
+/**
+ * Check added package file lists for package(s) that have a provide.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param keyDepend	dependency string representation
+ * @param keyName	dependency name string
+ * @param keyEVR	dependency [epoch:]version[-release] string
+ * @param keyFlags	dependency logical range qualifiers
+ * @return		available package pointer
+ */
+static /*@only@*/ /*@null@*/ struct availablePackage **
+alAllSatisfiesDepend(const availableList al,
+		const char * keyType, const char * keyDepend,
+		const char * keyName, const char * keyEVR, int keyFlags)
+	/*@*/
+{
+    struct availableIndexEntry needle, * match;
+    struct availablePackage * p, ** ret = NULL;
+    int i, rc, found;
+
+    if (*keyName == '/') {
+	ret = alAllFileSatisfiesDepend(al, keyType, keyName);
+	/* XXX Provides: /path was broken with added packages (#52183). */
+	if (ret != NULL && *ret != NULL)
+	    return ret;
+    }
+
+    if (!al->index.size || al->index.index == NULL) return NULL;
+
+    needle.entry = keyName;
+    needle.entryLen = strlen(keyName);
+    match = bsearch(&needle, al->index.index, al->index.size,
+		    sizeof(*al->index.index), indexcmp);
+
+    if (match == NULL) return NULL;
+
+    /* rewind to the first match */
+    while (match > al->index.index && indexcmp(match-1, &needle) == 0)
+	match--;
+
+    for (ret = NULL, found = 0;
+	 match <= al->index.index + al->index.size &&
+		indexcmp(match, &needle) == 0;
+	 match++)
+    {
+
+	p = match->package;
+	rc = 0;
+	switch (match->type) {
+	case IET_PROVIDES:
+	    i = match->entryIx;
+	    {	const char * proEVR;
+		int proFlags;
+
+		proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
+		proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
+		rc = rpmRangesOverlap(p->provides[i], proEVR, proFlags,
+				keyName, keyEVR, keyFlags);
+		if (rc)
+		    /*@innerbreak@*/ break;
+	    }
+	    if (keyType && keyDepend && rc)
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added provide)\n"),
+				keyType, keyDepend+2);
+	    break;
+	}
+
+	if (rc) {
+	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
+	    if (ret)	/* can't happen */
+		ret[found++] = p;
+	}
+    }
+
+    if (ret)
+	ret[found] = NULL;
+
+    return ret;
+}
+
+/**
+ * Check added package file lists for first package that has a provide.
+ * @todo Eliminate.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param keyDepend	dependency string representation
+ * @param keyName	dependency name string
+ * @param keyEVR	dependency [epoch:]version[-release] string
+ * @param keyFlags	dependency logical range qualifiers
+ * @return		available package pointer
+ */
+static inline /*@only@*/ /*@null@*/ struct availablePackage *
+alSatisfiesDepend(const availableList al,
+		const char * keyType, const char * keyDepend,
+		const char * keyName, const char * keyEVR, int keyFlags)
+	/*@*/
+{
+    struct availablePackage * ret;
+    struct availablePackage ** tmp =
+	alAllSatisfiesDepend(al, keyType, keyDepend, keyName, keyEVR, keyFlags);
+
+    if (tmp) {
+	ret = tmp[0];
+	tmp = _free(tmp);
+	return ret;
+    }
     return NULL;
 }
 
@@ -199,7 +421,7 @@ restart:
     if (numFailed) goto exit;
 
     if (!noDeps) {
-	struct rpmDependencyConflict * conflicts = NULL;
+	rpmDependencyConflict conflicts = NULL;
 	int numConflicts = 0;
 
 	rc = rpmdepCheck(ts, &conflicts, &numConflicts);
@@ -218,45 +440,73 @@ restart:
 	goto exit;
 
     {	int oc;
-	for (oc = 0; oc < ts->orderCount; oc++) {
-	    struct availablePackage *alp;
-	    rpmdbMatchIterator mi;
-	    const char * str;
-	    int i;
+	int npkgs = ts->orderCount;
+	struct availablePackage * p;
+	struct availablePackage * q;
+	unsigned char * selected = alloca(sizeof(*selected) * (npkgs + 1));
+	int i, j;
 
-	    alp = NULL;
-	    str = "???";
+fprintf(stdout, "digraph XXX {\n");
+
+	for (oc = 0; oc < npkgs; oc++) {
+	    p = NULL;
+
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
 		i = ts->order[oc].u.addedIndex;
-		alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
-		h = headerLink(alp->h);
-		str = "+++";
+		p = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 		break;
 	    case TR_REMOVED:
-		i = ts->order[oc].u.removed.dboffset;
-		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, &i, sizeof(i));
-		h = rpmdbNextIterator(mi);
-		if (h)
-		    h = headerLink(h);
-		rpmdbFreeIterator(mi);
-		str = "---";
+		continue;
 		break;
 	    }
 
-	    if (h) {
-		if (alp && alp->key) {
-		    const char * fn = alp->key;
-		    fprintf(stdout, "%s %s\n", str, fn);
-		} else {
-		    const char *n, *v, *r;
-		    headerNVR(h, &n, &v, &r);
-		    fprintf(stdout, "%s %s-%s-%s\n", str, n, v, r);
-		}
-		headerFree(h);
+fprintf(stdout, "\"%s\"\n", p->name);
+
+	}
+
+	for (oc = 0; oc < npkgs; oc++) {
+	    int matchNum;
+
+	    p = NULL;
+	    switch (ts->order[oc].type) {
+	    case TR_ADDED:
+		i = ts->order[oc].u.addedIndex;
+		p = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+		break;
+	    case TR_REMOVED:
+		continue;
+		break;
+	    }
+
+	    if (p->requiresCount <= 0)
+		continue;
+
+	    memset(selected, 0, sizeof(*selected) * npkgs);
+	    matchNum = p - ts->addedPackages.list;
+	    selected[matchNum] = 1;
+
+	    for (j = 0; j < p->requiresCount; j++) {
+		q = alSatisfiesDepend(&ts->addedPackages, NULL, NULL,
+			p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
+		if (q == NULL)
+		    continue;
+		if (!strncmp(p->requires[j], "rpmlib(", sizeof("rpmlib(")-1))
+		    continue;
+
+		matchNum = q - ts->addedPackages.list;
+		if (selected[matchNum] != 0)
+		    continue;
+		selected[matchNum] = 1;
+
+fprintf(stdout, "\"%s\" -> \"%s\"\n", p->name, q->name);
+
 	    }
 
 	}
+
+fprintf(stdout, "}\n");
+
     }
 
     rc = 0;
@@ -313,7 +563,8 @@ main(int argc, const char *argv[])
 	    rpmIncreaseVerbosity();
 	    break;
 	default:
-	    errx(EXIT_FAILURE, _("unknown popt return (%d)"), arg);
+	    fprintf(stderr, _("unknown popt return (%d)"), arg);
+	    exit (EXIT_FAILURE);
 	    /*@notreached@*/ break;
 	}
     }
