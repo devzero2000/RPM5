@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-03-15 13:45-0500\n"
+"POT-Creation-Date: 2001-03-19 13:05-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1748,164 +1748,164 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr "oèekivan znak ? u izrazu"
 
-#: build/files.c:227
+#: build/files.c:242
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:278 build/files.c:363 build/files.c:538
+#: build/files.c:296 build/files.c:385 build/files.c:563
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "nedostaje { posle %"
 
-#: build/files.c:289 build/files.c:483 build/files.c:549
+#: build/files.c:307 build/files.c:508 build/files.c:574
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "nedostaje ':' na %s:%d"
 
-#: build/files.c:327 build/files.c:508
+#: build/files.c:345 build/files.c:533
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/files.c:379
+#: build/files.c:401
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:417
+#: build/files.c:439
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:427
+#: build/files.c:449
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:439
+#: build/files.c:461
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:576
+#: build/files.c:601
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:586
+#: build/files.c:611
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:723
+#: build/files.c:749
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:729
+#: build/files.c:755
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:757
+#: build/files.c:783
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:771
+#: build/files.c:797
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/files.c:783
+#: build/files.c:809
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:949
+#: build/files.c:976
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:1060
+#: build/files.c:1138
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1155
+#: build/files.c:1233
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:1165
+#: build/files.c:1243
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1208 build/files.c:1732 build/parsePrep.c:42
+#: build/files.c:1286 build/files.c:1816 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1220
+#: build/files.c:1298
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:1297
+#: build/files.c:1376
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/files.c:1327
+#: build/files.c:1406
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1382
+#: build/files.c:1461
 #, fuzzy
 msgid "Could not open %%files file %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/files.c:1391 build/pack.c:108
+#: build/files.c:1470 build/pack.c:108
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:1720
+#: build/files.c:1804
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1789
+#: build/files.c:1873
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: build/files.c:1794
+#: build/files.c:1878
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Ne mogu da proèitam 'sigtarget'"
 
-#: build/files.c:1876
+#: build/files.c:1960
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "PGP omanuo"
 
-#: build/files.c:1880
+#: build/files.c:1964
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:2005
+#: build/files.c:2089
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2033 build/files.c:2047
+#: build/files.c:2117 build/files.c:2131
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:2160
+#: build/files.c:2244
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -2597,11 +2597,11 @@ msgstr "rekreiraj bazu podataka iz postojeæe baze"
 msgid "cannot get %s lock on database\n"
 msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
 
-#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:771
 msgid "exclusive"
 msgstr "ekskluzivno"
 
-#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:771
 msgid "shared"
 msgstr "deljeno"
 
@@ -2630,12 +2630,12 @@ msgstr ""
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/db2.c:784 lib/db3.c:764
+#: lib/db2.c:784 lib/db3.c:769
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
 
-#: lib/db2.c:791 lib/db3.c:771
+#: lib/db2.c:791 lib/db3.c:776
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""

@@ -619,17 +619,6 @@ MAN_OUTPUT             = man
 MAN_EXTENSION          = .3
 
 #---------------------------------------------------------------------------
-# configuration options related to the XML output
-#---------------------------------------------------------------------------
-
-# If the GENERATE_XML tag is set to YES Doxygen will 
-# generate an XML file that captures the structure of 
-# the code including all documentation. Warning: This feature 
-# is still experimental and very incomplete.
-
-GENERATE_XML           = NO
-
-#---------------------------------------------------------------------------
 # Configuration options related to the preprocessor   
 #---------------------------------------------------------------------------
 
