@@ -622,6 +622,7 @@ int main(int argc, char ** argv) {
     optCon = poptGetContext("rpm", argc, argv, optionsTable, 0);
     poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
     poptReadDefaultConfig(optCon, 1);
+    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
