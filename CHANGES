@@ -21,6 +21,7 @@
 	- fix: mark uninstalled elf32 files in rpmdb to disable -Va checks.
 	- ia64: add autorelocate_dcolor to macros.in.
 	- disable static linking until libc*.a provides symbols.
+	- fix: revert Obsoletes: "fix" (#134497).
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).

@@ -281,6 +281,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
 	/* Ignore colored obsoletes not in our rainbow. */
 	dscolor = rpmdsColor(obsoletes);
+	/* XXX obsoletes are never colored, so this is for future devel. */
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
@@ -296,6 +297,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
 	    ohcolor = hGetColor(oh);
+	    /* XXX provides *are* colored, effectively limiting Obsoletes:
+		to matching only colored Provides: based on pkg coloring. */
 	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
 		/*@innercontinue@*/ continue;
 
@@ -305,7 +308,9 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
+#ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
 		if (rpmVersionCompare(h, oh))
+#endif
 		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
 	}
 	mi = rpmdbFreeIterator(mi);
