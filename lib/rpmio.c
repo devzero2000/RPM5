@@ -1720,7 +1720,7 @@ void * ufdGetUrlinfo(FD_t fd) {
 static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     FD_t fd = c2f(cookie);
     int bytesRead;
-    int total;
+    int total = 0;
 
     /* XXX preserve timedRead() behavior */
     if (fdGetIo(fd) == fdio) {
@@ -2606,10 +2606,20 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", fd, fdbg(fd)));
 		if (noLibio)
 		    fdSetFp(fd, NULL);
 	    } else {
+		fflush(fp);	/* XXX possibly paranoia. */
 		rc = fclose(fp);
 		if (fpno == -1) {
 		    fd = fdFree(fd, "fopencookie (Fclose)");
 		    fdPop(fd);
+
+		    /*
+		     * XXX Red Hat 6.0 glibc-2.1.1 returns -1 and does not
+		     * XXX call the close libio vector. Do that now.
+		     */
+		    if (rc == -1 && fd->fps[fd->nfps].fdno >= 0) {
+			fdio_close_function_t * _close = FDIOVEC(fd, close);
+			rc = _close(fd);
+		    }
 		}
 	    }
 	} else {
@@ -2695,13 +2705,6 @@ static inline void cvtfmode (const char *m,
 	*f = flags;
 }
 
-#if _USE_LIBIO
-#if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 0
-/* XXX retrofit glibc-2.1.x typedef on glibc-2.0.x systems */
-typedef _IO_cookie_io_functions_t cookie_io_functions_t;
-#endif
-#endif
-
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
     char stdio[20], other[20], zstdio[20];
@@ -2771,7 +2774,7 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", fp);
 	FILE * fp = NULL;
 
 #if _USE_LIBIO
-	{   cookie_io_functions_t ciof;
+	{   _IO_cookie_io_functions_t ciof;
 	    ciof.read = iof->read;
 	    ciof.write = iof->write;
 	    ciof.seek = iof->seek;
