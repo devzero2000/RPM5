@@ -18,7 +18,7 @@
 #
 #   --  Gregory P. Smith <greg@electricrain.com>
 #
-# $Id$
+# Id: test_dbtables.py,v 1.6 2003/09/21 00:08:14 greg Exp 
 
 import sys, os, re
 try:
