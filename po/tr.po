@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-21 01:37-0400\n"
+"POT-Creation-Date: 2001-04-23 16:17-0400\n"
 "PO-Revision-Date: 2001-02-24 02:47+0200\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2541,8 +2541,9 @@ msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
 #: lib/depends.c:1731
-msgid "========== tsorting packages\n"
-msgstr "========== tsortlama paketleri\n"
+msgid ""
+"========== tsorting packages (order, #predecessors, #succesors, depth)\n"
+msgstr ""
 
 #: lib/depends.c:1778
 msgid "========== successors only (presentation order)\n"
@@ -3138,7 +3139,7 @@ msgstr "paket ne dosya sahibi ne de kimlik listesi içeriyor\n"
 msgid "can't query %s: %s\n"
 msgstr "%s sorgulanamýyor: %s\n"
 
-#: lib/query.c:514 lib/query.c:546 lib/rpminstall.c:319 lib/rpminstall.c:446
+#: lib/query.c:514 lib/query.c:546 lib/rpminstall.c:319 lib/rpminstall.c:448
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -3152,7 +3153,7 @@ msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "eski biçim kaynak paketleri sorgulanamaz\n"
 
-#: lib/query.c:556 lib/rpminstall.c:456
+#: lib/query.c:556 lib/rpminstall.c:458
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread baþarýsýz: %s\n"
@@ -3211,7 +3212,7 @@ msgstr "geçersiz kayýt numarasý: %u\n"
 msgid "record %d could not be read\n"
 msgstr "%d numaralý kayýt okunamadý\n"
 
-#: lib/query.c:744 lib/rpminstall.c:591
+#: lib/query.c:744 lib/rpminstall.c:593
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s paketi yüklenmedi\n"
@@ -3476,69 +3477,69 @@ msgstr "... %s olarak\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s atlanýyor - aktarým baþarýsýz - %s\n"
 
-#: lib/rpminstall.c:352
+#: lib/rpminstall.c:353
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paketler veritabaný açýlamadý\n"
 
-#: lib/rpminstall.c:374
+#: lib/rpminstall.c:375
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "%s paketi yeniden konumlandýrýlamaz\n"
 
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:422
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s dosyasýndan okuma hatalý\n"
 
-#: lib/rpminstall.c:426
+#: lib/rpminstall.c:428
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s dosyasý RPM'nin daha yeni bir sürümünü gerektiriyor\n"
 
-#: lib/rpminstall.c:438 lib/rpminstall.c:659
+#: lib/rpminstall.c:440 lib/rpminstall.c:661
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s yüklenemedi\n"
 
-#: lib/rpminstall.c:470
+#: lib/rpminstall.c:472
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d kaynak ve %d icra edilebilir paket bulundu\n"
 
-#: lib/rpminstall.c:485
+#: lib/rpminstall.c:487
 msgid "failed dependencies:\n"
 msgstr "baðýmlýlýklarda hata; gerekli paketler:\n"
 
-#: lib/rpminstall.c:506
+#: lib/rpminstall.c:508
 msgid "installing binary packages\n"
 msgstr "icra edilebilir paketler yükleniyor\n"
 
-#: lib/rpminstall.c:524
+#: lib/rpminstall.c:526
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s dosyasý açýlamadý: %s\n"
 
-#: lib/rpminstall.c:578
+#: lib/rpminstall.c:580
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "%s/packages.rpm açýlamaz\n"
 
-#: lib/rpminstall.c:594
+#: lib/rpminstall.c:596
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
 
-#: lib/rpminstall.c:617
+#: lib/rpminstall.c:619
 msgid "removing these packages would break dependencies:\n"
 msgstr "bu paketin silinmesi aþaðýdaki baðýmlýlýklarý etkileyecektir:\n"
 
-#: lib/rpminstall.c:646
+#: lib/rpminstall.c:648
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:654
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s yükleniyor\n"
@@ -4033,6 +4034,9 @@ msgstr "url portu bir sayý olmalý\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"
+
+#~ msgid "========== tsorting packages\n"
+#~ msgstr "========== tsortlama paketleri\n"
 
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, and "

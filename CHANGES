@@ -30,6 +30,8 @@
 	- add --repackage option to put erased bits back into a package.
 	- fix: (ppc) copy va_list in loop (#36845).
 	- cpanflute perl dependency needs explicit epoch (#37034).
+	- regenerate rpm.8 man page from docbook glop (in max-rpm).
+	- lib/depends.c: diddle debugging messages.
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro

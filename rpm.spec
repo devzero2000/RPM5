@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.7
+Release: 0.8
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -345,6 +345,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Apr 23 2001 Jeff Johnson <jbj@redhat.com>
+- regenerate rpm.8 man page from docbook glop (in max-rpm).
+- lib/depends.c: diddle debugging messages.
+
 * Sat Apr 21 2001 Jeff Johnson <jbj@redhat.com>
 - fix: s390 (and ppc?) could return CPIOERR_BAD_HEADER (#28645).
 - fix: Fwrite's are optimized out by aggressive compiler(irix) (#34711).
