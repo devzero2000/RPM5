@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-21 11:34-0400\n"
+"POT-Creation-Date: 2001-07-23 11:44-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -3358,12 +3358,12 @@ msgstr "nedostaje arhitektura za %s na %s:%d"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "lo¹a opcija '%s' na %s:%d"
 
-#: lib/rpmrc.c:1421
+#: lib/rpmrc.c:1436
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1422
+#: lib/rpmrc.c:1437
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

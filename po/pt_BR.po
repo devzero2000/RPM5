@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-21 11:34-0400\n"
+"POT-Creation-Date: 2001-07-23 11:44-0400\n"
 
 # , c-format
 #: build.c:36
@@ -3565,12 +3565,12 @@ msgstr ""
 msgid "bad option '%s' at %s:%d\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmrc.c:1421
+#: lib/rpmrc.c:1436
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1422
+#: lib/rpmrc.c:1437
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

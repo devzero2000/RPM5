@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-21 11:34-0400\n"
+"POT-Creation-Date: 2001-07-23 11:44-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3297,12 +3297,12 @@ msgstr "%s için %s:%d'de eksik mimari\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "seçenek '%s' (%s:%d) de hatalý\n"
 
-#: lib/rpmrc.c:1421
+#: lib/rpmrc.c:1436
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Bilinmeyen sistem: %s\n"
 
-#: lib/rpmrc.c:1422
+#: lib/rpmrc.c:1437
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Lütfen rpm-list@redhat.com listesine üye olun\n"
 

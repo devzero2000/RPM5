@@ -19,7 +19,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.79
+Release: 0.80
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -502,6 +502,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jul 23 2001 Jeff Johnson <jbj@redhat.com>
+- add pmac/ppciseries/ppcpseries varieties to ppc arch family.
+- include tdigest.c tkey.c and trpmio.c to "make dist".
+- re-enable dependency resolution source from package NVR.
+
 * Sun Jul 22 2001 Jeff Johnson <jbj@redhat.com>
 - use %%{rpm_version} to avoid other package versions.
 
