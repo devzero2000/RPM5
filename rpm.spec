@@ -80,6 +80,7 @@ build packages using RPM.
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 BuildRequires: popt >= 1.5
+Requires: rpm = %{version}
 Requires: popt >= 1.5
 Requires: python >= 1.5.2
 
