@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-02-23 16:59-0500\n"
+"POT-Creation-Date: 2001-03-07 15:43-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2570,30 +2570,30 @@ msgstr "paketti %s ei ole %s:ssä"
 msgid "package %s conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: lib/depends.c:1523
+#: lib/depends.c:1522
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
 #. Record all relations.
-#: lib/depends.c:1662
+#: lib/depends.c:1661
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1709
+#: lib/depends.c:1708
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1754
+#: lib/depends.c:1753
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1803
+#: lib/depends.c:1802
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1834
+#: lib/depends.c:1833
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

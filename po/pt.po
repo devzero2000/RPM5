@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2001-02-23 16:59-0500\n"
+"POT-Creation-Date: 2001-03-07 15:43-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2440,30 +2440,30 @@ msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
 msgid "package %s conflicts: %s\n"
 msgstr "o pacote %s está em conflito: %s\n"
 
-#: lib/depends.c:1523
+#: lib/depends.c:1522
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1662
+#: lib/depends.c:1661
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1709
+#: lib/depends.c:1708
 msgid "========== tsorting packages\n"
 msgstr "========== a realizar o tsort nos pacotes\n"
 
-#: lib/depends.c:1754
+#: lib/depends.c:1753
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1803
+#: lib/depends.c:1802
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1834
+#: lib/depends.c:1833
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 

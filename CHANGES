@@ -132,6 +132,7 @@
 	- (popt): use sprintf rather than snprintf for portability.
 	- (sparc) disable MD5 sum checks during install.
 	- (db1) plug largish memory leak in simulated interface for falloc.c.
+	- remove mozilla dependency white out, no longer needed.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-23 16:59-0500\n"
+"POT-Creation-Date: 2001-03-07 15:43-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2562,30 +2562,30 @@ msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 msgid "package %s conflicts: %s\n"
 msgstr "pakiet %s jest w konflikcie: %s\n"
 
-#: lib/depends.c:1523
+#: lib/depends.c:1522
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "usuwanie indeksu grupy\n"
 
 #. Record all relations.
-#: lib/depends.c:1662
+#: lib/depends.c:1661
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1709
+#: lib/depends.c:1708
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1754
+#: lib/depends.c:1753
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1803
+#: lib/depends.c:1802
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1834
+#: lib/depends.c:1833
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

@@ -344,6 +344,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Mar  7 2001 Jeff Johnson <jbj@redhat.com>
+- remove mozilla dependency white out, no longer needed.
+
 * Fri Feb 23 2001 Jeff Johnson <jbj@redhat.com>
 - (sparc) disable MD5 sum checks during install.
 - (db1) plug largish memory leak in simulated interface for falloc.c.

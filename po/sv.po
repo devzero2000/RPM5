@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-23 16:59-0500\n"
+"POT-Creation-Date: 2001-03-07 15:43-0500\n"
 "PO-Revision-Date: 2001-02-12 10:15+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2421,30 +2421,30 @@ msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1523
+#: lib/depends.c:1522
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1662
+#: lib/depends.c:1661
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1709
+#: lib/depends.c:1708
 msgid "========== tsorting packages\n"
 msgstr "========== tsorterar paket\n"
 
-#: lib/depends.c:1754
+#: lib/depends.c:1753
 msgid "========== successors only (presentation order)\n"
 msgstr "========== endast efterföljare (presentationsordning)\n"
 
-#: lib/depends.c:1803
+#: lib/depends.c:1802
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1834
+#: lib/depends.c:1833
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
