@@ -219,7 +219,7 @@ fi
 /usr/include/popt.h
 
 %changelog
-* Thu Mar  9 2000 Jeff Johnson <jbj@redhat.com>
+* Thu Mar 15 2000 Jeff Johnson <jbj@redhat.com>
 - portability: skip bzip2 if not available.
 - portability: skip gzseek if not available (zlib-1.0.4).
 - portability: skip personality if not available (linux).
@@ -227,6 +227,10 @@ fi
 - portability: don't use id -u (Brandon Allbery).
 - portability: don't chown/chgrp -h w/o lchown.
 - portability: splats in rpm.spec to find /usr/{share,local}/locale/*
+- fix: better filter in linux.req to avoid ARM specific objdump output.
+- fix: use glibc 2.1 glob/fnmatch everywhere.
+- fix: noLibio = 0 on Red Hat 4.x and 5.x.
+- fix: typo in autodeps/linux.req.
 
 * Thu Mar  2 2000 Jeff Johnson <jbj@redhat.com>
 - simpler hpux.prov script (Tim Mooney).
