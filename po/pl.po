@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
-"POT-Creation-Date: 2003-07-02 16:32-0400\n"
+"POT-Creation-Date: 2003-07-09 15:47-0400\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -2491,31 +2491,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
 
-#: lib/rpmfi.c:669
+#: lib/rpmfi.c:546
+#, c-format
+msgid "%s skipped due to missingok flag\n"
+msgstr "%s pominiêty z powodu flagi missingok\n"
+
+#: lib/rpmfi.c:783
 msgid "========== relocations\n"
 msgstr "========== przesuniêcia\n"
 
-#: lib/rpmfi.c:673
+#: lib/rpmfi.c:787
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d wy³±czenie  %s\n"
 
-#: lib/rpmfi.c:676
+#: lib/rpmfi.c:790
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d przesuniêcie %s -> %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:918
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "wy³±czanie %s %s\n"
 
-#: lib/rpmfi.c:814
+#: lib/rpmfi.c:928
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/rpmfi.c:901
+#: lib/rpmfi.c:1015
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie katalogu %s do %s\n"
@@ -3048,13 +3053,8 @@ msgstr "Uszkodzony skrót MD5: NIE OBS£UGIWANY\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Sygnatura: NIEZNANA (%d)\n"
 
-#: lib/transaction.c:105
-#, c-format
-msgid "%s skipped due to missingok flag\n"
-msgstr "%s pominiêty z powodu flagi missingok\n"
-
 #. @innercontinue@
-#: lib/transaction.c:954
+#: lib/transaction.c:891
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "wy³±czanie katalogu %s\n"
@@ -3067,7 +3067,7 @@ msgstr "wy³±czanie katalogu %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1065
+#: lib/transaction.c:1002
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "sprawdzanie poprawno¶ci %d elementów\n"
@@ -3080,7 +3080,7 @@ msgstr "sprawdzanie poprawno¶ci %d elementów\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1153
+#: lib/transaction.c:1090
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "obliczanie %d odcisków plików\n"
@@ -3088,7 +3088,7 @@ msgstr "obliczanie %d odcisków plików\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1232
+#: lib/transaction.c:1169
 msgid "computing file dispositions\n"
 msgstr "obliczanie dyspozycji plików\n"
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-02 16:32-0400\n"
+"POT-Creation-Date: 2003-07-09 15:47-0400\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -2478,31 +2478,36 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/rpmfi.c:669
+#: lib/rpmfi.c:546
+#, c-format
+msgid "%s skipped due to missingok flag\n"
+msgstr ""
+
+#: lib/rpmfi.c:783
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:673
+#: lib/rpmfi.c:787
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:676
+#: lib/rpmfi.c:790
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:918
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "lína %d: %s\n"
 
-#: lib/rpmfi.c:814
+#: lib/rpmfi.c:928
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:901
+#: lib/rpmfi.c:1015
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%5d færa %s -> %s\n"
@@ -3036,13 +3041,8 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:105
-#, c-format
-msgid "%s skipped due to missingok flag\n"
-msgstr ""
-
 #. @innercontinue@
-#: lib/transaction.c:954
+#: lib/transaction.c:891
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
@@ -3055,7 +3055,7 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1065
+#: lib/transaction.c:1002
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3068,7 +3068,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1153
+#: lib/transaction.c:1090
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3076,7 +3076,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1232
+#: lib/transaction.c:1169
 msgid "computing file dispositions\n"
 msgstr ""
 

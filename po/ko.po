@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2003-07-02 16:32-0400\n"
+"POT-Creation-Date: 2003-07-09 15:47-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2521,31 +2521,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"
 
-#: lib/rpmfi.c:669
+#: lib/rpmfi.c:546
+#, c-format
+msgid "%s skipped due to missingok flag\n"
+msgstr "missingok 플래그로 인해 %s(을)를 생략합니다\n"
+
+#: lib/rpmfi.c:783
 msgid "========== relocations\n"
 msgstr "========== 재배치\n"
 
-#: lib/rpmfi.c:673
+#: lib/rpmfi.c:787
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 제외  %s\n"
 
-#: lib/rpmfi.c:676
+#: lib/rpmfi.c:790
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 재배치 %s -> %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:918
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s(을)를 제외시킵니다\n"
 
-#: lib/rpmfi.c:814
+#: lib/rpmfi.c:928
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s(을)를 %s(으)로 재배치 합니다\n"
 
-#: lib/rpmfi.c:901
+#: lib/rpmfi.c:1015
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
@@ -3091,13 +3096,8 @@ msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/transaction.c:105
-#, c-format
-msgid "%s skipped due to missingok flag\n"
-msgstr "missingok 플래그로 인해 %s(을)를 생략합니다\n"
-
 #. @innercontinue@
-#: lib/transaction.c:954
+#: lib/transaction.c:891
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"
@@ -3110,7 +3110,7 @@ msgstr "%s 디렉토리를 제외시킵니다\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1065
+#: lib/transaction.c:1002
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3123,7 +3123,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1153
+#: lib/transaction.c:1090
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3131,7 +3131,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1232
+#: lib/transaction.c:1169
 msgid "computing file dispositions\n"
 msgstr ""
 
