@@ -20,10 +20,10 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 4.4
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
-Copyright: GPL
+License: GPL
 Conflicts: patch < 2.5
 %ifos linux
 Prereq: fileutils shadow-utils
@@ -476,100 +476,5 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sat Nov 22 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-4.3
-- fix: check added provides against installed conflicts (#110317).
-- changes for python 2.3
-- changes for libtool-1.5
-- changes for automake-1.7.8
-- changes for db-4.2.42.
-- splint fiddles.
-
-* Thu Sep 25 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-4.1
-- filter GLIBC_PRIVATE dependencies.
-
-* Tue Sep 16 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-4
-- add config directories for ppcpseries/ppciseries.
-
-* Mon Sep 15 2003 Jeff Johnson >jbj@redhat.com> 4.2.1-3
-- revert i18n table change to preserve help array size.
-
-* Wed Sep 10 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-3
-- speed up convertdb1 (#103206).
-
-* Tue Sep  9 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-2
-- fix: add -n to brp-compress to avoid needless file conflicts.
-- fix: ia32 on ia64 segfaults because of automagic file relocations.
-
-* Wed Jul 23 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-1
-- release candidate.
-
-* Mon Jul 21 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.31
-- fix: packages w/o file colors segfault.
-- add amd64 as alias for x86_64 (#99553).
-
-* Wed Jul 16 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.29
-- repair find-debuginfo.sh to avoid recursing in /usr/lib/debug.
-- fix: ia64: don't attempt autorelocate on .src.rpm's.
-- fix: debuginfo: -not -path /usr/lib/debug needed -prune too.
-
-* Thu Jul 10 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.26
-- apply debugedit patch necessary to produce kernel -debuginfo files.
-- zap zlib files so that apidocs gets included.
-
-* Wed Jul  9 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.21
-- resolve elf32/elf64 file conflicts to prefer elf64.
-
-* Tue Jul  8 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.20
-- resurrect manifests, RPMRC_NOTFOUND returned by readLead().
-- python: missed tuple refcount in IDTXload/IDTXglob.
-- fix: IDTXglob should return REMOVETID sorted headers (#89857).
-
-* Wed Jul  2 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.19
-- autorelocate ix86 package file paths on ia64.
-
-* Tue Jul  1 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.18
-- don't attempt to remove dbenv on --rebuilddb.
-- rebuild.
-
-* Tue Jun 24 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.17
-- update for fr.po (#97829).
-
-* Fri Jun 20 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.16
-- brp-python-bytecompile to automagically bytecode compile python.
-
-* Thu Jun 19 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.15
-- 2nd test release.
-
-* Thu Jun 12 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.13
-- fdCLose typo (#97257).
-- test release.
-
-* Mon Jun  9 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.12
-- gratuitous bump/rebuild to exclude ppc64 for the moment.
-
-* Thu Jun  5 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.11
-- update ja man pages (#92261).
-- backport rpmsw stopwatch, insturment rpmts operations.
-- toy method to enable --stats through bindings.
-
-* Wed Jun  4 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.8
-- pass structure pointer, not args, through headerSprintf call chain.
-- add ":xml" header format modifier.
-- --queryformat '[%%{*:xml}\n]' to dump header content in XML.
-- add ".arch" suffix to erase colored packages with identical NEVR.
-
-* Tue Jun  3 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.6
-- rebuild against fixes in beecrypt-3.0.0-0.20030603.
-- treat missing epoch's exactly the same as Epoch: 0.
-
-* Mon Jun  2 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.4
-- rebuild against fixes in beecrypt-3.0.0-0.20030602.
-
-* Thu May 29 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.3
-- build with external beecrypt-3.0.0.
-- blueprint beecrypt-3.0.0 changes against rpm-4.3.
-- x86_64 -> athlon, ppc64[ip]series -> ppc64 arch compatibility.
-
-* Thu Mar 27 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-0.1
-- start rpm-4.2.1.
-- hack out O_DIRECT support in db4 for now.
+* Mon Dec  1 2003 Jeff Johnson <jbj@redhat.com> 4.2.2-0.1
+- start rpm-4.2.2.

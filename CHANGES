@@ -1,3 +1,5 @@
+4.2.1 -> 4.2.2:
+
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.
 	- add version check for package with provides and obsoletes.
