@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-08-14 09:19-0400\n"
+"POT-Creation-Date: 2000-08-16 09:09-0400\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Leon Kanter <leon@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3182,7 +3182,7 @@ msgstr "ошибка(%d) записи записи %s в %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "ошибка(%d) удаления записи %s из %s"
 
-#: lib/rpmdb.c:766 lib/rpmdb.c:2293
+#: lib/rpmdb.c:766 lib/rpmdb.c:2300
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
@@ -3200,106 +3200,106 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr "ошибка(%d) при подсчёте пакетов"
 
-#: lib/rpmdb.c:1136 lib/rpmdb.c:1663 lib/uninstall.c:97
+#: lib/rpmdb.c:1136 lib/rpmdb.c:1670 lib/uninstall.c:97
 #, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%s: невозможно прочесть заголовок в 0x%x"
 
-#: lib/rpmdb.c:1716
+#: lib/rpmdb.c:1723
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "удаляется 0 записей %s.\n"
 
-#: lib/rpmdb.c:1727
+#: lib/rpmdb.c:1734
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: lib/rpmdb.c:1736
+#: lib/rpmdb.c:1743
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: lib/rpmdb.c:1878
+#: lib/rpmdb.c:1885
 #, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "ошибка(%d) резервирования памяти для instance нового пакета"
 
-#: lib/rpmdb.c:1935
+#: lib/rpmdb.c:1942
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr "добавляется 0 записей %s.\n"
 
-#: lib/rpmdb.c:1951
+#: lib/rpmdb.c:1958
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: lib/rpmdb.c:1960
+#: lib/rpmdb.c:1967
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: lib/rpmdb.c:2318
+#: lib/rpmdb.c:2325
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: lib/rpmdb.c:2322
+#: lib/rpmdb.c:2329
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2335
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог: %s\n"
 
-#: lib/rpmdb.c:2330
+#: lib/rpmdb.c:2337
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rpmdb.c:2337
+#: lib/rpmdb.c:2344
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2348
+#: lib/rpmdb.c:2355
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2371
+#: lib/rpmdb.c:2378
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе данных неверна, пропускается"
 
-#: lib/rpmdb.c:2403
+#: lib/rpmdb.c:2410
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "невозможно добавить запись (первоначально в %d)"
 
-#: lib/rpmdb.c:2421
+#: lib/rpmdb.c:2428
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2436
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: lib/rpmdb.c:2431
+#: lib/rpmdb.c:2438
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "заменяются файлы в %s файлами из %s для восстановления"
 
-#: lib/rpmdb.c:2441
+#: lib/rpmdb.c:2448
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: lib/rpmdb.c:2443
+#: lib/rpmdb.c:2450
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"

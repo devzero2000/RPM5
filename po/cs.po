@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-14 09:19-0400\n"
+"POT-Creation-Date: 2000-08-16 09:09-0400\n"
 "PO-Revision-Date: 2000-08-08 22:37+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3189,7 +3189,7 @@ msgstr "chyba(%d) pøi ukládání záznamu %s do %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "chyba(%d) pøi odstraòování záznamu %s z %s"
 
-#: lib/rpmdb.c:766 lib/rpmdb.c:2293
+#: lib/rpmdb.c:766 lib/rpmdb.c:2300
 msgid "no dbpath has been set"
 msgstr "nebyla nastavena dbpath"
 
@@ -3207,106 +3207,106 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr "chyba(%d) pøi poèítání balíèkù"
 
-#: lib/rpmdb.c:1136 lib/rpmdb.c:1663 lib/uninstall.c:97
+#: lib/rpmdb.c:1136 lib/rpmdb.c:1670 lib/uninstall.c:97
 #, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%s: nemohu èíst hlavièku na 0x%x"
 
-#: lib/rpmdb.c:1716
+#: lib/rpmdb.c:1723
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstraòuji 0 %s polo¾ek.\n"
 
-#: lib/rpmdb.c:1727
+#: lib/rpmdb.c:1734
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
-#: lib/rpmdb.c:1736
+#: lib/rpmdb.c:1743
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuji %d polo¾ek z indexu %s.\n"
 
-#: lib/rpmdb.c:1878
+#: lib/rpmdb.c:1885
 #, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "chyba(%d) pøi alokaci nové instance balíèku"
 
-#: lib/rpmdb.c:1935
+#: lib/rpmdb.c:1942
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr "pøidávám 0 %s polo¾ek.\n"
 
-#: lib/rpmdb.c:1951
+#: lib/rpmdb.c:1958
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "pøidávám \"%s\" do indexu %s\n"
 
-#: lib/rpmdb.c:1960
+#: lib/rpmdb.c:1967
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "pøidávám %d polo¾ek do indexu %s.\n"
 
-#: lib/rpmdb.c:2318
+#: lib/rpmdb.c:2325
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "databázi %s pøevádím do %s\n"
 
-#: lib/rpmdb.c:2322
+#: lib/rpmdb.c:2329
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáze %s ji¾ existuje"
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2335
 #, c-format
 msgid "creating directory %s\n"
 msgstr "vytváøím adresáø %s\n"
 
-#: lib/rpmdb.c:2330
+#: lib/rpmdb.c:2337
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pøi vytváøení adresáøe %s: %s"
 
-#: lib/rpmdb.c:2337
+#: lib/rpmdb.c:2344
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otevírám starou databázi s dbapi %d\n"
 
-#: lib/rpmdb.c:2348
+#: lib/rpmdb.c:2355
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otevírám novou databázi s dbapi %d\n"
 
-#: lib/rpmdb.c:2371
+#: lib/rpmdb.c:2378
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databázi je chybný -- vynechávám."
 
-#: lib/rpmdb.c:2403
+#: lib/rpmdb.c:2410
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nemohu pøidat záznam - pùvodnì u %d"
 
-#: lib/rpmdb.c:2421
+#: lib/rpmdb.c:2428
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "databázi nelze zvovu vytvoøit; pùvodní databáze zùstává na svém místì\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2436
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: lib/rpmdb.c:2431
+#: lib/rpmdb.c:2438
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "pro obnovení nahraïte soubory v %s soubory z %s"
 
-#: lib/rpmdb.c:2441
+#: lib/rpmdb.c:2448
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ma¾u adresáø %s\n"
 
-#: lib/rpmdb.c:2443
+#: lib/rpmdb.c:2450
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nemohu odstranit adresáø %s: %s\n"
