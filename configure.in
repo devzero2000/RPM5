@@ -337,8 +337,8 @@ dnl   )
 dnl )
 
 dnl Check for Berkeley db1 API retrofit to db2/db3 database.
-dnl AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c"],
-dnl     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c"])
+dnl AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c"],
+dnl     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c"])
 dnl )
 
 AC_MSG_CHECKING(whether to enable DB1 support)
