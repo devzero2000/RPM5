@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-07 14:45-0400\n"
+"POT-Creation-Date: 2001-05-07 19:30-0400\n"
 "PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2351,106 +2351,6 @@ msgstr "Внутренняя ошибка"
 msgid " failed - "
 msgstr "не удалось - "
 
-#: lib/db1.c:99 lib/db2.c:117 lib/db3.c:102
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "ошибка(%d) db%d из %s: %s\n"
-
-#: lib/db1.c:102 lib/db2.c:120 lib/db3.c:105
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "ошибка(%d) db%d: %s\n"
-
-#: lib/db1.c:418
-#, c-format
-msgid "closed  db file        %s\n"
-msgstr "закрыт файл базы данных %s\n"
-
-#: lib/db1.c:421
-#, c-format
-msgid "removed db file        %s\n"
-msgstr "удалён файл базы данных %s\n"
-
-#: lib/db1.c:452
-#, c-format
-msgid "bad db file %s\n"
-msgstr "неверный файл базы данных %s\n"
-
-#: lib/db1.c:457
-#, c-format
-msgid "opening db file        %s mode 0x%x\n"
-msgstr "открывется файл %s базы данных в режиме 0x%x\n"
-
-#. XXX check errno validity
-#: lib/db1.c:480
-#, c-format
-msgid "cannot get %s lock on database\n"
-msgstr "невозможно получить блокировку %s базы данных\n"
-
-#: lib/db1.c:481 lib/db2.c:787 lib/db3.c:798
-msgid "exclusive"
-msgstr "исключительный"
-
-#: lib/db1.c:481 lib/db2.c:787 lib/db3.c:798
-msgid "shared"
-msgstr "разделяемый"
-
-#: lib/db2.c:145 lib/db3.c:131
-#, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr "закрыто окружение базы данных %s/%s\n"
-
-#: lib/db2.c:161 lib/db3.c:147
-#, c-format
-msgid "removed db environment %s/%s\n"
-msgstr "удалено окружение базы данных %s/%s\n"
-
-#: lib/db2.c:198 lib/db3.c:186
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr "открывается окружение базы данных %s/%s %s\n"
-
-#: lib/db2.c:588 lib/db3.c:591
-#, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr "закрыт индекс базы данных %s/%s\n"
-
-#: lib/db2.c:679 lib/db3.c:686
-#, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
-
-#: lib/db2.c:785 lib/db3.c:796
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "невозможно получить блокировку %s на %s/%s\n"
-
-#: lib/db2.c:792 lib/db3.c:803
-#, c-format
-msgid "locked  db index       %s/%s\n"
-msgstr "заблокирован индекс базы данных %s/%s\n"
-
-#: lib/dbconfig.c:260
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored\n"
-msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
-
-#: lib/dbconfig.c:289
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "неверное числовое значение %s, пропущено\n"
-
-#: lib/dbconfig.c:298
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s имеет слишком малую или слишком большую величину long, пропущено\n"
-
-#: lib/dbconfig.c:307
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr ""
-"%s имеет слишком малую или слишком большую величину integer, пропущено\n"
-
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:565
 #, c-format
@@ -2564,20 +2464,6 @@ msgstr "ЦИКЛ:\n"
 #: lib/depends.c:1888
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
-
-#: lib/falloc.c:144
-#, c-format
-msgid ""
-"free list corrupt (%u)- please run\n"
-"\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
-"if \"rpm --rebuilddb\" fails to correct the problem.\n"
-msgstr ""
-"поврежден список свободных записей (%u) - пожалуйста запустите\n"
-"\t\"rpm --rebuilddb\"\n"
-"Более подробная информация доступна на http://www.rpm.org или в списке "
-"рассылки rpm-list@redhat.com\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
 #: lib/header.c:2667 lib/header.c:2684 lib/header.c:2702
@@ -3302,157 +3188,6 @@ msgstr ")"
 msgid "OK"
 msgstr "OК"
 
-#: lib/rpmdb.c:102
-#, c-format
-msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
-msgstr "dbiTagsInit: имя ключа \"%s\" не известно, игнорируется\n"
-
-#: lib/rpmdb.c:280
-#, c-format
-msgid "cannot open %s index using db%d - %s (%d)\n"
-msgstr "невозможно открыть индекс %s используя db%d - %s (%d)\n"
-
-#: lib/rpmdb.c:300
-#, c-format
-msgid "cannot open %s index\n"
-msgstr "невозможно открыть индекс %s\n"
-
-#: lib/rpmdb.c:386
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index\n"
-msgstr "ошибка(%d) получения записей \"%s\" из индекса %s\n"
-
-#: lib/rpmdb.c:511
-#, c-format
-msgid "error(%d) storing record %s into %s\n"
-msgstr "ошибка(%d) записи записи %s в %s\n"
-
-#: lib/rpmdb.c:521
-#, c-format
-msgid "error(%d) removing record %s from %s\n"
-msgstr "ошибка(%d) удаления записи %s из %s\n"
-
-#: lib/rpmdb.c:753
-msgid "no dbpath has been set\n"
-msgstr "параметер dbpath не установлен\n"
-
-#: lib/rpmdb.c:854
-msgid ""
-"old format database is present; use --rebuilddb to generate a new format "
-"database\n"
-msgstr ""
-"найдена база данных старого формата; используйте --rebuilddb для генерации "
-"базы данных нового формата\n"
-
-#. error
-#: lib/rpmdb.c:1044
-#, c-format
-msgid "error(%d) counting packages\n"
-msgstr "ошибка(%d) при подсчёте пакетов\n"
-
-#: lib/rpmdb.c:1100 lib/rpmdb.c:1662
-#, c-format
-msgid "%s: cannot read header at 0x%x\n"
-msgstr "%s: невозможно прочесть заголовок в 0x%x\n"
-
-#: lib/rpmdb.c:1365 lib/rpmdb.c:2505
-#, fuzzy, c-format
-msgid "record number %u in database is bad -- skipping.\n"
-msgstr "запись номер %d в базе данных неверна, пропускается.\n"
-
-#: lib/rpmdb.c:1729
-#, c-format
-msgid "removing \"%s\" from %s index.\n"
-msgstr "удаляется \"%s\" из индекса %s.\n"
-
-#: lib/rpmdb.c:1738
-#, c-format
-msgid "removing %d entries from %s index.\n"
-msgstr "удаляется %d записей из индекса %s.\n"
-
-#: lib/rpmdb.c:1928
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr "ошибка(%d) резервирования памяти для образа нового пакета\n"
-
-#: lib/rpmdb.c:2006
-#, c-format
-msgid "adding \"%s\" to %s index.\n"
-msgstr "добавляется \"%s\" в индекс %s.\n"
-
-#: lib/rpmdb.c:2017
-#, c-format
-msgid "adding %d entries to %s index.\n"
-msgstr "добавляется %d записей в индекс %s\n"
-
-#: lib/rpmdb.c:2399
-#, c-format
-msgid "removing %s after successful db3 rebuild.\n"
-msgstr "удаляется %s после успешного завершения переиндекации базы в db3.\n"
-
-#: lib/rpmdb.c:2427
-msgid "no dbpath has been set"
-msgstr "параметер dbpath не установлен"
-
-#: lib/rpmdb.c:2452
-#, c-format
-msgid "rebuilding database %s into %s\n"
-msgstr "перестраивается база данных %s в %s\n"
-
-#: lib/rpmdb.c:2456
-#, c-format
-msgid "temporary database %s already exists\n"
-msgstr "временная база данных %s уже существует\n"
-
-#: lib/rpmdb.c:2462
-#, c-format
-msgid "creating directory %s\n"
-msgstr "создаётся каталог %s\n"
-
-#: lib/rpmdb.c:2464
-#, c-format
-msgid "creating directory %s: %s\n"
-msgstr "создаётся каталог %s: %s\n"
-
-#: lib/rpmdb.c:2471
-#, c-format
-msgid "opening old database with dbapi %d\n"
-msgstr "открывается старая база данных через dbapi %d\n"
-
-#: lib/rpmdb.c:2482
-#, c-format
-msgid "opening new database with dbapi %d\n"
-msgstr "открывается новая база данных через dbapi %d\n"
-
-#: lib/rpmdb.c:2544
-#, fuzzy, c-format
-msgid "cannot add record originally at %u\n"
-msgstr "невозможно добавить запись (первоначально в %d)\n"
-
-#: lib/rpmdb.c:2562
-msgid "failed to rebuild database: original database remains in place\n"
-msgstr ""
-"перестроение базы данных не удалось, старая база данных остается на месте\n"
-
-#: lib/rpmdb.c:2570
-msgid "failed to replace old database with new database!\n"
-msgstr "невозможно заменить старую базу данных на новую!\n"
-
-#: lib/rpmdb.c:2572
-#, c-format
-msgid "replace files in %s with files from %s to recover"
-msgstr "файлы в %s заменяются файлами из %s для восстановления"
-
-#: lib/rpmdb.c:2582
-#, c-format
-msgid "removing directory %s\n"
-msgstr "удаляется каталог %s\n"
-
-#: lib/rpmdb.c:2584
-#, c-format
-msgid "failed to remove directory %s: %s\n"
-msgstr "ошибка удаления каталога %s: %s\n"
-
 #: lib/rpminstall.c:159
 msgid "Preparing..."
 msgstr "Подготовка..."
@@ -3841,6 +3576,271 @@ msgstr "отсутствует %s"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
+
+#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:102
+#, c-format
+msgid "db%d error(%d) from %s: %s\n"
+msgstr "ошибка(%d) db%d из %s: %s\n"
+
+#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:105
+#, c-format
+msgid "db%d error(%d): %s\n"
+msgstr "ошибка(%d) db%d: %s\n"
+
+#: rpmdb/db1.c:418
+#, c-format
+msgid "closed  db file        %s\n"
+msgstr "закрыт файл базы данных %s\n"
+
+#: rpmdb/db1.c:421
+#, c-format
+msgid "removed db file        %s\n"
+msgstr "удалён файл базы данных %s\n"
+
+#: rpmdb/db1.c:452
+#, c-format
+msgid "bad db file %s\n"
+msgstr "неверный файл базы данных %s\n"
+
+#: rpmdb/db1.c:457
+#, c-format
+msgid "opening db file        %s mode 0x%x\n"
+msgstr "открывется файл %s базы данных в режиме 0x%x\n"
+
+#. XXX check errno validity
+#: rpmdb/db1.c:480
+#, c-format
+msgid "cannot get %s lock on database\n"
+msgstr "невозможно получить блокировку %s базы данных\n"
+
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:798
+msgid "exclusive"
+msgstr "исключительный"
+
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:798
+msgid "shared"
+msgstr "разделяемый"
+
+#: rpmdb/db2.c:145 rpmdb/db3.c:131
+#, c-format
+msgid "closed  db environment %s/%s\n"
+msgstr "закрыто окружение базы данных %s/%s\n"
+
+#: rpmdb/db2.c:161 rpmdb/db3.c:147
+#, c-format
+msgid "removed db environment %s/%s\n"
+msgstr "удалено окружение базы данных %s/%s\n"
+
+#: rpmdb/db2.c:198 rpmdb/db3.c:186
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr "открывается окружение базы данных %s/%s %s\n"
+
+#: rpmdb/db2.c:588 rpmdb/db3.c:591
+#, c-format
+msgid "closed  db index       %s/%s\n"
+msgstr "закрыт индекс базы данных %s/%s\n"
+
+#: rpmdb/db2.c:679 rpmdb/db3.c:686
+#, c-format
+msgid "opening db index       %s/%s %s mode=0x%x\n"
+msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
+
+#: rpmdb/db2.c:785 rpmdb/db3.c:796
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "невозможно получить блокировку %s на %s/%s\n"
+
+#: rpmdb/db2.c:792 rpmdb/db3.c:803
+#, c-format
+msgid "locked  db index       %s/%s\n"
+msgstr "заблокирован индекс базы данных %s/%s\n"
+
+#: rpmdb/dbconfig.c:260
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored\n"
+msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
+
+#: rpmdb/dbconfig.c:289
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr "неверное числовое значение %s, пропущено\n"
+
+#: rpmdb/dbconfig.c:298
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr "%s имеет слишком малую или слишком большую величину long, пропущено\n"
+
+#: rpmdb/dbconfig.c:307
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr ""
+"%s имеет слишком малую или слишком большую величину integer, пропущено\n"
+
+#: rpmdb/falloc.c:144
+#, c-format
+msgid ""
+"free list corrupt (%u)- please run\n"
+"\t\"rpm --rebuilddb\"\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
+"if \"rpm --rebuilddb\" fails to correct the problem.\n"
+msgstr ""
+"поврежден список свободных записей (%u) - пожалуйста запустите\n"
+"\t\"rpm --rebuilddb\"\n"
+"Более подробная информация доступна на http://www.rpm.org или в списке "
+"рассылки rpm-list@redhat.com\n"
+
+#: rpmdb/rpmdb.c:102
+#, c-format
+msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
+msgstr "dbiTagsInit: имя ключа \"%s\" не известно, игнорируется\n"
+
+#: rpmdb/rpmdb.c:280
+#, c-format
+msgid "cannot open %s index using db%d - %s (%d)\n"
+msgstr "невозможно открыть индекс %s используя db%d - %s (%d)\n"
+
+#: rpmdb/rpmdb.c:300
+#, c-format
+msgid "cannot open %s index\n"
+msgstr "невозможно открыть индекс %s\n"
+
+#: rpmdb/rpmdb.c:386
+#, c-format
+msgid "error(%d) getting \"%s\" records from %s index\n"
+msgstr "ошибка(%d) получения записей \"%s\" из индекса %s\n"
+
+#: rpmdb/rpmdb.c:511
+#, c-format
+msgid "error(%d) storing record %s into %s\n"
+msgstr "ошибка(%d) записи записи %s в %s\n"
+
+#: rpmdb/rpmdb.c:521
+#, c-format
+msgid "error(%d) removing record %s from %s\n"
+msgstr "ошибка(%d) удаления записи %s из %s\n"
+
+#: rpmdb/rpmdb.c:753
+msgid "no dbpath has been set\n"
+msgstr "параметер dbpath не установлен\n"
+
+#: rpmdb/rpmdb.c:854
+msgid ""
+"old format database is present; use --rebuilddb to generate a new format "
+"database\n"
+msgstr ""
+"найдена база данных старого формата; используйте --rebuilddb для генерации "
+"базы данных нового формата\n"
+
+#. error
+#: rpmdb/rpmdb.c:1044
+#, c-format
+msgid "error(%d) counting packages\n"
+msgstr "ошибка(%d) при подсчёте пакетов\n"
+
+#: rpmdb/rpmdb.c:1100 rpmdb/rpmdb.c:1662
+#, c-format
+msgid "%s: cannot read header at 0x%x\n"
+msgstr "%s: невозможно прочесть заголовок в 0x%x\n"
+
+#: rpmdb/rpmdb.c:1365 rpmdb/rpmdb.c:2505
+#, fuzzy, c-format
+msgid "record number %u in database is bad -- skipping.\n"
+msgstr "запись номер %d в базе данных неверна, пропускается.\n"
+
+#: rpmdb/rpmdb.c:1729
+#, c-format
+msgid "removing \"%s\" from %s index.\n"
+msgstr "удаляется \"%s\" из индекса %s.\n"
+
+#: rpmdb/rpmdb.c:1738
+#, c-format
+msgid "removing %d entries from %s index.\n"
+msgstr "удаляется %d записей из индекса %s.\n"
+
+#: rpmdb/rpmdb.c:1928
+#, c-format
+msgid "error(%d) allocating new package instance\n"
+msgstr "ошибка(%d) резервирования памяти для образа нового пакета\n"
+
+#: rpmdb/rpmdb.c:2006
+#, c-format
+msgid "adding \"%s\" to %s index.\n"
+msgstr "добавляется \"%s\" в индекс %s.\n"
+
+#: rpmdb/rpmdb.c:2017
+#, c-format
+msgid "adding %d entries to %s index.\n"
+msgstr "добавляется %d записей в индекс %s\n"
+
+#: rpmdb/rpmdb.c:2399
+#, c-format
+msgid "removing %s after successful db3 rebuild.\n"
+msgstr "удаляется %s после успешного завершения переиндекации базы в db3.\n"
+
+#: rpmdb/rpmdb.c:2427
+msgid "no dbpath has been set"
+msgstr "параметер dbpath не установлен"
+
+#: rpmdb/rpmdb.c:2452
+#, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "перестраивается база данных %s в %s\n"
+
+#: rpmdb/rpmdb.c:2456
+#, c-format
+msgid "temporary database %s already exists\n"
+msgstr "временная база данных %s уже существует\n"
+
+#: rpmdb/rpmdb.c:2462
+#, c-format
+msgid "creating directory %s\n"
+msgstr "создаётся каталог %s\n"
+
+#: rpmdb/rpmdb.c:2464
+#, c-format
+msgid "creating directory %s: %s\n"
+msgstr "создаётся каталог %s: %s\n"
+
+#: rpmdb/rpmdb.c:2471
+#, c-format
+msgid "opening old database with dbapi %d\n"
+msgstr "открывается старая база данных через dbapi %d\n"
+
+#: rpmdb/rpmdb.c:2482
+#, c-format
+msgid "opening new database with dbapi %d\n"
+msgstr "открывается новая база данных через dbapi %d\n"
+
+#: rpmdb/rpmdb.c:2544
+#, fuzzy, c-format
+msgid "cannot add record originally at %u\n"
+msgstr "невозможно добавить запись (первоначально в %d)\n"
+
+#: rpmdb/rpmdb.c:2562
+msgid "failed to rebuild database: original database remains in place\n"
+msgstr ""
+"перестроение базы данных не удалось, старая база данных остается на месте\n"
+
+#: rpmdb/rpmdb.c:2570
+msgid "failed to replace old database with new database!\n"
+msgstr "невозможно заменить старую базу данных на новую!\n"
+
+#: rpmdb/rpmdb.c:2572
+#, c-format
+msgid "replace files in %s with files from %s to recover"
+msgstr "файлы в %s заменяются файлами из %s для восстановления"
+
+#: rpmdb/rpmdb.c:2582
+#, c-format
+msgid "removing directory %s\n"
+msgstr "удаляется каталог %s\n"
+
+#: rpmdb/rpmdb.c:2584
+#, c-format
+msgid "failed to remove directory %s: %s\n"
+msgstr "ошибка удаления каталога %s: %s\n"
 
 #: rpmio/macro.c:201
 #, c-format

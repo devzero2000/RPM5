@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-07 14:45-0400\n"
+"POT-Creation-Date: 2001-05-07 19:30-0400\n"
 "PO-Revision-Date: 2001-04-10 20:04+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2328,105 +2328,6 @@ msgstr "Internt fel"
 msgid " failed - "
 msgstr " misslyckades - "
 
-#: lib/db1.c:99 lib/db2.c:117 lib/db3.c:102
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "db%d-fel(%d) från %s: %s\n"
-
-#: lib/db1.c:102 lib/db2.c:120 lib/db3.c:105
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "db%d-fel(%d): %s\n"
-
-#: lib/db1.c:418
-#, c-format
-msgid "closed  db file        %s\n"
-msgstr "stängde  db-fil        %s\n"
-
-#: lib/db1.c:421
-#, c-format
-msgid "removed db file        %s\n"
-msgstr "tog bort db-fil        %s\n"
-
-#: lib/db1.c:452
-#, c-format
-msgid "bad db file %s\n"
-msgstr "felaktig db-fil %s\n"
-
-#: lib/db1.c:457
-#, c-format
-msgid "opening db file        %s mode 0x%x\n"
-msgstr "öppnar db-fil          %s rättighet 0x%x\n"
-
-#. XXX check errno validity
-#: lib/db1.c:480
-#, c-format
-msgid "cannot get %s lock on database\n"
-msgstr "kan inte få %s lås på databas\n"
-
-#: lib/db1.c:481 lib/db2.c:787 lib/db3.c:798
-msgid "exclusive"
-msgstr "uteslutande"
-
-#: lib/db1.c:481 lib/db2.c:787 lib/db3.c:798
-msgid "shared"
-msgstr "delat"
-
-#: lib/db2.c:145 lib/db3.c:131
-#, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr "stängde  db-miljö      %s/%s\n"
-
-#: lib/db2.c:161 lib/db3.c:147
-#, c-format
-msgid "removed db environment %s/%s\n"
-msgstr "tar bort db-miljö      %s/%s\n"
-
-#: lib/db2.c:198 lib/db3.c:186
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr "öppnar   db-miljö      %s/%s %s\n"
-
-#: lib/db2.c:588 lib/db3.c:591
-#, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr "tog bort db-index      %s/%s\n"
-
-#: lib/db2.c:679 lib/db3.c:686
-#, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "öppnar   db-index      %s/%s %s rättighet=0x%x\n"
-
-#: lib/db2.c:785 lib/db3.c:796
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "kan inte få %s lås på %s/%s\n"
-
-#: lib/db2.c:792 lib/db3.c:803
-#, c-format
-msgid "locked  db index       %s/%s\n"
-msgstr "låste    db-index      %s/%s\n"
-
-#: lib/dbconfig.c:260
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored\n"
-msgstr "dbiSetConfig: okänd db-flagga: \"%s\" ignorerad\n"
-
-#: lib/dbconfig.c:289
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s har ogiltigt ogiltigt numeriskt värde, hoppar över\n"
-
-#: lib/dbconfig.c:298
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
-
-#: lib/dbconfig.c:307
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
-
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:565
 #, c-format
@@ -2540,21 +2441,6 @@ msgstr "LOOP:\n"
 #: lib/depends.c:1888
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
-
-#: lib/falloc.c:144
-#, c-format
-msgid ""
-"free list corrupt (%u)- please run\n"
-"\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
-"if \"rpm --rebuilddb\" fails to correct the problem.\n"
-msgstr ""
-"frilistan trasig (%u)- var god kör\n"
-"        \"rpm --rebuilddb\"\n"
-"Mer information finns tillgänglig från http://www.rpm.org eller sändlistan\n"
-"rpm-list@redhat.com om \"rpm --rebuilddb\" inte lyckas rätta till "
-"problemet.\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
 #: lib/header.c:2667 lib/header.c:2684 lib/header.c:2702
@@ -3274,156 +3160,6 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmdb.c:102
-#, c-format
-msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
-msgstr "dbiTagsInit: okänt taggnamn: \"%s\" ignorerat\n"
-
-#: lib/rpmdb.c:280
-#, c-format
-msgid "cannot open %s index using db%d - %s (%d)\n"
-msgstr "kan inte öppna %s-indexet med db%d - %s (%d)\n"
-
-#: lib/rpmdb.c:300
-#, c-format
-msgid "cannot open %s index\n"
-msgstr "kan inte öppna %s-indexet\n"
-
-#: lib/rpmdb.c:386
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index\n"
-msgstr "fel(%d) när \"%s\"-poster hämtades från %s-indexet\n"
-
-#: lib/rpmdb.c:511
-#, c-format
-msgid "error(%d) storing record %s into %s\n"
-msgstr "fel(%d) när post %s sparades i %s\n"
-
-#: lib/rpmdb.c:521
-#, c-format
-msgid "error(%d) removing record %s from %s\n"
-msgstr "fel(%d) när post %s togs bort ur %s\n"
-
-#: lib/rpmdb.c:753
-msgid "no dbpath has been set\n"
-msgstr "ingen dbpath har satts\n"
-
-#: lib/rpmdb.c:854
-msgid ""
-"old format database is present; use --rebuilddb to generate a new format "
-"database\n"
-msgstr ""
-"databas i gammalt format finns; använd --rebuilddb för att skapa en databas "
-"i nytt format\n"
-
-#. error
-#: lib/rpmdb.c:1044
-#, c-format
-msgid "error(%d) counting packages\n"
-msgstr "fel(%d) när paket räknades\n"
-
-#: lib/rpmdb.c:1100 lib/rpmdb.c:1662
-#, c-format
-msgid "%s: cannot read header at 0x%x\n"
-msgstr "%s: kan inte läsa huvud vid 0x%x\n"
-
-#: lib/rpmdb.c:1365 lib/rpmdb.c:2505
-#, fuzzy, c-format
-msgid "record number %u in database is bad -- skipping.\n"
-msgstr "post nummer %d i databasen är felaktig -- hoppar över den.\n"
-
-#: lib/rpmdb.c:1729
-#, c-format
-msgid "removing \"%s\" from %s index.\n"
-msgstr "tar bort \"%s\" från %s-indexet.\n"
-
-#: lib/rpmdb.c:1738
-#, c-format
-msgid "removing %d entries from %s index.\n"
-msgstr "tar bort %d poster från %s-indexet.\n"
-
-#: lib/rpmdb.c:1928
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr "fel(%d) vid allokering av ny paketinstans\n"
-
-#: lib/rpmdb.c:2006
-#, c-format
-msgid "adding \"%s\" to %s index.\n"
-msgstr "lägger till \"%s\" till %s-indexet.\n"
-
-#: lib/rpmdb.c:2017
-#, c-format
-msgid "adding %d entries to %s index.\n"
-msgstr "lägger till %d poster till %s-indexet.\n"
-
-#: lib/rpmdb.c:2399
-#, c-format
-msgid "removing %s after successful db3 rebuild.\n"
-msgstr "tar bort %s efter lyckad db3-ombyggnad.\n"
-
-#: lib/rpmdb.c:2427
-msgid "no dbpath has been set"
-msgstr "ingen dbpath har satts"
-
-#: lib/rpmdb.c:2452
-#, c-format
-msgid "rebuilding database %s into %s\n"
-msgstr "bygger om databas %s till %s\n"
-
-#: lib/rpmdb.c:2456
-#, c-format
-msgid "temporary database %s already exists\n"
-msgstr "tillfällig databas %s existerar redan\n"
-
-#: lib/rpmdb.c:2462
-#, c-format
-msgid "creating directory %s\n"
-msgstr "skapar katalog %s\n"
-
-#: lib/rpmdb.c:2464
-#, c-format
-msgid "creating directory %s: %s\n"
-msgstr "skapar katalog %s: %s\n"
-
-#: lib/rpmdb.c:2471
-#, c-format
-msgid "opening old database with dbapi %d\n"
-msgstr "öppnar gammal databas med dbapi %d\n"
-
-#: lib/rpmdb.c:2482
-#, c-format
-msgid "opening new database with dbapi %d\n"
-msgstr "öppnar ny databas med dbapi %d\n"
-
-#: lib/rpmdb.c:2544
-#, fuzzy, c-format
-msgid "cannot add record originally at %u\n"
-msgstr "kan inte lägga till post ursprungligen vid %d\n"
-
-#: lib/rpmdb.c:2562
-msgid "failed to rebuild database: original database remains in place\n"
-msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
-
-#: lib/rpmdb.c:2570
-msgid "failed to replace old database with new database!\n"
-msgstr "kunde inte ersätta gammal databas med ny databas!\n"
-
-#: lib/rpmdb.c:2572
-#, c-format
-msgid "replace files in %s with files from %s to recover"
-msgstr "byt ut filer i %s med filer från %s för att återställa"
-
-#: lib/rpmdb.c:2582
-#, c-format
-msgid "removing directory %s\n"
-msgstr "tar bort katalog %s\n"
-
-#: lib/rpmdb.c:2584
-#, c-format
-msgid "failed to remove directory %s: %s\n"
-msgstr "kunde inte ta bort katalogen %s: %s\n"
-
 #: lib/rpminstall.c:159
 msgid "Preparing..."
 msgstr "Förbereder..."
@@ -3810,6 +3546,270 @@ msgstr "saknas     %s"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
+
+#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:102
+#, c-format
+msgid "db%d error(%d) from %s: %s\n"
+msgstr "db%d-fel(%d) från %s: %s\n"
+
+#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:105
+#, c-format
+msgid "db%d error(%d): %s\n"
+msgstr "db%d-fel(%d): %s\n"
+
+#: rpmdb/db1.c:418
+#, c-format
+msgid "closed  db file        %s\n"
+msgstr "stängde  db-fil        %s\n"
+
+#: rpmdb/db1.c:421
+#, c-format
+msgid "removed db file        %s\n"
+msgstr "tog bort db-fil        %s\n"
+
+#: rpmdb/db1.c:452
+#, c-format
+msgid "bad db file %s\n"
+msgstr "felaktig db-fil %s\n"
+
+#: rpmdb/db1.c:457
+#, c-format
+msgid "opening db file        %s mode 0x%x\n"
+msgstr "öppnar db-fil          %s rättighet 0x%x\n"
+
+#. XXX check errno validity
+#: rpmdb/db1.c:480
+#, c-format
+msgid "cannot get %s lock on database\n"
+msgstr "kan inte få %s lås på databas\n"
+
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:798
+msgid "exclusive"
+msgstr "uteslutande"
+
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:798
+msgid "shared"
+msgstr "delat"
+
+#: rpmdb/db2.c:145 rpmdb/db3.c:131
+#, c-format
+msgid "closed  db environment %s/%s\n"
+msgstr "stängde  db-miljö      %s/%s\n"
+
+#: rpmdb/db2.c:161 rpmdb/db3.c:147
+#, c-format
+msgid "removed db environment %s/%s\n"
+msgstr "tar bort db-miljö      %s/%s\n"
+
+#: rpmdb/db2.c:198 rpmdb/db3.c:186
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr "öppnar   db-miljö      %s/%s %s\n"
+
+#: rpmdb/db2.c:588 rpmdb/db3.c:591
+#, c-format
+msgid "closed  db index       %s/%s\n"
+msgstr "tog bort db-index      %s/%s\n"
+
+#: rpmdb/db2.c:679 rpmdb/db3.c:686
+#, c-format
+msgid "opening db index       %s/%s %s mode=0x%x\n"
+msgstr "öppnar   db-index      %s/%s %s rättighet=0x%x\n"
+
+#: rpmdb/db2.c:785 rpmdb/db3.c:796
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "kan inte få %s lås på %s/%s\n"
+
+#: rpmdb/db2.c:792 rpmdb/db3.c:803
+#, c-format
+msgid "locked  db index       %s/%s\n"
+msgstr "låste    db-index      %s/%s\n"
+
+#: rpmdb/dbconfig.c:260
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored\n"
+msgstr "dbiSetConfig: okänd db-flagga: \"%s\" ignorerad\n"
+
+#: rpmdb/dbconfig.c:289
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr "%s har ogiltigt ogiltigt numeriskt värde, hoppar över\n"
+
+#: rpmdb/dbconfig.c:298
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
+
+#: rpmdb/dbconfig.c:307
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
+
+#: rpmdb/falloc.c:144
+#, c-format
+msgid ""
+"free list corrupt (%u)- please run\n"
+"\t\"rpm --rebuilddb\"\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
+"if \"rpm --rebuilddb\" fails to correct the problem.\n"
+msgstr ""
+"frilistan trasig (%u)- var god kör\n"
+"        \"rpm --rebuilddb\"\n"
+"Mer information finns tillgänglig från http://www.rpm.org eller sändlistan\n"
+"rpm-list@redhat.com om \"rpm --rebuilddb\" inte lyckas rätta till "
+"problemet.\n"
+
+#: rpmdb/rpmdb.c:102
+#, c-format
+msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
+msgstr "dbiTagsInit: okänt taggnamn: \"%s\" ignorerat\n"
+
+#: rpmdb/rpmdb.c:280
+#, c-format
+msgid "cannot open %s index using db%d - %s (%d)\n"
+msgstr "kan inte öppna %s-indexet med db%d - %s (%d)\n"
+
+#: rpmdb/rpmdb.c:300
+#, c-format
+msgid "cannot open %s index\n"
+msgstr "kan inte öppna %s-indexet\n"
+
+#: rpmdb/rpmdb.c:386
+#, c-format
+msgid "error(%d) getting \"%s\" records from %s index\n"
+msgstr "fel(%d) när \"%s\"-poster hämtades från %s-indexet\n"
+
+#: rpmdb/rpmdb.c:511
+#, c-format
+msgid "error(%d) storing record %s into %s\n"
+msgstr "fel(%d) när post %s sparades i %s\n"
+
+#: rpmdb/rpmdb.c:521
+#, c-format
+msgid "error(%d) removing record %s from %s\n"
+msgstr "fel(%d) när post %s togs bort ur %s\n"
+
+#: rpmdb/rpmdb.c:753
+msgid "no dbpath has been set\n"
+msgstr "ingen dbpath har satts\n"
+
+#: rpmdb/rpmdb.c:854
+msgid ""
+"old format database is present; use --rebuilddb to generate a new format "
+"database\n"
+msgstr ""
+"databas i gammalt format finns; använd --rebuilddb för att skapa en databas "
+"i nytt format\n"
+
+#. error
+#: rpmdb/rpmdb.c:1044
+#, c-format
+msgid "error(%d) counting packages\n"
+msgstr "fel(%d) när paket räknades\n"
+
+#: rpmdb/rpmdb.c:1100 rpmdb/rpmdb.c:1662
+#, c-format
+msgid "%s: cannot read header at 0x%x\n"
+msgstr "%s: kan inte läsa huvud vid 0x%x\n"
+
+#: rpmdb/rpmdb.c:1365 rpmdb/rpmdb.c:2505
+#, fuzzy, c-format
+msgid "record number %u in database is bad -- skipping.\n"
+msgstr "post nummer %d i databasen är felaktig -- hoppar över den.\n"
+
+#: rpmdb/rpmdb.c:1729
+#, c-format
+msgid "removing \"%s\" from %s index.\n"
+msgstr "tar bort \"%s\" från %s-indexet.\n"
+
+#: rpmdb/rpmdb.c:1738
+#, c-format
+msgid "removing %d entries from %s index.\n"
+msgstr "tar bort %d poster från %s-indexet.\n"
+
+#: rpmdb/rpmdb.c:1928
+#, c-format
+msgid "error(%d) allocating new package instance\n"
+msgstr "fel(%d) vid allokering av ny paketinstans\n"
+
+#: rpmdb/rpmdb.c:2006
+#, c-format
+msgid "adding \"%s\" to %s index.\n"
+msgstr "lägger till \"%s\" till %s-indexet.\n"
+
+#: rpmdb/rpmdb.c:2017
+#, c-format
+msgid "adding %d entries to %s index.\n"
+msgstr "lägger till %d poster till %s-indexet.\n"
+
+#: rpmdb/rpmdb.c:2399
+#, c-format
+msgid "removing %s after successful db3 rebuild.\n"
+msgstr "tar bort %s efter lyckad db3-ombyggnad.\n"
+
+#: rpmdb/rpmdb.c:2427
+msgid "no dbpath has been set"
+msgstr "ingen dbpath har satts"
+
+#: rpmdb/rpmdb.c:2452
+#, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "bygger om databas %s till %s\n"
+
+#: rpmdb/rpmdb.c:2456
+#, c-format
+msgid "temporary database %s already exists\n"
+msgstr "tillfällig databas %s existerar redan\n"
+
+#: rpmdb/rpmdb.c:2462
+#, c-format
+msgid "creating directory %s\n"
+msgstr "skapar katalog %s\n"
+
+#: rpmdb/rpmdb.c:2464
+#, c-format
+msgid "creating directory %s: %s\n"
+msgstr "skapar katalog %s: %s\n"
+
+#: rpmdb/rpmdb.c:2471
+#, c-format
+msgid "opening old database with dbapi %d\n"
+msgstr "öppnar gammal databas med dbapi %d\n"
+
+#: rpmdb/rpmdb.c:2482
+#, c-format
+msgid "opening new database with dbapi %d\n"
+msgstr "öppnar ny databas med dbapi %d\n"
+
+#: rpmdb/rpmdb.c:2544
+#, fuzzy, c-format
+msgid "cannot add record originally at %u\n"
+msgstr "kan inte lägga till post ursprungligen vid %d\n"
+
+#: rpmdb/rpmdb.c:2562
+msgid "failed to rebuild database: original database remains in place\n"
+msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
+
+#: rpmdb/rpmdb.c:2570
+msgid "failed to replace old database with new database!\n"
+msgstr "kunde inte ersätta gammal databas med ny databas!\n"
+
+#: rpmdb/rpmdb.c:2572
+#, c-format
+msgid "replace files in %s with files from %s to recover"
+msgstr "byt ut filer i %s med filer från %s för att återställa"
+
+#: rpmdb/rpmdb.c:2582
+#, c-format
+msgid "removing directory %s\n"
+msgstr "tar bort katalog %s\n"
+
+#: rpmdb/rpmdb.c:2584
+#, c-format
+msgid "failed to remove directory %s: %s\n"
+msgstr "kunde inte ta bort katalogen %s: %s\n"
 
 #: rpmio/macro.c:201
 #, c-format

@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.17
+Release: 0.18
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -207,6 +207,7 @@ fi
 %{__prefix}/bin/rpmquery
 %{__prefix}/bin/rpmverify
 %{__prefix}/lib/librpm.so.*
+%{__prefix}/lib/librpmdb.so.*
 %{__prefix}/lib/librpmio.so.*
 %{__prefix}/lib/librpmbuild.so.*
 
@@ -215,8 +216,7 @@ fi
 %{__prefix}/lib/rpm/convertrpmrc.sh
 %{__prefix}/lib/rpm/macros
 %{__prefix}/lib/rpm/mkinstalldirs
-%{__prefix}/lib/rpm/rpmdb
-%{__prefix}/lib/rpm/rpm[eiukqv]
+%{__prefix}/lib/rpm/rpm[deiukqv]
 %{__prefix}/lib/rpm/rpmpopt*
 %{__prefix}/lib/rpm/rpmrc
 
@@ -313,6 +313,9 @@ fi
 %{__prefix}/lib/librpm.a
 %{__prefix}/lib/librpm.la
 %{__prefix}/lib/librpm.so
+%{__prefix}/lib/librpmdb.a
+%{__prefix}/lib/librpmdb.la
+%{__prefix}/lib/librpmdb.so
 %{__prefix}/lib/librpmio.a
 %{__prefix}/lib/librpmio.la
 %{__prefix}/lib/librpmio.so
@@ -350,7 +353,8 @@ fi
 %changelog
 * Mon May  7 2001 Jeff Johnson <jbj@redhat.com>
 - use internal db-3.2.9 sources to build by default.
-- don't build db1 by default.
+- don't build db1 support by default.
+- create rpmdb.la so that linkage against rpm's db-3.2.9 is possible.
 
 * Sun May  6 2001 Jeff Johnson <jbj@redhat.com>
 - fix: specfile queries with BuildArch: (#27589).

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2001-05-07 14:45-0400\n"
+"POT-Creation-Date: 2001-05-07 19:30-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2347,105 +2347,6 @@ msgstr "Erro interno"
 msgid " failed - "
 msgstr " falhou - "
 
-#: lib/db1.c:99 lib/db2.c:117 lib/db3.c:102
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "erro do db%d (%d) do %s: %s\n"
-
-#: lib/db1.c:102 lib/db2.c:120 lib/db3.c:105
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "erro do db%d (%d): %s\n"
-
-#: lib/db1.c:418
-#, c-format
-msgid "closed  db file        %s\n"
-msgstr "fechei o ficheiro do db %s\n"
-
-#: lib/db1.c:421
-#, c-format
-msgid "removed db file        %s\n"
-msgstr "removi o ficheiro do db %s\n"
-
-#: lib/db1.c:452
-#, c-format
-msgid "bad db file %s\n"
-msgstr "ficheiro db inválido %s\n"
-
-#: lib/db1.c:457
-#, c-format
-msgid "opening db file        %s mode 0x%x\n"
-msgstr "a aceder ao ficheiro db %s modo 0x%x\n"
-
-#. XXX check errno validity
-#: lib/db1.c:480
-#, c-format
-msgid "cannot get %s lock on database\n"
-msgstr "não consegui adquirir exclusivamente o %s na base de dados\n"
-
-#: lib/db1.c:481 lib/db2.c:787 lib/db3.c:798
-msgid "exclusive"
-msgstr "exclusivo"
-
-#: lib/db1.c:481 lib/db2.c:787 lib/db3.c:798
-msgid "shared"
-msgstr "partilhado"
-
-#: lib/db2.c:145 lib/db3.c:131
-#, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr "fechei o ambiente do db %s/%s\n"
-
-#: lib/db2.c:161 lib/db3.c:147
-#, c-format
-msgid "removed db environment %s/%s\n"
-msgstr "removi o ambiente do db %s/%s\n"
-
-#: lib/db2.c:198 lib/db3.c:186
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr "a aceder ao ambiente do db %s/%s %s\n"
-
-#: lib/db2.c:588 lib/db3.c:591
-#, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr "fechei o índice do db  %s/%s\n"
-
-#: lib/db2.c:679 lib/db3.c:686
-#, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr "a abrir o índice do db   %s/%s %s modo=0x%x\n"
-
-#: lib/db2.c:785 lib/db3.c:796
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "não consigo trancar o %s no %s/%s\n"
-
-#: lib/db2.c:792 lib/db3.c:803
-#, c-format
-msgid "locked  db index       %s/%s\n"
-msgstr "tranquei o índice do db     %s/%s\n"
-
-#: lib/dbconfig.c:260
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored\n"
-msgstr "opção do db desconhecida: \"%s\" ignorado\n"
-
-#: lib/dbconfig.c:289
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "O %s tem um valor numérico inválido, foi ignorado\n"
-
-#: lib/dbconfig.c:298
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "O %s tem um valor demasiado elevado ou pequeno, foi ignorado\n"
-
-#: lib/dbconfig.c:307
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "O %s tem um valor inteiro demasiado elevado ou pequeno, foi ignorado\n"
-
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:565
 #, c-format
@@ -2559,21 +2460,6 @@ msgstr "CICLO:\n"
 #: lib/depends.c:1888
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
-
-#: lib/falloc.c:144
-#, c-format
-msgid ""
-"free list corrupt (%u)- please run\n"
-"\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
-"if \"rpm --rebuilddb\" fails to correct the problem.\n"
-msgstr ""
-"lista de livres corrompida (%u)- por favor\n"
-"corra o \"rpm --rebuilddb\"\n"
-"Existe mais informação disponível em http://www.rpm.org ou na\n"
-"'mailing list' rpm-list@redhat.com\n"
-"se o \"rpm --rebuild\" não conseguir corrigir o problema.\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
 #: lib/header.c:2667 lib/header.c:2684 lib/header.c:2702
@@ -3303,157 +3189,6 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmdb.c:102
-#, c-format
-msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
-msgstr "dbiTagsInit: nome de opção não reconhecido: \"%s\" ignorado\n"
-
-#: lib/rpmdb.c:280
-#, c-format
-msgid "cannot open %s index using db%d - %s (%d)\n"
-msgstr "não consigo abrir o índice de %s usando o db%d - %s (%d)\n"
-
-#: lib/rpmdb.c:300
-#, c-format
-msgid "cannot open %s index\n"
-msgstr "não consigo abrir o índice do %s\n"
-
-#: lib/rpmdb.c:386
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index\n"
-msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
-
-#: lib/rpmdb.c:511
-#, c-format
-msgid "error(%d) storing record %s into %s\n"
-msgstr "erro(%d) ao guardar o registo %s em %s\n"
-
-#: lib/rpmdb.c:521
-#, c-format
-msgid "error(%d) removing record %s from %s\n"
-msgstr "erro(%d) ao remover o registo %s do %s\n"
-
-#: lib/rpmdb.c:753
-msgid "no dbpath has been set\n"
-msgstr "não foi definido o dbpath\n"
-
-#: lib/rpmdb.c:854
-msgid ""
-"old format database is present; use --rebuilddb to generate a new format "
-"database\n"
-msgstr ""
-"está presente uma base de dados antiga; use o --rebuildb para gerar uma base "
-"de dados no novo formato\n"
-
-#. error
-#: lib/rpmdb.c:1044
-#, c-format
-msgid "error(%d) counting packages\n"
-msgstr "erro(%d) ao contar os pacotes\n"
-
-#: lib/rpmdb.c:1100 lib/rpmdb.c:1662
-#, c-format
-msgid "%s: cannot read header at 0x%x\n"
-msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"
-
-#: lib/rpmdb.c:1365 lib/rpmdb.c:2505
-#, fuzzy, c-format
-msgid "record number %u in database is bad -- skipping.\n"
-msgstr "o número do registo %d na base de dados está errado -- a ignorar.\n"
-
-#: lib/rpmdb.c:1729
-#, c-format
-msgid "removing \"%s\" from %s index.\n"
-msgstr "a remover o \"%s\" do índice %s.\n"
-
-#: lib/rpmdb.c:1738
-#, c-format
-msgid "removing %d entries from %s index.\n"
-msgstr "a remover %d registos do índice %s.\n"
-
-#: lib/rpmdb.c:1928
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr "erro(%d) ao criar uma nova instância do pacote\n"
-
-#: lib/rpmdb.c:2006
-#, c-format
-msgid "adding \"%s\" to %s index.\n"
-msgstr "a adicionar o \"%s\" ao índice %s.\n"
-
-#: lib/rpmdb.c:2017
-#, c-format
-msgid "adding %d entries to %s index.\n"
-msgstr "a adicionar %d registos ao índice %s.\n"
-
-#: lib/rpmdb.c:2399
-#, c-format
-msgid "removing %s after successful db3 rebuild.\n"
-msgstr "a remover o %s depois duma reconstrução bem sucedida do db3.\n"
-
-#: lib/rpmdb.c:2427
-msgid "no dbpath has been set"
-msgstr "não foi definido o dbpath"
-
-#: lib/rpmdb.c:2452
-#, c-format
-msgid "rebuilding database %s into %s\n"
-msgstr "a reconstruir a base de dados %s em %s\n"
-
-#: lib/rpmdb.c:2456
-#, c-format
-msgid "temporary database %s already exists\n"
-msgstr "A base de dados temporária %s já existe\n"
-
-#: lib/rpmdb.c:2462
-#, c-format
-msgid "creating directory %s\n"
-msgstr "a criar a directoria %s\n"
-
-#: lib/rpmdb.c:2464
-#, c-format
-msgid "creating directory %s: %s\n"
-msgstr "a criar a directoria %s: %s\n"
-
-#: lib/rpmdb.c:2471
-#, c-format
-msgid "opening old database with dbapi %d\n"
-msgstr "a abrir a base de dados antiga com a dbapi %d\n"
-
-#: lib/rpmdb.c:2482
-#, c-format
-msgid "opening new database with dbapi %d\n"
-msgstr "a abrir a base de dados nova com a dbapi %d\n"
-
-#: lib/rpmdb.c:2544
-#, fuzzy, c-format
-msgid "cannot add record originally at %u\n"
-msgstr "não consigo adicionar o registo originalmente em %d\n"
-
-#: lib/rpmdb.c:2562
-msgid "failed to rebuild database: original database remains in place\n"
-msgstr ""
-"falhou a reconstrução da base de dados: a base de dados original mantém-se\n"
-
-#: lib/rpmdb.c:2570
-msgid "failed to replace old database with new database!\n"
-msgstr "falhou a substituição da base de dados antiga pela nova!\n"
-
-#: lib/rpmdb.c:2572
-#, c-format
-msgid "replace files in %s with files from %s to recover"
-msgstr "substituir os ficheiros em %s por ficheiros de %s a recuperar"
-
-#: lib/rpmdb.c:2582
-#, c-format
-msgid "removing directory %s\n"
-msgstr "a remover a directoria %s\n"
-
-#: lib/rpmdb.c:2584
-#, c-format
-msgid "failed to remove directory %s: %s\n"
-msgstr "falhou a remoção da directoria %s: %s\n"
-
 #: lib/rpminstall.c:159
 msgid "Preparing..."
 msgstr "A preparar..."
@@ -3841,6 +3576,271 @@ msgstr "falta     %s"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Dependências não satisfeitas para o %s-%s-%s: "
+
+#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:102
+#, c-format
+msgid "db%d error(%d) from %s: %s\n"
+msgstr "erro do db%d (%d) do %s: %s\n"
+
+#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:105
+#, c-format
+msgid "db%d error(%d): %s\n"
+msgstr "erro do db%d (%d): %s\n"
+
+#: rpmdb/db1.c:418
+#, c-format
+msgid "closed  db file        %s\n"
+msgstr "fechei o ficheiro do db %s\n"
+
+#: rpmdb/db1.c:421
+#, c-format
+msgid "removed db file        %s\n"
+msgstr "removi o ficheiro do db %s\n"
+
+#: rpmdb/db1.c:452
+#, c-format
+msgid "bad db file %s\n"
+msgstr "ficheiro db inválido %s\n"
+
+#: rpmdb/db1.c:457
+#, c-format
+msgid "opening db file        %s mode 0x%x\n"
+msgstr "a aceder ao ficheiro db %s modo 0x%x\n"
+
+#. XXX check errno validity
+#: rpmdb/db1.c:480
+#, c-format
+msgid "cannot get %s lock on database\n"
+msgstr "não consegui adquirir exclusivamente o %s na base de dados\n"
+
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:798
+msgid "exclusive"
+msgstr "exclusivo"
+
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:798
+msgid "shared"
+msgstr "partilhado"
+
+#: rpmdb/db2.c:145 rpmdb/db3.c:131
+#, c-format
+msgid "closed  db environment %s/%s\n"
+msgstr "fechei o ambiente do db %s/%s\n"
+
+#: rpmdb/db2.c:161 rpmdb/db3.c:147
+#, c-format
+msgid "removed db environment %s/%s\n"
+msgstr "removi o ambiente do db %s/%s\n"
+
+#: rpmdb/db2.c:198 rpmdb/db3.c:186
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr "a aceder ao ambiente do db %s/%s %s\n"
+
+#: rpmdb/db2.c:588 rpmdb/db3.c:591
+#, c-format
+msgid "closed  db index       %s/%s\n"
+msgstr "fechei o índice do db  %s/%s\n"
+
+#: rpmdb/db2.c:679 rpmdb/db3.c:686
+#, c-format
+msgid "opening db index       %s/%s %s mode=0x%x\n"
+msgstr "a abrir o índice do db   %s/%s %s modo=0x%x\n"
+
+#: rpmdb/db2.c:785 rpmdb/db3.c:796
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "não consigo trancar o %s no %s/%s\n"
+
+#: rpmdb/db2.c:792 rpmdb/db3.c:803
+#, c-format
+msgid "locked  db index       %s/%s\n"
+msgstr "tranquei o índice do db     %s/%s\n"
+
+#: rpmdb/dbconfig.c:260
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored\n"
+msgstr "opção do db desconhecida: \"%s\" ignorado\n"
+
+#: rpmdb/dbconfig.c:289
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr "O %s tem um valor numérico inválido, foi ignorado\n"
+
+#: rpmdb/dbconfig.c:298
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr "O %s tem um valor demasiado elevado ou pequeno, foi ignorado\n"
+
+#: rpmdb/dbconfig.c:307
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr "O %s tem um valor inteiro demasiado elevado ou pequeno, foi ignorado\n"
+
+#: rpmdb/falloc.c:144
+#, c-format
+msgid ""
+"free list corrupt (%u)- please run\n"
+"\t\"rpm --rebuilddb\"\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
+"if \"rpm --rebuilddb\" fails to correct the problem.\n"
+msgstr ""
+"lista de livres corrompida (%u)- por favor\n"
+"corra o \"rpm --rebuilddb\"\n"
+"Existe mais informação disponível em http://www.rpm.org ou na\n"
+"'mailing list' rpm-list@redhat.com\n"
+"se o \"rpm --rebuild\" não conseguir corrigir o problema.\n"
+
+#: rpmdb/rpmdb.c:102
+#, c-format
+msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
+msgstr "dbiTagsInit: nome de opção não reconhecido: \"%s\" ignorado\n"
+
+#: rpmdb/rpmdb.c:280
+#, c-format
+msgid "cannot open %s index using db%d - %s (%d)\n"
+msgstr "não consigo abrir o índice de %s usando o db%d - %s (%d)\n"
+
+#: rpmdb/rpmdb.c:300
+#, c-format
+msgid "cannot open %s index\n"
+msgstr "não consigo abrir o índice do %s\n"
+
+#: rpmdb/rpmdb.c:386
+#, c-format
+msgid "error(%d) getting \"%s\" records from %s index\n"
+msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
+
+#: rpmdb/rpmdb.c:511
+#, c-format
+msgid "error(%d) storing record %s into %s\n"
+msgstr "erro(%d) ao guardar o registo %s em %s\n"
+
+#: rpmdb/rpmdb.c:521
+#, c-format
+msgid "error(%d) removing record %s from %s\n"
+msgstr "erro(%d) ao remover o registo %s do %s\n"
+
+#: rpmdb/rpmdb.c:753
+msgid "no dbpath has been set\n"
+msgstr "não foi definido o dbpath\n"
+
+#: rpmdb/rpmdb.c:854
+msgid ""
+"old format database is present; use --rebuilddb to generate a new format "
+"database\n"
+msgstr ""
+"está presente uma base de dados antiga; use o --rebuildb para gerar uma base "
+"de dados no novo formato\n"
+
+#. error
+#: rpmdb/rpmdb.c:1044
+#, c-format
+msgid "error(%d) counting packages\n"
+msgstr "erro(%d) ao contar os pacotes\n"
+
+#: rpmdb/rpmdb.c:1100 rpmdb/rpmdb.c:1662
+#, c-format
+msgid "%s: cannot read header at 0x%x\n"
+msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"
+
+#: rpmdb/rpmdb.c:1365 rpmdb/rpmdb.c:2505
+#, fuzzy, c-format
+msgid "record number %u in database is bad -- skipping.\n"
+msgstr "o número do registo %d na base de dados está errado -- a ignorar.\n"
+
+#: rpmdb/rpmdb.c:1729
+#, c-format
+msgid "removing \"%s\" from %s index.\n"
+msgstr "a remover o \"%s\" do índice %s.\n"
+
+#: rpmdb/rpmdb.c:1738
+#, c-format
+msgid "removing %d entries from %s index.\n"
+msgstr "a remover %d registos do índice %s.\n"
+
+#: rpmdb/rpmdb.c:1928
+#, c-format
+msgid "error(%d) allocating new package instance\n"
+msgstr "erro(%d) ao criar uma nova instância do pacote\n"
+
+#: rpmdb/rpmdb.c:2006
+#, c-format
+msgid "adding \"%s\" to %s index.\n"
+msgstr "a adicionar o \"%s\" ao índice %s.\n"
+
+#: rpmdb/rpmdb.c:2017
+#, c-format
+msgid "adding %d entries to %s index.\n"
+msgstr "a adicionar %d registos ao índice %s.\n"
+
+#: rpmdb/rpmdb.c:2399
+#, c-format
+msgid "removing %s after successful db3 rebuild.\n"
+msgstr "a remover o %s depois duma reconstrução bem sucedida do db3.\n"
+
+#: rpmdb/rpmdb.c:2427
+msgid "no dbpath has been set"
+msgstr "não foi definido o dbpath"
+
+#: rpmdb/rpmdb.c:2452
+#, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "a reconstruir a base de dados %s em %s\n"
+
+#: rpmdb/rpmdb.c:2456
+#, c-format
+msgid "temporary database %s already exists\n"
+msgstr "A base de dados temporária %s já existe\n"
+
+#: rpmdb/rpmdb.c:2462
+#, c-format
+msgid "creating directory %s\n"
+msgstr "a criar a directoria %s\n"
+
+#: rpmdb/rpmdb.c:2464
+#, c-format
+msgid "creating directory %s: %s\n"
+msgstr "a criar a directoria %s: %s\n"
+
+#: rpmdb/rpmdb.c:2471
+#, c-format
+msgid "opening old database with dbapi %d\n"
+msgstr "a abrir a base de dados antiga com a dbapi %d\n"
+
+#: rpmdb/rpmdb.c:2482
+#, c-format
+msgid "opening new database with dbapi %d\n"
+msgstr "a abrir a base de dados nova com a dbapi %d\n"
+
+#: rpmdb/rpmdb.c:2544
+#, fuzzy, c-format
+msgid "cannot add record originally at %u\n"
+msgstr "não consigo adicionar o registo originalmente em %d\n"
+
+#: rpmdb/rpmdb.c:2562
+msgid "failed to rebuild database: original database remains in place\n"
+msgstr ""
+"falhou a reconstrução da base de dados: a base de dados original mantém-se\n"
+
+#: rpmdb/rpmdb.c:2570
+msgid "failed to replace old database with new database!\n"
+msgstr "falhou a substituição da base de dados antiga pela nova!\n"
+
+#: rpmdb/rpmdb.c:2572
+#, c-format
+msgid "replace files in %s with files from %s to recover"
+msgstr "substituir os ficheiros em %s por ficheiros de %s a recuperar"
+
+#: rpmdb/rpmdb.c:2582
+#, c-format
+msgid "removing directory %s\n"
+msgstr "a remover a directoria %s\n"
+
+#: rpmdb/rpmdb.c:2584
+#, c-format
+msgid "failed to remove directory %s: %s\n"
+msgstr "falhou a remoção da directoria %s: %s\n"
 
 #: rpmio/macro.c:201
 #, c-format
