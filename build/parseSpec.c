@@ -31,6 +31,9 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     /* Set up a new Spec structure with no packages. */
     spec = newSpec();
 
+    spec->fileStack = newOpenFileInfo();
+    spec->fileStack->fileName = strdup(specFile);
+
     spec->specFile = strdup(specFile);
     if (buildRoot) {
 	spec->gotBuildRoot = 1;

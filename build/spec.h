@@ -43,13 +43,20 @@ struct ReadLevelEntry {
     struct ReadLevelEntry *next;
 };
 
+struct OpenFileInfo {
+    char *fileName;
+    FILE *file;
+    int lineNum;
+    char readBuf[BUFSIZ];
+    char *readPtr;
+    struct OpenFileInfo *next;
+};
+
 struct SpecStruct {
     char *specFile;
     char *sourceRpmName;
 
-    FILE *file;
-    char readBuf[BUFSIZ];
-    char *readPtr;
+    struct OpenFileInfo *fileStack;
     char line[BUFSIZ];
     int lineNum;
 
@@ -128,6 +135,8 @@ typedef struct PackageStruct *Package;
 
 Spec newSpec(void);
 void freeSpec(Spec spec);
+
+struct OpenFileInfo * newOpenFileInfo(void);
 
 int addSource(Spec spec, Package pkg, char *field, int tag);
 char *getSource(Spec spec, int num, int flag);

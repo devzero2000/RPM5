@@ -15,4 +15,6 @@ int readLine(Spec spec, int strip);
 void closeSpec(Spec spec);
 void handleComments(char *s);
 
+void forceIncludeFile(Spec spec, const char * fileName);
+
 #endif
