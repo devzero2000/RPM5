@@ -30,7 +30,7 @@
 	- add aurora/sparc patches (#124469).
 	- use poll(2) if available, avoid borked aurora/sparc select (#124574).
 
-4.2.2 -> 4.3:
+4.2.3 -> 4.3:
 	- upgrade to zlib-1.2.beta7.
 	- fix: short option help missing string terminator.
 	- permit secondary tag match patterns with RPMQV_ALL.
@@ -67,6 +67,12 @@
 	- fix: handle elf64 note sections correctly.
 	- fix: grrr, skip notes on non-i386 entirely.
 	- fix: dev package build on s390x hack around.
+
+4.2.2 -> 4.2.3:
+	- bump rpm and popt versions to insure "newer".
+	- change default behavior to resolve file conflicts as LIFO.
+	- add --fileconflicts to recover rpm traditional behavior.
+	- prefer elf64 over elf32 files, everywhere and always (#126853).
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
