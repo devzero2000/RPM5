@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-07-07 14:30-0400\n"
+"POT-Creation-Date: 2001-07-08 17:09-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3565,20 +3565,20 @@ msgstr ""
 "v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by sa "
 "nikdy sta»)"
 
-#: lib/verify.c:355
-#, c-format
-msgid "%s-%s-%s: immutable header region digest check failed\n"
-msgstr ""
-
-#: lib/verify.c:414
+#: lib/verify.c:409
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "chýbajúce    %s\n"
 
-#: lib/verify.c:507
+#: lib/verify.c:502
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
+
+#: lib/verify.c:541
+#, c-format
+msgid "%s-%s-%s: immutable header region digest check failed\n"
+msgstr ""
 
 #: rpmdb/db1.c:100 rpmdb/db3.c:84
 #, c-format

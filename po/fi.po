@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-07-07 14:30-0400\n"
+"POT-Creation-Date: 2001-07-08 17:09-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -3556,20 +3556,20 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:355
-#, c-format
-msgid "%s-%s-%s: immutable header region digest check failed\n"
-msgstr ""
-
-#: lib/verify.c:414
+#: lib/verify.c:409
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: lib/verify.c:507
+#: lib/verify.c:502
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s:n tyydyttämättömät riippuvuudet:"
+
+#: lib/verify.c:541
+#, c-format
+msgid "%s-%s-%s: immutable header region digest check failed\n"
+msgstr ""
 
 #: rpmdb/db1.c:100 rpmdb/db3.c:84
 #, c-format

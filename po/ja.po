@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-07-07 14:30-0400\n"
+"POT-Creation-Date: 2001-07-08 17:09-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -3612,20 +3612,20 @@ msgstr ""
 "パッケージはグループ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:355
-#, c-format
-msgid "%s-%s-%s: immutable header region digest check failed\n"
-msgstr ""
-
-#: lib/verify.c:414
+#: lib/verify.c:409
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:507
+#: lib/verify.c:502
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
+
+#: lib/verify.c:541
+#, c-format
+msgid "%s-%s-%s: immutable header region digest check failed\n"
+msgstr ""
 
 #: rpmdb/db1.c:100 rpmdb/db3.c:84
 #, c-format
