@@ -512,6 +512,10 @@
 # XXX	Note: escaped %% for use in headerSprintf()
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
+#	The path to the dependency universe database. The default value
+#	is the rpmdb-redhat location.
+%_sdbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat
+
 #	The output binary package file name template used when suggesting
 #	binary packages that solve a dependency.
 #
