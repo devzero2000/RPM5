@@ -8,15 +8,15 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include <rpm/rpmio.h>
-#include <rpm/dbindex.h>
-#include <rpm/header.h>
-#include <popt.h>
-#include <rpm/rpmlib.h>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+#include "rpmlib.h"
+#include "rpmio.h"
+#include "dbindex.h"
+#include "header.h"
+#include "popt.h"
 
 /*
  * External functions
