@@ -3,6 +3,8 @@
 %define	__prefix	/usr
 %{expand:%%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
+%define	__mandir	%{__prefix}%{__share}/man
+
 Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
@@ -192,9 +194,9 @@ fi
 %dir %{__prefix}/src/redhat/RPMS
 %{__prefix}/src/redhat/RPMS/*
 %{__prefix}/*/locale/*/LC_MESSAGES/rpm.mo
-%{__prefix}/man/man[18]/*.[18]*
-%lang(pl) %{__prefix}/man/pl/man[18]/*.[18]*
-%lang(ru) %{__prefix}/man/ru/man[18]/*.[18]*
+%{__mandir}/man[18]/*.[18]*
+%lang(pl) %{__mandir}/pl/man[18]/*.[18]*
+%lang(ru) %{__mandir}/ru/man[18]/*.[18]*
 
 %files build
 %defattr(-,root,root)
@@ -236,7 +238,7 @@ fi
 %defattr(-,root,root)
 %{__prefix}/lib/libpopt.so.*
 %{__prefix}/*/locale/*/LC_MESSAGES/popt.mo
-%{__prefix}/man/man3/popt.3*
+%{__mandir}/man3/popt.3*
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort now.
 %{__prefix}/lib/libpopt.a
@@ -245,6 +247,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Aug 23 2000 Jeff Johnson <jbj@redhat.com>
+- macroize manpath to build on FHS systems.
+
 * Sun Aug 20 2000 Jeff Johnson <jbj@redhat.com>
 - python bindings to query and verify signatures.
 - add callbacks on package erasure.
