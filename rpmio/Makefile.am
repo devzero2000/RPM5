@@ -32,12 +32,6 @@ librpmio_la_LDFLAGS = -release 4.0.4 $(LDFLAGS) \
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = .created
 
-# XXX Add internal libtool dependence
-install-data-local:
-	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lpopt|" < librpmio.la > .librpmio.la && \
-	mv .librpmio.la librpmio.la
-
 $(top_builddir)/beecrypt/listobjs:
 	make -C $(top_builddir)/beecrypt listobjs
 

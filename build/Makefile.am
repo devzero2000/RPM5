@@ -32,12 +32,6 @@ librpmbuild_la_LDFLAGS = -release 4.0.4 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la
 
-# XXX Add internal libtool dependence
-install-data-local:
-	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lrpm|" < librpmbuild.la > .librpmbuild.la && \
-	mv .librpmbuild.la librpmbuild.la
-
 .PHONY:	sources
 sources:
 	@echo $(librpmbuild_la_SOURCES:%=build/%)

@@ -405,7 +405,6 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/rpmdb.c \
 	@top_srcdir@/rpmdb/rpmdb.h \
 	@top_srcdir@/rpmdb/tagname.c \
-	@top_srcdir@/rpmdb/tagtable.c \
 	@top_srcdir@/rpmio/digest.c \
 	@top_srcdir@/rpmio/macro.c \
 	@top_srcdir@/rpmio/rpmlog.c \
