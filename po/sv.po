@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2000-12-26 14:34-0500\n"
-"PO-Revision-Date: 2000-12-26 12:27+0100\n"
+"PO-Revision-Date: 2000-12-28 19:37+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -413,7 +413,7 @@ msgstr "      Flaggor för paketval:"
 
 #: rpm.c:334
 msgid "query all packages"
-msgstr "fråga om alla paket"
+msgstr "fråga alla paket"
 
 #: rpm.c:335
 msgid "        -f <file>+        "
@@ -421,7 +421,7 @@ msgstr "        -f <fil>+         "
 
 #: rpm.c:336
 msgid "query package owning <file>"
-msgstr "fråga om paket som äger <fil>"
+msgstr "fråga paket som äger <fil>"
 
 #: rpm.c:337
 msgid "        -p <packagefile>+ "
@@ -429,7 +429,7 @@ msgstr "        -p <paketfil>+ "
 
 #: rpm.c:338
 msgid "query (uninstalled) package <packagefile>"
-msgstr "fråga om (oinstallerat) paket <paketfil>"
+msgstr "fråga (oinstallerat) paket <paketfil>"
 
 #: rpm.c:339
 msgid "        --triggeredby <pkg>"
@@ -437,7 +437,7 @@ msgstr "        --triggeredby <pkt>"
 
 #: rpm.c:340
 msgid "query packages triggered by <pkg>"
-msgstr "fråga om paket utlösta av <pkt>"
+msgstr "fråga paket utlösta av <pkt>"
 
 #: rpm.c:341
 msgid "        --whatprovides <cap>"
@@ -445,7 +445,7 @@ msgstr "        --whatprovides <egenskap>"
 
 #: rpm.c:342
 msgid "query packages which provide <cap> capability"
-msgstr "undersök paket som tillhandahåller <egenskap>"
+msgstr "fråga paket som tillhandahåller <egenskap>"
 
 #: rpm.c:343
 msgid "        --whatrequires <cap>"
@@ -453,7 +453,7 @@ msgstr "        --whatrequires <egenskap>"
 
 #: rpm.c:344
 msgid "query packages which require <cap> capability"
-msgstr "undersök paket som behöver <egenskap>"
+msgstr "fråga paket som behöver <egenskap>"
 
 #: rpm.c:345
 msgid "      Information selection options:"
@@ -891,19 +891,19 @@ msgstr "Internt fel i argumenthantering (%d) :-(\n"
 
 #: rpm.c:828 rpmqv.c:993
 msgid "one type of query/verify may be performed at a time"
-msgstr "endast en typ av undersökning/verifiering kan utföras åt gången"
+msgstr "endast en typ av fråga/verifiering kan utföras åt gången"
 
 #: rpm.c:833 rpmqv.c:997
 msgid "unexpected query flags"
-msgstr "oväntade undersökningsflaggor"
+msgstr "oväntade frågeflaggor"
 
 #: rpm.c:836 rpmqv.c:1000
 msgid "unexpected query format"
-msgstr "oväntat undersökningsformat"
+msgstr "oväntat frågeformat"
 
 #: rpm.c:839 rpmqv.c:1003
 msgid "unexpected query source"
-msgstr "oväntad undersökningskälla"
+msgstr "oväntad frågekälla"
 
 #: rpm.c:842 rpmqv.c:1023
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
@@ -1108,7 +1108,7 @@ msgstr "extra argument angivna för förfrågan om alla paket"
 
 #: rpm.c:1159 rpmqv.c:1459
 msgid "no arguments given for query"
-msgstr "inga parametrar angivna för undersökning"
+msgstr "inga parametrar angivna för fråga"
 
 #: rpm.c:1176 rpmqv.c:1479
 msgid "extra arguments given for verify of all packages"
@@ -1315,7 +1315,7 @@ msgstr "  Flaggor för paketval:"
 
 #: lib/poptQV.c:68 rpmqv.c:445
 msgid "query/verify all packages"
-msgstr "fråga om/verifiera alla paket"
+msgstr "fråga/verifiera alla paket"
 
 #: rpmqv.c:446
 msgid "     -f <file>+           "
@@ -1323,7 +1323,7 @@ msgstr "     -f <fil>+            "
 
 #: rpmqv.c:447
 msgid "query/verify package owning <file>"
-msgstr "fråga om/verifiera paket som äger <fil>"
+msgstr "fråga/verifiera paket som äger <fil>"
 
 #: rpmqv.c:448
 msgid "     -p <packagefile>+    "
@@ -1331,7 +1331,7 @@ msgstr "     -p <paketfil>+       "
 
 #: rpmqv.c:449
 msgid "query/verify (uninstalled) package <packagefile>"
-msgstr "fråga om/verifiera (oinstallerat) paket <paketfil>"
+msgstr "fråga/verifiera (oinstallerat) paket <paketfil>"
 
 #: rpmqv.c:450
 msgid "     --triggeredby <pkg>  "
@@ -1339,7 +1339,7 @@ msgstr "     --triggeredby <pkt>  "
 
 #: rpmqv.c:451
 msgid "query/verify packages triggered by <pkg>"
-msgstr "fråga om/verifiera paket utlösta av <pkt>"
+msgstr "fråga/verifiera paket utlösta av <pkt>"
 
 #: rpmqv.c:452
 msgid "     --whatprovides <cap> "
@@ -1347,7 +1347,7 @@ msgstr "     --whatprovides <egenskap>"
 
 #: rpmqv.c:453
 msgid "query/verify packages which provide <cap> capability"
-msgstr "fråga om/verifiera paket som tillhandahåller <egenskap>"
+msgstr "fråga/verifiera paket som tillhandahåller <egenskap>"
 
 #: rpmqv.c:454
 msgid "     --whatrequires <cap> "
@@ -1355,7 +1355,7 @@ msgstr "     --whatrequires <egenskap>"
 
 #: rpmqv.c:455
 msgid "query/verify packages which require <cap> capability"
-msgstr "fråga om/verifiera paket som behöver <egenskap>"
+msgstr "fråga/verifiera paket som behöver <egenskap>"
 
 #: rpmqv.c:459
 msgid "     --queryformat <qfmt> "
@@ -1550,7 +1550,7 @@ msgstr "syntaxfel vid tolkning av ||"
 
 #: build/expression.c:287
 msgid "parse error in expression"
-msgstr "parsfel i uttryck"
+msgstr "tolkningsfel i uttryck"
 
 #: build/expression.c:316
 msgid "unmatched ("
@@ -2651,14 +2651,14 @@ msgid "   file: %s action: %s\n"
 msgstr "   fil: %s åtgärd: %s\n"
 
 #: lib/install.c:215
-#, fuzzy, c-format
+#, c-format
 msgid "user %s does not exist - using root\n"
-msgstr "användaren %s finns inte - använder root"
+msgstr "användaren %s finns inte - använder root\n"
 
 #: lib/install.c:223
-#, fuzzy, c-format
+#, c-format
 msgid "group %s does not exist - using root\n"
-msgstr "gruppen %s finns inte - använder root"
+msgstr "grupp %s finns inte - använder root\n"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
@@ -2738,14 +2738,14 @@ msgstr ""
 "hoppar över %s-%s-%s installation, %%pre-skriptet misslyckades med kod %d\n"
 
 #: lib/install.c:1062
-#, fuzzy, c-format
+#, c-format
 msgid "%s created as %s\n"
-msgstr "%s skapades som %s"
+msgstr "%s skapades som %s\n"
 
 #: lib/install.c:1098
-#, fuzzy, c-format
+#, c-format
 msgid "%s saved as %s\n"
-msgstr "%s sparades som %s"
+msgstr "%s sparades som %s\n"
 
 #: lib/install.c:1189
 msgid "running postinstall scripts (if any)\n"
@@ -2859,15 +2859,15 @@ msgstr "slå upp översatta strängar i spec-fil katalog"
 
 #: lib/poptQV.c:70
 msgid "query/verify package owning file"
-msgstr "fråga om/verifiera paket som äger fil"
+msgstr "fråga/verifiera paket som äger fil"
 
 #: lib/poptQV.c:72
 msgid "query/verify packages in group"
-msgstr "fråga om/verifiera paket i grupp"
+msgstr "fråga/verifiera paket i grupp"
 
 #: lib/poptQV.c:74
 msgid "query/verify a package file"
-msgstr "fråga om/verifiera en paketfil"
+msgstr "fråga/verifiera en paketfil"
 
 #: lib/poptQV.c:76
 msgid "rpm query mode"
@@ -2879,11 +2879,11 @@ msgstr "visa kända frågetaggar"
 
 #: lib/poptQV.c:82
 msgid "query a spec file"
-msgstr "fråga om en spec-fil"
+msgstr "fråga en spec-fil"
 
 #: lib/poptQV.c:84
 msgid "query the pacakges triggered by the package"
-msgstr "undersök paket utlösta av paketet"
+msgstr "fråga paket utlösta av paketet"
 
 #: lib/poptQV.c:86
 msgid "rpm verify mode"
@@ -2895,11 +2895,11 @@ msgstr "rpm verifieringsläge (ärvt)"
 
 #: lib/poptQV.c:90
 msgid "query the packages which require a capability"
-msgstr "fråga om paket som behöver en egenskap"
+msgstr "fråga paket som behöver en egenskap"
 
 #: lib/poptQV.c:92
 msgid "query the packages which provide a capability"
-msgstr "fråga om paket som tillhandahåller en egenskap"
+msgstr "fråga paket som tillhandahåller en egenskap"
 
 #: lib/poptQV.c:132
 msgid "list all configuration files"
@@ -2999,9 +2999,9 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
 
 #: lib/query.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "incorrect format: %s\n"
-msgstr "fel i format: %s\n"
+msgstr "fel format: %s\n"
 
 #: lib/query.c:233
 msgid "(contains no files)"
@@ -3039,7 +3039,7 @@ msgstr "paketet har varken filägare eller id-listor"
 #: lib/query.c:418
 #, c-format
 msgid "can't query %s: %s\n"
-msgstr "kan inte fråga om %s: %s\n"
+msgstr "kan inte fråga %s: %s\n"
 
 #. XXX Fstrerror
 #: lib/query.c:534
@@ -3059,12 +3059,12 @@ msgstr "%s verkar inte vara ett RPM-paket\n"
 #: lib/query.c:567
 #, c-format
 msgid "query of %s failed\n"
-msgstr "fråga om %s misslyckades\n"
+msgstr "fråga av %s misslyckades\n"
 
 #: lib/query.c:601
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr "fråga om spec-fil %s misslyckades, kan inte parsa\n"
+msgstr "fråga av spec-fil %s misslyckades, kan inte tolka\n"
 
 #: lib/query.c:624
 msgid "no packages\n"
@@ -3741,6 +3741,10 @@ msgstr "Genererar signatur med GPG.\n"
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Kunde inte köra pgp.  Använd --nopgp för att hoppa över PGP-kontroll."
 
+#: lib/signature.c:561 lib/signature.c:634
+msgid "exec failed!\n"
+msgstr "exec misslyckades!\n"
+
 #: lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Kunde inte köra gpg.  Använd --nogpg för att hoppa över GPG-kontroll."
@@ -3832,9 +3836,9 @@ msgstr ""
 "paket saknar både gruppnamn och id-listor (detta borde aldrig inträffa)"
 
 #: lib/verify.c:299
-#, fuzzy, c-format
+#, c-format
 msgid "missing    %s"
-msgstr "saknas     %s\n"
+msgstr "saknas     %s"
 
 #: lib/verify.c:380
 #, c-format
@@ -3959,7 +3963,7 @@ msgstr "Oavslutad %c: %s"
 
 #: rpmio/macro.c:1115
 msgid "A %% is followed by an unparseable macro"
-msgstr "Ett %% följs av ett makro som inte kan parsas"
+msgstr "Ett %% följs av ett makro som inte kan tolkas"
 
 #: rpmio/macro.c:1241
 msgid "Macro %%%.*s not found, skipping"
