@@ -1,3 +1,6 @@
+#/*! \page mconfig Current default macro definitions
+# \verbatim
+
 # $Id$
 #
 # This is a global RPM configuration file. All changes made here will
@@ -651,3 +654,6 @@ done \
 # %files -f %{name}.lang
 #
 %find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
+
+# \endverbatim
+#*/

@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -344,6 +344,16 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Apr  4 2001 Jeff Johnson <jbj@redhat.com>
+- fix: parameterized macro segfault (Jakub Bogusz <qboosh@pld.org.pl>)
+- fix: i18n tags in rpm-2.5.x had wrong offset/length (#33478).
+- fix: AIX has sizeof(uint_16) != sizeof(mode_t) verify cast needed.
+- fix: zero length hard links unpacked incorrectly (#34211).
+- fix: --relocate missing trailing slash (#28874,#25876).
+- fix: --excludedoc shouldn't create empty doc dir (#14531).
+- fix: %_netsharedpath needs to look at basenames (#26561).
+- fix: --excludepath was broken (#24434).
+
 * Thu Mar 22 2001 Jeff Johnson <jbj@redhat.com>
 - update per-interpreter dependency scripts, add sql/tcl (#20295).
 - fix: rpmvercmp("1.a", "1.") returned -1, not +1 (#21392).
