@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.53
+Release: 0.54
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -185,7 +185,7 @@ Please remove (or at least rename) one of those files, and re-install.
     exit 1
 fi
 /usr/sbin/groupadd -g 37 rpm				> /dev/null 2>&1
-/usr/sbin/useradd  -d /var/lib/rpm -u 37 -g 37 rpm	> /dev/null 2>&1
+/usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 rpm	> /dev/null 2>&1
 %endif
 exit 0
 
@@ -429,6 +429,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jun 28 2001 Jeff Johnson <jbj@redhat.com>
+- fix: sanity checks on #tags (<65K) and offset (<16Mb) in header.
+- fix: add -r to useradd to prevent /etc/skel glop (#46215).
+- fix: disambiguate typedef and struct name(s) for kpackage.
+
 * Mon Jun 25 2001 Jeff Johnson <jbj@redhat.com>
 - fix: remove executable bit on perl.req, not find-req.pl.
 - fix: permit partially enumerated hardlink file sets during build.
