@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 7x.22
+Release: 7x.23
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -522,7 +522,7 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Thu Jun  6 2002 Jeff Johnson <jbj@redhat.com>
+* Sun Jun  9 2002 Jeff Johnson <jbj@redhat.com> 4.0.4-7x.23
 - make peace with automake-1.6.1 et al.
 - backport all beecrypt/rpmio bits from 4.1 that don't break the API.
 - use /etc/rpm/platform (if it exists), rather than uname(2), for arch.

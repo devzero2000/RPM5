@@ -97,40 +97,22 @@ for SUBST in $SUBSTS ; do
   | grep -v '^@' \
   > ${PPD}/macros
 
-  #
-  # Better try to create these too until the smoke clears. Yuck.
-  AODIR=${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}
-  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || {
-    [ -L ${AODIR} ] && {
-	rm -f ${AODIR}
-	mkdir ${AODIR}
-    }
-    cp ${PPD}/macros ${AODIR}/macros
-  }
-  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || {
-    [ -L ${AODIR} ] && {
-	rm -f ${AODIR}
-	mkdir ${AODIR}
-    }
-    cp ${PPD}/macros ${AODIR}/macros
-  }
-
 done
 
 { cd ${DESTDIR}/${pkglibdir}
-  [ ! -d noarch-${OS} -o -L noarch-${OS} ] && rm -f noarch-${OS} 2>/dev/null
+
+  [ -L noarch-${OS} ] && rm -f noarch-${OS} 2>/dev/null
   mkdir -p noarch-${OS}
   cp ${ARCH}-${OS}/macros noarch-${OS}/macros
-  [ ! -d noarch-${VENDOR}-${OS} -o -L noarch-${VENDOR}-${OS} ] && rm -f noarch-${VENDOR}-${OS} 2>/dev/null
-  mkdir -p noarch-${VENDOR}-${OS}
-  cp ${ARCH}-${VENDOR}-${OS}/macros noarch-${VENDOR}-${OS}/macros
+
   [ -d ${VENDOR} ] || mkdir ${VENDOR}
   for i in brp-* find-lang.sh find-provides find-requires perl.prov perl.req
   do
     sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < $i > ${VENDOR}/$i
   done
-  echo "macrofiles:     /usr/lib/rpm/macros:/usr/lib/rpm/%{_target_platform}/macros:/etc/rpm/macros.specspo:/etc/rpm/macros.db1:/etc/rpm/macros.cdb:/etc/rpm/macros:/etc/rpm/%{_target_platform}/macros:~/.rpmmacros" > ${VENDOR}/rpmrc
-  sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < ${ARCH}-${VENDOR}-${OS}/macros | grep -v '^%optflags' > ${VENDOR}/macros
+  chmod -x ${VENDOR}/perl.req
+  echo "macrofiles:     /usr/lib/rpm/macros:/usr/lib/rpm/${VENDOR}/macros:/etc/rpm/macros.specspo:/etc/rpm/macros.db1:/etc/rpm/macros.cdb" > ${VENDOR}/rpmrc
+  sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < ${arch}-${OS}/macros | grep -v '^%optflags' > ${VENDOR}/macros
 }
 
 rm $TEMPRC
