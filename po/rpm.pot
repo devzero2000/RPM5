@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-12-03 15:44-0500\n"
+"POT-Creation-Date: 2000-12-03 19:26-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3749,12 +3749,12 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:286
+#: lib/verify.c:285
 #, c-format
 msgid "missing    %s\n"
 msgstr ""
 
-#: lib/verify.c:348
+#: lib/verify.c:347
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""

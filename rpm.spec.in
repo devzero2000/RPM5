@@ -274,7 +274,7 @@ fi
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
-%doc apidocs
+%doc @WITH_APIDOCS_TARGET@
 %endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a
@@ -307,6 +307,7 @@ fi
 - python: bind package removal (#21274).
 - autoconfigure building python bindings.
 - autoconfigure generating rpm API doco rpm-devel package.
+- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
 
 * Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
 - add missing headerFree for legacy signature header.

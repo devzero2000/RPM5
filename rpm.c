@@ -781,7 +781,7 @@ int main(int argc, const char ** argv)
 	    relocations[numRelocations++].newPath = NULL;
 	    break;
 
-         case GETOPT_RCFILE:
+	  case GETOPT_RCFILE:
 	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
 	    fprintf(stderr, _("Use --macros with a colon separated list of macro files to read.\n"));
 	    exit(EXIT_FAILURE);

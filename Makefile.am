@@ -9,9 +9,6 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c
 
-#	python/*.am python/*.in python/*.c python/*.h python/testit
-#	rpm.spec.in rpm.spec
-
 # XXX TODO: perl
 SUBDIRS = intl po popt rpmio lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
