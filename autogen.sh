@@ -16,10 +16,10 @@ checked if you need to, as rpm should build (and has built) with all
 recent versions of libtool/autoconf/automake.
 "
 
-libtoolize=`which glibtoolize`
+libtoolize=`which glibtoolize 2>/dev/null`
 case $libtoolize in
 /*) ;;
-*)  libtoolize=`which libtoolize`
+*)  libtoolize=`which libtoolize 2>/dev/null`
     case $libtoolize in
     /*) ;;
     *)  libtoolize=libtoolize
