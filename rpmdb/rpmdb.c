@@ -244,6 +244,7 @@ extern struct _dbiVec db3vec;
 #define DB3vec		NULL
 #endif
 
+#define	HAVE_SQLITE_DB_H	1
 #ifdef HAVE_SQLITE_DB_H
 /*@-exportheadervar -declundef @*/
 /*@unchecked@*/
