@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-04-28 20:47-0400\n"
+"POT-Creation-Date: 2001-04-29 11:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2521,41 +2521,41 @@ msgstr ""
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:263
+#: lib/fsm.c:266
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:265
+#: lib/fsm.c:268
 #, c-format
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1035
+#: lib/fsm.c:1038
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1339 lib/fsm.c:1456
+#: lib/fsm.c:1342 lib/fsm.c:1459
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1481
+#: lib/fsm.c:1485
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1486
+#: lib/fsm.c:1491
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1495
+#: lib/fsm.c:1501
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1512
+#: lib/fsm.c:1520
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
