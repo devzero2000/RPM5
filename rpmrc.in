@@ -119,6 +119,9 @@ arch_canon:	s390x: s390x	15
 
 arch_canon:	ppc64:	ppc64	16
 
+arch_canon:	sh: sh		17
+arch_canon:	xtensa: xtensa	18
+
 #############################################################
 # Canonical OS names and numbers
 
