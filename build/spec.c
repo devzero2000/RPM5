@@ -861,8 +861,6 @@ static int find_preamble_line(char *line, char **s)
 #define FILES_PART         10
 #define CHANGELOG_PART     11
 #define DESCRIPTION_PART   12
-#define TRIGGERON_PART     13
-#define TRIGGEROFF_PART    14
 #define VERIFYSCRIPT_PART  15
 
 static struct part_rec {
@@ -882,8 +880,6 @@ static struct part_rec {
     {FILES_PART,       0, "%files"},
     {CHANGELOG_PART,   0, "%changelog"},
     {DESCRIPTION_PART, 0, "%description"},
-    {TRIGGERON_PART,   0, "%triggeron"},
-    {TRIGGEROFF_PART,  0, "%triggeroff"},
     {VERIFYSCRIPT_PART, 0, "%verifyscript"},
     {0, 0, 0}
 };
@@ -976,18 +972,6 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
 	/* "main" package no matter where it appears, and it */
 	/* ends up in all the packages.                      */
 	if (addChangelog(spec->packages->header, sb)) {
-	    return 1;
-	}
-	break;
-      case TRIGGERON_PART:
-	if (addTrigger(cur_package, RPMSENSE_TRIGGER_ON,
-		       getStringBuf(sb), triggerArgs)) {
-	    return 1;
-	}
-	break;
-      case TRIGGEROFF_PART:
-	if (addTrigger(cur_package, RPMSENSE_TRIGGER_OFF,
-		       getStringBuf(sb), triggerArgs)) {
 	    return 1;
 	}
 	break;
@@ -1110,19 +1094,6 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	    rpmMessage(RPMMESS_DEBUG, "fileFile = %s\n", 
 			fileFile[0] ? fileFile : "(null)");
 
-	    /* If trigger, pull off the args */
-	    if (tag == TRIGGERON_PART || tag == TRIGGEROFF_PART) {
-		s1 = strstr(s, "--");
-		if (s1) {
-		    strcpy(triggerArgs, s1+2);
-		    *s1 = '\0';
-		    s = strtok(s, " \n\t");
-		} else {
-		    strcpy(triggerArgs, s);
-		    s = NULL;
-		}
-	    }
-	    
 	    /* Handle -n in part tags */
 	    lookupopts = 0;
 	    if (s) {
@@ -1382,10 +1353,6 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	  case PREUN_PART:
 	  case POSTUN_PART:
 	  case VERIFYSCRIPT_PART:
-	    appendLineStringBuf(sb, line);
-	    break;
-	  case TRIGGERON_PART:
-	  case TRIGGEROFF_PART:
 	    appendLineStringBuf(sb, line);
 	    break;
 	  case FILES_PART:
