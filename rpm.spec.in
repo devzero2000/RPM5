@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.2
+Release: 0.3
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -485,6 +485,14 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Jun 14 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.3
+- add 'requires' and 'conflicts' tag aliases.
+- python: return ds, not tuple, for ds iteration.
+- python: permit integer keys to ts.dbMatch().
+- xml: use <foo/> markup for empty tags.
+- xml: <integer/> instead of <integer>0</integer> markup.
+- fix: disable fingerprint generation on kernel paths.
+
 * Tue Jun  8 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.2
 - lua embedded in rpmio.
 - use lua to identify desired selinux file context regexes.
