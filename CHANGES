@@ -127,6 +127,7 @@
 	- file: check size read from elf header (#85297).
 	- fix: memory leak (85522).
 	- build with internal elfutils if not installed.
+	- fix: close db cursors to remove rpmdb references on signal exit.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
