@@ -1,35 +1,38 @@
 
-echo "
-****************************************************************************
-*                                                                          *
-*                   *** WARNING WARNING WARNING ***                        *
-*                                                                          *
-* This is source code from the development branch of rpm-4.3.              *
-*                                                                          *
-* If you want the "production" rpm-4.2.1 code, then you should use a       *
-* rpm-4.2.1 src.rpm. Alternatively, if using a CVS checkout, do            *
-* the following:                                                           *
-*                                                                          *
-*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
-*       (no password, just carriage return)                                *
-*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
-*       cd rpm                                                             *
-*                                                                          *
-* Here's the rpm-4_2 branch, latest is rpm-4.2.1:                          *
-*       cvs up -r rpm-4_2                                                  *
-*                                                                          *
-* Here's the rpm-4_1 branch, latest is rpm-4.1.1:                          *
-*       cvs up -r rpm-4_1                                                  *
-*                                                                          *
-* Here's the rpm-4_0 branch, latest is rpm-4.0.5:                          *
-*       cvs up -r rpm-4_0                                                  *
-*                                                                          *
-****************************************************************************
-"
-sleep 10
+#echo "
+#****************************************************************************
+#*                                                                          *
+#*                   *** WARNING WARNING WARNING ***                        *
+#*                                                                          *
+#* This is source code from the development branch of rpm-4.4.              *
+#*                                                                          *
+#* If you want the "production" rpm-4.3.1 code, then you should use a       *
+#* rpm-4.3.1 src.rpm. Alternatively, if using a CVS checkout, do            *
+#* the following:                                                           *
+#*                                                                          *
+#*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
+#*       (no password, just carriage return)                                *
+#*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
+#*       cd rpm                                                             *
+#*                                                                          *
+#* Here's the rpm-4_3 branch, latest is rpm-4.3.1:                          *
+#*       cvs up -r rpm-4_3                                                  *
+#*                                                                          *
+#* Here's the rpm-4_2 branch, latest is rpm-4.2.2:                          *
+#*       cvs up -r rpm-4_2                                                  *
+#*                                                                          *
+#* Here's the rpm-4_1 branch, latest is rpm-4.1.1:                          *
+#*       cvs up -r rpm-4_1                                                  *
+#*                                                                          *
+#* Here's the rpm-4_0 branch, latest is rpm-4.0.5:                          *
+#*       cvs up -r rpm-4_0                                                  *
+#*                                                                          *
+#****************************************************************************
+#"
+#sleep 10
 
 AC_PREREQ(2.59)
-AC_INIT(rpm, 4.3, rpm-list@redhat.com)
+AC_INIT(rpm, 4.3.1, rpm-list@redhat.com)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
@@ -165,7 +168,7 @@ a=`ls -l foo.chmodtest | awk '{print $1}'`
 rm -f foo.chmodtest
 if test "$a" = "-rwxr-xr-x"; then
     AC_MSG_RESULT(yes)
-    FIXPERMS=a+rX,g-w,o-w 
+    FIXPERMS=a+rX,u+w,g-w,o-w 
 else
     AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
     FIXPERMS=a+r,g-w,o-w 
