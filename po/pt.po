@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-08-20 18:00-0400\n"
+"POT-Creation-Date: 2002-08-21 20:34-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1556,37 +1556,57 @@ msgstr "não consigo escrever em %%%s %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "erro ao criar o ficheiro temporário %s\n"
 
-#: lib/package.c:442 lib/package.c:482 lib/package.c:685 lib/package.c:709
-#: lib/package.c:739 lib/rpmchecksig.c:786
+#: lib/package.c:331
+#, c-format
+msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
+msgstr ""
+
+#: lib/package.c:339 lib/package.c:392 lib/package.c:450
+#, c-format
+msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
+msgstr ""
+
+#: lib/package.c:371
+#, c-format
+msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
+msgstr ""
+
+#: lib/package.c:384
+#, c-format
+msgid "region size: BAD, ril(%d) > il(%d)\n"
+msgstr ""
+
+#: lib/package.c:481 lib/package.c:521 lib/package.c:724 lib/package.c:748
+#: lib/package.c:778 lib/rpmchecksig.c:786
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:591
+#: lib/package.c:630
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "a versão 1 dos pacotes não é suportada por esta versão do RPM\n"
 
-#: lib/package.c:599
+#: lib/package.c:638
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "só os pacotes com versão <= 4 são suportados por esta versão do RPM\n"
 
-#: lib/package.c:608 lib/rpmchecksig.c:226 lib/rpmchecksig.c:707
+#: lib/package.c:647 lib/rpmchecksig.c:226 lib/rpmchecksig.c:707
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: o rpmReadSignature falhou\n"
 
-#: lib/package.c:612 lib/rpmchecksig.c:230 lib/rpmchecksig.c:712
+#: lib/package.c:651 lib/rpmchecksig.c:230 lib/rpmchecksig.c:712
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
 
-#: lib/package.c:651 lib/rpmchecksig.c:605
+#: lib/package.c:690 lib/rpmchecksig.c:605
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/package.c:751 lib/rpmchecksig.c:118 lib/rpmchecksig.c:634
+#: lib/package.c:790 lib/rpmchecksig.c:118 lib/rpmchecksig.c:634
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
@@ -3252,14 +3272,18 @@ msgstr "não foi definido o dbpath\n"
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:1639 rpmdb/rpmdb.c:2271 rpmdb/rpmdb.c:3021
-msgid "rpmdb: skipping"
+#: rpmdb/rpmdb.c:1639
+msgid "miFreeHeader: skipping"
 msgstr ""
 
 #: rpmdb/rpmdb.c:1649
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
+
+#: rpmdb/rpmdb.c:2271
+msgid "rpmdbNextIterator: skipping"
+msgstr ""
 
 #: rpmdb/rpmdb.c:2298
 #, fuzzy, c-format
@@ -3305,6 +3329,11 @@ msgstr "erro(%d) ao remover o registo %s do %s\n"
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erro(%d) ao criar uma nova instância do pacote\n"
+
+#: rpmdb/rpmdb.c:3021
+#, fuzzy
+msgid "rpmdbAdd: skipping"
+msgstr "rpmdb: recebida instância do cabeçalho #%u estragada, a ignorar.\n"
 
 #: rpmdb/rpmdb.c:3193
 #, c-format
@@ -3772,10 +3801,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "h#%7u: %s"
 #~ msgstr "%s: %s\n"
-
-#, fuzzy
-#~ msgid "rpmdb: header #%u: %s -- skipping.\n"
-#~ msgstr "rpmdb: recebida instância do cabeçalho #%u estragada, a ignorar.\n"
 
 #~ msgid "unexpected arguments to --querytags "
 #~ msgstr "argumentos inesperados no --querytags "

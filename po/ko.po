@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-08-20 18:00-0400\n"
+"POT-Creation-Date: 2002-08-21 20:34-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1539,37 +1539,57 @@ msgstr "%%%s %s(을)를 작성할 수 없습니다\n"
 msgid "error creating temporary file %s\n"
 msgstr "임시 파일 %s(을)를 생성하는 도중 오류가 발생했습니다\n"
 
-#: lib/package.c:442 lib/package.c:482 lib/package.c:685 lib/package.c:709
-#: lib/package.c:739 lib/rpmchecksig.c:786
+#: lib/package.c:331
+#, c-format
+msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
+msgstr ""
+
+#: lib/package.c:339 lib/package.c:392 lib/package.c:450
+#, c-format
+msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
+msgstr ""
+
+#: lib/package.c:371
+#, c-format
+msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
+msgstr ""
+
+#: lib/package.c:384
+#, c-format
+msgid "region size: BAD, ril(%d) > il(%d)\n"
+msgstr ""
+
+#: lib/package.c:481 lib/package.c:521 lib/package.c:724 lib/package.c:748
+#: lib/package.c:778 lib/rpmchecksig.c:786
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:591
+#: lib/package.c:630
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "이 RPM 버전은 패키징 버전 '1' 을 지원하지 않습니다\n"
 
-#: lib/package.c:599
+#: lib/package.c:638
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "이 RPM 버전은 주 번호(major number)가 <= 4 인 패키징 만을 지원합니다\n"
 
-#: lib/package.c:608 lib/rpmchecksig.c:226 lib/rpmchecksig.c:707
+#: lib/package.c:647 lib/rpmchecksig.c:226 lib/rpmchecksig.c:707
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature이 실패했습니다\n"
 
-#: lib/package.c:612 lib/rpmchecksig.c:230 lib/rpmchecksig.c:712
+#: lib/package.c:651 lib/rpmchecksig.c:230 lib/rpmchecksig.c:712
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 유효한 서명이 없습니다\n"
 
-#: lib/package.c:651 lib/rpmchecksig.c:605
+#: lib/package.c:690 lib/rpmchecksig.c:605
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead이 실패했습니다\n"
 
-#: lib/package.c:751 lib/rpmchecksig.c:118 lib/rpmchecksig.c:634
+#: lib/package.c:790 lib/rpmchecksig.c:118 lib/rpmchecksig.c:634
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread이 실패했습니다: %s\n"
@@ -3244,14 +3264,18 @@ msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:1639 rpmdb/rpmdb.c:2271 rpmdb/rpmdb.c:3021
-msgid "rpmdb: skipping"
+#: rpmdb/rpmdb.c:1639
+msgid "miFreeHeader: skipping"
 msgstr ""
 
 #: rpmdb/rpmdb.c:1649
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
+
+#: rpmdb/rpmdb.c:2271
+msgid "rpmdbNextIterator: skipping"
+msgstr ""
 
 #: rpmdb/rpmdb.c:2298
 #, fuzzy, c-format
@@ -3299,6 +3323,11 @@ msgstr "%3$s에서 %2$s 레코드를 삭제하는 도중 오류(%1$d)가 발생했습니다\n"
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
+
+#: rpmdb/rpmdb.c:3021
+#, fuzzy
+msgid "rpmdbAdd: skipping"
+msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
 #: rpmdb/rpmdb.c:3193
 #, c-format
@@ -3769,11 +3798,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "h#%7u: %s"
 #~ msgstr "%s: %s\n"
-
-#, fuzzy
-#~ msgid "rpmdb: header #%u: %s -- skipping.\n"
-#~ msgstr ""
-#~ "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
 #~ msgid "unexpected arguments to --querytags "
 #~ msgstr "--querytags 옵션에 부적절한 인수가 지정되었습니다 "

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-20 18:00-0400\n"
+"POT-Creation-Date: 2002-08-21 20:34-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1553,38 +1553,58 @@ msgstr "kunne ikke skrive til %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "fejl ved oprettelse af midlertidig fil %s\n"
 
-#: lib/package.c:442 lib/package.c:482 lib/package.c:685 lib/package.c:709
-#: lib/package.c:739 lib/rpmchecksig.c:786
+#: lib/package.c:331
+#, c-format
+msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
+msgstr ""
+
+#: lib/package.c:339 lib/package.c:392 lib/package.c:450
+#, c-format
+msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
+msgstr ""
+
+#: lib/package.c:371
+#, c-format
+msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
+msgstr ""
+
+#: lib/package.c:384
+#, c-format
+msgid "region size: BAD, ril(%d) > il(%d)\n"
+msgstr ""
+
+#: lib/package.c:481 lib/package.c:521 lib/package.c:724 lib/package.c:748
+#: lib/package.c:778 lib/rpmchecksig.c:786
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:591
+#: lib/package.c:630
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "indpakningsversion 1 understøttes ikke af denne udgave af RPM\n"
 
-#: lib/package.c:599
+#: lib/package.c:638
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "kun indpakninger med hovedversion <= 4 understøttes af denne udgave af RPM\n"
 
-#: lib/package.c:608 lib/rpmchecksig.c:226 lib/rpmchecksig.c:707
+#: lib/package.c:647 lib/rpmchecksig.c:226 lib/rpmchecksig.c:707
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature mislykkedes\n"
 
-#: lib/package.c:612 lib/rpmchecksig.c:230 lib/rpmchecksig.c:712
+#: lib/package.c:651 lib/rpmchecksig.c:230 lib/rpmchecksig.c:712
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen tilgængelig signatur\n"
 
-#: lib/package.c:651 lib/rpmchecksig.c:605
+#: lib/package.c:690 lib/rpmchecksig.c:605
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/package.c:751 lib/rpmchecksig.c:118 lib/rpmchecksig.c:634
+#: lib/package.c:790 lib/rpmchecksig.c:118 lib/rpmchecksig.c:634
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
@@ -3265,14 +3285,18 @@ msgstr "der er ikke sat nogen dbpath\n"
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:1639 rpmdb/rpmdb.c:2271 rpmdb/rpmdb.c:3021
-msgid "rpmdb: skipping"
+#: rpmdb/rpmdb.c:1639
+msgid "miFreeHeader: skipping"
 msgstr ""
 
 #: rpmdb/rpmdb.c:1649
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
+
+#: rpmdb/rpmdb.c:2271
+msgid "rpmdbNextIterator: skipping"
+msgstr ""
 
 #: rpmdb/rpmdb.c:2298
 #, c-format
@@ -3318,6 +3342,10 @@ msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
+
+#: rpmdb/rpmdb.c:3021
+msgid "rpmdbAdd: skipping"
+msgstr ""
 
 #: rpmdb/rpmdb.c:3193
 #, c-format
