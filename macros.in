@@ -682,6 +682,11 @@ package or when debugging this package.\
 	%{?_dependency_whiteout_5_2}	\
 	%{nil}
 
+#
+# Default headerSprintf() output format string for rpm -qa
+#
+# XXX	Note: escaped %% for use in headerSprintf()
+%_query_all_fmt		%%{name}-%%{version}-%%{release}
 
 #==============================================================================
 # ---- Cache configuration macros.
