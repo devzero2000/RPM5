@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-09 09:30-0500\n"
+"POT-Creation-Date: 2001-02-10 09:07-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3324,7 +3324,7 @@ msgstr "otvorenie %s zlyhalo\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "nie je mo¾né pýta» sa zdrojových balíkov v starom formáte\n"
 
-#: lib/query.c:563 lib/rpminstall.c:312
+#: lib/query.c:563 lib/rpminstall.c:314
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s zrejme nie je RPM balík\n"
@@ -3389,7 +3389,7 @@ msgstr "po¾aduje sa záznam èíslo %d\n"
 msgid "record %d could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:746 lib/rpminstall.c:548
+#: lib/query.c:746 lib/rpminstall.c:555
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
@@ -3680,69 +3680,69 @@ msgstr "%s vynechané - prenos zlyhal - %s\n"
 msgid "retrieved %d packages\n"
 msgstr "prenieslo sa %d balíkov\n"
 
-#: lib/rpminstall.c:298 lib/rpminstall.c:472
+#: lib/rpminstall.c:300 lib/rpminstall.c:478
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s: %s"
 
-#: lib/rpminstall.c:316 lib/rpminstall.c:613
+#: lib/rpminstall.c:320 lib/rpminstall.c:620
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
 
-#: lib/rpminstall.c:331
+#: lib/rpminstall.c:335
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:357
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpminstall.c:398
+#: lib/rpminstall.c:402
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: lib/rpminstall.c:403
+#: lib/rpminstall.c:407
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:426
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: lib/rpminstall.c:431
+#: lib/rpminstall.c:437
 msgid "failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
 
-#: lib/rpminstall.c:452
+#: lib/rpminstall.c:458
 msgid "installing binary packages\n"
 msgstr "in¹talujú sa binárne balíky\n"
 
-#: lib/rpminstall.c:535
+#: lib/rpminstall.c:542
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpminstall.c:551
+#: lib/rpminstall.c:558
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:581
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstránenie týchto balíkov by poru¹ilo závislosti:\n"
 
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:609
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:615
 #, c-format
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"

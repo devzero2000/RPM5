@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-09 09:30-0500\n"
+"POT-Creation-Date: 2001-02-10 09:07-0500\n"
 "PO-Revision-Date: 2001-01-31 23:05GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: dansk <dansk@klid.dk>\n"
@@ -3163,7 +3163,7 @@ msgstr "åbning af %s mislykkedes %s\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:563 lib/rpminstall.c:312
+#: lib/query.c:563 lib/rpminstall.c:314
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s lader ikke til at være en RPM-pakke\n"
@@ -3227,7 +3227,7 @@ msgstr "pakkens post-nummer: %u\n"
 msgid "record %d could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:746 lib/rpminstall.c:548
+#: lib/query.c:746 lib/rpminstall.c:555
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -3517,69 +3517,69 @@ msgstr "overspringer %s - overførsel mislykkedes - %s\n"
 msgid "retrieved %d packages\n"
 msgstr "modtog %d pakker\n"
 
-#: lib/rpminstall.c:298 lib/rpminstall.c:472
+#: lib/rpminstall.c:300 lib/rpminstall.c:478
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kunne ikke åbne fil %s: %s\n"
 
-#: lib/rpminstall.c:316 lib/rpminstall.c:613
+#: lib/rpminstall.c:320 lib/rpminstall.c:620
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
-#: lib/rpminstall.c:331
+#: lib/rpminstall.c:335
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:357
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakke %s kan ikke omrokeres\n"
 
-#: lib/rpminstall.c:398
+#: lib/rpminstall.c:402
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fejl ved læsning fra filen %s\n"
 
-#: lib/rpminstall.c:403
+#: lib/rpminstall.c:407
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s kræver en nyere version af RPM\n"
 
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:426
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "fandt %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:431
+#: lib/rpminstall.c:437
 msgid "failed dependencies:\n"
 msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
 
-#: lib/rpminstall.c:452
+#: lib/rpminstall.c:458
 msgid "installing binary packages\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:535
+#: lib/rpminstall.c:542
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kunne ikke åbne %s/packages.rpm\n"
 
-#: lib/rpminstall.c:551
+#: lib/rpminstall.c:558
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" angiver flere pakker\n"
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:581
 msgid "removing these packages would break dependencies:\n"
 msgstr "fjernelse af disse pakker ville bryde afhængighederne:\n"
 
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:609
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:615
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"

@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.35
+Release: 0.36
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -343,6 +343,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Feb 10 2001 Jeff Johnson <jbj@redhat.com>
+- fix: diddle exit code for attempted installs of non-packages (#26850).
+- python binding diddles to reduce installer memory footprint by
+  delayed loading of file info.
+
 * Fri Feb  9 2001 Jeff Johnson <jbj@redhat.com>
 - fix: make a copy of retrieved header before loading.
 

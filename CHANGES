@@ -119,6 +119,9 @@
 	- fix: rpmCleanPath was nibbling at .. in macrofiles incorrectly.
 	- fix: check waitpid return code.
 	- fix: make a copy of retrieved header before loading.
+	- fix: diddle exit code for attempted installs of non-packages (#26850).
+	- python binding diddles to reduce installer memory footprint by
+	  delayed loading of file info.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
