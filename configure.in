@@ -816,6 +816,9 @@ withval=auto
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
 WITH_PYTHON_VERSION=
+if test -n "$withval" -a "$withval" != auto; then
+   WITH_PYTHON_VERSION=$withval
+fi
 if test $withval = auto ; then
 
   AC_MSG_CHECKING(for python 2.2)
