@@ -315,6 +315,8 @@ fi
 - handle install chroot's identically throughout the install process.
 - add rpmlib(HeaderLoadSortsTags) for tracking header regions "just in case".
 - create _tmppath on the fly if not present.
+- remove /etc/rpm/macros.db1 configuration file if db3 rebuilt.
+- remove overly verbose dbiOpen() error messages, no longer needed.
 
 * Thu Dec 14 2000 Jeff Johnson <jbj@redhat.com>
 - fix: synthesized callbacks for removed packages have not a pkgkey.
