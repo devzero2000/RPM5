@@ -974,6 +974,9 @@ AC_SUBST(LIBS)
 
 AC_SUBST(RPM)
 
+AC_DEFINE_UNQUOTED(OBJDUMP, "$OBJDUMP")
+AC_SUBST(OBJDUMP)
+
 dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
