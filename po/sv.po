@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-02-10 09:07-0500\n"
-"PO-Revision-Date: 2001-01-27 00:00+0100\n"
+"PO-Revision-Date: 2001-02-12 10:15+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3869,12 +3869,13 @@ msgid "running postuninstall script (if any)\n"
 msgstr "kör (eventuellt) postavinstallationsskript\n"
 
 #: lib/uninstall.c:436
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
 msgstr ""
-"körning av %s-skript från %s-%s-%s misslyckades, waitpid returnerade %s\n"
+"uppfångandet av returkod från %s-skript från %s-%s-%s misslyckades,\n"
+"waitpid returnerade %s\n"
 
 #: lib/uninstall.c:443
 #, c-format
