@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.54
+Release: 0.55
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -429,6 +429,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Jun 30 2001 Jeff Johnson <jbj@redhat.com>
+- update intl dirs to gettext-0.10.38.
+- fix: sanity check for header size added in headerCopyLoad() (#46469).
+
 * Thu Jun 28 2001 Jeff Johnson <jbj@redhat.com>
 - fix: sanity checks on #tags (<65K) and offset (<16Mb) in header.
 - fix: add -r to useradd to prevent /etc/skel glop (#46215).

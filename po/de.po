@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-28 14:25-0400\n"
+"POT-Creation-Date: 2001-06-30 13:50-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2360,7 +2360,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2546 lib/header.c:2565 lib/header.c:2585
+#: lib/header.c:2548 lib/header.c:2567 lib/header.c:2587
 msgid "(not a number)"
 msgstr "(keine Zahl)"
 
@@ -2437,90 +2437,90 @@ msgid "%s created as %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
 #. This should not be allowed
-#: lib/header.c:238
+#: lib/header.c:243
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:273 lib/header_internal.c:139 lib/psm.c:393
+#: lib/header.c:278 lib/header_internal.c:139 lib/psm.c:393
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1862
+#: lib/header.c:1864
 #, c-format
 msgid "missing { after %"
 msgstr "fehlende { nach %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1892
+#: lib/header.c:1894
 msgid "missing } after %{"
 msgstr "fehlende } nach %{"
 
 # »Tag« übersetzen??? -ke-
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1906
+#: lib/header.c:1908
 msgid "empty tag format"
 msgstr "leeres »Tag«-Format"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1920
+#: lib/header.c:1922
 msgid "empty tag name"
 msgstr "leerer »Tag«-Name"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1937
+#: lib/header.c:1939
 msgid "unknown tag"
 msgstr "unbekannter »Tag«"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1964
+#: lib/header.c:1966
 msgid "] expected at end of array"
 msgstr "] am Ende des Arrays erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1982
+#: lib/header.c:1984
 msgid "unexpected ]"
 msgstr "unerwartete ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1986
+#: lib/header.c:1988
 msgid "unexpected }"
 msgstr "unerwartete }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2052
+#: lib/header.c:2054
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2061
+#: lib/header.c:2063
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ nach ? im Ausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2074 lib/header.c:2116
+#: lib/header.c:2076 lib/header.c:2118
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2084
+#: lib/header.c:2086
 msgid ": expected following ? subexpression"
 msgstr ": nach ? Unterausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2101
+#: lib/header.c:2103
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ nach : im Ausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2126
+#: lib/header.c:2128
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
-#: lib/header.c:2306
+#: lib/header.c:2308
 msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 

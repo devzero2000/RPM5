@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-28 14:25-0400\n"
+"POT-Creation-Date: 2001-06-30 13:50-0400\n"
 "PO-Revision-Date: 2001-02-24 02:47+0200\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2194,7 +2194,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2546 lib/header.c:2565 lib/header.c:2585
+#: lib/header.c:2548 lib/header.c:2567 lib/header.c:2587
 msgid "(not a number)"
 msgstr "(bir sayı değil)"
 
@@ -2267,87 +2267,87 @@ msgid "%s created as %s\n"
 msgstr "%s %s olarak oluşturuldu\n"
 
 #. This should not be allowed
-#: lib/header.c:238
+#: lib/header.c:243
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE sayısı 1 olmalı.\n"
 
-#: lib/header.c:273 lib/header_internal.c:139 lib/psm.c:393
+#: lib/header.c:278 lib/header_internal.c:139 lib/psm.c:393
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "%d veri tipi desteklenmiyor\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1862
+#: lib/header.c:1864
 #, c-format
 msgid "missing { after %"
 msgstr "% den sonra eksik {"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1892
+#: lib/header.c:1894
 msgid "missing } after %{"
 msgstr "%{ den sonra } eksik"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1906
+#: lib/header.c:1908
 msgid "empty tag format"
 msgstr "boş etiket biçimi"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1920
+#: lib/header.c:1922
 msgid "empty tag name"
 msgstr "boş etiket ismi"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1937
+#: lib/header.c:1939
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1964
+#: lib/header.c:1966
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] bekleniyordu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1982
+#: lib/header.c:1984
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1986
+#: lib/header.c:1988
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2052
+#: lib/header.c:2054
 msgid "? expected in expression"
 msgstr "deyim içerisinde ? bekleniyordu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2061
+#: lib/header.c:2063
 msgid "{ expected after ? in expression"
 msgstr "deyim içerisinde ? dan sonra { bekleniyordu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2074 lib/header.c:2116
+#: lib/header.c:2076 lib/header.c:2118
 msgid "} expected in expression"
 msgstr "deyim içerisinde } bekleniyordu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2084
+#: lib/header.c:2086
 msgid ": expected following ? subexpression"
 msgstr "? altdeyiminden sonra : bekleniyordu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2101
+#: lib/header.c:2103
 msgid "{ expected after : in expression"
 msgstr "deyim içersinde : den sonra { bekleniyordu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2126
+#: lib/header.c:2128
 msgid "| expected at end of expression"
 msgstr "deyimin sonunda | bekleniyordu"
 
-#: lib/header.c:2306
+#: lib/header.c:2308
 msgid "(unknown type)"
 msgstr "(bilinmeyen tür)"
 
