@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-04-18 16:53-0400\n"
+"POT-Creation-Date: 2002-04-19 14:29-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3394,113 +3394,113 @@ msgstr "%s(을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:128
 msgid "file is not regular -- skipping size check\n"
 msgstr "파일이 올바르지(regular) 않습니다 -- 용량 검사를 생략합니다\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:145
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "예상(Expected) 용량: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 
-#: lib/signature.c:139
+#: lib/signature.c:149
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr " 실제 용량: %12d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:169
 msgid "No signature\n"
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:173
 msgid "Old PGP signature\n"
 msgstr "이전 PGP 서명\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:184
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "이전 (내부-용) 서명!  어떻게 얻으셨습니까!?\n"
 
-#: lib/signature.c:230
+#: lib/signature.c:234
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/signature.c:301 lib/signature.c:394 lib/signature.c:643
-#: lib/signature.c:748 lib/signature.c:825 lib/signature.c:858
+#: lib/signature.c:305 lib/signature.c:398 lib/signature.c:647
+#: lib/signature.c:752 lib/signature.c:829 lib/signature.c:862
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s(을)를 실행할 수 없음: %s\n"
 
-#: lib/signature.c:317
+#: lib/signature.c:321
 msgid "pgp failed\n"
 msgstr "pgp가 실패함\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:324
+#: lib/signature.c:328
 msgid "pgp failed to write signature\n"
 msgstr "pgp 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:329
+#: lib/signature.c:333
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 서명 용량: %d\n"
 
-#: lib/signature.c:342 lib/signature.c:436
+#: lib/signature.c:346 lib/signature.c:440
 msgid "unable to read the signature\n"
 msgstr "서명을 읽을 수 없습니다\n"
 
-#: lib/signature.c:347
+#: lib/signature.c:351
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "%d 바이트의 PGP 서명을 얻었습니다\n"
 
-#: lib/signature.c:411
+#: lib/signature.c:415
 msgid "gpg failed\n"
 msgstr "gpg가 실패함\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:418
+#: lib/signature.c:422
 msgid "gpg failed to write signature\n"
 msgstr "gpg 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:427
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 서명 용량: %d\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:445
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 
-#: lib/signature.c:469
+#: lib/signature.c:473
 msgid "Generating signature using PGP.\n"
 msgstr "PGP를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:475
+#: lib/signature.c:479
 msgid "Generating signature using GPG.\n"
 msgstr "GPG를 사용하여 서명을 생성합니다.\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:863 lib/signature.c:916
+#: lib/signature.c:867 lib/signature.c:920
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일 안에 부적합한 %%_signature 내용(spec)이 있습니다\n"
 
-#: lib/signature.c:896
+#: lib/signature.c:900
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일 안에 반드시 \"%%_gpg_name\"을 설정해야 합니다\n"
 
-#: lib/signature.c:908
+#: lib/signature.c:912
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일 안에 반드시 \"%%_pgp_name\"을 설정해야 합니다\n"
 
-#: lib/signature.c:951
+#: lib/signature.c:955
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 

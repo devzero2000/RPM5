@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-18 16:53-0400\n"
+"POT-Creation-Date: 2002-04-19 14:29-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3419,113 +3419,113 @@ msgstr "%s okunamýyor, EV çok büyük\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s okuma eriþimi için açýlamadý: %s.\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:128
 msgid "file is not regular -- skipping size check\n"
 msgstr "dosya normal deðil -- uzunluk denetimi atlanýyor\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:145
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "gereken boyut: %12d = (%d)uç+(%d)imza+(%d)iz+(%d)veri\n"
 
-#: lib/signature.c:139
+#: lib/signature.c:149
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Gerçek boyut: %12d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:169
 msgid "No signature\n"
 msgstr "Ýmza yok\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:173
 msgid "Old PGP signature\n"
 msgstr "Eski PGP imzasý\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:184
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Eski imza !!! Bunu nasýl aldýn!?\n"
 
-#: lib/signature.c:230
+#: lib/signature.c:234
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
 
-#: lib/signature.c:301 lib/signature.c:394 lib/signature.c:643
-#: lib/signature.c:748 lib/signature.c:825 lib/signature.c:858
+#: lib/signature.c:305 lib/signature.c:398 lib/signature.c:647
+#: lib/signature.c:752 lib/signature.c:829 lib/signature.c:862
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: lib/signature.c:317
+#: lib/signature.c:321
 msgid "pgp failed\n"
 msgstr "pgp hata verdi\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:324
+#: lib/signature.c:328
 msgid "pgp failed to write signature\n"
 msgstr "pgp imzasýnýn yazýlmasý baþarýsýz\n"
 
-#: lib/signature.c:329
+#: lib/signature.c:333
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP imza uzunluðu: %d\n"
 
-#: lib/signature.c:342 lib/signature.c:436
+#: lib/signature.c:346 lib/signature.c:440
 msgid "unable to read the signature\n"
 msgstr "imza okunamadý\n"
 
-#: lib/signature.c:347
+#: lib/signature.c:351
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "GPG imzasýnýn %d baytý alýndý\n"
 
-#: lib/signature.c:411
+#: lib/signature.c:415
 msgid "gpg failed\n"
 msgstr "gpg hata verdi\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:418
+#: lib/signature.c:422
 msgid "gpg failed to write signature\n"
 msgstr "imzanýn yazýlmasý sýrasýnda gpg hata verdi\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:427
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG imza uzunluðu: %d\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:445
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG imzasýnýn %d baytý alýndý\n"
 
-#: lib/signature.c:469
+#: lib/signature.c:473
 msgid "Generating signature using PGP.\n"
 msgstr "PGP kullanarak imza üretiliyor.\n"
 
-#: lib/signature.c:475
+#: lib/signature.c:479
 msgid "Generating signature using GPG.\n"
 msgstr "GPG kullanýlarak imza üretiliyor.\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:863 lib/signature.c:916
+#: lib/signature.c:867 lib/signature.c:920
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Makro dosyasýnda %%_signature spec geçersiz\n"
 
-#: lib/signature.c:896
+#: lib/signature.c:900
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Makro dosyanýzda \"%%_pgp_name\" tanýmlanmýþ olmalý\n"
 
-#: lib/signature.c:908
+#: lib/signature.c:912
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Makro dosyanýzda \"%%_pgp_name\" belirtmelisiniz\n"
 
-#: lib/signature.c:951
+#: lib/signature.c:955
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 

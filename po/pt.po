@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-04-18 16:53-0400\n"
+"POT-Creation-Date: 2002-04-19 14:29-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -3400,114 +3400,114 @@ msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:128
 msgid "file is not regular -- skipping size check\n"
 msgstr "o ficheiro não é normal -- a ignorar a verificação do tamanho\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:145
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 "Esperado um tamanho: %12d = início(%d)+assin.(%d)+'pad'(%d)+dados(%d)\n"
 
-#: lib/signature.c:139
+#: lib/signature.c:149
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Tamanho real: %12d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:169
 msgid "No signature\n"
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:173
 msgid "Old PGP signature\n"
 msgstr "Assinatura PGP antiga\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:184
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Assinatura (só interna) antiga! Como é que obteve isto!?\n"
 
-#: lib/signature.c:230
+#: lib/signature.c:234
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Assinatura: tamanho(%d)+pad(%d)\n"
 
-#: lib/signature.c:301 lib/signature.c:394 lib/signature.c:643
-#: lib/signature.c:748 lib/signature.c:825 lib/signature.c:858
+#: lib/signature.c:305 lib/signature.c:398 lib/signature.c:647
+#: lib/signature.c:752 lib/signature.c:829 lib/signature.c:862
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Não consegui executar %s: %s\n"
 
-#: lib/signature.c:317
+#: lib/signature.c:321
 msgid "pgp failed\n"
 msgstr "o pgp falhou\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:324
+#: lib/signature.c:328
 msgid "pgp failed to write signature\n"
 msgstr "o pgp não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:329
+#: lib/signature.c:333
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "tamanho da assinatura do PGP: %d\n"
 
-#: lib/signature.c:342 lib/signature.c:436
+#: lib/signature.c:346 lib/signature.c:440
 msgid "unable to read the signature\n"
 msgstr "incapaz de ler a assinatura\n"
 
-#: lib/signature.c:347
+#: lib/signature.c:351
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Obtive %d bytes da assinatura PGP\n"
 
-#: lib/signature.c:411
+#: lib/signature.c:415
 msgid "gpg failed\n"
 msgstr "o gpg falhou\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:418
+#: lib/signature.c:422
 msgid "gpg failed to write signature\n"
 msgstr "o gpg não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:427
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Tamanho da assinatura do GPG: %d\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:445
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Obtive %d bytes da assinatura do GPG\n"
 
-#: lib/signature.c:469
+#: lib/signature.c:473
 msgid "Generating signature using PGP.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:475
+#: lib/signature.c:479
 msgid "Generating signature using GPG.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:863 lib/signature.c:916
+#: lib/signature.c:867 lib/signature.c:920
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:896
+#: lib/signature.c:900
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:908
+#: lib/signature.c:912
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:951
+#: lib/signature.c:955
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "'Digest' MD5 estragado: NÃO SUPORTADO\n"
 
