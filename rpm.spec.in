@@ -69,7 +69,7 @@ will manipulate RPM packages and databases.
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
 Requires: rpm = %{rpm_version}, patch >= 2.5, file
-Provides: rpmbuild(VendorConfig) = %{version}
+Provides: rpmbuild(VendorConfig) = 4.1-1
 
 %description build
 The rpm-build package contains the scripts and executable programs
