@@ -352,7 +352,8 @@ msgstr "budi neverovatno prièljiv (zbog nala¾enja gre¹aka)"
 #: rpm.c:352
 #, fuzzy
 msgid "   Install, upgrade and query (with -p) allow URL's to be used in place"
-msgstr "   instaliranje, pobolj¹avanja i upit (sa -p) dozvoljavaju kori¹æenje URL-ova"
+msgstr ""
+"   instaliranje, pobolj¹avanja i upit (sa -p) dozvoljavaju kori¹æenje URL-ova"
 
 #: rpm.c:353
 #, fuzzy
@@ -511,7 +512,9 @@ msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or -"
 "d)"
-msgstr "poka¾i sve informacije koje se mogu proveriti za svaku datoteku (mora se koristiti sa -l, -c ili -d)"
+msgstr ""
+"poka¾i sve informacije koje se mogu proveriti za svaku datoteku (mora se "
+"koristiti sa -l, -c ili -d)"
 
 #: rpm.c:401
 msgid "list capabilities package provides"
@@ -534,7 +537,8 @@ msgstr ""
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
-msgstr "proveri instalaciju paketa koristeæi iste opcije za odreðenje paketa kao i -q"
+msgstr ""
+"proveri instalaciju paketa koristeæi iste opcije za odreðenje paketa kao i -q"
 
 #: lib/poptI.c:158 rpm.c:417 rpm.c:459 rpm.c:494
 msgid "do not verify package dependencies"
@@ -611,7 +615,8 @@ msgstr "pi¹i he¹-znak (#) kako odmièe instaliranje paketa (dobro doðe sa -v)"
 
 #: lib/poptI.c:102 rpm.c:446
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "instaliraj sve datoteke, èak i konfiguracije koje bi inaèe bile preskoèene"
+msgstr ""
+"instaliraj sve datoteke, èak i konfiguracije koje bi inaèe bile preskoèene"
 
 #: lib/poptI.c:143 rpm.c:449
 msgid "don't verify package architecture"
@@ -679,7 +684,8 @@ msgstr "a¾uriraj paket (iste opcije kao --install, plus)"
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr "a¾uriraj na staru verziju paketa (--force kod a¾uriranja ovo radi automatski)"
+msgstr ""
+"a¾uriraj na staru verziju paketa (--force kod a¾uriranja ovo radi automatski)"
 
 #: rpm.c:484
 msgid "    --erase <package>"
@@ -698,7 +704,9 @@ msgstr "izbri¹i (deinstaliraj) paket"
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr "ukloni sve pakete koji odgovaraju <paketu> (normalno, javlja se gre¹ka ako <paket> oznaèava vi¹e paketa)"
+msgstr ""
+"ukloni sve pakete koji odgovaraju <paketu> (normalno, javlja se gre¹ka ako "
+"<paket> oznaèava vi¹e paketa)"
 
 #: rpm.c:498
 msgid "do not execute any package specific scripts"
@@ -868,13 +876,17 @@ msgstr "upit nad %s neuspeo\n"
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
-msgstr "postavi dozvole datoteke kao one u bazi podataka paketa koristeæi iste opcije za odreðenje datoteka kao i -q"
+msgstr ""
+"postavi dozvole datoteke kao one u bazi podataka paketa koristeæi iste "
+"opcije za odreðenje datoteka kao i -q"
 
 #: rpm.c:573
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
-msgstr "postavi vlasnika i grupu datoteke kao i one u bazi podataka paketa koristeæi iste opcije za odreðenje datoteka kao i -q"
+msgstr ""
+"postavi vlasnika i grupu datoteke kao i one u bazi podataka paketa koristeæi "
+"iste opcije za odreðenje datoteka kao i -q"
 
 #: rpm.c:725 rpm.c:731 rpm.c:740 rpm.c:762 rpm.c:768 rpm.c:775 rpm.c:783
 #: rpm.c:791 rpm.c:812 rpm.c:818 rpm.c:881 rpmqv.c:636 rpmqv.c:642 rpmqv.c:648
@@ -1023,7 +1035,9 @@ msgstr "--justdb mo¾ete koristiti samo kod instalacije i brisanja paketa"
 msgid ""
 "script disabling options may only be specified during package installation, "
 "erasure, and verification"
-msgstr "--noscripsts mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
+msgstr ""
+"--noscripsts mo¾ete koristiti samo kod instalacije, uklanjanja ili provere "
+"paketa"
 
 #: rpm.c:979
 #, fuzzy
@@ -1042,19 +1056,23 @@ msgstr "--justdb mo¾ete koristiti samo kod instalacije i brisanja paketa"
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
-msgstr "--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
+msgstr ""
+"--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
 
 #: rpm.c:993 rpmqv.c:806
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
-msgstr "--test mo¾ete koristiti samo kod instalacije, uklanjanja ili kreiranja paketa"
+msgstr ""
+"--test mo¾ete koristiti samo kod instalacije, uklanjanja ili kreiranja paketa"
 
 #: rpm.c:997 rpmqv.c:811
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
-msgstr "--root (-r) mo¾ete navesti samo kod instalacije, uklanjanja, upita ili rekreiranja baze podataka"
+msgstr ""
+"--root (-r) mo¾ete navesti samo kod instalacije, uklanjanja, upita ili "
+"rekreiranja baze podataka"
 
 #: rpm.c:1009 rpmqv.c:823
 msgid "arguments to --root (-r) must begin with a /"
@@ -4190,11 +4208,13 @@ msgstr "neuspelo kreiranje %s\n"
 
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-#~ msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
+#~ msgstr ""
+#~ "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
 #, fuzzy
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-#~ msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
+#~ msgstr ""
+#~ "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
 #, fuzzy
 #~ msgid "Couldn't exec pgp\n"
@@ -4240,7 +4260,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "  Install, upgrade and query (with -p) modes allow URL's to be used in "
 #~ "place"
-#~ msgstr "   instaliranje, pobolj¹avanja i upit (sa -p) dozvoljavaju kori¹æenje URL-ova"
+#~ msgstr ""
+#~ "   instaliranje, pobolj¹avanja i upit (sa -p) dozvoljavaju kori¹æenje URL-"
+#~ "ova"
 
 #, fuzzy
 #~ msgid "  of file names as well as the following options:"
@@ -4398,7 +4420,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, "
 #~ "and verification"
-#~ msgstr "--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
+#~ msgstr ""
+#~ "--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere "
+#~ "paketa"
 
 #, fuzzy
 #~ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -4652,10 +4676,12 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgstr "nemoj proveravati operativni sistem za paket"
 
 #~ msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr "--build (-b) zahteva jedan od sledeæih podargumenata: a,b,i,c,p ili l"
+#~ msgstr ""
+#~ "--build (-b) zahteva jedan od sledeæih podargumenata: a,b,i,c,p ili l"
 
 #~ msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr "--tarbuild (-t) zahteva jedan od sledeæih podargumenata: a,b,c,i,p ili l"
+#~ msgstr ""
+#~ "--tarbuild (-t) zahteva jedan od sledeæih podargumenata: a,b,c,i,p ili l"
 
 #~ msgid "arguments to --dbpath must begin with a /"
 #~ msgstr "argumenti za --dbpath moraju poèeti znakom '/'"
@@ -4666,13 +4692,17 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "ftp options can only be used during package queries, installs, and "
 #~ "upgrades"
-#~ msgstr "opcije za FTP se mogu koristiti samo kod upita, instalacije ili a¾uriranja paketa"
+#~ msgstr ""
+#~ "opcije za FTP se mogu koristiti samo kod upita, instalacije ili "
+#~ "a¾uriranja paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "http options can only be used during package queries, installs, and "
 #~ "upgrades"
-#~ msgstr "opcije za FTP se mogu koristiti samo kod upita, instalacije ili a¾uriranja paketa"
+#~ msgstr ""
+#~ "opcije za FTP se mogu koristiti samo kod upita, instalacije ili "
+#~ "a¾uriranja paketa"
 
 #~ msgid "relocate files even though the package doesn't allow it"
 #~ msgstr "premesti datoteke èak iako paket to ne dozvoljava"
@@ -4977,25 +5007,33 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "--noscripts may only be specified during package installation and "
 #~ "uninstallation"
-#~ msgstr "--noscripsts mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
+#~ msgstr ""
+#~ "--noscripsts mo¾ete koristiti samo kod instalacije, uklanjanja ili "
+#~ "provere paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--nodeps may only be specified during package installation, "
 #~ "uninstallation, and verification"
-#~ msgstr "--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
+#~ msgstr ""
+#~ "--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere "
+#~ "paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--test may only be specified during package installation, uninstallation, "
 #~ "and building"
-#~ msgstr "--test mo¾ete koristiti samo kod instalacije, uklanjanja ili kreiranja paketa"
+#~ msgstr ""
+#~ "--test mo¾ete koristiti samo kod instalacije, uklanjanja ili kreiranja "
+#~ "paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--root (-r) may only be specified during installation, uninstallation, "
 #~ "querying, and database rebuilds"
-#~ msgstr "--root (-r) mo¾ete navesti samo kod instalacije, uklanjanja, upita ili rekreiranja baze podataka"
+#~ msgstr ""
+#~ "--root (-r) mo¾ete navesti samo kod instalacije, uklanjanja, upita ili "
+#~ "rekreiranja baze podataka"
 
 #, fuzzy
 #~ msgid "--clean may only be used during package building"
