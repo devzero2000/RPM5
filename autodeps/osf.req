@@ -1,4 +1,4 @@
-#! /usr/bin/ksh
+#!/bin/sh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
 # $Id$
@@ -43,7 +43,7 @@ filelist=`cat -`
 for f in `echo $filelist | xargs file | grep 'shell script' | cut -d: -f 2 \
 	| awk '{ print $1 }'`
 do
-    print $f
+    echo $f
 done | sort -u
 
 #
