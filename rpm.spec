@@ -157,6 +157,15 @@ fi
 /usr/lib/rpm/rpmrc
 /usr/lib/rpm/vpkg-provides.sh
 /usr/lib/rpm/vpkg-provides2.sh
+%ifarch i386 i486 i586 i686
+/usr/lib/rpm/i386-*
+%endif
+%ifarch alpha
+/usr/lib/rpm/alpha-*
+%endif
+%ifarch sparc sparc64
+/usr/lib/rpm/sparc*
+%endif
 
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
