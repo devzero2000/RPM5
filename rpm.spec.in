@@ -280,10 +280,10 @@ exit 0
 %rpmattr	%{__bindir}/rpmquery
 %rpmattr	%{__bindir}/rpmverify
 
-%{__libdir}/librpm-@VERSION@.so
-%{__libdir}/librpmdb-@VERSION@.so
-%{__libdir}/librpmio-@VERSION@.so
-%{__libdir}/librpmbuild-@VERSION@.so
+%{__libdir}/librpm-4.3.so
+%{__libdir}/librpmdb-4.3.so
+%{__libdir}/librpmio-4.3.so
+%{__libdir}/librpmbuild-4.3.so
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
 %rpmattr	%{__prefix}/lib/rpm/config.guess
