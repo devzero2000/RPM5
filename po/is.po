@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2000-12-13 16:53-0500\n"
-"PO-Revision-Date: 2000-08-02 13:00+0000\n"
+"PO-Revision-Date: 2000-12-18 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
 "MIME-Version: 1.0\n"
@@ -10,9 +10,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: build.c:26
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open rpm database in %s\n"
-msgstr "get ekki opnað pakka gagnagrunn í\n"
+msgstr "get ekki opnað pakka gagnagrunn í %s\n"
 
 #: build.c:36
 msgid "failed build dependencies:\n"
@@ -24,35 +24,35 @@ msgid "Unable to open spec file %s: %s\n"
 msgstr "Get ekki opnað spec skrána %s: %s\n"
 
 #: build.c:131 build.c:143
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open tar pipe: %m"
-msgstr "Gat ekki opnað pípu í tar: %s\n"
+msgstr "Gat ekki opnað pípu í tar: %m"
 
 #. Give up
 #: build.c:150
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read spec file from %s"
-msgstr "Gat ekki lesið spec skrá frá %s\n"
+msgstr "Gat ekki lesið spec skrá frá %s"
 
 #: build.c:177
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to rename %s to %s: %m"
-msgstr "Gat ekki endurnefnt %s sem %s: %s\n"
+msgstr "Gat ekki endurnefnt %s sem %s: %m"
 
 #: build.c:216
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat %s: %m"
-msgstr "gat ekki búið til %s: %s\n"
+msgstr "gat ekki skoðað %s: %m"
 
 #: build.c:221
-#, fuzzy, c-format
+#, c-format
 msgid "File %s is not a regular file."
-msgstr "Skráin er ekki venjuleg skrá: %s\n"
+msgstr "Skráin %s er ekki venjuleg skrá."
 
 #: build.c:229
-#, fuzzy, c-format
+#, c-format
 msgid "File %s does not appear to be a specfile."
-msgstr "Skráin %s virðist ekki vera specskrá.\n"
+msgstr "Skráin %s virðist ekki vera specskrá."
 
 #. parse up the build operators
 #: build.c:289
@@ -464,31 +464,31 @@ msgstr "fyrirspurn á pakkana sem þarfnast <cap> eiginleika"
 
 #: rpm.c:345
 msgid "      Information selection options:"
-msgstr ""
+msgstr "      Rofar um upplýsingaval:"
 
 #: rpm.c:347 rpmqv.c:464
 msgid "display package information"
-msgstr ""
+msgstr "birta pakkaupplýsingar"
 
 #: rpm.c:349 rpmqv.c:466
 msgid "display the package's change log"
-msgstr ""
+msgstr "birta breytingaskrá pakkans"
 
 #: rpm.c:351 rpmqv.c:468
 msgid "display package file list"
-msgstr ""
+msgstr "birta innihald pakkans"
 
 #: rpm.c:353 rpmqv.c:470
 msgid "show file states (implies -l)"
-msgstr ""
+msgstr "bírta ástand skráa (innifelur -l)"
 
 #: rpm.c:355 rpmqv.c:472
 msgid "list only documentation files (implies -l)"
-msgstr ""
+msgstr "birta einungis skrán sem eru leuðbeiningar (innifelur -l)"
 
 #: rpm.c:357 rpmqv.c:474
 msgid "list only configuration files (implies -l)"
-msgstr ""
+msgstr "birta einungis stillingaskrár (innifelur -l)"
 
 #: rpm.c:359 rpmqv.c:476
 msgid ""
@@ -498,11 +498,11 @@ msgstr ""
 
 #: rpm.c:361
 msgid "list capabilities package provides"
-msgstr ""
+msgstr "sýna einigleikana sem pakkin veitir"
 
 #: rpm.c:363
 msgid "list package dependencies"
-msgstr ""
+msgstr "skoða pakkaskilyrðin"
 
 #: rpm.c:365
 msgid "print the various [un]install scripts"
@@ -1117,18 +1117,16 @@ msgid "cannot re-open payload: %s\n"
 msgstr ""
 
 #: rpmqv.c:154
-#, fuzzy
 msgid "'<name> <body>'"
-msgstr "    --define '<nafn> <gildi>'"
+msgstr "'<nafn> <gildi>'"
 
 #: rpmqv.c:156
-#, fuzzy
 msgid "print macro expansion to stdout"
-msgstr "prenta útvíkkun fjölva <nafn> á staðalfrálag"
+msgstr "prenta útvíkkun fjölva á staðalfrálag"
 
 #: rpmqv.c:156
 msgid "<expr>+"
-msgstr ""
+msgstr "<expr>+"
 
 #: rpmqv.c:181
 msgid "read <file:...> instead of default macro file(s)"
@@ -1834,29 +1832,29 @@ msgid "Unable to open sigtarget %s: %s"
 msgstr ""
 
 #: build/pack.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read header from %s: %s"
-msgstr "Get ekki opnað spec skrána %s: %s\n"
+msgstr "Get ekki opnað haus í %s: %s"
 
 #: build/pack.c:494
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write header to %s: %s"
-msgstr "Gat ekki endurnefnt %s sem %s: %s\n"
+msgstr "Gat ekki ritað haus í %s: %s"
 
 #: build/pack.c:504
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read payload from %s: %s"
-msgstr "Get ekki opnað spec skrána %s: %s\n"
+msgstr "Get ekki lesið innihald %s: %s"
 
 #: build/pack.c:510
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write payload to %s: %s"
-msgstr "Get ekki opnað spec skrána %s: %s\n"
+msgstr "Get ekki ritað innihald í %s: %s"
 
 #: build/pack.c:537
 #, c-format
 msgid "Wrote: %s\n"
-msgstr ""
+msgstr "Skrifaði: %s\n"
 
 #: build/pack.c:602
 #, c-format
@@ -3596,11 +3594,11 @@ msgstr ""
 #: lib/signature.c:273
 #, c-format
 msgid "Couldn't exec pgp (%s)"
-msgstr ""
+msgstr "Gat ekki keyrt pgp (%s)"
 
 #: lib/signature.c:284
 msgid "pgp failed"
-msgstr ""
+msgstr "pgp brást"
 
 #. PGP failed to write signature
 #. Just in case
@@ -3615,7 +3613,7 @@ msgstr ""
 
 #: lib/signature.c:307 lib/signature.c:384
 msgid "unable to read the signature"
-msgstr ""
+msgstr "get ekki lesið undirskriftina"
 
 #: lib/signature.c:312
 #, c-format
@@ -3624,7 +3622,7 @@ msgstr ""
 
 #: lib/signature.c:350 lib/signature.c:695
 msgid "Couldn't exec gpg"
-msgstr ""
+msgstr "Gat ekki keyrt gpg"
 
 #: lib/signature.c:361
 msgid "gpg failed"
@@ -3740,73 +3738,73 @@ msgstr ""
 
 #: lib/verify.c:44
 msgid "don't verify files in package"
-msgstr ""
+msgstr "ekki yfirfara skrárnar í pakkanum"
 
 #: lib/verify.c:218
 msgid "package lacks both user name and id lists (this should never happen)"
-msgstr ""
+msgstr "í pakkanum eru engir notandalistar (þetta ætti aldrei að koma fyrir)"
 
 #: lib/verify.c:236
 msgid "package lacks both group name and id lists (this should never happen)"
-msgstr ""
+msgstr "í pakkanum eru engir hópalistar (þetta ætti aldrei að koma fyrir)"
 
 #: lib/verify.c:285
 #, c-format
 msgid "missing    %s\n"
-msgstr ""
+msgstr "vantar     %s\n"
 
 #: lib/verify.c:347
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
-msgstr ""
+msgstr "Óuppfyllt pakkaskilyrði fyrir %s-%s-%s: "
 
 #: rpmio/rpmio.c:534
 msgid "Success"
-msgstr ""
+msgstr "Tókst"
 
 #: rpmio/rpmio.c:537
 msgid "Bad server response"
-msgstr ""
+msgstr "Þjónninn svaraði rangt"
 
 #: rpmio/rpmio.c:540
 msgid "Server IO error"
-msgstr ""
+msgstr "Les/ritvilla á þjóninum"
 
 #: rpmio/rpmio.c:543
 msgid "Server timeout"
-msgstr ""
+msgstr "Þjónninn tímaði út"
 
 #: rpmio/rpmio.c:546
 msgid "Unable to lookup server host address"
-msgstr ""
+msgstr "Gat ekki flett upp vistfangi þjónsins"
 
 #: rpmio/rpmio.c:549
 msgid "Unable to lookup server host name"
-msgstr ""
+msgstr "Gat ekki flett upp heiti þjónsins"
 
 #: rpmio/rpmio.c:552
 msgid "Failed to connect to server"
-msgstr ""
+msgstr "Gat ekki tengst þjóninum"
 
 #: rpmio/rpmio.c:555
 msgid "Failed to establish data connection to server"
-msgstr ""
+msgstr "Gat ekki opnað gagnatengingu við þjóninn"
 
 #: rpmio/rpmio.c:558
 msgid "IO error to local file"
-msgstr ""
+msgstr "Les/ritvilla í skrána"
 
 #: rpmio/rpmio.c:561
 msgid "Error setting remote server to passive mode"
-msgstr ""
+msgstr "Ekki tókst að fá þjóninn í \"passive\" ham"
 
 #: rpmio/rpmio.c:564
 msgid "File not found on server"
-msgstr ""
+msgstr "Skráin fannst ekki á þjóninum"
 
 #: rpmio/rpmio.c:567
 msgid "Abort in progress"
-msgstr ""
+msgstr "Er að hætta við"
 
 #: rpmio/rpmio.c:571
 msgid "Unknown or unexpected error"
@@ -3815,7 +3813,7 @@ msgstr "Óþekkt eða óvænt villa"
 #: rpmio/rpmio.c:1166
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
-msgstr ""
+msgstr "tengist %s sem %s með aðgangsorði %s\n"
 
 #: rpmio/macro.c:187
 #, c-format
@@ -3826,12 +3824,12 @@ msgstr "======================== virkt %d tómt %d\n"
 #: rpmio/macro.c:301
 #, c-format
 msgid "%3d>%*s(empty)"
-msgstr ""
+msgstr "%3d>%*s(tómt)"
 
 #: rpmio/macro.c:342
 #, c-format
 msgid "%3d<%*s(empty)\n"
-msgstr ""
+msgstr "%3d<%*s(tómt)\n"
 
 #: rpmio/macro.c:555
 msgid "Macro %%%s has unterminated body"
@@ -3864,7 +3862,7 @@ msgstr ""
 #: rpmio/macro.c:814
 #, c-format
 msgid "Unknown option %c in %s(%s)"
-msgstr "+Oþekkt viðfang %c í %s(%s)"
+msgstr "Óþekkt viðfang %c í %s(%s)"
 
 #: rpmio/macro.c:993
 #, c-format
@@ -3882,7 +3880,7 @@ msgstr ""
 
 #: rpmio/macro.c:1241
 msgid "Macro %%%.*s not found, skipping"
-msgstr "Fjölvi %%%.*s fanmst ekki. Sleppi"
+msgstr "Fjölvi %%%.*s fannst ekki. Sleppi"
 
 #: rpmio/macro.c:1312
 msgid "Target buffer overflow"
@@ -3895,13 +3893,13 @@ msgid "File %s: %s"
 msgstr "Skrá %s: %s"
 
 #: rpmio/macro.c:1501
-#, fuzzy, c-format
+#, c-format
 msgid "File %s is smaller than %u bytes"
-msgstr "Skráin %s er minni en %d bæti"
+msgstr "Skráin %s er minni en %u bæti"
 
 #: rpmio/rpmlog.c:24
 msgid "(no error)"
-msgstr ""
+msgstr "(engin villa)"
 
 #. !< RPMLOG_EMERG
 #: rpmio/rpmlog.c:83 rpmio/rpmlog.c:84 rpmio/rpmlog.c:85
@@ -3962,6 +3960,3 @@ msgstr "gat ekki opnað %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "gat ekki búið til %s: %s\n"
-
-#~ msgid "internal error (rpm bug?): "
-#~ msgstr "innvær villa (í rpm?): "
