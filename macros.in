@@ -119,7 +119,6 @@
 %package debug \
 Summary: Debug information for package %{name} \
 Group: Development/Debug \
-Requires: %{name} = %{version} \
 %description debug \
 This package provides debug information for package %{name}. \
 Debug information is useful when developing applications that use this \
