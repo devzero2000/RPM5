@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-19 13:05-0500\n"
+"POT-Creation-Date: 2001-03-22 17:23-0500\n"
 "PO-Revision-Date: 2001-02-12 08:08+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2571,7 +2571,7 @@ msgstr ""
 "Pokud tento pøíkaz nevyøe¹í problém, naleznete více informací\n"
 "na http://www.rpm.org nebo v diskuzním listu rpm-list@redhat.com.\n"
 
-#: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
+#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
 #: lib/header.c:2596 lib/header.c:2613 lib/header.c:2633
 msgid "(not a number)"
 msgstr "(není èíslo)"
@@ -3084,124 +3084,123 @@ msgstr "pøedtransakèní syscall v balíèku %s: %s selhalo: %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s"
 
-#: lib/query.c:151
+#: lib/query.c:121
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "nesprávný formát: %s\n"
 
-#: lib/query.c:233
+#: lib/query.c:205
 msgid "(contains no files)"
 msgstr "(neobsahuje ¾ádné soubory)"
 
-#: lib/query.c:284
+#: lib/query.c:256
 msgid "normal        "
 msgstr "normální      "
 
-#: lib/query.c:286
+#: lib/query.c:258
 msgid "replaced      "
 msgstr "nahrazen      "
 
-#: lib/query.c:288
+#: lib/query.c:260
 msgid "not installed "
 msgstr "neinstalován  "
 
-#: lib/query.c:290
+#: lib/query.c:262
 msgid "net shared    "
 msgstr "sdílen v síti "
 
-#: lib/query.c:292
+#: lib/query.c:264
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(neznámý %3d) "
 
-#: lib/query.c:297
+#: lib/query.c:269
 msgid "(no state)    "
 msgstr "(chybí stav)  "
 
-#: lib/query.c:316 lib/query.c:361
+#: lib/query.c:288 lib/query.c:333
 msgid "package has neither file owner or id lists\n"
 msgstr "balíèek nemá vlastníka souboru ani seznamy id\n"
 
-#: lib/query.c:418
+#: lib/query.c:392
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#. XXX Fstrerror
-#: lib/query.c:534
+#: lib/query.c:513 lib/query.c:545
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
 
-#: lib/query.c:554
-msgid "old format source packages cannot be queried\n"
-msgstr "nelze provést dotaz na zdrojové balíèky starého formátu\n"
-
-#: lib/query.c:563 lib/rpminstall.c:315
-#, c-format
-msgid "%s does not appear to be a RPM package\n"
-msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
-
-#: lib/query.c:567
+#: lib/query.c:524
 #, c-format
 msgid "query of %s failed\n"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:601
+#: lib/query.c:530
+msgid "old format source packages cannot be queried\n"
+msgstr "nelze provést dotaz na zdrojové balíèky starého formátu\n"
+
+#: lib/query.c:555 lib/rpmchecksig.c:87
+#, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: Fread selhalo: %s\n"
+
+#: lib/query.c:598
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "dotaz na spec soubor %s selhal, nemohu parsovat\n"
 
-#: lib/query.c:624
+#: lib/query.c:621
 msgid "no packages\n"
 msgstr "¾ádné balíèky\n"
 
-#: lib/query.c:635
+#: lib/query.c:632
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
-#: lib/query.c:645
+#: lib/query.c:642
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:655
+#: lib/query.c:652
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: lib/query.c:666
+#: lib/query.c:663
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾ádný balíèek neposkytuje %s\n"
 
-#: lib/query.c:697
+#: lib/query.c:694
 #, c-format
 msgid "file %s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:698
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "soubor %s nevlastní ¾ádný balíèek\n"
 
-#: lib/query.c:727
+#: lib/query.c:724
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/query.c:730
+#: lib/query.c:727
 #, c-format
 msgid "package record number: %u\n"
 msgstr "záznam balíèku èíslo: %u\n"
 
-#: lib/query.c:735
+#: lib/query.c:732
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:746 lib/rpminstall.c:556
+#: lib/query.c:743 lib/rpminstall.c:556
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -3219,11 +3218,6 @@ msgstr "makeTempFile selhalo\n"
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite selhalo: %s\n"
-
-#: lib/rpmchecksig.c:87
-#, c-format
-msgid "%s: Fread failed: %s\n"
-msgstr "%s: Fread selhalo: %s\n"
 
 #: lib/rpmchecksig.c:120 lib/rpmchecksig.c:250
 #, c-format
@@ -3491,6 +3485,11 @@ msgstr "pøijato %d balíèkù\n"
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu otevøít soubor %s: %s\n"
+
+#: lib/rpminstall.c:315
+#, c-format
+msgid "%s does not appear to be a RPM package\n"
+msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
 
 #: lib/rpminstall.c:321 lib/rpminstall.c:621
 #, c-format

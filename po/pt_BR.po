@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-03-19 13:05-0500\n"
+msgstr "POT-Creation-Date: 2001-03-22 17:23-0500\n"
 
 # , c-format
 #: build.c:26
@@ -2831,7 +2831,7 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
+#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
 #: lib/header.c:2596 lib/header.c:2613 lib/header.c:2633
 msgid "(not a number)"
 msgstr ""
@@ -3383,128 +3383,128 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/query.c:151
+#: lib/query.c:121
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
 
-#: lib/query.c:233
+#: lib/query.c:205
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:284
+#: lib/query.c:256
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:286
+#: lib/query.c:258
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:288
+#: lib/query.c:260
 #, fuzzy
 msgid "not installed "
 msgstr "não foi passado pacote para instalação"
 
-#: lib/query.c:290
+#: lib/query.c:262
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:292
+#: lib/query.c:264
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:297
+#: lib/query.c:269
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:316 lib/query.c:361
+#: lib/query.c:288 lib/query.c:333
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "não foi passado pacote para instalação"
 
 # , c-format
-#: lib/query.c:418
+#: lib/query.c:392
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
-#. XXX Fstrerror
-#: lib/query.c:534
+#: lib/query.c:513 lib/query.c:545
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "Construção falhou.\n"
 
-#: lib/query.c:554
-msgid "old format source packages cannot be queried\n"
-msgstr ""
-
-#: lib/query.c:563 lib/rpminstall.c:315
-#, c-format
-msgid "%s does not appear to be a RPM package\n"
-msgstr ""
-
-#: lib/query.c:567
+#: lib/query.c:524
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:601
+#: lib/query.c:530
+msgid "old format source packages cannot be queried\n"
+msgstr ""
+
+# , c-format
+#: lib/query.c:555 lib/rpmchecksig.c:87
+#, fuzzy, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "Não consegui abrir: %s\n"
+
+#: lib/query.c:598
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:624
+#: lib/query.c:621
 #, fuzzy
 msgid "no packages\n"
 msgstr "pesquise todos os pacotes"
 
-#: lib/query.c:635
+#: lib/query.c:632
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:645
+#: lib/query.c:642
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "não foram passados pacotes para assinatura"
 
-#: lib/query.c:655
+#: lib/query.c:652
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:666
+#: lib/query.c:663
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:697
+#: lib/query.c:694
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:701
+#: lib/query.c:698
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:727
+#: lib/query.c:724
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:730
+#: lib/query.c:727
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:735
+#: lib/query.c:732
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:746 lib/rpminstall.c:556
+#: lib/query.c:743 lib/rpminstall.c:556
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "não foi passado pacote para instalação"
@@ -3524,12 +3524,6 @@ msgstr "Construção falhou.\n"
 #: lib/rpmchecksig.c:81
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr "Não consegui abrir: %s\n"
-
-# , c-format
-#: lib/rpmchecksig.c:87
-#, fuzzy, c-format
-msgid "%s: Fread failed: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
 #: lib/rpmchecksig.c:120 lib/rpmchecksig.c:250
@@ -3826,6 +3820,11 @@ msgstr ""
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "Não consegui abrir: %s\n"
+
+#: lib/rpminstall.c:315
+#, c-format
+msgid "%s does not appear to be a RPM package\n"
+msgstr ""
 
 #: lib/rpminstall.c:321 lib/rpminstall.c:621
 #, fuzzy, c-format

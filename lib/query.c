@@ -1,5 +1,6 @@
 /** \ingroup rpmcli
  * \file lib/query.c
+ * Display tag values from package metadata.
  */
 
 #include "system.h"
@@ -10,55 +11,24 @@
 
 #include <rpmbuild.h>
 #include <rpmurl.h>
+#include "manifest.h"
 #include "debug.h"
 
 /*@access Header@*/			/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 
-/* ======================================================================== */
-static char * permsString(int mode)
-{
-    char *perms = xstrdup("----------");
-   
-    if (S_ISDIR(mode)) 
-	perms[0] = 'd';
-    else if (S_ISLNK(mode))
-	perms[0] = 'l';
-    else if (S_ISFIFO(mode)) 
-	perms[0] = 'p';
-    else if (S_ISSOCK(mode)) 
-	perms[0] = 's';
-    else if (S_ISCHR(mode))
-	perms[0] = 'c';
-    else if (S_ISBLK(mode))
-	perms[0] = 'b';
-
-    /*@-unrecog@*/
-    if (mode & S_IRUSR) perms[1] = 'r';
-    if (mode & S_IWUSR) perms[2] = 'w';
-    if (mode & S_IXUSR) perms[3] = 'x';
- 
-    if (mode & S_IRGRP) perms[4] = 'r';
-    if (mode & S_IWGRP) perms[5] = 'w';
-    if (mode & S_IXGRP) perms[6] = 'x';
-
-    if (mode & S_IROTH) perms[7] = 'r';
-    if (mode & S_IWOTH) perms[8] = 'w';
-    if (mode & S_IXOTH) perms[9] = 'x';
-
-    if (mode & S_ISUID)
-	perms[3] = ((mode & S_IXUSR) ? 's' : 'S'); 
-
-    if (mode & S_ISGID)
-	perms[6] = ((mode & S_IXGRP) ? 's' : 'S'); 
-
-    if (mode & S_ISVTX)
-	perms[9] = ((mode & S_IXOTH) ? 't' : 'T');
-    /*@=unrecog@*/
-
-    return perms;
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
 }
 
+/**
+ */
 static void printFileInfo(char * te, const char * name,
 			  unsigned int size, unsigned short mode,
 			  unsigned int mtime,
@@ -74,7 +44,7 @@ static void printFileInfo(char * te, const char * name,
     static time_t now;
     static struct tm nowtm;
     const char * namefield = name;
-    char * perms;
+    char * perms = rpmPermsString(mode);
 
     /* On first call, grab snapshot of now */
     if (now == 0) {
@@ -82,8 +52,6 @@ static void printFileInfo(char * te, const char * name,
 	tm = localtime(&now);
 	nowtm = *tm;	/* structure assignment */
     }
-
-    perms = permsString(mode);
 
     if (owner) 
 	strncpy(ownerfield, owner, 8);
@@ -138,9 +106,11 @@ static void printFileInfo(char * te, const char * name,
 
     sprintf(te, "%s %4d %-8s%-8s %10s %s %s", perms,
 	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
-    if (perms) free(perms);
+    perms = _free(perms);
 }
 
+/**
+ */
 static inline const char * queryHeader(Header h, const char * qfmt)
 {
     const char * errstr;
@@ -152,6 +122,8 @@ static inline const char * queryHeader(Header h, const char * qfmt)
     return str;
 }
 
+/**
+ */
 static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
 		int xfile)
 {
@@ -221,7 +193,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 		te = t + tb;
 	    }
 	    te = stpcpy(te, str);
-	    free((void *)str);
+	    str = _free(str);
 	}
     }
 
@@ -361,7 +333,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 			_("package has neither file owner or id lists\n"));
 	    }
 
-	    free(filespec);
+	    filespec = _free(filespec);
 	}
 	if (te > t) {
 	    *te++ = '\n';
@@ -382,16 +354,18 @@ exit:
 	}
 	rpmMessage(RPMMESS_NORMAL, "%s", t);
     }
-    if (t) free(t);
-    if (dirNames) free(dirNames);
-    if (baseNames) free(baseNames);
-    if (fileLinktoList) free(fileLinktoList);
-    if (fileMD5List) free(fileMD5List);
-    if (fileOwnerList) free(fileOwnerList);
-    if (fileGroupList) free(fileGroupList);
+    t = _free(t);
+    dirNames = headerFreeData(dirNames, -1);
+    baseNames = headerFreeData(baseNames, -1);
+    fileLinktoList = headerFreeData(fileLinktoList, -1);
+    fileMD5List = headerFreeData(fileMD5List, -1);
+    fileOwnerList = headerFreeData(fileOwnerList, -1);
+    fileGroupList = headerFreeData(fileGroupList, -1);
     return rc;
 }
 
+/**
+ */
 static void
 printNewSpecfile(Spec spec)
 {
@@ -412,7 +386,7 @@ printNewSpecfile(Spec spec)
 
 	fmt[0] = '\0';
 	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}\n");
-	if (msgstr) free((void *)msgstr);
+	msgstr = _free(msgstr);
 	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr == NULL) {
 	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
@@ -422,8 +396,7 @@ printNewSpecfile(Spec spec)
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
 	case RPMTAG_GROUP:
-	    free(sl->sl_lines[t->t_startx]);
-	    sl->sl_lines[t->t_startx] = NULL;
+	    sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
 		continue;
 	    {   char *buf = xmalloc(strlen(tn) + sizeof(": ") + strlen(msgstr));
@@ -433,12 +406,11 @@ printNewSpecfile(Spec spec)
 	    break;
 	case RPMTAG_DESCRIPTION:
 	    for (j = 1; j < t->t_nlines; j++) {
-		free(sl->sl_lines[t->t_startx + j]);
-		sl->sl_lines[t->t_startx + j] = NULL;
+		sl->sl_lines[t->t_startx + j] =
+			_free(sl->sl_lines[t->t_startx + j]);
 	    }
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG)) {
-		free(sl->sl_lines[t->t_startx]);
-		sl->sl_lines[t->t_startx] = NULL;
+		sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
 		continue;
 	    }
 	    sl->sl_lines[t->t_startx + 1] = xstrdup(msgstr);
@@ -447,7 +419,7 @@ printNewSpecfile(Spec spec)
 	    break;
 	}
     }
-    if (msgstr) free((void *)msgstr);
+    msgstr = _free(msgstr);
 
     for (i = 0; i < sl->sl_nlines; i++) {
 	if (sl->sl_lines[i] == NULL)
@@ -521,58 +493,83 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
     case RPMQV_RPM:
     {	int argc = 0;
 	const char ** argv = NULL;
+	const char * fileURL = NULL;
 	int i;
 
 	rc = rpmGlob(arg, &argc, &argv);
-	if (rc)
-	    return 1;
+	if (rc) return 1;
+
+restart:
 	for (i = 0; i < argc; i++) {
 	    FD_t fd;
-	    fd = Fopen(argv[i], "r.ufdio");
+
+	    fileURL = _free(fileURL);
+	    fileURL = argv[i];
+	    argv[i] = NULL;
+
+	    /* Try to read the header from a package file. */
+	    fd = Fopen(fileURL, "r.ufdio");
 	    if (Ferror(fd)) {
-		/* XXX Fstrerror */
-		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), argv[i],
-#ifndef	NOTYET
-			urlStrerror(argv[i])
-#else
-			Fstrerror(fd)
-#endif
-		);
+		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
+			Fstrerror(fd));
 		if (fd) Fclose(fd);
 		retcode = 1;
 		break;
 	    }
 
 	    retcode = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-
 	    Fclose(fd);
 
-	    switch (retcode) {
-	    case 0:
-		if (h == NULL) {
-		    rpmError(RPMERR_QUERY,
-			_("old format source packages cannot be queried\n"));
-		    retcode = 1;
-		    break;
-		}
-		retcode = showPackage(qva, rpmdb, h);
-		headerFree(h);
-		break;
-	    case 1:
-		rpmError(RPMERR_QUERY,
-			_("%s does not appear to be a RPM package\n"), argv[i]);
-		/*@fallthrough@*/
-	    case 2:
-		rpmError(RPMERR_QUERY,
-			_("query of %s failed\n"), argv[i]);
+	    if (retcode == 2) {
+		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
 		retcode = 1;
 		break;
 	    }
+	    if (retcode == 0 && h == NULL) {
+		rpmError(RPMERR_QUERY,
+			_("old format source packages cannot be queried\n"));
+		retcode = 1;
+		break;
+	    }
+
+	    /* Query a package file. */
+	    if (retcode == 0) {
+		retcode = showPackage(qva, rpmdb, h);
+		headerFree(h);
+		continue;
+	    }
+
+	    /* Try to read a package manifest. */
+	    fd = Fopen(fileURL, "r.fpio");
+	    if (Ferror(fd)) {
+		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
+			Fstrerror(fd));
+		if (fd) Fclose(fd);
+		retcode = 1;
+		break;
+	    }
+	    
+	    /* Read list of packages from manifest. */
+	    retcode = rpmReadPackageManifest(fd, &argc, &argv);
+	    if (retcode) {
+		rpmError(RPMERR_QUERY, _("%s: Fread failed: %s\n"), fileURL,
+			Fstrerror(fd));
+		retcode = 1;
+	    }
+	    Fclose(fd);
+
+	    /* If successful, restart the query loop. */
+	    if (retcode == 0)
+		goto restart;
+
+	    break;
 	}
+
+	fileURL = _free(fileURL);
 	if (argv) {
 	    for (i = 0; i < argc; i++)
-		free((void *)argv[i]);
-	    free((void *)argv);
+		argv[i] = _free(argv[i]);
+	    argv = _free(argv);
 	}
     }	break;
 
@@ -705,7 +702,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
 	}
-	free((void *)fn);
+	fn = _free(fn);
     }	break;
 
     case RPMQV_DBOFFSET:

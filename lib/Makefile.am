@@ -12,7 +12,7 @@ pkginc_HEADERS = \
 	header.h misc.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
-	md5.h \
+	manifest.h md5.h \
 	rpmdb.h rpmlead.h signature.h
 
 mylibpaths =	-L$(top_builddir)/lib/.libs -L$(top_builddir)/rpmio/.libs \
@@ -24,7 +24,7 @@ lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c $(DBLIBSRCS) dbconfig.c depends.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
-	md5.c md5sum.c misc.c package.c problems.c \
+	manifest.c md5.c md5sum.c misc.c package.c problems.c \
 	poptBT.c poptQV.c query.c rpmchecksig.c rpmdb.c rpminstall.c \
 	rpmlead.c rpmlibprov.c rpmrc.c signature.c stringbuf.c \
 	tagName.c tagtable.c transaction.c uninstall.c verify.c

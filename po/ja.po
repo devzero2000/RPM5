@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-19 13:05-0500\n"
+"POT-Creation-Date: 2001-03-22 17:23-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2702,7 +2702,7 @@ msgstr ""
 "http://www.rpm.org もしくは rpm-list@redhat.com メーリングリストから\n"
 "詳細な情報が取得できます。\n"
 
-#: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
+#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
 #: lib/header.c:2596 lib/header.c:2613 lib/header.c:2633
 msgid "(not a number)"
 msgstr "(数字ではありません)"
@@ -3262,126 +3262,125 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 
-#: lib/query.c:151
+#: lib/query.c:121
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
 
-#: lib/query.c:233
+#: lib/query.c:205
 msgid "(contains no files)"
 msgstr "ファイルを含んでいません"
 
-#: lib/query.c:284
+#: lib/query.c:256
 msgid "normal        "
 msgstr "通常"
 
-#: lib/query.c:286
+#: lib/query.c:258
 msgid "replaced      "
 msgstr "置き換えられています"
 
-#: lib/query.c:288
+#: lib/query.c:260
 msgid "not installed "
 msgstr "インストールされていません"
 
-#: lib/query.c:290
+#: lib/query.c:262
 msgid "net shared    "
 msgstr "ネット共有"
 
-#: lib/query.c:292
+#: lib/query.c:264
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(未知の %3d)"
 
-#: lib/query.c:297
+#: lib/query.c:269
 msgid "(no state)    "
 msgstr "(何の状態もありません)"
 
-#: lib/query.c:316 lib/query.c:361
+#: lib/query.c:288 lib/query.c:333
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:418
+#: lib/query.c:392
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#. XXX Fstrerror
-#: lib/query.c:534
+#: lib/query.c:513 lib/query.c:545
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:554
-msgid "old format source packages cannot be queried\n"
-msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
-
-#: lib/query.c:563 lib/rpminstall.c:315
-#, c-format
-msgid "%s does not appear to be a RPM package\n"
-msgstr "%s は RPM パッケージではありません\n"
-
-#: lib/query.c:567
+#: lib/query.c:524
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:601
+#: lib/query.c:530
+msgid "old format source packages cannot be queried\n"
+msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
+
+#: lib/query.c:555 lib/rpmchecksig.c:87
+#, fuzzy, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: Fread に失敗しました: %s\n"
+
+#: lib/query.c:598
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:624
+#: lib/query.c:621
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:635
+#: lib/query.c:632
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:645
+#: lib/query.c:642
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:655
+#: lib/query.c:652
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:666
+#: lib/query.c:663
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:697
+#: lib/query.c:694
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:698
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:727
+#: lib/query.c:724
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:730
+#: lib/query.c:727
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:735
+#: lib/query.c:732
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:746 lib/rpminstall.c:556
+#: lib/query.c:743 lib/rpminstall.c:556
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -3400,11 +3399,6 @@ msgstr "makeTempFile に失敗しました\n"
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite に失敗しました: %s\n"
-
-#: lib/rpmchecksig.c:87
-#, fuzzy, c-format
-msgid "%s: Fread failed: %s\n"
-msgstr "%s: Fread に失敗しました: %s\n"
 
 #: lib/rpmchecksig.c:120 lib/rpmchecksig.c:250
 #, c-format
@@ -3675,6 +3669,11 @@ msgstr "%d 個のパッケージを取得しました\n"
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
+
+#: lib/rpminstall.c:315
+#, c-format
+msgid "%s does not appear to be a RPM package\n"
+msgstr "%s は RPM パッケージではありません\n"
 
 #: lib/rpminstall.c:321 lib/rpminstall.c:621
 #, fuzzy, c-format

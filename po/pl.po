@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-19 13:05-0500\n"
+"POT-Creation-Date: 2001-03-22 17:23-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2698,7 +2698,7 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
+#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
 #: lib/header.c:2596 lib/header.c:2613 lib/header.c:2633
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
@@ -3239,126 +3239,125 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s-%s-%s"
 
-#: lib/query.c:151
+#: lib/query.c:121
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³±d w formacie: %s\n"
 
-#: lib/query.c:233
+#: lib/query.c:205
 msgid "(contains no files)"
 msgstr "(nie zawiera plików)"
 
-#: lib/query.c:284
+#: lib/query.c:256
 msgid "normal        "
 msgstr "normalny      "
 
-#: lib/query.c:286
+#: lib/query.c:258
 msgid "replaced      "
 msgstr "zast±piony    "
 
-#: lib/query.c:288
+#: lib/query.c:260
 msgid "not installed "
 msgstr "niezainstalowany"
 
-#: lib/query.c:290
+#: lib/query.c:262
 msgid "net shared    "
 msgstr "udostêpniony w sieci"
 
-#: lib/query.c:292
+#: lib/query.c:264
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(nieznany %3d)"
 
-#: lib/query.c:297
+#: lib/query.c:269
 msgid "(no state)    "
 msgstr "(brak statusu)"
 
-#: lib/query.c:316 lib/query.c:361
+#: lib/query.c:288 lib/query.c:333
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "pakiet nie ma ani w³a¶ciciela pliku ani list id"
 
-#: lib/query.c:418
+#: lib/query.c:392
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 
-#. XXX Fstrerror
-#: lib/query.c:534
+#: lib/query.c:513 lib/query.c:545
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê\n"
 
-#: lib/query.c:554
-msgid "old format source packages cannot be queried\n"
-msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
-
-#: lib/query.c:563 lib/rpminstall.c:315
-#, c-format
-msgid "%s does not appear to be a RPM package\n"
-msgstr "%s nie wygl±da na pakiet RPM\n"
-
-#: lib/query.c:567
+#: lib/query.c:524
 #, c-format
 msgid "query of %s failed\n"
 msgstr "odpytywanie %s nie powiod³o siê\n"
 
-#: lib/query.c:601
+#: lib/query.c:530
+msgid "old format source packages cannot be queried\n"
+msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
+
+#: lib/query.c:555 lib/rpmchecksig.c:87
+#, fuzzy, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: readLead nie powiod³o siê\n"
+
+#: lib/query.c:598
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "odpytywanie pliku spec %s nie powiod³o siê, nie mo¿na interpretowaæ\n"
 
-#: lib/query.c:624
+#: lib/query.c:621
 #, fuzzy
 msgid "no packages\n"
 msgstr "znaleziono %d pakietów\n"
 
-#: lib/query.c:635
+#: lib/query.c:632
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:645
+#: lib/query.c:642
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:655
+#: lib/query.c:652
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:666
+#: lib/query.c:663
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:697
+#: lib/query.c:694
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:698
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:727
+#: lib/query.c:724
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:730
+#: lib/query.c:727
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "numer rekordu pakietu: %d\n"
 
-#: lib/query.c:735
+#: lib/query.c:732
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:746 lib/rpminstall.c:556
+#: lib/query.c:743 lib/rpminstall.c:556
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -3376,11 +3375,6 @@ msgstr "wykonanie nie powiod³o siê\n"
 #: lib/rpmchecksig.c:81
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr "%s: readLead nie powiod³o siê\n"
-
-#: lib/rpmchecksig.c:87
-#, fuzzy, c-format
-msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
 #: lib/rpmchecksig.c:120 lib/rpmchecksig.c:250
@@ -3653,6 +3647,11 @@ msgstr "¶ci±gniêto %d pakietów\n"
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
+
+#: lib/rpminstall.c:315
+#, c-format
+msgid "%s does not appear to be a RPM package\n"
+msgstr "%s nie wygl±da na pakiet RPM\n"
 
 #: lib/rpminstall.c:321 lib/rpminstall.c:621
 #, c-format
