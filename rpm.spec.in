@@ -414,13 +414,14 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Jun 15 2001 Jeff Johnson <jbj@redhat.com>
+* Sat Jun 16 2001 Jeff Johnson <jbj@redhat.com>
 - alpha: don't add "()(64bit)" dependency markers.
 - ia64/sparc: <arch>.{req,prov} identical to linux.{req,prov}.
 - add "rpmlib(ScriptletInterpreterArgs)" to track
 	%%post -p "/sbin/ldconfig -n /usr/lib"
   incompatibilities.
 - linux.req needs exit 0
+- popt: add POPT_ARGFLAG_SHOW_DEFAULT to display initial values (#32558).
 
 * Thu Jun 14 2001 Jeff Johnson <jbj@redhat.com>
 - fix: db1 end-of-file not detected in legacy compatible way.
