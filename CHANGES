@@ -2,6 +2,7 @@
 	- backport rpm-4.2 changes.
 	- fix: close db cursors to remove rpmdb references on signal exit.
 	- fix: short option help missing string terminator.
+	- fix: nested %if handling, optind initialization posix vs. glibc.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
