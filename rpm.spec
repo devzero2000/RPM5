@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.34
+Release: 0.35
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -412,6 +412,16 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jun 11 2001 Jeff Johnson <jbj@redhat.com>
+- remove dead code frpm popt table reorg.
+- more CLI typedefs/prototypes moved from rpmlib.h to rpmcli.h.
+- rpm --verify skips files in non-installed states.
+- rpm --verify skips content checks for %ghost files.
+- rpm --verify displays config/doc/gnost/license/readme atrrs for files.
+- rpm --verify checks immutable header region digest if available.
+- rpmbuild adds header region digest (SHA1 as string).
+- use rpmTag* typedefs in new hge/hae/hme/hre header vectors.
+
 * Fri Jun  8 2001 Jeff Johnson <jbj@redhat.com>
 - fix: QUERY_FOR_LIST file count clobbered.
 - create top level rpmcli API, factor top level modes into popt tables.
