@@ -177,6 +177,7 @@
 	- fix: short aliases broken (#49213).
 	- python: "seal" immutable region for legacy headers in rhnUnload() .
 	- python: add poptmodule.so bindings.
+	- fix: %dev(...) needs to map rdev and mtime from metadata.
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
