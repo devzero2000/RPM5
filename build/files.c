@@ -13,7 +13,6 @@
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
-#include <rpmmacro.h>
 
 #include "buildio.h"
 
@@ -69,9 +68,9 @@ typedef struct FileListRec_s {
 /*@only@*/ const char * fileURL;	/* filename in cpio archive */
 /*@observer@*/ const char * uname;
 /*@observer@*/ const char * gname;
-    int		flags;
+    unsigned	flags;
     specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
-    int		verifyFlags;
+    unsigned	verifyFlags;
 /*@only@*/ const char *langs;	/* XXX locales separated with | */
 } * FileListRec;
 
@@ -88,6 +87,7 @@ typedef struct AttrRec_s {
 
 /**
  */
+/*@unchecked@*/
 static int multiLib = 0;	/* MULTILIB */
 
 /**
@@ -177,6 +177,7 @@ static void dupAttrRec(const AttrRec oar, /*@in@*/ /*@out@*/ AttrRec nar)
 /**
  */
 static void dumpAttrRec(const char * msg, AttrRec ar)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     if (msg)
@@ -211,6 +212,7 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 /**
  */
 static char *strtokWithQuotes(char *s, char *delim)
+	/*@modifies *s @*/
 {
     static char *olds = NULL;
     char *token;
@@ -245,12 +247,16 @@ static char *strtokWithQuotes(char *s, char *delim)
 	olds = s+1;
     }
 
+    /*@-retalias -temptrans @*/
     return token;
+    /*@=retalias =temptrans @*/
 }
 
 /**
  */
-static void timeCheck(int tc, Header h)	/*@modifies internalState @*/
+static void timeCheck(int tc, Header h)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -260,8 +266,8 @@ static void timeCheck(int tc, Header h)	/*@modifies internalState @*/
     int count, x;
     time_t currentTime = time(NULL);
 
-    (void) hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
-    (void) hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
+    x = hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
+    x = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
     
     for (x = 0; x < count; x++) {
 	if ((currentTime - mtime[x]) > tc)
@@ -280,6 +286,7 @@ typedef struct VFA {
 /**
  */
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 VFA_t verifyAttrs[] = {
     { "md5",	RPMVERIFY_MD5 },
     { "size",	RPMVERIFY_FILESIZE },
@@ -361,7 +368,7 @@ static int parseForVerify(char * buf, FileList fl)
 	{   VFA_t *vfa;
 	    for (vfa = verifyAttrs; vfa->attribute != NULL; vfa++) {
 		if (strcmp(p, vfa->attribute))
-		    continue;
+		    /*@innercontinue@*/ continue;
 		verifyFlags |= vfa->flag;
 		/*@innerbreak@*/ break;
 	    }
@@ -746,7 +753,7 @@ static int parseForLang(char * buf, FileList fl)
 	if (fl->currentLangs != NULL)
 	for (i = 0; i < fl->nLangs; i++) {
 	    if (strncmp(fl->currentLangs[i], p, np))
-		continue;
+		/*@innercontinue@*/ continue;
 	    rpmError(RPMERR_BADSPEC, _("Duplicate locale %.*s in %%lang(%s)\n"),
 		(int)np, p, q);
 	    fl->processingFailed = 1;
@@ -774,7 +781,8 @@ static int parseForLang(char * buf, FileList fl)
 /**
  */
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
-	/*@modifies *lang @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *lang, rpmGlobalMacroContext @*/
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -816,7 +824,9 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 
 /**
  */
-static int parseForRegexMultiLib(const char *fileName)	/*@*/
+static int parseForRegexMultiLib(const char *fileName)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -847,6 +857,7 @@ static int parseForRegexMultiLib(const char *fileName)	/*@*/
 /**
  */
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	RPMFILE_DOC },
@@ -873,11 +884,12 @@ VFA_t virtualFileAttributes[] = {
  */
 static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 			  FileList fl, /*@out@*/ const char ** fileName)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
 		fl->currentFlags,
 		fl->docDirs, fl->docDirCount, fl->isDir,
 		fl->passedSpecialDoc, fl->isSpecialDoc,
-		pkg->specialDoc @*/
+		pkg->specialDoc, rpmGlobalMacroContext @*/
 {
     char *s, *t;
     int res, specialDoc = 0;
@@ -910,7 +922,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
     {	VFA_t *vfa;
 	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
 	    if (strcmp(s, vfa->attribute))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (!vfa->flag) {
 		if (!strcmp(s, "%dir"))
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
@@ -933,6 +945,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    res = 1;
 	}
 
+	/*@-branchstate@*/
 	if (*s != '/') {
 	    if (fl->currentFlags & RPMFILE_DOC) {
 		specialDoc = 1;
@@ -948,6 +961,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	} else {
 	    *fileName = s;
 	}
+	/*@=branchstate@*/
     }
 
     if (specialDoc) {
@@ -1037,13 +1051,13 @@ static int checkHardLinks(FileList fl)
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
 	    if (!S_ISREG(jlp->fl_mode))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_nlink != jlp->fl_nlink)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_ino != jlp->fl_ino)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_dev != jlp->fl_dev)
-		continue;
+		/*@innercontinue@*/ continue;
 	    return 1;
 	}
     }
@@ -1057,7 +1071,10 @@ static int checkHardLinks(FileList fl)
  */
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		TFI_t * cpioList, Header h, int isSrc)
-	/*@modifies h, *cpioList, fl->processingFailed, fl->fileList @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
+	/*@modifies h, *cpioList, fl->processingFailed, fl->fileList,
+		rpmGlobalMacroContext, fileSystem @*/
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
     uint_32 multiLibMask = 0;
@@ -1153,6 +1170,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->fileURL), 1);
 
+/*@-sizeoftype@*/
       if (sizeof(flp->fl_size) != sizeof(uint_32)) {
 	uint_32 psize = (uint_32)flp->fl_size;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
@@ -1197,15 +1215,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(flp->fl_dev), 1);
       }
-
       if (sizeof(flp->fl_ino) != sizeof(uint_32)) {
 	uint_32 ino = (uint_32)flp->fl_ino;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-			       &(ino), 1);
+				&(ino), 1);
       } else {
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-			       &(flp->fl_ino), 1);
+				&(flp->fl_ino), 1);
       }
+/*@=sizeoftype@*/
 
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
 			       &(flp->langs),  1);
@@ -1219,7 +1237,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    (void) mdfile(flp->diskURL, buf);
+	    (void) domd5(flp->diskURL, buf, 1);
 	s = buf;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
@@ -1284,7 +1302,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
 
-  { TFI_t fi = xcalloc(sizeof(*fi), 1);
+  { TFI_t fi = xcalloc(1, sizeof(*fi));
     char * a, * d;
 
     fi->type = TR_ADDED;
@@ -1297,7 +1315,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     *d = '\0';
 
     fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
+    /*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
     fi->dil = (int *)(fi->bnl + fi->fc);
+    /*@=dependenttrans@*/
 
     fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen);
     a = (char *)(fi->apath + fi->fc);
@@ -1325,7 +1345,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
+	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
+	/*@=dependenttrans@*/
 	d = stpcpy(d, flp->diskURL);
 
 	/* Make room for the dirName NUL, find start of baseName. */
@@ -1361,10 +1383,12 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    fi->fmapflags[i] |= CPIO_MULTILIB;
 
     }
+    /*@-branchstate@*/
     if (cpioList)
 	*cpioList = fi;
     else
 	fi = _free(fi);
+    /*@=branchstate@*/
   }
 }
 
@@ -1387,9 +1411,12 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
  * @param fl		package file tree walk data
  */
 static int addFile(FileList fl, const char * diskURL, struct stat * statp)
-	/*@modifies *statp, fl->processingFailed,
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
-		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir @*/
+		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
+		rpmGlobalMacroContext, fileSystem @*/
 {
     const char *fileURL = diskURL;
     struct stat statbuf;
@@ -1418,8 +1445,10 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
     }
 
     /* XXX make sure '/' can be packaged also */
+    /*@-branchstate@*/
     if (*fileURL == '\0')
 	fileURL = "/";
+    /*@=branchstate@*/
 
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
@@ -1598,9 +1627,12 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
  */
 static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
-	/*@modifies fl->processingFailed,
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
-		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir @*/
+		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
+		rpmGlobalMacroContext, fileSystem @*/
 {
     int doGlob;
     const char *diskURL = NULL;
@@ -1641,6 +1673,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	    goto exit;
 	}
 
+	/*@-branchstate@*/
 	rc = rpmGlob(diskURL, &argc, &argv);
 	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
 	    for (i = 0; i < argc; i++) {
@@ -1653,6 +1686,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 			diskURL);
 	    rc = 1;
 	}
+	/*@=branchstate@*/
     } else {
 	rc = addFile(fl, diskURL, NULL);
     }
@@ -1668,8 +1702,11 @@ exit:
  */
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
 	/*@modifies spec->macros,
-		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header */
+		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     struct FileList_s fl;
@@ -1839,6 +1876,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fileName == NULL)
 	    continue;
 
+	/*@-branchstate@*/
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
 	    specialDoc = _free(specialDoc);
@@ -1849,6 +1887,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    (void) processBinaryFile(pkg, &fl, fileName);
 	    /*@=nullstate@*/
 	}
+	/*@=branchstate@*/
     }
 
     /* Now process special doc, if there is one */
@@ -1934,6 +1973,7 @@ void initSourceHeader(Spec spec)
 
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
+    /*@-branchstate@*/
     for (hi = headerInitIterator(spec->packages->header);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
@@ -1960,15 +2000,17 @@ void initSourceHeader(Spec spec)
 	case HEADER_I18NTABLE:
 	    if (ptr)
 		(void)headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    /* do not copy */
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     hi = headerFreeIterator(hi);
+    /*@=branchstate@*/
 
     /* Add the build restrictions */
+    /*@-branchstate@*/
     for (hi = headerInitIterator(spec->buildRestrictions);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
@@ -1977,6 +2019,7 @@ void initSourceHeader(Spec spec)
 	    (void) headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
     }
     hi = headerFreeIterator(hi);
+    /*@=branchstate@*/
 
     if (spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
@@ -2125,7 +2168,8 @@ int processSourceFiles(Spec spec)
 static StringBuf getOutputFrom(char * dir, char * argv[],
 			const char * writePtr, int writeBytesLeft,
 			int failNonZero)
-	/*@*/
+	/*@globals fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState@*/
 {
     int progPID;
     int toProg[2];
@@ -2135,7 +2179,9 @@ static StringBuf getOutputFrom(char * dir, char * argv[],
     StringBuf readBuff;
     int done;
 
+    /*@-type@*/ /* FIX: cast? */
     oldhandler = signal(SIGPIPE, SIG_IGN);
+    /*@=type@*/
 
     toProg[0] = toProg[1] = 0;
     (void) pipe(toProg);
@@ -2240,7 +2286,9 @@ top:
     	(void) close(toProg[1]);
     if (fromProg[0] >= 0)
 	(void) close(fromProg[0]);
+    /*@-type@*/ /* FIX: cast? */
     (void) signal(SIGPIPE, oldhandler);
+    /*@=type@*/
 
     /* Collect status from prog */
     (void)waitpid(progPID, &status, 0);
@@ -2270,6 +2318,7 @@ typedef struct {
 /**
  */
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 DepMsg_t depMsgs[] = {
   { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
@@ -2314,7 +2363,10 @@ DepMsg_t depMsgs[] = {
 /**
  */
 static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
-	/*@modifies cpioList @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies cpioList, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     TFI_t fi = cpioList;
     StringBuf writeBuf;
@@ -2359,16 +2411,16 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 		continue;
 	    failnonzero = 1;
 	    tagflags = RPMSENSE_FIND_PROVIDES;
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPMTAG_REQUIREFLAGS:
 	    if (!pkg->autoReq)
 		continue;
 	    failnonzero = 0;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    continue;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
 	/* Get the script name to run */
@@ -2434,7 +2486,7 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
  */
 static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
 		const char ** versions, int *flags)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     int hasVersions = (versions != NULL);
     int hasFlags = (flags != NULL);
@@ -2475,7 +2527,7 @@ static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
 /**
  */
 static void printDeps(Header h)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -2485,43 +2537,45 @@ static void printDeps(Header h)
     rpmTagType dvt = -1;
     int * flags = NULL;
     DepMsg_t * dm;
-    int count;
+    int count, xx;
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {
 	switch (dm->ntag) {
 	case 0:
 	    names = hfd(names, dnt);
-	    break;
+	    /*@switchbreak@*/ break;
 	case -1:
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    names = hfd(names, dnt);
 	    if (!hge(h, dm->ntag, &dnt, (void **) &names, &count))
 		continue;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	switch (dm->vtag) {
 	case 0:
 	    versions = hfd(versions, dvt);
-	    break;
+	    /*@switchbreak@*/ break;
 	case -1:
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    versions = hfd(versions, dvt);
-	    (void) hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
-	    break;
+	    xx = hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
+	    /*@switchbreak@*/ break;
 	}
 	switch (dm->ftag) {
 	case 0:
 	    flags = NULL;
-	    break;
+	    /*@switchbreak@*/ break;
 	case -1:
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
-	    (void) hge(h, dm->ftag, NULL, (void **) &flags, NULL);
-	    break;
+	    xx = hge(h, dm->ftag, NULL, (void **) &flags, NULL);
+	    /*@switchbreak@*/ break;
 	}
+	/*@-noeffect@*/
 	printDepMsg(dm, count, names, versions, flags);
+	/*@=noeffect@*/
     }
     names = hfd(names, dnt);
     versions = hfd(versions, dvt);
@@ -2554,7 +2608,9 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	    (void) generateDepends(spec, pkg, pkg->cpioList, 2);
 	} else
 	    (void) generateDepends(spec, pkg, pkg->cpioList, 0);
+	/*@-noeffect@*/
 	printDeps(pkg->header);
+	/*@=noeffect@*/
     }
 
     return res;

@@ -179,7 +179,6 @@ char *alloca ();
 # endif
 #endif
 
-#include <ctype.h>
 #if defined (__GLIBC__) && defined(__LCLINT__)
 /*@-declundef@*/
 /*@unchecked@*/
@@ -187,6 +186,7 @@ extern __const __int32_t *__ctype_tolower;
 /*@unchecked@*/
 extern __const __int32_t *__ctype_toupper;
 /*@=declundef@*/
+#include <ctype.h>
 
 /*@-exportlocal@*/
 extern int isalnum(int) __THROW	/*@*/;

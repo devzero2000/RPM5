@@ -8,6 +8,11 @@
 
 #include "cpio.h"
 
+/*@-exportlocal@*/
+/*@unchecked@*/
+extern int _fsm_debug;
+/*@=exportlocal@*/
+
 /**
  */
 #define	FSM_VERBOSE	0x8000

@@ -65,7 +65,7 @@ typedef struct _FDDIGEST_s {
  * @param ctx		existing digest context
  * @return		duplicated digest context
  */
-/*@only@*/
+/*@only@*/ /*@unused@*/
 DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
 	/*@*/;
 

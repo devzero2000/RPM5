@@ -9,6 +9,7 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
 struct rpmSignArguments_s rpmKArgs =
 	{ RESIGN_NONE, CHECKSIG_ALL, 0, NULL };
 
@@ -45,6 +46,7 @@ static void signArgCallback( /*@unused@*/ poptContext con,
 
 /**
  */
+/*@unchecked@*/
 struct poptOption rpmSignPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	signArgCallback, 0, NULL, NULL },

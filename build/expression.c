@@ -41,10 +41,11 @@ typedef struct _value {
 /**
  */
 static Value valueMakeInteger(int i)
+	/*@*/
 {
   Value v;
 
-  v = (Value) xmalloc(sizeof(struct _value));
+  v = (Value) xmalloc(sizeof(*v));
   v->type = VALUE_TYPE_INTEGER;
   v->data.i = i;
   return v;
@@ -53,10 +54,11 @@ static Value valueMakeInteger(int i)
 /**
  */
 static Value valueMakeString(/*@only@*/ const char *s)
+	/*@*/
 {
   Value v;
 
-  v = (Value) xmalloc(sizeof(struct _value));
+  v = (Value) xmalloc(sizeof(*v));
   v->type = VALUE_TYPE_STRING;
   v->data.s = s;
   return v;
@@ -65,6 +67,7 @@ static Value valueMakeString(/*@only@*/ const char *s)
 /**
  */
 static void valueFree( /*@only@*/ Value v)
+	/*@modifies v @*/
 {
   if (v) {
     if (v->type == VALUE_TYPE_STRING)
@@ -75,6 +78,7 @@ static void valueFree( /*@only@*/ Value v)
 
 #ifdef DEBUG_PARSER
 static void valueDump(const char *msg, Value v, FILE *fp)
+	/*@*/
 {
   if (msg)
     fprintf(fp, "%s ", msg);
@@ -162,6 +166,7 @@ ETTE_t exprTokTable[] = {
 };
 
 static const char *prToken(int val)
+	/*@*/
 {
     ETTE_t *et;
     
@@ -177,6 +182,9 @@ static const char *prToken(int val)
  * @param state		expression parser state
  */
 static int rdToken(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   int token;
   Value v = NULL;
@@ -310,17 +318,24 @@ static int rdToken(ParseState state)
   return 0;
 }
 
-static Value doLogical(ParseState state);
+static Value doLogical(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/;
 
 /**
  * @param state		expression parser state
  */
 static Value doPrimary(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v;
 
   DEBUG(printf("doPrimary()\n"));
 
+  /*@-branchstate@*/
   switch (state->nextToken) {
   case TOK_OPEN_P:
     if (rdToken(state))
@@ -383,6 +398,7 @@ static Value doPrimary(ParseState state)
     return NULL;
     /*@notreached@*/ break;
   }
+  /*@=branchstate@*/
 
   DEBUG(valueDump("doPrimary:", v, stdout));
   return v;
@@ -392,6 +408,9 @@ static Value doPrimary(ParseState state)
  * @param state		expression parser state
  */
 static Value doMultiplyDivide(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 
@@ -401,6 +420,7 @@ static Value doMultiplyDivide(ParseState state)
   if (v1 == NULL)
     return NULL;
 
+  /*@-branchstate@*/
   while (state->nextToken == TOK_MULTIPLY
 	 || state->nextToken == TOK_DIVIDE) {
     int op = state->nextToken;
@@ -432,6 +452,7 @@ static Value doMultiplyDivide(ParseState state)
       return NULL;
     }
   }
+  /*@=branchstate@*/
 
   if (v2) valueFree(v2);
   return v1;
@@ -441,6 +462,9 @@ static Value doMultiplyDivide(ParseState state)
  * @param state		expression parser state
  */
 static Value doAddSubtract(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 
@@ -450,6 +474,7 @@ static Value doAddSubtract(ParseState state)
   if (v1 == NULL)
     return NULL;
 
+  /*@-branchstate@*/
   while (state->nextToken == TOK_ADD || state->nextToken == TOK_MINUS) {
     int op = state->nextToken;
 
@@ -490,6 +515,7 @@ static Value doAddSubtract(ParseState state)
       v1 = valueMakeString(copy);
     }
   }
+  /*@=branchstate@*/
 
   if (v2) valueFree(v2);
   return v1;
@@ -499,6 +525,9 @@ static Value doAddSubtract(ParseState state)
  * @param state		expression parser state
  */
 static Value doRelational(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 
@@ -508,6 +537,7 @@ static Value doRelational(ParseState state)
   if (v1 == NULL)
     return NULL;
 
+  /*@-branchstate@*/
   while (state->nextToken >= TOK_EQ && state->nextToken <= TOK_GE) {
     int op = state->nextToken;
 
@@ -530,24 +560,24 @@ static Value doRelational(ParseState state)
       switch (op) {
       case TOK_EQ:
 	r = (i1 == i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_NEQ:
 	r = (i1 != i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_LT:
 	r = (i1 < i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_LE:
 	r = (i1 <= i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_GT:
 	r = (i1 > i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_GE:
 	r = (i1 >= i2);
-	break;
+	/*@switchbreak@*/ break;
       default:
-	break;
+	/*@switchbreak@*/ break;
       }
       valueFree(v1);
       v1 = valueMakeInteger(r);
@@ -558,29 +588,30 @@ static Value doRelational(ParseState state)
       switch (op) {
       case TOK_EQ:
 	r = (strcmp(s1,s2) == 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_NEQ:
 	r = (strcmp(s1,s2) != 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_LT:
 	r = (strcmp(s1,s2) < 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_LE:
 	r = (strcmp(s1,s2) <= 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_GT:
 	r = (strcmp(s1,s2) > 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_GE:
 	r = (strcmp(s1,s2) >= 0);
-	break;
+	/*@switchbreak@*/ break;
       default:
-	break;
+	/*@switchbreak@*/ break;
       }
       valueFree(v1);
       v1 = valueMakeInteger(r);
     }
   }
+  /*@=branchstate@*/
 
   if (v2) valueFree(v2);
   return v1;
@@ -590,6 +621,9 @@ static Value doRelational(ParseState state)
  * @param state		expression parser state
  */
 static Value doLogical(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 
@@ -599,6 +633,7 @@ static Value doLogical(ParseState state)
   if (v1 == NULL)
     return NULL;
 
+  /*@-branchstate@*/
   while (state->nextToken == TOK_LOGICAL_AND
 	 || state->nextToken == TOK_LOGICAL_OR) {
     int op = state->nextToken;
@@ -630,6 +665,7 @@ static Value doLogical(ParseState state)
       return NULL;
     }
   }
+  /*@=branchstate@*/
 
   if (v2) valueFree(v2);
   return v1;
@@ -713,6 +749,7 @@ char * parseExpressionString(Spec spec, const char *expr)
 
   DEBUG(valueDump("parseExprString:", v, stdout));
 
+  /*@-branchstate@*/
   switch (v->type) {
   case VALUE_TYPE_INTEGER: {
     char buf[128];
@@ -725,6 +762,7 @@ char * parseExpressionString(Spec spec, const char *expr)
   default:
     break;
   }
+  /*@=branchstate@*/
 
   state.str = _free(state.str);
   valueFree(v);

@@ -10,22 +10,20 @@
  */
 typedef struct SpecStruct *Spec;
 
-#include "rpmmacro.h"
-
 /** \ingroup rpmbuild
  */
 struct TriggerFileEntry {
     int index;
-/*@only@*/ char *fileName;
-/*@only@*/ char *script;
-/*@only@*/ char *prog;
-/*@owned@*/ struct TriggerFileEntry *next;
+/*@only@*/ char * fileName;
+/*@only@*/ char * script;
+/*@only@*/ char * prog;
+/*@owned@*/ struct TriggerFileEntry * next;
 };
 
-#define RPMBUILD_ISSOURCE     1
-#define RPMBUILD_ISPATCH     (1 << 1)
-#define RPMBUILD_ISICON      (1 << 2)
-#define RPMBUILD_ISNO        (1 << 3)
+#define RPMBUILD_ISSOURCE	(1 << 0)
+#define RPMBUILD_ISPATCH	(1 << 1)
+#define RPMBUILD_ISICON		(1 << 2)
+#define RPMBUILD_ISNO		(1 << 3)
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
@@ -44,7 +42,8 @@ struct Source {
 /*@-typeuse@*/
 typedef struct ReadLevelEntry {
     int reading;
-/*@dependent@*/ struct ReadLevelEntry * next;
+/*@dependent@*/
+    struct ReadLevelEntry * next;
 } RLE_t;
 /*@=typeuse@*/
 
@@ -55,8 +54,10 @@ typedef struct OpenFileInfo {
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
-/*@dependent@*/ char *readPtr;
-/*@owned@*/ struct OpenFileInfo * next;
+/*@dependent@*/
+    char * readPtr;
+/*@owned@*/
+    struct OpenFileInfo * next;
 } OFI_t;
 
 /** \ingroup rpmbuild
@@ -126,8 +127,10 @@ struct SpecStruct {
     int numSources;
     int noSource;
 
-/*@refcounted@*/ Header sourceHeader;
-/*@owned@*/ void * sourceCpioList;
+/*@refcounted@*/
+    Header sourceHeader;
+/*@owned@*/
+    void * sourceCpioList;
 
 /*@dependent@*/ /*@null@*/ MacroContext macros;
 
@@ -143,9 +146,11 @@ struct SpecStruct {
  * The structure used to store values for a package.
  */
 struct PackageStruct {
-/*@refcounted@*/ Header header;
+/*@refcounted@*/
+    Header header;
 
-/*@owned@*/ void * cpioList;
+/*@owned@*/
+    void * cpioList;
 
 /*@owned@*/ struct Source * icon;
 
@@ -180,7 +185,9 @@ extern "C" {
  * Create and initialize Spec structure.
  * @return spec		spec file control structure
  */
-/*@only@*/ Spec newSpec(void)	/*@*/;
+/*@only@*/ Spec newSpec(void)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
  * Destroy Spec structure.
@@ -188,7 +195,8 @@ extern "C" {
  * @return		NULL always
  */
 /*@null@*/ Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
-	/*@modifies spec @*/;
+	/*@globals fileSystem @*/
+	/*@modifies spec, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
@@ -196,7 +204,8 @@ extern "C" {
  */
 /*@-declundef@*/
 extern /*@null@*/ Spec (*freeSpecVec) (Spec spec)	/* XXX FIXME */
-	/*@modifies spec @*/;
+	/*@globals fileSystem @*/
+	/*@modifies spec, fileSystem @*/;
 /*@=declundef@*/
 
 /** \ingroup rpmbuild
@@ -213,9 +222,11 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
  * @param spec		spec file control structure
  */
 int addSource(Spec spec, Package pkg, const char * field, int tag)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
-		pkg->icon @*/;
+		pkg->icon,
+		rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure

@@ -17,7 +17,10 @@
 /**
  */
 static int checkSpec(Header h)
-	/*@modifies h, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const char * rootdir = NULL;
     rpmdb db = NULL;
@@ -64,6 +67,7 @@ static int checkSpec(Header h)
 /**
  */
 static int isSpecFile(const char * specfile)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     char buf[256];
@@ -87,13 +91,13 @@ static int isSpecFile(const char * specfile)
 	case '\r':
 	case '\n':
 	    checking = 1;
-	    break;
+	    /*@switchbreak@*/ break;
 	case ':':
 	    checking = 0;
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    if (checking && !(isprint(*s) || isspace(*s))) return 0;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     return 1;
@@ -103,7 +107,10 @@ static int isSpecFile(const char * specfile)
  */
 static int buildForTarget(const char * arg, BTA_t ba,
 		const char * passPhrase, char * cookie)
-	/*@modifies fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     int buildAmount = ba->buildAmount;
     const char * buildRootURL = NULL;
@@ -118,9 +125,12 @@ static int buildForTarget(const char * arg, BTA_t ba,
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 #endif
 
+    /*@-branchstate@*/
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
+    /*@=branchstate@*/
 
+    /*@-compmempass@*/ /* FIX: static zcmds heartburn */
     if (ba->buildMode == 't') {
 	FILE *fp;
 	const char * specDir;
@@ -220,6 +230,7 @@ static int buildForTarget(const char * arg, BTA_t ba,
     } else {
 	specURL = arg;
     }
+    /*@=compmempass@*/
 
     specut = urlPath(specURL, &specFile);
     if (*specFile != '/') {
@@ -332,5 +343,6 @@ exit:
     /* Restore original configuration. */
     rpmFreeMacros(NULL);
     (void) rpmReadConfigFiles(rcfile, NULL);
+
     return rc;
 }

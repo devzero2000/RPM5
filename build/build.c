@@ -10,6 +10,7 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
 static int _build_debug = 0;
 
 /*@access StringBuf @*/
@@ -19,19 +20,22 @@ static int _build_debug = 0;
 /**
  */
 static void doRmSource(Spec spec)
-	/*@modifies fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/
 {
     struct Source *p;
     Package pkg;
+    int rc;
     
 #if 0
-    Unlink(spec->specFile);
+    rc = Unlink(spec->specFile);
 #endif
 
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	    (void) Unlink(fn);
+	    rc = Unlink(fn);
 	    fn = _free(fn);
 	}
     }
@@ -40,7 +44,7 @@ static void doRmSource(Spec spec)
 	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-		(void) Unlink(fn);
+		rc = Unlink(fn);
 		fn = _free(fn);
 	    }
 	}
@@ -73,42 +77,44 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     int status;
     int rc;
     
+    /*@-branchstate@*/
     switch (what) {
-      case RPMBUILD_PREP:
+    case RPMBUILD_PREP:
 	name = "%prep";
 	sb = spec->prep;
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
 	break;
-      case RPMBUILD_BUILD:
+    case RPMBUILD_BUILD:
 	name = "%build";
 	sb = spec->build;
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
 	break;
-      case RPMBUILD_INSTALL:
+    case RPMBUILD_INSTALL:
 	name = "%install";
 	sb = spec->install;
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
 	break;
-      case RPMBUILD_CLEAN:
+    case RPMBUILD_CLEAN:
 	name = "%clean";
 	sb = spec->clean;
 	mTemplate = "%{__spec_clean_template}";
 	mPost = "%{__spec_clean_post}";
 	break;
-      case RPMBUILD_RMBUILD:
+    case RPMBUILD_RMBUILD:
 	name = "--clean";
 	mTemplate = "%{__spec_clean_template}";
 	mPost = "%{__spec_clean_post}";
 	break;
-      case RPMBUILD_STRINGBUF:
-      default:
+    case RPMBUILD_STRINGBUF:
+    default:
 	mTemplate = "%{___build_template}";
 	mPost = "%{___build_post}";
 	break;
     }
+    /*@=branchstate@*/
 
     if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
 	rc = 0;
@@ -132,17 +138,24 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     }
 #endif
 
+    /*@-branchstate@*/
     if (fdGetFp(fd) == NULL)
 	xfd = Fdopen(fd, "w.fpio");
     else
 	xfd = fd;
+    /*@=branchstate@*/
+
+    /*@-type@*/ /* FIX: cast? */
     if ((fp = fdGetFp(xfd)) == NULL) {
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }
+    /*@=type@*/
     
     (void) urlPath(rootURL, &rootDir);
+    /*@-branchstate@*/
     if (*rootDir == '\0') rootDir = "/";
+    /*@=branchstate@*/
 
     (void) urlPath(scriptName, &buildScript);
 
@@ -198,7 +211,9 @@ fprintf(stderr, "*** addMacros\n");
     rpmMessage(RPMMESS_NORMAL, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
 
+	/*@-mods@*/
 	errno = 0;
+	/*@=mods@*/
 	(void) execvp(argv[0], (char *const *)argv);
 
 	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s\n"),

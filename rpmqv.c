@@ -75,32 +75,39 @@ enum modes {
 #define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
 
 /*@-exportheadervar@*/
+/*@unchecked@*/
 extern int _ftp_debug;
+/*@unchecked@*/
 extern int noLibio;
+/*@unchecked@*/
 extern int _rpmio_debug;
+/*@-redecl@*/
+/*@unchecked@*/
 extern int _url_debug;
-
-/*@-varuse@*/
-/*@observer@*/ extern const char * rpmNAME;
-/*@=varuse@*/
-/*@observer@*/ extern const char * rpmEVR;
-/*@-varuse@*/
-extern int rpmFLAGS;
-/*@=varuse@*/
+/*@=redecl@*/
 
 /*@=exportheadervar@*/
 
 /* options for all executables */
 
+/*@unchecked@*/
 static int help = 0;
+/*@unchecked@*/
 static int noUsageMsg = 0;
-/*@observer@*/ /*@null@*/ static const char * pipeOutput = NULL;
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+static const char * pipeOutput = NULL;
+/*@unchecked@*/
 static int quiet = 0;
-/*@observer@*/ /*@null@*/ static const char * rcfile = NULL;
-/*@observer@*/ /*@null@*/ static char * rootdir = "/";
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+static const char * rcfile = NULL;
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+static char * rootdir = "/";
+/*@unchecked@*/
 static int showrc = 0;
+/*@unchecked@*/
 static int showVersion = 0;
 
+/*@unchecked@*/
 static struct poptOption rpmAllPoptTable[] = {
  { "version", '\0', 0, &showVersion, 0,
 	N_("print the version of rpm being used"),
@@ -152,6 +159,7 @@ static struct poptOption rpmAllPoptTable[] = {
 };
 
 /* the structure describing the options we take and the defaults */
+/*@unchecked@*/
 static struct poptOption optionsTable[] = {
 
  /* XXX colliding options */
@@ -211,6 +219,7 @@ long _stksize = 64 * 1024L;
 #endif
 
 /*@exits@*/ static void argerror(const char * desc)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     fprintf(stderr, _("%s: %s\n"), __progname, desc);
@@ -218,12 +227,14 @@ long _stksize = 64 * 1024L;
 }
 
 static void printVersion(void)
+	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     fprintf(stdout, _("RPM version %s\n"), rpmEVR);
 }
 
 static void printBanner(void)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     (void) puts(_("Copyright (C) 1998-2000 - Red Hat, Inc."));
@@ -231,6 +242,7 @@ static void printBanner(void)
 }
 
 static void printUsage(void)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     FILE * fp = stdout;

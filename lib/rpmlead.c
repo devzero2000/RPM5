@@ -8,9 +8,7 @@
 # include <machine/types.h>
 #endif
 
-#if !defined(__LCLINT__)
 #include <netinet/in.h>
-#endif	/* __LCLINT__ */
 
 #include <rpmlib.h>
 
@@ -19,7 +17,7 @@
 
 /* The lead needs to be 8 byte aligned */
 
-int writeLead(FD_t fd, struct rpmlead *lead)
+int writeLead(FD_t fd, const struct rpmlead *lead)
 {
     struct rpmlead l;
 
@@ -35,9 +33,11 @@ int writeLead(FD_t fd, struct rpmlead *lead)
     l.osnum = htons(l.osnum);
     l.signature_type = htons(l.signature_type);
 	
+    /*@-sizeoftype@*/
     if (Fwrite(&l, sizeof(char), sizeof(l), fd) != sizeof(l)) {
 	return 1;
     }
+    /*@=sizeoftype@*/
 
     return 0;
 }
@@ -45,11 +45,13 @@ int writeLead(FD_t fd, struct rpmlead *lead)
 int readLead(FD_t fd, struct rpmlead *lead)
 {
     memset(lead, 0, sizeof(*lead));
+    /*@-type@*/ /* FIX: remove timed read */
     if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
 	rpmError(RPMERR_READ, _("read failed: %s (%d)\n"), Fstrerror(fd), 
 	      errno);
 	return 1;
     }
+    /*@=type@*/
 
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);

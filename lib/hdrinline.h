@@ -1,3 +1,4 @@
+/*@-type@*/ /* FIX: cast to HV_t bogus */
 #ifndef H_HDRINLINE
 #define H_HDRINLINE
 
@@ -13,11 +14,13 @@ extern "C" {
 /** \ingroup header
  * Header methods for rpm headers.
  */
+/*@observer@*/ /*@unchecked@*/
 extern struct HV_s * hdrVec;
 
 /** \ingroup header
  */
 /*@unused@*/ static inline HV_t h2hv(Header h)
+	/*@*/
 {
     /*@-abstract -castexpose -refcounttrans@*/
     return ((HV_t)h);
@@ -53,7 +56,7 @@ Header headerNew(void)
 /** \ingroup header
  * Reference a header instance.
  * @param h		header
- * @return		referenced header instance
+ * @return		new header reference
  */
 /*@unused@*/ static inline
 Header headerLink(Header h)
@@ -71,7 +74,9 @@ Header headerLink(Header h)
 void headerSort(Header h)
 	/*@modifies h @*/
 {
+/*@-noeffectuncon@*/ /* FIX: add rc */
     (h2hv(h)->hdrsort) (h);
+/*@=noeffectuncon@*/
     return;
 }
 
@@ -83,7 +88,9 @@ void headerSort(Header h)
 void headerUnsort(Header h)
 	/*@modifies h @*/
 {
+/*@-noeffectuncon@*/ /* FIX: add rc */
     (h2hv(h)->hdrunsort) (h);
+/*@=noeffectuncon@*/
     return;
 }
 /*@=exportlocal@*/
@@ -176,7 +183,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  */
 /*@unused@*/ static inline
 /*@null@*/ Header headerRead(FD_t fd, enum hMagic magicp)
-	/*@modifies fd, fileSystem @*/
+	/*@modifies fd @*/
 {
     return hdrVec->hdrread(fd, magicp);
 }
@@ -190,7 +197,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  */
 /*@unused@*/ static inline
 int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
-	/*@modifies fd, h, fileSystem @*/
+	/*@modifies fd, h @*/
 {
     /*@-abstract@*/
     if (h == NULL) return 0;
@@ -404,19 +411,19 @@ int headerRemoveEntry(Header h, int_32 tag)
  *
  * @param h		header
  * @param fmt		format to use
- * @param tags		array of tag name/value pairs
+ * @param tbltags	array of tag name/value pairs
  * @param extensions	chained table of formatting extensions.
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 /*@unused@*/ static inline
 /*@only@*/ char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tags,
+		     const struct headerTagTableEntry_s * tbltags,
 		     const struct headerSprintfExtension_s * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/
 {
-    return (h2hv(h)->hdrsprintf) (h, fmt, tags, extensions, errmsg);
+    return (h2hv(h)->hdrsprintf) (h, fmt, tbltags, extensions, errmsg);
 }
 
 /** \ingroup header
@@ -429,7 +436,9 @@ int headerRemoveEntry(Header h, int_32 tag)
 void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	/*@modifies headerFrom, headerTo @*/
 {
+/*@-noeffectuncon@*/ /* FIX: add rc */
     hdrVec->hdrcopytags(headerFrom, headerTo, tagstocopy);
+/*@=noeffectuncon@*/
     return;
 }
 
@@ -484,3 +493,4 @@ int headerNextIterator(HeaderIterator hi,
 #endif
 
 #endif	/* H_HDRINLINE */
+/*@=type@*/

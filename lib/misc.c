@@ -17,10 +17,8 @@ static int _debug = 0;
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
-/*@-exportheadervar@*/
 /* just to put a marker in librpm.a */
-/*@unused@*/ /*@observer@*/ char * RPMVERSION = VERSION;
-/*@=exportheadervar@*/
+const char * RPMVERSION = VERSION;
 
 char ** splitString(const char * str, int length, char sep)
 {
@@ -40,7 +38,7 @@ char ** splitString(const char * str, int length, char sep)
 
     *dest = '\0';
 
-    list = xmalloc(sizeof(char *) * (fields + 1));
+    list = xmalloc(sizeof(*list) * (fields + 1));
 
     dest = s;
     list[0] = dest;
@@ -66,6 +64,7 @@ void freeSplitString(char ** list)
     list = _free(list);
 }
 
+#ifdef	DYING
 int rpmfileexists(const char * urlfn)
 {
     const char *fn;
@@ -94,6 +93,7 @@ int rpmfileexists(const char * urlfn)
 
     return 1;
 }
+#endif
 
 int doputenv(const char *str)
 {
@@ -118,6 +118,8 @@ int dosetenv(const char * name, const char * value, int overwrite)
 }
 
 static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     char * d, * de;
     int created = 0;
@@ -141,9 +143,9 @@ static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 	    switch(errno) {
 	    default:
 		return errno;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case ENOENT:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    rc = mkdir(d, mode);
 	    if (rc)
@@ -175,15 +177,19 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     FD_t fd = NULL;
     int ran;
 
+    /*@-branchstate@*/
     if (!prefix) prefix = "";
+    /*@=branchstate@*/
 
     /* Create the temp directory if it doesn't already exist. */
+    /*@-branchstate@*/
     if (!_initialized) {
 	_initialized = 1;
 	tempfn = rpmGenPath(prefix, tpmacro, NULL);
 	if (rpmMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
 	    goto errxit;
     }
+    /*@=branchstate@*/
 
     /* XXX should probably use mkstemp here */
     srand(time(NULL));
@@ -210,9 +216,9 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	case URL_IS_HTTP:
 	case URL_IS_DASH:
 	    goto errxit;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	fd = Fopen(tempfn, "w+x.ufdio");
@@ -247,10 +253,12 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	break;
     }
 
+    /*@-branchstate@*/
     if (fnptr)
 	*fnptr = tempfn;
     else 
 	tempfn = _free(tempfn);
+    /*@=branchstate@*/
     *fdptr = fd;
 
     return 0;
@@ -381,6 +389,7 @@ exit:
 static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 			    /*@out@*/ int * fileCountPtr, rpmTag baseNameTag,
 			    rpmTag dirNameTag, rpmTag dirIndexesTag)
+	/*@modifies *fileListPtr, *fileCountPtr @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -522,8 +531,10 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	    else
 		argv = xrealloc(argv, (argc+2) * sizeof(*argv));
 	    argv[argc] = xstrdup(av[j]);
+/*@-modfilesys@*/
 if (_debug)
 fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
+/*@=modfilesys@*/
 	    argc++;
 	    continue;
 	}
@@ -553,26 +564,32 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	case URL_IS_PATH:
 	case URL_IS_DASH:
 	    strncpy(globRoot, av[j], nb);
-	    break;
+	    /*@switchbreak@*/ break;
 	case URL_IS_UNKNOWN:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	globRoot += nb;
 	*globRoot = '\0';
+/*@-modfilesys@*/
 if (_debug)
 fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", (int)maxb, (int)nb, (int)nb, av[j], globURL, globURL);
+/*@=modfilesys@*/
 	
+	/*@-branchstate@*/
 	if (argc == 0)
 	    argv = xmalloc((gl.gl_pathc+1) * sizeof(*argv));
 	else if (gl.gl_pathc > 0)
 	    argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
+	/*@=branchstate@*/
 	for (i = 0; i < gl.gl_pathc; i++) {
 	    const char * globFile = &(gl.gl_pathv[i][0]);
 	    if (globRoot > globURL && globRoot[-1] == '/')
 		while (*globFile == '/') globFile++;
 	    strcpy(globRoot, globFile);
+/*@-modfilesys@*/
 if (_debug)
 fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
+/*@=modfilesys@*/
 	    argv[argc++] = xstrdup(globURL);
 	}
 	/*@-immediatetrans@*/
@@ -782,18 +799,18 @@ int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii)
 
     if (fd == NULL || Ferror(fd)) {
 	if (fd)
-	    Fclose(fd);
+	    (void) Fclose(fd);
 	return 1;
     }
 
     fdInitDigest(fd, PGPHASHALGO_MD5, 0);
     while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
-	;
-    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, 1);
+	{};
+    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, asAscii);
 
     if (Ferror(fd))
 	rc = 1;
-    Fclose(fd);
+    (void) Fclose(fd);
 
     if (!rc)
 	memcpy(digest, md5sum, md5len);

@@ -6,22 +6,23 @@
  *
  */
 
-#include <unistd.h>
-#include <sys/types.h>
-
-#include "header.h"
-#include "ugid.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
+ * Split string into fields separated by a character.
+ * @param str		string
+ * @param length	length of string
+ * @param sep		separator character
+ * @return		(malloc'd) argv array
  */
 /*@only@*/ char ** splitString(const char * str, int length, char sep)
 	/*@*/;
 
 /**
+ * Free split string argv array.
+ * @param list		argv array
  */
 void freeSplitString( /*@only@*/ char ** list)
 	/*@modifies list @*/;
@@ -43,24 +44,24 @@ void freeSplitString( /*@only@*/ char ** list)
 }
 
 /**
- */
-int rpmfileexists(const char * urlfn)
-	/*@modifies fileSystem @*/;
-
-/*
- * These are like the libc functions, but they malloc() the space which
- * is needed.
- */
-
-/**
+ * Like the libc function, but malloc()'s the space needed.
+ * @param name		variable name
+ * @param value		variable value
+ * @param overwrte	should an existing variable be changed?
+ * @return		0 on success
  */
 int dosetenv(const char * name, const char * value, int overwrite)
-	/*@modifies fileSystem @*/;
+	/*@globals environ@*/
+	/*@modifies *environ @*/;
 
 /**
- */
+ * Like the libc function, but malloc()'s the space needed.
+ * @param str		"name=value" string
+ * @return		0 on success
+  */
 int doputenv(const char * str)
-	/*@modifies fileSystem @*/;
+	/*@globals environ@*/
+	/*@modifies *environ @*/;
 
 /**
  * Return file handle for a temporaray file.
@@ -78,26 +79,35 @@ int doputenv(const char * str)
 int makeTempFile(/*@null@*/ const char * prefix,
 		/*@null@*/ /*@out@*/ const char ** fnptr,
 		/*@out@*/ FD_t * fdptr)
-	/*@modifies *fnptr, *fdptr, fileSystem @*/;
-
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *fnptr, *fdptr, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+ 
 /**
  * Return (malloc'd) current working directory.
  * @return		current working directory (malloc'ed)
  */
 /*@only@*/ char * currentDirectory(void)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
+ * Convert absolute path tag to (dirname,basename,dirindex) tags.
+ * @param h		header
  */
 void compressFilelist(Header h)
 	/*@modifies h @*/;
 
 /**
+ * Convert (dirname,basename,dirindex) tags to absolute path tag.
+ * @param h		header
  */
 void expandFilelist(Header h)
 	/*@modifies h @*/;
 
 /**
+ * @param h		header
  */
 void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			/*@out@*/ int * fileCountPtr)
@@ -105,15 +115,22 @@ void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr,
 
 /**
  */
-int myGlobPatternP (const char *patternURL)	/*@*/;
+/*@-exportlocal@*/
+int myGlobPatternP (const char *patternURL)
+	/*@*/;
+/*@=exportlocal@*/
 
 /**
  */
 int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
-	/*@out@*/ const char *** argvPtr)
-		/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
+		/*@out@*/ const char *** argvPtr)
+	/*@globals fileSystem @*/
+	/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
 
 /**
+ * Retrofit a Provides: name = version-release dependency into legacy
+ * packages.
+ * @param h		header
  */
 void providePackageNVR(Header h)
 	/*@modifies h @*/;

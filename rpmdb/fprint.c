@@ -71,9 +71,11 @@ static fingerPrint doLookup(fingerPrintCache cache,
     cdnl = strlen(cleanDirName);
 
     if (*cleanDirName == '/') {
+	/*@-branchstate@*/
 	if (!scareMemory)
 	    cleanDirName =
 		rpmCleanPath(strcpy(alloca(cdnl+1), dirName));
+	/*@=branchstate@*/
     } else {
 	scareMemory = 0;	/* XXX causes memory leak */
 
@@ -86,7 +88,8 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
 	dir[0] = '\0';
-	if ( /*@-unrecog@*/ realpath(".", dir) /*@=unrecog@*/ != NULL) {
+	/*@-branchstate@*/
+	if (realpath(".", dir) != NULL) {
 	    end = dir + strlen(dir);
 	    if (end[-1] != '/')	*end++ = '/';
 	    end = stpncpy(end, cleanDirName, sizeof(dir) - (end - dir));
@@ -98,6 +101,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    cleanDirName = dir;
 	    cdnl = end - dir;
 	}
+	/*@=branchstate@*/
     }
     fp.entry = NULL;
     fp.subDir = NULL;
@@ -127,6 +131,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    char * dn = xmalloc(nb);
 	    struct fprintCacheEntry_s * newEntry = (void *)dn;
 
+	    /*@-usereleased@*/	/* LCL: contiguous malloc confusion */
 	    dn += sizeof(*newEntry);
 	    strcpy(dn, (*buf != '\0' ? buf : "/"));
 	    newEntry->ino = sb.st_ino;
@@ -135,9 +140,10 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    newEntry->dirName = dn;
 	    fp.entry = newEntry;
 
-	    /*@-kepttrans@*/
+	    /*@-kepttrans -dependenttrans @*/
 	    htAddEntry(cache->ht, dn, fp.entry);
-	    /*@@kepttrans@*/
+	    /*@=kepttrans =dependenttrans @*/
+	    /*@=usereleased@*/
 	}
 
         if (fp.entry) {
@@ -151,7 +157,9 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    fp.baseName = baseName;
 	    if (!scareMemory && fp.subDir != NULL)
 		fp.subDir = xstrdup(fp.subDir);
+	/*@-compdef@*/ /* FIX: fp.entry.{dirName,dev,ino,isFake} undef @*/
 	    return fp;
+	/*@=compdef@*/
 	}
 
         /* stat of '/' just failed! */
@@ -168,7 +176,9 @@ static fingerPrint doLookup(fingerPrintCache cache,
 
     /*@notreached@*/
 
+    /*@-compdef@*/ /* FIX: fp.entry.{dirName,dev,ino,isFake} undef @*/
     /*@-nullret@*/ return fp; /*@=nullret@*/	/* LCL: can't happen. */
+    /*@=compdef@*/
 }
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
@@ -241,12 +251,13 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
     rpmTagType bnt, dnt;
     int_32 * dirIndexes;
     int fileCount;
+    int xx;
 
     if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &fileCount))
 	return;
 
-    (void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-    (void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
     fpLookupList(cache, dirNames, baseNames, dirIndexes, fileCount, fpList);
     dirNames = hfd(dirNames, dnt);
     baseNames = hfd(baseNames, bnt);

@@ -12,7 +12,10 @@
 /** \ingroup rpmcli
  * Should version 3 packages be produced?
  */
+/*@-redecl@*/
+/*@unchecked@*/
 extern int _noDirTokens;
+/*@=redecl@*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,10 +50,12 @@ typedef	struct rpmBuildArguments_s *	BTA_t;
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct rpmBuildArguments_s	rpmBTArgs;
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct poptOption		rpmBuildPoptTable[];
 
 /*@}*/
@@ -131,6 +136,7 @@ typedef enum rpmVerifyFlags_e {
  * @param h		header to use for query/verify
  */
 typedef	int (*QVF_t) (QVA_t qva, rpmdb db, Header h)
+	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmcli
@@ -149,6 +155,7 @@ int showMatches(QVA_t qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
  * @param fp	file handle to use for display
  */
 void rpmDisplayQueryTags(FILE * fp)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /** \ingroup rpmcli
@@ -162,7 +169,8 @@ void rpmDisplayQueryTags(FILE * fp)
  */
 int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
 		rpmdb db, QVF_t showPackage)
-	/*@modifies db, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Display results of package query.
@@ -173,6 +181,7 @@ int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
  * @return		0 always
  */
 int showQueryPackage(QVA_t qva, rpmdb db, Header h)
+	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmcli
@@ -184,7 +193,8 @@ int showQueryPackage(QVA_t qva, rpmdb db, Header h)
  * @return		rpmQueryVerify() result, or 1 on rpmdbOpen() failure
  */
 int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Display results of package verify.
@@ -194,7 +204,8 @@ int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
  * @return		result of last non-zero verify return
  */
 int showVerifyPackage(QVA_t qva, /*@only@*/ rpmdb db, Header h)
-	/*@modifies db, h, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies db, h, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Check original header digest.
@@ -213,7 +224,8 @@ int rpmVerifyDigest(Header h)
  * @return		rpmQueryVerify() result, or 1 on rpmdbOpen() failure
  */
 int rpmVerify(QVA_t qva, rpmQVSources source, const char *arg)
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Describe query/verify command line request.
@@ -232,22 +244,27 @@ struct rpmQVArguments_s {
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct rpmQVArguments_s rpmQVArgs;
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct poptOption rpmQVSourcePoptTable[];
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern int specedit;
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct poptOption rpmQueryPoptTable[];
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct poptOption rpmVerifyPoptTable[];
 
 /*@}*/
@@ -272,7 +289,8 @@ int rpmInstall(/*@null@*/ const char * rootdir,
 		rpmInstallInterfaceFlags interfaceFlags,
 		rpmprobFilterFlags probFilter,
 		/*@null@*/ rpmRelocation * relocations)
-	/*@modifies *relocations, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies *relocations, rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Install source rpm package.
@@ -285,6 +303,7 @@ int rpmInstall(/*@null@*/ const char * rootdir,
 int rpmInstallSource(const char * rootdir, const char * arg,
 		/*@null@*/ /*@out@*/ const char ** specFile,
 		/*@null@*/ /*@out@*/ char ** cookie)
+	/*@globals fileSystem @*/
 	/*@modifies *specFile, *cookie, fileSystem @*/;
 
 /** \ingroup rpmcli
@@ -298,7 +317,8 @@ int rpmInstallSource(const char * rootdir, const char * arg,
 int rpmErase(/*@null@*/ const char * rootdir, /*@null@*/ const char ** argv,
 		rpmtransFlags transFlags, 
 		rpmEraseInterfaceFlags interfaceFlags)
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Describe database command line requests.
@@ -388,6 +408,7 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @return 		id index
  */
 /*@only@*/ /*@null@*/ IDTX IDTXglob(const char * globstr, rpmTag tag)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 
@@ -410,8 +431,10 @@ typedef /*@abstract@*/ struct IDTindex_s {
 		const unsigned long total,
 		/*@null@*/ const void * pkgKey,
 		/*@null@*/ void * data)
-	/*@modifies fileSystem @*/;
+	/*@globals internalState, fileSystem @*/
+	/*@modifies internalState, fileSystem @*/;
 
+/*@unchecked@*/
 extern int packagesTotal;
 
 /** \ingroup rpmcli
@@ -420,14 +443,17 @@ extern int packagesTotal;
  */
 int rpmRollback(struct rpmInstallArguments_s * ia,
 		/*@null@*/ const char ** argv)
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct rpmInstallArguments_s rpmIArgs;
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct poptOption rpmInstallPoptTable[];
 
 /*@}*/
@@ -447,10 +473,12 @@ struct rpmDatabaseArguments_s {
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct rpmDatabaseArguments_s rpmDBArgs;
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct poptOption rpmDatabasePoptTable[];
 
 /*@}*/
@@ -478,7 +506,8 @@ typedef enum rpmCheckSigFlags_e {
  * @return		0 on success
  */
 int rpmCheckSig(rpmCheckSigFlags flags, /*@null@*/ const char ** argv)
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmReSign() operation.
@@ -499,7 +528,8 @@ typedef enum rpmResignFlags_e {
  */
 int rpmReSign(rpmResignFlags add, char * passPhrase,
 		/*@null@*/ const char ** argv)
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Describe signature command line request.
@@ -513,10 +543,12 @@ struct rpmSignArguments_s {
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct rpmSignArguments_s rpmKArgs;
 
 /** \ingroup rpmcli
  */
+/*@unchecked@*/
 extern struct poptOption rpmSignPoptTable[];
 
 /*@}*/

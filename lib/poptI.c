@@ -13,6 +13,7 @@
 extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@=redecl@*/
 
+/*@unchecked@*/
 struct rpmInstallArguments_s rpmIArgs;
 
 #define	POPT_RELOCATE		1016
@@ -20,6 +21,7 @@ struct rpmInstallArguments_s rpmIArgs;
 #define	POPT_ROLLBACK		1024
 
 /*@exits@*/ static void argerror(const char * desc)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     fprintf(stderr, _("%s: %s\n"), __progname, desc);

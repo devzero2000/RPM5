@@ -90,15 +90,17 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
     if (flags & O_WRONLY)
 	return NULL;
 
+    /*@-type@*/ /* FIX: cast? */
     fd = ufdio->_open(path, flags, perms);
+    /*@=type@*/
     if (Ferror(fd))
 	/* XXX Fstrerror */
 	return NULL;
 
-    /*@-modobserver -observertrans@*/
+    /*@-modobserver -observertrans -mods @*/
     memcpy(fadio, fdio, sizeof(*fadio));
     fadio->_open = fadOpen;
-    /*@=modobserver =observertrans@*/
+    /*@=modobserver =observertrans =mods @*/
 
     fdSetIo(fd, fadio);
     fadSetFirstFree(fd, 0);
@@ -108,10 +110,12 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
     if (fadGetFileSize(fd) == 0) {
 	newHdr.magic = FA_MAGIC;
 	newHdr.firstFree = 0;
+	/*@-sizeoftype@*/
 	if (Fwrite(&newHdr, sizeof(char), sizeof(newHdr), fd) != sizeof(newHdr)) {
 	    (void) Fclose(fd);
 	    return NULL;
 	}
+	/*@=sizeoftype@*/
 	fadSetFirstFree(fd, 0);
 	fadSetFileSize(fd, sizeof(newHdr));
     } else {
@@ -157,7 +161,9 @@ unsigned int fadAlloc(FD_t fd, unsigned int size)
     memset(&header, 0, sizeof(header));
 
     /* our internal idea of size includes overhead */
+    /*@-sizeoftype@*/
     size += sizeof(struct faHeader) + sizeof(struct faFooter);
+    /*@=sizeoftype@*/
 
     /* Make sure they are allocing multiples of 64 bytes. It'll keep
        things less fragmented that way */
@@ -413,10 +419,11 @@ void fadFree(FD_t fd, unsigned int offset)
 }
 
 static int fadSanity(FD_t fd, int offset, const struct faHeader * fh, int printit)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     int rc = 0;
 
+    /*@-sizeoftype@*/
     /* Check size range and alignment. */
     if (!(fh->size > 0 && fh->size <= 0x00200000 && (fh->size & 0x3f) == 0))
 	rc |= 0x1;
@@ -434,6 +441,7 @@ static int fadSanity(FD_t fd, int offset, const struct faHeader * fh, int printi
 		fh->freePrev < fadGetFileSize(fd) &&
 		(fh->freePrev & 0x3f) == sizeof(struct faFileHeader)) )
 	rc |= 0x4;
+    /*@=sizeoftype@*/
 
     /* Check that only the isFree bit is (possibly) set. */
     if (fh->isFree & ~1)
@@ -456,14 +464,16 @@ int fadFirstOffset(FD_t fd)
     return fadNextOffset(fd, 0);
 }
 
-int fadNextOffset(FD_t fd, unsigned int lastOffset)
+int fadNextOffset(FD_t fd, unsigned int lastoff)
 {
     struct faHeader header;
     int offset;
 
-    offset = (lastOffset)
-	? (lastOffset - sizeof(header))
+    /*@-sizeoftype@*/
+    offset = (lastoff)
+	? (lastoff - sizeof(header))
 	: sizeof(struct faFileHeader);
+    /*@=sizeoftype@*/
 
     if (offset >= fadGetFileSize(fd))
 	return 0;
@@ -472,7 +482,7 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
     if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	return 0;
 
-    if (!lastOffset && header.isFree == 0)
+    if (!lastoff && header.isFree == 0)
 	return (offset + sizeof(header));
 
     /*
@@ -506,7 +516,7 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
 
     /* Sanity check this to make sure we're not going in loops */
     offset += sizeof(header);
-    if (offset <= lastOffset)
+    if (offset <= lastoff)
 	return 0;	/* XXX used to return -1 */
 
     return offset;

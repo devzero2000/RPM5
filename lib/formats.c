@@ -5,6 +5,7 @@
 #include "system.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
+#include "rpmpgp.h"
 #include "manifest.h"
 #include "misc.h"
 #include "debug.h"
@@ -24,14 +25,12 @@ static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
     const int_32 * item = data;
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
+    if (type != RPM_INT32_TYPE)
 	val = xstrdup(_("(not a number)"));
-    } else if (*item & RPMSENSE_TRIGGERIN) {
+    else if (*item & RPMSENSE_TRIGGERIN)
 	val = xstrdup("in");
-    } else {
+    else
 	val = xstrdup("un");
-    }
-
     return val;
 }
 
@@ -116,6 +115,160 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
+static /*@only@*/ char * armorFormat(int_32 type, const void * data, 
+		/*@unused@*/ char * formatPrefix, int padding, int element)
+	/*@*/
+{
+    const char * enc;
+    const char * s;
+    char * t;
+    char * val;
+    int atype;
+    int lc, ns, nt;
+
+    switch (type) {
+    case RPM_BIN_TYPE:
+	s = data;
+	ns = element;
+	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
+	break;
+    case RPM_STRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+	enc = data;
+	if (b64decode(enc, (void **)&s, &ns))
+	    return xstrdup(_("(not base64)"));
+	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
+	break;
+    case RPM_NULL_TYPE:
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+    case RPM_INT16_TYPE:
+    case RPM_INT32_TYPE:
+    case RPM_I18NSTRING_TYPE:
+    default:
+	return xstrdup(_("(invalid type)"));
+	/*@notreached@*/ break;
+    }
+
+    nt = ((ns + 2) / 3) * 4;
+    /*@-globs@*/
+    /* Add additional bytes necessary for eol string(s). */
+    if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
+       if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
+        ++lc;
+	nt += lc * strlen(b64encode_eolstr);
+    }
+    /*@=globs@*/
+
+    nt += 512;	/* XXX slop for armor and crc */
+
+    val = t = xmalloc(nt + padding + 1);
+    *t = '\0';
+    t = stpcpy(t, "-----BEGIN PGP ");
+    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
+    /*@-globs@*/
+    t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), RPMVERSION);
+    /*@=globs@*/
+    t = stpcpy(t, " (beecrypt-2.2.0)\n\n");
+
+    if ((enc = b64encode(s, ns)) != NULL) {
+	t = stpcpy(t, enc);
+	enc = _free(enc);
+	if ((enc = b64crc(s, ns)) != NULL) {
+	    *t++ = '=';
+	    t = stpcpy(t, enc);
+	    enc = _free(enc);
+	}
+    }
+	
+    t = stpcpy(t, "-----END PGP ");
+    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
+    t = stpcpy(t, "-----\n");
+
+    /*@-branchstate@*/
+    if (s != data) s = _free(s);
+    /*@=branchstate@*/
+
+    return val;
+}
+
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * base64Format(int_32 type, const void * data, 
+		/*@unused@*/ char * formatPrefix, int padding, int element)
+	/*@*/
+{
+    char * val;
+
+    if (type != RPM_BIN_TYPE) {
+	val = xstrdup(_("(not a blob)"));
+    } else {
+	const char * enc;
+	char * t;
+	int lc;
+	int nt = ((element + 2) / 3) * 4;
+
+	/*@-globs@*/
+	/* Add additional bytes necessary for eol string(s). */
+	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	    lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
+        if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
+            ++lc;
+	    nt += lc * strlen(b64encode_eolstr);
+	}
+	/*@=globs@*/
+
+	val = t = xmalloc(nt + padding + 1);
+
+	*t = '\0';
+	if ((enc = b64encode(data, element)) != NULL) {
+	    t = stpcpy(t, enc);
+	    enc = _free(enc);
+	}
+    }
+
+    return val;
+}
+
+#ifdef	NOTYET
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * pgppktFormat(int_32 type, const void * data, 
+	char * formatPrefix, int padding, int element)
+		/*@modifies formatPrefix @*/
+{
+    char * val;
+
+    if (type != RPM_BIN_TYPE) {
+	val = xstrdup(_("(not a blob)"));
+    } else {
+    }
+
+    return val;
+}
+#endif
+
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
 static /*@only@*/ char * depflagsFormat(int_32 type, const void * data, 
 	char * formatPrefix, int padding, /*@unused@*/ int element)
 		/*@modifies formatPrefix @*/
@@ -155,9 +308,11 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
  * @return		0 on success
  */
 static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
-	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *type, *data, *count, *freeData,
+		fileSystem, internalState @*/
 {
     const char ** list;
 
@@ -215,9 +370,12 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
@@ -279,7 +437,7 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
     char ** conds, ** s;
     char * item, * flagsStr;
     char * chptr;
-    int i, j;
+    int i, j, xx;
     char buf[5];
 
     if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, (void **) &names, &numNames)) {
@@ -287,21 +445,22 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 	return 0;
     }
 
-    (void) hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
-    (void) hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    (void) hge(h, RPMTAG_TRIGGERVERSION, &tvt, (void **) &versions, NULL);
-    (void) hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    xx = hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
+    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    xx = hge(h, RPMTAG_TRIGGERVERSION, &tvt, (void **) &versions, NULL);
+    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
     s = hfd(s, tst);
 
     *freeData = 1;
-    *data = conds = xmalloc(sizeof(char * ) * numScripts);
+    *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
 	for (j = 0; j < numNames; j++) {
-	    if (indices[j] != i) continue;
+	    if (indices[j] != i)
+		/*@innercontinue@*/ continue;
 
 	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
 	    if (flags[j] & RPMSENSE_SENSEMASK) {
@@ -347,7 +506,7 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
     int_32 * indices, * flags;
     const char ** conds;
     const char ** s;
-    int i, j;
+    int i, j, xx;
     int numScripts, numNames;
 
     if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, &numNames)) {
@@ -355,17 +514,18 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 	return 1;
     }
 
-    (void) hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    (void) hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
     s = hfd(s, tst);
 
     *freeData = 1;
-    *data = conds = xmalloc(sizeof(char * ) * numScripts);
+    *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
-	    if (indices[j] != i) continue;
+	    if (indices[j] != i)
+		/*@innercontinue@*/ continue;
 
 	    if (flags[j] & RPMSENSE_TRIGGERIN)
 		conds[i] = xstrdup("in");
@@ -406,11 +566,14 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
 /* I18N look aside diversions */
 
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
 /*@=exportlocal =exportheadervar@*/
-/*@observer@*/ static const char * language = "LANGUAGE";
+/*@observer@*/ /*@unchecked@*/
+static const char * language = "LANGUAGE";
 
-/*@observer@*/ static const char * _macro_i18ndomains =
+/*@observer@*/ /*@unchecked@*/
+static const char * _macro_i18ndomains =
 		"%{?_i18ndomains:%{_i18ndomains}}";
 
 /**
@@ -423,9 +586,10 @@ int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
  * @return		0 on success
  */
 static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
@@ -454,22 +618,24 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	/* change to en_US for msgkey -> msgid resolution */
 	langval = getenv(language);
 	(void) setenv(language, "en_US", 1);
-	++_nl_msg_cat_cntr;
+/*@i@*/	++_nl_msg_cat_cntr;
 
 	msgid = NULL;
+	/*@-branchstate@*/
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
 	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
 	    if (msgid != msgkey) break;
 	}
+	/*@=branchstate@*/
 
 	/* restore previous environment for msgid -> msgstr resolution */
 	if (langval)
 	    (void) setenv(language, langval, 1);
 	else
 	    unsetenv(language);
-	++_nl_msg_cat_cntr;
+/*@i@*/	++_nl_msg_cat_cntr;
 
 	if (domain && msgid) {
 	    *data = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
@@ -507,9 +673,10 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
@@ -523,9 +690,10 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
@@ -539,13 +707,15 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int groupTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
 
+/*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_GROUP", { groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION", { descriptionTag } },
@@ -556,6 +726,11 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS", { triggercondsTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE", { triggertypeTag } },
+    { HEADER_EXT_FORMAT, "armor", { armorFormat } },
+    { HEADER_EXT_FORMAT, "base64", { base64Format } },
+#ifdef	NOTYET
+    { HEADER_EXT_FORMAT, "pgppkt", { pgppktFormat } },
+#endif
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms", { permsFormat } },
@@ -563,3 +738,4 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_FORMAT, "triggertype", { triggertypeFormat } },
     { HEADER_EXT_MORE, NULL, { (void *) headerDefaultFormats } }
 } ;
+/*@=type@*/

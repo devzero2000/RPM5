@@ -15,6 +15,7 @@
  */
 static int addTriggerIndex(Package pkg, const char *file,
 	const char *script, const char *prog)
+	/*@modifies pkg->triggerFiles @*/
 {
     struct TriggerFileEntry *tfe;
     struct TriggerFileEntry *list = pkg->triggerFiles;
@@ -26,11 +27,10 @@ static int addTriggerIndex(Package pkg, const char *file,
 	list = list->next;
     }
 
-    if (last) {
+    if (last)
 	index = last->index + 1;
-    }
 
-    tfe = xmalloc(sizeof(*tfe));
+    tfe = xcalloc(1, sizeof(*tfe));
 
     tfe->fileName = (file) ? xstrdup(file) : NULL;
     tfe->script = (script && *script != '\0') ? xstrdup(script) : NULL;
@@ -38,19 +38,22 @@ static int addTriggerIndex(Package pkg, const char *file,
     tfe->index = index;
     tfe->next = NULL;
 
-    if (last) {
+    if (last)
 	last->next = tfe;
-    } else {
+    else
 	pkg->triggerFiles = tfe;
-    }
 
     return index;
 }
 
 /* these have to be global because of stupid compilers */
+/*@unchecked@*/
     /*@observer@*/ /*@null@*/ static const char *name = NULL;
+/*@unchecked@*/
     /*@observer@*/ /*@null@*/ static const char *prog = NULL;
+/*@unchecked@*/
     /*@observer@*/ /*@null@*/ static const char *file = NULL;
+/*@unchecked@*/
     static struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
@@ -93,10 +96,13 @@ int parseScript(Spec spec, int parsePart)
     poptContext optCon = NULL;
     
     reqargs[0] = '\0';
+    /*@-mods@*/
     name = NULL;
     prog = "/bin/sh";
     file = NULL;
+    /*@=mods@*/
     
+    /*@-branchstate@*/
     switch (parsePart) {
       case PART_PRE:
 	tag = RPMTAG_PREIN;
@@ -150,6 +156,7 @@ int parseScript(Spec spec, int parsePart)
 	partname = "%triggerpostun";
 	break;
     }
+    /*@=branchstate@*/
 
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
 	/* break line into two */
@@ -181,10 +188,10 @@ int parseScript(Spec spec, int parsePart)
 		rc = RPMERR_BADSPEC;
 		goto exit;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case 'n':
 	    flag = PART_NAME;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     
@@ -198,8 +205,10 @@ int parseScript(Spec spec, int parsePart)
     }
 
     if (poptPeekArg(optCon)) {
+	/*@-mods@*/
 	if (name == NULL)
 	    name = poptGetArg(optCon);
+	/*@=mods@*/
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,

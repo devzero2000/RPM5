@@ -63,6 +63,7 @@ rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *headerp,
  * @return		0 on success, 1 on error
  */
 int rpmWriteSignature(FD_t fd, Header h)
+	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/;
 
 /** \ingroup signature
@@ -70,7 +71,8 @@ int rpmWriteSignature(FD_t fd, Header h)
  */
 int rpmAddSignature(Header h, const char * file,
 		    int_32 sigTag, /*@null@*/ const char * passPhrase)
-	/*@modifies h @*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies h, rpmGlobalMacroContext @*/;
 
 /******************************************************************/
 
@@ -83,13 +85,15 @@ int rpmAddSignature(Header h, const char * file,
  * Return type of signature in effect for building.
  */
 int rpmLookupSignatureType(int action)
-	/*@modifies internalState @*/;
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup signature
  *  Read a pass phrase from the user.
  */
 /*@null@*/ char * rpmGetPassPhrase(const char *prompt, const int sigTag)
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup signature
  *  Return path to pgp executable of given type, or NULL when not found.
@@ -97,7 +101,8 @@ int rpmLookupSignatureType(int action)
 /*@-redecl@*/
 /*@null@*/ const char * rpmDetectPGPVersion(
 			/*@null@*/ /*@out@*/ pgpVersion * pgpVer)
-	/*@modifies *pgpVer, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies *pgpVer, rpmGlobalMacroContext, fileSystem @*/;
 /*@=redecl@*/
 
 #ifdef __cplusplus

@@ -17,7 +17,8 @@
 
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
-	/*@modifies *fdp, *fnp, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies *fdp, *fnp, rpmGlobalMacroContext, fileSystem @*/
 {
     const char *fn;
     FD_t fd;
@@ -55,7 +56,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 	if (fnp)
 	    *fnp = fn;
 	*fdp = fdLink(fd, "manageFile return");
-	fdFree(fd, "manageFile return");
+	(void) fdFree(fd, "manageFile return");
 	return 0;
     }
 
@@ -166,9 +167,11 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	    /* Dump the immutable region (if present). */
 	    if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
 		Header nh = headerCopyLoad(uh);
-		headerFree(sig);
+		sig = headerFree(sig);
+		/*@-nullpass@*/
 		sig = headerLink(nh);
-		headerFree(nh);
+		/*@=nullpass@*/
+		nh = headerFree(nh);
 	    }
 
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
@@ -188,7 +191,7 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
 	strcat(tmprpm, ".XXXXXX");
-	/*@-unrecog@*/ mktemp(tmprpm) /*@=unrecog@*/;
+	(void) /*@-unrecog@*/ mktemp(tmprpm) /*@=unrecog@*/;
 	trpm = tmprpm;
 
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))

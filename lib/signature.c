@@ -67,7 +67,7 @@ int rpmLookupSignatureType(int action)
 
 const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 {
-    /* Actually this should support having more then one pgp version. */ 
+    /* Actually this should support having more then one pgp version. */
     /* At the moment only one version is possible since we only       */
     /* have one %_pgpbin and one %_pgp_path.                          */
 
@@ -77,7 +77,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
     if (saved_pgp_version == PGP_UNKNOWN) {
 	char *pgpvbin;
 	struct stat st;
-	
+
 	if (!(pgpbin && pgpbin[0] != '\0')) {
 	  pgpbin = _free(pgpbin);
 	  saved_pgp_version = -1;
@@ -109,6 +109,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @return 			rpmRC return code
  */
 static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     struct stat st;
@@ -208,10 +209,10 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 
 int rpmWriteSignature(FD_t fd, Header h)
 {
-    static byte buf[8] = "\000\000\000\000\000\000\000\000";
+    static byte buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
     int sigSize, pad;
     int rc;
-    
+
     rc = headerWrite(fd, h, HEADER_MAGIC_YES);
     if (rc)
 	return rc;
@@ -239,7 +240,8 @@ Header rpmFreeSignature(Header h)
 
 static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
-	/*@modifies *sig, *size, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies *sig, *size, rpmGlobalMacroContext, fileSystem @*/
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -256,7 +258,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 
     inpipe[0] = inpipe[1] = 0;
     (void) pipe(inpipe);
-    
+
     if (!(pid = fork())) {
 	const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
 	const char *path;
@@ -322,9 +324,9 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
     *size = st.st_size;
     rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *size);
     *sig = xmalloc(*size);
-    
+
     {	FD_t fd;
-	int rc = 0;
+	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
 	    rc = timedRead(fd, *sig, *size);
@@ -339,7 +341,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
     }
 
     rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of PGP sig\n"), *size);
-    
+
     return 0;
 }
 
@@ -350,7 +352,8 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
  */
 static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
-	/*@modifies *sig, *size, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies *sig, *size, rpmGlobalMacroContext, fileSystem @*/
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -368,7 +371,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 
     inpipe[0] = inpipe[1] = 0;
     (void) pipe(inpipe);
-    
+
     if (!(pid = fork())) {
 	const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 
@@ -415,7 +418,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     *size = st.st_size;
     rpmMessage(RPMMESS_DEBUG, _("GPG sig size: %d\n"), *size);
     *sig = xmalloc(*size);
-    
+
     {	FD_t fd;
 	int rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
@@ -432,7 +435,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     }
 
     rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of GPG sig\n"), *size);
-    
+
     return 0;
 }
 
@@ -444,7 +447,7 @@ int rpmAddSignature(Header h, const char * file, int_32 sigTag,
     byte buf[16];
     void *sig;
     int ret = -1;
-    
+
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
 	(void) stat(file, &st);
@@ -477,6 +480,7 @@ int rpmAddSignature(Header h, const char * file, int_32 sigTag,
 
 static rpmVerifySignatureReturn
 verifySizeSignature(const char * datafile, int_32 size, /*@out@*/ char * result)
+	/*@globals fileSystem @*/
 	/*@modifies *result, fileSystem @*/
 {
     struct stat st;
@@ -496,8 +500,9 @@ verifySizeSignature(const char * datafile, int_32 size, /*@out@*/ char * result)
 #define	X(_x)	(unsigned)((_x) & 0xff)
 
 static rpmVerifySignatureReturn
-verifyMD5Signature(const char * datafile, const byte * sig, 
+verifyMD5Signature(const char * datafile, const byte * sig,
 			      /*@out@*/ char * result, md5func fn)
+	/*@globals fileSystem @*/
 	/*@modifies *result, fileSystem @*/
 {
     byte md5sum[16];
@@ -534,7 +539,8 @@ verifyMD5Signature(const char * datafile, const byte * sig,
 static rpmVerifySignatureReturn
 verifyPGPSignature(const char * datafile, const void * sig, int count,
 		/*@out@*/ char * result)
-	/*@modifies *result, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies *result, rpmGlobalMacroContext, fileSystem @*/
 {
     int pid, status, outpipe[2];
 /*@only@*/ /*@null@*/ const char * sigfile = NULL;
@@ -667,14 +673,15 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
-    
+
     return res;
 }
 
 static rpmVerifySignatureReturn
 verifyGPGSignature(const char * datafile, const void * sig, int count,
 		/*@out@*/ char * result)
-	/*@modifies *result, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies *result, rpmGlobalMacroContext, fileSystem @*/
 {
     int pid, status, outpipe[2];
 /*@only@*/ /*@null@*/ const char * sigfile = NULL;
@@ -684,7 +691,7 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     const char * cmd;
     char *const *av;
     int rc;
-  
+
     /* Write out the signature */
 #ifdef	DYING
   { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);
@@ -750,19 +757,20 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
 	}
 	(void) fclose(file);
     }
-  
+
     (void) waitpid(pid, &status, 0);
     if (sigfile) (void) unlink(sigfile);
     sigfile = _free(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
-    
+
     return res;
 }
 
 static int checkPassPhrase(const char * passPhrase, const int sigTag)
-	/*@modifies fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/
 {
     int passPhrasePipe[2];
     int pid, status;
@@ -878,7 +886,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 	}
 	break;
     case RPMSIGTAG_PGP5: 	/* XXX legacy */
-    case RPMSIGTAG_PGP: 
+    case RPMSIGTAG_PGP:
       { const char *name = rpmExpand("%{?_pgp_name}", NULL);
 	aok = (name && *name != '\0');
 	name = _free(name);

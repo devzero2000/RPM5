@@ -4,6 +4,17 @@
 
 #include "system.h"
 
+#if defined(__LCLINT__)
+/*@-redef@*/
+typedef	unsigned int u_int32_t;
+typedef	unsigned short u_int16_t;
+typedef	unsigned char u_int8_t;
+/*@-incondefs@*/	/* LCLint 3.0.0.15 */
+typedef	int int32_t;
+/*@=incondefs@*/
+/*@=redef@*/
+#endif
+
 #include <db3/db.h>
 
 #include <rpmlib.h>
@@ -20,6 +31,7 @@
 #define	__USE_DB3	1
 
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 struct _dbiIndex db3dbi;
 /*@=exportlocal =exportheadervar@*/
 
@@ -36,9 +48,10 @@ struct dbOption {
 /*@observer@*/ /*@null@*/ const char * argDescrip; /*!< argument description for autohelp */
 };
 
-/*@-immediatetrans -exportlocal -exportheadervar@*/
+/*@-compmempass -immediatetrans -exportlocal -exportheadervar@*/
 /** \ingroup db3
  */
+/*@unchecked@*/
 struct dbOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
  { "client",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_CLIENT,
@@ -246,7 +259,7 @@ struct dbOption rdbOptions[] = {
 
  { NULL, 0,0, NULL, 0, NULL, NULL }
 };
-/*@=immediatetrans =exportlocal =exportheadervar@*/
+/*@=compmempass =immediatetrans =exportlocal =exportheadervar@*/
 
 static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong)
 	/*@modifies opt->arg @*/
@@ -317,7 +330,8 @@ dbiIndex db3Free(dbiIndex dbi)
 }
 
 /** @todo Set a reasonable "last gasp" default db config. */
-/*@observer@*/ static const char *db3_config_default =
+/*@observer@*/ /*@unchecked@*/
+static const char *db3_config_default =
     "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:mp_size=512Kb:pagesize=512:perms=0644";
 
 dbiIndex db3New(rpmdb rpmdb, int rpmtag)
@@ -343,6 +357,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     }
 
     /* Parse the options for the database element(s). */
+    /*@-branchstate@*/
     if (dbOpts && *dbOpts && *dbOpts != '%') {
 	char *o, *oe;
 	char *p, *pe;
@@ -381,7 +396,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	    /* Find key in option table. */
 	    for (opt = rdbOptions; opt->longName != NULL; opt++) {
 		if (strcmp(tok, opt->longName))
-		    continue;
+		    /*@innercontinue@*/ continue;
 		/*@innerbreak@*/ break;
 	    }
 	    if (opt->longName == NULL) {
@@ -400,17 +415,19 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
 	    case POPT_ARG_NONE:
 		(void) dbSaveInt(opt, argInfo, 1L);
-		break;
+		/*@switchbreak@*/ break;
 	    case POPT_ARG_VAL:
 		(void) dbSaveInt(opt, argInfo, (long)opt->val);
-	    	break;
+	    	/*@switchbreak@*/ break;
 	    case POPT_ARG_STRING:
 	    {	const char ** t = opt->arg;
+		/*@-mods@*/
 		if (t) {
 		    *t = _free(*t);
 		    *t = xstrdup( (p ? p : "") );
 		}
-	    }	break;
+		/*@=mods@*/
+	    }	/*@switchbreak@*/ break;
 
 	    case POPT_ARG_INT:
 	    case POPT_ARG_LONG:
@@ -436,7 +453,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 			continue;
 		    }
 		    (void) dbSaveLong(opt, argInfo, aLong);
-		    break;
+		    /*@switchbreak@*/ break;
 		} else {
 		    if (aLong > INT_MAX || aLong < INT_MIN) {
 			rpmError(RPMERR_DBCONFIG,
@@ -446,17 +463,18 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 		    }
 		    (void) dbSaveInt(opt, argInfo, aLong);
 		}
-	      }	break;
+	      }	/*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}
     }
+    /*@=branchstate@*/
 
     dbOpts = _free(dbOpts);
 
     /*@-assignexpose@*/
-    *dbi = db3dbi;	/* structure assignment */
+/*@i@*/	*dbi = db3dbi;	/* structure assignment */
     /*@=assignexpose@*/
     memset(&db3dbi, 0, sizeof(db3dbi));
 
@@ -464,13 +482,14 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	dbi->dbi_perms = 0644;
     dbi->dbi_mode = rpmdb->db_mode;
     /*@-keeptrans@*/
-    dbi->dbi_rpmdb = rpmdb;
+/*@i@*/	dbi->dbi_rpmdb = rpmdb;
     /*@=keeptrans@*/
     dbi->dbi_rpmtag = rpmtag;
     
     /*
      * Inverted lists have join length of 2, primary data has join length of 1.
      */
+    /*@-sizeoftype@*/
     switch (rpmtag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
@@ -480,6 +499,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	dbi->dbi_jlen = 2 * sizeof(int_32);
 	break;
     }
+    /*@=sizeoftype@*/
 
     dbi->dbi_use_cursors = 1;		/* db3 cursors are always used now. */
 
@@ -494,7 +514,9 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     if ((dbi->dbi_bt_flags | dbi->dbi_h_flags) & DB_DUP)
 	dbi->dbi_permit_dups = 1;
 
+    /*@-globstate@*/ /* FIX: *(rdbOptions->arg) reachable */
     return dbi;
+    /*@=globstate@*/
 }
 
 const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)

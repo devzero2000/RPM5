@@ -24,7 +24,9 @@
 	- calculate rpm-4.1 ordering/orientation metrics in rpmdepOrder().
 	- use beecrypt routines to calculate digests in rpm.
 	- dump legacy support for broken md5 signatures.
-	- sync popt and rpmio with rpm-4.1.
+	- sync popt and rpmio with rpm-4.1, rpmio has OpenPGP API.
+	- sync rpmdb and build with rpm-4.1, lots of splint annotations.
+	- add :armor and :base64 query format qualifiers for binary signatures.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

@@ -10,6 +10,7 @@
 
 /**
  */
+/*@observer@*/ /*@unchecked@*/
 static struct ReqComp {
 /*@observer@*/ /*@null@*/ const char * token;
     rpmsenseFlags sense;
@@ -112,9 +113,9 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	re = r;
@@ -136,7 +137,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	  struct ReqComp *rc;
 	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
 	    if ((ve-v) != strlen(rc->token) || strncmp(v, rc->token, (ve-v)))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    if (r[0] == '/') {
 		rpmError(RPMERR_BADSPEC,
@@ -153,9 +154,9 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 		/* Add prereq on rpmlib that has versioned dependencies. */
 		if (!rpmExpandNumeric("%{_noVersionedDependencies}"))
 		    (void) rpmlibNeedsFeature(h, "VersionedDependencies", "3.0.3-1");
-		break;
+		/*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    flags |= rc->sense;
 
@@ -168,6 +169,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	  }
 	}
 
+	/*@-branchstate@*/
 	if (flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
 		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s\n"),
@@ -180,6 +182,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	    re = ve;	/* ==> next token after version string starts here */
 	} else
 	    version = NULL;
+	/*@=branchstate@*/
 
 	(void) addReqProv(spec, h, flags, req, version, index);
 

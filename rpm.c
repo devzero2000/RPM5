@@ -112,9 +112,6 @@ extern int _noDirTokens;
 extern int _useDbiMajor;
 
 static int showVersion;
-extern const char * rpmNAME;
-extern const char * rpmEVR;
-extern int rpmFLAGS;
 
 extern struct MacroContext_s rpmCLIMacroContext;
 

@@ -521,8 +521,8 @@ static void parseEVR(char * evr,
     if (rp) *rp = release;
 }
 
-/*@observer@*/ const char *rpmNAME = PACKAGE;
-/*@observer@*/ const char *rpmEVR = VERSION;
+const char *rpmNAME = PACKAGE;
+const char *rpmEVR = VERSION;
 int rpmFLAGS = RPMSENSE_EQUAL;
 
 int rpmRangesOverlap(const char * AName, const char * AEVR, int AFlags,
@@ -1122,7 +1122,7 @@ alAllSatisfiesDepend(const availableList al,
 		rc = rpmRangesOverlap(p->provides[i], proEVR, proFlags,
 				keyName, keyEVR, keyFlags);
 		if (rc)
-		    /*@innerbreak@*/ break;
+		    /*@switchbreak@*/ break;
 	    }
 	    if (keyType && keyDepend && rc)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added provide)\n"),

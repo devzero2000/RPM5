@@ -1,3 +1,4 @@
+/*@-type@*/ /* FIX: shrug */
 /** \ingroup db1
  * \file rpmdb/db1.c
  */
@@ -84,7 +85,7 @@ static /*@observer@*/ char * db_strerror(int error)
 }
 
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
-	/*@modifies dbi, fileSystem @*/
+	/*@*/
 {
     int rc = 0;
 
@@ -109,6 +110,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 #endif	/* DYING */
 
 static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc = 0;
@@ -133,6 +135,7 @@ static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags)
 }
 
 /*@null@*/ static void * doGetRecord(dbiIndex dbi, unsigned int offset)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     FD_t pkgs = dbi->dbi_db;
@@ -232,10 +235,12 @@ retry:
     compressFilelist(h);
 
 exit:
+    /*@-branchstate@*/
     if (h != NULL) {
 	uh = headerUnload(h);
 	h = headerFree(h);
     }
+    /*@=branchstate@*/
     return uh;
 }
 
@@ -264,6 +269,7 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 		/*@null@*/ void ** datap, 
 		/*@null@*/ size_t * datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *keyp, *keylen, *datap, *datalen, fileSystem @*/
 {
     DBT key, data;
@@ -359,6 +365,7 @@ bail:
 
 static int db1cdel(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, const void * keyp,
 		size_t keylen, /*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     DBT key;
@@ -394,6 +401,7 @@ static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 		const void * keyp, size_t keylen,
 		const void * datap, size_t datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, datap, fileSystem @*/
 {
     DBT key, data;
@@ -466,7 +474,9 @@ static int db1stat(/*@unused@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 }
 
 static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
-	/*@modifies dbi, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
+	/*@modifies dbi, rpmGlobalMacroContext, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * base = db1basename(dbi->dbi_rpmtag);
@@ -476,6 +486,7 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
     (void) urlPath(urlfn, &fn);
 
+    /*@-branchstate@*/
     if (dbi->dbi_db) {
 	if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	    FD_t pkgs = dbi->dbi_db;
@@ -493,6 +504,7 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 #endif
 	dbi->dbi_db = NULL;
     }
+    /*@=branchstate@*/
 
     rpmMessage(RPMMESS_DEBUG, _("closed  db file        %s\n"), urlfn);
     /* Remove temporary databases */
@@ -509,7 +521,9 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
 static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag,
 	/*@out@*/ dbiIndex * dbip)
-	/*@modifies *dbip, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
+	/*@modifies *dbip, rpmGlobalMacroContext, fileSystem @*/
 {
     /*@-nestedextern@*/
     extern struct _dbiVec db1vec;
@@ -600,9 +614,11 @@ exit:
 /** \ingroup db1
  */
 /*@-exportheadervar@*/
+/*@observer@*/ /*@unchecked@*/
 struct _dbiVec db1vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db1open, db1close, db1sync, db1copen, db1cclose, db1cdel, db1cget, db1cput,
     db1ccount, db1byteswapped, db1stat
 };
 /*@=exportheadervar@*/
+/*@=type@*/

@@ -57,6 +57,8 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
 	   myftwFunc func,
 	   void *fl)
+	/*@globals errno, fileSystem @*/
+	/*@modifies *dirs, *dir, errno, fileSystem @*/
 {
   int got;
   struct dirent *entry;
@@ -127,9 +129,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
       else
 	flag = MYFTW_F;
 
-      /*@-modunconnomods@*/
       retval = (*func) (fl, dir, &s);
-      /*@=modunconnomods@*/
 
       if (flag == MYFTW_D)
 	{
@@ -192,7 +192,7 @@ int myftw (const char *dir,
     descriptors = 1;
 
   /*@access DIR@*/
-  dirs = (DIR **) alloca (descriptors * sizeof (DIR *));
+  dirs = (DIR **) alloca (descriptors * sizeof (*dirs));
   i = descriptors;
   while (i-- > 0)
     dirs[i] = NULL;
@@ -225,9 +225,7 @@ int myftw (const char *dir,
   len = strlen (dir);
   memcpy ((void *) buf, (void *) dir, len + 1);
 
-  /*@-modunconnomods@*/
   retval = (*func) (fl, buf, &s);
-  /*@=modunconnomods@*/
 
   if (flag == MYFTW_D)
     {
@@ -239,7 +237,9 @@ int myftw (const char *dir,
 
 	  save = errno;
 	  (void) Closedir (dirs[0]);
+	  /*@-mods@*/
 	  errno = save;
+	  /*@=mods@*/
 	}
     }
 

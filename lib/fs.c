@@ -1,3 +1,4 @@
+/*@-mods@*/
 /**
  * \file lib/fs.c
  */
@@ -15,8 +16,11 @@ struct fsinfo {
     int rdonly;				/*!< is mount point read only? */
 };
 
+/*@unchecked@*/
 /*@only@*/ /*@null@*/ static struct fsinfo * filesystems = NULL;
+/*@unchecked@*/
 /*@only@*/ /*@null@*/ static const char ** fsnames = NULL;
+/*@unchecked@*/
 static int numFilesystems = 0;
 
 void freeFilesystems(void)
@@ -55,6 +59,7 @@ int mntctl(int command, int size, char *buffer);
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
+	/*@*/
 {
     int size;
     void * buf;
@@ -130,24 +135,19 @@ static int getFilesystemList(void)
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
+	/*@globals fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState@*/
 {
     int numAlloced = 10;
     struct stat sb;
     int i;
     const char * mntdir;
     int rdonly = 0;
+
 #   if GETMNTENT_ONE || GETMNTENT_TWO
     our_mntent item;
     FILE * mtab;
-#   elif HAVE_GETMNTINFO_R
-    struct statfs * mounts = NULL;
-    int mntCount = 0, bufSize = 0, flags = MNT_NOWAIT;
-    int nextMount = 0;
-#   endif
 
-    rpmMessage(RPMMESS_DEBUG, _("getting list of mounted filesystems\n"));
-
-#   if GETMNTENT_ONE || GETMNTENT_TWO
 	mtab = fopen(MOUNTED, "r");
 	if (!mtab) {
 	    rpmError(RPMERR_MTAB, _("failed to open %s: %s\n"), MOUNTED, 
@@ -155,6 +155,10 @@ static int getFilesystemList(void)
 	    return 1;
 	}
 #   elif HAVE_GETMNTINFO_R
+    struct statfs * mounts = NULL;
+    int mntCount = 0, bufSize = 0, flags = MNT_NOWAIT;
+    int nextMount = 0;
+
 	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
 #   endif
 
@@ -164,7 +168,7 @@ static int getFilesystemList(void)
     while (1) {
 #	if GETMNTENT_ONE
 	    /* this is Linux */
-	    /*@-modunconnomods@*/
+	    /*@-modunconnomods -moduncon @*/
 	    our_mntent * itemptr = getmntent(mtab);
 	    if (!itemptr) break;
 	    item = *itemptr;	/* structure assignment */
@@ -175,7 +179,7 @@ static int getFilesystemList(void)
 		rdonly = 1;
 	    /*@=compdef@*/
 #endif
-	    /*@=modunconnomods@*/
+	    /*@=modunconnomods =moduncon @*/
 #	elif GETMNTENT_TWO
 	    /* Solaris, maybe others */
 	    if (getmntent(mtab, &item)) break;
@@ -329,11 +333,14 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
     sourceDir = _free(sourceDir);
 
+    /*@-branchstate@*/
     if (usagesPtr)
 	*usagesPtr = usages;
     else
 	usages = _free(usages);
+    /*@=branchstate@*/
 
     return 0;
 }
 /*@=usereleased =onlytrans@*/
+/*@=mods@*/

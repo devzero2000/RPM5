@@ -10,7 +10,10 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
 struct rpmQVArguments_s rpmQVArgs;
+
+/*@unchecked@*/
 int specedit = 0;
 
 #define POPT_QUERYFORMAT	1000
@@ -65,6 +68,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 /**
  * Common query/verify mode options.
  */
+/*@unchecked@*/
 struct poptOption rpmQVSourcePoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 	rpmQVSourceArgCallback, 0, NULL, NULL },
@@ -137,6 +141,7 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 /**
  * Query mode options.
  */
+/*@unchecked@*/
 struct poptOption rpmQueryPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 	queryArgCallback, 0, NULL, NULL },
@@ -180,6 +185,7 @@ struct poptOption rpmQueryPoptTable[] = {
 /**
  * Verify mode options.
  */
+/*@unchecked@*/
 struct poptOption rpmVerifyPoptTable[] = {
 #ifdef	DYING
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 

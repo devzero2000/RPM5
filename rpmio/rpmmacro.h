@@ -36,7 +36,7 @@ extern MacroContext rpmCLIMacroContext;
  * identified by the token '://', so file paths must not begin with '//'.
  */
 /*@-redecl@*/
-/*@observer@*/ /*@checked@*/
+/*@observer@*/ /*@unchecked@*/
 extern const char * macrofiles;
 /*@=redecl@*/
 

@@ -333,6 +333,7 @@ INPUT                  = \
 	@top_srcdir@/build/parseReqs.c \
 	@top_srcdir@/build/parseScript.c \
 	@top_srcdir@/build/parseSpec.c \
+	@top_srcdir@/build/poptBT.c \
 	@top_srcdir@/build/reqprov.c \
 	@top_srcdir@/build/rpmbuild.h \
 	@top_srcdir@/build/rpmspec.h \
@@ -370,7 +371,6 @@ INPUT                  = \
 	@top_srcdir@/lib/misc.c \
 	@top_srcdir@/lib/misc.h \
 	@top_srcdir@/lib/package.c \
-	@top_srcdir@/lib/poptBT.c \
 	@top_srcdir@/lib/poptI.c \
 	@top_srcdir@/lib/poptK.c \
 	@top_srcdir@/lib/poptQV.c \
@@ -407,8 +407,6 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/rpmhash.h \
 	@top_srcdir@/rpmdb/rpmdb.c \
 	@top_srcdir@/rpmdb/rpmdb.h \
-	@top_srcdir@/rpmio/base64.c \
-	@top_srcdir@/rpmio/base64.h \
 	@top_srcdir@/rpmio/digest.c \
 	@top_srcdir@/rpmio/macro.c \
 	@top_srcdir@/rpmio/rpmlog.c \

@@ -18,7 +18,9 @@
 
 /**
  */
+#ifdef	NOTYET
 typedef /*@abstract@*/ struct pgpDig_s * pgpDig;
+#endif
 
 /** \ingroup rpmio
  * Hide libio API lossage.

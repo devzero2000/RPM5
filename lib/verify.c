@@ -8,6 +8,7 @@
 #include "psm.h"
 #include <rpmcli.h>
 
+#include "ugid.h"
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
@@ -15,14 +16,6 @@
 /*@access PSM_t*/
 /*@access FD_t*/	/* XXX compared with NULL */
 /*@access rpmdb*/	/* XXX compared with NULL */
-
-static int _ie = 0x44332211;
-static union _vendian {
-/*@unused@*/ int i;
-    char b[4];
-} *_endian = (union _vendian *)&_ie;
-#define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
-#define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
@@ -41,29 +34,8 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     int count;
     int rc;
     struct stat sb;
-    int_32 useBrokenMd5;
 
-  if (IS_BIG_ENDIAN()) {	/* XXX was ifdef WORDS_BIGENDIAN */
-    int_32 * brokenPtr;
-    if (!hge(h, RPMTAG_BROKENMD5, NULL, (void **) &brokenPtr, NULL)) {
-	HAE_t hae = (HAE_t)headerAddEntry;
-	const char * rpmVersion;
-
-	if (hge(h, RPMTAG_RPMVERSION, NULL, (void **) &rpmVersion, NULL)) {
-	    useBrokenMd5 = ((rpmvercmp(rpmVersion, "2.3.3") >= 0) &&
-			    (rpmvercmp(rpmVersion, "2.3.8") <= 0));
-	} else {
-	    useBrokenMd5 = 1;
-	}
-	(void) hae(h, RPMTAG_BROKENMD5, RPM_INT32_TYPE, &useBrokenMd5, 1);
-    } else {
-	useBrokenMd5 = *brokenPtr;
-    }
-  } else {
-    useBrokenMd5 = 0;
-  }
-
-    (void) hge(h, RPMTAG_FILEMODES, NULL, (void **) &modeList, &count);
+    rc = hge(h, RPMTAG_FILEMODES, NULL, (void **) &modeList, &count);
     if (hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL))
 	fileAttrs = fileFlags[filenum];
 
@@ -279,7 +251,7 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	gid_t gid;
 
 	if (hge(h, RPMTAG_FILEGROUPNAME, &gnt, (void **) &gnameList, NULL)) {
-	    rc =  gnameToGid(gnameList[filenum], &gid);
+	    rc = gnameToGid(gnameList[filenum], &gid);
 	    if (rc || (gid != sb.st_gid))
 		*result |= RPMVERIFY_GROUP;
 	    gnameList = hfd(gnameList, gnt);
@@ -419,11 +391,13 @@ static int verifyHeader(QVA_t qva, Header h)
 
 	rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask);
 	if (rc) {
+	    /*@-internalglobs@*/ /* FIX: shrug */
 	    if (!(fileAttrs & RPMFILE_MISSINGOK) || rpmIsVerbose()) {
 		sprintf(te, _("missing    %s"), fileNames[i]);
 		te += strlen(te);
 		ec = rc;
 	    }
+	    /*@=internalglobs@*/
 	} else if (verifyResult) {
 	    const char * size, * md5, * link, * mtime, * mode;
 	    const char * group, * user, * rdev;
@@ -500,6 +474,7 @@ static int verifyDependencies(rpmdb rpmdb, Header h)
     (void) rpmdepCheck(ts, &conflicts, &numConflicts);
     ts = rpmtransFree(ts);
 
+    /*@-branchstate@*/
     if (numConflicts) {
 	const char *n, *v, *r;
 	char * t, * te;
@@ -538,6 +513,7 @@ static int verifyDependencies(rpmdb rpmdb, Header h)
 	}
 	rc = 1;
     }
+    /*@=branchstate@*/
     return rc;
 }
 

@@ -29,6 +29,7 @@ static void printFileInfo(char * te, const char * name,
 			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
 			  int uid, int gid, const char * linkto)
+	/*@modifies *te @*/
 {
     char sizefield[15];
     char ownerfield[9], groupfield[9];
@@ -108,6 +109,7 @@ static void printFileInfo(char * te, const char * name,
 /**
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
+	/*@*/
 {
     const char * errstr;
     const char * str;
@@ -122,6 +124,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
  */
 static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
 		int xfile)
+	/*@*/
 {
     int nlink = 0;
 
@@ -189,6 +192,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
     if (queryFormat) {
 	const char * str = queryHeader(h, queryFormat);
 	nonewline = 1;
+	/*@-branchstate@*/
 	if (str) {
 	    size_t tb = (te - t);
 	    size_t sb = strlen(str);
@@ -202,6 +206,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	    /*@=usereleased@*/
 	    str = _free(str);
 	}
+	/*@=branchstate@*/
     }
 
     if (!(queryFlags & QUERY_FOR_LIST))
@@ -259,25 +264,31 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	  && (fileFlagsList[i] & RPMFILE_GHOST))
 	    continue;
 
+	/*@-internalglobs@*/ /* FIX: shrug */
 	if (!rpmIsVerbose() && prefix)
 	    te = stpcpy(te, prefix);
+	/*@=internalglobs@*/
 
 	if (queryFlags & QUERY_FOR_STATE) {
 	    if (fileStatesList) {
 		rpmfileState fstate = fileStatesList[i];
 		switch (fstate) {
 		case RPMFILE_STATE_NORMAL:
-		    te = stpcpy(te, _("normal        ")); break;
+		    te = stpcpy(te, _("normal        "));
+		    /*@switchbreak@*/ break;
 		case RPMFILE_STATE_REPLACED:
-		    te = stpcpy(te, _("replaced      ")); break;
+		    te = stpcpy(te, _("replaced      "));
+		    /*@switchbreak@*/ break;
 		case RPMFILE_STATE_NOTINSTALLED:
-		    te = stpcpy(te, _("not installed ")); break;
+		    te = stpcpy(te, _("not installed "));
+		    /*@switchbreak@*/ break;
 		case RPMFILE_STATE_NETSHARED:
-		    te = stpcpy(te, _("net shared    ")); break;
+		    te = stpcpy(te, _("net shared    "));
+		    /*@switchbreak@*/ break;
 		default:
 		    sprintf(te, _("(unknown %3d) "), (int)fileStatesList[i]);
 		    te += strlen(te);
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    } else {
 		te = stpcpy(te, _("(no state)    "));
@@ -313,10 +324,14 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	    else
 		sprintf(te, "X");
 	    te += strlen(te);
-	} else if (!rpmIsVerbose()) {
+	} else
+	/*@-internalglobs@*/ /* FIX: shrug */
+	if (!rpmIsVerbose()) {
 	    te = stpcpy(te, dirNames[dirIndexes[i]]);
 	    te = stpcpy(te, baseNames[i]);
-	} else {
+	}
+	/*@=internalglobs@*/
+	else {
 	    char * filespec;
 	    int nlink;
 	    size_t fileSize;
@@ -389,6 +404,8 @@ exit:
  */
 static void
 printNewSpecfile(Spec spec)
+	/*@globals fileSystem @*/
+	/*@modifies spec->sl->sl_lines[], fileSystem @*/
 {
     Header h;
     speclines sl = spec->sl;
@@ -399,6 +416,7 @@ printNewSpecfile(Spec spec)
     if (sl == NULL || st == NULL)
 	return;
 
+    /*@-branchstate@*/
     for (i = 0; i < st->st_ntags; i++) {
 	spectag t = st->st_t + i;
 	const char * tn = tagName(t->t_tag);
@@ -453,11 +471,11 @@ printNewSpecfile(Spec spec)
 		(void) stpcpy( stpcpy( stpcpy(buf, tn), ": "), msgstr);
 		sl->sl_lines[t->t_startx] = buf;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPMTAG_DESCRIPTION:
 	    for (j = 1; j < t->t_nlines; j++) {
 		if (*sl->sl_lines[t->t_startx + j] == '%')
-		    continue;
+		    /*@innercontinue@*/ continue;
 		/*@-unqualifiedtrans@*/
 		sl->sl_lines[t->t_startx + j] =
 			_free(sl->sl_lines[t->t_startx + j]);
@@ -470,9 +488,10 @@ printNewSpecfile(Spec spec)
 	    sl->sl_lines[t->t_startx + 1] = xstrdup(msgstr);
 	    if (t->t_nlines > 2)
 		sl->sl_lines[t->t_startx + 2] = xstrdup("\n\n");
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
+    /*@=branchstate@*/
     msgstr = _free(msgstr);
 
     for (i = 0; i < sl->sl_nlines; i++) {
@@ -502,7 +521,7 @@ void rpmDisplayQueryTags(FILE * fp)
 	/* XXX don't print query tags twice. */
 	for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	    if (t->name == NULL)	/* XXX programmer error. */
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (!strcmp(t->name, ext->name))
 	    	/*@innerbreak@*/ break;
 	}

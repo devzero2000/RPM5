@@ -18,16 +18,21 @@
 /*@access IDTX @*/
 /*@access IDT @*/
 
+/*@unchecked@*/
 static int hashesPrinted = 0;
 
+/*@unchecked@*/
 int packagesTotal = 0;
+/*@unchecked@*/
 static int progressTotal = 0;
+/*@unchecked@*/
 static int progressCurrent = 0;
 
 /**
  */
 static void printHash(const unsigned long amount, const unsigned long total)
-	/*@modifies fileSystem @*/
+	/*@globals hashesPrinted, progressCurrent, fileSystem @*/
+	/*@modifies hashesPrinted, progressCurrent, fileSystem @*/
 {
     int hashesNeeded;
     int hashesTotal = 50;
@@ -70,7 +75,10 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 			const unsigned long total,
 			/*@null@*/ const void * pkgKey,
 			/*@null@*/ void * data)
-	/*@modifies fileSystem @*/
+	/*@globals hashesPrinted, progressCurrent, progressTotal,
+		fileSystem @*/
+	/*@modifies hashesPrinted, progressCurrent, progressTotal,
+		fileSystem @*/
 {
     /*@-castexpose@*/
     Header h = (Header) arg;
@@ -216,6 +224,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     }
 
     /* Build fully globbed list of arguments in argv[argc]. */
+    /*@-branchstate@*/
     /*@-temptrans@*/
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
     /*@=temptrans@*/
@@ -228,6 +237,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	eiu->argc += ac;
 	eiu->argv[eiu->argc] = NULL;
     }
+    /*@=branchstate@*/
     av = _free(av);	ac = 0;
 
 restart:
@@ -260,7 +270,7 @@ restart:
 
 	    {	char tfnbuf[64];
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
-		/*@-unrecog@*/ mktemp(tfnbuf) /*@=unrecog@*/;
+		(void) mktemp(tfnbuf);
 		tfn = rpmGenPath(rootdir, "%{_tmppath}/", tfnbuf);
 	    }
 
@@ -275,18 +285,18 @@ restart:
 		eiu->numFailed++;
 		eiu->pkgURL[eiu->pkgx] = NULL;
 		tfn = _free(tfn);
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    eiu->pkgState[eiu->pkgx] = 1;
 	    eiu->pkgURL[eiu->pkgx] = tfn;
 	    eiu->pkgx++;
-	}   break;
+	}   /*@switchbreak@*/ break;
 	case URL_IS_PATH:
 	default:
 	    eiu->pkgURL[eiu->pkgx] = fileURL;
 	    fileURL = NULL;
 	    eiu->pkgx++;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     fileURL = _free(fileURL);
@@ -396,7 +406,7 @@ restart:
 		count = rpmdbGetIteratorCount(mi);
 		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
 		    if (rpmVersionCompare(oldH, eiu->h) < 0)
-			continue;
+			/*@innercontinue@*/ continue;
 		    /* same or newer package already installed */
 		    count = 0;
 		    /*@innerbreak@*/ break;
@@ -421,20 +431,20 @@ restart:
 	    case 0:
 		rpmMessage(RPMMESS_DEBUG, "\tadded binary package [%d]\n",
 			eiu->numRPMS);
-		break;
+		/*@switchbreak@*/ break;
 	    case 1:
 		rpmMessage(RPMMESS_ERROR,
 			    _("error reading from file %s\n"), *eiu->fnp);
 		eiu->numFailed++;
 		goto exit;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case 2:
 		rpmMessage(RPMMESS_ERROR,
 			    _("file %s requires a newer version of RPM\n"),
 			    *eiu->fnp);
 		eiu->numFailed++;
 		goto exit;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 
 	    eiu->numRPMS++;
@@ -492,6 +502,7 @@ restart:
 	    stopInstall = 1;
 	}
 
+	/*@-branchstate@*/
 	if (!stopInstall && conflicts) {
 	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
@@ -499,6 +510,7 @@ restart:
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
+	/*@=branchstate@*/
     }
 
     if (eiu->numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
@@ -637,6 +649,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	    stopUninstall = 1;
 	}
 
+	/*@-branchstate@*/
 	if (!stopUninstall && conflicts) {
 	    rpmMessage(RPMMESS_ERROR, _("removing these packages would break "
 			      "dependencies:\n"));
@@ -645,6 +658,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}
+	/*@=branchstate@*/
     }
 
     if (!stopUninstall) {
@@ -697,6 +711,7 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     return rc;
 }
 
+/*@unchecked@*/
 static int reverse = -1;
 
 /**
@@ -765,6 +780,7 @@ IDTX IDTXload(rpmdb db, rpmTag tag)
     Header h;
 
     mi = rpmdbInitIterator(db, tag, NULL, 0);
+    /*@-branchstate@*/
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmTagType type = RPM_NULL_TYPE;
 	int_32 count = 0;
@@ -794,6 +810,7 @@ IDTX IDTXload(rpmdb db, rpmTag tag)
 	}
 	idtx->nidt++;
     }
+    /*@=branchstate@*/
     mi = rpmdbFreeIterator(mi);
 
     return IDTXsort(idtx);
@@ -838,6 +855,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	}
 
 	tidp = NULL;
+	/*@-branchstate@*/
 	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp) {
 
 	    idtx = IDTXgrow(idtx, 1);
@@ -856,6 +874,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	    }
 	    idtx->nidt++;
 	}
+	/*@=branchstate@*/
 
 	h = headerFree(h);
 	(void) Fclose(fd);

@@ -60,10 +60,10 @@ struct urlinfo_s {
 extern "C" {
 #endif
 
-/*@checked@*/
+/*@unchecked@*/
 extern int _url_count;		/*!< No. of cached URL's. */
 
-/*@checked@*/
+/*@unchecked@*/
 /*@only@*/ /*@null@*/
 extern urlinfo * _url_cache;	/*!< URL cache. */
 

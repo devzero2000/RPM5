@@ -7,7 +7,7 @@
 #include <rpmlib.h>
 #include "debug.h"
 
-static struct rpmlibProvides {
+static struct rpmlibProvides_s {
 /*@observer@*/ /*@null@*/ const char * featureName;
 /*@observer@*/ /*@null@*/ const char * featureEVR;
     int featureFlags;
@@ -42,7 +42,7 @@ static struct rpmlibProvides {
 
 void rpmShowRpmlibProvides(FILE * fp)
 {
-    const struct rpmlibProvides * rlp;
+    const struct rpmlibProvides_s * rlp;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
 	fprintf(fp, "    %s", rlp->featureName);
@@ -57,7 +57,7 @@ void rpmShowRpmlibProvides(FILE * fp)
 int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
 	int keyFlags)
 {
-    const struct rpmlibProvides * rlp;
+    const struct rpmlibProvides_s * rlp;
     int rc = 0;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
@@ -90,20 +90,28 @@ int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
         versions[n] = rpmlibProvides[n].featureEVR;
     }
     
+    /*@-branchstate@*/
     if (provNames)
 	*provNames = names;
     else
 	names = _free(names);
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if (provFlags)
 	*provFlags = flags;
     else
 	flags = _free(flags);
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if (provVersions)
 	*provVersions = versions;
     else
 	versions = _free(versions);
+    /*@=branchstate@*/
 
+    /*@-compmempass@*/ /* FIX: rpmlibProvides[] reachable */
     return n;
+    /*@=compmempass@*/
 }

@@ -31,7 +31,6 @@ char * rpmPermsString(int mode)
     else if (S_ISBLK(mode))
 	perms[0] = 'b';
 
-    /*@-unrecog@*/
     if (mode & S_IRUSR) perms[1] = 'r';
     if (mode & S_IWUSR) perms[2] = 'w';
     if (mode & S_IXUSR) perms[3] = 'x';
@@ -52,7 +51,6 @@ char * rpmPermsString(int mode)
 
     if (mode & S_ISVTX)
 	perms[9] = ((mode & S_IXOTH) ? 't' : 'T');
-    /*@=unrecog@*/
 
     return perms;
 }

@@ -145,11 +145,15 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
 
     GET_NUM_FIELD(hdr.devMajor, major);
     GET_NUM_FIELD(hdr.devMinor, minor);
-    st->st_dev = /*@-shiftsigned@*/ makedev(major, minor) /*@=shiftsigned@*/ ;
+    /*@-shiftimplementation@*/
+    st->st_dev = makedev(major, minor);
+    /*@=shiftimplementation@*/
 
     GET_NUM_FIELD(hdr.rdevMajor, major);
     GET_NUM_FIELD(hdr.rdevMinor, minor);
-    st->st_rdev = /*@-shiftsigned@*/ makedev(major, minor) /*@=shiftsigned@*/ ;
+    /*@-shiftimplementation@*/
+    st->st_rdev = makedev(major, minor);
+    /*@=shiftimplementation@*/
 
     GET_NUM_FIELD(hdr.namesize, nameSize);
     if (nameSize >= fsm->wrsize)
@@ -180,6 +184,7 @@ const char *const cpioStrerror(int rc)
     int l, myerrno = errno;
 
     strcpy(msg, "cpio: ");
+    /*@-branchstate@*/
     switch (rc) {
     default:
 	s = msg + strlen(msg);
@@ -215,17 +220,20 @@ const char *const cpioStrerror(int rc)
     case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
     }
+    /*@=branchstate@*/
 
     l = sizeof(msg) - strlen(msg) - 1;
     if (s != NULL) {
 	if (l > 0) strncat(msg, s, l);
 	l -= strlen(s);
     }
+    /*@-branchstate@*/
     if ((rc & CPIOERR_CHECK_ERRNO) && myerrno) {
 	s = _(" failed - ");
 	if (l > 0) strncat(msg, s, l);
 	l -= strlen(s);
 	if (l > 0) strncat(msg, strerror(myerrno), l);
     }
+    /*@=branchstate@*/
     return msg;
 }

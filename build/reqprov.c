@@ -22,6 +22,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     rpmTag indextag = 0;
     int len;
     rpmsenseFlags extra = RPMSENSE_ANY;
+    int xx;
     
     if (depFlags & RPMSENSE_PROVIDES) {
 	nametag = RPMTAG_PROVIDENAME;
@@ -56,8 +57,10 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
     depFlags = (depFlags & (RPMSENSE_SENSEMASK | RPMSENSE_MULTILIB)) | extra;
 
+    /*@-branchstate@*/
     if (depEVR == NULL)
 	depEVR = "";
+    /*@=branchstate@*/
     
     /* Check for duplicate dependencies. */
     if (hge(h, nametag, &dnt, (void **) &names, &len)) {
@@ -68,11 +71,11 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	int duplicate = 0;
 
 	if (flagtag) {
-	    (void) hge(h, versiontag, &dvt, (void **) &versions, NULL);
-	    (void) hge(h, flagtag, NULL, (void **) &flags, NULL);
+	    xx = hge(h, versiontag, &dvt, (void **) &versions, NULL);
+	    xx = hge(h, flagtag, NULL, (void **) &flags, NULL);
 	}
 	if (indextag)
-	    (void) hge(h, indextag, NULL, (void **) &indexes, NULL);
+	    xx = hge(h, indextag, NULL, (void **) &indexes, NULL);
 
 	while (len > 0) {
 	    len--;
@@ -101,15 +104,15 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     }
 
     /* Add this dependency. */
-    (void) headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &depName, 1);
+    xx = headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &depName, 1);
     if (flagtag) {
-	(void) headerAddOrAppendEntry(h, versiontag,
+	xx = headerAddOrAppendEntry(h, versiontag,
 			       RPM_STRING_ARRAY_TYPE, &depEVR, 1);
-	(void) headerAddOrAppendEntry(h, flagtag,
+	xx = headerAddOrAppendEntry(h, flagtag,
 			       RPM_INT32_TYPE, &depFlags, 1);
     }
     if (indextag)
-	(void) headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);
+	xx = headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);
 
     return 0;
 }

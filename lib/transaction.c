@@ -1248,7 +1248,8 @@ static int ensureOlder(struct availablePackage * alp, Header old,
 }
 
 static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
-	/*@modifies fi @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies fi, rpmGlobalMacroContext @*/
 {
     int noDocs = (ts->transFlags & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;

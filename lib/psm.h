@@ -24,37 +24,52 @@ struct transactionFileInfo_s {
   /* for all packages */
     enum rpmTransactionType type;
     fileAction action;		/*!< File disposition default. */
-/*@owned@*/ fileAction * actions;	/*!< File disposition(s) */
-/*@owned@*/ struct fingerPrint_s * fps;	/*!< File fingerprint(s) */
+/*@owned@*/
+    fileAction * actions;	/*!< File disposition(s) */
+/*@owned@*/
+    struct fingerPrint_s * fps;	/*!< File fingerprint(s) */
     HGE_t hge;			/*!< Vector to headerGetEntry() */
     HAE_t hae;			/*!< Vector to headerAddEntry() */
     HME_t hme;			/*!< Vector to headerModifyEntry() */
     HRE_t hre;			/*!< Vector to headerRemoveEntry() */
     HFD_t hfd;			/*!< Vector to headerFreeData() */
     Header h;			/*!< Package header */
-/*@owned@*/ const char * name;
-/*@owned@*/ const char * version;
-/*@owned@*/ const char * release;
+/*@owned@*/
+    const char * name;
+/*@owned@*/
+    const char * version;
+/*@owned@*/
+    const char * release;
     int_32 epoch;
     uint_32 flags;		/*!< File flag default. */
     const uint_32 * fflags;	/*!< File flag(s) (from header) */
     const uint_32 * fsizes;	/*!< File size(s) (from header) */
     const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
-/*@owned@*/ const char ** bnl;	/*!< Base name(s) (from header) */
-/*@owned@*/ const char ** dnl;	/*!< Directory name(s) (from header) */
+/*@owned@*/
+    const char ** bnl;		/*!< Base name(s) (from header) */
+/*@owned@*/
+    const char ** dnl;		/*!< Directory name(s) (from header) */
     int_32 * dil;		/*!< Directory indice(s) (from header) */
-/*@owned@*/ const char ** obnl;	/*!< Original base name(s) (from header) */
-/*@owned@*/ const char ** odnl;	/*!< Original directory name(s) (from header) */
-/*@unused@*/ int_32 * odil;	/*!< Original directory indice(s) (from header) */
+/*@owned@*/
+    const char ** obnl;		/*!< Original base name(s) (from header) */
+/*@owned@*/
+    const char ** odnl;		/*!< Original directory name(s) (from header) */
+/*@unused@*/
+    int_32 * odil;		/*!< Original directory indice(s) (from header) */
 /*@owned@*/ const char ** fmd5s;/*!< File MD5 sum(s) (from header) */
-/*@owned@*/ const char ** flinks;	/*!< File link(s) (from header) */
+/*@owned@*/
+    const char ** flinks;	/*!< File link(s) (from header) */
 /* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
     uint_16 * fmodes;		/*!< File mode(s) (from header) */
     uint_16 * frdevs;		/*!< File rdev(s) (from header) */
-/*@only@*/ /*@null@*/ char * fstates;	/*!< File state(s) (from header) */
-/*@owned@*/ const char ** fuser;	/*!< File owner(s) */
-/*@owned@*/ const char ** fgroup;	/*!< File group(s) */
-/*@owned@*/ const char ** flangs;	/*!< File lang(s) */
+/*@only@*/ /*@null@*/
+    char * fstates;		/*!< File state(s) (from header) */
+/*@owned@*/
+    const char ** fuser;	/*!< File owner(s) */
+/*@owned@*/
+    const char ** fgroup;	/*!< File group(s) */
+/*@owned@*/
+    const char ** flangs;	/*!< File lang(s) */
     int fc;			/*!< No. of files. */
     int dc;			/*!< No. of directories. */
     int bnlmax;			/*!< Length (in bytes) of longest base name. */
@@ -64,21 +79,29 @@ struct transactionFileInfo_s {
     unsigned int archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
     mode_t fperms;		/*!< File perms (0644) if not mapped. */
-/*@only@*/ /*@null@*/ const char ** apath;
+/*@only@*/ /*@null@*/
+    const char ** apath;
     int mapflags;
-/*@owned@*/ /*@null@*/ int * fmapflags;
+/*@owned@*/ /*@null@*/
+    int * fmapflags;
     uid_t uid;
-/*@owned@*/ /*@null@*/ uid_t * fuids;	/*!< File uid(s) */
+/*@owned@*/ /*@null@*/
+    uid_t * fuids;	/*!< File uid(s) */
     gid_t gid;
-/*@owned@*/ /*@null@*/ gid_t * fgids;	/*!< File gid(s) */
+/*@owned@*/ /*@null@*/
+    gid_t * fgids;	/*!< File gid(s) */
     int magic;
 #define	TFIMAGIC	0x09697923
-/*@owned@*/ FSM_t fsm;		/*!< File state machine data. */
+/*@owned@*/
+    FSM_t fsm;		/*!< File state machine data. */
 
   /* these are for TR_ADDED packages */
-/*@dependent@*/ struct availablePackage * ap;
-/*@owned@*/ struct sharedFileInfo * replaced;
-/*@owned@*/ uint_32 * replacedSizes;
+/*@dependent@*/
+    struct availablePackage * ap;
+/*@owned@*/
+    struct sharedFileInfo * replaced;
+/*@owned@*/
+    uint_32 * replacedSizes;
 
   /* for TR_REMOVED packages */
     unsigned int record;
@@ -133,17 +156,25 @@ typedef enum pkgStage_e {
 /**
  */
 struct psm_s {
-/*@kept@*/ rpmTransactionSet ts;/*!< transaction set */
-/*@kept@*/ TFI_t fi;		/*!< transaction element file info */
+/*@kept@*/
+    rpmTransactionSet ts;	/*!< transaction set */
+/*@kept@*/
+    TFI_t fi;			/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage/multilib header. */
-/*@null@*/ rpmdbMatchIterator mi;
-/*@observer@*/ const char * stepName;
-/*@only@*/ /*@null@*/ const char * rpmio_flags;
-/*@only@*/ /*@null@*/ const char * failedFile;
-/*@only@*/ /*@null@*/ const char * pkgURL;	/*!< Repackage URL. */
-/*@dependent@*/ const char * pkgfn;	/*!< Repackage file name. */
+/*@null@*/
+    rpmdbMatchIterator mi;
+/*@observer@*/
+    const char * stepName;
+/*@only@*/ /*@null@*/
+    const char * rpmio_flags;
+/*@only@*/ /*@null@*/
+    const char * failedFile;
+/*@only@*/ /*@null@*/
+    const char * pkgURL;	/*!< Repackage URL. */
+/*@dependent@*/
+    const char * pkgfn;		/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
@@ -156,7 +187,8 @@ struct psm_s {
     unsigned long total;	/*!< Callback total. */
     rpmRC rc;
     pkgStage goal;
-/*@unused@*/ pkgStage stage;
+/*@unused@*/
+    pkgStage stage;
 };
 
 #ifdef __cplusplus
@@ -193,10 +225,13 @@ void freeFi(TFI_t fi)
  * @return		0 on success
  */
 int psmStage(PSM_t psm, pkgStage stage)
-	/*@modifies psm, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* H_ROLLBACK */
+#endif	/* H_PSM */

@@ -47,7 +47,9 @@ static inline int genSourceRpmName(Spec spec)
  */
 static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		const char * fmodeMacro)
-	/*@modifies fdo, csa, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies fdo, csa, rpmGlobalMacroContext, fileSystem @*/
 {
     const char * rootDir = "/";
     rpmdb rpmdb = NULL;
@@ -94,6 +96,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 /**
  */
 static int cpio_copy(FD_t fdo, CSA_t csa)
+	/*@globals fileSystem@*/
 	/*@modifies fdo, csa, fileSystem @*/
 {
     char buf[BUFSIZ];
@@ -119,7 +122,9 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
  */
 static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 		const char * file, /*@only@*/ StringBuf sb)
-	/*@modifies fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/
 {
     char buf[BUFSIZ];
     const char * fn = buf;
@@ -135,7 +140,9 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 	sb = freeStringBuf(sb);
 	return NULL;
     }
+    /*@-type@*/ /* FIX: cast? */
     if ((f = fdGetFp(fd)) != NULL)
+    /*@=type@*/
     while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
@@ -153,7 +160,9 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 /**
  */
 static int addFileToTag(Spec spec, const char * file, Header h, int tag)
-	/*@modifies h, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
@@ -176,7 +185,9 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 /**
  */
 static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
-	/*@modifies h, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
 {
     StringBuf sb = newStringBuf();
     char *s;
@@ -194,7 +205,9 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 /**
  */
 static int processScriptFiles(Spec spec, Package pkg)
-	/*@modifies pkg->header, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies pkg->header, rpmGlobalMacroContext, fileSystem @*/
 {
     struct TriggerFileEntry *p;
     
@@ -281,12 +294,14 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     }
 
     /* Get copy of lead */
+    /*@-sizeoftype@*/
     if ((rc = Fread(lead, sizeof(char), sizeof(*lead), fdi)) != sizeof(*lead)) {
 	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"),
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
 	return RPMERR_BADMAGIC;
     }
+    /*@=sizeoftype@*/
 
     /* XXX FIXME: EPIPE on <stdin> */
     if (Fseek(fdi, 0, SEEK_SET) == -1) {
@@ -321,10 +336,12 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 	/*@notreached@*/ break;
     }
 
+    /*@-branchstate@*/
     if (specp)
 	*specp = spec;
     else
 	spec = freeSpec(spec);
+    /*@=branchstate@*/
 
     if (csa != NULL)
 	csa->cpioFdIn = fdi;
@@ -334,15 +351,19 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     return 0;
 }
 
+/*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
 #define	RPMPKGVERSION_MIN	30004
 #define	RPMPKGVERSION_MAX	40003
+/*@unchecked@*/
 static int rpmpkg_version = -1;
 
 static int rpmLeadVersion(void)
+	/*@globals rpmpkg_version, rpmGlobalMacroContext @*/
+	/*@modifies rpmpkg_version, rpmGlobalMacroContext @*/
 {
     int rpmlead_version;
 
@@ -392,14 +413,16 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	providePackageNVR(h);
 
     /* Save payload information */
+    /*@-branchstate@*/
     switch(type) {
     case RPMLEAD_SOURCE:
-	rpmio_flags = rpmExpand("%{?_source_payload:%{_source_payload}}", NULL);
+	rpmio_flags = rpmExpand("%{?_source_payload}", NULL);
 	break;
     case RPMLEAD_BINARY:
-	rpmio_flags = rpmExpand("%{?_binary_payload:%{_binary_payload}}", NULL);
+	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
 	break;
     }
+    /*@=branchstate@*/
     if (!(rpmio_flags && *rpmio_flags)) {
 	rpmio_flags = _free(rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");
@@ -423,7 +446,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 
     /* Create and add the cookie */
     if (cookie) {
-	sprintf(buf, "%s %d", buildHost(), (int) time(NULL));
+	sprintf(buf, "%s %d", buildHost(), (int) (*getBuildTime()));
 	*cookie = xstrdup(buf);
 	(void) headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
     }
@@ -655,6 +678,7 @@ exit:
     return rc;
 }
 
+/*@unchecked@*/
 static int_32 copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
@@ -728,12 +752,12 @@ int packageBinaries(Spec spec)
 		    switch(errno) {
 		    case  ENOENT:
 			if (Mkdir(dn, 0755) == 0)
-			    break;
+			    /*@switchbreak@*/ break;
 			/*@fallthrough@*/
 		    default:
 			rpmError(RPMERR_BADFILENAME,_("cannot create %s: %s\n"),
 			    dn, strerror(errno));
-			break;
+			/*@switchbreak@*/ break;
 		    }
 		}
 		dn = _free(dn);
@@ -743,12 +767,16 @@ int packageBinaries(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
+	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
-	csa->cpioList = pkg->cpioList;
+	/*@-assignexpose -newreftrans@*/
+/*@i@*/	csa->cpioList = pkg->cpioList;
+	/*@=assignexpose =newreftrans@*/
 
 	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
+	/*@=type@*/
 	fn = _free(fn);
 	if (rc)
 	    return rc;
@@ -780,12 +808,16 @@ int packageSources(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
+	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageSources)");
-	csa->cpioList = spec->sourceCpioList;
+	/*@-assignexpose -newreftrans@*/
+/*@i@*/	csa->cpioList = spec->sourceCpioList;
+	/*@=assignexpose =newreftrans@*/
 
 	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
+	/*@=type@*/
 	fn = _free(fn);
     }
     return rc;

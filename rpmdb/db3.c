@@ -1,13 +1,26 @@
+/*@-type@*/ /* FIX: annotate db3 methods */
 /** \ingroup db3
  * \file rpmdb/db3.c
  */
 
+/*@unchecked@*/
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "system.h"
 
 #if defined(HAVE_FTOK) && defined(HAVE_SYS_IPC_H)
 #include <sys/ipc.h>
+#endif
+
+#if defined(__LCLINT__)
+/*@-redef@*/ /* FIX: rpmio/rpmio.c also declares */
+typedef	unsigned int u_int32_t;
+typedef	unsigned short u_int16_t;
+typedef	unsigned char u_int8_t;
+/*@-incondefs@*/	/* LCLint 3.0.0.15 */
+typedef	int int32_t;
+/*@=incondefs@*/
+/*@=redef@*/
 #endif
 
 #include <db3/db.h>
@@ -72,7 +85,9 @@ struct dbiBStats_s {
 };
 /*@=fielduse@*/
 
+/*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc = 0;
@@ -80,21 +95,25 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
     rc = error;
 
     if (printit && rc) {
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	if (msg)
 	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
 		dbi->dbi_api, rc, msg, db_strerror(error));
 	else
 	    rpmError(RPMERR_DBERR, _("db%d error(%d): %s\n"),
 		dbi->dbi_api, rc, db_strerror(error));
+	/*@=moduncon@*/
     }
 
     return rc;
 }
+/*@=globuse =mustmod @*/
 
 static int db_fini(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile)
-	/*@modifies dbi, fileSystem @*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV * dbenv = rpmdb->db_dbenv;
@@ -113,7 +132,9 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     if (rpmdb->db_remove_env || dbi->dbi_tear_down) {
 	int xx;
 
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	xx = db_env_create(&dbenv, 0);
+	/*@=moduncon@*/
 	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = dbenv->remove(dbenv, dbhome, 0);
@@ -136,10 +157,13 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
     return 0;
 }
 
+/*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile,
 		/*@out@*/ DB_ENV ** dbenvp)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
 	/*@modifies dbi, *dbenvp, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -185,10 +209,12 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	return 1;
 
   { int xx;
+    /*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
     dbenv->set_errcall(dbenv, rpmdb->db_errcall);
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /* dbenv->set_paniccall(???) */
+    /*@=noeffectuncon@*/
     xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
     xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
@@ -241,7 +267,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
 	if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
 	    root = NULL;
+	/*@-mods@*/
 	tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	/*@=mods@*/
 	xx = dbenv->set_tmp_dir(dbenv, tmpdir);
 	xx = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
 	tmpdir = _free(tmpdir);
@@ -269,8 +297,10 @@ errxit:
     }
     return rc;
 }
+/*@=moduncon@*/
 
 static int db3sync(dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -286,6 +316,7 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
 }
 
 static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc;
@@ -297,6 +328,7 @@ static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
 
 /*@unused@*/ static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 		u_int32_t flags)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcp, fileSystem @*/
 {
     int rc;
@@ -304,11 +336,14 @@ static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
     if (dbcp) *dbcp = NULL;
     rc = dbcursor->c_dup(dbcursor, dbcp, flags);
     rc = cvtdberr(dbi, "dbcursor->c_dup", rc, _debug);
+    /*@-nullstate @*/ /* FIX: *dbcp can be NULL */
     return rc;
+    /*@=nullstate @*/
 }
 
 static int db3c_get(dbiIndex dbi, DBC * dbcursor,
 		DBT * key, DBT * data, u_int32_t flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int _printit;
@@ -332,6 +367,7 @@ static int db3c_get(dbiIndex dbi, DBC * dbcursor,
 
 static int db3c_put(dbiIndex dbi, DBC * dbcursor,
 		DBT * key, DBT * data, u_int32_t flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc;
@@ -343,6 +379,7 @@ static int db3c_put(dbiIndex dbi, DBC * dbcursor,
 }
 
 static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc;
@@ -356,6 +393,7 @@ static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
 
 static inline int db3c_open(dbiIndex dbi, /*@null@*/ /*@out@*/ DBC ** dbcp,
 		int dbiflags)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcp, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -379,6 +417,7 @@ static inline int db3c_open(dbiIndex dbi, /*@null@*/ /*@out@*/ DBC ** dbcp,
 
 static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 		unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     int rc = 0;
@@ -390,11 +429,15 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
     if (!dbi->dbi_use_cursors)
 	return 0;
 
+    /*@-branchstate@*/
     if (dbcursor == NULL)
 	dbcursor = dbi->dbi_rmw;
+    /*@=branchstate@*/
     if (dbcursor) {
+	/*@-branchstate@*/
 	if (dbcursor == dbi->dbi_rmw)
 	    dbi->dbi_rmw = NULL;
+	/*@=branchstate@*/
 	rc = db3c_close(dbi, dbcursor);
     }
     /*@-usereleased -compdef@*/ return rc; /*@=usereleased =compdef@*/
@@ -402,6 +445,7 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 
 static int db3copen(dbiIndex dbi,
 		/*@null@*/ /*@out@*/ DBC ** dbcp, unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
     DBC * dbcursor;
@@ -431,6 +475,7 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen,
 		const void * datap, size_t datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -461,6 +506,7 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor,
 static int db3cdel(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -496,6 +542,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ void ** keyp, /*@null@*/ size_t * keylen,
 		/*@null@*/ void ** datap, /*@null@*/ size_t * datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies *keyp, *keylen, *datap, *datalen, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -546,6 +593,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 static int db3ccount(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ /*@out@*/ unsigned int * countp,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies *countp, fileSystem @*/
 {
     db_recno_t count = 0;
@@ -581,6 +629,7 @@ static int db3byteswapped(dbiIndex dbi)	/*@*/
 }
 
 static int db3stat(dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -604,7 +653,10 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
+/*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -631,7 +683,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
      * Either the root or directory components may be a URL. Concatenate,
      * convert the URL to a path, and add the name of the file.
      */
+    /*@-mods@*/
     urlfn = rpmGenPath(root, home, NULL);
+    /*@=mods@*/
     (void) urlPath(urlfn, &dbhome);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
@@ -672,14 +726,18 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
 	DB_ENV * dbenv = NULL;
 
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	rc = db_env_create(&dbenv, 0);
+	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
 	if (rc || dbenv == NULL) goto exit;
 
+	/*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
 	dbenv->set_errcall(dbenv, rpmdb->db_errcall);
 	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /*	dbenv->set_paniccall(???) */
+	/*@=noeffectuncon@*/
 	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
 	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
@@ -690,7 +748,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	if (dbi->dbi_tmpdir) {
+	    /*@-mods@*/
 	    const char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	    /*@=mods@*/
 	    rc = dbenv->set_tmp_dir(dbenv, tmpdir);
 	    rc = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
 	    tmpdir = _free(tmpdir);
@@ -702,11 +762,15 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	rc = db_create(&db, dbenv, 0);
+	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 
 	if (db != NULL) {
+		/*@-mods@*/
 		const char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
+		/*@=mods@*/
 
 		rc = db->verify(db, dbf, NULL, NULL, flags);
 		rc = cvtdberr(dbi, "db->verify", rc, _debug);
@@ -736,8 +800,11 @@ exit:
 
     return rc;
 }
+/*@=moduncon@*/
 
 static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
 	/*@modifies *dbip, fileSystem @*/
 {
     /*@-nestedextern@*/
@@ -765,10 +832,12 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     /*
      * Parse db configuration parameters.
      */
+    /*@-mods@*/
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	/*@-nullstate@*/
 	return 1;
 	/*@=nullstate@*/
+    /*@=mods@*/
     dbi->dbi_api = DB_VERSION_MAJOR;
 
     /*
@@ -783,7 +852,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
      * Either the root or directory components may be a URL. Concatenate,
      * convert the URL to a path, and add the name of the file.
      */
+    /*@-mods@*/
     urlfn = rpmGenPath(root, home, NULL);
+    /*@=mods@*/
     (void) urlPath(urlfn, &dbhome);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
@@ -857,7 +928,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    }
 
 	} else {	/* dbhome is writable, check for persistent dbenv. */
+	    /*@-mods@*/
 	    const char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
+	    /*@=mods@*/
 
 	    if (access(dbf, F_OK) == -1) {
 		/* ... non-existent (or unwritable) DBENV, will create ... */
@@ -883,7 +956,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
 	/* dbhome is writable, and DB->open flags may conflict. */
 	const char * dbfn = (dbfile ? dbfile : tagName(dbi->dbi_rpmtag));
+	/*@-mods@*/
 	const char * dbf = rpmGetPath(dbhome, "/", dbfn, NULL);
+	/*@=mods@*/
 
 	if (access(dbf, F_OK) == -1) {
 	    /* File does not exist, DB->open might create ... */
@@ -909,6 +984,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	dbi->dbi_verify_on_close = 0;
 
     if (dbi->dbi_use_dbenv) {
+	/*@-mods@*/
 	if (rpmdb->db_dbenv == NULL) {
 	    rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 	    if (rc == 0) {
@@ -919,6 +995,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    dbenv = rpmdb->db_dbenv;
 	    rpmdb->db_opens++;
 	}
+	/*@=mods@*/
     }
 
     rpmMessage(RPMMESS_DEBUG, _("opening  db index       %s/%s %s mode=0x%x\n"),
@@ -928,7 +1005,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if (rc == 0) {
 	static int _lockdbfd = 0;
 
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
+	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
 	    if (rc == 0 && dbi->dbi_lorder) {
@@ -1170,17 +1249,19 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
     urlfn = _free(urlfn);
 
-    /*@-nullstate@*/
+    /*@-nullstate -compmempass@*/
     return rc;
-    /*@=nullstate@*/
+    /*@=nullstate =compmempass@*/
 }
 
 /** \ingroup db3
  */
 /*@-exportheadervar@*/
+/*@observer@*/ /*@unchecked@*/
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3copen, db3cclose, db3cdel, db3cget, db3cput,
     db3ccount, db3byteswapped, db3stat
 };
 /*@=exportheadervar@*/
+/*@=type@*/
