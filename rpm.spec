@@ -7,20 +7,22 @@
 
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 3.0.5
+%define version 3.0.6
 Version: %{version}
-Release: 13.6x
+Release: 6x
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
+# XXX the libio interface is incompatible in glibc-2.2
+Conflicts: glibc >= 2.1.3
 Prereq: gawk fileutils textutils sh-utils mktemp
 BuildRequires: bzip2 >= 0.9.0c-2
 Requires: popt, bzip2 >= 0.9.0c-2
 BuildRequires: python-devel >= 1.5.2
 %endif
-BuildRoot: /var/tmp/%{name}-root
+BuildRoot: %{_tmppath}/%{name}-root
 
 %description
 The RPM Package Manager (RPM) is a powerful command line driven
@@ -74,7 +76,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.5
+Version: 1.5.1
 
 %description -n popt
 Popt is a C library for parsing command line parameters.  Popt was
@@ -248,6 +250,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Sep 13 2000 Jeff Johnson <jbj@redhat.com>
+- add conflict to avoid incompatible libio interface in glibc-2.2.
+- rpm 3.0.6 release.
+
 * Wed Sep 13 2000 Jeff Johnson <jbj@redhat.com>
 - popt: support for float/double args.
 - fix: honor --test when doing --freshen.
