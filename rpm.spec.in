@@ -26,7 +26,7 @@ Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
-Prereq: fileutils mktemp shadow-utils
+Prereq: fileutils shadow-utils
 %endif
 Requires: popt = 1.8
 Obsoletes: rpm-perl < %{version}
@@ -73,7 +73,7 @@ will manipulate RPM packages and databases.
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
 Requires: rpm = %{rpm_version}, patch >= 2.5, file
-Provides: rpmbuild(VendorConfig) = %{version}
+Provides: rpmbuild(VendorConfig) = 4.1-1
 
 %description build
 The rpm-build package contains the scripts and executable programs
@@ -134,7 +134,7 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
-	$WITH_PYTHON --enable-posixmutexes --without-javaglue
+	$WITH_PYTHON --without-javaglue
 %else
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
@@ -183,8 +183,6 @@ gzip -9n apidocs/man/man*/* || :
 { cd $RPM_BUILD_ROOT
   rm -rf .%{__includedir}/beecrypt
   rm -f .%{__libdir}/libbeecrypt.{a,la,so.2.2.0}
-  rm -rf .%{__includedir}/libelf
-  rm -f .%{__libdir}/libelf.{a,la}
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
   rm -rf .%{__mandir}/{fr,ko}
 }
