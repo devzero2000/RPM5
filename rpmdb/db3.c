@@ -664,9 +664,14 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     dbi->dbi_dbinfo = _free(dbi->dbi_dbinfo);
 
     if (dbi->dbi_use_dbenv) {
-	/*@-nullstate@*/
-	xx = db_fini(dbi, (dbhome ? dbhome : ""), dbfile, dbsubfile);
-	/*@=nullstate@*/
+	if (dbi->dbi_dbenv == rpmdb->db_dbenv && rpmdb->db_opens == 1) {
+	    /*@-nullstate@*/
+	    xx = db_fini(dbi, (dbhome ? dbhome : ""), dbfile, dbsubfile);
+	    /*@=nullstate@*/
+	    rpmdb->db_dbenv = NULL;
+	}
+	dbi->dbi_dbenv = NULL;
+	rpmdb->db_opens--;
     }
 
     if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
@@ -910,8 +915,18 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
     dbi->dbi_dbinfo = NULL;
 
-    if (dbi->dbi_use_dbenv)
-	rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
+    if (dbi->dbi_use_dbenv) {
+	if (rpmdb->db_dbenv == NULL) {
+	    rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
+	    if (rc == 0) {
+		rpmdb->db_dbenv = dbenv;
+		rpmdb->db_opens = 1;
+	    }
+	} else {
+	    dbenv = rpmdb->db_dbenv;
+	    rpmdb->db_opens++;
+	}
+    }
 
     rpmMessage(RPMMESS_DEBUG, _("opening  db index       %s/%s %s mode=0x%x\n"),
 		dbhome, (dbfile ? dbfile : tagName(dbi->dbi_rpmtag)),
