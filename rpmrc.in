@@ -173,8 +173,8 @@ buildarchtranslate: osfmach3_i486: i386
 buildarchtranslate: osfmach3_i386: i386
 
 buildarchtranslate: athlon: i386
-buildarchtranslate: pentium4: pentium4
-buildarchtranslate: pentium3: pentium3
+buildarchtranslate: pentium4: i386
+buildarchtranslate: pentium3: i386
 buildarchtranslate: i686: i386
 buildarchtranslate: i586: i386
 buildarchtranslate: i486: i386
