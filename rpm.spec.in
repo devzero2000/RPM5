@@ -19,7 +19,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.90
+Release: 0.91
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -338,6 +338,7 @@ fi
 %{__prefix}/lib/librpmio-@VERSION@.so
 %{__prefix}/lib/librpmbuild-@VERSION@.so
 
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
 %rpmattr	%{__prefix}/lib/rpm/config.guess
 %rpmattr	%{__prefix}/lib/rpm/config.sub
 %rpmattr	%{__prefix}/lib/rpm/convertrpmrc.sh
@@ -509,6 +510,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Aug 13 2001 Jeff Johnson <jbj@redhat.com>
+- fix: segfault on headerFree given malicious data.
+- fix: don't verify hash page nelem.
+- better error messages for verification failures.
+- include directory /usr/lib/rpm in rpm package.
+
 * Wed Aug  8 2001 Jeff Johnson <jbj@redhat.com>
 - add legacy (compile only) wrappers for fdFileno et al.
 - add -D_REENTRANT (note rpmlib is still not thread safe).

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-08 08:37-0400\n"
+"POT-Creation-Date: 2001-08-13 11:45-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2266,7 +2266,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2607 lib/header.c:2626 lib/header.c:2646
+#: lib/header.c:2609 lib/header.c:2628 lib/header.c:2648
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -2344,88 +2344,88 @@ msgid "%s created as %s\n"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
 #. This should not be allowed
-#: lib/header.c:255
+#: lib/header.c:256
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "¹tevec grabData() RPM_STRING_TYPE mora biti 1.\n"
 
-#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:400
+#: lib/header.c:291 lib/header_internal.c:139 lib/psm.c:400
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Tip podatkov %d ni podprt\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1923
+#: lib/header.c:1925
 #, c-format
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1953
+#: lib/header.c:1955
 msgid "missing } after %{"
 msgstr "manjkajoèi } za %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1967
+#: lib/header.c:1969
 msgid "empty tag format"
 msgstr "oblika znaèke manjka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1981
+#: lib/header.c:1983
 msgid "empty tag name"
 msgstr "ime znaèke manjka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1998
+#: lib/header.c:2000
 msgid "unknown tag"
 msgstr "neznana znaèka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2025
+#: lib/header.c:2027
 msgid "] expected at end of array"
 msgstr "na koncu polja je prièakovan ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2043
+#: lib/header.c:2045
 msgid "unexpected ]"
 msgstr "neprièakovan ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2047
+#: lib/header.c:2049
 msgid "unexpected }"
 msgstr "neprièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2113
+#: lib/header.c:2115
 msgid "? expected in expression"
 msgstr "v izrazu je prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2122
+#: lib/header.c:2124
 msgid "{ expected after ? in expression"
 msgstr "v izrazu je za { prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2135 lib/header.c:2177
+#: lib/header.c:2137 lib/header.c:2179
 msgid "} expected in expression"
 msgstr "v izrazu je prièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2145
+#: lib/header.c:2147
 msgid ": expected following ? subexpression"
 msgstr "za podizrazom ? je prièakovano :"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2162
+#: lib/header.c:2164
 msgid "{ expected after : in expression"
 msgstr "v izrazu je za : prièakovan {"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2187
+#: lib/header.c:2189
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
-#: lib/header.c:2367
+#: lib/header.c:2369
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
@@ -3650,11 +3650,11 @@ msgstr "odpiranje datoteke %s v naèinu 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1119
+#: rpmdb/db1.c:562 rpmdb/db3.c:1141
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1119
+#: rpmdb/db1.c:562 rpmdb/db3.c:1141
 msgid "shared"
 msgstr "skupno"
 
@@ -3673,27 +3673,27 @@ msgstr "odstranjeno db okolje %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "odpiranje db okolja %s/%s %s\n"
 
-#: rpmdb/db3.c:660
+#: rpmdb/db3.c:669
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db3.c:702
+#: rpmdb/db3.c:724
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db3.c:899
+#: rpmdb/db3.c:921
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
 
-#: rpmdb/db3.c:1117
+#: rpmdb/db3.c:1139
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:1123
+#: rpmdb/db3.c:1145
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "zaklenjeno  db kazalo       %s/%s\n"

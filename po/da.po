@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-08 08:37-0400\n"
+"POT-Creation-Date: 2001-08-13 11:45-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2224,7 +2224,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2607 lib/header.c:2626 lib/header.c:2646
+#: lib/header.c:2609 lib/header.c:2628 lib/header.c:2648
 msgid "(not a number)"
 msgstr "(ikke et tal)"
 
@@ -2302,87 +2302,87 @@ msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"
 
 #. This should not be allowed
-#: lib/header.c:255
+#: lib/header.c:256
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
 
-#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:400
+#: lib/header.c:291 lib/header_internal.c:139 lib/psm.c:400
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatype %d understøttes ikke\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1923
+#: lib/header.c:1925
 #, c-format
 msgid "missing { after %"
 msgstr "manglende { efter %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1953
+#: lib/header.c:1955
 msgid "missing } after %{"
 msgstr "manglende } efter %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1967
+#: lib/header.c:1969
 msgid "empty tag format"
 msgstr "tomt mærkeformat"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1981
+#: lib/header.c:1983
 msgid "empty tag name"
 msgstr "tomt mærkenavn"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1998
+#: lib/header.c:2000
 msgid "unknown tag"
 msgstr "ukendt mærke"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2025
+#: lib/header.c:2027
 msgid "] expected at end of array"
 msgstr "] forventet ved slutningen af tabel"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2043
+#: lib/header.c:2045
 msgid "unexpected ]"
 msgstr "uventet ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2047
+#: lib/header.c:2049
 msgid "unexpected }"
 msgstr "uventet }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2113
+#: lib/header.c:2115
 msgid "? expected in expression"
 msgstr "? forventet i udtryk"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2122
+#: lib/header.c:2124
 msgid "{ expected after ? in expression"
 msgstr "{ forventet efter ? i udtryk"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2135 lib/header.c:2177
+#: lib/header.c:2137 lib/header.c:2179
 msgid "} expected in expression"
 msgstr "} forventet i udtryk"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2145
+#: lib/header.c:2147
 msgid ": expected following ? subexpression"
 msgstr ": forventet efter ?-underudtryk"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2162
+#: lib/header.c:2164
 msgid "{ expected after : in expression"
 msgstr "{ forventet efter : i udtryk"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2187
+#: lib/header.c:2189
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
-#: lib/header.c:2367
+#: lib/header.c:2369
 msgid "(unknown type)"
 msgstr "(ukendt type)"
 
@@ -3570,11 +3570,11 @@ msgstr "åbner db-fil      %s modus 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kunne ikke opnå %s lås på database\n"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1119
+#: rpmdb/db1.c:562 rpmdb/db3.c:1141
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1119
+#: rpmdb/db1.c:562 rpmdb/db3.c:1141
 msgid "shared"
 msgstr "delt"
 
@@ -3593,27 +3593,27 @@ msgstr "fjernede db-miljø  %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "åbner   db-miljø  %s/%s %s\n"
 
-#: rpmdb/db3.c:660
+#: rpmdb/db3.c:669
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:702
+#: rpmdb/db3.c:724
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:899
+#: rpmdb/db3.c:921
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1117
+#: rpmdb/db3.c:1139
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1123
+#: rpmdb/db3.c:1145
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste   db-index  %s/%s\n"

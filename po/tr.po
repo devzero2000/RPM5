@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-08 08:37-0400\n"
+"POT-Creation-Date: 2001-08-13 11:45-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2230,7 +2230,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2607 lib/header.c:2626 lib/header.c:2646
+#: lib/header.c:2609 lib/header.c:2628 lib/header.c:2648
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -2308,87 +2308,87 @@ msgid "%s created as %s\n"
 msgstr "%s %s olarak oluþturuldu\n"
 
 #. This should not be allowed
-#: lib/header.c:255
+#: lib/header.c:256
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE sayýsý 1 olmalý.\n"
 
-#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:400
+#: lib/header.c:291 lib/header_internal.c:139 lib/psm.c:400
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "%d veri türü desteklenmiyor\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1923
+#: lib/header.c:1925
 #, c-format
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1953
+#: lib/header.c:1955
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1967
+#: lib/header.c:1969
 msgid "empty tag format"
 msgstr "etiket biçemi boþ"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1981
+#: lib/header.c:1983
 msgid "empty tag name"
 msgstr "etiket ismi boþ"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1998
+#: lib/header.c:2000
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2025
+#: lib/header.c:2027
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2043
+#: lib/header.c:2045
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2047
+#: lib/header.c:2049
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2113
+#: lib/header.c:2115
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2122
+#: lib/header.c:2124
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2135 lib/header.c:2177
+#: lib/header.c:2137 lib/header.c:2179
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2145
+#: lib/header.c:2147
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2162
+#: lib/header.c:2164
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2187
+#: lib/header.c:2189
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
-#: lib/header.c:2367
+#: lib/header.c:2369
 msgid "(unknown type)"
 msgstr "(bilinmeyen tür)"
 
@@ -3572,11 +3572,11 @@ msgstr "açýlan db dosyasý      %s kip 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "Veritabaný için %s kilit alýnamadý\n"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1119
+#: rpmdb/db1.c:562 rpmdb/db3.c:1141
 msgid "exclusive"
 msgstr "baðdaþýk"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1119
+#: rpmdb/db1.c:562 rpmdb/db3.c:1141
 msgid "shared"
 msgstr "paylaþýmlý"
 
@@ -3595,27 +3595,27 @@ msgstr "silindi       db ortamý %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "açýlýyor      db ortamý %s/%s %s\n"
 
-#: rpmdb/db3.c:660
+#: rpmdb/db3.c:669
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kapandý      db endeks %s/%s\n"
 
-#: rpmdb/db3.c:702
+#: rpmdb/db3.c:724
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "doðrulandý    db endeks %s/%s\n"
 
-#: rpmdb/db3.c:899
+#: rpmdb/db3.c:921
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1117
+#: rpmdb/db3.c:1139
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1123
+#: rpmdb/db3.c:1145
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"
