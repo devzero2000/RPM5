@@ -19,7 +19,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.89
+Release: 0.90
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -511,6 +511,7 @@ fi
 %changelog
 * Wed Aug  8 2001 Jeff Johnson <jbj@redhat.com>
 - add legacy (compile only) wrappers for fdFileno et al.
+- add -D_REENTRANT (note rpmlib is still not thread safe).
 
 * Mon Aug  6 2001 Jeff Johnson <jbj@redhat.com>
 - python: add hiesenbug patch.
