@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-02-10 09:07-0500\n"
-"PO-Revision-Date: 2001-02-08 18:51+0100\n"
+"PO-Revision-Date: 2001-02-12 08:08+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3872,11 +3872,13 @@ msgid "running postuninstall script (if any)\n"
 msgstr "spou¹tím pøípadný postdeinstalaèní skript\n"
 
 #: lib/uninstall.c:436
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
-msgstr "provedení skripletu %s z %s-%s-%s tu selhalo, návratový kód: %s\n"
+msgstr ""
+"Získání návratového kódu skriptletu %s ze %s-%s-%s selhalo, waitpid vrátil "
+"%s\n"
 
 #: lib/uninstall.c:443
 #, c-format
