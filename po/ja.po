@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 13:33-0500\n"
+"POT-Creation-Date: 2002-11-05 14:50-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1152,15 +1152,15 @@ msgstr "--sign はパッケージ作成時のみ使用できます"
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
-#: rpm.c:1113 rpmqv.c:1127
+#: rpm.c:1113 rpmqv.c:1129
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags の引数が間違っています"
 
-#: rpm.c:1124 rpmqv.c:1136
+#: rpm.c:1124 rpmqv.c:1138
 msgid "no packages given for signature check"
 msgstr "署名検査のためのパッケージがありません"
 
-#: rpm.c:1135 rpmqv.c:1145
+#: rpm.c:1135 rpmqv.c:1147
 msgid "no packages given for signing"
 msgstr "署名のためのパッケージがありません"
 
@@ -1168,24 +1168,24 @@ msgstr "署名のためのパッケージがありません"
 msgid "no packages given for uninstall"
 msgstr "アンインストールのためのパッケージがありません"
 
-#: rpm.c:1240 rpmqv.c:1067
+#: rpm.c:1240 rpmqv.c:1069
 msgid "no packages given for install"
 msgstr "インストールのためのパッケージがありません"
 
-#: rpm.c:1264 rpmqv.c:1090
+#: rpm.c:1264 rpmqv.c:1092
 msgid "extra arguments given for query of all packages"
 msgstr "全パッケージの問い合わせのために余分な引数があります"
 
-#: rpm.c:1269 rpmqv.c:1099
+#: rpm.c:1269 rpmqv.c:1101
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数がありません"
 
-#: rpm.c:1286 rpmqv.c:1115
+#: rpm.c:1286 rpmqv.c:1117
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "全パッケージの検証のために余分な引数があります"
 
-#: rpm.c:1290 rpmqv.c:1119
+#: rpm.c:1290 rpmqv.c:1121
 msgid "no arguments given for verify"
 msgstr "検証のための引数がありません"
 
@@ -1316,19 +1316,19 @@ msgid ""
 "and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpmqv.c:937
+#: rpmqv.c:939
 msgid "no packages files given for rebuild"
 msgstr "再作成するためのパッケージファイルがありません"
 
-#: rpmqv.c:1006
+#: rpmqv.c:1008
 msgid "no spec files given for build"
 msgstr "作成のための spec ファイルがありません"
 
-#: rpmqv.c:1008
+#: rpmqv.c:1010
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
-#: rpmqv.c:1029
+#: rpmqv.c:1031
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "インストールのためのパッケージがありません"

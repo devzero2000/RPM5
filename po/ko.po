@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-11-05 13:33-0500\n"
+"POT-Creation-Date: 2002-11-05 14:50-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1100,15 +1100,15 @@ msgstr "--sign 옵션은 패키지 제작시에만 사용할 수 있습니다"
 msgid "exec failed\n"
 msgstr "실행에 실패했습니다\n"
 
-#: rpm.c:1113 rpmqv.c:1127
+#: rpm.c:1113 rpmqv.c:1129
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags 옵션에 부적절한 인수가 지정되었습니다 "
 
-#: rpm.c:1124 rpmqv.c:1136
+#: rpm.c:1124 rpmqv.c:1138
 msgid "no packages given for signature check"
 msgstr "서명 검사할 패키지가 지정되지 않았습니다"
 
-#: rpm.c:1135 rpmqv.c:1145
+#: rpm.c:1135 rpmqv.c:1147
 msgid "no packages given for signing"
 msgstr "서명할 패키지가 지정되지 않았습니다"
 
@@ -1116,23 +1116,23 @@ msgstr "서명할 패키지가 지정되지 않았습니다"
 msgid "no packages given for uninstall"
 msgstr "제거(uninstall)할 패키지가 지정되지 않았습니다"
 
-#: rpm.c:1240 rpmqv.c:1067
+#: rpm.c:1240 rpmqv.c:1069
 msgid "no packages given for install"
 msgstr "설치할 패키지가 지정되지 않았습니다"
 
-#: rpm.c:1264 rpmqv.c:1090
+#: rpm.c:1264 rpmqv.c:1092
 msgid "extra arguments given for query of all packages"
 msgstr "모든 패키지를 질의하는데 필요 이상의 인수가 지정되었습니다"
 
-#: rpm.c:1269 rpmqv.c:1099
+#: rpm.c:1269 rpmqv.c:1101
 msgid "no arguments given for query"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
-#: rpm.c:1286 rpmqv.c:1115
+#: rpm.c:1286 rpmqv.c:1117
 msgid "extra arguments given for verify of all packages"
 msgstr "모든 패키지를 검증하는데 필요 이상의 인수가 지정되었습니다"
 
-#: rpm.c:1290 rpmqv.c:1119
+#: rpm.c:1290 rpmqv.c:1121
 msgid "no arguments given for verify"
 msgstr "검증에 필요한 인수가 지정되지 않았습니다"
 
@@ -1258,19 +1258,19 @@ msgid ""
 "and erasure"
 msgstr "스크립트 해제 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:937
+#: rpmqv.c:939
 msgid "no packages files given for rebuild"
 msgstr "재제작(rebuild)할 패키지 파일이 지정되지 않았습니다"
 
-#: rpmqv.c:1006
+#: rpmqv.c:1008
 msgid "no spec files given for build"
 msgstr "패키지 제작에 필요한 spec 파일이 지정되지 않았습니다"
 
-#: rpmqv.c:1008
+#: rpmqv.c:1010
 msgid "no tar files given for build"
 msgstr "패키지 제작에 필요한 tar 파일이 지정되지 않았습니다"
 
-#: rpmqv.c:1029
+#: rpmqv.c:1031
 msgid "no packages given for erase"
 msgstr "삭제할 패키지가 지정되지 않았습니다"
 

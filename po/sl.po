@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 13:33-0500\n"
+"POT-Creation-Date: 2002-11-05 14:50-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1126,15 +1126,15 @@ msgstr "--sign sme biti podan le ob izgradnji paketa"
 msgid "exec failed\n"
 msgstr "izvajanje je bilo neuspe¹no\n"
 
-#: rpm.c:1113 rpmqv.c:1127
+#: rpm.c:1113 rpmqv.c:1129
 msgid "unexpected arguments to --querytags "
 msgstr "neprièakovani argumenti za --querytags "
 
-#: rpm.c:1124 rpmqv.c:1136
+#: rpm.c:1124 rpmqv.c:1138
 msgid "no packages given for signature check"
 msgstr "paketi za katere bi bilo potrebno preveriti podpis niso navedeni"
 
-#: rpm.c:1135 rpmqv.c:1145
+#: rpm.c:1135 rpmqv.c:1147
 msgid "no packages given for signing"
 msgstr "paketi katere bi bilo potrebno podpisati niso navedeni"
 
@@ -1142,23 +1142,23 @@ msgstr "paketi katere bi bilo potrebno podpisati niso navedeni"
 msgid "no packages given for uninstall"
 msgstr "paketi katere bi bilo potrebno odstraniti niso navedeni"
 
-#: rpm.c:1240 rpmqv.c:1067
+#: rpm.c:1240 rpmqv.c:1069
 msgid "no packages given for install"
 msgstr "paketi katere bi bilo potrebno namestiti niso navedeni"
 
-#: rpm.c:1264 rpmqv.c:1090
+#: rpm.c:1264 rpmqv.c:1092
 msgid "extra arguments given for query of all packages"
 msgstr "pri poizvedbi paketov so podani odveèni argumenti"
 
-#: rpm.c:1269 rpmqv.c:1099
+#: rpm.c:1269 rpmqv.c:1101
 msgid "no arguments given for query"
 msgstr "argumenti za poizvedbo niso podani"
 
-#: rpm.c:1286 rpmqv.c:1115
+#: rpm.c:1286 rpmqv.c:1117
 msgid "extra arguments given for verify of all packages"
 msgstr "pri preverjanju paketov so podani odveèni argumenti"
 
-#: rpm.c:1290 rpmqv.c:1119
+#: rpm.c:1290 rpmqv.c:1121
 msgid "no arguments given for verify"
 msgstr "argumenti za preverjanje niso podani"
 
@@ -1287,19 +1287,19 @@ msgid ""
 "and erasure"
 msgstr "--justdb sme biti podan le ob namestitvi ali odstranitvi paketa"
 
-#: rpmqv.c:937
+#: rpmqv.c:939
 msgid "no packages files given for rebuild"
 msgstr "paketi za vnovièno izgradnjo niso navedeni"
 
-#: rpmqv.c:1006
+#: rpmqv.c:1008
 msgid "no spec files given for build"
 msgstr "datoteka spec za izgradnjo manjka"
 
-#: rpmqv.c:1008
+#: rpmqv.c:1010
 msgid "no tar files given for build"
 msgstr "arhiv tar za izgradnjo manjka"
 
-#: rpmqv.c:1029
+#: rpmqv.c:1031
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "paketi katere bi bilo potrebno namestiti niso navedeni"

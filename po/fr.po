@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 13:33-0500\n"
+"POT-Creation-Date: 2002-11-05 14:50-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1202,15 +1202,15 @@ msgstr "--sign ne peut tre spcifi que lors de la construction d'un package"
 msgid "exec failed\n"
 msgstr "La construction a chou.\n"
 
-#: rpm.c:1113 rpmqv.c:1127
+#: rpm.c:1113 rpmqv.c:1129
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpm.c:1124 rpmqv.c:1136
+#: rpm.c:1124 rpmqv.c:1138
 msgid "no packages given for signature check"
 msgstr "aucun package n'a t spcifi pour la vrification de signature"
 
-#: rpm.c:1135 rpmqv.c:1145
+#: rpm.c:1135 rpmqv.c:1147
 #, fuzzy
 msgid "no packages given for signing"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
@@ -1219,25 +1219,25 @@ msgstr "aucun package n'a t spcifi pour la dsinstallation"
 msgid "no packages given for uninstall"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpm.c:1240 rpmqv.c:1067
+#: rpm.c:1240 rpmqv.c:1069
 msgid "no packages given for install"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: rpm.c:1264 rpmqv.c:1090
+#: rpm.c:1264 rpmqv.c:1092
 #, fuzzy
 msgid "extra arguments given for query of all packages"
 msgstr "aucun argument n'a t fourni pour la requte"
 
-#: rpm.c:1269 rpmqv.c:1099
+#: rpm.c:1269 rpmqv.c:1101
 msgid "no arguments given for query"
 msgstr "aucun argument n'a t fourni pour la requte"
 
-#: rpm.c:1286 rpmqv.c:1115
+#: rpm.c:1286 rpmqv.c:1117
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "aucun argument n'a t fourni pour la requte"
 
-#: rpm.c:1290 rpmqv.c:1119
+#: rpm.c:1290 rpmqv.c:1121
 msgid "no arguments given for verify"
 msgstr "aucun argument n'a t fourni pour la vrification"
 
@@ -1367,20 +1367,20 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpmqv.c:937
+#: rpmqv.c:939
 msgid "no packages files given for rebuild"
 msgstr "aucun package n'a t spcifi pour la reconstruction"
 
-#: rpmqv.c:1006
+#: rpmqv.c:1008
 msgid "no spec files given for build"
 msgstr "aucun package n'a t spcifi pour la construction"
 
-#: rpmqv.c:1008
+#: rpmqv.c:1010
 #, fuzzy
 msgid "no tar files given for build"
 msgstr "aucun package n'a t spcifi pour la construction"
 
-#: rpmqv.c:1029
+#: rpmqv.c:1031
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "aucun package n'a t spcifi pour l'installation"

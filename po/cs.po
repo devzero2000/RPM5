@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 13:33-0500\n"
+"POT-Creation-Date: 2002-11-05 14:50-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1095,15 +1095,15 @@ msgstr "--sign mù¾e být pou¾it jen pøi sestavování balíèkù"
 msgid "exec failed\n"
 msgstr "spu¹tìní selhalo\n"
 
-#: rpm.c:1113 rpmqv.c:1127
+#: rpm.c:1113 rpmqv.c:1129
 msgid "unexpected arguments to --querytags "
 msgstr "neoèekávané parametry pro --querytags "
 
-#: rpm.c:1124 rpmqv.c:1136
+#: rpm.c:1124 rpmqv.c:1138
 msgid "no packages given for signature check"
 msgstr "ke kontrole podpisu nezadány ¾ádné balíèky"
 
-#: rpm.c:1135 rpmqv.c:1145
+#: rpm.c:1135 rpmqv.c:1147
 msgid "no packages given for signing"
 msgstr "k podepsání nezadány ¾ádné balíèky"
 
@@ -1111,23 +1111,23 @@ msgstr "k podepsání nezadány ¾ádné balíèky"
 msgid "no packages given for uninstall"
 msgstr "nezadány ¾ádné balíèky pro odstranìní"
 
-#: rpm.c:1240 rpmqv.c:1067
+#: rpm.c:1240 rpmqv.c:1069
 msgid "no packages given for install"
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: rpm.c:1264 rpmqv.c:1090
+#: rpm.c:1264 rpmqv.c:1092
 msgid "extra arguments given for query of all packages"
 msgstr "k dotazu na v¹echny balíèky zadány parametry navíc"
 
-#: rpm.c:1269 rpmqv.c:1099
+#: rpm.c:1269 rpmqv.c:1101
 msgid "no arguments given for query"
 msgstr "k dotazu nezadány ¾ádné parametry"
 
-#: rpm.c:1286 rpmqv.c:1115
+#: rpm.c:1286 rpmqv.c:1117
 msgid "extra arguments given for verify of all packages"
 msgstr "pro kontrolu v¹ech balíèkù zadány parametry navíc"
 
-#: rpm.c:1290 rpmqv.c:1119
+#: rpm.c:1290 rpmqv.c:1121
 msgid "no arguments given for verify"
 msgstr "pro kontrolu nezadány ¾ádné balíèky"
 
@@ -1255,19 +1255,19 @@ msgstr ""
 "volba pro potlaèení skriptù mù¾e být pou¾ita jen pøi instalaci nebo pøi "
 "odstraòování balíèkù"
 
-#: rpmqv.c:937
+#: rpmqv.c:939
 msgid "no packages files given for rebuild"
 msgstr "ke znovusestavení nezadány ¾ádné balíèky"
 
-#: rpmqv.c:1006
+#: rpmqv.c:1008
 msgid "no spec files given for build"
 msgstr "pro sestavení nezadány ¾ádné spec soubory"
 
-#: rpmqv.c:1008
+#: rpmqv.c:1010
 msgid "no tar files given for build"
 msgstr "pro sestavení nezadány ¾ádné tar soubory"
 
-#: rpmqv.c:1029
+#: rpmqv.c:1031
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "nezadány ¾ádné balíèky pro instalaci"

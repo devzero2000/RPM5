@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 13:33-0500\n"
+"POT-Creation-Date: 2002-11-05 14:50-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1106,15 +1106,15 @@ msgstr "--sign sadece paket oluþturulurken kullanýlabilir"
 msgid "exec failed\n"
 msgstr "icra baþarýsýz\n"
 
-#: rpm.c:1113 rpmqv.c:1127
+#: rpm.c:1113 rpmqv.c:1129
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags ile beklenmeyen girdiler"
 
-#: rpm.c:1124 rpmqv.c:1136
+#: rpm.c:1124 rpmqv.c:1138
 msgid "no packages given for signature check"
 msgstr "imzasý kontrol edilecek paket(ler) belirtilmedi"
 
-#: rpm.c:1135 rpmqv.c:1145
+#: rpm.c:1135 rpmqv.c:1147
 msgid "no packages given for signing"
 msgstr "imzalanacak paket(ler) belirtilmedi"
 
@@ -1122,23 +1122,23 @@ msgstr "imzalanacak paket(ler) belirtilmedi"
 msgid "no packages given for uninstall"
 msgstr "sistemden silinecek paket(ler) belirtilmedi"
 
-#: rpm.c:1240 rpmqv.c:1067
+#: rpm.c:1240 rpmqv.c:1069
 msgid "no packages given for install"
 msgstr "yüklenecek paket(ler) belirtilmedi"
 
-#: rpm.c:1264 rpmqv.c:1090
+#: rpm.c:1264 rpmqv.c:1092
 msgid "extra arguments given for query of all packages"
 msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
 
-#: rpm.c:1269 rpmqv.c:1099
+#: rpm.c:1269 rpmqv.c:1101
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: rpm.c:1286 rpmqv.c:1115
+#: rpm.c:1286 rpmqv.c:1117
 msgid "extra arguments given for verify of all packages"
 msgstr "tüm paketlerin denetlenmesi için fazladan argümanlar belirtildi"
 
-#: rpm.c:1290 rpmqv.c:1119
+#: rpm.c:1290 rpmqv.c:1121
 msgid "no arguments given for verify"
 msgstr "denetleme için hiç argüman belirtilmedi"
 
@@ -1266,19 +1266,19 @@ msgstr ""
 "betik iptal etme seçenekleri sadece paketin kurulmasý ve silinmesi sýrasýnda "
 "kullanýlabilir"
 
-#: rpmqv.c:937
+#: rpmqv.c:939
 msgid "no packages files given for rebuild"
 msgstr "yeniden oluþturmak için paket dosyalarý belirtilmemiþ"
 
-#: rpmqv.c:1006
+#: rpmqv.c:1008
 msgid "no spec files given for build"
 msgstr "oluþturma için gerekli spec dosyasý belirtilmemiþ"
 
-#: rpmqv.c:1008
+#: rpmqv.c:1010
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirtilmemiþ"
 
-#: rpmqv.c:1029
+#: rpmqv.c:1031
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "yüklenecek paket(ler) belirtilmedi"

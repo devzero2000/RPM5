@@ -87,6 +87,7 @@
 	- beecrypt: revert cpu/arch compile option mixup (#66752).
 	- backport /etc/rpm/platform changes.
 	- backport db-4.1.17 changes.
+	- add _noDirTokens macro for 6x builds.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

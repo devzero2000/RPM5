@@ -912,6 +912,8 @@ int main(int argc, const char ** argv, char ** envp)
 	(void) close(p[1]);
     }
 	
+    _noDirTokens = rpmExpandNumeric("%{?_noDirTokens}");
+
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
