@@ -1,4 +1,5 @@
 2.5.5 -> 2.5.6:
+	- update Russian translation w man pages.
 	- solaris: don't attempt static link. (Tim Monney)
 	- fix: timeCheck in rpm.c should be unsigned long. (Tim Mooney)
 	- osf: prov searches only shared libraries. (Tim Mooney)
