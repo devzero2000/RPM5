@@ -8,6 +8,7 @@
 	- restore file conflict detection traditional behavior.
 	- fix: PIE executables have basename-as-soname provides (#123697).
 	- shared libraries in separate rpm-libs package.
+	- fix: defattr for rpm-libs (#130461).
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

@@ -370,6 +370,7 @@ exit 0
 %lang(sk)	%{__mandir}/sk/man[18]/*.[18]*
 
 %files libs
+%defattr(-,root,root)
 %{__libdir}/librpm-4.2.so
 %{__libdir}/librpmdb-4.2.so
 %{__libdir}/librpmio-4.2.so
@@ -494,6 +495,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Aug 20 2004 Jeff Johnson <jbj@jbj.org> 4.2.3-4
+- fix: defattr for rpm-libs (#130461).
+
 * Thu Aug 19 2004 Jeff Johnson <jbj@jbj.org> 4.2.3-3
 - shared libraries in separate rpm-libs package.
 
