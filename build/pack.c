@@ -73,6 +73,11 @@ int packageSources(Spec spec)
     headerAddEntry(spec->sourceHeader, RPMTAG_BUILDTIME,
 		   RPM_INT32_TYPE, getBuildTime(), 1);
 
+    {	int capabilty = 0;
+	headerAddEntry(pkg->header, RPMTAG_CAPABILITY, RPM_INT32_TYPE,
+			&capability, 1);
+    }
+
     genSourceRpmName(spec);
     sprintf(fileName, "%s/%s", rpmGetVar(RPMVAR_SRPMDIR), spec->sourceRpmName);
 
@@ -126,6 +131,11 @@ int packageBinaries(Spec spec)
 		       RPM_STRING_TYPE, buildHost(), 1);
 	headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
+
+    {	int capabilty = 0;
+	headerAddEntry(pkg->header, RPMTAG_CAPABILITY, RPM_INT32_TYPE,
+			&capability, 1);
+    }
 
 	genSourceRpmName(spec);
 	headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
