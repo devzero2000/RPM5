@@ -1481,14 +1481,14 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
 	return -2;
 	/*@notreached@*/ break;
     }
-    return glob(pattern, flags, errfunc, pglob);
+    return xxglob(pattern, flags, errfunc, pglob);
 }
 
 void Globfree(glob_t *pglob)
 {
 if (_rpmio_debug)
 fprintf(stderr, "*** Globfree(%p)\n", pglob);
-    globfree(pglob);
+    xxglobfree(pglob);
 }
 
 DIR * Opendir(const char * path)
