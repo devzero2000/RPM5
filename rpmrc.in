@@ -31,7 +31,7 @@ optflags: alphaev6 -O2 -g -mieee -mcpu=ev6
 optflags: alphaev67 -O2 -g -mieee -mcpu=ev67
 
 optflags: sparc -O2 -g -m32 -mtune=ultrasparc
-optflags: sparcv8 -O2 -g -m32 -mcpu=ultrasparc -mv8
+optflags: sparcv8 -O2 -g -m32 -mtune=ultrasparc -mv8
 optflags: sparcv9 -O2 -g -m32 -mcpu=ultrasparc
 optflags: sparc64 -O2 -g -m64 -mcpu=ultrasparc
 
