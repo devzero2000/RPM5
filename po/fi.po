@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-01-18 20:49-0500\n"
+"POT-Creation-Date: 2001-01-21 19:14-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -4063,7 +4063,12 @@ msgstr ""
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:446
+#: lib/uninstall.c:436
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgstr "skriptin ajo epäonnistui"
+
+#: lib/uninstall.c:443
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "skriptin ajo epäonnistui"

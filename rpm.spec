@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.33
+Release: 0.34
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -343,6 +343,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Jan 21 2001 Jeff Johnson <jbj@redhat.com>
+- fix: check waitpid return code.
+
 * Fri Jan 19 2001 Jeff Johnson <jbj@redhat.com>
 - ewt's cpio.c hack.
 - ewt's cpio.c hack reverted.

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-18 20:49-0500\n"
+"POT-Creation-Date: 2001-01-21 19:14-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -4047,7 +4047,12 @@ msgstr "datoteke bomo odstranili, test = %d\n"
 msgid "running postuninstall script (if any)\n"
 msgstr "poganjanje poodnamestitvenih skriptov (èe obstajajo)\n"
 
-#: lib/uninstall.c:446
+#: lib/uninstall.c:436
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgstr "skript se ni uspe¹no izvedel"
+
+#: lib/uninstall.c:443
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "skript se ni uspe¹no izvedel"

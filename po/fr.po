@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-01-18 20:49-0500\n"
+msgstr "POT-Creation-Date: 2001-01-21 19:14-0500\n"
 
 #: build.c:26
 #, fuzzy, c-format
@@ -4071,7 +4071,12 @@ msgstr ""
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:446
+#: lib/uninstall.c:436
+#, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgstr ""
+
+#: lib/uninstall.c:443
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""

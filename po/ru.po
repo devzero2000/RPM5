@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-18 20:49-0500\n"
+"POT-Creation-Date: 2001-01-21 19:14-0500\n"
 "PO-Revision-Date: 2001-01-21 16:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3900,7 +3900,12 @@ msgstr "файлы будут удалены; test = %d\n"
 msgid "running postuninstall script (if any)\n"
 msgstr "выполняется скрипт postuninstall (если есть)\n"
 
-#: lib/uninstall.c:446
+#: lib/uninstall.c:436
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgstr "ошибка выполнения скрипта %s из %s-%s-%s, код возврата %d\n"
+
+#: lib/uninstall.c:443
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения скрипта %s из %s-%s-%s, код возврата %d\n"

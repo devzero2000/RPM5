@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-18 20:49-0500\n"
+"POT-Creation-Date: 2001-01-21 19:14-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -4074,7 +4074,12 @@ msgstr "ファイル test = %d を削除します\n"
 msgid "running postuninstall script (if any)\n"
 msgstr "ポストアンインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/uninstall.c:446
+#: lib/uninstall.c:436
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgstr "スクリプトの実行に失敗"
+
+#: lib/uninstall.c:443
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"

@@ -274,11 +274,13 @@ static int runScript(const rpmTransactionSet ts, Header h,
     int len;
     char * prefixBuf = NULL;
     pid_t child;
-    int status;
+    int status = 0;
     const char * fn = NULL;
     int i;
     int freePrefixes = 0;
     FD_t out;
+    int rc = 0;
+    const char *n, *v, *r;
 
     if (!progArgv && !script)
 	return 0;
@@ -292,6 +294,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
 	argc = progArgc;
     }
 
+    headerNVR(h, &n, &v, &r);
     if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) &prefixes,
 		       &numPrefixes)) {
 	freePrefixes = 1;
@@ -428,7 +431,20 @@ static int runScript(const rpmTransactionSet ts, Header h,
 	/*@notreached@*/
     }
 
-    (void)waitpid(child, &status, 0);
+    if (waitpid(child, &status, 0) < 0) {
+	rpmError(RPMERR_SCRIPT,
+		 _("execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"),
+		 sln, n, v, r, strerror (errno));
+	/* XXX what to do here? */
+	rc = 0;
+    } else {
+	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	    rpmError(RPMERR_SCRIPT,
+		     _("execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"),
+		     sln, n, v, r, WEXITSTATUS(status));
+	    rc = 1;
+	}
+    }
 
     if (freePrefixes) free(prefixes);
 
@@ -439,16 +455,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
 	free((void *)fn);
     }
 
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	const char *n, *v, *r;
-	headerNVR(h, &n, &v, &r);
-	rpmError(RPMERR_SCRIPT,
-	    _("execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"),
-		sln, n, v, r, WEXITSTATUS(status));
-	return 1;
-    }
-
-    return 0;
+    return rc;
 }
 
 int runInstScript(const rpmTransactionSet ts, Header h,
