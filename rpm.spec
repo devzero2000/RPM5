@@ -1,6 +1,6 @@
 Summary: Red Hat Package Manager
 Name: rpm
-%define version 2.5.2
+%define version 2.5.3
 Version: %{version}
 Release: 3
 Group: Utilities/System
@@ -60,12 +60,9 @@ rm -rf $RPM_BUILD_ROOT
 /bin/rpm
 /usr/bin/rpm2cpio
 /usr/bin/gendiff
-/usr/bin/find-provides
-/usr/bin/find-requires
 /usr/man/man8/rpm.8
 /usr/man/man8/rpm2cpio.8
-/usr/lib/rpmrc
-/usr/lib/rpmpopt
+/usr/lib/rpm
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS
