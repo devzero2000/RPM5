@@ -274,7 +274,8 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	/* go through things backwards so that /usr/local relocations take
 	   precedence over /usr ones */
 	nextReloc = relocations + numRelocations - 1;
-	len = strlen(nextReloc->oldPath);
+	if ((len = strlen(nextReloc->oldPath)) == 1)
+	    len = 0;
 	newLen = strlen(nextReloc->newPath);
 	for (i = fileCount - 1; i >= 0 && nextReloc; i--) {
 	    do {
@@ -284,7 +285,8 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 			nextReloc = 0;
 		    } else {
 			nextReloc--;
-			len = strlen(nextReloc->oldPath);
+			if ((len = strlen(nextReloc->oldPath)) == 1)
+			    len = 0;
 			newLen = strlen(nextReloc->newPath);
 		    }
 		}
