@@ -970,12 +970,12 @@ fprintf(stderr, "*** davReq(%p,%s,\"%s\") exit sess %p req %p rc %d\n", ctrl, ht
 
 #if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     davContentLength(ctrl,
-		ne_get_response_header(ctrl->req, "Content-Length");
+		ne_get_response_header(ctrl->req, "Content-Length"));
     davConnection(ctrl,
-		ne_get_response_header(ctrl->req, "Connection");
+		ne_get_response_header(ctrl->req, "Connection"));
     if (strcmp(httpCmd, "PUT"))
 	davAcceptRanges(u,
-		ne_get_response_header(ctrl->req, "Accept-Ranges");
+		ne_get_response_header(ctrl->req, "Accept-Ranges"));
 #endif
 
     ctrl = fdLink(ctrl, "open data (davReq)");
