@@ -94,7 +94,7 @@ static int checkOwners(const char *urlfn)
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	xfree(urlfn);
+	free((void *)urlfn);
 	return NULL;
     }
 
@@ -106,7 +106,7 @@ static int checkOwners(const char *urlfn)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
-	xfree(urlfn);
+	free((void *)urlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -126,7 +126,7 @@ static int checkOwners(const char *urlfn)
 		c, (const char *) basename(fn),
 		zipper,
 		fn, strip, args);
-	xfree(zipper);
+	free((void *)zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
@@ -134,7 +134,7 @@ static int checkOwners(const char *urlfn)
 		strip, args, fn);
     }
 
-    xfree(urlfn);
+    free((void *)urlfn);
     return buf;
 }
 
@@ -190,7 +190,7 @@ static int checkOwners(const char *urlfn)
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	xfree(urlfn);
+	free((void *)urlfn);
 	return NULL;
     }
 
@@ -202,7 +202,7 @@ static int checkOwners(const char *urlfn)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
-	xfree(urlfn);
+	free((void *)urlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -227,7 +227,7 @@ static int checkOwners(const char *urlfn)
 	zipper = rpmGetPath(t, NULL);
 	buf[0] = '\0';
 	t = stpcpy(buf, zipper);
-	xfree(zipper);
+	free((void *)zipper);
 	*t++ = ' ';
 	t = stpcpy(t, fn);
 	if (needtar)
@@ -245,7 +245,7 @@ static int checkOwners(const char *urlfn)
 	t = stpcpy(t, fn);
     }
 
-    xfree(urlfn);
+    free((void *)urlfn);
     return buf;
 }
 
@@ -338,7 +338,7 @@ static int doSetupMacro(Spec spec, char *line)
 	(void) urlPath(buildDirURL, &buildDir);
 	sprintf(buf, "cd %s", buildDir);
 	appendLineStringBuf(spec->prep, buf);
-	xfree(buildDirURL);
+	free((void *)buildDirURL);
     }
     
     /* delete any old sources */
@@ -391,7 +391,7 @@ static int doSetupMacro(Spec spec, char *line)
 	    const char *fix = rpmExpand(*fm, " .", NULL);
 	    if (fix && *fix != '%')
 		appendLineStringBuf(spec->prep, fix);
-	    xfree(fix);
+	    free((void *)fix);
 	}
     }
     

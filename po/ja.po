@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-09 12:13-0500\n"
+"POT-Creation-Date: 2000-12-09 14:16-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -61,12 +61,12 @@ msgid "File %s does not appear to be a specfile."
 msgstr "ファイル %s は スペックファイルではないようです。\n"
 
 #. parse up the build operators
-#: build.c:290
+#: build.c:289
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "作成中ターゲットプラットフォーム: %s\n"
 
-#: build.c:305
+#: build.c:304
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
@@ -3751,25 +3751,20 @@ msgstr "不明なシステム: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com に連絡を下さい\n"
 
-#: lib/signature.c:117
-#, c-format
-msgid "sigsize         : %d\n"
-msgstr "署名サイズ     : %d\n"
-
-#: lib/signature.c:118
-#, c-format
-msgid "Header + Archive: %d\n"
-msgstr "ヘッダ + アーカイブ: %d\n"
-
-#: lib/signature.c:119
-#, c-format
-msgid "expected size   : %d\n"
-msgstr "期待されるサイズ: %d\n"
-
-#: lib/signature.c:123
+#: lib/signature.c:115
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 "ファイルは一般のファイルではありません -- サイズチェックをスキップします\n"
+
+#: lib/signature.c:119
+#, c-format
+msgid "Expected size: %10db = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
+msgstr ""
+
+#: lib/signature.c:123
+#, c-format
+msgid "  Actual size: %10db\n"
+msgstr ""
 
 #: lib/signature.c:142
 msgid "No signature\n"
@@ -3783,120 +3778,115 @@ msgstr "古い PGP 署名\n"
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 
-#: lib/signature.c:160
-msgid "New Header signature\n"
-msgstr "新しいヘッダ署名\n"
-
-#. 8-byte pad
-#: lib/signature.c:172 lib/signature.c:209
+#: lib/signature.c:208
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:173 lib/signature.c:210
+#: lib/signature.c:209
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "署名パッド: %d\n"
 
-#: lib/signature.c:272
+#: lib/signature.c:271
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "pgp を実行できません(%s)"
 
-#: lib/signature.c:283
+#: lib/signature.c:282
 msgid "pgp failed"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:290
+#: lib/signature.c:289
 msgid "pgp failed to write signature"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:295
+#: lib/signature.c:294
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:306 lib/signature.c:383
+#: lib/signature.c:305 lib/signature.c:382
 msgid "unable to read the signature"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:311
+#: lib/signature.c:310
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:349 lib/signature.c:694
+#: lib/signature.c:348 lib/signature.c:693
 #, fuzzy
 msgid "Couldn't exec gpg"
 msgstr "gpg を実行できません"
 
-#: lib/signature.c:360
+#: lib/signature.c:359
 #, fuzzy
 msgid "gpg failed"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:367
+#: lib/signature.c:366
 #, fuzzy
 msgid "gpg failed to write signature"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:372
+#: lib/signature.c:371
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:388
+#: lib/signature.c:387
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
-#: lib/signature.c:415
+#: lib/signature.c:414
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "PGP を使用して署名の生成中\n"
 
-#: lib/signature.c:421
+#: lib/signature.c:420
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "GPG を使用して署名の生成中\n"
 
-#: lib/signature.c:500 lib/signature.c:562
+#: lib/signature.c:499 lib/signature.c:561
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 "pgp を実行できませんでした。\n"
 "PGP チェックをスキップするために --nopgp を使用してください。"
 
-#: lib/signature.c:560 lib/signature.c:633
+#: lib/signature.c:559 lib/signature.c:632
 msgid "exec failed!\n"
 msgstr "実行失敗!\n"
 
-#: lib/signature.c:635
+#: lib/signature.c:634
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 "gpg を実行できませんでした。\n"
 "GPG チェックをスキップするために --nogpg を使用してください。"
 
-#: lib/signature.c:723
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr "pgp を実行できません"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:727 lib/signature.c:780
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr "マクロファイル中で無効な %%_signature スペック"
 
-#: lib/signature.c:760
+#: lib/signature.c:759
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:772
+#: lib/signature.c:771
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
@@ -4195,6 +4185,18 @@ msgstr "%s のオープンに失敗: %s"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#~ msgid "sigsize         : %d\n"
+#~ msgstr "署名サイズ     : %d\n"
+
+#~ msgid "Header + Archive: %d\n"
+#~ msgstr "ヘッダ + アーカイブ: %d\n"
+
+#~ msgid "expected size   : %d\n"
+#~ msgstr "期待されるサイズ: %d\n"
+
+#~ msgid "New Header signature\n"
+#~ msgstr "新しいヘッダ署名\n"
 
 #, fuzzy
 #~ msgid "path %s is not relocateable for package %s-%s-%s"

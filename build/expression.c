@@ -63,7 +63,7 @@ static Value valueMakeString(/*@only@*/ const char *s)
 static void valueFree( /*@only@*/ Value v)
 {
   if (v) {
-    if (v->type == VALUE_TYPE_STRING) xfree(v->data.s);
+    if (v->type == VALUE_TYPE_STRING) free((void *)v->data.s);
     free(v);
   }
 }

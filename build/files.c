@@ -578,7 +578,7 @@ static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
 	    rc = 1;
 	else if (regcomp(&compiledPatt, patt, REG_EXTENDED))
 	    rc = -1;
-	xfree(patt);
+	free((void *)patt);
 	if (rc)
 	    return rc;
 	hasRegex = 1;
@@ -616,7 +616,7 @@ static int parseForRegexMultiLib(const char *fileName)
 	    rc = 1;
 	else if (regcomp(&compiledPatt, patt, REG_EXTENDED | REG_NOSUB))
 	    rc = -1;
-	xfree(patt);
+	free((void *)patt);
 	if (rc)
 	    return rc;
 	hasRegex = 1;
@@ -736,7 +736,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
 
 		ddir = rpmGetPath("%{_docdir}/", n, "-", v, NULL);
 		strcpy(buf, ddir);
-		xfree(ddir);
+		free((void *)ddir);
 	    }
 
 	/* XXX FIXME: this is easy to do as macro expansion */
@@ -1177,9 +1177,9 @@ static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
 	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
-		xfree(argv[i]);
+		free((void *)argv[i]);
 	    }
-	    xfree(argv);
+	    free((void *)argv);
 	} else {
 	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s"), diskURL);
 	    rc = 1;
@@ -1190,7 +1190,7 @@ static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
 
 exit:
     if (diskURL)
-	xfree(diskURL);
+	free((void *)diskURL);
     if (rc)
 	fl->processingFailed = 1;
     return rc;
@@ -1237,7 +1237,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 		ffn, Fstrerror(fd));
 	    return RPMERR_BADFILENAME;
 	}
-	xfree(ffn);
+	free((void *)ffn);
 
 	while (fgets(buf, sizeof(buf), (FILE *)fdGetFp(fd))) {
 	    handleComments(buf);
@@ -1319,7 +1319,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fl.currentLangs) {
 	    int i;
 	    for (i = 0; i < fl.nLangs; i++)
-		xfree(fl.currentLangs[i]);
+		free((void *)fl.currentLangs[i]);
 	    FREE(fl.currentLangs);
 	}
   	fl.nLangs = 0;
@@ -1365,7 +1365,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fl.currentLangs) {
 	    int i;
 	    for (i = 0; i < fl.nLangs; i++)
-		xfree(fl.currentLangs[i]);
+		free((void *)fl.currentLangs[i]);
 	    FREE(fl.currentLangs);
 	}
   	fl.nLangs = 0;
@@ -1399,7 +1399,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     if (fl.currentLangs) {
 	int i;
 	for (i = 0; i < fl.nLangs; i++)
-	    xfree(fl.currentLangs[i]);
+	    free((void *)fl.currentLangs[i]);
 	FREE(fl.currentLangs);
     }
 
@@ -1509,7 +1509,7 @@ int processSourceFiles(Spec spec)
 	s = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	appendLineStringBuf(sourceFiles, s);
-	xfree(s);
+	free((void *)s);
       }
     }
 
@@ -1519,7 +1519,7 @@ int processSourceFiles(Spec spec)
 	    s = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	    appendLineStringBuf(sourceFiles, s);
-	    xfree(s);
+	    free((void *)s);
 	}
     }
 

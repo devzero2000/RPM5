@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-09 12:13-0500\n"
+"POT-Creation-Date: 2000-12-09 14:16-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -62,12 +62,12 @@ msgid "File %s does not appear to be a specfile."
 msgstr "%s nie wygl±da na pakiet RPM\n"
 
 #. parse up the build operators
-#: build.c:290
+#: build.c:289
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Budowanie dla platform: %s\n"
 
-#: build.c:305
+#: build.c:304
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
@@ -3725,24 +3725,19 @@ msgstr "Nieznany system: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Skontaktuj siê, proszê, z rpm-list@redhat.com\n"
 
-#: lib/signature.c:117
-#, c-format
-msgid "sigsize         : %d\n"
-msgstr "rozmiar sygnat. : %d\n"
-
-#: lib/signature.c:118
-#, c-format
-msgid "Header + Archive: %d\n"
-msgstr "Nag³ówek + Archiwum: %d\n"
+#: lib/signature.c:115
+msgid "file is not regular -- skipping size check\n"
+msgstr "plik nieregularny -- sprawdzanie rozmiaru pominiête\n"
 
 #: lib/signature.c:119
 #, c-format
-msgid "expected size   : %d\n"
-msgstr "oczekiwany rozmiar: %d\n"
+msgid "Expected size: %10db = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
+msgstr ""
 
 #: lib/signature.c:123
-msgid "file is not regular -- skipping size check\n"
-msgstr "plik nieregularny -- sprawdzanie rozmiaru pominiête\n"
+#, c-format
+msgid "  Actual size: %10db\n"
+msgstr ""
 
 #: lib/signature.c:142
 msgid "No signature\n"
@@ -3756,111 +3751,106 @@ msgstr "Stara sygnatura PGP\n"
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Stara (tylko wewnêtrzna) sygnatura! Sk±d Ty to wzi±³e¶!?"
 
-#: lib/signature.c:160
-msgid "New Header signature\n"
-msgstr "Nowa sygnatura nag³ówka\n"
-
-#. 8-byte pad
-#: lib/signature.c:172 lib/signature.c:209
+#: lib/signature.c:208
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Rozmiar sygnatury: %d\n"
 
-#: lib/signature.c:173 lib/signature.c:210
+#: lib/signature.c:209
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Blok sygnatury: %d\n"
 
-#: lib/signature.c:272
+#: lib/signature.c:271
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Nie mo¿na uruchomiæ pgp"
 
-#: lib/signature.c:283
+#: lib/signature.c:282
 msgid "pgp failed"
 msgstr "pgp nie powiod³o siê"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:290
+#: lib/signature.c:289
 msgid "pgp failed to write signature"
 msgstr "zapisanie sygnatury przez pgp nie powiod³o siê"
 
-#: lib/signature.c:295
+#: lib/signature.c:294
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "rozmiar sygnatury PGP: %d\n"
 
-#: lib/signature.c:306 lib/signature.c:383
+#: lib/signature.c:305 lib/signature.c:382
 msgid "unable to read the signature"
 msgstr "nie mo¿na odczytaæ sygnatury"
 
-#: lib/signature.c:311
+#: lib/signature.c:310
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Mam %d bajtów sygnatury PGP\n"
 
-#: lib/signature.c:349 lib/signature.c:694
+#: lib/signature.c:348 lib/signature.c:693
 msgid "Couldn't exec gpg"
 msgstr "Nie mo¿na uruchomiæ gpg"
 
-#: lib/signature.c:360
+#: lib/signature.c:359
 msgid "gpg failed"
 msgstr "gpg nie powiod³o siê"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:367
+#: lib/signature.c:366
 msgid "gpg failed to write signature"
 msgstr "zapisanie sygnatury przez gpg nie powiod³o siê"
 
-#: lib/signature.c:372
+#: lib/signature.c:371
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "rozmiar sygnatury GPG: %d\n"
 
-#: lib/signature.c:388
+#: lib/signature.c:387
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Mam %d bajtów sygnatury GPG\n"
 
-#: lib/signature.c:415
+#: lib/signature.c:414
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "Generowanie sygnatury: %d\n"
 
-#: lib/signature.c:421
+#: lib/signature.c:420
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "Generowanie sygnatury: %d\n"
 
-#: lib/signature.c:500 lib/signature.c:562
+#: lib/signature.c:499 lib/signature.c:561
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Nie mo¿na uruchomiæ pgp. U¿yj --nopgp aby pomin±æ sprawdz. PGP"
 
-#: lib/signature.c:560 lib/signature.c:633
+#: lib/signature.c:559 lib/signature.c:632
 msgid "exec failed!\n"
 msgstr "uruchomienie nie powiod³o siê!\n"
 
-#: lib/signature.c:635
+#: lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Nie mo¿na uruchomiæ gpg. U¿yj --nopgp aby pomin±æ sprawdz. GPG"
 
-#: lib/signature.c:723
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr "Nie mo¿na uruchomiæ pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:727 lib/signature.c:780
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr "B³êdny wpis %%_signature w pliku makra"
 
-#: lib/signature.c:760
+#: lib/signature.c:759
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "Musisz ustawiæ \"%%_gpg_name\" w pliku swego makra"
 
-#: lib/signature.c:772
+#: lib/signature.c:771
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Musisz ustawiæ \"%%_pgp_name\" w pliku swego makra"
 
@@ -4147,6 +4137,18 @@ msgstr "nie mo¿na otworzyæ %s: %s"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"
+
+#~ msgid "sigsize         : %d\n"
+#~ msgstr "rozmiar sygnat. : %d\n"
+
+#~ msgid "Header + Archive: %d\n"
+#~ msgstr "Nag³ówek + Archiwum: %d\n"
+
+#~ msgid "expected size   : %d\n"
+#~ msgstr "oczekiwany rozmiar: %d\n"
+
+#~ msgid "New Header signature\n"
+#~ msgstr "Nowa sygnatura nag³ówka\n"
 
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "nie mo¿na u¿yæ ¶cie¿ki %s przy przesuwaniu pakietu %s-%s-%s"

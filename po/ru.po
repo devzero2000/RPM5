@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-12-09 12:13-0500\n"
+"POT-Creation-Date: 2000-12-09 14:16-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -56,12 +56,12 @@ msgid "File %s does not appear to be a specfile."
 msgstr "Файл %s не похож на spec файл.\n"
 
 #. parse up the build operators
-#: build.c:290
+#: build.c:289
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Целевые платформы для сборки: %s\n"
 
-#: build.c:305
+#: build.c:304
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Сборка для целевой платформы %s\n"
@@ -3657,24 +3657,19 @@ msgstr "Неизвестная система: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
-#: lib/signature.c:117
-#, c-format
-msgid "sigsize         : %d\n"
-msgstr "размер подписи  : %d\n"
-
-#: lib/signature.c:118
-#, c-format
-msgid "Header + Archive: %d\n"
-msgstr "Заголовок + Архив: %d\n"
+#: lib/signature.c:115
+msgid "file is not regular -- skipping size check\n"
+msgstr "необычный файл -- пропускаю проверку размера\n"
 
 #: lib/signature.c:119
 #, c-format
-msgid "expected size   : %d\n"
-msgstr "ожидаемый размер: %d\n"
+msgid "Expected size: %10db = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
+msgstr ""
 
 #: lib/signature.c:123
-msgid "file is not regular -- skipping size check\n"
-msgstr "необычный файл -- пропускаю проверку размера\n"
+#, c-format
+msgid "  Actual size: %10db\n"
+msgstr ""
 
 #: lib/signature.c:142
 msgid "No signature\n"
@@ -3689,113 +3684,108 @@ msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 "Старая (только для внутреннего использования) подпись! Где вы ЭТО взяли!?"
 
-#: lib/signature.c:160
-msgid "New Header signature\n"
-msgstr "Новая подпись заголовка\n"
-
-#. 8-byte pad
-#: lib/signature.c:172 lib/signature.c:209
+#: lib/signature.c:208
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Размер подписи: %d\n"
 
-#: lib/signature.c:173 lib/signature.c:210
+#: lib/signature.c:209
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Заполнитель подписи : %d\n"
 
-#: lib/signature.c:272
+#: lib/signature.c:271
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Нвозможно запустить pgp (%s)"
 
-#: lib/signature.c:283
+#: lib/signature.c:282
 msgid "pgp failed"
 msgstr "ошибка pgp"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:290
+#: lib/signature.c:289
 msgid "pgp failed to write signature"
 msgstr "ошибка pgp при записи подписи"
 
-#: lib/signature.c:295
+#: lib/signature.c:294
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
-#: lib/signature.c:306 lib/signature.c:383
+#: lib/signature.c:305 lib/signature.c:382
 msgid "unable to read the signature"
 msgstr "невозможно прочесть подпись"
 
-#: lib/signature.c:311
+#: lib/signature.c:310
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
-#: lib/signature.c:349 lib/signature.c:694
+#: lib/signature.c:348 lib/signature.c:693
 msgid "Couldn't exec gpg"
 msgstr "Невозможно запустить gpg"
 
-#: lib/signature.c:360
+#: lib/signature.c:359
 msgid "gpg failed"
 msgstr "ошибка gpg"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:367
+#: lib/signature.c:366
 msgid "gpg failed to write signature"
 msgstr "ошибка gpg при записи подписи"
 
-#: lib/signature.c:372
+#: lib/signature.c:371
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Размер подписи GPG: %d\n"
 
-#: lib/signature.c:388
+#: lib/signature.c:387
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Получено %d байт подписи GPG\n"
 
-#: lib/signature.c:415
+#: lib/signature.c:414
 msgid "Generating signature using PGP.\n"
 msgstr "Генерируется подпись PGP.\n"
 
-#: lib/signature.c:421
+#: lib/signature.c:420
 msgid "Generating signature using GPG.\n"
 msgstr "Генерируется подпись GPG.\n"
 
-#: lib/signature.c:500 lib/signature.c:562
+#: lib/signature.c:499 lib/signature.c:561
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 "Нвозможно запустить pgp. Используйте --nopgp чтобы пропустить проверку PGP "
 "подписей."
 
-#: lib/signature.c:560 lib/signature.c:633
+#: lib/signature.c:559 lib/signature.c:632
 msgid "exec failed!\n"
 msgstr "ошибка запуска!\n"
 
-#: lib/signature.c:635
+#: lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 "Невозможно запустить gpg. Используйте --nogpg чтобы пропустить проверку GPG "
 "подписей."
 
-#: lib/signature.c:723
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr "Невозможно запустить pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:727 lib/signature.c:780
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Неверная спецификация %%_signature в макрофайле"
 
-#: lib/signature.c:760
+#: lib/signature.c:759
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле"
 
-#: lib/signature.c:772
+#: lib/signature.c:771
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле"
 
@@ -4078,6 +4068,18 @@ msgstr "невозможно открыть %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "sigsize         : %d\n"
+#~ msgstr "размер подписи  : %d\n"
+
+#~ msgid "Header + Archive: %d\n"
+#~ msgstr "Заголовок + Архив: %d\n"
+
+#~ msgid "expected size   : %d\n"
+#~ msgstr "ожидаемый размер: %d\n"
+
+#~ msgid "New Header signature\n"
+#~ msgstr "Новая подпись заголовка\n"
 
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "путь %s - не перемещаемый для пакета %s-%s-%s"

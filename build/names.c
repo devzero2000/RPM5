@@ -21,9 +21,9 @@ void freeNames(void)
 {
     int x;
     for (x = 0; x < uid_used; x++)
-	xfree(unames[x]);
+	free((void *)unames[x]);
     for (x = 0; x < gid_used; x++)
-	xfree(gnames[x]);
+	free((void *)gnames[x]);
 }
 
 const char *getUname(uid_t uid)

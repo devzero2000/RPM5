@@ -25,7 +25,7 @@ static void doRmSource(Spec spec)
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 	    unlink(fn);
-	    xfree(fn);
+	    free((void *)fn);
 	}
     }
 
@@ -34,7 +34,7 @@ static void doRmSource(Spec spec)
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 		unlink(fn);
-		xfree(fn);
+		free((void *)fn);
 	    }
 	}
     }
@@ -213,7 +213,7 @@ exit:
     if (scriptName) {
 	if (!rc)
 	    Unlink(scriptName);
-	xfree(scriptName);
+	free((void *)scriptName);
     }
     if (u) {
 	switch (u->urltype) {

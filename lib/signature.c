@@ -81,7 +81,7 @@ const char * rpmDetectPGPVersion(pgpVersion *pgpVer)
 
     if (saved_pgp_version == PGP_UNKNOWN) {
 	char *pgpvbin;
-	struct stat statbuf;
+	struct stat st;
 	
 	if (!(pgpbin && pgpbin[0] != '%')) {
 	  if (pgpbin) free((void *)pgpbin);
@@ -91,9 +91,9 @@ const char * rpmDetectPGPVersion(pgpVersion *pgpVer)
 	pgpvbin = (char *)alloca(strlen(pgpbin) + sizeof("v"));
 	(void)stpcpy(stpcpy(pgpvbin, pgpbin), "v");
 
-	if (stat(pgpvbin, &statbuf) == 0)
+	if (stat(pgpvbin, &st) == 0)
 	  saved_pgp_version = PGP_5;
-	else if (stat(pgpbin, &statbuf) == 0)
+	else if (stat(pgpbin, &st) == 0)
 	  saved_pgp_version = PGP_2;
 	else
 	  saved_pgp_version = PGP_NOTDETECTED;
@@ -104,28 +104,28 @@ const char * rpmDetectPGPVersion(pgpVersion *pgpVer)
     return pgpbin;
 }
 
-static int checkSize(FD_t fd, int size, int sigsize)
+static inline int checkSize(FD_t fd, int siglen, int pad, int datalen)
 {
-    int headerArchiveSize;
-    struct stat statbuf;
+    struct stat st;
 
-    fstat(Fileno(fd), &statbuf);
+    fstat(Fileno(fd), &st);
 
-    if (S_ISREG(statbuf.st_mode)) {
-	headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;
-
-	rpmMessage(RPMMESS_DEBUG, _("sigsize         : %d\n"), sigsize);
-	rpmMessage(RPMMESS_DEBUG, _("Header + Archive: %d\n"), headerArchiveSize);
-	rpmMessage(RPMMESS_DEBUG, _("expected size   : %d\n"), size);
-
-	return size - headerArchiveSize;
-    } else {
-	rpmMessage(RPMMESS_DEBUG, _("file is not regular -- skipping size check\n"));
+    if (!S_ISREG(st.st_mode)) {
+	rpmMessage(RPMMESS_DEBUG,
+	    _("file is not regular -- skipping size check\n"));
 	return 0;
     }
+    rpmMessage(RPMMESS_DEBUG,
+	_("Expected size: %10db = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
+		sizeof(struct rpmlead)+siglen+pad+datalen,
+		sizeof(struct rpmlead), siglen, pad, datalen);
+    rpmMessage(RPMMESS_DEBUG,
+	_("  Actual size: %10db\n"), st.st_size);
+
+    return ((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size);
 }
 
-int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
+int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 {
     byte buf[2048];
     int sigSize, pad;
@@ -137,7 +137,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
     if (headerp)
 	*headerp = NULL;
     
-    switch (sig_type) {
+    switch (sigType) {
       case RPMSIG_NONE:
 	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
 	rc = 0;
@@ -157,7 +157,6 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 	      _("Old (internal-only) signature!  How did you get that!?"));
 	break;
       case RPMSIG_HEADERSIG:
-	rpmMessage(RPMMESS_DEBUG, _("New Header signature\n"));
 	/* This is a new style signature */
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	if (h == NULL)
@@ -167,13 +166,13 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 	/* XXX Legacy headers have a HEADER_IMAGE tag added. */
 	if (headerIsEntry(h, RPMTAG_HEADERIMAGE))
 	    sigSize -= (16 + 16);
+	if (headerIsEntry(h, RPMTAG_HEADERSIGNATURES))
+	    sigSize -= 16;
 
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
-	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count))
 	    break;
-	if (checkSize(fd, *archSize, sigSize + pad))
+	if (checkSize(fd, sigSize, pad, *archSize))
 	    break;
 	if (pad) {
 	    if (timedRead(fd, buf, pad) != pad)
@@ -231,7 +230,7 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
     char sigfile[1024];
     int pid, status;
     int inpipe[2];
-    struct stat statbuf;
+    struct stat st;
 
     sprintf(sigfile, "%s.sig", file);
 
@@ -284,14 +283,14 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 	return 1;
     }
 
-    if (stat(sigfile, &statbuf)) {
+    if (stat(sigfile, &st)) {
 	/* PGP failed to write signature */
 	unlink(sigfile);  /* Just in case */
 	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature"));
 	return 1;
     }
 
-    *size = statbuf.st_size;
+    *size = st.st_size;
     rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *size);
     *sig = xmalloc(*size);
     
@@ -325,7 +324,7 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
     int pid, status;
     int inpipe[2];
     FILE *fpipe;
-    struct stat statbuf;
+    struct stat st;
 
     sprintf(sigfile, "%s.sig", file);
 
@@ -361,14 +360,14 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 	return 1;
     }
 
-    if (stat(sigfile, &statbuf)) {
+    if (stat(sigfile, &st)) {
 	/* GPG failed to write signature */
 	unlink(sigfile);  /* Just in case */
 	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature"));
 	return 1;
     }
 
-    *size = statbuf.st_size;
+    *size = st.st_size;
     rpmMessage(RPMMESS_DEBUG, _("GPG sig size: %d\n"), *size);
     *sig = xmalloc(*size);
     
@@ -392,7 +391,7 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 
 int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *passPhrase)
 {
-    struct stat statbuf;
+    struct stat st;
     int_32 size;
     byte buf[16];
     void *sig;
@@ -400,8 +399,8 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
     
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
-	stat(file, &statbuf);
-	size = statbuf.st_size;
+	stat(file, &st);
+	size = st.st_size;
 	ret = 0;
 	headerAddEntry(header, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1);
 	break;
@@ -431,13 +430,13 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
 static rpmVerifySignatureReturn
 verifySizeSignature(const char *datafile, int_32 size, char *result)
 {
-    struct stat statbuf;
+    struct stat st;
 
-    stat(datafile, &statbuf);
-    if (size != statbuf.st_size) {
+    stat(datafile, &st);
+    if (size != st.st_size) {
 	sprintf(result, "Header+Archive size mismatch.\n"
 		"Expected %d, saw %d.\n",
-		size, (int)statbuf.st_size);
+		size, (int)st.st_size);
 	return RPMSIG_BAD;
     }
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-09 12:13-0500\n"
+"POT-Creation-Date: 2000-12-09 14:16-0500\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -60,12 +60,12 @@ msgid "File %s does not appear to be a specfile."
 msgstr "Ne ka¾e, da je %s datoteka spec.\n"
 
 #. parse up the build operators
-#: build.c:290
+#: build.c:289
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Izgradnja za ciljna strojna okolja: %s\n"
 
-#: build.c:305
+#: build.c:304
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Izgradnja za ciljni sistem %s\n"
@@ -3716,24 +3716,19 @@ msgstr "Neznan sistem: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Prosimo, pi¹ite na rpm-list@redhat.com\n"
 
-#: lib/signature.c:117
-#, c-format
-msgid "sigsize         : %d\n"
-msgstr "dol¾ina podpisa : %d\n"
-
-#: lib/signature.c:118
-#, c-format
-msgid "Header + Archive: %d\n"
-msgstr "glava in arhiv  : %d\n"
+#: lib/signature.c:115
+msgid "file is not regular -- skipping size check\n"
+msgstr "datoteka ni navadna datoteka -- preskakujemo preverjanje velikosti\n"
 
 #: lib/signature.c:119
 #, c-format
-msgid "expected size   : %d\n"
-msgstr "prièakovana vel.: %d\n"
+msgid "Expected size: %10db = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
+msgstr ""
 
 #: lib/signature.c:123
-msgid "file is not regular -- skipping size check\n"
-msgstr "datoteka ni navadna datoteka -- preskakujemo preverjanje velikosti\n"
+#, c-format
+msgid "  Actual size: %10db\n"
+msgstr ""
 
 #: lib/signature.c:142
 msgid "No signature\n"
@@ -3747,109 +3742,104 @@ msgstr "Stari podpis PGP\n"
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Podpis v (interni) stari obliki! Kje ste ga dobili?"
 
-#: lib/signature.c:160
-msgid "New Header signature\n"
-msgstr "Podpis v novi glavi\n"
-
-#. 8-byte pad
-#: lib/signature.c:172 lib/signature.c:209
+#: lib/signature.c:208
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:173 lib/signature.c:210
+#: lib/signature.c:209
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Dol¾. polnila : %d\n"
 
-#: lib/signature.c:272
+#: lib/signature.c:271
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Ni mo¾no pognati pgp (%s)"
 
-#: lib/signature.c:283
+#: lib/signature.c:282
 msgid "pgp failed"
 msgstr "pgp neuspe¹en"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:290
+#: lib/signature.c:289
 msgid "pgp failed to write signature"
 msgstr "pgp neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:295
+#: lib/signature.c:294
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Dol¾. podpisa PGP: %d\n"
 
-#: lib/signature.c:306 lib/signature.c:383
+#: lib/signature.c:305 lib/signature.c:382
 msgid "unable to read the signature"
 msgstr "branje podpisa neuspe¹no"
 
-#: lib/signature.c:311
+#: lib/signature.c:310
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Prebrano %d bajtov podpisa PGP\n"
 
-#: lib/signature.c:349 lib/signature.c:694
+#: lib/signature.c:348 lib/signature.c:693
 msgid "Couldn't exec gpg"
 msgstr "Ni mo¾no pognati gpg"
 
-#: lib/signature.c:360
+#: lib/signature.c:359
 msgid "gpg failed"
 msgstr "gpg neuspe¹en"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:367
+#: lib/signature.c:366
 msgid "gpg failed to write signature"
 msgstr "gpg neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:372
+#: lib/signature.c:371
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Dol¾. podpisa GnuPG: %d\n"
 
-#: lib/signature.c:388
+#: lib/signature.c:387
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Prebrano %d bajtov podpisa GnuPG\n"
 
-#: lib/signature.c:415
+#: lib/signature.c:414
 msgid "Generating signature using PGP.\n"
 msgstr "Ustvarjamo podpis s PGP.\n"
 
-#: lib/signature.c:421
+#: lib/signature.c:420
 msgid "Generating signature using GPG.\n"
 msgstr "Ustvarjamo podpis z GnuPG.\n"
 
-#: lib/signature.c:500 lib/signature.c:562
+#: lib/signature.c:499 lib/signature.c:561
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Ni mo¾no pognati pgp. Preverjanja PGP lahko preskoèite z --nopgp"
 
-#: lib/signature.c:560 lib/signature.c:633
+#: lib/signature.c:559 lib/signature.c:632
 msgid "exec failed!\n"
 msgstr "zagon neuspe¹en!\n"
 
-#: lib/signature.c:635
+#: lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Ni mo¾no pognati gpg. Preverjanja GnuPG lahko preskoèite z --nogpg"
 
-#: lib/signature.c:723
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr "Ni mo¾no pognati pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:727 lib/signature.c:780
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Neveljavno doloèilo %%_signature v makrodatoteki"
 
-#: lib/signature.c:760
+#: lib/signature.c:759
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:772
+#: lib/signature.c:771
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
@@ -4134,6 +4124,18 @@ msgstr "neuspe¹no odpiranje %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#~ msgid "sigsize         : %d\n"
+#~ msgstr "dol¾ina podpisa : %d\n"
+
+#~ msgid "Header + Archive: %d\n"
+#~ msgstr "glava in arhiv  : %d\n"
+
+#~ msgid "expected size   : %d\n"
+#~ msgstr "prièakovana vel.: %d\n"
+
+#~ msgid "New Header signature\n"
+#~ msgstr "Podpis v novi glavi\n"
 
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "poti %s ni mo¾no premakniti za paket %s-%s-%s"
