@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1.01
+Release: 1.02
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Aug 31 2001 Jeff Johnson <jbj@redhat.com>
+- fix: Provides: /path did not work with added packages (#52183).
+- fix: progress bar scaling did not include source rpm count.
+
 * Tue Aug 28 2001 Jeff Johnson <jbj@redhat.com>
 - python: teach rhnLoad about RPMTAG_SHA1RHN as well.
 - dependency whiteout for libgnomeprint -> gnome-print (ordering only).
