@@ -365,8 +365,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     int recNumber;
     int retcode = 0;
     char *end = NULL;
-    struct urlContext context;
-    int isUrl = 0;
+    void *context;
     char path[PATH_MAX];
 
     switch (source) {
@@ -381,10 +380,10 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	break;
     }
 
+    context = NULL;
     switch (source) {
       case QUERY_RPM:
 	if (urlIsURL(arg)) {
-	    isUrl = 1;
 	    if ((fd = urlGetFd(arg, &context)) < 0) {
 		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 			ftpStrerror(fd));
@@ -401,10 +400,10 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	if (fd >= 0) {
 	    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 
-	    close(fd);
-	    if (isUrl) {
-		urlFinishedFd(&context);
-	    }
+	    if (context != NULL)
+		urlAbortFd(context, fd);
+	    else
+		close(fd);
 
 	    switch (rc) {
 		case 0:
@@ -518,22 +517,22 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_PATH:
 	if (*arg != '/') {
-		/* Using realpath on the arg isn't correct if the arg is a symlink,
-		 * especially if the symlink is a dangling link.  What we should
-		 * instead do is use realpath() on `.' and then append arg to
-		 * it.
-		 */
+	    /* Using realpath on the arg isn't correct if the arg is a symlink,
+	     * especially if the symlink is a dangling link.  What we should
+	     * instead do is use realpath() on `.' and then append arg to
+	     * it.
+	     */
 	    if (realpath(".", path) != NULL) {
 		if (path[strlen(path)] != '/') {
-			if (strncat(path, "/", PATH_MAX - strlen(path) - 1) == NULL) {
+		    if (strncat(path, "/", sizeof(path) - strlen(path) - 1) == NULL) {
 	    		fprintf(stderr, _("maximum path length exceeded\n"));
 	    		return 1;
-			}
+		    }
 		}
 		/* now append the original file name to the real path */
-		if (strncat(path, arg, PATH_MAX - strlen(path) - 1) == NULL) {
-	    		fprintf(stderr, _("maximum path length exceeded\n"));
-	    		return 1;
+		if (strncat(path, arg, sizeof(path) - strlen(path) - 1) == NULL) {
+	    	    fprintf(stderr, _("maximum path length exceeded\n"));
+	    	    return 1;
 		}
 		arg = path;
 	    }

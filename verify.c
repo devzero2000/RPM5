@@ -165,10 +165,9 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
     int isSource;
     rpmdb db;
     dbiIndexSet matches;
-    struct urlContext context;
     char * arg;
-    int isUrl;
-    char path[255];
+    void *context;
+    char path[PATH_MAX];
 
     ec = 0;
     if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {
@@ -196,10 +195,11 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 	while (*argv) {
 	    arg = *argv++;
 
+	    context = NULL;
+	    rc = 0;
 	    switch (source) {
 	      case VERIFY_RPM:
 		if (urlIsURL(arg)) {
-		    isUrl = 1;
 		    if ((fd = urlGetFd(arg, &context)) < 0) {
 			fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 				ftpStrerror(fd));
@@ -215,7 +215,12 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 
 		if (fd >= 0) {
 		    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-		    close(fd);
+
+		    if (context != NULL)
+			urlAbortFd(context, fd);
+		    else
+			close(fd);
+
 		    switch (rc) {
 			case 0:
 			    rc = verifyPackage(prefix, db, h, verifyFlags);
@@ -240,10 +245,28 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		break;
 
 	      case VERIFY_PATH:
-		if (*arg != '/') {
-		    if (realpath(arg, path) != NULL)
-			arg = path;
+	      if (*arg != '/') {
+		/* Using realpath on the arg isn't correct if the arg is a symlink,
+		 * especially if the symlink is a dangling link.  What we should
+		 * instead do is use realpath() on `.' and then append arg to
+		 * it.
+		 */
+	       if (realpath(".", path) != NULL) {
+		if (path[strlen(path)] != '/') {
+		    if (strncat(path, "/", sizeof(path) - strlen(path) - 1) == NULL) {
+	    		fprintf(stderr, _("maximum path length exceeded\n"));
+	    		return 1;
+		    }
 		}
+		/* now append the original file name to the real path */
+		if (strncat(path, arg, sizeof(path) - strlen(path) - 1) == NULL) {
+	    	    fprintf(stderr, _("maximum path length exceeded\n"));
+	    	    return 1;
+		}
+		arg = path;
+	       }
+	      }
+
 		if (rpmdbFindByFile(db, arg, &matches)) {
 		    fprintf(stderr, _("file %s is not owned by any package\n"), 
 				arg);
@@ -265,8 +288,8 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		}
 		break;
 
-		case VERIFY_EVERY:
-		    ; /* nop */
+	      case VERIFY_EVERY:
+		break;
 	    }
 	    if (rc)
 		ec = rc;

@@ -143,6 +143,8 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     int stopInstall = 0;
+    size_t nb;
+    const char *tmppath = rpmGetVar(RPMVAR_TMPPATH);
 
     if (installFlags & RPMINSTALL_TEST) 
 	mode = O_RDONLY;
@@ -154,32 +156,42 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	;
 
     rpmMessage(RPMMESS_DEBUG, _("found %d packages\n"), numPackages);
-    packages = alloca((numPackages + 1) * sizeof(char *));
-    packages[numPackages] = NULL;
-    tmpPackages = alloca((numPackages + 1) * sizeof(char *));
-    binaryHeaders = alloca((numPackages + 1) * sizeof(Header));
-	
+
+    nb = (numPackages + 1) * sizeof(char *);
+    packages = alloca(nb);
+    memset(packages, 0, nb);
+    tmpPackages = alloca(nb);
+    memset(tmpPackages, 0, nb);
+    nb = (numPackages + 1) * sizeof(Header);
+    binaryHeaders = alloca(nb);
+    memset(binaryHeaders, 0, nb);
+
     rpmMessage(RPMMESS_DEBUG, _("looking for packages to download\n"));
     for (filename = argv, i = 0; *filename; filename++) {
+
 	if (urlIsURL(*filename)) {
+	    char *tfn;
+
 	    if (rpmIsVerbose()) {
 		fprintf(stdout, _("Retrieving %s\n"), *filename);
 	    }
-	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir) +
-			         strlen(rpmGetVar(RPMVAR_TMPPATH)));
-	    sprintf(packages[i], "%s%s/rpm-ftp-%d-%d.tmp", rootdir, 
-		    rpmGetVar(RPMVAR_TMPPATH), tmpnum++, (int) getpid());
-	    rpmMessage(RPMMESS_DEBUG, 
-			_("getting %s as %s\n"), *filename, packages[i]);
-	    fd = urlGetFile(*filename, packages[i]);
-	    if (fd < 0) {
+	    
+	    nb = strlen(rootdir) + strlen(tmppath) +
+		sizeof("/rpm-ftp-12345-12345.tmp");
+	    tfn = malloc(nb);
+	    sprintf(tfn, "%s%s/rpm-ftp-%.5u-%.5u.tmp", rootdir, 
+		    tmppath, tmpnum++, (int) getpid());
+	    rpmMessage(RPMMESS_DEBUG, _("getting %s as %s\n"), *filename, tfn);
+	    rc = urlGetFile(*filename, tfn);
+	    if (rc < 0) {
 		fprintf(stderr, 
 			_("error: skipping %s - transfer failed - %s\n"), 
-			*filename, ftpStrerror(fd));
+			*filename, ftpStrerror(rc));
 		numFailed++;
+		packages[i] = NULL;
+		free(tfn);
 	    } else {
-		tmpPackages[numTmpPackages++] = packages[i];
-		i++;
+		tmpPackages[numTmpPackages++] = packages[i++] = tfn;
 	    }
 	} else {
 	    packages[i++] = *filename;
@@ -189,12 +201,12 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     rpmMessage(RPMMESS_DEBUG, _("retrieved %d packages\n"), numTmpPackages);
 
     rpmMessage(RPMMESS_DEBUG, _("finding source and binary packages\n"));
-    for (filename = packages; *filename; filename++) {
+    for (filename = packages, i = 0; *filename; filename++, i++) {
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
 	    fprintf(stderr, _("error: cannot open file %s\n"), *filename);
 	    numFailed++;
-	    *filename = NULL;
+	    packages[i] = NULL;
 	    continue;
 	}
 
@@ -212,7 +224,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	if (rc) {
 	    fprintf(stderr, _("error: %s cannot be installed\n"), *filename);
 	    numFailed++;
-	    *filename = NULL;
+	    packages[i] = NULL;
 	} else if (isSource) {
 	    /* the header will be NULL if this is a v1 source package */
 	    if (binaryHeaders[numBinaryPackages])
@@ -278,8 +290,10 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 				     relocations);
     }
 
-    for (i = 0; i < numTmpPackages; i++)
+    for (i = 0; i < numTmpPackages; i++) {
 	unlink(tmpPackages[i]);
+	free(tmpPackages[i]);
+    }
 
     for (i = 0; i < numBinaryPackages; i++) 
 	headerFree(binaryHeaders[i]);

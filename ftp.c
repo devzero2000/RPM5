@@ -46,6 +46,7 @@ extern int h_errno;
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <arpa/inet.h>
+#include <arpa/telnet.h>
 
 #include "inet_aton.h"		/* for systems too stupid to provide this */
 #include "intl.h"
@@ -62,6 +63,9 @@ extern int h_errno;
 #endif
 
 #include "ftp.h"
+
+static int ftpDebug = 1;
+static int ftpTimeoutSecs = TIMEOUT_SECS;
 
 static int ftpCheckResponse(int sock, char ** str);
 static int ftpCommand(int sock, char * command, ...);
@@ -85,7 +89,7 @@ static int ftpCheckResponse(int sock, char ** str) {
 	FD_ZERO(&readSet);
 	FD_SET(sock, &readSet);
 
-	timeout.tv_sec = TIMEOUT_SECS;
+	timeout.tv_sec = ftpTimeoutSecs;
 	timeout.tv_usec = 0;
     
 	rc = select(sock + 1, &readSet, &emptySet, &emptySet, &timeout);
@@ -142,11 +146,14 @@ static int ftpCheckResponse(int sock, char ** str) {
 	}
     } while (doesContinue && !rc);
 
-    if (*errorCode == '4' || *errorCode == '5') {
-	if (!strncmp(errorCode, "550", 3)) {
-	    return FTPERR_FILE_NOT_FOUND;
-	}
+if (ftpDebug)
+fprintf(stderr, "<- %s\n", buf);
 
+    if (*errorCode == '4' || *errorCode == '5') {
+	if (!strncmp(errorCode, "550", 3))
+	    return FTPERR_FILE_NOT_FOUND;
+	if (!strncmp(errorCode, "552", 3))
+	    return FTPERR_NIC_ABORT_IN_PROGRESS;
 	return FTPERR_BAD_SERVER_RESPONSE;
     }
 
@@ -188,6 +195,8 @@ int ftpCommand(int sock, char * command, ...) {
     buf[len - 1] = '\n';
     buf[len] = '\0';
      
+if (ftpDebug)
+fprintf(stderr, "-> %s", buf);
     if (write(sock, buf, len) != len) {
         return FTPERR_SERVER_IO_ERROR;
     }
@@ -225,13 +234,12 @@ static int getHostAddress(const char * host, struct in_addr * address) {
     return 0;
 }
 
-int ftpOpen(char * host, char * name, char * password, char * proxy,
-	    int port) {
+int ftpOpen(const char * host, const char * name, const char * password,
+	const char * proxy, int port) {
     static int sock;
     /*static char * lastHost = NULL;*/
     struct in_addr serverAddress;
     struct sockaddr_in destPort;
-    struct passwd * pw;
     char * buf;
     int rc;
 
@@ -242,10 +250,11 @@ int ftpOpen(char * host, char * name, char * password, char * proxy,
 
     if (!password) {
 	if (getuid()) {
-	    pw = getpwuid(getuid());
-	    password = alloca(strlen(pw->pw_name) + 2);
-	    strcpy(password, pw->pw_name);
-	    strcat(password, "@");
+	    struct passwd * pw = getpwuid(getuid());
+	    char *myp = alloca(strlen(pw->pw_name) + 2);
+	    strcpy(myp, pw->pw_name);
+	    strcat(myp, "@");
+	    password = myp;
 	} else {
 	    password = "root@";
 	}
@@ -313,7 +322,7 @@ int ftpReadData(int sock, int out) {
 	FD_ZERO(&readSet);
 	FD_SET(sock, &readSet);
 
-	timeout.tv_sec = TIMEOUT_SECS;
+	timeout.tv_sec = ftpTimeoutSecs;
 	timeout.tv_usec = 0;
     
 	rc = select(sock + 1, &readSet, &emptySet, &emptySet, &timeout);
@@ -338,7 +347,37 @@ int ftpReadData(int sock, int out) {
     }
 }
 
-int ftpGetFileDesc(int sock, char * remotename) {
+int ftpAbort(int sock, int dsock) {
+    char buf[BUFFER_SIZE];
+    int rc;
+    int tosecs = ftpTimeoutSecs;
+
+if (ftpDebug)
+fprintf(stderr, "-> ABOR\n");
+    sprintf(buf, "%c%c%c", IAC, IP, IAC);
+    send(sock, buf, 3, MSG_OOB);
+    sprintf(buf, "%cABOR\r\n", DM);
+    if (write(sock, buf, 7) != 7) {
+        return FTPERR_SERVER_IO_ERROR;
+    }
+    if (dsock >= 0) {
+	while(read(dsock, buf, sizeof(buf)) > 0)
+	    ;
+    }
+
+    ftpTimeoutSecs = 1;
+    if ((rc = ftpCheckResponse(sock, NULL)) == FTPERR_NIC_ABORT_IN_PROGRESS) {
+	rc = ftpCheckResponse(sock, NULL);
+    }
+    rc = ftpCheckResponse(sock, NULL);
+    ftpTimeoutSecs = tosecs;
+
+    if (dsock >= 0)
+	close(dsock);
+    return 0;
+}
+
+int ftpGetFileDesc(int sock, const char * remotename) {
     int dataSocket;
     struct sockaddr_in dataAddress;
     int i, j;
@@ -347,6 +386,8 @@ int ftpGetFileDesc(int sock, char * remotename) {
     char * retrCommand;
     int rc;
 
+if (ftpDebug)
+fprintf(stderr, "-> PASV\n");
     if (write(sock, "PASV\r\n", 6) != 6) {
         return FTPERR_SERVER_IO_ERROR;
     }
@@ -395,14 +436,18 @@ int ftpGetFileDesc(int sock, char * remotename) {
     sprintf(retrCommand, "RETR %s\r\n", remotename);
     i = strlen(retrCommand);
    
-    if (write(sock, retrCommand, i) != i) {
-        return FTPERR_SERVER_IO_ERROR;
-    }
-
-    if (connect(dataSocket, (struct sockaddr *) &dataAddress, 
-	        sizeof(dataAddress))) {
+    while (connect(dataSocket, (struct sockaddr *) &dataAddress, 
+	        sizeof(dataAddress)) < 0) {
+	if (errno == EINTR)
+	    continue;
 	close(dataSocket);
         return FTPERR_FAILED_DATA_CONNECT;
+    }
+
+if (ftpDebug)
+fprintf(stderr, "-> %s", retrCommand);
+    if (write(sock, retrCommand, i) != i) {
+        return FTPERR_SERVER_IO_ERROR;
     }
 
     if ((rc = ftpCheckResponse(sock, NULL))) {
@@ -421,7 +466,7 @@ int ftpGetFileDone(int sock) {
     return 0;
 }
 
-int ftpGetFile(int sock, char * remotename, int dest) {
+int ftpGetFile(int sock, const char * remotename, int dest) {
     int dataSocket, rc;
 
     dataSocket = ftpGetFileDesc(sock, remotename);
@@ -470,6 +515,9 @@ const char *ftpStrerror(int errorNumber) {
 
     case FTPERR_FILE_NOT_FOUND:
       return _("File not found on server");
+
+    case FTPERR_NIC_ABORT_IN_PROGRESS:
+      return _("Abort in progress");
 
     case FTPERR_UNKNOWN:
     default:

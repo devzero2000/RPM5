@@ -13,12 +13,14 @@ const char * ftpStrerror(int ftpErrno);
 #define FTPERR_PASSIVE_ERROR         -8
 #define FTPERR_FAILED_DATA_CONNECT   -9
 #define FTPERR_FILE_NOT_FOUND        -10
+#define FTPERR_NIC_ABORT_IN_PROGRESS -11
 #define FTPERR_UNKNOWN               -100
 
-int ftpOpen(char * host, char * name, char * password, char * proxy, int port);
-int ftpGetFile(int sock, char * remotename, int dest);
-int ftpGetFileDesc(int sock, char * remotename);
+int ftpOpen(const char * host, const char * name, const char * password, const char * proxy, int port);
+int ftpGetFile(int sock, const char * remotename, int dest);
+int ftpGetFileDesc(int sock, const char * remotename);
 int ftpGetFileDone(int sock);
+int ftpAbort(int sock, int dsock);
 void ftpClose(int sock);
 
 #endif

@@ -18,205 +18,296 @@
 #include "rpmlib.h"
 #include "url.h"
 
-struct pwcacheEntry {
-    char * machine;
-    char * account;
-    char * pw;
-} ;
+#include <netinet/in.h>
+#include <netdb.h>
 
-static char * getFtpPassword(char * machine, char * account, int mustAsk);
-static int urlFtpLogin(char * url, char ** fileNamePtr);
-static int urlFtpSplit(char * url, char ** user, char ** pw, char ** host, 
-		char ** path);
+#ifndef	FREE
+#define	FREE(_x)   { if ((_x) != NULL) { free((void *)(_x)); (_x) = NULL; } }
+#endif
 
-static char * getFtpPassword(char * machine, char * account, int mustAsk) {
-    static struct pwcacheEntry * pwCache = NULL;
-    static int pwCount = 0;
-    int i;
-    char * prompt;
+static void findUrlinfo(urlinfo **uret, int mustAsk);
+static int urlConnect(const char * url, urlinfo **uret);
 
-    for (i = 0; i < pwCount; i++) {
-	if (!strcmp(pwCache[i].machine, machine) &&
-	    !strcmp(pwCache[i].account, account))
-		break;
-    }
+void freeUrlinfo(urlinfo *u)
+{
+    if (u->ftpControl)
+	urlFinishedFd(u);
+    FREE(u->service);
+    FREE(u->user);
+    FREE(u->password);
+    FREE(u->host);
+    FREE(u->portstr);
+    FREE(u->path);
 
-    if (i < pwCount && !mustAsk) {
-	return pwCache[i].pw;
-    } else if (i == pwCount) {
-	pwCount++;
-	if (pwCache)
-	    pwCache = realloc(pwCache, sizeof(*pwCache) * pwCount);
-	else
-	    pwCache = malloc(sizeof(*pwCache));
-
-	pwCache[i].machine = strdup(machine);
-	pwCache[i].account = strdup(account);
-    } else
-	free(pwCache[i].pw);
-
-    prompt = alloca(strlen(machine) + strlen(account) + 50);
-    sprintf(prompt, _("Password for %s@%s: "), account, machine);
-
-    pwCache[i].pw = strdup(getpass(prompt));
-
-    return pwCache[i].pw;
+    FREE(u);
 }
 
-static int urlFtpSplit(char * url, char ** user, char ** pw, char ** host, 
-		char ** path) {
-    char * chptr, * machineName, * fileName;
-    char * userName = NULL;
-    char * password = NULL;
+urlinfo *newUrlinfo(void)
+{
+    urlinfo *u;
+    if ((u = malloc(sizeof(*u))) == NULL)
+	return NULL;
+    memset(u, 0, sizeof(*u));
+    u->port = -1;
+    u->ftpControl = -1;
+    return u;
+}
 
-    url += 6;			/* skip ftp:// */
+static void findUrlinfo(urlinfo **uret, int mustAsk)
+{
+    urlinfo *u;
+    urlinfo **empty;
+    static urlinfo **uCache = NULL;
+    static int uCount = 0;
+    int i;
 
-    chptr = url;
-    while (*chptr && (*chptr != '/')) chptr++;
-    if (!*chptr) return -1;
+    if (uret == NULL)
+	return;
 
-    machineName = url;		/* could still have user:pass@ though */
-    fileName = chptr;
+    u = *uret;
 
-    *path = strdup(chptr);
- 
-    *chptr = '\0';
+    empty = NULL;
+    for (i = 0; i < uCount; i++) {
+	urlinfo *ou;
+	if ((ou = uCache[i]) == NULL) {
+	    if (empty == NULL)
+		empty = &uCache[i];
+	    continue;
+	}
+	if (u->service && ou->service && strcmp(ou->service, u->service))
+	    continue;
+	if (u->host && ou->host && strcmp(ou->host, u->host))
+	    continue;
+	if (u->user && ou->user && strcmp(ou->user, u->user))
+	    continue;
+	if (u->password && ou->password && strcmp(ou->password, u->password))
+	    continue;
+	if (u->portstr && ou->portstr && strcmp(ou->portstr, u->portstr))
+	    continue;
+	break;
+    }
 
-    chptr = fileName;
-    while (chptr > url && *chptr != '@') chptr--;
-    if (chptr > url) {		/* we have a username */
-	*chptr = '\0';
-	userName = machineName;
-	machineName = chptr + 1;
-	
-	chptr = userName;
-	while (*chptr && *chptr != ':') chptr++;
-	if (*chptr) {		/* we have a password */
-	    *chptr = '\0';
-	    password = chptr + 1;
+    if (i == uCount) {
+	if (empty == NULL) {
+	    uCount++;
+	    if (uCache)
+		uCache = realloc(uCache, sizeof(*uCache) * uCount);
+	    else
+		uCache = malloc(sizeof(*uCache));
+	    empty = &uCache[i];
+	}
+	*empty = u;
+    } else {
+	const char *up = uCache[i]->path;
+	uCache[i]->path = u->path;
+	u->path = up;
+	freeUrlinfo(u);
+    }
+
+    *uret = u = uCache[i];
+
+    if (!strcmp(u->service, "ftp")) {
+	if (mustAsk || (u->user != NULL && u->password == NULL)) {
+	    char * prompt;
+	    FREE(u->password);
+	    prompt = alloca(strlen(u->host) + strlen(u->user) + 40);
+	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
+	    u->password = strdup(getpass(prompt));
 	}
     }
-	
-    if (userName && !password) {
-	password = getFtpPassword(machineName, userName, 0);
-    } 
+    return;
+}
 
-    if (userName)
-	*user = strdup(userName);
+int urlSplit(const char * url, urlinfo **uret)
+{
+    urlinfo *u;
+    char *myurl;
+    char *s, *se, *f, *fe;
 
-    if (password)
-	*pw = strdup(password);
+    if (uret == NULL)
+	return -1;
+    if ((u = newUrlinfo()) == NULL)
+	return -1;
 
-    *host = strdup(machineName);
+    if ((se = s = myurl = strdup(url)) == NULL) {
+	freeUrlinfo(u);
+	return -1;
+    }
+    do {
+	while (*se && *se != '/') se++;
+	if (*se == '\0') {
+	    if (myurl) free(myurl);
+	    freeUrlinfo(u);
+	    return -1;
+	}
+    	if ((se != s) && se[-1] == ':' && se[0] == '/' && se[1] == '/') {
+		se[-1] = '\0';
+	    u->service = strdup(s);
+	    se += 2;
+	    s = se++;
+	    continue;
+	}
+        u->path = strdup(se);
+	*se = '\0';
+	break;
+    } while (1);
+
+    fe = f = s;
+    while (*fe && *fe != '@') fe++;
+    if (*fe == '@') {
+	s = fe + 1;
+	*fe = '\0';
+	while (fe > f && *fe != ':') fe--;
+	if (*fe == ':') {
+	    *fe++ = '\0';
+	    u->password = strdup(fe);
+	}
+	u->user = strdup(f);
+    }
+
+    fe = f = s;
+    while (*fe && *fe != ':') fe++;
+    if (*fe == ':') {
+	*fe++ = '\0';
+	u->portstr = strdup(fe);
+	if (u->portstr != NULL && u->portstr[0] != '\0') {
+	    char *end;
+	    u->port = strtol(u->portstr, &end, 0);
+	    if (*end) {
+		rpmMessage(RPMMESS_ERROR, _("url port must be a number\n"));
+		if (myurl) free(myurl);
+		freeUrlinfo(u);
+		return -1;
+	    }
+	}
+    }
+    u->host = strdup(f);
+
+    if (u->port < 0 && u->service != NULL) {
+	struct servent *se;
+	if ((se = getservbyname(u->service, "tcp")) != NULL)
+	    u->port = se->s_port;
+	else if (!strcasecmp(u->service, "ftp"))
+	    u->port = IPPORT_FTP;
+	else if (!strcasecmp(u->service, "http"))
+	    u->port = IPPORT_HTTP;
+    }
+
+    if (myurl) free(myurl);
+    if (uret) {
+	*uret = u;
+	findUrlinfo(uret, 0);
+    }
+    return 0;
+}
+
+static int urlConnect(const char * url, urlinfo **uret) {
+    urlinfo *u;
+   
+    rpmMessage(RPMMESS_DEBUG, _("getting %s\n"), url);
+
+    if (urlSplit(url, &u) < 0)
+	return -1;
+
+    if (u->ftpControl < 0) {
+	char * proxy;
+	char * portStr;
+	char * endPtr;
+	int port;
+
+	rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"),
+		u->host,
+		u->user ? u->user : "ftp", 
+		u->password ? u->password : "(username)");
+
+	proxy = rpmGetVar(RPMVAR_FTPPROXY);
+	portStr = rpmGetVar(RPMVAR_FTPPORT);
+	if (!portStr) {
+	    port = -1;
+	} else {
+	    port = strtol(portStr, &endPtr, 0);
+	    if (*endPtr) {
+		rpmMessage(RPMMESS_ERROR, _("ftpport must be a number\n"));
+		return -1;
+	    }
+ 	}
+
+	u->ftpControl = ftpOpen(u->host, u->user, u->password, proxy, port);
+    }
+
+    if (u->ftpControl < 0)
+	return -1;
+
+    if (uret)
+	*uret = u;
 
     return 0;
 }
 
-static int urlFtpLogin(char * url, char ** fileNamePtr) {
-    char * buf;
-    char * machineName, * fileName;
-    char * userName = NULL;
-    char * password = NULL;
-    char * proxy;
-    char * portStr, * endPtr;
-    int port;
-    int ftpconn;
-   
-    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
-
-    buf = alloca(strlen(url) + 1);
-    strcpy(buf, url);
-
-    urlFtpSplit(buf, &userName, &password, &machineName, &fileName);
-
-    rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"), machineName,
-		userName ? userName : "ftp", 
-		password ? password : "(username)");
-
-    proxy = rpmGetVar(RPMVAR_FTPPROXY);
-    portStr = rpmGetVar(RPMVAR_FTPPORT);
-    if (!portStr) {
-	port = -1;
-    } else {
-	port = strtol(portStr, &endPtr, 0);
-	if (*endPtr) {
-	    fprintf(stderr, _("error: ftpport must be a number\n"));
-	    return -1;
-	}
-    }
-
-    ftpconn = ftpOpen(machineName, userName, password, proxy, port);
-
-    free(machineName);
-    free(userName);
-    free(password);
-
-    if (ftpconn < 0) {
-	free(fileName);
-	return ftpconn;
-    }
-
-    *fileNamePtr = fileName;
-
-    return ftpconn;
-}
-
-int urlGetFd(char * url, struct urlContext * context) {
-    char * fileName;
+int urlGetFd(const char * url, void **xx) {
+    urlinfo **uret = (urlinfo **)xx;
+    urlinfo *u;
     int fd;
+    int rc;
 
-    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
+    if ((rc = urlConnect(url, &u)) < 0)
+	return rc;
 
-    if ((context->ftpControl = urlFtpLogin(url, &fileName)) < 0) 
-	return context->ftpControl;
+    fd = ftpGetFileDesc(u->ftpControl, u->path);
 
-    fd = ftpGetFileDesc(context->ftpControl, fileName);
+    if (fd < 0) {
+	urlFinishedFd(u);
+	return fd;
+    }
 
-    free(fileName);
-
-    if (fd < 0) ftpClose(context->ftpControl);
+    if (uret)
+	*uret = u;
 
     return fd;
 }
 
-int urlFinishedFd(struct urlContext * context) {
-    ftpClose(context->ftpControl);
-
+int urlAbortFd(void *x, int fd) {
+    urlinfo *u = (urlinfo *)x;
+    if (u->ftpControl) {
+	ftpAbort(u->ftpControl, fd);
+    } else if (fd >= 0)
+	close(fd);
     return 0;
 }
 
-int urlGetFile(char * url, char * dest) {
-    char * fileName;
-    int ftpconn;
+int urlFinishedFd(void *x) {
+    urlinfo *u = (urlinfo *)x;
+    if (u->ftpControl) {
+	ftpClose(u->ftpControl);
+	u->ftpControl = -1;
+    }
+    return 0;
+}
+
+int urlGetFile(const char * url, const char * dest) {
+    urlinfo *u;
     int rc;
     int fd;
 
-    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
+    if ((rc = urlConnect(url, &u)) < 0)
+	return rc;
 
-    if ((ftpconn = urlFtpLogin(url, &fileName)) < 0) return ftpconn;
-
-    fd = creat(dest, 0600);
-
-    if (fd < 0) {
+    if ((fd = open(dest, (O_CREAT|O_WRONLY|O_TRUNC), 0600)) < 0) {
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);
-	ftpClose(ftpconn);
-	free(fileName);
 	return FTPERR_UNKNOWN;
     }
 
-    if ((rc = ftpGetFile(ftpconn, fileName, fd))) {
+    if ((rc = ftpGetFile(u->ftpControl, u->path, fd))) {
+	urlFinishedFd(u);
 	unlink(dest);
-    }    
-
-    free(fileName);
+    }
     close(fd);
-    ftpClose(ftpconn);
 
     return rc;
 }
 
-int urlIsURL(char * url) {
-    if (!strncmp(url, "ftp://", 6)) return 1;
-
-    return 0;
+urltype urlIsURL(const char * url) {
+    if (!strncmp(url, "ftp://", 6))
+	return URL_IS_FTP;
+    return URL_IS_UNKNOWN;
 }

@@ -1,4 +1,7 @@
 2.5.5 -> 2.5.6:
+	- attempt ftp ABOR on query/verify url's.
+	- cache open ftp control descriptor with password.
+	- verify needed same realpath semantics as query.
 	- plug fd leak in urlGetFile().
 	- translate cpio errors using cpioStrerror.
 	- display "..?....." rather than "..5....." for unreadable files.
