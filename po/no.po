@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
 "POT-Creation-Date: 2000-08-16 09:09-0400\n"
-"PO-Revision-Date: 2000-08-04 02:59+02:00\n"
+"PO-Revision-Date: 2000-08-17 20:22+02:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -449,23 +449,23 @@ msgstr "        --whatprovides <cap>"
 
 #: rpm.c:335
 msgid "query packages which provide <cap> capability"
-msgstr ""
+msgstr "spør etter pakker som tilbyr <funk> funksjonalitet"
 
 #: rpm.c:336
 msgid "        --whatrequires <cap>"
-msgstr ""
+msgstr "        --whatrequires <funk>"
 
 #: rpm.c:337
 msgid "query packages which require <cap> capability"
-msgstr ""
+msgstr "spør etter etter pakker som trenger <funk> funksjonalitet"
 
 #: rpm.c:338
 msgid "      Information selection options:"
-msgstr ""
+msgstr "      Alternativer for informasjonsvalg:"
 
 #: rpm.c:340 rpmqv.c:452
 msgid "display package information"
-msgstr ""
+msgstr "vis pakkeinformasjon"
 
 #: rpm.c:342 rpmqv.c:454
 msgid "display the package's change log"
@@ -492,10 +492,11 @@ msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
 msgstr ""
+"vis all verifiserbar informasjon for hver fil (må brukes med -l, -c, eller -d"
 
 #: rpm.c:354
 msgid "list capabilities package provides"
-msgstr ""
+msgstr "list funksjoner pakken tilbyr"
 
 #: rpm.c:356
 msgid "list package dependencies"
@@ -514,6 +515,8 @@ msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr ""
+"verifisér en pakkeinstallasjon ved å bruke samme alternativer for "
+"pakkespesifikasjon som -q"
 
 #: rpm.c:370 rpm.c:412 rpm.c:447 rpmqv.c:477 rpmqv.c:523 rpmqv.c:557
 msgid "do not verify package dependencies"
@@ -529,7 +532,7 @@ msgstr "ikke verifiser filattributter"
 
 #: rpm.c:376 rpmqv.c:484
 msgid "list the tags that can be used in a query format"
-msgstr ""
+msgstr "list tags som kan brukes i et spørringsformat"
 
 #: rpm.c:379
 msgid "    --install <packagefile>"
@@ -553,23 +556,23 @@ msgstr "hopp over filer i sti <sti>"
 
 #: rpm.c:384
 msgid "      --relocate <oldpath>=<newpath>"
-msgstr ""
+msgstr "      --relocate <gmlsti>=<nysti>"
 
 #: rpm.c:385 rpmqv.c:535
 msgid "relocate files from <oldpath> to <newpath>"
-msgstr ""
+msgstr "omplassér filer fra <gmlsti> til <nysti>"
 
 #: rpm.c:387 rpmqv.c:503
 msgid "relocate files in non-relocateable package"
-msgstr ""
+msgstr "omplassér filer i ikke-omplasserbar pakke"
 
 #: rpm.c:388
 msgid "      --prefix <dir>      "
-msgstr ""
+msgstr "      --prefix <kat>"
 
 #: rpm.c:389 rpmqv.c:533
 msgid "relocate the package to <dir>, if relocatable"
-msgstr ""
+msgstr "omplassér pakken til <kat>, hvis den er omplasserbar"
 
 #: rpm.c:393 rpmqv.c:505
 msgid "do not install documentation"
@@ -577,15 +580,15 @@ msgstr "ikke installer dokumentasjon"
 
 #: rpm.c:395 rpmqv.c:509
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr ""
+msgstr "forkortning for --replacepkgs --replacefiles"
 
 #: rpm.c:397 rpmqv.c:511
 msgid "print hash marks as package installs (good with -v)"
-msgstr ""
+msgstr "skriv ut skigarder etter som pakken installeres (nyttig med -v)"
 
 #: rpm.c:399 rpmqv.c:500
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr ""
+msgstr "installér alle filer, selv konfigurasjoner som ellers kan hoppes over"
 
 #: rpm.c:402 rpmqv.c:513
 msgid "don't verify package architecture"
@@ -609,7 +612,7 @@ msgstr "oppdatér databasen, men ikke modifiser filsystemet"
 
 #: rpm.c:414 rpm.c:449 rpmqv.c:525 rpmqv.c:559
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr ""
+msgstr "ikke ordne pakkeinstallasjon for å tilfredsstille avhengigheter"
 
 #: rpm.c:416
 msgid "don't execute any installation scripts"
@@ -637,11 +640,11 @@ msgstr "ikke installér, men si ifra om det ville virke eller ikke"
 
 #: rpm.c:431
 msgid "    --upgrade <packagefile>"
-msgstr ""
+msgstr "    --upgrade <pakkefil>"
 
 #: rpm.c:432
 msgid "    -U <packagefile>      "
-msgstr ""
+msgstr "    -U <pakkefil>"
 
 #: rpm.c:433 rpmqv.c:545
 msgid "upgrade package (same options as --install, plus)"
@@ -652,10 +655,12 @@ msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
+"oppgradér til en gammel versjon av pakken (--force ved oppgraderinger gjør "
+"dette automatisk)"
 
 #: rpm.c:437
 msgid "    --erase <package>"
-msgstr ""
+msgstr "    --erase <pakke>"
 
 #: rpm.c:439 rpmqv.c:551
 msgid "erase (uninstall) package"
@@ -666,6 +671,8 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
+"fjern alle pakker som er lik <pakke> (normalt vil en feil genereres hvis "
+"<pakke> spesifiserer flere pakker)"
 
 #: rpm.c:451 rpmqv.c:561
 msgid "do not execute any package specific scripts"
@@ -673,11 +680,11 @@ msgstr "ikke kjør noen pakkespesifikke skript"
 
 #: rpm.c:457
 msgid "    -b<stage> <spec>      "
-msgstr ""
+msgstr "    -b<stadium> <spec>    "
 
 #: rpm.c:458
 msgid "    -t<stage> <tarball>   "
-msgstr ""
+msgstr "    -t<stadium> <tarball> "
 
 #: rpm.c:459 rpmqv.c:570
 msgid "build package, where <stage> is one of:"
@@ -730,7 +737,7 @@ msgstr "generér PGP/GPG signatur"
 
 #: rpm.c:482
 msgid "      --buildroot <dir>   "
-msgstr ""
+msgstr "      --buildroot <kat>   "
 
 #: rpm.c:483 rpmqv.c:596
 msgid "use <dir> as the build root"
@@ -738,11 +745,11 @@ msgstr "bruk <katalog> som byggrot"
 
 #: rpm.c:484
 msgid "      --target=<platform>+"
-msgstr ""
+msgstr "      --target=<plattform>+"
 
 #: rpm.c:485 rpmqv.c:598
 msgid "build the packages for the build targets platform1...platformN."
-msgstr ""
+msgstr "bygg pakkene for mål plattform1...plattformN."
 
 #: rpm.c:487 rpmqv.c:600
 msgid "do not execute any stages"
@@ -750,25 +757,27 @@ msgstr "ikke kjør noen steg"
 
 #: rpm.c:488
 msgid "      --timecheck <secs>  "
-msgstr ""
+msgstr "      --timecheck <sek>   "
 
 #: rpm.c:489
 msgid "set the time check to <secs> seconds (0 disables)"
-msgstr ""
+msgstr "sett tidssjekk til <sek> sekunder (0 slår av)"
 
 #: rpm.c:491
 msgid "    --rebuild <src_pkg>   "
-msgstr ""
+msgstr "    --rebuild <kilde_pakke>"
 
 #: rpm.c:492 rpmqv.c:603
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
+"installér kildepakke, bygg binærpakke og fjern specfil, kilder, patcher og "
+"ikoner."
 
 #: rpm.c:493
 msgid "    --recompile <src_pkg> "
-msgstr ""
+msgstr "    --recompile <kilde_pakke>"
 
 #: rpm.c:494 rpmqv.c:605
 msgid "like --rebuild, but don't build any package"
@@ -776,7 +785,7 @@ msgstr "som --rebuild, men ikke bygg noen pakke"
 
 #: rpm.c:497
 msgid "    --resign <pkg>+       "
-msgstr ""
+msgstr "    --resign <pakke>+     "
 
 #: rpm.c:498 rpmqv.c:611
 msgid "sign a package (discard current signature)"
@@ -784,7 +793,7 @@ msgstr "signér en pakke (forkast nåværende signatur)"
 
 #: rpm.c:499
 msgid "    --addsign <pkg>+      "
-msgstr ""
+msgstr "    --addsign <pakke>+    "
 
 #: rpm.c:500 rpmqv.c:613
 msgid "add a signature to a package"
@@ -792,7 +801,7 @@ msgstr "legg til signatur til en pakke"
 
 #: rpm.c:501
 msgid "    --checksig <pkg>+"
-msgstr ""
+msgstr "    --checksig <pakke>+"
 
 #: rpm.c:502
 msgid "    -K <pkg>+             "
@@ -827,12 +836,16 @@ msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
+"sett filrettigheter til de samme som i pakkedatabasen ved å bruke samme "
+"alternativer for pakkespesifikasjon som med -q"
 
 #: rpm.c:526 rpmqv.c:489
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
+"set fileierskap og gruppe til de som er i pakkedatabasen ved å bruke samme "
+"alternativer for pakkespesifikasjon som -q"
 
 #: rpm.c:664 rpm.c:670 rpm.c:679 rpm.c:701 rpm.c:707 rpm.c:714 rpm.c:722
 #: rpm.c:730 rpm.c:751 rpm.c:808 rpmqv.c:811 rpmqv.c:820 rpmqv.c:826
@@ -843,7 +856,7 @@ msgstr "kun ett større modi kan spesifiseres"
 
 #: rpm.c:672 rpmqv.c:813
 msgid "-u and --uninstall are deprecated and no longer work.\n"
-msgstr ""
+msgstr "-u og --uninstall er utgått og virker ikke lengre.\n"
 
 #: rpm.c:674 rpmqv.c:815
 msgid "Use -e or --erase instead.\n"
@@ -872,56 +885,57 @@ msgstr "Intern feil i argumentprosesseringen (%d) :-(\n"
 
 #: rpm.c:815 rpmqv.c:973
 msgid "one type of query/verify may be performed at a time"
-msgstr ""
+msgstr "én type spørring/verifisering kan utføres om gangen"
 
 #: rpm.c:820 rpmqv.c:977
 msgid "unexpected query flags"
-msgstr ""
+msgstr "uventede flagg for spørring"
 
 #: rpm.c:823 rpmqv.c:980
 msgid "unexpected query format"
-msgstr ""
+msgstr "ventet spørringsformat"
 
 #: rpm.c:826 rpmqv.c:983
 msgid "unexpected query source"
-msgstr ""
+msgstr "uventet spørringskilde"
 
 #: rpm.c:829 rpmqv.c:1003
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
-msgstr ""
+msgstr "kun installasjon, oppgradering, rmsource og rmspec kan tvinges"
 
 #: rpm.c:832 rpmqv.c:1008
 msgid "files may only be relocated during package installation"
-msgstr ""
+msgstr "filer kan kun omplasseres under pakkeinstallasjon"
 
 #: rpm.c:835 rpmqv.c:1011
 msgid "only one of --prefix or --relocate may be used"
-msgstr ""
+msgstr "kune en av --prefix eller --relocate kan brukes"
 
 #: rpm.c:838 rpmqv.c:1014
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
+"--relocate og --excludepath kan kun brukes ved installasjon av nye pakker"
 
 #: rpm.c:841 rpmqv.c:1017
 msgid "--prefix may only be used when installing new packages"
-msgstr ""
+msgstr "--prefix kan kun brukes ved installasjon av nye pakker"
 
 #: rpm.c:844 rpmqv.c:1020
 msgid "arguments to --prefix must begin with a /"
-msgstr ""
+msgstr "argumenter til --prefix må begynne med en /"
 
 #: rpm.c:847 rpmqv.c:1023
 msgid "--hash (-h) may only be specified during package installation"
-msgstr ""
+msgstr "--hash (-h) kan kun spesifiseres under pakkeinstallasjon"
 
 #: rpm.c:851 rpmqv.c:1027
 msgid "--percent may only be specified during package installation"
-msgstr ""
+msgstr "--percent kan kun spesifiseres under pakkeinstallasjon"
 
 #: rpm.c:855 rpmqv.c:1031
 msgid "--replacefiles may only be specified during package installation"
-msgstr ""
+msgstr "--replacefiles kan kun spesifiseres under pakkeinstallasjon"
 
 #: rpm.c:859 rpmqv.c:1035
 msgid "--replacepkgs may only be specified during package installation"
