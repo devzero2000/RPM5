@@ -345,6 +345,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat May  5 2001 Jeff Johnson <jbj@redhat.com>
+- enough lclint annotations and fiddles already.
+
 * Thu May  3 2001 Jeff Johnson <jbj@redhat.com>
 - still more boring lclint annotations and fiddles.
 

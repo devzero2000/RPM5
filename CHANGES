@@ -42,6 +42,7 @@
 	- more boring lclint annotations and fiddles.
 	- yet more boring lclint annotations and fiddles.
 	- still more boring lclint annotations and fiddles.
+	- enough lclint annotations and fiddles already.
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
