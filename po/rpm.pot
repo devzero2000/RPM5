@@ -1,12 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-04-05 11:24-0500\n"
+"POT-Creation-Date: 2002-04-11 18:01-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -507,11 +508,11 @@ msgid ""
 "options as -q"
 msgstr ""
 
-#: lib/poptI.c:158 rpm.c:417 rpm.c:459 rpm.c:494
+#: rpm.c:417 rpm.c:459 rpm.c:494 lib/poptI.c:158
 msgid "do not verify package dependencies"
 msgstr ""
 
-#: lib/poptK.c:69 rpm.c:419
+#: rpm.c:419 lib/poptK.c:69
 msgid "do not verify file md5 checksums"
 msgstr ""
 
@@ -531,7 +532,7 @@ msgstr ""
 msgid "    -i <packagefile>      "
 msgstr ""
 
-#: lib/poptI.c:154 rpm.c:428
+#: rpm.c:428 lib/poptI.c:154
 msgid "install package"
 msgstr ""
 
@@ -551,7 +552,7 @@ msgstr ""
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr ""
 
-#: lib/poptI.c:116 rpm.c:434
+#: rpm.c:434 lib/poptI.c:116
 msgid "relocate files in non-relocateable package"
 msgstr ""
 
@@ -559,47 +560,47 @@ msgstr ""
 msgid "      --prefix <dir>      "
 msgstr ""
 
-#: lib/poptI.c:204 rpm.c:436
+#: rpm.c:436 lib/poptI.c:204
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 
-#: lib/poptI.c:128 rpm.c:440
+#: rpm.c:440 lib/poptI.c:128
 msgid "do not install documentation"
 msgstr ""
 
-#: lib/poptI.c:134 rpm.c:442
+#: rpm.c:442 lib/poptI.c:134
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr ""
 
-#: lib/poptI.c:140 rpm.c:444
+#: rpm.c:444 lib/poptI.c:140
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 
-#: lib/poptI.c:102 rpm.c:446
+#: rpm.c:446 lib/poptI.c:102
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 
-#: lib/poptI.c:143 rpm.c:449
+#: rpm.c:449 lib/poptI.c:143
 msgid "don't verify package architecture"
 msgstr ""
 
-#: lib/poptI.c:149 rpm.c:451
+#: rpm.c:451 lib/poptI.c:149
 msgid "don't check disk space before installing"
 msgstr ""
 
-#: lib/poptI.c:146 rpm.c:453
+#: rpm.c:453 lib/poptI.c:146
 msgid "don't verify package operating system"
 msgstr ""
 
-#: lib/poptI.c:151 rpm.c:455
+#: rpm.c:455 lib/poptI.c:151
 msgid "install documentation"
 msgstr ""
 
-#: lib/poptI.c:156 rpm.c:457 rpm.c:492
+#: rpm.c:457 rpm.c:492 lib/poptI.c:156
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 
-#: lib/poptI.c:161 rpm.c:461 rpm.c:496
+#: rpm.c:461 rpm.c:496 lib/poptI.c:161
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 
@@ -611,19 +612,19 @@ msgstr ""
 msgid "don't execute any scripts triggered by this package"
 msgstr ""
 
-#: lib/poptI.c:202 rpm.c:467
+#: rpm.c:467 lib/poptI.c:202
 msgid "print percentages as package installs"
 msgstr ""
 
-#: lib/poptI.c:214 rpm.c:469
+#: rpm.c:469 lib/poptI.c:214
 msgid "install even if the package replaces installed files"
 msgstr ""
 
-#: lib/poptI.c:217 rpm.c:471
+#: rpm.c:471 lib/poptI.c:217
 msgid "reinstall if the package is already present"
 msgstr ""
 
-#: lib/poptI.c:222 rpm.c:475
+#: rpm.c:475 lib/poptI.c:222
 msgid "don't install, but tell if it would work or not"
 msgstr ""
 
@@ -639,7 +640,7 @@ msgstr ""
 msgid "upgrade package (same options as --install, plus)"
 msgstr ""
 
-#: lib/poptI.c:198 rpm.c:482
+#: rpm.c:482 lib/poptI.c:198
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -653,11 +654,11 @@ msgstr ""
 msgid "    -e <package>          "
 msgstr ""
 
-#: lib/poptI.c:125 rpm.c:486
+#: rpm.c:486 lib/poptI.c:125
 msgid "erase (uninstall) package"
 msgstr ""
 
-#: lib/poptI.c:106 rpm.c:488
+#: rpm.c:488 lib/poptI.c:106
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -704,15 +705,15 @@ msgstr ""
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
 
-#: build/poptBT.c:221 rpm.c:520
+#: rpm.c:520 build/poptBT.c:221
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: build/poptBT.c:200 rpm.c:522
+#: rpm.c:522 build/poptBT.c:200
 msgid "remove build tree when done"
 msgstr ""
 
-#: build/poptBT.c:217 rpm.c:524
+#: rpm.c:524 build/poptBT.c:217
 msgid "remove sources when done"
 msgstr ""
 
@@ -720,7 +721,7 @@ msgstr ""
 msgid "remove spec file when done"
 msgstr ""
 
-#: build/poptBT.c:223 rpm.c:528
+#: rpm.c:528 build/poptBT.c:223
 msgid "generate PGP/GPG signature"
 msgstr ""
 
@@ -766,7 +767,7 @@ msgstr ""
 msgid "    --resign <pkg>+       "
 msgstr ""
 
-#: lib/poptK.c:56 rpm.c:543
+#: rpm.c:543 lib/poptK.c:56
 msgid "sign a package (discard current signature)"
 msgstr ""
 
@@ -774,7 +775,7 @@ msgstr ""
 msgid "    --addsign <pkg>+      "
 msgstr ""
 
-#: lib/poptK.c:54 rpm.c:545
+#: rpm.c:545 lib/poptK.c:54
 msgid "add a signature to a package"
 msgstr ""
 
@@ -786,15 +787,15 @@ msgstr ""
 msgid "    -K <pkg>+             "
 msgstr ""
 
-#: lib/poptK.c:60 rpm.c:548
+#: rpm.c:548 lib/poptK.c:60
 msgid "verify package signature"
 msgstr ""
 
-#: lib/poptK.c:66 rpm.c:550
+#: rpm.c:550 lib/poptK.c:66
 msgid "skip any PGP signatures"
 msgstr ""
 
-#: lib/poptK.c:63 rpm.c:552
+#: rpm.c:552 lib/poptK.c:63
 msgid "skip any GPG signatures"
 msgstr ""
 
@@ -840,19 +841,19 @@ msgstr ""
 msgid "Use -e or --erase instead.\n"
 msgstr ""
 
-#: lib/poptI.c:63 rpm.c:824
+#: rpm.c:824 lib/poptI.c:63
 msgid "relocations must begin with a /"
 msgstr ""
 
-#: lib/poptI.c:65 rpm.c:826
+#: rpm.c:826 lib/poptI.c:65
 msgid "relocations must contain a ="
 msgstr ""
 
-#: lib/poptI.c:68 rpm.c:829
+#: rpm.c:829 lib/poptI.c:68
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: lib/poptI.c:51 rpm.c:838
+#: rpm.c:838 lib/poptI.c:51
 msgid "exclude paths must begin with a /"
 msgstr ""
 
@@ -1128,7 +1129,7 @@ msgstr ""
 msgid "<cmd>"
 msgstr ""
 
-#: lib/poptI.c:205 rpmqv.c:129
+#: rpmqv.c:129 lib/poptI.c:205
 msgid "<dir>"
 msgstr ""
 
@@ -1188,7 +1189,7 @@ msgstr ""
 msgid "Common options for all rpm modes:"
 msgstr ""
 
-#: lib/poptI.c:27 rpmqv.c:224
+#: rpmqv.c:224 lib/poptI.c:27
 #, c-format
 msgid "%s: %s\n"
 msgstr ""
@@ -2410,7 +2411,6 @@ msgstr ""
 
 #. @-observertrans -readonlytrans@
 #: lib/header.c:2194
-#, c-format
 msgid "missing { after %"
 msgstr ""
 

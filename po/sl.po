@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-05 11:24-0500\n"
+"POT-Creation-Date: 2002-04-11 18:01-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -548,11 +548,11 @@ msgid ""
 "options as -q"
 msgstr "namestitev paketa preverimo z enakimi izbirnimi doloèili kot -q"
 
-#: lib/poptI.c:158 rpm.c:417 rpm.c:459 rpm.c:494
+#: rpm.c:417 rpm.c:459 rpm.c:494 lib/poptI.c:158
 msgid "do not verify package dependencies"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: lib/poptK.c:69 rpm.c:419
+#: rpm.c:419 lib/poptK.c:69
 msgid "do not verify file md5 checksums"
 msgstr "brez preverjanja nadzorne vsote md5"
 
@@ -572,7 +572,7 @@ msgstr "    --install <paket>      "
 msgid "    -i <packagefile>      "
 msgstr "    -i <paket>            "
 
-#: lib/poptI.c:154 rpm.c:428
+#: rpm.c:428 lib/poptI.c:154
 msgid "install package"
 msgstr "name¹èanje paketa"
 
@@ -592,7 +592,7 @@ msgstr "      --relocate <starapot>=<novapot>"
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr "prestavljanje datoteke iz stare poti v novo"
 
-#: lib/poptI.c:116 rpm.c:434
+#: rpm.c:434 lib/poptI.c:116
 msgid "relocate files in non-relocateable package"
 msgstr ""
 
@@ -600,48 +600,48 @@ msgstr ""
 msgid "      --prefix <dir>      "
 msgstr "      --prefix <imenik>   "
 
-#: lib/poptI.c:204 rpm.c:436
+#: rpm.c:436 lib/poptI.c:204
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "èe je mogoèe, bo paket prestavljen v imenik <imenik>"
 
-#: lib/poptI.c:128 rpm.c:440
+#: rpm.c:440 lib/poptI.c:128
 msgid "do not install documentation"
 msgstr "brez namestitve dokumentacije"
 
-#: lib/poptI.c:134 rpm.c:442
+#: rpm.c:442 lib/poptI.c:134
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "okraj¹ava za --replacepkgs --replacefiles"
 
-#: lib/poptI.c:140 rpm.c:444
+#: rpm.c:444 lib/poptI.c:140
 msgid "print hash marks as package installs (good with -v)"
 msgstr "z izpisom znakov # ob namestitvi (uporabno z -v)"
 
-#: lib/poptI.c:102 rpm.c:446
+#: rpm.c:446 lib/poptI.c:102
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "namestitev vseh datotek, vkljuèno z nastavitvenimi, ki so sicer izpu¹èene"
 
-#: lib/poptI.c:143 rpm.c:449
+#: rpm.c:449 lib/poptI.c:143
 msgid "don't verify package architecture"
 msgstr "brez preverjanja arhitekture paketa"
 
-#: lib/poptI.c:149 rpm.c:451
+#: rpm.c:451 lib/poptI.c:149
 msgid "don't check disk space before installing"
 msgstr "brez preverjanja prostora na disku pred name¹èanjem"
 
-#: lib/poptI.c:146 rpm.c:453
+#: rpm.c:453 lib/poptI.c:146
 msgid "don't verify package operating system"
 msgstr "brez preverjanja operacijskega sistema paketa"
 
-#: lib/poptI.c:151 rpm.c:455
+#: rpm.c:455 lib/poptI.c:151
 msgid "install documentation"
 msgstr "namesti dokumentacijo"
 
-#: lib/poptI.c:156 rpm.c:457 rpm.c:492
+#: rpm.c:457 rpm.c:492 lib/poptI.c:156
 msgid "update the database, but do not modify the filesystem"
 msgstr "obnovi podatkovno zbirko, a ne spreminjaj datoteènega sistema"
 
-#: lib/poptI.c:161 rpm.c:461 rpm.c:496
+#: rpm.c:461 rpm.c:496 lib/poptI.c:161
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "brez spreminjanja vrstnega reda paketov z namenom zadovoljevanja soodvisnosti"
@@ -654,19 +654,19 @@ msgstr "brez izvajanja namestitvenih skriptov"
 msgid "don't execute any scripts triggered by this package"
 msgstr "brez izvajanja skriptov, ki jih po¾ene ta paket"
 
-#: lib/poptI.c:202 rpm.c:467
+#: rpm.c:467 lib/poptI.c:202
 msgid "print percentages as package installs"
 msgstr "izpis odstotkov med namestitvijo"
 
-#: lib/poptI.c:214 rpm.c:469
+#: rpm.c:469 lib/poptI.c:214
 msgid "install even if the package replaces installed files"
 msgstr "namesti, èetudi paket pi¹e prek ¾e name¹èene datoteke"
 
-#: lib/poptI.c:217 rpm.c:471
+#: rpm.c:471 lib/poptI.c:217
 msgid "reinstall if the package is already present"
 msgstr "ponovno namesti, èe paket ¾e obstaja"
 
-#: lib/poptI.c:222 rpm.c:475
+#: rpm.c:475 lib/poptI.c:222
 msgid "don't install, but tell if it would work or not"
 msgstr "ne namesti, a ugotovi, èe bi delovalo"
 
@@ -682,7 +682,7 @@ msgstr "    -U <paket>            "
 msgid "upgrade package (same options as --install, plus)"
 msgstr "nadgradi paket (iste izbire kot --install in ¹e:)"
 
-#: lib/poptI.c:198 rpm.c:482
+#: rpm.c:482 lib/poptI.c:198
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -699,11 +699,11 @@ msgstr "    --erase <paket>   "
 msgid "    -e <package>          "
 msgstr "    --resign <paket>+     "
 
-#: lib/poptI.c:125 rpm.c:486
+#: rpm.c:486 lib/poptI.c:125
 msgid "erase (uninstall) package"
 msgstr "izbri¹i (odstrani) paket"
 
-#: lib/poptI.c:106 rpm.c:488
+#: rpm.c:488 lib/poptI.c:106
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -754,15 +754,15 @@ msgstr ""
 "prevedeni in izvorni paket (priprava, prevajanje, namestitev, izgradnja "
 "paketa)"
 
-#: build/poptBT.c:221 rpm.c:520
+#: rpm.c:520 build/poptBT.c:221
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "preskok naravnost na doloèeno stopnjo (samo za c,i)"
 
-#: build/poptBT.c:200 rpm.c:522
+#: rpm.c:522 build/poptBT.c:200
 msgid "remove build tree when done"
 msgstr "po zakljuèku drevo imenikov v katerih smo pakete gradili odstrani"
 
-#: build/poptBT.c:217 rpm.c:524
+#: rpm.c:524 build/poptBT.c:217
 msgid "remove sources when done"
 msgstr "po zakljuèku naj se izvorna koda izbri¹e"
 
@@ -771,7 +771,7 @@ msgstr "po zakljuèku naj se izvorna koda izbri¹e"
 msgid "remove spec file when done"
 msgstr "po zakljuèku naj se datoteka s specifikacijami izbri¹e"
 
-#: build/poptBT.c:223 rpm.c:528
+#: rpm.c:528 build/poptBT.c:223
 msgid "generate PGP/GPG signature"
 msgstr "izdelava podpisa PGP/GPG"
 
@@ -819,7 +819,7 @@ msgstr "kot --rebuild, a brez izgradnje kakr¹negakoli paketa"
 msgid "    --resign <pkg>+       "
 msgstr "    --resign <paket>+     "
 
-#: lib/poptK.c:56 rpm.c:543
+#: rpm.c:543 lib/poptK.c:56
 msgid "sign a package (discard current signature)"
 msgstr "podpi¹i paket(e) (trenutni podpis zavrzi)"
 
@@ -827,7 +827,7 @@ msgstr "podpi¹i paket(e) (trenutni podpis zavrzi)"
 msgid "    --addsign <pkg>+      "
 msgstr "    --addsign <paket>+    "
 
-#: lib/poptK.c:54 rpm.c:545
+#: rpm.c:545 lib/poptK.c:54
 msgid "add a signature to a package"
 msgstr "paketu(-om) dodaj podpis"
 
@@ -841,15 +841,15 @@ msgstr "    --checksig <paket>+"
 msgid "    -K <pkg>+             "
 msgstr "    -K <paket>+           "
 
-#: lib/poptK.c:60 rpm.c:548
+#: rpm.c:548 lib/poptK.c:60
 msgid "verify package signature"
 msgstr "preveri podpis paketa(-ov)"
 
-#: lib/poptK.c:66 rpm.c:550
+#: rpm.c:550 lib/poptK.c:66
 msgid "skip any PGP signatures"
 msgstr "preskoèi vse podpise PGP"
 
-#: lib/poptK.c:63 rpm.c:552
+#: rpm.c:552 lib/poptK.c:63
 msgid "skip any GPG signatures"
 msgstr "preskoèi vse podpise GPG"
 
@@ -900,19 +900,19 @@ msgstr "-u in --uninstall nista veè podprti izbiri in ne delujeta veè.\n"
 msgid "Use -e or --erase instead.\n"
 msgstr "Namesto njiju uporabite -e ali --erase.\n"
 
-#: lib/poptI.c:63 rpm.c:824
+#: rpm.c:824 lib/poptI.c:63
 msgid "relocations must begin with a /"
 msgstr "premikanja se morajo zaèeti z /"
 
-#: lib/poptI.c:65 rpm.c:826
+#: rpm.c:826 lib/poptI.c:65
 msgid "relocations must contain a ="
 msgstr "premikanja morajo vsebovati ="
 
-#: lib/poptI.c:68 rpm.c:829
+#: rpm.c:829 lib/poptI.c:68
 msgid "relocations must have a / following the ="
 msgstr "premikanja morajo imeti /, ki mu sledi ="
 
-#: lib/poptI.c:51 rpm.c:838
+#: rpm.c:838 lib/poptI.c:51
 msgid "exclude paths must begin with a /"
 msgstr "poti, ki niso obdelane, se morajo zaèeti z /"
 
@@ -1200,7 +1200,7 @@ msgstr ""
 msgid "<cmd>"
 msgstr ""
 
-#: lib/poptI.c:205 rpmqv.c:129
+#: rpmqv.c:129 lib/poptI.c:205
 msgid "<dir>"
 msgstr ""
 
@@ -1261,7 +1261,7 @@ msgstr ""
 msgid "Common options for all rpm modes:"
 msgstr ""
 
-#: lib/poptI.c:27 rpmqv.c:224
+#: rpmqv.c:224 lib/poptI.c:27
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "datoteka %s: %s\n"
@@ -2533,7 +2533,6 @@ msgstr "Tip podatkov %d ni podprt\n"
 
 #. @-observertrans -readonlytrans@
 #: lib/header.c:2194
-#, c-format
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 

@@ -74,6 +74,7 @@
 	- speedup large queries by ~50%.
 	- revert to presentation ordering Yet Again (#62158).
 	- non-glibc: on upgrade, mergesort is much faster than quicksort.
+	- fix: generate config file md5 as ascii, not binary (#62542).
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

@@ -835,7 +835,7 @@ static fileAction decideFileFate(const char * dirName,
     }
 
     if (dbWhat == REG) {
-	rc = domd5(filespec, buffer, 0);
+	rc = domd5(filespec, buffer, 1);
 	if (rc) {
 	    /* assume the file has been removed, don't freak */
 	    return FA_CREATE;
