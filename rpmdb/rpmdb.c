@@ -1958,10 +1958,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 		return NULL;
 	}
 	mi->mi_setx++;
-    } while (mi->mi_offset == 0
-|| mi->mi_offset == 514
-|| mi->mi_offset == 518
-);
+    } while (mi->mi_offset == 0);
 
     if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset)
 	goto exit;
