@@ -1408,7 +1408,7 @@ static struct badDeps_s {
     { "ypbind", "yp-tools" },
     { "ghostscript-fonts", "ghostscript" },
     /* 7.1 only */
-    { "mozilla-psm", "mozilla" },
+    { "mozilla", "mozilla-psm" },
     { "arts", "kdelibs-sound" },
     /* 7.0 only */
     { "pango-gtkbeta-devel", "pango-gtkbeta" },
