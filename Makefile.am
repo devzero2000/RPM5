@@ -53,15 +53,15 @@ rpmpopt-$(VERSION): rpmpopt
 noinst_HEADERS = \
 	acconfig.h	build.h		debug.h		system.h
 
-#rpm_SOURCES =
-#rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
-#rpm_LDADD =		rpm.o $(myLDADD)
-#rpm.o:	rpmqv.c
-#	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
-
-rpm_SOURCES =		rpm.c
+rpm_SOURCES =
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
-rpm_LDADD =		$(myLDADD)
+rpm_LDADD =		rpm.o $(myLDADD)
+rpm.o:	rpmqv.c
+	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
+
+#rpm_SOURCES =		rpm.c
+#rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
+#rpm_LDADD =		$(myLDADD)
 
 rpmb_SOURCES =		build.c
 rpmb_LDFLAGS =		$(myLDFLAGS)
@@ -187,7 +187,6 @@ setperms:
 	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(varprefix)/lib/rpm
 	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/[A-Z]*
 	-@$(__CHMOD) 0775 $(DESTDIR)$(varprefix)/lib/rpm
-	-@$(__CHMOD) 0755 $(DESTDIR)$(varprefix)/lib/rpm/Desktop
 	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/__db.*
 
 .PHONY:	unsetgid

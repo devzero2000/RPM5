@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-07-05 17:20-0400\n"
+"POT-Creation-Date: 2001-07-07 14:30-0400\n"
 "PO-Revision-Date: 2001-05-10 23:07+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -70,16 +70,16 @@ msgstr "Bygger för målet %s\n"
 msgid "rpm: %s\n"
 msgstr "rpm: %s\n"
 
-#: rpm.c:238 rpmqv.c:217
+#: rpm.c:238 rpmqv.c:218
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
-#: rpm.c:242 rpmqv.c:223
+#: rpm.c:242 rpmqv.c:224
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr "Copyright © 1998-2000 - Red Hat, Inc."
 
-#: rpm.c:243 rpmqv.c:224
+#: rpm.c:243 rpmqv.c:225
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "Det här programmet kan distribueras fritt enligt villkoren i GNU GPL"
 
@@ -852,8 +852,8 @@ msgstr ""
 "paketspecifikationsflaggor som -q"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:531 rpmqv.c:537 rpmqv.c:543
-#: rpmqv.c:577
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:532 rpmqv.c:538 rpmqv.c:544
+#: rpmqv.c:578
 msgid "only one major mode may be specified"
 msgstr "enbart ett huvudläge kan anges"
 
@@ -881,7 +881,7 @@ msgstr "omflyttningar måste ha ett / efter ="
 msgid "exclude paths must begin with a /"
 msgstr "uteslutna sökvägar måste börja med /"
 
-#: rpm.c:850 rpmqv.c:484
+#: rpm.c:850 rpmqv.c:485
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "Flaggan --rcfile har tagits bort.\n"
 
@@ -889,103 +889,103 @@ msgstr "Flaggan --rcfile har tagits bort.\n"
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr "Använd --macros med en kolonseparerad lista med makrofiler att läsa.\n"
 
-#: rpm.c:856 rpmqv.c:491
+#: rpm.c:856 rpmqv.c:492
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Internt fel i argumenthantering (%d) :-(\n"
 
-#: rpm.c:891 rpmqv.c:558
+#: rpm.c:891 rpmqv.c:559
 msgid "one type of query/verify may be performed at a time"
 msgstr "endast en typ av fråga/verifiering kan utföras åt gången"
 
-#: rpm.c:896 rpmqv.c:562
+#: rpm.c:896 rpmqv.c:563
 msgid "unexpected query flags"
 msgstr "oväntade frågeflaggor"
 
-#: rpm.c:899 rpmqv.c:565
+#: rpm.c:899 rpmqv.c:566
 msgid "unexpected query format"
 msgstr "oväntat frågeformat"
 
-#: rpm.c:902 rpmqv.c:568
+#: rpm.c:902 rpmqv.c:569
 msgid "unexpected query source"
 msgstr "oväntad frågekälla"
 
-#: rpm.c:905 rpmqv.c:605
+#: rpm.c:905 rpmqv.c:609
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "enbart installation, uppgradering, rmsource och rmspec kan tvingas fram"
 
-#: rpm.c:908 rpmqv.c:607
+#: rpm.c:908 rpmqv.c:611
 msgid "files may only be relocated during package installation"
 msgstr "filer kan relokeras endast under paketinstallation"
 
-#: rpm.c:911 rpmqv.c:610
+#: rpm.c:911 rpmqv.c:614
 msgid "only one of --prefix or --relocate may be used"
 msgstr "enbart en av --prefix eller --relocate kan användas"
 
-#: rpm.c:914 rpmqv.c:613
+#: rpm.c:914 rpmqv.c:617
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate och --excludepath kan endast användas när nya paket installeras"
 
-#: rpm.c:917 rpmqv.c:616
+#: rpm.c:917 rpmqv.c:620
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan endast användas när nya paket installeras"
 
-#: rpm.c:920 rpmqv.c:619
+#: rpm.c:920 rpmqv.c:623
 msgid "arguments to --prefix must begin with a /"
 msgstr "argument till --prefix måste börja med /"
 
-#: rpm.c:923 rpmqv.c:622
+#: rpm.c:923 rpmqv.c:626
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan enbart användas vid paketinstallation"
 
-#: rpm.c:927 rpmqv.c:626
+#: rpm.c:927 rpmqv.c:630
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan enbart användas vid paketinstallation"
 
-#: rpm.c:931 rpmqv.c:631
+#: rpm.c:931 rpmqv.c:635
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles kan enbart användas vid paketinstallation"
 
-#: rpm.c:935 rpmqv.c:635
+#: rpm.c:935 rpmqv.c:639
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan enbart användas vid paketinstallation"
 
-#: rpm.c:939 rpmqv.c:639
+#: rpm.c:939 rpmqv.c:643
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs kan enbart användas vid paketinstallation"
 
-#: rpm.c:943 rpmqv.c:643
+#: rpm.c:943 rpmqv.c:647
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs kan enbart användas vid paketinstallation"
 
-#: rpm.c:947 rpmqv.c:647
+#: rpm.c:947 rpmqv.c:651
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "enbart en av --excludedocs och --includedocs kan användas"
 
-#: rpm.c:951 rpmqv.c:651
+#: rpm.c:951 rpmqv.c:655
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch kan enbart användas vid paketinstallation"
 
-#: rpm.c:955 rpmqv.c:655
+#: rpm.c:955 rpmqv.c:659
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos kan enbart användas vid paketinstallation"
 
-#: rpm.c:959 rpmqv.c:660
+#: rpm.c:959 rpmqv.c:664
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize kan enbart användas vid paketinstallation"
 
-#: rpm.c:963 rpmqv.c:664
+#: rpm.c:963 rpmqv.c:668
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches kan enbart användas när paket tas bort"
 
-#: rpm.c:967 rpmqv.c:668
+#: rpm.c:967 rpmqv.c:672
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles kan enbart användas vid paketinstallation"
 
-#: rpm.c:971 rpmqv.c:673
+#: rpm.c:971 rpmqv.c:677
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb kan enbart användas vid installation och avinstallation av paket"
@@ -1002,7 +1002,7 @@ msgstr ""
 msgid "--apply may only be specified during package installation"
 msgstr "--apply kan enbart användas vid paketinstallation"
 
-#: rpm.c:987 rpmqv.c:683
+#: rpm.c:987 rpmqv.c:687
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -1010,7 +1010,7 @@ msgstr ""
 "utlösardeaktiveringsflaggor kan enbart användas vid installation och "
 "avinstallation av paket"
 
-#: rpm.c:991 rpmqv.c:687
+#: rpm.c:991 rpmqv.c:691
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1018,14 +1018,14 @@ msgstr ""
 "--nodeps kan enbart användas vid tillverkning, omtillverkning, "
 "omkompilering, installation, avinstallation, och verifiering"
 
-#: rpm.c:996 rpmqv.c:692
+#: rpm.c:996 rpmqv.c:696
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test kan enbart användas vid installation, avinstallation och tillverkning"
 
-#: rpm.c:1000 rpmqv.c:697
+#: rpm.c:1000 rpmqv.c:701
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1033,7 +1033,7 @@ msgstr ""
 "--root (-r) kan enbart användas vid installation, avinstallation, förfrågan, "
 "och databasombyggnad"
 
-#: rpm.c:1012 rpmqv.c:709
+#: rpm.c:1012 rpmqv.c:713
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argument till --root (-r) måste börja med /"
 
@@ -1054,77 +1054,77 @@ msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 kan enbart användas vid signaturkontroll och paketverifiering"
 
-#: rpm.c:1038 rpmqv.c:730
+#: rpm.c:1038 rpmqv.c:734
 msgid "no files to sign\n"
 msgstr "inga filer att signera\n"
 
-#: rpm.c:1043 rpmqv.c:735
+#: rpm.c:1043 rpmqv.c:739
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "kan inte komma åt filen %s\n"
 
-#: rpm.c:1058 rpmqv.c:754
+#: rpm.c:1058 rpmqv.c:758
 msgid "pgp not found: "
 msgstr "pgp hittades inte: "
 
-#: rpm.c:1062 rpmqv.c:759
+#: rpm.c:1062 rpmqv.c:763
 msgid "Enter pass phrase: "
 msgstr "Ange lösenfras: "
 
-#: rpm.c:1064 rpmqv.c:761
+#: rpm.c:1064 rpmqv.c:765
 msgid "Pass phrase check failed\n"
 msgstr "Kontrollen av lösenfrasen misslyckades\n"
 
-#: rpm.c:1067 rpmqv.c:765
+#: rpm.c:1067 rpmqv.c:769
 msgid "Pass phrase is good.\n"
 msgstr "Lösenfrasen är ok.\n"
 
-#: rpm.c:1072 rpmqv.c:770
+#: rpm.c:1072 rpmqv.c:774
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Felaktig %%_signature-spec i makrofil.\n"
 
-#: rpm.c:1078 rpmqv.c:777
+#: rpm.c:1078 rpmqv.c:781
 msgid "--sign may only be used during package building"
 msgstr "--sign kan enbart användas vid pakettillverkning"
 
-#: rpm.c:1093 rpmqv.c:793
+#: rpm.c:1093 rpmqv.c:797
 msgid "exec failed\n"
 msgstr "exec misslyckades\n"
 
-#: rpm.c:1116 rpmqv.c:1006
+#: rpm.c:1116 rpmqv.c:1010
 msgid "unexpected arguments to --querytags "
 msgstr "oväntade argument till --querytags "
 
-#: rpm.c:1127 rpmqv.c:1015
+#: rpm.c:1127 rpmqv.c:1019
 msgid "no packages given for signature check"
 msgstr "inga paket angivna för signaturkontroll"
 
-#: rpm.c:1138 rpmqv.c:1024
+#: rpm.c:1138 rpmqv.c:1028
 msgid "no packages given for signing"
 msgstr "inga paket angivna för signering"
 
-#: rpm.c:1154 rpmqv.c:911
+#: rpm.c:1154 rpmqv.c:915
 msgid "no packages given for uninstall"
 msgstr "inga paket angivna för avinstallation"
 
-#: rpm.c:1243 rpmqv.c:922
+#: rpm.c:1243 rpmqv.c:926
 msgid "no packages given for install"
 msgstr "inga paket angivna för installation"
 
-#: rpm.c:1267 rpmqv.c:969
+#: rpm.c:1267 rpmqv.c:973
 msgid "extra arguments given for query of all packages"
 msgstr "extra argument angivna för förfrågan om alla paket"
 
-#: rpm.c:1272 rpmqv.c:978
+#: rpm.c:1272 rpmqv.c:982
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för fråga"
 
-#: rpm.c:1289 rpmqv.c:994
+#: rpm.c:1289 rpmqv.c:998
 msgid "extra arguments given for verify of all packages"
 msgstr "extra argument angivna för verifiering av alla paket"
 
-#: rpm.c:1293 rpmqv.c:998
+#: rpm.c:1293 rpmqv.c:1002
 msgid "no arguments given for verify"
 msgstr "inga parametrar angivna för verifiering"
 
@@ -1225,25 +1225,25 @@ msgstr "Installera-/Uppdatera-/Raderaflaggor"
 msgid "Common options for all rpm modes:"
 msgstr "Gemensamma flaggor för alla rpm-lägen:"
 
-#: lib/poptI.c:25 rpmqv.c:210
+#: lib/poptI.c:25 rpmqv.c:211
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: rpmqv.c:235
+#: rpmqv.c:236
 #, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "Användning: %s {--help}\n"
 
-#: rpmqv.c:485
+#: rpmqv.c:486
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Använd \"--macros <fil:...>\" istället.\n"
 
-#: rpmqv.c:599
+#: rpmqv.c:603
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath angivet för en operation som inte använder någon databas"
 
-#: rpmqv.c:678
+#: rpmqv.c:682
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -1251,15 +1251,15 @@ msgstr ""
 "skriptdeaktiveringsflaggor kan enbart användas vid installation och "
 "avinstallation av paket"
 
-#: rpmqv.c:823
+#: rpmqv.c:827
 msgid "no packages files given for rebuild"
 msgstr "inga paketfiler angivna för omtillverkning"
 
-#: rpmqv.c:892
+#: rpmqv.c:896
 msgid "no spec files given for build"
 msgstr "ingen specfiler angivna för tillverkning"
 
-#: rpmqv.c:894
+#: rpmqv.c:898
 msgid "no tar files given for build"
 msgstr "inga tar-filer angivna för tillverkning"
 
