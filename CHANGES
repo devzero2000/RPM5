@@ -33,6 +33,7 @@
 	- speed up convertdb1 (#103206).
 	- revert i18n table change to preserve help array size.
 	- add config directories for ppc64pseries/ppc64iseries.
+	- filter GLIBC_PRIVATE dependencies.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

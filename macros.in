@@ -324,6 +324,10 @@ package or when debugging this package.\
 %_use_internal_dependency_generator	1
 
 #
+# Permit GLIBC_PRIVATE dependencies.
+%_permit_GLIBC_PRIVATE			0
+
+#
 # Path to scripts to autogenerate package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is zero.
