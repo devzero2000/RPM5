@@ -8,14 +8,18 @@
 # Values for RPM_OPT_FLAGS for various platforms
 
 optflags: i386 -O2 -m486 -fno-strength-reduce
+optflags: i486 -O2 -march=1486
+optflags: i586 -O2 -march=i586
+optflags: i686 -O2 -march=i686
+optflags: athlon -O2 -march=athlon
 optflags: ia64 -O2
 
 # XXX Please note that -mieee has been added in rpm-3.0.5.
 optflags: alpha -O2 -mieee
 
-optflags: sparc -O2
-optflags: sparcv9 -O2 -mv8 -mtune=ultrasparc
-optflags: sparc64 -O2
+optflags: sparc -O2 -m32 -mtune=ultrasparc
+optflags: sparcv9 -O2 -m32 -mcpu=ultrasparc
+optflags: sparc64 -O2 -m64 -mcpu=ultrasparc
 optflags: m68k -O2 -fomit-frame-pointer
 optflags: ppc -O2 -fsigned-char
 optflags: parisc -O2 -mpa-risc-1-0
@@ -38,9 +42,7 @@ optflags: hades -O2 -fomit-frame-pointer
 #############################################################
 # Canonical arch names and numbers
 
-arch_canon:	i986:	i986	1
-arch_canon:	i886:	i886	1
-arch_canon:	i786:	i786	1
+arch_canon:	athlon:	athlon	1
 arch_canon:	i686:	i686	1
 arch_canon:	i586:	i586	1
 arch_canon:	i486:	i486	1
@@ -111,9 +113,6 @@ os_canon:    Linux/ESA: VM/ESA	20
 #############################################################
 # For a given uname().machine, the default build arch
 
-buildarchtranslate: osfmach3_i986: i386
-buildarchtranslate: osfmach3_i886: i386
-buildarchtranslate: osfmach3_i786: i386
 buildarchtranslate: osfmach3_i686: i386
 buildarchtranslate: osfmach3_i586: i386
 buildarchtranslate: osfmach3_i486: i386
@@ -121,9 +120,7 @@ buildarchtranslate: osfmach3_i386: i386
 
 buildarchtranslate: ia64: ia64
 
-buildarchtranslate: i986: i386
-buildarchtranslate: i886: i386
-buildarchtranslate: i786: i386
+buildarchtranslate: athlon: i386
 buildarchtranslate: i686: i386
 buildarchtranslate: i586: i386
 buildarchtranslate: i486: i386
@@ -154,17 +151,12 @@ arch_compat: alpha: axp noarch
 
 arch_compat: ia64: noarch
 
-arch_compat: i986: i886
-arch_compat: i886: i786
-arch_compat: i786: i686
+arch_compat: athlon: i686
 arch_compat: i686: i586
 arch_compat: i586: i486
 arch_compat: i486: i386
 arch_compat: i386: noarch
 
-arch_compat: osfmach3_i986: i986 osfmach3_i886
-arch_compat: osfmach3_i886: i886 osfmach3_i786
-arch_compat: osfmach3_i786: i786 osfmach3_i686
 arch_compat: osfmach3_i686: i686 osfmach3_i586
 arch_compat: osfmach3_i586: i586 osfmach3_i486
 arch_compat: osfmach3_i486: i486 osfmach3_i386
@@ -235,9 +227,7 @@ os_compat: TOS: FreeMiNT MiNT mint
 
 buildarch_compat: ia64: noarch
 
-buildarch_compat: i986: i886
-buildarch_compat: i886: i786
-buildarch_compat: i786: i686
+buildarch_compat: athlon: i686
 buildarch_compat: i686: i586
 buildarch_compat: i586: i486
 buildarch_compat: i486: i386
@@ -267,7 +257,8 @@ buildarch_compat: atariclone: m68kmint noarch
 buildarch_compat: milan: m68kmint noarch
 buildarch_compat: hades: m68kmint noarch
 
-buildarch_compat: ia64: ia64 moarch
+buildarch_compat: ia64: noarch
+buildarch_compat: s390: noarch
 
 macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros.specspo:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 

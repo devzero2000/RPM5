@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	    t = stpcpy(t, ".bzdio");
     }
 
-    gzdi = Fdopen(fdDup(fdi), rpmio_flags);	/* XXX gzdi == fdi */
+    gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
     if (gzdi == NULL || Ferror(gzdi)) {
 	fprintf(stderr, _("cannot re-open payload: %s\n"), Fstrerror(gzdi));
 	exit(EXIT_FAILURE);
