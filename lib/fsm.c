@@ -648,7 +648,14 @@ int fsmMapAttrs(FSM_t fsm)
 	if (fsm->mapFlags & CPIO_MAP_GID)
 	    st->st_gid = finalGid;
 
-	fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
+	{   rpmTransactionSet ts = fsmGetTs(fsm);
+	
+	    if (fi->fmd5s != NULL && ts != NULL
+	    && !(ts->transFlags & RPMTRANS_FLAG_NOMD5))
+		fsm->fmd5sum = fi->fmd5s[i];
+	    else
+		fsm->fmd5sum = NULL;
+	}
 
     }
     return 0;
@@ -1592,7 +1599,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (rc == CPIOERR_LSTAT_FAILED)
 		rc = fsmStage(fsm, FSM_MKNOD);
 	} else {
-	    rc = CPIOERR_UNKNOWN_FILETYPE;
+	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
+	    if (strncmp(fsm->path, "/dev/log", sizeof("/dev/log")-1))
+		rc = CPIOERR_UNKNOWN_FILETYPE;
 	}
 	if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
 	    fsm->li->createdPath = fsm->li->linkIndex;
@@ -1709,7 +1718,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    break;
 	}
 
-	if (!S_ISSOCK(st->st_mode)) {	/* XXX /dev/log et al are skipped */
+	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
+	if (!S_ISSOCK(st->st_mode)
+	&&  strncmp(fsm->path, "/dev/log", sizeof("/dev/log")-1))
+	{
 	    /* Rename temporary to final file name. */
 	    if (!S_ISDIR(st->st_mode) &&
 		(fsm->subdir || fsm->suffix || fsm->nsuffix))

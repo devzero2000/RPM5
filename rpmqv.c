@@ -469,7 +469,12 @@ int main(int argc, const char ** argv)
 		ka->checksigFlags &= ~CHECKSIG_MD5;
 	    else
 #endif
-		/*@-ifempty@*/ ;
+#ifdef	IAM_RPMEIU
+	    if (bigMode & MODES_IE)
+		ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+	    else
+#endif
+		{};
 	    break;
 #endif	/* IAM_RPMQV || IAM_RPMK */
 
@@ -1018,6 +1023,8 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for erase"));
+ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	    ec += rpmRollback(ia, NULL);
 	} else {
 	    ec += rpmErase(rootdir, (const char **)poptGetArgs(optCon), 
@@ -1054,6 +1061,8 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for install"));
+ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	    ec += rpmRollback(ia, NULL);
 	} else {
 

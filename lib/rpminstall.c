@@ -1076,6 +1076,7 @@ int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
 	ts = rpmtransFree(ts);
 
 	/* Clean up after successful rollback. */
+	if (!rpmIsDebug())
 	for (i = 0; i < rtids->nidt; i++) {
 	    IDT rrp = rtids->idt + i;
 	    if (rrp->val.u32 != thistid)

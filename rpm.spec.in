@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.27
+Release: 0.28
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -349,6 +349,7 @@ fi
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/macros
 %rpmattr	%{__prefix}/lib/rpm/mkinstalldirs
 %rpmattr	%{__prefix}/lib/rpm/rpm.*
+%rpmattr	%{__prefix}/lib/rpm/rpm2cpio.sh
 %rpmattr	%{__prefix}/lib/rpm/rpm[deiukqv]
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc
@@ -444,6 +445,7 @@ fi
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
 %rpmattr	%{__prefix}/lib/rpm/rpmdiff
 %rpmattr	%{__prefix}/lib/rpm/rpmdiff.cgi
+%rpmattr	%{__prefix}/lib/rpm/trpm
 %rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
@@ -516,6 +518,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Feb  3 2002 Jeff Johnson <jbj@redhat.com>
+- transaction rollbacks are functional.
+
 * Sat Feb  2 2002 Jeff Johnson <jbj@redhat.com>
 - fix: drop header region when writing repackaged legacy header.
 - bail on %files macro.
