@@ -1,4 +1,5 @@
 2.5.5 -> 2.5.6:
+	- sub-packages inherit RPMTAG_EPOCH (just like RPMTAG_VERSION/RELEASE).
 	- fix off-by-1 alloca that prevented relocating /.
 	- add %include (Tom Dyas<tdyas@remus.rutgers.edu>)
 	- their must be a { between two % in a query format (unless %% is
