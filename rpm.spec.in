@@ -488,6 +488,7 @@ exit 0
 * Wed Apr  7 2004 Jeff Johnson <jbj@jbj.org> 4.3.1-0.2
 - fix: segfault on --recontext if file_contexts unreadable (#117374).
 - fix: /etc/security/selinux/file_contexts is default path.
+- fix: no transaction lock if --test was specified (#119783).
 
 * Tue Mar 30 2004 Jeff Johnson <jbj@jbj.org> 4.3.1-0.1
 - fix: don't add leading space to %* argv expansion (#119059).

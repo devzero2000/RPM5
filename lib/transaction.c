@@ -953,15 +953,19 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpmtsi qi;	rpmte q;
     int numAdded;
     int numRemoved;
+    void * lock = NULL;
     int xx;
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0)
 	return -1;
 
-    void *lock = rpmtsAcquireLock(ts);
-    if (!lock)
-	return -1;
+    /* If we are in test mode, then there's no need for transaction lock. */
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	lock = rpmtsAcquireLock(ts);
+	if (lock == NULL)
+	    return -1;
+    }
 
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
