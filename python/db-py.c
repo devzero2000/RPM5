@@ -410,9 +410,8 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
 	PyErr_SetString(pyrpmError, "cannot read rpmdb entry");
 	return NULL;
     }
-
     ho = createHeaderObject(h);
-    headerFree(h);
+    rpmdbFreeIterator(mi);
 
     return ho;
 }
