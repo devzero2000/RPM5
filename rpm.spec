@@ -150,7 +150,6 @@ fi
 /usr/lib/rpm/find-provides
 /usr/lib/rpm/find-req.pl
 /usr/lib/rpm/find-requires
-/usr/lib/rpm/freshen.sh
 /usr/lib/rpm/macros
 /usr/lib/rpm/mkinstalldirs
 /usr/lib/rpm/rpmpopt
