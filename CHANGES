@@ -28,7 +28,7 @@
 	- display rpmlib provides when invoked with --showrc.
 	- fix: compare versions if doing --freshen.
 	- fix: Red Hat 6.0 (5.2 also?) glibc-2.1.1 fclose fails using libio.
-	- add /usr/kerbeos/man to brp-compress.
+	- add /usr/kerberos/man to brp-compress.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
