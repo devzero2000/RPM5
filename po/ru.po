@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2002-04-05 11:24-0500\n"
-"PO-Revision-Date: 2002-03-05 13:51-0500\n"
-"Last-Translator: Eugene Kanter, <ekanter@blackcatlinux.com>\n"
+"PO-Revision-Date: 2002-04-09 16:44-0400\n"
+"Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=KOI8-R\n"
@@ -2882,7 +2882,8 @@ msgstr "конфликт файла %s при попытках установки %s и %s"
 #: lib/problems.c:155
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr "файл %s из установленного пакета %s конфликтует с файлом из пакета %s"
+msgstr ""
+"файл %s из устанавливаемого пакета %s конфликтует с файлом из пакета %s"
 
 #: lib/problems.c:160
 #, c-format
@@ -3184,7 +3185,7 @@ msgstr "%s: Подписи нет (RPM v1.0)\n"
 
 #: lib/rpmchecksig.c:498
 msgid "NOT OK"
-msgstr "НЕ OК"
+msgstr "НЕ ОК"
 
 #: lib/rpmchecksig.c:499 lib/rpmchecksig.c:513
 msgid " (MISSING KEYS:"
@@ -3204,7 +3205,7 @@ msgstr ")"
 
 #: lib/rpmchecksig.c:512
 msgid "OK"
-msgstr "OК"
+msgstr "ОК"
 
 #: lib/rpminstall.c:153
 msgid "Preparing..."
@@ -4094,6 +4095,3 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(неизвестный тип)"
