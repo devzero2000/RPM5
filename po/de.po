@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-22 15:37-0500\n"
+"POT-Creation-Date: 2001-02-23 16:59-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2543,47 +2543,47 @@ msgstr "Lesen von %s fehlgeschlagen: %s."
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:763
+#: lib/cpio.c:767
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1250
+#: lib/cpio.c:1254
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "Fehler: "
 
-#: lib/cpio.c:1253
+#: lib/cpio.c:1257
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1254
+#: lib/cpio.c:1258
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1272
+#: lib/cpio.c:1276
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1273
+#: lib/cpio.c:1277
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(unbekannter Typ)"
 
-#: lib/cpio.c:1274
+#: lib/cpio.c:1278
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1275
+#: lib/cpio.c:1279
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1276
+#: lib/cpio.c:1280
 #, fuzzy
 msgid "Internal error"
 msgstr "Fataler Fehler: "
 
-#: lib/cpio.c:1285
+#: lib/cpio.c:1289
 #, fuzzy
 msgid " failed - "
 msgstr "pgp fehlgeschlagen"
@@ -3621,109 +3621,109 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/rpmdb.c:1079 lib/rpmdb.c:1621
+#: lib/rpmdb.c:1079 lib/rpmdb.c:1623
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
 # FIXME
-#: lib/rpmdb.c:1686
+#: lib/rpmdb.c:1688
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:1695
+#: lib/rpmdb.c:1697
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:1836
+#: lib/rpmdb.c:1838
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/rpmdb.c:1910
+#: lib/rpmdb.c:1912
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # FIXME
-#: lib/rpmdb.c:1919
+#: lib/rpmdb.c:1921
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:2255
+#: lib/rpmdb.c:2257
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2281
+#: lib/rpmdb.c:2283
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: lib/rpmdb.c:2306
+#: lib/rpmdb.c:2308
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rpmdb.c:2310
+#: lib/rpmdb.c:2312
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: lib/rpmdb.c:2316
+#: lib/rpmdb.c:2318
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpmdb.c:2318
+#: lib/rpmdb.c:2320
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpmdb.c:2325
+#: lib/rpmdb.c:2327
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rpmdb.c:2336
+#: lib/rpmdb.c:2338
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rpmdb.c:2359
+#: lib/rpmdb.c:2361
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: lib/rpmdb.c:2396
+#: lib/rpmdb.c:2398
 #, fuzzy, c-format
 msgid "cannot add record originally at %d\n"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: lib/rpmdb.c:2414
+#: lib/rpmdb.c:2416
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2422
+#: lib/rpmdb.c:2424
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2424
+#: lib/rpmdb.c:2426
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2434
+#: lib/rpmdb.c:2436
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
 # , c-format
-#: lib/rpmdb.c:2436
+#: lib/rpmdb.c:2438
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"

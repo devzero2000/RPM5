@@ -344,6 +344,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Feb 23 2001 Jeff Johnson <jbj@redhat.com>
+- (sparc) disable MD5 sum checks during install.
+- (db1) plug largish memory leak in simulated interface for falloc.c.
+
 * Thu Feb 22 2001 Jeff Johnson <jbj@redhat.com>
 - portability changes from Joe Orton <jorton@redhat.com> et al.
 - (alpha): rip out ALPHA_LOSSAGE now that gcc-2.96-76 has fix (#28509).

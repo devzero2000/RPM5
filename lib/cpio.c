@@ -466,8 +466,10 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 	return CPIOERR_OPEN_FAILED;
 
     /* XXX This doesn't support brokenEndian checks. */
+#if !defined(__sparc__)
     if (filemd5)
 	fdInitMD5(ofd, 0);
+#endif
 
     cbInfo.file = hdr->path;
     cbInfo.fileSize = st->st_size;
@@ -494,6 +496,7 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 	}
     }
 
+#if !defined(__sparc__)
     if (filemd5) {
 	const char * md5sum = NULL;
 
@@ -508,6 +511,7 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 	    free((void *)md5sum);
 	}
     }
+#endif
 
     Fclose(ofd);
 

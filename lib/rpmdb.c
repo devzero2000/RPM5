@@ -1381,6 +1381,8 @@ top:
     }
 
     mi->mi_h = headerCopyLoad(uh);
+    /* XXX db1 with hybrid, simulated db interface on falloc.c needs free. */
+    if (dbi->dbi_api <= 1) free(uh);
 
     if (mi->mi_release) {
 	const char *release;

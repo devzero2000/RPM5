@@ -16,8 +16,8 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #endif
 #endif
 
-#define	DB_VERSION_MAJOR	0
-#define	DB_VERSION_MINOR	0
+#define	DB_VERSION_MAJOR	1
+#define	DB_VERSION_MINOR	85
 #define	DB_VERSION_PATCH	0
 
 #define	_mymemset(_a, _b, _c)

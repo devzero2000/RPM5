@@ -130,6 +130,8 @@
 	- portability changes from Joe Orton <jorton@redhat.com> et al.
 	- (alpha): rip out ALPHA_LOSSAGE now that gcc-2.96-76 has fix (#28509).
 	- (popt): use sprintf rather than snprintf for portability.
+	- (sparc) disable MD5 sum checks during install.
+	- (db1) plug largish memory leak in simulated interface for falloc.c.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
