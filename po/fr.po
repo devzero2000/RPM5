@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-24 14:50-0500\n"
+"POT-Creation-Date: 2004-03-24 22:38+0000\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -72,12 +72,10 @@ msgid "Building for target %s\n"
 msgstr "Construction pour cible %s\n"
 
 #: rpm2cpio.c:55
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "l'argument n'est pas un paquetage RPM\n"
 
 #: rpm2cpio.c:60
-#, c-format
 msgid "error reading header from package\n"
 msgstr "erreur dans la lecteur de l'entête du paquetage\n"
 
@@ -128,12 +126,10 @@ msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: rpmqv.c:136
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:137
-#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -293,7 +289,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "les arguments ed --root (-r) doivent commencer par un /"
 
 #: rpmqv.c:541
-#, c-format
 msgid "no files to sign\n"
 msgstr "aucun fichier à signer\n"
 
@@ -303,7 +298,6 @@ msgid "cannot access file %s\n"
 msgstr "ne peut accéder au fichier %s\n"
 
 #: rpmqv.c:565
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp non trouvé: "
 
@@ -312,12 +306,10 @@ msgid "Enter pass phrase: "
 msgstr "Entrez la phrase de passe: "
 
 #: rpmqv.c:572
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Mauvaise phrase de passe\n"
 
 #: rpmqv.c:576
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Phrase de passe bonne.\n"
 
@@ -331,7 +323,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign est réservé à la construction d'un paquetage"
 
 #: rpmqv.c:605
-#, c-format
 msgid "exec failed\n"
 msgstr "echec de l'exec\n"
 
@@ -1609,12 +1600,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: MAUVAIS, non hexa\n"
 
 #: lib/package.c:471
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr SDA: MAUVAIS, non binaire\n"
 
@@ -1630,7 +1619,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr taille(%d): PASBON, la lecture renvoie %d\n"
 
 #: lib/package.c:665
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1650,7 +1638,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr blob(%d): PASBON, la lecture renvoie %d\n"
 
 #: lib/package.c:709
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -3005,7 +2992,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "taille du sigh(%d): PASBON, la lecture retourne %d\n"
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3030,7 +3016,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3098,9 +3083,6 @@ msgstr "J'ai %d octets de sig GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3145,12 +3127,10 @@ msgid "V3 DSA signature: "
 msgstr "signature V3 DSA: "
 
 #: lib/signature.c:1357
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verification de signature: MAUVAIS PARAMETRES\n"
 
 #: lib/signature.c:1384
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Somme MD5 erronée: NONSUPPORTE\n"
 
@@ -3722,7 +3702,6 @@ msgid "(no error)"
 msgstr "(pas d'erreur)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "erreur fatale: "

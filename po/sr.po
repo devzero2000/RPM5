@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-24 14:50-0500\n"
+"POT-Creation-Date: 2004-03-24 22:38+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -61,12 +61,11 @@ msgid "Building for target %s\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
 #: rpm2cpio.c:55
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
 #: rpm2cpio.c:60
-#, fuzzy, c-format
+#, fuzzy
 msgid "error reading header from package\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
@@ -115,12 +114,11 @@ msgid "RPM version %s\n"
 msgstr "RPM verzija %s\n"
 
 #: rpmqv.c:136
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
 #: rpmqv.c:137
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Mo¾ete slobodno distribuirati dalje pod odredbama GNU GPL"
@@ -274,7 +272,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenti za --root (-r) moraju poèeti znakom /"
 
 #: rpmqv.c:541
-#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -284,7 +281,7 @@ msgid "cannot access file %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: rpmqv.c:565
-#, fuzzy, c-format
+#, fuzzy
 msgid "pgp not found: "
 msgstr "Datoteka nije pronaðena na serveru"
 
@@ -293,12 +290,10 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:572
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Neuspela provera lozinke\n"
 
 #: rpmqv.c:576
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Lozinka je dobra.\n"
 
@@ -312,7 +307,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign se mo¾e koristiti samo kod kreiranja paketa"
 
 #: rpmqv.c:605
-#, fuzzy, c-format
+#, fuzzy
 msgid "exec failed\n"
 msgstr "%s: Neuspelo otvaranje\n"
 
@@ -1604,12 +1599,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1625,7 +1618,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1645,7 +1637,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -3031,7 +3022,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3056,7 +3046,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3129,9 +3118,6 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3175,12 +3161,10 @@ msgid "V3 DSA signature: "
 msgstr "%s: Potpis nije na raspolaganju\n"
 
 #: lib/signature.c:1357
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3758,7 +3742,6 @@ msgid "(no error)"
 msgstr "gre¹ka: "
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatalna gre¹ka: "

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-24 14:50-0500\n"
+"POT-Creation-Date: 2004-03-24 22:38+0000\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -68,12 +68,12 @@ msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
 
 #: rpm2cpio.c:55
-#, fuzzy, c-format
+#, fuzzy
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません\n"
 
 #: rpm2cpio.c:60
-#, fuzzy, c-format
+#, fuzzy
 msgid "error reading header from package\n"
 msgstr "パッケージからヘッダの読み込みのエラー\n"
 
@@ -123,7 +123,7 @@ msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
 
 #: rpmqv.c:136
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 "著作権 (C) 1998 - Red Hat Software\n"
@@ -131,7 +131,7 @@ msgstr ""
 "誤訳等は神田まで"
 
 #: rpmqv.c:137
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "GNU一般公有使用許諾書の下で自由に配布できます"
@@ -288,7 +288,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらねばなりません"
 
 #: rpmqv.c:541
-#, c-format
 msgid "no files to sign\n"
 msgstr "署名するためのファイルがありません\n"
 
@@ -298,7 +297,7 @@ msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません\n"
 
 #: rpmqv.c:565
-#, fuzzy, c-format
+#, fuzzy
 msgid "pgp not found: "
 msgstr "pgp が見つかりません: "
 
@@ -307,12 +306,10 @@ msgid "Enter pass phrase: "
 msgstr "パスフレーズを入力してください: "
 
 #: rpmqv.c:572
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズチェックに失敗しました\n"
 
 #: rpmqv.c:576
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です．\n"
 
@@ -326,7 +323,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ使用できます"
 
 #: rpmqv.c:605
-#, c-format
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
@@ -1633,12 +1629,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1654,7 +1648,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1674,7 +1667,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -3088,7 +3080,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3113,7 +3104,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3186,9 +3176,6 @@ msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3233,12 +3220,10 @@ msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
 #: lib/signature.c:1357
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3817,7 +3802,6 @@ msgid "(no error)"
 msgstr "(エラー 0x%x)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "致命的なエラー: "
