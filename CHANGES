@@ -1,4 +1,5 @@
 2.5.6 -> 2.5.7:
+	- don't erase failing build script (Tim Mooney).
 	- use portable mkinstalldirs (Tim Mooney).
 	- irix6 autodeps were dup'd (Shing-Gene Yung <shing@cz3.nus.edu.sg>).
 	- getservbyname needed ntohs().

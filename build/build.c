@@ -188,7 +188,9 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     if (! WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SCRIPT, _("Bad exit status from %s (%s)"),
 		 scriptName, name);
+#if 0	/* XXX don't erase the failing script */
 	unlink(scriptName);
+#endif
 	FREE(scriptName);
 	return RPMERR_SCRIPT;
     }
