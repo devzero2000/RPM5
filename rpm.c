@@ -46,6 +46,7 @@
 #define GETOPT_RMSOURCE		1015
 #define GETOPT_RELOCATE		1016
 #define GETOPT_TRIGGEREDBY	1017
+#define	GETOPT_SHOWRC		1018
 
 char * version = VERSION;
 
@@ -57,6 +58,7 @@ enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 /* the flags for the various options */
 static int allFiles;
 static int allMatches;
+static char * arch;
 static int badReloc;
 static int clean;
 static int dump;
@@ -78,18 +80,22 @@ static int noMd5;
 static int noPgp;
 static int noScripts;
 static int noTriggers;
+static char * os;
 static int oldPackage;
 static int showPercents;
 static char * pipeOutput;
 static char * prefix;
 static int queryTags;
 static int quiet;
+static char * rcfile;
 static int replaceFiles;
 static int replacePackages;
 static char * rootdir;
 static int shortCircuit;
+static int showrc;
 static int signIt;
 static int test;
+
 static int rpm_version;
 
 /* the structure describing the options we take and the defaults */
@@ -100,8 +106,8 @@ static struct poptOption optionsTable[] = {
 	{ "allmatches", 'a', 0, &allMatches, 0 },
 	{ "badreloc", '\0', 0, &badReloc, 0 },
 	{ "build", 'b', POPT_ARG_STRING, 0, 'b' },
-	{ "buildarch", '\0', POPT_ARG_STRING, 0, 0 },
-	{ "buildos", '\0', POPT_ARG_STRING, 0, 0 },
+	{ "buildarch", '\0', POPT_ARG_STRING, &arch, 0 },
+	{ "buildos", '\0', POPT_ARG_STRING, &os, 0 },
 	{ "buildroot", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDROOT },
 	{ "checksig", 'K', 0, 0, 'K' },
 	{ "clean", '\0', 0, &clean, 0 },
@@ -145,7 +151,7 @@ static struct poptOption optionsTable[] = {
 	{ "queryformat", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
 	{ "querytags", '\0', 0, &queryTags, 0 },
 	{ "quiet", '\0', 0, &quiet, 0 },
-	{ "rcfile", '\0', POPT_ARG_STRING, 0, 0 },
+	{ "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0 },
 	{ "rebuild", '\0', 0, 0, GETOPT_REBUILD },
 	{ "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB },
 	{ "recompile", '\0', 0, 0, GETOPT_RECOMPILE },
@@ -156,7 +162,7 @@ static struct poptOption optionsTable[] = {
 	{ "rmsource", '\0', 0, 0, GETOPT_RMSOURCE },
 	{ "root", 'r', POPT_ARG_STRING, &rootdir, 0 },
 	{ "short-circuit", '\0', 0, &shortCircuit, 0 },
-	{ "showrc", '\0', 0, 0, 0 },
+	{ "showrc", '\0', 0, &showrc, GETOPT_SHOWRC },
 	{ "sign", '\0', 0, &signIt, 0 },
 	{ "state", 's', 0, 0, 's' },
 	{ "tarball", 't', POPT_ARG_STRING, 0, 't' },
@@ -516,24 +522,20 @@ int main(int argc, char ** argv) {
     int queryFor = 0;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0;
-    int showrc = 0;
     int gotDbpath = 0, building = 0, verifyFlags;
     int rmsource = 0;
     int checksigFlags = 0;
     int timeCheck = 0;
     int addSign = NEW_SIGNATURE;
-    char * rcfile = NULL, * queryFormat = NULL;
+    char * queryFormat = NULL;
     char buildChar = ' ';
     char * specFile;
     char * tce;
     char * passPhrase = "";
     char * buildRootOverride = NULL, * cookie = NULL;
-    char * arch = NULL;
-    char * os = NULL;
     char * optArg;
     pid_t pipeChild = 0;
     char * pkg;
-    char ** currarg;
     char * errString;
     poptContext optCon;
     char * infoCommand[] = { "--info", NULL };
@@ -547,6 +549,7 @@ int main(int argc, char ** argv) {
     /* set the defaults for the various command line options */
     allFiles = 0;
     allMatches = 0;
+    arch = NULL;
     badReloc = 0;
     clean = 0;
     dump = 0;
@@ -569,6 +572,7 @@ int main(int argc, char ** argv) {
     noScripts = 0;
     noTriggers = 0;
     oldPackage = 0;
+    os = NULL;
     showPercents = 0;
     pipeOutput = NULL;
     prefix = NULL;
@@ -578,6 +582,7 @@ int main(int argc, char ** argv) {
     replacePackages = 0;
     rootdir = "/";
     shortCircuit = 0;
+    showrc = 0;
     signIt = 0;
     test = 0;
     rpm_version = 0;
@@ -591,28 +596,26 @@ int main(int argc, char ** argv) {
     /* Make a first pass through the arguments, looking for --rcfile */
     /* as well as --arch and --os.  We need to handle that before    */
     /* dealing with the rest of the arguments.                       */
-    currarg = argv;
-    while (*currarg) {
-	if (!strcmp(*currarg, "--rcfile")) {
-	    rcfile = *(++currarg);
-	} else if (!strcmp(*currarg, "--buildarch")) {
-	    arch = *(++currarg);
-	} else if (!strcmp(*currarg, "--buildos")) {
-	    os = *(++currarg);
-	} else if (!strcmp(*currarg, "--showrc")) {
-	    showrc = 1;
-	    building = 1;
-	} else if (!strncmp(*currarg, "-b", 2) ||
-		   !strncmp(*currarg, "-t", 2) ||
-		   !strcmp(*currarg, "--tarbuild") ||
-		   !strcmp(*currarg, "--build") ||
-		   !strcmp(*currarg, "--rebuild") ||
-		   !strcmp(*currarg, "--rmsource") ||
-		   !strcmp(*currarg, "--recompile")) {
-	    building = 1;
-	}
+    optCon = poptGetContext("rpm", argc, argv, optionsTable, 0);
+    poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+    poptReadDefaultConfig(optCon, 1);
+    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
-	if (*currarg) currarg++;
+    while ((arg = poptGetNextOpt(optCon)) > 0) {
+	optArg = poptGetOptArg(optCon);
+
+	switch(arg) {
+	  case 'b':
+	  case 't':
+	  case GETOPT_REBUILD:
+	  case GETOPT_RMSOURCE:
+	  case GETOPT_RECOMPILE:
+	  case GETOPT_SHOWRC:	/* showrc set as side effect */
+	    building = 1;
+	    /* fall thru */
+	  default:
+	    break;
+	}
     } 
 
     /* reading this early makes it easy to override */
@@ -623,10 +626,7 @@ int main(int argc, char ** argv) {
 	exit(0);
     }
 
-    optCon = poptGetContext("rpm", argc, argv, optionsTable, 0);
-    poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
-    poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
+    poptResetContext(optCon);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
