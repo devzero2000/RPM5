@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-12-10 22:07-0500\n"
+"POT-Creation-Date: 2000-12-10 23:00-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3319,7 +3319,7 @@ msgstr "ошибка(%d) записи записи %s в %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "ошибка(%d) удаления записи %s из %s"
 
-#: lib/rpmdb.c:772 lib/rpmdb.c:2349
+#: lib/rpmdb.c:772 lib/rpmdb.c:2351
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
@@ -3337,106 +3337,106 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr "ошибка(%d) при подсчёте пакетов"
 
-#: lib/rpmdb.c:1142 lib/rpmdb.c:1684
+#: lib/rpmdb.c:1142 lib/rpmdb.c:1686
 #, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%s: невозможно прочесть заголовок в 0x%x"
 
-#: lib/rpmdb.c:1737
+#: lib/rpmdb.c:1739
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "удаляется 0 записей %s.\n"
 
-#: lib/rpmdb.c:1748
+#: lib/rpmdb.c:1750
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: lib/rpmdb.c:1757
+#: lib/rpmdb.c:1759
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: lib/rpmdb.c:1899
+#: lib/rpmdb.c:1901
 #, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета"
 
-#: lib/rpmdb.c:1962
+#: lib/rpmdb.c:1964
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr "добавляется 0 записей %s.\n"
 
-#: lib/rpmdb.c:1978
+#: lib/rpmdb.c:1980
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: lib/rpmdb.c:1987
+#: lib/rpmdb.c:1989
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: lib/rpmdb.c:2374
+#: lib/rpmdb.c:2376
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: lib/rpmdb.c:2378
+#: lib/rpmdb.c:2380
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rpmdb.c:2384
+#: lib/rpmdb.c:2386
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: lib/rpmdb.c:2386
+#: lib/rpmdb.c:2388
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rpmdb.c:2393
+#: lib/rpmdb.c:2395
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2404
+#: lib/rpmdb.c:2406
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2427
+#: lib/rpmdb.c:2429
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе данных неверна, пропускается."
 
-#: lib/rpmdb.c:2460
+#: lib/rpmdb.c:2466
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "невозможно добавить запись (первоначально в %d)"
 
-#: lib/rpmdb.c:2478
+#: lib/rpmdb.c:2484
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: lib/rpmdb.c:2486
+#: lib/rpmdb.c:2492
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: lib/rpmdb.c:2488
+#: lib/rpmdb.c:2494
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: lib/rpmdb.c:2498
+#: lib/rpmdb.c:2504
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: lib/rpmdb.c:2500
+#: lib/rpmdb.c:2506
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"
@@ -3663,13 +3663,13 @@ msgstr "необычный файл -- пропускаю проверку размера\n"
 
 #: lib/signature.c:119
 #, c-format
-msgid "Expected size: %10db = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
+msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
 #: lib/signature.c:123
-#, c-format
-msgid "  Actual size: %10db\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "  Actual size: %12d\n"
+msgstr "Размер подписи: %d\n"
 
 #: lib/signature.c:142
 msgid "No signature\n"
@@ -3684,108 +3684,108 @@ msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 "Старая (только для внутреннего использования) подпись! Где вы ЭТО взяли!?"
 
-#: lib/signature.c:208
+#: lib/signature.c:210
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Размер подписи: %d\n"
 
-#: lib/signature.c:209
+#: lib/signature.c:211
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Заполнитель подписи : %d\n"
 
-#: lib/signature.c:271
+#: lib/signature.c:273
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Нвозможно запустить pgp (%s)"
 
-#: lib/signature.c:282
+#: lib/signature.c:284
 msgid "pgp failed"
 msgstr "ошибка pgp"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:289
+#: lib/signature.c:291
 msgid "pgp failed to write signature"
 msgstr "ошибка pgp при записи подписи"
 
-#: lib/signature.c:294
+#: lib/signature.c:296
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
-#: lib/signature.c:305 lib/signature.c:382
+#: lib/signature.c:307 lib/signature.c:384
 msgid "unable to read the signature"
 msgstr "невозможно прочесть подпись"
 
-#: lib/signature.c:310
+#: lib/signature.c:312
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
-#: lib/signature.c:348 lib/signature.c:693
+#: lib/signature.c:350 lib/signature.c:695
 msgid "Couldn't exec gpg"
 msgstr "Невозможно запустить gpg"
 
-#: lib/signature.c:359
+#: lib/signature.c:361
 msgid "gpg failed"
 msgstr "ошибка gpg"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:366
+#: lib/signature.c:368
 msgid "gpg failed to write signature"
 msgstr "ошибка gpg при записи подписи"
 
-#: lib/signature.c:371
+#: lib/signature.c:373
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Размер подписи GPG: %d\n"
 
-#: lib/signature.c:387
+#: lib/signature.c:389
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Получено %d байт подписи GPG\n"
 
-#: lib/signature.c:414
+#: lib/signature.c:416
 msgid "Generating signature using PGP.\n"
 msgstr "Генерируется подпись PGP.\n"
 
-#: lib/signature.c:420
+#: lib/signature.c:422
 msgid "Generating signature using GPG.\n"
 msgstr "Генерируется подпись GPG.\n"
 
-#: lib/signature.c:499 lib/signature.c:561
+#: lib/signature.c:501 lib/signature.c:563
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 "Нвозможно запустить pgp. Используйте --nopgp чтобы пропустить проверку PGP "
 "подписей."
 
-#: lib/signature.c:559 lib/signature.c:632
+#: lib/signature.c:561 lib/signature.c:634
 msgid "exec failed!\n"
 msgstr "ошибка запуска!\n"
 
-#: lib/signature.c:634
+#: lib/signature.c:636
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 "Невозможно запустить gpg. Используйте --nogpg чтобы пропустить проверку GPG "
 "подписей."
 
-#: lib/signature.c:722
+#: lib/signature.c:724
 msgid "Couldn't exec pgp"
 msgstr "Невозможно запустить pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:726 lib/signature.c:779
+#: lib/signature.c:728 lib/signature.c:781
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Неверная спецификация %%_signature в макрофайле"
 
-#: lib/signature.c:759
+#: lib/signature.c:761
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле"
 
-#: lib/signature.c:771
+#: lib/signature.c:773
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле"
 
