@@ -27,7 +27,13 @@ do
 	mkdir -p "${debugdn}"
 	echo extracting debug info from $f
 	/usr/lib/rpm/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug -l "$SOURCEFILE" "$f"
-	eu-strip -f "${debugfn}" "$f" || :
+	if test -w "$f"; then
+		eu-strip -f "${debugfn}" "$f" || :
+	else
+		chmod u+w "$f"
+		eu-strip -f "${debugfn}" "$f" || :
+		chmod u-w "$f"
+	fi
 done
 
 mkdir -p ${RPM_BUILD_ROOT}/usr/src/debug
