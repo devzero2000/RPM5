@@ -72,7 +72,6 @@ static int add_assoc = 1;
 /*
  * Command-line options.
  */
-static int debug = 0;
 static int change = 1;
 static int quiet = 0;
 #define QPRINTF(args...) do { if (!quiet) printf(args); } while (0)
@@ -82,39 +81,95 @@ static int warn_no_match = 0;
 static char *rootpath = NULL;
 static int rootpathlen = 0;
 
-/*
- * A file security context specification.
+static rpmsx mysx;
+
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param p		memory to free
+ * @return		NULL always
  */
-#ifdef	DYING
-typedef struct rpmsxp_s {
-/*@only@*/
-    char *pattern;	/* regular expession string for diagnostic messages */
-/*@only@*/
-    char *type;	/* type string for diagnostic messages */
-/*@only@*/
-    char *context;	/* context string */
-/*@only@*/
-    regex_t * preg;	/* compiled regular expression */
-    mode_t fmode;	/* mode format value */
-    int matches;	/* number of matching pathnames */
-    int hasMetaChars; 	/* indicates whether the RE has 
-			   any meta characters.  
-			   0 = no meta chars 
-			   1 = has one or more meta chars */
-    int fstem;	/* indicates which of the stem-compression
-			   items it matches */
-} * rpmsxp;
+/*@unused@*/ static inline /*@null@*/
+void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
+	/*@modifies p @*/
+{
+    if (p != NULL)	free((void *)p);
+    return NULL;
+}
 
-typedef struct rpmsxs_s {
-	char * stem;
-	int len;
-} * rpmsxs;
-#endif
+/*@unchecked@*/
+int _rpmsx_debug = 0;
 
-struct rpmsxs_s * stem_arr = NULL;
-int nsxs = 0;
-int maxsxs = 0;
+/**
+ * Stable sort for policy specifications, patterns before paths.
+ * @param sx           security context patterns
+ */
+static void rpmsxSort(rpmsx sx)
+       /*@modifies sx @*/
+{
+    rpmsxp sxp;
+    int i, j;
 
+    /* Stable sort for policy regex's and paths. */
+    sxp = xmalloc(sizeof(*sxp) * sx->Count);
+
+    /* Regex patterns first ... */
+    j = 0;
+    for (i = 0; i < sx->Count; i++) {
+	if (!sx->sxp[i].hasMetaChars)
+	    continue;
+	memcpy(sxp + j, sx->sxp + i, sizeof(*sxp));
+	j++;
+    }
+
+    /* ... then file paths. */
+    for (i = 0; i < sx->Count; i++) {
+	if (sx->sxp[i].hasMetaChars)
+	    continue;
+	memcpy(sxp + j, sx->sxp + i, sizeof(*sxp));
+	j++;
+    }
+
+    sx->sxp = _free(sx->sxp);
+    sx->sxp = sxp;
+}
+
+/* Determine if the regular expression specification has any meta characters. */
+static void rpmsxHasMetaChars(rpmsxp sxp)
+{
+    const char * c = sxp->pattern;
+    int len = strlen(c);
+    const char * end = c + len;
+
+    sxp->hasMetaChars = 0; 
+
+    /* Look at each character in the RE specification string for a 
+     * meta character. Return when any meta character reached. */
+    while (c != end) {
+	switch(*c) {
+	case '.':
+	case '^':
+	case '$':
+	case '?':
+	case '*':
+	case '+':
+	case '|':
+	case '[':
+	case '(':
+	case '{':
+	    sxp->hasMetaChars = 1;
+	    return;
+	    break;
+	case '\\':		/* skip the next character */
+	    c++;
+	    break;
+	default:
+	    break;
+
+	}
+	c++;
+    }
+    return;
+}
 
 /* Return the length of the text that can be considered the stem, returns 0
  * if there is no identifiable stem */
@@ -148,7 +203,7 @@ static int rpmsxsFStem(const char * const buf)
  * or existing stem, (or -1 if there is no possible stem - IE for a file in
  * the root directory or a regex that is too complex for us).  Makes bpp
  * point to the text AFTER the stem. */
-static int rpmsxAdd(const char **bpp)
+static int rpmsxAdd(rpmsx sx, const char **bpp)
 {
     int stem_len = rpmsxsPStem(*bpp);
     rpmsxs sxs;
@@ -156,31 +211,26 @@ static int rpmsxAdd(const char **bpp)
 
     if (!stem_len)
 	return -1;
-    for (i = 0; i < nsxs; i++) {
-	if (stem_len != stem_arr[i].len)
+    for (i = 0; i < sx->nsxs; i++) {
+	sxs = sx->sxs + i;
+	if (stem_len != sxs->len)
 	    continue;
-	if (strncmp(*bpp, stem_arr[i].stem, stem_len))
+	if (strncmp(*bpp, sxs->stem, stem_len))
 	    continue;
 	*bpp += stem_len;
 	return i;
     }
 
-    if (nsxs == maxsxs) {
-	maxsxs = maxsxs * 2 + 16;
-	stem_arr = xrealloc(stem_arr, sizeof(*stem_arr) * maxsxs);
+    if (sx->nsxs == sx->maxsxs) {
+	sx->maxsxs = sx->maxsxs * 2 + 16;
+	sx->sxs = xrealloc(sx->sxs, sizeof(*sx->sxs) * sx->maxsxs);
     }
-    sxs = stem_arr + nsxs;
+    sxs = sx->sxs + sx->nsxs;
     sxs->len = stem_len;
-#ifdef DYING
-    sxs->stem = xmalloc(stem_len + 1);
-    memcpy(sxs->stem, *bpp, stem_len);
-    sxs->stem[stem_len] = '\0';
-#else
     sxs->stem = strndup(*bpp, stem_len);
-#endif
-    nsxs++;
+    sx->nsxs++;
     *bpp += stem_len;
-    return nsxs - 1;
+    return sx->nsxs - 1;
 }
 
 /* find the stem of a file name, returns the index into stem_arr (or -1 if
@@ -193,8 +243,8 @@ static int rpmsxFind(const rpmsx sx, const char ** bpp)
     int i;
 
     if (stem_len)
-    for (i = 0; i < nsxs; i++) {
-	sxs = stem_arr + i;
+    for (i = 0; i < sx->nsxs; i++) {
+	sxs = sx->sxs + i;
 	if (stem_len != sxs->len)
 	    continue;
 	if (strncmp(*bpp, sxs->stem, stem_len))
@@ -205,13 +255,74 @@ static int rpmsxFind(const rpmsx sx, const char ** bpp)
     return -1;
 }
 
-/*
- * The array of specifications, initially in the
- * same order as in the specification file.
- * Sorting occurs based on hasMetaChars
- */
-static rpmsxp spec_arr;
-static int nspec;
+rpmsx XrpmsxUnlink(rpmsx sx, const char * msg, const char * fn, unsigned ln)
+{
+    if (sx == NULL) return NULL;
+/*@-modfilesys@*/
+if (_rpmsx_debug && msg != NULL)
+fprintf(stderr, "--> sx %p -- %d %s at %s:%u\n", sx, sx->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    sx->nrefs--;
+    return NULL;
+}
+
+rpmsx XrpmsxLink(rpmsx sx, const char * msg, const char * fn, unsigned ln)
+{
+    if (sx == NULL) return NULL;
+    sx->nrefs++;
+
+/*@-modfilesys@*/
+if (_rpmsx_debug && msg != NULL)
+fprintf(stderr, "--> sx %p ++ %d %s at %s:%u\n", sx, sx->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+
+    /*@-refcounttrans@*/ return sx; /*@=refcounttrans@*/
+}
+
+rpmsx rpmsxFree(rpmsx sx)
+{
+    int i;
+
+    if (sx == NULL)
+	return NULL;
+
+    if (sx->nrefs > 1)
+	return rpmsxUnlink(sx, __func__);
+
+/*@-modfilesys@*/
+if (_rpmsx_debug < 0)
+fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
+/*@=modfilesys@*/
+
+    /*@-branchstate@*/
+    if (sx->Count > 0)
+    for (i = 0; i < sx->Count; i++) {
+	rpmsxp sxp = sx->sxp + i;
+	sxp->pattern = _free(sxp->pattern);
+	sxp->type = _free(sxp->type);
+	sxp->context = _free(sxp->context);
+/*@i@*/	regfree(sxp->preg);
+/*@i@*/	sxp->preg = _free(sxp->preg);
+    }
+    sx->sxp = _free(sx->sxp);
+
+    if (sx->nsxs > 0)
+    for (i = 0; i < sx->nsxs; i++) {
+	rpmsxs sxs = sx->sxs + i;
+	sxs->stem = _free(sxs->stem);
+    }
+    sx->sxs = _free(sx->sxs);
+    /*@=branchstate@*/
+
+    (void) rpmsxUnlink(sx, __func__);
+    /*@-refcounttrans -usereleased@*/
+/*@-boundswrite@*/
+    memset(sx, 0, sizeof(*sx));		/* XXX trash and burn */
+/*@=boundswrite@*/
+    sx = _free(sx);
+    /*@=refcounttrans =usereleased@*/
+    return NULL;
+}
 
 /*
  * An association between an inode and a 
@@ -255,27 +366,29 @@ static file_spec_t file_spec_add(ino_t ino, int specind, const char *file)
 	 fl != NULL;
 	 prevfl = fl, fl = fl->next)
     {
+	rpmsxp sxp;
+
 	if (ino == fl->ino) {
 	    ret = lstat(fl->file, &sb);
 	    if (ret < 0 || sb.st_ino != ino) {
 		fl->specind = specind;
-		free(fl->file);
+		fl->file = _free(fl->file);
 		fl->file = xstrdup(file);
 		return fl;
 	    }
 
-	    no_conflict = (strcmp(spec_arr[fl->specind].context,spec_arr[specind].context) == 0);
+	    sxp = mysx->sxp + fl->specind;
+	    no_conflict = (strcmp(sxp->context, sxp->context) == 0);
 	    if (no_conflict)
 		return fl;
 
 	    fprintf(stderr,
 		"%s:  conflicting specifications for %s and %s, using %s.\n",
 		__progname, file, fl->file,
-		((specind > fl->specind) ? spec_arr[specind].
-		 context : spec_arr[fl->specind].context));
-	    fl->specind =
-		    (specind > fl->specind) ? specind : fl->specind;
-	    free(fl->file);
+		((specind > fl->specind)
+			? mysx->sxp[specind].context : sxp->context));
+	    fl->specind = (specind > fl->specind) ? specind : fl->specind;
+	    fl->file = _free(fl->file);
 	    fl->file = xstrdup(file);
 	    return fl;
 	}
@@ -335,16 +448,17 @@ static void file_spec_destroy(void)
 	while (fl) {
 	    tmp = fl;
 	    fl = fl->next;
-	    free(tmp->file);
-	    free(tmp);
+	    tmp->file = _free(tmp->file);
+	    tmp = _free(tmp);
 	}
 	fl_head[h].next = NULL;
     }
 }
 
 
-static int match(const char *name, struct stat *sb)
+static int match(rpmsx sx, const char *name, struct stat *sb)
 {
+    rpmsxp sxp;
     static char errbuf[255 + 1];
     const char *fullname = name;
     const char *buf = name;
@@ -368,16 +482,14 @@ static int match(const char *name, struct stat *sb)
 	return -1;
     }
 
-    file_stem = rpmsxFind(NULL, &buf);
+    file_stem = rpmsxFind(sx, &buf);
 
     /* 
      * Check for matching specifications in reverse order, so that
      * the last matching specification is used.
      */
-    for (i = nspec - 1; i >= 0; i--) {
-	rpmsxp sxp;
-
-	sxp = spec_arr + i;
+    for (i = sx->Count - 1; i >= 0; i--) {
+	sxp = sx->sxp + i;
 
 	/* if the spec in question matches no stem or has the same
 	 * stem as the file AND if the spec in question has no mode
@@ -407,11 +519,12 @@ static int match(const char *name, struct stat *sb)
 
     /* Cound matches found. */
     if (i >= 0)
-	spec_arr[i].matches++;
+	sxp->matches++;
 
     return i;
 }
 
+#ifdef DYING
 /* Used with qsort to sort specs from lowest to highest hasMetaChars value */
 static int spec_compare(const void* specA, const void* specB)
 {
@@ -420,6 +533,7 @@ static int spec_compare(const void* specA, const void* specB)
 	((const rpmsxp)specA)->hasMetaChars
 	); 
 }
+#endif
 
 /*
  * Check for duplicate specifications. If a duplicate specification is found 
@@ -427,14 +541,14 @@ static int spec_compare(const void* specA, const void* specB)
  * specification is found and the context is different, give a warning
  * to the user (This could be changed to error). Return of non-zero is an error.
  */
-static int nodups_specs(void)
+static int nodups_specs(rpmsx sx)
 {
     int i, j;
 
-    for (i = 0; i < nspec; i++) {
-	rpmsxp sip = spec_arr + i;
-	for (j = i + 1; j < nspec; j++) { 
-	    rpmsxp sjp = spec_arr + j;
+    for (i = 0; i < sx->Count; i++) {
+	rpmsxp sip = sx->sxp + i;
+	for (j = i + 1; j < sx->Count; j++) { 
+	    rpmsxp sjp = sx->sxp + j;
 
 	    /* Check if same RE string */
 	    if (strcmp(sjp->pattern, sip->pattern))
@@ -457,53 +571,6 @@ static int nodups_specs(void)
 	}
     }
     return 0;
-}
-
-static void usage(const char * const name, poptContext optCon)
-{
-	fprintf(stderr,
-		"usage:  %s [-dnqvW] spec_file pathname...\n"
-		"usage:  %s -s [-dnqvW] spec_file\n", name, name);
-	poptPrintUsage(optCon, stderr, 0);
-	exit(1);
-}
-
-/* Determine if the regular expression specification has any meta characters. */
-static void spec_hasMetaChars(rpmsxp sxp)
-{
-    const char * c = sxp->pattern;
-    int len = strlen(c);
-    const char * end = c + len;
-
-    sxp->hasMetaChars = 0; 
-
-    /* Look at each character in the RE specification string for a 
-     * meta character. Return when any meta character reached. */
-    while (c != end) {
-	switch(*c) {
-	case '.':
-	case '^':
-	case '$':
-	case '?':
-	case '*':
-	case '+':
-	case '|':
-	case '[':
-	case '(':
-	case '{':
-	    sxp->hasMetaChars = 1;
-	    return;
-	    break;
-	case '\\':		/* skip the next character */
-	    c++;
-	    break;
-	default:
-	    break;
-
-	}
-	c++;
-    }
-    return;
 }
 
 /*
@@ -533,11 +600,11 @@ static int apply_spec(const char *file,
 	return 0;
     }
 
-    i = match(my_file, &my_sb);
+    i = match(mysx, my_file, &my_sb);
     if (i < 0)
 	/* No matching specification. */
 	return 0;
-    sxp = spec_arr + i;
+    sxp = mysx->sxp + i;
 
     /*
      * Try to add an association between this inode and
@@ -556,7 +623,7 @@ static int apply_spec(const char *file,
 	    return 0;
     }
 
-    if (debug) {
+    if (_rpmsx_debug) {
 	if (sxp->type) {
 	    printf("%s:  %s matched by (%s,%s,%s)\n", __progname,
 		       my_file, sxp->pattern,
@@ -624,18 +691,17 @@ static int nerr = 0;
 static void inc_err(void)
 {
     nerr++;
-    if (nerr > 9 && !debug) {
+    if (nerr > 9 && !_rpmsx_debug) {
 	fprintf(stderr, "Exiting after 10 errors.\n");
 	exit(1);
     }
 }
 
-static
-int parseREContexts(const char *fn)
+int rpmsxParse(rpmsx sx, const char *fn)
 {
     FILE * fp;
-    char errbuf[255 + 1];
-    char buf[255 + 1];
+    char errbuf[BUFSIZ + 1];
+    char buf[BUFSIZ + 1];
     char * bp;
     char * regex;
     char * type;
@@ -646,7 +712,6 @@ int parseREContexts(const char *fn)
     int lineno;
     int pass;
     int regerr;
-    rpmsxp sxp;
 
     if ((fp = fopen(fn, "r")) == NULL) {
 	perror(fn);
@@ -662,9 +727,11 @@ int parseREContexts(const char *fn)
      * and fills in the spec array.
      */
     for (pass = 0; pass < 2; pass++) {
+	rpmsxp sxp;
+
 	lineno = 0;
-	nspec = 0;
-	sxp = spec_arr;
+	sx->Count = 0;
+	sxp = sx->sxp;
 	while (fgets(buf, sizeof buf, fp)) {
 	    lineno++;
 	    len = strlen(buf);
@@ -689,11 +756,11 @@ int parseREContexts(const char *fn)
 			fn, lineno, buf);
 		inc_err();
 		if (items == 1)
-		    free(regex);
+		    regex = _free(regex);
 		continue;
 	    } else if (items == 2) {
 		/* The type field is optional. */
-		free(context);
+		context = _free(context);
 		context = type;
 		type = 0;
 	    }
@@ -701,7 +768,7 @@ int parseREContexts(const char *fn)
 	    if (pass == 1) {
 		/* On the second pass, compile and store the specification in spec. */
 		const char *reg_buf = regex;
-		sxp->fstem = rpmsxAdd(&reg_buf);
+		sxp->fstem = rpmsxAdd(sx, &reg_buf);
 		sxp->pattern = regex;
 
 		/* Anchor the regular expression. */
@@ -721,7 +788,7 @@ int parseREContexts(const char *fn)
 			errbuf);
 		    inc_err();
 		}
-		free(anchored_regex);
+		anchored_regex = _free(anchored_regex);
 
 		/* Convert the type string to a mode format */
 		sxp->type = type;
@@ -780,16 +847,16 @@ int parseREContexts(const char *fn)
 
 		/* Determine if specification has 
 		 * any meta characters in the RE */
-		spec_hasMetaChars(sxp);
+		rpmsxHasMetaChars(sxp);
 		sxp++;
 	    }
 
-	    nspec++;
+	    sx->Count++;
 	    if (pass == 0) {
-		free(regex);
+		regex = _free(regex);
 		if (type)
-		    free(type);
-		free(context);
+		    type = _free(type);
+		context = _free(context);
 	    }
 	}
 
@@ -797,26 +864,51 @@ int parseREContexts(const char *fn)
 	    return -1;
 
 	if (pass == 0) {
-	    QPRINTF("%s:  read %d specifications\n", fn, nspec);
-	    if (nspec == 0)
+	    QPRINTF("%s:  read %d specifications\n", fn, sx->Count);
+	    if (sx->Count == 0)
 		return 0;
-	    spec_arr = xcalloc(nspec, sizeof(*spec_arr));
+	    sx->sxp = xcalloc(sx->Count, sizeof(*sx->sxp));
 	    rewind(fp);
 	}
     }
     fclose(fp);
 
+#ifdef	DYING
     /* Sort the specifications with most general first */
-    qsort(spec_arr, nspec, sizeof(*spec_arr), spec_compare);
+    qsort(sx->sxp, sx->Count, sizeof(*sx->sxp), spec_compare);
+#else
+    rpmsxSort(sx);
+#endif
 
     /* Verify no exact duplicates */
-    if (nodups_specs() != 0)
+    if (nodups_specs(sx) != 0)
 	return -1;
     return 0;
 }
 
+rpmsx rpmsxNew(const char * fn)
+{
+    rpmsx sx;
+
+    sx = xcalloc(1, sizeof(*sx));
+    sx->sxp = NULL;
+    sx->Count = 0;
+    sx->i = -1;
+    sx->sxs = NULL;
+    sx->nsxs = 0;
+    sx->maxsxs = 0;
+    sx->reverse = 0;
+
+    (void) rpmsxLink(sx, __func__);
+
+    if (rpmsxParse(sx, fn) != 0)
+	return rpmsxFree(sx);
+
+    return sx;
+}
+
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL, &debug, 1,
+ { "debug", 'd', POPT_ARG_VAL, &_rpmsx_debug, 1,
         N_("show what specification matched each file"), NULL },
  { "nochange", 'n', POPT_ARG_VAL, &change, 0,
         N_("do not change any file labels"), NULL },
@@ -826,7 +918,7 @@ static struct poptOption optionsTable[] = {
         N_("use an alternate root path"), N_("ROOT") },
  { "stdin", 's', POPT_ARG_VAL, &use_stdin, 1,
         N_("use stdin for a list of files instead of searching a partition"), NULL },
- { "verbose", 'v', POPT_ARG_VAL, &warn_no_match, 1,
+ { "verbose", 'v', POPT_ARG_VAL, &verbose, 1,
         N_("show changes in file labels"), NULL },
  { "warn", 'W', POPT_ARG_VAL, &warn_no_match, 1,
         N_("warn about entries that have no matching file"), NULL },
@@ -834,6 +926,16 @@ static struct poptOption optionsTable[] = {
    POPT_AUTOHELP
    POPT_TABLEEND
 };
+
+static void usage(const char * const name, poptContext optCon)
+{
+	fprintf(stderr,
+		"usage:  %s [-dnqvW] spec_file pathname...\n"
+		"usage:  %s -s [-dnqvW] spec_file\n", name, name);
+	poptPrintUsage(optCon, stderr, 0);
+	exit(1);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -906,7 +1008,8 @@ int main(int argc, char **argv)
     }
 
     /* Parse the specification file. */
-    if (parseREContexts(*av) != 0) {
+    mysx = rpmsxNew(*av);
+    if (mysx == NULL) {
 	perror(*av);
 	goto exit;
     }
@@ -969,10 +1072,10 @@ int main(int argc, char **argv)
     }
 
     if (warn_no_match) {
-	for (i = 0; i < nspec; i++) {
+	for (i = 0; i < mysx->Count; i++) {
 	    rpmsxp sxp;
 
-	    sxp = spec_arr + i;
+	    sxp = mysx->sxp + i;
 	    if (sxp->matches > 0)
 		continue;
 	    if (sxp->type) {
@@ -990,6 +1093,7 @@ int main(int argc, char **argv)
     ec = 0;
 
 exit:
+    mysx = rpmsxFree(mysx);
     optCon = poptFreeContext(optCon);
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
