@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-14 20:49-0400\n"
+"POT-Creation-Date: 2002-08-15 13:24-0400\n"
 "PO-Revision-Date: 2002-04-09 16:44-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1455,7 +1455,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:386
-#: rpmdb/header.c:3121 rpmdb/header.c:3144 rpmdb/header.c:3168
+#: rpmdb/header.c:3124 rpmdb/header.c:3147 rpmdb/header.c:3171
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -2238,7 +2238,7 @@ msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
 #: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:123 lib/rpminstall.c:452
-#: lib/rpminstall.c:583 lib/rpminstall.c:986 lib/rpmts.c:441
+#: lib/rpminstall.c:583 lib/rpminstall.c:990 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2322,7 +2322,7 @@ msgstr "номер записи пакета: %u\n"
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:907 lib/rpminstall.c:763
+#: lib/query.c:907 lib/rpminstall.c:765
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -2556,7 +2556,7 @@ msgstr "ошибка чтения из файла %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "для файла %s необходима более новая версия RPM\n"
 
-#: lib/rpminstall.c:575 lib/rpminstall.c:842 tools/rpmgraph.c:156
+#: lib/rpminstall.c:575 lib/rpminstall.c:846 tools/rpmgraph.c:156
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
@@ -2566,7 +2566,7 @@ msgstr "%s не может быть установлен\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1193
+#: lib/rpminstall.c:625 lib/rpminstall.c:793 lib/rpminstall.c:1203
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2585,22 +2585,22 @@ msgstr "устанавливаю бинарные пакеты\n"
 msgid "cannot open file %s: %s\n"
 msgstr "невозможно открыть файл %s: %s\n"
 
-#: lib/rpminstall.c:766
+#: lib/rpminstall.c:768
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:826
+#: lib/rpminstall.c:830
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:832
+#: lib/rpminstall.c:836
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
 
-#: lib/rpminstall.c:1187
+#: lib/rpminstall.c:1197
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -2834,7 +2834,7 @@ msgid "Suggesting: %s\n"
 msgstr "Загружается %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:860
+#: lib/rpmts.c:883
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -3178,22 +3178,22 @@ msgid "{ expected after ? in expression"
 msgstr "в выражении после \"?\" ожидалось \"{\""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2512 rpmdb/header.c:2557
+#: rpmdb/header.c:2513 rpmdb/header.c:2560
 msgid "} expected in expression"
 msgstr "в выражении ожидалось \"}\""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2522
+#: rpmdb/header.c:2523
 msgid ": expected following ? subexpression"
 msgstr "в выражении после \"?\" ожидалось \":\""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2542
+#: rpmdb/header.c:2543
 msgid "{ expected after : in expression"
 msgstr "в выражении после \":\" ожидалось \"{\""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2567
+#: rpmdb/header.c:2570
 msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
@@ -3438,37 +3438,37 @@ msgstr "Макрос %%%s (%s) не был использован ниже уровня %d\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Неизвестный параметр %c в %s(%s)\n"
 
-#: rpmio/macro.c:1168
+#: rpmio/macro.c:1170
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Глубина рекурсии(%d) больше допустимой(%d)\n"
 
-#: rpmio/macro.c:1238 rpmio/macro.c:1255
+#: rpmio/macro.c:1240 rpmio/macro.c:1257
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Незакрытая %c: %s\n"
 
-#: rpmio/macro.c:1296
+#: rpmio/macro.c:1298
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "непонятный макрос после %%\n"
 
-#: rpmio/macro.c:1425
+#: rpmio/macro.c:1427
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Макрос %%%.*s не найден, пропускаю\n"
 
-#: rpmio/macro.c:1496
+#: rpmio/macro.c:1498
 msgid "Target buffer overflow\n"
 msgstr "Переполнение целевого буфера\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1691 rpmio/macro.c:1697
+#: rpmio/macro.c:1693 rpmio/macro.c:1699
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: rpmio/macro.c:1700
+#: rpmio/macro.c:1702
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Длина файла %s меньше чем %u байт\n"

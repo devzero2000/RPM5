@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-14 20:49-0400\n"
+"POT-Creation-Date: 2002-08-15 13:24-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1474,7 +1474,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:386
-#: rpmdb/header.c:3121 rpmdb/header.c:3144 rpmdb/header.c:3168
+#: rpmdb/header.c:3124 rpmdb/header.c:3147 rpmdb/header.c:3171
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -2290,7 +2290,7 @@ msgid "can't query %s: %s\n"
 msgstr "ni mo¾no poizvedeti o %s: %s\n"
 
 #: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:123 lib/rpminstall.c:452
-#: lib/rpminstall.c:583 lib/rpminstall.c:986 lib/rpmts.c:441
+#: lib/rpminstall.c:583 lib/rpminstall.c:990 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2375,7 +2375,7 @@ msgstr "¹tevilka zapisa paketa: %d\n"
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:907 lib/rpminstall.c:763
+#: lib/query.c:907 lib/rpminstall.c:765
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2610,7 +2610,7 @@ msgstr "napaka pri branju iz datoteke %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:575 lib/rpminstall.c:842 tools/rpmgraph.c:156
+#: lib/rpminstall.c:575 lib/rpminstall.c:846 tools/rpmgraph.c:156
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
@@ -2620,7 +2620,7 @@ msgstr "%s ni mo¾no namestiti\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "najdeno %d izvornih in %d binarnih paketov\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1193
+#: lib/rpminstall.c:625 lib/rpminstall.c:793 lib/rpminstall.c:1203
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2639,22 +2639,22 @@ msgstr "name¹èanje binarnih paketov\n"
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:766
+#: lib/rpminstall.c:768
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:826
+#: lib/rpminstall.c:830
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:832
+#: lib/rpminstall.c:836
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpminstall.c:1187
+#: lib/rpminstall.c:1197
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -2888,7 +2888,7 @@ msgid "Suggesting: %s\n"
 msgstr "izvori v: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:860
+#: lib/rpmts.c:883
 msgid "getting list of mounted filesystems\n"
 msgstr "zbiranje seznama priklopljenih datoteènih sistemov.\n"
 
@@ -3239,22 +3239,22 @@ msgid "{ expected after ? in expression"
 msgstr "v izrazu je za { prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2512 rpmdb/header.c:2557
+#: rpmdb/header.c:2513 rpmdb/header.c:2560
 msgid "} expected in expression"
 msgstr "v izrazu je prièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2522
+#: rpmdb/header.c:2523
 msgid ": expected following ? subexpression"
 msgstr "za podizrazom ? je prièakovano :"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2542
+#: rpmdb/header.c:2543
 msgid "{ expected after : in expression"
 msgstr "v izrazu je za : prièakovan {"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2567
+#: rpmdb/header.c:2570
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
@@ -3502,38 +3502,38 @@ msgstr "Makro %%%s (%s) ni bil uporabljen pod ravnijo %d"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Neznana izbira %c v %s(%s)"
 
-#: rpmio/macro.c:1168
+#: rpmio/macro.c:1170
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Globina rekurzije (%d) veèja od maksimalne (%d)"
 
-#: rpmio/macro.c:1238 rpmio/macro.c:1255
+#: rpmio/macro.c:1240 rpmio/macro.c:1257
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Nezakljuèeni %c: %s"
 
-#: rpmio/macro.c:1296
+#: rpmio/macro.c:1298
 #, fuzzy, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Oznaki %% sledi nerazèlenljiv makro"
 
-#: rpmio/macro.c:1425
+#: rpmio/macro.c:1427
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makro %%%.*s ni najden - preskoèeno"
 
-#: rpmio/macro.c:1496
+#: rpmio/macro.c:1498
 #, fuzzy
 msgid "Target buffer overflow\n"
 msgstr "Ciljni medpomnilnik je bil prekoraèen"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1691 rpmio/macro.c:1697
+#: rpmio/macro.c:1693 rpmio/macro.c:1699
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "Datoteka %s: %s"
 
-#: rpmio/macro.c:1700
+#: rpmio/macro.c:1702
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"

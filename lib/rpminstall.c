@@ -714,6 +714,8 @@ exit:
     eiu->pkgURL = _free(eiu->pkgURL);
     eiu->argv = _free(eiu->argv);
 
+    rpmtsEmpty(ts);
+
     return eiu->numFailed;
 }
 /*@=bounds@*/
@@ -810,6 +812,8 @@ int rpmErase(rpmts ts,
 	stopUninstall = 1;
 	ps = rpmpsFree(ps);
     }
+
+    rpmtsEmpty(ts);
 
     return numFailed;
 }
@@ -1050,6 +1054,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
     int numRemoved;
     rpmps ps;
     int _unsafe_rollbacks = 0;
+    rpmtransFlags transFlags = ia->transFlags;
 
     if (argv != NULL && *argv != NULL) {
 	rc = -1;
@@ -1068,7 +1073,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
     vsflags |= RPMVSF_NEEDPAYLOAD;	/* XXX no legacy signatures */
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
-    (void) rpmtsSetFlags(ts, ia->transFlags);
+    (void) rpmtsSetFlags(ts, transFlags);
 
     itids = IDTXload(ts, RPMTAG_INSTALLTID);
     if (itids != NULL) {
@@ -1122,6 +1127,9 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	if (thistid == 0 || thistid < ia->rbtid)
 	    break;
 
+	rpmtsEmpty(ts);
+	(void) rpmtsSetFlags(ts, transFlags);
+
 	/* Install the previously erased packages for this transaction. */
 	while (rp != NULL && rp->val.u32 == thistid) {
 
@@ -1165,8 +1173,10 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    if (_unsafe_rollbacks)
 		rpmcliPackagesTotal++;
 
-	    if (!(ia->installInterfaceFlags & ifmask))
+	    if (!(ia->installInterfaceFlags & ifmask)) {
 		ia->installInterfaceFlags |= INSTALL_ERASE;
+		(void) rpmtsSetFlags(ts, (transFlags | RPMTRANS_FLAG_REVERSE));
+	    }
 
 #ifdef	NOTYET
 	    ip->instance = 0;
@@ -1225,12 +1235,15 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    }
 	}
 
+
     } while (1);
 
 exit:
-
     rtids = IDTXfree(rtids);
     itids = IDTXfree(itids);
+
+    rpmtsEmpty(ts);
+    (void) rpmtsSetFlags(ts, transFlags);
 
     return rc;
 }

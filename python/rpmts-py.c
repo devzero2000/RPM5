@@ -1004,9 +1004,9 @@ static PyObject * rpmts_SetFlags(rpmtsObject * s, PyObject * args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
-    int transFlags = 0;
+    rpmtransFlags transFlags = 0;
 
-    if (!PyArg_ParseTuple(args, "iOO:SetFlags", &transFlags))
+    if (!PyArg_ParseTuple(args, "i:SetFlags", &transFlags))
 	return NULL;
 
 if (_rpmts_debug)
