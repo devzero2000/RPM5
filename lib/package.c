@@ -25,8 +25,6 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
     struct rpmlead leadBlock;
     Header * hdr = NULL;
     struct rpmlead * lead;
-    int_8 arch;
-    int isSource;
     char * defaultPrefix;
     struct stat sb;
     int_32 true = 1;
