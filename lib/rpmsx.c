@@ -309,8 +309,7 @@ static int rpmsxpCheckNoDupes(const rpmsx sx)
 int rpmsxParse(rpmsx sx, const char * fn)
 {
     FILE * fp;
-    char errbuf[255 + 1];
-    char buf[255 + 1];
+    char buf[BUFSIZ + 1];
     char * bp;
     char * regex;
     char * type;
@@ -350,7 +349,8 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	lineno = 0;
 	sx->Count = 0;
 	sxp = sx->sxp;
-	while (fgets(buf, sizeof buf, fp)) {
+	while (fgets(buf, sizeof(buf)-1, fp)) {
+	    buf[sizeof(buf)-1] = '\0';
 	    lineno++;
 	    len = strlen(buf);
 	    if (buf[len - 1] != '\n') {
@@ -401,7 +401,9 @@ int rpmsxParse(rpmsx sx, const char * fn)
 		regerr = regcomp(sxp->preg, anchored_regex,
 			    REG_EXTENDED | REG_NOSUB);
 		if (regerr < 0) {
-		    (void) regerror(regerr, sxp->preg, errbuf, sizeof errbuf);
+		    char errbuf[BUFSIZ + 1];
+		    (void) regerror(regerr, sxp->preg, errbuf, sizeof(errbuf)-1);
+		    errbuf[sizeof(errbuf)-1] = '\0';
 		    fprintf(stderr,
 			_("%s:  unable to compile regular expression %s on line number %d:  %s\n"),
 			fn, regex, lineno,
@@ -670,9 +672,10 @@ const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 	    fcontext = rpmsxContext(sx);
 	    /*@switchbreak@*/ break;
 	default:
-	  { static char errbuf[255 + 1];
-	    (void) regerror(ret, preg, errbuf, sizeof errbuf);
+	  { static char errbuf[BUFSIZ + 1];
+	    (void) regerror(ret, preg, errbuf, sizeof(errbuf)-1);
 /*@-modfilesys -nullpass @*/
+	    errbuf[sizeof(errbuf)-1] = '\0';
 	    fprintf(stderr, "unable to match %s against %s:  %s\n",
                 fn, rpmsxPattern(sx), errbuf);
 /*@=modfilesys =nullpass @*/
