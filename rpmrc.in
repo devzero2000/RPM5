@@ -297,7 +297,7 @@ os_compat: TOS: FreeMiNT MiNT mint
 os_compat: BSD_OS: bsdi
 os_compat: bsdi4.0: bsdi
 
-buildarch_compat: ia64: i686 noarch
+buildarch_compat: ia64: noarch
 
 buildarch_compat: athlon: i686
 buildarch_compat: i686: i586
