@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2000-12-21 16:05-0500\n"
-"PO-Revision-Date: 2000-10-09 22:31+0200\n"
+"PO-Revision-Date: 2000-12-22 22:08+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -10,9 +10,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: build.c:26
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open rpm database in %s\n"
-msgstr "kan inte öppna paketdatabas i %s\n"
+msgstr "kan inte öppna rpmdatabas i %s\n"
 
 #: build.c:36
 msgid "failed build dependencies:\n"
@@ -24,35 +24,35 @@ msgid "Unable to open spec file %s: %s\n"
 msgstr "Kan inte öppna spec-filen %s: %s\n"
 
 #: build.c:131 build.c:143
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open tar pipe: %m"
-msgstr "Kunde inte öppna \"tar\"-rör: %s\n"
+msgstr "Kunde inte öppna \"tar\"-rör: %m"
 
 #. Give up
 #: build.c:150
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read spec file from %s"
-msgstr "Kunde inte läsa spec-fil från %s\n"
+msgstr "Kunde inte läsa spec-fil från %s"
 
 #: build.c:177
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to rename %s to %s: %m"
-msgstr "Kunde inte byta namn på %s till %s: %s\n"
+msgstr "Kunde inte byta namn på %s till %s: %m"
 
 #: build.c:216
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat %s: %m"
-msgstr "kunde inte ta status på %s: %s"
+msgstr "kunde inte ta status på %s: %m"
 
 #: build.c:221
-#, fuzzy, c-format
+#, c-format
 msgid "File %s is not a regular file."
-msgstr "Filen är inte en ordinär fil: %s\n"
+msgstr "Filen %s är inte en ordinär fil."
 
 #: build.c:229
-#, fuzzy, c-format
+#, c-format
 msgid "File %s does not appear to be a specfile."
-msgstr "Filen %s tycks inte vara en spec-fil.\n"
+msgstr "Filen %s tycks inte vara en spec-fil."
 
 #. parse up the build operators
 #: build.c:289
@@ -880,11 +880,11 @@ msgstr "uteslutna sökvägar måste börja med /"
 
 #: rpm.c:787 rpmqv.c:931
 msgid "The --rcfile option has been eliminated.\n"
-msgstr ""
+msgstr "Flaggan --rcfile har tagits bort.\n"
 
 #: rpm.c:788
 msgid "Use --macros with a colon separated list of macro files to read.\n"
-msgstr ""
+msgstr "Använd --macros med en kolonseparerad lista av makrofiler att läsa.\n"
 
 #: rpm.c:793 rpmqv.c:937
 #, c-format
@@ -1139,26 +1139,24 @@ msgid "cannot re-open payload: %s\n"
 msgstr "kan inte återöppna lasten: %s\n"
 
 #: rpmqv.c:154
-#, fuzzy
 msgid "'<name> <body>'"
-msgstr "   --define '<namn> <kropp>'"
+msgstr "'<namn> <kropp>'"
 
 #: rpmqv.c:156
-#, fuzzy
 msgid "print macro expansion to stdout"
-msgstr "skriv ut expansionen av makrot <namn> på standard ut"
+msgstr "skriv ut makroexpansion på standard ut"
 
 #: rpmqv.c:156
 msgid "<expr>+"
-msgstr ""
+msgstr "<uttr>+"
 
 #: rpmqv.c:181
 msgid "read <file:...> instead of default macro file(s)"
-msgstr ""
+msgstr "läs <fil:...> istället för standardmakrofil(er)"
 
 #: rpmqv.c:182
 msgid "<file:...>"
-msgstr ""
+msgstr "<fil:...>"
 
 #: rpmqv.c:296
 #, c-format
@@ -1386,9 +1384,8 @@ msgid "show the trigger scriptlets contained in the package"
 msgstr "visa utlösningsskripten i paketet"
 
 #: rpmqv.c:495
-#, fuzzy
 msgid "do not execute verify script (if any)"
-msgstr "utför inga steg"
+msgstr "utför inte (eventuellt) verifieringsskript"
 
 #: rpmqv.c:510
 msgid "   --install <packagefile>"
@@ -1487,9 +1484,8 @@ msgid "rebuild database indices from existing database headers"
 msgstr "bygg om databasindex från existerande databashuvuden"
 
 #: rpmqv.c:932
-#, fuzzy
 msgid "Use \"--macros <file:...>\" instead..\n"
-msgstr "Använd -e eller --erase istället.\n"
+msgstr "Använd \"--macros <fil:...>\" istället.\n"
 
 #: rpmqv.c:1007
 msgid "--dbpath given for operation that does not use a database"
@@ -1538,6 +1534,9 @@ msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
+"\n"
+"\n"
+"RPM byggfel:\n"
 
 #: build/expression.c:208
 msgid "syntax error while parsing =="
@@ -1756,19 +1755,19 @@ msgstr "Bearbetar filer: %s-%s-%s\n"
 
 #: build/names.c:42
 msgid "getUname: too many uid's\n"
-msgstr ""
+msgstr "getUname: för många uid:er\n"
 
 #: build/names.c:68
 msgid "getUnameS: too many uid's\n"
-msgstr ""
+msgstr "getUnameS: för många uid:er\n"
 
 #: build/names.c:95
 msgid "getGname: too many gid's\n"
-msgstr ""
+msgstr "getGname: för många gid:er\n"
 
 #: build/names.c:121
 msgid "getGnameS: too many gid's\n"
-msgstr ""
+msgstr "getGnameS: för många gid:er\n"
 
 #: build/names.c:155
 #, c-format
@@ -1865,24 +1864,24 @@ msgid "Unable to open sigtarget %s: %s"
 msgstr "Kan inte läsa signaturen %s: %s"
 
 #: build/pack.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read header from %s: %s"
-msgstr "Kan inte läsa ikon %s: %s"
+msgstr "Kan inte läsa huvud från %s: %s"
 
 #: build/pack.c:494
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write header to %s: %s"
-msgstr "Kan inte skriva paket %s: %s"
+msgstr "Kan inte skriva huvud till %s: %s"
 
 #: build/pack.c:504
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read payload from %s: %s"
-msgstr "Kan inte läsa ikon %s: %s"
+msgstr "Kan inte läsa last från %s: %s"
 
 #: build/pack.c:510
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write payload to %s: %s"
-msgstr "Kan inte skriva paket %s: %s"
+msgstr "Kan inte skriva last till %s: %s"
 
 #: build/pack.c:537
 #, c-format
@@ -2042,9 +2041,9 @@ msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "rad %d: Epoch/Serial-fält måste vara numeriskt: %s"
 
 #: build/parsePreamble.c:573 build/parsePreamble.c:584
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad %s: qualifiers: %s"
-msgstr "rad %d: Felaktigt %s-tal: %s\n"
+msgstr "rad %d: Felaktigt %s: bestämningar: %s"
 
 #: build/parsePreamble.c:610
 #, c-format
@@ -2280,7 +2279,7 @@ msgstr "Saknad hårdlänk"
 
 #: lib/cpio.c:1268
 msgid "MD5 sum mismatch"
-msgstr ""
+msgstr "MD5-summa stämmer inte"
 
 #: lib/cpio.c:1269
 msgid "Internal error"
@@ -2340,10 +2339,10 @@ msgstr "%s: %-45s JA (db-filer)\n"
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db tillhandahållande)\n"
 
-#: lib/depends.c:1144
-#, fuzzy, c-format
+#: lib/depends.c:1143
+#, c-format
 msgid "%s: %-45s YES (db package)\n"
-msgstr "%s: %-45s JA (db-filer)\n"
+msgstr "%s: %-45s JA (db-paket)\n"
 
 #: lib/depends.c:1160
 #, c-format
@@ -2367,28 +2366,28 @@ msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1522
-#, fuzzy, c-format
+#: lib/depends.c:1531
+#, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
-msgstr "tar bort \"%s\" från %s-indexet.\n"
+msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
 #: lib/depends.c:1626
 msgid "========== recording tsort relations\n"
-msgstr ""
+msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
 #: lib/depends.c:1676
 msgid "========== tsorting packages\n"
-msgstr ""
+msgstr "========== tsorterar paket\n"
 
 #: lib/depends.c:1779
 msgid "LOOP:\n"
-msgstr ""
+msgstr "LOOP:\n"
 
 #: lib/depends.c:1810
 msgid "========== continuing tsort ...\n"
-msgstr ""
+msgstr "========== fortsätter med tsort ...\n"
 
 #: lib/db1.c:91 lib/db3.c:451
 #, c-format
@@ -2559,10 +2558,9 @@ msgid "file %s is on an unknown device"
 msgstr "filen %s är på en okänd enhet"
 
 #. This should not be allowed
-#: lib/header.c:220
-#, fuzzy
+#: lib/header.c:215
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
+msgstr "dataLength() RPM_STRING_TYPE antal måste vara 1.\n"
 
 #: lib/header.c:255 lib/header.c:1052 lib/install.c:365
 #, c-format
@@ -2948,62 +2946,60 @@ msgid " conflicts with %s-%s-%s\n"
 msgstr " står i konflikt med %s-%s-%s\n"
 
 #: lib/problems.c:99
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is for a different architecture"
-msgstr "paket %s-%s-%s är för en annan arkitektur"
+msgstr "paket %s är för en annan arkitektur"
 
 #: lib/problems.c:103
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is for a different operating system"
-msgstr "paket %s-%s-%s är för ett annat operativsystem"
+msgstr "paket %s är för ett annat operativsystem"
 
 #: lib/problems.c:107
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is already installed"
-msgstr "paket %s-%s-%s är redan installerat"
+msgstr "paket %s är redan installerat"
 
 #: lib/problems.c:111
-#, fuzzy, c-format
+#, c-format
 msgid "path %s in package %s is not relocateable"
-msgstr "paket %s är inte relokerbart\n"
+msgstr "sökväg %s i paket %s är inte relokerbar"
 
 #: lib/problems.c:116
-#, fuzzy, c-format
+#, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
-msgstr ""
-"filen %s är en konflikt mellan installationsförsök av %s-%s-%s och %s-%s-%s"
+msgstr "filen %s är en konflikt mellan installationsförsök av %s och %s"
 
 #: lib/problems.c:121
-#, fuzzy, c-format
+#, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
-"filen %s från installation av %s-%s-%s står i konflikt med filen från paket "
-"%s-%s-%s"
+"filen %s från installation av %s står i konflikt med filen från paket %s"
 
 #: lib/problems.c:126
-#, fuzzy, c-format
+#, c-format
 msgid "package %s (which is newer than %s) is already installed"
-msgstr "paket %s-%s-%s (som är nyare än %s-%s-%s) är redan installerat"
+msgstr "paket %s (som är nyare än %s) är redan installerat"
 
 #: lib/problems.c:131
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
-msgstr "installation av paket %s-%s-%s kräver %ld%cb på filsystem %s"
+msgstr "installation av paket %s kräver %ld%cB på filsystem %s"
 
 #: lib/problems.c:141
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
-msgstr "installation av paket %s-%s-%s kräver %ld%cb på filsystem %s"
+msgstr "installation av paket %s kräver %ld inoder på filsystem %s"
 
 #: lib/problems.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "paket %s-%s-%s systemanrop före transaktion: %s misslyckades: %s"
+msgstr "paket %s systemanrop före transaktion: %s misslyckades: %s"
 
 #: lib/problems.c:153
-#, fuzzy, c-format
+#, c-format
 msgid "unknown error %d encountered while manipulating package %s"
-msgstr "okänt fel %d uppträdde under manipulation av paket %s-%s-%s"
+msgstr "okänt fel %d uppträdde under behandling av paket %s"
 
 #: lib/query.c:151
 #, c-format
@@ -3432,12 +3428,11 @@ msgstr "kunde inte ta bort katalogen %s: %s\n"
 
 #: lib/rpminstall.c:142
 msgid "Preparing..."
-msgstr ""
+msgstr "Förbereder..."
 
 #: lib/rpminstall.c:145
-#, fuzzy
 msgid "Preparing packages for installation..."
-msgstr "inga paket angivna för installation"
+msgstr "Förbereder paket för installation"
 
 #: lib/rpminstall.c:206
 msgid "counting packages to install\n"
@@ -3654,11 +3649,13 @@ msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
+"Förväntad storlek: %12d = "
+"inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%d)\n"
 
 #: lib/signature.c:123
-#, fuzzy, c-format
+#, c-format
 msgid "  Actual size: %12d\n"
-msgstr "Signaturstorlek  : %d\n"
+msgstr "  Faktisk storlek: %12d\n"
 
 #: lib/signature.c:142
 msgid "No signature\n"
@@ -3986,14 +3983,13 @@ msgid "File %s: %s"
 msgstr "Fil %s: %s"
 
 #: rpmio/macro.c:1501
-#, fuzzy, c-format
+#, c-format
 msgid "File %s is smaller than %u bytes"
-msgstr "Filen %s är mindre än %d byte"
+msgstr "Filen %s är mindre än %u byte"
 
 #: rpmio/rpmlog.c:24
-#, fuzzy
 msgid "(no error)"
-msgstr "(fel 0x%x)"
+msgstr "(inget fel)"
 
 #. !< RPMLOG_EMERG
 #: rpmio/rpmlog.c:83 rpmio/rpmlog.c:84 rpmio/rpmlog.c:85
@@ -4054,40 +4050,3 @@ msgstr "kunde inte öppna %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
-
-#~ msgid "%%instchangelog value in macro file should be a number, but isn't"
-#~ msgstr ""
-#~ "%%instchangelog-värde i makrofil skall vara ett tal, men är inte det"
-
-#~ msgid "sigsize         : %d\n"
-#~ msgstr "sigstorlek       : %d\n"
-
-#~ msgid "Header + Archive: %d\n"
-#~ msgstr "Huvud + Arkiv    : %d\n"
-
-#~ msgid "expected size   : %d\n"
-#~ msgstr "förväntad storlek: %d\n"
-
-#~ msgid "New Header signature\n"
-#~ msgstr "Ny huvudsignatur\n"
-
-#~ msgid "path %s is not relocateable for package %s-%s-%s"
-#~ msgstr "sökväg %s är inte relokerbar för paket %s-%s-%s"
-
-#~ msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
-#~ msgstr "RPMERR_INTERNAL: Slog i begränsning i getUname()\n"
-
-#~ msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
-#~ msgstr "RPMERR_INTERNAL: Slog i begränsning i getGname()\n"
-
-#~ msgid "internal error (rpm bug?): "
-#~ msgstr "internt fel (fel i rpm?): "
-
-#~ msgid "Unable to read sigtarget %s: %s"
-#~ msgstr "Kan inte läsa signaturen %s: %s"
-
-#~ msgid "undefined identifier"
-#~ msgstr "odefinierad identifierare"
-
-#~ msgid "loop in prerequisite chain: %s"
-#~ msgstr "cirkularitet i kedja av förutsättningar: %s"
