@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-21 19:14-0500\n"
-"PO-Revision-Date: 2001-01-23 23:45+01:00\n"
+"PO-Revision-Date: 2001-01-24 00:05+01:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1575,7 +1575,7 @@ msgstr ""
 #: build/build.c:199
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kjøring av %s feilet (%s): %s\n"
 
 #: build/build.c:208
 #, c-format
@@ -1703,7 +1703,7 @@ msgstr "To filer på én linje: %s\n"
 #: build/files.c:771
 #, c-format
 msgid "File must begin with \"/\": %s\n"
-msgstr "eksluderingssti må begynne med en /"
+msgstr "Filen må begynne med \"/\": %s\n"
 
 #: build/files.c:783
 msgid "Can't mix special %%doc with other forms: %s\n"
@@ -1732,7 +1732,7 @@ msgstr "Fil ikke funnet: %s\n"
 #: build/files.c:1208 build/files.c:1732 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
-msgstr ""
+msgstr "Ugyldig eier/gruppe: %s\n"
 
 #: build/files.c:1220
 #, c-format
@@ -1782,7 +1782,7 @@ msgstr "%s feilet\n"
 #: build/files.c:1880
 #, c-format
 msgid "failed to write all data to %s\n"
-msgstr "kunne ikke opprette %s: %s\n"
+msgstr "kunne ikke skrive alle data til %s\n"
 
 #: build/files.c:2005
 #, c-format
@@ -1792,7 +1792,7 @@ msgstr ""
 #: build/files.c:2033 build/files.c:2047
 #, c-format
 msgid "Failed to find %s:\n"
-msgstr "klarte ikke å åpne %s: %s\n"
+msgstr "Klarte ikke å finne %s:\n"
 
 #: build/files.c:2160
 #, c-format
@@ -1838,27 +1838,27 @@ msgstr "cpio_copy: feil under lesing: %s\n"
 #: build/pack.c:165
 #, c-format
 msgid "Could not open PreIn file: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke åpne PreIn-fil: %s\n"
 
 #: build/pack.c:172
 #, c-format
 msgid "Could not open PreUn file: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke åpne PreUn-fil: %s\n"
 
 #: build/pack.c:179
 #, c-format
 msgid "Could not open PostIn file: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke åpne PostIn-fil: %s\n"
 
 #: build/pack.c:186
 #, c-format
 msgid "Could not open PostUn file: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke åpne PostUn-fil: %s\n"
 
 #: build/pack.c:194
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke åpne VerifyScript-fil: %s\n"
 
 #: build/pack.c:209
 #, c-format
@@ -1902,12 +1902,12 @@ msgstr ""
 #: build/pack.c:470
 #, c-format
 msgid "Unable to write package: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke skrive pakke: %s\n"
 
 #: build/pack.c:485
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke åpne sigmål %s: %s\n"
 
 #: build/pack.c:495
 #, c-format
@@ -1917,22 +1917,22 @@ msgstr "Kunne ikke åpne spec fil %s: %s\n"
 #: build/pack.c:509
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr "Feil under endring av navn fra %s til %s: %s\n"
+msgstr "Kunne ikke skrive header til %s: %s\n"
 
 #: build/pack.c:519
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke lese \"payload\" fra %s: %s\n"
 
 #: build/pack.c:525
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke skrive \"payload\" til %s: %s\n"
 
 #: build/pack.c:552
 #, c-format
 msgid "Wrote: %s\n"
-msgstr ""
+msgstr "Skrev: %s\n"
 
 #: build/pack.c:617
 #, c-format
@@ -1980,7 +1980,7 @@ msgstr ""
 #: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:187
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
-msgstr "klarte ikke å åpne %s: %s\n"
+msgstr "linje %d: Ugyldig flagg %s: %s\n"
 
 #: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:199
 #, c-format
@@ -1999,7 +1999,7 @@ msgstr ""
 
 #: build/parseFiles.c:33
 msgid "line %d: Error parsing %%files: %s\n"
-msgstr "feil under lesing fra fil %s\n"
+msgstr "linje %d: Feil under lesing av %%filer: %s\n"
 
 #: build/parseFiles.c:75
 msgid "line %d: Second %%files list\n"
@@ -2028,7 +2028,7 @@ msgstr ""
 #: build/parsePreamble.c:243
 #, c-format
 msgid "%s field must be present in package: %s\n"
-msgstr "\"%s\" spesifiserer flere pakker\n"
+msgstr "%s-felt må være tilstede i pakken: %s\n"
 
 #: build/parsePreamble.c:270
 #, c-format
@@ -2038,7 +2038,7 @@ msgstr ""
 #: build/parsePreamble.c:324
 #, c-format
 msgid "Unable to open icon %s: %s\n"
-msgstr "Kunne ikke åpne spec fil %s: %s\n"
+msgstr "Kunne ikke åpne ikon %s: %s\n"
 
 #: build/parsePreamble.c:342
 #, c-format
@@ -2727,7 +2727,7 @@ msgstr ""
 #: lib/install.c:721
 #, c-format
 msgid "cannot create sourcedir %s\n"
-msgstr "kan ikke åpne %s: %s\n"
+msgstr "kan ikke åpne kildekatalog %s\n"
 
 #: lib/install.c:728 lib/install.c:759
 #, c-format
@@ -2742,7 +2742,7 @@ msgstr ""
 #: lib/install.c:752
 #, c-format
 msgid "cannot create specdir %s\n"
-msgstr "kan ikke åpne %s: %s\n"
+msgstr "kan ikke opprette speckatalog %s\n"
 
 #: lib/install.c:763
 #, c-format
@@ -2787,12 +2787,12 @@ msgstr ""
 #: lib/install.c:1069
 #, c-format
 msgid "%s created as %s\n"
-msgstr "kunne ikke opprette %s: %s\n"
+msgstr "%s opprettet som %s\n"
 
 #: lib/install.c:1105
 #, c-format
 msgid "%s saved as %s\n"
-msgstr "kunne ikke opprette %s: %s\n"
+msgstr "%s lagret som %s\n"
 
 #: lib/install.c:1199
 msgid "running postinstall scripts (if any)\n"
@@ -2877,7 +2877,7 @@ msgstr ""
 
 #: lib/poptBT.c:153
 msgid "build source and binary packages from <tarball>"
-msgstr "Bygg kilde- og binærpakker fra <tarball>"
+msgstr "bygg kilde- og binærpakker fra <tarball>"
 
 #: lib/poptBT.c:156
 msgid "build binary package only from <tarball>"
@@ -2934,11 +2934,11 @@ msgstr ""
 
 #: lib/poptQV.c:70
 msgid "query/verify package(s) owning file"
-msgstr "spør pakke som eier <fil>"
+msgstr "spør/verifisér pakke(r) som eier fil"
 
 #: lib/poptQV.c:72
 msgid "query/verify package(s) in group"
-msgstr "spør/verifisér pakker utløst av <pakke>"
+msgstr "spør/verifisér pakke(r) i gruppe"
 
 #: lib/poptQV.c:74
 msgid "query/verify a package file (i.e. a binary *.rpm file)"
@@ -3305,12 +3305,12 @@ msgstr ""
 #: lib/rpmdb.c:495
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
-msgstr "feil under lesing fra fil %s\n"
+msgstr "feil(%d) under lagring av post %s til %s\n"
 
 #: lib/rpmdb.c:505
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
-msgstr "feil under lesing fra fil %s\n"
+msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
 #: lib/rpmdb.c:740
 msgid "no dbpath has been set\n"
@@ -3624,7 +3624,7 @@ msgstr ""
 #: lib/rpmrc.c:694
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
-msgstr "kan ikke åpne %s: %s\n"
+msgstr "kan ikke åpne %s ved %s:%d %s\n"
 
 #: lib/rpmrc.c:734
 #, c-format
@@ -3634,7 +3634,7 @@ msgstr "manglende arkitektur for %s ved %s:%d\n"
 #: lib/rpmrc.c:801
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
-msgstr "kunne ikke opprette %s: %s\n"
+msgstr "ugyldig flagg '%s' ved %s:%d\n"
 
 #: lib/rpmrc.c:1198
 #, c-format
@@ -3780,7 +3780,7 @@ msgstr ""
 #: lib/transaction.c:472
 #, c-format
 msgid "%5d relocate %s -> %s\n"
-msgstr "kunne ikke opprette %s: %s\n"
+msgstr "%5d relokér %s -> %s\n"
 
 #: lib/transaction.c:543
 #, c-format
@@ -3790,22 +3790,22 @@ msgstr ""
 #: lib/transaction.c:592
 #, c-format
 msgid "excluding %s %s\n"
-msgstr ""
+msgstr "eksluderer %s %s\n"
 
 #: lib/transaction.c:599
 #, c-format
 msgid "relocating %s to %s\n"
-msgstr ""
+msgstr "relokerer %s til %s\n"
 
 #: lib/transaction.c:671
 #, c-format
 msgid "relocating directory %s to %s\n"
-msgstr ""
+msgstr "relokerer katalog %s til %s\n"
 
 #: lib/transaction.c:676
 #, c-format
 msgid "excluding directory %s\n"
-msgstr ""
+msgstr "ekskluderer katalog %s\n"
 
 #: lib/transaction.c:800
 #, c-format
