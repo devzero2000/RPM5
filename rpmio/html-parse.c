@@ -1047,8 +1047,9 @@ extern int _ftp_debug;
 
 #if 0
 #define	HTMLPATH	"http://download.fedora.redhat.com/pub/fedora/linux/core/3/i386/os/Fedora/RPMS/"
+#define HTMLPATH	"http://localhost/rawhide/test/"
 #else
-#define HTMLPATH        "http://localhost/rawhide/"
+#define HTMLPATH	"http://localhost/rawhide/"
 #endif
 static const char * htmlpath = HTMLPATH;
 
@@ -1071,6 +1072,9 @@ int main ()
   int length = 0;
   int read_count;
   int tag_counter = 0;
+  int flags = MHT_TRIM_VALUES;
+  struct hash_table *interesting_tags = (struct hash_table *)1;
+  struct hash_table *interesting_attributes = (struct hash_table *)1;
   FD_t fd;
 
 _rpmio_debug = 0;
@@ -1078,16 +1082,20 @@ _dav_debug = 0;
   fd = Fopen(htmlpath, "r.ufdio");
   while ((read_count = Fread (x + length, 1, size - length, fd)))
     {
-      length += read_count;
-      if (read_count != size)
+      if (read_count <= 0)
 	break;
+      length += read_count;
       size <<= 1;
       x = (char *)xrealloc (x, size);
     }
-
    (void) Fclose(fd);
+   x[length] = '\0';
+#if 0
+fprintf(stderr, "============== %p[%d]\n%s\n", x, length, x);
+#endif
 
-  map_html_tags (x, length, test_mapper, &tag_counter, 0, NULL, NULL);
+  map_html_tags (x, length, test_mapper, &tag_counter,
+	flags, interesting_tags, interesting_attributes);
   printf ("TAGS: %d\n", tag_counter);
   printf ("Tag backouts:     %d\n", tag_backout_count);
   printf ("Comment backouts: %d\n", comment_backout_count);
