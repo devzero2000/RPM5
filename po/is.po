@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-23 16:17-0400\n"
+"POT-Creation-Date: 2001-04-24 22:49-0400\n"
 "PO-Revision-Date: 2001-02-02 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -2550,32 +2550,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "lína %d: %s\n"
 
-#: lib/fsm.c:1040
+#: lib/fsm.c:1044
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1342 lib/fsm.c:1459
+#: lib/fsm.c:1346 lib/fsm.c:1463
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s vistað sem %s\n"
 
-#: lib/fsm.c:1484
+#: lib/fsm.c:1488
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1489
+#: lib/fsm.c:1493
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "gat ekki endurnefnt %s sem %s: %s\n"
 
-#: lib/fsm.c:1498
+#: lib/fsm.c:1502
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "gat ekki endurnefnt %s sem %s: %s\n"
 
-#: lib/fsm.c:1515
+#: lib/fsm.c:1519
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s búið til sem %s\n"

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-23 16:17-0400\n"
+"POT-Creation-Date: 2001-04-24 22:49-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2836,32 +2836,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/fsm.c:1040
+#: lib/fsm.c:1044
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1342 lib/fsm.c:1459
+#: lib/fsm.c:1346 lib/fsm.c:1463
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/fsm.c:1484
+#: lib/fsm.c:1488
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
 
-#: lib/fsm.c:1489
+#: lib/fsm.c:1493
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Entfernen von %s fehlgeschlagen: %s"
 
-#: lib/fsm.c:1498
+#: lib/fsm.c:1502
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:1515
+#: lib/fsm.c:1519
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "kann Datei %s nicht öffnen: "
