@@ -12,15 +12,7 @@
  * Signature types stored in rpm lead.
  */
 typedef	enum sigType_e {
-    RPMSIGTYPE_NONE	= 0,	/*!< unused, legacy. */
-    RPMSIGTYPE_PGP262_1024 = 1,	/*!< unused, legacy. */
-/*@-enummemuse@*/
-    RPMSIGTYPE_BAD	= 2,	/*!< Unknown signature type. */
-/*@=enummemuse@*/
-    RPMSIGTYPE_MD5	= 3,	/*!< unused, legacy. */
-    RPMSIGTYPE_MD5_PGP	= 4,	/*!< unused, legacy. */
-    RPMSIGTYPE_HEADERSIG= 5,	/*!< Header style signature */
-    RPMSIGTYPE_DISABLE	= 6	/*!< Disable verification (debugging only) */
+    RPMSIGTYPE_HEADERSIG= 5	/*!< Header style signature */
 } sigType;
 
 /** \ingroup signature

@@ -244,19 +244,10 @@ static int rpmtsStashKeyid(rpmts ts)
     return 0;
 }
 
-/**
- * Perform simple sanity and range checks on header tag(s).
- * @param il		no. of tags in header
- * @param dl		no. of bytes in header data.
- * @param pe		1st element in tag array, big-endian
- * @param info		failing (or last) tag element, host-endian
- * @param negate	negative offset expected?
- * @return		-1 on success, otherwise failing tag element index
- */
-static int headerVerifyInfo(int il, int dl, entryInfo pe, entryInfo info,
-		int negate)
-	/*@modifies info @*/
+int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 {
+    const entryInfo pe = pev;
+    entryInfo info = iv;
     int i;
 
 /*@-boundsread@*/
