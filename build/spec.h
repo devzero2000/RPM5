@@ -134,5 +134,6 @@ char *getSource(Spec spec, int num, int flag);
 char *getFullSource(Spec spec, int num, int flag);
 void freeSources(Spec spec);
 int parseNoSource(Spec spec, char *field, int tag);
+void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy);
 
 #endif /* _SPEC_H_ */

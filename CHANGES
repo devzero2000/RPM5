@@ -1,4 +1,5 @@
 2.5.2 -> 2.5.3:
+	- copy changelog tags to sub-packages just before packaging
 	- added EPOCH handling to supplement serial numbers
 	- add RPMTAG_EPOCH and RPMTAG_CAPABILITY init to 0.
 	- fix infinite recursion on non-ERANGE return from getcwd() during

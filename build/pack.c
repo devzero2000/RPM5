@@ -102,6 +102,13 @@ int packageSources(Spec spec)
 		    spec->passPhrase, &(spec->cookie));
 }
 
+static int copyTags[] = {
+    RPMTAG_CHANGELOGTIME,
+    RPMTAG_CHANGELOGNAME,
+    RPMTAG_CHANGELOGTEXT,
+    0
+};
+
 int packageBinaries(Spec spec)
 {
     int rc;
@@ -120,6 +127,9 @@ int packageBinaries(Spec spec)
 	    return rc;
 	}
 	
+	/* Copy changelog from src rpm */
+	headerCopyTags(spec->packages->header, pkg->header, copyTags);
+
 	if (spec->cookie) {
 	    headerAddEntry(pkg->header, RPMTAG_COOKIE,
 			   RPM_STRING_TYPE, spec->cookie, 1);
