@@ -16,7 +16,7 @@ Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
 # XXX the libio interface is incompatible in glibc-2.2
-Conflicts: glibc >= 2.1.3
+Conflicts: glibc > 2.1.3
 Prereq: gawk fileutils textutils sh-utils mktemp
 BuildRequires: bzip2 >= 0.9.0c-2
 Requires: popt, bzip2 >= 0.9.0c-2
@@ -250,5 +250,8 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Sep 18 2000 Jeff Johnson <jbj@redhat.com>
+- conflicts should permit installation with glibc-2.1.3.
+
 * Thu Sep 14 2000 Jeff Johnson <jbj@redhat.com>
 - start rpm-3.0.7.
