@@ -251,7 +251,7 @@ int ftpOpen(const char * host, const char * name, const char * password,
     if (!password) {
 	if (getuid()) {
 	    struct passwd * pw = getpwuid(getuid());
-	    char *myp = alloca(strlen(pw->pw_name) + sizeof("@") + 1);
+	    char *myp = alloca(strlen(pw->pw_name) + sizeof("@"));
 	    strcpy(myp, pw->pw_name);
 	    strcat(myp, "@");
 	    password = myp;
@@ -261,7 +261,7 @@ int ftpOpen(const char * host, const char * name, const char * password,
     }
 
     if (proxy) {
-	buf = alloca(strlen(name) + strlen(host) + sizeof("@") + 1);
+	buf = alloca(strlen(name) + strlen(host) + sizeof("@"));
 	sprintf(buf, "%s@%s", name, host);
 	name = buf;
 	host = proxy;
