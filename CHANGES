@@ -81,6 +81,7 @@
 	- remove /etc/rpm/macros.db1 configuration file if db3 rebuilt.
 	- remove overly verbose dbiOpen() error messages, no longer needed.
 	- whiteout mozilla loop for 7.1.
+	- immutable headers, once installed by rpm3, need to lose immutablity.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
