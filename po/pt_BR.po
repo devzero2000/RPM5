@@ -3,7 +3,7 @@
 #
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
-msgstr "POT-Creation-Date: 1998-09-28 16:11-0400\n"
+msgstr "POT-Creation-Date: 1998-09-28 16:45-0400\n"
 
 #: ../rpm.c:188
 #, c-format
@@ -324,12 +324,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "use <diretório> como diretório para o banco de dados"
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "use s como formato do cabeçalho (implica -i)"
 
 #: ../rpm.c:311
@@ -340,7 +340,8 @@ msgstr ""
 "no lugar"
 
 #: ../rpm.c:312
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   de nomes de arquivos bem como as seguintes opções:\n"
 
 #: ../rpm.c:313
@@ -385,30 +386,32 @@ msgstr "pesquise pacote (não instalado) <arquivo-pacote>"
 
 #: ../rpm.c:324
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
 #: ../rpm.c:325
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
 #: ../rpm.c:327
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "pesquise pacotes que fornecem a capacidade <i>"
 
 #: ../rpm.c:328
-msgid "        --whatrequires <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatrequires <cap>"
+msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
 #: ../rpm.c:329
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "pesquise pacotes que requerem capacidade <i>"
 
 #: ../rpm.c:330
@@ -471,7 +474,7 @@ msgstr ""
 
 #: ../rpm.c:357
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<estágio> <spec>    "
 
 #: ../rpm.c:358
@@ -658,7 +661,7 @@ msgstr "    -b<estágio> <spec>    "
 
 #: ../rpm.c:455
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<estágio> <spec>    "
 
 #: ../rpm.c:456
@@ -709,8 +712,9 @@ msgid "generate PGP signature"
 msgstr "gere assinatura PGP"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<estágio> <spec>    "
 
 #: ../rpm.c:478
 #, fuzzy
@@ -727,8 +731,9 @@ msgid "build the packages for architecture <arch>"
 msgstr "não verifique a arquitetura do pacote"
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
-msgstr ""
+#, fuzzy
+msgid "      --buildos <os>      "
+msgstr "    -b<estágio> <spec>    "
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -740,7 +745,7 @@ msgstr "não execute nenhum estágio"
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "atribua S segundos ao tempo de checagem (0 o desabilita)"
 
 #: ../rpm.c:488
@@ -757,7 +762,7 @@ msgstr ""
 
 #: ../rpm.c:490
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<estágio> <spec>    "
 
 #: ../rpm.c:491

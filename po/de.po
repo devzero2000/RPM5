@@ -38,7 +38,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1998-09-28 16:11-0400\n"
+"POT-Creation-Date: 1998-09-28 16:45-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -336,12 +336,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "<VERZ> als Datenbankverzeichnis benutzen"
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "S als Kopfzeilen-Format benutzen (impliziert -i)"
 
 #: ../rpm.c:311
@@ -351,7 +351,8 @@ msgstr ""
 "   Installieren, Aktualisieren und Anfragen (mit -p) erlauben es, ftp-URLs"
 
 #: ../rpm.c:312
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr ""
 "   anstelle von Dateinamen zu benutzen. Außerdem die folgenden Optionen:\n"
 
@@ -397,30 +398,32 @@ msgstr "Anfrage nach (nicht installiertem) Paket <PAKET-DATEI>"
 
 #: ../rpm.c:324
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
 #: ../rpm.c:325
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
 #: ../rpm.c:327
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
 #: ../rpm.c:328
-msgid "        --whatrequires <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatrequires <cap>"
+msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
 #: ../rpm.c:329
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
 #: ../rpm.c:330
@@ -481,7 +484,7 @@ msgstr ""
 
 #: ../rpm.c:357
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<STUFE> <SPEC>      "
 
 #: ../rpm.c:358
@@ -671,7 +674,7 @@ msgstr "    -b<STUFE> <SPEC>      "
 
 #: ../rpm.c:455
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<STUFE> <SPEC>      "
 
 #: ../rpm.c:456
@@ -724,8 +727,9 @@ msgid "generate PGP signature"
 msgstr "PGP-Signatur generieren"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<STUFE> <SPEC>      "
 
 #: ../rpm.c:478
 msgid "use <dir> as the build root"
@@ -740,8 +744,9 @@ msgid "build the packages for architecture <arch>"
 msgstr "Erstelle die Pakete für die Architektur <ARCH>"
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
-msgstr ""
+#, fuzzy
+msgid "      --buildos <os>      "
+msgstr "    -b<STUFE> <SPEC>      "
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -753,7 +758,7 @@ msgstr "Keine Stufen ausführen"
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "Die Zeitüberprüfung auf S Sekunden setzen (mit 0 ausschalten)"
 
 #: ../rpm.c:488
@@ -770,7 +775,7 @@ msgstr ""
 
 #: ../rpm.c:490
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<STUFE> <SPEC>      "
 
 #: ../rpm.c:491

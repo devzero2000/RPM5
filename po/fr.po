@@ -1,6 +1,6 @@
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
-msgstr "POT-Creation-Date: 1998-09-28 16:11-0400\n"
+msgstr "POT-Creation-Date: 1998-09-28 16:45-0400\n"
 
 #: ../rpm.c:188
 #, c-format
@@ -283,11 +283,11 @@ msgid "use <dir> as the directory for the database"
 msgstr ""
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr ""
 
 #: ../rpm.c:311
@@ -296,7 +296,7 @@ msgid ""
 msgstr ""
 
 #: ../rpm.c:312
-msgid "   of file names as well as the following options:\n"
+msgid "   of file names as well as the following options:"
 msgstr ""
 
 #: ../rpm.c:313
@@ -345,27 +345,29 @@ msgstr ""
 "        -p <packagefile>+ - interroge le package (non installé) <packagefile>"
 
 #: ../rpm.c:324
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr ""
 
 #: ../rpm.c:325
-msgid "query packages triggered by <package>"
+#, fuzzy
+msgid "query packages triggered by <pkg>"
 msgstr ""
+"        -f <file>+        - interroge le package à qui appartient <file>"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
+msgid "        --whatprovides <cap>"
 msgstr ""
 
 #: ../rpm.c:327
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr ""
 
 #: ../rpm.c:328
-msgid "        --whatrequires <icap>"
+msgid "        --whatrequires <cap>"
 msgstr ""
 
 #: ../rpm.c:329
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr ""
 
 #: ../rpm.c:330
@@ -433,8 +435,9 @@ msgid "show the trigger scripts contained in the package"
 msgstr ""
 
 #: ../rpm.c:357
-msgid "    --pipe <cmd>        "
-msgstr ""
+#, fuzzy
+msgid "    --pipe <cmd>          "
+msgstr "    --checksig <pkg>+  - vérifie la signature PGP"
 
 #: ../rpm.c:358
 msgid "send stdout to <cmd>"
@@ -627,7 +630,7 @@ msgid "    -b<stage> <spec>      "
 msgstr ""
 
 #: ../rpm.c:455
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr ""
 
 #: ../rpm.c:456
@@ -687,7 +690,7 @@ msgid "generate PGP signature"
 msgstr "      --sign            - genère une signature PGP"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
+msgid "      --buildroot <dir>   "
 msgstr ""
 
 #: ../rpm.c:478
@@ -703,8 +706,9 @@ msgid "build the packages for architecture <arch>"
 msgstr ""
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
-msgstr ""
+#, fuzzy
+msgid "      --buildos <os>      "
+msgstr "    --checksig <pkg>+  - vérifie la signature PGP"
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -716,7 +720,7 @@ msgstr ""
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr ""
 "      --time-check <s>  - positionne l'intervalle de vérification à S "
 "secondes (0 le désactive)"
@@ -735,8 +739,9 @@ msgstr ""
 "patches, et les icones."
 
 #: ../rpm.c:490
-msgid "    --rmsource <spec>   "
-msgstr ""
+#, fuzzy
+msgid "    --rmsource <spec>     "
+msgstr "    --checksig <pkg>+  - vérifie la signature PGP"
 
 #: ../rpm.c:491
 msgid "remove sources and spec file"

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-2.5.3\n"
-"POT-Creation-Date: 1998-09-28 16:11-0400\n"
+"POT-Creation-Date: 1998-09-28 16:45-0400\n"
 "PO-Revision-Date: Tue Sep 15 14:17:00 EEST 1998\n"
 "Last-Translator: Serguei Koubouchine <ksi@ksi-linux.com>\n"
 "MIME-Version: 1.0\n"
@@ -276,12 +276,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "использовать <dir> как директорию для базы данных"
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "использовать s как формат хедера (подразумевает -i)"
 
 #: ../rpm.c:311
@@ -291,7 +291,8 @@ msgstr ""
 "   установка, апгрейд и запрос (с -p) допускает использование ftp URL вместо"
 
 #: ../rpm.c:312
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   имен файлов а также следующие опции:\n"
 
 #: ../rpm.c:313
@@ -336,29 +337,32 @@ msgstr "запросить (неустановленный) пакет <packagefile>"
 
 #: ../rpm.c:324
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "запросить пакеты с триггер-скриптами на пакет <package>"
 
 #: ../rpm.c:325
-msgid "query packages triggered by <package>"
+#, fuzzy
+msgid "query packages triggered by <pkg>"
 msgstr "запросить пакеты с триггер-скриптами на пакет <package>"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "запросить пакеты с триггер-скриптами на пакет <package>"
 
 #: ../rpm.c:327
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "найти пакеты, предоставляющие сервис <i>"
 
 #: ../rpm.c:328
-msgid "        --whatrequires <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatrequires <cap>"
+msgstr "запросить пакеты с триггер-скриптами на пакет <package>"
 
 #: ../rpm.c:329
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "найти пакеты, требующие сервиса <i>"
 
 #: ../rpm.c:330
@@ -418,7 +422,7 @@ msgid "show the trigger scripts contained in the package"
 msgstr "показать триггер-скрипты, содержащиеся в пакете"
 
 #: ../rpm.c:357
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr ""
 
 #: ../rpm.c:358
@@ -603,7 +607,7 @@ msgid "    -b<stage> <spec>      "
 msgstr ""
 
 #: ../rpm.c:455
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr ""
 
 #: ../rpm.c:456
@@ -653,7 +657,7 @@ msgid "generate PGP signature"
 msgstr "генерировать PGP-подпись"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
+msgid "      --buildroot <dir>   "
 msgstr ""
 
 #: ../rpm.c:478
@@ -669,7 +673,7 @@ msgid "build the packages for architecture <arch>"
 msgstr "собрать пакеты для архитектуры <arch>"
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
+msgid "      --buildos <os>      "
 msgstr ""
 
 #: ../rpm.c:482
@@ -682,7 +686,7 @@ msgstr "не исполнять никаких этапов"
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "установить проверку времени в S секунд (0 отменяет ее)"
 
 #: ../rpm.c:488
@@ -698,7 +702,7 @@ msgstr ""
 "текстами, патчи и пиктограммы."
 
 #: ../rpm.c:490
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr ""
 
 #: ../rpm.c:491

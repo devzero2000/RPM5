@@ -1,7 +1,7 @@
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-28 16:11-0400\n"
+"POT-Creation-Date: 1998-09-28 16:45-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -287,12 +287,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "koristi <dir> kao direktorijum baze podataka"
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "koristi s kao format zaglavlja (povlaèi -i)"
 
 #: ../rpm.c:311
@@ -302,7 +302,8 @@ msgstr ""
 "   instaliranje, pobolj¹avanja i upit (sa -p) dozvoljavaju kori¹æenje URL-ova"
 
 #: ../rpm.c:312
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   na mestu imena datoteka kao i sledeæe opcije:\n"
 
 #: ../rpm.c:313
@@ -347,30 +348,32 @@ msgstr "upit za (deinstaliran) paket <paketdatoteka>"
 
 #: ../rpm.c:324
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "upit nad paketom koji ima <datoteku>"
 
 #: ../rpm.c:325
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "upit nad paketom koji ima <datoteku>"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: ../rpm.c:327
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "upit za pakete koji omoguæavaju <i> svojstvo"
 
 #: ../rpm.c:328
-msgid "        --whatrequires <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatrequires <cap>"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: ../rpm.c:329
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "upit za pakete koji zahtevaju <i> svojstvo"
 
 #: ../rpm.c:330
@@ -431,7 +434,7 @@ msgstr ""
 
 #: ../rpm.c:357
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<faza> <spec>\t "
 
 #: ../rpm.c:358
@@ -617,7 +620,7 @@ msgstr "    -b<faza> <spec>\t "
 
 #: ../rpm.c:455
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<faza> <spec>\t "
 
 #: ../rpm.c:456
@@ -666,8 +669,9 @@ msgid "generate PGP signature"
 msgstr "napravi PGP potpis"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<faza> <spec>\t "
 
 #: ../rpm.c:478
 msgid "use <dir> as the build root"
@@ -682,8 +686,9 @@ msgid "build the packages for architecture <arch>"
 msgstr "napravi pakete za arhitekturu <arh>"
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
-msgstr ""
+#, fuzzy
+msgid "      --buildos <os>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -695,7 +700,7 @@ msgstr "nemoj izvr¹iti nijednu fazu"
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "postavi vremensku proveru na S sekundi (0 je deaktivira)"
 
 #: ../rpm.c:488
@@ -712,7 +717,7 @@ msgstr ""
 
 #: ../rpm.c:490
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<faza> <spec>\t "
 
 #: ../rpm.c:491

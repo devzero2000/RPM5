@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.4\n"
-"POT-Creation-Date: 1998-09-28 16:11-0400\n"
+"POT-Creation-Date: 1998-09-28 16:45-0400\n"
 "PO-Revision-Date: 1998-09-26 12:46+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -315,12 +315,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "pou¾i» <adresár> ako adresár pre databázu"
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "pou¾i» s ako hlavièkový formát (implikuje -i)"
 
 #: ../rpm.c:311
@@ -329,7 +329,8 @@ msgid ""
 msgstr "   in¹talácia, aktualizácia a otázky (s -p) umo¾òujú pou¾i» ftp URL"
 
 #: ../rpm.c:312
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   namiesto názvov súborov, ako aj nasledujúce voµby:\n"
 
 #: ../rpm.c:313
@@ -374,30 +375,32 @@ msgstr "opýta» sa (nenain¹talovaného) balíku <súbor_balíku>"
 
 #: ../rpm.c:324
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "opýta» sa balíkov spustených balíkom <balík>"
 
 #: ../rpm.c:325
-msgid "query packages triggered by <package>"
+#, fuzzy
+msgid "query packages triggered by <pkg>"
 msgstr "opýta» sa balíkov spustených balíkom <balík>"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "        --requires"
 
 #: ../rpm.c:327
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "opýta» sa balíkov poskytujúcich schopnos» <i>"
 
 #: ../rpm.c:328
 #, fuzzy
-msgid "        --whatrequires <icap>"
+msgid "        --whatrequires <cap>"
 msgstr "        --requires"
 
 #: ../rpm.c:329
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "opýta» sa balíkov vy¾adujúcich schopnos» <i>"
 
 #: ../rpm.c:330
@@ -458,7 +461,7 @@ msgstr "zobrazi» spú¹»acie skripty obsiahnuté v balíku"
 
 #: ../rpm.c:357
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:358
@@ -645,7 +648,7 @@ msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:455
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:456
@@ -694,8 +697,9 @@ msgid "generate PGP signature"
 msgstr "vytvori» PGP podpis"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:478
 msgid "use <dir> as the build root"
@@ -710,8 +714,9 @@ msgid "build the packages for architecture <arch>"
 msgstr "zostavi» balík pre architektúru <arch>"
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
-msgstr ""
+#, fuzzy
+msgid "      --buildos <os>      "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -723,7 +728,7 @@ msgstr "nevykona» ¾iadne etapy"
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "nastavi» kontrolu èasu na S sekúnd (0 pre deaktiváciu)"
 
 #: ../rpm.c:488
@@ -740,7 +745,7 @@ msgstr ""
 
 #: ../rpm.c:490
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:491

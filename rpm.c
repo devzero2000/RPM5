@@ -288,91 +288,91 @@ static void printHelp(void) {
     printBanner();
     puts(_(""));
 
-    puts(_("usage:"));
-    printHelpLine("   --help                 ", 
+    puts(         _("usage:"));
+    printHelpLine(  "   --help                 ", 
 		  _("print this message"));
-    printHelpLine("   --version              ",
+    printHelpLine(  "   --version              ",
 		  _("print the version of rpm being used"));
-    puts(_("   all modes support the following arguments:"));
+    puts(         _("   all modes support the following arguments:"));
     printHelpLine(_("      --rcfile <file>     "),
 		  _("use <file> instead of /etc/rpmrc and $HOME/.rpmrc"));
-    printHelpLine("     -v                   ",
+    printHelpLine(  "     -v                   ",
 		  _("be a little more verbose"));
-    printHelpLine("     -vv                  ",
+    printHelpLine(  "     -vv                  ",
 		  _("be incredibly verbose (for debugging)"));
-    printHelpLine("   -q                     ",
+    printHelpLine(  "   -q                     ",
 		  _("query mode"));
     printHelpLine(_("      --root <dir>        "),
 		  _("use <dir> as the top level directory"));
     printHelpLine(_("      --dbpath <dir>      "),
 		  _("use <dir> as the directory for the database"));
-    printHelpLine(_("      --queryformat <qfmt>   "),
-		  _("use qfmt as the header format (implies -i)"));
-    puts(_("   install, upgrade and query (with -p) allow ftp URL's to be used in place"));
-    puts(_("   of file names as well as the following options:\n"));
+    printHelpLine(_("      --queryformat <qfmt>"),
+		  _("use <qfmt> as the header format (implies -i)"));
+    puts(         _("   install, upgrade and query (with -p) allow ftp URL's to be used in place"));
+    puts(         _("   of file names as well as the following options:"));
     printHelpLine(_("      --ftpproxy <host>   "),
 		  _("hostname or IP of ftp proxy"));
     printHelpLine(_("      --ftpport <port>    "),
 		  _("port number of ftp server (or proxy)"));
-    puts(        _("      Package specification options:"));
+    puts(         _("      Package specification options:"));
     printHelpLine(  "        -a                ",
 		  _("query all packages"));
     printHelpLine(_("        -f <file>+        "),
 		  _("query package owning <file>"));
     printHelpLine(_("        -p <packagefile>+ "),
 		  _("query (uninstalled) package <packagefile>"));
-    printHelpLine(_("        --triggeredby <package>"),
-		  _("query packages triggered by <package>"));
-    printHelpLine(_("        --whatprovides <icap>"),
-		  _("query packages which provide <icap> capability"));
-    printHelpLine(_("        --whatrequires <icap>"),
-		  _("query packages which require <icap> capability"));
-    puts(_("      Information selection options:"));
-    printHelpLine("        -i                ",
+    printHelpLine(_("        --triggeredby <pkg>"),
+		  _("query packages triggered by <pkg>"));
+    printHelpLine(_("        --whatprovides <cap>"),
+		  _("query packages which provide <cap> capability"));
+    printHelpLine(_("        --whatrequires <cap>"),
+		  _("query packages which require <cap> capability"));
+    puts(         _("      Information selection options:"));
+    printHelpLine(  "        -i                ",
 		  _("display package information"));
-    printHelpLine("        --changelog       ",
+    printHelpLine  ("        --changelog       ",
 		  _("display the package's change log"));
-    printHelpLine("        -l                ",
+    printHelpLine(  "        -l                ",
 		  _("display package file list"));
-    printHelpLine("        -s                ",
+    printHelpLine(  "        -s                ",
 		  _("show file states (implies -l)"));
-    printHelpLine("        -d                ",
+    printHelpLine(  "        -d                ",
 		  _("list only documentation files (implies -l)"));
-    printHelpLine("        -c                ",
+    printHelpLine(  "        -c                ",
 		  _("list only configuration files (implies -l)"));
-    printHelpLine("        --dump            ",
+    printHelpLine(  "        --dump            ",
 		  _("show all verifiable information for each file (must be used with -l, -c, or -d)"));
-    printHelpLine("        --provides        ",
+    printHelpLine(  "        --provides        ",
 		  _("list capabilities package provides"));
-    puts(       _("        --requires"));
-    printHelpLine("        -R                ",
+    puts(         _("        --requires"));
+    printHelpLine(  "        -R                ",
 		  _("list package dependencies"));
-    printHelpLine("        --scripts         ",
+    printHelpLine(  "        --scripts         ",
 		  _("print the various [un]install scripts"));
-    printHelpLine("        --triggers        ",
+    printHelpLine(  "        --triggers        ",
 		  _("show the trigger scripts contained in the package"));
-    puts(         "");
-    puts(         "    -V");
-    puts(         "    -y");
-    printHelpLine(_("    --pipe <cmd>        "),
+    puts("");
+    puts(           "    -V");
+    puts(           "    -y");
+    printHelpLine(_("    --pipe <cmd>          "),
 		  _("send stdout to <cmd>"));
-    printHelpLine("    --verify              ",
+    printHelpLine(  "    --verify              ",
 		  _("verify a package installation using the same same package specification options as -q"));
     printHelpLine(_("      --dbpath <dir>      "),
 		  _("use <dir> as the directory for the database"));
     printHelpLine(_("      --root <dir>        "),
 		  _("use <dir> as the top level directory"));
-    printHelpLine("      --nodeps            ",
+    printHelpLine(  "      --nodeps            ",
 		  _("do not verify package dependencies"));
-    printHelpLine("      --nomd5             ",
+    printHelpLine(  "      --nomd5             ",
 		  _("do not verify file md5 checksums"));
-    printHelpLine("      --nofiles           ",
+    printHelpLine(  "      --nofiles           ",
 		  _("do not verify file attributes"));
     puts("");
-    printHelpLine("    --setperms            ",
+    printHelpLine(  "    --setperms            ",
 		  _("set the file permissions to those in the package database"
 		    " using the same package specification options as -q"));
-    printHelpLine("    --setugids            ",
+    printHelpLine(  "    --setugids            ",
 		  _("set the file owner and group to those in the package "
 		    "database using the same package specification options as "
 		    "-q"));
@@ -382,112 +382,112 @@ static void printHelp(void) {
 		  _("install package"));
     printHelpLine(_("      --relocate <oldpath>=<newpath>"),
 		  _("relocate files from <oldpath> to <newpath>"));
-    printHelpLine("      --badreloc",
+    printHelpLine(  "      --badreloc",
 		  _("relocate files even though the package doesn't allow it"));
     printHelpLine(_("      --prefix <dir>      "),
 		  _("relocate the package to <dir>, if relocatable"));
     printHelpLine(_("      --dbpath <dir>      "),
 		  _("use <dir> as the directory for the database"));
-    printHelpLine("      --excludedocs       ",
+    printHelpLine(  "      --excludedocs       ",
 		  _("do not install documentation"));
-    printHelpLine("      --force             ",
+    printHelpLine(  "      --force             ",
 		  _("short hand for --replacepkgs --replacefiles"));
-    puts(         "      -h");
-    printHelpLine("      --hash              ",
+    puts(           "      -h");
+    printHelpLine(  "      --hash              ",
 		  _("print hash marks as package installs (good with -v)"));
-    printHelpLine("      --allfiles          ",
+    printHelpLine(  "      --allfiles          ",
 		  _("install all files, even configurations which might "
 		    "otherwise be skipped"));
-    printHelpLine("      --ignorearch        ",
+    printHelpLine(  "      --ignorearch        ",
 		  _("don't verify package architecture"));
-    printHelpLine("      --ignoreos          ",
+    printHelpLine(  "      --ignoreos          ",
 		  _("don't verify package operating system"));
-    printHelpLine("      --includedocs       ",
+    printHelpLine(  "      --includedocs       ",
 		  _("install documentation"));
-    printHelpLine("      --justdb            ",
+    printHelpLine(  "      --justdb            ",
 		  _("update the database, but do not modify the filesystem"));
-    printHelpLine("      --nodeps            ",
+    printHelpLine(  "      --nodeps            ",
 		  _("do not verify package dependencies"));
-    printHelpLine("      --noorder           ",
+    printHelpLine(  "      --noorder           ",
 		  _("do not reorder package installation to satisfy dependencies"));
-    printHelpLine("      --noscripts         ",
+    printHelpLine(  "      --noscripts         ",
 		  _("don't execute any installation scripts"));
-    printHelpLine("      --notriggers        ",
+    printHelpLine(  "      --notriggers        ",
 		  _("don't execute any scripts triggered by this package"));
-    printHelpLine("      --percent           ",
+    printHelpLine(  "      --percent           ",
 		  _("print percentages as package installs"));
-    printHelpLine("      --replacefiles      ",
+    printHelpLine(  "      --replacefiles      ",
 		  _("install even if the package replaces installed files"));
-    printHelpLine("      --replacepkgs       ",
+    printHelpLine(  "      --replacepkgs       ",
 		  _("reinstall if the package is already present"));
     printHelpLine(_("      --root <dir>        "),
 		  _("use <dir> as the top level directory"));
-    printHelpLine("      --test              ",
+    printHelpLine(  "      --test              ",
 		  _("don't install, but tell if it would work or not"));
     puts("");
-    puts(        _("    --upgrade <packagefile>"));
+    puts(         _("    --upgrade <packagefile>"));
     printHelpLine(_("    -U <packagefile>      "),
 		  _("upgrade package (same options as --install, plus)"));
-    printHelpLine("      --oldpackage        ",
+    printHelpLine(  "      --oldpackage        ",
 		  _("upgrade to an old version of the package (--force on upgrades does this automatically)"));
     puts("");
-    puts(        _("    --erase <package>"));
-    printHelpLine("    -e <package>          ",
+    puts(         _("    --erase <package>"));
+    printHelpLine(  "    -e <package>          ",
 		  _("erase (uninstall) package"));
-    printHelpLine("      --allmatches        ",
+    printHelpLine(  "      --allmatches        ",
 		  _("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"));
     printHelpLine(_("      --dbpath <dir>      "),
 		  _("use <dir> as the directory for the database"));
-    printHelpLine("      --justdb            ",
+    printHelpLine(  "      --justdb            ",
 		  _("update the database, but do not modify the filesystem"));
-    printHelpLine("      --nodeps            ",
+    printHelpLine(  "      --nodeps            ",
 		  _("do not verify package dependencies"));
-    printHelpLine("      --noorder           ",
+    printHelpLine(  "      --noorder           ",
 		  _("do not reorder package installation to satisfy dependencies"));
-    printHelpLine("      --noscripts         ",
+    printHelpLine(  "      --noscripts         ",
 		  _("do not execute any package specific scripts"));
-    printHelpLine("      --notriggers        ",
+    printHelpLine(  "      --notriggers        ",
 		  _("don't execute any scripts triggered by this package"));
     printHelpLine(_("      --root <dir>        "),
 		  _("use <dir> as the top level directory"));
     puts("");
-    puts(        _("    -b<stage> <spec>      "));
-    printHelpLine(_("    -t<stage> <tarball>      "),
+    puts(         _("    -b<stage> <spec>      "));
+    printHelpLine(_("    -t<stage> <tarball>   "),
 		  _("build package, where <stage> is one of:"));
-    printHelpLine("          p               ",
+    printHelpLine(  "          p               ",
 		  _("prep (unpack sources and apply patches)"));
-    printHelpLine("          l               ",
+    printHelpLine(  "          l               ",
 		  _("list check (do some cursory checks on %files)"));
-    printHelpLine("          c               ",
+    printHelpLine(  "          c               ",
 		  _("compile (prep and compile)"));
-    printHelpLine("          i               ",
+    printHelpLine(  "          i               ",
 		  _("install (prep, compile, install)"));
-    printHelpLine("          b               ",
+    printHelpLine(  "          b               ",
 		  _("binary package (prep, compile, install, package)"));
-    printHelpLine("          a               ",
+    printHelpLine(  "          a               ",
 		  _("bin/src package (prep, compile, install, package)"));
-    printHelpLine("      --short-circuit     ",
+    printHelpLine(  "      --short-circuit     ",
 		  _("skip straight to specified stage (only for c,i)"));
-    printHelpLine("      --clean             ",
+    printHelpLine(  "      --clean             ",
 		  _("remove build tree when done"));
-    printHelpLine("      --rmsource          ",
+    printHelpLine(  "      --rmsource          ",
 		  _("remove sources and spec file when done"));
-    printHelpLine("      --sign              ",
+    printHelpLine(  "      --sign              ",
 		  _("generate PGP signature"));
-    printHelpLine(_("      --buildroot <dir>     "),
+    printHelpLine(_("      --buildroot <dir>   "),
 		  _("use <dir> as the build root"));
     printHelpLine(_("      --buildarch <arch>  "),
 		  _("build the packages for architecture <arch>"));
-    printHelpLine(_("      --buildos <os>  "),
+    printHelpLine(_("      --buildos <os>      "),
 		  _("build the packages for ositecture <os>"));
-    printHelpLine("      --test              ",
+    printHelpLine(  "      --test              ",
 		  _("do not execute any stages"));
-    printHelpLine("      --timecheck <secs>     ",
-		  _("set the time check to <secs> seconds (0 disables it)"));
+    printHelpLine(  "      --timecheck <secs>  ",
+		  _("set the time check to <secs> seconds (0 disables)"));
     puts("");
     printHelpLine(_("    --rebuild <src_pkg>   "),
 		  _("install source package, build binary package and remove spec file, sources, patches, and icons."));
-    printHelpLine(_("    --rmsource <spec>   "),
+    printHelpLine(_("    --rmsource <spec>     "),
 		  _("remove sources and spec file"));
     printHelpLine(_("    --recompile <src_pkg> "),
 		  _("like --rebuild, but don't build any package"));
@@ -495,22 +495,22 @@ static void printHelp(void) {
 		  _("sign a package (discard current signature)"));
     printHelpLine(_("    --addsign <pkg>+      "),
 		  _("add a signature to a package"));
-    puts(         "    -K");
+    puts(           "    -K");
     printHelpLine(_("    --checksig <pkg>+     "),
 		  _("verify package signature"));
-    printHelpLine("      --nopgp             ",
+    printHelpLine(  "      --nopgp             ",
 		  _("skip any PGP signatures"));
-    printHelpLine("      --nomd5             ",
+    printHelpLine(  "      --nomd5             ",
 		  _("skip any MD5 signatures"));
-    printHelpLine("    --querytags           ",
+    printHelpLine(  "    --querytags           ",
 		  _("list the tags that can be used in a query format"));
-    printHelpLine("    --initdb              ",
+    printHelpLine(  "    --initdb              ",
 		  _("make sure a valid database exists"));
-    printHelpLine("    --rebuilddb           ",
+    printHelpLine(  "    --rebuilddb           ",
 		  _("rebuild database from existing database"));
     printHelpLine(_("      --dbpath <dir>      "),
 		  _("use <dir> as the directory for the database"));
-    printHelpLine("      --root <dir>        ",
+    printHelpLine(  "      --root <dir>        ",
 		  _("use <dir> as the top level directory"));
 }
 

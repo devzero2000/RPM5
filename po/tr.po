@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-09-28 16:11-0400\n"
+"POT-Creation-Date: 1998-09-28 16:45-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -324,12 +324,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "Veritabaný dizini olarak <dizin> kullanýlýr"
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "'header format' olarak s kullanýlýr (-i'yi gerektirir)"
 
 #: ../rpm.c:311
@@ -339,7 +339,8 @@ msgstr ""
 "   yükleme, güncelleme ve sorgulama (-p ile) iþlemlerimde dosya isimleri "
 
 #: ../rpm.c:312
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   yerine FTP adreslerini aþaðýdaki seçeneklerle kabul eder:\n"
 
 #: ../rpm.c:313
@@ -384,31 +385,32 @@ msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
 
 #: ../rpm.c:324
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
 #: ../rpm.c:325
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "        --requires"
 
 #: ../rpm.c:327
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "<i> yeteneði olan paketleri sorgulama"
 
 #: ../rpm.c:328
 #, fuzzy
-msgid "        --whatrequires <icap>"
+msgid "        --whatrequires <cap>"
 msgstr "        --requires"
 
 #: ../rpm.c:329
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
 
 #: ../rpm.c:330
@@ -470,7 +472,7 @@ msgstr ""
 
 #: ../rpm.c:357
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:358
@@ -653,7 +655,7 @@ msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:455
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:456
@@ -706,8 +708,9 @@ msgid "generate PGP signature"
 msgstr "PGP-imzasý yaratýr"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:478
 msgid "use <dir> as the build root"
@@ -722,8 +725,9 @@ msgid "build the packages for architecture <arch>"
 msgstr "paketleri <arch> mimarisi için oluþturur"
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
-msgstr ""
+#, fuzzy
+msgid "      --buildos <os>      "
+msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -735,7 +739,7 @@ msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "zaman kontrolünü S saniyeye ayarlar (0 ile tümüyle kaldýrýr)"
 
 #: ../rpm.c:488
@@ -752,7 +756,7 @@ msgstr ""
 
 #: ../rpm.c:490
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:491

@@ -1,7 +1,7 @@
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-28 16:11-0400\n"
+"POT-Creation-Date: 1998-09-28 16:45-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -316,12 +316,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "pou¾ít <adresáø> jako adresáø pro databázi"
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "pou¾ít s jako hlavièkový formát (implikuje -i)"
 
 #: ../rpm.c:311
@@ -331,7 +331,8 @@ msgstr ""
 "   instalovat, aktualizovat a dotazovat (s -p) k umo¾nìní pou¾ití prvkù URL"
 
 #: ../rpm.c:312
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   ftp místo názvù souborù i následujících mo¾ností:\n"
 
 #: ../rpm.c:313
@@ -376,31 +377,32 @@ msgstr "dotazovat (nenainstalovaný) balíèek <souborbalíèku>"
 
 #: ../rpm.c:324
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "dotazovat balíèek vlastnící <soubor>"
 
 #: ../rpm.c:325
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "dotazovat balíèek vlastnící <soubor>"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "        --requires"
 
 #: ../rpm.c:327
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "dotazovat balíèky poskytující schopnost <i>"
 
 #: ../rpm.c:328
 #, fuzzy
-msgid "        --whatrequires <icap>"
+msgid "        --whatrequires <cap>"
 msgstr "        --requires"
 
 #: ../rpm.c:329
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "dotazovat balíèky vy¾adující schopnost <i>"
 
 #: ../rpm.c:330
@@ -461,7 +463,7 @@ msgstr ""
 
 #: ../rpm.c:357
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:358
@@ -647,7 +649,7 @@ msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:455
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:456
@@ -696,8 +698,9 @@ msgid "generate PGP signature"
 msgstr "generovat podpis PGP"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:478
 msgid "use <dir> as the build root"
@@ -712,8 +715,9 @@ msgid "build the packages for architecture <arch>"
 msgstr "sestavit balíèky pro architekturu <arch>"
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
-msgstr ""
+#, fuzzy
+msgid "      --buildos <os>      "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -725,7 +729,7 @@ msgstr "nespou¹tìt ¾ádné etapy"
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "nastavit èasovou kontrolu na S sekund (0 ji deaktivuje)"
 
 #: ../rpm.c:488
@@ -742,7 +746,7 @@ msgstr ""
 
 #: ../rpm.c:490
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:491

@@ -1,7 +1,7 @@
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-28 16:11-0400\n"
+"POT-Creation-Date: 1998-09-28 16:45-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -319,12 +319,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "kaytä <hakem> tietokannan hakemistona"
 
 #: ../rpm.c:309
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:310
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "käytä s headerin formaatina (josta seuraa -i)"
 
 #: ../rpm.c:311
@@ -336,7 +336,7 @@ msgstr ""
 
 #: ../rpm.c:312
 #, fuzzy
-msgid "   of file names as well as the following options:\n"
+msgid "   of file names as well as the following options:"
 msgstr "   tiedostoniminä, kuten myös seuraavia parametrejä:\n"
 
 #: ../rpm.c:313
@@ -381,30 +381,32 @@ msgstr "kysele(asentamatonta) pakettia <pakettitiedosto>"
 
 #: ../rpm.c:324
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: ../rpm.c:325
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: ../rpm.c:326
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: ../rpm.c:327
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
 
 #: ../rpm.c:328
-msgid "        --whatrequires <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatrequires <cap>"
+msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: ../rpm.c:329
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
 
 #: ../rpm.c:330
@@ -465,7 +467,7 @@ msgstr ""
 
 #: ../rpm.c:357
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<vaihe> <määrittely> "
 
 #: ../rpm.c:358
@@ -651,7 +653,7 @@ msgstr "    -b<vaihe> <määrittely> "
 
 #: ../rpm.c:455
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<vaihe> <määrittely> "
 
 #: ../rpm.c:456
@@ -700,8 +702,9 @@ msgid "generate PGP signature"
 msgstr "generoi PGP-allekirjoitus"
 
 #: ../rpm.c:477
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<vaihe> <määrittely> "
 
 #: ../rpm.c:478
 msgid "use <dir> as the build root"
@@ -716,8 +719,9 @@ msgid "build the packages for architecture <arch>"
 msgstr "käännä paketit arkkitehtuurille <arkk>"
 
 #: ../rpm.c:481
-msgid "      --buildos <os>  "
-msgstr ""
+#, fuzzy
+msgid "      --buildos <os>      "
+msgstr "    -b<vaihe> <määrittely> "
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -729,7 +733,7 @@ msgstr "älä suorita mitään vaiheita"
 
 #: ../rpm.c:486
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "aseta aikatarkistus S sekunniksi (0 ohittaa)"
 
 #: ../rpm.c:488
@@ -746,7 +750,7 @@ msgstr ""
 
 #: ../rpm.c:490
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<vaihe> <määrittely> "
 
 #: ../rpm.c:491
