@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.0.2\n"
+"Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-21 19:14-0500\n"
-"PO-Revision-Date: 2001-01-23 23:01+01:00\n"
+"PO-Revision-Date: 2001-01-23 23:45+01:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1211,31 +1211,31 @@ msgstr "<pakke>"
 
 #: rpmqv.c:261 rpmqv.c:627
 msgid "skip files with leading component <path> "
-msgstr ""
+msgstr "hopp over filer med innledende komponent <sti> "
 
 #: rpmqv.c:267
 msgid "upgrade package if already installed"
-msgstr "pakke %s kan ikke relokeres\n"
+msgstr "oppgradér pakke hvis den allerede er installert"
 
 #: rpmqv.c:268 rpmqv.c:286 rpmqv.c:325
 msgid "<packagefile>+"
-msgstr "        -p <pakkefil>+ "
+msgstr "<pakkefil>+"
 
 #: rpmqv.c:297 rpmqv.c:601
 msgid "do not execute scripts (if any)"
-msgstr "ikke kjør noen steg"
+msgstr "ikke kjør noen skript (hvis noen)"
 
 #: rpmqv.c:300 rpmqv.c:649
 msgid "don't execute any scriptlets triggered by this package"
-msgstr ""
+msgstr "Ikke kjør skriptlets som utløses av denne pakken"
 
 #: rpmqv.c:313
 msgid "<oldpath>=<newpath>"
-msgstr "      --relocate <gmlsti>=<nysti>"
+msgstr "<gmlsti>=<nysti>"
 
 #: rpmqv.c:324
 msgid "upgrade package"
-msgstr "    --upgrade <pakkefil>"
+msgstr "oppgradér pakke"
 
 #: rpmqv.c:347
 msgid "Query options (with -q or --query):"
@@ -1274,7 +1274,7 @@ msgstr ""
 #: rpmqv.c:418
 #, c-format
 msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <katalog>]"
+msgstr "       %s {--rebuilddb} [--rcfile <fil:...>] [--dbpath <katalog>]\n"
 
 #: rpmqv.c:422
 #, c-format
@@ -1286,20 +1286,20 @@ msgstr ""
 msgid ""
 "                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                        [--rcfile <fil>] [--ignorearch] [--dbpath <katalog>]"
+"                  [--rcfile <fil:...>] [--ignorearch] [--dbpath <katalog>]"
 
 #: rpmqv.c:434
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file:...>]"
-msgstr ""
-"                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
+msgstr "                  [--excludedocs] [--includedocs] [--rcfile <fil:...>]"
 
 #: rpmqv.c:442
 #, c-format
 msgid ""
 "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:...>]\n"
 msgstr ""
-"       rpm {--erase -e} [--root <katalog>] [--noscripts] [--rcfile <fil>]"
+"       %s {--erase -e} [--root <katalog>] [--noscripts] [--rcfile "
+"<fil:...>]\n"
 
 #: rpmqv.c:449
 msgid ""
@@ -1312,7 +1312,7 @@ msgstr ""
 msgid ""
 "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
 msgstr ""
-"       rpm {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <fil>]"
+"       %s {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <fil:...>]\n"
 
 #: rpmqv.c:460
 #, c-format
@@ -1328,13 +1328,13 @@ msgstr ""
 #, c-format
 msgid ""
 "       %s {--resign} [--rcfile <file:...>] package1 package2 ... packageN\n"
-msgstr "       rpm {--resign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN"
+msgstr "       %s {--resign} [--rcfile <fil:...>] pakke1 pakke2 ... pakkeN\n"
 
 #: rpmqv.c:466
 #, c-format
 msgid ""
 "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-msgstr "       rpm {--addsign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN"
+msgstr "       %s {--addsign} [--rcfile <fil:...>] pakke1 pakke2 ... pakkeN"
 
 #: rpmqv.c:467
 #, c-format
@@ -1342,7 +1342,8 @@ msgid ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
 "<file:...>]\n"
 msgstr ""
-"       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]"
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
+"<fil:...>]\n"
 
 #: rpmqv.c:511
 msgid "  All modes support the following options:"
@@ -1354,7 +1355,7 @@ msgstr ""
 
 #: rpmqv.c:514
 msgid "   --eval '<expr>+'       "
-msgstr "    --eval '<navn>+'      "
+msgstr "   --eval '<uttr>+'       "
 
 #: rpmqv.c:515
 msgid "print the expansion of macro <expr> to stdout"
@@ -1645,17 +1646,17 @@ msgstr ""
 #: build/files.c:278 build/files.c:363 build/files.c:538
 #, c-format
 msgid "Missing '(' in %s %s\n"
-msgstr "mangler andre ':' ved %s:%d"
+msgstr "Mangler '(' i %s %s\n"
 
 #: build/files.c:289 build/files.c:483 build/files.c:549
 #, c-format
 msgid "Missing ')' in %s(%s\n"
-msgstr "mangler andre ':' ved %s:%d"
+msgstr "Mangler ')' i %s(%s\n"
 
 #: build/files.c:327 build/files.c:508
 #, c-format
 msgid "Invalid %s token: %s\n"
-msgstr "klarte ikke å åpne %s: %s\n"
+msgstr "Ugyldig %s-tegn: %s\n"
 
 #: build/files.c:379
 #, c-format
@@ -1697,7 +1698,7 @@ msgstr ""
 #: build/files.c:757
 #, c-format
 msgid "Two files on one line: %s\n"
-msgstr "klarte ikke å åpne %s: %s\n"
+msgstr "To filer på én linje: %s\n"
 
 #: build/files.c:771
 #, c-format
@@ -1711,7 +1712,7 @@ msgstr ""
 #: build/files.c:949
 #, c-format
 msgid "File listed twice: %s\n"
-msgstr "Fil %s: %s"
+msgstr "Fil listet to ganger: %s\n"
 
 #: build/files.c:1060
 #, c-format
@@ -1726,7 +1727,7 @@ msgstr ""
 #: build/files.c:1165
 #, c-format
 msgid "File not found: %s\n"
-msgstr "klarte ikke å åpne %s: %s\n"
+msgstr "Fil ikke funnet: %s\n"
 
 #: build/files.c:1208 build/files.c:1732 build/parsePrep.c:42
 #, c-format
@@ -1760,13 +1761,13 @@ msgstr "Installerer %s\n"
 #: build/files.c:1720
 #, c-format
 msgid "Bad file: %s: %s\n"
-msgstr "Fil %s: %s"
+msgstr "Ugyldig fil %s: %s\n"
 
 #. XXX this error message is probably not seen.
 #: build/files.c:1789
 #, c-format
 msgid "Couldn't exec %s: %s\n"
-msgstr "kunne ikke opprette %s: %s\n"
+msgstr "Kunne ikke kjøre %s: %s\n"
 
 #: build/files.c:1794
 #, c-format
@@ -1776,7 +1777,7 @@ msgstr "klarte ikke å åpne %s: %s\n"
 #: build/files.c:1876
 #, c-format
 msgid "%s failed\n"
-msgstr ""
+msgstr "%s feilet\n"
 
 #: build/files.c:1880
 #, c-format
@@ -1832,7 +1833,7 @@ msgstr ""
 #: build/pack.c:81
 #, c-format
 msgid "cpio_copy read failed: %s\n"
-msgstr "lesing feilet: %s (%d)"
+msgstr "cpio_copy: feil under lesing: %s\n"
 
 #: build/pack.c:165
 #, c-format
@@ -2078,12 +2079,12 @@ msgstr ""
 #: build/parsePreamble.c:541
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
-msgstr "relokasjoner må begynne med en /"
+msgstr "linje %d: Docdir må begynne med '/': %s\n"
 
 #: build/parsePreamble.c:553
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
-msgstr "url-port må være et tall\n"
+msgstr "linje %d: Epoch/serienummer må være et tall: %s\n"
 
 #: build/parsePreamble.c:593 build/parsePreamble.c:604
 #, c-format
@@ -2098,17 +2099,17 @@ msgstr ""
 #: build/parsePreamble.c:639
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
-msgstr "intern feil (rpm feil?): "
+msgstr "Intern feil: Ugyldig tag %d\n"
 
 #: build/parsePreamble.c:783
 #, c-format
 msgid "Bad package specification: %s\n"
-msgstr "      Alternativer for pakkespesifikasjon:"
+msgstr "Ugyldig pakkespesifikasjon: %s\n"
 
 #: build/parsePreamble.c:789
 #, c-format
 msgid "Package already exists: %s\n"
-msgstr "pakke %s kan ikke relokeres\n"
+msgstr "Pakke eksisterer allerede: %s\n"
 
 #: build/parsePreamble.c:815
 #, c-format
@@ -2223,7 +2224,7 @@ msgstr ""
 #: build/parseSpec.c:136
 #, c-format
 msgid "line %d: %s\n"
-msgstr "Fil %s: %s"
+msgstr "linje %d: %s\n"
 
 #. XXX Fstrerror
 #: build/parseSpec.c:185
@@ -2254,7 +2255,7 @@ msgstr ""
 
 #: build/parseSpec.c:493
 msgid "No buildable architectures\n"
-msgstr "ikke verifiser pakkearkitektur"
+msgstr "Ingen byggbare arkitekturer\n"
 
 #: build/parseSpec.c:548
 msgid "Package has no %%description: %s\n"
@@ -2731,7 +2732,7 @@ msgstr "kan ikke åpne %s: %s\n"
 #: lib/install.c:728 lib/install.c:759
 #, c-format
 msgid "cannot write to %s\n"
-msgstr "kan ikke åpne %s: %s\n"
+msgstr "kan ikke skrive til %s\n"
 
 #: lib/install.c:732
 #, c-format
@@ -2750,7 +2751,7 @@ msgstr ""
 
 #: lib/install.c:796 lib/install.c:825
 msgid "source package contains no .spec file\n"
-msgstr "spør pakke som eier <fil>"
+msgstr "kildepakke inneholder ikke en .spec-fil\n"
 
 #: lib/install.c:843
 #, c-format
@@ -2841,7 +2842,7 @@ msgstr ""
 
 #: lib/poptBT.c:131
 msgid "build source and binary packages from <specfile>"
-msgstr "fant %d kilde- og %d binærpakker\n"
+msgstr "bygg kilde- og binærpakker fra <specfil>"
 
 #: lib/poptBT.c:134
 msgid "build binary package only from <specfile>"
@@ -2876,7 +2877,7 @@ msgstr ""
 
 #: lib/poptBT.c:153
 msgid "build source and binary packages from <tarball>"
-msgstr "fant %d kilde- og %d binærpakker\n"
+msgstr "Bygg kilde- og binærpakker fra <tarball>"
 
 #: lib/poptBT.c:156
 msgid "build binary package only from <tarball>"
@@ -3024,7 +3025,7 @@ msgstr ""
 #: lib/problems.c:99
 #, c-format
 msgid "package %s is for a different architecture"
-msgstr "pakke %s kan ikke relokeres\n"
+msgstr "pakke %s er for en annen arkitektur"
 
 #: lib/problems.c:103
 #, c-format
@@ -3034,12 +3035,12 @@ msgstr ""
 #: lib/problems.c:107
 #, c-format
 msgid "package %s is already installed"
-msgstr "pakke %s kan ikke relokeres\n"
+msgstr "pakke %s er allerede installert"
 
 #: lib/problems.c:111
 #, c-format
 msgid "path %s in package %s is not relocateable"
-msgstr "pakke %s kan ikke relokeres\n"
+msgstr "sti %s i pakke %s kan ikke relokeres"
 
 #: lib/problems.c:116
 #, c-format
@@ -3289,12 +3290,12 @@ msgstr ""
 #: lib/rpmdb.c:271
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
-msgstr "kan ikke åpne %s indeks"
+msgstr "kan ikke åpne %s-indeks ved bruk av db%d - %s (%d)\n"
 
 #: lib/rpmdb.c:291
 #, c-format
 msgid "cannot open %s index\n"
-msgstr "kan ikke åpne %s indeks"
+msgstr "kan ikke åpne %s indeks\n"
 
 #: lib/rpmdb.c:376
 #, c-format
@@ -3435,7 +3436,7 @@ msgstr ""
 
 #: lib/rpminstall.c:145
 msgid "Preparing packages for installation..."
-msgstr "filer kan kun omplasseres under pakkeinstallasjon"
+msgstr "Forbereder pakker for installasjon..."
 
 #: lib/rpminstall.c:206
 msgid "counting packages to install\n"
@@ -3547,27 +3548,27 @@ msgstr "Installerer %s\n"
 #: lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)\n"
-msgstr "lesing feilet: %s (%d)"
+msgstr "lesing feilet: %s (%d)\n"
 
 #: lib/rpmrc.c:150
 #, c-format
 msgid "missing second ':' at %s:%d\n"
-msgstr "mangler andre ':' ved %s:%d"
+msgstr "mangler andre ':' ved %s:%d\n"
 
 #: lib/rpmrc.c:153
 #, c-format
 msgid "missing architecture name at %s:%d\n"
-msgstr "manglende navn på arkitektur ved %s:%d"
+msgstr "manglende navn på arkitektur ved %s:%d\n"
 
 #: lib/rpmrc.c:305
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
-msgstr "Ukomplett datalinje ved %s:%d"
+msgstr "Ukomplett datalinje ved %s:%d\n"
 
 #: lib/rpmrc.c:310
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
-msgstr "Ukomplett datalinje ved %s:%d"
+msgstr "For mange argumenter i datalinje ved %s:%d\n"
 
 #: lib/rpmrc.c:317
 #, c-format
@@ -3577,7 +3578,7 @@ msgstr ""
 #: lib/rpmrc.c:352
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
-msgstr "Ukomplett datalinje ved %s:%d"
+msgstr "Ukomplett standardlinje ved %s:%d\n"
 
 #: lib/rpmrc.c:357
 #, c-format
@@ -3587,7 +3588,7 @@ msgstr ""
 #: lib/rpmrc.c:547
 #, c-format
 msgid "Cannot expand %s\n"
-msgstr "kan ikke åpne %s: %s\n"
+msgstr "Kan ikke utvide %s\n"
 
 #: lib/rpmrc.c:552
 #, c-format
@@ -3608,12 +3609,12 @@ msgstr "kunne ikke opprette %s: %s\n"
 #: lib/rpmrc.c:651
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
-msgstr "mangler andre ':' ved %s:%d"
+msgstr "mangler ':' (fant 0x%02X) ved %s:%d\n"
 
 #: lib/rpmrc.c:668 lib/rpmrc.c:742
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
-msgstr "manglende navn på arkitektur ved %s:%d"
+msgstr "manglende argumentfor %s ved %s:%d\n"
 
 #: lib/rpmrc.c:685 lib/rpmrc.c:707
 #, c-format
@@ -3628,7 +3629,7 @@ msgstr "kan ikke åpne %s: %s\n"
 #: lib/rpmrc.c:734
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
-msgstr "manglende navn på arkitektur ved %s:%d"
+msgstr "manglende arkitektur for %s ved %s:%d\n"
 
 #: lib/rpmrc.c:801
 #, c-format
@@ -3819,12 +3820,12 @@ msgstr ""
 #: lib/uninstall.c:78
 #, c-format
 msgid "rmdir of %s failed: %s\n"
-msgstr "lesing feilet: %s (%d)"
+msgstr "rmdir for %s feilet: %s\n"
 
 #: lib/uninstall.c:88
 #, c-format
 msgid "removal of %s failed: %s\n"
-msgstr "lesing feilet: %s (%d)"
+msgstr "fjerning av %s feilet: %s\n"
 
 #: lib/uninstall.c:151
 #, c-format
@@ -3864,7 +3865,7 @@ msgstr ""
 #: lib/verify.c:321
 #, c-format
 msgid "missing    %s"
-msgstr "mangler andre ':' ved %s:%d"
+msgstr "mangler    %s"
 
 #: lib/verify.c:402
 #, c-format
@@ -3997,18 +3998,18 @@ msgstr ""
 
 #: rpmio/macro.c:1322
 msgid "Target buffer overflow\n"
-msgstr "Overflyt i målbuffer"
+msgstr "Overflyt i målbuffer\n"
 
 #. XXX Fstrerror
 #: rpmio/macro.c:1502 rpmio/macro.c:1508
 #, c-format
 msgid "File %s: %s\n"
-msgstr "Fil %s: %s"
+msgstr "Fil %s: %s\n"
 
 #: rpmio/macro.c:1511
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
-msgstr "Fil %s er mindre enn %d bytes"
+msgstr "Fil %s er mindre enn %u bytes\n"
 
 #: rpmio/rpmlog.c:24
 msgid "(no error)"
