@@ -1,5 +1,3 @@
-
-
 /* 
    Simple progam for pullng all the referenced java classes out of a
    class file.  Java files are supposed to be platform independent, so

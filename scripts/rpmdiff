@@ -1,5 +1,4 @@
-
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 # rpmdiff - a program for comparing two rpm files for differences.
 # Written by Ken Estes, Mail.com.
