@@ -4,7 +4,6 @@
 #include <rpmurl.h>
 
 #include "build.h"
-#include "install.h"
 #include "signature.h"
 #include "debug.h"
 
@@ -51,9 +50,12 @@ enum modes {
 /* the flags for the various options */
 static int allFiles;
 static int allMatches;
+static int applyOnly;
 static int badReloc;
+static int dirStash;
 static int excldocs;
 static int force;
+extern int _fsm_debug;
 extern int _ftp_debug;
 static int showHash;
 static int help;
@@ -69,14 +71,32 @@ extern int noLibio;
 static int noMd5;
 static int noOrder;
 static int noPgp;
+
 static int noScripts;
+static int noPre;
+static int noPost;
+static int noPreun;
+static int noPostun;
+
 static int noTriggers;
+static int noTPrein;
+static int noTIn;
+static int noTUn;
+static int noTPostun;
+
 static int noUsageMsg;
 static int oldPackage;
 static char * pipeOutput;
 static char * prefix;
 static int quiet;
 static char * rcfile;
+
+static int rePackage;
+static int pkgCommit;
+static int pkgUndo;
+static int tsCommit;
+static int tsUndo;
+
 static int replaceFiles;
 static int replacePackages;
 static char * rootdir;
@@ -103,9 +123,11 @@ static struct poptOption optionsTable[] = {
  { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,	NULL, NULL},
  { "allfiles", '\0', 0, &allFiles, 0,		NULL, NULL},
  { "allmatches", '\0', 0, &allMatches, 0,	NULL, NULL},
+ { "apply", '\0', 0, &applyOnly, 0,		NULL, NULL},
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
  { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,NULL, NULL},
+ { "dirstash", '\0', POPT_ARG_VAL, &dirStash, 1,	NULL, NULL},
  { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
  { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO, NULL, NULL},
@@ -113,6 +135,7 @@ static struct poptOption optionsTable[] = {
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
  { "freshen", 'F', 0, 0, 'F',			NULL, NULL},
+ { "fsmdebug", '\0', POPT_ARG_VAL, &_fsm_debug, -1,		NULL, NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL, &_ftp_debug, -1,		NULL, NULL},
  { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
  { "help", '\0', 0, &help, 0,			NULL, NULL},
@@ -135,11 +158,24 @@ static struct poptOption optionsTable[] = {
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
  { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
  { "nopgp", '\0', 0, &noPgp, 0,			NULL, NULL},
+
  { "noscripts", '\0', 0, &noScripts, 0,		NULL, NULL},
+ { "nopre", '\0', 0, &noPre, 0,			NULL, NULL},
+ { "nopost", '\0', 0, &noPost, 0,		NULL, NULL},
+ { "nopreun", '\0', 0, &noPreun, 0,		NULL, NULL},
+ { "nopostun", '\0', 0, &noPostun, 0,		NULL, NULL},
+
  { "notriggers", '\0', 0, &noTriggers, 0,	NULL, NULL},
+ { "notriggerprein", '\0', 0, &noTPrein, 0,	NULL, NULL},
+ { "notriggerin", '\0', 0, &noTIn, 0,		NULL, NULL},
+ { "notriggerun", '\0', 0, &noTUn, 0,		NULL, NULL},
+ { "notriggerpostun", '\0', 0, &noTPostun, 0,	NULL, NULL},
+
  { "oldpackage", '\0', 0, &oldPackage, 0,	NULL, NULL},
  { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
+ { "pkgcommit", '\0', POPT_ARG_VAL, &pkgCommit, 1,	NULL, NULL},
+ { "pkgundo", '\0', POPT_ARG_VAL, &pkgUndo, 1,	NULL, NULL},
  { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
 #ifndef	DYING
@@ -149,6 +185,7 @@ static struct poptOption optionsTable[] = {
 #endif
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
  { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,	NULL, NULL},
+ { "repackage", '\0', POPT_ARG_VAL, &rePackage, 1,	NULL, NULL},
  { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},
  { "replacepkgs", '\0', 0, &replacePackages, 0,	NULL, NULL},
  { "resign", '\0', 0, 0, GETOPT_RESIGN,		NULL, NULL},
@@ -157,6 +194,8 @@ static struct poptOption optionsTable[] = {
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
  { "test", '\0', 0, &test, 0,			NULL, NULL},
+ { "commit", '\0', POPT_ARG_VAL, &tsCommit, 1,	NULL, NULL},
+ { "undo", '\0', POPT_ARG_VAL, &tsUndo, 1,	NULL, NULL},
  { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL, &_url_debug, -1,		NULL, NULL},
  { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
@@ -538,7 +577,9 @@ int main(int argc, const char ** argv)
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t *qva = &rpmQVArgs;
     int arg;
-    int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
+    rpmtransFlags transFlags = RPMTRANS_FLAG_NONE;
+    rpmInstallInterfaceFlags installInterfaceFlags = INSTALL_NONE;
+    rpmEraseInterfaceFlags eraseInterfaceFlags = UNINSTALL_NONE;
     int verifyFlags;
     int checksigFlags = 0;
     rpmResignFlags addSign = RESIGN_NEW_SIGNATURE;
@@ -566,6 +607,7 @@ int main(int argc, const char ** argv)
     /* set the defaults for the various command line options */
     allFiles = 0;
     allMatches = 0;
+    applyOnly = 0;
     badReloc = 0;
     excldocs = 0;
     force = 0;
@@ -588,8 +630,19 @@ int main(int argc, const char ** argv)
     noMd5 = 0;
     noOrder = 0;
     noPgp = 0;
+
     noScripts = 0;
+    noPre = 0;
+    noPost = 0;
+    noPreun = 0;
+    noPostun = 0;
+
     noTriggers = 0;
+    noTPrein = 0;
+    noTIn = 0;
+    noTUn = 0;
+    noTPostun = 0;
+
     noUsageMsg = 0;
     oldPackage = 0;
     showPercents = 0;
@@ -907,13 +960,20 @@ int main(int argc, const char ** argv)
 		   "installation and erasure"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
-	bigMode != MODE_VERIFY && noScripts)
-	argerror(_("--noscripts may only be specified during package "
+	bigMode != MODE_VERIFY &&
+	(noScripts | noPre | noPost | noPreun | noPostun |
+	 noTriggers | noTPrein | noTIn | noTUn | noTPostun))
+	argerror(_("script disabling options may only be specified during package "
 		   "installation, erasure, and verification"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noTriggers)
-	argerror(_("--notriggers may only be specified during package "
-		   "installation, erasure, and verification"));
+    if (bigMode != MODE_INSTALL && applyOnly)
+	argerror(_("--apply may only be specified during package "
+		   "installation"));
+
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
+	(noTriggers | noTPrein | noTIn | noTUn | noTPostun))
+	argerror(_("trigger disabling options may only be specified during package "
+		   "installation and erasure"));
 
     if (noDeps & (bigMode & ~MODES_FOR_NODEPS))
 	argerror(_("--nodeps may only be specified during package "
@@ -1077,15 +1137,32 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for uninstall"));
 
-	if (noScripts) uninstallFlags |= RPMTRANS_FLAG_NOSCRIPTS;
-	if (noTriggers) uninstallFlags |= RPMTRANS_FLAG_NOTRIGGERS;
-	if (test) uninstallFlags |= RPMTRANS_FLAG_TEST;
-	if (justdb) uninstallFlags |= RPMTRANS_FLAG_JUSTDB;
-	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
-	if (allMatches) interfaceFlags |= UNINSTALL_ALLMATCHES;
+	if (noScripts) transFlags |= (_noTransScripts | _noTransTriggers);
+	if (noPre) transFlags |= RPMTRANS_FLAG_NOPRE;
+	if (noPost) transFlags |= RPMTRANS_FLAG_NOPOST;
+	if (noPreun) transFlags |= RPMTRANS_FLAG_NOPREUN;
+	if (noPostun) transFlags |= RPMTRANS_FLAG_NOPOSTUN;
+
+	if (noTriggers) transFlags |= _noTransTriggers;
+	if (noTPrein) transFlags |= RPMTRANS_FLAG_NOTRIGGERPREIN;
+	if (noTIn) transFlags |= RPMTRANS_FLAG_NOTRIGGERIN;
+	if (noTUn) transFlags |= RPMTRANS_FLAG_NOTRIGGERUN;
+	if (noTPostun) transFlags |= RPMTRANS_FLAG_NOTRIGGERPOSTUN;
+
+	if (test) transFlags |= RPMTRANS_FLAG_TEST;
+	if (justdb) transFlags |= RPMTRANS_FLAG_JUSTDB;
+	if (dirStash) transFlags |= RPMTRANS_FLAG_DIRSTASH;
+	if (rePackage) transFlags |= RPMTRANS_FLAG_REPACKAGE;
+	if (pkgCommit) transFlags |= RPMTRANS_FLAG_PKGCOMMIT;
+	if (pkgUndo) transFlags |= RPMTRANS_FLAG_PKGUNDO;
+	if (tsCommit) transFlags |= RPMTRANS_FLAG_COMMIT;
+	if (tsUndo) transFlags |= RPMTRANS_FLAG_UNDO;
+
+	if (noDeps) eraseInterfaceFlags |= UNINSTALL_NODEPS;
+	if (allMatches) eraseInterfaceFlags |= UNINSTALL_ALLMATCHES;
 
 	ec = rpmErase(rootdir, (const char **)poptGetArgs(optCon), 
-			 uninstallFlags, interfaceFlags);
+			 transFlags, eraseInterfaceFlags);
 	break;
 
       case MODE_INSTALL:
@@ -1104,26 +1181,47 @@ int main(int argc, const char ** argv)
 	if (ignoreOs) probFilter |= RPMPROB_FILTER_IGNOREOS;
 	if (ignoreSize) probFilter |= RPMPROB_FILTER_DISKSPACE;
 
-	if (test) installFlags |= RPMTRANS_FLAG_TEST;
+	if (applyOnly)
+	    transFlags = (_noTransScripts | _noTransTriggers |
+		RPMTRANS_FLAG_APPLYONLY | RPMTRANS_FLAG_PKGCOMMIT);
+
+	if (test) transFlags |= RPMTRANS_FLAG_TEST;
 	/* RPMTRANS_FLAG_BUILD_PROBS */
-	if (noScripts) installFlags |= RPMTRANS_FLAG_NOSCRIPTS;
-	if (justdb) installFlags |= RPMTRANS_FLAG_JUSTDB;
-	if (noTriggers) installFlags |= RPMTRANS_FLAG_NOTRIGGERS;
+
+	if (noScripts) transFlags |= (_noTransScripts | _noTransTriggers);
+	if (noPre) transFlags |= RPMTRANS_FLAG_NOPRE;
+	if (noPost) transFlags |= RPMTRANS_FLAG_NOPOST;
+	if (noPreun) transFlags |= RPMTRANS_FLAG_NOPREUN;
+	if (noPostun) transFlags |= RPMTRANS_FLAG_NOPOSTUN;
+
+	if (noTriggers) transFlags |= RPMTRANS_FLAG_NOTRIGGERS;
+	if (noTPrein) transFlags |= RPMTRANS_FLAG_NOTRIGGERPREIN;
+	if (noTIn) transFlags |= RPMTRANS_FLAG_NOTRIGGERIN;
+	if (noTUn) transFlags |= RPMTRANS_FLAG_NOTRIGGERUN;
+	if (noTPostun) transFlags |= RPMTRANS_FLAG_NOTRIGGERPOSTUN;
+
+	if (justdb) transFlags |= RPMTRANS_FLAG_JUSTDB;
 	if (!incldocs) {
 	    if (excldocs)
-		installFlags |= RPMTRANS_FLAG_NODOCS;
+		transFlags |= RPMTRANS_FLAG_NODOCS;
 	    else if (rpmExpandNumeric("%{_excludedocs}"))
-		installFlags |= RPMTRANS_FLAG_NODOCS;
+		transFlags |= RPMTRANS_FLAG_NODOCS;
 	}
-	if (allFiles) installFlags |= RPMTRANS_FLAG_ALLFILES;
+	if (allFiles) transFlags |= RPMTRANS_FLAG_ALLFILES;
+	if (dirStash) transFlags |= RPMTRANS_FLAG_DIRSTASH;
+	if (rePackage) transFlags |= RPMTRANS_FLAG_REPACKAGE;
+	if (pkgCommit) transFlags |= RPMTRANS_FLAG_PKGCOMMIT;
+	if (pkgUndo) transFlags |= RPMTRANS_FLAG_PKGUNDO;
+	if (tsCommit) transFlags |= RPMTRANS_FLAG_COMMIT;
+	if (tsUndo) transFlags |= RPMTRANS_FLAG_UNDO;
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
-	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
-	if (showHash) interfaceFlags |= INSTALL_HASH;
-	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
-	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
-	if (upgrade) interfaceFlags |= INSTALL_UPGRADE;
-	if (freshen) interfaceFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN);
+	if (showPercents) installInterfaceFlags |= INSTALL_PERCENT;
+	if (showHash) installInterfaceFlags |= INSTALL_HASH;
+	if (noDeps) installInterfaceFlags |= INSTALL_NODEPS;
+	if (noOrder) installInterfaceFlags |= INSTALL_NOORDER;
+	if (upgrade) installInterfaceFlags |= INSTALL_UPGRADE;
+	if (freshen) installInterfaceFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN);
 
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for install"));
@@ -1142,7 +1240,8 @@ int main(int argc, const char ** argv)
 	}
 
 	ec += rpmInstall(rootdir, (const char **)poptGetArgs(optCon), 
-			installFlags, interfaceFlags, probFilter, relocations);
+			transFlags, installInterfaceFlags, probFilter,
+			relocations);
 	break;
 
       case MODE_QUERY:

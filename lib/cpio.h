@@ -18,8 +18,7 @@
 #include <rpmio_internal.h>
 
 /** \ingroup payload
- * Note:  CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
- * be positive numbers or this setting the high bit stuff is a bad idea.
+ * @note CPIO_CHECK_ERRNO bit is set only if errno is valid.
  */
 #define CPIOERR_CHECK_ERRNO	0x00008000
 
@@ -35,114 +34,90 @@ enum cpioErrorReturns {
 	CPIOERR_UTIME_FAILED	= (8    | CPIOERR_CHECK_ERRNO),
 	CPIOERR_UNLINK_FAILED	= (9    | CPIOERR_CHECK_ERRNO),
 
+	CPIOERR_RENAME_FAILED	= (10   | CPIOERR_CHECK_ERRNO),
 	CPIOERR_SYMLINK_FAILED	= (11   | CPIOERR_CHECK_ERRNO),
 	CPIOERR_STAT_FAILED	= (12   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_MKDIR_FAILED	= (13   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_MKNOD_FAILED	= (14   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_MKFIFO_FAILED	= (15   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_LINK_FAILED	= (16   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_READLINK_FAILED	= (17   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_READ_FAILED	= (18   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_COPY_FAILED	= (19   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_HDR_SIZE	= (20			),
-	CPIOERR_UNKNOWN_FILETYPE = (21			),
-	CPIOERR_MISSING_HARDLINK = (22			),
-	CPIOERR_MD5SUM_MISMATCH	= (23			),
-	CPIOERR_INTERNAL	= (24			)
+	CPIOERR_LSTAT_FAILED	= (13   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_MKDIR_FAILED	= (14   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_RMDIR_FAILED	= (15   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_MKNOD_FAILED	= (16   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_MKFIFO_FAILED	= (17   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_LINK_FAILED	= (18   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_READLINK_FAILED	= (19   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_READ_FAILED	= (20   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_COPY_FAILED	= (21   | CPIOERR_CHECK_ERRNO),
+	CPIOERR_HDR_SIZE	= (22			),
+	CPIOERR_HDR_TRAILER	= (23			),
+	CPIOERR_UNKNOWN_FILETYPE= (24			),
+	CPIOERR_MISSING_HARDLINK= (25			),
+	CPIOERR_MD5SUM_MISMATCH	= (26			),
+	CPIOERR_INTERNAL	= (27			)
 };
 
 /** \ingroup payload
  */
-enum cpioMapFlags {
-    CPIO_MAP_PATH		= (1 << 0),
-    CPIO_MAP_MODE		= (1 << 1),
-    CPIO_MAP_UID		= (1 << 2),
-    CPIO_MAP_GID		= (1 << 3),
-    CPIO_FOLLOW_SYMLINKS	= (1 << 4),  /* only for building */
-    CPIO_MULTILIB		= (1 << 31) /* internal, only for building */
-};
+typedef enum cpioMapFlags_e {
+    CPIO_MAP_PATH	= (1 << 0),
+    CPIO_MAP_MODE	= (1 << 1),
+    CPIO_MAP_UID	= (1 << 2),
+    CPIO_MAP_GID	= (1 << 3),
+    CPIO_FOLLOW_SYMLINKS= (1 << 4), /* only for building. */
+    CPIO_MAP_ABSOLUTE	= (1 << 5),
+    CPIO_MAP_ADDDOT	= (1 << 6),
+    CPIO_MULTILIB	= (1 << 31) /* internal, only for building. */
+} cpioMapFlags;
+
+#define CPIO_NEWC_MAGIC	"070701"
+#define CPIO_CRC_MAGIC	"070702"
+#define CPIO_TRAILER	"TRAILER!!!"
 
 /** \ingroup payload
- * Defines a single file to be included in a cpio payload.
+ * Cpio archive header information.
  */
-struct cpioFileMapping {
-/*@dependent@*/ const char * archivePath; /*!< Path to store in cpio archive. */
-/*@dependent@*/ const char * fsPath;      /*!< Location of payload file. */
-/*@dependent@*/ const char * md5sum;      /*!< File MD5 sum (NULL disables). */
-    mode_t finalMode;		/*!< Mode of payload file (from header). */
-    uid_t finalUid;		/*!< Uid of payload file (from header). */
-    gid_t finalGid;		/*!< Gid of payload file (from header). */
-    int mapFlags;
+struct cpioCrcPhysicalHeader {
+    char magic[6];
+    char inode[8];
+    char mode[8];
+    char uid[8];
+    char gid[8];
+    char nlink[8];
+    char mtime[8];
+    char filesize[8];
+    char devMajor[8];
+    char devMinor[8];
+    char rdevMajor[8];
+    char rdevMinor[8];
+    char namesize[8];
+    char checksum[8];			/* ignored !! */
 };
 
-/** \ingroup payload
- * The first argument passed in a cpio progress callback.
- *
- * Note: When building the cpio payload, only "file" is filled in.
- */
-struct cpioCallbackInfo {
-/*@dependent@*/ const char * file;	/*!< File name being installed. */
-    long fileSize;			/*!< Total file size. */
-    long fileComplete;			/*!< Amount of file unpacked. */
-    long bytesProcessed;		/*!< No. bytes in archive read. */
-};
+#define	PHYS_HDR_SIZE	110		/*!< Don't depend on sizeof(struct) */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** \ingroup payload
- */
-typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
-
-/** \ingroup payload
- * The RPM internal equivalent of the command line "cpio -i".
- *
- * If no mappings are passed, this installs everything! If one is passed
- * it should be sorted according to cpioFileMapCmp() and only files included
- * in the map are installed. Files are installed relative to the current
- * directory unless a mapping is given which specifies an absolute
- * directory. The mode mapping is only used for the permission bits, not
- * for the file type. The owner/group mappings are ignored for the nonroot
- * user.
- *
- * @param cfd		file handle
- * @param mappings	archive info for extraction
- * @param numMappings	number of archive elements
- * @param cb		progress callback
- * @param cbData	progress callback data
- * @retval failedFile	file name (malloc'ed) that caused failure (if any)
+/**
+ * Write cpio trailer.
+ * @retval fsm		file path and stat info
  * @return		0 on success
  */
-int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
-		       int numMappings, cpioCallback cb, void * cbData,
-		       /*@out@*/const char ** failedFile)
-	/*@modifies fileSystem, cfd, *failedFile @*/;
+int cpioTrailerWrite(FSM_t fsm);
 
-/** \ingroup payload
- * The RPM internal equivalent of the command line "cpio -o".
- *
- * @param cfd		file handle
- * @param mappings	archive info for building
- * @param numMappings	number of archive elements
- * @param cb		progress callback
- * @param cbData	progress callback data
- * @retval failedFile	file name (malloc'ed) that caused failure (if any)
+/**
+ * Write cpio header.
+ * @retval fsm		file path and stat info
  * @return		0 on success
  */
-int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
-		     int numMappings, cpioCallback cb, void * cbData,
-		     unsigned int * archiveSize, /*@out@*/const char ** failedFile)
-	/*@modifies fileSystem, cfd, *archiveSize, *failedFile @*/;
+int cpioHeaderWrite(FSM_t fsm, struct stat * st);
 
-/** \ingroup payload
- * Compare two cpio file map entries (qsort/bsearch).
- * This is designed to be qsort/bsearch compatible.
- * @param a		1st map
- * @param b		2nd map
- * @return		result of comparison
+/**
+ * Read cpio header.
+ * @retval fsm		file path and stat info
+ * @return		0 on success
  */
-int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
+int cpioHeaderRead(FSM_t fsm, struct stat * st)
+	/*@modifies fsm, *st @*/;
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.

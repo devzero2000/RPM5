@@ -1715,10 +1715,10 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     hdrObject * h;
     Header header;
     Header sigs;
-    int rc;
     FD_t fd;
     int rawFd;
     int isSource = 0;
+    rpmRC rc;
 
     if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
     fd = fdDup(rawFd);
@@ -1727,7 +1727,8 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     Fclose(fd);
 
     switch (rc) {
-      case 0:
+    case RPMRC_BADSIZE:
+    case RPMRC_OK:
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
 	h->h = header;
 	h->sigs = sigs;
@@ -1738,12 +1739,14 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
 	    isSource = 1;
 	break;
 
-      case 1:
+    case RPMRC_BADMAGIC:
 	Py_INCREF(Py_None);
 	h = (hdrObject *) Py_None;
 	break;
 
-      default:
+    case RPMRC_FAIL:
+    case RPMRC_SHORTREAD:
+    default:
 	PyErr_SetString(pyrpmError, "error reading package");
 	return NULL;
     }
@@ -1933,10 +1936,9 @@ static PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args) {
 }
 
 /** \ingroup python
+ * This assumes the order of list matches the order of the new headers, and
+ * throws an exception if that isn't true.
  */
-
-/* this assumes the order of list matches the order of the new headers, and
-   throws an exception if that isn't true */
 static int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag) {
     Header newH;
     HeaderIterator iter;
@@ -2289,8 +2291,8 @@ static PyMethodDef rpmModuleMethods[] = {
     { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS, NULL },
     { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
     { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS, NULL },
-    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS, NULL },
+    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },
     { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS, NULL },
     { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS, NULL },
     { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },

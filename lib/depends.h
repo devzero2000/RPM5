@@ -22,7 +22,7 @@ struct tsortInfo {
 /*@kept@*/ struct availablePackage * tsi_pkg;
     int		tsi_reqx;
     int		tsi_qcnt;
-};
+} ;
 
 /** \ingroup rpmdep
  * Info about a single package to be installed.
@@ -102,7 +102,7 @@ struct availableList {
     int alloced;			/*!< No. of pkgs allocated for list. */
     int numDirs;			/*!< No. of directories. */
 /*@owned@*/ struct dirInfo * dirs;	/*!< Set of directories. */
-};
+} ;
 
 /** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.
@@ -119,7 +119,7 @@ struct transactionElement {
 	    int dependsOnIndex;
 	} removed;
     } u;
-};
+} ;
 
 /** \ingroup rpmdep
  * The set of packages to be installed/removed atomically.
@@ -137,7 +137,7 @@ struct rpmTransactionSet_s {
 /*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;		/*!< No. removed rpmdb instances. */
     int allocedRemovedPackages;		/*!< Size of removed packages array. */
-    struct availableList addedPackages;/*!< Set of packages being installed. */
+    struct availableList addedPackages;	/*!< Set of packages being installed. */
     struct availableList availablePackages;
 				/*!< Universe of possible packages. */
 /*@only@*/ struct transactionElement * order;
@@ -146,14 +146,13 @@ struct rpmTransactionSet_s {
     int orderAlloced;		/*!< No. of allocated transaction elements. */
 /*@shared@*/ TFI_t flList;	/*!< Transaction element(s) file info. */
     int flEntries;		/*!< No. of transaction elements. */
-
     int chrootDone;		/*!< Has chroot(2) been been done? */
 /*@only@*/ const char * rootDir;/*!< Path to top of install tree. */
 /*@only@*/ const char * currDir;/*!< Current working directory. */
 /*@null@*/ FD_t scriptFd;	/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
     int id;			/*!< Transaction id. */
-};
+} ;
 
 /** \ingroup rpmdep
  * Problems encountered while checking dependencies.
@@ -162,13 +161,12 @@ struct problemsSet {
     struct rpmDependencyConflict * problems;	/*!< Problems encountered. */
     int num;			/*!< No. of problems found. */
     int alloced;		/*!< No. of problems allocated. */
-};
+} ;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* XXX lib/uninstall.c */
 /** \ingroup rpmdep
  * Compare package name-version-release from header with dependency, looking
  * for overlap.

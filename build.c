@@ -1,12 +1,17 @@
+/** \ingroup rpmcli
+ * Parse spec file and build package.
+ */
+
 #include "system.h"
 
 #include <rpmbuild.h>
 #include <rpmurl.h>
 
 #include "build.h"
-#include "install.h"
 #include "debug.h"
 
+/**
+ */
 static int checkSpec(Header h)
 {
     char *rootdir = NULL;
@@ -52,6 +57,8 @@ static int checkSpec(Header h)
  * angielsku...
  */
 /* XXX this is still a dumb test but at least it's i18n aware */
+/**
+ */
 static int isSpecFile(const char *specfile)
 {
     char buf[256];
@@ -87,6 +94,8 @@ static int isSpecFile(const char *specfile)
     return 1;
 }
 
+/**
+ */
 static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	const char *passPhrase, char *cookie)
 {
@@ -116,6 +125,8 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
+	/* XXX Using mkstemp is difficult here. */
+	/* XXX FWIW, default %{_specdir} is root.root 0755 */
 	{   char tfn[64];
 	    strcpy(tfn, "rpm-spec.XXXXXX");
 	    tmpSpecFile = rpmGetPath("%{_specdir}/", mktemp(tfn), NULL);

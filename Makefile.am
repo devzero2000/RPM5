@@ -18,15 +18,14 @@ INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/rpmio \
 LIBS =
 
 myLDFLAGS = # -L$(top_builddir)/build/.libs -L$(top_builddir)/lib/.libs \
-	-L$(top_builddir)/rpmio/.libs -L$(top_builddir)/popt/.libs \
-	@LIBMISC@
+	-L$(top_builddir)/rpmio/.libs -L$(top_builddir)/popt/.libs
 
 # XXX libtool can/should generate dependent libs.
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
 # XXX top_builddir ldpaths are wrong building in tree
 myLDADD = $(top_builddir)/build/librpmbuild.la $(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la \
-	@INTLLIBS@
+	@INTLLIBS@ @LIBMISC@
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm

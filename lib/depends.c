@@ -325,13 +325,13 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	p->filesCount = 0;
 	p->baseNames = NULL;
     } else {
-        hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
-        hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+	hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
+	hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
 	hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
-        dirMapping = alloca(sizeof(*dirMapping) * numDirs);
+	dirMapping = alloca(sizeof(*dirMapping) * numDirs);
 
 	/* allocated enough space for all the directories we could possible
 	   need to add */
@@ -598,7 +598,7 @@ int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
 
 exit:
     rpmMessage(RPMMESS_DEBUG, _("  %s    A %s\tB %s\n"),
-	(result ? "YES" : "NO "), aDepend, bDepend);
+	(result ? _("YES") : _("NO ")), aDepend, bDepend);
     aDepend = _free(aDepend);
     bDepend = _free(bDepend);
     return result;
@@ -1068,8 +1068,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	    xx = dbiGet(dbi, dbcursor, (void **)&keyDepend, &keylen, &datap, &datalen, 0);
 	    if (xx == 0 && datap && datalen == 4) {
 		memcpy(&rc, datap, datalen);
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s %-3s (cached)\n"),
-			keyType, keyDepend, (rc ? "NO" : "YES"));
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s %-s (cached)\n"),
+			keyType, keyDepend, (rc ? _("NO ") : _("YES")));
 		xx = dbiCclose(dbi, NULL, 0);
 		return rc;
 	    }
@@ -1102,7 +1102,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
      * Check those dependencies now.
      */
-     if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
+    if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
 	if (rpmCheckRpmlibProvides(keyName, keyEVR, keyFlags)) {
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib provides)\n"),
 			keyType, keyDepend+2);
@@ -1190,7 +1190,7 @@ exit:
 		_cacheDependsRC = 0;
 #if 0	/* XXX NOISY */
 	    else
-		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %s) added to Depends cache.\n"), keyType, keyDepend, (rc ? "NO" : "YES"));
+		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %s) added to Depends cache.\n"), keyType, keyDepend, (rc ? _("NO ") : _("YES")));
 #endif
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	}
@@ -1289,7 +1289,7 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 	requires = hfd(requires, rnt);
     }
 
-    if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **) &conflicts, &conflictsCount))
+    if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **)&conflicts, &conflictsCount))
     {
 	conflictsCount = 0;
     } else {

@@ -494,6 +494,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
     {	int ac = 0;
 	const char ** av = NULL;
 	const char * fileURL = NULL;
+	rpmRC rpmrc;
 	int i;
 
 	rc = rpmGlob(arg, &ac, &av);
@@ -517,15 +518,15 @@ restart:
 		break;
 	    }
 
-	    retcode = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	    rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 	    Fclose(fd);
 
-	    if (retcode == 2) {
+	    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADMAGIC)) {
 		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
 		retcode = 1;
 		break;
 	    }
-	    if (retcode == 0 && h == NULL) {
+	    if (rpmrc == RPMRC_OK && h == NULL) {
 		rpmError(RPMERR_QUERY,
 			_("old format source packages cannot be queried\n"));
 		retcode = 1;
@@ -533,7 +534,7 @@ restart:
 	    }
 
 	    /* Query a package file. */
-	    if (retcode == 0) {
+	    if (rpmrc == RPMRC_OK) {
 		retcode = showPackage(qva, rpmdb, h);
 		headerFree(h);
 		continue;

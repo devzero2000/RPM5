@@ -153,8 +153,8 @@ if [ -f /var/lib/rpm/Packages -a -f /var/lib/rpm/packages.rpm ]; then
 #
 #You have both
 #	/var/lib/rpm/packages.rpm	db1 format installed package headers
-+#	/var/lib/rpm/Packages		db3 format installed package headers
-+#Please remove (or at least rename) one of those files, and re-install.
+#	/var/lib/rpm/Packages		db3 format installed package headers
+#Please remove (or at least rename) one of those files, and re-install.
 #"
     exit 1
 fi
@@ -174,7 +174,6 @@ else
     rm -f /etc/rpm/macros.db1
     /bin/rpm --initdb
 fi
-
 
 %ifos linux
 %postun -p /sbin/ldconfig

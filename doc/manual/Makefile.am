@@ -3,12 +3,15 @@
 EXTRA_DIST	= \
 	builddependencies \
 	buildroot \
+	conditionalbuilds \
 	dependencies \
 	format \
+	hregions \
 	macros \
 	multiplebuilds \
 	queryformat \
-	spec \
 	relocatable \
 	signatures \
-	triggers
+	spec \
+	triggers \
+	tsort

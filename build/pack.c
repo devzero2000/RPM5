@@ -16,10 +16,10 @@
 
 extern int _noDirTokens;
 
-/*@access StringBuf @*/        /* compared with NULL */
-/*@access TFI_t @*/    /* compared with NULL */
-/*@access Header @*/   /* compared with NULL */
-/*@access FD_t @*/     /* compared with NULL */
+/*@access StringBuf @*/	/* compared with NULL */
+/*@access TFI_t @*/	/* compared with NULL */
+/*@access Header @*/	/* compared with NULL */
+/*@access FD_t @*/	/* compared with NULL */
 
 /**
  */
@@ -39,30 +39,39 @@ static inline int genSourceRpmName(Spec spec)
 }
 
 /**
+ * @todo Create transaction set *much* earlier.
  */
-static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmodeMacro)
+static int cpio_doio(FD_t fdo, Header h, CSA_t * csa, const char * fmodeMacro)
 {
+    const char * rootDir = "/";
+    rpmdb rpmdb = NULL;
+    rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
+    TFI_t fi = csa->cpioList;
+    const char *fmode = rpmExpand(fmodeMacro, NULL);
+    const char *failedFile = NULL;
     FD_t cfd;
     int rc;
-    const char *failedFile = NULL;
-    const char *fmode = rpmExpand(fmodeMacro, NULL);
 
     if (!(fmode && fmode[0] == 'w'))
 	fmode = xstrdup("w9.gzdio");
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
-    rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
-			  &csa->cpioArchiveSize, &failedFile);
+
+    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
+		&csa->cpioArchiveSize, &failedFile);
+    Fclose(cfd);
+    (void) fsmTeardown(fi->fsm);
+
     if (rc) {
 	rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s\n"),
 		failedFile, cpioStrerror(rc));
       rc = 1;
     }
 
-    Fclose(cfd);
     if (failedFile)
 	free((void *)failedFile);
     free((void *)fmode);
+    rpmtransFree(ts);
 
     return rc;
 }
@@ -232,7 +241,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
 {
     FD_t fdi;
     Spec spec;
-    int rc;
+    rpmRC rc;
 
     if (fileName != NULL) {
 	fdi = Fopen(fileName, "r.ufdio");
@@ -267,12 +276,15 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
    /* Read the rpm lead and header */
     rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
     switch (rc) {
-    case 1:
+    case RPMRC_BADMAGIC:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
 		fileName);
 	return RPMERR_BADMAGIC;
-    case 0:
+    case RPMRC_OK:
 	break;
+    case RPMRC_FAIL:
+    case RPMRC_BADSIZE:
+    case RPMRC_SHORTREAD:
     default:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"),
 		fileName);
@@ -313,6 +325,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 		&csa->cpioArchiveSize, 1);
     }
 
+#ifdef	DYING
     /* Choose how filenames are represented. */
     if (_noDirTokens)
 	expandFilelist(h);
@@ -322,6 +335,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	if (type == RPMLEAD_BINARY)
 	    rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
+#endif
 
     /* Binary packages now have explicit Provides: name = version-release. */
     if (type == RPMLEAD_BINARY)
@@ -380,7 +394,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rc = RPMERR_NOSPACE;
     } else { /* Write the archive and get the size */
 	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, csa, rpmio_flags);
+	    rc = cpio_doio(fd, h, csa, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
@@ -463,9 +477,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	lead.type = type;
 	lead.archnum = archnum;
 	lead.osnum = osnum;
-	lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
+	lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
-	{	    const char *name, *version, *release;
+	{   const char *name, *version, *release;
 	    headerNVR(h, &name, &version, &release);
 	    sprintf(buf, "%s-%s-%s", name, version, release);
 	    strncpy(lead.name, buf, sizeof(lead.name));
@@ -650,7 +664,6 @@ int packageBinaries(Spec spec)
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
 	csa->cpioList = pkg->cpioList;
-	csa->cpioCount = pkg->cpioCount;
 
 	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
@@ -687,7 +700,6 @@ int packageSources(Spec spec)
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = fdNew("init (packageSources)");
 	csa->cpioList = spec->sourceCpioList;
-	csa->cpioCount = spec->sourceCpioCount;
 
 	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));

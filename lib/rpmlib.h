@@ -36,9 +36,9 @@ extern "C" {
  * @param fd		file handle
  * @retval signatures	address of signatures pointer (or NULL)
  * @retval hdr		address of header pointer (or NULL)
- * @return		0 on success, 1 on bad magic, 2 on error
+ * @return		rpmRC return code
  */
-int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
+rpmRC rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
 	/*@out@*/ Header * hdr)
 		/*@modifies fd, *signatures, *hdr @*/;
 
@@ -49,9 +49,9 @@ int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
  * @retval isSource
  * @retval major
  * @retval minor
- * @return		0 on success, 1 on bad magic, 2 on error
+ * @return		rpmRC return code
  */
-int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
+rpmRC rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
 	/*@out@*/ int * isSource, /*@out@*/ int * major,
 	/*@out@*/ int * minor)
 		/*@modifies fd, *hdr, *isSource, *major, *minor @*/;
@@ -74,6 +74,13 @@ int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
  */
 void headerMergeLegacySigs(Header h, const Header sig)
 	/*@modifies h @*/;
+
+/** \ingroup header
+ * Regenerate signature header.
+ * @param h		header
+ * @return		regenerated signature header
+ */
+Header headerRegenSigHeader(const Header h)	/*@*/;
 
 /**
  * Retrieve file names from header.
@@ -661,7 +668,7 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
  * @param mi		rpm database iterator
  * @param version	version to check for
  */
-void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, /*@kept@*/ const char * version)
+void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -670,7 +677,7 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, /*@kept@*/ const char * vers
  * @param mi		rpm database iterator
  * @param release	release to check for
  */
-void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, /*@kept@*/ const char * release)
+void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -865,9 +872,9 @@ typedef struct rpmRelocation_s {
  * @param notify	progress callback
  * @param notifyData	progress callback private data
  * @retval cooke	address of cookie pointer
- * @return		0 on success, 1 on bad magic, 2 on error
+ * @return		rpmRC return code
  */
-int rpmInstallSourcePackage(const char * root, FD_t fd,
+rpmRC rpmInstallSourcePackage(const char * root, FD_t fd,
 			/*@out@*/ const char ** specFile,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
 			/*@out@*/ char ** cookie)

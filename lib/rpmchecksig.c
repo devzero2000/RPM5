@@ -106,7 +106,8 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sig = NULL;
-    int rc = EXIT_FAILURE;
+    int res = EXIT_FAILURE;
+    rpmRC rc;
     
     tmprpm[0] = '\0';
     while ((rpm = *argv++) != NULL) {
@@ -133,7 +134,8 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 	    break;
 	}
 
-	if (rpmReadSignature(fd, &sig, l->signature_type)) {
+	rc = rpmReadSignature(fd, &sig, l->signature_type);
+	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
 	    goto exit;
 	}
@@ -169,7 +171,7 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	    goto exit;
 
-	l->signature_type = RPMSIG_HEADERSIG;
+	l->signature_type = RPMSIGTYPE_HEADERSIG;
 	if (writeLead(ofd, l)) {
 	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), trpm,
 		Fstrerror(ofd));
@@ -198,11 +200,11 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 	rename(trpm, rpm);	tmprpm[0] = '\0';
     }
 
-    rc = 0;
+    res = 0;
 
 exit:
-    if (fd)	manageFile(&fd, NULL, 0, rc);
-    if (ofd)	manageFile(&ofd, NULL, 0, rc);
+    if (fd)	manageFile(&fd, NULL, 0, res);
+    if (ofd)	manageFile(&ofd, NULL, 0, res);
 
     if (sig) {
 	rpmFreeSignature(sig);
@@ -218,7 +220,7 @@ exit:
 	tmprpm[0] = '\0';
     }
 
-    return rc;
+    return res;
 }
 
 int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
@@ -238,6 +240,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
     int_32 tag, type, count;
     const void * ptr;
     int res = 0;
+    rpmRC rc;
 
     while ((rpm = *argv++) != NULL) {
 
@@ -260,7 +263,9 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 	default:
 	    break;
 	}
-	if (rpmReadSignature(fd, &sig, l->signature_type)) {
+
+	rc = rpmReadSignature(fd, &sig, l->signature_type);
+	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
 	    goto bottom;

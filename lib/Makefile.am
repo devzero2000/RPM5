@@ -11,8 +11,8 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	header.h misc.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h depends.h falloc.h fprint.h hash.h install.h \
-	manifest.h md5.h \
+	cpio.h depends.h falloc.h fprint.h fsm.h hash.h \
+	manifest.h md5.h psm.h \
 	rpmdb.h rpmlead.h signature.h
 
 mylibpaths =	-L$(top_builddir)/lib/.libs -L$(top_builddir)/rpmio/.libs \
@@ -23,11 +23,12 @@ LIBS =
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c $(DBLIBSRCS) dbconfig.c depends.c \
-	formats.c fprint.c fs.c getdate.c hash.c header.c install.c \
+	formats.c fprint.c fs.c fsm.c getdate.c hash.c header.c \
 	manifest.c md5.c md5sum.c misc.c package.c problems.c \
-	poptBT.c poptQV.c query.c rpmchecksig.c rpmdb.c rpminstall.c \
+	poptBT.c poptQV.c psm.c query.c \
+	rpmchecksig.c rpmdb.c rpminstall.c \
 	rpmlead.c rpmlibprov.c rpmrc.c signature.c stringbuf.c \
-	tagName.c tagtable.c transaction.c uninstall.c verify.c
+	tagName.c tagtable.c transaction.c verify.c
 librpm_la_LDFLAGS = @libdb3@ @libdb2@ @libdb1@
 librpm_la_LIBADD = $(DBLIBOBJS)
 librpm_la_DEPENDENCIES = $(DBLIBOBJS)

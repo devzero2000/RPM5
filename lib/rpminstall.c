@@ -307,6 +307,7 @@ restart:
     /* Continue processing file arguments, building transaction set. */
     for (fnp = pkgURL+prevx; *fnp; fnp++, prevx++) {
 	const char * fileName;
+	rpmRC rpmrc;
 	int isSource;
 
 	rpmMessage(RPMMESS_DEBUG, "============== %s\n", *fnp);
@@ -322,14 +323,14 @@ restart:
 	    continue;
 	}
 
-	rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 	Fclose(fd);
 
-	if (rc == 2) {
+	if (rpmrc == RPMRC_FAIL || rpmrc == RPMRC_SHORTREAD) {
 	    numFailed++; *fnp = NULL;
 	    continue;
 	}
-	if (rc == 0 && isSource) {
+	if ((rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) && isSource) {
 	    rpmMessage(RPMMESS_DEBUG, "\tadded source rpm[%d]\n", numSRPMS);
 		sourceURL = (sourceURL == NULL)
 		    ? xmalloc( (numSRPMS + 2) * sizeof(*sourceURL))
@@ -338,7 +339,7 @@ restart:
 	    *fnp = NULL;
 	    continue;
 	}
-	if (rc == 0) {
+	if (rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) {
 	    if (!dbIsOpen) {
 		int mode = (transFlags & RPMTRANS_FLAG_TEST)
 				? O_RDONLY : (O_RDWR | O_CREAT);
@@ -433,7 +434,7 @@ restart:
 	    continue;
 	}
 
-	if (rc != 1) {
+	if (rpmrc != RPMRC_BADMAGIC) {
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
 	    numFailed++; *fnp = NULL;
 	    break;
@@ -526,9 +527,11 @@ restart:
 		continue;
 	    }
 
-	    if (!(transFlags & RPMTRANS_FLAG_TEST))
-		numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
-				showProgress, (void *) ((long)notifyFlags), NULL);
+	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
+		rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, NULL,
+			showProgress, (void *) ((long)notifyFlags), NULL);
+		if (rpmrc != RPMRC_OK) numFailed++;
+	    }
 
 	    Fclose(fd);
 	}
@@ -648,9 +651,11 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     if (rpmIsVerbose())
 	fprintf(stdout, _("Installing %s\n"), arg);
 
-    rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL,
+    {	rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL,
 				 cookie);
-    if (rc == 1) {
+	rc = (rpmrc == RPMRC_OK ? 0 : 1);
+    }
+    if (rc != 0) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
 	if (specFile && *specFile)
 	    *specFile = _free(*specFile);

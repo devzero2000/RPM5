@@ -8,7 +8,7 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-/*@access StringBuf @*/			/* compared with NULL */
+/*@access StringBuf @*/		/* compared with NULL */
 
 /* These have to be global scope to make up for *stupid* compilers */
     /*@observer@*/ /*@null@*/ static const char *name = NULL;

@@ -137,7 +137,7 @@ const char * rpmProblemString(rpmProblem prob) /*@*/
 	break;
     case RPMPROB_FILE_CONFLICT:
 	snprintf(buf, nb,
- 	    _("file %s from install of %s conflicts with file from package %s"),
+	    _("file %s from install of %s conflicts with file from package %s"),
 		prob->str1, prob->pkgNEVR, prob->altNEVR);
 	break;
     case RPMPROB_OLDPACKAGE:

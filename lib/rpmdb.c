@@ -60,9 +60,9 @@ static int dbiTagToDbix(int rpmtag)
  */
 static void dbiTagsInit(void)
 {
-    static const char * _dbiTagStr_default =
-	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername";
-    char * dbiTagStr;
+/*@observer@*/ static const char * const _dbiTagStr_default =
+	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Removetid";
+    char * dbiTagStr = NULL;
     char * o, * oe;
     int rpmtag;
 
@@ -108,7 +108,8 @@ static void dbiTagsInit(void)
 	dbiTags[dbiTagsMax++] = rpmtag;
     }
 
-    free(dbiTagStr);
+    if (dbiTagStr)
+	free(dbiTagStr);
 }
 
 #if USE_DB1
@@ -203,7 +204,7 @@ if (rc == 0 && datapp && *datapp && datalenp && *datalenp >= sizeof(dataval))
     memcpy(&dataval, *datapp, sizeof(dataval));
 fprintf(stderr, "    Get %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n",
     tagName(dbi->dbi_rpmtag), *keypp, (long)*keylenp, *datapp, (long)*datalenp,
-    (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)*keypp : keyval), dataval, rc);
+    (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)*keypp : keyval), (unsigned)dataval, rc);
 }
     return rc;
 }
@@ -223,7 +224,7 @@ INLINE int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen
 if (_debug < 0 || dbi->dbi_debug) {
 int dataval = 0xdeadbeef;
 if (datap) memcpy(&dataval, datap, sizeof(dataval));
-fprintf(stderr, "    Put %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), dataval, rc);
+fprintf(stderr, "    Put %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), (unsigned)dataval, rc);
 }
 
     return rc;
@@ -354,16 +355,17 @@ union _dbswap {
 /**
  * Return items that match criteria.
  * @param dbi		index database handle
+ * @param dbcursor	index database cursor
  * @param keyp		search key
  * @param keylen	search key length (0 will use strlen(key))
  * @param setp		address of items retrieved from index database
  * @return		-1 error, 0 success, 1 not found
  */
-static int dbiSearch(dbiIndex dbi, DBC * dbcursor, const char * keyp, size_t keylen,
-		dbiIndexSet * setp)
+static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
+	const char * keyp, size_t keylen, dbiIndexSet * setp)
 {
-    void * datap;
-    size_t datalen;
+    void * datap = NULL;
+    size_t datalen = 0;
     int rc;
 
     if (setp) *setp = NULL;
@@ -432,15 +434,17 @@ static int dbiSearch(dbiIndex dbi, DBC * dbcursor, const char * keyp, size_t key
 
 /**
  * Change/delete items that match criteria.
- * @param dbi	index database handle
- * @param keyp	update key
- * @param set	items to update in index database
- * @return	0 success, 1 not found
+ * @param dbi		index database handle
+ * @param dbcursor	index database cursor
+ * @param keyp		update key
+ * @param keylen	update key length
+ * @param set		items to update in index database
+ * @return		0 success, 1 not found
  */
 /*@-compmempass@*/
-static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor, const char * keyp, dbiIndexSet set)
+static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
+	const void * keyp, size_t keylen, dbiIndexSet set)
 {
-    size_t keylen = strlen(keyp);
     void * datap;
     size_t datalen;
     int rc;
@@ -648,10 +652,12 @@ static void unblockSignals(rpmdb rpmdb, sigset_t * oldMask)
 #define	_DB_FILTER_DUPS	0
 #define	_DB_ERRPFX	"rpmdb"
 
-static struct rpmdb_s dbTemplate = {
+/*@-fullinitblock@*/
+/*@observer@*/ static struct rpmdb_s dbTemplate = {
     _DB_ROOT,	_DB_HOME, _DB_FLAGS, _DB_MODE, _DB_PERMS,
     _DB_MAJOR,	_DB_REMOVE_ENV, _DB_FILTER_DUPS, _DB_ERRPFX
 };
+/*@=fullinitblock@*/
 
 int rpmdbOpenAll (rpmdb rpmdb)
 {
@@ -709,10 +715,12 @@ int rpmdbSync(rpmdb rpmdb)
     return 0;
 }
 
-static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
+static /*@only@*/ rpmdb newRpmdb(/*@kept@*/ const char * root,
+		/*@kept@*/ const char * home,
 		int mode, int perms, int flags)
 {
     rpmdb rpmdb = xcalloc(sizeof(*rpmdb), 1);
+    const char * epfx = _DB_ERRPFX;
     static int _initialized = 0;
 
     if (!_initialized) {
@@ -724,35 +732,23 @@ static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
 
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
-    if (root)
-	rpmdb->db_root = (*root ? root : _DB_ROOT);
-    if (home)
-	rpmdb->db_home = (*home ? home : _DB_HOME);
     if (mode >= 0)	rpmdb->db_mode = mode;
     if (perms >= 0)	rpmdb->db_perms = perms;
     if (flags >= 0)	rpmdb->db_flags = flags;
 
-    if (rpmdb->db_root)
-	rpmdb->db_root = rpmGetPath(rpmdb->db_root, NULL);
-    if (rpmdb->db_home) {
-	rpmdb->db_home = rpmGetPath(rpmdb->db_home, NULL);
-	if (!(rpmdb->db_home && rpmdb->db_home[0] != '%')) {
-	    rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
-	   goto errxit;
-	}
+    rpmdb->db_root = rpmGetPath( (root && *root ? root : _DB_ROOT), NULL);
+    rpmdb->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
+    if (!(rpmdb->db_home && rpmdb->db_home[0] != '%')) {
+	rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
+	rpmdbClose(rpmdb);
+	return NULL;
     }
-    if (rpmdb->db_errpfx)
-	rpmdb->db_errpfx = xstrdup(rpmdb->db_errpfx);
+    rpmdb->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     rpmdb->db_remove_env = 0;
     rpmdb->db_filter_dups = _filterDbDups;
     rpmdb->db_ndbi = dbiTagsMax;
     rpmdb->_dbi = xcalloc(rpmdb->db_ndbi, sizeof(*rpmdb->_dbi));
     return rpmdb;
-
-errxit:
-    if (rpmdb)
-	rpmdbClose(rpmdb);
-    return NULL;
 }
 
 static int openDatabase(const char * prefix, const char * dbpath, int _dbapi,
@@ -807,11 +803,12 @@ static int openDatabase(const char * prefix, const char * dbpath, int _dbapi,
 	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
 		if (dbi == NULL) rc |= 1;
+		/* XXX open only Packages, indices created on the fly. */
 #if 0
 		if (rpmdb->db_api == 3)
 #endif
 		    goto exit;
-		break;
+		/*@notreached@*/ break;
 	    case RPMTAG_NAME:
 		if (dbi == NULL) rc |= 1;
 		if (minimal)
@@ -918,7 +915,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
     dbi = dbiOpen(rpmdb, RPMTAG_BASENAMES, 0);
     dbcursor = NULL;
     xx = dbiCopen(dbi, &dbcursor, 0);
-    rc = dbiSearch(dbi, dbcursor, baseName, 0, &allMatches);
+    rc = dbiSearch(dbi, dbcursor, baseName, strlen(baseName), &allMatches);
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
     if (rc) {
@@ -1012,7 +1009,7 @@ int rpmdbCountPackages(rpmdb rpmdb, const char * name)
     if (dbi) {
 	DBC * dbcursor = NULL;
 	xx = dbiCopen(dbi, &dbcursor, 0);
-	rc = dbiSearch(dbi, dbcursor, name, 0, &matches);
+	rc = dbiSearch(dbi, dbcursor, name, strlen(name), &matches);
 	xx = dbiCclose(dbi, dbcursor, 0);
 	dbcursor = NULL;
     }
@@ -1042,7 +1039,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
     int rc;
     int i;
 
-    rc = dbiSearch(dbi, dbcursor, name, 0, matches);
+    rc = dbiSearch(dbi, dbcursor, name, strlen(name), matches);
 
     if (rc != 0) {
 	rc = ((rc == -1) ? 2 : 1);
@@ -1113,9 +1110,14 @@ exit:
     return rc;
 }
 
-/* 0 found matches */
-/* 1 no matches */
-/* 2 error */
+/**
+ * Lookup by name, name-version, and finally by name-version-release.
+ * @param dbi		index database handle (always RPMDBI_PACKAGES)
+ * @param dbcursor	index database cursor
+ * @param arg
+ * @param matches
+ * @return 		0 on success, 1 on no mtches, 2 on error
+ */
 static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, const char * arg, dbiIndexSet * matches)
 {
     char * localarg, * chptr;
@@ -1160,6 +1162,7 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, const char * arg, dbiInd
  *   Note: this is called from a markReplacedFiles iteration, and *must*
  *   preserve the "join key" (i.e. offset) for the header.
  * @param dbi		index database handle (always RPMDBI_PACKAGES)
+ * @param dbcursor	index database cursor
  * @param offset	join key
  * @param h		rpm header
  * @return 		0 on success
@@ -1187,9 +1190,9 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
 }
 
 struct _rpmdbMatchIterator {
-    const void *	mi_keyp;
+/*@only@*/ const void *	mi_keyp;
     size_t		mi_keylen;
-    rpmdb		mi_rpmdb;
+/*@kept@*/ rpmdb	mi_rpmdb;
     int			mi_rpmtag;
     dbiIndexSet		mi_set;
     DBC *		mi_dbc;
@@ -1202,8 +1205,8 @@ struct _rpmdbMatchIterator {
     unsigned int	mi_filenum;
     unsigned int	mi_fpnum;
     unsigned int	mi_dbnum;
-    const char *	mi_version;
-    const char *	mi_release;
+/*@only@*/ const char *	mi_version;
+/*@only@*/ const char *	mi_release;
 };
 
 void rpmdbFreeIterator(rpmdbMatchIterator mi)
@@ -1240,7 +1243,7 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	mi->mi_version = NULL;
     }
     if (mi->mi_dbc) {
-	int xx = dbiCclose(dbi, mi->mi_dbc, 1);
+	xx = dbiCclose(dbi, mi->mi_dbc, 1);
 	mi->mi_dbc = NULL;
     }
     if (mi->mi_set) {
@@ -1502,6 +1505,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     rpmdbMatchIterator mi = NULL;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
+    const void * mi_keyp = NULL;
     int isLabel = 0;
 
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
@@ -1560,11 +1564,11 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
 	k = xmalloc(keylen + 1);
 	memcpy(k, keyp, keylen);
 	k[keylen] = '\0';	/* XXX for strings */
-	keyp = k;
+	mi_keyp = k;
     }
 
-    mi = xcalloc(sizeof(*mi), 1);
-    mi->mi_keyp = keyp;
+    mi = xcalloc(1, sizeof(*mi));
+    mi->mi_keyp = mi_keyp;
     mi->mi_keylen = keylen;
 
     mi->mi_rpmdb = rpmdb;
@@ -1586,13 +1590,22 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     return mi;
 }
 
-static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor, const char * keyp,
-		dbiIndexItem rec)
+/**
+ * Remove entry from database index.
+ * @param dbi		index database handle
+ * @param dbcursor	index database cursor
+ * @param keyp		search key
+ * @param keylen	search key length
+ * @param rec		record to remove
+ * @return		0 on success
+ */
+static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
+	const void * keyp, size_t keylen, dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
     int rc;
     
-    rc = dbiSearch(dbi, dbcursor, keyp, 0, &set);
+    rc = dbiSearch(dbi, dbcursor, keyp, keylen, &set);
 
     if (rc < 0)			/* not found */
 	rc = 0;
@@ -1600,7 +1613,7 @@ static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor, const char * ke
 	rc = 1;		/* error message already generated from dbindex.c */
     else {			/* success */
 	if (!dbiPruneSet(set, rec, 1, sizeof(*rec), 1) &&
-	    dbiUpdateIndex(dbi, dbcursor, keyp, set))
+	    dbiUpdateIndex(dbi, dbcursor, keyp, keylen, set))
 	    rc = 1;
     }
 
@@ -1676,7 +1689,6 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 		xx = dbiDel(dbi, dbcursor, &hdrNum, sizeof(hdrNum), 0);
 		xx = dbiCclose(dbi, dbcursor, 0);
 		dbcursor = NULL;
-		/* XXX HACK sync is on the bt with multiple db access */
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
 		continue;
@@ -1707,24 +1719,56 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	    }
 
 	    for (i = 0; i < rpmcnt; i++) {
+		const void * valp;
+		size_t vallen;
+
+		/* Identify value pointer and length. */
+		switch (rpmtype) {
+		case RPM_CHAR_TYPE:
+		case RPM_INT8_TYPE:
+		    vallen = sizeof(RPM_CHAR_TYPE);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_INT16_TYPE:
+		    vallen = sizeof(int_16);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_INT32_TYPE:
+		    vallen = sizeof(int_32);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_BIN_TYPE:
+		    vallen = rpmcnt;
+		    valp = rpmvals;
+		    rpmcnt = 1;		/* XXX break out of loop. */
+		    break;
+		case RPM_STRING_TYPE:
+		case RPM_I18NSTRING_TYPE:
+		    rpmcnt = 1;		/* XXX break out of loop. */
+		    /*@fallthrough@*/
+		case RPM_STRING_ARRAY_TYPE:
+		default:
+		    vallen = strlen(rpmvals[i]);
+		    valp = rpmvals[i];
+		    break;
+		}
+
 		/*
 		 * This is almost right, but, if there are duplicate tag
 		 * values, there will be duplicate attempts to remove
 		 * the header instance. It's easier to just ignore errors
 		 * than to do things correctly.
 		 */
-		xx = removeIndexEntry(dbi, dbcursor, rpmvals[i], rec);
+		xx = removeIndexEntry(dbi, dbcursor, valp, vallen, rec);
 	    }
 
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 
-	    /* XXX HACK sync is on the bt with multiple db access */
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 
-	    headerFreeData(rpmvals, rpmtype);
-	    rpmvals = NULL;
+	    rpmvals = headerFreeData(rpmvals, rpmtype);
 	    rpmtype = 0;
 	    rpmcnt = 0;
 	}
@@ -1742,12 +1786,22 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
     return 0;
 }
 
-static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor, const char *index, dbiIndexItem rec)
+/**
+ * Add entry to database index.
+ * @param dbi		index database handle
+ * @param dbcursor	index database cursor
+ * @param keyp		search key
+ * @param keylen	search key length
+ * @param rec		record to add
+ * @return		0 on success
+ */
+static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor,
+	const char * keyp, size_t keylen, dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
     int rc;
 
-    rc = dbiSearch(dbi, dbcursor, index, 0, &set);
+    rc = dbiSearch(dbi, dbcursor, keyp, keylen, &set);
 
     if (rc > 0) {
 	rc = 1;			/* error */
@@ -1757,7 +1811,7 @@ static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor, const char *index,
 	    set = xcalloc(1, sizeof(*set));
 	}
 	dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
-	if (dbiUpdateIndex(dbi, dbcursor, index, set))
+	if (dbiUpdateIndex(dbi, dbcursor, keyp, keylen, set))
 	    rc = 1;
     }
 
@@ -1931,6 +1985,8 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	    }
 
 	    for (i = 0; i < rpmcnt; i++) {
+		const void * valp;
+		size_t vallen;
 
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
@@ -1959,17 +2015,48 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		    break;
 		}
 
-		rc += addIndexEntry(dbi, dbcursor, rpmvals[i], rec);
+		/* Identify value pointer and length. */
+		switch (rpmtype) {
+		case RPM_CHAR_TYPE:
+		case RPM_INT8_TYPE:
+		    vallen = sizeof(int_8);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_INT16_TYPE:
+		    vallen = sizeof(int_16);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_INT32_TYPE:
+		    vallen = sizeof(int_32);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_BIN_TYPE:
+		    vallen = rpmcnt;
+		    valp = rpmvals;
+		    rpmcnt = 1;		/* XXX break out of loop. */
+		    break;
+		case RPM_STRING_TYPE:
+		case RPM_I18NSTRING_TYPE:
+		    rpmcnt = 1;		/* XXX break out of loop. */
+		    /*@fallthrough@*/
+		case RPM_STRING_ARRAY_TYPE:
+		default:
+		    valp = rpmvals[i];
+		    vallen = strlen(rpmvals[i]);
+		    break;
+		}
+
+		rc += addIndexEntry(dbi, dbcursor, valp, vallen, rec);
 	    }
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 
-	    /* XXX HACK sync is on the bt with multiple db access */
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 
-	    headerFreeData(rpmvals, rpmtype);
-	    rpmvals = NULL;
+	/*@-observertrans@*/
+	    rpmvals = headerFreeData(rpmvals, rpmtype);
+	/*@=observertrans@*/
 	    rpmtype = 0;
 	    rpmcnt = 0;
 	}
@@ -2377,6 +2464,7 @@ int rpmdbRebuild(const char * rootdir)
 
 		headerNVR(h, &name, &version, &release);
 
+		/*@-shadow@*/
 		{   rpmdbMatchIterator mi;
 		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);
 		    rpmdbSetIteratorVersion(mi, version);
@@ -2387,6 +2475,7 @@ int rpmdbRebuild(const char * rootdir)
 		    }
 		    rpmdbFreeIterator(mi);
 		}
+		/*@=shadow@*/
 
 		if (skip)
 		    continue;

@@ -8,16 +8,15 @@
  * @todo Eliminate, merge into rpmlib.
  */
 
-#include "cpio.h"
+#include "psm.h"
 
 /**
  */
 typedef struct cpioSourceArchive {
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
-/*@dependent@*/ struct cpioFileMapping *cpioList;
-    int		cpioCount;
-    struct rpmlead *lead;	/* XXX FIXME: exorcize lead/arch/os */
+/*@dependent@*/ TFI_t cpioList;
+    struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
 } CSA_t;
 
 #ifdef __cplusplus

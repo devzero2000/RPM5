@@ -6,11 +6,9 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmbuild.h>
 #include <rpmurl.h>
 
-#include "depends.h"
-#include "install.h"
+#include "psm.h"
 #include "md5.h"
 #include "misc.h"
 #include "debug.h"
@@ -220,7 +218,7 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum,
     if (flags & RPMVERIFY_MODE) {
 	/*
 	 * Platforms (like AIX) where sizeof(unsigned short) != sizeof(mode_t)
-	 * need the (unsigned short) cast here.
+	 * need the (unsigned short) cast here. 
 	 */
 	if (modeList[filenum] != (unsigned short)sb.st_mode)
 	    *result |= RPMVERIFY_MODE;
@@ -295,12 +293,23 @@ int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd)
 {
     rpmdb rpmdb = NULL;
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
+    TFI_t fi = xcalloc(1, sizeof(*fi));
+    struct psm_s psmbuf;
+    PSM_t psm = &psmbuf;
     int rc;
 
     if (scriptFd)
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
-    rc = runInstScript(ts, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
-		     0, 0);
+    fi->magic = TFIMAGIC;
+    loadFi(h, fi);
+    memset(psm, 0, sizeof(*psm));
+    psm->ts = ts;
+    psm->fi = fi;
+    psm->scriptTag = RPMTAG_VERIFYSCRIPT;
+    psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
+    rc = psmStage(psm, PSM_SCRIPT);
+    freeFi(fi);
+    fi = _free(fi);
     rpmtransFree(ts);
     return rc;
 }
