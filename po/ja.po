@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-22 14:16-0400\n"
+"POT-Creation-Date: 2002-08-23 16:58-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -66,7 +66,7 @@ msgstr "作成中ターゲットプラットフォーム: %s\n"
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
 
-#: rpm2cpio.c:54
+#: rpm2cpio.c:55
 #, fuzzy
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません\n"
@@ -732,7 +732,7 @@ msgstr "readRPM: %s の読み込み: %s\n"
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: build/pack.c:342
+#: build/pack.c:346
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s は RPM パッケージではありません\n"
@@ -777,7 +777,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:629 lib/psm.c:1812
+#: build/pack.c:629 lib/psm.c:1823
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -807,7 +807,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:710 lib/psm.c:2118
+#: build/pack.c:710 lib/psm.c:2128
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1618,41 +1618,41 @@ msgstr ""
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:481 lib/package.c:521 lib/package.c:724 lib/package.c:748
-#: lib/package.c:778 lib/rpmchecksig.c:786
+#: lib/package.c:481 lib/package.c:521 lib/package.c:714 lib/package.c:738
+#: lib/package.c:768 lib/rpmchecksig.c:797
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:630
+#: lib/package.c:616
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:638
+#: lib/package.c:624
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:647 lib/rpmchecksig.c:226 lib/rpmchecksig.c:707
+#: lib/package.c:634 lib/rpmchecksig.c:228 lib/rpmchecksig.c:715
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/package.c:651 lib/rpmchecksig.c:230 lib/rpmchecksig.c:712
+#: lib/package.c:639 lib/rpmchecksig.c:233 lib/rpmchecksig.c:721
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
 
-#: lib/package.c:690 lib/rpmchecksig.c:605
+#: lib/package.c:680 lib/rpmchecksig.c:611
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:790 lib/rpmchecksig.c:118 lib/rpmchecksig.c:634
+#: lib/package.c:780 lib/rpmchecksig.c:118 lib/rpmchecksig.c:640
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2232,87 +2232,87 @@ msgstr "PGP/GPG 署名を生成します"
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
 
-#: lib/psm.c:446
+#: lib/psm.c:456
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/psm.c:565
+#: lib/psm.c:575
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/psm.c:906
+#: lib/psm.c:916
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x\n"
 msgstr ""
 
-#: lib/psm.c:985
+#: lib/psm.c:995
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:993
+#: lib/psm.c:1003
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:1155
+#: lib/psm.c:1165
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:1178
+#: lib/psm.c:1188
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/psm.c:1184
+#: lib/psm.c:1194
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1590
+#: lib/psm.c:1601
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:1715
+#: lib/psm.c:1726
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1825
+#: lib/psm.c:1835
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: lib/psm.c:1871
+#: lib/psm.c:1881
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1880
+#: lib/psm.c:1890
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1928
+#: lib/psm.c:1938
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:1929
+#: lib/psm.c:1939
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:2126
+#: lib/psm.c:2136
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:2129
+#: lib/psm.c:2139
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2367,93 +2367,93 @@ msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:123 lib/rpminstall.c:452
-#: lib/rpminstall.c:583 lib/rpminstall.c:990 lib/rpmts.c:441
+#: lib/query.c:565 lib/query.c:606 lib/rpminstall.c:123 lib/rpminstall.c:452
+#: lib/rpminstall.c:581 lib/rpminstall.c:987 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:577
+#: lib/query.c:579
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:583
+#: lib/query.c:585
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:609 lib/rpminstall.c:596
+#: lib/query.c:616 lib/rpminstall.c:594
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:653
+#: lib/query.c:660
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:674
+#: lib/query.c:681
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:694
+#: lib/query.c:701
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:704
+#: lib/query.c:711
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:718 lib/query.c:740 lib/query.c:761 lib/query.c:796
+#: lib/query.c:725 lib/query.c:747 lib/query.c:768 lib/query.c:803
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s を読むのに失敗: $s。"
 
-#: lib/query.c:728 lib/query.c:746 lib/query.c:771 lib/query.c:801
+#: lib/query.c:735 lib/query.c:753 lib/query.c:778 lib/query.c:808
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:812
+#: lib/query.c:819
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:823
+#: lib/query.c:830
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:857
+#: lib/query.c:864
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:861
+#: lib/query.c:868
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:888
+#: lib/query.c:895
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:891
+#: lib/query.c:898
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:896
+#: lib/query.c:903
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:907 lib/rpminstall.c:765
+#: lib/query.c:914 lib/rpminstall.c:763
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -2483,83 +2483,83 @@ msgstr "makeTempFile に失敗しました\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:208 lib/rpmchecksig.c:691
+#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:698
 #, fuzzy, c-format
 msgid "%s: not an rpm package\n"
 msgstr "引数は RPM パッケージではありません\n"
 
-#: lib/rpmchecksig.c:213
+#: lib/rpmchecksig.c:214
 #, fuzzy, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: v1.0 の RPM には署名できません\n"
 
-#: lib/rpmchecksig.c:217
+#: lib/rpmchecksig.c:218
 #, fuzzy, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: v2.0 の RPM には再署名できません\n"
 
-#: lib/rpmchecksig.c:317
+#: lib/rpmchecksig.c:322
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:347
+#: lib/rpmchecksig.c:353
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writedLead に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:353
+#: lib/rpmchecksig.c:359
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:557
+#: lib/rpmchecksig.c:563
 #, fuzzy, c-format
 msgid "%s: import read failed.\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/rpmchecksig.c:562
+#: lib/rpmchecksig.c:568
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:569
+#: lib/rpmchecksig.c:575
 #, fuzzy, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/rpmchecksig.c:619
+#: lib/rpmchecksig.c:625
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/rpmchecksig.c:697
+#: lib/rpmchecksig.c:704
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 有効な署名はありません(v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:952
+#: lib/rpmchecksig.c:963
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:953 lib/rpmchecksig.c:967
+#: lib/rpmchecksig.c:964 lib/rpmchecksig.c:978
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (キーの紛失) "
 
-#: lib/rpmchecksig.c:955 lib/rpmchecksig.c:969
+#: lib/rpmchecksig.c:966 lib/rpmchecksig.c:980
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:956 lib/rpmchecksig.c:970
+#: lib/rpmchecksig.c:967 lib/rpmchecksig.c:981
 msgid " (UNTRUSTED KEYS:"
 msgstr " (信頼できない鍵:"
 
-#: lib/rpmchecksig.c:958 lib/rpmchecksig.c:972
+#: lib/rpmchecksig.c:969 lib/rpmchecksig.c:983
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:966
+#: lib/rpmchecksig.c:977
 msgid "OK"
 msgstr ""
 
@@ -2674,66 +2674,66 @@ msgstr "%s として...\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/rpminstall.c:507
-#, fuzzy, c-format
-msgid "package %s is not relocateable\n"
-msgstr "パッケージ %s は再配置できません"
-
-#: lib/rpminstall.c:557
-#, fuzzy, c-format
-msgid "error reading from file %s\n"
-msgstr "ファイル %s からの読み込みエラー "
-
-#: lib/rpminstall.c:563
-#, c-format
-msgid "file %s requires a newer version of RPM\n"
-msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
-
-#: lib/rpminstall.c:575 lib/rpminstall.c:846 tools/rpmgraph.c:156
+#: lib/rpminstall.c:471 lib/rpminstall.c:844 tools/rpmgraph.c:147
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
 
-#: lib/rpminstall.c:611
+#: lib/rpminstall.c:511
+#, fuzzy, c-format
+msgid "package %s is not relocateable\n"
+msgstr "パッケージ %s は再配置できません"
+
+#: lib/rpminstall.c:561
+#, fuzzy, c-format
+msgid "error reading from file %s\n"
+msgstr "ファイル %s からの読み込みエラー "
+
+#: lib/rpminstall.c:567
+#, c-format
+msgid "file %s requires a newer version of RPM\n"
+msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
+
+#: lib/rpminstall.c:609
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:793 lib/rpminstall.c:1203
+#: lib/rpminstall.c:623 lib/rpminstall.c:791 lib/rpminstall.c:1201
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:632 tools/rpmgraph.c:208
+#: lib/rpminstall.c:630 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:660
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:686
+#: lib/rpminstall.c:684
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/rpminstall.c:768
+#: lib/rpminstall.c:766
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:830
+#: lib/rpminstall.c:828
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpminstall.c:836
+#: lib/rpminstall.c:834
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
-#: lib/rpminstall.c:1197
+#: lib/rpminstall.c:1195
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -2964,18 +2964,18 @@ msgstr "%s/packages.rpm をオープンできません\n"
 msgid "cannot open Solve database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/rpmts.c:456
+#: lib/rpmts.c:460
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "行目: %s"
 
-#: lib/rpmts.c:467
+#: lib/rpmts.c:472
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "ソースは: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:898
+#: lib/rpmts.c:903
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 
@@ -3091,38 +3091,38 @@ msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 msgid "Header+Payload size: "
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/signature.c:916
+#: lib/signature.c:915
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:972
+#: lib/signature.c:971
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/signature.c:1047
+#: lib/signature.c:1046
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "MD5 署名をスキップします"
 
-#: lib/signature.c:1164
+#: lib/signature.c:1163
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1165
+#: lib/signature.c:1164
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
-#: lib/signature.c:1244
+#: lib/signature.c:1243
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1271
+#: lib/signature.c:1270
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1275
+#: lib/signature.c:1274
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
