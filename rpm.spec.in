@@ -19,7 +19,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.80
+Release: 0.81
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -158,7 +158,7 @@ capabilities.
 #
 # XXX work around a (possible) compiler problem on ia64
 %ifarch ia64
-RPM_OPT_FLAGS="-O0"
+#RPM_OPT_FLAGS="-O0"
 %endif
 
 %ifos linux
@@ -506,6 +506,9 @@ fi
 - add pmac/ppciseries/ppcpseries varieties to ppc arch family.
 - include tdigest.c tkey.c and trpmio.c to "make dist".
 - re-enable dependency resolution source from package NVR.
+- rename pmac to ppcmac.
+- ia64: revert -O0 compilation.
+- upgrade to db-3.3.11 final.
 
 * Sun Jul 22 2001 Jeff Johnson <jbj@redhat.com>
 - use %%{rpm_version} to avoid other package versions.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-23 11:44-0400\n"
+"POT-Creation-Date: 2001-07-23 22:35-0400\n"
 "PO-Revision-Date: 2001-07-24 00:15+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -495,8 +495,8 @@ msgstr "vypsat pouze konfiguraèní soubory (implikuje -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or "
-"-d)"
+"show all verifiable information for each file (must be used with -l, -c, or -"
+"d)"
 msgstr ""
 "zobrazit v¹echny ovìøitelné údaje pro ka¾dý soubor (musí se pou¾ít s -l, -c "
 "nebo -d)"
@@ -2692,7 +2692,7 @@ msgstr ""
 #: lib/poptQV.c:164
 #, c-format
 msgid "skip %%readme files"
-msgstr "%s: readLead selhalo\n"
+msgstr ""
 
 #: lib/poptQV.c:170
 msgid "use the following query format"
@@ -3517,11 +3517,11 @@ msgstr "otevírám db soubor     %s mode 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nemohu vytvoøit zámek %s na databázi\n"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1060
+#: rpmdb/db1.c:562 rpmdb/db3.c:1076
 msgid "exclusive"
 msgstr "výhradní"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1060
+#: rpmdb/db1.c:562 rpmdb/db3.c:1076
 msgid "shared"
 msgstr "sdílený"
 
@@ -3540,27 +3540,27 @@ msgstr "odstranìno db prostøedí %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "otevírám db environment %s/%s %s\n"
 
-#: rpmdb/db3.c:629
+#: rpmdb/db3.c:637
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "uzavøen db index       %s/%s\n"
 
-#: rpmdb/db3.c:665
+#: rpmdb/db3.c:673
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "uzavøen db index       %s/%s\n"
 
-#: rpmdb/db3.c:848
+#: rpmdb/db3.c:856
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otevírám db index      %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1058
+#: rpmdb/db3.c:1074
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu zamknout databázi zámkem %s v %s/%s\n"
 
-#: rpmdb/db3.c:1064
+#: rpmdb/db3.c:1080
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "uzamèen db index       %s/%s\n"
@@ -3590,8 +3590,8 @@ msgstr "%s má pøíli¹ velkou nebo moc malou celoèíselnou hodnotu, pøeskoèeno\n"
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
+"More information is available from http://www.rpm.org or the rpm-list@redhat."
+"com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "poru¹en free list (%u) - spus»te prosím\n"

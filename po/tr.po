@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-23 11:44-0400\n"
+"POT-Creation-Date: 2001-07-23 22:35-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3548,11 +3548,11 @@ msgstr "açýlan db dosyasý      %s kip 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "Veritabaný için %s kilit alýnamadý\n"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1060
+#: rpmdb/db1.c:562 rpmdb/db3.c:1076
 msgid "exclusive"
 msgstr "baðdaþýk"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1060
+#: rpmdb/db1.c:562 rpmdb/db3.c:1076
 msgid "shared"
 msgstr "paylaþýmlý"
 
@@ -3571,27 +3571,27 @@ msgstr "silindi       db ortamý %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "açýlýyor      db ortamý %s/%s %s\n"
 
-#: rpmdb/db3.c:629
+#: rpmdb/db3.c:637
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kapandý      db endeks %s/%s\n"
 
-#: rpmdb/db3.c:665
+#: rpmdb/db3.c:673
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "doðrulandý    db endeks %s/%s\n"
 
-#: rpmdb/db3.c:848
+#: rpmdb/db3.c:856
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1058
+#: rpmdb/db3.c:1074
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1064
+#: rpmdb/db3.c:1080
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"
