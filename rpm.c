@@ -955,8 +955,9 @@ int main(int argc, char ** argv) {
 	querySource != QUERY_PACKAGE) 
 	argerror(_("unexpected query source"));
 
-    if (bigMode != MODE_INSTALL && force)
-	argerror(_("only installation and upgrading may be forced"));
+    if (!(bigMode == MODE_INSTALL ||
+	 (bigMode == MODE_BUILD && rmsource)) && force)
+	argerror(_("only installation, upgrading and rmsource may be forced"));
 
     if (bigMode != MODE_INSTALL && badReloc)
 	argerror(_("files may only be relocated during package installation"));
@@ -1194,7 +1195,7 @@ int main(int argc, char ** argv) {
 		exit(1);
 
 	    if (build(specFile, buildAmount, passPhrase, buildRootOverride,
-			0, test, cookie)) {
+			0, test, cookie, force)) {
 		exit(1);
 	    }
 	    free(cookie);
@@ -1249,7 +1250,7 @@ int main(int argc, char ** argv) {
 
 	while ((pkg = poptGetArg(optCon)))
 	    if (build(pkg, buildAmount, passPhrase, buildRootOverride,
-			bigMode == MODE_TARBUILD, test, NULL)) {
+			bigMode == MODE_TARBUILD, test, NULL, force)) {
 		exit(1);
 	    }
 	break;

@@ -251,25 +251,19 @@ static void doRmSource(Spec spec)
     
     unlink(spec->specFile);
 
-    p = spec->sources;
-    while (p) {
+    for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
 	    unlink(buf);
 	}
-	p = p->next;
     }
 
-    pkg = spec->packages;
-    while (pkg) {
-	p = pkg->icon;
-	while (p) {
+    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
 		unlink(buf);
 	    }
-	    p = p->next;
 	}
-	pkg = pkg->next;
     }
 }

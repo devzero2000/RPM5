@@ -44,7 +44,7 @@ static char *doUntar(Spec spec, int c, int quietly);
 #define COMPRESSED_OTHER 1
 #define COMPRESSED_BZIP2 2
 
-int parsePrep(Spec spec)
+int parsePrep(Spec spec, int force)
 {
     int nextPart, res, rc;
     StringBuf buf;
@@ -91,7 +91,7 @@ int parsePrep(Spec spec)
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
-	if (res) {
+	if (res && !force) {
 	    freeSplitString(saveLines);
 	    freeStringBuf(buf);
 	    return res;
@@ -255,13 +255,11 @@ static char *doUntar(Spec spec, int c, int quietly)
     int compressed;
 
     s = NULL;
-    sp = spec->sources;
-    while (sp) {
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISSOURCE) && (sp->num == c)) {
 	    s = sp->source;
 	    break;
 	}
-	sp = sp->next;
     }
     if (! s) {
 	rpmError(RPMERR_BADSPEC, _("No source number %d"), c);
@@ -375,20 +373,18 @@ static int doPatchMacro(Spec spec, char *line)
 
     if (! opt_P) {
 	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E);
-	if (! s) {
+	if (s == NULL) {
 	    return RPMERR_BADSPEC;
 	}
 	appendLineStringBuf(spec->prep, s);
     }
 
-    x = 0;
-    while (x < patch_index) {
+    for (x = 0; x < patch_index; x++) {
 	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E);
-	if (! s) {
+	if (s == NULL) {
 	    return RPMERR_BADSPEC;
 	}
 	appendLineStringBuf(spec->prep, s);
-	x++;
     }
     
     return 0;
@@ -405,13 +401,11 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
     int compressed;
 
     s = NULL;
-    sp = spec->sources;
-    while (sp) {
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
 	    s = sp->source;
 	    break;
 	}
-	sp = sp->next;
     }
     if (! s) {
 	rpmError(RPMERR_BADSPEC, _("No patch number %d"), c);

@@ -20,7 +20,8 @@
 #include "build/spec.h"
 
 int build(char *arg, int buildAmount, char *passPhrase,
-	         char *buildRoot, int fromTarball, int test, char *cookie) {
+	  char *buildRoot, int fromTarball, int test, char *cookie,
+	  int force) {
     FILE *f;
     char * specfile;
     int res = 0;
@@ -139,7 +140,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
     if (parseSpec(&spec, specfile, buildRoot, 0, passPhrase, cookie,
-	_anyarch(buildAmount))) {
+	_anyarch(buildAmount), force)) {
 	    return 1;
     }
 #undef	_anyarch
