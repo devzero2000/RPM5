@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-12-06 23:39-0500\n"
+"POT-Creation-Date: 2000-12-07 12:30-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3799,27 +3799,27 @@ msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле"
 
-#: lib/transaction.c:470
+#: lib/transaction.c:496
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr "исключаю файл %s%s\n"
 
-#: lib/transaction.c:496 lib/transaction.c:579
+#: lib/transaction.c:522 lib/transaction.c:605
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
 
-#: lib/transaction.c:501
+#: lib/transaction.c:527
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещается %s в %s\n"
 
-#: lib/transaction.c:572
+#: lib/transaction.c:598
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещается каталог %s в %s\n"
 
-#: lib/transaction.c:723
+#: lib/transaction.c:749
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-06 23:39-0500\n"
+"POT-Creation-Date: 2000-12-07 12:30-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -3901,27 +3901,27 @@ msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/transaction.c:470
+#: lib/transaction.c:496
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/transaction.c:496 lib/transaction.c:579
+#: lib/transaction.c:522 lib/transaction.c:605
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:501
+#: lib/transaction.c:527
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/transaction.c:572
+#: lib/transaction.c:598
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
-#: lib/transaction.c:723
+#: lib/transaction.c:749
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"

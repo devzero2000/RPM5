@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-12-06 23:39-0500\n"
+"POT-Creation-Date: 2000-12-07 12:30-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -3892,27 +3892,27 @@ msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/transaction.c:470
+#: lib/transaction.c:496
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/transaction.c:496 lib/transaction.c:579
+#: lib/transaction.c:522 lib/transaction.c:605
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:501
+#: lib/transaction.c:527
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:572
+#: lib/transaction.c:598
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:723
+#: lib/transaction.c:749
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

@@ -152,6 +152,32 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
     ts->scriptFd = (fd ? fdLink(fd, "rpmtransSetScriptFd") : NULL);
 }
 
+int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
+{
+    int rc = 0;
+
+    if (nep) *nep = ts->orderCount;
+    if (ep) {
+	const void ** e;
+	int oc;
+
+	*ep = e = xmalloc(ts->orderCount * sizeof(*e));
+	for (oc = 0; oc < ts->orderCount; oc++, e++) {
+	    struct availablePackage * alp;
+	    switch (ts->order[oc].type) {
+	    case TR_ADDED:
+		alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+		*e = alp->key;
+		break;
+	    case TR_REMOVED:
+		*e = NULL;
+		break;
+	    }
+	}
+    }
+    return rc;
+}
+
 static rpmProblemSet psCreate(void)
 {
     rpmProblemSet probs;

@@ -12,7 +12,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.15
+Release: 0.17
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -297,6 +297,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Dec  7 2000 Jeff Johnson <jbj@redhat.com>
+- add rpmtransGetKeys() to retrieve transaction keys in tsort'ed order.
+
 * Wed Dec  6 2000 Jeff Johnson <jbj@redhat.com>
 - improved find-{requires,provides} for aix4/hpux/irix6/osf.
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>

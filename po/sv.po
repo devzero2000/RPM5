@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-06 23:39-0500\n"
+"POT-Creation-Date: 2000-12-07 12:30-0500\n"
 "PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3770,27 +3770,27 @@ msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil"
 
-#: lib/transaction.c:470
+#: lib/transaction.c:496
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr "hoppar över %s%s\n"
 
-#: lib/transaction.c:496 lib/transaction.c:579
+#: lib/transaction.c:522 lib/transaction.c:605
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
 
-#: lib/transaction.c:501
+#: lib/transaction.c:527
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "flyttar %s till %s\n"
 
-#: lib/transaction.c:572
+#: lib/transaction.c:598
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"
 
-#: lib/transaction.c:723
+#: lib/transaction.c:749
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"

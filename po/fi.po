@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-12-06 23:39-0500\n"
+"POT-Creation-Date: 2000-12-07 12:30-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -3933,27 +3933,27 @@ msgstr "Sinun pit‰‰ asettaa \"pgp_name:\" rpmrc-tiedostossa"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Sinun pit‰‰ asettaa \"pgp_name:\" rpmrc-tiedostossa"
 
-#: lib/transaction.c:470
+#: lib/transaction.c:496
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "Haen: %s\n"
 
-#: lib/transaction.c:496 lib/transaction.c:579
+#: lib/transaction.c:522 lib/transaction.c:605
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/transaction.c:501
+#: lib/transaction.c:527
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:572
+#: lib/transaction.c:598
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/transaction.c:723
+#: lib/transaction.c:749
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

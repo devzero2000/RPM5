@@ -909,6 +909,18 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
 	/*@modifies ts, fd @*/;
 
 /** \ingroup rpmtrans
+ * Retrieve keys from ordered transaction set.
+ * @todo Removed packages have no keys, returned as interleaved NULL pointers.
+ * @param ts		rpm transaction set
+ * @retval ep		address of returned element array pointer (or NULL)
+ * @retval nep		address of no. of returned elements (or NULL)
+ * @return		0 always
+ */
+int rpmtransGetKeys(const rpmTransactionSet ts,
+	/*@out@*/ const void *** ep, /*@out@*/ int * nep)
+		/*@modifies ep, nep @*/;
+
+/** \ingroup rpmtrans
  * Check that all dependencies can be resolved.
  * @param rpmdep	rpm transaction set
  * @retval conflicts

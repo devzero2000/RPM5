@@ -59,6 +59,7 @@
 	- make sure that replaced tags in region are counted in headerSizeof().
 	- support for dmalloc debugging.
 	- filter region tags in headerNextIterator, exit throut headerReload.
+	- add rpmtransGetKeys() to retrieve transaction keys in tsort'ed order.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
