@@ -103,7 +103,9 @@ static PyObject * pyrpmError;
  * 	print header['name']
  * \endcode
  * This method of access is a bit slower because the name must be
- * translated into the tag number dynamically.
+ * translated into the tag number dynamically. You also must make sure
+ * the strings in header lookups don't get translated, or the lookups
+ * will fail.
  */
 
 /** \ingroup python
@@ -508,11 +510,38 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args) {
+    if (!PyArg_ParseTuple(args, ""))
+        return NULL;
+
     mungeFilelist (s->h);
 
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+/** \ingroup python
+ */
+static PyObject * hdrSprintf(hdrObject * s, PyObject * args) {
+    char * fmt;
+    char * r;
+    errmsg_t err;
+    PyObject * result;
+
+    if (!PyArg_ParseTuple(args, "s", &fmt))
+        return NULL;
+
+    r = headerSprintf(s->h, fmt, rpmTagTable, rpmHeaderFormats, &err);
+    if (!r) {
+	PyErr_SetString(pyrpmError, err);
+	return NULL;
+    }
+
+    result = Py_BuildValue("s", r);
+    free(r);
+
+    return result;
+}
+
 
 /** \ingroup python
  */
@@ -524,6 +553,7 @@ static struct PyMethodDef hdrMethods[] = {
 	{"compressFilelist",	(PyCFunction) hdrCompressFilelist,	1 },
 	{"fullFilelist",	(PyCFunction) hdrFullFilelist,	1 },
 	{"rhnUnload",	(PyCFunction) rhnUnload, METH_VARARGS },
+	{"sprintf",	(PyCFunction) hdrSprintf, METH_VARARGS },
 	{NULL,		NULL}		/* sentinel */
 };
 
@@ -2318,6 +2348,9 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
  */
 static PyObject * getTsHeader (PyObject * self, PyObject * args) {
     hdrObject * h;
+
+    if (!PyArg_ParseTuple(args, ""))
+	return NULL;
     
     if (transactionSetHeader) {
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
@@ -2328,6 +2361,18 @@ static PyObject * getTsHeader (PyObject * self, PyObject * args) {
 	h->modes = h->rdevs = NULL;
 	return (PyObject *) h;
     }
+    Py_INCREF(Py_None);
+    return (PyObject *) Py_None;
+}
+
+static PyObject * setVerbosity (PyObject * self, PyObject * args) {
+    int level;
+
+    if (!PyArg_ParseTuple(args, "i", &level))
+	return NULL;
+
+    rpmSetVerbosity(level);
+
     Py_INCREF(Py_None);
     return (PyObject *) Py_None;
 }
@@ -2458,6 +2503,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "checksig", (PyCFunction) checkSig, METH_VARARGS, NULL },
     { "getTransactionCallbackHeader", (PyCFunction) getTsHeader, METH_VARARGS, NULL },
 /*      { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL }, */
+    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS, NULL },
     { NULL }
 } ;
 
@@ -2604,6 +2650,16 @@ void initrpm(void) {
     REGISTER_ENUM(CHECKSIG_PGP);
     REGISTER_ENUM(CHECKSIG_GPG);
     REGISTER_ENUM(CHECKSIG_MD5);
+
+    REGISTER_ENUM(RPMLOG_EMERG);
+    REGISTER_ENUM(RPMLOG_ALERT);
+    REGISTER_ENUM(RPMLOG_CRIT);
+    REGISTER_ENUM(RPMLOG_ERR);
+    REGISTER_ENUM(RPMLOG_WARNING);
+    REGISTER_ENUM(RPMLOG_NOTICE);
+    REGISTER_ENUM(RPMLOG_INFO);
+    REGISTER_ENUM(RPMLOG_DEBUG);
+
 }
 
 /*@}*/
