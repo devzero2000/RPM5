@@ -545,11 +545,7 @@ assert(otherFi != NULL);
 			if (!XFA_SKIPPING(fi->actions[i])) {
 			    /* XXX static helpers are order dependent. Ick. */
 			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
-			     && strcmp(fn, "/emul/i386/usr/sbin/libgcc_post_upgrade")
-			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade")
-			     && strcmp(fn, "/emul/i386/usr/sbin/glibc_post_upgrade")
-			     && strcmp(fn, "/emul/i386/sbin/ldconfig")
-			     && strcmp(fn, "/emul/i386/bin/sh"))
+			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
 				otherFi->actions[otherFileNum] = FA_SKIP;
 			}
 			fi->actions[i] = FA_CREATE;

@@ -532,6 +532,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t out;
     rpmRC rc = RPMRC_OK;
     const char *n, *v, *r;
+#if __ia64__
+    const char *a;
+#endif
 
     if (progArgv == NULL && script == NULL)
 	return rc;
@@ -540,6 +543,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
+#if __ia64__
+    xx = hge(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
+#endif
 
     /* XXX bash must have functional libtermcap.so.2 */
     if (!strcmp(n, "libtermcap"))
@@ -577,8 +583,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
 
 #if __ia64__
-    if (!strcmp(n, "glibc")
-     && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade"))
+    /* XXX This assumes that all interpreters are elf executables. */
+    if (a != NULL && a[0] == 'i' && a[1] != '\0' && a[2] == '8' && a[3] == '6')
     {
 	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
 	const char * errstr;
@@ -1807,6 +1813,7 @@ psm->te->h = headerFree(psm->te->h);
 	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')
 	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
 	{
+#if !defined(__ia64__)
 	    static int _loaded = 0;
 
 	    /*
@@ -1818,6 +1825,7 @@ psm->te->h = headerFree(psm->te->h);
 		endpwent();
 		_loaded++;
 	    }
+#endif
 
 	    xx = chdir("/");
 	    /*@-superuser@*/

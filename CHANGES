@@ -10,6 +10,10 @@
 	- shared libraries in separate rpm-libs package.
 	- fix: defattr for rpm-libs (#130461).
 	- fix: static glibc/libgcc helpers always installed (#127522).
+	- ia64: make sure that autorelocated file dependencies are satisfied.
+	- ia64: relocate all scriptlet interpreters.
+	- ia64: don't bother trying to preload autorelocated modules.
+	- fix: filesystem package needs mail/lock w/o getgrnam.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
