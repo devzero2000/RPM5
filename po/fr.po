@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-23 22:35-0400\n"
+"POT-Creation-Date: 2001-07-24 16:28-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2191,7 +2191,11 @@ msgstr ""
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:225
+#: lib/cpio.c:217
+msgid "Archive file not in header"
+msgstr ""
+
+#: lib/cpio.c:226
 #, fuzzy
 msgid " failed - "
 msgstr "La construction a chou.\n"
@@ -2341,41 +2345,46 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:292
+#: lib/fsm.c:290
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:294
+#: lib/fsm.c:292
 #, fuzzy, c-format
 msgid "%9d %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1130
+#: lib/fsm.c:1128
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1513 lib/fsm.c:1638
+#: lib/fsm.c:1403
+#, c-format
+msgid "archive file %s was not found in header file list\n"
+msgstr ""
+
+#: lib/fsm.c:1522 lib/fsm.c:1647
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1664
+#: lib/fsm.c:1673
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1670
+#: lib/fsm.c:1679
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1680
+#: lib/fsm.c:1689
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1699
+#: lib/fsm.c:1708
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "impossible d'ouvrir: %s\n"

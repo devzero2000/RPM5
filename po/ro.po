@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-23 22:35-0400\n"
+"POT-Creation-Date: 2001-07-24 16:28-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -2028,7 +2028,11 @@ msgstr ""
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:225
+#: lib/cpio.c:217
+msgid "Archive file not in header"
+msgstr ""
+
+#: lib/cpio.c:226
 msgid " failed - "
 msgstr ""
 
@@ -2177,41 +2181,46 @@ msgstr ""
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:292
+#: lib/fsm.c:290
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:294
+#: lib/fsm.c:292
 #, c-format
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1130
+#: lib/fsm.c:1128
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1513 lib/fsm.c:1638
+#: lib/fsm.c:1403
+#, c-format
+msgid "archive file %s was not found in header file list\n"
+msgstr ""
+
+#: lib/fsm.c:1522 lib/fsm.c:1647
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1664
+#: lib/fsm.c:1673
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1670
+#: lib/fsm.c:1679
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1680
+#: lib/fsm.c:1689
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1699
+#: lib/fsm.c:1708
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""

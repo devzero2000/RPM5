@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-23 22:35-0400\n"
+"POT-Creation-Date: 2001-07-24 16:28-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2158,7 +2158,11 @@ msgstr ""
 msgid "Internal error"
 msgstr "内部エラー"
 
-#: lib/cpio.c:225
+#: lib/cpio.c:217
+msgid "Archive file not in header"
+msgstr ""
+
+#: lib/cpio.c:226
 #, fuzzy
 msgid " failed - "
 msgstr "失敗 - "
@@ -2310,41 +2314,46 @@ msgstr "%s のオープンに失敗: %s"
 msgid "file %s is on an unknown device\n"
 msgstr "ファイル %s は不明なデバイスです"
 
-#: lib/fsm.c:292
+#: lib/fsm.c:290
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:294
+#: lib/fsm.c:292
 #, fuzzy, c-format
 msgid "%9d %s\n"
 msgstr "%d 行目: %s"
 
-#: lib/fsm.c:1130
+#: lib/fsm.c:1128
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1513 lib/fsm.c:1638
+#: lib/fsm.c:1403
+#, c-format
+msgid "archive file %s was not found in header file list\n"
+msgstr ""
+
+#: lib/fsm.c:1522 lib/fsm.c:1647
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/fsm.c:1664
+#: lib/fsm.c:1673
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s を削除できません - ディレクトリが空でありません"
 
-#: lib/fsm.c:1670
+#: lib/fsm.c:1679
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s の rmdir に失敗: %s"
 
-#: lib/fsm.c:1680
+#: lib/fsm.c:1689
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/fsm.c:1699
+#: lib/fsm.c:1708
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"

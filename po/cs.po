@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-23 22:35-0400\n"
+"POT-Creation-Date: 2001-07-24 16:28-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2081,7 +2081,11 @@ msgstr "MD5 souèet nesouhlasí"
 msgid "Internal error"
 msgstr "Interní chyba"
 
-#: lib/cpio.c:225
+#: lib/cpio.c:217
+msgid "Archive file not in header"
+msgstr ""
+
+#: lib/cpio.c:226
 msgid " failed - "
 msgstr "selhal - "
 
@@ -2233,41 +2237,46 @@ msgstr "nemohu otevøít %s: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "soubor %s je na neznámém zaøízení\n"
 
-#: lib/fsm.c:292
+#: lib/fsm.c:290
 msgid "========= Directories not explictly included in package:\n"
 msgstr "========= Adresáøe, které nebyly explicitnì zaøazeny do balíèku:\n"
 
-#: lib/fsm.c:294
+#: lib/fsm.c:292
 #, c-format
 msgid "%9d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1130
+#: lib/fsm.c:1128
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "vytvoøen adresáø %s s právy %04o.\n"
 
-#: lib/fsm.c:1513 lib/fsm.c:1638
+#: lib/fsm.c:1403
+#, c-format
+msgid "archive file %s was not found in header file list\n"
+msgstr ""
+
+#: lib/fsm.c:1522 lib/fsm.c:1647
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s ulo¾eno jako %s\n"
 
-#: lib/fsm.c:1664
+#: lib/fsm.c:1673
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s odstranìní %s selhalo: Adresáø není prázdný\n"
 
-#: lib/fsm.c:1670
+#: lib/fsm.c:1679
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s selhal: %s\n"
 
-#: lib/fsm.c:1680
+#: lib/fsm.c:1689
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s selhal: %s\n"
 
-#: lib/fsm.c:1699
+#: lib/fsm.c:1708
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s vytvoøen jako %s\n"
