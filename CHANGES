@@ -33,6 +33,10 @@
 	- regenerate rpm.8 man page from docbook glop (in max-rpm).
 	- lib/depends.c: diddle debugging messages.
 	- fix: readlink return value clobbered by header write.
+	- fix: ineeded count wrong for overlapped, created files.
+	- globalize _free(3) wrapper in rpmlib.h, consistent usage throughout.
+	- internalize locale insensitive ctype(3) in rpmio.h
+	- boring lclint annotations and fiddles.
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
