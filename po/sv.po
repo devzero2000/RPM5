@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2001-07-16 10:39-0400\n"
-"PO-Revision-Date: 2001-05-10 23:07+0200\n"
+"PO-Revision-Date: 2001-07-16 19:28+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -275,9 +275,8 @@ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <kat>]"
 
 #: rpm.c:296
-#, fuzzy
 msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <kat>]"
+msgstr "       rpm {--veryfydb} [--rcfile <fil>] [--dbpath <kat>]"
 
 #: rpm.c:297
 msgid "       rpm {--querytags}"
@@ -490,8 +489,8 @@ msgstr "visa enbart konfigurationsfiler (implicerar -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or -"
-"d)"
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
 msgstr ""
 "visa all verifierbar information för varje fil (måste användas med -l, -c "
 "eller -d)"
@@ -585,8 +584,8 @@ msgstr "kortform för --replacepkgs --replacefiles"
 #: lib/poptI.c:124 rpm.c:447
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
-"skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med -"
-"v)"
+"skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med "
+"-v)"
 
 #: lib/poptI.c:89 rpm.c:449
 msgid "install all files, even configurations which might otherwise be skipped"
@@ -831,9 +830,8 @@ msgid "rebuild database from existing database"
 msgstr "bygg om databasen från existerande databas"
 
 #: rpm.c:565 rpmdb/poptDB.c:27
-#, fuzzy
 msgid "verify database files"
-msgstr "fråga en specfil"
+msgstr "verifiera databasfiler"
 
 #: rpm.c:573
 msgid ""
@@ -1226,9 +1224,9 @@ msgid "Common options for all rpm modes:"
 msgstr "Gemensamma flaggor för alla rpm-lägen:"
 
 #: lib/poptI.c:25 rpmqv.c:215
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s\n"
-msgstr "fil %s: %s\n"
+msgstr "%s: %s\n"
 
 #: rpmqv.c:240
 #, c-format
@@ -1528,9 +1526,8 @@ msgid "getUnameS: too many uid's\n"
 msgstr "getUnameS: för många uid:er\n"
 
 #: build/names.c:84
-#, fuzzy
 msgid "getUidS: too many uid's\n"
-msgstr "getUnameS: för många uid:er\n"
+msgstr "getUidS: för många uid:er\n"
 
 #: build/names.c:105
 msgid "getGname: too many gid's\n"
@@ -1541,9 +1538,8 @@ msgid "getGnameS: too many gid's\n"
 msgstr "getGnameS: för många gid:er\n"
 
 #: build/names.c:147
-#, fuzzy
 msgid "getGidS: too many gid's\n"
-msgstr "getGnameS: för många gid:er\n"
+msgstr "getGidS: för många gid:er\n"
 
 #: build/names.c:178
 #, c-format
@@ -1556,9 +1552,9 @@ msgid "create archive failed on file %s: %s\n"
 msgstr "skapande av arkiv misslyckades vid fil %s: %s\n"
 
 #: build/pack.c:81 lib/psm.c:1779
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "skapande av arkiv misslyckades vid fil %s: %s\n"
+msgstr "skapande av arkiv misslyckades: %s\n"
 
 #: build/pack.c:103
 #, c-format
@@ -1611,9 +1607,9 @@ msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: läs %s: %s\n"
 
 #: build/pack.c:292 build/pack.c:485
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Fseek failed: %s\n"
-msgstr "%s: Fread misslyckades: %s\n"
+msgstr "%s: Fseek misslyckades: %s\n"
 
 #: build/pack.c:308
 #, c-format
@@ -1800,9 +1796,9 @@ msgid "Unknown icon type: %s\n"
 msgstr "Okänd ikontyp: %s\n"
 
 #: build/parsePreamble.c:423
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Tag takes single token only: %s\n"
-msgstr "rad %d: otillåten flagga %s: %s\n"
+msgstr "rad %d: Taggen tar endast ett värde: %s\n"
 
 #: build/parsePreamble.c:459
 #, c-format
@@ -2067,9 +2063,8 @@ msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
 #: lib/cpio.c:214
-#, fuzzy
 msgid "Missing hard link(s)"
-msgstr "Saknad hårdlänk"
+msgstr "Saknad(e) hårdlänk(ar)"
 
 #: lib/cpio.c:215
 msgid "MD5 sum mismatch"
@@ -2415,8 +2410,8 @@ msgstr "bygg endast källpaket från <specfil>"
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
-"bygg till och med %prep (packa upp källkod samt applicera patchar) från <tar-"
-"arkiv>"
+"bygg till och med %prep (packa upp källkod samt applicera patchar) från "
+"<tar-arkiv>"
 
 #: lib/poptBT.c:149 lib/poptBT.c:152 lib/poptBT.c:155 lib/poptBT.c:158
 #: lib/poptBT.c:161 lib/poptBT.c:164 lib/poptBT.c:167
@@ -2484,9 +2479,8 @@ msgid "do not execute any stages of the build"
 msgstr "utför inga steg i tillverkningen"
 
 #: lib/poptBT.c:189
-#, fuzzy
 msgid "do not verify build dependencies"
-msgstr "verifiera inte paketberoenden"
+msgstr "verifiera inte byggberoenden"
 
 #: lib/poptBT.c:191
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
@@ -2510,7 +2504,7 @@ msgstr "slå upp översatta strängar i specfilkatalog"
 
 #: lib/poptI.c:75
 msgid "malformed rollback time"
-msgstr ""
+msgstr "felformatterat återgångstid"
 
 #: lib/poptI.c:99 lib/poptI.c:150
 msgid "do not execute package scriptlet(s)"
@@ -2598,21 +2592,19 @@ msgstr "spara raderade paketfiler genom ompaketering"
 
 #: lib/poptI.c:203
 msgid "deinstall new package(s), reinstall old package(s), back to date"
-msgstr ""
+msgstr "avinstallera nya paket, ominstallera gamla paket, tillbaka till datum"
 
 #: lib/poptI.c:204
-#, fuzzy
 msgid "<date>"
-msgstr "<sökväg>"
+msgstr "<datum>"
 
 #: lib/poptI.c:209
 msgid "upgrade package(s)"
 msgstr "uppgradera paket"
 
 #: lib/poptK.c:56
-#, fuzzy
 msgid "generate signature"
-msgstr "tillverka en PGP/GPG-signatur"
+msgstr "generera signatur"
 
 #: lib/poptQV.c:72
 msgid "query/verify all packages"
@@ -2685,17 +2677,17 @@ msgstr "lista filer i paketet"
 #: lib/poptQV.c:157
 #, c-format
 msgid "skip %%ghost files"
-msgstr ""
+msgstr "hoppa över %%ghost-filer"
 
 #: lib/poptQV.c:161
 #, c-format
 msgid "skip %%license files"
-msgstr ""
+msgstr "hoppa över %%license-filer"
 
 #: lib/poptQV.c:164
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%readme files"
-msgstr "%s: readLead misslyckades\n"
+msgstr "hoppa över %%readme-filer"
 
 #: lib/poptQV.c:170
 msgid "use the following query format"
@@ -2714,57 +2706,48 @@ msgid "display a verbose file listing"
 msgstr "visa en utförlig fillistning"
 
 #: lib/poptQV.c:193
-#, fuzzy
 msgid "don't verify MD5 digest of files"
-msgstr "verifiera inte filerna i paketet"
+msgstr "verifiera inte MD5-summor för filer"
 
 #: lib/poptQV.c:196
-#, fuzzy
 msgid "don't verify size of files"
-msgstr "verifiera inte filerna i paketet"
+msgstr "verifiera inte storlekar på filer"
 
 #: lib/poptQV.c:199
-#, fuzzy
 msgid "don't verify symlink path of files"
-msgstr "verifiera inte filerna i paketet"
+msgstr "verifiera inte sökvägen i symboliska länkar"
 
 #: lib/poptQV.c:202
-#, fuzzy
 msgid "don't verify owner of files"
-msgstr "verifiera inte filerna i paketet"
+msgstr "verifiera inte ägare till filer"
 
 #: lib/poptQV.c:205
-#, fuzzy
 msgid "don't verify group of files"
-msgstr "verifiera inte filerna i paketet"
+msgstr "verifiera inte grupper till filerna"
 
 #: lib/poptQV.c:208
 msgid "don't verify modification time of files"
-msgstr ""
+msgstr "verifiera inte modifikationstiden för filer"
 
 #: lib/poptQV.c:211 lib/poptQV.c:214
-#, fuzzy
 msgid "don't verify mode of files"
-msgstr "verifiera inte filerna i paketet"
+msgstr "verifiera inte rättigheter för filer"
 
 #: lib/poptQV.c:217
 msgid "don't verify files in package"
 msgstr "verifiera inte filerna i paketet"
 
 #: lib/poptQV.c:219
-#, fuzzy
 msgid "don't verify package dependencies"
 msgstr "verifiera inte paketberoenden"
 
 #: lib/poptQV.c:221 lib/poptQV.c:225
-#, fuzzy
 msgid "don't execute %verifyscript (if any)"
 msgstr "utför inte (eventuellt) %verifyscript"
 
 #: lib/poptQV.c:228
-#, fuzzy
 msgid "don't verify header SHA1 digest"
-msgstr "verifiera inte filerna i paketet"
+msgstr "verifiera inte huvudets SHA1-summa"
 
 #: lib/problems.c:83
 #, c-format
@@ -2832,14 +2815,14 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
 
 #: lib/psm.c:587
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create %%%s %s\n"
-msgstr "kan inte skapa %s %s\n"
+msgstr "kan inte skapa %%%s %s\n"
 
 #: lib/psm.c:593
-#, fuzzy, c-format
+#, c-format
 msgid "cannot write to %%%s %s\n"
-msgstr "kan inte skriva till %s\n"
+msgstr "kan inte skriva till %%%s %s\n"
 
 #: lib/psm.c:631
 msgid "source package expected, binary found\n"
@@ -3299,8 +3282,8 @@ msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
-"Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
-"d)\n"
+"Förväntad storlek: %12d = "
+"inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%d)\n"
 
 #: lib/signature.c:139
 #, c-format
@@ -3484,7 +3467,7 @@ msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 #: lib/verify.c:541
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
-msgstr ""
+msgstr "%s-%s-%s: kontrollsumma för oföränderlig huvudregion misslyckades\n"
 
 #: rpmdb/db1.c:100 rpmdb/db3.c:84
 #, c-format
@@ -3500,12 +3483,12 @@ msgstr "db%d-fel(%d): %s\n"
 #, c-format
 msgid ""
 "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
-msgstr ""
+msgstr "Trasig paketkedja vid %d(0x%08x), försöker återansluta ...\n"
 
 #: rpmdb/db1.c:180
 #, c-format
 msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
-msgstr ""
+msgstr "Återansluter trasig kedja vid %d(0x%08x).\n"
 
 #: rpmdb/db1.c:497
 #, c-format
@@ -3542,34 +3525,34 @@ msgid "shared"
 msgstr "delat"
 
 #: rpmdb/db3.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "closed   db environment %s/%s\n"
-msgstr "stängde  db-miljö      %s/%s\n"
+msgstr "stängde     db-miljö %s/%s\n"
 
 #: rpmdb/db3.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "removed  db environment %s/%s\n"
-msgstr "tar bort db-miljö      %s/%s\n"
+msgstr "tog bort    db-miljö %s/%s\n"
 
 #: rpmdb/db3.c:166
-#, fuzzy, c-format
+#, c-format
 msgid "opening  db environment %s/%s %s\n"
-msgstr "öppnar   db-miljö      %s/%s %s\n"
+msgstr "öppnar      db-miljö %s/%s %s\n"
 
 #: rpmdb/db3.c:629
-#, fuzzy, c-format
+#, c-format
 msgid "closed   db index       %s/%s\n"
-msgstr "tog bort db-index      %s/%s\n"
+msgstr "stängde     db-index %s/%s\n"
 
 #: rpmdb/db3.c:665
-#, fuzzy, c-format
+#, c-format
 msgid "verified db index       %s/%s\n"
-msgstr "tog bort db-index      %s/%s\n"
+msgstr "verifierade db-index %s/%s\n"
 
 #: rpmdb/db3.c:848
-#, fuzzy, c-format
+#, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
-msgstr "öppnar   db-index      %s/%s %s rättighet=0x%x\n"
+msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"
 
 #: rpmdb/db3.c:1058
 #, c-format
@@ -3577,9 +3560,9 @@ msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
 #: rpmdb/db3.c:1064
-#, fuzzy, c-format
+#, c-format
 msgid "locked   db index       %s/%s\n"
-msgstr "låste    db-index      %s/%s\n"
+msgstr "låste       db-index %s/%s\n"
 
 #: rpmdb/dbconfig.c:389
 #, c-format
@@ -3606,8 +3589,8 @@ msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the rpm-list@redhat."
-"com mailing list\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "frilistan trasig (%u)- var god kör\n"
@@ -3684,7 +3667,7 @@ msgstr "post nummer %u i databasen är felaktig -- hoppar över den.\n"
 #: rpmdb/rpmdb.c:1986
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
-msgstr ""
+msgstr "rpmdb: skadad huvudinstans #%u hämtad, hoppar över.\n"
 
 #: rpmdb/rpmdb.c:2248
 #, c-format
@@ -3991,181 +3974,3 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
-
-#, fuzzy
-#~ msgid "generate GPG/PGP signature"
-#~ msgstr "tillverka en PGP/GPG-signatur"
-
-#~ msgid "cannot open package: %s\n"
-#~ msgstr "kan inte öppna paket: %s\n"
-
-#~ msgid "Bad count for headerAddEntry(): %d\n"
-#~ msgstr "Felaktigt antal till headerAddEntry(): %d\n"
-
-#~ msgid "  All modes support the following options:"
-#~ msgstr "  Alla lägen stödjer följande argument:"
-
-#~ msgid "   --define '<name> <body>'"
-#~ msgstr "   --define '<namn> <kropp>'"
-
-#~ msgid "   --eval '<expr>+'       "
-#~ msgstr "   --eval '<uttr>+'       "
-
-#~ msgid "print the expansion of macro <expr> to stdout"
-#~ msgstr "skriv ut expansionen av makrot <uttr> på standard ut"
-
-#~ msgid "   --pipe <cmd>           "
-#~ msgstr "   --pipe <kommando>      "
-
-#~ msgid "   --rcfile <file:...>    "
-#~ msgstr "   --rcfile <fil:...>     "
-
-#~ msgid "use <file:...> instead of default list of macro files"
-#~ msgstr "använd <fil:...> istället för standardlistan av makrofiler"
-
-#~ msgid "   --dbpath <dir>         "
-#~ msgstr "   --dbpath <kat>         "
-
-#~ msgid "   --root <dir>           "
-#~ msgstr "   --root <kat>           "
-
-#~ msgid ""
-#~ "  Install, upgrade and query (with -p) modes allow URL's to be used in "
-#~ "place"
-#~ msgstr ""
-#~ "   Installera, uppgradera och fråga (med -p) tillåter URL:er att användas"
-
-#~ msgid "  of file names as well as the following options:"
-#~ msgstr "  istället för filnamn, liksom följande flaggor:"
-
-#~ msgid "     --ftpproxy <host>    "
-#~ msgstr "     --ftpproxy <värd>    "
-
-#~ msgid "     --ftpport <port>     "
-#~ msgstr "     --ftpport <port>     "
-
-#~ msgid "     --httpproxy <host>   "
-#~ msgstr "     --httpproxy <värd>   "
-
-#~ msgid "     --httpport <port>    "
-#~ msgstr "     --httpport <port>    "
-
-#~ msgid "  Package specification options:"
-#~ msgstr "  Flaggor för paketval:"
-
-#~ msgid "     -f <file>+           "
-#~ msgstr "     -f <fil>+            "
-
-#~ msgid "query/verify package owning <file>"
-#~ msgstr "fråga/verifiera paket som äger <fil>"
-
-#~ msgid "     -p <packagefile>+    "
-#~ msgstr "     -p <paketfil>+       "
-
-#~ msgid "query/verify (uninstalled) package <packagefile>"
-#~ msgstr "fråga/verifiera (oinstallerat) paket <paketfil>"
-
-#~ msgid "     --triggeredby <pkg>  "
-#~ msgstr "     --triggeredby <pkt>  "
-
-#~ msgid "query/verify packages triggered by <pkg>"
-#~ msgstr "fråga/verifiera paket utlösta av <pkt>"
-
-#~ msgid "     --whatprovides <cap> "
-#~ msgstr "     --whatprovides <egenskap>"
-
-#~ msgid "query/verify packages which provide <cap> capability"
-#~ msgstr "fråga/verifiera paket som tillhandahåller <egenskap>"
-
-#~ msgid "     --whatrequires <cap> "
-#~ msgstr "     --whatrequires <egenskap>"
-
-#~ msgid "query/verify packages which require <cap> capability"
-#~ msgstr "fråga/verifiera paket som behöver <egenskap>"
-
-#~ msgid "     --queryformat <qfmt> "
-#~ msgstr "     --queryformat <ffmt> "
-
-#~ msgid "    Information selection options:"
-#~ msgstr "    Flaggor för informationsval:"
-
-#~ msgid "list capabilities provided by package"
-#~ msgstr "visa de egenskaper paketet tillhandahåller"
-
-#~ msgid "list capabilities required by package"
-#~ msgstr "visa de egenskaper paketet behöver"
-
-#~ msgid "print the various [un]install scriptlets"
-#~ msgstr "visa de olika [av]installationsskripten"
-
-#~ msgid "show the trigger scriptlets contained in the package"
-#~ msgstr "visa utlösningsskripten i paketet"
-
-#~ msgid "do not execute scripts (if any)"
-#~ msgstr "utför inte (eventuellt) skript"
-
-#~ msgid "   --install <packagefile>"
-#~ msgstr "   --install <paketfil>   "
-
-#~ msgid "   -i <packagefile>       "
-#~ msgstr "   -i <paketfil>          "
-
-#~ msgid "     --excludepath <path> "
-#~ msgstr "     --excludepath <sökväg>"
-
-#~ msgid "don't execute any installation scriptlets"
-#~ msgstr "kör inte installationsskript"
-
-#~ msgid "don't execute any scriptlets triggered by this package"
-#~ msgstr "kör inte utlösningsskript utlösta av detta paket"
-
-#~ msgid "     --prefix <dir>       "
-#~ msgstr "     --prefix <katalog>   "
-
-#~ msgid "     --relocate <oldpath>=<newpath>"
-#~ msgstr "     --relocate <frånskv>=<tillskv>"
-
-#~ msgid "   --upgrade <packagefile>"
-#~ msgstr "   --upgrade <paketfil>   "
-
-#~ msgid "   -U <packagefile>       "
-#~ msgstr "   -U <paketfil>          "
-
-#~ msgid "   --erase <package>"
-#~ msgstr "   --erase <paket>  "
-
-#~ msgid "   -e <package>           "
-#~ msgstr "   -e <paket>             "
-
-#~ msgid "   --resign <pkg>+        "
-#~ msgstr "   --resign <pkt>+        "
-
-#~ msgid "   --addsign <pkg>+       "
-#~ msgstr "   --addsign <pkt>+       "
-
-#~ msgid "   --checksig <pkg>+"
-#~ msgstr "   --checksig <pkt>+"
-
-#~ msgid "   -K <pkg>+             "
-#~ msgstr "   -K <pkt>+             "
-
-#~ msgid "initalize database (unnecessary, legacy use)"
-#~ msgstr "initiera databasen (onödigt, ärvt format)"
-
-#~ msgid "rebuild database indices from existing database headers"
-#~ msgstr "bygg om databasindex från existerande databashuvuden"
-
-#~ msgid "closed  db environment %s/%s\n"
-#~ msgstr "stängde  db-miljö      %s/%s\n"
-
-#~ msgid "removed db environment %s/%s\n"
-#~ msgstr "tar bort db-miljö      %s/%s\n"
-
-#~ msgid "closed  db index       %s/%s\n"
-#~ msgstr "tog bort db-index      %s/%s\n"
-
-#~ msgid "opening db index       %s/%s %s mode=0x%x\n"
-#~ msgstr "öppnar   db-index      %s/%s %s rättighet=0x%x\n"
-
-#~ msgid "locked  db index       %s/%s\n"
-#~ msgstr "låste    db-index      %s/%s\n"
