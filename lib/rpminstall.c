@@ -908,6 +908,7 @@ int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
     IDT ip;
     int niids = 0;
     int rc;
+    int i;
     int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
 
     if (argv != NULL && *argv != NULL) {
@@ -1044,10 +1045,19 @@ int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
 	    rpmProblemSetPrint(stderr, probs);
 	    if (probs != NULL) rpmProblemSetFree(probs);
 	    probs = NULL;
-	    goto exit;
 	}
+	if (rc)
+	    goto exit;
 
 	ts = rpmtransFree(ts);
+
+	/* Clean up after successful rollback. */
+	for (i = 0; i < rtids->nidt; i++) {
+	    IDT rrp = rtids->idt + i;
+	    if (rrp->val.u32 != thistid)
+		continue;
+	    (void) unlink(rrp->key);
+	}
 
     } while (1);
 

@@ -451,7 +451,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    tprev = dataStart;
 	    /* XXX HEADER_IMAGE tags don't include region sub-tag. */
 	    /*@-sizeoftype@*/
-	    if (ie.info.tag != HEADER_IMMUTABLE)
+	    if (ie.info.tag == HEADER_IMAGE)
 		tprev -= REGION_TAG_COUNT;
 	    /*@=sizeoftype@*/
 	}
@@ -1259,7 +1259,12 @@ static int copyEntry(const indexEntry entry,
     if (p)
     switch (entry->info.type) {
     case RPM_BIN_TYPE:
-	/* XXX this only works for HEADER_IMMUTABLE */
+	/*
+	 * XXX This only works for
+	 * XXX 	"sealed" HEADER_IMMUTABLE/HEADER_SIGNATURES/HEADER_IMAGE.
+	 * XXX This will *not* work for unsealed legacy HEADER_IMAGE (i.e.
+	 * XXX a legacy header freshly read, but not yet unloaded to the rpmdb).
+	 */
 	if (ENTRY_IS_REGION(entry)) {
 	    int_32 * ei = ((int_32 *)entry->data) - 2;
 	    /*@-castexpose@*/
@@ -1270,17 +1275,26 @@ static int copyEntry(const indexEntry entry,
 	    int_32 ril = rdl/sizeof(*pe);
 
 	    /*@-sizeoftype@*/
-	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) +
-			entry->rdlen + REGION_TAG_COUNT;
+	    rdl = entry->rdlen;
+	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) + rdl;
+	    if (entry->info.tag == HEADER_IMAGE) {
+		ril -= 1;
+		pe += 1;
+	    } else {
+		count += REGION_TAG_COUNT;
+		rdl += REGION_TAG_COUNT;
+	    }
+
 	    *p = xmalloc(count);
 	    ei = (int_32 *) *p;
 	    ei[0] = htonl(ril);
-	    ei[1] = htonl(entry->rdlen + REGION_TAG_COUNT);
+	    ei[1] = htonl(rdl);
+
 	    /*@-castexpose@*/
 	    pe = (entryInfo) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
 	    /*@=castexpose@*/
-	    dataStart = (char *) memcpy(pe + ril, dataStart,
-					(entry->rdlen + REGION_TAG_COUNT));
+
+	    dataStart = (char *) memcpy(pe + ril, dataStart, rdl);
 	    /*@=sizeoftype@*/
 
 	    rc = regionSwab(NULL, ril, 0, pe, dataStart, 0);
