@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-23 12:24-0500\n"
+"POT-Creation-Date: 2001-03-23 15:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2743,7 +2743,7 @@ msgstr ""
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
+#: lib/misc.c:338 lib/misc.c:343 lib/misc.c:349
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr ""

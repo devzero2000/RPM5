@@ -65,6 +65,7 @@ char * rpmPermsString(int mode)
     return perms;
 }
 
+/**@todo Infinite loops through manifest files exist, operator error for now. */
 int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 {
     StringBuf sb = newStringBuf();
@@ -127,14 +128,14 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 
     /* Concatenate existing unprocessed args after manifest contents. */
     if (argv && i < argc) {
-	int nac = (ac - 1) + (argc - i - 1) + 1;
-	const char ** nav = xcalloc(nac, sizeof(*nav));
+	int nac = ac + (argc - i);
+	const char ** nav = xcalloc((nac + 1), sizeof(*nav));
 
 	if (ac)
-	    memcpy(nav, av, (ac - 1) * sizeof(*nav));
-	if ((argc - i - 1) > 0)
-	    memcpy(nav + (ac - 1), argv + i, (argc - i - 1) * sizeof(*nav));
-	nav[nac - 1] = NULL;
+	    memcpy(nav, av, ac * sizeof(*nav));
+	if ((argc - i) > 0)
+	    memcpy(nav + ac, argv + i, (argc - i) * sizeof(*nav));
+	nav[nac] = NULL;
 
 	*argvPtr = argv = _free(argv);
 	av = _free(av);
@@ -143,8 +144,10 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     }
 
     /* Save new argc/argv list. */
-    if (argvPtr)
+    if (argvPtr) {
+	*argvPtr = _free(*argvPtr);
 	*argvPtr = av;
+    }
     if (argcPtr)
 	*argcPtr = ac;
 

@@ -491,21 +491,21 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 
     switch (source) {
     case RPMQV_RPM:
-    {	int argc = 0;
-	const char ** argv = NULL;
+    {	int ac = 0;
+	const char ** av = NULL;
 	const char * fileURL = NULL;
 	int i;
 
-	rc = rpmGlob(arg, &argc, &argv);
+	rc = rpmGlob(arg, &ac, &av);
 	if (rc) return 1;
 
 restart:
-	for (i = 0; i < argc; i++) {
+	for (i = 0; i < ac; i++) {
 	    FD_t fd;
 
 	    fileURL = _free(fileURL);
-	    fileURL = argv[i];
-	    argv[i] = NULL;
+	    fileURL = av[i];
+	    av[i] = NULL;
 
 	    /* Try to read the header from a package file. */
 	    fd = Fopen(fileURL, "r.ufdio");
@@ -550,7 +550,7 @@ restart:
 	    }
 	    
 	    /* Read list of packages from manifest. */
-	    retcode = rpmReadPackageManifest(fd, &argc, &argv);
+	    retcode = rpmReadPackageManifest(fd, &ac, &av);
 	    if (retcode) {
 		rpmError(RPMERR_QUERY, _("%s: Fread failed: %s\n"), fileURL,
 			Fstrerror(fd));
@@ -566,10 +566,10 @@ restart:
 	}
 
 	fileURL = _free(fileURL);
-	if (argv) {
-	    for (i = 0; i < argc; i++)
-		argv[i] = _free(argv[i]);
-	    argv = _free(argv);
+	if (av) {
+	    for (i = 0; i < ac; i++)
+		av[i] = _free(av[i]);
+	    av = _free(av);
 	}
     }	break;
 
