@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-09-13 13:41-0400\n"
+"POT-Creation-Date: 2000-10-31 13:04-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2212,44 +2212,44 @@ msgstr ""
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:908
+#: lib/depends.c:909
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:930
+#: lib/depends.c:931
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:952
+#: lib/depends.c:953
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:962
+#: lib/depends.c:964
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1010
+#: lib/depends.c:1012
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:1072
+#: lib/depends.c:1074
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/depends.c:1127 lib/depends.c:1426
+#: lib/depends.c:1129 lib/depends.c:1428
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Abhängigkeiten zu prüfen"
 
-#: lib/depends.c:1222
+#: lib/depends.c:1224
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -3047,7 +3047,7 @@ msgid "opening database mode 0x%x in %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
 # , c-format
-#: lib/rpmdb.c:160 lib/url.c:445
+#: lib/rpmdb.c:160 lib/url.c:447
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -3653,19 +3653,19 @@ msgstr ""
 msgid "Password for %s@%s: "
 msgstr "Passworf für %s@%s: "
 
-#: lib/url.c:243 lib/url.c:269
+#: lib/url.c:245 lib/url.c:271
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
-#: lib/url.c:405
+#: lib/url.c:407
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
 # , c-format
 #. XXX Fstrerror
-#: lib/url.c:462
+#: lib/url.c:464
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-09-13 13:41-0400\n"
+"POT-Creation-Date: 2000-10-31 13:04-0500\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2054,44 +2054,44 @@ msgstr "%s: %s uppfyllt av tillhandahållanden (provides) från rpmrc.\n"
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s uppfyllt av tillhandahållanden (provides) från rpmrc.\n"
 
-#: lib/depends.c:908
+#: lib/depends.c:909
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr "%s: %s uppfyllt av fillistor från db.\n"
 
-#: lib/depends.c:930
+#: lib/depends.c:931
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr "%s: %s uppfyllt av tillhandahållanden (provides) från db.\n"
 
-#: lib/depends.c:952
+#: lib/depends.c:953
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "%s: %s uppfyllt av db-paket.\n"
 
-#: lib/depends.c:962
+#: lib/depends.c:964
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr "%s: %s ej uppfyllt.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1010
+#: lib/depends.c:1012
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "paket %s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1072
+#: lib/depends.c:1074
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1127 lib/depends.c:1426
+#: lib/depends.c:1129 lib/depends.c:1428
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "kan inte läsa huvud vid %d för beroendekontroll"
 
-#: lib/depends.c:1222
+#: lib/depends.c:1224
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "cirkularitet i kedja av förutsättningar: %s"
@@ -2858,7 +2858,7 @@ msgstr "OK"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "öppnar databas med rättighet 0x%x i %s\n"
 
-#: lib/rpmdb.c:160 lib/url.c:445
+#: lib/rpmdb.c:160 lib/url.c:447
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunde inte öppna %s: %s\n"
@@ -3431,17 +3431,17 @@ msgstr "varning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgid "Password for %s@%s: "
 msgstr "Lösenord för %s@%s: "
 
-#: lib/url.c:243 lib/url.c:269
+#: lib/url.c:245 lib/url.c:271
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "fel: %s-port måste vara ett tal\n"
 
-#: lib/url.c:405
+#: lib/url.c:407
 msgid "url port must be a number\n"
 msgstr "url-port måste vara ett tal\n"
 
 #. XXX Fstrerror
-#: lib/url.c:462
+#: lib/url.c:464
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
