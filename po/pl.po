@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-16 14:19-0400\n"
+"POT-Creation-Date: 2001-08-17 15:18-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3584,31 +3584,31 @@ msgstr "%s pominiêty z powodu flagi missingok\n"
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/verify.c:257
+#: lib/verify.c:274
 #, fuzzy
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "pakiet nie specyfikuje ani nazwy u¿ytkownika ani list id (to nie powinno siê "
 "zdarzyæ)"
 
-#: lib/verify.c:278
+#: lib/verify.c:295
 #, fuzzy
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "pakiet nie specyfikuje ani nazwy grupy ani list id (to nie powinno siê "
 "zdarzyæ)"
 
-#: lib/verify.c:410
+#: lib/verify.c:427
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "brak    %s\n"
 
-#: lib/verify.c:503
+#: lib/verify.c:520
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Niespe³nione zale¿no¶ci dla %s-%s-%s: "
 
-#: lib/verify.c:542
+#: lib/verify.c:559
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

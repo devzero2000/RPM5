@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-16 14:19-0400\n"
+"POT-Creation-Date: 2001-08-17 15:18-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -3637,31 +3637,31 @@ msgstr "%s は missingok フラグのためスキップします\n"
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/verify.c:257
+#: lib/verify.c:274
 #, fuzzy
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "パッケージは ユーザ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:278
+#: lib/verify.c:295
 #, fuzzy
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "パッケージはグループ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:410
+#: lib/verify.c:427
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:503
+#: lib/verify.c:520
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: lib/verify.c:542
+#: lib/verify.c:559
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

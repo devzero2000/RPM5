@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-08-16 14:19-0400\n"
+"POT-Creation-Date: 2001-08-17 15:18-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3411,25 +3411,25 @@ msgstr ""
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/verify.c:257
+#: lib/verify.c:274
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:278
+#: lib/verify.c:295
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:410
+#: lib/verify.c:427
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:503
+#: lib/verify.c:520
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: lib/verify.c:542
+#: lib/verify.c:559
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

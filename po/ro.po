@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-16 14:19-0400\n"
+"POT-Creation-Date: 2001-08-17 15:18-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -3406,25 +3406,25 @@ msgstr ""
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/verify.c:257
+#: lib/verify.c:274
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:278
+#: lib/verify.c:295
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:410
+#: lib/verify.c:427
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:503
+#: lib/verify.c:520
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: lib/verify.c:542
+#: lib/verify.c:559
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

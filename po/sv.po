@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-16 14:19-0400\n"
+"POT-Creation-Date: 2001-08-17 15:18-0400\n"
 "PO-Revision-Date: 2001-08-02 14:13+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3466,28 +3466,28 @@ msgstr "%s överhoppad på grund av missingok-flagga\n"
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
 
-#: lib/verify.c:257
+#: lib/verify.c:274
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "paketet saknar både användarnamn och id-listor (detta borde aldrig "
 "inträffa)\n"
 
-#: lib/verify.c:278
+#: lib/verify.c:295
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "paketet saknar både gruppnamn och id-listor (detta borde aldrig inträffa)\n"
 
-#: lib/verify.c:410
+#: lib/verify.c:427
 #, c-format
 msgid "missing    %s"
 msgstr "saknas     %s"
 
-#: lib/verify.c:503
+#: lib/verify.c:520
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
-#: lib/verify.c:542
+#: lib/verify.c:559
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrollsumma för oföränderlig huvudregion misslyckades\n"

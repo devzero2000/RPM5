@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-16 14:19-0400\n"
+"POT-Creation-Date: 2001-08-17 15:18-0400\n"
 "PO-Revision-Date: 2001-08-13 21:38+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3484,27 +3484,27 @@ msgstr "missingok 플래그로 인해 %s (을)를 생략합니다\n"
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"
 
-#: lib/verify.c:257
+#: lib/verify.c:274
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "패키지에 사용자 이름과 id 목록이 없습니다 (절대 이렇게 되어서는 안됩니다)\n"
 
-#: lib/verify.c:278
+#: lib/verify.c:295
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "패키지에 그룹 이름과 id 목록이 없습니다 (절대 이렇게 되어서는 안됩니다)\n"
 
-#: lib/verify.c:410
+#: lib/verify.c:427
 #, c-format
 msgid "missing    %s"
 msgstr "다음을 찾을 수 없습니다    %s"
 
-#: lib/verify.c:503
+#: lib/verify.c:520
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 에 의존성 문제 발생: "
 
-#: lib/verify.c:542
+#: lib/verify.c:559
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
