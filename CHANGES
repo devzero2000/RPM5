@@ -65,7 +65,7 @@
 	- add aurora/sparc patches (#124469).
 	- use poll(2) if available, avoid borked aurora/sparc select (#124574).
 
-4.2.3 -> 4.3:
+4.2.4 -> 4.3:
 	- upgrade to zlib-1.2.beta7.
 	- fix: short option help missing string terminator.
 	- permit secondary tag match patterns with RPMQV_ALL.
@@ -101,6 +101,9 @@
 	- fix: handle elf64 note sections correctly.
 	- fix: grrr, skip notes on non-i386 entirely.
 	- fix: dev package build on s390x hack around.
+
+4.2.3 -> 4.2.4:
+	- generate debuginfo for setuid binaries (#100963).
 
 4.2.2 -> 4.2.3:
 	- bump rpm and popt versions to insure "newer".

@@ -15,7 +15,7 @@ echo -n > $SOURCEFILE
 
 # Strip ELF binaries
 for f in `find $RPM_BUILD_ROOT -path "${debugdir}" -prune -o -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`
+	sed -n -e 's/^\(.*\):[  ]*.*ELF.* executable.*, not stripped/\1/p'`
 do
 	dn=$(dirname $f | sed -n -e "s#^$RPM_BUILD_ROOT##p")
 	bn=$(basename $f .debug).debug
