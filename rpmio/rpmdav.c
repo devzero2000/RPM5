@@ -834,6 +834,7 @@ static void hexdump(const unsigned char * buf, ssize_t len)
 }
 #endif
 
+#ifdef	OLDNEON
 static void davAcceptRanges(void * userdata, const char * value)
 {
     urlinfo u = userdata;
@@ -876,6 +877,7 @@ fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, value);
     else if (!strcasecmp(value, "Keep-Alive"))
 	ctrl->persist = 1;
 }
+#endif
 
 /*@-mustmod@*/ /* HACK: stash error in *str. */
 int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
@@ -922,12 +924,14 @@ assert(ctrl->req != NULL);
 
     ne_set_request_private(ctrl->req, "fd", ctrl);
 
+#ifdef	OLDNEON
     ne_add_response_header_catcher(ctrl->req, davAllHeaders, ctrl);
 
     ne_add_response_header_handler(ctrl->req, "Content-Length",
 		davContentLength, ctrl);
     ne_add_response_header_handler(ctrl->req, "Connection",
 		davConnection, ctrl);
+#endif
 
     if (!strcmp(httpCmd, "PUT")) {
 	ctrl->wr_chunked = 1;
@@ -938,8 +942,10 @@ assert(ctrl->req != NULL);
     } else {
 	/* HACK: possible Last-Modified: Tue, 02 Nov 2004 14:29:36 GMT */
 	/* HACK: possible ETag: "inode-size-mtime" */
+#ifdef	OLDNEON
 	ne_add_response_header_handler(ctrl->req, "Accept-Ranges",
 			davAcceptRanges, u);
+#endif
 	/* HACK: possible Transfer-Encoding: on GET. */
 
 	/* HACK: other errors may need retry too. */

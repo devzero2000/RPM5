@@ -1,6 +1,7 @@
-#/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
+#/*! \page config_rpmrc Default configuration: @RPMCONFIGDIR@/rpmrc
 # \verbatim
 #
+# @RPMCONFIGDIR@/@configure_input@
 # $Id$
 #
 # This is a global RPM configuration file. All changes made here will
