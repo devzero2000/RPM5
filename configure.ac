@@ -8,7 +8,7 @@ AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 AC_CONFIG_HEADERS
-AM_INIT_AUTOMAKE(rpm, 4.2.2)
+AM_INIT_AUTOMAKE(rpm, 4.2.3)
 AM_CONFIG_HEADER(config.h)
 
 dnl XXX AM_MAINTAINER_MODE

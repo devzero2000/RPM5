@@ -1,3 +1,9 @@
+4.2.2 -> 4.2.3:
+	- bump rpm and popt versions to insure "newer".
+	- change default behavior to resolve file conflicts as LIFO.
+	- add --fileconflicts to recover rpm traditional behavior.
+	- prefer elf64 over elf32 files, everywhere and always (#126853).
+
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
 	- make peace with libtool-1.5, autoconf-2.59, automake-1.8.
