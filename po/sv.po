@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-17 15:18-0400\n"
+"POT-Creation-Date: 2001-08-23 23:23-0400\n"
 "PO-Revision-Date: 2001-08-23 21:34+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -489,8 +489,8 @@ msgstr "visa enbart konfigurationsfiler (implicerar -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or "
-"-d)"
+"show all verifiable information for each file (must be used with -l, -c, or -"
+"d)"
 msgstr ""
 "visa all verifierbar information för varje fil (måste användas med -l, -c "
 "eller -d)"
@@ -584,8 +584,8 @@ msgstr "kortform för --replacepkgs --replacefiles"
 #: lib/poptI.c:124 rpm.c:447
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
-"skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med "
-"-v)"
+"skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med -"
+"v)"
 
 #: lib/poptI.c:89 rpm.c:449
 msgid "install all files, even configurations which might otherwise be skipped"
@@ -2433,8 +2433,8 @@ msgstr "bygg endast källpaket från <specfil>"
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
-"bygg till och med %prep (packa upp källkod samt applicera patchar) från "
-"<tar-arkiv>"
+"bygg till och med %prep (packa upp källkod samt applicera patchar) från <tar-"
+"arkiv>"
 
 #: lib/poptBT.c:149 lib/poptBT.c:152 lib/poptBT.c:155 lib/poptBT.c:158
 #: lib/poptBT.c:161 lib/poptBT.c:164 lib/poptBT.c:167
@@ -3305,8 +3305,8 @@ msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
-"Förväntad storlek: %12d = "
-"inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%d)\n"
+"Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
+"d)\n"
 
 #: lib/signature.c:139
 #, c-format
@@ -3612,8 +3612,8 @@ msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
+"More information is available from http://www.rpm.org or the rpm-list@redhat."
+"com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "frilistan trasig (%u)- var god kör\n"
