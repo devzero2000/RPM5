@@ -5,12 +5,13 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL \
 	RPM-GPG-KEY RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	gendiff po/*.in po/*.po po/rpm.pot \
+	gendiff installplatform platform* \
+	po/*.in po/*.po po/rpm.pot \
 	python/*.am python/*.in python/*.c python/*.h python/testit \
 	rpm.magic rpmpopt rpm.spec installplatform
 
 # XXX TODO: python perl
-SUBDIRS = intl po popt build lib misc tools scripts tests doc .
+SUBDIRS = intl po popt lib build misc tools scripts tests doc .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/popt \
 	@INCPATH@
@@ -62,7 +63,6 @@ install-data-local:
 	@@LN_S@ rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
 	@case "@build_cpu@" in \
-	*86) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i386 ;;\
 	*86)	$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i386;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i486;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i586;\

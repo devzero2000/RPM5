@@ -149,7 +149,7 @@ if test "$cross_compiling" != "yes"; then
 dnl
 dnl Set search path for common programs
 dnl
-    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/opt/gnu/bin"
+    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
 
 dnl
 dnl Find some common programs
@@ -260,9 +260,9 @@ dnl
 dnl Check for features
 dnl
 
-### use option --enable-v5-packages to turn on support for rpm-4.x packages
+### use option --enable-v5-packages to turn on support for rpm-5.x packages
 AC_MSG_CHECKING(if you want experimental rpm-5.0 packages)
-AC_ARG_ENABLE(v4-packages,
+AC_ARG_ENABLE(v5-packages,
         [  --enable-v5-packages[=no]    [experimental] support for rpm-5.x packages],
         [with_v5_packages=$enableval],
         [with_v5_packages=no])

@@ -1,4 +1,11 @@
 3.0.4 -> 3.0.5
+	- fix: --define and --eval on alpha were broke.
+	- configure.in fiddles for BSD systems (Patrick Schoo).
+	- solaris2.6: avoid bsearch with empty dir list (Ric Klaren - klaren@cs.utwente.nl)
+	- include RPM-GPG-KEY in file manifest.
+	- Add ia64 and sparc64 changes. 
+	- rpm.spec: add per-platform sub-directories.
+	- FreeBSD fixes (bero@redhat.com).
 	- handle version 4 packaging as input.
 	- builds against bzip2 1.0
 	- fix: resurrect symlink unique'ifying property of finger prints.

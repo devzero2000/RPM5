@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 8.6x
+Release: 9.6x
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -144,7 +144,7 @@ fi
 
 %files
 %defattr(-,root,root)
-%doc RPM-PGP-KEY CHANGES GROUPS doc/manual/*
+%doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/*
 /bin/rpm
 %ifos linux
 %dir /etc/rpm

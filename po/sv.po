@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-20 00:28-0400\n"
+"POT-Creation-Date: 2000-07-22 07:54-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -140,7 +140,8 @@ msgid "This may be freely redistributed under the terms of the GNU GPL"
 msgstr "Den här programvaran kan distribueras fritt med hänsyn till GNU GPL"
 
 #: rpm.c:224
-msgid "usage: rpm {--help}"
+#, fuzzy
+msgid "Usage: rpm {--help}"
 msgstr "använd: rpm {--help}"
 
 #: rpm.c:225
@@ -370,7 +371,8 @@ msgid "       rpm {--querytags}"
 msgstr "       rpm {--querytags}"
 
 #: rpm.c:309
-msgid "usage:"
+#, fuzzy
+msgid "Usage:"
 msgstr "användning:"
 
 #: rpm.c:311
@@ -914,8 +916,8 @@ msgid "rebuild database from existing database"
 msgstr "bygg om databasen från existerande databas"
 
 #: rpm.c:690 rpm.c:696 rpm.c:703 rpm.c:709 rpm.c:718 rpm.c:725 rpm.c:772
-#: rpm.c:778 rpm.c:785 rpm.c:820 rpm.c:826 rpm.c:832 rpm.c:840 rpm.c:884
-#: rpm.c:939 rpm.c:946
+#: rpm.c:778 rpm.c:785 rpm.c:820 rpm.c:826 rpm.c:832 rpm.c:840 rpm.c:886
+#: rpm.c:941 rpm.c:948
 msgid "only one major mode may be specified"
 msgstr "enbart ett läge kan specifieras"
 
@@ -935,7 +937,7 @@ msgstr "--build (-b) kräver en av a,b,i,c,p,l som dess enda argument"
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr "--tarbuild (-t) kräver en av a,b,i,c,p,l som sitt enda argument"
 
-#: rpm.c:793 rpm.c:799 rpm.c:806 rpm.c:813 rpm.c:953
+#: rpm.c:793 rpm.c:799 rpm.c:806 rpm.c:813 rpm.c:955
 msgid "one type of query/verify may be performed at a time"
 msgstr "en typ av undersökning/verifiering kan utföras åt gången"
 
@@ -943,128 +945,128 @@ msgstr "en typ av undersökning/verifiering kan utföras åt gången"
 msgid "arguments to --dbpath must begin with a /"
 msgstr "argument till --dbpath måste börja med /"
 
-#: rpm.c:890
+#: rpm.c:892
 msgid "relocations must begin with a /"
 msgstr "omflyttningar måste börja med /"
 
-#: rpm.c:892
+#: rpm.c:894
 msgid "relocations must contain a ="
 msgstr "omflyttningar måste innehålla ett ="
 
-#: rpm.c:895
+#: rpm.c:897
 msgid "relocations must have a / following the ="
 msgstr "omflyttningar måste ha ett / efter ="
 
-#: rpm.c:904
+#: rpm.c:906
 msgid "exclude paths must begin with a /"
 msgstr "uteslutna sökvägar måste börja med /"
 
-#: rpm.c:913
+#: rpm.c:915
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Internt fel i argumenthantering (%d) :-(\n"
 
-#: rpm.c:964
+#: rpm.c:966
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath angivet för en operation som inte använder någon databas"
 
-#: rpm.c:968
+#: rpm.c:970
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck kan enbart användas vid pakettillverkning"
 
-#: rpm.c:971
+#: rpm.c:973
 msgid "unexpected query flags"
 msgstr "oväntade undersökningsflaggor"
 
-#: rpm.c:974
+#: rpm.c:976
 msgid "unexpected query format"
 msgstr "oväntat undersökningsformat"
 
-#: rpm.c:977
+#: rpm.c:979
 msgid "unexpected query source"
 msgstr "oväntad undersökningskälla"
 
-#: rpm.c:983
+#: rpm.c:985
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "enbart installation, uppgradering, rmsource och rmspec kan tvingas fram"
 
-#: rpm.c:986
+#: rpm.c:988
 msgid "files may only be relocated during package installation"
 msgstr "filer kan relokeras endast under paketinstallation"
 
-#: rpm.c:989
+#: rpm.c:991
 msgid "only one of --prefix or --relocate may be used"
 msgstr "enbart en av --prefix eller --relocate kan användas"
 
-#: rpm.c:992
+#: rpm.c:994
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate och --excludepath kan endast användas när nya paket installeras"
 
-#: rpm.c:995
+#: rpm.c:997
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan endast användas när nya paket installeras"
 
-#: rpm.c:998
+#: rpm.c:1000
 msgid "arguments to --prefix must begin with a /"
 msgstr "argument till --prefix måste börja med /"
 
-#: rpm.c:1001
+#: rpm.c:1003
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan enbart användas vid paketinstallation"
 
-#: rpm.c:1005
+#: rpm.c:1007
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan enbart användas vid paketinstallation"
 
-#: rpm.c:1009
+#: rpm.c:1011
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles kan enbart användas vid paketinstallation"
 
-#: rpm.c:1013
+#: rpm.c:1015
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan enbart användas vid paketinstallation"
 
-#: rpm.c:1017
+#: rpm.c:1019
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs kan enbart användas vid paketinstallation"
 
-#: rpm.c:1021
+#: rpm.c:1023
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs kan enbart användas vid paketinstallation"
 
-#: rpm.c:1025
+#: rpm.c:1027
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "enbart en av --excludedocs och --includedocs läge kan specifieras"
 
-#: rpm.c:1029
+#: rpm.c:1031
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch kan enbart användas vid paketinstallation"
 
-#: rpm.c:1033
+#: rpm.c:1035
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos kan enbart användas vid paketinstallation"
 
-#: rpm.c:1037
+#: rpm.c:1039
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize kan enbart användas vid paketinstallation"
 
-#: rpm.c:1041
+#: rpm.c:1043
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches kan enbart användas när paket tas bort"
 
-#: rpm.c:1045
+#: rpm.c:1047
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles kan enbart användas vid paketinstallation"
 
-#: rpm.c:1049
+#: rpm.c:1051
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb kan enbart användas vid installation och avinstallation av paket"
 
-#: rpm.c:1054
+#: rpm.c:1056
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -1072,7 +1074,7 @@ msgstr ""
 "--noscripts kan enbart användas vid paketinstallation, avinstallation och "
 "verifiering"
 
-#: rpm.c:1058
+#: rpm.c:1060
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
@@ -1080,7 +1082,7 @@ msgstr ""
 "--notriggers kan enbart användas vid installation, avinstallation och "
 "verifiering"
 
-#: rpm.c:1062
+#: rpm.c:1064
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1089,14 +1091,14 @@ msgstr ""
 "--nodeps kan enbart användas vid tillverkning, installation, avinstallation, "
 "och verifiering"
 
-#: rpm.c:1067
+#: rpm.c:1069
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test kan enbart användas vid installation, avinstallation och tillverkning"
 
-#: rpm.c:1071
+#: rpm.c:1073
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1104,121 +1106,121 @@ msgstr ""
 "--root (-r) kan enbart användas vid installation, avinstallation, förfrågan, "
 "och databasombyggnad"
 
-#: rpm.c:1083
+#: rpm.c:1085
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argument till --root (-r) måste börja med /"
 
-#: rpm.c:1089
+#: rpm.c:1091
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage kan enbart användas vid paketuppgraderingar"
 
-#: rpm.c:1094
+#: rpm.c:1096
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "ftp-flaggor kan enbart användas vid förfrågan, installation och uppgradering"
 
-#: rpm.c:1100
+#: rpm.c:1102
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "http-flaggor kan enbart användas vid förfrågan, installation och uppgradering"
 
-#: rpm.c:1104
+#: rpm.c:1106
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp kan enbart användas vid signaturkontroll"
 
-#: rpm.c:1107
+#: rpm.c:1109
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg kan enbart användas vid signaturkontroll"
 
-#: rpm.c:1110
+#: rpm.c:1112
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 kan enbart användas vid signaturkontroll och paketverifiering"
 
-#: rpm.c:1138
+#: rpm.c:1140
 msgid "no files to sign\n"
 msgstr "inga filer att signera\n"
 
-#: rpm.c:1143
+#: rpm.c:1145
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "kan inte komma åt filen %s\n"
 
-#: rpm.c:1158
+#: rpm.c:1160
 msgid "pgp not found: "
 msgstr "pgp hittades inte: "
 
-#: rpm.c:1162
+#: rpm.c:1164
 msgid "Enter pass phrase: "
 msgstr "Ange lösenfras: "
 
-#: rpm.c:1164
+#: rpm.c:1166
 msgid "Pass phrase check failed\n"
 msgstr "Kontrollen av lösenfrasen misslyckades\n"
 
-#: rpm.c:1167
+#: rpm.c:1169
 msgid "Pass phrase is good.\n"
 msgstr "Lösenfrasen är ok.\n"
 
-#: rpm.c:1172
+#: rpm.c:1174
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Felaktig %%_signature spec i makrofil.\n"
 
-#: rpm.c:1178
+#: rpm.c:1180
 msgid "--sign may only be used during package building"
 msgstr "--sign kan enbart användas vid pakettillverkning"
 
-#: rpm.c:1193
+#: rpm.c:1195
 msgid "exec failed\n"
 msgstr "exec misslyckades\n"
 
-#: rpm.c:1212
+#: rpm.c:1214
 msgid "unexpected arguments to --querytags "
 msgstr "oväntade argument till --querytags "
 
-#: rpm.c:1223
+#: rpm.c:1225
 msgid "no packages given for signature check"
 msgstr "inga paket angivna för signatur kontroll"
 
-#: rpm.c:1234
+#: rpm.c:1236
 msgid "no packages given for signing"
 msgstr "inga paket angivna för signering"
 
-#: rpm.c:1246
+#: rpm.c:1248
 msgid "no packages files given for rebuild"
 msgstr "inga paketfiler angivna för omtillverkning"
 
-#: rpm.c:1309
+#: rpm.c:1311
 msgid "no spec files given for build"
 msgstr "ingen spec-filer angivna för tillverkning"
 
-#: rpm.c:1311
+#: rpm.c:1313
 msgid "no tar files given for build"
 msgstr "inga tar-filer angivna för tillverkning"
 
-#: rpm.c:1327
+#: rpm.c:1329
 msgid "no packages given for uninstall"
 msgstr "inga paket angivna för avinstallation"
 
-#: rpm.c:1378
+#: rpm.c:1380
 msgid "no packages given for install"
 msgstr "inga paket angivna för installation"
 
-#: rpm.c:1401
+#: rpm.c:1403
 msgid "extra arguments given for query of all packages"
 msgstr "extra argument angivna för förfrågan om alla paket"
 
-#: rpm.c:1406
+#: rpm.c:1408
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för undersökning"
 
-#: rpm.c:1423
+#: rpm.c:1425
 msgid "extra arguments given for verify of all packages"
 msgstr "extra argument angivna för verifiering av alla paket"
 
-#: rpm.c:1427
+#: rpm.c:1429
 msgid "no arguments given for verify"
 msgstr "inga parametrar angivna för verifiering"
 

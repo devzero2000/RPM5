@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-07-20 00:28-0400\n"
+msgstr "POT-Creation-Date: 2000-07-22 07:54-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:460
 #, c-format
@@ -152,7 +152,8 @@ msgstr ""
 "Pública GNU (GPL)"
 
 #: rpm.c:224
-msgid "usage: rpm {--help}"
+#, fuzzy
+msgid "Usage: rpm {--help}"
 msgstr "uso: rpm {--help}"
 
 #: rpm.c:225
@@ -415,7 +416,8 @@ msgid "       rpm {--querytags}"
 msgstr ""
 
 #: rpm.c:309
-msgid "usage:"
+#, fuzzy
+msgid "Usage:"
 msgstr "uso:"
 
 #: rpm.c:311
@@ -995,8 +997,8 @@ msgid "rebuild database from existing database"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
 #: rpm.c:690 rpm.c:696 rpm.c:703 rpm.c:709 rpm.c:718 rpm.c:725 rpm.c:772
-#: rpm.c:778 rpm.c:785 rpm.c:820 rpm.c:826 rpm.c:832 rpm.c:840 rpm.c:884
-#: rpm.c:939 rpm.c:946
+#: rpm.c:778 rpm.c:785 rpm.c:820 rpm.c:826 rpm.c:832 rpm.c:840 rpm.c:886
+#: rpm.c:941 rpm.c:948
 msgid "only one major mode may be specified"
 msgstr "somente um modo principal pode ser especificado"
 
@@ -1016,7 +1018,7 @@ msgstr "--build (-b) requer um único argumento do tipo a,b,i,c,p,l"
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr "--tarbuild (-t) requer um único argumento do tipo a,b,i,c,p,l"
 
-#: rpm.c:793 rpm.c:799 rpm.c:806 rpm.c:813 rpm.c:953
+#: rpm.c:793 rpm.c:799 rpm.c:806 rpm.c:813 rpm.c:955
 msgid "one type of query/verify may be performed at a time"
 msgstr "um tipo de pesquisa/verificação pode ser feita por vez"
 
@@ -1024,148 +1026,148 @@ msgstr "um tipo de pesquisa/verificação pode ser feita por vez"
 msgid "arguments to --dbpath must begin with a /"
 msgstr "argumentos para o --dbpath devem começar com uma /"
 
-#: rpm.c:890
+#: rpm.c:892
 #, fuzzy
 msgid "relocations must begin with a /"
 msgstr "argumentos para o --dbpath devem começar com uma /"
 
-#: rpm.c:892
+#: rpm.c:894
 msgid "relocations must contain a ="
 msgstr ""
 
-#: rpm.c:895
+#: rpm.c:897
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: rpm.c:904
+#: rpm.c:906
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "argumentos para o --dbpath devem começar com uma /"
 
-#: rpm.c:913
+#: rpm.c:915
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpm.c:964
+#: rpm.c:966
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath passado para uma operação que não usa um banco de dados"
 
-#: rpm.c:968
+#: rpm.c:970
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck somente pode ser usado durante a construção de pacotes"
 
-#: rpm.c:971
+#: rpm.c:973
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "fonte de pesquisa não esperado"
 
-#: rpm.c:974
+#: rpm.c:976
 #, fuzzy
 msgid "unexpected query format"
 msgstr "fonte de pesquisa não esperado"
 
-#: rpm.c:977
+#: rpm.c:979
 msgid "unexpected query source"
 msgstr "fonte de pesquisa não esperado"
 
-#: rpm.c:983
+#: rpm.c:985
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "somente instalação e atualização podem ser forçadas"
 
-#: rpm.c:986
+#: rpm.c:988
 #, fuzzy
 msgid "files may only be relocated during package installation"
 msgstr "--percent somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:989
+#: rpm.c:991
 #, fuzzy
 msgid "only one of --prefix or --relocate may be used"
 msgstr "somente um entre --excludedocs e --includedocs pode ser especificado"
 
-#: rpm.c:992
+#: rpm.c:994
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--prefix somente pode ser usada quando se está instalando novos pacotes"
 
-#: rpm.c:995
+#: rpm.c:997
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 "--prefix somente pode ser usada quando se está instalando novos pacotes"
 
-#: rpm.c:998
+#: rpm.c:1000
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumentos para --prefix devem começar com uma /"
 
-#: rpm.c:1001
+#: rpm.c:1003
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 "--hash (-h) somente podem ser especificado durante instalações de pacotes"
 
-#: rpm.c:1005
+#: rpm.c:1007
 msgid "--percent may only be specified during package installation"
 msgstr "--percent somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1009
+#: rpm.c:1011
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--percent somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1013
+#: rpm.c:1015
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 "--replacepkgs somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1017
+#: rpm.c:1019
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 "--excludedocs somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1021
+#: rpm.c:1023
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 "--includedocs somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1025
+#: rpm.c:1027
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "somente um entre --excludedocs e --includedocs pode ser especificado"
 
-#: rpm.c:1029
+#: rpm.c:1031
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 "--ignorearch somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1033
+#: rpm.c:1035
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 "--ignoreos somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1037
+#: rpm.c:1039
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 "--ignoreos somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1041
+#: rpm.c:1043
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 "--allmatches somente pode ser especificado durante desinstalações de pacotes"
 
-#: rpm.c:1045
+#: rpm.c:1047
 #, fuzzy
 msgid "--allfiles may only be specified during package installation"
 msgstr "--percent somente pode ser especificado durante instalações de pacotes"
 
-#: rpm.c:1049
+#: rpm.c:1051
 #, fuzzy
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--test somente pode ser especificado durante [des]instalações e construções "
 "de pacotes"
 
-#: rpm.c:1054
+#: rpm.c:1056
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -1173,7 +1175,7 @@ msgstr ""
 "--noscripts somente pode ser especificado durante [des]instalações e "
 "verificações de pacotes"
 
-#: rpm.c:1058
+#: rpm.c:1060
 #, fuzzy
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
@@ -1182,7 +1184,7 @@ msgstr ""
 "--nodeps somente pode ser especificado durante [des]instalações e "
 "verificações de pacotes"
 
-#: rpm.c:1062
+#: rpm.c:1064
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1191,7 +1193,7 @@ msgstr ""
 "--nodeps somente pode ser especificado durante [des]instalações e "
 "verificações de pacotes"
 
-#: rpm.c:1067
+#: rpm.c:1069
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -1199,7 +1201,7 @@ msgstr ""
 "--test somente pode ser especificado durante [des]instalações e construções "
 "de pacotes"
 
-#: rpm.c:1071
+#: rpm.c:1073
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1207,22 +1209,22 @@ msgstr ""
 "--root (-r) somente pode ser especificado durante [des]instalações, "
 "pesquisas e reconstrução de bancos de dados"
 
-#: rpm.c:1083
+#: rpm.c:1085
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumentos para --root (-r) devem começar com uma /"
 
-#: rpm.c:1089
+#: rpm.c:1091
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage somente pode ser usado durante a atualização de pacotes"
 
-#: rpm.c:1094
+#: rpm.c:1096
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "opções ftp somente podem ser usadas durante pesquisas, instalações e "
 "atualizações de pacotes"
 
-#: rpm.c:1100
+#: rpm.c:1102
 #, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
@@ -1230,16 +1232,16 @@ msgstr ""
 "opções ftp somente podem ser usadas durante pesquisas, instalações e "
 "atualizações de pacotes"
 
-#: rpm.c:1104
+#: rpm.c:1106
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp somente pode ser usado durante checagem de assinaturas"
 
-#: rpm.c:1107
+#: rpm.c:1109
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nopgp somente pode ser usado durante checagem de assinaturas"
 
-#: rpm.c:1110
+#: rpm.c:1112
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
@@ -1247,91 +1249,91 @@ msgstr ""
 "--nopgp somente pode ser usado durante checagem de assinaturas e verificação "
 "de pacotes"
 
-#: rpm.c:1138
+#: rpm.c:1140
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1143
+#: rpm.c:1145
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpm.c:1158
+#: rpm.c:1160
 #, fuzzy
 msgid "pgp not found: "
 msgstr "não foi passado pacote para desinstalação"
 
-#: rpm.c:1162
+#: rpm.c:1164
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1164
+#: rpm.c:1166
 msgid "Pass phrase check failed\n"
 msgstr "Checagem de pass phrase falhou\n"
 
-#: rpm.c:1167
+#: rpm.c:1169
 msgid "Pass phrase is good.\n"
 msgstr "Pass phrase ok.\n"
 
-#: rpm.c:1172
+#: rpm.c:1174
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1178
+#: rpm.c:1180
 msgid "--sign may only be used during package building"
 msgstr "--sign somente pode ser usado durante a construção de pacotes"
 
-#: rpm.c:1193
+#: rpm.c:1195
 #, fuzzy
 msgid "exec failed\n"
 msgstr "Construção falhou.\n"
 
-#: rpm.c:1212
+#: rpm.c:1214
 msgid "unexpected arguments to --querytags "
 msgstr "argumentos não esperados em --querytags"
 
-#: rpm.c:1223
+#: rpm.c:1225
 msgid "no packages given for signature check"
 msgstr "nenhum pacote informado para checagem de assinatura"
 
-#: rpm.c:1234
+#: rpm.c:1236
 msgid "no packages given for signing"
 msgstr "não foram passados pacotes para assinatura"
 
-#: rpm.c:1246
+#: rpm.c:1248
 msgid "no packages files given for rebuild"
 msgstr "não foram passados pacotes para reconstrução"
 
-#: rpm.c:1309
+#: rpm.c:1311
 msgid "no spec files given for build"
 msgstr "não foi passado arquivo spec para construção"
 
-#: rpm.c:1311
+#: rpm.c:1313
 msgid "no tar files given for build"
 msgstr "não foram passados arquivos tar para construção"
 
-#: rpm.c:1327
+#: rpm.c:1329
 msgid "no packages given for uninstall"
 msgstr "não foi passado pacote para desinstalação"
 
-#: rpm.c:1378
+#: rpm.c:1380
 msgid "no packages given for install"
 msgstr "não foi passado pacote para instalação"
 
-#: rpm.c:1401
+#: rpm.c:1403
 msgid "extra arguments given for query of all packages"
 msgstr "foram passados argumentos em excesso para pesquisa em todos os pacotes"
 
-#: rpm.c:1406
+#: rpm.c:1408
 msgid "no arguments given for query"
 msgstr "não foi passado argumento para pesquisa"
 
-#: rpm.c:1423
+#: rpm.c:1425
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "foram passados argumentos em excesso para pesquisa em todos os pacotes"
 
-#: rpm.c:1427
+#: rpm.c:1429
 msgid "no arguments given for verify"
 msgstr "não foi passado argumento para verificação"
 
