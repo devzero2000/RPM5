@@ -67,7 +67,7 @@ static PyObject * pyrpmError;
  * 	import os, rpm
  *  
  * 	fd = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
- * 	(isSource, header) = rpm.headerFromPackage(fd)
+ * 	(header, isSource) = rpm.headerFromPackage(fd)
  * 	fd.close()
  * \endcode
  * The Python interface to the header data is quite elegant.  It
