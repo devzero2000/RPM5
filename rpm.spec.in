@@ -494,6 +494,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Oct 15 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-13
+- fix: don't set handler if SIG_IGN is already set (#134474).
+
 * Mon Oct 11 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-12
 - python: remove ".A" from creaky ts.check() tuple return (#135008).
 
