@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-06-05 16:19-0400\n"
+msgstr "POT-Creation-Date: 2001-06-05 17:49-0400\n"
 
 #: build.c:36
 #, fuzzy, c-format
@@ -2603,7 +2603,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2772 lib/header.c:2791 lib/header.c:2811
+#: lib/header.c:2776 lib/header.c:2795 lib/header.c:2815
 msgid "(not a number)"
 msgstr ""
 
@@ -2691,79 +2691,79 @@ msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2102
+#: lib/header.c:2104
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2132
+#: lib/header.c:2134
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2146
+#: lib/header.c:2148
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2158
+#: lib/header.c:2160
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2175
+#: lib/header.c:2177
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2202
+#: lib/header.c:2204
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2220
+#: lib/header.c:2222
 #, fuzzy
 msgid "unexpected ]"
 msgstr "source de requête inattendue"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2224
+#: lib/header.c:2226
 #, fuzzy
 msgid "unexpected }"
 msgstr "source de requête inattendue"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2289
+#: lib/header.c:2291
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2298
+#: lib/header.c:2300
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2311 lib/header.c:2353
+#: lib/header.c:2313 lib/header.c:2355
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2321
+#: lib/header.c:2323
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2338
+#: lib/header.c:2340
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2363
+#: lib/header.c:2365
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2540
+#: lib/header.c:2544
 msgid "(unknown type)"
 msgstr ""
 
