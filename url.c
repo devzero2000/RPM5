@@ -205,15 +205,11 @@ int urlGetFile(char * url, char * dest) {
     }
 
     if ((rc = ftpGetFile(ftpconn, fileName, fd))) {
-	free(fileName);
 	unlink(dest);
-	close(fd);
-	ftpClose(ftpconn);
-	return rc;
     }    
 
     free(fileName);
-
+    close(fd);
     ftpClose(ftpconn);
 
     return rc;
