@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.15
+Release: 0.16
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -173,6 +173,8 @@ do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
 
+# - serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
+mkdir -p ${RPM_BUILD_ROOT}/var/lock/rpm
 %endif
 
 %if %{with_apidocs}
@@ -264,6 +266,7 @@ exit 0
 #%config(noreplace,missingok)	/etc/rpm/macros.*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lock/rpm
 
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 %rpmdbattr	/var/lib/rpm/*
