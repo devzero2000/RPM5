@@ -82,6 +82,8 @@ else
 fi
 AC_MSG_RESULT($LDFLAGS_STATIC)
 
+dnl make sure we set a default for RPM.
+RPM=rpm.shared
 if test -n "$LDFLAGS_STATIC"
 then
   AC_CHECKING(if we can link dynamically and still access the services switch)

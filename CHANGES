@@ -1,7 +1,8 @@
 2.5.5 -> 2.5.6:
+	- configure.in: set default value for RPM. (Tim Mooney)
 	- add new Epoch: keyword just like Serial:.
 	- update Russian translation w man pages.
-	- solaris: don't attempt static link. (Tim Monney)
+	- solaris: don't attempt static link. (Tim Mooney)
 	- fix: timeCheck in rpm.c should be unsigned long. (Tim Mooney)
 	- osf: prov searches only shared libraries. (Tim Mooney)
 	- solaris: set PATH in prov/req scripts. (Tim Mooney)
