@@ -22,14 +22,14 @@ static char * hkppath = HKPPATH;
 static unsigned int keyids[] = {
 	0xF5C75256,
 	0xe418e3aa,
-	0x897da07a,
-	0xdb42a60e,
 	0x4f2a6fd2,
-	0xcba29bf9,
-	0x2039b291,
 	0x30c9ecf8,
 	0x8df56d05,
+	0xcba29bf9,
+	0xdb42a60e,
+	0x897da07a,
 	0x1cddbca9,
+	0x2039b291,
 	0
 };
 
@@ -38,6 +38,7 @@ static int readKeys(const char * uri)
     unsigned int * kip;
     const byte * pkt;
     ssize_t pktlen;
+    byte keyid[8];
     char fn[BUFSIZ];
     pgpDig dig;
     int rc;
@@ -59,9 +60,17 @@ fprintf(stderr, "======================= %s\n", fn);
         }
 
 	dig = pgpNewDig();
+#if 0
 	rc = pgpPrtPkts(pkt, pktlen, dig, _printing);
 	if (rc)
 	    ec++;
+#else
+#if 0
+fprintf(stderr, "%s\n", pgpHexStr(pkt, pktlen));
+#endif
+	if (!pgpPubkeyFingerprint(pkt, pktlen, keyid))
+fprintf(stderr, "KEYID: %08x %08x\n", pgpGrab(keyid, 4), pgpGrab(keyid+4, 4));
+#endif
 	dig = pgpFreeDig(dig);
 
 	free((void *)pkt);

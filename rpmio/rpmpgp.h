@@ -1079,7 +1079,7 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
 char * pgpHexStr(const byte *p, unsigned int plen)
 	/*@*/
 {
-    static char prbuf[2048];
+    static char prbuf[8*BUFSIZ];	/* XXX ick */
     char *t = prbuf;
     t = pgpHexCvt(t, p, plen);
     return prbuf;
@@ -1096,7 +1096,7 @@ const char * pgpMpiStr(const byte *p)
 	/*@requires maxRead(p) >= 3 @*/
 	/*@*/
 {
-    static char prbuf[2048];
+    static char prbuf[8*BUFSIZ];	/* XXX ick */
     char *t = prbuf;
     sprintf(t, "[%4u]: ", pgpGrab(p, 2));
     t += strlen(t);
@@ -1205,6 +1205,18 @@ int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
 int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+
+/**
+ * Calculate OpenPGP public key fingerprint.
+ * @todo V3 non-RSA public keys not implemented.
+ * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
+ * @param pktlen	OpenPGP packet length (no. of bytes)
+ * @retval keyid	publick key fingerprint
+ * @return		0 on sucess, else -1
+ */
+int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
+		/*@out@*/ byte * keyid)
+	/*@modifies *keyid @*/;
 
 /**
  * Print/parse next OpenPGP packet.

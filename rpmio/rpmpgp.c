@@ -702,20 +702,6 @@ static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 		switch (i) {
 		case 0:		/* n */
 		    (void) mpbsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
-		    /* Get the keyid */
-		    if (_digp) {
-			uint32_t* np = _dig->rsa_pk.n.modl;
-			size_t nsize = _dig->rsa_pk.n.size;
-			uint32_t keyid[2];
-			#if WORDS_BIGENDIAN
-			keyid[0] = np[nsize-2];
-			keyid[1] = np[nsize-1];
-			#else
-			keyid[0] = swapu32(np[nsize-2]);
-			keyid[1] = swapu32(np[nsize-1]);
-			#endif
-			memcpy(_digp->signid, keyid, sizeof(_digp->signid));
-		    }
 if (_debug && _print)
 fprintf(stderr, "\t     n = "),  mpfprintln(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
 		    /*@switchbreak@*/ break;
@@ -951,6 +937,64 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
     return 0;
 }
 
+int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
+		byte * keyid)
+{
+    const byte *s = pkt;
+    DIGEST_CTX ctx;
+    byte version;
+    int rc = -1;	/* assume failure. */
+
+    if (pkt[0] != 0x99)
+	return rc;
+    version = pkt[3];
+
+    switch (version) {
+    case 3:
+      {	pgpPktKeyV3 v = (pgpPktKeyV3) (pkt + 3);
+
+	s += sizeof(pkt[0]) + sizeof(pkt[1]) + sizeof(pkt[2]) + sizeof(*v);
+	switch (v->pubkey_algo) {
+	case PGPPUBKEYALGO_RSA:
+	    s += (pgpMpiLen(s) - 8);
+	    memcpy(keyid, s, 8);
+	    rc = 0;
+	    break;
+	default:	/* TODO: md5 of mpi bodies (i.e. no length) */
+	    break;
+	}
+      }	break;
+    case 4:
+      {	pgpPktKeyV4 v = (pgpPktKeyV4) (pkt + 3);
+	byte * SHA1 = NULL;
+	int i;
+
+	s += sizeof(pkt[0]) + sizeof(pkt[1]) + sizeof(pkt[2]) + sizeof(*v);
+	switch (v->pubkey_algo) {
+	case PGPPUBKEYALGO_RSA:
+	    for (i = 0; i < 2; i++)
+		s += pgpMpiLen(s);
+	    break;
+	case PGPPUBKEYALGO_DSA:
+	    for (i = 0; i < 4; i++)
+		s += pgpMpiLen(s);
+	    break;
+	}
+
+	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(ctx, pkt, (s-pkt));
+	(void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 0);
+
+	s = SHA1 + 12;
+	memcpy(keyid, s, 8);
+	rc = 0;
+
+	if (SHA1) free(SHA1);
+      }	break;
+    }
+    return rc;
+}
+
 int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 {
     unsigned int val = *pkt;
@@ -984,6 +1028,14 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 	rc = pgpPrtSig(tag, h, hlen);
 	break;
     case PGPTAG_PUBLIC_KEY:
+	/* Get the public key fingerprint. */
+	if (_digp) {
+	    if (!pgpPubkeyFingerprint(pkt, pktlen, _digp->signid))
+		_digp->saved |= PGPDIG_SAVED_ID;
+	    else
+		memset(_digp->signid, 0, sizeof(_digp->signid));
+	}
+	/*@fallthrough@*/
     case PGPTAG_PUBLIC_SUBKEY:
 	rc = pgpPrtKey(tag, h, hlen);
 	break;
