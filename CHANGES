@@ -45,6 +45,8 @@
 	- fix: removed packages leaked DIRINDEXES tag data.
 	- reload tags added during install when loading header from rpmdb.
 	- avoid brp-compress hang with both compressed/uncompressed man pages.
+	- improved find-{requires,provides} for aix4/hpux/irix6/osf.
+		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
