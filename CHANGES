@@ -60,6 +60,10 @@
 	- add toy python callbacks for payload unpacking failure(s).
 	- fix: one-step-too-far when searching added package provides (#61388).
 	- fix: avoid libio misconfiguration with bleeding edge glibc.
+	- fix: add quotes around [:blank:] in linux find-provides.
+	- make --addsign and --resign behave exactly the same.
+	- *really* dump signature header immutable region.
+	- fix: don't overflow result buffer if gpg/pgp gives copious output.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

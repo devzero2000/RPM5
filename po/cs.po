@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-18 19:23-0500\n"
+"POT-Creation-Date: 2002-03-18 22:23-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2552,11 +2552,11 @@ msgstr "(neznámý typ)"
 msgid "error creating temporary file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/package.c:161
+#: lib/package.c:173
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "práce s balíèky verze 1 není podporována touto verzí RPM\n"
 
-#: lib/package.c:225
+#: lib/package.c:237
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "tato verze RPM podporuje práci s balíèky s verzí <= 4\n"
@@ -3136,68 +3136,68 @@ msgstr "%s: Fwrite selhalo: %s\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/rpmchecksig.c:129 lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:132 lib/rpmchecksig.c:319
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/rpmchecksig.c:134
+#: lib/rpmchecksig.c:137
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:138
+#: lib/rpmchecksig.c:141
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:295
+#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:335
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/rpmchecksig.c:151 lib/rpmchecksig.c:300
+#: lib/rpmchecksig.c:154 lib/rpmchecksig.c:340
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:202
+#: lib/rpmchecksig.c:242
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: Fwrite selhalo: %s\n"
 
-#: lib/rpmchecksig.c:208
+#: lib/rpmchecksig.c:248
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: Fwrite selhalo: %s\n"
 
-#: lib/rpmchecksig.c:285
+#: lib/rpmchecksig.c:325
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:458
+#: lib/rpmchecksig.c:498
 #, fuzzy
 msgid "NOT OK"
 msgstr "NE "
 
-#: lib/rpmchecksig.c:459 lib/rpmchecksig.c:473
+#: lib/rpmchecksig.c:499 lib/rpmchecksig.c:513
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:461 lib/rpmchecksig.c:475
+#: lib/rpmchecksig.c:501 lib/rpmchecksig.c:515
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:462 lib/rpmchecksig.c:476
+#: lib/rpmchecksig.c:502 lib/rpmchecksig.c:516
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:464 lib/rpmchecksig.c:478
+#: lib/rpmchecksig.c:504 lib/rpmchecksig.c:518
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:472
+#: lib/rpmchecksig.c:512
 msgid "OK"
 msgstr ""
 
@@ -3436,7 +3436,7 @@ msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
 #: lib/signature.c:297 lib/signature.c:390 lib/signature.c:639
-#: lib/signature.c:740 lib/signature.c:813 lib/signature.c:846
+#: lib/signature.c:744 lib/signature.c:821 lib/signature.c:854
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Nemohu spustit %s: %s\n"
@@ -3502,22 +3502,22 @@ msgstr "Generuji podpis: %d\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:851 lib/signature.c:904
+#: lib/signature.c:859 lib/signature.c:912
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "©patná %%_signature spec v souboru maker.\n"
 
-#: lib/signature.c:884
+#: lib/signature.c:892
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:896
+#: lib/signature.c:904
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:939
+#: lib/signature.c:947
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3574,17 +3574,17 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:396
+#: lib/verify.c:392
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "chybí { po %"
 
-#: lib/verify.c:491
+#: lib/verify.c:487
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: lib/verify.c:531
+#: lib/verify.c:527
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

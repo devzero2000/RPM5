@@ -314,12 +314,8 @@ int rpmVerifyDigest(Header h)
     int ec = 0;		/* assume no problems */
 
     /* Retrieve header digest. */
-    if (!hge(h, RPMTAG_SHA1HEADER, &hdt, (void **) &hdigest, NULL)
-    &&	!hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
-    {
-	if (hge(h, RPMTAG_BADSHA1HEADER, &hdt, (void **) &hdigest, NULL))
+    if (!hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
 	    return 0;
-    }
 
     /* Regenerate original header. */
     if (!hge(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))

@@ -528,6 +528,10 @@ fi
 * Mon Mar 18 2002 Jeff Johnson <jbj@redhat.com>
 - fix: one-step-too-far when searching added package provides (#61388).
 - fix: avoid libio misconfiguration with bleeding edge glibc.
+- fix: add quotes around [:blank:] in linux find-provides.
+- make --addsign and --resign behave exactly the same.
+- *really* dump signature header immutable region.
+- fix: don't overflow result buffer if gpg/pgp gives copious output.
 
 * Fri Mar 15 2002 Jeff Johnson <jbj@redhat.com>
 - re-enable FD_CLOEXEC, the problem is in zlib through mmap.

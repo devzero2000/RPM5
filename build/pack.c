@@ -507,14 +507,14 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
 
     (void) Fflush(fd);
-    if (Fseek(fd, sizeof(header_magic), SEEK_SET) == -1) {
+    if (Fseek(fd, 0L, SEEK_SET) == -1) {
 	rc = RPMERR_FSEEK;
 	rpmError(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
 			sigtarget, Fstrerror(fd));
     }
 
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    if (headerWrite(fd, h, HEADER_MAGIC_NO)) {
+    if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
 	rpmError(RPMERR_NOSPACE, _("Unable to write final header\n"));
     }

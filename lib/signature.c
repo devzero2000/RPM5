@@ -648,12 +648,15 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     file = fdopen(outpipe[0], "r");
     result[0] = '\0';
     if (file) {
+	char *t = result;
+	int nb = 8*BUFSIZ - 1;
 	while (fgets(buf, 1024, file)) {
 	    if (strncmp("File '", buf, 6) &&
 		strncmp("Text is assu", buf, 12) &&
 		strncmp("This signature applies to another message", buf, 41) &&
 		buf[0] != '\n') {
-		strcat(result, buf);
+		    nb -= strlen(buf);
+		    if (nb > 0) t = stpncpy(t, buf, nb);
 	    }
 	    if (!strncmp("WARNING: Can't find the right public key", buf, 40))
 		res = RPMSIG_NOKEY;
@@ -665,6 +668,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 		res = RPMSIG_OK;
 	}
 	(void) fclose(file);
+	*t = '\0';
     }
 
     (void) waitpid(pid, &status, 0);
@@ -749,13 +753,17 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     file = fdopen(outpipe[0], "r");
     result[0] = '\0';
     if (file) {
+	char * t = result;
+	int nb = 8*BUFSIZ - 1;
 	while (fgets(buf, 1024, file)) {
-	    strcat(result, buf);
+	    nb -= strlen(buf);
+	    if (nb > 0) t = stpncpy(t, buf, nb);
 	    if (!xstrncasecmp("gpg: Can't check signature: Public key not found", buf, 48)) {
 		res = RPMSIG_NOKEY;
 	    }
 	}
 	(void) fclose(file);
+	*t = '\0';
     }
 
     (void) waitpid(pid, &status, 0);

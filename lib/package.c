@@ -54,6 +54,12 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	case RPMSIGTAG_PGP5:
 	    tag = RPMTAG_SIGPGP5;
 	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_PAYLOADSIZE:
+	    tag = RPMTAG_ARCHIVESIZE;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_SHA1:
+	case RPMSIGTAG_DSA:
+	case RPMSIGTAG_RSA:
 	default:
 	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
 		continue;
@@ -103,6 +109,12 @@ Header headerRegenSigHeader(const Header h)
 	case RPMTAG_SIGPGP5:
 	    stag = RPMSIGTAG_PGP5;
 	    /*@switchbreak@*/ break;
+	case RPMTAG_ARCHIVESIZE:
+	    stag = RPMSIGTAG_PAYLOADSIZE;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SHA1HEADER:
+	case RPMTAG_DSAHEADER:
+	case RPMTAG_RSAHEADER:
 	default:
 	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
 		continue;

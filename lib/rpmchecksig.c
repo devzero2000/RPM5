@@ -107,13 +107,16 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
     FD_t fd = NULL;
     FD_t ofd = NULL;
     struct rpmlead lead, *l = &lead;
-    int sigtype;
+    int_32 sigtag;
     const char *rpm, *trpm;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sig = NULL;
+    void * uh = NULL;
+    int_32 uht, uhc;
     int res = EXIT_FAILURE;
     rpmRC rc;
+    int xx;
     
     tmprpm[0] = '\0';
     if (argv)
@@ -159,34 +162,71 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
 
-	/* Generate the new signatures */
-	if (flags != RESIGN_ADD_SIGNATURE) {
-	    void * uh = NULL;
-	    int_32 uht, uhc;
+	/* Dump the immutable region (if present). */
+	if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
+	    HeaderIterator hi;
+	    int_32 tag, type, count;
+	    hPTR_t ptr;
+	    Header oh;
+	    Header nh;
 
-	    /* Dump the immutable region (if present). */
-	    if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
-		Header nh = headerCopyLoad(uh);
-		sig = headerFree(sig);
-		/*@-nullpass@*/
-		sig = headerLink(nh);
-		/*@=nullpass@*/
-		nh = headerFree(nh);
+	    nh = headerNew();
+	    if (nh == NULL) {
+		uh = headerFreeData(uh, uht);
+		goto exit;
 	    }
 
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP5);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_GPG);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
+	    oh = headerCopyLoad(uh);
+	    for (hi = headerInitIterator(oh);
+		headerNextIterator(hi, &tag, &type, &ptr, &count);
+		ptr = headerFreeData(ptr, type))
+	    {
+		if (ptr)
+		    xx = headerAddEntry(nh, tag, type, ptr, count);
+	    }
+	    hi = headerFreeIterator(hi);
+	    oh = headerFree(oh);
+
+	    sig = headerFree(sig);
+	    sig = headerLink(nh);
+	    nh = headerFree(nh);
 	}
 
-	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0)
-	    (void) rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
+	/* Eliminate broken digest values. */
+	xx = headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_1);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_2);
+
+	/* Toss and recalculate header+payload size and digests. */
+	xx = headerRemoveEntry(sig, RPMSIGTAG_SIZE);
+	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_MD5);
+	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
+#ifdef	NOTYET	/* XXX leave new-fangled header-only digest in place. */
+        xx = headerRemoveEntry(sig, RPMSIGTAG_SHA1);
+        xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, passPhrase);
+#endif
+
+	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
+#ifdef	NOTYET	/* XXX leave new-fangled header-only signatures in place. */
+            case RPMSIGTAG_GPG:
+                xx = headerRemoveEntry(sig, RPMSIGTAG_DSA);
+                /*@fallthrough@*/
+            case RPMSIGTAG_PGP5:
+            case RPMSIGTAG_PGP:
+                xx = headerRemoveEntry(sig, RPMSIGTAG_RSA);
+                /*@switchbreak@*/ break;
+            }
+#endif
+            xx = headerRemoveEntry(sig, sigtag);
+            xx = rpmAddSignature(sig, sigtarget, sigtag, passPhrase);
+	}
+
+	/* Reallocate the signature into one contiguous region. */
+	sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
+	if (sig == NULL)	/* XXX can't happen */
+	    goto exit;
 
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
@@ -254,7 +294,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     int res2, res3;
     struct rpmlead lead, *l = &lead;
     const char *rpm = NULL;
-    char result[1024];
+    char result[8*BUFSIZ];
     const char * sigtarget = NULL;
     unsigned char buffer[8192];
     unsigned char missingKeys[7164];
