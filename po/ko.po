@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-06-15 14:27-0400\n"
+"POT-Creation-Date: 2001-06-15 19:44-0400\n"
 "PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -3307,7 +3307,7 @@ msgstr "서명을 읽을 수 없습니다\n"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 서명의 용량은 %d 바이트 입니다\n"
 
-#: lib/signature.c:371 lib/signature.c:734
+#: lib/signature.c:371 lib/signature.c:758
 msgid "Couldn't exec gpg\n"
 msgstr "gpg 를 실행할 수 없습니다\n"
 
@@ -3339,35 +3339,35 @@ msgstr "PGP 를 사용하여 서명을 생성합니다.\n"
 msgid "Generating signature using GPG.\n"
 msgstr "GPG 를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:531 lib/signature.c:594
+#: lib/signature.c:530 lib/signature.c:605
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "pgp 를 실행할 수 없습니다.  PGP 검사를 생략하시려면, --nopgp 옵션을 사용하십"
 "시요.\n"
 
-#: lib/signature.c:672
+#: lib/signature.c:695
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "gpg 를 실행할 수 없습니다.  GPG 검사를 생략하시려면, --nogpg 옵션을 사용하십"
 "시요.\n"
 
-#: lib/signature.c:763
+#: lib/signature.c:787
 msgid "Couldn't exec pgp\n"
 msgstr "pgp 를 실행할 수 없습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:767 lib/signature.c:820
+#: lib/signature.c:791 lib/signature.c:844
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일에 올바르지 못한 \"%%_signature\" 가 있습니다\n"
 
-#: lib/signature.c:800
+#: lib/signature.c:824
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_gpg_name\" 을 설정해 주셔야 합니다\n"
 
-#: lib/signature.c:812
+#: lib/signature.c:836
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_pgp_name\" 을 설정해 주셔야 합니다\n"

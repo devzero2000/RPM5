@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-15 14:27-0400\n"
+"POT-Creation-Date: 2001-06-15 19:44-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3551,7 +3551,7 @@ msgstr "nicht möglich, die Signatur zu lesen"
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:371 lib/signature.c:734
+#: lib/signature.c:371 lib/signature.c:758
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Konnte pgp nicht durchführen"
@@ -3588,34 +3588,34 @@ msgstr "PGP-Signatur generieren"
 msgid "Generating signature using GPG.\n"
 msgstr "PGP-Signatur generieren"
 
-#: lib/signature.c:531 lib/signature.c:594
+#: lib/signature.c:530 lib/signature.c:605
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Konnte pgp nicht aufrufen.  Überspring die PGP-Checks mit --nopgp."
 
-#: lib/signature.c:672
+#: lib/signature.c:695
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Konnte pgp nicht aufrufen.  Überspring die PGP-Checks mit --nopgp."
 
-#: lib/signature.c:763
+#: lib/signature.c:787
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Konnte pgp nicht durchführen"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:767 lib/signature.c:820
+#: lib/signature.c:791 lib/signature.c:844
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:800
+#: lib/signature.c:824
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 
-#: lib/signature.c:812
+#: lib/signature.c:836
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-06-15 14:27-0400\n"
+"POT-Creation-Date: 2001-06-15 19:44-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -3382,7 +3382,7 @@ msgstr "ne mogu da proèitam potpis"
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:371 lib/signature.c:734
+#: lib/signature.c:371 lib/signature.c:758
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Ne mogu da izvr¹im PGP"
@@ -3419,34 +3419,34 @@ msgstr "napravi PGP potpis"
 msgid "Generating signature using GPG.\n"
 msgstr "napravi PGP potpis"
 
-#: lib/signature.c:531 lib/signature.c:594
+#: lib/signature.c:530 lib/signature.c:605
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
-#: lib/signature.c:672
+#: lib/signature.c:695
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
-#: lib/signature.c:763
+#: lib/signature.c:787
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Ne mogu da izvr¹im PGP"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:767 lib/signature.c:820
+#: lib/signature.c:791 lib/signature.c:844
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:800
+#: lib/signature.c:824
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/signature.c:812
+#: lib/signature.c:836
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2001-06-15 14:27-0400\n"
+"POT-Creation-Date: 2001-06-15 19:44-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -3279,7 +3279,7 @@ msgstr "incapaz de ler a assinatura\n"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Obtive %d bytes da assinatura PGP\n"
 
-#: lib/signature.c:371 lib/signature.c:734
+#: lib/signature.c:371 lib/signature.c:758
 msgid "Couldn't exec gpg\n"
 msgstr "Não consegui executar o gpg\n"
 
@@ -3311,31 +3311,31 @@ msgstr "A gerar a assinatura usando o PGP.\n"
 msgid "Generating signature using GPG.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:531 lib/signature.c:594
+#: lib/signature.c:530 lib/signature.c:605
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Não consegui correr o pgp. Use o --nopgp para ignorar as verificações de PGP.\n"
 
-#: lib/signature.c:672
+#: lib/signature.c:695
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Não consegui correr o gpg. Use o --nogpg para ignorar as verificações de GPG.\n"
 
-#: lib/signature.c:763
+#: lib/signature.c:787
 msgid "Couldn't exec pgp\n"
 msgstr "Não consegui executar o pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:767 lib/signature.c:820
+#: lib/signature.c:791 lib/signature.c:844
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:800
+#: lib/signature.c:824
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:812
+#: lib/signature.c:836
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"

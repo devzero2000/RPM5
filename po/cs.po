@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-15 14:27-0400\n"
+"POT-Creation-Date: 2001-06-15 19:44-0400\n"
 "PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3309,7 +3309,7 @@ msgstr "nemohu èíst podpis\n"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Pøeèteno %d bajtù PGP podpisu\n"
 
-#: lib/signature.c:371 lib/signature.c:734
+#: lib/signature.c:371 lib/signature.c:758
 msgid "Couldn't exec gpg\n"
 msgstr "Nemohu spustit gpg\n"
 
@@ -3341,31 +3341,31 @@ msgstr "Generuji PGP podpis.\n"
 msgid "Generating signature using GPG.\n"
 msgstr "Generuji GPG podpis.\n"
 
-#: lib/signature.c:531 lib/signature.c:594
+#: lib/signature.c:530 lib/signature.c:605
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Nemohu spustit pgp. Vynechte kontrolu PGP pomocí --nopgp.\n"
 
-#: lib/signature.c:672
+#: lib/signature.c:695
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Nelze spustit gpg. Vynechte kontrolu GPG pomocí --nogpg.\n"
 
-#: lib/signature.c:763
+#: lib/signature.c:787
 msgid "Couldn't exec pgp\n"
 msgstr "Nemohu spustit pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:767 lib/signature.c:820
+#: lib/signature.c:791 lib/signature.c:844
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "©patná %%_signature spec v souboru maker\n"
 
-#: lib/signature.c:800
+#: lib/signature.c:824
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_gpg_name\" ve svém makro souboru\n"
 
-#: lib/signature.c:812
+#: lib/signature.c:836
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_pgp_name\" ve svém makro souboru\n"
