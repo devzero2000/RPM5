@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.86
+Release: 0.88
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -107,6 +107,8 @@ programs that will manipulate RPM packages and databases.
 Summary: Native bindings to the RPM API for Perl.
 Group: Development/Languages
 URL: http://www.cpan.org
+Provides: perl(RPM::Database) = %{rpm_version}
+Provides: perl(RPM::Header) = %{rpm_version}
 Requires: rpm = %{rpm_version}
 Requires: perl >= 0:5.00503
 Requires: popt = 1.6.3
@@ -507,6 +509,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Aug  6 2001 Jeff Johnson <jbj@redhat.com>
+- python: add hiesenbug patch.
+
+* Sun Aug  5 2001 Jeff Johnson <jbj@redhat.com>
+- portability: some compilers squawk at return ((void) foo()) (#50419).
+- remove fdFileno() from librpmio, use inline version instead (#50420).
+- fix: linux find-requires needs quotes around [:blank:].
+- remove /var/lib/rpm/__db* cache files if %%__dbi_cdb is not configured.
+
 * Sat Aug  4 2001 Jeff Johnson <jbj@redhat.com>
 - fix: i18n tags not terminated correctly with NUL (#50304).
 - add explicit casts to work around a s390 compiler problem.
