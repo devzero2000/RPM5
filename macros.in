@@ -385,6 +385,9 @@ print (t)\
 %__perl_provides	@RPMCONFIGDIR@/perl.prov
 %__perl_requires	@RPMCONFIGDIR@/perl.req
 
+%__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
+%__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
+
 #
 # fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
 # These macros are necessary only for legacy compatibility, and have moved

@@ -6,6 +6,7 @@
 	- fix: segfault on --verifydb (#138589).
 	- sparcv8: optflags changed to -mtune=ultrasparc (#140420).
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
+	- automagically detect and emit "python(abi) = 2.4" dependencies.
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.
