@@ -8,7 +8,7 @@
 #include "debug.h"
 
 static int _debug = 0;
-static int _printing = 1;
+static int _printing = 0;
 
 extern int noNeon;
 
@@ -20,16 +20,16 @@ extern int noNeon;
 static char * hkppath = HKPPATH;
 
 static unsigned int keyids[] = {
-	0xF5C75256,
-	0xe418e3aa,
-	0x4f2a6fd2,
-	0x30c9ecf8,
-	0x8df56d05,
-	0xcba29bf9,
-	0xdb42a60e,
-	0x897da07a,
-	0x1cddbca9,
-	0x2039b291,
+	0xc2b079fc, 0xf5c75256,
+	0x94cd5742, 0xe418e3aa,
+	0xb44269d0, 0x4f2a6fd2,
+	0xda84cbd4, 0x30c9ecf8,
+	0x29d5ba24, 0x8df56d05,
+	0xa520e8f1, 0xcba29bf9,
+	0x219180cd, 0xdb42a60e,
+	0xfd372689, 0x897da07a,
+	0xe1385d4e, 0x1cddbca9,
+	0xb873641b, 0x2039b291,
 	0
 };
 
@@ -44,10 +44,11 @@ static int readKeys(const char * uri)
     int rc;
     int ec = 0;
 
-    for (kip = keyids; *kip; kip++) {
+    dig = pgpNewDig();
+    for (kip = keyids; *kip; kip += 2) {
 	pgpArmor pa;
 
-	sprintf(fn, "%s/pks/lookup?op=get&search=0x%x", uri, *kip);
+	sprintf(fn, "%s/pks/lookup?op=get&search=0x%08x%08x", uri, kip[0], kip[1]);
 fprintf(stderr, "======================= %s\n", fn);
 	pkt = NULL;
 	pktlen = 0;
@@ -59,23 +60,22 @@ fprintf(stderr, "======================= %s\n", fn);
             continue;
         }
 
-	dig = pgpNewDig();
-#if 0
 	rc = pgpPrtPkts(pkt, pktlen, dig, _printing);
 	if (rc)
 	    ec++;
-#else
 #if 0
 fprintf(stderr, "%s\n", pgpHexStr(pkt, pktlen));
 #endif
 	if (!pgpPubkeyFingerprint(pkt, pktlen, keyid))
 fprintf(stderr, "KEYID: %08x %08x\n", pgpGrab(keyid, 4), pgpGrab(keyid+4, 4));
-#endif
-	dig = pgpFreeDig(dig);
+
+
+	pgpCleanDig(dig);
 
 	free((void *)pkt);
 	pkt = NULL;
     }
+    dig = pgpFreeDig(dig);
 
     return ec;
 }
