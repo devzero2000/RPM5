@@ -78,6 +78,7 @@
 %_buildshell		/bin/sh
 %_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
+%_rebuilddbpath		%{_dbpath}
 %_defaultdocdir		%{_usr}/doc
 #
 %__find_provides	@FINDPROVIDES@
