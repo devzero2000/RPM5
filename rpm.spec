@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.69
+Release: 0.70
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -266,6 +266,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Aug 20 2000 Jeff Johnson <jbj@redhat.com>
+- add callbacks on package erasure.
+- fix: preserve cpio errno when using Fclose with libio.
+
 * Fri Aug 18 2000 Jeff Johnson <jbj@redhat.com>
 - python bindings to query and verify signatures.
 

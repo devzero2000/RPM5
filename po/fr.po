@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-08-17 17:19-0400\n"
+msgstr "POT-Creation-Date: 2000-08-20 03:04-0400\n"
 
 #: build.c:25 lib/rpminstall.c:451
 #, c-format
@@ -2684,7 +2684,7 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:149 lib/uninstall.c:195
+#: lib/install.c:149 lib/uninstall.c:182
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
@@ -2705,88 +2705,89 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:580
+#. XXX FIXME: Fclose with libio destroys errno
+#: lib/install.c:583
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:581
+#: lib/install.c:584
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:625
+#: lib/install.c:628
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:645
+#: lib/install.c:648
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/install.c:651 lib/install.c:681
+#: lib/install.c:654 lib/install.c:684
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/install.c:655
+#: lib/install.c:658
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:675
+#: lib/install.c:678
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/install.c:685
+#: lib/install.c:688
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:719 lib/install.c:747
+#: lib/install.c:722 lib/install.c:750
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr ""
 "        -f <file>+        - interroge le package à qui appartient <file>"
 
-#: lib/install.c:769
+#: lib/install.c:772
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:771 lib/install.c:1044 lib/uninstall.c:28
+#: lib/install.c:774 lib/install.c:1047 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:863
+#: lib/install.c:866
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:913
+#: lib/install.c:916
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/install.c:973
+#: lib/install.c:976
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:978
+#: lib/install.c:981
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1003
+#: lib/install.c:1006
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1040
+#: lib/install.c:1043
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1128
+#: lib/install.c:1131
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -3359,7 +3360,7 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/rpmdb.c:1136 lib/rpmdb.c:1670 lib/uninstall.c:97
+#: lib/rpmdb.c:1136 lib/rpmdb.c:1670
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
@@ -3848,16 +3849,16 @@ msgstr ""
 msgid "removal of %s failed: %s"
 msgstr ""
 
-#: lib/uninstall.c:141
+#: lib/uninstall.c:122
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:209
+#: lib/uninstall.c:206
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:406
+#: lib/uninstall.c:396
 #, c-format
 msgid "execution of %s-%s-%s script failed, exit status %d"
 msgstr ""

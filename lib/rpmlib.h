@@ -628,6 +628,7 @@ void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 #define	RPMTRANS_FLAG_ALLFILES		(1 << 6)
 #define	RPMTRANS_FLAG_KEEPOBSOLETE	(1 << 7)
 #define	RPMTRANS_FLAG_MULTILIB		(1 << 8)
+#define	RPMTRANS_FLAG_ERASECALLBACK	(1 << 9)
 
 /**
  */

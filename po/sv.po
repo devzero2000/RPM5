@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-17 17:19-0400\n"
+"POT-Creation-Date: 2000-08-20 03:04-0400\n"
 "PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2534,7 +2534,7 @@ msgstr "| förväntades vid slutet på uttryck"
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
-#: lib/install.c:149 lib/uninstall.c:195
+#: lib/install.c:149 lib/uninstall.c:182
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   fil: %s åtgärd: %s\n"
@@ -2555,86 +2555,87 @@ msgstr "%%instchangelog-värde i makrofil skall vara ett tal, men är inte det"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:580
+#. XXX FIXME: Fclose with libio destroys errno
+#: lib/install.c:583
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "uppackning av arkiv misslyckades%s%s: %s"
 
-#: lib/install.c:581
+#: lib/install.c:584
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/install.c:625
+#: lib/install.c:628
 msgid "installing a source package\n"
 msgstr "installerar källpaket\n"
 
-#: lib/install.c:645
+#: lib/install.c:648
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "kan inte skapa källkatalog %s"
 
-#: lib/install.c:651 lib/install.c:681
+#: lib/install.c:654 lib/install.c:684
 #, c-format
 msgid "cannot write to %s"
 msgstr "kan inte skriva till %s"
 
-#: lib/install.c:655
+#: lib/install.c:658
 #, c-format
 msgid "sources in: %s\n"
 msgstr "källkod i: %s\n"
 
-#: lib/install.c:675
+#: lib/install.c:678
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "kan inte skapa spec-katalog %s"
 
-#: lib/install.c:685
+#: lib/install.c:688
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec-fil i: %s\n"
 
-#: lib/install.c:719 lib/install.c:747
+#: lib/install.c:722 lib/install.c:750
 msgid "source package contains no .spec file"
 msgstr "källpaket innehåller ingen spec-fil"
 
-#: lib/install.c:769
+#: lib/install.c:772
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "byter namn på %s till %s\n"
 
-#: lib/install.c:771 lib/install.c:1044 lib/uninstall.c:28
+#: lib/install.c:774 lib/install.c:1047 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "namnbyte från %s till %s misslyckades: %s"
 
-#: lib/install.c:863
+#: lib/install.c:866
 msgid "source package expected, binary found"
 msgstr "källpaket förväntades, fann binärpaket"
 
-#: lib/install.c:913
+#: lib/install.c:916
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s filtest = %d\n"
 
-#: lib/install.c:973
+#: lib/install.c:976
 msgid "stopping install as we're running --test\n"
 msgstr "avbryter installation eftersom vi kör --test\n"
 
-#: lib/install.c:978
+#: lib/install.c:981
 msgid "running preinstall script (if any)\n"
 msgstr "kör (eventuellt) preinstalltionsskript\n"
 
-#: lib/install.c:1003
+#: lib/install.c:1006
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "varning: %s skapades som %s"
 
-#: lib/install.c:1040
+#: lib/install.c:1043
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "varning: %s sparades som %s"
 
-#: lib/install.c:1128
+#: lib/install.c:1131
 msgid "running postinstall scripts (if any)\n"
 msgstr "kör (eventuellt) postinstallationsskript\n"
 
@@ -3201,7 +3202,7 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr "fel(%d) när paket räknades"
 
-#: lib/rpmdb.c:1136 lib/rpmdb.c:1670 lib/uninstall.c:97
+#: lib/rpmdb.c:1136 lib/rpmdb.c:1670
 #, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%s: kan inte läsa huvud vid 0x%x"
@@ -3683,16 +3684,16 @@ msgstr "rmdir av %s misslyckades: %s"
 msgid "removal of %s failed: %s"
 msgstr "borttagning av %s misslyckades: %s"
 
-#: lib/uninstall.c:141
+#: lib/uninstall.c:122
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "tar bort filer test = %d\n"
 
-#: lib/uninstall.c:209
+#: lib/uninstall.c:206
 msgid "running postuninstall script (if any)\n"
 msgstr "kör (eventuellt) postavinstallationsskript\n"
 
-#: lib/uninstall.c:406
+#: lib/uninstall.c:396
 #, c-format
 msgid "execution of %s-%s-%s script failed, exit status %d"
 msgstr "körning av skript från %s-%s-%s misslyckades, slutstatus %d"
