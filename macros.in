@@ -328,7 +328,17 @@ package or when debugging this package.\
 %_filter_GLIBC_PRIVATE			0
 
 # Desired selinux policy tree
-%__policy_tree	targeted
+%__policy_tree	%{expand:%%global __policy_tree %{lua:\
+t="targeted"\
+f = io.open("/etc/selinux/config")\
+if f then\
+  for l in f:lines() do\
+    if "SELINUXTYPE=" == string.sub(l,0,12) then t=string.sub(l,13); end\
+  end\
+  f:close()\
+end\
+print (t)\
+}}%{__policy_tree}
 
 # Path to selinux file context patterns.
 %__file_context_path /etc/selinux/%{__policy_tree}/contexts/files/file_contexts
