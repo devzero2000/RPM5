@@ -82,6 +82,7 @@
 	- remove vestiges of mipseb arch (#62408).
 	- make peace with automake-1.6.1 et al.
 	- backport all beecrypt/rpmio bits from 4.1 that don't break the API.
+	- use /etc/rpm/platform (if it exists), rather than uname(2), for arch.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

@@ -2,7 +2,6 @@
 #include "system.h"
 
 #include <stdarg.h>
-
 #if defined(__linux__) && defined(__powerpc__)
 #include <setjmp.h>
 #endif
@@ -26,6 +25,13 @@ static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 
 /*@observer@*/ /*@checked@*/
 const char * macrofiles = MACROFILES;
+
+/*@observer@*/ /*@unchecked@*/
+static const char * platform = "/etc/rpm/platform";
+/*@only@*/ /*@unchecked@*/
+static const char ** platpat = NULL;
+/*@unchecked@*/
+static int nplatpat = 0;
 
 typedef /*@owned@*/ const char * cptr_t;
 
@@ -770,6 +776,112 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 }
 /*@=usedef@*/
 
+
+/**
+ */
+static int rpmPlatform(const char * platform)
+	/*@globals nplatpat, platpat,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies nplatpat, platpat,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
+    char * b = NULL;
+    ssize_t blen = 0;
+    int init_platform = 0;
+    char * p, * pe;
+    int rc;
+
+    rc = rpmioSlurp(platform, &b, &blen);
+
+    if (rc || b == NULL || blen <= 0) {
+	rc = -1;
+	goto exit;
+    }
+
+    p = b;
+    for (pe = p; p && *p; p = pe) {
+	pe = strchr(p, '\n');
+	if (pe)
+	    *pe++ = '\0';
+
+	while (*p && isspace(*p))
+	    p++;
+	if (*p == '\0' || *p == '#')
+	    continue;
+
+	if (init_platform) {
+	    char * t = p + strlen(p);
+
+	    while (--t > p && isspace(*t))
+		*t = '\0';
+	    if (t > p) {
+		platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
+/*@-onlyunqglobaltrans@*/
+		platpat[nplatpat] = xstrdup(p);
+		nplatpat++;
+		platpat[nplatpat] = NULL;
+/*@=onlyunqglobaltrans@*/
+	    }
+	    continue;
+	}
+
+	cpu = p;
+	vendor = "unknown";
+	os = "unknown";
+	gnu = NULL;
+	while (*p && !(*p == '-' || isspace(*p)))
+	    p++;
+	if (*p != '\0') *p++ = '\0';
+
+	vendor = p;
+	while (*p && !(*p == '-' || isspace(*p)))
+	    p++;
+/*@-branchstate@*/
+	if (*p != '-') {
+	    if (*p != '\0') *p++ = '\0';
+	    os = vendor;
+	    vendor = "unknown";
+	} else {
+	    if (*p != '\0') *p++ = '\0';
+
+	    os = p;
+	    while (*p && !(*p == '-' || isspace(*p)))
+		p++;
+	    if (*p == '-') {
+		*p++ = '\0';
+
+		gnu = p;
+		while (*p && !(*p == '-' || isspace(*p)))
+		    p++;
+	    }
+	    if (*p != '\0') *p++ = '\0';
+	}
+/*@=branchstate@*/
+
+	addMacro(NULL, "_host_cpu", NULL, cpu, -1);
+	addMacro(NULL, "_host_vendor", NULL, vendor, -1);
+	addMacro(NULL, "_host_os", NULL, os, -1);
+
+	platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
+/*@-onlyunqglobaltrans@*/
+	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}", (gnu && *gnu ? "-" : NULL), gnu, NULL);
+	nplatpat++;
+	platpat[nplatpat] = NULL;
+/*@=onlyunqglobaltrans@*/
+	
+	init_platform++;
+    }
+    rc = (init_platform ? 0 : -1);
+
+exit:
+/*@-modobserver@*/
+    b = _free(b);
+/*@=modobserver@*/
+    return rc;
+}
+
+
 #	if defined(__linux__) && defined(__i386__)
 #include <setjmp.h>
 #include <signal.h>
@@ -933,10 +1045,12 @@ static void mfspr_ill(int notused)
 }
 #endif
 
+/**
+ */
 static void defaultMachine(/*@out@*/ const char ** arch,
 		/*@out@*/ const char ** os)
-	/*@globals fileSystem@*/
-	/*@modifies *arch, *os, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies *arch, *os, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static struct utsname un;
     static int gotDefaults = 0;
@@ -944,7 +1058,24 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     canonEntry canon;
     int rc;
 
-    if (!gotDefaults) {
+    while (!gotDefaults) {
+	if (!rpmPlatform(platform)) {
+	    const char * s;
+	    s = rpmExpand("%{_host_cpu}", NULL);
+	    if (s) {
+		strncpy(un.machine, s, sizeof(un.machine));
+		un.machine[sizeof(un.machine)-1] = '\0';
+		s = _free(s);
+	    }
+	    s = rpmExpand("%{_host_os}", NULL);
+	    if (s) {
+		strncpy(un.sysname, s, sizeof(un.sysname));
+		un.sysname[sizeof(un.sysname)-1] = '\0';
+		s = _free(s);
+	    }
+	    gotDefaults = 1;
+	    break;
+	}
 	rc = uname(&un);
 	if (rc < 0) return;
 
@@ -968,7 +1099,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 		    fd++) {
 		      if (!xisdigit(un.release[fd]) && (un.release[fd] != '.')) {
 			un.release[fd] = 0;
-			break;
+			/*@innerbreak@*/ break;
 		      }
 		    }
 		    sprintf(un.sysname,"sunos%s",un.release);
@@ -1178,6 +1309,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	if (canon)
 	    strcpy(un.sysname, canon->short_name);
 	gotDefaults = 1;
+	break;
     }
 
     if (arch) *arch = un.machine;
