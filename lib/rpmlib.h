@@ -19,6 +19,9 @@ int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
 extern const struct headerTagTableEntry rpmTagTable[];
 extern const int rpmTagTableSize;
 
+/* this chains to headerDefaultFormats[] */
+extern const struct headerSprintfExtension rpmHeaderFormats[];
+
 /* these tags are for both the database and packages */
 /* none of these can be 0 !!                         */
 
@@ -145,8 +148,8 @@ extern const int rpmTagTableSize;
 #define RPMSENSE_CONFLICTS       (1 << 5) /* only used internally by builds */
 #define RPMSENSE_SENSEMASK       15       /* Mask to get senses */
 
-#define RPMSENSE_TRIGGER_ON              (1 << 16)
-#define RPMSENSE_TRIGGER_OFF             (1 << 17)
+#define RPMSENSE_TRIGGER_IN      (1 << 16)
+#define RPMSENSE_TRIGGER_UN      (1 << 17)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
@@ -186,7 +189,8 @@ extern const int rpmTagTableSize;
 #define RPMVAR_NETSHAREDPATH		33
 #define RPMVAR_DEFAULTDOCDIR		34
 #define RPMVAR_FIXPERMS			35
-#define RPMVAR_LASTVAR	                36 /* IMPORTANT to keep right! */
+#define RPMVAR_GZIPBIN     		36
+#define RPMVAR_LASTVAR	                37 /* IMPORTANT to keep right! */
 
 char *rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
@@ -359,6 +363,9 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define RPMERR_NORELOCATE	-32	/* tried to relocate improper package */
 #define RPMERR_BADOS            -33     /* bad architecture or arch mismatch */
 #define RPMMESS_BACKUP          -34     /* backup made during [un]install */
+#define RPMERR_MTAB		-35	/* failed to read mount table */
+#define RPMERR_STAT		-36	/* failed to stat something */
+#define RPMERR_BADDEV		-37	/* file on device not listed in mtab */
 
 /* spec.c build.c pack.c */
 #define RPMERR_UNMATCHEDIF      -107    /* unclosed %ifarch or %ifos */
@@ -411,5 +418,9 @@ void rpmFreeSignature(Header h);
 
 int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
+
+int rpmGetFilesystemList(char *** listptr);
+int rpmGetFilesystemUsage(char ** filelist, int_32 * fssizes, int numFiles,
+			  uint_32 ** usagesPtr, int flags);
 
 #endif
