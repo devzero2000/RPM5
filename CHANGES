@@ -10,6 +10,7 @@
 	- port to internal file-4.10 libmagic rather than libfmagic.
 	- move global /var/lock/rpm/transaction to dbpath.
 	- permit fcntl path to be configured through rpmlock_path macro.
+	- python: force dbMatch() h# key to be 32 bit integer (#146477).
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.
