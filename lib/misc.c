@@ -84,7 +84,9 @@ char ** splitString(const char * str, int length, char sep)
 
     list[i] = NULL;
 
+/*@-nullret@*/ /* FIX: list[i] is NULL */
     return list;
+/*@=nullret@*/
 }
 /*@=bounds@*/
 
@@ -345,12 +347,9 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 if (_debug)
 fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", (int)maxb, (int)nb, (int)nb, av[j], globURL, globURL);
 	
-	/*@-branchstate@*/
-	if (argc == 0)
-	    argv = xmalloc((gl.gl_pathc+1) * sizeof(*argv));
-	else if (gl.gl_pathc > 0)
-	    argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
-	/*@=branchstate@*/
+	argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
+
+	if (argv != NULL)
 	for (i = 0; i < gl.gl_pathc; i++) {
 	    const char * globFile = &(gl.gl_pathv[i][0]);
 	    if (globRoot > globURL && globRoot[-1] == '/')
@@ -378,12 +377,16 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 
 exit:
     av = _free(av);
+/*@-branchstate@*/
     if (rc || argvPtr == NULL) {
+/*@-dependenttrans -unqualifiedtrans@*/
 	if (argv != NULL)
 	for (i = 0; i < argc; i++)
 	    argv[i] = _free(argv[i]);
 	argv = _free(argv);
+/*@=dependenttrans =unqualifiedtrans@*/
     }
+/*@=branchstate@*/
     return rc;
 }
 

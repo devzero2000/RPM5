@@ -142,9 +142,9 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
  * @todo Permit selectable display formats (i.e. binary).
  * @param type		tag type
  * @param data		tag value
- * @param formatPrefix
+ * @param formatPrefix	(unused)
  * @param padding	(unused)
- * @param element	(unused)
+ * @param element	no. bytes of binary data
  * @return		formatted string
  */
 static /*@only@*/ char * armorFormat(int_32 type, const void * data, 
@@ -160,6 +160,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     switch (type) {
     case RPM_BIN_TYPE:
 	s = data;
+	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	ns = element;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
@@ -190,7 +191,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
  * @todo Permit selectable display formats (i.e. binary).
  * @param type		tag type
  * @param data		tag value
- * @param formatPrefix
+ * @param formatPrefix	(unused)
  * @param padding
  * @param element
  * @return		formatted string
@@ -207,7 +208,9 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	const char * enc;
 	char * t;
 	int lc;
-	size_t nt = ((element + 2) / 3) * 4;
+	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
+	size_t ns = element;
+	size_t nt = ((ns + 2) / 3) * 4;
 
 /*@-boundswrite@*/
 	/*@-globs@*/
@@ -223,7 +226,7 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	val = t = xmalloc(nt + padding + 1);
 
 	*t = '\0';
-	if ((enc = b64encode(data, element)) != NULL) {
+	if ((enc = b64encode(data, ns)) != NULL) {
 	    t = stpcpy(t, enc);
 	    enc = _free(enc);
 	}
@@ -234,7 +237,50 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 }
 
 /**
- * Display signature fingerprint and time.
+ */
+static size_t xmlstrlen(const char * s)
+	/*@*/
+{
+    size_t len = 0;
+    int c;
+
+/*@-boundsread@*/
+    while ((c = *s++) != '\0')
+/*@=boundsread@*/
+    {
+	switch (c) {
+	case '<': case '>':	len += 4;	/*@switchbreak@*/ break;
+	case '&':		len += 5;	/*@switchbreak@*/ break;
+	default:		len += 1;	/*@switchbreak@*/ break;
+	}
+    }
+    return len;
+}
+
+/**
+ */
+static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+/*@-bounds@*/
+    while ((c = *s++) != '\0') {
+	switch (c) {
+	case '<':	te = stpcpy(te, "&lt;");	/*@switchbreak@*/ break;
+	case '>':	te = stpcpy(te, "&gt;");	/*@switchbreak@*/ break;
+	case '&':	te = stpcpy(te, "&amp;");	/*@switchbreak@*/ break;
+	default:	*te++ = c;			/*@switchbreak@*/ break;
+	}
+    }
+    *te = '\0';
+/*@=bounds@*/
+    return t;
+}
+
+/**
+ * Wrap tag data in simple header xml markup.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -242,11 +288,109 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
+/*@-bounds@*/
+static /*@only@*/ char * xmlFormat(int_32 type, const void * data, 
+		char * formatPrefix, int padding,
+		/*@unused@*/ int element)
+	/*@modifies formatPrefix @*/
+{
+    const char * xtag = NULL;
+    size_t nb;
+    char * val;
+    const char * s = NULL;
+    char * t, * te;
+    unsigned long anint = 0;
+    int xx;
+
+/*@-branchstate@*/
+    switch (type) {
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_TYPE:
+	s = data;
+	xtag = "string";
+	break;
+    case RPM_BIN_TYPE:
+    {	int cpl = b64encode_chars_per_line;
+/*@-mods@*/
+	b64encode_chars_per_line = 0;
+/*@=mods@*/
+/*@-formatconst@*/
+	s = base64Format(type, data, formatPrefix, padding, element);
+/*@=formatconst@*/
+/*@-mods@*/
+	b64encode_chars_per_line = cpl;
+/*@=mods@*/
+	xtag = "base64";
+    }	break;
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+	anint = *((uint_8 *) data);
+	break;
+    case RPM_INT16_TYPE:
+	anint = *((uint_16 *) data);
+	break;
+    case RPM_INT32_TYPE:
+	anint = *((uint_32 *) data);
+	break;
+    case RPM_NULL_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    default:
+	return xstrdup(_("(invalid xml type)"));
+	/*@notreached@*/ break;
+    }
+/*@=branchstate@*/
+
+/*@-branchstate@*/
+    if (s == NULL) {
+	int tlen = 32;
+	t = memset(alloca(tlen+1), 0, tlen+1);
+	xx = snprintf(t, tlen, "%lu", anint);
+	s = t;
+	xtag = "integer";
+    }
+/*@=branchstate@*/
+
+    nb = 2 * strlen(xtag) + sizeof("\t<></>") + xmlstrlen(s);
+    te = t = alloca(nb);
+    te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
+    te = xmlstrcpy(te, s);
+    te += strlen(te);
+    te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
+
+    /* XXX s was malloc'd */
+/*@-branchstate@*/
+    if (!strcmp(xtag, "base64"))
+	s = _free(s);
+/*@=branchstate@*/
+
+    nb += padding;
+    val = xmalloc(nb+1);
+/*@-boundswrite@*/
+    strcat(formatPrefix, "s");
+/*@=boundswrite@*/
+/*@-formatconst@*/
+    xx = snprintf(val, nb, formatPrefix, t);
+/*@=formatconst@*/
+    val[nb] = '\0';
+
+    return val;
+}
+/*@=bounds@*/
+
+/**
+ * Display signature fingerprint and time.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	(unused)
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
 static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data, 
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     char * val, * t;
 
@@ -460,7 +604,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -517,7 +661,6 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-/*@-bounds@*/	/* LCL: segfault */
 static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
@@ -552,6 +695,7 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
     *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
+/*@-bounds@*/
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
@@ -577,13 +721,13 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 
 	conds[i] = chptr;
     }
+/*@=bounds@*/
 
     names = hfd(names, tnt);
     versions = hfd(versions, tvt);
 
     return 0;
 }
-/*@=bounds@*/
 
 /**
  * Retrieve trigger type info.
@@ -623,6 +767,7 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
     *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
+/*@-bounds@*/
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
@@ -641,6 +786,7 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 	    /*@innerbreak@*/ break;
 	}
     }
+/*@=bounds@*/
 
     return 0;
 }
@@ -765,7 +911,7 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
 static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
@@ -855,7 +1001,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
@@ -875,7 +1021,7 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
 static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
@@ -895,7 +1041,7 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 static int groupTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
@@ -925,6 +1071,7 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_FORMAT, "perms",		{ permsFormat } },
     { HEADER_EXT_FORMAT, "permissions",		{ permsFormat } },
     { HEADER_EXT_FORMAT, "triggertype",		{ triggertypeFormat } },
+    { HEADER_EXT_FORMAT, "xml",			{ xmlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
 } ;
 /*@=type@*/

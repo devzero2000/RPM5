@@ -1049,7 +1049,7 @@ bottom:
 	av[i] = _free(av[i]);
     av = _free(av);	ac = 0;
 
-    return idtx;
+    return IDTXsort(idtx);
 }
 
 /** @todo Transaction handling, more, needs work. */

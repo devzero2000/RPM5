@@ -217,12 +217,15 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
  */
 static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
 		rpmfi fi, /*@null@*/ FD_t scriptFd)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, scriptFd, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     rpmpsm psm = rpmpsmNew(ts, NULL, fi);
     int rc = 0;
+
+    if (psm == NULL)	/* XXX can't happen */
+	return rc;
 
     if (scriptFd != NULL)
 	rpmtsSetScriptFd(psm->ts, scriptFd);
@@ -248,7 +251,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
  * @return		0 no problems, 1 problems found
  */
 static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fi, fileSystem, internalState  @*/
 {
     char buf[BUFSIZ];
@@ -359,7 +362,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
  */
 static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 		Header h)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmps ps;

@@ -52,7 +52,7 @@ struct indexEntry_s {
 /** \ingroup header
  * The Header data structure.
  */
-struct headerToken {
+struct headerToken_s {
 /*@unused@*/
     struct HV_s hv;		/*!< Header public methods. */
 /*@only@*/ /*@null@*/
@@ -74,6 +74,8 @@ struct headerToken {
  */
 typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
+/*@null@*/
+    headerTagFormatFunction fmt;
 /*@null@*/
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
@@ -102,9 +104,9 @@ struct rpmec_s {
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct sprintfToken * sprintfToken;
+typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
 /*@-fielduse@*/
-struct sprintfToken {
+struct sprintfToken_s {
     enum {
 	PTOK_NONE = 0,
 	PTOK_TAG,
@@ -113,17 +115,18 @@ struct sprintfToken {
 	PTOK_COND
     } type;
     union {
+	struct sprintfTag_s tag;	/*!< PTOK_TAG */
 	struct {
 	/*@only@*/
 	    sprintfToken format;
+	    int i;
 	    int numTokens;
-	} array;
-	struct sprintfTag_s tag;
+	} array;			/*!< PTOK_ARRAY */
 	struct {
 	/*@dependent@*/
 	    char * string;
 	    int len;
-	} string;
+	} string;			/*!< PTOK_STRING */
 	struct {
 	/*@only@*/ /*@null@*/
 	    sprintfToken ifFormat;
@@ -132,7 +135,7 @@ struct sprintfToken {
 	    sprintfToken elseFormat;
 	    int numElseTokens;
 	    struct sprintfTag_s tag;
-	} cond;
+	} cond;				/*!< PTOK_COND */
     } u;
 };
 /*@=fielduse@*/
