@@ -727,7 +727,7 @@ print (t)\
 #	Note: the %_vsflags_erase applies to --upgrade/--freshen modes as
 #	well as --erase.
 #
-%__vsflags		0
+%__vsflags		0xf0000
 %_vsflags_build		%{__vsflags}
 %_vsflags_erase		%{__vsflags}
 %_vsflags_install	%{__vsflags}
