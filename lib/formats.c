@@ -344,7 +344,8 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     if (s == NULL) {
 	int tlen = 32;
 	t = memset(alloca(tlen+1), 0, tlen+1);
-	xx = snprintf(t, tlen, "%lu", anint);
+	if (anint != 0)
+	    xx = snprintf(t, tlen, "%lu", anint);
 	s = t;
 	xtag = "integer";
     }
