@@ -622,8 +622,8 @@ static PyObject * _strerror(PyObject *self, PyObject *args)
 
 /* Methods for the popt module */
 static struct PyMethodDef poptModuleMethods[] = {
-    {"getContext", (PyCFunction)getContext},
-    {"strerror", (PyCFunction)_strerror},
+    {"getContext", (PyCFunction)getContext, METH_VARARGS, NULL},
+    {"strerror", (PyCFunction)_strerror, METH_VARARGS, NULL},
     {NULL, NULL}
 };
 
