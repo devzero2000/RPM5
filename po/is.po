@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-04 16:22-0500\n"
+"POT-Creation-Date: 2002-02-06 15:01-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -3911,59 +3911,59 @@ msgstr "Skrá %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Skráin %s er minni en %u bæti\n"
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:660
 msgid "Success"
 msgstr "Tókst"
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:663
 msgid "Bad server response"
 msgstr "Þjónninn svaraði rangt"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:666
 msgid "Server I/O error"
 msgstr "Les/ritvilla á þjóninum"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:669
 msgid "Server timeout"
 msgstr "Þjónninn tímaði út"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:672
 msgid "Unable to lookup server host address"
 msgstr "Gat ekki flett upp vistfangi þjónsins"
 
-#: rpmio/rpmio.c:671
+#: rpmio/rpmio.c:675
 msgid "Unable to lookup server host name"
 msgstr "Gat ekki flett upp heiti þjónsins"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:678
 msgid "Failed to connect to server"
 msgstr "Gat ekki tengst þjóninum"
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:681
 msgid "Failed to establish data connection to server"
 msgstr "Gat ekki opnað gagnatengingu við þjóninn"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:684
 msgid "I/O error to local file"
 msgstr "Les/ritvilla í skrána"
 
-#: rpmio/rpmio.c:683
+#: rpmio/rpmio.c:687
 msgid "Error setting remote server to passive mode"
 msgstr "Ekki tókst að fá þjóninn í \"passive\" ham"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:690
 msgid "File not found on server"
 msgstr "Skráin fannst ekki á þjóninum"
 
-#: rpmio/rpmio.c:689
+#: rpmio/rpmio.c:693
 msgid "Abort in progress"
 msgstr "Er að hætta við"
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:697
 msgid "Unknown or unexpected error"
 msgstr "Óþekkt eða óvænt villa"
 
-#: rpmio/rpmio.c:1365
+#: rpmio/rpmio.c:1369
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "tengist %s sem %s með aðgangsorði %s\n"

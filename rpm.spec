@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.29
+Release: 0.30
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -522,6 +522,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Feb  7 2002 Jeff Johnson <jbj@redhat.com>
+- rpm-4.0.4 release candidate.
+
 * Mon Feb  4 2002 Jeff Johnson <jbj@redhat.com>
 - generate index for pkgid (aka Sigmd5) tag, query/verify by pkgid.
 - generate index for hdrid (aka Sha1header) tag, query/verify by hdrid.
