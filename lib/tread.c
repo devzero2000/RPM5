@@ -1,3 +1,5 @@
+#include "miscfn.h"
+
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -9,7 +11,7 @@ int timedRead(int fd, void * bufptr, int length) {
     int bytesRead;
     int total = 0;
     char * buf = bufptr;
-    struct fd_set readSet;
+    fd_set readSet;
     struct timeval tv;
 
     while  (total < length) {
