@@ -1,9 +1,0 @@
-/* $Id$ */
-
-TYPEMAP
-
-Header			T_PTROBJ
-rpmTransactionSet	T_PTROBJ
-rpmdb			T_PTROBJ
-
-const char *		T_PV
