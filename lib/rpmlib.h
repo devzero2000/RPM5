@@ -228,16 +228,15 @@ typedef enum rpmTag_e {
 /* XXX 2nd underscore prevents tagTable generation */
     RPMTAG_SIG_BASE		= HEADER_SIGBASE,
     RPMTAG_SIGSIZE		= RPMTAG_SIG_BASE+1,
-    RPMTAG_SIGLEMD5_1		= RPMTAG_SIG_BASE+2,	/*!< internal - obsolate */
+    RPMTAG_SIGLEMD5_1		= RPMTAG_SIG_BASE+2,	/*!< internal - obsolete */
     RPMTAG_SIGPGP		= RPMTAG_SIG_BASE+3,
-    RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,	/*!< internal - obsolate */
+    RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,	/*!< internal - obsolete */
     RPMTAG_SIGMD5	        = RPMTAG_SIG_BASE+5,
     RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,
-    RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/*!< internal - obsolate */
+    RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/*!< internal - obsolete */
 
-    RPMTAG_BADSHA1_1		= RPMTAG_SIG_BASE+8,	/*!< internal - obsolate */
-    RPMTAG_BADSHA1_2		= RPMTAG_SIG_BASE+9, 	/*!< internal - obsolate */
-
+    RPMTAG_BADSHA1_1		= RPMTAG_SIG_BASE+8,	/*!< internal - obsolete */
+    RPMTAG_BADSHA1_2		= RPMTAG_SIG_BASE+9,	/*!< internal - obsolete */
     RPMTAG_PUBKEYS		= RPMTAG_SIG_BASE+10,
     RPMTAG_DSAHEADER		= RPMTAG_SIG_BASE+11,
     RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,
@@ -327,7 +326,7 @@ typedef enum rpmTag_e {
     RPMTAG_CHANGELOGNAME	= 1081,
     RPMTAG_CHANGELOGTEXT	= 1082,
 /*@-enummemuse@*/
-    RPMTAG_BROKENMD5		= 1083, /*!< internal */
+    RPMTAG_BROKENMD5		= 1083, /*!< internal - obsolete */
 /*@=enummemuse@*/
     RPMTAG_PREREQ		= 1084, /*!< internal */
     RPMTAG_PREINPROG		= 1085,
@@ -354,7 +353,7 @@ typedef enum rpmTag_e {
 /*@-enummemuse@*/
     RPMTAG_CAPABILITY		= 1105, /*!< internal - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_SOURCEPACKAGE	= 1106, /*!< internal */
+    RPMTAG_SOURCEPACKAGE	= 1106, /*!< src.rpm header marker */
 /*@-enummemuse@*/
     RPMTAG_OLDORIGFILENAMES	= 1107, /*!< internal - obsolete */
 /*@=enummemuse@*/
@@ -362,7 +361,7 @@ typedef enum rpmTag_e {
     RPMTAG_BUILDREQUIRES	= 1109, /*!< internal */
     RPMTAG_BUILDCONFLICTS	= 1110, /*!< internal */
 /*@-enummemuse@*/
-    RPMTAG_BUILDMACROS		= 1111, /*!< internal */
+    RPMTAG_BUILDMACROS		= 1111, /*!< internal - unused */
 /*@=enummemuse@*/
     RPMTAG_PROVIDEFLAGS		= 1112,
     RPMTAG_PROVIDEVERSION	= 1113,
@@ -382,9 +381,23 @@ typedef enum rpmTag_e {
     RPMTAG_MULTILIBS		= 1127,
     RPMTAG_INSTALLTID		= 1128,
     RPMTAG_REMOVETID		= 1129,
-    RPMTAG_SHA1RHN		= 1130, /*!< internal */
+    RPMTAG_SHA1RHN		= 1130, /*!< internal - obsolete */
     RPMTAG_RHNPLATFORM		= 1131,
     RPMTAG_PLATFORM		= 1132,
+    RPMTAG_PATCHESNAME		= 1133, /*!< placeholder (SuSE) */
+    RPMTAG_PATCHESFLAGS		= 1134, /*!< placeholder (SuSE) */
+    RPMTAG_PATCHESVERSION	= 1135, /*!< placeholder (SuSE) */
+    RPMTAG_CACHECTIME		= 1136,
+    RPMTAG_CACHEPKGPATH		= 1137,
+    RPMTAG_CACHEPKGSIZE		= 1138,
+    RPMTAG_CACHEPKGMTIME	= 1139,
+    RPMTAG_FILECOLORS		= 1140,
+    RPMTAG_FILECLASS		= 1141,
+    RPMTAG_CLASSDICT		= 1142,
+    RPMTAG_FILEDEPENDSX		= 1143,
+    RPMTAG_FILEDEPENDSN		= 1144,
+    RPMTAG_DEPENDSDICT		= 1145,
+    RPMTAG_SOURCEPKGID		= 1146,
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/
@@ -1740,21 +1753,19 @@ typedef enum rpmEraseInterfaceFlags_e {
  * Tags found in signature header from package.
  */
 enum rpmtagSignature {
-    RPMSIGTAG_SIZE	= 1000,	/*!< Header+Payload size in bytes. */
-/* the md5 sum was broken *twice* on big endian machines */
-    RPMSIGTAG_LEMD5_1	= 1001,	/*!< Broken MD5, take 1 */
-    RPMSIGTAG_PGP	= 1002,	/*!< PGP 2.6.3 signature. */
-    RPMSIGTAG_LEMD5_2	= 1003,	/*!< Broken MD5, take 2 */
-    RPMSIGTAG_MD5	= 1004,	/*!< MD5 signature. */
-    RPMSIGTAG_GPG	= 1005, /*!< GnuPG signature. */
-    RPMSIGTAG_PGP5	= 1006,	/*!< PGP5 signature @deprecated legacy. */
-    RPMSIGTAG_PAYLOADSIZE = 1007,
-				/*!< uncompressed payload size in bytes. */
-    RPMSIGTAG_BADSHA1_1 = RPMTAG_BADSHA1_1,	/*!< Broken SHA1, take 1. */
-    RPMSIGTAG_BADSHA1_2 = RPMTAG_BADSHA1_2,	/*!< Broken SHA1, take 2. */
-    RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< sha1 header digest. */
-    RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< DSA header signature. */
-    RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< RSA header signature. */
+    RPMSIGTAG_SIZE	= 1000,	/*!< internal Header+Payload size in bytes. */
+    RPMSIGTAG_LEMD5_1	= 1001,	/*!< internal Broken MD5, take 1 @deprecated legacy. */
+    RPMSIGTAG_PGP	= 1002,	/*!< internal PGP 2.6.3 signature. */
+    RPMSIGTAG_LEMD5_2	= 1003,	/*!< internal Broken MD5, take 2 @deprecated legacy. */
+    RPMSIGTAG_MD5	= 1004,	/*!< internal MD5 signature. */
+    RPMSIGTAG_GPG	= 1005, /*!< internal GnuPG signature. */
+    RPMSIGTAG_PGP5	= 1006,	/*!< internal PGP5 signature @deprecated legacy. */
+    RPMSIGTAG_PAYLOADSIZE = 1007,/*!< internal uncompressed payload size in bytes. */
+    RPMSIGTAG_BADSHA1_1	= RPMTAG_BADSHA1_1,	/*!< internal Broken SHA1, take 1. */
+    RPMSIGTAG_BADSHA1_2	= RPMTAG_BADSHA1_2,	/*!< internal Broken SHA1, take 2. */
+    RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< internal sha1 header digest. */
+    RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< internal DSA header signature. */
+    RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< internal RSA header signature. */
 };
 
 /**

@@ -203,13 +203,14 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
 	xx = headerRemoveEntry(sig, RPMSIGTAG_MD5);
 	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
-#ifdef	NOTYET	/* XXX leave new-fangled header-only digest in place. */
         xx = headerRemoveEntry(sig, RPMSIGTAG_SHA1);
+#ifdef	NOTYET
         xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, passPhrase);
 #endif
 
+	/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
-#ifdef	NOTYET	/* XXX leave new-fangled header-only signatures in place. */
+	    switch (sigtag) {
             case RPMSIGTAG_GPG:
                 xx = headerRemoveEntry(sig, RPMSIGTAG_DSA);
                 /*@fallthrough@*/
@@ -218,7 +219,6 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
                 xx = headerRemoveEntry(sig, RPMSIGTAG_RSA);
                 /*@switchbreak@*/ break;
             }
-#endif
             xx = headerRemoveEntry(sig, sigtag);
             xx = rpmAddSignature(sig, sigtarget, sigtag, passPhrase);
 	}

@@ -5,6 +5,7 @@
 	- add rpmdb_loadcvt script, rpmdb_foo utilities.
 	- use current autotools,
 	- use splint, not lclint.
+	- delete rpm-4.1 header-only signatures/digests when signing.
 
 4.0.3 -> 4.0.4:
 	- turn off rpm-perl until it's self-hosting.
