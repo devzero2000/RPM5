@@ -898,10 +898,33 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
     return 0;
 }
 
+typedef struct VFA {
+	char *	attribute;
+	int	flag;
+} VFA_t;
+
+VFA_t virtualFileAttributes[] = {
+	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
+	{ "%doc",	RPMFILE_DOC },
+	{ "%ghost",	RPMFILE_GHOST },
+	{ "%readme",	RPMFILE_README },
+	{ "%license",	RPMFILE_LICENSE },
+
+#if WHY_NOT
+	{ "%spec",	RPMFILE_SPEC },
+	{ "%config",	RPMFILE_CONFIG },
+	{ "%donotuse",	RPMFILE_DONOTUSE },	/* XXX WTFO? */
+	{ "%missingok",	RPMFILE_CONFIG|RPMFILE_MISSINGOK },
+	{ "%noreplace",	RPMFILE_CONFIG|RPMFILE_NOREPLACE },
+#endif
+
+	NULL
+};
+
 static int parseForSimple(Spec spec, Package pkg, char *buf,
 			  struct FileList *fl, char **fileName)
 {
-    char *s;
+    char *s, *t;
     int res, specialDoc = 0;
     char *name, *version;
     char specialDocBuf[BUFSIZ];
@@ -909,8 +932,10 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
     specialDocBuf[0] = '\0';
     *fileName = NULL;
     res = 0;
-    s = strtokWithQuotes(buf, " \t\n");
-    while (s) {
+
+    t = buf;
+    while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
+	t = NULL;
 	if (!strcmp(s, "%docdir")) {
 	    s = strtokWithQuotes(NULL, " \t\n");
 	    if (fl->docDirCount == MAXDOCDIR) {
@@ -925,37 +950,46 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 		res = 1;
 	    }
 	    break;
-	} else if (!strcmp(s, "%doc")) {
-	    fl->currentFlags |= RPMFILE_DOC;
-	} else if (!strcmp(s, "%ghost")) {
-	    fl->currentFlags |= RPMFILE_GHOST;
-	} else if (!strcmp(s, "%dir")) {
-	    fl->isDir = 1;
-	} else {
-	    if (*fileName) {
-		/* We already got a file -- error */
+	}
+
+    /* Set flags for virtual file attributes */
+    {	VFA_t *vfa;
+	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
+	    if (strcmp(s, vfa->attribute))
+		continue;
+	    if (!strcmp(s, "%dir"))
+		fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
+	    else
+		fl->currentFlags |= vfa->flag;
+	    break;
+	}
+	if (vfa)
+	    continue;
+    }
+
+	if (*fileName) {
+	    /* We already got a file -- error */
+	    rpmError(RPMERR_BADSPEC,
+		"Two files on one line: %s", *fileName);
+	    fl->processingFailed = 1;
+	    res = 1;
+	}
+
+	if (*s != '/') {
+	    if (fl->currentFlags & RPMFILE_DOC) {
+		specialDoc = 1;
+		strcat(specialDocBuf, " ");
+		strcat(specialDocBuf, s);
+	    } else {
+		/* not in %doc, does not begin with / -- error */
 		rpmError(RPMERR_BADSPEC,
-			 "Two files on one line: %s", *fileName);
+		    "File must begin with \"/\": %s", s);
 		fl->processingFailed = 1;
 		res = 1;
 	    }
-	    if (*s != '/') {
-		if (fl->currentFlags & RPMFILE_DOC) {
-		    specialDoc = 1;
-		    strcat(specialDocBuf, " ");
-		    strcat(specialDocBuf, s);
-		} else {
-		    /* not in %doc, does not begin with / -- error */
-		    rpmError(RPMERR_BADSPEC,
-			     "File must begin with \"/\": %s", s);
-		    fl->processingFailed = 1;
-		    res = 1;
-		}
-	    } else {
-		*fileName = s;
-	    }
+	} else {
+	    *fileName = s;
 	}
-	s = strtokWithQuotes(NULL, " \t\n");
     }
 
     if (specialDoc) {
@@ -966,6 +1000,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	    fl->processingFailed = 1;
 	    res = 1;
 	} else {
+	/* XXX FIXME: this is easy to do as macro expansion */
 	    headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
 			   (void *) &name, NULL);
 	    headerGetEntry(pkg->header, RPMTAG_VERSION, NULL,
