@@ -12,11 +12,11 @@ msgstr ""
 #: build.c:36
 #, c-format
 msgid "cannot open rpm database in %s\n"
-msgstr "%s 에서 rpm 데이터베이스를 열 수 없습니다\n"
+msgstr "%s의 rpm 데이터베이스를 열 수 없습니다\n"
 
 #: build.c:46
 msgid "failed build dependencies:\n"
-msgstr "의존성 문제로 제작에 실패함:\n"
+msgstr "의존성 문제로 인해 제작에 실패함:\n"
 
 #: build.c:77
 #, c-format
@@ -32,17 +32,17 @@ msgstr "tar 파이프를 여는데 실패함: %m\n"
 #: build.c:169
 #, c-format
 msgid "Failed to read spec file from %s\n"
-msgstr "%s 에서 spec 파일을 읽는데 실패했습니다\n"
+msgstr "%s에서 spec 파일을 읽는데 실패했습니다\n"
 
 #: build.c:197
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
-msgstr "%s 에서 %s (으)로 이름 변경하는데 실패함: %m\n"
+msgstr "%s의 이름을 %s(으)로 변경하는데 실패함: %m\n"
 
 #: build.c:236
 #, c-format
 msgid "failed to stat %s: %m\n"
-msgstr "%s 의 상태(stat)를 표시하는데 실패함: %m\n"
+msgstr "%s의 상태(stat)를 표시하는데 실패함: %m\n"
 
 #: build.c:241
 #, c-format
@@ -63,7 +63,7 @@ msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 #: build.c:321
 #, c-format
 msgid "Building for target %s\n"
-msgstr "%s (을)를 제작하고 있습니다\n"
+msgstr "%s(을)를 제작하고 있습니다\n"
 
 #: rpm.c:227
 #, c-format
@@ -73,7 +73,7 @@ msgstr "rpm: %s\n"
 #: rpm.c:238 rpmqv.c:224
 #, c-format
 msgid "RPM version %s\n"
-msgstr "RPM - %s\n"
+msgstr "RPM 버전 - %s\n"
 
 #: rpm.c:242 rpmqv.c:230
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
@@ -81,7 +81,7 @@ msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
 #: rpm.c:243 rpmqv.c:231
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
-msgstr "이 프로그램은 GNU Public License 내에서 자유롭게 재배포될 수 있습니다."
+msgstr "이 프로그램은 GNU Public License 내에서 자유롭게 재배포할 수 있습니다"
 
 #: rpm.c:251
 msgid "Usage: rpm {--help}"
@@ -289,7 +289,7 @@ msgstr "        rpm {--querytags}"
 
 #: rpm.c:331
 msgid "Usage:"
-msgstr "  사용법:"
+msgstr " * 사용법:"
 
 #: rpm.c:333
 msgid "print this message"
@@ -297,11 +297,11 @@ msgstr "이 메세지를 출력합니다"
 
 #: rpm.c:335 rpmqv.c:107
 msgid "print the version of rpm being used"
-msgstr "현재 사용 중인 rpm 버전을 표시합니다"
+msgstr "현재 사용되고 있는 rpm 버전을 표시합니다"
 
 #: rpm.c:338
 msgid "   All modes support the following arguments:"
-msgstr "   모든 모드에서 다음의 인수를 사용하실 수 있습니다:"
+msgstr "  * 모든 모드에서 다음의 인수를 사용할 수 있습니다:"
 
 #: rpm.c:339
 msgid "    --define '<name> <body>'"
@@ -309,7 +309,7 @@ msgstr "    --define '<이름> <본문>'"
 
 #: rpm.c:340 rpmqv.c:114
 msgid "define macro <name> with value <body>"
-msgstr "<본문> 의 내용(value)으로 <이름> 매크로를 정의합니다"
+msgstr "<본문>의 내용(value)으로 <이름> 매크로를 정의합니다"
 
 #: rpm.c:341
 msgid "    --eval '<name>+'      "
@@ -325,7 +325,7 @@ msgstr "    --pipe <명령>         "
 
 #: rpm.c:344 rpmqv.c:120
 msgid "send stdout to <cmd>"
-msgstr "표준출력을 <명령> 으로 보냅니다"
+msgstr "표준출력을 <명령>으로 보냅니다"
 
 #: rpm.c:345
 msgid "    --rcfile <file>       "
@@ -333,7 +333,7 @@ msgstr "    --rcfile <파일>       "
 
 #: rpm.c:346
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-msgstr "/etc/rpmrc 와 $HOME/.rpmrc 파일 대신에 지정된 <파일> 을 사용합니다"
+msgstr "/etc/rpmrc 와 $HOME/.rpmrc 파일 대신 지정한 <파일>을 사용합니다"
 
 #: rpm.c:348 rpmqv.c:138
 msgid "display final rpmrc and macro configuration"
@@ -350,11 +350,11 @@ msgstr "화면에 출력되는 메세지의 내용을 아주 상세히 보여줍니다 (디버깅 용)"
 #: rpm.c:355
 msgid "   Install, upgrade and query (with -p) allow URL's to be used in place"
 msgstr ""
-"     설치, 업그레이드 및 질의시 (-p 옵션과 함께 사용시) 파일명을 적는 곳에"
+"    * 설치, 업그레이드 및 질의시 (-p 옵션과 함께 사용시) 파일명을 적는 곳에"
 
 #: rpm.c:356
 msgid "   of file names as well as the following options:"
-msgstr "      파일이 위치한 URL과 함께 다음의 옵션을 사용하실 수 있습니다:"
+msgstr "      파일이 위치한 URL과 함께 다음의 옵션을 사용할 수 있습니다:"
 
 #: rpm.c:357
 msgid "      --ftpproxy <host>   "
@@ -362,7 +362,7 @@ msgstr "      --ftpproxy <호스트> "
 
 #: rpm.c:358
 msgid "hostname or IP of ftp proxy"
-msgstr "ftp 프록시의 호스트 명 또는 IP 주소"
+msgstr "ftp 프록시의 호스트명 또는 IP 주소"
 
 #: rpm.c:359
 msgid "      --ftpport <port>    "
@@ -378,7 +378,7 @@ msgstr "      --httpproxy <호스트>"
 
 #: rpm.c:362
 msgid "hostname or IP of http proxy"
-msgstr "http 프록시의 호스트 명 또는 IP 주소"
+msgstr "http 프록시의 호스트명 또는 IP 주소"
 
 #: rpm.c:363
 msgid "      --httpport <port>   "
@@ -398,7 +398,7 @@ msgstr "      --dbpath <디렉토리> "
 
 #: rpm.c:370 rpm.c:416 rpm.c:441 rpm.c:493 rpm.c:567
 msgid "use <dir> as the directory for the database"
-msgstr "<디렉토리> 를 데이터베이스 디렉토리로 사용합니다"
+msgstr "<디렉토리>를 데이터베이스 디렉토리로 사용합니다"
 
 #: rpm.c:371
 msgid "      --queryformat <qfmt>"
@@ -406,7 +406,7 @@ msgstr "      --queryformat <질의형식>"
 
 #: rpm.c:372
 msgid "use <qfmt> as the header format (implies --info)"
-msgstr "<질의형식> 을 헤더 형식으로 사용합니다 (--info 옵션이 포함되어 있음)"
+msgstr "<질의형식>을 헤더 형식으로 사용합니다 (--info 옵션이 포함되어 있음)"
 
 #: rpm.c:373 rpm.c:417 rpm.c:475 rpm.c:504
 msgid "      --root <dir>        "
@@ -414,11 +414,11 @@ msgstr "      --root <디렉토리>   "
 
 #: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:123
 msgid "use <dir> as the top level directory"
-msgstr "<디렉토리> 를 최상위 디렉토리로 사용합니다"
+msgstr "<디렉토리>를 최상위 디렉토리로 사용합니다"
 
 #: rpm.c:375
 msgid "      Package specification options:"
-msgstr "       패키지 지정 옵션:"
+msgstr "      * 패키지 세부사항 명시 옵션:"
 
 #: rpm.c:377
 msgid "query all packages"
@@ -430,7 +430,7 @@ msgstr "        -f <파일>+        "
 
 #: rpm.c:379
 msgid "query package owning <file>"
-msgstr "<파일> 이 포함되어 있는 패키지에 대해 질의합니다"
+msgstr "<파일>이 포함되어 있는 패키지에 대해 질의합니다"
 
 #: rpm.c:380
 msgid "        -p <packagefile>+ "
@@ -438,7 +438,7 @@ msgstr "        -p <패키지파일>+  "
 
 #: rpm.c:381
 msgid "query (uninstalled) package <packagefile>"
-msgstr "(설치되지 않은) <패키지파일> 에 대해 질의합니다"
+msgstr "(설치되어 있지 않은) <패키지파일>에 대해 질의합니다"
 
 #: rpm.c:382
 msgid "        --triggeredby <pkg>"
@@ -446,7 +446,7 @@ msgstr "        --triggeredby <패키지>"
 
 #: rpm.c:383
 msgid "query packages triggered by <pkg>"
-msgstr "<패키지> 로 인하여 발생되는 패키지에 대해 질의합니다"
+msgstr "<패키지>로 인하여 생성되는(triggered) 패키지에 대해 질의합니다"
 
 #: rpm.c:384
 msgid "        --whatprovides <cap>"
@@ -454,7 +454,7 @@ msgstr "        --whatprovides <기능>"
 
 #: rpm.c:385
 msgid "query packages which provide <cap> capability"
-msgstr "<기능> 을 제공하는 패키지에 대해 질의합니다"
+msgstr "<기능>을 제공하는 패키지에 대해 질의합니다"
 
 #: rpm.c:386
 msgid "        --whatrequires <cap>"
@@ -462,11 +462,11 @@ msgstr "        --whatrequires <기능>"
 
 #: rpm.c:387
 msgid "query packages which require <cap> capability"
-msgstr "<기능> 을 필요로 하는 패키지에 대해 질의합니다"
+msgstr "<기능>을 필요로 하는 패키지에 대해 질의합니다"
 
 #: rpm.c:388
 msgid "      Information selection options:"
-msgstr "       정보 선택 옵션:"
+msgstr "      * 정보 선택 옵션:"
 
 #: rpm.c:390
 msgid "display package information"
@@ -474,7 +474,7 @@ msgstr "패키지에 대한 정보를 보여줍니다"
 
 #: rpm.c:392
 msgid "display the package's change log"
-msgstr "패키지의 변경 사항(change log)을 보여줍니다"
+msgstr "패키지의 변경된 사항(change log)을 보여줍니다"
 
 #: rpm.c:394
 msgid "display package file list"
@@ -531,7 +531,7 @@ msgstr "패키지의 의존성을 검사하지 않습니다"
 
 #: lib/poptK.c:67 rpm.c:422
 msgid "do not verify file md5 checksums"
-msgstr "파일의 md5 체크섬을 검사하지 않습니다"
+msgstr "파일의 md5 합계검사(checksum)를 확인하지 않습니다"
 
 #: rpm.c:424
 msgid "do not verify file attributes"
@@ -567,7 +567,7 @@ msgstr "      --relocate <이전경로>=<새로운경로>"
 
 #: rpm.c:435
 msgid "relocate files from <oldpath> to <newpath>"
-msgstr "<이전경로> 에서 <새로운경로> 로 파일을 재배치하여 설치합니다"
+msgstr "<이전경로>에서 <새로운경로>로 파일을 재배치하여 설치합니다"
 
 #: lib/poptI.c:103 rpm.c:437
 msgid "relocate files in non-relocateable package"
@@ -580,7 +580,7 @@ msgstr "      --prefix <디렉토리> "
 #: lib/poptI.c:188 rpm.c:439
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
-"재배치 기능이 있는 패키지의 경우, 지정된 <디렉토리> 로 재배치하여 설치합니다"
+"재배치 기능이 있는 패키지의 경우, 지정한 <디렉토리>로 재배치하여 설치합니다"
 
 #: lib/poptI.c:112 rpm.c:443
 msgid "do not install documentation"
@@ -598,7 +598,9 @@ msgstr ""
 
 #: lib/poptI.c:89 rpm.c:449
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "어떠한 설정에 상관없이 패키지 안의 모든 파일을 설치합니다"
+msgstr ""
+"특정 파일을 생략하기 위한 설정이 적용된 경우에도, 패키지 안의 모든 파일을 "
+"설치합니다"
 
 #: lib/poptI.c:127 rpm.c:452
 msgid "don't verify package architecture"
@@ -630,7 +632,8 @@ msgstr "패키지 설치시 어떠한 설치관련 스크립트도 실행하지 않습니다"
 
 #: rpm.c:468 rpm.c:503
 msgid "don't execute any scripts triggered by this package"
-msgstr "이 패키지로 인해 발생되는 스크립트를 실행하지 않습니다"
+msgstr ""
+"이 패키지로 인해 생성되는(triggered) 어떠한 스크립트도 실행하지 않습니다"
 
 #: lib/poptI.c:186 rpm.c:470
 msgid "print percentages as package installs"
@@ -685,8 +688,8 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"<패키지> 이름과 일치하는 패키지는 모두 제거합니다 (<패키지> 에 여러개의 "
-"패키지를 지정하실 경우에는 오류가 발생됩니다)"
+"<패키지> 이름과 일치하는 패키지는 모두 제거합니다 (<패키지>에 여러개의 "
+"패키지를 동시에 지정할 경우에는 오류가 발생합니다)"
 
 #: rpm.c:501
 msgid "do not execute any package specific scripts"
@@ -702,7 +705,7 @@ msgstr "    -t<단계> <tar파일>    "
 
 #: rpm.c:509
 msgid "build package, where <stage> is one of:"
-msgstr "패키지를 제작하며, <단계> 에 사용되는 옵션은 다음과 같습니다:"
+msgstr "패키지를 제작하며, <단계>에서 사용하는 옵션은 다음과 같습니다:"
 
 #: rpm.c:511
 msgid "prep (unpack sources and apply patches)"
@@ -758,7 +761,7 @@ msgstr "      --buildroot <디렉토리>"
 
 #: rpm.c:533
 msgid "use <dir> as the build root"
-msgstr "<디렉토리> 를 패키지 제작을 위한 루트 디렉토리로 사용합니다"
+msgstr "<디렉토리>를 패키지 제작을 위한 루트 디렉토리로 사용합니다"
 
 #: rpm.c:534
 msgid "      --target=<platform>+"
@@ -766,7 +769,7 @@ msgstr "      --target=<플랫폼>+  "
 
 #: rpm.c:535
 msgid "build the packages for the build targets platform1...platformN."
-msgstr "지정된 플랫폼1...플랫폼N 의 패키지를 제작합니다"
+msgstr "지정한 목표대상의 플랫폼1...플랫폼N 패키지를 제작합니다."
 
 #: rpm.c:537
 msgid "do not execute any stages"
@@ -781,7 +784,7 @@ msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
-"<소스_패키지> 로 바이너리 패키지를 제작하며, 패키지 제작 후에는 spec, 소스, "
+"<소스_패키지>로 바이너리 패키지를 제작하며, 패키지 제작 후에는 spec, 소스, "
 "패치, 아이콘 파일을 삭제합니다"
 
 #: rpm.c:541
@@ -822,15 +825,15 @@ msgstr "패키지의 서명을 검사합니다"
 
 #: lib/poptK.c:64 rpm.c:553
 msgid "skip any PGP signatures"
-msgstr "PGP 서명은 검사하지 않습니다"
+msgstr "어떠한 PGP 서명도 검사하지 않습니다"
 
 #: lib/poptK.c:61 rpm.c:555
 msgid "skip any GPG signatures"
-msgstr "GPG 서명은 검사하지 않습니다"
+msgstr "어떠한 GPG 서명도 검사하지 않습니다"
 
 #: rpm.c:557
 msgid "skip any MD5 signatures"
-msgstr "MD5 서명은 검사하지 않습니다"
+msgstr "어떠한 MD5 서명도 검사하지 않습니다"
 
 #: rpm.c:561
 msgid "make sure a valid database exists"
@@ -850,7 +853,7 @@ msgid ""
 "package specification options as -q"
 msgstr ""
 "-q 옵션과 같은 패키지 지정 옵션을 사용하여 패키지 데이터베이스에 있는 파일의 "
-"허가권(permission) 을 설정합니다"
+"허가권(permission)을 설정합니다"
 
 #: rpm.c:576
 msgid ""
@@ -864,7 +867,7 @@ msgstr ""
 #: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:617 rpmqv.c:623 rpmqv.c:629
 #: rpmqv.c:667
 msgid "only one major mode may be specified"
-msgstr "하나의 주요(major) 모드만 지정하실 수 있습니다"
+msgstr "하나의 주(major) 모드만 지정할 수 있습니다"
 
 #: rpm.c:736
 msgid "-u and --uninstall are deprecated and no longer work.\n"
@@ -876,11 +879,11 @@ msgstr "대신 -e 또는 --erase 옵션을 사용하십시요.\n"
 
 #: lib/poptI.c:55 rpm.c:827
 msgid "relocations must begin with a /"
-msgstr "재배치시에는 반드시 '/' 로 시작되어야 합니다"
+msgstr "재배치시에는 반드시 '/' 로 시작해야 합니다"
 
 #: lib/poptI.c:57 rpm.c:829
 msgid "relocations must contain a ="
-msgstr "재배치시에는 반드시 '=' 이 포함되어야 합니다"
+msgstr "재배치시에는 반드시 '=' 을 포함해야 합니다"
 
 #: lib/poptI.c:60 rpm.c:832
 msgid "relocations must have a / following the ="
@@ -888,7 +891,7 @@ msgstr "재배치시에는 반드시 '=' 뒤에 '/' 가 와야 합니다"
 
 #: lib/poptI.c:43 rpm.c:841
 msgid "exclude paths must begin with a /"
-msgstr "제외시킬 경로는 반드시 '/' 로 시작되어야 합니다"
+msgstr "제외시킬 경로는 반드시 '/' 로 시작해야 합니다"
 
 #: rpm.c:850 rpmqv.c:569
 msgid "The --rcfile option has been eliminated.\n"
@@ -897,16 +900,17 @@ msgstr "--rcfile 옵션이 제거되었습니다.\n"
 #: rpm.c:851
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
-"--macros 옵션은 콜론(:)으로 구분된 매크로 목록 파일과 함께 사용하십시요.\n"
+"--macros 옵션에는 읽어올 매크로 목록 파일을 콜론(:)으로 구분하여 "
+"사용하십시요.\n"
 
 #: rpm.c:856 rpmqv.c:576
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
-msgstr "(%d) 의 인수 처리 과정 중 내부 오류가 발생했습니다 :-(\n"
+msgstr "인수 처리과정 (%d) 도중 내부 오류가 발생했습니다 :-(\n"
 
 #: rpm.c:891 rpmqv.c:646
 msgid "one type of query/verify may be performed at a time"
-msgstr "질의/검증 중에서 한가지 유형은 동시에 수행될 수 있습니다"
+msgstr "질의/검증 유형은 각각 다른 유형과 동시에 수행할 수 있습니다"
 
 #: rpm.c:896 rpmqv.c:650
 msgid "unexpected query flags"
@@ -930,74 +934,74 @@ msgstr "패키지 설치시에만 파일을 재배치할 수 있습니다"
 
 #: rpm.c:911 rpmqv.c:705
 msgid "only one of --prefix or --relocate may be used"
-msgstr "--prefix 또는 --relocate 옵션 중 하나만 사용하실 수 있습니다"
+msgstr "--prefix 또는 --relocate 옵션 중 하나만 사용할 수 있습니다"
 
 #: rpm.c:914 rpmqv.c:708
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
-"--relocate 와 --excludepath 옵션은 최신의 패키지를 설치할 때에만 사용하실 수 "
+"--relocate 와 --excludepath 옵션은 최신의 패키지를 설치할 때에만 사용할 수 "
 "있습니다"
 
 #: rpm.c:917 rpmqv.c:711
 msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix 옵션은 최신의 패키지를 설치할 때에만 사용하실 수 있습니다"
+msgstr "--prefix 옵션은 최신의 패키지를 설치할 때에만 사용할 수 있습니다"
 
 #: rpm.c:920 rpmqv.c:714
 msgid "arguments to --prefix must begin with a /"
-msgstr "--prefix 옵션의 인수는 반드시 '/' 로 시작되어야 합니다"
+msgstr "--prefix 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
 #: rpm.c:923 rpmqv.c:717
 msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--hash (-h) 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:927 rpmqv.c:721
 msgid "--percent may only be specified during package installation"
-msgstr "--percent 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--percent 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:931 rpmqv.c:726
 msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--replacefiles 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:935 rpmqv.c:730
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--replacepkgs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:939 rpmqv.c:734
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--excludedocs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:943 rpmqv.c:738
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--includedocs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:947 rpmqv.c:742
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "--excludedocs 와 --includedocs 옵션만 지정하실 수 있습니다"
+msgstr "--excludedocs 와 --includedocs 옵션만 지정할 수 있습니다"
 
 #: rpm.c:951 rpmqv.c:746
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--ignorearch 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:955 rpmqv.c:750
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--ignoreos 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:959 rpmqv.c:755
 msgid "--ignoresize may only be specified during package installation"
-msgstr "--ignoresize 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--ignoresize 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:963 rpmqv.c:759
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches 옵션은 패키지 삭제시에만 지정하실 수 있습니다"
+msgstr "--allmatches 옵션은 패키지 삭제시에만 지정할 수 있습니다"
 
 #: rpm.c:967 rpmqv.c:763
 msgid "--allfiles may only be specified during package installation"
-msgstr "--allfiles 옵션은 패키지 설치시에만 지정하실 수 있습니다"
+msgstr "--allfiles 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
 #: rpm.c:971 rpmqv.c:768
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--justdb 옵션은 패키지 설치와 삭제시에만 지정하실 수 있습니다"
+msgstr "--justdb 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
 #: rpm.c:978
 msgid ""
