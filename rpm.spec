@@ -344,6 +344,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Feb 22 2001 Jeff Johnson <jbj@redhat.com>
+- portability changes from Joe Orton <jorton@redhat.com> et al.
+- (alpha): rip out ALPHA_LOSSAGE now that gcc-2.96-76 has fix (#28509).
+
 * Mon Feb 19 2001 Jeff Johnson <jbj@redhat.com>
 - rpm-4.0.2 release candidate.
 

@@ -96,19 +96,6 @@ exit:
     return rc;
 }
 
-/*
- * XXX gcc-2.96-60 on alpha (at least) needs ALPHA_LOSSAGE defined.
- *
- * Otherwise, the (mis-compilation?!) symptom is the inability to pass sig_type
- * correctly to rpmReadSignature(FD_t *fd, Header *header, short sig_type)
- * (Note: the short in both struct rpmlead and in the prototype).
- */
-#ifdef	__alpha
-#define	ALPHA_LOSSAGE
-#else
-#undef	ALPHA_LOSSAGE
-#endif
-
 int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 {
     FD_t fd = NULL;
@@ -121,9 +108,6 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
     Header sig = NULL;
     int rc = EXIT_FAILURE;
     
-#ifdef ALPHA_LOSSAGE
-l = malloc(sizeof(*l));
-#endif
     tmprpm[0] = '\0';
     while ((rpm = *argv++) != NULL) {
 
@@ -217,7 +201,6 @@ l = malloc(sizeof(*l));
     rc = 0;
 
 exit:
-if (l != &lead) free(l);
     if (fd)	manageFile(&fd, NULL, 0, rc);
     if (ofd)	manageFile(&ofd, NULL, 0, rc);
 
@@ -256,9 +239,6 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
     const void * ptr;
     int res = 0;
 
-#ifdef ALPHA_LOSSAGE
-l = malloc(sizeof(*l));
-#endif
     while ((rpm = *argv++) != NULL) {
 
 	if (manageFile(&fd, &rpm, O_RDONLY, 0)) {
@@ -467,7 +447,6 @@ l = malloc(sizeof(*l));
 	    free((void *)sigtarget);	sigtarget = NULL;
 	}
     }
-if (l != &lead) free(l);
 
     return res;
 }

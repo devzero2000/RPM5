@@ -127,6 +127,8 @@
 	- fix: permit packages to differ by 0 or 32 bytes (#26373).
 	- fix: permit HEADER_IMMUTABLE tag queries.
 	- split db configuration into separate file.
+	- portability changes from Joe Orton <jorton@redhat.com> et al.
+	- (alpha): rip out ALPHA_LOSSAGE now that gcc-2.96-76 has fix (#28509).
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
