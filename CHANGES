@@ -1,4 +1,5 @@
 2.5.3 -> 2.5.4:
+	- restore backward compatible rpmrc/rpmpopt symlinks.
 	- update pt_BR translations (Arnaldo Carvalho de Melo).
 	- permit --{buildroot,timecheck,test,sign} with -tX (Toshio Kuratomi).
 	- fix database rebuilds with triggers (Steve Sanberg).
@@ -6,8 +7,8 @@
 	- eliminate redundant close in provide/require processing.
 	- solaris portability patch resurrection (Steve Sanberg).
 	- permit autogen.sh to work on non "prefix=/usr" hosts.
-	- add %license/%readme virtual file attributes
-	- align "Build Host:" with other fields
+	- add %license/%readme virtual file attributes.
+	- align "Build Host:" with other fields.
 
 2.5.2 -> 2.5.3:
 	- copy changelog tags to sub-packages just before packaging

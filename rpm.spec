@@ -2,7 +2,7 @@ Summary: Red Hat Package Manager
 Name: rpm
 %define version 2.5.4
 Version: %{version}
-Release: 1
+Release: 2
 Group: Utilities/System
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -63,6 +63,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/man/man8/rpm.8
 /usr/man/man8/rpm2cpio.8
 /usr/lib/rpm
+/usr/lib/rpmrc
+/usr/lib/rpmpopt
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS
