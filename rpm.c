@@ -829,7 +829,8 @@ int main(int argc, char ** argv) {
 
 	  case GETOPT_BUILDROOT:
 	    if (bigMode != MODE_UNKNOWN &&
-		bigMode != MODE_BUILD && bigMode != MODE_REBUILD)
+		bigMode != MODE_BUILD && bigMode != MODE_REBUILD &&
+		bigMode != MODE_TARBUILD)
 		argerror(_("only one major mode may be specified"));
 	    buildRootOverride = optArg;
 	    break;
@@ -930,7 +931,7 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_QUERYTAGS;
 
     if (buildRootOverride && bigMode != MODE_BUILD &&
-	bigMode != MODE_REBUILD) {
+	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
 	argerror("--buildroot may only be used during package builds");
     }
 
@@ -941,7 +942,7 @@ int main(int argc, char ** argv) {
 			"database"));
 
     if (timeCheck && bigMode != MODE_BUILD && bigMode != MODE_REBUILD &&
-	bigMode != MODE_RECOMPILE) 
+	bigMode != MODE_RECOMPILE && bigMode != MODE_TARBUILD) 
 	argerror(_("--timecheck may only be used during package builds"));
     
     if (bigMode != MODE_QUERY && queryFor) 
@@ -1039,7 +1040,7 @@ int main(int argc, char ** argv) {
 		   "verification"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
-	bigMode != MODE_BUILD && test)
+	bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && test )
 	argerror(_("--test may only be specified during package installation, "
 		 "erasure, and building"));
 
@@ -1097,7 +1098,7 @@ int main(int argc, char ** argv) {
 
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
-	    bigMode == MODE_RESIGN) {
+	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD) {
             if (poptPeekArg(optCon)) {
 		switch (rpmLookupSignatureType()) {
 		  case RPMSIGTAG_PGP:
