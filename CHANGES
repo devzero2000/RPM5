@@ -1,3 +1,6 @@
+2.3.11 -> 2.3.12:
+	- got rpmfilename rpmrc directive working (merged from 2.4.x tree)
+
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output
 	- fix handling of source files with bad owners/groups
