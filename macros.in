@@ -553,7 +553,7 @@
 
 #	The directory in which erased packages will be saved when using
 #	the --repackage option.
-%_repackage_dir		/var/spool/up2date
+%_repackage_dir		/var/spool/repackage
 
 #	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
 %_repackage_root	%{nil}
