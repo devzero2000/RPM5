@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2002-01-22 12:11-0500\n"
-"PO-Revision-Date: 2002-01-20 20:59+0900\n"
+"PO-Revision-Date: 2002-01-23 00:00+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -120,8 +120,8 @@ msgstr ""
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                     [--prefix <디렉토리>] [--ignoreos] [--nodeps] [--"
-"allfiles]"
+"                     [--prefix <디렉토리>] [--ignoreos] [--nodeps] "
+"[--allfiles]"
 
 #: rpm.c:256 rpm.c:265 rpm.c:275
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
@@ -166,8 +166,8 @@ msgstr "                     [--excludedocs] [--includedocs] [--rcfile <파일>]"
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
-"                     [--ignorearch] [--dbpath <디렉토리>] [--prefix <디렉토리"
-">]"
+"                     [--ignorearch] [--dbpath <디렉토리>] [--prefix "
+"<디렉토리>]"
 
 #: rpm.c:266
 msgid "                        [--httpproxy <host>] [--httpport <port>] "
@@ -224,8 +224,8 @@ msgstr ""
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
-"                     [--dbpath <디렉토리>] [--nodeps] [--nofiles] [--"
-"noscripts]"
+"                     [--dbpath <디렉토리>] [--nodeps] [--nofiles] "
+"[--noscripts]"
 
 #: rpm.c:281
 msgid "                        [--nomd5] [targets]"
@@ -496,11 +496,11 @@ msgstr ""
 
 #: rpm.c:399
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or -"
-"d)"
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
 msgstr ""
-"패키지에 포함된 각 파일에 대해 검증할 수 있는 정보는 모두 보여줍니다 (-l, -"
-"c, 또는 -d 옵션과 함께 사용해야 합니다)"
+"패키지에 포함된 각 파일에 대해 검증할 수 있는 정보는 모두 보여줍니다 (-l, "
+"-c, 또는 -d 옵션과 함께 사용해야 합니다)"
 
 #: rpm.c:401
 msgid "list capabilities package provides"
@@ -593,14 +593,14 @@ msgstr "--replacepkgs 와 --replacefiles 옵션을 동시에 사용합니다"
 #: lib/poptI.c:126 rpm.c:444
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
-"패키지 설치를 해시마크(#)로 표시합니다 (-v 옵션과 함께 사용하는 것이 좋습니"
-"다)"
+"패키지 설치를 해시마크(#)로 표시합니다 (-v 옵션과 함께 사용하는 것이 "
+"좋습니다)"
 
 #: lib/poptI.c:91 rpm.c:446
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
-"특정 파일을 생략하기 위한 설정이 적용된 경우에도, 패키지 안의 모든 파일을 설"
-"치합니다"
+"특정 파일을 생략하기 위한 설정이 적용된 경우에도, 패키지 안의 모든 파일을 "
+"설치합니다"
 
 #: lib/poptI.c:129 rpm.c:449
 msgid "don't verify package architecture"
@@ -668,8 +668,8 @@ msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
-"이전 버전의 패키지로 다운그레이드 합니다 (--force 옵션을 사용시에는 이 옵션"
-"이 자동으로 적용됩니다)"
+"이전 버전의 패키지로 다운그레이드 합니다 (--force 옵션을 사용시에는 이 "
+"옵션이 자동으로 적용됩니다)"
 
 #: rpm.c:484
 msgid "    --erase <package>"
@@ -688,8 +688,8 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"<패키지> 이름과 일치하는 패키지는 모두 제거합니다 (<패키지>에 여러개의 패키지"
-"를 동시에 지정할 경우에는 오류가 발생합니다)"
+"<패키지> 이름과 일치하는 패키지는 모두 제거합니다 (<패키지>에 여러개의 "
+"패키지를 동시에 지정할 경우에는 오류가 발생합니다)"
 
 #: rpm.c:498
 msgid "do not execute any package specific scripts"
@@ -732,8 +732,8 @@ msgstr ""
 #: rpm.c:518
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
-"바이너리와 소스 패키지 제작 (준비 과정, 컴파일, 설치, 바이너리와 소스 패키지"
-"를 제작합니다)"
+"바이너리와 소스 패키지 제작 (준비 과정, 컴파일, 설치, 바이너리와 소스 "
+"패키지를 제작합니다)"
 
 #: build/poptBT.c:221 rpm.c:520
 msgid "skip straight to specified stage (only for c,i)"
@@ -784,8 +784,8 @@ msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
-"<소스_패키지>로 바이너리 패키지를 제작하며, 패키지 제작 후에는 spec, 소스, 패"
-"치, 아이콘 파일을 삭제합니다"
+"<소스_패키지>로 바이너리 패키지를 제작하며, 패키지 제작 후에는 spec, 소스, "
+"패치, 아이콘 파일을 삭제합니다"
 
 #: rpm.c:538
 msgid "    --recompile <src_pkg> "
@@ -900,8 +900,8 @@ msgstr "--rcfile 옵션이 제거되었습니다.\n"
 #: rpm.c:848
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
-"--macros 옵션에는 읽어올 매크로 목록 파일을 콜론(:)으로 구분하여 사용하십시"
-"요.\n"
+"--macros 옵션에는 읽어올 매크로 목록 파일을 콜론(:)으로 구분하여 "
+"사용하십시요.\n"
 
 #: rpm.c:853 rpmqv.c:587
 #, c-format
@@ -940,8 +940,8 @@ msgstr "--prefix 또는 --relocate 옵션 중 하나만 사용할 수 있습니다"
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
-"--relocate 와 --excludepath 옵션은 최신의 패키지를 설치할 때에만 사용할 수 있"
-"습니다"
+"--relocate 와 --excludepath 옵션은 최신의 패키지를 설치할 때에만 사용할 수 "
+"있습니다"
 
 #: rpm.c:914 rpmqv.c:722
 msgid "--prefix may only be used when installing new packages"
@@ -1024,8 +1024,8 @@ msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
-"--nodeps 옵션은 패키지 제작, 재제작(rebuild), 재컴파일(recompile), 설치, 삭"
-"제, 검증시에만 지정할 수 있습니다"
+"--nodeps 옵션은 패키지 제작, 재제작(rebuild), 재컴파일(recompile), 설치, "
+"삭제, 검증시에만 지정할 수 있습니다"
 
 #: rpm.c:993 rpmqv.c:798
 msgid ""
@@ -1970,8 +1970,8 @@ msgstr "%d 번째 행: 두번째 %%prep\n"
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"%d 번째 행: 의존성 토큰(token)은 반드시 '문자-숫자 조합', '_' 또는 '/' 로 시"
-"작해야 합니다: %s\n"
+"%d 번째 행: 의존성 토큰(token)은 반드시 '문자-숫자 조합', '_' 또는 '/' 로 "
+"시작해야 합니다: %s\n"
 
 #: build/parseReqs.c:112
 #, c-format
@@ -2325,7 +2325,7 @@ msgstr "%s-%s-%s 패키지의 필요사항이 만족되지 않음: %s\n"
 #: lib/depends.c:1504
 #, c-format
 msgid "package %s conflicts: %s\n"
-msgstr "패키지 %s(이)가 충돌함: %s\n"
+msgstr "%s 패키지가 충돌함: %s\n"
 
 #: lib/depends.c:1750
 #, c-format
@@ -2343,8 +2343,8 @@ msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
-"========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 트리, 깊이"
-"[depth])\n"
+"========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 트리, "
+"깊이[depth])\n"
 
 #: lib/depends.c:2023
 msgid "========== successors only (presentation order)\n"
@@ -2364,18 +2364,16 @@ msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
 #: lib/formats.c:139
-#, fuzzy
 msgid "(not base64)"
-msgstr "(숫자가 아닙니다)"
+msgstr "(base64가 아닙니다)"
 
 #: lib/formats.c:149
 msgid "(invalid type)"
-msgstr ""
+msgstr "(부적합한 타입)"
 
 #: lib/formats.c:211 lib/formats.c:256
-#, fuzzy
 msgid "(not a blob)"
-msgstr "(숫자가 아닙니다)"
+msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
 
 #: lib/fs.c:75
 #, c-format
@@ -2845,15 +2843,15 @@ msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
-"%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
-"니다"
+"%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 "
+"필요합니다"
 
 #: lib/problems.c:175
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
-"%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld의 아이노드(inode)"
-"가 필요합니다"
+"%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld의 "
+"아이노드(inode)가 필요합니다"
 
 #: lib/problems.c:180
 #, c-format
@@ -2862,14 +2860,14 @@ msgstr ""
 "%s 패키지의 선(pre)-트랜잭션 시스템콜(syscall): %s(이)가 실패했습니다: %s"
 
 #: lib/problems.c:184
-#, fuzzy, c-format
+#, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
-msgstr "%s-%s-%s 패키지의 필요사항이 만족되지 않음: %s\n"
+msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"
 
 #: lib/problems.c:188
-#, fuzzy, c-format
+#, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "패키지 %s(이)가 충돌함: %s\n"
+msgstr "%s 패키지의 충돌사항(내역)이 만족하지 않음: %s\n"
 
 #: lib/problems.c:193
 #, c-format
@@ -2899,15 +2897,15 @@ msgstr "소스 패키지에 .spec 파일이 포함되어 있지 않습니다\n"
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
-"%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, waitpid가 %5"
-"$s(을)를 반환하였습니다\n"
+"%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, waitpid가 "
+"%5$s(을)를 반환하였습니다\n"
 
 #: lib/psm.c:1022
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
-"%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상황 %5"
-"$d\n"
+"%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상황 "
+"%5$d\n"
 
 #: lib/psm.c:1358
 #, c-format
@@ -3547,8 +3545,8 @@ msgstr "db%d 오류(%d): %s\n"
 msgid ""
 "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
 msgstr ""
-"오프셋 %d(0x%08x)의 패키지 연결부분(chain)이 손상되었습니다, 접근을 재시도 합"
-"니다 ...\n"
+"오프셋 %d(0x%08x)의 패키지 연결부분(chain)이 손상되었습니다, 접근을 재시도 "
+"합니다 ...\n"
 
 #: rpmdb/db1.c:183
 #, c-format
@@ -3655,8 +3653,8 @@ msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the rpm-list@redhat."
-"com mailing list\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "빈(free) 목록의 손상 (%u)- 다음의 명령을 실행하십시요\n"
@@ -3671,8 +3669,8 @@ msgstr "데이터베이스를 초기화 합니다"
 #: rpmdb/poptDB.c:24
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
-"설치된 패키지 헤더에서 상반된 목록(inverted lists)의 데이터베이스를 재구축 합"
-"니다"
+"설치된 패키지 헤더에서 상반된 목록(inverted lists)의 데이터베이스를 재구축 "
+"합니다"
 
 #: rpmdb/poptDB.c:29
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
@@ -3683,8 +3681,8 @@ msgstr "(기존의) rpm[23] 패키징과 호환하는 헤더를 생성합니다"
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
-"DB 태그 초기화[dbiTagsInit]: 인증되지 않은 태그 이름: \"%s\"(은)는 무시됩니"
-"다\n"
+"DB 태그 초기화[dbiTagsInit]: 인증되지 않은 태그 이름: \"%s\"(은)는 "
+"무시됩니다\n"
 
 #: rpmdb/rpmdb.c:383
 #, c-format
@@ -4045,6 +4043,3 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s(을)를 생성하는데 실패함: %s\n"
-
-#~ msgid "getting list of mounted filesystems\n"
-#~ msgstr "마운트된 파일시스템의 목록을 수집하고 있습니다\n"
