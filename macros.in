@@ -502,6 +502,12 @@
 # XXX	Note: escaped %% for use in headerSprintf()
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
+#	The output binary package file name template used when suggesting
+#	binary packages that solve a dependency.
+#
+# XXX	Note: escaped %% for use in headerSprintf()
+%_solve_name_fmt	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+
 #	The output binary package file name template used when repackaging
 #	erased packages.
 #
