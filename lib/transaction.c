@@ -1893,7 +1893,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		    ourrc++;
 		    break;
 		}
-		dbh = headerCopy(dbh);
+		dbh = headerLink(dbh);
 		rpmdbFreeIterator(mi);
 	    }
 

@@ -118,6 +118,7 @@
 	- fix: insure that %lang scopes over hard links correctly.
 	- fix: rpmCleanPath was nibbling at .. in macrofiles incorrectly.
 	- fix: check waitpid return code.
+	- fix: make a copy of retrieved header before loading.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

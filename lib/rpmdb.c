@@ -1380,7 +1380,7 @@ top:
 	mi->mi_h = NULL;
     }
 
-    mi->mi_h = headerLoad(uh);
+    mi->mi_h = headerCopyLoad(uh);
 
     if (mi->mi_release) {
 	const char *release;
