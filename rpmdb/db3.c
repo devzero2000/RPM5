@@ -310,7 +310,11 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     if (db != NULL)
 	rc = db->sync(db, flags);
     /* XXX DB_INCOMPLETE is returned occaisionally with multiple access. */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+    _printit = _debug;
+#else
     _printit = (rc == DB_INCOMPLETE ? 0 : _debug);
+#endif
     rc = cvtdberr(dbi, "db->sync", rc, _printit);
     return rc;
 }
@@ -822,7 +826,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
     DB_TXN * txnid = NULL;
+#endif
     u_int32_t oflags;
     int _printit;
 
@@ -1071,6 +1077,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 #endif
 		    break;
 		case DB_BTREE:
+/* 4.1: db->set_append_recno(???) */
 		    if (dbi->dbi_bt_flags) {
 			rc = db->set_flags(db, dbi->dbi_bt_flags);
 			rc = cvtdberr(dbi, "db->set_bt_flags", rc, _debug);
@@ -1102,6 +1109,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		    break;
 		case DB_RECNO:
 		    if (dbi->dbi_re_delim) {
+/* 4.1: db->set_append_recno(???) */
 			rc = db->set_re_delim(db, dbi->dbi_re_delim);
 			rc = cvtdberr(dbi, "db->set_re_selim", rc, _debug);
 			if (rc) break;
@@ -1153,8 +1161,13 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 			? dbfullpath : dbfile;
 #endif
 
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+		rc = db->open(db, txnid, dbpath, dbsubfile,
+		    dbi->dbi_type, oflags, dbi->dbi_perms);
+#else
 		rc = db->open(db, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
+#endif
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
@@ -1173,16 +1186,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);
 
-	    if (rc == 0 && dbi->dbi_use_dbenv
-	    && (dbi->dbi_eflags & DB_INIT_CDB) && dbi->dbi_get_rmw_cursor)
-	    {
-		DBC * dbcursor = NULL;
-		xx = db->cursor(db, txnid, &dbcursor,
-			((oflags & DB_RDONLY) ? 0 : DB_WRITECURSOR));
-		xx = cvtdberr(dbi, "db->cursor", xx, _debug);
-		dbi->dbi_rmw = dbcursor;
-	    } else
-		dbi->dbi_rmw = NULL;
+	    dbi->dbi_rmw = NULL;
 
 	    /*
 	     * Lock a file using fcntl(2). Traditionally this is Packages,
