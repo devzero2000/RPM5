@@ -90,7 +90,7 @@
 /* 40 = 4.0, 33 = 3.3; this will break if the second number is > 9 */
 #define DBVER (DB_VERSION_MAJOR * 10 + DB_VERSION_MINOR)
 
-#define PY_BSDDB_VERSION "3.3.1"
+#define PY_BSDDB_VERSION "3.4.2"
 
 static char *rcs_id = "$Id$";
 
@@ -410,6 +410,7 @@ static int makeDBError(int err)
     switch (err) {
         case 0:                     /* successful, no error */      break;
 
+#if (DBVER < 41)
         case DB_INCOMPLETE:
 #if INCOMPLETE_IS_WARNING
             strcpy(errTxt, db_strerror(err));
@@ -429,6 +430,7 @@ static int makeDBError(int err)
         errObj = DBIncompleteError;
 #endif
         break;
+#endif
 
         case DB_KEYEMPTY:           errObj = DBKeyEmptyError;       break;
         case DB_KEYEXIST:           errObj = DBKeyExistError;       break;
@@ -1023,12 +1025,29 @@ DB_associate(DBObject* self, PyObject* args, PyObject* kwargs)
     secondaryDB->associateCallback = callback;
     secondaryDB->primaryDBType = _DB_get_type(self);
 
-
+    /* PyEval_InitThreads is called here due to a quirk in python 1.5
+     * - 2.2.1 (at least) according to Russell Williamson <merel@wt.net>:
+     * The global interepreter lock is not initialized until the first
+     * thread is created using thread.start_new_thread() or fork() is
+     * called.  that would cause the ALLOW_THREADS here to segfault due
+     * to a null pointer reference if no threads or child processes
+     * have been created.  This works around that and is a no-op if
+     * threads have already been initialized.
+     *  (see pybsddb-users mailing list post on 2002-08-07)
+     */
+    PyEval_InitThreads();
     MYDB_BEGIN_ALLOW_THREADS;
+#if (DBVER >= 41)
+    err = self->db->associate(self->db, NULL,
+                              secondaryDB->db,
+                              _db_associateCallback,
+                              flags);
+#else
     err = self->db->associate(self->db,
                               secondaryDB->db,
                               _db_associateCallback,
                               flags);
+#endif
     MYDB_END_ALLOW_THREADS;
 
     if (err) {
@@ -1498,7 +1517,11 @@ DB_open(DBObject* self, PyObject* args, PyObject* kwargs)
     }
 
     MYDB_BEGIN_ALLOW_THREADS;
+#if (DBVER >= 41)
+    err = self->db->open(self->db, NULL, filename, dbname, type, flags, mode);
+#else
     err = self->db->open(self->db, filename, dbname, type, flags, mode);
+#endif
     MYDB_END_ALLOW_THREADS;
     if (makeDBError(err)) {
         self->db = NULL;
@@ -1851,7 +1874,9 @@ DB_stat(DBObject* self, PyObject* args)
         MAKE_HASH_ENTRY(nkeys);
         MAKE_HASH_ENTRY(ndata);
         MAKE_HASH_ENTRY(pagesize);
+#if (DBVER < 41)
         MAKE_HASH_ENTRY(nelem);
+#endif
         MAKE_HASH_ENTRY(ffactor);
         MAKE_HASH_ENTRY(buckets);
         MAKE_HASH_ENTRY(free);
@@ -1896,7 +1921,7 @@ DB_stat(DBObject* self, PyObject* args)
         MAKE_QUEUE_ENTRY(re_len);
         MAKE_QUEUE_ENTRY(re_pad);
         MAKE_QUEUE_ENTRY(pgfree);
-#if (DBVER >= 31) && (DBVER < 40)
+#if (DBVER == 31)
         MAKE_QUEUE_ENTRY(start);
 #endif
         MAKE_QUEUE_ENTRY(first_recno);
@@ -2334,8 +2359,6 @@ DBC_close(DBCursorObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args, ":close"))
         return NULL;
 
-    CHECK_CURSOR_NOT_CLOSED(self);
-
     if (self->dbc != NULL) {
         MYDB_BEGIN_ALLOW_THREADS;
         err = self->dbc->c_close(self->dbc);
@@ -2424,7 +2447,7 @@ DBC_first(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 static PyObject*
 DBC_get(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int err, flags;
+    int err, flags=0;
     PyObject* keyobj = NULL;
     PyObject* dataobj = NULL;
     PyObject* retval = NULL;
@@ -3309,7 +3332,7 @@ DBEnv_lock_stat(DBEnvObject* self, PyObject* args)
     int err;
     DB_LOCK_STAT* sp;
     PyObject* d = NULL;
-    u_int32_t flags;
+    u_int32_t flags = 0;
 
     if (!PyArg_ParseTuple(args, "|i:lock_stat", &flags))
         return NULL;
@@ -3337,7 +3360,9 @@ DBEnv_lock_stat(DBEnvObject* self, PyObject* args)
 
 #define MAKE_ENTRY(name)  _addIntToDict(d, #name, sp->st_##name)
 
+#if (DBVER < 41)
     MAKE_ENTRY(lastid);
+#endif
     MAKE_ENTRY(nmodes);
 #if (DBVER >= 32)
     MAKE_ENTRY(maxlocks);
@@ -3421,7 +3446,7 @@ DBEnv_txn_stat(DBEnvObject* self, PyObject* args)
     int err;
     DB_TXN_STAT* sp;
     PyObject* d = NULL;
-    u_int32_t flags;
+    u_int32_t flags=0;
 
     if (!PyArg_ParseTuple(args, "|i:txn_stat", &flags))
         return NULL;
@@ -4116,7 +4141,9 @@ DL_EXPORT(void) init_rpmdb(void)
     ADD_INT(d, DB_APPEND);
     ADD_INT(d, DB_BEFORE);
     ADD_INT(d, DB_CACHED_COUNTS);
+#if (DBVER < 41)
     ADD_INT(d, DB_CHECKPOINT);
+#endif
 #if (DBVER >= 33)
     ADD_INT(d, DB_COMMIT);
 #endif
@@ -4124,7 +4151,9 @@ DL_EXPORT(void) init_rpmdb(void)
 #if (DBVER >= 32)
     ADD_INT(d, DB_CONSUME_WAIT);
 #endif
+#if (DBVER < 41)
     ADD_INT(d, DB_CURLSN);
+#endif
     ADD_INT(d, DB_CURRENT);
 #if (DBVER >= 33)
     ADD_INT(d, DB_FAST_STAT);
@@ -4164,7 +4193,9 @@ DL_EXPORT(void) init_rpmdb(void)
     ADD_INT(d, DB_DONOTINDEX);
 #endif
 
+#if (DBVER < 41)
     ADD_INT(d, DB_INCOMPLETE);
+#endif
     ADD_INT(d, DB_KEYEMPTY);
     ADD_INT(d, DB_KEYEXIST);
     ADD_INT(d, DB_LOCK_DEADLOCK);
