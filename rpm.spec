@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.21
+Release: 0.22
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -310,6 +310,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Dec 12 2000 Jeff Johnson <jbj@redhat.com>
+- bail on header regions.
+
 * Sun Dec 10 2000 Jeff Johnson <jbj@redhat.com>
 - handle added dirtoken tags (mostly) correctly with header regions.
 - add FHS doc/man/info dirs, diddle autoconf goo.
