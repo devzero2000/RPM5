@@ -345,6 +345,7 @@ int rpmVerifyDigest(Header h)
 
 /**
  * Check file info from header against what's actually installed.
+ * @param qva		parsed query/verify options
  * @param h		header
  * @return		0 no problems, 1 problems found
  */

@@ -417,7 +417,7 @@ typedef /*@abstract@*/ struct IDTindex_s {
 
 /**
  * Load tag (instance,value) pairs from packages, and return sorted id index.
- * @param db		glob expression
+ * @param globstr	glob expression
  * @param tag		rpm tag
  * @return 		id index
  */
@@ -435,7 +435,7 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @param what		callback identifier
  * @param amount	per-callback progress info
  * @param total		per-callback progress info
- * @param pkgkey	opaque header key (e.g. file name or PyObject)
+ * @param pkgKey	opaque header key (e.g. file name or PyObject)
  * @param data		private data (e.g. rpmInstallInterfaceFlags)
  * @return		per-callback data (e.g. an opened FD_t)
  */

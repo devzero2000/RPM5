@@ -212,7 +212,7 @@ void freeFi(TFI_t fi)
 
 /**
  * Return formatted string representation of package disposition.
- * @param a		package dispostion
+ * @param fi		transaction element file info
  * @return		formatted string
  */
 /*@observer@*/ const char *const fiTypeString(/*@partial@*/TFI_t fi)

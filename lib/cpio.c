@@ -21,8 +21,8 @@ extern int _fsm_debug;
 
 /**
  * Convert string to unsigned integer (with buffer size check).
- * @param		input string
- * @retval		address of 1st character not processed
+ * @param str		input string
+ * @retval endptr	address of 1st character not processed
  * @param base		numerical conversion base
  * @param num		max no. of bytes to read
  * @return		converted integer

@@ -108,6 +108,8 @@ void expandFilelist(Header h)
 
 /**
  * @param h		header
+ * @retval fileListPtr
+ * @retval fileCountPtr
  */
 void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			/*@out@*/ int * fileCountPtr)

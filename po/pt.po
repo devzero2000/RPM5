@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-06-06 16:30-0400\n"
+"POT-Creation-Date: 2002-06-06 19:13-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -3305,97 +3305,97 @@ msgstr "a efectuar o 'rollback' (+%d,-%d) pacotes para %s"
 msgid "read failed: %s (%d)\n"
 msgstr "a leitura falhou: %s (%d)\n"
 
-#: lib/rpmrc.c:192
+#: lib/rpmrc.c:200
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "falta o segundo ':' em %s:%d\n"
 
-#: lib/rpmrc.c:195
+#: lib/rpmrc.c:203
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "falta o nome da arquitectura em %s:%d\n"
 
-#: lib/rpmrc.c:349
+#: lib/rpmrc.c:357
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Linha de dados incompleta em %s:%d\n"
 
-#: lib/rpmrc.c:354
+#: lib/rpmrc.c:362
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Demasiados argumentos na linha de dados em %s:%d\n"
 
-#: lib/rpmrc.c:362
+#: lib/rpmrc.c:370
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Número de arq./SO errado: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:399
+#: lib/rpmrc.c:407
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Linha por omissão incompleta em %s:%d\n"
 
-#: lib/rpmrc.c:404
+#: lib/rpmrc.c:412
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Demasiados argumentos na linha por omissão em %s:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:574
+#: lib/rpmrc.c:582
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Não consegui ler o %s: %s.\n"
 
-#: lib/rpmrc.c:612
+#: lib/rpmrc.c:620
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "falta um ':' (encontrado um 0x%02x) em %s:%d\n"
 
-#: lib/rpmrc.c:629 lib/rpmrc.c:703
+#: lib/rpmrc.c:637 lib/rpmrc.c:711
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "faltam argumentos para o %s em %s:%d\n"
 
-#: lib/rpmrc.c:646 lib/rpmrc.c:668
+#: lib/rpmrc.c:654 lib/rpmrc.c:676
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "a expansão do %s falhou em %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:655
+#: lib/rpmrc.c:663
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "não consigo abrir o %s em %s:%d: %s\n"
 
-#: lib/rpmrc.c:695
+#: lib/rpmrc.c:703
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "falta a arquitectura para o %s em %s:%d\n"
 
-#: lib/rpmrc.c:762
+#: lib/rpmrc.c:770
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "má opção '%s' em %s:%d\n"
 
-#: lib/rpmrc.c:1387
+#: lib/rpmrc.c:1521
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Sistema desconhecido: %s\n"
 
-#: lib/rpmrc.c:1388
+#: lib/rpmrc.c:1522
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Por favor contacte o rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1613
+#: lib/rpmrc.c:1747
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Não consigo expandir o %s\n"
 
-#: lib/rpmrc.c:1618
+#: lib/rpmrc.c:1752
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 
-#: lib/rpmrc.c:1635
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"

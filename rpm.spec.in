@@ -382,6 +382,8 @@ fi
 %endif
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/noarch*
 
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/@RPMCANONVENDOR@
+
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
 %lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/rpm.mo
@@ -524,6 +526,7 @@ fi
 - make peace with automake-1.6.1 et al.
 - backport all beecrypt/rpmio bits from 4.1 that don't break the API.
 - use /etc/rpm/platform (if it exists), rather than uname(2), for arch.
+- add /usr/lib/rpm/redhat/* per-vendor configuration.
 
 * Thu May  2 2002 Jeff Johnson <jbj@redhat.com>
 - fix: include <sys/time.h> for 6.2 python modules.

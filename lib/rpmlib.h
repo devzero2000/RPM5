@@ -1162,7 +1162,7 @@ typedef struct rpmRelocation_s {
  * @retval specFilePtr	address of spec file name (or NULL)
  * @param notify	progress callback
  * @param notifyData	progress callback private data
- * @retval cooke	address of cookie pointer (or NULL)
+ * @retval cookie	address of cookie pointer (or NULL)
  * @return		rpmRC return code
  */
 rpmRC rpmInstallSourcePackage(/*@null@*/ const char * rootDir, FD_t fd,
@@ -1442,9 +1442,9 @@ typedef enum rpmtransFlags_e {
 
 /** \ingroup rpmtrans
  * Return copy of rpmlib internal provides.
- * @retval		address of array of rpmlib internal provide names
- * @retval		address of array of rpmlib internal provide flags
- * @retval		address of array of rpmlib internal provide versions
+ * @retval provNames	address of array of rpmlib internal provide names
+ * @retval provFlags	address of array of rpmlib internal provide flags
+ * @retval provVersions	address of array of rpmlib internal provide versions
  * @return		no. of entries
  */
 /*@unused@*/

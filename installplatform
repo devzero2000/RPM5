@@ -28,11 +28,6 @@ RPMRC_GNU="`$RPM --eval '%{_gnu}'`"
 target_platform="`$RPM --eval '%{?_gnu:%undefine _gnu}%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
-rm -f ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
-ln -s ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
-rm -f ${DESTDIR}/${pkglibdir}/noarch-${OS}
-ln -s ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${OS}
-
 case "$arch" in
   i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_ s_i386_athlon_' ;;
   alpha*) SUBSTS='s_alpha_alpha_ s_alpha_alphaev5_ s_alpha_alphaev56_ s_alpha_alphapca56_ s_alpha_alphaev6_ s_alpha_alphaev67_' ;;
@@ -48,7 +43,7 @@ for SUBST in $SUBSTS ; do
   TARGET=`echo $target | sed -e $SUBST`
   LIB=lib
 
-  PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}"
+  PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${OS}"
 
   [ -d $PPD ] || mkdir $PPD
 
@@ -104,15 +99,38 @@ for SUBST in $SUBSTS ; do
 
   #
   # Better try to create these too until the smoke clears. Yuck.
+  AODIR=${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || {
-    rm -f ${DESTDIR}/${pkglibdir}/${TARGET}
-    ln -s ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
+    [ -L ${AODIR} ] && {
+	rm -f ${AODIR}
+	mkdir ${AODIR}
+    }
+    cp ${PPD}/macros ${AODIR}/macros
   }
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || {
-    rm -f ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
-    ln -s ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
+    [ -L ${AODIR} ] && {
+	rm -f ${AODIR}
+	mkdir ${AODIR}
+    }
+    cp ${PPD}/macros ${AODIR}/macros
   }
 
 done
+
+{ cd ${DESTDIR}/${pkglibdir}
+  [ ! -d noarch-${OS} -o -L noarch-${OS} ] && rm -f noarch-${OS} 2>/dev/null
+  mkdir -p noarch-${OS}
+  cp ${ARCH}-${OS}/macros noarch-${OS}/macros
+  [ ! -d noarch-${VENDOR}-${OS} -o -L noarch-${VENDOR}-${OS} ] && rm -f noarch-${VENDOR}-${OS} 2>/dev/null
+  mkdir -p noarch-${VENDOR}-${OS}
+  cp ${ARCH}-${VENDOR}-${OS}/macros noarch-${VENDOR}-${OS}/macros
+  [ -d ${VENDOR} ] || mkdir ${VENDOR}
+  for i in brp-* find-lang.sh find-provides find-requires perl.prov perl.req
+  do
+    sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < $i > ${VENDOR}/$i
+  done
+  echo "macrofiles:     /usr/lib/rpm/macros:/usr/lib/rpm/%{_target_platform}/macros:/etc/rpm/macros.specspo:/etc/rpm/macros.db1:/etc/rpm/macros.cdb:/etc/rpm/macros:/etc/rpm/%{_target_platform}/macros:~/.rpmmacros" > ${VENDOR}/rpmrc
+  sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < ${ARCH}-${VENDOR}-${OS}/macros | grep -v '^%optflags' > ${VENDOR}/macros
+}
 
 rm $TEMPRC

@@ -111,6 +111,7 @@ int cpioTrailerWrite(FSM_t fsm)
 /**
  * Write cpio header.
  * @retval fsm		file path and stat info
+ * @param st
  * @return		0 on success
  */
 int cpioHeaderWrite(FSM_t fsm, struct stat * st)
@@ -119,6 +120,7 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
 /**
  * Read cpio header.
  * @retval fsm		file path and stat info
+ * @param st
  * @return		0 on success
  */
 int cpioHeaderRead(FSM_t fsm, struct stat * st)
@@ -126,7 +128,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.
- * @param		error code
+ * @param rc		error code
  * @return		formatted error string
  */
 /*@observer@*/ const char *const cpioStrerror(int rc)		/*@*/;
