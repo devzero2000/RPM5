@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.39
+Release: 0.40
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -416,6 +416,10 @@ fi
 %changelog
 * Fri Jun 15 2001 Jeff Johnson <jbj@redhat.com>
 - alpha: don't add "()(64bit)" dependency markers.
+- ia64/sparc: <arch>.{req,prov} identical to linux.{req,prov}.
+- add "rpmlib(ScriptletInterpreterArgs)" to track
+	%%post -p "/sbin/ldconfig -n /usr/lib"
+  incompatibilities.
 
 * Thu Jun 14 2001 Jeff Johnson <jbj@redhat.com>
 - fix: db1 end-of-file not detected in legacy compatible way.
