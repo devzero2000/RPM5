@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-29 16:25-0500\n"
+"POT-Creation-Date: 2002-01-30 16:04-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -557,7 +557,7 @@ msgstr ""
 "overi» in¹taláciu balíka s pou¾itím rovnakých volieb ¹pecifikácia balíka ako "
 "pre -q"
 
-#: lib/poptI.c:155 rpm.c:417 rpm.c:459 rpm.c:494
+#: lib/poptI.c:158 rpm.c:417 rpm.c:459 rpm.c:494
 msgid "do not verify package dependencies"
 msgstr "neoverova» závislosti balíka"
 
@@ -581,7 +581,7 @@ msgstr "    --install <súbor_balíku>"
 msgid "    -i <packagefile>      "
 msgstr "    -i <súbor_balíku>      "
 
-#: lib/poptI.c:151 rpm.c:428
+#: lib/poptI.c:154 rpm.c:428
 msgid "install package"
 msgstr "in¹talova» balík"
 
@@ -610,19 +610,19 @@ msgstr "balík %s nie je nain¹talovaný\n"
 msgid "      --prefix <dir>      "
 msgstr "      --prefix <adresár>  "
 
-#: lib/poptI.c:201 rpm.c:436
+#: lib/poptI.c:204 rpm.c:436
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "presunú» balík do <adresára>, pokiaµ to balík povoµuje"
 
-#: lib/poptI.c:125 rpm.c:440
+#: lib/poptI.c:128 rpm.c:440
 msgid "do not install documentation"
 msgstr "nein¹talova» dokumentáciu"
 
-#: lib/poptI.c:131 rpm.c:442
+#: lib/poptI.c:134 rpm.c:442
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "skratka pre --replacepkgs --replacefiles"
 
-#: lib/poptI.c:137 rpm.c:444
+#: lib/poptI.c:140 rpm.c:444
 msgid "print hash marks as package installs (good with -v)"
 msgstr "vypisova» znaèky poèas in¹talácie balíka (vhodné s -v)"
 
@@ -632,27 +632,27 @@ msgstr ""
 "in¹talova» v¹etky súbory vrátane konfiguraèných súborov, ktoré by inak mohli "
 "by» vynechané"
 
-#: lib/poptI.c:140 rpm.c:449
+#: lib/poptI.c:143 rpm.c:449
 msgid "don't verify package architecture"
 msgstr "neoverova» architektúru balíka"
 
-#: lib/poptI.c:146 rpm.c:451
+#: lib/poptI.c:149 rpm.c:451
 msgid "don't check disk space before installing"
 msgstr "pred in¹taláciou nekontrolova» dostupné miesto na disku"
 
-#: lib/poptI.c:143 rpm.c:453
+#: lib/poptI.c:146 rpm.c:453
 msgid "don't verify package operating system"
 msgstr "neoverova» operaèný systém balíka"
 
-#: lib/poptI.c:148 rpm.c:455
+#: lib/poptI.c:151 rpm.c:455
 msgid "install documentation"
 msgstr "in¹talova» dokumentáciu"
 
-#: lib/poptI.c:153 rpm.c:457 rpm.c:492
+#: lib/poptI.c:156 rpm.c:457 rpm.c:492
 msgid "update the database, but do not modify the filesystem"
 msgstr "aktualizova» databázu bez zmeny súborového systému"
 
-#: lib/poptI.c:158 rpm.c:461 rpm.c:496
+#: lib/poptI.c:161 rpm.c:461 rpm.c:496
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "nemeni» poradie balíkov kvôli vyrie¹eniu závislostí"
 
@@ -664,19 +664,19 @@ msgstr "nevykona» ¾iadne in¹talaèné skripty"
 msgid "don't execute any scripts triggered by this package"
 msgstr "nevykona» ¾iadne skripty spú¹»ané týmto balíkom"
 
-#: lib/poptI.c:199 rpm.c:467
+#: lib/poptI.c:202 rpm.c:467
 msgid "print percentages as package installs"
 msgstr "vypisova» percentá poèas in¹talácie balíka"
 
-#: lib/poptI.c:211 rpm.c:469
+#: lib/poptI.c:214 rpm.c:469
 msgid "install even if the package replaces installed files"
 msgstr "in¹talova» aj pokiaµ balík prepí¹e in¹talované súbory"
 
-#: lib/poptI.c:214 rpm.c:471
+#: lib/poptI.c:217 rpm.c:471
 msgid "reinstall if the package is already present"
 msgstr "prein¹talova», pokiaµ u¾ balík existuje"
 
-#: lib/poptI.c:219 rpm.c:475
+#: lib/poptI.c:222 rpm.c:475
 msgid "don't install, but tell if it would work or not"
 msgstr "nein¹talova», ale oznámi», èi by to bolo mo¾né"
 
@@ -692,7 +692,7 @@ msgstr "    -U <súbor_balíka>     "
 msgid "upgrade package (same options as --install, plus)"
 msgstr "aktualizova» balík (rovnaké voµby ako --install, a k tomu)"
 
-#: lib/poptI.c:195 rpm.c:482
+#: lib/poptI.c:198 rpm.c:482
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -709,7 +709,7 @@ msgstr "    --erase <package>"
 msgid "    -e <package>          "
 msgstr "    --resign <balík>+     "
 
-#: lib/poptI.c:122 rpm.c:486
+#: lib/poptI.c:125 rpm.c:486
 msgid "erase (uninstall) package"
 msgstr "odin¹talova» balík"
 
@@ -1216,7 +1216,7 @@ msgstr ""
 msgid "<cmd>"
 msgstr ""
 
-#: lib/poptI.c:202 rpmqv.c:130
+#: lib/poptI.c:205 rpmqv.c:130
 msgid "<dir>"
 msgstr ""
 
@@ -2323,115 +2323,120 @@ msgid " failed - "
 msgstr " zlyhalo - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:568
+#: lib/depends.c:569
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:597
+#: lib/depends.c:598
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:598 lib/depends.c:1220 lib/depends.c:1353
+#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:598 lib/depends.c:1220 lib/depends.c:1353
+#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
 #, fuzzy
 msgid "NO "
 msgstr "NIE JE V PORIADKU"
 
-#: lib/depends.c:1022
+#: lib/depends.c:1023
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1128
+#: lib/depends.c:1129
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1219
+#: lib/depends.c:1220
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:1248
+#: lib/depends.c:1249
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1265
+#: lib/depends.c:1266
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:1289
+#: lib/depends.c:1290
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1302
+#: lib/depends.c:1303
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1316
+#: lib/depends.c:1317
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:1332
+#: lib/depends.c:1333
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1353
+#: lib/depends.c:1354
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1425
+#: lib/depends.c:1426
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1504
+#: lib/depends.c:1505
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/depends.c:1750
+#: lib/depends.c:1681
+#, c-format
+msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
+msgstr ""
+
+#: lib/depends.c:1785
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuje sa index skupín\n"
 
 #. Record all relations.
-#: lib/depends.c:1901
+#: lib/depends.c:1941
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1961
+#: lib/depends.c:2001
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:2023
+#: lib/depends.c:2066
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2075
+#: lib/depends.c:2130
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2104
+#: lib/depends.c:2159
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2635,107 +2640,111 @@ msgstr ""
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:112 lib/poptI.c:163
+#: lib/poptI.c:112 lib/poptI.c:166
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "nevykona» ¾iadne skripty ¹pecifikované balíkom"
 
 #: lib/poptI.c:119
-msgid "save erased package files by renaming into sub-directory"
+msgid "use chainsaw dependency tree decimation when ordering"
 msgstr ""
 
 #: lib/poptI.c:122
+msgid "save erased package files by renaming into sub-directory"
+msgstr ""
+
+#: lib/poptI.c:125
 #, fuzzy
 msgid "<package>+"
 msgstr "nájdených %d balíkov\n"
 
-#: lib/poptI.c:127
+#: lib/poptI.c:130
 #, fuzzy
 msgid "skip files with leading component <path> "
 msgstr "vynecha» súbory v ceste <cesta>"
 
-#: lib/poptI.c:128
+#: lib/poptI.c:131
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:134
+#: lib/poptI.c:137
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/poptI.c:135 lib/poptI.c:151 lib/poptI.c:223
+#: lib/poptI.c:138 lib/poptI.c:154 lib/poptI.c:226
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "        -p <súbor_balíku>+"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:169
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "nevykona» ¾iadne etapy"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:172
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "nevykona» ¾iadne etapy"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:175
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "nevykona» ¾iadne etapy"
 
-#: lib/poptI.c:175
+#: lib/poptI.c:178
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "nevykona» ¾iadne etapy"
 
-#: lib/poptI.c:179
+#: lib/poptI.c:182
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "nevykona» ¾iadne skripty spú¹»ané týmto balíkom"
 
-#: lib/poptI.c:182
+#: lib/poptI.c:185
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "nevykona» ¾iadne skripty ¹pecifikované balíkom"
 
-#: lib/poptI.c:185
+#: lib/poptI.c:188
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "nevykona» ¾iadne in¹talaèné skripty"
 
-#: lib/poptI.c:188
+#: lib/poptI.c:191
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "nevykona» ¾iadne in¹talaèné skripty"
 
-#: lib/poptI.c:191
+#: lib/poptI.c:194
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nevykona» ¾iadne in¹talaèné skripty"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:207
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "presunú» súbory zo <starej_cesty> do <novej_cesty>"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:208
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "      --relocate <stará_cesta>=<nová_cesta>"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:211
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:216
+#: lib/poptI.c:219
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:217
+#: lib/poptI.c:220
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:222
+#: lib/poptI.c:225
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "    --upgrade <súbor_balíka>"

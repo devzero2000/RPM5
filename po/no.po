@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-29 16:25-0500\n"
+"POT-Creation-Date: 2002-01-30 16:04-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -527,7 +527,7 @@ msgstr ""
 "verifiser en pakkeinstallasjon ved å bruke samme alternativer for "
 "pakkespesifikasjon som -q"
 
-#: lib/poptI.c:155 rpm.c:417 rpm.c:459 rpm.c:494
+#: lib/poptI.c:158 rpm.c:417 rpm.c:459 rpm.c:494
 msgid "do not verify package dependencies"
 msgstr "ikke verifiser pakkeavhengigheter"
 
@@ -551,7 +551,7 @@ msgstr "    --install <pakkefil>"
 msgid "    -i <packagefile>      "
 msgstr "    -i <pakkefil>         "
 
-#: lib/poptI.c:151 rpm.c:428
+#: lib/poptI.c:154 rpm.c:428
 msgid "install package"
 msgstr "installer pakke"
 
@@ -579,19 +579,19 @@ msgstr "omplasser filer i ikke-omplasserbar pakke"
 msgid "      --prefix <dir>      "
 msgstr "      --prefix <kat>"
 
-#: lib/poptI.c:201 rpm.c:436
+#: lib/poptI.c:204 rpm.c:436
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "omplasser pakken til <kat>, hvis den er omplasserbar"
 
-#: lib/poptI.c:125 rpm.c:440
+#: lib/poptI.c:128 rpm.c:440
 msgid "do not install documentation"
 msgstr "ikke installer dokumentasjon"
 
-#: lib/poptI.c:131 rpm.c:442
+#: lib/poptI.c:134 rpm.c:442
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "forkortning for --replacepkgs --replacefiles"
 
-#: lib/poptI.c:137 rpm.c:444
+#: lib/poptI.c:140 rpm.c:444
 msgid "print hash marks as package installs (good with -v)"
 msgstr "skriv ut skigarder etter som pakken installeres (nyttig med -v)"
 
@@ -599,27 +599,27 @@ msgstr "skriv ut skigarder etter som pakken installeres (nyttig med -v)"
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr "installer alle filer, selv konfigurasjoner som ellers kan hoppes over"
 
-#: lib/poptI.c:140 rpm.c:449
+#: lib/poptI.c:143 rpm.c:449
 msgid "don't verify package architecture"
 msgstr "ikke verifiser pakkearkitektur"
 
-#: lib/poptI.c:146 rpm.c:451
+#: lib/poptI.c:149 rpm.c:451
 msgid "don't check disk space before installing"
 msgstr "ikke sjekk diskplass før installasjon"
 
-#: lib/poptI.c:143 rpm.c:453
+#: lib/poptI.c:146 rpm.c:453
 msgid "don't verify package operating system"
 msgstr "ikke verifiser operativsystem for pakken"
 
-#: lib/poptI.c:148 rpm.c:455
+#: lib/poptI.c:151 rpm.c:455
 msgid "install documentation"
 msgstr "installer dokumentasjon"
 
-#: lib/poptI.c:153 rpm.c:457 rpm.c:492
+#: lib/poptI.c:156 rpm.c:457 rpm.c:492
 msgid "update the database, but do not modify the filesystem"
 msgstr "oppdater databasen, men ikke modifiser filsystemet"
 
-#: lib/poptI.c:158 rpm.c:461 rpm.c:496
+#: lib/poptI.c:161 rpm.c:461 rpm.c:496
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "ikke ordne pakkeinstallasjon for å tilfredsstille avhengigheter"
 
@@ -631,19 +631,19 @@ msgstr "ikke kjør noen installasjonsskript"
 msgid "don't execute any scripts triggered by this package"
 msgstr "ikke kjør skript som utløses av denne pakken"
 
-#: lib/poptI.c:199 rpm.c:467
+#: lib/poptI.c:202 rpm.c:467
 msgid "print percentages as package installs"
 msgstr "skriv ut prosentvis fremgang etter som pakken installeres"
 
-#: lib/poptI.c:211 rpm.c:469
+#: lib/poptI.c:214 rpm.c:469
 msgid "install even if the package replaces installed files"
 msgstr "installer selv om pakken erstatter installerte filer"
 
-#: lib/poptI.c:214 rpm.c:471
+#: lib/poptI.c:217 rpm.c:471
 msgid "reinstall if the package is already present"
 msgstr "reinstaller selv om pakken allerede er installert"
 
-#: lib/poptI.c:219 rpm.c:475
+#: lib/poptI.c:222 rpm.c:475
 msgid "don't install, but tell if it would work or not"
 msgstr "ikke installer, men si ifra om det ville virke eller ikke"
 
@@ -659,7 +659,7 @@ msgstr "    -U <pakkefil>"
 msgid "upgrade package (same options as --install, plus)"
 msgstr "oppgrader pakke (samme alternativ som --install, plus)"
 
-#: lib/poptI.c:195 rpm.c:482
+#: lib/poptI.c:198 rpm.c:482
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -675,7 +675,7 @@ msgstr "    --erase <pakke>"
 msgid "    -e <package>          "
 msgstr "    -e <pakke>            "
 
-#: lib/poptI.c:122 rpm.c:486
+#: lib/poptI.c:125 rpm.c:486
 msgid "erase (uninstall) package"
 msgstr "slett (avinstaller) pakke"
 
@@ -1163,7 +1163,7 @@ msgstr "<uttr>+"
 msgid "<cmd>"
 msgstr "<kmd>"
 
-#: lib/poptI.c:202 rpmqv.c:130
+#: lib/poptI.c:205 rpmqv.c:130
 msgid "<dir>"
 msgstr "<kat>"
 
@@ -2244,114 +2244,119 @@ msgid " failed - "
 msgstr " feilet - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:568
+#: lib/depends.c:569
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:597
+#: lib/depends.c:598
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:598 lib/depends.c:1220 lib/depends.c:1353
+#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
 msgid "YES"
 msgstr "JA"
 
-#: lib/depends.c:598 lib/depends.c:1220 lib/depends.c:1353
+#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
 msgid "NO "
 msgstr "NEI"
 
-#: lib/depends.c:1022
+#: lib/depends.c:1023
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1128
+#: lib/depends.c:1129
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1219
+#: lib/depends.c:1220
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1248
+#: lib/depends.c:1249
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1265
+#: lib/depends.c:1266
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1289
+#: lib/depends.c:1290
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1302
+#: lib/depends.c:1303
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1316
+#: lib/depends.c:1317
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1332
+#: lib/depends.c:1333
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1353
+#: lib/depends.c:1354
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1425
+#: lib/depends.c:1426
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1504
+#: lib/depends.c:1505
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "pakke %s er i konflikt: %s\n"
 
-#: lib/depends.c:1750
+#: lib/depends.c:1681
+#, c-format
+msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
+msgstr ""
+
+#: lib/depends.c:1785
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1901
+#: lib/depends.c:1941
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1961
+#: lib/depends.c:2001
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:2023
+#: lib/depends.c:2066
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2075
+#: lib/depends.c:2130
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2104
+#: lib/depends.c:2159
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2550,100 +2555,104 @@ msgstr ""
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:112 lib/poptI.c:163
+#: lib/poptI.c:112 lib/poptI.c:166
 msgid "do not execute package scriptlet(s)"
 msgstr "ikke kjør pakkespesifikke skriptlet"
 
 #: lib/poptI.c:119
+msgid "use chainsaw dependency tree decimation when ordering"
+msgstr ""
+
+#: lib/poptI.c:122
 msgid "save erased package files by renaming into sub-directory"
 msgstr "lagre slettede pakkefiler ved å endre navn til underkatalog"
 
-#: lib/poptI.c:122
+#: lib/poptI.c:125
 msgid "<package>+"
 msgstr "<pakke>+"
 
-#: lib/poptI.c:127
+#: lib/poptI.c:130
 msgid "skip files with leading component <path> "
 msgstr "hopp over filer med innledende komponent <sti> "
 
-#: lib/poptI.c:128
+#: lib/poptI.c:131
 msgid "<path>"
 msgstr "<sti>"
 
-#: lib/poptI.c:134
+#: lib/poptI.c:137
 msgid "upgrade package(s) if already installed"
 msgstr "oppgrader pakke(r) hvis allerede installert"
 
-#: lib/poptI.c:135 lib/poptI.c:151 lib/poptI.c:223
+#: lib/poptI.c:138 lib/poptI.c:154 lib/poptI.c:226
 msgid "<packagefile>+"
 msgstr "<pakkefil>+"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:169
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "ikke kjør noen %%pre skriptlet (hvis noen)"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:172
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "ikke kjør %%post skriptlet (hvis noen)"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:175
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "ikke kjør %%preun skriptlet (hvis noen)"
 
-#: lib/poptI.c:175
+#: lib/poptI.c:178
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "ikke kjør %%postun skriptlet (hvis noen)"
 
-#: lib/poptI.c:179
+#: lib/poptI.c:182
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "Ikke kjør noen skriptlets som utløses av denne pakken"
 
-#: lib/poptI.c:182
+#: lib/poptI.c:185
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "ikke kjør %%triggerprein skriptlets"
 
-#: lib/poptI.c:185
+#: lib/poptI.c:188
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "ikke kjør %%triggerin skriptlets"
 
-#: lib/poptI.c:188
+#: lib/poptI.c:191
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "ikke kjør %%triggerun skriplets"
 
-#: lib/poptI.c:191
+#: lib/poptI.c:194
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "ikke kjør %%triggerpostun skriptlets"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:207
 msgid "relocate files from path <old> to <new>"
 msgstr "omplasser filer fra sti <gml> til <ny>"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:208
 msgid "<old>=<new>"
 msgstr "<gml>=<ny>"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:211
 msgid "save erased package files by repackaging"
 msgstr "lagre slettede pakkefiler ved ompakking"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:219
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:217
+#: lib/poptI.c:220
 #, fuzzy
 msgid "<date>"
 msgstr "<sti>"
 
-#: lib/poptI.c:222
+#: lib/poptI.c:225
 msgid "upgrade package(s)"
 msgstr "oppgrader pakke(r)"
 

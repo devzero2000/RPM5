@@ -9,6 +9,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmmacro.h>		/* XXX for rpmExpand() */
 
 #include "depends.h"
 #include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
@@ -1610,13 +1611,12 @@ static int checkDependentConflicts(rpmTransactionSet ts,
     return rc;
 }
 
-/*
- * XXX Hack to remove known Red Hat dependency loops, will be removed
- * as soon as rpm's legacy permits.
- */
-#undef	DEPENDENCY_WHITEOUT
+struct badDeps_s {
+/*@observer@*/ /*@null@*/ const char * pname;
+/*@observer@*/ /*@null@*/ const char * qname;
+};
 
-#if defined(DEPENDENCY_WHITEOUT)
+#ifdef	DYING
 static struct badDeps_s {
 /*@observer@*/ /*@null@*/ const char * pname;
 /*@observer@*/ /*@null@*/ const char * qname;
@@ -1645,21 +1645,63 @@ static struct badDeps_s {
     { "pam", "pamconfig" },
     { NULL, NULL }
 };
-    
+#else
+static struct badDeps_s * badDeps = NULL;
+#endif
+
+/**
+ * Check for dependency relations to be ignored.
+ *
+ * @param p	successor package (i.e. with Requires: )
+ * @param q	predecessor package (i.e. with Provides: )
+ * @return	1 if dependency is to be ignored.
+ */
 static int ignoreDep(const struct availablePackage * p,
 		const struct availablePackage * q)
 	/*@*/
 {
-    struct badDeps_s * bdp = badDeps;
+    struct badDeps_s * bdp;
+    static int _initialized = 0;
+    const char ** av = NULL;
+    int ac = 0;
 
-    while (bdp->pname != NULL && bdp->qname != NULL) {
+    if (!_initialized) {
+	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
+	int i;
+
+	if (s != NULL && *s != '\0'
+	&& !(i = poptParseArgvString(s, &ac, (const char ***)&av))
+	&& ac > 0 && av != NULL)
+	{
+	    bdp = badDeps = xcalloc(ac+1, sizeof(*badDeps));
+	    for (i = 0; i < ac; i++, bdp++) {
+		char * p, * q;
+
+		if (av[i] == NULL)
+		    break;
+		p = xstrdup(av[i]);
+		if ((q = strchr(p, '>')) != NULL)
+		    *q++ = '\0';
+		bdp->pname = p;
+		bdp->qname = q;
+		rpmMessage(RPMMESS_DEBUG,
+			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
+			i, bdp->pname, bdp->qname);
+	    }
+	    bdp->pname = bdp->qname = NULL;
+	}
+	av = _free(av);
+	s = _free(s);
+	_initialized++;
+    }
+
+    if (badDeps != NULL)
+    for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++) {
 	if (!strcmp(p->name, bdp->pname) && !strcmp(q->name, bdp->qname))
 	    return 1;
-	bdp++;
     }
     return 0;
 }
-#endif
 
 /**
  * Recursively mark all nodes with their predecessors.
@@ -1795,11 +1837,9 @@ static inline int addRelation( const rpmTransactionSet ts,
     if (!strncmp(p->requires[j], "rpmlib(", sizeof("rpmlib(")-1))
 	return 0;
 
-#if defined(DEPENDENCY_WHITEOUT)
     /* Avoid certain dependency relations. */
     if (ignoreDep(p, q))
 	return 0;
-#endif
 
     /* Avoid redundant relations. */
     /* XXX TODO: add control bit. */
@@ -1848,6 +1888,9 @@ static void addQ(struct availablePackage * p,
 {
     struct availablePackage *q, *qprev;
 
+    /* Mark the package as queued. */
+    p->tsi.tsi_reqx = 1;
+
     if ((*rp) == NULL) {	/* 1st element */
 	(*rp) = (*qp) = p;
 	return;
@@ -1871,7 +1914,11 @@ static void addQ(struct availablePackage * p,
 int rpmdepOrder(rpmTransactionSet ts)
 {
     int npkgs = ts->addedPackages.size;
+#ifdef	DYING
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
+#else
+    int chainsaw = 1;
+#endif
     struct availablePackage * p;
     struct availablePackage * q;
     struct availablePackage * r;
@@ -1966,7 +2013,7 @@ rescan:
     if ((p = ts->addedPackages.list) != NULL)
     for (i = 0; i < npkgs; i++, p++) {
 
-	/* Prefer packages in presentation order. */
+	/* Prefer packages in chainsaw or presentation order. */
 	if (!chainsaw)
 	    p->tsi.tsi_qcnt = (npkgs - i);
 
@@ -1979,6 +2026,9 @@ rescan:
 
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = q->tsi.tsi_suc) {
+
+	/* Mark the package as unqueued. */
+	q->tsi.tsi_reqx = 0;
 
 	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%5d%5d %*s %s-%s-%s\n",
 			orderingCount, q->npreds, q->tsi.tsi_qcnt,
@@ -2021,6 +2071,18 @@ rescan:
 	    _printed++;
 	    rpmMessage(RPMMESS_DEBUG,
 		_("========== successors only (presentation order)\n"));
+
+	    /* Relink the queue in presentation order. */
+	    tsi = &q->tsi;
+	    if ((p = ts->addedPackages.list) != NULL)
+	    for (i = 0; i < npkgs; i++, p++) {
+		/* Is this element in the queue? */
+		if (p->tsi.tsi_reqx == 0)
+		    /*@innercontinue@*/ continue;
+		tsi->tsi_suc = p;
+		tsi = &p->tsi;
+	    }
+	    tsi->tsi_suc = NULL;
 	}
     }
 

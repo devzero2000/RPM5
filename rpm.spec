@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.21
+Release: 0.23
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -516,6 +516,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jan 30 2002 Jeff Johnson <jbj@redhat.com>
+- legacy: configurable whiteout for known Red Hat dependency loops.
+- perl.req: don't mis-generate dependencies like perl(::path/to/foo.pl).
+- use chainsaw algorithm for dependency tree decimation when ordering.
+
 * Tue Jan 29 2002 Jeff Johnson <jbj@redhat.com>
 - transaction rollback code in rpmRollback().
 - Red Hat 6.2 portability cruft.
