@@ -265,6 +265,10 @@ static int davConnect(urlinfo u)
     const char * path = NULL;
     int rc;
 
+    /* HACK: hkp:// has no steenkin' options */
+    if (!(u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS))
+	return 0;
+
     /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
     /* HACK: perhaps capture Allow: tag, look for PUT permitted. */

@@ -24,6 +24,9 @@
 #ifndef	IPPORT_HTTPS
 #define	IPPORT_HTTPS	443
 #endif
+#ifndef	IPPORT_PGPKEYSERVER
+#define	IPPORT_PGPKEYSERVER	11371
+#endif
 
 /**
  */
@@ -505,15 +508,16 @@ int urlSplit(const char * url, urlinfo *uret)
 
     if (u->port < 0 && u->scheme != NULL) {
 	struct servent *serv;
-	/*@-multithreaded -moduncon @*/
+/*@-multithreaded -moduncon @*/
+	/* HACK hkp:// might lookup "pgpkeyserver" */
 	serv = getservbyname(u->scheme, "tcp");
-	/*@=multithreaded =moduncon @*/
+/*@=multithreaded =moduncon @*/
 	if (serv != NULL)
 	    u->port = ntohs(serv->s_port);
 	else if (u->urltype == URL_IS_FTP)
 	    u->port = IPPORT_FTP;
 	else if (u->urltype == URL_IS_HKP)
-	    u->port = IPPORT_HTTP;
+	    u->port = IPPORT_PGPKEYSERVER;
 	else if (u->urltype == URL_IS_HTTP)
 	    u->port = IPPORT_HTTP;
 	else if (u->urltype == URL_IS_HTTPS)
