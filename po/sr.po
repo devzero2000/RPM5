@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2004-10-30 21:58-0400\n"
+"POT-Creation-Date: 2004-10-31 13:24-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1452,7 +1452,7 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:507
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
 #: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(nije broj)"

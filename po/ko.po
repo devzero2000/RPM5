@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2004-10-30 21:58-0400\n"
+"POT-Creation-Date: 2004-10-31 13:24-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1425,7 +1425,7 @@ msgstr "========== tsort를 진행합니다...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:507
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
 #: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"

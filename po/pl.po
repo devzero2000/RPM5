@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
-"POT-Creation-Date: 2004-10-30 21:58-0400\n"
+"POT-Creation-Date: 2004-10-31 13:24-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1429,7 +1429,7 @@ msgstr "========== kontynuowanie tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:507
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
 #: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"

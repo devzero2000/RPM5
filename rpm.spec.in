@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 16
+Release: 19
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -494,8 +494,11 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Oct 31 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-19
+- fix: buffer overrun displaying ko_KR (#135389).
+
 * Sat Oct 30 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-18
-- reprise file conflicts yet again, flip/flop/flip/flop ... flip?
+- reprise file conflicts yet again, flip/flop/flip/flop ...
 
 * Fri Oct 29 2004 Jeff Johnson <jbj@redhat.com> 4.2.3-16
 - python: fix RPMPROB_BADRELOCATE segfault return in ts.check (#137116).

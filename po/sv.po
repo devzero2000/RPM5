@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
-"POT-Creation-Date: 2004-10-30 21:58-0400\n"
+"POT-Creation-Date: 2004-10-31 13:24-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1421,7 +1421,7 @@ msgstr "========== fortsätter med tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:507
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
 #: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(inte ett tal)"
