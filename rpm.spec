@@ -345,6 +345,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu May  3 2001 Jeff Johnson <jbj@redhat.com>
+- still more boring lclint annotations and fiddles.
+
 * Sun Apr 29 2001 Jeff Johnson <jbj@redhat.com>
 - transaction iterator(s) need to run in reverse order on pure erasures.
 - erasures not yet strict, warn & chug on unlink(2)/rmdir(2) failure.
