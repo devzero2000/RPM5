@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2001-04-17 16:44-0400\n"
+"POT-Creation-Date: 2001-04-19 12:15-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2366,7 +2366,7 @@ msgid " failed - "
 msgstr " falhou - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:571
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2375,7 +2375,7 @@ msgstr ""
 "A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
 "\t %s\tB %s\n"
 
-#: lib/depends.c:593
+#: lib/depends.c:600
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s     A %s\tB %s\n"
@@ -2448,24 +2448,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1715
 msgid "========== tsorting packages\n"
 msgstr "========== a realizar o tsort nos pacotes\n"
 
-#: lib/depends.c:1752
+#: lib/depends.c:1762
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1801
+#: lib/depends.c:1811
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1832
+#: lib/depends.c:1839
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
@@ -2707,7 +2707,7 @@ msgstr "esperado um | no fim da expressão"
 msgid "(unknown type)"
 msgstr "(tipo desconhecido)"
 
-#: lib/install.c:190 lib/uninstall.c:209
+#: lib/install.c:190 lib/uninstall.c:211
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   ficheiro: %s acção: %s\n"
@@ -2772,45 +2772,45 @@ msgstr "o pacote de código-fonte não contem um ficheiro .spec\n"
 msgid "renaming %s to %s\n"
 msgstr "a mudar o nome de %s para %s\n"
 
-#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#: lib/install.c:845 lib/install.c:1114 lib/uninstall.c:60
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr "Não consegui mudar o nome de %s para %s: %s\n"
 
-#: lib/install.c:935
+#: lib/install.c:937
 msgid "source package expected, binary found\n"
 msgstr ""
 "esperava-se um pacote com código-fonte, foi encontrado um pacote binário\n"
 
-#: lib/install.c:979
+#: lib/install.c:981
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "pacote: teste dos ficheiros do %s-%s-%s = %d\n"
 
-#: lib/install.c:1023
+#: lib/install.c:1025
 msgid "stopping install as we're running --test\n"
 msgstr "a parar a instalação dado que estamos a correr o --test\n"
 
-#: lib/install.c:1028
+#: lib/install.c:1030
 msgid "running preinstall script (if any)\n"
 msgstr "a correr o programa de pré-instalação (se existir)\n"
 
-#: lib/install.c:1036
+#: lib/install.c:1038
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 "a ignorar a instalação do %s-%s-%s, o 'scriptlet' %%pre falhou, rc %d\n"
 
-#: lib/install.c:1069
+#: lib/install.c:1071
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"
 
-#: lib/install.c:1105
+#: lib/install.c:1110
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gravado como %s\n"
 
-#: lib/install.c:1199
+#: lib/install.c:1204
 msgid "running postinstall scripts (if any)\n"
 msgstr "a correr os programas de pós-instalação (se existirem)\n"
 
@@ -3222,7 +3222,7 @@ msgstr "número de registo do pacote: %u\n"
 msgid "record %d could not be read\n"
 msgstr "o registo %d não pôde ser lido\n"
 
-#: lib/query.c:743 lib/rpminstall.c:587
+#: lib/query.c:743 lib/rpminstall.c:588
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
@@ -3506,7 +3506,7 @@ msgstr "erro ao ler do ficheiros %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "o %s precisa duma versão mais recente do RPM\n"
 
-#: lib/rpminstall.c:437 lib/rpminstall.c:652
+#: lib/rpminstall.c:437 lib/rpminstall.c:653
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "o %s não pode ser instalado\n"
@@ -3529,26 +3529,26 @@ msgstr "a instalar os pacotes binários\n"
 msgid "cannot open file %s: %s\n"
 msgstr "não consigo aceder ao ficheiro %s: %s\n"
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:575
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "não consigo abrir %s/packages.rpm\n"
 
-#: lib/rpminstall.c:590
+#: lib/rpminstall.c:591
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "o \"%s\" especifica vários pacotes\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 msgid "removing these packages would break dependencies:\n"
 msgstr "a remoção destes pacotes irá quebrar dependências:\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:642
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "não consigo aceder ao %s: %s\n"
 
-#: lib/rpminstall.c:647
+#: lib/rpminstall.c:648
 #, c-format
 msgid "Installing %s\n"
 msgstr "A instalar o %s\n"
@@ -3840,16 +3840,16 @@ msgstr "o rmdir da %s falhou: %s\n"
 msgid "removal of %s failed: %s\n"
 msgstr "a remoção do %s falhou: %s\n"
 
-#: lib/uninstall.c:151
+#: lib/uninstall.c:153
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "irá remover o teste dos ficheiros = %d\n"
 
-#: lib/uninstall.c:233
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr "a correr o programa de pós-instalação (se existir)\n"
 
-#: lib/uninstall.c:436
+#: lib/uninstall.c:438
 #, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
@@ -3858,7 +3858,7 @@ msgstr ""
 "obtenção do código de retorno do 'scriplet' %s do %s-%s-%s falhou, o waitpid "
 "devolveu %s\n"
 
-#: lib/uninstall.c:443
+#: lib/uninstall.c:445
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-17 16:44-0400\n"
+"POT-Creation-Date: 2001-04-19 12:15-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2485,7 +2485,7 @@ msgid " failed - "
 msgstr " neuspe¹no - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:571
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2494,7 +2494,7 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:593
+#: lib/depends.c:600
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
@@ -2567,24 +2567,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1715
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1752
+#: lib/depends.c:1762
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1801
+#: lib/depends.c:1811
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1832
+#: lib/depends.c:1839
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2828,7 +2828,7 @@ msgstr "na koncu izraza je prièakovan |"
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
-#: lib/install.c:190 lib/uninstall.c:209
+#: lib/install.c:190 lib/uninstall.c:211
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr " datoteka: %s akcija: %s\n"
@@ -2894,45 +2894,45 @@ msgstr "izvorni paket ne vsebuje datoteke .spec"
 msgid "renaming %s to %s\n"
 msgstr "preimenovanje %s v %s\n"
 
-#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#: lib/install.c:845 lib/install.c:1114 lib/uninstall.c:60
 #, fuzzy, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr "preimenovanje %s v %s je bilo neuspe¹no: %s"
 
-#: lib/install.c:935
+#: lib/install.c:937
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "prièakovan je bil izvorni paket, najden binarni"
 
-#: lib/install.c:979
+#: lib/install.c:981
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/install.c:1023
+#: lib/install.c:1025
 msgid "stopping install as we're running --test\n"
 msgstr "ustavljanje namestitev, ker teèemo kot --test\n"
 
-#: lib/install.c:1028
+#: lib/install.c:1030
 msgid "running preinstall script (if any)\n"
 msgstr "poganjanje prednamestitvenih skript (èe obstajajo)\n"
 
-#: lib/install.c:1036
+#: lib/install.c:1038
 #, fuzzy
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr "preskoèeno - %s - prenos neuspe¹en - %s\n"
 
-#: lib/install.c:1069
+#: lib/install.c:1071
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/install.c:1105
+#: lib/install.c:1110
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/install.c:1199
+#: lib/install.c:1204
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjanje ponamestitvenih skript (èe obstajajo)\n"
 
@@ -3361,7 +3361,7 @@ msgstr "¹tevilka zapisa paketa: %d\n"
 msgid "record %d could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:743 lib/rpminstall.c:587
+#: lib/query.c:743 lib/rpminstall.c:588
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -3649,7 +3649,7 @@ msgstr "napaka pri branju iz datoteke %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:437 lib/rpminstall.c:652
+#: lib/rpminstall.c:437 lib/rpminstall.c:653
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
@@ -3672,26 +3672,26 @@ msgstr "name¹èanje binarnih paketov\n"
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:575
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "datoteke %s/packages.rpm ni mo¾no odpreti\n"
 
-#: lib/rpminstall.c:590
+#: lib/rpminstall.c:591
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranitev teh paketov bi podrla soodvisnosti:\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:642
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:647
+#: lib/rpminstall.c:648
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
@@ -3991,23 +3991,23 @@ msgstr "odstranitev imenika %s je bila neuspe¹na: %s"
 msgid "removal of %s failed: %s\n"
 msgstr "odstranitev %s je bila neuspe¹na: %s"
 
-#: lib/uninstall.c:151
+#: lib/uninstall.c:153
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "datoteke bomo odstranili, test = %d\n"
 
-#: lib/uninstall.c:233
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr "poganjanje poodnamestitvenih skriptov (èe obstajajo)\n"
 
-#: lib/uninstall.c:436
+#: lib/uninstall.c:438
 #, fuzzy, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
 msgstr "skript se ni uspe¹no izvedel"
 
-#: lib/uninstall.c:443
+#: lib/uninstall.c:445
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "skript se ni uspe¹no izvedel"

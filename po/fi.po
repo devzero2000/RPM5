@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-04-17 16:44-0400\n"
+"POT-Creation-Date: 2001-04-19 12:15-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2496,14 +2496,14 @@ msgid " failed - "
 msgstr "pgp ep‰onnistui"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:571
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:593
+#: lib/depends.c:600
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
@@ -2576,24 +2576,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1715
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1752
+#: lib/depends.c:1762
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1801
+#: lib/depends.c:1811
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1832
+#: lib/depends.c:1839
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2832,7 +2832,7 @@ msgstr "odotin '}'-merkki‰ ilmauksen lopussa"
 msgid "(unknown type)"
 msgstr "(tuntematon tyyppi)"
 
-#: lib/install.c:190 lib/uninstall.c:209
+#: lib/install.c:190 lib/uninstall.c:211
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -2899,44 +2899,44 @@ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#: lib/install.c:845 lib/install.c:1114 lib/uninstall.c:60
 #, fuzzy, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr "%s:n nime‰minen %s:ksi ep‰onnistui: %s"
 
-#: lib/install.c:935
+#: lib/install.c:937
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:979
+#: lib/install.c:981
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/install.c:1023
+#: lib/install.c:1025
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:1028
+#: lib/install.c:1030
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1036
+#: lib/install.c:1038
 #, fuzzy
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
 
-#: lib/install.c:1069
+#: lib/install.c:1071
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/install.c:1105
+#: lib/install.c:1110
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/install.c:1199
+#: lib/install.c:1204
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -3372,7 +3372,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %d could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:743 lib/rpminstall.c:587
+#: lib/query.c:743 lib/rpminstall.c:588
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -3657,7 +3657,7 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:437 lib/rpminstall.c:652
+#: lib/rpminstall.c:437 lib/rpminstall.c:653
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "virhe: %s ei voida asentaa\n"
@@ -3681,26 +3681,26 @@ msgstr "asenna paketti"
 msgid "cannot open file %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:575
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: lib/rpminstall.c:590
+#: lib/rpminstall.c:591
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 msgid "removing these packages would break dependencies:\n"
 msgstr "n‰iden pakettien poisto rikkoisi riippuvuuksia:\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:642
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpminstall.c:647
+#: lib/rpminstall.c:648
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
@@ -4003,23 +4003,23 @@ msgstr "%s:n rmdir ep‰onnistui: %s"
 msgid "removal of %s failed: %s\n"
 msgstr "%s:n poisto ep‰onnistui: %s"
 
-#: lib/uninstall.c:151
+#: lib/uninstall.c:153
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:233
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:436
+#: lib/uninstall.c:438
 #, fuzzy, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
 msgstr "skriptin ajo ep‰onnistui"
 
-#: lib/uninstall.c:443
+#: lib/uninstall.c:445
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "skriptin ajo ep‰onnistui"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-17 16:44-0400\n"
+"POT-Creation-Date: 2001-04-19 12:15-0400\n"
 "PO-Revision-Date: 2001-04-10 20:04+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2345,7 +2345,7 @@ msgid " failed - "
 msgstr " misslyckades - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:571
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2354,7 +2354,7 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:593
+#: lib/depends.c:600
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
@@ -2427,24 +2427,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1715
 msgid "========== tsorting packages\n"
 msgstr "========== tsorterar paket\n"
 
-#: lib/depends.c:1752
+#: lib/depends.c:1762
 msgid "========== successors only (presentation order)\n"
 msgstr "========== endast efterföljare (presentationsordning)\n"
 
-#: lib/depends.c:1801
+#: lib/depends.c:1811
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1832
+#: lib/depends.c:1839
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
@@ -2686,7 +2686,7 @@ msgstr "| förväntades vid slutet på uttryck"
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
-#: lib/install.c:190 lib/uninstall.c:209
+#: lib/install.c:190 lib/uninstall.c:211
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   fil: %s åtgärd: %s\n"
@@ -2751,45 +2751,45 @@ msgstr "källpaket innehåller ingen .spec-fil\n"
 msgid "renaming %s to %s\n"
 msgstr "byter namn på %s till %s\n"
 
-#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#: lib/install.c:845 lib/install.c:1114 lib/uninstall.c:60
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr "namnbyte från %s till %s misslyckades: %s\n"
 
-#: lib/install.c:935
+#: lib/install.c:937
 msgid "source package expected, binary found\n"
 msgstr "källpaket förväntades, fann binärpaket\n"
 
-#: lib/install.c:979
+#: lib/install.c:981
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s filtest = %d\n"
 
-#: lib/install.c:1023
+#: lib/install.c:1025
 msgid "stopping install as we're running --test\n"
 msgstr "avbryter installation eftersom vi kör --test\n"
 
-#: lib/install.c:1028
+#: lib/install.c:1030
 msgid "running preinstall script (if any)\n"
 msgstr "kör (eventuellt) preinstallationsskript\n"
 
-#: lib/install.c:1036
+#: lib/install.c:1038
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 "hoppar över installation av %s-%s-%s, %%pre-skriptet misslyckades med kod "
 "%d\n"
 
-#: lib/install.c:1069
+#: lib/install.c:1071
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
 
-#: lib/install.c:1105
+#: lib/install.c:1110
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sparades som %s\n"
 
-#: lib/install.c:1199
+#: lib/install.c:1204
 msgid "running postinstall scripts (if any)\n"
 msgstr "kör (eventuellt) postinstallationsskript\n"
 
@@ -3194,7 +3194,7 @@ msgstr "paketpost nummer: %u\n"
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:743 lib/rpminstall.c:587
+#: lib/query.c:743 lib/rpminstall.c:588
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -3477,7 +3477,7 @@ msgstr "fel vid läsning från fil %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s behöver en nyare version av RPM\n"
 
-#: lib/rpminstall.c:437 lib/rpminstall.c:652
+#: lib/rpminstall.c:437 lib/rpminstall.c:653
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
@@ -3500,26 +3500,26 @@ msgstr "installerar binärpaket\n"
 msgid "cannot open file %s: %s\n"
 msgstr "kan inte öppna filen %s: %s\n"
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:575
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kan inte öppna %s/packages.rpm\n"
 
-#: lib/rpminstall.c:590
+#: lib/rpminstall.c:591
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 msgid "removing these packages would break dependencies:\n"
 msgstr "att ta bort dessa paket skulle göra sönder beroenden:\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:642
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:647
+#: lib/rpminstall.c:648
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
@@ -3810,16 +3810,16 @@ msgstr "rmdir av %s misslyckades: %s\n"
 msgid "removal of %s failed: %s\n"
 msgstr "kan inte ta bort %s: %s\n"
 
-#: lib/uninstall.c:151
+#: lib/uninstall.c:153
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "tar bort filer test = %d\n"
 
-#: lib/uninstall.c:233
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr "kör (eventuellt) postavinstallationsskript\n"
 
-#: lib/uninstall.c:436
+#: lib/uninstall.c:438
 #, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
@@ -3828,7 +3828,7 @@ msgstr ""
 "uppfångandet av returkod från %s-skript från %s-%s-%s misslyckades,\n"
 "waitpid returnerade %s\n"
 
-#: lib/uninstall.c:443
+#: lib/uninstall.c:445
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "körning av %s-skript från %s-%s-%s misslyckades, slutstatus %d\n"

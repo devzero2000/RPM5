@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-17 16:44-0400\n"
+"POT-Creation-Date: 2001-04-19 12:15-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2498,14 +2498,14 @@ msgid " failed - "
 msgstr " zlyhalo - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:571
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:593
+#: lib/depends.c:600
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
@@ -2578,24 +2578,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuje sa index skupín\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1715
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1752
+#: lib/depends.c:1762
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1801
+#: lib/depends.c:1811
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1832
+#: lib/depends.c:1839
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2833,7 +2833,7 @@ msgstr "| oèakávené na konci výrazu"
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
-#: lib/install.c:190 lib/uninstall.c:209
+#: lib/install.c:190 lib/uninstall.c:211
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   súbor: akcia %s: %s\n"
@@ -2899,45 +2899,45 @@ msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 msgid "renaming %s to %s\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#: lib/install.c:845 lib/install.c:1114 lib/uninstall.c:60
 #, fuzzy, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr "premenovanie %s na %s zlyhalo: %s"
 
-#: lib/install.c:935
+#: lib/install.c:937
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "oèakávaný zdrojový balík, nájdený binárny"
 
-#: lib/install.c:979
+#: lib/install.c:981
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "balík: %s-%s-%s test súborov = %d\n"
 
-#: lib/install.c:1023
+#: lib/install.c:1025
 msgid "stopping install as we're running --test\n"
 msgstr "in¹talácia zastavená kvôli re¾imu --test\n"
 
-#: lib/install.c:1028
+#: lib/install.c:1030
 msgid "running preinstall script (if any)\n"
 msgstr "vykonávajú sa predin¹talaèné skripty (ak existujú)\n"
 
-#: lib/install.c:1036
+#: lib/install.c:1038
 #, fuzzy
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr "%s vynechané - prenos zlyhal - %s\n"
 
-#: lib/install.c:1069
+#: lib/install.c:1071
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "varovanie: %s vytvorené ako %s"
 
-#: lib/install.c:1105
+#: lib/install.c:1110
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/install.c:1199
+#: lib/install.c:1204
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "vykonávajú sa poin¹talaèné skripty (ak existujú)\n"
@@ -3365,7 +3365,7 @@ msgstr "po¾aduje sa záznam èíslo %d\n"
 msgid "record %d could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:743 lib/rpminstall.c:587
+#: lib/query.c:743 lib/rpminstall.c:588
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
@@ -3653,7 +3653,7 @@ msgstr "chyba pri vytváraní doèasného súboru %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:437 lib/rpminstall.c:652
+#: lib/rpminstall.c:437 lib/rpminstall.c:653
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
@@ -3676,26 +3676,26 @@ msgstr "in¹talujú sa binárne balíky\n"
 msgid "cannot open file %s: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s: %s"
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:575
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpminstall.c:590
+#: lib/rpminstall.c:591
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstránenie týchto balíkov by poru¹ilo závislosti:\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:642
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpminstall.c:647
+#: lib/rpminstall.c:648
 #, c-format
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
@@ -3997,23 +3997,23 @@ msgstr "rmdir %s zlyhalo: %s"
 msgid "removal of %s failed: %s\n"
 msgstr "odstránenie %s zlyhalo: %s"
 
-#: lib/uninstall.c:151
+#: lib/uninstall.c:153
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "budú sa odstraòova» súbory test = %d\n"
 
-#: lib/uninstall.c:233
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr "vykonávajú sa postdein¹talaèné skripty (ak existujú)\n"
 
-#: lib/uninstall.c:436
+#: lib/uninstall.c:438
 #, fuzzy, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
 msgstr "vykonanie skriptu zlyhalo"
 
-#: lib/uninstall.c:443
+#: lib/uninstall.c:445
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "vykonanie skriptu zlyhalo"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-17 16:44-0400\n"
+"POT-Creation-Date: 2001-04-19 12:15-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2352,7 +2352,7 @@ msgid " failed - "
 msgstr " mislykkedes - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:571
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2361,7 +2361,7 @@ msgstr ""
 "\"B\"-afhængighed kræver en epoke (antager samme som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:593
+#: lib/depends.c:600
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
@@ -2434,24 +2434,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1715
 msgid "========== tsorting packages\n"
 msgstr "========== tsort'er pakker\n"
 
-#: lib/depends.c:1752
+#: lib/depends.c:1762
 msgid "========== successors only (presentation order)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1801
+#: lib/depends.c:1811
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1832
+#: lib/depends.c:1839
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
@@ -2693,7 +2693,7 @@ msgstr "| forventet ved slutningen af udtryk"
 msgid "(unknown type)"
 msgstr "(ukendt type)"
 
-#: lib/install.c:190 lib/uninstall.c:209
+#: lib/install.c:190 lib/uninstall.c:211
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   fil: %s aktion: %s\n"
@@ -2760,43 +2760,43 @@ msgstr "kildepakke indeholder ingen .spec-fil\n"
 msgid "renaming %s to %s\n"
 msgstr "omdøber %s til %s\n"
 
-#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#: lib/install.c:845 lib/install.c:1114 lib/uninstall.c:60
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr "omdøbning af %s til %s mislykkedes: %s\n"
 
-#: lib/install.c:935
+#: lib/install.c:937
 msgid "source package expected, binary found\n"
 msgstr "kildepakke forventet, binær fundet\n"
 
-#: lib/install.c:979
+#: lib/install.c:981
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "pakke: %s-%s-%s filer test = %d\n"
 
-#: lib/install.c:1023
+#: lib/install.c:1025
 msgid "stopping install as we're running --test\n"
 msgstr "stopper installation, da vi kører --test\n"
 
-#: lib/install.c:1028
+#: lib/install.c:1030
 msgid "running preinstall script (if any)\n"
 msgstr "kører præinstallations-skript (hvis det findes)\n"
 
-#: lib/install.c:1036
+#: lib/install.c:1038
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr "overspringer installation af %s-%s-%s, %%pre-småskript fejlede rc %d\n"
 
-#: lib/install.c:1069
+#: lib/install.c:1071
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"
 
-#: lib/install.c:1105
+#: lib/install.c:1110
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gemt som %s\n"
 
-#: lib/install.c:1199
+#: lib/install.c:1204
 msgid "running postinstall scripts (if any)\n"
 msgstr "kører postinstallations-skript (hvis det findes)\n"
 
@@ -3201,7 +3201,7 @@ msgstr "pakkens post-nummer: %u\n"
 msgid "record %d could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:743 lib/rpminstall.c:587
+#: lib/query.c:743 lib/rpminstall.c:588
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -3488,7 +3488,7 @@ msgstr "fejl ved læsning fra filen %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s kræver en nyere version af RPM\n"
 
-#: lib/rpminstall.c:437 lib/rpminstall.c:652
+#: lib/rpminstall.c:437 lib/rpminstall.c:653
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
@@ -3511,26 +3511,26 @@ msgstr "installerer binærpakker\n"
 msgid "cannot open file %s: %s\n"
 msgstr "kunne ikke åbne fil %s: %s\n"
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:575
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kunne ikke åbne %s/packages.rpm\n"
 
-#: lib/rpminstall.c:590
+#: lib/rpminstall.c:591
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" angiver flere pakker\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 msgid "removing these packages would break dependencies:\n"
 msgstr "fjernelse af disse pakker ville bryde afhængighederne:\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:642
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/rpminstall.c:647
+#: lib/rpminstall.c:648
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"
@@ -3819,16 +3819,16 @@ msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 msgid "removal of %s failed: %s\n"
 msgstr "fjernelse af %s mislykkedes: %s\n"
 
-#: lib/uninstall.c:151
+#: lib/uninstall.c:153
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "vil fjerne filer test = %d\n"
 
-#: lib/uninstall.c:233
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr "kører skriptet postuninstall (hvis det findes)\n"
 
-#: lib/uninstall.c:436
+#: lib/uninstall.c:438
 #, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
@@ -3837,7 +3837,7 @@ msgstr ""
 "modtagelse af returkode på %s småskript fra %s-%s-%s mislykkedes, waitpid "
 "returnerede %s\n"
 
-#: lib/uninstall.c:443
+#: lib/uninstall.c:445
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-17 16:44-0400\n"
+"POT-Creation-Date: 2001-04-19 12:15-0400\n"
 "PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2371,7 +2371,7 @@ msgid " failed - "
 msgstr "не удалось - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:571
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2380,7 +2380,7 @@ msgstr ""
 "для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:593
+#: lib/depends.c:600
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
@@ -2453,24 +2453,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1715
 msgid "========== tsorting packages\n"
 msgstr "========== сортировка пакетов\n"
 
-#: lib/depends.c:1752
+#: lib/depends.c:1762
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1801
+#: lib/depends.c:1811
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1832
+#: lib/depends.c:1839
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
@@ -2712,7 +2712,7 @@ msgstr "в конце выражения ожидался \"|\""
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
-#: lib/install.c:190 lib/uninstall.c:209
+#: lib/install.c:190 lib/uninstall.c:211
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "файл : %s действие: %s\n"
@@ -2777,44 +2777,44 @@ msgstr "исходный пакет не содержит файла спецификации\n"
 msgid "renaming %s to %s\n"
 msgstr "переименовывается %s в %s\n"
 
-#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#: lib/install.c:845 lib/install.c:1114 lib/uninstall.c:60
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr "ошибка переименования %s в %s: %s\n"
 
-#: lib/install.c:935
+#: lib/install.c:937
 msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 
-#: lib/install.c:979
+#: lib/install.c:981
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/install.c:1023
+#: lib/install.c:1025
 msgid "stopping install as we're running --test\n"
 msgstr "установка прекращается, т.к. мы исполняем --test\n"
 
-#: lib/install.c:1028
+#: lib/install.c:1030
 msgid "running preinstall script (if any)\n"
 msgstr "исполняется сценарий preinstall (если есть)\n"
 
-#: lib/install.c:1036
+#: lib/install.c:1038
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 "пропускается установка %s-%s-%s, ошибка сценария %%pre: код возврата: %d\n"
 
-#: lib/install.c:1069
+#: lib/install.c:1071
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s создан как %s\n"
 
-#: lib/install.c:1105
+#: lib/install.c:1110
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s сохранен как %s\n"
 
-#: lib/install.c:1199
+#: lib/install.c:1204
 msgid "running postinstall scripts (if any)\n"
 msgstr "выполняется сценарий postinstall (если есть)\n"
 
@@ -3224,7 +3224,7 @@ msgstr "номер записи пакета: %u\n"
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:743 lib/rpminstall.c:587
+#: lib/query.c:743 lib/rpminstall.c:588
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -3508,7 +3508,7 @@ msgstr "ошибка чтения из файла %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "для файла %s необходима более новая версия RPM\n"
 
-#: lib/rpminstall.c:437 lib/rpminstall.c:652
+#: lib/rpminstall.c:437 lib/rpminstall.c:653
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
@@ -3531,26 +3531,26 @@ msgstr "устанавливаю бинарные пакеты\n"
 msgid "cannot open file %s: %s\n"
 msgstr "невозможно открыть файл %s: %s\n"
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:575
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "ошибка открытия %s/packages.rpm\n"
 
-#: lib/rpminstall.c:590
+#: lib/rpminstall.c:591
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 msgid "removing these packages would break dependencies:\n"
 msgstr "удаление этих пакетов нарушит зависимости:\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:642
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:647
+#: lib/rpminstall.c:648
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
@@ -3842,16 +3842,16 @@ msgstr "ошибка удаления каталога %s: %s\n"
 msgid "removal of %s failed: %s\n"
 msgstr "ошибка удаления %s: %s\n"
 
-#: lib/uninstall.c:151
+#: lib/uninstall.c:153
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "файлы будут удалены; test = %d\n"
 
-#: lib/uninstall.c:233
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr "выполняется сценарий postuninstall (если есть)\n"
 
-#: lib/uninstall.c:436
+#: lib/uninstall.c:438
 #, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
@@ -3859,7 +3859,7 @@ msgid ""
 msgstr ""
 "ошибка получения кода возврата сценария %s из %s-%s-%s, waitpid вернул %s\n"
 
-#: lib/uninstall.c:443
+#: lib/uninstall.c:445
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
