@@ -4,8 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 PYVER= @WITH_PYTHON_VERSION@
 
-INCLUDES = \
-	-I$(top_srcdir) \
+INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
@@ -14,7 +13,7 @@ INCLUDES = \
 	-I/usr/include/python${PYVER} \
 	@INCPATH@
 
-EXTRA_DIST = db-py.c db-py.h hash.h header-py.c header-py.h upgrade.h
+noinst_HEADERS = db-py.h hash.h header-py.c header-py.h upgrade.h
 
 mylibs= \
 	$(top_builddir)/lib/librpm.la \
@@ -25,10 +24,13 @@ mylibs= \
 LDADD =
 
 pythondir = $(prefix)/lib/python${PYVER}/site-packages
-python_PROGRAMS = rpmmodule.so poptmodule.so
+python_PROGRAMS = rpmmodule.so
 
-rpmmodule_so_SOURCES = rpmmodule.c
+noinst_PROGRAMS = poptmodule.so
+
+rpmmodule_so_SOURCES =
 rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
+
 poptmodule_so_SOURCES = poptmodule.c
 poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 

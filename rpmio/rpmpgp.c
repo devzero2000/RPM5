@@ -335,7 +335,7 @@ fprintf(stderr, "*** %s %s\n", pre, t);
     mp32nsethex(mpn, t);
     t = _free(t);
 if (_debug && _print)
-printf("\t %s ", pre), mp32println(mpn->size, mpn->data);
+fprintf(stderr, "\t %s ", pre), mp32println(stderr, mpn->size, mpn->data);
 }
 
 int pgpPrtSubType(const byte *h, unsigned int hlen)
@@ -369,7 +369,13 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 	    /*@switchbreak@*/ break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
 /*@-mods -mayaliasunique @*/
-	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY) {
+#ifdef	DYING
+	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY)
+#else
+	    if (_digp && !(_digp->saved & PGPDIG_SAVED_TIME))
+#endif
+	    {
+		_digp->saved |= PGPDIG_SAVED_TIME;
 		memcpy(_digp->time, p+1, sizeof(_digp->time));
 	    }
 /*@=mods =mayaliasunique @*/
@@ -386,7 +392,13 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 /*@-mods -mayaliasunique @*/
-	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY) {
+#ifdef	DYING
+	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY)
+#else
+	    if (_digp && !(_digp->saved & PGPDIG_SAVED_ID))
+#endif
+	    {
+		_digp->saved |= PGPDIG_SAVED_ID;
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
 	    }
 /*@=mods =mayaliasunique @*/
@@ -459,7 +471,7 @@ static int pgpPrtSigParams(/*@unused@*/ pgpTag tag, byte pubkey_algo, byte sigty
 		case 0:		/* m**d */
 		    mp32nsethex(&_dig->c, pgpMpiHex(p));
 if (_debug && _print)
-printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
+fprintf(stderr, "\t  m**d = "),  mp32println(stderr, _dig->c.size, _dig->c.data);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -560,12 +572,12 @@ int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
 
 if (_debug && _print)
 fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
-	/*@-mods@*/
+/*@-mods@*/
 	if (_digp && _digp->pubkey_algo == 0) {
-	    _digp->hashlen = plen;
-	    _digp->hash = memcpy(xmalloc(plen), p, plen);
+	    _digp->hashlen = sizeof(*v) + plen;
+	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
 	}
-	/*@=mods@*/
+/*@=mods@*/
 	(void) pgpPrtSubType(p, plen);
 	p += plen;
 
@@ -679,12 +691,12 @@ static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 			memcpy(_digp->signid, keyid, sizeof(_digp->signid));
 		    }
 if (_debug && _print)
-printf("\t     n = "),  mp32println(_dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
+fprintf(stderr, "\t     n = "),  mp32println(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
 		    /*@switchbreak@*/ break;
 		case 1:		/* e */
 		    mp32nsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
 if (_debug && _print)
-printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
+fprintf(stderr, "\t     e = "),  mp32println(stderr, _dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -700,22 +712,22 @@ printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		case 0:		/* p */
 		    mp32bsethex(&_dig->p, pgpMpiHex(p));
 if (_debug && _print)
-printf("\t     p = "),  mp32println(_dig->p.size, _dig->p.modl);
+fprintf(stderr, "\t     p = "),  mp32println(stderr, _dig->p.size, _dig->p.modl);
 		    /*@switchbreak@*/ break;
 		case 1:		/* q */
 		    mp32bsethex(&_dig->q, pgpMpiHex(p));
 if (_debug && _print)
-printf("\t     q = "),  mp32println(_dig->q.size, _dig->q.modl);
+fprintf(stderr, "\t     q = "),  mp32println(stderr, _dig->q.size, _dig->q.modl);
 		    /*@switchbreak@*/ break;
 		case 2:		/* g */
 		    mp32nsethex(&_dig->g, pgpMpiHex(p));
 if (_debug && _print)
-printf("\t     g = "),  mp32println(_dig->g.size, _dig->g.data);
+fprintf(stderr, "\t     g = "),  mp32println(stderr, _dig->g.size, _dig->g.data);
 		    /*@switchbreak@*/ break;
 		case 3:		/* y */
 		    mp32nsethex(&_dig->y, pgpMpiHex(p));
 if (_debug && _print)
-printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
+fprintf(stderr, "\t     y = "),  mp32println(stderr, _dig->y.size, _dig->y.data);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -992,7 +1004,7 @@ struct pgpDig_s * pgpNewDig(void)
     return dig;
 }
 
-struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
+void pgpCleanDig(struct pgpDig_s * dig)
 	/*@modifies dig @*/
 {
     if (dig != NULL) {
@@ -1008,20 +1020,11 @@ struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	}
 	/*@=unqualifiedtrans@*/
 
-	/*@-branchstate@*/
-	if (dig->md5ctx != NULL)
-	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
-	dig->md5ctx = NULL;
+	memset(&dig->signature, 0, sizeof(dig->signature));
+	memset(&dig->pubkey, 0, sizeof(dig->pubkey));
+
 	dig->md5 = _free(dig->md5);
-
-	/*@-branchstate@*/
-	if (dig->sha1ctx != NULL)
-	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
-	dig->sha1ctx = NULL;
 	dig->sha1 = _free(dig->sha1);
-
 	mp32nfree(&dig->hm);
 	mp32nfree(&dig->r);
 	mp32nfree(&dig->s);
@@ -1030,6 +1033,52 @@ struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	mp32nfree(&dig->m);
 	mp32nfree(&dig->c);
 	mp32nfree(&dig->rsahm);
+    }
+    /*@-nullstate@*/
+    return;
+    /*@=nullstate@*/
+}
+
+struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
+	/*@modifies dig @*/
+{
+    if (dig != NULL) {
+
+	/* DUmp the signature/pubkey data. */
+	pgpCleanDig(dig);
+
+	/*@-branchstate@*/
+	if (dig->md5ctx != NULL)
+	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->md5ctx = NULL;
+
+	/*@-branchstate@*/
+	if (dig->hdrsha1ctx != NULL)
+	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->hdrsha1ctx = NULL;
+
+	/*@-branchstate@*/
+	if (dig->sha1ctx != NULL)
+	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->sha1ctx = NULL;
+
+	mp32bfree(&dig->p);
+	mp32bfree(&dig->q);
+	mp32nfree(&dig->g);
+	mp32nfree(&dig->y);
+	mp32nfree(&dig->hm);
+	mp32nfree(&dig->r);
+	mp32nfree(&dig->s);
+
+	mp32bfree(&dig->rsa_pk.n);
+	mp32nfree(&dig->rsa_pk.e);
+	mp32nfree(&dig->m);
+	mp32nfree(&dig->c);
+	mp32nfree(&dig->hm);
+
 	dig = _free(dig);
     }
     return dig;

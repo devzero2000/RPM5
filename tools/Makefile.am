@@ -2,53 +2,38 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = \
-	-I$(top_srcdir) \
+INCLUDES = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
 	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpmchecksig.c
+EXTRA_DIST =	rpminject.c
 
-EXTRA_PROGRAMS = rpminject rpmsort
+EXTRA_PROGRAMS = rpminject
 
-#myLDFLAGS= -L$(top_builddir)/build -L$(top_builddir)/lib \
-#	-L$(top_builddir)/rpmio -L$(top_builddir)/popt
-
-myLDADD = \
+LDADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
-	@WITH_ZLIB_LIB@ \
 	@INTLLIBS@
 
-LIBS =
-#LDFLAGS = $(myLDFLAGS)
-LDADD = $(myLDADD)
-
 noinst_PROGRAMS = \
-	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
+	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature rpmsort
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = javadeps
 
+javadeps_SOURCES =	javadeps.c
+
 rpmsort_SOURCES =	rpmsort.c
 rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
 
-javadeps_SOURCES =	javadeps.c
-
-$(PROGRAMS): $(myLDADD)
-
-gnash.o: gnash.c
-	$(COMPILE) -o $@ -c gnash.c
-
-gnash: gnash.o
-	$(LINK) -all-static -o $@ gnash.o $(LDADD)
-
+$(PROGRAMS): $(LDADD)

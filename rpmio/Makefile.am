@@ -6,29 +6,23 @@ EXTRA_DIST = tdigest.c tficl.c tkey.c trpmio.c
 
 EXTRA_PROGRAMS = tdigest tkey tring trpmio dumpasn1
 
-INCLUDES = \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/lib \
+INCLUDES = -I. \
 	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
-	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h \
 	ugid.h
-noinst_HEADERS = rpmio_internal.h rpmpgp.h
-
-LIBS +=	@WITH_ZLIB_LIB@ -lrt -lpthread
+noinst_HEADERS = fts.h rpmio_internal.h rpmpgp.h
 
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
 lib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = digest.c macro.c rpmio.c rpmlog.c rpmmalloc.c \
+librpmio_la_SOURCES = digest.c fts.c macro.c rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release @VERSION@
+librpmio_la_LDFLAGS = -release @VERSION@ -lrt -lpthread
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = .created
 

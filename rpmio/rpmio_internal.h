@@ -65,13 +65,14 @@ typedef struct _FDDIGEST_s {
  * @param octx		existing digest context
  * @return		duplicated digest context
  */
-/*@only@*/ /*@unused@*/
+/*@only@*/
 DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
 	/*@*/;
 
 /** \ingroup rpmio
  * Initialize digest.
  * Set bit count to 0 and buffer to mysterious initialization constants.
+ * @param hashalgo	type of digest
  * @param flags		bit(s) to control digest operation
  * @return		digest context
  */
@@ -149,11 +150,20 @@ struct _FD_s {
 extern int _rpmio_debug;
 /*@=redecl@*/
 
+/*@-redecl@*/
+extern int _ftp_debug;
+/*@=redecl@*/
+
 #define DBG(_f, _m, _x) \
     if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x
 
+#if defined(__LCLINT__XXX)
+#define DBGIO(_f, _x)
+#define DBGREFS(_f, _x)
+#else
 #define DBGIO(_f, _x)   DBG((_f), RPMIO_DEBUG_IO, _x)
 #define DBGREFS(_f, _x) DBG((_f), RPMIO_DEBUG_REFS, _x)
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -467,7 +477,7 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
  * Update digest(s) attached to fd.
  */
 /*@unused@*/ static inline
-void fdUpdateDigests(FD_t fd, const byte * buf, ssize_t buflen)
+void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
 	/*@modifies fd @*/
 {
     int i;
@@ -507,11 +517,11 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
     if (i < 0) {
 	if (datap) *datap = NULL;
 	if (lenp) *lenp = 0;
-	return;
-    } else if (i == imax)
-	fd->ndigests = imax - 1;
-    else
-	fd->ndigests = imax;
+    }
+
+    fd->ndigests = imax;
+    if (i < imax)
+	fd->ndigests++;		/* convert index to count */
 }
 
 /*@-shadow@*/
@@ -531,7 +541,7 @@ int fdFileno(/*@null@*/ void * cookie)
 /**
  */
 int rpmioSlurp(const char * fn,
-                /*@out@*/ const byte ** bp, /*@out@*/ ssize_t * blenp)
+                /*@out@*/ const unsigned char ** bp, /*@out@*/ ssize_t * blenp)
         /*@globals fileSystem @*/
         /*@modifies *bp, *blenp, fileSystem @*/;
 

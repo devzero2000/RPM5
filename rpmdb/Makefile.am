@@ -2,8 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = \
-	-I$(top_srcdir) \
+INCLUDES = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmio \
@@ -14,7 +13,7 @@ INCLUDES = \
 EXTRA_DIST = db3.c db1.c falloc.c
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmdb.h
+pkginc_HEADERS = db.h rpmdb.h
 noinst_HEADERS = falloc.h fprint.h rpmhash.h
 
 mylibpaths = \
@@ -34,6 +33,9 @@ librpmdb_la_LDFLAGS = -release @VERSION@ @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
 
+# XXX make sure that db.h symlink is generated
+dbconfig.c: db.h
+
 # XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
@@ -43,14 +45,17 @@ install-data-local:
 falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
-.created:
+db.h:
+	@ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
+
+.created: db.h
 	for lo in $(DB3LOBJS); do \
 	  [ -f $$lo ] || $(LN_S) $(top_builddir)/$(WITH_DB_SUBDIR)/$$lo $$lo ; \
 	done
 	touch $@
 
 clean-local:
-	rm -f $(DB3LOBJS) *.o .created
+	rm -f $(DB3LOBJS) *.o .created db.h
 
 .PHONY:	sources
 sources:

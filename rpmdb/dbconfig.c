@@ -320,6 +320,7 @@ dbiIndex db3Free(dbiIndex dbi)
 	dbi->dbi_home = _free(dbi->dbi_home);
 	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_subfile = _free(dbi->dbi_subfile);
+	dbi->dbi_tmpdir = _free(dbi->dbi_tmpdir);
 	dbi->dbi_host = _free(dbi->dbi_host);
 	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
@@ -501,7 +502,8 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     }
     /*@=sizeoftype@*/
 
-    dbi->dbi_use_cursors = 1;		/* db3 cursors are always used now. */
+    dbi->dbi_use_cursors = 1;	/* db3 cursors are always used now. */
+    dbi->dbi_byteswapped = 0;	/* -1 unknown, 0 native order, 1 alien order */
 
     if (!dbi->dbi_use_dbenv) {		/* db3 dbenv is always used now. */
 	dbi->dbi_use_dbenv = 1;
