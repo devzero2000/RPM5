@@ -309,6 +309,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jan 18 2001 Jeff Johnson <jbj@redhat.com>
+- fix: insure that %lang scopes over hard links correctly.
+- fix: rpmCleanPath was nibbling at .. in macrofiles incorrectly.
+
 * Mon Jan 15 2001 Jeff Johnson <jbj@redhat.com>
 - fix: extra newline in many error messages (#23947).
 - fix: rpm -Va with db1 needs per-iterator, not per-index, offset.
