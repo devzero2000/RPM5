@@ -2196,7 +2196,11 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi @*/
 {
     if (mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0) {
-#ifdef DYING
+    /*
+     * mergesort is much (~10x with lots of identical basenames) faster
+     * than pure quicksort, but glibc uses msort_with_tmp() on stack.
+     */
+#if defined(__GLIBC__)
 	qsort(mi->mi_set->recs, mi->mi_set->count,
 		sizeof(*mi->mi_set->recs), hdrNumCmp);
 #else
