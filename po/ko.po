@@ -2399,7 +2399,7 @@ msgstr ""
 #: lib/depends.c:1329
 #, c-format
 msgid "package %s conflicts: %s\n"
-msgstr ""
+msgstr "패키지 %s (이)가 충돌함: %s\n"
 
 #: lib/depends.c:1549
 #, c-format
