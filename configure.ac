@@ -167,10 +167,10 @@ a=`ls -l foo.chmodtest | awk '{print $1}'`
 rm -f foo.chmodtest
 if test "$a" = "-rwxr-xr-x"; then
     AC_MSG_RESULT(yes)
-    FIXPERMS=a+rX,g-w,o-w 
+    FIXPERMS=a+rX,u+w,g-w,o-w 
 else
     AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
-    FIXPERMS=a+r,g-w,o-w 
+    FIXPERMS=a+r,u+w,g-w,o-w 
 fi
 AC_SUBST(FIXPERMS)
 
@@ -233,7 +233,7 @@ dnl
 dnl use defaults if cross-compiling, otherwise use the default path.
 dnl
 if test "$cross_compiling" = "yes"; then
-    MYPATH=""
+    MYPATH=":"
 else
 #    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
     MYPATH=$PATH
@@ -894,6 +894,17 @@ AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
 
+AC_MSG_CHECKING(for python 2.4)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <python2.4/Python.h>
+main() {
+  exit(strncmp("2.4", PY_VERSION, 3));
+} ]])],[withval=yes],[withval=no],[withval=yes])
+  AC_MSG_RESULT($withval)
+  if test $withval = yes ; then
+    WITH_PYTHON_VERSION="2.4"
+  else
+
 AC_MSG_CHECKING(for python 2.3)
 AC_TRY_RUN([
 #include <python2.3/Python.h>
@@ -931,7 +942,7 @@ main() {
       fi
     fi
   fi
-
+  fi
 fi
 
 if test "$WITH_PYTHON_VERSION" != no ; then
