@@ -83,7 +83,7 @@ const char * rpmProblemString(rpmProblem prob)
 	break;
 
       case RPMPROB_NEW_FILE_CONFLICT:
-	sprintf(buf, _("file %s conflicts between attemped installs of "
+	sprintf(buf, _("file %s conflicts between attempted installs of "
 		       "%s-%s-%s and %s-%s-%s"), prob.str1, name, version, 
 		release, altName, altVersion, altRelease);
 	break;
