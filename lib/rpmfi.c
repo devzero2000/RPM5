@@ -866,6 +866,7 @@ assert(fn != NULL);		/* XXX can't happen */
 	*fn = '\0';
 	fnlen = stpcpy( stpcpy(fn, dirNames[dirIndexes[i]]), baseNames[i]) - fn;
 
+if (fColors != NULL)
 dColors[dirIndexes[i]] |= fColors[i];
 	/*
 	 * See if this file path needs relocating.
