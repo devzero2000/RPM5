@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.12
+Release: 0.13
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -482,6 +482,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Feb 20 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.13
+- fix: only first "mkdir -p" directory had context set.
+
 * Wed Feb 18 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.12
 - python: add patch to rpm-4_3 to initialize RE contexts.
 
