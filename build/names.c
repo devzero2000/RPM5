@@ -1,5 +1,5 @@
 /** \ingroup rpmbuild
- * \file build/files.c
+ * \file build/names.c
  * Simple user/group name/id cache (plus hostname and buildtime)
  */
 

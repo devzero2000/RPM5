@@ -64,7 +64,7 @@ typedef enum rpmParseState_e {
     PART_TRIGGERUN	= 14,	/*!< */
     PART_VERIFYSCRIPT	= 15,	/*!< */
     PART_BUILDARCHITECTURES= 16,/*!< */
-   PART_TRIGGERPOSTUN	= 17	/*!< */
+    PART_TRIGGERPOSTUN	= 17	/*!< */
 } rpmParseState;
 
 /* from build/read.h */
