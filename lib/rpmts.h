@@ -948,6 +948,15 @@ int rpmtsGetKeys(rpmts ts,
 	/*@modifies *np @*/;
 
 /**
+ * Return (malloc'd) header name-version-release.arch string.
+ * @param h		header
+ * @retval np		name tag value
+ * @return		name-version-release string
+ */
+/*@only@*/ char * hGetNEVRA(Header h, /*@null@*/ /*@out@*/ const char ** np )
+	/*@modifies *np @*/;
+
+/**
  * Return header color.
  * @param h		header
  * @return		header color

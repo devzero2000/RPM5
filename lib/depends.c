@@ -572,7 +572,7 @@ exit:
 /**
  * Check added requires/conflicts against against installed+added packages.
  * @param ts		transaction set
- * @param pkgNEVR	package name-version-release
+ * @param pkgNEVRA	package name-version-release.arch
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
  * @param depName	dependency name to filter (or NULL)
@@ -580,7 +580,7 @@ exit:
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
-static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
+static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
@@ -624,7 +624,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	    }
 	    /*@=branchstate@*/
 
-	    rpmdsProblem(ts->probs, pkgNEVR, requires, suggestedKeys, adding);
+	    rpmdsProblem(ts->probs, pkgNEVRA, requires, suggestedKeys, adding);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -656,7 +656,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
 	case 0:		/* conflicts exist. */
-	    rpmdsProblem(ts->probs, pkgNEVR, conflicts, NULL, adding);
+	    rpmdsProblem(ts->probs, pkgNEVRA, conflicts, NULL, adding);
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
 	    /*@switchbreak@*/ break;
@@ -692,19 +692,19 @@ static int checkPackageSet(rpmts ts, const char * dep,
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	const char * pkgNEVR;
+	const char * pkgNEVRA;
 	rpmds requires, conflicts;
 	int rc;
 
-	pkgNEVR = hGetNEVR(h, NULL);
+	pkgNEVRA = hGetNEVRA(h, NULL);
 	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
-	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, dep, 0, adding);
+	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
-	pkgNEVR = _free(pkgNEVR);
+	pkgNEVRA = _free(pkgNEVRA);
 
 	if (rc) {
 	    ec = 1;
@@ -1635,7 +1635,7 @@ int rpmtsCheck(rpmts ts)
 	rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
-	rc = checkPackageDeps(ts, rpmteNEVR(p),
+	rc = checkPackageDeps(ts, rpmteNEVRA(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			NULL,

@@ -494,6 +494,11 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Oct  6 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-10
+- display caught signals to diagnose #134474 (gonna be SIGPIPE).
+- display N-V-R.A in dependency failure messages.
+- selinux: set "rpm_script_t" always, not just for /bin/sh.
+
 * Tue Oct  5 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-9
 - fix: revert Obsoletes: "fix" (#134497).
 - fix: work around for dangling symlinks not globbed (#134362).

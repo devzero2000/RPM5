@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-29 18:25-0400\n"
+"POT-Creation-Date: 2004-10-06 16:25-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -723,7 +723,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:632 lib/psm.c:1562
+#: build/pack.c:632 lib/psm.c:1556
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -753,7 +753,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:725 lib/psm.c:1831
+#: build/pack.c:725 lib/psm.c:1825
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1347,67 +1347,67 @@ msgstr ""
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:397
+#: lib/depends.c:402
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:424
+#: lib/depends.c:429
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:441
+#: lib/depends.c:446
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:470
+#: lib/depends.c:475
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:483
+#: lib/depends.c:488
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:496
+#: lib/depends.c:501
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:851
+#: lib/depends.c:860
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:972
+#: lib/depends.c:981
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1204
+#: lib/depends.c:1213
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1296
+#: lib/depends.c:1305
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1381
+#: lib/depends.c:1390
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1454
+#: lib/depends.c:1463
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1489
+#: lib/depends.c:1498
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1494
+#: lib/depends.c:1503
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2195,65 +2195,65 @@ msgid ""
 "Continuing ...\n"
 msgstr ""
 
-#: lib/psm.c:637
+#: lib/psm.c:632
 #, c-format
-msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
+msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:645
+#: lib/psm.c:640
 #, c-format
-msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
+msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:857
+#: lib/psm.c:852
 #, c-format
-msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
+msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
+msgstr ""
+
+#: lib/psm.c:886
+#, c-format
+msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
 #: lib/psm.c:892
 #, c-format
-msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:898
-#, c-format
-msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
-msgstr ""
-
-#: lib/psm.c:1330
+#: lib/psm.c:1324
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1465
+#: lib/psm.c:1459
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1574
+#: lib/psm.c:1568
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:1652
+#: lib/psm.c:1646
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1653
+#: lib/psm.c:1647
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1839
+#: lib/psm.c:1833
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1842
+#: lib/psm.c:1836
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:118 lib/rpmts.c:575
+#: lib/query.c:118 lib/rpmts.c:598
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2301,7 +2301,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr ""
 
 #: lib/query.c:430 lib/query.c:477 lib/rpminstall.c:123 lib/rpminstall.c:476
-#: lib/rpminstall.c:607 lib/rpminstall.c:1035 lib/rpmts.c:586
+#: lib/rpminstall.c:607 lib/rpminstall.c:1035 lib/rpmts.c:609
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2905,50 +2905,50 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:164
+#: lib/rpmts.c:187
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:262
+#: lib/rpmts.c:285
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:280
+#: lib/rpmts.c:303
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:288
+#: lib/rpmts.c:311
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:465
+#: lib/rpmts.c:488
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:607
+#: lib/rpmts.c:630
 #, c-format
 msgid "Adding: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:619
+#: lib/rpmts.c:642
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1107
+#: lib/rpmts.c:1130
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1109
+#: lib/rpmts.c:1132
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1165
+#: lib/rpmts.c:1188
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr ""
