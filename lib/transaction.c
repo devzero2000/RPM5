@@ -104,9 +104,6 @@ static void freeFi(TFI_t *fi)
 	if (fi->bnl) {
 	    free(fi->bnl); fi->bnl = NULL;
 	    free(fi->dnl); fi->dnl = NULL;
-#ifdef	DOUBLE_FREE
-	    xfree(fi->dil); fi->dil = NULL;
-#endif
 	}
 	if (fi->flinks) {
 	    free(fi->flinks); fi->flinks = NULL;
@@ -128,6 +125,9 @@ static void freeFi(TFI_t *fi)
 	    }
 	    if (fi->fstates) {
 		free(fi->fstates); fi->fstates = NULL;
+	    }
+	    if (fi->dil) {
+		xfree(fi->dil); fi->dil = NULL;
 	    }
 	    break;
 	case TR_ADDED:
@@ -1659,9 +1659,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    continue;
 	free(fi->bnl); fi->bnl = NULL;
 	free(fi->dnl); fi->dnl = NULL;
-#ifdef	DOUBLE_FREE
-	xfree(fi->dil); fi->dil = NULL;
-#endif
 	switch (fi->type) {
 	case TR_ADDED:
 	    free(fi->fmd5s); fi->fmd5s = NULL;
@@ -1669,6 +1666,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	case TR_REMOVED:
+	    xfree(fi->dil); fi->dil = NULL;
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	}

@@ -41,6 +41,10 @@
 	- RPM_BIN_TYPE malloc'ed when retrieved through headerGetEntry().
 	- add headerFreeData() to free any data malloc'ed during retrieval.
 	- preserve exact image of original header when installing/upgrading.
+	- add missing headerFree for legacy signature header.
+	- fix: removed packages leaked DIRINDEXES tag data.
+	- reload tags added during install when loading header from rpmdb.
+	- avoid brp-compress hang with both compressed/uncompressed man pages.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

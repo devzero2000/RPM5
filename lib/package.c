@@ -128,9 +128,8 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 	   only saves memory (nice), but gives fingerprinting a nice, fat
 	   speed boost (very nice). Go ahead and convert old headers to
 	   the new style (this is a noop for new headers) */
-	if (lead->major < 4) {
+	if (lead->major < 4)
 	    compressFilelist(*hdr);
-	}
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
         if (lead->type == RPMLEAD_SOURCE) {
@@ -150,9 +149,8 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 	/*@notreached@*/ break;
     } 
 
-    if (hdrPtr == NULL) {
+    if (hdrPtr == NULL)
 	headerFree(*hdr);
-    }
     
     return 0;
 }
@@ -175,12 +173,15 @@ int rpmReadPackageHeader(FD_t fd, Header * hdrp, int * isSource, int * major,
     if (rc)
 	return rc;
 
-    if (hdrp && *hdrp && sig)
+    if (hdrp && *hdrp && sig) {
 	headerMergeLegacySigs(*hdrp, sig);
+	headerFree(sig);
+    }
    
     if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
     if (major) *major = lead.major;
     if (minor) *minor = lead.minor;
    
-    return 0;
+exit:
+    return rc;
 }

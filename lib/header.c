@@ -328,20 +328,6 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 	*p = (!minMem
 		? memcpy(xmalloc(entry->length), entry->data, entry->length)
 		: entry->data);
-#ifdef	NOTYET
-	if (ENTRY_IS_REGION(entry)) {
-	/* XXX *p is incorrect here, +/- 2*sizeof(int_32). */
-	    int_32 *ei = (int_32 *) *p;
-	    int_32 il = ntohl(ei[0]);
-	    int_32 dl = ntohl(ei[1]);
-	    struct entryInfo * pe = (struct entryInfo *) &ei[2];
-	    char * dataStart = (char *) (pe + il);
-fprintf(stderr, "*** copyEntry: %x %x %x %x (%d,%d) (%p,%p)\n", ei[0], ei[1], ei[2], ei[3], il, dl, pe, dataStart);
-
-	    regionSwab(NULL, il, 0, pe, dataStart, 0);
-	    if (c) *c = entry->length;
-	}
-#endif
 	break;
     case RPM_STRING_TYPE:
 	if (entry->info.count == 1) {
@@ -513,7 +499,8 @@ Header headerLoad(void *pv)
 	int_32 * stei = memcpy(alloca(REGION_TAG_COUNT), dataStart + ntohl(pe->offset), REGION_TAG_COUNT);
 	int_32 rdl = -ntohl(stei[2]);	/* negative offset */
 	int_32 ril = rdl/sizeof(*pe);
-	int xxx;
+	int dlen;
+	int j = 0;
 
 	entry->info.type = htonl(pe->type);
 	if (entry->info.type < RPM_MIN_TYPE || entry->info.type > RPM_MAX_TYPE)
@@ -523,8 +510,14 @@ Header headerLoad(void *pv)
 	entry->info.offset = -rdl;	/* negative offset */
 
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
-	xxx = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, 0);
+	dlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, 0);
 	entry->data = dataStart + entry->info.offset;
+
+	j += ril;
+
+	if (j < h->indexUsed) {
+	    dlen = regionSwab(entry+ril, h->indexUsed-ril, dlen, pe+ril, dataStart, 0);
+	}
     }
 
     h->sorted = 0;
@@ -549,9 +542,9 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 
     /* Sort entries by (region,tag) */
     headerUnsort(h);
-    i = h->sorted;
 
     /* XXX Hack to avoid the headerSort() undoing headerUnsort. */
+    i = h->sorted;
     h->sorted = 1;
     len = headerSizeof(h, HEADER_MAGIC_NO);
     h->sorted = i;
@@ -582,10 +575,11 @@ t = te;
 
 src = (char *)entry->data;
 dlen = (entry->length - rdl + sizeof(*pe));
-if (!h->reloaded) {
-    src += sizeof(*pe);
-    dlen -= REGION_TAG_COUNT;
-}
+
+	    if (!(h->reloaded || entry->info.tag == HEADER_IMAGE)) {
+		src += sizeof(*pe);
+		dlen -= REGION_TAG_COUNT;
+	    }
 
 	    memcpy(pe+1, src,  (rdl - sizeof(*pe)));
 	    memcpy(te, src + rdl - sizeof(*pe), dlen);
@@ -596,7 +590,9 @@ if (!h->reloaded) {
 	    pe->type = htonl(entry->info.type);
 	    pe->count = htonl(entry->info.count);
 
-	    if (h->reloaded) {
+	    if (!(h->reloaded || entry->info.tag == HEADER_IMAGE)) {
+		pe->offset = htonl(te - dataStart - REGION_TAG_COUNT);
+	    } else {
 		int_32 * stei = memcpy(alloca(REGION_TAG_COUNT), te, REGION_TAG_COUNT);
 		stei[0] = pe->tag;
 		stei[1] = pe->type;
@@ -605,13 +601,11 @@ if (!h->reloaded) {
 		memcpy(te, stei, REGION_TAG_COUNT);
 		pe->offset = htonl(te - dataStart);
 		te += REGION_TAG_COUNT;
-	    } else {
-		pe->offset = htonl(te - dataStart - REGION_TAG_COUNT);
 	    }
 
-	    i += (ril-1);	/* YYY */
-	    entry += (ril-1);	/* YYY */
-	    pe += (ril-1);	/* YYY */
+	    i += (ril-1);
+	    entry += (ril-1);
+	    pe += (ril-1);
 	    continue;
 	}
 
@@ -692,9 +686,8 @@ Header headerReload(Header h, int tag)
     nh->region_allocated = 1;
     nh->reloaded = 1;
     if (ENTRY_IS_REGION(nh->index)) {
-	if (tag == HEADER_SIGNATURES || tag == HEADER_IMMUTABLE) {
+	if (tag == HEADER_SIGNATURES || tag == HEADER_IMMUTABLE)
 	    nh->index[0].info.tag = tag;
-	}
     }
     return nh;
 }
@@ -1181,9 +1174,7 @@ void headerFree(Header h)
 	    if (h->region_allocated && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
 		    int_32 * ei = entry->data;
-		    /* XXX HACK: adjust to beginning of header. */
-		    if (entry->info.tag != HEADER_IMAGE)
-			ei -= 2;
+		    ei -= 2; /* XXX HACK: adjust to beginning of header. */
 		    free(ei);
 		}
 	    } else if (!ENTRY_IN_REGION(entry)) {

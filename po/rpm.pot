@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-11-30 11:30-0500\n"
+"POT-Creation-Date: 2000-11-30 19:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2466,7 +2466,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2404 lib/header.c:2421 lib/header.c:2441
+#: lib/header.c:2397 lib/header.c:2414 lib/header.c:2434
 msgid "(not a number)"
 msgstr ""
 
@@ -2499,88 +2499,88 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:250 lib/header.c:890 lib/install.c:380
+#: lib/header.c:250 lib/header.c:885 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1315
+#: lib/header.c:1308
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1757
+#: lib/header.c:1750
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1787
+#: lib/header.c:1780
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1801
+#: lib/header.c:1794
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1813
+#: lib/header.c:1806
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1830
+#: lib/header.c:1823
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1857
+#: lib/header.c:1850
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1875
+#: lib/header.c:1868
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1879
+#: lib/header.c:1872
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1939
+#: lib/header.c:1932
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1948
+#: lib/header.c:1941
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1961 lib/header.c:2002
+#: lib/header.c:1954 lib/header.c:1995
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1971
+#: lib/header.c:1964
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1987
+#: lib/header.c:1980
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2012
+#: lib/header.c:2005
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2183
+#: lib/header.c:2176
 msgid "(unknown type)"
 msgstr ""
 
@@ -2698,7 +2698,7 @@ msgstr ""
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr ""
 
-#: lib/package.c:147
+#: lib/package.c:146
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr ""

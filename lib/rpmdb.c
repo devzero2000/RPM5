@@ -104,7 +104,7 @@ static void dbiTagsInit(void)
 	if (dbiTagToDbix(rpmtag) >= 0)
 	    continue;
 
-	dbiTags = xrealloc(dbiTags, (dbiTagsMax + 1) * sizeof(*dbiTags));
+	dbiTags = xrealloc(dbiTags, (dbiTagsMax + 1) * sizeof(*dbiTags)); /* XXX memory leak */
 	dbiTags[dbiTagsMax++] = rpmtag;
     }
 

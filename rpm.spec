@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.13
+Release: 0.14
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -272,6 +272,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
+- add missing headerFree for legacy signature header.
+- fix: removed packages leaked DIRINDEXES tag data.
+- reload tags added during install when loading header from rpmdb.
+- avoid brp-compress hang with both compressed/uncompressed man pages.
+
 * Tue Nov 21 2000 Jeff Johnson <jbj@redhat.com>
 - add brp-strip-shared script <rodrigob@conectiva.com.br>.
 - better item/task progress bars <rodrigob@conectiva.com.br>.

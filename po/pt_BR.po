@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-11-27 11:28-0500\n"
+msgstr "POT-Creation-Date: 2000-11-30 19:10-0500\n"
 
 # , c-format
 #: build.c:25
@@ -2735,7 +2735,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2410 lib/header.c:2427 lib/header.c:2447
+#: lib/header.c:2397 lib/header.c:2414 lib/header.c:2434
 msgid "(not a number)"
 msgstr ""
 
@@ -2766,94 +2766,94 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:213
+#: lib/header.c:215
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:248 lib/header.c:899 lib/install.c:380
+#: lib/header.c:250 lib/header.c:885 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1321
+#: lib/header.c:1308
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1763
+#: lib/header.c:1750
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1793
+#: lib/header.c:1780
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1807
+#: lib/header.c:1794
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1819
+#: lib/header.c:1806
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1836
+#: lib/header.c:1823
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1863
+#: lib/header.c:1850
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1881
+#: lib/header.c:1868
 #, fuzzy
 msgid "unexpected ]"
 msgstr "fonte de pesquisa não esperado"
 
 #. @-observertrans@
-#: lib/header.c:1885
+#: lib/header.c:1872
 #, fuzzy
 msgid "unexpected }"
 msgstr "fonte de pesquisa não esperado"
 
 #. @-observertrans@
-#: lib/header.c:1945
+#: lib/header.c:1932
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1954
+#: lib/header.c:1941
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1967 lib/header.c:2008
+#: lib/header.c:1954 lib/header.c:1995
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1977
+#: lib/header.c:1964
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1993
+#: lib/header.c:1980
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2018
+#: lib/header.c:2005
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2189
+#: lib/header.c:2176
 msgid "(unknown type)"
 msgstr ""
 
@@ -2976,7 +2976,7 @@ msgstr ""
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr ""
 
-#: lib/package.c:147
+#: lib/package.c:146
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr ""
