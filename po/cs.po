@@ -1,37 +1,29 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 #: ../rpm.c:211 ../rpm.c:289
+#, fuzzy
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-10-08 12:10-0400\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 1998-10-12 12:33-0400\n"
+"PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
+"Language-Team: Czech <pavelm@terminal.cz>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
-"Date: 1998-05-02 21:41:47-0400\n"
-"From: Erik Troan <ewt@lacrosse.redhat.com>\n"
-"Original-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
-"Xgettext-Options: --default-domain=rpm --add-comments --keyword=_ "
-"--keyword=N_\n"
-"Files: /home/ewt/redhat/rpm/rpm.c /home/ewt/redhat/rpm/query.c "
-"/home/ewt/redhat/rpm/install.c /home/ewt/redhat/rpm/verify.c "
-"/home/ewt/redhat/rpm/checksig.c /home/ewt/redhat/rpm/url.c "
-"/home/ewt/redhat/rpm/ftp.c /home/ewt/redhat/rpm/lib/uninstall.c "
-"/home/ewt/redhat/rpm/lib/rpmdb.c /home/ewt/redhat/rpm/lib/signature.c "
-"/home/ewt/redhat/rpm/lib/dbindex.c /home/ewt/redhat/rpm/lib/depends.c "
-"/home/ewt/redhat/rpm/lib/formats.c /home/ewt/redhat/rpm/lib/fs.c "
-"/home/ewt/redhat/rpm/lib/header.c /home/ewt/redhat/rpm/lib/lookup.c "
-"/home/ewt/redhat/rpm/lib/rebuilddb.c /home/ewt/redhat/rpm/lib/messages.c "
-"/home/ewt/redhat/rpm/lib/package.c /home/ewt/redhat/rpm/lib/rpmlead.c "
-"/home/ewt/redhat/rpm/lib/rpmrc.c\n"
 
 #: ../rpm.c:188
 #, c-format
 msgid "rpm: %s\n"
-msgstr ""
+msgstr "rpm: %s\n"
 
 #: ../rpm.c:199
 #, c-format
 msgid "RPM version %s\n"
-msgstr "RPM, verze %s\n"
+msgstr "RPM verze %s\n"
 
 #: ../rpm.c:203
 msgid "Copyright (C) 1998 - Red Hat Software"
@@ -53,7 +45,7 @@ msgstr "       rpm {--version}"
 
 #: ../rpm.c:215
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
-msgstr "       rpm {--initdb} [--dbpath <adresáø>]"
+msgstr "       rpm {--initdb}   [--dbpath <adr>]"
 
 #: ../rpm.c:216
 msgid ""
@@ -64,40 +56,40 @@ msgstr ""
 #: ../rpm.c:217
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
-"                      [--replacepkgs] [--replacefiles] [--root <adresáø>]"
+"                        [--replacepkgs] [--replacefiles] [--root <adr>]"
 
 #: ../rpm.c:218
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
-msgstr "                      [--excludedocs] [--includedocs] [--noscripts]"
+msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
 #: ../rpm.c:219
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                      [--rcfile <soubor>] [--ignorearch] [--dbpath <adresáø>]"
+"                        [--rcfile <soubor>] [--ignorearch] [--dbpath <adr>]"
 
 #: ../rpm.c:220
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                      [--prefix <adresáø>] [--ignoreos] [--nodeps] "
-"[--allfiles]"
+"                        [--prefix <adr>] [--ignoreos] [--nodeps] [--allfiles]"
 
 #: ../rpm.c:221
 msgid ""
 "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
 msgstr ""
-"                      [--ftpproxy <hostitel>] [--ftpport <port>] [--justdb]"
+"                        [--ftpproxy <hostitel>] [--ftpport <port>] [--justdb]"
 
 #: ../rpm.c:222 ../rpm.c:230
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
-msgstr "                      [--noorder] [--relocate starácesta=novácesta]"
+msgstr "                        [--noorder] [--relocate starácesta=novácesta]"
 
 #: ../rpm.c:223
-#, fuzzy
 msgid ""
 "                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"
-msgstr "                      [--badreloc] soubor1.rpm ... souborN.rpm"
+msgstr ""
+"                        [--badreloc] [--notriggers] soubor1.rpm ... "
+"souborN.rpm"
 
 #: ../rpm.c:224
 msgid ""
@@ -107,32 +99,32 @@ msgstr ""
 
 #: ../rpm.c:225
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-msgstr "                      [--oldpackage] [--root <adresáø>] [--noscripts]"
+msgstr "                        [--oldpackage] [--root <adr>] [--noscripts]"
 
 #: ../rpm.c:226
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
-"                      [--excludedocs] [--includedocs] [--rcfile <soubor>]"
+"                        [--excludedocs] [--includedocs] [--rcfile <soubor>]"
 
 #: ../rpm.c:227
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
-"                      [--ignorearch]  [--dbpath <adresáø>] [--prefix "
-"<adresáø>] "
+"                        [--ignorearch]  [--dbpath <adr>] [--prefix <adr>] "
 
 #: ../rpm.c:228
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                      [--ftpproxy <hostitel>] [--ftpport <port>]"
+msgstr "                        [--ftpproxy <hostitel>] [--ftpport <port>]"
 
 #: ../rpm.c:229
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-msgstr "                      [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
+msgstr ""
+"                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
 #: ../rpm.c:231
 msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
-msgstr "                      [--badreloc] soubor1.rpm ... souborN.rpm"
+msgstr "                        [--badreloc] soubor1.rpm ... souborN.rpm"
 
 #: ../rpm.c:232
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
@@ -140,49 +132,42 @@ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
 #: ../rpm.c:233
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr ""
-"                      [--scripts] [--root <adresáø>] [--rcfile <soubor>]"
+msgstr "                        [--scripts] [--root <adr>] [--rcfile <soubor>]"
 
 #: ../rpm.c:234
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
-msgstr "                      [--whatprovides] [--whatrequires] [--requires]"
+msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: ../rpm.c:235
-#, fuzzy
 msgid ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
 msgstr ""
-"                      [--ftpuseport] [--ftpproxy <hostitel>] [--ftpport "
-"<port>]"
+"                        [--triggeredby] [--ftpuseport] [--ftpproxy "
+"<hostitel>]"
 
 #: ../rpm.c:236
-#, fuzzy
 msgid ""
 "                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
 msgstr ""
-"                      [--dbpath <adresáø>] [--nodeps] [--nofiles] "
-"[--noscripts]"
+"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
 
 #: ../rpm.c:237
-#, fuzzy
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-msgstr "                      [--nomd5] [cíle]"
+msgstr "                        [--changelog] [--dbpath <adr>] [cíle]"
 
 #: ../rpm.c:238
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-msgstr ""
-"       rpm {--verify -V -y} [-afpg] [--root <adresáø>] [--rcfile <soubor>]"
+msgstr "       rpm {--verify -V -y} [-afpg] [--root <adr>] [--rcfile <soubor>]"
 
 #: ../rpm.c:239
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
-"                      [--dbpath <adresáø>] [--nodeps] [--nofiles] "
-"[--noscripts]"
+"                        [--dbpath <adr>] [--nodeps] [--nofiles] [--noscripts]"
 
 #: ../rpm.c:240
 msgid "                        [--nomd5] [targets]"
-msgstr "                      [--nomd5] [cíle]"
+msgstr "                        [--nomd5] [cíle]"
 
 #: ../rpm.c:241
 msgid "       rpm {--setperms} [-afpg] [target]"
@@ -195,38 +180,38 @@ msgstr "       rpm {--setugids} [-afpg] [cíl]"
 #: ../rpm.c:243
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
-"       rpm {--erase -e} [--root <adresáø>] [--noscripts] [--rcfile <soubor>]"
+"       rpm {--erase -e} [--root <adr>] [--noscripts] [--rcfile <soubor>]"
 
 #: ../rpm.c:244
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-msgstr "                      [--dbpath <adresáø>] [--nodeps] [--allmatches]"
+msgstr "                        [--dbpath <adr>] [--nodeps] [--allmatches]"
 
 #: ../rpm.c:245
-#, fuzzy
 msgid ""
 "                        [--justdb] [--notriggers] rpackage1 ... packageN"
-msgstr "                      [--justdb] balíèek1 ... balíèekN"
+msgstr ""
+"                        [--justdb] [--notriggers] rbalíèek1 ... balíèekN"
 
 #: ../rpm.c:246
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
-"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
+"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile "
 "<soubor>]"
 
 #: ../rpm.c:247
 msgid ""
 "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 msgstr ""
-"                      [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
+"                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 
 #: ../rpm.c:248
 msgid "                        [--buildarch <arch>] [--rmsource] specfile"
-msgstr "                      [--buildarch <arch>] [--rmsource] souborspec"
+msgstr "                        [--buildarch <arch>] [--rmsource] soubor.spec"
 
 #: ../rpm.c:249
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-msgstr "       rpm {--rmsource} [--rcfile <soubor>] [-v] souborspec"
+msgstr "       rpm {--rmsource} [--rcfile <soubor>] [-v] soubor.spec"
 
 #: ../rpm.c:250
 msgid ""
@@ -256,11 +241,11 @@ msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <soubor>]"
 
 #: ../rpm.c:255
 msgid "                           package1 ... packageN"
-msgstr "                         balíèek1 ... balíèekN"
+msgstr "                           balíèek1 ... balíèekN"
 
 #: ../rpm.c:256
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "       rpm {--rebuilddb} [--rcfile <soubor>] [--dbpath <adresáø>]"
+msgstr "       rpm {--rebuilddb} [--rcfile <soubor>] [--dbpath <adr>]"
 
 #: ../rpm.c:257
 msgid "       rpm {--querytags}"
@@ -272,19 +257,19 @@ msgstr "pou¾ití:"
 
 #: ../rpm.c:293
 msgid "print this message"
-msgstr "tisk této zprávy"
+msgstr "vytisknout tuto zprávu"
 
 #: ../rpm.c:295
 msgid "print the version of rpm being used"
-msgstr "tisk verze rpm, který se právì pou¾ívá"
+msgstr "vytisknout pou¾ívanou verzi rpm"
 
 #: ../rpm.c:296
 msgid "   all modes support the following arguments:"
-msgstr "   v¹echny re¾imy podporují následující argumenty:"
+msgstr "   v¹echny re¾imy podporují tyto argumenty:"
 
 #: ../rpm.c:297
 msgid "      --rcfile <file>     "
-msgstr ""
+msgstr "      --rcfile <soubor>     "
 
 #: ../rpm.c:298
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
@@ -304,52 +289,49 @@ msgstr "dotazovací re¾im"
 
 #: ../rpm.c:305 ../rpm.c:363 ../rpm.c:423 ../rpm.c:451
 msgid "      --root <dir>        "
-msgstr ""
+msgstr "      --root <adr>        "
 
 #: ../rpm.c:306 ../rpm.c:364 ../rpm.c:424 ../rpm.c:452 ../rpm.c:514
 msgid "use <dir> as the top level directory"
-msgstr "pou¾ít <adresáø> jako adresáø vrcholové úrovnì"
+msgstr "pou¾ít <adr> jako adresáø vrcholové úrovnì"
 
 #: ../rpm.c:307 ../rpm.c:361 ../rpm.c:389 ../rpm.c:439 ../rpm.c:511
-#, fuzzy
 msgid "      --dbpath <dir>      "
-msgstr "    -b<etapa> <spec>      "
+msgstr "      --dbpath <adr>      "
 
 #: ../rpm.c:308 ../rpm.c:362 ../rpm.c:390 ../rpm.c:440 ../rpm.c:512
 msgid "use <dir> as the directory for the database"
-msgstr "pou¾ít <adresáø> jako adresáø pro databázi"
+msgstr "pou¾ít <adr> jako adresáø pro databázi"
 
 #: ../rpm.c:309
 msgid "      --queryformat <qfmt>"
-msgstr ""
+msgstr "      --queryformat <qfmt>"
 
 #: ../rpm.c:310
-#, fuzzy
 msgid "use <qfmt> as the header format (implies -i)"
-msgstr "pou¾ít s jako hlavièkový formát (implikuje -i)"
+msgstr "pou¾ít <qfmt> jako hlavièkový formát (implikuje -i)"
 
 #: ../rpm.c:311
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
-"   instalovat, aktualizovat a dotazovat (s -p) k umo¾nìní pou¾ití prvkù URL"
+"   instalace, aktualizace a dotazování (s -p) umo¾òují pou¾ití URL-adres ftp"
 
 #: ../rpm.c:312
-#, fuzzy
 msgid "   of file names as well as the following options:"
-msgstr "   ftp místo názvù souborù i následujících mo¾ností:\n"
+msgstr "   místo názvù souborù vèetnì následujících voleb:"
 
 #: ../rpm.c:313
 msgid "      --ftpproxy <host>   "
-msgstr ""
+msgstr "      --ftpproxy <hostitel> "
 
 #: ../rpm.c:314
 msgid "hostname or IP of ftp proxy"
-msgstr "název hostitele èi adresa IP ftp-proxy"
+msgstr "název hostitele èi IP pro ftp-proxy"
 
 #: ../rpm.c:315
 msgid "      --ftpport <port>    "
-msgstr ""
+msgstr "      --ftpport <port>    "
 
 #: ../rpm.c:316
 msgid "port number of ftp server (or proxy)"
@@ -357,7 +339,7 @@ msgstr "èíslo portu serveru ftp (nebo proxy)"
 
 #: ../rpm.c:317
 msgid "      Package specification options:"
-msgstr "      Mo¾nosti specifikace balíèku:"
+msgstr "      Volby pro specifikaci balíèku:"
 
 #: ../rpm.c:319
 msgid "query all packages"
@@ -365,53 +347,47 @@ msgstr "dotazovat v¹echny balíèky"
 
 #: ../rpm.c:320
 msgid "        -f <file>+        "
-msgstr ""
+msgstr "        -f <soubor>+      "
 
 #: ../rpm.c:321
 msgid "query package owning <file>"
-msgstr "dotazovat balíèek vlastnící <soubor>"
+msgstr "dotazy na balíèek vlastnící <soubor>"
 
 #: ../rpm.c:322
 msgid "        -p <packagefile>+ "
-msgstr ""
+msgstr "        -p <souborbalíku>+  "
 
 #: ../rpm.c:323
 msgid "query (uninstalled) package <packagefile>"
-msgstr "dotazovat (nenainstalovaný) balíèek <souborbalíèku>"
+msgstr "dotazovat (nenainstalovaný) balíèek <souborbalíku>"
 
 #: ../rpm.c:324
-#, fuzzy
 msgid "        --triggeredby <pkg>"
-msgstr "        --requires"
+msgstr "        --triggeredby <balík>"
 
 #: ../rpm.c:325
-#, fuzzy
 msgid "query packages triggered by <pkg>"
-msgstr "dotazovat balíèek vlastnící <soubor>"
+msgstr "dotazy na balíèky aktivované <balíkem>"
 
 #: ../rpm.c:326
-#, fuzzy
 msgid "        --whatprovides <cap>"
-msgstr "        --requires"
+msgstr "        --whatprovides <sch>"
 
 #: ../rpm.c:327
-#, fuzzy
 msgid "query packages which provide <cap> capability"
-msgstr "dotazovat balíèky poskytující schopnost <i>"
+msgstr "dotazovat balíèky poskytující schopnost <sch>"
 
 #: ../rpm.c:328
-#, fuzzy
 msgid "        --whatrequires <cap>"
-msgstr "        --requires"
+msgstr "        --whatrequires <sch>"
 
 #: ../rpm.c:329
-#, fuzzy
 msgid "query packages which require <cap> capability"
-msgstr "dotazovat balíèky vy¾adující schopnost <i>"
+msgstr "dotazovat balíèky vy¾adující schopnost <sch>"
 
 #: ../rpm.c:330
 msgid "      Information selection options:"
-msgstr "      Mo¾nosti vybírání informací:"
+msgstr "      Volby pro vybìr informací:"
 
 #: ../rpm.c:332
 msgid "display package information"
@@ -419,7 +395,7 @@ msgstr "zobrazit informace o balíèku"
 
 #: ../rpm.c:334
 msgid "display the package's change log"
-msgstr "zobrazit protokol zmìn balíèku"
+msgstr "zobrazit protokol o zmìnách balíèku"
 
 #: ../rpm.c:336
 msgid "display package file list"
@@ -463,12 +439,11 @@ msgstr "vytisknout rùzné [de]instalaèní skripty"
 
 #: ../rpm.c:353
 msgid "show the trigger scripts contained in the package"
-msgstr ""
+msgstr "zobrazit aktivaèní skripty obsa¾ené v balíèku"
 
 #: ../rpm.c:357
-#, fuzzy
 msgid "    --pipe <cmd>          "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    --pipe <pøíkaz>       "
 
 #: ../rpm.c:358
 msgid "send stdout to <cmd>"
@@ -479,8 +454,8 @@ msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr ""
-"ovìøit instalaci balíèku pou¾itím stejných mo¾ností specifikace balíèku, "
-"jako -q"
+"ovìøit instalaci balíèku pou¾itím stejných voleb pro specifikaci balíèku, "
+"jako pro -q"
 
 #: ../rpm.c:366 ../rpm.c:410 ../rpm.c:444
 msgid "do not verify package dependencies"
@@ -488,7 +463,7 @@ msgstr "neovìøovat závislosti balíèkù"
 
 #: ../rpm.c:368
 msgid "do not verify file md5 checksums"
-msgstr "neovìøovat kontrolní souèty md5 u souborù"
+msgstr "neovìøovat kontrolní souèty souborù md5"
 
 #: ../rpm.c:370
 msgid "do not verify file attributes"
@@ -500,7 +475,7 @@ msgid ""
 "package specification options as -q"
 msgstr ""
 "nastavit oprávnìní souborù dle údajù v databázi balíèkù pomocí stejných "
-"mo¾ností specifikace balíèku, jako -q"
+"voleb pro specifikaci balíèku, jako pro -q"
 
 #: ../rpm.c:376
 msgid ""
@@ -508,26 +483,23 @@ msgid ""
 "package specification options as -q"
 msgstr ""
 "nastavit vlastníka a skupinu souborù dle údajù v databázi balíèkù pomocí "
-"stejných mo¾ností specifikace balíèku, jako -q"
+"stejných voleb pro specifikaci balíèku, jako pro -q"
 
 #: ../rpm.c:380
-#, fuzzy
 msgid "    --install <packagefile>"
-msgstr "instalovat balíèek"
+msgstr "    --install <souborbalíku>"
 
 #: ../rpm.c:381
-#, fuzzy
 msgid "    -i <packagefile>      "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    -i <souborbalíku>     "
 
 #: ../rpm.c:382
 msgid "install package"
-msgstr "instalovat balíèek"
+msgstr "nainstalovat balíèek"
 
 #: ../rpm.c:383
-#, fuzzy
 msgid "      --relocate <oldpath>=<newpath>"
-msgstr "pøemístit soubory ze <starécesty> na <novoucestu>"
+msgstr "      --relocate <starácesta>=<novácesta>"
 
 #: ../rpm.c:384
 msgid "relocate files from <oldpath> to <newpath>"
@@ -539,11 +511,11 @@ msgstr "pøemístit soubory, i kdy¾ to balíèek nedovoluje"
 
 #: ../rpm.c:387
 msgid "      --prefix <dir>      "
-msgstr ""
+msgstr "      --prefix <adr>      "
 
 #: ../rpm.c:388
 msgid "relocate the package to <dir>, if relocatable"
-msgstr "pøemístit soubory do <adresáøe>, jsou-li pøemístitelné"
+msgstr "pøemístit soubory do <adr>, jsou-li pøemístitelné"
 
 #: ../rpm.c:392
 msgid "do not install documentation"
@@ -555,12 +527,12 @@ msgstr "zkratka pro --replacepkgs --replacefiles"
 
 #: ../rpm.c:397
 msgid "print hash marks as package installs (good with -v)"
-msgstr "tisknout dvojité køí¾ky dle instalace balíèku (dobré s -v)"
+msgstr "bìhem instalace balíèku zobrazit dvojité køí¾ky (dobré s -v)"
 
 #: ../rpm.c:399
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
-"instalovat v¹echny soubory - i konfigurace, které by se jinak mohly vynechat"
+"nainstalovat v¹echny soubory; i konfigurace, které by se jinak mohly vynechat"
 
 #: ../rpm.c:402
 msgid "don't verify package architecture"
@@ -572,7 +544,7 @@ msgstr "neovìøovat operaèní systém balíèku"
 
 #: ../rpm.c:406
 msgid "install documentation"
-msgstr "instalovat dokumentaci"
+msgstr "nainstalovat dokumentaci"
 
 #: ../rpm.c:408 ../rpm.c:442
 msgid "update the database, but do not modify the filesystem"
@@ -580,19 +552,19 @@ msgstr "inovovat databázi, ale neupravovat souborový systém"
 
 #: ../rpm.c:412 ../rpm.c:446
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr "nemìòte poøadí instalace balíèkù pro vyøe¹ení závislostí"
+msgstr "pro vyøe¹ení závislostí nemìnit poøadí instalace balíèkù"
 
 #: ../rpm.c:414
 msgid "don't execute any installation scripts"
-msgstr "nespou¹tìjte ¾ádné instalaèní skripty"
+msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
 #: ../rpm.c:416 ../rpm.c:450
 msgid "don't execute any scripts triggered by this package"
-msgstr ""
+msgstr "nespou¹tìt ¾ádné skripty aktivované tímto balíèkem"
 
 #: ../rpm.c:418
 msgid "print percentages as package installs"
-msgstr "tisknout procenta dle instalace balíèku"
+msgstr "bìhem instalace balíèku zobrazit procenta"
 
 #: ../rpm.c:420
 msgid "install even if the package replaces installed files"
@@ -604,16 +576,15 @@ msgstr "pøeinstalovat, i kdy¾ je ji¾ balíèek pøítomen"
 
 #: ../rpm.c:426
 msgid "don't install, but tell if it would work or not"
-msgstr "neinstalovat ale sdìlit, zda-li by to fungovalo èi nikoliv"
+msgstr "neinstalovat ale sdìlit, zda-li by to fungovalo èi nikoli"
 
 #: ../rpm.c:428
 msgid "    --upgrade <packagefile>"
-msgstr ""
+msgstr "    --upgrade <souborbalíku>"
 
 #: ../rpm.c:429
-#, fuzzy
 msgid "    -U <packagefile>      "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    -U <souborbalíku>      "
 
 #: ../rpm.c:430
 msgid "upgrade package (same options as --install, plus)"
@@ -624,12 +595,12 @@ msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
-"aktualizovat na star¹í verzi balíèku (--force to dìlá pøi aktualizacích "
+"aktualizovat na starou verzi balíèku (--force to dìlá pøi aktualizacích "
 "automaticky)"
 
 #: ../rpm.c:434
 msgid "    --erase <package>"
-msgstr ""
+msgstr "    --erase <balíèek>"
 
 #: ../rpm.c:436
 msgid "erase (uninstall) package"
@@ -640,21 +611,20 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"odstranit v¹echny balíèky odpovídající <balíèku> (normálnì se generuje "
-"chyba, specifikuje-li <balíèek> více balíèkù)"
+"odstranit v¹echny balíèky odpovídající <balíèku> (obvykle se generuje chyba, "
+"specifikuje-li <balíèek> více balíèkù)"
 
 #: ../rpm.c:448
 msgid "do not execute any package specific scripts"
-msgstr "nespou¹tìt ¾ádné skripty specifické balíèkùm"
+msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
 #: ../rpm.c:454
 msgid "    -b<stage> <spec>      "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    -b<etapa> <.spec>     "
 
 #: ../rpm.c:455
-#, fuzzy
 msgid "    -t<stage> <tarball>   "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    -t<etapa> <klubkotar> "
 
 #: ../rpm.c:456
 msgid "build package, where <stage> is one of:"
@@ -667,7 +637,7 @@ msgstr "pøíprava (rozbalí zdroje a aplikuje záplaty)"
 #: ../rpm.c:460
 #, c-format
 msgid "list check (do some cursory checks on %files)"
-msgstr "kontrola seznamù (provede urèité zbì¾né kontroly %souborù)"
+msgstr "kontrola seznamù (provede zbì¾né kontroly %files)"
 
 #: ../rpm.c:462
 msgid "compile (prep and compile)"
@@ -683,11 +653,11 @@ msgstr "binární balíèek (pøíprava, kompilace, instalace, zabalení)"
 
 #: ../rpm.c:468
 msgid "bin/src package (prep, compile, install, package)"
-msgstr "bin/src balíèek (pøíprava, kompilace, instalace, zabalení)"
+msgstr "balíèek bin/src (pøíprava, kompilace, instalace, zabalení)"
 
 #: ../rpm.c:470
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "pøejít pøímo k urèené etapì (pouze pro c,i)"
+msgstr "pøeskoèit pøímo na urèenou etapu (pouze pro c,i)"
 
 #: ../rpm.c:472
 msgid "remove build tree when done"
@@ -695,7 +665,7 @@ msgstr "po dokonèení odstranit sestavovací strom"
 
 #: ../rpm.c:474
 msgid "remove sources and spec file when done"
-msgstr "po dokonèení odstranit zdroje a soubor specifikací"
+msgstr "po dokonèení odstranit zdroje a soubor .spec"
 
 #: ../rpm.c:476
 msgid "generate PGP signature"
@@ -703,24 +673,23 @@ msgstr "generovat podpis PGP"
 
 #: ../rpm.c:477
 msgid "      --buildroot <dir>   "
-msgstr ""
+msgstr "      --buildroot <adr>   "
 
 #: ../rpm.c:478
 msgid "use <dir> as the build root"
-msgstr "pou¾ít <adresáø> jako sestavovací koøen"
+msgstr "pou¾ít <adr> jako sestavovací koøen"
 
 #: ../rpm.c:479
 msgid "      --buildarch <arch>  "
-msgstr ""
+msgstr "      --buildarch <arch>  "
 
 #: ../rpm.c:480
 msgid "build the packages for architecture <arch>"
 msgstr "sestavit balíèky pro architekturu <arch>"
 
 #: ../rpm.c:481
-#, fuzzy
 msgid "      --buildos <os>      "
-msgstr "    -b<etapa> <spec>      "
+msgstr "      --buildos <os>      "
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
@@ -732,16 +701,15 @@ msgstr "nespou¹tìt ¾ádné etapy"
 
 #: ../rpm.c:485
 msgid "      --timecheck <secs>  "
-msgstr ""
+msgstr "      --timecheck <s>     "
 
 #: ../rpm.c:486
-#, fuzzy
 msgid "set the time check to <secs> seconds (0 disables)"
-msgstr "nastavit èasovou kontrolu na S sekund (0 ji deaktivuje)"
+msgstr "nastavit èasovou kontrolu na <s> sekund (0 ji deaktivuje)"
 
 #: ../rpm.c:488
 msgid "    --rebuild <src_pkg>   "
-msgstr ""
+msgstr "    --rebuild <zdrojbalík>"
 
 #: ../rpm.c:489
 msgid ""
@@ -749,47 +717,43 @@ msgid ""
 "patches, and icons."
 msgstr ""
 "instalovat zdrojový balíèek, sestavit binární balíèek a odstranit soubor "
-"specifikací, zdroje, záplaty i ikony."
+".spec, zdroje, záplaty i ikony."
 
 #: ../rpm.c:490
-#, fuzzy
 msgid "    --rmsource <spec>     "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    --rmsource <.spec>    "
 
 #: ../rpm.c:491
 msgid "remove sources and spec file"
-msgstr "odstranit zdroje a soubor specifikací"
+msgstr "odstranit zdroje a soubor .spec"
 
 #: ../rpm.c:492
 msgid "    --recompile <src_pkg> "
-msgstr ""
+msgstr "    --recompile <zdrojbal>"
 
 #: ../rpm.c:493
 msgid "like --rebuild, but don't build any package"
-msgstr "jako --rebuild, ale nesestavovat ¾ádný balíèek"
+msgstr "jako --rebuild, ale nesestavovat ¾ádné balíèky"
 
 #: ../rpm.c:494
-#, fuzzy
 msgid "    --resign <pkg>+       "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    --resign <balík>+     "
 
 #: ../rpm.c:495
 msgid "sign a package (discard current signature)"
 msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
 #: ../rpm.c:496
-#, fuzzy
 msgid "    --addsign <pkg>+      "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    --addsign <balík>+    "
 
 #: ../rpm.c:497
 msgid "add a signature to a package"
 msgstr "pøidat k balíèku podpis"
 
 #: ../rpm.c:499
-#, fuzzy
 msgid "    --checksig <pkg>+     "
-msgstr "    -b<etapa> <spec>      "
+msgstr "    --checksig <balík>+   "
 
 #: ../rpm.c:500
 msgid "verify package signature"
@@ -797,11 +761,11 @@ msgstr "ovìøit podpis balíèku"
 
 #: ../rpm.c:502
 msgid "skip any PGP signatures"
-msgstr "vynechat libovolné podpisy PGP"
+msgstr "vynechat pøípadné podpisy PGP"
 
 #: ../rpm.c:504
 msgid "skip any MD5 signatures"
-msgstr "vynechat libovolné podpisy MD5"
+msgstr "vynechat pøípadné podpisy MD5"
 
 #: ../rpm.c:506
 msgid "list the tags that can be used in a query format"
@@ -809,11 +773,11 @@ msgstr "uvést pøíznaky, které lze pou¾ít v dotazovacím formátu"
 
 #: ../rpm.c:508
 msgid "make sure a valid database exists"
-msgstr "zajistìte, aby existovala platná databáze"
+msgstr "zajistit, aby existovala platná databáze"
 
 #: ../rpm.c:510
 msgid "rebuild database from existing database"
-msgstr "znovu sestavit databázi z existující databáze"
+msgstr "pøestavit databázi z existující databáze"
 
 #: ../rpm.c:637 ../rpm.c:643 ../rpm.c:650 ../rpm.c:656 ../rpm.c:665
 #: ../rpm.c:672 ../rpm.c:718 ../rpm.c:724 ../rpm.c:813 ../rpm.c:820
@@ -824,7 +788,7 @@ msgstr "specifikovat lze jen jeden hlavní re¾im"
 
 #: ../rpm.c:658
 msgid "-u and --uninstall are deprecated and no longer work.\n"
-msgstr "-u a --uninstall se neschvalují a ji¾ dále nefungují.\n"
+msgstr "-u a --uninstall se neschvalují a ji¾ je nelze pou¾ít.\n"
 
 #: ../rpm.c:660
 msgid "Use -e or --erase instead.\n"
@@ -833,17 +797,18 @@ msgstr "Místo nich pou¾ijte -e nebo --erase.\n"
 #: ../rpm.c:676
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
-"--build (-b) vy¾aduje jedno z písmen a,b,i,c,p,l jako výhradní argument"
+"--build (-b) vy¾aduje jednu z voleb a,b,i,c,p,l jako svùj výhradní argument"
 
 #: ../rpm.c:680
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
-"--tarbuild (-t) vy¾aduje jedno z písmen a,b,i,c,p,l jako výhradní argument"
+"--tarbuild (-t) vy¾aduje jednu z voleb a,b,i,c,p,l jako svùj výhradní "
+"argument"
 
 #: ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770 ../rpm.c:790
 #: ../rpm.c:798 ../rpm.c:806
 msgid "one type of query/verify may be performed at a time"
-msgstr "v daném okam¾iku lze provést jeden typ dotazu nebo ovìøení"
+msgstr "v daném okam¾iku lze provést jeden typ dotazu èi ovìøení"
 
 #: ../rpm.c:856
 msgid "arguments to --dbpath must begin with a /"
@@ -867,11 +832,11 @@ msgstr "pøemístìní musejí mít za znakem = znak /"
 
 #: ../rpm.c:900
 msgid "Internal error in argument processing :-(\n"
-msgstr ""
+msgstr "Interní chyba pøi zpracování argumentù :-(\n"
 
 #: ../rpm.c:941
 msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath zadána pro operaci, která nepou¾ívá databázi"
+msgstr "--dbpath zadána pro operaci, která databázi nepou¾ívá"
 
 #: ../rpm.c:946
 msgid "--timecheck may only be used during package builds"
@@ -879,11 +844,11 @@ msgstr "--timecheck lze pou¾ít jen pøi sestavování balíèkù"
 
 #: ../rpm.c:949 ../rpm.c:952
 msgid "unexpected query specifiers"
-msgstr "neoèekávané specifikátory dotazu"
+msgstr "neèekané specifikátory dotazu"
 
 #: ../rpm.c:956
 msgid "unexpected query source"
-msgstr "neoèekávaný zdroj dotazu"
+msgstr "neèekaný zdroj dotazu"
 
 #: ../rpm.c:959
 msgid "only installation and upgrading may be forced"
@@ -966,12 +931,11 @@ msgstr ""
 "balíèkù"
 
 #: ../rpm.c:1030
-#, fuzzy
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--nodeps se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
+"--notriggers se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
 "balíèkù"
 
 #: ../rpm.c:1035
@@ -1019,9 +983,8 @@ msgid "--short-circuit may only be used during package building"
 msgstr "--short-circuit lze pou¾ít jen pøi sestavování balíèkù"
 
 #: ../rpm.c:1067
-#, fuzzy
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
-msgstr "--short-circuit lze pou¾ít pouze s -bc, -bi, -tc nebo -ti"
+msgstr "--short-circuit lze pou¾ít pouze s -bc, -bi, -bs, -tc, -ti nebo -ts"
 
 #: ../rpm.c:1072
 msgid "--oldpackage may only be used during upgrades"
@@ -1053,7 +1016,7 @@ msgstr ""
 
 #: ../rpm.c:1106
 msgid "Pass phrase check failed\n"
-msgstr "Nelze zkontrolovat heslovou frázi\n"
+msgstr "Chybná heslová fráze\n"
 
 #: ../rpm.c:1109
 msgid "Pass phrase is good.\n"
@@ -1064,13 +1027,12 @@ msgid "--sign may only be used during package building"
 msgstr "--sign lze pou¾ít jen pøi sestavování balíèkù"
 
 #: ../rpm.c:1136
-#, fuzzy
 msgid "exec failed\n"
-msgstr "%s: chybný Open\n"
+msgstr "nelze spustit\n"
 
 #: ../rpm.c:1155
 msgid "unexpected arguments to --querytags "
-msgstr "neoèekávané argumenty pro --querytags "
+msgstr "neèekané argumenty pro --querytags "
 
 #: ../rpm.c:1166
 msgid "no packages given for signature check"
@@ -1086,7 +1048,7 @@ msgstr "k opìtnému sestavení nezadány ¾ádné soubory balíèkù"
 
 #: ../rpm.c:1245
 msgid "no spec files given for build"
-msgstr "pro sestavení nezadány ¾ádné soubory specifikací"
+msgstr "pro sestavení nezadány ¾ádné soubory .spec"
 
 #: ../rpm.c:1247
 msgid "no tar files given for build"
@@ -1119,42 +1081,41 @@ msgstr "chyba v formátu: %s\n"
 
 #: ../query.c:85
 msgid "(contains no files)"
-msgstr "(neobsahuje ¾ádné soubory)"
+msgstr "(neobsahuje soubory)"
 
 #: ../query.c:138
 msgid "normal        "
-msgstr ""
+msgstr "normální      "
 
 #: ../query.c:140
 msgid "replaced      "
-msgstr ""
+msgstr "nahrazen      "
 
 #: ../query.c:142
 msgid "net shared    "
-msgstr ""
+msgstr "sdílen v síti "
 
 #: ../query.c:144
-#, fuzzy
 msgid "not installed "
-msgstr "balíèek %s není nainstalován\n"
+msgstr "neinstalován  "
 
 #: ../query.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "(unknown %3d) "
-msgstr "(neznámý typ)"
+msgstr "(neznámý %3d) "
 
 #: ../query.c:150
 msgid "(no state)    "
-msgstr ""
+msgstr "(chybí stav)  "
 
 #: ../query.c:166 ../query.c:196
 msgid "package has neither file owner or id lists"
-msgstr ""
+msgstr "balíèek nemá vlastníka souboru ani id-seznamy"
 
 #: ../query.c:341
 #, c-format
 msgid "querying record number %d\n"
-msgstr ""
+msgstr "probíhá dotaz na záznam èíslo %d\n"
 
 #: ../query.c:346 ../verify.c:142
 msgid "error: could not read database record\n"
@@ -1167,17 +1128,17 @@ msgstr "nelze otevøít %s: %s\n"
 
 #: ../query.c:405
 msgid "old format source packages cannot be queried\n"
-msgstr "zdrojové balíèky ve starém formátu nelze dotazovat\n"
+msgstr "na zdrojové balíèky starého formátu se nelze dotazovat\n"
 
 #: ../query.c:414
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
-msgstr "nezdá se, ¾e by %s byl balíèek RPM\n"
+msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
 
 #: ../query.c:418
 #, c-format
 msgid "query of %s failed\n"
-msgstr "nelze se dotazovat na %s\n"
+msgstr "dotaz na %s se nezdaøil\n"
 
 #: ../query.c:431 ../verify.c:182
 msgid "could not read database record!\n"
@@ -1196,7 +1157,7 @@ msgstr "¾ádný balíèek neposkytuje %s\n"
 #: ../query.c:462
 #, c-format
 msgid "no package triggers %s\n"
-msgstr "¾ádný balíèek neuvolní %s\n"
+msgstr "¾ádný balíèek neaktivuje %s\n"
 
 #: ../query.c:472
 #, c-format
@@ -1205,12 +1166,12 @@ msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
 #: ../query.c:490 ../query.c:496
 msgid "maximum path length exceeded\n"
-msgstr ""
+msgstr "pøekroèena maximální délka cesty\n"
 
 #: ../query.c:508
-#, fuzzy, c-format
+#, c-format
 msgid "file %s: %s\n"
-msgstr "nelze otevøít %s: %s"
+msgstr "soubor %s: %s\n"
 
 #: ../query.c:511 ../verify.c:242
 #, c-format
@@ -1250,11 +1211,11 @@ msgstr "chyba: nelze otevøít soubor %s\n"
 #: ../install.c:96 ../install.c:418
 #, c-format
 msgid "Installing %s\n"
-msgstr "Instaluje se %s\n"
+msgstr "Probíhá instalace %s\n"
 
 #: ../install.c:103
 msgid "stopping source install as we're just testing\n"
-msgstr ""
+msgstr "probíhá zastavení zdrojové instalace, nebo» jde jen o testování\n"
 
 #: ../install.c:114 ../install.c:208
 #, c-format
@@ -1267,53 +1228,51 @@ msgid "error: %s cannot be installed\n"
 msgstr "chyba: %s nelze nainstalovat\n"
 
 #: ../install.c:152
-#, fuzzy
 msgid "counting packages to install\n"
-msgstr "pro instalaci nezadány ¾ádné balíèky"
+msgstr "probíhá poèítání balíèkù pro instalaci\n"
 
 #: ../install.c:156
-#, fuzzy, c-format
+#, c-format
 msgid "found %d packages\n"
-msgstr "dotazovat v¹echny balíèky"
+msgstr "nalezeno %d balíèkù\n"
 
 #: ../install.c:162
-#, fuzzy
 msgid "looking for packages to download\n"
-msgstr "chyba pøi hledání balíèku %s\n"
+msgstr "probíhá hledání balíèkù pro sta¾ení\n"
 
 #: ../install.c:166
 #, c-format
 msgid "Retrieving %s\n"
-msgstr "Získává se %s\n"
+msgstr "Probíhá naèítání %s\n"
 
 #: ../install.c:173
 #, c-format
 msgid "getting %s as %s\n"
-msgstr ""
+msgstr "Probíhá získávání %s jako %s\n"
 
 #: ../install.c:177
 #, c-format
 msgid "error: skipping %s - transfer failed - %s\n"
-msgstr "chyba: vynechává se %s - chybný pøenos - %s\n"
+msgstr "chyba: vynechává se %s - pøenos neúspì¹ný - %s\n"
 
 #: ../install.c:189
 #, c-format
 msgid "retrieved %d packages\n"
-msgstr ""
+msgstr "získalo se %d balíèkù\n"
 
 #: ../install.c:191
 msgid "finding source and binary packages\n"
-msgstr ""
+msgstr "probíhá hledání zdrojových a binárních balíèkù\n"
 
 #: ../install.c:227
-#, fuzzy, c-format
+#, c-format
 msgid "found %d source and %d binary packages\n"
-msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
+msgstr "nalezeno %d zdrojových a %d binárních balíèkù\n"
 
 #: ../install.c:231
 #, c-format
 msgid "opening database mode: 0%o\n"
-msgstr ""
+msgstr "probíhá otevírání databázového re¾imu: 0%o\n"
 
 #: ../install.c:233 ../install.c:322
 #, c-format
@@ -1325,14 +1284,12 @@ msgid "failed dependencies:\n"
 msgstr "chybné závislosti:\n"
 
 #: ../install.c:275
-#, fuzzy
 msgid "installing binary packages\n"
-msgstr "instalovat balíèek"
+msgstr "probíhá instalace binárních balíèkù\n"
 
 #: ../install.c:309
-#, fuzzy
 msgid "counting packages to uninstall\n"
-msgstr "pro deinstalaci nezadány ¾ádné balíèky"
+msgstr "probíhá poèítání balíèkù pro deinstalaci\n"
 
 #: ../install.c:335
 #, c-format
@@ -1345,18 +1302,18 @@ msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" specifikuje více balíèkù\n"
 
 #: ../install.c:365
-#, fuzzy, c-format
+#, c-format
 msgid "found %d packages to uninstall\n"
-msgstr "pro deinstalaci nezadány ¾ádné balíèky"
+msgstr "nalezeno %d balíèkù pro deinstalaci\n"
 
 #: ../install.c:380
 msgid "removing these packages would break dependencies:\n"
-msgstr "odstranìní tìchto balíèkù by naru¹ilo závislosti:\n"
+msgstr "odstranìní tìchto balíèkù by poru¹ilo závislosti:\n"
 
 #: ../install.c:391
 #, c-format
 msgid "uninstalling record number %d\n"
-msgstr ""
+msgstr "probíhá deinstalace záznamu èíslo %d\n"
 
 #: ../install.c:413
 #, c-format
@@ -1374,9 +1331,9 @@ msgid " conflicts with %s-%s-%s\n"
 msgstr " koliduje s %s-%s-%s\n"
 
 #: ../verify.c:39
-#, fuzzy, c-format
+#, c-format
 msgid "missing    %s\n"
-msgstr "po % chybí {"
+msgstr "chybí      %s\n"
 
 #: ../verify.c:95
 #, c-format
@@ -1386,22 +1343,22 @@ msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 #: ../verify.c:137
 #, c-format
 msgid "verifying record number %d\n"
-msgstr ""
+msgstr "probíhá ovìøování záznamu èíslo %d\n"
 
 #: ../verify.c:219
 #, c-format
 msgid "%s is not an RPM\n"
-msgstr ""
+msgstr "%s není typu RPM\n"
 
 #: ../checksig.c:31 ../checksig.c:162
 #, c-format
 msgid "%s: Open failed\n"
-msgstr "%s: chybný Open\n"
+msgstr "%s: Chybné otevøení\n"
 
 #: ../checksig.c:35 ../checksig.c:167
 #, c-format
 msgid "%s: readLead failed\n"
-msgstr "%s: chybný readLead\n"
+msgstr "%s: Chybné readLead\n"
 
 #: ../checksig.c:39
 #, c-format
@@ -1416,7 +1373,7 @@ msgstr "%s: RPM v2.0 nelze podepsat znovu\n"
 #: ../checksig.c:47 ../checksig.c:177
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
-msgstr "%s: chybný rpmReadSignature\n"
+msgstr "%s: Chybné rpmReadSignature\n"
 
 #: ../checksig.c:60 ../checksig.c:191
 msgid "Couldn't read the header/archive"
@@ -1427,9 +1384,9 @@ msgid "Couldn't write header/archive to temp file"
 msgstr "Nelze zapsat hlavièku nebo archiv do doèasného souboru"
 
 #: ../build/pack.c:266 ../checksig.c:92
-#, fuzzy, c-format
+#, c-format
 msgid "Generating signature: %d\n"
-msgstr "generovat podpis PGP"
+msgstr "Probíhá generování podpisu: %d\n"
 
 #: ../checksig.c:115
 msgid "Couldn't read sigtarget"
@@ -1456,15 +1413,15 @@ msgstr "Nelze zapsat %s"
 
 #: ../checksig.c:289
 msgid "NOT OK"
-msgstr ""
+msgstr "NENÍ TO OK"
 
 #: ../checksig.c:290 ../checksig.c:297
 msgid " (MISSING KEYS)"
-msgstr " (CHYBÌJÍ KLÁVESY)"
+msgstr " (CHYBÍ KLÍÈE) "
 
 #: ../checksig.c:296
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: ../url.c:59
 #, c-format
@@ -1474,12 +1431,12 @@ msgstr "Heslo pro %s@%s: "
 #: ../url.c:125 ../url.c:168 ../url.c:194
 #, c-format
 msgid "getting %s via anonymous ftp\n"
-msgstr ""
+msgstr "probíhá získávání %s pomocí anonymního ftp\n"
 
 #: ../url.c:132
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
-msgstr ""
+msgstr "probíhá pøihla¹ování na %s jako %s, h. %s\n"
 
 #: ../url.c:143
 msgid "error: ftpport must be a number\n"
@@ -1488,11 +1445,11 @@ msgstr "chyba: ftpport musí být èíslo\n"
 #: ../url.c:201
 #, c-format
 msgid "failed to create %s\n"
-msgstr "nelze vytvoøit %s\n"
+msgstr "%s nelze vytvoøit\n"
 
 #: ../ftp.c:445
 msgid "Bad FTP server response"
-msgstr "Chybná odezva FTP-serveru"
+msgstr "Chybná odezva serveru FTP"
 
 #: ../ftp.c:448
 msgid "FTP IO error"
@@ -1500,27 +1457,27 @@ msgstr "V/V chyba FTP"
 
 #: ../ftp.c:451
 msgid "FTP server timeout"
-msgstr "Promlka FTP-serveru"
+msgstr "Promlka serveru FTP"
 
 #: ../ftp.c:454
 msgid "Unable to lookup FTP server host address"
-msgstr "Nelze vyhledat adresu hostitelského FTP-serveru"
+msgstr "Nelze vyhledat adresu hostitelského serveru FTP"
 
 #: ../ftp.c:457
 msgid "Unable to lookup FTP server host name"
-msgstr "Nelze vyhledat název hostitelského FTP-serveru"
+msgstr "Nelze vyhledat název hostitelského serveru FTP"
 
 #: ../ftp.c:460
 msgid "Failed to connect to FTP server"
-msgstr "Nelze se pøipojit k FTP-serveru"
+msgstr "K serveru FTP se nelze pøipojit"
 
 #: ../ftp.c:463
 msgid "Failed to establish data connection to FTP server"
-msgstr "Nelze navázat datové pøipojení k FTP-serveru"
+msgstr "Se serverem FTP nelze navázat datové spojení"
 
 #: ../ftp.c:466
 msgid "IO error to local file"
-msgstr "V/V chyba místního souboru"
+msgstr "V/V chyba na místní soubor"
 
 #: ../ftp.c:469
 msgid "Error setting remote server to passive mode"
@@ -1548,12 +1505,12 @@ msgstr "Nelze èíst %s: %s."
 #: ../build.c:87
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %s\n"
-msgstr "Nelze èíst %s: %s."
+msgstr "nelze odstranit %s: %s\n"
 
 #: ../build.c:119
-#, c-format
+#, fuzzy, c-format
 msgid "File is not a regular file: %s\n"
-msgstr ""
+msgstr "soubor není regulérní -- kontrola velikosti se vynechává\n"
 
 #: ../build.c:124
 #, fuzzy, c-format
@@ -1573,7 +1530,7 @@ msgstr "Nelze otevøít %s pro ètení: %s."
 #: ../build/build.c:177
 #, fuzzy, c-format
 msgid "Executing: %s\n"
-msgstr "Získává se %s\n"
+msgstr "Probíhá naèítání %s\n"
 
 #: ../build/build.c:181
 #, fuzzy, c-format
@@ -1581,9 +1538,9 @@ msgid "Exec of %s failed (%s)"
 msgstr "nelze otevøít %s: %s\n"
 
 #: ../build/build.c:189
-#, c-format
+#, fuzzy, c-format
 msgid "Bad exit status from %s (%s)"
-msgstr ""
+msgstr "nelze provést statistiku %s: %s"
 
 #: ../build/files.c:256 ../build/parsePrep.c:474
 #, c-format
@@ -1593,7 +1550,7 @@ msgstr ""
 #: ../build/files.c:292
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
-msgstr "nelze otevøít %s: %s\n"
+msgstr "soubor %s: %s\n"
 
 #: ../build/files.c:338
 #, fuzzy
@@ -1616,9 +1573,9 @@ msgid "File listed twice: %s"
 msgstr "Nelze èíst %s: %s."
 
 #: ../build/files.c:693
-#, c-format
+#, fuzzy, c-format
 msgid "archive = %s, fs = %s\n"
-msgstr ""
+msgstr "offset archivu je %d\n"
 
 #: ../build/files.c:732
 #, c-format
@@ -1641,9 +1598,9 @@ msgid "Bad owner/group: %s\n"
 msgstr ""
 
 #: ../build/files.c:869
-#, c-format
+#, fuzzy, c-format
 msgid "File %d: %s\n"
-msgstr ""
+msgstr "soubor %s: %s\n"
 
 #: ../build/files.c:953
 msgid "Hit limit for %%docdir"
@@ -1747,12 +1704,12 @@ msgstr "Nelze naèíst cílpodpisu"
 #: ../build/misc.c:193
 #, fuzzy, c-format
 msgid "%s failed"
-msgstr "chybný pgp"
+msgstr "chyba pgp"
 
 #: ../build/misc.c:197
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
-msgstr "nelze vytvoøit %s\n"
+msgstr "%s nelze vytvoøit\n"
 
 #: ../build/names.c:47 ../build/names.c:81
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
@@ -1788,9 +1745,9 @@ msgid "Unable to read sigtarget: %s"
 msgstr "Nelze zapsat %s"
 
 #: ../build/pack.c:308
-#, c-format
+#, fuzzy, c-format
 msgid "Wrote: %s\n"
-msgstr ""
+msgstr "rpm: %s\n"
 
 #: ../build/pack.c:333
 #, fuzzy
@@ -1805,7 +1762,7 @@ msgstr "Nelze spustit pgp"
 #: ../build/pack.c:350
 #, fuzzy
 msgid "Execution of gzip failed"
-msgstr "nelze spustit skript"
+msgstr "skript nelze spustit"
 
 #: ../build/pack.c:356
 #, fuzzy, c-format
@@ -1914,7 +1871,7 @@ msgstr ""
 #: ../build/parsePreamble.c:79
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
-msgstr "      Mo¾nosti specifikace balíèku:"
+msgstr "      Volby pro specifikaci balíèku:"
 
 #: ../build/parsePreamble.c:85
 #, c-format
@@ -1922,9 +1879,9 @@ msgid "Package already exists: %s"
 msgstr ""
 
 #: ../build/parsePreamble.c:112
-#, c-format
+#, fuzzy, c-format
 msgid "line %d: Unknown tag: %s"
-msgstr ""
+msgstr "Neznámý systém: %s\n"
 
 #: ../build/parsePreamble.c:137
 msgid "Spec file can't use BuildRoot"
@@ -1997,9 +1954,9 @@ msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "chybí architektura pro %s u %s:%d"
 
 #: ../build/parsePreamble.c:487
-#, c-format
+#, fuzzy, c-format
 msgid "Internal error: Bogus tag %d"
-msgstr ""
+msgstr "interní chyba (chyba rpm?): "
 
 #: ../build/parsePreamble.c:643 ../build/parsePreamble.c:650
 #, fuzzy, c-format
@@ -2009,7 +1966,7 @@ msgstr "Nelze zapsat %s"
 #: ../build/parsePreamble.c:660
 #, fuzzy, c-format
 msgid "Unknown icon type: %s"
-msgstr "(neznámý typ)"
+msgstr "Neznámý systém: %s\n"
 
 #: ../build/parsePrep.c:54
 msgid "line %d: second %%prep"
@@ -2069,7 +2026,7 @@ msgstr "Nelze èíst %s: %s."
 #: ../build/parsePrep.c:489 ../build/parsePrep.c:497
 #, fuzzy, c-format
 msgid "File %s: %s"
-msgstr "Nelze èíst %s: %s."
+msgstr "soubor %s: %s\n"
 
 #: ../build/parsePrep.c:500
 #, c-format
@@ -2151,9 +2108,9 @@ msgid "Unclosed %%if"
 msgstr ""
 
 #: ../build/read.c:83
-#, c-format
+#, fuzzy, c-format
 msgid "line %d: %s"
-msgstr ""
+msgstr "soubor %s: %s\n"
 
 #. Got an else with no %if !
 #: ../build/read.c:104
@@ -2180,7 +2137,7 @@ msgstr ""
 #: ../build/reqprov.c:166
 #, fuzzy
 msgid "Failed to find requires"
-msgstr "nelze vytvoøit %s\n"
+msgstr "%s nelze vytvoøit\n"
 
 #: ../build/reqprov.c:201
 msgid "Provides:"
@@ -2212,7 +2169,7 @@ msgstr ""
 #: ../lib/cpio.c:491
 #, fuzzy, c-format
 msgid "error %d reading header: %s\n"
-msgstr "chyba vytváøení adresáøe %s: %s"
+msgstr "chyba pøi vytváøení adresáøe %s: %s"
 
 #: ../lib/dbindex.c:26
 #, c-format
@@ -2222,17 +2179,17 @@ msgstr "nelze otevøít soubor %s: "
 #: ../lib/dbindex.c:53
 #, c-format
 msgid "error getting record %s from %s"
-msgstr "chyba získávání záznamu %s z %s"
+msgstr "chyba pøi získávání záznamu %s z %s"
 
 #: ../lib/dbindex.c:81
 #, c-format
 msgid "error storing record %s into %s"
-msgstr "chyba ukládání záznamu %s do %s"
+msgstr "chyba pøi ukládání záznamu %s do %s"
 
 #: ../lib/dbindex.c:88
 #, c-format
 msgid "error removing record %s into %s"
-msgstr "chyba odstraòování záznamu %s do %s"
+msgstr "chyba pøi odstraòování záznamu %s do %s"
 
 #: ../lib/depends.c:383 ../lib/depends.c:538
 #, c-format
@@ -2242,26 +2199,26 @@ msgstr "nelze èíst hlavièku u %d pro kontrolu závislostí"
 #: ../lib/depends.c:448
 #, c-format
 msgid "dependencies: looking for %s\n"
-msgstr ""
+msgstr "závislosti: probíhá hledání %s\n"
 
 #: ../lib/depends.c:631
-#, fuzzy, c-format
+#, c-format
 msgid "package %s require not satisfied: %s\n"
-msgstr "balíèek %s není uveden v %s"
+msgstr "polo¾ka 'vy¾aduje' balíèku %s není splnìna: %s\n"
 
 #: ../lib/depends.c:674
-#, fuzzy, c-format
+#, c-format
 msgid "package %s conflicts: %s\n"
-msgstr "balíèek %s není uveden v %s"
+msgstr "balíèek %s koliduje: %s\n"
 
 #: ../lib/depends.c:773
 msgid "dbrecMatchesDepFlags() failed to read header"
-msgstr ""
+msgstr "dbrecMatchesDepFlags() nemù¾e pøeèíst hlavièku"
 
 #: ../lib/depends.c:825
 #, c-format
 msgid "loop in prerequisite chain: %s"
-msgstr "smyèka v øetìzu pøedpokladù: %s"
+msgstr "smyèka v øetìzu podmínek: %s"
 
 #: ../lib/falloc.c:137
 #, c-format
@@ -2277,12 +2234,12 @@ msgstr "(není èíslo)"
 #: ../lib/fs.c:53
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
-msgstr "mntctl() nevrátil velikost fuggeru(?): %s"
+msgstr "mntctl() nevrátil velikost polo¾ky fugger: %s"
 
 #: ../lib/fs.c:87 ../lib/fs.c:249
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat %s: %s"
-msgstr "nelze otevøít %s: %s"
+msgstr "nelze provést statistiku %s: %s"
 
 #: ../lib/fs.c:128
 #, c-format
@@ -2292,34 +2249,33 @@ msgstr "nelze otevøít %s: %s"
 #: ../lib/fs.c:270
 #, c-format
 msgid "file %s is on an unknown device"
-msgstr ""
+msgstr "soubor %s je na neznámém zaøízení"
 
 #: ../lib/header.c:678
 #, c-format
 msgid "Data type %d not supprted\n"
-msgstr ""
+msgstr "Datový typ %d není podporován\n"
 
 #. This should not be allowed
 #: ../lib/header.c:890
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
-msgstr ""
+msgstr "Poèet RPM_STRING_TYPE pro grabData() musí být 1.\n"
 
 #: ../lib/header.c:920
 #, c-format
 msgid "Data type %d not supported\n"
-msgstr ""
+msgstr "Datový typ %d není podporován\n"
 
 #: ../lib/header.c:979
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
-msgstr ""
+msgstr "Chybný poèet pro headerAddEntry(): %d\n"
 
 #: ../lib/header.c:1278
 msgid "? expected in expression"
 msgstr "ve výrazu se oèekával ?"
 
 #: ../lib/header.c:1285
-#, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "ve výrazu se po ? oèekávala {"
 
@@ -2332,7 +2288,6 @@ msgid ": expected following ? subexpression"
 msgstr "v podvýrazu se po ? oèekávala :"
 
 #: ../lib/header.c:1315
-#, fuzzy
 msgid "{ expected after : in expression"
 msgstr "ve výrazu se po : oèekávala {"
 
@@ -2373,10 +2328,6 @@ msgstr "neoèekávaná ]"
 msgid "unexpected }"
 msgstr "neoèekávaná }"
 
-#: ../lib/header.c:1612 ../lib/header.c:1618 ../lib/header.c:1801
-msgid "(none)"
-msgstr ""
-
 #: ../lib/header.c:1712
 msgid "(unknown type)"
 msgstr "(neznámý typ)"
@@ -2400,14 +2351,14 @@ msgid "path %s is not relocatable"
 msgstr "balíèek %s není nainstalován\n"
 
 #: ../lib/install.c:297
-#, c-format
+#, fuzzy, c-format
 msgid "relocating %s to %s\n"
-msgstr ""
+msgstr "Probíhá získávání %s jako %s\n"
 
 #: ../lib/install.c:345
 #, fuzzy, c-format
 msgid "not installing %s -- linguas\n"
-msgstr "Instaluje se %s\n"
+msgstr "Probíhá instalace %s\n"
 
 #: ../lib/install.c:367
 #, c-format
@@ -2424,13 +2375,14 @@ msgid "instchangelog value in rpmrc should be a number, but isn't"
 msgstr ""
 
 #: ../lib/install.c:475 ../lib/install.c:755
+#, fuzzy
 msgid "stopping install as we're running --test\n"
-msgstr ""
+msgstr "probíhá zastavení zdrojové instalace, nebo» jde jen o testování\n"
 
 #: ../lib/install.c:506
 #, fuzzy, c-format
 msgid "package %s-%s-%s is for a different architecture"
-msgstr "balíèek %s-%s-%s obsahuje sdílené soubory\n"
+msgstr "balíèek %s-%s-%s obsahuje sdílení soubory\n"
 
 #: ../lib/install.c:513
 #, c-format
@@ -2440,7 +2392,7 @@ msgstr ""
 #: ../lib/install.c:525
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
-msgstr "balíèek %s-%s-%s obsahuje sdílené soubory\n"
+msgstr "balíèek %s-%s-%s obsahuje sdílení soubory\n"
 
 #. no matches
 #: ../lib/install.c:589
@@ -2449,9 +2401,9 @@ msgid "package %s is now obsolete and will be removed\n"
 msgstr "balíèek %s není nainstalován\n"
 
 #: ../lib/install.c:700
-#, c-format
+#, fuzzy, c-format
 msgid "file %s in netshared path\n"
-msgstr ""
+msgstr "soubor %s je sdílen\n"
 
 #: ../lib/install.c:717
 #, c-format
@@ -2464,8 +2416,9 @@ msgid "%s exists - backing up\n"
 msgstr ""
 
 #: ../lib/install.c:761
+#, fuzzy
 msgid "running preinstall script (if any)\n"
-msgstr ""
+msgstr "spou¹tí se pøípadný poinstalaèní skript\n"
 
 #: ../lib/install.c:792
 #, c-format
@@ -2480,15 +2433,17 @@ msgstr ""
 #: ../lib/install.c:830 ../lib/install.c:1538 ../lib/uninstall.c:607
 #, c-format
 msgid "rename of %s to %s failed: %s"
-msgstr "nelze pøejmenovat %s na %s: %s"
+msgstr "%s nelze pøejmenovat na %s: %s"
 
 #: ../lib/install.c:931
+#, fuzzy
 msgid "running postinstall script (if any)\n"
-msgstr ""
+msgstr "spou¹tí se pøípadný poinstalaèní skript\n"
 
 #: ../lib/install.c:952
+#, fuzzy
 msgid "removing old versions of package\n"
-msgstr ""
+msgstr "balíèek je balíèkem verze jedna!\n"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
@@ -2517,8 +2472,9 @@ msgid ""
 msgstr ""
 
 #: ../lib/install.c:1152
+#, fuzzy
 msgid "\tfile type changed - replacing\n"
-msgstr ""
+msgstr "     soubor se vskutku sdílí - ukládá se\n"
 
 #: ../lib/install.c:1156
 msgid "\tcan't check file for changes - replacing\n"
@@ -2557,25 +2513,27 @@ msgstr "nelze èíst hlavièku u %d pro deinstalaci"
 #: ../lib/install.c:1281 ../lib/uninstall.c:148
 #, c-format
 msgid "package %s-%s-%s contain shared files\n"
-msgstr "balíèek %s-%s-%s obsahuje sdílené soubory\n"
+msgstr "balíèek %s-%s-%s obsahuje sdílení soubory\n"
 
 #: ../lib/install.c:1286 ../lib/uninstall.c:153
-#, fuzzy, c-format
+#, c-format
 msgid "package %s contains no files"
-msgstr "balíèek %s-%s-%s obsahuje sdílené soubory\n"
+msgstr "balíèek %s neobsahuje soubory"
 
 #: ../lib/install.c:1308 ../lib/uninstall.c:176
 #, c-format
 msgid "file %s is shared\n"
-msgstr ""
+msgstr "soubor %s je sdílen\n"
 
 #: ../lib/install.c:1324
+#, fuzzy
 msgid "\told version already replaced\n"
-msgstr ""
+msgstr "%s ji¾ byl nahrazen\n"
 
 #: ../lib/install.c:1327
+#, fuzzy
 msgid "\tother version never installed\n"
-msgstr ""
+msgstr "     soubor nebyl nikdy nainstalován\n"
 
 #: ../lib/install.c:1335
 #, fuzzy, c-format
@@ -2583,14 +2541,14 @@ msgid "%s conflicts with file from %s-%s-%s"
 msgstr " koliduje s %s-%s-%s\n"
 
 #: ../lib/install.c:1354
-#, c-format
+#, fuzzy, c-format
 msgid "%s from %s-%s-%s will be replaced\n"
-msgstr ""
+msgstr "%s ji¾ byl nahrazen\n"
 
 #: ../lib/install.c:1418
 #, fuzzy
 msgid "installing a source package\n"
-msgstr "instalovat balíèek"
+msgstr "probíhá instalace binárních balíèkù\n"
 
 #: ../lib/install.c:1434 ../lib/install.c:1439
 #, fuzzy, c-format
@@ -2605,22 +2563,22 @@ msgstr ""
 #: ../lib/install.c:1444
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
-msgstr "nelze otevøít %s: %s\n"
+msgstr "soubor %s: %s\n"
 
 #: ../lib/install.c:1477 ../lib/install.c:1516
 #, fuzzy
 msgid "source package contains no .spec file"
-msgstr "dotazovat balíèek vlastnící <soubor>"
+msgstr "balíèek %s neobsahuje soubory"
 
 #: ../lib/install.c:1536
-#, c-format
+#, fuzzy, c-format
 msgid "renaming %s to %s\n"
-msgstr ""
+msgstr "Probíhá získávání %s jako %s\n"
 
 #: ../lib/install.c:1652
 #, fuzzy, c-format
 msgid "package %s-%s-%s (which is newer) is already installed"
-msgstr "balíèek %s-%s-%s obsahuje sdílené soubory\n"
+msgstr "balíèek %s-%s-%s obsahuje sdílení soubory\n"
 
 #: ../lib/lookup.c:91
 #, c-format
@@ -2641,12 +2599,12 @@ msgstr "fatální chyba: "
 
 #: ../lib/messages.c:72
 msgid "internal error (rpm bug?): "
-msgstr ""
+msgstr "interní chyba (chyba rpm?): "
 
 #: ../lib/misc.c:356 ../lib/misc.c:361 ../lib/misc.c:367
 #, fuzzy, c-format
 msgid "error creating temporary file %s"
-msgstr "chyba vytváøení adresáøe %s: %s"
+msgstr "chyba pøi vytváøení adresáøe %s: %s"
 
 #: ../lib/oldheader.c:301
 msgid "bad file state: "
@@ -2654,20 +2612,20 @@ msgstr ""
 
 #: ../lib/package.c:63
 msgid "package is a version one package!\n"
-msgstr ""
+msgstr "balíèek je balíèkem verze jedna!\n"
 
 #: ../lib/package.c:66
 msgid "old style source package -- I'll do my best\n"
-msgstr ""
+msgstr "zdrojový balíèek starého typu -- snaha bude\n"
 
 #: ../lib/package.c:69
 #, c-format
 msgid "archive offset is %d\n"
-msgstr ""
+msgstr "offset archivu je %d\n"
 
 #: ../lib/package.c:79
 msgid "old style binary package\n"
-msgstr ""
+msgstr "binární balíèek starého typu\n"
 
 #: ../lib/package.c:110
 msgid ""
@@ -2676,13 +2634,13 @@ msgstr ""
 "tato verze RPM podporuje jen balíèky, které mají hlavní (major) èísla <= 3"
 
 #: ../lib/rebuilddb.c:26
-#, fuzzy, c-format
+#, c-format
 msgid "rebuilding database in rootdir %s\n"
-msgstr "znovu sestavit databázi z existující databáze"
+msgstr "databáze se pøestavuje v koøenovém adresáøi %s\n"
 
 #: ../lib/rebuilddb.c:30 ../lib/rpmdb.c:55 ../lib/rpmdb.c:68
 msgid "no dbpath has been set"
-msgstr "nebyla nastavena ¾ádná dbpath"
+msgstr "nebyla nastavena dbpath"
 
 #: ../lib/rebuilddb.c:38
 #, c-format
@@ -2690,22 +2648,22 @@ msgid "temporary database %s already exists"
 msgstr "doèasná databáze %s ji¾ existuje"
 
 #: ../lib/rebuilddb.c:42
-#, fuzzy, c-format
+#, c-format
 msgid "creating directory: %s\n"
-msgstr "chyba vytváøení adresáøe %s: %s"
+msgstr "vytváøí se adresáø: %s\n"
 
 #: ../lib/rebuilddb.c:44
 #, c-format
 msgid "error creating directory %s: %s"
-msgstr "chyba vytváøení adresáøe %s: %s"
+msgstr "chyba pøi vytváøení adresáøe %s: %s"
 
 #: ../lib/rebuilddb.c:50
 msgid "opening old database\n"
-msgstr ""
+msgstr "otevírá se stará databáze\n"
 
 #: ../lib/rebuilddb.c:55
 msgid "opening new database\n"
-msgstr ""
+msgstr "otevírá se nová databáze\n"
 
 #: ../lib/rebuilddb.c:64 ../lib/rebuilddb.c:82
 #, c-format
@@ -2719,26 +2677,26 @@ msgstr "nelze pøidat záznam - pùvodnì u %d"
 
 #: ../lib/rebuilddb.c:93
 msgid "failed to rebuild database; original database remains in place\n"
-msgstr ""
+msgstr "databázi nelze pøestavit; pùvodní databáze zùstává na svém místì\n"
 
 #: ../lib/rebuilddb.c:100
 msgid "failed to replace old database with new database!\n"
-msgstr ""
+msgstr "starou databázi nelze nahradit novou databází!\n"
 
 #: ../lib/rebuilddb.c:102
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
-msgstr ""
+msgstr "aby se obnovily, nahrazuje soubory v %s soubory z %s"
 
 #: ../lib/rebuilddb.c:107
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove %s: %s\n"
-msgstr "nelze otevøít %s: %s"
+msgstr "nelze odstranit %s: %s\n"
 
 #: ../lib/rpmdb.c:123
 #, c-format
 msgid "opening database in %s\n"
-msgstr ""
+msgstr "otevírá se databáze v %s\n"
 
 #: ../lib/rpmdb.c:132
 #, c-format
@@ -2774,46 +2732,44 @@ msgstr "balíèek nemá název"
 
 #: ../lib/rpmdb.c:330
 msgid "removing name index\n"
-msgstr ""
+msgstr "odstraòuje se rejstøík názvù\n"
 
 #: ../lib/rpmdb.c:335
-#, fuzzy
 msgid "package has no group\n"
-msgstr "balíèek nemá název"
+msgstr "balíèek nemá skupinu\n"
 
 #: ../lib/rpmdb.c:337
 msgid "removing group index\n"
-msgstr ""
+msgstr "odstraòuje se rejstøík skupin\n"
 
 #: ../lib/rpmdb.c:344
-#, fuzzy, c-format
+#, c-format
 msgid "removing provides index for %s\n"
-msgstr "chyba odstraòování záznamu %s do %s"
+msgstr "odstraòuje se rejstøík 'poskytuje' pro %s\n"
 
 #: ../lib/rpmdb.c:359
-#, fuzzy, c-format
+#, c-format
 msgid "removing requiredby index for %s\n"
-msgstr "chyba odstraòování záznamu %s do %s"
+msgstr "odstraòuje se rejstøík 'vy¾aduje' pro %s\n"
 
 #: ../lib/rpmdb.c:371
-#, fuzzy, c-format
+#, c-format
 msgid "removing trigger index for %s\n"
-msgstr "chyba odstraòování záznamu %s do %s"
+msgstr "odstraòuje se rejstøík aktivací pro %s\n"
 
 #: ../lib/rpmdb.c:382
 #, c-format
 msgid "removing conflict index for %s\n"
-msgstr ""
+msgstr "odstraòuje se rejstøík konfliktù pro %s\n"
 
 #: ../lib/rpmdb.c:393
 #, c-format
 msgid "removing file index for %s\n"
-msgstr ""
+msgstr "odstraòuje se rejstøík souborù pro %s\n"
 
 #: ../lib/rpmdb.c:400
-#, fuzzy
 msgid "package has no files\n"
-msgstr "balíèek nemá název"
+msgstr "balíèek neobsahuje soubory\n"
 
 #: ../lib/rpmdb.c:473
 msgid "cannot allocate space for database"
@@ -2826,7 +2782,7 @@ msgstr "nelze èíst hlavièku u %d pro inovaci"
 
 #: ../lib/rpmdb.c:546
 msgid "header changed size!"
-msgstr ""
+msgstr "hlavièka zmìnila velikost!"
 
 #: ../lib/rpmlead.c:49
 #, c-format
@@ -2843,99 +2799,96 @@ msgstr "chybí druhá ':' u %s:%d"
 msgid "missing architecture name at %s:%d"
 msgstr "chybí název architektury u %s:%d"
 
-#: ../lib/rpmrc.c:353
+#: ../lib/rpmrc.c:362
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr "Neúplný datový øádek u %s:%d"
 
-#: ../lib/rpmrc.c:357
+#: ../lib/rpmrc.c:366
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr "Pøíli¹ mnoho argumentù v datovém øádku u %s:%d"
 
-#: ../lib/rpmrc.c:364
+#: ../lib/rpmrc.c:373
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr "Chybné èíslo arch/os: %s (%s:%d)"
 
-#: ../lib/rpmrc.c:397
+#: ../lib/rpmrc.c:406
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr "Neúplný výchozí øádek u %s:%d"
 
-#: ../lib/rpmrc.c:402
+#: ../lib/rpmrc.c:411
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr "Pøíli¹ mnoho argumentù ve výchozím øádku u %s:%d"
 
-#: ../lib/rpmrc.c:493 ../lib/rpmrc.c:509
+#: ../lib/rpmrc.c:502 ../lib/rpmrc.c:518
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "Nelze otevøít %s pro ètení: %s."
 
-#: ../lib/rpmrc.c:552
+#: ../lib/rpmrc.c:561
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr "Nelze èíst %s: %s."
 
-#: ../lib/rpmrc.c:582
+#: ../lib/rpmrc.c:591
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr "chybí ':' u %s:%d"
 
-#: ../lib/rpmrc.c:598 ../lib/rpmrc.c:619
+#: ../lib/rpmrc.c:607 ../lib/rpmrc.c:628
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr "chybí argument pro %s u %s:%d"
 
-#: ../lib/rpmrc.c:609
+#: ../lib/rpmrc.c:618
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr "chybí architektura pro %s u %s:%d"
 
-#: ../lib/rpmrc.c:662
+#: ../lib/rpmrc.c:671
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr "chybná volba '%s' u %s:%d"
 
-#: ../lib/rpmrc.c:1018
+#: ../lib/rpmrc.c:1027
 #, c-format
 msgid "Unknown system: %s\n"
-msgstr ""
+msgstr "Neznámý systém: %s\n"
 
-#: ../lib/rpmrc.c:1019
+#: ../lib/rpmrc.c:1028
 msgid "Please contact rpm-list@redhat.com\n"
-msgstr ""
+msgstr "Zkontaktujte rpm-list@redhat.com\n"
 
 #: ../lib/signature.c:83
-#, fuzzy
 msgid "No signature\n"
-msgstr "%s: Dostupný není ¾ádný podpis\n"
+msgstr "Chybí podpis\n"
 
 #: ../lib/signature.c:86
-#, fuzzy
 msgid "Old PGP signature\n"
-msgstr "generovat podpis PGP"
+msgstr "Starý podpis PGP\n"
 
 #: ../lib/signature.c:99
 msgid "Old (internal-only) signature!  How did you get that!?"
-msgstr "Starý (pouze interní) podpis! Jak jste ho získali!?"
+msgstr "Starý (pouze interní) podpis! Jak jste to získali!?"
 
 #: ../lib/signature.c:103
-#, fuzzy
 msgid "New Header signature\n"
-msgstr "podpis nelze pøeèíst"
+msgstr "Podpis nové hlavièky\n"
 
 #. 8-byte pad
 #: ../lib/signature.c:111 ../lib/signature.c:149
 #, c-format
 msgid "Signature size: %d\n"
-msgstr ""
+msgstr "Velikost podpisu: %d\n"
 
 #: ../lib/signature.c:112 ../lib/signature.c:150
 #, c-format
 msgid "Signature pad : %d\n"
-msgstr ""
+msgstr "Podlo¾ka podpisu: %d\n"
 
 #: ../lib/signature.c:222 ../lib/signature.c:479
 msgid "Couldn't exec pgp"
@@ -2943,7 +2896,7 @@ msgstr "Nelze spustit pgp"
 
 #: ../lib/signature.c:233
 msgid "pgp failed"
-msgstr "chybný pgp"
+msgstr "chyba pgp"
 
 #. PGP failed to write signature
 #. Just in case
@@ -2954,7 +2907,7 @@ msgstr "chyba pgp pøi zápisu podpisu"
 #: ../lib/signature.c:245
 #, c-format
 msgid "PGP sig size: %d\n"
-msgstr ""
+msgstr "Velikost podpisu PGP: %d\n"
 
 #: ../lib/signature.c:253
 msgid "unable to read the signature"
@@ -2963,31 +2916,30 @@ msgstr "podpis nelze pøeèíst"
 #: ../lib/signature.c:259
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
-msgstr ""
+msgstr "Zisk %d bajtù podpisu PGP\n"
 
 #: ../lib/signature.c:274
 #, c-format
 msgid "sigsize         : %d\n"
-msgstr ""
+msgstr "velikostpodpisu : %d\n"
 
 #: ../lib/signature.c:275
 #, c-format
 msgid "Header + Archive: %d\n"
-msgstr ""
+msgstr "Hlavièka+archiv : %d\n"
 
 #: ../lib/signature.c:276
 #, c-format
 msgid "expected size   : %d\n"
-msgstr ""
+msgstr "oèekáv. velikost: %d\n"
 
 #: ../lib/signature.c:280
 msgid "file is not regular -- skipping size check\n"
-msgstr ""
+msgstr "soubor není regulérní -- kontrola velikosti se vynechává\n"
 
 #: ../lib/signature.c:394
-#, fuzzy
 msgid "exec failed!\n"
-msgstr "%s: chybný Open\n"
+msgstr "nelze spustit!\n"
 
 #: ../lib/signature.c:396
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
@@ -2995,110 +2947,110 @@ msgstr "Nelze spustit pgp. Vynechte kontroly PGP pomocí --nopgp."
 
 #: ../lib/signature.c:430
 msgid "You must set \"pgp_name:\" in your rpmrc file"
-msgstr "V souboru rpmrc musíte nastavit \"pgp_name:\""
+msgstr "V souboru rpmrc se musí nastavit \"pgp_name:\""
 
 #. This shouldn't happen, but some versions of RPM didn't
 #. implement --justdb properly, and chose to leave this stuff
 #. out.
 #: ../lib/uninstall.c:166 ../lib/uninstall.c:296
 msgid "package is missing FILESTATES\n"
-msgstr ""
+msgstr "balíèek neobsahuje FILESTATES\n"
 
 #: ../lib/uninstall.c:181
 msgid "     file has already been replaced\n"
-msgstr ""
+msgstr "     soubor byl ji¾ nahrazen\n"
 
 #: ../lib/uninstall.c:185
 msgid "     file was never installed\n"
-msgstr ""
+msgstr "     soubor nebyl nikdy nainstalován\n"
 
 #: ../lib/uninstall.c:189
 msgid "     file is netshared (so don't touch it)\n"
-msgstr ""
+msgstr "     soubor se sdílí v síti (nedotýkat se)\n"
 
 #: ../lib/uninstall.c:196
 msgid "    file is truely shared - saving\n"
-msgstr ""
+msgstr "     soubor se vskutku sdílí - ukládá se\n"
 
 #: ../lib/uninstall.c:246
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read packages named %s for uninstall"
-msgstr "nelze èíst hlavièku u %d pro deinstalaci"
+msgstr "nelze èíst balíèky nazvané %d pro deinstalaci"
 
 #: ../lib/uninstall.c:274
 #, c-format
 msgid "will remove files test = %d\n"
-msgstr ""
+msgstr "odstraní se soubory test = %d\n"
 
 #: ../lib/uninstall.c:322
 #, c-format
 msgid "%s has a netshared override\n"
-msgstr ""
+msgstr "%s má vy¹¹í prioritu sdílení v síti\n"
 
 #: ../lib/uninstall.c:360
 msgid "running postuninstall script (if any)\n"
-msgstr ""
+msgstr "spou¹tí se pøípadný poinstalaèní skript\n"
 
 #: ../lib/uninstall.c:374
 msgid "removing database entry\n"
-msgstr ""
+msgstr "odstraòuje se polo¾ka databáze\n"
 
 #: ../lib/uninstall.c:523
 msgid "execution of script failed"
-msgstr "nelze spustit skript"
+msgstr "skript nelze spustit"
 
 #: ../lib/uninstall.c:568
 #, c-format
 msgid "%s has already been replaced\n"
-msgstr ""
+msgstr "%s ji¾ byl nahrazen\n"
 
 #. if it's a config file, we may not want to remove it
 #: ../lib/uninstall.c:574
 #, c-format
 msgid "finding md5sum of %s\n"
-msgstr ""
+msgstr "hledá se md5sum pro %s\n"
 
 #: ../lib/uninstall.c:582
 msgid "    failed - assuming file removed\n"
-msgstr ""
+msgstr "    neúspìch - soubor pova¾ován za odstranìný\n"
 
 #: ../lib/uninstall.c:585
 msgid "    file changed - will save\n"
-msgstr ""
+msgstr "    soubor zmìnìn - ulo¾í se\n"
 
 #: ../lib/uninstall.c:589
 msgid "    file unchanged - will remove\n"
-msgstr ""
+msgstr "    soubor nezmìnìn - odstraní se\n"
 
 #: ../lib/uninstall.c:597
-#, fuzzy, c-format
+#, c-format
 msgid "keeping %s\n"
-msgstr "Získává se %s\n"
+msgstr "ponechává se %s\n"
 
 #: ../lib/uninstall.c:601
 #, c-format
 msgid "saving %s as %s.rpmsave\n"
-msgstr ""
+msgstr "%s se ukládá jako %s.rpmsave\n"
 
 #: ../lib/uninstall.c:615
 #, c-format
 msgid "%s - removing\n"
-msgstr ""
+msgstr "%s - odstraòuje se\n"
 
 #: ../lib/uninstall.c:621
 #, c-format
 msgid "cannot remove %s - directory not empty"
-msgstr "nelze odstranit %s - adresáø není prázdný"
+msgstr "%s nelze odstranit - adresáø není prázdný"
 
 #: ../lib/uninstall.c:624
 #, c-format
 msgid "rmdir of %s failed: %s"
-msgstr "chybný rmdir adresáøe %s: %s"
+msgstr "neúspìch rmdir %s: %s"
 
 #: ../lib/uninstall.c:634
 #, c-format
 msgid "removal of %s failed: %s"
-msgstr "nelze odstranit %s: %s"
+msgstr "%s nelze odstranit: %s"
 
 #: ../lib/verify.c:186
 msgid "package lacks both user name and id lists (this should never happen)"
@@ -3108,14 +3060,18 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
+#~ msgid "(none)"
+#~ msgstr "(není)"
+
+#, fuzzy
 #~ msgid ""
 #~ "                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"
-#~ msgstr ""
-#~ "                      [--provides] [--dump] [--dbpath <adresáø>] "
-#~ "[--changelog]"
+#~ msgstr "                        [--changelog] [--dbpath <adr>] [cíle]"
 
+#, fuzzy
 #~ msgid "                        [targets]"
-#~ msgstr "                      [cíle]"
+#~ msgstr "                        [--nomd5] [cíle]"
 
+#, fuzzy
 #~ msgid "cannot read database record at %d"
-#~ msgstr "nelze èíst databázový záznam u %d"
+#~ msgstr "nelze naèíst databázový záznam!\n"
