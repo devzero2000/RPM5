@@ -32,7 +32,7 @@
 #sleep 10
 
 AC_PREREQ(2.59)
-AC_INIT(rpm, 4.3.2, rpm-list@redhat.com)
+AC_INIT(rpm, 4.3.3, rpm-list@redhat.com)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
@@ -817,6 +817,17 @@ AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
 
+AC_MSG_CHECKING(for python 2.4)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <python2.4/Python.h>
+main() {
+  exit(strncmp("2.4", PY_VERSION, 3));
+} ]])],[withval=yes],[withval=no],[withval=yes])
+  AC_MSG_RESULT($withval)
+  if test $withval = yes ; then
+    WITH_PYTHON_VERSION="2.4"
+  else
+    
 AC_MSG_CHECKING(for python 2.3)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <python2.3/Python.h>
@@ -851,7 +862,7 @@ main() {
       fi
     fi
   fi
-
+  fi
 fi
 
 if test "$WITH_PYTHON_VERSION" != no ; then

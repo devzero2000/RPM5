@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 21
+Release: 1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -494,103 +494,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Tue Nov  2 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-21
-- remove verbose debugging messages (#137834).
-
-* Sun Oct 31 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-19
-- fix: buffer overrun displaying ko_KR (#135389).
-
-* Sat Oct 30 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-18
-- reprise file conflicts yet again, flip/flop/flip/flop ...
-
-* Fri Oct 29 2004 Jeff Johnson <jbj@redhat.com> 4.2.3-16
-- python: fix RPMPROB_BADRELOCATE segfault return in ts.check (#137116).
-- revert selinux patch until fc3 release.
-
-* Fri Oct 22 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-15
-- selinux: set "ldconfig_t" for /sbin/ldconfig, else "rpm_script_t".
-
-* Sun Oct 17 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-14
-- don't add time stamp to compressed man pages (#132526).
-
-* Fri Oct 15 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-13
-- fix: don't set handler if SIG_IGN is already set (#134474).
-
-* Mon Oct 11 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-12
-- python: remove ".A" from creaky ts.check() tuple return (#135008).
-
-* Fri Oct  8 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-11
-- honor inherited SIG_IGN when establishing rpmdb signal exit (#134474).
-
-* Wed Oct  6 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-10
-- display caught signals to diagnose #134474 (gonna be SIGPIPE).
-- display N-V-R.A in dependency failure messages.
-- selinux: set "rpm_script_t" always, not just for /bin/sh.
-
-* Tue Oct  5 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-9
-- fix: revert Obsoletes: "fix" (#134497).
-- fix: work around for dangling symlinks not globbed (#134362).
-
-* Fri Oct  1 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-8
-- disable static linking until libc*.a provides symbols.
-
-* Thu Sep 30 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-7
-- ia64: add autorelocate_dcolor to macros.in.
-
-* Wed Sep 29 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-6
-- fix: mark uninstalled elf32 files in rpmdb to disable -Va checks.
-
-* Wed Sep 15 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-4
-- print dependency loops as warning iff --anaconda is specified.
-
-* Sat Sep  4 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-2
-- ia64: make sure that autorelocated file dependencies are satisfied.
-- ia64: relocate all scriptlet interpreters.
-- ia64: don't bother trying to preload autorelocated modules.
-- fix: filesystem package needs mail/lock w/o getgrnam.
-- fix: do getpwnam/getgrnam to load correct modules before chroot.
-- restore file conflict detection traditional behavior.
-
-* Fri Aug 20 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-0.9
-- fix: static glibc/libgcc helpers always installed (#127522).
-- fix: defattr for rpm-libs (#130461).
-
-* Thu Aug 19 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.7
-- shared libraries in separate rpm-libs package.
-- avoid "can't happen" recursion while retrieving pubkeys.
-- add ppc32dy4 arch.
-- make peace with automake 1.9.1.
-
-* Fri Jul  9 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.6
-- fix: evaluate rather than default file_contexts path. (#127501).
-
-* Mon Jul  5 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.5
-- change default behavior to resolve file conflicts as LIFO.
-- add --fileconflicts to recover rpm traditional behavior.
-- prefer elf64 over elf32 files, everywhere and always (#126853).
-- ia64: auto-relocate entire, not partial, directory contents (#126905).
-- ia64: auto-relocate glibc.ix86 interpreter path (#100563).
-
-* Wed Jun 16 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.4
-- add ppc8[25]60 arches.
-
-* Mon Jun 14 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.3
-- add 'requires' and 'conflicts' tag aliases.
-- python: return ds, not tuple, for ds iteration.
-- python: permit integer keys to ts.dbMatch().
-- xml: use <foo/> markup for empty tags.
-- xml: <integer/> instead of <integer>0</integer> markup.
-- fix: disable fingerprint generation on kernel paths.
-
-* Tue Jun  8 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.2
-- lua embedded in rpmio.
-- use lua to identify desired selinux file context regexes.
-
-* Tue Jun  1 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.1
-- use /etc/selinux/targeted/contexts/files/file_contexts for now.
-- disable file contexts into package metadata during build.
-- fix: dev package build on s390x hack around.
-- fix: "/path/foo.../bar" was losing a dot (#123844).
-- fix: PIE executables have basename-as-soname provides (#123697).
-- add aurora/sparc patches (#124469).
-- use poll(2) if available, avoid borked aurora/sparc select (#124574).
+* Wed Nov 10 2004 Jeff Johnson <jbj@jbj.org>
+- bump micro version.
+- make peace with libtool-1.5.10 and automake-1.9.3.
+- python: add python 2.4 support.
+- selinux: use rpm_execcon, not execv, to run scriptlets (#136848).
+- fix: segfault on --verifydb (#138589).

@@ -478,83 +478,6 @@ static pid_t psmWait(rpmpsm psm)
 }
 
 /**
- * Change selinux type prior to exec.
- * @param psm		package state machine data
- * @param ntype		new selinux type
- * @return		0 on success
- */
-static int switchExecType(rpmpsm psm, /*@null@*/ const char * ntype)
-	/*@*/
-{
-    security_context_t ocon = NULL;
-    security_context_t ncon = NULL;
-    int rc = -1;	/* assume failure */
-
-    if (psm == NULL)
-	goto exit;
-
-    /* Set default exec policy if NULL specified. */
-    if (ntype == NULL)
-	goto doit;
-
-    /* Substitute new exec type. */
-    rc = getexeccon(&ocon);
-    if (rc != 0)
-	goto exit;
-
-    if (ocon == NULL) {
-	rc = getcon(&ocon);
-	/* XXX ocon == NULL can't happen. */
-	if (rc != 0 || ocon == NULL)
-	    goto exit;
-    }
-
-    {	const char * s = (const char *) ocon;
-	const char * se;
-	size_t nb;
-	char * t = NULL;
-
-	if ((se = strrchr(s, ':')) == NULL) {
-	    rc = -1;
-	    goto exit;
-	}
-	se++;
-	nb = (se - s);
-
-	t = xmalloc( nb + strlen(ntype) + 1 );
-	(void) stpcpy( stpncpy(t, s, nb), ntype);
-
-	ncon = (security_context_t) t;
-    }
-
-doit:
-    rc = setexeccon(ncon);
-
-    /*
-     * Policy for rpm currently permits rpm_script_t establish only from
-     * sysadm_r or system_r. If enforcing, this is hard error, otherwise
-     * warn the user and continue.
-     */
-    if (rc != 0) {
-	if (security_getenforce() == 1) {	/* enforcing */
-	    rpmMessage(RPMMESS_ERROR,
-		_("setexeccon(%s) fails from context \"%s\": %s\n"),
-		(char *) ncon, (char *) ocon, strerror(errno));
-	} else {				/* permissive */
-	    rpmMessage(RPMMESS_WARNING,
-		_("setexeccon(%s) fails from context \"%s\": %s\nContinuing ...\n"),
-		(char *) ncon, (char *) ocon, strerror(errno));
-	    rc = 0;
-	}
-    }
-
-exit:
-    if (ncon) freecon(ncon);
-    if (ocon) freecon(ocon);
-    return rc;
-}
-
-/**
  */
 /*@unchecked@*/
 static int ldconfig_done = 0;
@@ -856,15 +779,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    /* XXX Don't mtrace into children. */
 	    unsetenv("MALLOC_CHECK_");
 
-	    /* Set "rpm_script_t" identity for scriptlets under selinux. */
-	    if (rpmtsSELinuxEnabled(ts) == 1) {	
-		/* Set "ldconfig_t" for /sbin/ldconfig else "rpm_script_t" */
-#if 0
-		xx = switchExecType(psm,
-	(!strcmp(argv[0],"/sbin/ldconfig") ? "ldconfig_t" : "rpm_script_t"));
-#else
-		xx = switchExecType(psm, "rpm_script_t");
-#endif
+	    /* Permit libselinux to do the scriptlet exec. *
+	    if (rpmtsSELinuxEnabled(ts) == 1) {
+		xx = rpm_execcon(0, argv[0], argv, environ);
 		if (xx != 0)
 		    break;
 	    }

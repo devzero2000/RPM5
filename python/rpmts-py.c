@@ -363,8 +363,6 @@ rpmts_Check(rpmtsObject * s, PyObject * args)
     int i;
     int xx;
 
-rpmIncreaseVerbosity();
-rpmIncreaseVerbosity();
     memset(&cbInfo, 0, sizeof(cbInfo));
     if (!PyArg_ParseTuple(args, "|O:Check", &cbInfo.cb))
 	return NULL;
