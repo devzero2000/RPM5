@@ -487,10 +487,24 @@ DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned l
 
     fdno = open(path, flags, mode);
     if (fdno < 0) return NULL;
+/*
+ * XXX 2 package(s) from Red Hat powertools 6.2 hang if close-on-exec
+ * XXX is set:
+ *
+ *	powertools/6.2/i386/xmris-4.0.5-1.i386.rpm
+ *	powertools/6.2/i386/ZZplayer-0.2-1.i386.rpm
+ *
+ * XXX AFAIK, the effect of not setting close-on-exec is that 2 rdonly file
+ * XXX descriptors, one positioned at payload EOF, the other positioned at
+ * XXX beginning of the payload, leak into scriptlets. <shrug>
+ *
+ */
+#ifdef	NOTYET
     if (fcntl(fdno, F_SETFD, FD_CLOEXEC)) {
 	(void) close(fdno);
 	return NULL;
     }
+#endif
     fd = fdNew("open (fdOpen)");
     fdSetFdno(fd, fdno);
     fd->flags = flags;

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.33
+Release: 7x.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -81,6 +81,7 @@ will manipulate RPM packages and databases.
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
 Requires: rpm = %{rpm_version}
+Provides: perl(Specfile)
 
 %description build
 This package contains scripts and executable programs that are used to
@@ -524,6 +525,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Feb 13 2002 Jeff Johnson <jbj@redhat.com>
+- don't do close-on-exec, 2 powertools packages cannot be read when doing.
+- reapply Berkeley DB patch #4491.
+
 * Thu Feb  7 2002 Jeff Johnson <jbj@redhat.com>
 - rpm-4.0.4 release candidate.
 - add cpanflute2, another perl.req fiddle.

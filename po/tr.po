@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-06 15:01-0500\n"
+"POT-Creation-Date: 2002-02-13 18:04-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3997,59 +3997,59 @@ msgstr "%s dosyasý: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
 
-#: rpmio/rpmio.c:660
+#: rpmio/rpmio.c:674
 msgid "Success"
 msgstr "Baþarýlý"
 
-#: rpmio/rpmio.c:663
+#: rpmio/rpmio.c:677
 msgid "Bad server response"
 msgstr "Sunucudan kötü yanýt"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:680
 msgid "Server I/O error"
 msgstr "Sunucu G/Ç hatasý"
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:683
 msgid "Server timeout"
 msgstr "Sunucu zaman aþýmý"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:686
 msgid "Unable to lookup server host address"
 msgstr "Sunucu makina adresi bulunamadý"
 
-#: rpmio/rpmio.c:675
+#: rpmio/rpmio.c:689
 msgid "Unable to lookup server host name"
 msgstr "Sunucu makina ismi bulunamadý"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:692
 msgid "Failed to connect to server"
 msgstr "Sunucuya baðlanýlamadý"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:695
 msgid "Failed to establish data connection to server"
 msgstr "Sunucuya veri baðlantýsý kurulamadý"
 
-#: rpmio/rpmio.c:684
+#: rpmio/rpmio.c:698
 msgid "I/O error to local file"
 msgstr "Yerel dosyaya G/Ç hatasý"
 
-#: rpmio/rpmio.c:687
+#: rpmio/rpmio.c:701
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokma ayarlarýnda hata"
 
-#: rpmio/rpmio.c:690
+#: rpmio/rpmio.c:704
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:707
 msgid "Abort in progress"
 msgstr "Kesme iþlemi sürüyor"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:711
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1369
+#: rpmio/rpmio.c:1383
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"

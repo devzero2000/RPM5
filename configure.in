@@ -266,14 +266,14 @@ addlib() {
 WITH_ZLIB_SUBDIR=
 WITH_ZLIB_INCLUDE=
 WITH_ZLIB_LIB=
-if test -d zlib ; then
-  WITH_ZLIB_SUBDIR=zlib
-  addlib \${top_builddir}/zlib
-  WITH_ZLIB_INCLUDE="-I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
-  INCPATH="$INCPATH -I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
-  WITH_ZLIB_LIB="\${top_builddir}/${WITH_ZLIB_SUBDIR}/libz.la"
-  AC_DEFINE(HAVE_GZSEEK)
-fi
+#if test -d zlib ; then
+#  WITH_ZLIB_SUBDIR=zlib
+#  addlib \${top_builddir}/zlib
+#  WITH_ZLIB_INCLUDE="-I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
+#  INCPATH="$INCPATH -I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
+#  WITH_ZLIB_LIB="\${top_builddir}/${WITH_ZLIB_SUBDIR}/libz.la"
+#  AC_DEFINE(HAVE_GZSEEK)
+#fi
 AC_SUBST(WITH_ZLIB_SUBDIR)
 AC_SUBST(WITH_ZLIB_INCLUDE)
 AC_SUBST(WITH_ZLIB_LIB)
