@@ -414,7 +414,7 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Sat Jun 16 2001 Jeff Johnson <jbj@redhat.com>
+* Sun Jun 17 2001 Jeff Johnson <jbj@redhat.com>
 - alpha: don't add "()(64bit)" dependency markers.
 - ia64/sparc: <arch>.{req,prov} identical to linux.{req,prov}.
 - add "rpmlib(ScriptletInterpreterArgs)" to track
@@ -422,6 +422,9 @@ fi
   incompatibilities.
 - linux.req needs exit 0
 - popt: add POPT_ARGFLAG_SHOW_DEFAULT to display initial values (#32558).
+- popt: add POPT_CONTEXT_ARG_OPTS for all opts to return 1 (#30912).
+- fix: fsm reads/writes now return error on partial I/O.
+- fix: Ferror returned spurious error for gzdio/bzdio.
 
 * Thu Jun 14 2001 Jeff Johnson <jbj@redhat.com>
 - fix: db1 end-of-file not detected in legacy compatible way.
