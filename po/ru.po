@@ -331,7 +331,7 @@ msgstr "использовать <файл> вместо /etc/rpmrc и $HOME/.rpmrc"
 
 #: rpm.c:298 rpmqv.c:403
 msgid "display final rpmrc and macro configuration"
-msgstr ""
+msgstr "показать текущее значение ресурсов и макросов"
 
 #: rpm.c:300 rpmqv.c:411
 msgid "be a little more verbose"
@@ -658,7 +658,7 @@ msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
-"откат на более старую версию пакета (--force для обновления делает это "
+"откат на более старую версию пакета (--force при обновлении делает это "
 "автоматически)"
 
 #: rpm.c:437
@@ -1052,7 +1052,7 @@ msgstr ""
 
 #: rpm.c:955 rpmqv.c:1145
 msgid "no files to sign\n"
-msgstr ""
+msgstr "нет файлов для подписи\n"
 
 #: rpm.c:960 rpmqv.c:1150
 #, c-format
@@ -2244,6 +2244,8 @@ msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
+"для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
+"\tA %s\tB %s\n"
 
 #: lib/depends.c:485
 #, c-format
@@ -2293,7 +2295,7 @@ msgstr "%s: %-45s NO\n"
 #: lib/depends.c:1019
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
-msgstr ""
+msgstr "%s: (%s, %s) добавлено к каш зависимостей\n"
 
 #. requirements are not satisfied.
 #: lib/depends.c:1073
@@ -2446,6 +2448,10 @@ msgid ""
 "rpm-list@redhat.com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
+"поврежден список свободных записей (%u) - пожалуйста запустите\n"
+"\t\"rpm --rebuilddb\"\n"
+"Более подробная информация доступна на http://www.rpm.org илина списке "
+"рассылки rpm-list@redhat.com\n"
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
 #: lib/header.c:2092 lib/header.c:2108 lib/header.c:2127
@@ -2676,43 +2682,43 @@ msgstr "buildroot уже указан"
 
 #: lib/poptBT.c:108
 msgid "build through %%prep stage from spec file"
-msgstr ""
+msgstr "выполнить по стадию %%prep файла спецификации"
 
 #: lib/poptBT.c:110
 msgid "build through %%build stage from spec file"
-msgstr ""
+msgstr "выполнить по стадию %%build файла спецификации"
 
 #: lib/poptBT.c:112
 msgid "build through %%install stage from spec file"
-msgstr ""
+msgstr "выполнить по стадию %%install файла спецификации"
 
 #: lib/poptBT.c:114
 msgid "verify %%files section from spec file"
-msgstr ""
+msgstr "проверить раздел %%files файла спецификации"
 
 #: lib/poptBT.c:116
 msgid "build source and binary package from spec file"
-msgstr ""
+msgstr "собрать исходный и двоичный пакеты файла спецификации"
 
 #: lib/poptBT.c:118
 msgid "build binary package from spec file"
-msgstr ""
+msgstr "собрать двоичный пакет файла спецификации"
 
 #: lib/poptBT.c:120
 msgid "build source package from spec file"
-msgstr ""
+msgstr "собрать исходный пакет файла спецификации"
 
 #: lib/poptBT.c:123
 msgid "build through %%prep stage from tar ball"
-msgstr ""
+msgstr "выполнить по стадию %%prep из архива tar"
 
 #: lib/poptBT.c:125
 msgid "build through %%build stage from tar ball"
-msgstr ""
+msgstr "выполнить по стадию %%build из архива tar"
 
 #: lib/poptBT.c:127
 msgid "build through %%install stage from tar ball"
-msgstr ""
+msgstr "выполнить по стадию %%install из архива tar"
 
 #: lib/poptBT.c:129
 msgid "verify %%files section from tar ball"
@@ -2736,7 +2742,7 @@ msgstr "собрать двоичный пакет из исходного пакета"
 
 #: lib/poptBT.c:140
 msgid "build through %%install stage from source package"
-msgstr ""
+msgstr "выполнить по стадию %%install из архива tar"
 
 #: lib/poptBT.c:143
 msgid "override build root"
@@ -2744,7 +2750,7 @@ msgstr "переопределить build root"
 
 #: lib/poptBT.c:147
 msgid "do not execute any stages of the build"
-msgstr "не исполнять никаких этапов сборки"
+msgstr "не выполнять никаких этапов сборки"
 
 #: lib/poptBT.c:149
 msgid "do not accept I18N msgstr's from specfile"
@@ -2752,7 +2758,7 @@ msgstr "не принимать строк I18N из spec-файла"
 
 #: lib/poptBT.c:153
 msgid "remove specfile when done"
-msgstr "после завершения удалить spec-файл"
+msgstr "после завершения удалить файл спецификации"
 
 #: lib/poptBT.c:157
 msgid "override target platform"
@@ -2760,7 +2766,7 @@ msgstr "переопределить целевую платформу"
 
 #: lib/poptBT.c:159
 msgid "lookup I18N strings in specfile catalog"
-msgstr "искать строки I18N в каталоге со spec-файлом"
+msgstr "искать строки I18N в каталоге с файлом спецификации"
 
 #: lib/poptQV.c:64
 msgid "query/verify package owning file"
@@ -2784,7 +2790,7 @@ msgstr "отобразить известные ключи запроса"
 
 #: lib/poptQV.c:76
 msgid "query a spec file"
-msgstr "запросить spec-файл"
+msgstr "запросить файл спецификации"
 
 #: lib/poptQV.c:78
 msgid "query the pacakges triggered by the package"
@@ -2792,15 +2798,15 @@ msgstr "запросить пакеты с триггер-скриптами на пакет"
 
 #: lib/poptQV.c:80
 msgid "rpm verify mode"
-msgstr "режим запроса"
+msgstr "режим проверки rpm"
 
 #: lib/poptQV.c:82
 msgid "rpm verify mode (legacy)"
-msgstr ""
+msgstr "режим проверки rpm (старый)"
 
 #: lib/poptQV.c:84
 msgid "query the packages which require a capability"
-msgstr "найти пакеты, требующие сервиса"
+msgstr "найти пакеты, требующие сервис"
 
 #: lib/poptQV.c:86
 msgid "query the packages which provide a capability"
@@ -2808,7 +2814,7 @@ msgstr "найти пакеты, предоставляющие сервис"
 
 #: lib/poptQV.c:126
 msgid "list all configuration files"
-msgstr "показать все конфигурационные файлы"
+msgstr "показать все файлы конфигурации"
 
 #: lib/poptQV.c:128
 msgid "list all documentation files"
@@ -2816,15 +2822,15 @@ msgstr "показать все файлы документации"
 
 #: lib/poptQV.c:130
 msgid "dump basic file information"
-msgstr "вывести базовую информацию о файле"
+msgstr "показать основную информацию о файле"
 
 #: lib/poptQV.c:132
 msgid "list files in package"
-msgstr "показать файлы пакета"
+msgstr "показать список файлов пакета"
 
 #: lib/poptQV.c:136
 msgid "use the following query format"
-msgstr "исп. следующий формат запроса"
+msgstr "используйте следующий формат запроса"
 
 #: lib/poptQV.c:138
 msgid "substitute i18n sections into spec file"
@@ -2832,11 +2838,11 @@ msgstr "подставить секции i18n из следующего каталога"
 
 #: lib/poptQV.c:140
 msgid "display the states of the listed files"
-msgstr "показать состояние показанных файлов"
+msgstr "показать состояние списка файлов"
 
 #: lib/poptQV.c:142
 msgid "display a verbose file listing"
-msgstr "вывести детальный список файлов пакета"
+msgstr "показать детальный список файлов пакета"
 
 #: lib/problems.c:76
 #, c-format
@@ -2856,7 +2862,7 @@ msgstr "пакет %s-%s-%s - для другой архитектуры"
 #: lib/problems.c:104
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
-msgstr "пакет %s-%s-%s - для другой ОС"
+msgstr "пакет %s-%s-%s - для другой операционной системы"
 
 #: lib/problems.c:109
 #, c-format
@@ -2940,13 +2946,13 @@ msgstr "пакет не содержит списков ни хозяев файлов, ни их ID"
 #: lib/query.c:376
 #, c-format
 msgid "can't query %s: %s\n"
-msgstr "не могу удалить %s: %s\n"
+msgstr "не могу запросить %s: %s\n"
 
 #. XXX Fstrerror
 #: lib/query.c:493
 #, c-format
 msgid "open of %s failed: %s\n"
-msgstr "открытие %s не удалось: %s\n"
+msgstr "невозможно открыть %s: %s\n"
 
 #: lib/query.c:511
 msgid "old format source packages cannot be queried\n"
@@ -2965,7 +2971,7 @@ msgstr "ошибка запроса %s\n"
 #: lib/query.c:557
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr "запрос spec-файла %s не удался, не могу разобрать файл\n"
+msgstr "запрос файла спецификации %s не удался, невозможно разобрать файл\n"
 
 #: lib/query.c:580
 msgid "no packages\n"
@@ -3063,7 +3069,7 @@ msgstr "%s: ошибка rpmReadSignature\n"
 #: lib/rpmchecksig.c:134 lib/rpmchecksig.c:262
 #, c-format
 msgid "%s: No signature available\n"
-msgstr "%s: Подписи не доступны\n"
+msgstr "%s: Подпись не доступна\n"
 
 #: lib/rpmchecksig.c:167
 #, c-format
@@ -3082,7 +3088,7 @@ msgstr "%s: Подписи нет (RPM v1.0)\n"
 
 #: lib/rpmchecksig.c:412
 msgid "NOT OK"
-msgstr "НЕ Ok"
+msgstr "НЕ OК"
 
 #: lib/rpmchecksig.c:413 lib/rpmchecksig.c:427
 msgid " (MISSING KEYS:"
@@ -3094,7 +3100,7 @@ msgstr ") "
 
 #: lib/rpmchecksig.c:416 lib/rpmchecksig.c:430
 msgid " (UNTRUSTED KEYS:"
-msgstr " ("
+msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
 #: lib/rpmchecksig.c:418 lib/rpmchecksig.c:432
 msgid ")"
@@ -3102,12 +3108,12 @@ msgstr ")"
 
 #: lib/rpmchecksig.c:426
 msgid "OK"
-msgstr "Ok"
+msgstr "OК"
 
 #: lib/rpmdb.c:95
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
-msgstr ""
+msgstr "dbiTagsInit: имя ключа \"%s\" не известно, игнорируется\n"
 
 #: lib/rpmdb.c:258
 msgid ""
@@ -3117,6 +3123,12 @@ msgid ""
 "    and configure \"%%_dbapi 3\" (e.g. create and/or edit /etc/rpm/macros).\n"
 "\n"
 msgstr ""
+"\n"
+"--> Эта версия RPM не была собрана с поддержкой для \"%%_dbapi %d\".\n"
+"    Используя \"rpm --showrc\" проверьте значения макроса %%_dbapi и\n"
+"    определите \"%%_dbapi 3\" (т.е. создайте или поправьте "
+"/etc/rpm/macros).\n"
+"\n"
 
 #: lib/rpmdb.c:273
 #, c-format
@@ -3137,6 +3149,11 @@ msgid ""
 "    your database to db%d format by running \"rpm --rebuilddb\" as root.\n"
 "\n"
 msgstr ""
+"\n"
+"--> Невозможно открыть базу данных RPM в формате db%d.\n"
+"    Если пакет RPM был обновлен, необходимо переиндексировать базу данных\n"
+"    в формат db%d, запустив \"rpm --rebuilddb\" как root\n"
+"\n"
 
 #: lib/rpmdb.c:321
 msgid ""
@@ -3147,6 +3164,12 @@ msgid ""
 "/etc/rpm/macros).\n"
 "\n"
 msgstr ""
+"\n"
+"--> База данных db%d указана в макросе %%_dbapi, но обнаружена база данных\n"
+"    в формате db%d. Проверьте значение макроса %%_dbapi, используя\n"
+"    \"rpm --showrc\" и укажите \"%%_dbapi %d\" (т.е. создайте и/или\n"
+"    поправьте /etc/rpm/macros).\n"
+"\n"
 
 #: lib/rpmdb.c:336
 msgid ""
