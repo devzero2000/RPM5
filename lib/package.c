@@ -29,7 +29,7 @@
 /*@access FD_t @*/		/* XXX stealing digests */
 
 /*@unchecked@*/
-static int _print_pkts = 0;
+int _print_pkts = 0;
 
 /*@unchecked@*/
 static unsigned int nkeyids_max = 256;
