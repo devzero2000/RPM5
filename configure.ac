@@ -1109,6 +1109,7 @@ AC_SUBST(MARK64)
 
 dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
+autorelocate_dcolor='0'
 case "${build_cpu}" in
 *86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
 ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
@@ -1118,7 +1119,8 @@ alpha*)		RPMCANONCOLOR=0; RPMCANONARCH=alpha ;;
 sparc64*)	RPMCANONCOLOR=3; RPMCANONARCH=sparc64 ;;
 sparc*)		RPMCANONCOLOR=3; RPMCANONARCH=sparc ;;
 ia64*)		RPMCANONCOLOR=2; RPMCANONARCH=ia64;
-		autorelocate_path='/emul/%%{ARCH}-%%{OS}' ;;
+		autorelocate_path='/emul/%%{ARCH}-%%{OS}'
+		autorelocate_dcolor='1' ;;
 s390x*)		RPMCANONCOLOR=3; RPMCANONARCH=s390x ;;
 s390*)		RPMCANONCOLOR=0; RPMCANONARCH=s390 ;;
 powerpc64*|ppc64*)	RPMCANONCOLOR=3; RPMCANONARCH=ppc64 ;;
@@ -1150,6 +1152,7 @@ esac
 RPMCANONOS="$build_os_noversion"
 AC_SUBST(RPMCANONCOLOR)
 AC_SUBST(autorelocate_path)
+AC_SUBST(autorelocate_dcolor)
 AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)

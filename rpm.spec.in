@@ -485,6 +485,12 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Jul  5 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.5
+- change default behavior to resolve file conflicts as LIFO.
+- add --fileconflicts to recover rpm traditional behavior.
+- prefer elf64 over elf32 files, everywhere and always (#126853).
+- ia64: auto-relocate entire, not partial, directory contents (#126905).
+
 * Wed Jun 16 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.4
 - add ppc8[25]60 arches.
 
