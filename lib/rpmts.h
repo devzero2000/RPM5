@@ -7,10 +7,13 @@
  */
 
 #include "rpmps.h"
+#include "rpmsw.h"
 
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmts_debug;
+/*@unchecked@*/
+extern int _rpmts_stats;
 /*@unchecked@*/
 extern int _fps_debug;
 /*@=exportlocal@*/
@@ -58,6 +61,30 @@ typedef enum rpmVSFlags_e {
     RPMVSF_NOMD5 |		\
     RPMVSF_NODSA |		\
     RPMVSF_NORSA )
+
+/**
+ * Indices for timestamps.
+ */
+typedef	enum rpmtsOpX_e {
+    RPMTS_OP_TOTAL		=  0,
+    RPMTS_OP_CHECK		=  1,
+    RPMTS_OP_ORDER		=  2,
+    RPMTS_OP_FINGERPRINT	=  3,
+    RPMTS_OP_REPACKAGE		=  4,
+    RPMTS_OP_INSTALL		=  5,
+    RPMTS_OP_ERASE		=  6,
+    RPMTS_OP_SCRIPTLETS		=  7,
+    RPMTS_OP_COMPRESS		=  8,
+    RPMTS_OP_UNCOMPRESS		=  9,
+    RPMTS_OP_DIGEST		= 10,
+    RPMTS_OP_SIGNATURE		= 11,
+    RPMTS_OP_DBADD		= 12,
+    RPMTS_OP_DBREMOVE		= 13,
+    RPMTS_OP_DBGET		= 14,
+    RPMTS_OP_DBPUT		= 15,
+    RPMTS_OP_DBDEL		= 16,
+    RPMTS_OP_MAX		= 17
+} rpmtsOpX;
 
 #if defined(_RPMTS_INTERNAL)
 
@@ -114,6 +141,7 @@ struct rpmts_s {
 /*@null@*/
     int (*solve) (rpmts ts, rpmds key, const void * data)
 	/*@modifies ts @*/;	/*!< Search for NEVRA key. */
+/*@relnull@*/
     const void * solveData;	/*!< Solve callback data */
     int nsuggests;		/*!< No. of depCheck suggestions. */
 /*@only@*/ /*@null@*/
@@ -192,6 +220,8 @@ struct rpmts_s {
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
 
+    struct rpmop_s ops[RPMTS_OP_MAX];
+
 /*@null@*/
     pgpDig dig;			/*!< Current signature/pubkey parameters. */
 
@@ -214,7 +244,7 @@ extern "C" {
  * @return		0 on success
  */
 int rpmtsCheck(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -234,8 +264,8 @@ int rpmtsCheck(rpmts ts)
  * @return		no. of (added) packages that could not be ordered
  */
 int rpmtsOrder(rpmts ts)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies ts, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Process all package elements in a transaction set.
@@ -246,10 +276,8 @@ int rpmtsOrder(rpmts ts)
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState@*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Unreference a transaction instance.
@@ -303,7 +331,7 @@ int rpmtsCloseDB(rpmts ts)
  * @return		0 on success
  */
 int rpmtsOpenDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -314,7 +342,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
  * @return		0 on success
  */
 int rpmtsInitDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -323,7 +351,7 @@ int rpmtsInitDB(rpmts ts, int dbmode)
  * @return		0 on success
  */
 int rpmtsRebuildDB(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -332,7 +360,7 @@ int rpmtsRebuildDB(rpmts ts)
  * @return		0 on success
  */
 int rpmtsVerifyDB(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -346,7 +374,7 @@ int rpmtsVerifyDB(rpmts ts)
 /*@only@*/ /*@null@*/
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
@@ -355,7 +383,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
  * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
  */
 rpmRC rpmtsFindPubkey(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState */;
 
 /** \ingroup rpmts
@@ -377,7 +405,7 @@ int rpmtsCloseSDB(rpmts ts)
  */
 /*@-exportlocal@*/
 int rpmtsOpenSDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
@@ -390,7 +418,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
  */
 /*@-exportlocal@*/
 int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
@@ -439,16 +467,16 @@ void rpmtsCleanDig(rpmts ts)
  * @param ts		transaction set
  */
 void rpmtsClean(rpmts ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem , internalState@*/;
 
 /** \ingroup rpmts
  * Re-create an empty transaction set.
  * @param ts		transaction set
  */
 void rpmtsEmpty(rpmts ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Destroy transaction set, closing the database as well.
@@ -457,8 +485,8 @@ void rpmtsEmpty(rpmts ts)
  */
 /*@null@*/
 rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Get verify signatures flag(s).
@@ -711,8 +739,9 @@ int rpmtsNElements(rpmts ts)
  * Return (ordered) transaction set element.
  * @param ts		transaction set
  * @param ix		transaction element index
- * @return		transaction element
+ * @return		transaction element (or NULL)
  */
+/*@null@*/ /*@dependent@*/
 rpmte rpmtsElement(rpmts ts, int ix)
 	/*@*/;
 
@@ -769,6 +798,16 @@ Spec rpmtsSetSpec(rpmts ts, /*@null@*/ Spec spec)
 rpmte rpmtsRelocateElement(rpmts ts)
 	/*@*/;
 
+/** \ingroup rpmts
+ * Set current relocate transaction element.
+ * @param ts		transaction set
+ * @param relocateElement new relocate transaction element
+ * @return		previous relocate transaction element
+ */
+/*@null@*/
+rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
+	/*@modifies ts @*/;
+
 /**
  * Retrieve color bits of transaction set.
  * @param ts		transaction set
@@ -786,15 +825,15 @@ uint_32 rpmtsColor(rpmts ts)
 uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
 	/*@modifies ts @*/;
 
-/** \ingroup rpmts
- * Set current relocate transaction element.
+/**
+ * Retrieve operation timestamp from a transaction set.
  * @param ts		transaction set
- * @param relocateElement new relocate transaction element
- * @return		previous relocate transaction element
+ * @param opx		operation timestamp index
+ * @return		pointer to operation timestamp.
  */
 /*@null@*/
-rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
-	/*@modifies ts @*/;
+rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
+	/*@*/;
 
 /** \ingroup rpmts
  * Set transaction notify callback function and argument.
@@ -818,8 +857,8 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmts
  * Add package to be installed to transaction set.
@@ -837,7 +876,7 @@ rpmts rpmtsCreate(void)
 int rpmtsAddInstallElement(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext,
+	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, h, rpmcliPackagesTotal, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -865,8 +904,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 int rpmtsGetKeys(rpmts ts,
 		/*@null@*/ /*@out@*/ fnpyKey ** ep,
 		/*@null@*/ /*@out@*/ int * nep)
-	/*@globals fileSystem @*/
-	/*@modifies ts, ep, nep, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, ep, nep, fileSystem, internalState @*/;
 
 /**
  * Return (malloc'd) header name-version-release string.

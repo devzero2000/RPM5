@@ -10,6 +10,8 @@
 	- --queryformat '[%%{*:xml}\n]' to dump header content in XML.
 	- add ".arch" suffix to erase colored packages with identical NEVR.
 	- update ja man pages (#92261).
+	- backport rpmsw stopwatch, insturment rpmts operations.
+	- toy method to enable --stats through bindings.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

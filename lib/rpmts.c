@@ -63,6 +63,9 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@unchecked@*/
 int _rpmts_debug = 0;
 
+/*@unchecked@*/
+int _rpmts_stats = 0;
+
 char * hGetNEVR(Header h, const char ** np)
 {
     const char * n, * v, * r;
@@ -725,6 +728,43 @@ void rpmtsEmpty(rpmts ts)
 /*@=nullstate@*/
 }
 
+static void rpmtsPrintStat(const char * name, /*@null@*/ struct rpmop_s * op)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    static unsigned int scale = (1000 * 1000);
+    if (op != NULL && op->count > 0)
+	fprintf(stderr, "   %s %6d %6lu.%06lu MB %6lu.%06lu secs\n",
+		name, op->count,
+		(unsigned long)op->bytes/scale, (unsigned long)op->bytes%scale,
+		op->usecs/scale, op->usecs%scale);
+}
+
+static void rpmtsPrintStats(rpmts ts)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_TOTAL), 0);
+
+    rpmtsPrintStat("total:       ", rpmtsOp(ts, RPMTS_OP_TOTAL));
+    rpmtsPrintStat("check:       ", rpmtsOp(ts, RPMTS_OP_CHECK));
+    rpmtsPrintStat("order:       ", rpmtsOp(ts, RPMTS_OP_ORDER));
+    rpmtsPrintStat("fingerprint: ", rpmtsOp(ts, RPMTS_OP_FINGERPRINT));
+    rpmtsPrintStat("repackage:   ", rpmtsOp(ts, RPMTS_OP_REPACKAGE));
+    rpmtsPrintStat("install:     ", rpmtsOp(ts, RPMTS_OP_INSTALL));
+    rpmtsPrintStat("erase:       ", rpmtsOp(ts, RPMTS_OP_ERASE));
+    rpmtsPrintStat("scriptlets:  ", rpmtsOp(ts, RPMTS_OP_SCRIPTLETS));
+    rpmtsPrintStat("compress:    ", rpmtsOp(ts, RPMTS_OP_COMPRESS));
+    rpmtsPrintStat("uncompress:  ", rpmtsOp(ts, RPMTS_OP_UNCOMPRESS));
+    rpmtsPrintStat("digest:      ", rpmtsOp(ts, RPMTS_OP_DIGEST));
+    rpmtsPrintStat("signature:   ", rpmtsOp(ts, RPMTS_OP_SIGNATURE));
+    rpmtsPrintStat("dbadd:       ", rpmtsOp(ts, RPMTS_OP_DBADD));
+    rpmtsPrintStat("dbremove:    ", rpmtsOp(ts, RPMTS_OP_DBREMOVE));
+    rpmtsPrintStat("dbget:       ", rpmtsOp(ts, RPMTS_OP_DBGET));
+    rpmtsPrintStat("dbput:       ", rpmtsOp(ts, RPMTS_OP_DBPUT));
+    rpmtsPrintStat("dbdel:       ", rpmtsOp(ts, RPMTS_OP_DBDEL));
+}
+
 rpmts rpmtsFree(rpmts ts)
 {
     if (ts == NULL)
@@ -764,6 +804,9 @@ rpmts rpmtsFree(rpmts ts)
 	ts->pkpkt = _free(ts->pkpkt);
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
+
+    if (_rpmts_stats)
+	rpmtsPrintStats(ts);
 
     (void) rpmtsUnlink(ts, "tsCreate");
 
@@ -1275,6 +1318,17 @@ uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
     return ocolor;
 }
 
+rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
+{
+    rpmop op = NULL;
+
+    if (ts != NULL && opx >= 0 && opx < RPMTS_OP_MAX)
+	op = ts->ops + opx;
+/*@-usereleased -compdef @*/
+    return op;
+/*@=usereleased =compdef @*/
+}
+
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {
@@ -1320,6 +1374,8 @@ rpmts rpmtsCreate(void)
     rpmts ts;
 
     ts = xcalloc(1, sizeof(*ts));
+    memset(&ts->ops, 0, sizeof(ts->ops));
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_TOTAL), -1);
     ts->goal = TSM_UNKNOWN;
     ts->filesystemCount = 0;
     ts->filesystems = NULL;

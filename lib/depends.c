@@ -332,7 +332,7 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
-	/*@globals _cacheDependsRC, rpmGlobalMacroContext,
+	/*@globals _cacheDependsRC, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, _cacheDependsRC, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -377,7 +377,9 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 		memset(data, 0, sizeof(*data));
 		data->data = datap;
 		data->size = datalen;
+/*@-nullstate@*/ /* FIX: data->data may be NULL */
 		xx = dbiGet(dbi, dbcursor, key, data, DB_SET);
+/*@=nullstate@*/
 		DNEVR = key->data;
 		DNEVRlen = key->size;
 		datap = data->data;
@@ -576,7 +578,7 @@ exit:
 static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, requires, conflicts, rpmGlobalMacroContext,
 		fileSystem, internalState */
@@ -675,7 +677,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
  */
 static int checkPackageSet(rpmts ts, const char * dep,
 		/*@only@*/ /*@null@*/ rpmdbMatchIterator mi, int adding)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 1;
@@ -693,7 +695,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
+	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
 	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
@@ -716,7 +718,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
  * @return		0 no problems found
  */
 static int checkDependentPackages(rpmts ts, const char * dep)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmdbMatchIterator mi;
@@ -731,7 +733,7 @@ static int checkDependentPackages(rpmts ts, const char * dep)
  * @return		0 no problems found
  */
 static int checkDependentConflicts(rpmts ts, const char * dep)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int rc = 0;
@@ -815,12 +817,13 @@ static void freeBadDeps(void)
  */
 /*@-boundsread@*/
 static int ignoreDep(const rpmte p, const rpmte q)
-	/*@globals badDeps, badDepsInitialized @*/
-	/*@modifies badDeps, badDepsInitialized @*/
+	/*@globals badDeps, badDepsInitialized,
+		rpmGlobalMacroContext, h_errno @*/
+	/*@modifies badDeps, badDepsInitialized,
+		rpmGlobalMacroContext @*/
 {
     struct badDeps_s * bdp;
 
-/*@-globs -mods@*/
     if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
@@ -855,7 +858,6 @@ static int ignoreDep(const rpmte p, const rpmte q)
 	s = _free(s);
 	badDepsInitialized++;
     }
-/*@=globs =mods@*/
 
     /*@-compdef@*/
     if (badDeps != NULL)
@@ -1001,8 +1003,9 @@ static inline int addRelation(rpmts ts,
 		/*@dependent@*/ rpmte p,
 		unsigned char * selected,
 		rpmds requires)
-	/*@globals fileSystem @*/
-	/*@modifies ts, p, *selected, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, p, *selected, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
@@ -1070,10 +1073,8 @@ static inline int addRelation(rpmts ts,
     tsi->tsi_reqx = rpmdsIx(requires);
 
     tsi->tsi_next = rpmteTSI(q)->tsi_next;
-/*@-mods@*/
     rpmteTSI(q)->tsi_next = tsi;
     rpmteTSI(q)->tsi_qcnt++;			/* bump q successor count */
-/*@=mods@*/
     return 0;
 }
 /*@=mustmod@*/
@@ -1177,6 +1178,8 @@ int rpmtsOrder(rpmts ts)
 #ifdef	DYING
     rpmalMakeIndex(ts->addedPackages);
 #endif
+
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
     /* T1. Initialize. */
     if (oType == 0)
@@ -1579,6 +1582,8 @@ assert(newOrderCount == ts->orderCount);
 #endif
     freeBadDeps();
 
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
+
     return 0;
 }
 /*@=bounds@*/
@@ -1591,6 +1596,8 @@ int rpmtsCheck(rpmts ts)
     int closeatexit = 0;
     int xx;
     int rc;
+
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
     /* Do lazy, readonly, open of rpm database. */
     if (rpmtsGetRdb(ts) == NULL && ts->dbmode != -1) {
@@ -1716,6 +1723,9 @@ int rpmtsCheck(rpmts ts)
 exit:
     mi = rpmdbFreeIterator(mi);
     pi = rpmtsiFree(pi);
+
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
+
     /*@-branchstate@*/
     if (closeatexit)
 	xx = rpmtsCloseDB(ts);

@@ -107,6 +107,16 @@ static PyObject * setEpochPromote (PyObject * self, PyObject * args)
 
 /**
  */
+static PyObject * setStats (PyObject * self, PyObject * args)
+{
+    if (!PyArg_ParseTuple(args, "i", &_rpmts_stats))
+	return NULL;
+    Py_INCREF(Py_None);
+    return (PyObject *) Py_None;
+}
+
+/**
+ */
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS,
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
@@ -145,6 +155,8 @@ static PyMethodDef rpmModuleMethods[] = {
     { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS,
 	NULL },
     { "setEpochPromote", (PyCFunction) setEpochPromote, METH_VARARGS,
+	NULL },
+    { "setStats", (PyCFunction) setStats, METH_VARARGS,
 	NULL },
 
     { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS,

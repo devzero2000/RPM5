@@ -55,15 +55,14 @@ int rpmVersionCompare(Header first, Header second)
 
     if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &epochOne, NULL))
 	epochOne = NULL;
-    if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (void **) &epochTwo,
-			NULL))
+    if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (void **) &epochTwo, NULL))
 	epochTwo = NULL;
 
-    if (epochOne && !epochTwo)
+    if (epochOne != NULL && epochTwo == NULL)
 	return 1;
-    else if (!epochOne && epochTwo)
+    else if (epochOne == NULL && epochTwo != NULL)
 	return -1;
-    else if (epochOne && epochTwo) {
+    else if (epochOne != NULL && epochTwo != NULL) {
 /*@-boundsread@*/
 	if (*epochOne < *epochTwo)
 	    return -1;
@@ -244,14 +243,14 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     struct rpmpsm_s psmbuf;
     rpmpsm psm = &psmbuf;
     int isSource;
-    rpmRC rc;
+    rpmRC rpmrc;
     int i;
 
     memset(psm, 0, sizeof(*psm));
     psm->ts = rpmtsLink(ts, "InstallSourcePackage");
 
-    rc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
-    switch (rc) {
+    rpmrc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
+    switch (rpmrc) {
     case RPMRC_NOTTRUSTED:
     case RPMRC_NOKEY:
     case RPMRC_OK:
@@ -263,13 +262,13 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (h == NULL)
 	goto exit;
 
-    rc = RPMRC_OK;
+    rpmrc = RPMRC_OK;
 
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
     if (!isSource) {
 	rpmError(RPMERR_NOTSRPM, _("source package expected, binary found\n"));
-	rc = RPMRC_FAIL;
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -279,7 +278,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     h = headerFree(h);
 
     if (fi == NULL) {	/* XXX can't happen */
-	rc = RPMRC_FAIL;
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -348,16 +347,16 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     }
 
     _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
-    rc = rpmMkdirPath(_sourcedir, "sourcedir");
-    if (rc) {
-	rc = RPMRC_FAIL;
+    rpmrc = rpmMkdirPath(_sourcedir, "sourcedir");
+    if (rpmrc) {
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
     _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
-    rc = rpmMkdirPath(_specdir, "specdir");
-    if (rc) {
-	rc = RPMRC_FAIL;
+    rpmrc = rpmMkdirPath(_specdir, "specdir");
+    if (rpmrc) {
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -389,22 +388,22 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	specFile = t;
     } else {
 	rpmError(RPMERR_NOSPEC, _("source package contains no .spec file\n"));
-	rc = RPMRC_FAIL;
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
     psm->goal = PSM_PKGINSTALL;
 
     /*@-compmempass@*/	/* FIX: psm->fi->dnl should be owned. */
-    rc = rpmpsmStage(psm, PSM_PROCESS);
+    rpmrc = rpmpsmStage(psm, PSM_PROCESS);
 
     (void) rpmpsmStage(psm, PSM_FINI);
     /*@=compmempass@*/
 
-    if (rc) rc = RPMRC_FAIL;
+    if (rpmrc) rpmrc = RPMRC_FAIL;
 
 exit:
-    if (specFilePtr && specFile && rc == RPMRC_OK)
+    if (specFilePtr && specFile && rpmrc == RPMRC_OK)
 	*specFilePtr = specFile;
     else
 	specFile = _free(specFile);
@@ -433,7 +432,7 @@ exit:
 
     psm->ts = rpmtsFree(psm->ts);
 
-    return rc;
+    return rpmrc;
 }
 
 /*@observer@*/ /*@unchecked@*/
@@ -845,6 +844,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
 
     maxPrefixLength = 0;
+    if (prefixes != NULL)
     for (i = 0; i < numPrefixes; i++) {
 	len = strlen(prefixes[i]);
 	if (len > maxPrefixLength) maxPrefixLength = len;
@@ -857,7 +857,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
 	/*@-branchstate@*/
 	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
-	    if (freePrefixes) free(prefixes);
+	    if (prefixes != NULL && freePrefixes) free(prefixes);
 	    return RPMRC_FAIL;
 	}
 	/*@=branchstate@*/
@@ -954,6 +954,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    /*@=modobserver@*/
 	}
 
+	if (prefixes != NULL)
 	for (i = 0; i < numPrefixes; i++) {
 	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
 	    xx = doputenv(prefixBuf);
@@ -1208,7 +1209,7 @@ static rpmRC runTriggers(rpmpsm psm)
     if (numPackage < 0)
 	return RPMRC_NOTFOUND;
 
-    if (fi->h != NULL)	/* XXX can't happen */
+    if (fi != NULL && fi->h != NULL)	/* XXX can't happen */
     {	Header triggeredH;
 	rpmdbMatchIterator mi;
 	int countCorrection = psm->countCorrection;
@@ -2106,17 +2107,21 @@ assert(psm->mi == NULL);
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h == NULL)	break;	/* XXX can't happen */
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
 	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
 				ts, headerCheck);
 	else
 	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
 				NULL, NULL);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	break;
     case PSM_RPMDB_REMOVE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
 				NULL, NULL);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	break;
 
     default:

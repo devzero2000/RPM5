@@ -1206,6 +1206,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
 	/*@-branchstate@*/
  	fi = rpmfiInit(fi, 0);
@@ -1218,6 +1219,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	    /*@=dependenttrans@*/
 	}
 	/*@=branchstate@*/
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
     }
     pi = rpmtsiFree(pi);
 
@@ -1246,6 +1248,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 
 	if (fc == 0) continue;
 
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(fc, sizeof(*matches));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
@@ -1345,6 +1348,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	case TR_REMOVED:
 	    /*@switchbreak@*/ break;
 	}
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
     }
     pi = rpmtsiFree(pi);
     ps = rpmpsFree(ps);
@@ -1416,6 +1420,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 			numRemoved, NULL, ts->notifyData));
 		progress++;
 
+		(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_REPACKAGE), 0);
+
 	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
 		fi->mapflags |= CPIO_MAP_ABSOLUTE;
 		fi->mapflags |= CPIO_MAP_ADDDOT;
@@ -1426,6 +1432,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		fi->mapflags &= ~CPIO_MAP_ABSOLUTE;
 		fi->mapflags &= ~CPIO_MAP_ADDDOT;
 		fi->mapflags &= ~CPIO_ALL_HARDLINKS;
+
+		(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_REPACKAGE), 0);
 
 		/*@switchbreak@*/ break;
 	    }
@@ -1454,11 +1462,13 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	    continue;	/* XXX can't happen */
 	
 	psm = rpmpsmNew(ts, p, fi);
+assert(psm != NULL);
 	psm->unorderedSuccessor =
 		(rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
+	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
 
 	    pkgKey = rpmteAddedKey(p);
 
@@ -1553,8 +1563,12 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 
 	    p->h = headerFree(p->h);
 
+	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
+
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
+	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
+
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", rpmteNEVR(p));
 	    /*
 	     * XXX This has always been a hack, now mostly broken.
@@ -1564,6 +1578,9 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		if (rpmpsmStage(psm, PSM_PKGERASE))
 		    ourrc++;
 	    }
+
+	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
+
 	    /*@switchbreak@*/ break;
 	}
 	xx = rpmdbSync(rpmtsGetRdb(ts));
