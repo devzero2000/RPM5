@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-02-14 19:19-0500\n"
-"PO-Revision-Date: 2001-01-21 16:45-0500\n"
+"PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
@@ -446,7 +446,7 @@ msgstr "        --triggeredby <пакет>"
 
 #: rpm.c:340
 msgid "query packages triggered by <pkg>"
-msgstr "запросить пакеты с триггер-скриптами на <пакет>"
+msgstr "запросить пакеты с триггер-сценариями на <пакет>"
 
 #: rpm.c:341
 msgid "        --whatprovides <cap>"
@@ -510,11 +510,11 @@ msgstr "показать зависимости пакета"
 
 #: rpm.c:365
 msgid "print the various [un]install scripts"
-msgstr "вывести [де]инсталляционные скрипты пакета"
+msgstr "вывести [де]инсталляционные сценарии пакета"
 
 #: rpm.c:367
 msgid "show the trigger scripts contained in the package"
-msgstr "показать триггер-скрипты, содержащиеся в пакете"
+msgstr "показать триггер-сценарии, содержащиеся в пакете"
 
 #: rpm.c:371 rpmqv.c:593
 msgid ""
@@ -625,11 +625,11 @@ msgstr "не менять порядок установки пакетов для удовлетворения зависимостей"
 
 #: rpm.c:423
 msgid "don't execute any installation scripts"
-msgstr "не исполнять каких-либо установочных скриптов"
+msgstr "не исполнять каких-либо установочных сценариев"
 
 #: rpm.c:425 rpm.c:460 rpmqv.c:683
 msgid "don't execute any scripts triggered by this package"
-msgstr "не исполнять триггер-скриптов, взведенных на этот пакет"
+msgstr "не исполнять триггер-сценариев, взведенных на этот пакет"
 
 #: rpm.c:427 rpmqv.c:306 rpmqv.c:651
 msgid "print percentages as package installs"
@@ -685,7 +685,7 @@ msgstr ""
 
 #: rpm.c:458 rpmqv.c:681
 msgid "do not execute any package specific scripts"
-msgstr "не исполнять никаких скриптов, специфичных для пакета"
+msgstr "не исполнять никаких сценариев, специфичных для пакета"
 
 #: rpm.c:464
 msgid "    -b<stage> <spec>      "
@@ -1007,7 +1007,7 @@ msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--noscripts может быть указан только при установке, удалении и верификации "
+"--noscripts может быть указан только при установке, удалении и проверки "
 "пакета"
 
 #: rpm.c:917
@@ -1015,7 +1015,7 @@ msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--notriggers может быть указан только при установке, удалении и верификации "
+"--notriggers может быть указан только при установке, удалении и проверки "
 "пакета"
 
 #: rpm.c:921 rpmqv.c:1162
@@ -1023,8 +1023,8 @@ msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
-"--nodeps может быть указан только при сборке, установке, удалении и "
-"верификации пакетов"
+"--nodeps может быть указан только при сборке, установке, удалении и проверки "
+"пакетов"
 
 #: rpm.c:926 rpmqv.c:1167
 msgid ""
@@ -1247,11 +1247,11 @@ msgstr "<файл пакета>+"
 
 #: rpmqv.c:297 rpmqv.c:601
 msgid "do not execute scripts (if any)"
-msgstr "не исполнять никаких скриптов (если есть)"
+msgstr "не исполнять никаких сценариев (если есть)"
 
 #: rpmqv.c:300 rpmqv.c:649
 msgid "don't execute any scriptlets triggered by this package"
-msgstr "не исполнять триггер-скриптов, взведенных на этот пакет"
+msgstr "не исполнять триггер-сценариев, взведенных на этот пакет"
 
 #: rpmqv.c:313
 msgid "<oldpath>=<newpath>"
@@ -1466,7 +1466,7 @@ msgstr "     --triggeredby <пакет>"
 
 #: rpmqv.c:557
 msgid "query/verify packages triggered by <pkg>"
-msgstr "запросить/проверить пакеты с триггер-скриптами на пакет <пакет>"
+msgstr "запросить/проверить пакеты с триггер-сценариями на пакет <пакет>"
 
 #: rpmqv.c:558
 msgid "     --whatprovides <cap> "
@@ -1502,11 +1502,11 @@ msgstr "показать сервисы, необходимые для пакета"
 
 #: rpmqv.c:588
 msgid "print the various [un]install scriptlets"
-msgstr "вывести разнообразные [де]инсталляционные скрипты"
+msgstr "вывести разнообразные [де]инсталляционные сценарии"
 
 #: rpmqv.c:590
 msgid "show the trigger scriptlets contained in the package"
-msgstr "показать триггер-скрипты, содержащиеся в пакете"
+msgstr "показать триггер-сценарии, содержащиеся в пакете"
 
 #: rpmqv.c:616
 msgid "   --install <packagefile>"
@@ -1522,7 +1522,7 @@ msgstr "     --excludepath <путь> "
 
 #: rpmqv.c:647
 msgid "don't execute any installation scriptlets"
-msgstr "не исполнять каких-либо установочных скриптов"
+msgstr "не исполнять каких-либо установочных сценариев"
 
 #: rpmqv.c:652
 msgid "     --prefix <dir>       "
@@ -2251,7 +2251,7 @@ msgstr "строка %d: Ошибка анализа %s: %s\n"
 #: build/parseScript.c:174
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
-msgstr "строка %d: Программы в скриптах должны начинаться с '/': %s\n"
+msgstr "строка %d: Программы в сценариях должны начинаться с '/': %s\n"
 
 #: build/parseScript.c:216
 #, c-format
@@ -2797,12 +2797,12 @@ msgstr "установка прекращается, т.к. мы исполняем --test\n"
 
 #: lib/install.c:1028
 msgid "running preinstall script (if any)\n"
-msgstr "исполняется скрипт preinstall (если есть)\n"
+msgstr "исполняется сценарий preinstall (если есть)\n"
 
 #: lib/install.c:1036
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
-"пропускается установка %s-%s-%s, ошибка скриптa %%pre: код возврата: %d\n"
+"пропускается установка %s-%s-%s, ошибка сценария %%pre: код возврата: %d\n"
 
 #: lib/install.c:1069
 #, c-format
@@ -2816,7 +2816,7 @@ msgstr "%s сохранен как %s\n"
 
 #: lib/install.c:1199
 msgid "running postinstall scripts (if any)\n"
-msgstr "выполняется скрипт postinstall (если есть)\n"
+msgstr "выполняется сценарий postinstall (если есть)\n"
 
 #: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
 #, c-format
@@ -2993,7 +2993,7 @@ msgstr "<файл спецификации>"
 
 #: lib/poptQV.c:84
 msgid "query the package(s) triggered by the package"
-msgstr "запросить пакеты с триггер-скриптами на пакет"
+msgstr "запросить пакеты с триггер-сценариями на пакет"
 
 #: lib/poptQV.c:86
 msgid "rpm verify mode"
@@ -3873,7 +3873,7 @@ msgstr "файлы будут удалены; test = %d\n"
 
 #: lib/uninstall.c:233
 msgid "running postuninstall script (if any)\n"
-msgstr "выполняется скрипт postuninstall (если есть)\n"
+msgstr "выполняется сценарий postuninstall (если есть)\n"
 
 #: lib/uninstall.c:436
 #, c-format
@@ -3881,12 +3881,12 @@ msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
 msgstr ""
-"ошибка получения кода возврата скрипта %s из %s-%s-%s, waitpid вернул %s\n"
+"ошибка получения кода возврата сценария %s из %s-%s-%s, waitpid вернул %s\n"
 
 #: lib/uninstall.c:443
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
-msgstr "ошибка выполнения скрипта %s из %s-%s-%s, код возврата %d\n"
+msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
 #: lib/verify.c:59
 msgid "don't verify files in package"
