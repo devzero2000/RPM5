@@ -200,6 +200,16 @@
 #
 #%vendor
 
+# Preferred db interface:
+#	0	linux glibc libdb1 routines.
+#	1	db_185.h interface in db2/db3 libdb.a.
+#	2	native db2 interface.
+#	3	native db3 interface.
+%_preferdb		2
+
+# Filter duplicate entries in db (needed only to correct bug pre rpm-3.0.4)
+%_filterdbdups		no
+
 #==============================================================================
 # ---- per-platform macros.
 #	Macros that are specific to an individual platform. The values here
