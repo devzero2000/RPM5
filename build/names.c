@@ -143,10 +143,8 @@ time_t *const getBuildTime(void)
 {
     static time_t buildTime = 0;
 
-    if (! buildTime) {
+    if (! buildTime)
 	buildTime = time(NULL);
-    }
-
     return &buildTime;
 }
 
