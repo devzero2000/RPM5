@@ -613,6 +613,9 @@ void rpmalMakeIndex(rpmal al)
 	alp = al->list + i;
 	rpmalAddProvides(al, (alKey)i, alp->provides, alp->tscolor);
     }
+
+    /* Reset size to the no. of provides added. */
+    ai->size = ai->k;
     qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
 }
 
