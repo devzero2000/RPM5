@@ -413,7 +413,7 @@ static int addDefault(defaultEntry * table, int * tableLen, char * line,
     return 0;
 }
 
-static /*@null@*/ const canonEntry lookupInCanonTable(const char * name,
+static /*@null@*/ canonEntry lookupInCanonTable(const char * name,
 		const canonEntry table, int tableLen)
 	/*@*/
 {
@@ -1400,7 +1400,7 @@ void rpmGetOsInfo(const char ** name, int * num)
     getMachineInfo(OS, name, num);
 }
 
-void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
+static void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
 {
 
     char *ca = NULL, *co = NULL, *ct = NULL;
