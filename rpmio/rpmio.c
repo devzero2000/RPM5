@@ -225,6 +225,7 @@ DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
 	/*@fallthrough@*/
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_HKP:
     case URL_IS_FTP:
     case URL_IS_DASH:
 	break;
@@ -757,6 +758,7 @@ const char *urlStrerror(const char *url)
     switch (urlIsURL(url)) {
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_HKP:
     case URL_IS_FTP:
     {	urlinfo u;
 /* XXX This only works for httpReq/ftpLogin/ftpReq failures */
@@ -1885,6 +1887,7 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
 	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_HKP:
     case URL_IS_FTP:
     case URL_IS_DASH:
     default:
@@ -1965,7 +1968,9 @@ int ufdClose( /*@only@*/ void * cookie)
 
 	/* XXX Why not (u->urltype == URL_IS_HTTP) ??? */
 	/* XXX Why not (u->urltype == URL_IS_HTTPS) ??? */
-	if (u->scheme != NULL && !strncmp(u->scheme, "http", sizeof("http")-1))
+	/* XXX Why not (u->urltype == URL_IS_HKP) ??? */
+	if (u->scheme != NULL
+	 && (!strncmp(u->scheme, "http", sizeof("http")-1) || !strncmp(u->scheme, "hkp", sizeof("hkp")-1)))
 	{
 	    if (fd->wr_chunked) {
 		int rc;
@@ -1974,8 +1979,10 @@ int ufdClose( /*@only@*/ void * cookie)
 		if (!noNeon) {
 		    fd->wr_chunked = 0;
 		    /* HACK: flimsy wiring for davWrite */
+#if 0	/* HACK build against upstream neon for now. */
 		    rc = ne_send_request_chunk(fd->req, (void *)NULL, (size_t)0);
 		    rc = ne_finish_request(fd->req);
+#endif
 		    rc = davResp(u, fd, NULL);
 		} else
 #endif
@@ -2167,6 +2174,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_HKP:
       if (!noNeon) {
 	fd = davOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
@@ -3115,6 +3123,7 @@ fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 	switch (urlIsURL(path)) {
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
+	case URL_IS_HKP:
 	    isHTTP = 1;
 	    /*@fallthrough@*/
 	case URL_IS_PATH:

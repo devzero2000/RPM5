@@ -107,6 +107,7 @@ int Mkdir (const char * path, mode_t mode)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -136,6 +137,7 @@ int Chdir (const char * path)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -163,6 +165,7 @@ int Rmdir (const char * path)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -193,6 +196,7 @@ int Rename (const char * oldpath, const char * newpath)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -217,6 +221,7 @@ fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (i
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -239,6 +244,7 @@ int Link (const char * oldpath, const char * newpath)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -261,6 +267,7 @@ fprintf(stderr, "*** link old %*s new %*s\n", (int)(oe - oldpath), oldpath, (int
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -289,6 +296,7 @@ int Unlink(const char * path) {
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -1291,6 +1299,7 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -1320,6 +1329,7 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -1349,6 +1359,7 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -1375,6 +1386,7 @@ fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -1464,6 +1476,7 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -1500,6 +1513,7 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
+    case URL_IS_HKP:
     default:
 	return NULL;
 	/*@notreached@*/ break;

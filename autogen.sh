@@ -35,6 +35,9 @@ fi
 if [ -d file ]; then
     (echo "--- file"; cd file; ./autogen.sh --noconfigure "$@")
 fi
+if [ -d neon ]; then
+    (echo "--- neon"; cd neon; ./autogen.sh "$@")
+fi
 
 echo "--- rpm"
 libtoolize --copy --force

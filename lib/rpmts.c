@@ -944,6 +944,7 @@ const char * rpmtsRootDir(rpmts ts)
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
+	case URL_IS_HKP:
 	case URL_IS_DASH:
 	default:
 	    rootDir = "/";
