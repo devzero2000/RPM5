@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-11-15 18:01-0500\n"
+"POT-Creation-Date: 2000-11-15 18:13-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2142,45 +2142,45 @@ msgstr ""
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:760
+#: lib/cpio.c:756
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1246
+#: lib/cpio.c:1242
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1249
+#: lib/cpio.c:1245
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1250
+#: lib/cpio.c:1246
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1264
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1269
+#: lib/cpio.c:1265
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1270
+#: lib/cpio.c:1266
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1271
+#: lib/cpio.c:1267
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1272
+#: lib/cpio.c:1268
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1281
+#: lib/cpio.c:1277
 msgid " failed - "
 msgstr ""
 

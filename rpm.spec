@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.9
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -272,6 +272,13 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Nov 15 2000 Jeff Johnson <jbj@redhat.com>
+- fix: segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" (#20595).
+- hpux w/o -D_OPEN_SOURCE has not h_errno.
+- verify MD5 sums of payload files when unpacking archive.
+- hide libio lossage in prototype, not API.
+- add support for SHA1 as well as MD5 message digests.
+
 * Mon Nov 13 2000 Jeff Johnson <jbj@redhat.com>
 - fix: work around for (mis-compilation?!) segfaults on signature paths.
 

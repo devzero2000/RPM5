@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-11-13 16:30-0500\n"
+"POT-Creation-Date: 2000-11-15 18:13-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2285,51 +2285,55 @@ msgstr "riadok %d: Chybné no%s èíslo: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
 
-#: lib/cpio.c:362
+#: lib/cpio.c:444
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "premenovanie %s na %s zlyhalo: %s\n"
 
-#: lib/cpio.c:368
+#: lib/cpio.c:450
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "zmazanie %s zlyhalo: %s\n"
 
-#: lib/cpio.c:612
+#: lib/cpio.c:756
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1242
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(chyba 0x%x)"
 
-#: lib/cpio.c:1076
+#: lib/cpio.c:1245
 msgid "Bad magic"
 msgstr "Chybné magické èíslo"
 
-#: lib/cpio.c:1077
+#: lib/cpio.c:1246
 msgid "Bad/unreadable  header"
 msgstr "Chybná/neèitateµná hlavièka"
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1264
 msgid "Header size too big"
 msgstr "Priveµká hlavièka"
 
-#: lib/cpio.c:1096
+#: lib/cpio.c:1265
 msgid "Unknown file type"
 msgstr "Neznámy typ súboru"
 
-#: lib/cpio.c:1097
+#: lib/cpio.c:1266
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1098
+#: lib/cpio.c:1267
+msgid "MD5 sum mismatch"
+msgstr ""
+
+#: lib/cpio.c:1268
 msgid "Internal error"
 msgstr "Interná chyba"
 
-#: lib/cpio.c:1107
+#: lib/cpio.c:1277
 msgid " failed - "
 msgstr " zlyhalo - "
 
@@ -2565,26 +2569,26 @@ msgstr ""
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
-#: lib/fs.c:56
+#: lib/fs.c:58
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 
-#: lib/fs.c:91 lib/fs.c:261
+#: lib/fs.c:93 lib/fs.c:263
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr "nepodarilo sa zisti» stav %s: %s"
 
-#: lib/fs.c:127
+#: lib/fs.c:129
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/fs.c:132
+#: lib/fs.c:134
 #, c-format
 msgid "failed to open %s: %s"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/fs.c:283
+#: lib/fs.c:285
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr "súbor %s sa nachádza na neznámom zariadení"
@@ -2594,7 +2598,7 @@ msgstr "súbor %s sa nachádza na neznámom zariadení"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
 
-#: lib/header.c:250 lib/header.c:721 lib/install.c:324
+#: lib/header.c:250 lib/header.c:721 lib/install.c:330
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ údajov %d nie je podorovaný\n"
@@ -2665,108 +2669,108 @@ msgstr "| oèakávené na konci výrazu"
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
-#: lib/install.c:149 lib/uninstall.c:182
+#: lib/install.c:155 lib/uninstall.c:182
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   súbor: akcia %s: %s\n"
 
-#: lib/install.c:168
+#: lib/install.c:174
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr "pou¾ívateµ %s neexistuje - pou¾ije sa root"
 
-#: lib/install.c:176
+#: lib/install.c:182
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr "skupina %s neexistuje - pou¾ije sa root"
 
-#: lib/install.c:205
+#: lib/install.c:211
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr "hodnota %%instchangelog v makro-súbore by mala by» èíselná, ale nie je"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:583
+#: lib/install.c:590
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "rozbalenie archívu zlyhalo%s%s: %s"
 
-#: lib/install.c:584
+#: lib/install.c:591
 msgid " on file "
 msgstr " pre súbor "
 
-#: lib/install.c:628
+#: lib/install.c:635
 msgid "installing a source package\n"
 msgstr "in¹taluje sa zdrojový balík\n"
 
-#: lib/install.c:648
+#: lib/install.c:655
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: lib/install.c:654 lib/install.c:684
+#: lib/install.c:661 lib/install.c:691
 #, c-format
 msgid "cannot write to %s"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: lib/install.c:658
+#: lib/install.c:665
 #, c-format
 msgid "sources in: %s\n"
 msgstr "zdroje v: %s\n"
 
-#: lib/install.c:678
+#: lib/install.c:685
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: lib/install.c:688
+#: lib/install.c:695
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec-súbor v: %s\n"
 
-#: lib/install.c:722 lib/install.c:750
+#: lib/install.c:729 lib/install.c:757
 msgid "source package contains no .spec file"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: lib/install.c:772
+#: lib/install.c:779
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/install.c:774 lib/install.c:1047 lib/uninstall.c:28
+#: lib/install.c:781 lib/install.c:1054 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "premenovanie %s na %s zlyhalo: %s"
 
-#: lib/install.c:866
+#: lib/install.c:873
 msgid "source package expected, binary found"
 msgstr "oèakávaný zdrojový balík, nájdený binárny"
 
-#: lib/install.c:916
+#: lib/install.c:923
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "balík: %s-%s-%s test súborov = %d\n"
 
-#: lib/install.c:976
+#: lib/install.c:983
 msgid "stopping install as we're running --test\n"
 msgstr "in¹talácia zastavená kvôli re¾imu --test\n"
 
-#: lib/install.c:981
+#: lib/install.c:988
 msgid "running preinstall script (if any)\n"
 msgstr "vykonávajú sa predin¹talaèné skripty (ak existujú)\n"
 
-#: lib/install.c:1006
+#: lib/install.c:1013
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "varovanie: %s vytvorené ako %s"
 
-#: lib/install.c:1043
+#: lib/install.c:1050
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/install.c:1131
+#: lib/install.c:1138
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "vykonávajú sa poin¹talaèné skripty (ak existujú)\n"
@@ -3854,59 +3858,59 @@ msgstr "chýbajúce    %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: rpmio/rpmio.c:529
+#: rpmio/rpmio.c:538
 msgid "Success"
 msgstr "Úspech"
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:541
 msgid "Bad server response"
 msgstr "Chybná odpoveï servera"
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:544
 msgid "Server IO error"
 msgstr "Chyba vstupu/výstupu servera"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:547
 msgid "Server timeout"
 msgstr "Prekroèenie èasového limitu servera"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:550
 msgid "Unable to lookup server host address"
 msgstr "Nie je mo¾né vyhµada» adresu servera"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:553
 msgid "Unable to lookup server host name"
 msgstr "Nie je mo¾né vyhµada» názov servera"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:556
 msgid "Failed to connect to server"
 msgstr "Pripojenie k serveru zlyhalo"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:559
 msgid "Failed to establish data connection to server"
 msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:562
 msgid "IO error to local file"
 msgstr "Chyba vstupu/výstupu lokálneho súboru"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:565
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:568
 msgid "File not found on server"
 msgstr "Súbor sa na serveri nenachádza"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:571
 msgid "Abort in progress"
 msgstr "Zru¹enie prebieha"
 
-#: rpmio/rpmio.c:566
+#: rpmio/rpmio.c:575
 msgid "Unknown or unexpected error"
 msgstr "Neznáma alebo neoèakávaná chyba"
 
-#: rpmio/rpmio.c:1161
+#: rpmio/rpmio.c:1170
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prihlasuje sa na %s ako %s, heslo %s\n"
@@ -4009,47 +4013,47 @@ msgstr "fatálna chyba: "
 msgid "internal error (rpm bug?): "
 msgstr "interná chyba (chyba rpm?): "
 
-#: rpmio/rpmmalloc.c:9
+#: rpmio/rpmmalloc.c:13
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:88
+#: rpmio/url.c:95
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:105
+#: rpmio/url.c:114
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:132
+#: rpmio/url.c:142
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:218
+#: rpmio/url.c:228
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Heslo pre %s@%s: "
 
-#: rpmio/url.c:244 rpmio/url.c:270
+#: rpmio/url.c:252 rpmio/url.c:278
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "chyba: %sport musí by» èíslo\n"
 
-#: rpmio/url.c:406
+#: rpmio/url.c:416
 msgid "url port must be a number\n"
 msgstr "url port musí by» èíslo\n"
 
-#: rpmio/url.c:446
+#: rpmio/url.c:456
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
 #. XXX Fstrerror
-#: rpmio/url.c:463
+#: rpmio/url.c:473
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"

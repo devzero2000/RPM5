@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-11-13 16:30-0500\n"
+"POT-Creation-Date: 2000-11-15 18:13-0500\n"
 "PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2175,51 +2175,55 @@ msgstr "rad %d: Felaktigt no%s-tal: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "rad %d: Felaktigt %s-tal: %s\n"
 
-#: lib/cpio.c:362
+#: lib/cpio.c:444
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "kan inte flytta %s till %s: %s\n"
 
-#: lib/cpio.c:368
+#: lib/cpio.c:450
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "kan inte ta bort %s: %s\n"
 
-#: lib/cpio.c:612
+#: lib/cpio.c:756
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1242
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(fel 0x%x)"
 
-#: lib/cpio.c:1076
+#: lib/cpio.c:1245
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
 
-#: lib/cpio.c:1077
+#: lib/cpio.c:1246
 msgid "Bad/unreadable  header"
 msgstr "Felaktigt/oläsbart huvud"
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1264
 msgid "Header size too big"
 msgstr "Huvudstorlek för stor"
 
-#: lib/cpio.c:1096
+#: lib/cpio.c:1265
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: lib/cpio.c:1097
+#: lib/cpio.c:1266
 msgid "Missing hard link"
 msgstr "Saknad hårdlänk"
 
-#: lib/cpio.c:1098
+#: lib/cpio.c:1267
+msgid "MD5 sum mismatch"
+msgstr ""
+
+#: lib/cpio.c:1268
 msgid "Internal error"
 msgstr "Internt fel"
 
-#: lib/cpio.c:1107
+#: lib/cpio.c:1277
 msgid " failed - "
 msgstr " misslyckades - "
 
@@ -2462,26 +2466,26 @@ msgstr ""
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
-#: lib/fs.c:56
+#: lib/fs.c:58
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr "mntctl() kunde inte returnera fugger-storlek: %s"
 
-#: lib/fs.c:91 lib/fs.c:261
+#: lib/fs.c:93 lib/fs.c:263
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr "kunde inte ta status på %s: %s"
 
-#: lib/fs.c:127
+#: lib/fs.c:129
 msgid "getting list of mounted filesystems\n"
 msgstr "hämtar lista över monterade filsystem\n"
 
-#: lib/fs.c:132
+#: lib/fs.c:134
 #, c-format
 msgid "failed to open %s: %s"
 msgstr "kunde inte öppna %s: %s"
 
-#: lib/fs.c:283
+#: lib/fs.c:285
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr "filen %s är på en okänd enhet"
@@ -2491,7 +2495,7 @@ msgstr "filen %s är på en okänd enhet"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
 
-#: lib/header.c:250 lib/header.c:721 lib/install.c:324
+#: lib/header.c:250 lib/header.c:721 lib/install.c:330
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatyp %d stöds inte\n"
@@ -2562,108 +2566,108 @@ msgstr "| förväntades vid slutet på uttryck"
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
-#: lib/install.c:149 lib/uninstall.c:182
+#: lib/install.c:155 lib/uninstall.c:182
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   fil: %s åtgärd: %s\n"
 
-#: lib/install.c:168
+#: lib/install.c:174
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr "användaren %s finns inte - använder root"
 
-#: lib/install.c:176
+#: lib/install.c:182
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr "gruppen %s finns inte - använder root"
 
-#: lib/install.c:205
+#: lib/install.c:211
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr "%%instchangelog-värde i makrofil skall vara ett tal, men är inte det"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:583
+#: lib/install.c:590
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "uppackning av arkiv misslyckades%s%s: %s"
 
-#: lib/install.c:584
+#: lib/install.c:591
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/install.c:628
+#: lib/install.c:635
 msgid "installing a source package\n"
 msgstr "installerar källpaket\n"
 
-#: lib/install.c:648
+#: lib/install.c:655
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "kan inte skapa källkatalog %s"
 
-#: lib/install.c:654 lib/install.c:684
+#: lib/install.c:661 lib/install.c:691
 #, c-format
 msgid "cannot write to %s"
 msgstr "kan inte skriva till %s"
 
-#: lib/install.c:658
+#: lib/install.c:665
 #, c-format
 msgid "sources in: %s\n"
 msgstr "källkod i: %s\n"
 
-#: lib/install.c:678
+#: lib/install.c:685
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "kan inte skapa spec-katalog %s"
 
-#: lib/install.c:688
+#: lib/install.c:695
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec-fil i: %s\n"
 
-#: lib/install.c:722 lib/install.c:750
+#: lib/install.c:729 lib/install.c:757
 msgid "source package contains no .spec file"
 msgstr "källpaket innehåller ingen spec-fil"
 
-#: lib/install.c:772
+#: lib/install.c:779
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "byter namn på %s till %s\n"
 
-#: lib/install.c:774 lib/install.c:1047 lib/uninstall.c:28
+#: lib/install.c:781 lib/install.c:1054 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "namnbyte från %s till %s misslyckades: %s"
 
-#: lib/install.c:866
+#: lib/install.c:873
 msgid "source package expected, binary found"
 msgstr "källpaket förväntades, fann binärpaket"
 
-#: lib/install.c:916
+#: lib/install.c:923
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s filtest = %d\n"
 
-#: lib/install.c:976
+#: lib/install.c:983
 msgid "stopping install as we're running --test\n"
 msgstr "avbryter installation eftersom vi kör --test\n"
 
-#: lib/install.c:981
+#: lib/install.c:988
 msgid "running preinstall script (if any)\n"
 msgstr "kör (eventuellt) preinstalltionsskript\n"
 
-#: lib/install.c:1006
+#: lib/install.c:1013
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "varning: %s skapades som %s"
 
-#: lib/install.c:1043
+#: lib/install.c:1050
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "varning: %s sparades som %s"
 
-#: lib/install.c:1131
+#: lib/install.c:1138
 msgid "running postinstall scripts (if any)\n"
 msgstr "kör (eventuellt) postinstallationsskript\n"
 
@@ -3750,59 +3754,59 @@ msgstr "saknas     %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
-#: rpmio/rpmio.c:529
+#: rpmio/rpmio.c:538
 msgid "Success"
 msgstr "Lyckades"
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:541
 msgid "Bad server response"
 msgstr "Konstigt svar från server"
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:544
 msgid "Server IO error"
 msgstr "IO-fel mot server"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:547
 msgid "Server timeout"
 msgstr "Förbindelsen med servern dog ut (timeout)"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:550
 msgid "Unable to lookup server host address"
 msgstr "Kunde inte slå upp serverns adress"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:553
 msgid "Unable to lookup server host name"
 msgstr "Kunde inte slå upp serverns namn"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:556
 msgid "Failed to connect to server"
 msgstr "Misslyckades med att kontakta servern"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:559
 msgid "Failed to establish data connection to server"
 msgstr "Misslyckades med att etablera en dataförbindelse till servern"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:562
 msgid "IO error to local file"
 msgstr "IO-fel mot lokal fil"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:565
 msgid "Error setting remote server to passive mode"
 msgstr "Fel när den fjärrservern sattes i passivt läge"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:568
 msgid "File not found on server"
 msgstr "Filen fanns inte på servern"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:571
 msgid "Abort in progress"
 msgstr "Avbruten under gång"
 
-#: rpmio/rpmio.c:566
+#: rpmio/rpmio.c:575
 msgid "Unknown or unexpected error"
 msgstr "Okänt eller oväntat fel"
 
-#: rpmio/rpmio.c:1161
+#: rpmio/rpmio.c:1170
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "loggar in på %s som %s, lösenord %s\n"
@@ -3905,47 +3909,47 @@ msgstr "fatalt fel: "
 msgid "internal error (rpm bug?): "
 msgstr "internt fel (fel i rpm?): "
 
-#: rpmio/rpmmalloc.c:9
+#: rpmio/rpmmalloc.c:13
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "minnesallokering (%u byte) returnerade NULL.\n"
 
-#: rpmio/url.c:88
+#: rpmio/url.c:95
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "varning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:105
+#: rpmio/url.c:114
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "varning: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:132
+#: rpmio/url.c:142
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "varning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:218
+#: rpmio/url.c:228
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Lösenord för %s@%s: "
 
-#: rpmio/url.c:244 rpmio/url.c:270
+#: rpmio/url.c:252 rpmio/url.c:278
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "fel: %s-port måste vara ett tal\n"
 
-#: rpmio/url.c:406
+#: rpmio/url.c:416
 msgid "url port must be a number\n"
 msgstr "url-port måste vara ett tal\n"
 
-#: rpmio/url.c:446
+#: rpmio/url.c:456
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunde inte öppna %s: %s\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:463
+#: rpmio/url.c:473
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"

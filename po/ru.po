@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-11-13 16:30-0500\n"
+"POT-Creation-Date: 2000-11-15 18:13-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2200,51 +2200,55 @@ msgstr "строка %d: Неверное число no%s: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "строка %d: Неверное число %s: %s\n"
 
-#: lib/cpio.c:362
+#: lib/cpio.c:444
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "невозможно переименовать %s в %s: %s\n"
 
-#: lib/cpio.c:368
+#: lib/cpio.c:450
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "невозможно удалить ссылку %s: %s\n"
 
-#: lib/cpio.c:612
+#: lib/cpio.c:756
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1242
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(ошибка 0x%x)"
 
-#: lib/cpio.c:1076
+#: lib/cpio.c:1245
 msgid "Bad magic"
 msgstr "Неверный magic"
 
-#: lib/cpio.c:1077
+#: lib/cpio.c:1246
 msgid "Bad/unreadable  header"
 msgstr "Неверный/нечитаемый заголовок"
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1264
 msgid "Header size too big"
 msgstr "Заголовок слишком велик"
 
-#: lib/cpio.c:1096
+#: lib/cpio.c:1265
 msgid "Unknown file type"
 msgstr "Неизвестный тип файла"
 
-#: lib/cpio.c:1097
+#: lib/cpio.c:1266
 msgid "Missing hard link"
 msgstr "Отсутствует жесткая ссылка"
 
-#: lib/cpio.c:1098
+#: lib/cpio.c:1267
+msgid "MD5 sum mismatch"
+msgstr ""
+
+#: lib/cpio.c:1268
 msgid "Internal error"
 msgstr "Внутренняя ошибка"
 
-#: lib/cpio.c:1107
+#: lib/cpio.c:1277
 msgid " failed - "
 msgstr "не удалось - "
 
@@ -2487,26 +2491,26 @@ msgstr ""
 msgid "(not a number)"
 msgstr "(не число)"
 
-#: lib/fs.c:56
+#: lib/fs.c:58
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr "mntctl() не возвратил значение размера fugger: %s"
 
-#: lib/fs.c:91 lib/fs.c:261
+#: lib/fs.c:93 lib/fs.c:263
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr "невозможно получить информацию о %s: %s"
 
-#: lib/fs.c:127
+#: lib/fs.c:129
 msgid "getting list of mounted filesystems\n"
 msgstr "получение списка смонтированных файловых систем\n"
 
-#: lib/fs.c:132
+#: lib/fs.c:134
 #, c-format
 msgid "failed to open %s: %s"
 msgstr "невозможно открыть %s: %s"
 
-#: lib/fs.c:283
+#: lib/fs.c:285
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr "файл %s - на неизвестном устройстве"
@@ -2516,7 +2520,7 @@ msgstr "файл %s - на неизвестном устройстве"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE count must be 1.\n"
 
-#: lib/header.c:250 lib/header.c:721 lib/install.c:324
+#: lib/header.c:250 lib/header.c:721 lib/install.c:330
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
@@ -2587,108 +2591,108 @@ msgstr "в конце выражения ожидался \"|\""
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
-#: lib/install.c:149 lib/uninstall.c:182
+#: lib/install.c:155 lib/uninstall.c:182
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "файл : %s действие: %s\n"
 
-#: lib/install.c:168
+#: lib/install.c:174
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr "пользователь %s не существует, используется root"
 
-#: lib/install.c:176
+#: lib/install.c:182
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr "группа %s не существует, используется root"
 
-#: lib/install.c:205
+#: lib/install.c:211
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr "значение %%instchangelog в макрофайле должно быть числом"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:583
+#: lib/install.c:590
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "распаковка архива не удалась%s%s: %s"
 
-#: lib/install.c:584
+#: lib/install.c:591
 msgid " on file "
 msgstr " на файле "
 
-#: lib/install.c:628
+#: lib/install.c:635
 msgid "installing a source package\n"
 msgstr "устанавливается исходный пакет\n"
 
-#: lib/install.c:648
+#: lib/install.c:655
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "невозможно создать sourcedir %s"
 
-#: lib/install.c:654 lib/install.c:684
+#: lib/install.c:661 lib/install.c:691
 #, c-format
 msgid "cannot write to %s"
 msgstr "невозможно писать в %s"
 
-#: lib/install.c:658
+#: lib/install.c:665
 #, c-format
 msgid "sources in: %s\n"
 msgstr "исходники в: %s\n"
 
-#: lib/install.c:678
+#: lib/install.c:685
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "невозможно создать specdir %s"
 
-#: lib/install.c:688
+#: lib/install.c:695
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "файл spec в: %s\n"
 
-#: lib/install.c:722 lib/install.c:750
+#: lib/install.c:729 lib/install.c:757
 msgid "source package contains no .spec file"
 msgstr "исходный пакет не содержит файла .spec"
 
-#: lib/install.c:772
+#: lib/install.c:779
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/install.c:774 lib/install.c:1047 lib/uninstall.c:28
+#: lib/install.c:781 lib/install.c:1054 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "ошибка переименования %s в %s: %s"
 
-#: lib/install.c:866
+#: lib/install.c:873
 msgid "source package expected, binary found"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного"
 
-#: lib/install.c:916
+#: lib/install.c:923
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/install.c:976
+#: lib/install.c:983
 msgid "stopping install as we're running --test\n"
 msgstr "установка прекращается, т.к. мы исполняем --test\n"
 
-#: lib/install.c:981
+#: lib/install.c:988
 msgid "running preinstall script (if any)\n"
 msgstr "исполняется скрипт preinstall (если есть)\n"
 
-#: lib/install.c:1006
+#: lib/install.c:1013
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "внимание: %s создан как %s"
 
-#: lib/install.c:1043
+#: lib/install.c:1050
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "внимание: %s сохранен как %s"
 
-#: lib/install.c:1131
+#: lib/install.c:1138
 msgid "running postinstall scripts (if any)\n"
 msgstr "выполняется скрипт postinstall (если есть)\n"
 
@@ -3777,59 +3781,59 @@ msgstr "отсутствует %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: rpmio/rpmio.c:529
+#: rpmio/rpmio.c:538
 msgid "Success"
 msgstr "Выполнено"
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:541
 msgid "Bad server response"
 msgstr "Неверный ответ сервера"
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:544
 msgid "Server IO error"
 msgstr "Ошибка ввода/вывода сервера"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:547
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:550
 msgid "Unable to lookup server host address"
 msgstr "Не могу найти адрес сервера"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:553
 msgid "Unable to lookup server host name"
 msgstr "Не могу найти имя сервера"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:556
 msgid "Failed to connect to server"
 msgstr "Не могу соединиться с сервером"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:559
 msgid "Failed to establish data connection to server"
 msgstr "Не могу установить соединение для данных с сервером"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:562
 msgid "IO error to local file"
 msgstr "Ошибка ввода/вывода в локальный файл"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:565
 msgid "Error setting remote server to passive mode"
 msgstr "Ошибка при переводе удаленного сервера в пассивный режим"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:568
 msgid "File not found on server"
 msgstr "Файл не найден на сервере"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:571
 msgid "Abort in progress"
 msgstr "Отмена в процессе"
 
-#: rpmio/rpmio.c:566
+#: rpmio/rpmio.c:575
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: rpmio/rpmio.c:1161
+#: rpmio/rpmio.c:1170
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
@@ -3932,47 +3936,47 @@ msgstr "фатальная ошибка: "
 msgid "internal error (rpm bug?): "
 msgstr "внутренняя ошибка rpm: "
 
-#: rpmio/rpmmalloc.c:9
+#: rpmio/rpmmalloc.c:13
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "memory alloc (%u bytes) returned NULL.\n"
 
-#: rpmio/url.c:88
+#: rpmio/url.c:95
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "внимание: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:105
+#: rpmio/url.c:114
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "внимание: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:132
+#: rpmio/url.c:142
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "внимание: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:218
+#: rpmio/url.c:228
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Пароль для %s@%s: "
 
-#: rpmio/url.c:244 rpmio/url.c:270
+#: rpmio/url.c:252 rpmio/url.c:278
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "ошибка: %s порт должен быть числом\n"
 
-#: rpmio/url.c:406
+#: rpmio/url.c:416
 msgid "url port must be a number\n"
 msgstr "url порт должен быть числом\n"
 
-#: rpmio/url.c:446
+#: rpmio/url.c:456
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:463
+#: rpmio/url.c:473
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
