@@ -3872,12 +3872,13 @@ msgid "running postuninstall script (if any)\n"
 msgstr "a correr o programa de pós-instalação (se existir)\n"
 
 #: lib/uninstall.c:436
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
 "returned %s\n"
 msgstr ""
-"a execução do 'scriplet' %s do %s-%s-%s falhou, o waitpid devolveu %s\n"
+"obtenção do código de retorno do 'scriplet' %s do %s-%s-%s falhou, o waitpid "
+"devolveu %s\n"
 
 #: lib/uninstall.c:443
 #, c-format
@@ -4111,18 +4112,3 @@ msgstr "o porto do URL tem de ser um número\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"
-
-#~ msgid "closed  db environment %s/%s(%s)\n"
-#~ msgstr "fechei o ambiente db %s/%s(%s)\n"
-
-#~ msgid "removed db environment %s/%s(%s)\n"
-#~ msgstr "removi o ambiente %s/%s(%s)\n"
-
-#~ msgid "opening db environment %s/%s(%s) %s\n"
-#~ msgstr "a aceder ao ambiente %s/%s(%s) %s\n"
-
-#~ msgid "closed  db index       %s/%s(%s)\n"
-#~ msgstr "fechei o índice do db  %s/%s(%s)\n"
-
-#~ msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-#~ msgstr "a aceder ao índice do db  %s/%s(%s) %s modo=0x%x\n"
