@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-06-19 12:36-0400\n"
+msgstr "POT-Creation-Date: 2001-06-19 15:54-0400\n"
 
 # , c-format
 #: build.c:36
@@ -2419,35 +2419,35 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/fsm.c:1115
+#: lib/fsm.c:1112
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:1433 lib/fsm.c:1558
+#: lib/fsm.c:1430 lib/fsm.c:1555
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/fsm.c:1584
+#: lib/fsm.c:1581
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/fsm.c:1590
+#: lib/fsm.c:1587
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/fsm.c:1600
+#: lib/fsm.c:1597
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: lib/fsm.c:1619
+#: lib/fsm.c:1616
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "No consegui abrir: %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2001-06-19 12:36-0400\n"
+"POT-Creation-Date: 2001-06-19 15:54-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2197,32 +2197,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "linha %d: %s\n"
 
-#: lib/fsm.c:1115
+#: lib/fsm.c:1112
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1433 lib/fsm.c:1558
+#: lib/fsm.c:1430 lib/fsm.c:1555
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gravado como %s\n"
 
-#: lib/fsm.c:1584
+#: lib/fsm.c:1581
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "não consigo remover a %s - a directoria não está vazia\n"
 
-#: lib/fsm.c:1590
+#: lib/fsm.c:1587
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "o rmdir da %s falhou: %s\n"
 
-#: lib/fsm.c:1600
+#: lib/fsm.c:1597
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
 
-#: lib/fsm.c:1619
+#: lib/fsm.c:1616
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"

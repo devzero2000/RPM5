@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-06-19 12:36-0400\n"
+"POT-Creation-Date: 2001-06-19 15:54-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2248,32 +2248,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/fsm.c:1115
+#: lib/fsm.c:1112
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1433 lib/fsm.c:1558
+#: lib/fsm.c:1430 lib/fsm.c:1555
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/fsm.c:1584
+#: lib/fsm.c:1581
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "ne mogu da uklonim %s - direktorijum nije prazan"
 
-#: lib/fsm.c:1590
+#: lib/fsm.c:1587
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "neuspela komanda rmdir %s: %s"
 
-#: lib/fsm.c:1600
+#: lib/fsm.c:1597
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
 
-#: lib/fsm.c:1619
+#: lib/fsm.c:1616
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-19 12:36-0400\n"
+"POT-Creation-Date: 2001-06-19 15:54-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2220,32 +2220,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "linie %d: %s\n"
 
-#: lib/fsm.c:1115
+#: lib/fsm.c:1112
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1433 lib/fsm.c:1558
+#: lib/fsm.c:1430 lib/fsm.c:1555
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gemt som %s\n"
 
-#: lib/fsm.c:1584
+#: lib/fsm.c:1581
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kan ikke fjerne %s - katalog ikke tomt\n"
 
-#: lib/fsm.c:1590
+#: lib/fsm.c:1587
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 
-#: lib/fsm.c:1600
+#: lib/fsm.c:1597
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/fsm.c:1619
+#: lib/fsm.c:1616
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-06-19 12:36-0400\n"
+"POT-Creation-Date: 2001-06-19 15:54-0400\n"
 "PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -2215,32 +2215,32 @@ msgstr "========= 패키지 안에 디렉토리가 포함되어 있지 않음:\n"
 msgid "%9d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1115
+#: lib/fsm.c:1112
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%04o 허가권(permission)의 %s 디렉토리를 생성했습니다.\n"
 
-#: lib/fsm.c:1433 lib/fsm.c:1558
+#: lib/fsm.c:1430 lib/fsm.c:1555
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s (이)가 %s (으)로 저장되었습니다\n"
 
-#: lib/fsm.c:1584
+#: lib/fsm.c:1581
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s 디렉토리 %s 삭제에 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:1590
+#: lib/fsm.c:1587
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s 디렉토리 %s 삭제에 실패함: %s\n"
 
-#: lib/fsm.c:1600
+#: lib/fsm.c:1597
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s 링크 %s 해제에 실패함: %s\n"
 
-#: lib/fsm.c:1619
+#: lib/fsm.c:1616
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s (이)가 %s (으)로 생성되었습니다\n"
