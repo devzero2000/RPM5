@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.65
+Release: 0.67
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -429,6 +429,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jul 11 2001 Jeff Johnson <jbj@redhat.com>
+- fix: adjust arg count for --POPTdesc/--POPTargs deletion.
+- add linux per-platform macro %_smp_mflags <sopwith@redhat.com>.
+- document more popt aliases for --help usage.
+- remove --tarbuild from man page(s), use -t[abpcils] instead (#48666).
+
 * Tue Jul 10 2001 Jeff Johnson <jbj@redhat.com>
 - fix: -i CLI context broken Yet Again.
 - fix: --rebuild broken.
