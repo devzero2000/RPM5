@@ -1,6 +1,6 @@
 %define	with_python_subpackage	1
 %define	with_bzip2		1
-%define	with_apidocs		0
+%define	with_apidocs		1
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -128,8 +128,8 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
-%_dbpath		1
-%_dbpath_rebuild	1
+%%_dbapi		1
+%%_dbapi_rebuild	1
 E_O_F
 
 { cd $RPM_BUILD_ROOT
@@ -274,7 +274,7 @@ fi
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
-%doc 
+%doc apidocs
 %endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a

@@ -128,8 +128,8 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
-%_dbpath		1
-%_dbpath_rebuild	1
+%%_dbapi		1
+%%_dbapi_rebuild	1
 E_O_F
 
 { cd $RPM_BUILD_ROOT
