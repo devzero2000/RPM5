@@ -110,7 +110,7 @@
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
 %__debug_install_post   \
-   @RPMCONFIGDIR@/find-debuginfo.sh \
+   @RPMCONFIGDIR@/find-debuginfo.sh %{_builddir}/%{buildsubdir} \
 %{nil}
 
 #	Template for debug information sub-package.
