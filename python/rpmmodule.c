@@ -77,6 +77,7 @@ static PyObject * rebuildDB (PyObject * self, PyObject * args);
 /* transaction set functions */
 static PyObject * rpmtransCreate(PyObject * self, PyObject * args);
 static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args);
+static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args);
 static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args);
 static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args);
 static PyObject * rpmtransOrder(rpmtransObject * s, PyObject * args);
@@ -263,6 +264,7 @@ static struct PyMethodDef rpmdbMIMethods[] = {
 
 static struct PyMethodDef rpmtransMethods[] = {
 	{"add",		(PyCFunction) rpmtransAdd,	1 },
+	{"remove",	(PyCFunction) rpmtransRemove,	1 },
 	{"depcheck",	(PyCFunction) rpmtransDepCheck,	1 },
 	{"order",	(PyCFunction) rpmtransOrder,	1 },
 	{"run",		(PyCFunction) rpmtransRun, 1 },
@@ -1574,6 +1576,35 @@ static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args) {
     if (key) {
 	PyList_Append(s->keyList, key);
     }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
+    char * name;
+    int count;
+    rpmdbMatchIterator mi;
+    
+    if (!PyArg_ParseTuple(args, "s", &name))
+        return NULL;
+
+    /* XXX: Copied hack from ../lib/rpminstall.c, rpmErase() */
+    mi = rpmdbInitIterator(s->dbo->db, RPMDBI_LABEL, name, 0);
+    count = rpmdbGetIteratorCount(mi);
+    if (count <= 0) {
+        PyErr_SetString(pyrpmError, "package not installed");
+        return NULL;
+    } else { /* XXX: Note that we automatically choose to remove all matches */
+        Header h;
+        while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+	    if (recOffset) {
+	        rpmtransRemovePackage(s->ts, recOffset);
+	    }
+	}
+    }
+    rpmdbFreeIterator(mi);
 
     Py_INCREF(Py_None);
     return Py_None;
