@@ -1,4 +1,6 @@
+/*@-bounds@*/
 /*@-type@*/ /* FIX: annotate db3 methods */
+/*@-mustmod@*/	/* FIX: db annotations */
 /** \ingroup db3
  * \file rpmdb/db3.c
  */
@@ -147,7 +149,7 @@ static const char * dbiModeFlags =
 #endif	/* NOTNOW */
 
 
-/*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
+/*@-globuse @*/	/* FIX: rpmError not annotated yet. */
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -167,7 +169,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 
     return rc;
 }
-/*@=globuse =mustmod @*/
+/*@=globuse @*/
 
 static int db_fini(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
@@ -226,6 +228,7 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
  * Check that posix mutexes are shared.
  * @return		0 == shared.
  */
+/*@-compdef -moduncon -noeffectuncon @*/ /* FIX: annotate. */
 static int db3_pthread_nptl(void)
 	/*@*/
 {
@@ -244,7 +247,7 @@ static int db3_pthread_nptl(void)
     if (ret == 0)
 	ret = pthread_mutex_init(&mutex, mutexattrp);
     if (mutexattrp != NULL)
-	pthread_mutexattr_destroy(mutexattrp);
+	(void) pthread_mutexattr_destroy(mutexattrp);
     if (ret)
 	return ret;
     (void) pthread_mutex_destroy(&mutex);
@@ -264,6 +267,7 @@ static int db3_pthread_nptl(void)
 	(void) pthread_cond_destroy(&cond);
     return ret;
 }
+/*@=compdef =moduncon =noeffectuncon @*/
 #endif
 
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
@@ -271,7 +275,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile,
 		/*@out@*/ DB_ENV ** dbenvp)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem @*/
 	/*@modifies dbi, *dbenvp, fileSystem @*/
 {
@@ -352,7 +356,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 #endif
 	    if (!xx)
 		break;
-	    sleep(15);
+	    (void) sleep(15);
 	}
     } else {
 #if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
@@ -484,9 +488,9 @@ static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 }
 
 static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
-		unsigned int flags)
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     int rc = -2;
 
@@ -529,9 +533,9 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
 }
 
 static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies *dbcursor, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     int rc;
@@ -710,8 +714,10 @@ static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     DB_TXN * txnid = NULL;
 
+    assert(db != NULL);
     rc = db->associate(db, txnid, secondary, callback, flags);
 #else
+    assert(db != NULL);
     rc = db->associate(db, secondary, callback, flags);
 #endif
 /*@=moduncon@*/
@@ -727,6 +733,7 @@ static int db3join(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
     DB * db = dbi->dbi_db;
     int rc;
 
+    assert(db != NULL);
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
     rc = db->join(db, curslist, dbcp, flags);
 /*@=moduncon@*/
@@ -736,7 +743,7 @@ static int db3join(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
 
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
@@ -845,9 +852,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 
-	/*@-moduncon@*/ /* FIX: annotate db3 methods */
+/*@-moduncon -nullstate @*/ /* FIX: annotate db3 methods */
 	rc = db_create(&db, dbenv, 0);
-	/*@=moduncon@*/
+/*@=moduncon =nullstate @*/
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 
 	if (db != NULL) {
@@ -886,13 +893,13 @@ exit:
 /*@=moduncon@*/
 
 static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
-	/*@modifies *dbip, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *dbip, fileSystem, internalState @*/
 {
-    /*@-nestedextern@*/
+/*@-nestedextern -shadow @*/
     extern struct _dbiVec db3vec;
-    /*@=nestedextern@*/
+/*@=nestedextern =shadow @*/
     const char * urlfn = NULL;
     const char * root;
     const char * home;
@@ -1380,4 +1387,6 @@ struct _dbiVec db3vec = {
     db3byteswapped, db3stat
 };
 /*@=exportheadervar@*/
+/*@=mustmod@*/
 /*@=type@*/
+/*@=bounds@*/

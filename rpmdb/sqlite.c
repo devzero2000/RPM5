@@ -1,3 +1,14 @@
+/*@-bounds@*/
+/*@-mustmod@*/
+/*@-paramuse@*/
+/*@-globuse@*/
+/*@-moduncon@*/
+/*@-noeffectuncon@*/
+/*@-compdef@*/
+/*@-compmempass@*/
+/*@-branchstate@*/
+/*@-modfilesystem@*/
+
 /*
  * sqlite.c
  * sqlite interface for rpmdb
@@ -37,15 +48,8 @@
 
 #include "debug.h"
 
-#define	USE_SQLITE3
-#define	SQLITE			sqlite3
-
-#define	SQLITE_BUSY_HANDLER	sqlite3_busy_handler
-#define	SQLITE_CLOSE		sqlite3_close
-#define	SQLITE_EXEC		sqlite3_exec
-#define	SQLITE_FREE		sqlite3_free
-#define	SQLITE_FREE_TABLE	sqlite3_free_table
-#define	SQLITE_GET_TABLE	sqlite3_get_table
+/*@access rpmdb @*/
+/*@access dbiIndex @*/
 
 #if 0
   /* Turn off some of the COMMIT transactions */
@@ -60,7 +64,6 @@
   #define SQL_TRACE_CURSOR
 #endif
 
-
 /* Define the things normally in a header... */
 struct __sql_mem;	typedef struct __sql_mem      SQL_MEM;
 
@@ -68,7 +71,7 @@ struct __sql_db;	typedef struct __sql_db	      SQL_DB;
 struct __sql_dbcursor;	typedef struct __sql_dbcursor SQL_CURSOR; 
 
 struct __sql_db {
-  SQLITE * db;     /* Database pointer */
+  sqlite3 * db;     /* Database pointer */
 
   int transaction; /* Do we have a transaction open? */
 
@@ -100,15 +103,6 @@ struct __sql_mem {
   void * mem_ptr;
   SQL_MEM * next;
 };
-
-/* local prototypes */
-int sql_initDB(dbiIndex dbi);
-
-int sql_startTransaction(dbiIndex dbi);
-int sql_endTransaction(dbiIndex dbi);
-int sql_commitTransaction(dbiIndex dbi, int flag);
-
-void * allocTempBuffer(DBC * dbcursor, size_t len);
 
 /*===================================================================*/
 /*
@@ -209,10 +203,11 @@ void * allocTempBuffer(DBC * dbcursor, size_t len);
 */
 static size_t sqlite_encode_binary(const unsigned char *in, size_t n,
 		unsigned char *out)
+	/*@modifies out @*/
 {
   long i, j, e, m;
   int cnt[256];
-  if( n<=0 ){
+  if (n == 0) {
     out[0] = 'x';
     out[1] = 0;
     return 1;
@@ -262,6 +257,7 @@ static size_t sqlite_encode_binary(const unsigned char *in, size_t n,
 ** to decode a string in place.
 */
 static size_t sqlite_decode_binary(const unsigned char *in, unsigned char *out)
+	/*@modifies out @*/
 {
   long i;
   int c, e;
@@ -286,121 +282,81 @@ static size_t sqlite_decode_binary(const unsigned char *in, unsigned char *out)
 }
 /*===================================================================*/
 
-/* sqlite prototypes */
-int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip);
-
-int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags);
-
-int sql_sync (dbiIndex dbi, unsigned int flags);
-
-int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
-		int (*callback) (DB *, const DBT *, const DBT *, DBT *),
-		unsigned int flags);
-     
-int sql_join (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
-		unsigned int flags);
-   
-int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
-		/*@out@*/ DBC ** dbcp, unsigned int dbiflags);   
-
-int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags);
-
-int sql_cdup (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
-		unsigned int flags);
-
-int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags);
-
-int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags);
-     
-int sql_cpget (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
-		DBT * key, DBT * pkey, DBT * data, unsigned int flags);
-   
-int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags);
-
-int sql_ccount (dbiIndex dbi, DBC * dbcursor,
-		/*@out@*/ unsigned int * countp,
-		unsigned int flags);
-
-int sql_byteswapped (dbiIndex dbi);
-
-int sql_stat (dbiIndex dbi, unsigned int flags);
-
-
 /*
  * Transaction support
  */
 
-int sql_startTransaction(dbiIndex dbi)
+static int sql_startTransaction(dbiIndex dbi)
+	/*@*/
 {
     DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+    int rc = 0;
+
     assert(db != NULL);
-
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
-
-    int rc=0;
 
     /* XXX:  Transaction Support */
     if (!sqldb->transaction) {
       char * pzErrmsg;
-      rc = SQLITE_EXEC(sqldb->db, "BEGIN TRANSACTION;", NULL, NULL, &pzErrmsg);
+      rc = sqlite3_exec(sqldb->db, "BEGIN TRANSACTION;", NULL, NULL, &pzErrmsg);
 
 #ifdef SQL_TRACE_TRANSACTIONS
       rpmMessage(RPMMESS_DEBUG, "Begin %s SQL transaction %s (%d)\n",
 		dbi->dbi_subfile, pzErrmsg, rc);
 #endif
 
-      if ( rc == 0 )
-	sqldb->transaction=1;
+      if (rc == 0)
+	sqldb->transaction = 1;
     }
 
     return rc;
 }
 
-int sql_endTransaction(dbiIndex dbi)
+static int sql_endTransaction(dbiIndex dbi)
+	/*@*/
 {
     DB * db = dbi->dbi_db;
-    assert(db != NULL);
-
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+    SQL_DB * sqldb;
     int rc=0;
+
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
 
     /* XXX:  Transaction Support */
     if (sqldb->transaction) {
       char * pzErrmsg;
-      rc = SQLITE_EXEC(sqldb->db, "END TRANSACTION;", NULL, NULL, &pzErrmsg);
+      rc = sqlite3_exec(sqldb->db, "END TRANSACTION;", NULL, NULL, &pzErrmsg);
 
 #ifdef SQL_TRACE_TRANSACTIONS
       rpmMessage(RPMMESS_DEBUG, "End %s SQL transaction %s (%d)\n",
 		dbi->dbi_subfile, pzErrmsg, rc);
 #endif
 
-      if ( rc == 0 )
-	sqldb->transaction=0;
+      if (rc == 0)
+	sqldb->transaction = 0;
     }
 
     return rc;
 }
 
-int sql_commitTransaction(dbiIndex dbi, int flag)
+static int sql_commitTransaction(dbiIndex dbi, int flag)
+	/*@*/
 {
     DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+    int rc = 0;
+
     assert(db != NULL);
-
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
-
-    int rc=0;
 
     /* XXX:  Transactions */
     if ( sqldb->transaction ) {
       char * pzErrmsg;
-      rc = SQLITE_EXEC(sqldb->db, "COMMIT;", NULL, NULL, &pzErrmsg);
+      rc = sqlite3_exec(sqldb->db, "COMMIT;", NULL, NULL, &pzErrmsg);
 
 #ifdef SQL_TRACE_TRANSACTIONS
       rpmMessage(RPMMESS_DEBUG, "Commit %s SQL transaction(s) %s (%d)\n",
@@ -430,15 +386,18 @@ int sql_commitTransaction(dbiIndex dbi, int flag)
  * valgrind was used to verify...
  *
  */
-void * allocTempBuffer(DBC * dbcursor, size_t len)
+static void * allocTempBuffer(DBC * dbcursor, size_t len)
+	/*@*/
 {
     DB * db = dbcursor->dbp;
+    SQL_DB * sqldb;
+    SQL_CURSOR * sqlcursor;
+    SQL_MEM * item;
+
     assert(db != NULL);
-
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL);
-
-    SQL_CURSOR * sqlcursor = sqldb->head_cursor;
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
+    sqlcursor = sqldb->head_cursor;
 
     /* Find our version of the db3 cursor */
     while ( sqlcursor != NULL && sqlcursor->name != dbcursor ) {
@@ -447,7 +406,7 @@ void * allocTempBuffer(DBC * dbcursor, size_t len)
 
     assert(sqlcursor != NULL);
 
-    SQL_MEM * item = xmalloc(sizeof(SQL_MEM));
+    item = xmalloc(sizeof(*item));
     item->mem_ptr = xmalloc(len);
 
 #if 0
@@ -472,15 +431,18 @@ void * allocTempBuffer(DBC * dbcursor, size_t len)
 }
 
 static int sql_busy_handler(void * dbi_void, int time)
+	/*@*/
 {
-  dbiIndex dbi = (dbiIndex) dbi_void;
+/*@-castexpose@*/
+    dbiIndex dbi = (dbiIndex) dbi_void;
+/*@=castexpose@*/
 
-  rpmMessage(RPMMESS_WARNING, _("Unable to get lock on db %s, retrying... (%d)\n"),
+    rpmMessage(RPMMESS_WARNING, _("Unable to get lock on db %s, retrying... (%d)\n"),
 		dbi->dbi_file, time);
 
-  sleep(1);
+    (void) sleep(1);
 
-  return 1;
+    return 1;
 }
 
 /**
@@ -488,19 +450,16 @@ static int sql_busy_handler(void * dbi_void, int time)
  *
  * Create the table.. create the db_info
  */
-int sql_initDB(dbiIndex dbi)
+static int sql_initDB(dbiIndex dbi)
+	/*@*/
 {
 #ifdef SQL_TRACE_FUNCTIONS
     rpmMessage(RPMMESS_DEBUG, "sql_initDB()\n");
 #endif
 
     DB * db = dbi->dbi_db;
-    assert(db != NULL);
-
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    int rc=0;
+    SQL_DB * sqldb;
+    int rc = 0;
 
     char ** resultp;
     int nrow;
@@ -508,28 +467,32 @@ int sql_initDB(dbiIndex dbi)
     char * pzErrmsg;
     char cmd[BUFSIZ];
 
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
+
     /* Check if the table exists... */
     sprintf(cmd,
 	"SELECT name FROM 'sqlite_master' WHERE type='table' and name='%s';",
 		dbi->dbi_subfile);
-    rc = SQLITE_GET_TABLE(sqldb->db, cmd,
+    rc = sqlite3_get_table(sqldb->db, cmd,
 	&resultp, &nrow, &ncolumn, &pzErrmsg);
 
-    (void) SQLITE_FREE_TABLE(resultp);
+    (void) sqlite3_free_table(resultp);
 
     if ( rc == 0 && nrow < 1 ) {
       sprintf(cmd, "CREATE TABLE '%s' (key blob UNIQUE, value blob);",
 		dbi->dbi_subfile);
-      rc = SQLITE_EXEC(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+      rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
 
       if ( rc == 0 ) {
         sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT);");
-	rc = SQLITE_EXEC(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
       }
 
       if ( rc == 0 ) {
 	sprintf(cmd, "INSERT INTO 'db_info' values('%d');", __BYTE_ORDER);
-	rc = SQLITE_EXEC(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
       }
     }
 
@@ -540,21 +503,175 @@ int sql_initDB(dbiIndex dbi)
     return rc;
 }
 
+/**   
+ * Close database cursor.
+ * @param dbi           index database handle
+ * @param dbcursor      database cursor
+ * @param flags         (unused)
+ * @return              0 on success
+ */   
+static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, *dbcursor, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+    SQL_CURSOR * sqlcursor, *prev;
+    int rc = 0;
+
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_cclose()\n");
+#endif
+
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
+
+    prev=NULL;
+    sqlcursor = sqldb->head_cursor;
+
+    /* Find our version of the db3 cursor */
+    while ( sqlcursor != NULL && sqlcursor->name != dbcursor ) {
+      prev = sqlcursor;
+      sqlcursor = sqlcursor->next_cursor;
+    }
+
+    assert(sqlcursor != NULL);
+
+    /* Free memory */
+    if ( sqlcursor->resultp ) {
+      (void) sqlite3_free_table( sqlcursor->resultp );
+    }
+
+    if ( sqlcursor->memory ) {
+      SQL_MEM * curr_mem = sqlcursor->memory;
+      SQL_MEM * next_mem;
+      int loc_count=0;
+
+      while ( curr_mem ) {
+	next_mem = curr_mem->next;
+	free ( curr_mem->mem_ptr );
+	free ( curr_mem );
+	curr_mem = next_mem;
+	loc_count++;
+      }
+
+      if ( sqlcursor->count != loc_count)
+	rpmMessage(RPMMESS_DEBUG, "Alloced %ld -- free %ld\n", 
+		sqlcursor->count, loc_count);
+    }
+
+    /* Remove from the list */
+    if (prev == NULL) {
+      sqldb->head_cursor = sqlcursor->next_cursor;
+    } else {
+      prev->next_cursor = sqlcursor->next_cursor;
+    }
+
+    sqldb->count--;
+
+/*@-kepttrans@*/
+    sqlcursor = _free(sqlcursor);
+/*@=kepttrans@*/
+    dbcursor = _free(dbcursor);
+
+#ifndef SQL_FAST_DB
+    if ( flags == DB_WRITECURSOR ) {
+       rc = sql_commitTransaction(dbi, 1);
+    } else {
+       rc = sql_endTransaction(dbi);
+    }
+#else
+       rc = sql_endTransaction(dbi);
+#endif
+
+    return rc;
+}
+
+/**
+ * Close index database, and destroy database handle.
+ * @param dbi           index database handle
+ * @param flags         (unused)
+ * @return              0 on success
+ */
+static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+    int rc = 0;
+
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_close()\n");
+#endif
+
+    if (db && db->app_private && ((SQL_DB *)db->app_private)->db)
+    {
+      sqldb = (SQL_DB *)db->app_private;
+      assert(sqldb != NULL && sqldb->db != NULL);
+
+      /* Commit, don't open a new one */
+      rc = sql_commitTransaction(dbi, 1);
+
+      /* close all cursors */
+/*@-infloops@*/
+      while ( sqldb->head_cursor ) {
+	(void) sql_cclose(dbi, sqldb->head_cursor->name, 0);
+      }
+/*@=infloops@*/
+
+      if (sqldb->count)
+	rpmMessage(RPMMESS_DEBUG, "cursors %ld\n", sqldb->count);
+
+      (void) sqlite3_close(sqldb->db);
+
+      rpmMessage(RPMMESS_DEBUG, _("closed   sql db         %s\n"),
+		dbi->dbi_subfile);
+
+#if 0
+      /* Since we didn't setup the memory, don't clear it! */
+      /* Free up memory */
+      if (rpmdb->db_dbenv != NULL) {
+	dbenv = rpmdb->db_dbenv;
+	if (rpmdb->db_opens == 1) {
+	  rpmdb->db_dbenv = _free(rpmdb->db_dbenv);
+	}
+	rpmdb->db_opens--;
+      }
+#endif
+
+      if (dbi->dbi_stats) {
+	dbi->dbi_stats = _free(dbi->dbi_stats);
+      }
+
+      dbi->dbi_file = _free(dbi->dbi_file);
+#if 0
+      /* They're the same so only free one! */
+      dbi->dbi_subfile = _free(dbi->dbi_subfile);
+#endif
+      dbi->dbi_db->app_private = _free(dbi->dbi_db->app_private);  /* sqldb */
+      dbi->dbi_db = _free(dbi->dbi_db);
+    }
+    dbi = _free(dbi);
+
+    return 0;
+}
+
 /**
  * Return handle for an index database.
  * @param rpmdb         rpm database
  * @param rpmtag        rpm tag
  * @return              0 on success
  */
-int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
-	/*@globals fileSystem @*/
-	/*@modifies *dbip, fileSystem @*/
+static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *dbip, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_open()\n");
-#endif
-
+/*@-nestedextern -shadow @*/
     extern struct _dbiVec sqlitevec;
+/*@=nestedextern -shadow @*/
    
     const char * urlfn = NULL;
     const char * root;
@@ -573,9 +690,15 @@ int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 
     SQL_DB * sqldb;
 
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_open()\n");
+#endif
+
     dbi = xcalloc(1, sizeof(*dbi));
     
-    dbi->dbi_rpmdb = rpmdb;
+/*@-assignexpose -newreftrans@*/
+/*@i@*/ dbi->dbi_rpmdb = rpmdb;
+/*@=assignexpose =newreftrans@*/
     dbi->dbi_rpmtag = rpmtag;
     dbi->dbi_api = 4; /* I have assigned 4 to sqlite */
 
@@ -617,11 +740,14 @@ int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
      * use this for the filename and table name
      */
     {
-      len=strlen(dbfile);
-      char * t = xcalloc(len + 1, sizeof(char));
+      char * t;
+      len = strlen(dbfile);
+      t = xcalloc(len + 1, sizeof(*t));
       (void) stpcpy( t, dbfile );
       dbi->dbi_file = t;
-      dbi->dbi_subfile= t;
+/*@-kepttrans@*/ /* WRONG */
+      dbi->dbi_subfile = t;
+/*@=kepttrans@*/
     }
 
     dbi->dbi_mode=O_RDWR;
@@ -649,17 +775,13 @@ int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     db = xcalloc(1, sizeof(*db));
     sqldb = xcalloc(1,sizeof(*sqldb));
        
-#if defined(USE_SQLITE3)
     sql_errcode = NULL;
     xx = sqlite3_open(dbfname, &sqldb->db);
     if (xx != SQLITE_OK)
 	sql_errcode = sqlite3_errmsg(sqldb->db);
-#else
-    sqldb->db = sqlite_open(dbfname, dbi->dbi_mode, &sql_errcode);
-#endif
 
     if (sqldb->db)
-      SQLITE_BUSY_HANDLER(sqldb->db, &sql_busy_handler, dbi);
+      (void) sqlite3_busy_handler(sqldb->db, &sql_busy_handler, dbi);
 
     sqldb->transaction = 0;	/* Initialize no current transactions */
     sqldb->head_cursor = NULL; 	/* no current cursors */
@@ -697,7 +819,7 @@ int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 	*dbip = dbi;
     }
     else {
-	sql_close(dbi, 0);
+	(void) sql_close(dbi, 0);
     }
  
     urlfn = _free(urlfn);
@@ -707,95 +829,26 @@ int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 }
 
 /**
- * Close index database, and destroy database handle.
- * @param dbi           index database handle
- * @param flags         (unused)
- * @return              0 on success
- */
-int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
-{
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_close()\n");
-#endif
-
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
-
-    int rc=0;
-
-    if (db && db->app_private && ((SQL_DB *)db->app_private)->db)
-    {
-      sqldb = (SQL_DB *)db->app_private;
-      assert(sqldb != NULL && sqldb->db != NULL);
-
-      /* Commit, don't open a new one */
-      rc = sql_commitTransaction(dbi, 1);
-
-      /* close all cursors */
-      while ( sqldb->head_cursor ) {
-	sql_cclose(dbi, sqldb->head_cursor->name, 0);
-      }
-
-      if (sqldb->count)
-	rpmMessage(RPMMESS_DEBUG, "cursors %ld\n", sqldb->count);
-
-      SQLITE_CLOSE(sqldb->db);
-
-      rpmMessage(RPMMESS_DEBUG, _("closed   sql db         %s\n"),
-		dbi->dbi_subfile);
-
-#if 0
-      /* Since we didn't setup the memory, don't clear it! */
-      /* Free up memory */
-      if (rpmdb->db_dbenv != NULL) {
-	dbenv = rpmdb->db_dbenv;
-	if (rpmdb->db_opens == 1) {
-	  rpmdb->db_dbenv = _free(rpmdb->db_dbenv);
-	}
-	rpmdb->db_opens--;
-      }
-#endif
-
-      if (dbi->dbi_stats) {
-	dbi->dbi_stats = _free(dbi->dbi_stats);
-      }
-
-      dbi->dbi_file = _free(dbi->dbi_file);
-#if 0
-      /* They're the same so only free one! */
-      dbi->dbi_subfile = _free(dbi->dbi_subfile);
-#endif
-      dbi->dbi_db->app_private = _free(dbi->dbi_db->app_private);  /* sqldb */
-      dbi->dbi_db = _free(dbi->dbi_db);
-    }
-    dbi = _free(dbi);
-
-    return 0;
-}
-
-/**
  * Flush pending operations to disk.
  * @param dbi           index database handle
  * @param flags         (unused)
  * @return              0 on success
  */
-int sql_sync (dbiIndex dbi, unsigned int flags)
+static int sql_sync (dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+    int rc = 0;
+
 #ifdef SQL_TRACE_FUNCTIONS
     rpmMessage(RPMMESS_DEBUG, "sql_sync()\n");
 #endif
 
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
- 
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
-
-    int rc = 0;
 
 #ifndef SQL_FAST_DB
     rc = sql_commitTransaction(dbi, 0);
@@ -812,25 +865,24 @@ int sql_sync (dbiIndex dbi, unsigned int flags)
  * @param dbiflags      DB_WRITECURSOR or 0
  * @return              0 on success
  */
-int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
+static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 		/*@out@*/ DBC ** dbcp, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *txnid, *dbcp, fileSystem @*/
 {
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+    DBC * dbcursor;
+    SQL_CURSOR * sqlcursor;
+    int rc = 0;
+
 #ifdef SQL_TRACE_FUNCTIONS
     rpmMessage(RPMMESS_DEBUG, "sql_copen()\n");
 #endif
 
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-  
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
-
-    DBC * dbcursor;
-    SQL_CURSOR * sqlcursor;
-
-    int rc=0;
 
     dbcursor = xcalloc(1, sizeof(*dbcursor));
     dbcursor->dbp=db;
@@ -857,92 +909,8 @@ int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
     if (dbcp)
 	/*@-onlytrans@*/ *dbcp = dbcursor; /*@=onlytrans@*/
     else
-	(void) sql_cclose(dbi, dbcursor, 0);
+	/*@-kepttrans@*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=kepttrans@*/
      
-    return rc;
-}
-
-/**   
- * Close database cursor.
- * @param dbi           index database handle
- * @param dbcursor      database cursor
- * @param flags         (unused)
- * @return              0 on success
- */   
-int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcursor, fileSystem @*/
-{
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cclose()\n");
-#endif
-
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-    
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    SQL_CURSOR * sqlcursor, *prev;
-
-    int rc=0;
-
-    prev=NULL;
-    sqlcursor = sqldb->head_cursor;
-
-    /* Find our version of the db3 cursor */
-    while ( sqlcursor != NULL && sqlcursor->name != dbcursor ) {
-      prev = sqlcursor;
-      sqlcursor = sqlcursor->next_cursor;
-    }
-
-    assert(sqlcursor != NULL);
-
-    /* Free memory */
-    if ( sqlcursor->resultp ) {
-      (void) SQLITE_FREE_TABLE( sqlcursor->resultp );
-    }
-
-    if ( sqlcursor->memory ) {
-      SQL_MEM * curr_mem = sqlcursor->memory;
-      SQL_MEM * next_mem;
-      int loc_count=0;
-
-      while ( curr_mem ) {
-	next_mem = curr_mem->next;
-	free ( curr_mem->mem_ptr );
-	free ( curr_mem );
-	curr_mem = next_mem;
-	loc_count++;
-      }
-
-      if ( sqlcursor->count != loc_count)
-	rpmMessage(RPMMESS_DEBUG, "Alloced %ld -- free %ld\n", 
-		sqlcursor->count, loc_count);
-    }
-
-    /* Remove from the list */
-    if (prev == NULL) {
-      sqldb->head_cursor = sqlcursor->next_cursor;
-    } else {
-      prev->next_cursor = sqlcursor->next_cursor;
-    }
-
-    sqldb->count--;
-
-    sqlcursor = _free(sqlcursor);
-    dbcursor = _free(dbcursor);
-
-#ifndef SQL_FAST_DB
-    if ( flags == DB_WRITECURSOR ) {
-       rc = sql_commitTransaction(dbi, 1);
-    } else {
-       rc = sql_endTransaction(dbi);
-    }
-#else
-       rc = sql_endTransaction(dbi);
-#endif
-
     return rc;
 }
 
@@ -955,26 +923,26 @@ int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
  * @param flags         (unused)
  * @return              0 on success
  */
-int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
+static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
+		DBT * data, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cdel()\n");
-#endif
-
     DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    int rc=0;
+    SQL_DB * sqldb;
+    int rc = 0;
     unsigned char * key_enc_string, * data_enc_string;
     int key_len, data_len;
     char * pzErrmsg;
     char * cmd;
+
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_cdel()\n");
+#endif
+
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
 
 #ifdef SQL_TRACE_CURSOR
     rpmMessage(RPMMESS_DEBUG, "  cdel on %s  key 0x%x (%d), data 0x%x (%d), flags %d\n",
@@ -999,8 +967,8 @@ int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
     
     cmd = sqlite3_mprintf("DELETE FROM '%q' WHERE key='%q' AND value='%q';",
 	dbi->dbi_subfile, key_enc_string, data_enc_string);
-    rc = SQLITE_EXEC(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-    SQLITE_FREE(cmd);
+    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+    sqlite3_free(cmd);
 
     if ( rc )
       rpmMessage(RPMMESS_DEBUG, "cdel %s (%d)\n",
@@ -1018,28 +986,26 @@ int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
  * @param flags         (unused)
  * @return              0 on success
  */
-int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
+static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
+		DBT * data, unsigned int flags)
 	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, *data, fileSystem @*/
+	/*@modifies dbi, dbcursor, *key, *data, fileSystem @*/
 {
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+    SQL_CURSOR * sqlcursor;
+    int rc = 0;
+    int cleanup = 0;   
+    char * pzErrmsg;
+    char * cmd;
+
 #ifdef SQL_TRACE_FUNCTIONS
     rpmMessage(RPMMESS_DEBUG, "sql_cget()\n");
 #endif
 
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
-
-    SQL_CURSOR * sqlcursor;
-
-    int rc=0;
-    int cleanup=0;   
-    
-    char * pzErrmsg;
-    char * cmd;
 
     if ( dbcursor == NULL ) {
       rc = sql_copen ( dbi, NULL, &dbcursor, 0 );
@@ -1072,7 +1038,9 @@ int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 static int mykeydata;
 	flags=DB_SET;
 	key->size=4;
+/*@-immediatetrans@*/
 if (key->data == NULL) key->data = &mykeydata;
+/*@=immediatetrans@*/
 	memset(key->data, 0, 4);
       }
     }
@@ -1085,7 +1053,7 @@ if (key->data == NULL) key->data = &mykeydata;
 #endif
 
       if ( sqlcursor->resultp ) {
-	(void) SQLITE_FREE_TABLE( sqlcursor->resultp );
+	(void) sqlite3_free_table( sqlcursor->resultp );
 	sqlcursor->resultp = NULL;
 	sqlcursor->nrow=0;
 	sqlcursor->ncolumn=0;
@@ -1096,11 +1064,11 @@ if (key->data == NULL) key->data = &mykeydata;
 	case 0:
 	  cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
 			dbi->dbi_subfile);
-	  rc = SQLITE_GET_TABLE(sqldb->db, cmd,
+	  rc = sqlite3_get_table(sqldb->db, cmd,
 			&sqlcursor->resultp, &sqlcursor->nrow, &sqlcursor->ncolumn,
 			&pzErrmsg
 		);
-	  SQLITE_FREE(cmd);
+	  sqlite3_free(cmd);
 	  break;
 	default:
 	{
@@ -1125,10 +1093,10 @@ if (key->data == NULL) key->data = &mykeydata;
 
 	  cmd = sqlite3_mprintf("SELECT key,value FROM '%q' WHERE key='%q';",
 			dbi->dbi_subfile, key_enc_string);
-	  rc = SQLITE_GET_TABLE(sqldb->db, cmd,
+	  rc = sqlite3_get_table(sqldb->db, cmd,
 			&sqlcursor->resultp, &sqlcursor->nrow, &sqlcursor->ncolumn,
 			&pzErrmsg);
-	  SQLITE_FREE(cmd);
+	  sqlite3_free(cmd);
 
 	  break;
 	}
@@ -1230,7 +1198,7 @@ repeat:
     /* If we retrieved the 0x0 record.. clear so next pass we'll get them all.. */
     if ( sqlcursor->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES ) {
       if ( sqlcursor->resultp ) {
-	(void) SQLITE_FREE_TABLE( sqlcursor->resultp );
+	(void) sqlite3_free_table( sqlcursor->resultp );
 	sqlcursor->resultp = NULL;
 	sqlcursor->nrow=0;
 	sqlcursor->ncolumn=0;
@@ -1238,9 +1206,8 @@ repeat:
       }
     }
 
-    if ( cleanup ) {
-      (void) sql_cclose(dbi, dbcursor, 0);
-    }
+    if (cleanup)
+	/*@-temptrans@*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=temptrans@*/
 
     return rc;
 }
@@ -1254,26 +1221,26 @@ repeat:
  * @param flags         (unused)
  * @return              0 on success
  */
-int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-			unsigned int flags)
+static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
+			DBT * data, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cput()\n");
-#endif
-
     DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    int rc=0;
+    SQL_DB * sqldb;
+    int rc = 0;
     unsigned char * key_enc_string, * data_enc_string;
     int key_len, data_len;
     char * pzErrmsg;
     char * cmd;
+
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_cput()\n");
+#endif
+
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
 
 #ifdef SQL_TRACE_CURSOR
     rpmMessage(RPMMESS_DEBUG, "  cput on %s  key 0x%x (%d), data 0x%x (%d), flags %d\n",
@@ -1298,8 +1265,8 @@ int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
     
     cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES('%q', '%q');",
 	dbi->dbi_subfile, key_enc_string, data_enc_string);
-    rc = SQLITE_EXEC(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-    SQLITE_FREE(cmd);
+    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+    sqlite3_free(cmd);
 
     if ( rc )
       rpmMessage(RPMMESS_WARNING, "cput %s (%d)\n",
@@ -1313,30 +1280,28 @@ int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
  * @param dbi           index database handle   
  * @return              0 no
  */
-int sql_byteswapped (dbiIndex dbi)
+static int sql_byteswapped (dbiIndex dbi)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_byteswapped()\n");
-#endif
-
     DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-       
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    int sql_rc, rc=0;
-
+    SQL_DB * sqldb;
+    int sql_rc, rc = 0;
     char ** resultp;
     int nrow;
     int ncolumn;
     char * pzErrmsg;
-
     long db_endian;
 
-    sql_rc = SQLITE_GET_TABLE(sqldb->db, "SELECT endian FROM 'db_info';",
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_byteswapped()\n");
+#endif
+
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
+
+    sql_rc = sqlite3_get_table(sqldb->db, "SELECT endian FROM 'db_info';",
 	&resultp, &nrow, &ncolumn, &pzErrmsg);
 
     if (sql_rc == 0 && nrow > 0) {
@@ -1359,7 +1324,7 @@ int sql_byteswapped (dbiIndex dbi)
       rpmMessage(RPMMESS_WARNING, "Unable to determine DB endian.\n");
     }
 
-    (void) SQLITE_FREE_TABLE(resultp);
+    (void) sqlite3_free_table(resultp);
    
     return rc;
 }
@@ -1370,40 +1335,40 @@ int sql_byteswapped (dbiIndex dbi)
  * @param flags         retrieve statistics that don't require traversal?
  * @return              0 on success
  */
-int sql_stat (dbiIndex dbi, unsigned int flags)
+static int sql_stat (dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_stat()\n");
-#endif
-
     DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    int rc=0;
-
+    SQL_DB * sqldb;
+    int rc = 0;
     char ** resultp;
     int nrow;
     int ncolumn;
     char * pzErrmsg;
     char * cmd;
+    long nkeys = -1;
 
-    long nkeys=-1;
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_stat()\n");
+#endif
+
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
 
     if ( dbi->dbi_stats ) {
 	dbi->dbi_stats = _free(dbi->dbi_stats);
     }
 
+/*@-sizeoftype@*/
     dbi->dbi_stats = xcalloc(1, sizeof(DB_HASH_STAT));
+/*@=sizeoftype@*/
 
     cmd = sqlite3_mprintf("SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
-    rc = SQLITE_GET_TABLE(sqldb->db, cmd,
+    rc = sqlite3_get_table(sqldb->db, cmd,
 	&resultp, &nrow, &ncolumn, &pzErrmsg);
-    SQLITE_FREE(cmd);
+    sqlite3_free(cmd);
 
     if ( rc == 0 && nrow > 0) {
       nkeys=strtol(resultp[1], NULL, 10);
@@ -1417,7 +1382,7 @@ int sql_stat (dbiIndex dbi, unsigned int flags)
       }
     }
 
-    (void) SQLITE_FREE_TABLE(resultp);
+    (void) sqlite3_free_table(resultp);
 
     if (nkeys < 0)
       nkeys = 4096;  /* Good high value */
@@ -1442,19 +1407,21 @@ int sql_stat (dbiIndex dbi, unsigned int flags)
  * @param flags         DB_CREATE or 0
  * @return              0 on success
  */
-int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
+static int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
 		int (*callback) (DB *, const DBT *, const DBT *, DBT *),
 		unsigned int flags)
+	/*@*/
 {
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+ 
     /* unused */
     rpmMessage(RPMMESS_ERROR, "sql_associate() not implemented\n");
 
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
- 
+
     return EINVAL;
 }
 
@@ -1466,20 +1433,21 @@ int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
  * @param flags         DB_JOIN_NOSORT or 0
  * @return              0 on success
  */
-int sql_join (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
+static int sql_join (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
 		unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+ 
     /* unused */
     rpmMessage(RPMMESS_ERROR, "sql_join() not implemented\n");
     
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
- 
+
     return EINVAL;
 }
 
@@ -1491,20 +1459,21 @@ int sql_join (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
  * @param flags         DB_POSITION for same position, 0 for uninitialized
  * @return              0 on success
  */
-int sql_cdup (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
+static int sql_cdup (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
 		unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+ 
     /* unused */
     rpmMessage(RPMMESS_ERROR, "sql_cdup() not implemented\n");
 
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
- 
+
     return EINVAL;
 }
 
@@ -1518,20 +1487,21 @@ int sql_cdup (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
  * @param flags         DB_NEXT, DB_SET, or 0
  * @return              0 on success
  */
-int sql_cpget (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
+static int sql_cpget (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+ 
     /* unused */
     rpmMessage(RPMMESS_ERROR, "sql_cpget() not implemented\n");
 
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
- 
+
     return EINVAL;
 }
 
@@ -1543,32 +1513,31 @@ int sql_cpget (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
  * @param flags         (unused)
  * @return              0 on success
  */
-int sql_ccount (dbiIndex dbi, DBC * dbcursor,   
-		/*@out@*/ unsigned int * countp,
-		unsigned int flags)
+static int sql_ccount (dbiIndex dbi, /*@unused@*/ DBC * dbcursor,   
+		/*@unused@*/ /*@out@*/ unsigned int * countp,
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+
     /* unused */
     rpmMessage(RPMMESS_ERROR, "sql_cpget() not implemented\n");
 
-    DB * db = dbi->dbi_db;
-    assert(db != NULL); 
-      
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
 
     return EINVAL;
 }
-
-
-
 
 /* Major, minor, patch version of DB.. we're not using db.. so set to 0 */
 /* open, close, sync, associate, join */
 /* cursor_open, cursor_close, cursor_dup, cursor_delete, cursor_get, */
 /* cursor_pget?, cursor_put, cursor_count */
 /* db_bytewapped, stat */
+/*@observer@*/ /*@unchecked@*/
 struct _dbiVec sqlitevec = {
     0, 0, 0, 
     sql_open, 
@@ -1588,3 +1557,13 @@ struct _dbiVec sqlitevec = {
     sql_stat
 };
 
+/*@=modfilesystem@*/
+/*@=branchstate@*/
+/*@=compmempass@*/
+/*@=compdef@*/
+/*@=moduncon@*/
+/*@=noeffectuncon@*/
+/*@=globuse@*/
+/*@=paramuse@*/
+/*@=mustmod@*/
+/*@=bounds@*/

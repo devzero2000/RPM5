@@ -235,7 +235,7 @@ static void dbiTagsInit(void)
 
 #ifdef HAVE_DB3_DB_H
 /*@-exportheadervar -declundef @*/
-/*@unchecked@*/
+/*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec db3vec;
 /*@=exportheadervar =declundef @*/
 #define	DB3vec		&db3vec
@@ -247,7 +247,7 @@ extern struct _dbiVec db3vec;
 #define	HAVE_SQLITE_DB_H	1
 #ifdef HAVE_SQLITE_DB_H
 /*@-exportheadervar -declundef @*/
-/*@unchecked@*/
+/*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec sqlitevec;
 /*@=exportheadervar =declundef @*/
 #define	SQLITEvec	&sqlitevec
@@ -3600,7 +3600,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
-		const char * newdbpath, int _newdbapi)
+		const char * newdbpath, /*@unused@*/ int _newdbapi)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {

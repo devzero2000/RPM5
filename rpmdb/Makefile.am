@@ -178,7 +178,7 @@ clean-local:
 BUILT_SOURCES = tagtbl.c
 
 rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-lclint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
+	-splint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:
@@ -186,7 +186,7 @@ sources:
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES)
+	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
 
 tdbi: librpmdb.la tdbi.o
 	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
