@@ -88,6 +88,7 @@
 #%_pgp_path
 #%_provides
 #%_timecheck
+#%vendor
 
 #==============================================================================
 # ---- per-platform macros.
@@ -95,9 +96,9 @@
 #	will be used if the per-platform macro file does not exist..
 #
 %_arch			@RPMCANONARCH@
-%vendor			@RPMCANONVENDOR@
+%_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
-%_target_platform	%{_target_cpu}-%{vendor}-%{_target_os}
+%_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
 #
 # XXX use the rpmrc instantiated macro for now
 #%optflags		-O2
