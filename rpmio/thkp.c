@@ -35,8 +35,10 @@ static unsigned int keyids[] = {
 	0xfd372689, 0x897da07a,
 	0xe1385d4e, 0x1cddbca9,
 	0xb873641b, 0x2039b291,
+	0xbbe89728, 0x6afdb2e8,
+	0x1aa78495, 0x3eb24301,
 #endif
-	0x58e727c4, 0xc621be0f,
+	0x58e727c4, 0xc621be0f,	/* XXX V4 Public Subkey(s), CRITICAL, revocations. */
 	0
 };
 
