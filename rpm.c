@@ -330,7 +330,7 @@ static void printHelp(void) {
     puts(         _("      Information selection options:"));
     printHelpLine(  "        -i                ",
 		  _("display package information"));
-    printHelpLine  ("        --changelog       ",
+    printHelpLine(  "        --changelog       ",
 		  _("display the package's change log"));
     printHelpLine(  "        -l                ",
 		  _("display package file list"));
@@ -482,7 +482,7 @@ static void printHelp(void) {
 		  _("build the packages for ositecture <os>"));
     printHelpLine(  "      --test              ",
 		  _("do not execute any stages"));
-    printHelpLine(  "      --timecheck <secs>  ",
+    printHelpLine(_("      --timecheck <secs>  "),
 		  _("set the time check to <secs> seconds (0 disables)"));
     puts("");
     printHelpLine(_("    --rebuild <src_pkg>   "),

@@ -3,7 +3,7 @@
 #
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
-msgstr "POT-Creation-Date: 1998-09-28 16:45-0400\n"
+msgstr "POT-Creation-Date: 1998-09-28 17:41-0400\n"
 
 #: ../rpm.c:188
 #, c-format
@@ -742,6 +742,11 @@ msgstr ""
 #: ../rpm.c:484
 msgid "do not execute any stages"
 msgstr "não execute nenhum estágio"
+
+#: ../rpm.c:485
+#, fuzzy
+msgid "      --timecheck <secs>  "
+msgstr "    -b<estágio> <spec>    "
 
 #: ../rpm.c:486
 #, fuzzy

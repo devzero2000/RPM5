@@ -1,7 +1,7 @@
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-28 16:45-0400\n"
+"POT-Creation-Date: 1998-09-28 17:41-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -726,6 +726,11 @@ msgstr "sestavit balíèky pro ositekturu <os>"
 #: ../rpm.c:484
 msgid "do not execute any stages"
 msgstr "nespou¹tìt ¾ádné etapy"
+
+#: ../rpm.c:485
+#, fuzzy
+msgid "      --timecheck <secs>  "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:486
 #, fuzzy

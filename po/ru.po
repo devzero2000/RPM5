@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-2.5.3\n"
-"POT-Creation-Date: 1998-09-28 16:45-0400\n"
+"POT-Creation-Date: 1998-09-28 17:41-0400\n"
 "PO-Revision-Date: Tue Sep 15 14:17:00 EEST 1998\n"
 "Last-Translator: Serguei Koubouchine <ksi@ksi-linux.com>\n"
 "MIME-Version: 1.0\n"
@@ -683,6 +683,10 @@ msgstr "собрать пакеты для операционной системы <os>"
 #: ../rpm.c:484
 msgid "do not execute any stages"
 msgstr "не исполнять никаких этапов"
+
+#: ../rpm.c:485
+msgid "      --timecheck <secs>  "
+msgstr ""
 
 #: ../rpm.c:486
 #, fuzzy

@@ -1,7 +1,7 @@
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-28 16:45-0400\n"
+"POT-Creation-Date: 1998-09-28 17:41-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -730,6 +730,11 @@ msgstr "käännä paketit käyttöjärjestelmälle <kj>"
 #: ../rpm.c:484
 msgid "do not execute any stages"
 msgstr "älä suorita mitään vaiheita"
+
+#: ../rpm.c:485
+#, fuzzy
+msgid "      --timecheck <secs>  "
+msgstr "    -b<vaihe> <määrittely> "
 
 #: ../rpm.c:486
 #, fuzzy
