@@ -759,7 +759,7 @@
 #
 %GNUconfigure(MCs:)      \
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS; \
-  LDFLAGS="${LDFLAGS:-'%{-s:-s}'}"  ; export LDFLAGS; \
+  LDFLAGS="${LDFLAGS:-%{-s:-s}}"  ; export LDFLAGS; \
   %{-C:_mydir="`pwd`"; %{-M: %{__mkdir} -p %{-C*};} cd %{-C*}} \
   dirs="`find ${_mydir} -name configure.in -print`"; export dirs; \
     for coin in `echo ${dirs}` \
