@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-22 18:38-0400\n"
+"POT-Creation-Date: 2000-06-22 20:46-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1234,7 +1234,7 @@ msgstr ""
 msgid "cannot re-open payload: %s\n"
 msgstr ""
 
-#: build/build.c:110 build/pack.c:312
+#: build/build.c:110 build/pack.c:346
 msgid "Unable to open temp file."
 msgstr ""
 
@@ -1550,51 +1550,51 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:324
+#: build/pack.c:358
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:359
+#: build/pack.c:394
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:391
+#: build/pack.c:426
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:406
+#: build/pack.c:441
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:422
+#: build/pack.c:457
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:432
+#: build/pack.c:467
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:442
+#: build/pack.c:477
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr ""
 
-#: build/pack.c:457
+#: build/pack.c:492
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:525
+#: build/pack.c:560
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:542
+#: build/pack.c:577
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -1846,12 +1846,7 @@ msgstr ""
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr ""
 
-#: build/parseReqs.c:151
-#, c-format
-msgid "line %d: Version not permitted: %s"
-msgstr ""
-
-#: build/parseReqs.c:177
+#: build/parseReqs.c:170
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr ""
@@ -2226,86 +2221,86 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:362
+#: lib/install.c:378
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:363
+#: lib/install.c:379
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:406
+#: lib/install.c:422
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:426
+#: lib/install.c:442
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr ""
 
-#: lib/install.c:432 lib/install.c:462
+#: lib/install.c:448 lib/install.c:478
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:436
+#: lib/install.c:452
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:456
+#: lib/install.c:472
 #, c-format
 msgid "cannot create specdir %s"
 msgstr ""
 
-#: lib/install.c:466
+#: lib/install.c:482
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:500 lib/install.c:528
+#: lib/install.c:516 lib/install.c:544
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:550
+#: lib/install.c:566
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:30
+#: lib/install.c:568 lib/install.c:847 lib/uninstall.c:30
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:643
+#: lib/install.c:659
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:700
+#: lib/install.c:716
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:761
+#: lib/install.c:777
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:766
+#: lib/install.c:782
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:791
+#: lib/install.c:807
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:827
+#: lib/install.c:843
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:901
+#: lib/install.c:917
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 

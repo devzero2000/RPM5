@@ -234,6 +234,8 @@ fi
 %changelog
 * Thu Jun 22 2000 Jeff Johnson <jbj@redhat.com>
 - internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
+- support for separate source/binary compression policy.
+- support for bzip payloads.
 
 * Wed Jun 21 2000 Jeff Johnson <jbj@redhat.com>
 - fix: don't expand macros in false branch of %if (kasal@suse.cz).
