@@ -76,7 +76,7 @@ do_tsort(const char *fileArgv[])
 	    rpmMessage(RPMMESS_ERROR, _("cannot open Available database\n"));
 	    goto endavail;
 	}
-        mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, NULL, 0);
+        mi = rpmdbInitIterator(avdb, RPMDBI_PACKAGES, NULL, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    rpmtransAvailablePackage(ts, h, NULL);
 	}
