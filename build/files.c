@@ -1019,28 +1019,21 @@ static int isDoc(FileList fl, const char * fileName)	/*@*/
 
 /**
  * Verify that file attributes scope over hardlinks correctly.
- * @todo only %lang for now, finish other attributes later.
+ * If partial hardlink sets are possible, then add tracking dependency.
  * @param fl		package file tree walk data
+ * @return		1 if partial hardlink sets can exist, 0 otherwise.
  */
-static void checkHardLinks(FileList fl)
-	/*@modifies fl->fileList->flags, fl->fileList->langs @*/
+static int checkHardLinks(FileList fl)
+	/*@*/
 {
-    char nlangs[BUFSIZ];
     FileListRec ilp, jlp;
     int i, j;
 
-    nlangs[0] = '\0';
     for (i = 0;  i < fl->fileListRecsUsed; i++) {
-	char *te;
-
 	ilp = fl->fileList + i;
 	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
-	if (ilp->flags & RPMFILE_SPECFILE)
-	    continue;
 
-	te = nlangs;
-	*te = '\0';
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
 	    if (!S_ISREG(jlp->fl_mode))
@@ -1051,42 +1044,10 @@ static void checkHardLinks(FileList fl)
 		continue;
 	    if (ilp->fl_dev != jlp->fl_dev)
 		continue;
-	    if (!strcmp(ilp->langs, jlp->langs)) {
-		jlp->flags |= RPMFILE_SPECFILE;
-		continue;
-	    }
-	    if (te == nlangs)
-		te = stpcpy(te, ilp->langs);
-	    *te++ = '|';
-	    te = stpcpy(te, jlp->langs);
-	}
-
-	/* Are locales distributed over hard links correctly? */
-	if (te == nlangs)
-	    continue;
-
-	ilp->langs = _free(ilp->langs);
-	ilp->langs = xstrdup(nlangs);
-	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
-	    jlp = fl->fileList + j;
-	    if (!S_ISREG(jlp->fl_mode))
-		continue;
-	    if (ilp->fl_nlink != jlp->fl_nlink)
-		continue;
-	    if (ilp->fl_ino != jlp->fl_ino)
-		continue;
-	    if (ilp->fl_dev != jlp->fl_dev)
-		continue;
-	    jlp->flags |= RPMFILE_SPECFILE;
-	    jlp->langs = _free(jlp->langs);
-	    jlp->langs = xstrdup(nlangs);
+	    return 1;
 	}
     }
-
-    for (i = 0;  i < fl->fileListRecsUsed; i++) {
-	ilp = fl->fileList + i;
-	ilp->flags &= ~RPMFILE_SPECFILE;
-    }
+    return 0;
 }
 
 /**
@@ -1934,7 +1895,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 	goto exit;
 
     /* Verify that file attributes scope over hardlinks correctly. */
-    checkHardLinks(&fl);
+    if (checkHardLinks(&fl))
+	(void) rpmlibNeedsFeature(pkg->header,
+			"PartialHardlinkSets", "4.0.4-1");
 
     genCpioListAndHeader(&fl, (TFI_t *)&pkg->cpioList, pkg->header, 0);
 

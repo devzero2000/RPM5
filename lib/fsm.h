@@ -15,10 +15,12 @@
 #define	FSM_INTERNAL	0x4000
 #define	FSM_SYSCALL	0x2000
 #define	FSM_DEAD	0x1000
+
 #define	_fv(_a)		((_a) | FSM_VERBOSE)
 #define	_fi(_a)		((_a) | FSM_INTERNAL)
 #define	_fs(_a)		((_a) | (FSM_INTERNAL | FSM_SYSCALL))
 #define	_fd(_a)		((_a) | (FSM_INTERNAL | FSM_DEAD))
+
 typedef enum fileStage_e {
     FSM_UNKNOWN =   0,
     FSM_INIT	=  _fd(1),
@@ -86,8 +88,8 @@ typedef enum fileStage_e {
 /** \ingroup payload
  * Keeps track of the set of all hard links to a file in an archive.
  */
-struct hardLink {
-/*@owned@*/ struct hardLink * next;
+struct hardLink_s {
+/*@owned@*/ struct hardLink_s * next;
 /*@owned@*/ const char ** nsuffix;
 /*@owned@*/ int * filex;
     struct stat sb;
@@ -129,8 +131,8 @@ struct fsm_s {
     size_t wrnb;			/*!< write: Number of bytes returned. */
 /*@only@*/ FSMI_t iter;			/*!< File iterator. */
     int ix;				/*!< Current file iterator index. */
-/*@only@*/ struct hardLink * links;	/*!< Pending hard linked file(s). */
-/*@only@*/ struct hardLink * li;	/*!< Current hard linked file(s). */
+/*@only@*/ struct hardLink_s * links;	/*!< Pending hard linked file(s). */
+/*@only@*/ struct hardLink_s * li;	/*!< Current hard linked file(s). */
 /*@kept@*/ /*@null@*/ unsigned int * archiveSize;	/*!< Pointer to archive size. */
 /*@kept@*/ /*@null@*/ const char ** failedFile;	/*!< First file name that failed. */
 /*@shared@*/ const char * subdir;	/*!< Current file sub-directory. */

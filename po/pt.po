@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-10 13:48-0500\n"
+"POT-Creation-Date: 2002-01-11 14:45-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -1407,98 +1407,98 @@ msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Não é possível misturar o %%doc especial com outras formas: %s\n"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1130
+#: build/files.c:1091
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Ficheiro listado duas vezes: %s\n"
 
-#: build/files.c:1276
+#: build/files.c:1237
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "A 'symlink' aponta para a BuildRoot: %s -> %s\n"
 
-#: build/files.c:1474
+#: build/files.c:1435
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "O ficheiro não corresponde ao prefixo (%s): %s\n"
 
-#: build/files.c:1498
+#: build/files.c:1459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Ficheiro não encontrado: %s\n"
 
-#: build/files.c:1541 build/files.c:2139 build/parsePrep.c:45
+#: build/files.c:1502 build/files.c:2102 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Dono/grupo inválido: %s\n"
 
-#: build/files.c:1553
+#: build/files.c:1514
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Ficheiro: %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1654
+#: build/files.c:1615
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "O ficheiro precisa de começar por \"/\": %s\n"
 
-#: build/files.c:1677
+#: build/files.c:1638
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linha %d: Nome do ficheiro não permitido: %s\n"
 
-#: build/files.c:1691
+#: build/files.c:1652
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Ficheiro não encontrado pelo glob: %s\n"
 
-#: build/files.c:1749
+#: build/files.c:1710
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Não consegui abrir o ficheiro do %%files %s: %s\n"
 
-#: build/files.c:1760 build/pack.c:142
+#: build/files.c:1721 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "linha: %s\n"
 
-#: build/files.c:2127
+#: build/files.c:2090
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ficheiro inválido: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2198
+#: build/files.c:2161
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Não consegui executar o %s: %S\n"
 
-#: build/files.c:2203
+#: build/files.c:2166
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Não consegui executar à parte o %s: &s\n"
 
-#: build/files.c:2285
+#: build/files.c:2248
 #, c-format
 msgid "%s failed\n"
 msgstr "O %s falhou\n"
 
-#: build/files.c:2289
+#: build/files.c:2252
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "não consegui escrever todos os dados em %s\n"
 
-#: build/files.c:2421
+#: build/files.c:2384
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "A procurar o %s: (usando o %s)...\n"
 
-#: build/files.c:2447 build/files.c:2461
+#: build/files.c:2410 build/files.c:2424
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Não consegui encontrar o %s:\n"
 
-#: build/files.c:2580
+#: build/files.c:2543
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "A processar os ficheiros: %s-%s-%s\n"
@@ -2248,37 +2248,37 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "linha %d: %s\n"
 
-#: lib/fsm.c:1133
+#: lib/fsm.c:1136
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1410
+#: lib/fsm.c:1413
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1529 lib/fsm.c:1654
+#: lib/fsm.c:1532 lib/fsm.c:1657
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gravado como %s\n"
 
-#: lib/fsm.c:1680
+#: lib/fsm.c:1683
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "não consigo remover a %s - a directoria não está vazia\n"
 
-#: lib/fsm.c:1686
+#: lib/fsm.c:1689
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "o rmdir da %s falhou: %s\n"
 
-#: lib/fsm.c:1696
+#: lib/fsm.c:1699
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
 
-#: lib/fsm.c:1715
+#: lib/fsm.c:1718
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"

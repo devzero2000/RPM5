@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.10
+Release: 0.11
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -516,6 +516,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jan 11 2002 Jeff Johnson <jbj@redhat.com>
+- permit subset installs for %lang colored hardlink file sets.
+
 * Thu Jan 10 2002 Jeff Johnson <jbj@redhat.com>
 - fix: signing multiple times dinna work, discard immutable region.
 - remove poptmodule.so for separate packaging.
