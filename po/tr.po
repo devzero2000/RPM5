@@ -1,0 +1,1243 @@
+# Turkish Messages for RPM
+# Revised by KGF <kgf@c3i9.epfl.ch>, 1997.
+#
+# Translated from de.po 
+#
+# Türkçe Sözlük  http://www.linux.org.tr/yardim/sozluk.html
+# bazý sorunlu kelimeler 'içinde' orjinal olarak verildi.. 
+#
+# Ama baþlangýç için idare eder gibi.. 
+# 
+# 7.12.1997 
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rpm-2.4.3\n"
+"POT-Creation-Date: 1997-12-07 16:09+0200\n"
+"PO-Revision-Date: 1997-12-07 16:15 CEST\n"
+"Last-Translator: KGF <kgf@c3i9.epfl.ch>\n"
+"Language-Team: Turkish <Turgut.Uyar@linux.org.tr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-9\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:69
+#, c-format
+msgid "RPM version %s\n"
+msgstr "RPM Sürüm %s\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:73
+msgid "Copyright (C) 1997 - Red Hat Software"
+msgstr "Copyright © 1997 - Red Hat Software"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:74
+msgid ""
+"This may be freely redistributed under the terms of the GNU Public License"
+msgstr ""
+"Bu program GNU Public License ile belirlenen koþullar altýnda serbestçe\n"
+"daðýtýlabilir."
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:83
+msgid "usage: rpm {--help}"
+msgstr "Kullaným: rpm {--help}"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:84
+msgid "       rpm {--version}"
+msgstr ""
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:85
+msgid "       rpm {--initdb}   [--dbpath <dir>]"
+msgstr "       rpm {--initdb}   [--dbpath <dizin>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:86
+msgid ""
+"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgstr ""
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:87
+msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
+msgstr ""
+"                        [--replacepkgs] [--replacefiles] [--root <VERZ>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:88
+msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
+msgstr ""
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:89
+msgid ""
+"                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
+msgstr ""
+"                        [--rcfile <dosya>] [--ignorearch] [--dbpath <dizin>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:90
+msgid ""
+"                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
+msgstr ""
+"                        [--prefix <dizin>] [--ignoreos] [--nodeps] "
+"[--allfiles]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:91 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:97
+msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
+msgstr "                        [--ftpproxy <makine>] [--ftpport <port>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:92 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:99
+msgid "                        file1.rpm ... fileN.rpm"
+msgstr "                        dosya1.rpm ... dosyaN.rpm"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:93
+msgid ""
+"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgstr ""
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:94
+msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
+msgstr "                        [--oldpackage] [--root <dizin>] [--noscripts]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:95
+msgid ""
+"                        [--excludedocs] [--includedocs] [--rcfile <file>]"
+msgstr ""
+"                        [--excludedocs] [--includedocs] [--rcfile <dosya>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:96
+msgid ""
+"                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
+msgstr ""
+"                        [--ignorearch]  [--dbpath <dizin>] [--prefix <dizin>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:98
+msgid "                        [--ignoreos] [--nodeps] [--allfiles]"
+msgstr "                        [--ignoreos] [--nodeps] [--allfiles]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:100
+msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+msgstr ""
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:101
+msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
+msgstr "                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:102
+msgid "                        [--whatprovides] [--whatrequires] [--requires]"
+msgstr ""
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:103
+msgid ""
+"                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
+msgstr ""
+"                        [--ftpuseport] [--ftpproxy <makine>] [--ftpport <port>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:104
+msgid ""
+"                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"
+msgstr ""
+"                        [--provides] [--dump] [--dbpath <dizin>] [--changelog]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:105
+msgid "                        [targets]"
+msgstr "                        [targets]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:106
+msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
+msgstr "       rpm {--verify -V -y} [-afpg] [--root <dizin>] [--rcfile <dosya>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:107
+msgid ""
+"                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
+msgstr ""
+"                        [--dbpath <dosya>] [--nodeps] [--nofiles] "
+"[--noscripts]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:108
+msgid "                        [--nomd5] [targets]"
+msgstr "                        [--nomd5] [targets]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:109
+msgid "       rpm {--setperms} [-afpg] [target]"
+msgstr "       rpm {--setperms} [-afpg] [target]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:110
+msgid "       rpm {--setugids} [-afpg] [target]"
+msgstr "       rpm {--setugids} [-afpg] [target]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:111
+msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
+msgstr ""
+"       rpm {--erase -e] [--root <dizin>] [--noscripts] [--rcfile <dosya>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:112
+msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
+msgstr "                        [--dbpath <dizin>] [--nodeps] [--allmatches]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:113
+msgid "                        package1 ... packageN"
+msgstr "                        paket1 ... paketN"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:114
+msgid ""
+"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
+msgstr ""
+"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
+"<dosya>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:115
+msgid ""
+"                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
+msgstr ""
+"                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:116
+msgid "                        [--buildarch <arch>] specfile"
+msgstr "                        [--buildarch <arch>] spec-dosyasý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:117
+msgid ""
+"       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgstr ""
+"       rpm {--rebuild} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:118
+msgid ""
+"       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgstr ""
+"       rpm {--recompile} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:119
+msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
+msgstr "       rpm {--resign} [--rcfile <dosya>] paket1 paket2 ... paketN"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:120
+msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
+msgstr "       rpm {--addsign} [--rcfile <dosya>] paket1 paket2 ... paketN"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:121
+msgid "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"
+msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <dosya>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:122
+msgid "                           package1 ... packageN"
+msgstr "                           paket1 ... paketN"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:123
+msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
+msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:124
+msgid "       rpm {--querytags}"
+msgstr ""
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:158
+msgid "usage:"
+msgstr "Kullaným:"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:160
+msgid "print this message"
+msgstr "Bu bilgiyi verir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:162
+msgid "print the version of rpm being used"
+msgstr "Kullanýlan RPM sürümünü verir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:163
+msgid "   all modes support the following arguments:"
+msgstr "   tüm kipler aþaðýdaki argümanlarý kabul ederler:"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:165
+msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
+msgstr "/etc/rpmrc ve $HOME/.rpmrc yerine <dosya> kullanýn"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:167
+msgid "be a little more verbose"
+msgstr "daha çok açýklama verir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:169
+msgid "be incredibly verbose (for debugging)"
+msgstr "çok fazla açýklama verir (hata ayýklama için)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:171
+msgid "query mode"
+msgstr "Sorgulama kipi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:173 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:227
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:277 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:299
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:357
+msgid "use <dir> as the top level directory"
+msgstr "kök (baþlangýç) dizini olarak <dizin> kullanýlýr"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:175 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:225
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:249 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:293
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:355
+msgid "use <dir> as the directory for the database"
+msgstr "Veritabaný dizini olarak <dizin> kullanýlýr"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:177
+msgid "use s as the header format (implies -i)"
+msgstr "'header format' olarak s kullanýlýr (-i'yi gerektirir)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:178
+msgid ""
+"   install, upgrade and query (with -p) allow ftp URL's to be used in place"
+msgstr ""
+"   Yükleme, güncelleme ve sorgulama (-p seceneði ile)  sýrasýnda dosya ismi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:179
+msgid "   of file names as well as the following options:\n"
+msgstr ""
+"   yerine FTP adreslerini aþaðýdaki seçeneklerle kabul eder:\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:181
+msgid "hostname or IP of ftp proxy"
+msgstr "Makina ismi veya FTP-Proxy'nin IP numarasý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:183
+msgid "port number of ftp server (or proxy)"
+msgstr "FTP sunucusunun (ya da Proxy'nin) port numarasý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:184
+msgid "      Package specification options:"
+msgstr "      Paket seçim seçenekleri:"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:186
+msgid "query all packages"
+msgstr "Tüm paketleri sorgulama"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:188
+msgid "query package owning <file>"
+msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:190
+msgid "query (uninstalled) package <packagefile>"
+msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:192
+msgid "query packages which provide <i> capability"
+msgstr "<i> yeteneði olan paketleri sorgulama"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:194
+msgid "query packages which require <i> capability"
+msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:195
+msgid "      Information selection options:"
+msgstr "      Bilgilendirme seçenekleri:"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:197
+msgid "display package information"
+msgstr "Paket bilgisini gösterme"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:199
+msgid "display the package's change log"
+msgstr "Paketin 'Change Log' (deðiþiklik) bilgisini gösterme"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:201
+msgid "display package file list"
+msgstr "Paketin içerdiði dosyalarý gösterme"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:203
+msgid "show file states (implies -l)"
+msgstr "Dosyalarýn durumunu gösterir (-l gerektirir)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:205
+msgid "list only documentation files (implies -l)"
+msgstr "Sadece belge dosyalarýný gösterir (-l gerektirir)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:207
+msgid "list only configuration files (implies -l)"
+msgstr "Sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:209
+msgid ""
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
+msgstr ""
+"Her dosya hakkýnda doðrulanabilen tüm bilgileri gösterir ( -l, -c veya -d "
+"seçenekleri ile kullanýlmalýdýr!)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:211
+msgid "list capabilities package provides"
+msgstr "Paketin saðladýðý yetenekleri sýralar"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:212
+msgid "        --requires"
+msgstr ""
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:214
+msgid "list package dependencies"
+msgstr "Paketin baðýmlýlýklarýný (gerektirdiði paketleri) gösterir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:216
+msgid "print the various [un]install scripts"
+msgstr "Paketin çeþitli yükleme, silme betiklerini (scripts) gösterir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:221
+msgid "send stdout to <cmd>"
+msgstr "Standart çýktýyý <KOMUT>'a gönderir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:223
+msgid ""
+"verify a package installation using the same same package specification "
+"options as -q"
+msgstr ""
+"Yüklenmiþ bir paketi -q ile belirtilen seçeneklerin aynýsý ile doðrular"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:229 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:267
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:295
+msgid "do not verify package dependencies"
+msgstr "Paket baðýmlýlýklarýný doðrulamaz"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:231
+msgid "do not verify file md5 checksums"
+msgstr "Dosyalarýn 'md5-checksum' larýný doðrulamaz"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:233
+msgid "do not verify file attributes"
+msgstr "Dosya özelliklerini doðrulamaz"
+
+# Was ist gemeint? Ich habs auch nicht verstanden ... 
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:236
+msgid ""
+"set the file permissions to those in the package database using the same "
+"package specification options as -q"
+msgstr ""
+"Dosya eriþim haklarýný, -q ile belirtilen paket özellikleri ile, paket"
+"veritabanýndaki karþýlýklarýna göre deðiþtirir (hadi hayýrlýsý)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:239
+msgid ""
+"set the file owner and group to those in the package database using the same "
+"package specification options as -q"
+msgstr ""
+"Dosyalarýn sahiplerini ve gruplarýný, -q ile belirtilen paket özellikleri ile"
+"paket veritabanýndaki karþýlýklarýna göre deðiþtirir. (??)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:245
+msgid "install package"
+msgstr "Paket yüklemek"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:247
+msgid "relocate the package to <dir>, if relocatable"
+msgstr ""
+"Paketin yerini (eðer deðitirilebiliyorsa) <dizin>'e deðiþtirir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:251
+msgid "do not install documentation"
+msgstr "Yazýlýmýn belgelerini yüklemez"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:253
+msgid "short hand for --replacepkgs --replacefiles"
+msgstr "--replacepkgs --replacefiles'ýn kýsaltmasý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:256
+msgid "print hash marks as package installs (good with -v)"
+msgstr "Yükleme sýrasýnda bir gösterge çýkarýr (-v seçeneði ile iyi)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:258
+msgid "install all files, even configurations which might otherwise be skipped"
+msgstr ""
+"Tüm dosyalarý, hatta normal olarak atlanabilecek yapýlandýrmalarý bile,"
+"yükler"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:261
+msgid "don't verify package architecture"
+msgstr "Paket mimarisini doðrulamaz"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:263
+msgid "don't verify package operating system"
+msgstr "Paket'in ait olduðu iþletim sistemini doðrulamaz"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:265
+msgid "install documentation"
+msgstr "Paket ile gelen belgeleri de yükler"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:269
+msgid "don't execute any installation scripts"
+msgstr "Yükleme betiklerini (scripts) çalýþtýrmaz."
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:271
+msgid "print percentages as package installs"
+msgstr "Yükleme sýrasýnda geliþme yüzde olarak gösterilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:273
+msgid "install even if the package replaces installed files"
+msgstr "Paket mevcut dosyalarý silse bile paketi yükler"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:275
+msgid "reinstall if the package is already present"
+msgstr "Paket mevcutsa yeniden yükler"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:279
+msgid "don't install, but tell if it would work or not"
+msgstr "Yükleme yapmaz, sadece çalýþýp çalýþmayacaðýný belirtir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:283
+msgid "upgrade package (same options as --install, plus)"
+msgstr "Paketi günceller (seçenekler --install ile ayný, ek olarak)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:285
+msgid ""
+"upgrade to an old version of the package (--force on upgrades does this "
+"automatically)"
+msgstr ""
+"Paketi daha eski bir sürümü ile günceller (--force seçeneði, güncellemelerde"
+"bunu otomatik olarak saðlar)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:289
+msgid "erase (uninstall) package"
+msgstr "Paketi siler (uninstall)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:291
+msgid ""
+"remove all packages which match <package> (normally an error is generated if "
+"<package> specified multiple packages)"
+msgstr ""
+"Ýsmi <PAKET> ile baþalayan tüm paketleri siler. (Normal olarak <PAKET> birden"
+"fazla paket tanýmlýyorsa bir hata oluþturulur)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:297
+msgid "do not execute any package specific scripts"
+msgstr "Pakete ait hiçbir betik (Script) çalýþtýrýlmaz"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:301
+msgid "    -b<stage> <spec>      "
+msgstr "    -b<adým> <spec>      "
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:303
+msgid "build package, where <stage> is one of:"
+msgstr "Paket yaratýr, <adým> aþaðýdaki harflerden biridir:"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:305
+msgid "prep (unpack sources and apply patches)"
+msgstr "hazýrlama (kaynaklar açýlýr ve yamalar uygulanýr)"
+
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:307
+#, c-format
+msgid "list check (do some cursory checks on %files)"
+msgstr "kontrol ( %files üstünkörü bir kontrol edilir)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:309
+msgid "compile (prep and compile)"
+msgstr "derleme (hazýrlama ve derleme)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:311
+msgid "install (prep, compile, install)"
+msgstr "yükleme (hazýrlama, derleme, yükleme)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:313
+msgid "binary package (prep, compile, install, package)"
+msgstr ""
+"Çalýþtýrýlabilir paket yaratma (hazýrlama, derleme, yükleme, paketleme)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:315
+msgid "bin/src package (prep, compile, install, package)"
+msgstr ""
+"Çalýþtýrýlabilir ve Kaynak paket yaratmak (hazýrlama, derleme, yükleme ve"
+"paketleme)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:317
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "Doðrudan belirtilen adýma atlar (sadece c ve i için)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:319
+msgid "remove build tree when done"
+msgstr "Ýþlem sonunda paket yaratma yapýsýný siler"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:321
+msgid "generate PGP signature"
+msgstr "PGP-imzasý yaratýr"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:323
+msgid "use <dir> as the build root"
+msgstr "Paket yaratýlýrken <dizin> baþlangýç dizini olarak kullanýlýr"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:325
+msgid "build the packages for architecture <arch>"
+msgstr "Paketleri <arch> mimarisi için oluþturur"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:327
+msgid "build the packages for ositecture <os>"
+msgstr "Paketleri <os> iþletim sistemi için oluþturur"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:329
+msgid "do not execute any stages"
+msgstr "Adýmlarýn hiçbirini çalýþtýrmaz"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:331
+msgid "set the time check to S seconds (0 disables it)"
+msgstr "Zaman kontrolünü S saniyeye ayarlar (0 ile tümüyle kaldýrýr)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:334
+msgid ""
+"install source package, build binary package and remove spec file, sources, "
+"patches, and icons."
+msgstr ""
+"Kaynak paketini yükler, çalýþtýrýlabilir paketi yaratýr, spec dosyasýný, "
+"kaynak ve yama dosyalarý ile icon'lari siler"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:336
+msgid "like --rebuild, but don't build any package"
+msgstr "--rebuild gibi, ama paket yaratmaz"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:338
+msgid "sign a package (discard current signature)"
+msgstr "Paketi imzalar (mevcut imza kaldýrýlýr)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:340
+msgid "add a signature to a package"
+msgstr "Pakete bir imza ekler"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:343
+msgid "verify package signature"
+msgstr "Paket imzasýný doðrular"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:345
+msgid "skip any PGP signatures"
+msgstr "Tüm PGP imzalarýný atlar"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:347
+msgid "skip any MD5 signatures"
+msgstr "Tüm MD5 imzalarýný atlar"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:349
+msgid "list the tags that can be used in a query format"
+msgstr "Sorgulama sýrasýnda kullanýlabilecek 'Tag'leri sýralar"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:351
+msgid "make sure a valid database exists"
+msgstr "Geçerli bir veri tabaný olmasýný saðlar"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:353
+msgid "rebuild database from existing database"
+msgstr "Mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
+
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:381
+#, c-format
+msgid "Failed to open tar pipe: %s\n"
+msgstr "tar komutuna yönlendirmede hata oluþtu: %s\n"
+
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:386
+#, c-format
+msgid "Failed to read spec file from %s\n"
+msgstr "spec-dosyasýný  %s 'den okumada hata oluþtu\n"
+
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:447
+#, c-format
+msgid "unable to open: %s\n"
+msgstr "Belirtilen dosyaya okuma eriþimi yapýlamadý: %s\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:460 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:471
+msgid "Build failed.\n"
+msgstr "Paket yaratma iþlemi tamamlanamadý.\n"
+
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:469
+#, c-format
+msgid "%s doesn't build on this architecture\n"
+msgstr "%s bu mimari üzerinde yaratýlamýyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:643 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:649
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:656 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:662
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:671 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:678
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:723 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:729
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:810 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:816
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:823 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:829
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:837 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:869
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:894 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:900
+msgid "only one major mode may be specified"
+msgstr "sadece bir ana kip (major mode) belirtilebilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:664
+msgid "-u and --uninstall are deprecated and no longer work.\n"
+msgstr "-u ve --uninstall komutlarý eskidirler ve çalýþmamaktadýrlar.\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:666
+msgid "Use -e or --erase instead.\n"
+msgstr "Yerine  -e veya --erase komutunu kullanýn\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:682
+msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
+msgstr ""
+"--build (-b) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:686
+msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
+msgstr ""
+"--tarbuild (-t) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
+
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:752 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:759
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:767 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:775
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:795 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:803
+msgid "one type of query/verify may be performed at a time"
+msgstr ""
+"Bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:845
+msgid "arguments to --dbpath must begin with a /"
+msgstr "--dbpath için verilen argümanlar '/' ile baþlamalý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:852
+msgid "one type of query may be performed at a time"
+msgstr "Bir anda sadece tek bir tarz sorgulama yapýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:912
+msgid "--dbpath given for operation that does not use a database"
+msgstr "--dbpath veritabaný kullanýlmayan bir iþlemde belirtildi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:917
+msgid "--timecheck may only be used during package builds"
+msgstr "--timecheck sadece paket oluþturulurken kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:920 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:923
+msgid "unexpected query specifiers"
+msgstr "Sorgulama için beklenmeyen bilgiler girildi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:927
+msgid "unexpected query source"
+msgstr "Beklenmeyen sorgulama kaynaðý girildi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:930
+msgid "only installation and upgrading may be forced"
+msgstr "Sadece yükleme ve güncelleme zorlanabilir (force edilebilir)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:933
+msgid "--prefix may only be used when installing new packages"
+msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:936
+msgid "arguments to --prefix must begin with a /"
+msgstr "--prefix komutunun argümanlarý '/' ile baþlamalý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:939
+msgid "--hash (-h) may only be specified during package installation"
+msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:943
+msgid "--percent may only be specified during package installation"
+msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:947
+msgid "--replacefiles may only be specified during package installation"
+msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:951
+msgid "--replacepkgs may only be specified during package installation"
+msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:955
+msgid "--excludedocs may only be specified during package installation"
+msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:959
+msgid "--includedocs may only be specified during package installation"
+msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:963
+msgid "only one of --excludedocs and --includedocs may be specified"
+msgstr ""
+"--excludedocs ve --includedocs bir arada kullanýlamaz (bi daha olmasýn)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:967
+msgid "--ignorearch may only be specified during package installation"
+msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:971
+msgid "--ignoreos may only be specified during package installation"
+msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:975
+msgid "--allmatches may only be specified during package erasure"
+msgstr "--allmatches sadece paket silinmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:979
+msgid "--allfiles may only be specified during package installation"
+msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:984
+msgid ""
+"--noscripts may only be specified during package installation, erasure, and "
+"verification"
+msgstr ""
+"--noscripts sadece paket yüklenmesi, silinmesi veya doðrulanmasý sýrasýnda"
+"kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:989
+msgid ""
+"--nodeps may only be specified during package installation, erasure, and "
+"verification"
+msgstr ""
+"--nodeps sadece paket yüklenmesi, silinmesi veya doðrulanmasý sýrasýnda"
+"kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:993
+msgid "--nofiles may only be specified during package verification"
+msgstr "--nofiles sadece paket doðrulamasý sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:998
+msgid ""
+"--test may only be specified during package installation, erasure, and "
+"building"
+msgstr ""
+"--test darf sadece paket yüklemesi, silinmesi veya yaratýlmasý sýrasýnda "
+"kullanabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1003
+msgid ""
+"--root (-r) may only be specified during installation, erasure, querying, "
+"and database rebuilds"
+msgstr ""
+"--root (-r) sadece paket yüklenmesi, silinmesi, sorgulanmasý veya veritabaný "
+"oluþturulmasý sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1008
+msgid "arguments to --root (-r) must begin with a /"
+msgstr "--root (-r) komutun argümanlarý '/' ile baþlamalý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1011
+msgid "--clean may only be used during package building"
+msgstr "--clean sadece paket oluþturulmasý sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1014
+msgid "--short-circuit may only be used during package building"
+msgstr "--short-circuit sadece paket oluþturulmasý sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1017
+msgid "--short-circuit may only be used with -bc, -bi, -tc or -ti"
+msgstr ""
+"--short-circuit mutlaka -bc, bi, -tc veya -ti ile beraber kullanýlmalýdýr"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1022
+msgid "--oldpackage may only be used during upgrades"
+msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1025
+msgid "--dump may only be used during queries"
+msgstr "--dump sadece sorgulama sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1028
+msgid "--dump of queries must be used with -l, -c, or -d"
+msgstr "sorgulamada --dump mutlaka -l, -c, or -d ile kullanýlmalýdýr"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1033
+msgid ""
+"ftp options can only be used during package queries, installs, and upgrades"
+msgstr ""
+"ftp seçenekleri sadece paket sorgulamalarýnda, yüklemelerde veya güncelleme"
+"sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1040
+msgid "--nopgp may only be used during signature checking"
+msgstr "--nopgp sadece Ýmza kontrolü sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1043
+msgid ""
+"--nopgp may only be used during signature checking and package verification"
+msgstr ""
+"--nopgp sadece imza kontrolü veya paket doðrulamasý sýrasýnda kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1056
+msgid "Pass phrase check failed\n"
+msgstr "Parola kontrolü baþarýsýzlýkla sonuçlandý\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1059
+msgid "Pass phrase is good.\n"
+msgstr "Parola doðru.\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1071
+msgid "--sign may only be used during package building"
+msgstr "--sign sadece paket olusturulurken kullanýlabilir"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1105
+msgid "unexpected arguments to --querytags "
+msgstr "--querytags için beklenmeyen argümanlar"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1116
+msgid "no packages given for signature check"
+msgstr "Ýmzasý kontrol edilecek paketler belirtilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1123
+msgid "no packages given for signing"
+msgstr "Ýmzalanacak paketler belirtilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1132
+msgid "no packages files given for rebuild"
+msgstr "Yeniden oluþturmak için paket dosyalarý belirtilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1187
+msgid "no spec files given for build"
+msgstr "Oluþturma için gerekli spec dosyasý belirtilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1189
+msgid "no tar files given for build"
+msgstr "Oluþturma için gereken tar dosyalarý belirttilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1200
+msgid "no packages given for uninstall"
+msgstr "Sistemden silinecek paketler belirtilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1234
+msgid "no packages given for install"
+msgstr "Yüklenecek paketler belirtilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1245
+msgid "extra arguments given for query of all packages"
+msgstr "Tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1250
+msgid "no arguments given for query"
+msgstr "Sorgulama için hiç argüman belirtilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1267
+msgid "no arguments given for verify"
+msgstr "Doðrulama için hiç argüman belirtilmedi"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:77
+msgid "(contains no files)"
+msgstr "(hiç dosya içermiyor)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:331
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:127
+msgid "error: could not read database record\n"
+msgstr "HATA: veritabaný kaydý okunamadý\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:367 /usr/src/ke/rpm/rpm-2.4.3/query.c:374
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:179
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:186
+#, c-format
+msgid "open of %s failed: %s\n"
+msgstr "%s 'ye erisimde belirtilen hata oluþtu: %s\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:390
+msgid "old format source packages cannot be queried\n"
+msgstr "eski tip kaynak paketleri sorgulanamýyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:399
+#, c-format
+msgid "%s does not appear to be a RPM package\n"
+msgstr "%s bir RPM paketi deðil (gibi)\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:403
+#, c-format
+msgid "query of %s failed\n"
+msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:416
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:163
+msgid "could not read database record!\n"
+msgstr "Veritabaný kaydý okunamadý!\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:427
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:209
+#, c-format
+msgid "group %s does not contain any packages\n"
+msgstr "%s grubu hiç paket içermiyor\n"
+
+# oder besser: ... listet %s auf? -ke-
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:437
+#, c-format
+msgid "no package provides %s\n"
+msgstr "hiç bir paket  %s saðlamýyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:447
+#, c-format
+msgid "no package requires %s\n"
+msgstr "hiç bir paket %s gerektirmiyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:461
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:223
+#, c-format
+msgid "file %s is not owned by any package\n"
+msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:472
+#, c-format
+msgid "invalid package number: %s\n"
+msgstr "geçersiz paket numarsý: %s\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:475
+#, c-format
+msgid "showing package: %d\n"
+msgstr "%d : numaralý paketi gösteriyorum\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:479
+#, c-format
+msgid "record %d could not be read\n"
+msgstr "%d numaralý kayýt okunamadý\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:332
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:491
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:234
+#, c-format
+msgid "package %s is not installed\n"
+msgstr "%s pakedi yüklenmemiþ\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:494
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:236
+#, c-format
+msgid "error looking for package %s\n"
+msgstr "%s pakedi aranýrken hata oluþtu\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:81
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:196
+#, c-format
+msgid "error: cannot open file %s\n"
+msgstr "HATA: %s dosyasý okunamadý\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:98
+#, c-format
+msgid "Installing %s\n"
+msgstr "%s yükleniyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:116
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:209
+#, c-format
+msgid "error: %s does not appear to be a RPM package\n"
+msgstr "HATA: %s herhangi bir RPM pakedine ait görünmüyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:121
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:214
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:421
+#, c-format
+msgid "error: %s cannot be installed\n"
+msgstr "HATA: %s yüklenemedi\n"
+
+#  daha güzel bir þey olabilir
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:168
+#, c-format
+msgid "Retrieving %s\n"
+msgstr "%s alýnýyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:178
+#, c-format
+msgid "error: skipping %s - transfer failed - %s\n"
+msgstr "HATA: %s atlanýyor - aktarým baþarýsýz - %s\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:255
+msgid "failed dependencies:\n"
+msgstr "Baðýmlýlýk hatasý, aþaðýdaki paketlere ihtiyacýnýz var:\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:322
+#, c-format
+msgid "cannot open %s%s/packages.rpm\n"
+msgstr "%s%s/packages.rpm dosyasýna eriþilemiyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:335
+#, c-format
+msgid "error searching for package %s\n"
+msgstr "%s paketi bulunamadý\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:343
+#, c-format
+msgid "\"%s\" specifies multiple packages\n"
+msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
+
+# oder besser: "... verletzen" ?
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:380
+msgid "removing these packages would break dependencies:\n"
+msgstr "Bu paketin silinmesi aþaðýdaki baðýmlýlýklarý etkileyecektir:\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:412
+#, c-format
+msgid "error: cannot open %s\n"
+msgstr "HATA: %s eriþilemiyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:458
+#, c-format
+msgid " is needed by %s-%s-%s\n"
+msgstr ", %s-%s-%s tarafýndan kullanýlýyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:461
+#, c-format
+msgid " conflicts with %s-%s-%s\n"
+msgstr ", %s-%s-%s ile çeliþiyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:90
+#, c-format
+msgid "Unsatisfied dependencies for %s-%s-%s: "
+msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:30
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:153
+#, c-format
+msgid "%s: Open failed\n"
+msgstr "%s: Eriþilemedi\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:34
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:158
+#, c-format
+msgid "%s: readLead failed\n"
+msgstr "%s: 'readLead' hata verdi\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:38
+#, c-format
+msgid "%s: Can't sign v1.0 RPM\n"
+msgstr "%s: v1.0-RPM (eski sürüm) imzalanamýyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:42
+#, c-format
+msgid "%s: Can't re-sign v2.0 RPM\n"
+msgstr "%s: v2.0-RPM (eski sürüm) yeniden imzalanamýyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:46
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:168
+#, c-format
+msgid "%s: rpmReadSignature failed\n"
+msgstr "%s: 'rpmReadSignature' hata verdi\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:58
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:182
+msgid "Couldn't read the header/archive"
+msgstr "'header/archive' okunamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:64
+msgid "Couldn't write header/archive to temp file"
+msgstr "'header/archive' geçici bir dosyaya yazýlamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:109
+msgid "Couldn't read sigtarget"
+msgstr "Ýmza hedefi 'sigtarget' okunamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:117
+msgid "Couldn't write package"
+msgstr "Paket yazýlamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:163
+#, c-format
+msgid "%s: No signature available (v1.0 RPM)\n"
+msgstr "%s: Ýmza bulundurmuyor (v1.0 RPM)\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:173
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Ýmza bulunmuyor\n"
+
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:188
+#, c-format
+msgid "Unable to write %s"
+msgstr "%s 'nin yazýlmasý mümkün deðil"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:278
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:285
+msgid " (MISSING KEYS)"
+msgstr " (EKSÝK ANAHTARLAR)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:345
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:131
+#, c-format
+msgid "cannot read header at %d for uninstall"
+msgstr "%d numaralý paketin silmek için gereken 'header' kýsmý okunamadý"
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:144
+#, c-format
+msgid "package %s-%s-%s contain shared files\n"
+msgstr "Paket %s-%s-%s ortak (shared) dosyalar içeriyor\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:381
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:387
+#, c-format
+msgid "error creating file %s for (un)install script"
+msgstr "Yükleme (silme) betikleri (script) için gereken %s dosyasý yaratýlamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:439
+msgid "execution of script failed"
+msgstr "betik (script) çalýþtýrýlamadý "
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:494
+#, c-format
+msgid "rename of %s to %s failed: %s"
+msgstr "%s 'nin isminin  %s 'ye çevrilmesinde belirtilen hata oluþtu: %s"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:508
+#, c-format
+msgid "cannot remove %s - directory not empty"
+msgstr "%s silinemedi - belirtilen dizin boþ deðil"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:511
+#, c-format
+msgid "rmdir of %s failed: %s"
+msgstr "%s dizinin silinmesinde belirtilen hata oluþtu: %s"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:519
+#, c-format
+msgid "removal of %s failed: %s"
+msgstr "%s 'in silinmesinde belirtilen hata oluþtu: %s"
+
+# , c-format
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:108
+#, c-format
+msgid "failed to open %s\n"
+msgstr "%s 'ye eriþimde hata oluþtu\n"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:121
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:128
+#, c-format
+msgid "cannot get %s lock on database"
+msgstr "Veritabaný için %s kilit (lock) alýnamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:122
+msgid "exclusive"
+msgstr "özel"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:129
+msgid "shared"
+msgstr "paylaþýlan (shared)"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:311
+#, c-format
+msgid "package %s not listed in %s"
+msgstr "%s paketi %s altýnda gözükmüyor"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:322
+#, c-format
+msgid "package %s not found in %s"
+msgstr "%s pakedi %s içerisinde bulunamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:353
+msgid "package has no name"
+msgstr "Paketin adý yok :-)"
+
+# reservieren???
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:488
+msgid "cannot allocate space for database"
+msgstr "Veritabaný için yer bulunamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:546
+#, c-format
+msgid "cannot read header at %d for update"
+msgstr "%d numaralý paketin güncelleme için gereken 'header' kýsmý okunamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:99
+msgid "Old (internal-only) signature!  How did you get that!?"
+msgstr "Eski imza !!! Eee bunu nasýl baþardýn bakiiim ?"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:222
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:479
+msgid "Couldn't exec pgp"
+msgstr "PGP çalýþtýrýlamadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:233
+msgid "pgp failed"
+msgstr "PGP hata verdi"
+
+#. PGP failed to write signature
+#. Just in case
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:240
+msgid "pgp failed to write signature"
+msgstr "PGP imzasýnýn yazýlmasý sýrasýnda hata oluþtu"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:253
+msgid "unable to read the signature"
+msgstr "imzayý okumak mümkün olmadý"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:396
+msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
+msgstr "PGP çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn."
+
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:430
+msgid "You must set \"pgp_name:\" in your rpmrc file"
+msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
