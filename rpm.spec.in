@@ -513,6 +513,7 @@ fi
 %changelog
 * Sun Dec  9 2001 Jeff Johnson <jbj@redhat.com>
 - solaris: translate i86pc to i386 (#57182).
+- fix: %GNUconfigure breaks with single quotes (#57264).
 
 * Mon Dec  3 2001 Jeff Johnson <jbj@redhat.com>
 - rpm-4.0.4 started.
