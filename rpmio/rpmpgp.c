@@ -135,7 +135,8 @@ struct pgpValTbl_s pgpSymkeyTbl[] = {
     { PGPSYMKEYALGO_AES_128,	"AES(128-bit key)" },
     { PGPSYMKEYALGO_AES_192,	"AES(192-bit key)" },
     { PGPSYMKEYALGO_AES_256,	"AES(256-bit key)" },
-    { PGPSYMKEYALGO_TWOFISH,	"TWOFISH" },
+    { PGPSYMKEYALGO_TWOFISH,	"TWOFISH(256-bit key)" },
+    { PGPSYMKEYALGO_NOENCRYPT,	"no encryption" },
     { -1,			"Unknown symmetric key algorithm" },
 };
 
@@ -143,6 +144,7 @@ struct pgpValTbl_s pgpCompressionTbl[] = {
     { PGPCOMPRESSALGO_NONE,	"Uncompressed" },
     { PGPCOMPRESSALGO_ZIP,	"ZIP" },
     { PGPCOMPRESSALGO_ZLIB, 	"ZLIB" },
+    { PGPCOMPRESSALGO_BZIP2, 	"BZIP2" },
     { -1,			"Unknown compression algorithm" },
 };
 
@@ -153,6 +155,9 @@ struct pgpValTbl_s pgpHashTbl[] = {
     { PGPHASHALGO_MD2,		"MD2" },
     { PGPHASHALGO_TIGER192,	"TIGER192" },
     { PGPHASHALGO_HAVAL_5_160,	"HAVAL-5-160" },
+    { PGPHASHALGO_SHA256,	"SHA256" },
+    { PGPHASHALGO_SHA384,	"SHA384" },
+    { PGPHASHALGO_SHA512,	"SHA512" },
     { -1,			"Unknown hash algorithm" },
 };
 
@@ -172,7 +177,7 @@ struct pgpValTbl_s pgpSubTypeTbl[] = {
     { PGPSUBTYPE_REGEX,		"regular expression" },
     { PGPSUBTYPE_REVOCABLE,	"revocable" },
     { PGPSUBTYPE_KEY_EXPIRE_TIME,"key expiration time" },
-    { PGPSUBTYPE_BACKWARD_COMPAT,"placeholder for backward compatibility" },
+    { PGPSUBTYPE_ARR,		"additional recipient request" },
     { PGPSUBTYPE_PREFER_SYMKEY,	"preferred symmetric algorithms" },
     { PGPSUBTYPE_REVOKE_KEY,	"revocation key" },
     { PGPSUBTYPE_ISSUER_KEYID,	"issuer key ID" },
@@ -186,6 +191,9 @@ struct pgpValTbl_s pgpSubTypeTbl[] = {
     { PGPSUBTYPE_KEY_FLAGS,	"key flags" },
     { PGPSUBTYPE_SIGNER_USERID,	"signer's user id" },
     { PGPSUBTYPE_REVOKE_REASON,	"reason for revocation" },
+    { PGPSUBTYPE_FEATURES,	"features" },
+    { PGPSUBTYPE_EMBEDDED_SIG,	"embedded signature" },
+
     { PGPSUBTYPE_INTERNAL_100,	"internal subpkt type 100" },
     { PGPSUBTYPE_INTERNAL_101,	"internal subpkt type 101" },
     { PGPSUBTYPE_INTERNAL_102,	"internal subpkt type 102" },
@@ -367,7 +375,9 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	p += i;
 	hlen -= i;
 
-	pgpPrtVal("    ", pgpSubTypeTbl, p[0]);
+	pgpPrtVal("    ", pgpSubTypeTbl, (p[0]&(~PGPSUBTYPE_CRITICAL)));
+	if (p[0] & PGPSUBTYPE_CRITICAL)
+	    fprintf(stderr, " *CRITICAL*");
 	switch (*p) {
 	case PGPSUBTYPE_PREFER_SYMKEY:	/* preferred symmetric algorithms */
 	    for (i = 1; i < plen; i++)
@@ -419,7 +429,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_TRUST_SIG:
 	case PGPSUBTYPE_REGEX:
 	case PGPSUBTYPE_REVOCABLE:
-	case PGPSUBTYPE_BACKWARD_COMPAT:
+	case PGPSUBTYPE_ARR:
 	case PGPSUBTYPE_REVOKE_KEY:
 	case PGPSUBTYPE_NOTATION:
 	case PGPSUBTYPE_PREFER_KEYSERVER:
@@ -428,6 +438,8 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_KEY_FLAGS:
 	case PGPSUBTYPE_SIGNER_USERID:
 	case PGPSUBTYPE_REVOKE_REASON:
+	case PGPSUBTYPE_FEATURES:
+	case PGPSUBTYPE_EMBEDDED_SIG:
 	case PGPSUBTYPE_INTERNAL_100:
 	case PGPSUBTYPE_INTERNAL_101:
 	case PGPSUBTYPE_INTERNAL_102:
