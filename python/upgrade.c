@@ -31,6 +31,9 @@ static void printMemStats(char *mess)
 }
 #endif
 
+/*@access Header@*/		/* compared with NULL. */
+/*@access rpmdbMatchIterator@*/	/* compared with NULL. */
+
 int pkgCompare(void * first, void * second);	/* XXX make gcc shut up. */
 int pkgCompare(void * first, void * second) {
     struct packageInfo ** a = first;
@@ -46,9 +49,9 @@ int pkgCompare(void * first, void * second) {
 
 /* Adds all files in the second file list which are not in the first
    file list to the hash table. */
-static void compareFileList(int availFileCount, char **availBaseNames,
+static void compareFileList(int availFileCount, char ** availBaseNames,
 			    char ** availDirNames, int * availDirIndexes,
-			    int instFileCount, char **instBaseNames,
+			    int instFileCount, char ** instBaseNames,
 			    char ** instDirNames, int * instDirIndexes,
 			    struct hash_table *ht)
 {
@@ -111,7 +114,7 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 
-	headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
+	(void) headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
 	if (name && !strcmp(name, "metroess")) {
 	    /* metro was removed from 5.1, but leave it if it's already
 	       installed */
@@ -123,11 +126,12 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
 		       sizeof(*psp->packages), (void *)pkgCompare);
 	if (!pack) {
 	    if (headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
-			  (const void **) &installedFiles, &installedFileCount)) {
-		headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
-			  (const void **) &installedDirIndexes, NULL);
-		headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
-			  (const void **) &installedDirs, NULL);
+			  (const void **) &installedFiles, &installedFileCount)
+	    &&	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
+			  (const void **) &installedDirIndexes, NULL)
+	    &&	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
+			  (const void **) &installedDirs, NULL))
+	    {
 
 		compareFileList(0, NULL, NULL, NULL, installedFileCount,
 				installedFiles, installedDirs,
@@ -139,7 +143,7 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
 	}
     }
 
-    rpmdbFreeIterator(mi);
+    mi = rpmdbFreeIterator(mi);
 }
 
 static int findPackagesWithObsoletes(rpmdb db, struct pkgSet *psp)
@@ -151,7 +155,7 @@ static int findPackagesWithObsoletes(rpmdb db, struct pkgSet *psp)
     count = psp->numPackages;
     pip = psp->packages;
     while (count--) {
-	if ((*pip)->selected) {
+	if ((*pip)->selected != 0) {
 	    pip++;
 	    continue;
 	}
@@ -185,9 +189,12 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
     Header h, installedHeader;
     char *name;
     int count;
-    char **installedFiles, **availFiles;
-    char **installedDirs, ** availDirs;
-    int_32 * installedDirIndexes, * availDirIndexes;
+    char **installedFiles;
+    char ** availFiles = NULL;
+    char ** installedDirs;
+    char ** availDirs = NULL;
+    int_32 * installedDirIndexes;
+    int_32 * availDirIndexes = NULL;
     int installedFileCount, availFileCount;
     struct packageInfo **pip;
 
@@ -196,8 +203,9 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
     while (count--) {
 	h = (*pip)->h;
 	name = NULL;
-	headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
-	if (!name) {
+	if (!headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL) ||
+	    name == NULL)
+	{
 	    /* bum header */
 	    /*logMessage("Failed with bad header");*/
 	    return(-1);
@@ -208,9 +216,9 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
     {	rpmdbMatchIterator mi;
 
 	mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
-	skipThis = (mi ? 0 : 1);
-	rpmErrorSetCallback(errorFunction);
-	while((installedHeader = rpmdbNextIterator(mi)) != NULL) {
+	skipThis = (mi != NULL ? 0 : 1);
+	(void) rpmErrorSetCallback(errorFunction);
+	while ((installedHeader = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmVersionCompare(installedHeader, h) >= 0) {
 		/* already have a newer version installed */
 		DEBUG (("Already have newer version\n"))
@@ -218,8 +226,8 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 		break;
 	    }
 	}
-	rpmdbFreeIterator(mi);
-	rpmErrorSetCallback(NULL);
+	mi = rpmdbFreeIterator(mi);
+	(void) rpmErrorSetCallback(NULL);
 	if (! skipThis) {
 	    DEBUG (("No newer version installed\n"))
 	}
@@ -236,9 +244,9 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 		availFiles = NULL;
 		availFileCount = 0;
 	    } else {
-		headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
+		(void) headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
 			    (const void **) &availDirs, NULL);
-		headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
+		(void) headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
 			    (const void **) &availDirIndexes, NULL);
 	    }
 
@@ -246,12 +254,13 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	    while((installedHeader = rpmdbNextIterator(mi)) != NULL) {
 		if (headerGetEntryMinMemory(installedHeader, RPMTAG_BASENAMES, 
-			      NULL, (const void **) &installedFiles,
-			      &installedFileCount)) {
-		    headerGetEntryMinMemory(installedHeader, RPMTAG_DIRNAMES, 
-				NULL, (const void **) &installedDirs, NULL);
-		    headerGetEntryMinMemory(installedHeader, RPMTAG_DIRINDEXES, 
-				NULL, (const void **) &installedDirIndexes, NULL);
+				NULL, (const void **) &installedFiles,
+				&installedFileCount)
+		&&  headerGetEntryMinMemory(installedHeader, RPMTAG_DIRNAMES, 
+				NULL, (const void **) &installedDirs, NULL)
+		&&  headerGetEntryMinMemory(installedHeader, RPMTAG_DIRINDEXES, 
+				NULL, (const void **) &installedDirIndexes, NULL))
+		{
 
 		    compareFileList(availFileCount, availFiles,
 				    availDirs, availDirIndexes,
@@ -263,7 +272,7 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 		    free(installedDirs);
 		}
 	    }
-	    rpmdbFreeIterator(mi);
+	    mi = rpmdbFreeIterator(mi);
 	}
 
 	    if (availFiles) {
@@ -286,7 +295,7 @@ static int removeMovedFilesAlreadyHandled(struct pkgSet *psp,
     char *name;
     int i, count;
     Header h;
-    char **availFiles, ** availDirs;
+    char ** availFiles, ** availDirs;
     int_32 * availDirIndexes;
     int availFileCount;
     struct packageInfo **pip;
@@ -295,17 +304,18 @@ static int removeMovedFilesAlreadyHandled(struct pkgSet *psp,
     pip = psp->packages;
     while (count--) {
 	h = (*pip)->h;
-	if ((*pip)->selected) {
+	if ((*pip)->selected != 0) {
 	    name = NULL;
-	    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
+	    (void) headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
 
 	    if (headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
-			  (const void **) &availFiles, &availFileCount)) {
+			  (const void **) &availFiles, &availFileCount)
 
-		headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
-			       (const void **) &availDirs, NULL);
-		headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
-			       (const void **) &availDirIndexes, NULL);
+	    &&	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
+			       (const void **) &availDirs, NULL)
+	    &&	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
+			       (const void **) &availDirIndexes, NULL))
+	    {
 
 		for (i = 0; i < availFileCount; i++) {
 		    if (htInTable(ht, availDirs[availDirIndexes[i]],
@@ -347,16 +357,17 @@ static int findPackagesWithRelocatedFiles(struct pkgSet *psp,
 	h = (*pip)->h;
 	if (! (*pip)->selected) {
 	    name = NULL;
-	    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
+	    (void) headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
 
 	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL,
-			 (void **) &availFiles, &availFileCount)) {
-		headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
-			    (const void **) &availDirs, NULL);
-		headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
-			    (const void **) &availDirIndexes, NULL);
-		headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
-			    (const void **) &availFileModes, NULL);
+			 (void **) &availFiles, &availFileCount)
+	    &&	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
+			    (const void **) &availDirs, NULL)
+	    &&	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
+			    (const void **) &availDirIndexes, NULL)
+	    &&	headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
+			    (const void **) &availFileModes, NULL))
+	    {
 
 		for (i = 0; i < availFileCount; i++) {
 		    if (S_ISDIR(availFileModes[i])) continue;
@@ -410,12 +421,13 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
     count = psp->numPackages;
     pip = psp->packages;
     while (count--) {
-	if ((*pip)->selected) {
+	if ((*pip)->selected != 0) {
 	    h = (*pip)->h;
 	    /* If this package is already installed, don't bother */
 	    name = NULL;
-	    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
-	    if (!name) {
+	    if (!headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL) ||
+		name == NULL)
+	    {
 		/* bum header */
 		/*logMessage("Failed with bad header");*/
 		return(-1);
@@ -423,7 +435,7 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
 	  { rpmdbMatchIterator mi;
 
 	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
-	    rpmErrorSetCallback(errorFunction);
+	    (void) rpmErrorSetCallback(errorFunction);
 	    while((installedHeader = rpmdbNextIterator(mi)) != NULL) {
 		if (rpmVersionCompare(installedHeader, h) >= 0) {
 		    /* already have a newer version installed */
@@ -432,8 +444,8 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
 		    break;
 		}
 	    }
-	    rpmdbFreeIterator(mi);
-	    rpmErrorSetCallback(NULL);
+	    mi = rpmdbFreeIterator(mi);
+	    (void) rpmErrorSetCallback(NULL);
 	  }
 	}
 
@@ -465,10 +477,11 @@ int ugFindUpgradePackages(struct pkgSet *psp, char *installRoot)
 	return(-1);
     }
 
-    rpmErrorSetCallback(old);
+    (void) rpmErrorSetCallback(old);
     rpmSetVerbosity(RPMMESS_NORMAL);
     
     hashTable = htNewTable(1103);
+    if (hashTable == NULL) return (-1);
 
     /* For all packages that are installed, if there is no package       */
     /* available by that name, add the package's files to the hash table */
@@ -480,7 +493,7 @@ int ugFindUpgradePackages(struct pkgSet *psp, char *installRoot)
     /* updating availPkgs with the count.  Also add files to the hash   */
     /* table that do not exist in the new package - they may have moved */
     if (findUpgradePackages(db, psp, hashTable)) {
-	rpmdbClose(db);
+	(void) rpmdbClose(db);
 	return(-1);
     }
     /*logDebugMessage(("found basic packages to upgrade"));
@@ -489,19 +502,19 @@ int ugFindUpgradePackages(struct pkgSet *psp, char *installRoot)
 
     /* Remove any files that were added to the hash table that are in */
     /* some other package marked for upgrade.                         */
-    removeMovedFilesAlreadyHandled(psp, hashTable);
+    (void) removeMovedFilesAlreadyHandled(psp, hashTable);
     /*logDebugMessage(("removed extra files which have moved"));
     printCount(psp);*/
 
-    findPackagesWithRelocatedFiles(psp, hashTable);
+    (void) findPackagesWithRelocatedFiles(psp, hashTable);
     /*logDebugMessage(("found packages with relocated files"));
     printCount(psp);*/
 
-    findPackagesWithObsoletes(db, psp);
+    (void) findPackagesWithObsoletes(db, psp);
     /*logDebugMessage(("found packages that obsolete installed packages"));
     printCount(psp);*/
     
-    unmarkPackagesAlreadyInstalled(db, psp);
+    (void) unmarkPackagesAlreadyInstalled(db, psp);
     /*logDebugMessage(("unmarked packages already installed"));
     printCount(psp);*/
     
@@ -509,7 +522,7 @@ int ugFindUpgradePackages(struct pkgSet *psp, char *installRoot)
     
     /*printMemStats("Done");*/
 
-    rpmdbClose(db);
+    (void) rpmdbClose(db);
 
     return 0;
 }
