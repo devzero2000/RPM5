@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-07-16 20:13-0400\n"
+"POT-Creation-Date: 2000-07-19 21:12-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2185,69 +2185,69 @@ msgstr ""
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:780
+#: lib/depends.c:779
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:819
+#: lib/depends.c:818
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:836
+#: lib/depends.c:835
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:867
+#: lib/depends.c:866
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:882
+#: lib/depends.c:881
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:909
+#: lib/depends.c:908
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:931
+#: lib/depends.c:930
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:953
+#: lib/depends.c:952
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:963
+#: lib/depends.c:962
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1011
+#: lib/depends.c:1010
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:1073
+#: lib/depends.c:1072
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/depends.c:1128 lib/depends.c:1427
+#: lib/depends.c:1127 lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Abhängigkeiten zu prüfen"
 
-#: lib/depends.c:1223
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2591,13 +2591,13 @@ msgstr ""
 msgid "error creating temporary file %s"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/package.c:52
+#: lib/package.c:50
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr ""
 "Nur Pakete mit Hauptnummern <= 3 werden von dieser RPM-Version unterstützt"
 
-#: lib/package.c:107
+#: lib/package.c:105
 #, fuzzy
 msgid ""
 "only packages with major numbers <= 4 are supported by this version of RPM"

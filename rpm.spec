@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 0.8
+Release: 7.0.9
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -234,6 +234,10 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Thu Jul 20 2000 Jeff Johnson <jbj@redhat.com>
+- fix: Red Hat 6.0 (5.2?) glibc-2.1.1 fclose fails using libio.
+- add /usr/kerberos/man to brp-compress.
+
 * Sun Jul 16 2000 Jeff Johnson <jbj@redhat.com>
 - remove (unused) RPMTAG_CAPABILITY.
 - remove (legacy) use of RPMTAG_{OBSOLETES,PROVIDES} internally.

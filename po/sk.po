@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-07-16 20:13-0400\n"
+"POT-Creation-Date: 2000-07-19 21:12-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2055,69 +2055,69 @@ msgstr ""
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr "dbrecMatchesDepFlags() sa nepodarilo preèíta» hlavièku"
 
-#: lib/depends.c:780
+#: lib/depends.c:779
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:819
+#: lib/depends.c:818
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:836
+#: lib/depends.c:835
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:867
+#: lib/depends.c:866
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:882
+#: lib/depends.c:881
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:909
+#: lib/depends.c:908
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:931
+#: lib/depends.c:930
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:953
+#: lib/depends.c:952
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:963
+#: lib/depends.c:962
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1011
+#: lib/depends.c:1010
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1073
+#: lib/depends.c:1072
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/depends.c:1128 lib/depends.c:1427
+#: lib/depends.c:1127 lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre kontrolu závislostí"
 
-#: lib/depends.c:1223
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "sluèka v re»azi po¾iadaviek: %s"
@@ -2450,12 +2450,12 @@ msgstr "interná chyba (chyba rpm?): "
 msgid "error creating temporary file %s"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: lib/package.c:52
+#: lib/package.c:50
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
-#: lib/package.c:107
+#: lib/package.c:105
 #, fuzzy
 msgid ""
 "only packages with major numbers <= 4 are supported by this version of RPM"

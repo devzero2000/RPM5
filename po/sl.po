@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-16 20:13-0400\n"
+"POT-Creation-Date: 2000-07-19 21:12-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2038,69 +2038,69 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr "dbrecMatchesDepFlags() ni uspel prebrati glave"
 
-#: lib/depends.c:780
+#: lib/depends.c:779
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr "%s: %s zadovoljen ob dodatnem seznamu datotek.\n"
 
-#: lib/depends.c:819
+#: lib/depends.c:818
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
 
-#: lib/depends.c:836
+#: lib/depends.c:835
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr "%s: %s zadovoljen ob dodatni ponudbi.\n"
 
-#: lib/depends.c:867
+#: lib/depends.c:866
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:882
+#: lib/depends.c:881
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:909
+#: lib/depends.c:908
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr "%s: %s zadovoljen ob seznamu datotek db.\n"
 
-#: lib/depends.c:931
+#: lib/depends.c:930
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr "%s: %s zadovoljen ob ponudbi db.\n"
 
-#: lib/depends.c:953
+#: lib/depends.c:952
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "%s: %s zadovoljen ob paketih db.\n"
 
-#: lib/depends.c:963
+#: lib/depends.c:962
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr "%s: %s nezadovoljen.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1011
+#: lib/depends.c:1010
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "paket %s zahteva, a ni zadovoljeno: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1073
+#: lib/depends.c:1072
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s v sporu: %s\n"
 
-#: lib/depends.c:1128 lib/depends.c:1427
+#: lib/depends.c:1127 lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "ni mo¾no prebrati glave pri %d za preizkus soodvisnosti"
 
-#: lib/depends.c:1223
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "zanka v predpogojevani verigi: %s"
@@ -2436,12 +2436,12 @@ msgstr "interna napaka (hro¹è v rpm?): "
 msgid "error creating temporary file %s"
 msgstr "napaka pri ustvarjanju zaèasne datoteke %s"
 
-#: lib/package.c:52
+#: lib/package.c:50
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <= 3"
 
-#: lib/package.c:107
+#: lib/package.c:105
 #, fuzzy
 msgid ""
 "only packages with major numbers <= 4 are supported by this version of RPM"
