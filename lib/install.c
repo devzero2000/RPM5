@@ -231,6 +231,7 @@ static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
     free(fileGroups);
 }
 
+#ifdef DYING
 /**
  * Truncate header changelog tag to configurable limit before installing.
  * @param h		header
@@ -285,6 +286,7 @@ static void trimChangelog(Header h)
     free(names);
     free(texts);
 }
+#endif	/* DYING */
 
 /**
  * Copy file data from h to newH.
@@ -1180,7 +1182,9 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	currDir = NULL;
     }
 
+#ifdef	DYING
     trimChangelog(h);
+#endif
 
     /* if this package has already been installed, remove it from the database
        before adding the new one */

@@ -61,6 +61,7 @@ static int noPgp = 0;
 #define GETOPT_SHOWRC		1018
 #define	GETOPT_DEFINEMACRO	1020
 #define	GETOPT_EVALMACRO	1021
+#define	GETOPT_RCFILE		1022
 
 enum modes {
 
@@ -174,7 +175,14 @@ static struct poptOption optionsTable[] = {
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
  { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
 
+ { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
+	N_("read <file:...> instead of default macro file(s)"),
+	N_("<file:...>") },
+#ifndef	DYING
  { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,	NULL, NULL},
+#else
+ { "rcfile", '\0', 0, 0, GETOPT_RCFILE,		NULL, NULL},
+#endif
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
 
 #if defined(IAM_RPMQV) || defined(IAM_RPMK)
@@ -917,6 +925,12 @@ int main(int argc, const char ** argv)
 	    noUsageMsg = 1;
 	  } break;
 
+          case GETOPT_RCFILE:
+	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
+	    fprintf(stderr, _("Use \"--macros <file:...>\" instead..\n"));
+	    exit(EXIT_FAILURE);
+	    /*@notreached@*/ break;
+
 	  default:
 	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
 	    exit(EXIT_FAILURE);
@@ -1281,7 +1295,6 @@ int main(int argc, const char ** argv)
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
        
 	switch (ba->buildChar) {
-	  /* these fallthroughs are intentional */
 	  case 'a':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	    /*@fallthrough@*/

@@ -21,6 +21,34 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 
+void headerMergeLegacySigs(Header h, const Header sig)
+{
+    HeaderIterator hi;
+    int_32 tag, type, count;
+    const void *ptr;
+
+    hi = headerInitIterator(sig);
+    while (headerNextIterator(hi, &tag, &type, &ptr, &count)) {
+	if (tag < RPMSIGTAG_SIZE)
+	    continue;
+	switch (tag) {
+	case RPMSIGTAG_SIZE:	tag = RPMTAG_SIGSIZE;	break;
+	case RPMSIGTAG_LEMD5_1:	tag = RPMTAG_SIGLEMD5_1;break;
+	case RPMSIGTAG_PGP:	tag = RPMTAG_SIGPGP;	break;
+	case RPMSIGTAG_LEMD5_2:	tag = RPMTAG_SIGLEMD5_2;break;
+	case RPMSIGTAG_MD5:	tag = RPMTAG_SIGMD5;	break;
+	case RPMSIGTAG_GPG:	tag = RPMTAG_SIGGPG;	break;
+	case RPMSIGTAG_PGP5:	tag = RPMTAG_SIGPGP5;	break;
+	default:					break;
+	}
+	if (!headerIsEntry(h, tag))
+	    headerAddEntry(h, tag, type, ptr, count);
+	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
+	    free((void *)ptr);
+    }
+    headerFreeIterator(hi);
+}
+
 /**
  * Retrieve package components from file handle.
  * @param fd		file handle
@@ -129,19 +157,26 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
     return 0;
 }
 
-int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr)
+int rpmReadPackageInfo(FD_t fd, Header * sigp, Header * hdrp)
 {
-    return readPackageHeaders(fd, NULL, signatures, hdr);
+    int rc = readPackageHeaders(fd, NULL, sigp, hdrp);
+    if (hdrp && *hdrp && sigp && *sigp)
+	headerMergeLegacySigs(*hdrp, *sigp);
+    return rc;
 }
 
-int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
+int rpmReadPackageHeader(FD_t fd, Header * hdrp, int * isSource, int * major,
 		  int * minor)
 {
-    int rc;
     struct rpmlead lead;
+    Header sig = NULL;
+    int rc = readPackageHeaders(fd, &lead, &sig, hdrp);
 
-    rc = readPackageHeaders(fd, &lead, NULL, hdr);
-    if (rc) return rc;
+    if (rc)
+	return rc;
+
+    if (hdrp && *hdrp && sig)
+	headerMergeLegacySigs(*hdrp, sig);
    
     if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
     if (major) *major = lead.major;

@@ -1,4 +1,5 @@
-/** \file build/pack.c
+/** \ingroup rpmbuild
+ * \file build/pack.c
  *  Assemble components of an RPM package.
  */
 
@@ -212,7 +213,6 @@ static int processScriptFiles(Spec spec, Package pkg)
     return 0;
 }
 
-/** */
 int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
 	    CSA_t *csa)
 {
@@ -267,29 +267,29 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
 
     if (specp)
 	*specp = spec;
+    else
+	freeSpec(spec);
 
-    if (csa) {
+    if (csa)
 	csa->cpioFdIn = fdi;
-    } else {
+    else
 	Fclose(fdi);
-    }
 
     return 0;
 }
 
-/** */
-int writeRPM(Header h, const char *fileName, int type,
+int writeRPM(Header *hdrp, const char *fileName, int type,
 		    CSA_t *csa, char *passPhrase, const char **cookie)
 {
-    FD_t fd, ifd;
+    FD_t fd = NULL;
+    FD_t ifd = NULL;
     int rc, count, sigtype;
-    int archnum, osnum;
     const char *sigtarget;
     const char * rpmio_flags = NULL;
     char *s;
     char buf[BUFSIZ];
-    Header sig;
-    struct rpmlead lead;
+    Header h = *hdrp;
+    Header sig = NULL;
 
     if (Fileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
@@ -349,7 +349,13 @@ int writeRPM(Header h, const char *fileName, int type,
 	headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
     }
     
-    /* Write the header */
+    /* Reallocate the header into one contiguous region. */
+    *hdrp = h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+
+    /*
+     * Write the header+archive into a temp file so that the size of
+     * archive (after compression) can be added to the header.
+     */
     if (makeTempFile(NULL, &sigtarget, &fd)) {
 	rpmError(RPMERR_CREATE, _("Unable to open temp file."));
 	return RPMERR_CREATE;
@@ -369,76 +375,34 @@ int writeRPM(Header h, const char *fileName, int type,
     }
     if (rpmio_flags) xfree(rpmio_flags);
 
-    if (rc != 0) {
-	Fclose(fd);
-	unlink(sigtarget);
-	xfree(sigtarget);
-	return rc;
-    }
+    if (rc)
+	goto exit;
 
-    /* Now set the real archive size in the Header */
+    /*
+     * Set the actual archive size, and rewrite the header.
+     * This used to be done using headerModifyEntry(), but now that headers
+     * have regions, the value is scribbled directly into the header data
+     * area. Some new scheme for adding the final archive size will have
+     * to be devised if headerGetEntry() ever changes to return a pointer
+     * to memory not in the region. <shrug>
+     */
     if (Fileno(csa->cpioFdIn) < 0) {
-	headerModifyEntry(h, RPMTAG_ARCHIVESIZE,
-		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
+	int_32 * archiveSize;
+	if (headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL, (void *)&archiveSize, NULL))
+	    *archiveSize = csa->cpioArchiveSize;
     }
 
-    (void)Fseek(fd, 0,  SEEK_SET);
+    (void)Fseek(fd, 0, SEEK_SET);
 
     if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	rc = RPMERR_NOSPACE;
 
     Fclose(fd);
-    unlink(fileName);
+    fd = NULL;
+    Unlink(fileName);
 
-    if (rc) {
-	unlink(sigtarget);
-	xfree(sigtarget);
-	return rc;
-    }
-
-    /* Open the output file */
-    fd = Fopen(fileName, "w.ufdio");
-    if (fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
-		fileName, Fstrerror(fd));
-	unlink(sigtarget);
-	xfree(sigtarget);
-	return RPMERR_CREATE;
-    }
-
-    /* Now write the lead */
-    {	const char *name, *version, *release;
-	headerNVR(h, &name, &version, &release);
-	sprintf(buf, "%s-%s-%s", name, version, release);
-    }
-
-    archnum = -1;
-    osnum = -1;
-    if (Fileno(csa->cpioFdIn) < 0) {
-	rpmGetArchInfo(NULL, &archnum);
-	rpmGetOsInfo(NULL, &osnum);
-    } else if (csa->lead != NULL) {	/* XXX FIXME: exorcize lead/arch/os */
-	archnum = csa->lead->archnum;
-	osnum = csa->lead->osnum;
-    }
-
-    memset(&lead, 0, sizeof(lead));
-    lead.major = RPM_MAJOR_NUMBER;
-    lead.minor = 0;
-    lead.type = type;
-    lead.archnum = archnum;
-    lead.osnum = osnum;
-    lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
-    strncpy(lead.name, buf, sizeof(lead.name));
-    if (writeLead(fd, &lead)) {
-	rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
-		 Fstrerror(fd));
-	Fclose(fd);
-	unlink(sigtarget);
-	xfree(sigtarget);
-	unlink(fileName);
-	return rc;
-    }
+    if (rc)
+	goto exit;
 
     /* Generate the signature */
     fflush(stdout);
@@ -449,57 +413,136 @@ int writeRPM(Header h, const char *fileName, int type,
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
 	rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
     }
-    if ((rc = rpmWriteSignature(fd, sig))) {
-	Fclose(fd);
-	unlink(sigtarget);
-	xfree(sigtarget);
-	unlink(fileName);
-	rpmFreeSignature(sig);
-	return rc;
+
+    /* Reallocate the signature into one contiguous region. */
+    sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
+
+    /* Open the output file */
+    fd = Fopen(fileName, "w.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
+		fileName, Fstrerror(fd));
+	rc = RPMERR_CREATE;
+	goto exit;
     }
-    rpmFreeSignature(sig);
-	
+
+    /* Write the lead section into the package. */
+    {	int archnum = -1;
+	int osnum = -1;
+	struct rpmlead lead;
+
+	if (Fileno(csa->cpioFdIn) < 0) {
+#ifndef	DYING
+	    rpmGetArchInfo(NULL, &archnum);
+	    rpmGetOsInfo(NULL, &osnum);
+#endif
+	} else if (csa->lead != NULL) {
+	    archnum = csa->lead->archnum;
+	    osnum = csa->lead->osnum;
+	}
+
+	memset(&lead, 0, sizeof(lead));
+	lead.major = RPM_MAJOR_NUMBER;
+	lead.minor = 0;
+	lead.type = type;
+	lead.archnum = archnum;
+	lead.osnum = osnum;
+	lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
+
+	{	    const char *name, *version, *release;
+	    headerNVR(h, &name, &version, &release);
+	    sprintf(buf, "%s-%s-%s", name, version, release);
+	    strncpy(lead.name, buf, sizeof(lead.name));
+	}
+
+	if (writeLead(fd, &lead)) {
+	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
+		 Fstrerror(fd));
+	    rc = RPMERR_NOSPACE;
+	    goto exit;
+	}
+    }
+
+    /* Write the signature section into the package. */
+    rc = rpmWriteSignature(fd, sig);
+    if (rc)
+	goto exit;
+
     /* Append the header and archive */
     ifd = Fopen(sigtarget, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
 	rpmError(RPMERR_READ, _("Unable to open sigtarget %s: %s"),
 		sigtarget, Fstrerror(ifd));
-	Fclose(fd);
-	Unlink(sigtarget);
-	xfree(sigtarget);
-	Unlink(fileName);
-	return RPMERR_READ;
+	rc = RPMERR_READ;
+	goto exit;
     }
+
+    /* Add signatures to header, and write header into the package. */
+    {	Header nh = headerRead(ifd, HEADER_MAGIC_YES);
+
+	if (nh == NULL) {
+	    rpmError(RPMERR_READ, _("Unable to read header from %s: %s"),
+			sigtarget, Fstrerror(ifd));
+	    rc = RPMERR_READ;
+	    goto exit;
+	}
+
+#ifdef	NOTYET
+	headerMergeLegacySigs(nh, sig);
+#endif
+
+	rc = headerWrite(fd, nh, HEADER_MAGIC_YES);
+	headerFree(nh);
+
+	if (rc) {
+	    rpmError(RPMERR_NOSPACE, _("Unable to write header to %s: %s"),
+			fileName, Fstrerror(fd));
+	    rc = RPMERR_NOSPACE;
+	    goto exit;
+	}
+    }
+	
+    /* Write the payload into the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
-	    rpmError(RPMERR_READ, _("Unable to read sigtarget %s: %s"),
+	    rpmError(RPMERR_READ, _("Unable to read payload from %s: %s"),
 		     sigtarget, Fstrerror(ifd));
-	    Fclose(ifd);
-	    Fclose(fd);
-	    unlink(sigtarget);
-	    xfree(sigtarget);
-	    unlink(fileName);
-	    return RPMERR_READ;
+	    rc = RPMERR_READ;
+	    goto exit;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) < 0) {
-	    rpmError(RPMERR_NOSPACE, _("Unable to write package %s: %s"),
+	    rpmError(RPMERR_NOSPACE, _("Unable to write payload to %s: %s"),
 		     fileName, Fstrerror(fd));
-	    Fclose(ifd);
-	    Fclose(fd);
-	    unlink(sigtarget);
-	    xfree(sigtarget);
-	    unlink(fileName);
-	    return RPMERR_NOSPACE;
+	    rc = RPMERR_NOSPACE;
+	    goto exit;
 	}
     }
-    Fclose(ifd);
-    Fclose(fd);
-    unlink(sigtarget);
-    xfree(sigtarget);
+    rc = 0;
 
-    rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
+exit:
+    if (sig) {
+	rpmFreeSignature(sig);
+	sig = NULL;
+    }
+    if (ifd) {
+	Fclose(ifd);
+	ifd = NULL;
+    }
+    if (fd) {
+	Fclose(fd);
+	fd = NULL;
+    }
+    if (sigtarget) {
+	Unlink(sigtarget);
+	xfree(sigtarget);
+    }
 
-    return 0;
+    if (rc == 0)
+	rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
+    else
+	Unlink(fileName);
+
+    return rc;
 }
 
 static int_32 copyTags[] = {
@@ -509,7 +552,6 @@ static int_32 copyTags[] = {
     0
 };
 
-/** */
 int packageBinaries(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;
@@ -594,7 +636,7 @@ int packageBinaries(Spec spec)
 	csa->cpioList = pkg->cpioList;
 	csa->cpioCount = pkg->cpioCount;
 
-	rc = writeRPM(pkg->header, fn, RPMLEAD_BINARY,
+	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 	xfree(fn);
@@ -605,7 +647,6 @@ int packageBinaries(Spec spec)
     return 0;
 }
 
-/** */
 int packageSources(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;
@@ -632,7 +673,7 @@ int packageSources(Spec spec)
 	csa->cpioList = spec->sourceCpioList;
 	csa->cpioCount = spec->sourceCpioCount;
 
-	rc = writeRPM(spec->sourceHeader, fn, RPMLEAD_SOURCE,
+	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 	xfree(fn);

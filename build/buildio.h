@@ -38,7 +38,7 @@ int readRPM(const char *fileName, /*@out@*/ Spec *specp, /*@out@*/ struct rpmlea
  * @warning The first header argument is now passed by reference in order to
  * return a reloaded contiguous header to the caller.
  *
- * @param h		header
+ * @retval hdrp		header to write (final header is returned).
  * @param filename	file name of package
  * @param type		RPMLEAD_SOURCE/RPMLEAD_BINARY
  * @param csa
@@ -46,7 +46,7 @@ int readRPM(const char *fileName, /*@out@*/ Spec *specp, /*@out@*/ struct rpmlea
  * @retval cookie	generated cookie (i.e build host/time)
  * @return		0 on success
  */
-int writeRPM(Header h, const char *fileName, int type,
+int writeRPM(Header *hdrp, const char *fileName, int type,
 		CSA_t *csa, char *passPhrase, /*@out@*/ const char **cookie);
 
 #ifdef __cplusplus

@@ -44,7 +44,7 @@ int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
 	/*@out@*/ int * minor)
 		/*@modifies fd, *hdr, *isSource, *major, *minor @*/;
 
-/**
+/** \ingroup header
  * Return name, version, release strings from header.
  * @param h		header
  * @retval np		address of name pointer (or NULL)
@@ -54,6 +54,14 @@ int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
  */
 int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
 	/*@out@*/ const char **rp) /*@modifies *np, *vp, *rp @*/;
+
+/** \ingroup header
+ * Translate and merge legacy signature tags into header.
+ * @param h		header
+ * @param sig		signature header
+ */
+void headerMergeLegacySigs(Header h, const Header sig)
+	/*@modifies h @*/;
 
 /**
  * Retrieve file names from header.
@@ -147,7 +155,7 @@ typedef enum rpmTag_e {
 /* Retrofit (and uniqify) signature tags for use by tagName() and rpmQuery. */
 /* the md5 sum was broken *twice* on big endian machines */
 /* XXX 2nd underscore prevents tagTable generation */
-    RPMTAG_SIG_BASE		= 256,
+    RPMTAG_SIG_BASE		= HEADER_SIGBASE,
     RPMTAG_SIGSIZE		= RPMTAG_SIG_BASE+1,
     RPMTAG_SIGLEMD5_1		= RPMTAG_SIG_BASE+2,
     RPMTAG_SIGPGP		= RPMTAG_SIG_BASE+3,

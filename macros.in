@@ -276,6 +276,7 @@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
+
 #
 # Define a generic value for optflags. Normally overridden by per-target macros.
 %optflags		-O2

@@ -492,9 +492,9 @@ void headerUnsort(Header h)
 
 /** \ingroup header
  * Duplicate tag values from one header into another.
- * @param headerFrom		source header
- * @param headerTo		destination header
- * @param tagstocopy		array of tags that are copied
+ * @param headerFrom	source header
+ * @param headerTo	destination header
+ * @param tagstocopy	array of tags that are copied
  */
 void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy)
 	/*@modifies headerFrom, headerTo @*/;
@@ -544,6 +544,8 @@ typedef enum rpmSubTagType_e {
 #define	HEADER_IMMUTABLE	63
 #define	HEADER_REGIONS		64
 #define HEADER_I18NTABLE	100
+#define	HEADER_SIGBASE		256
+#define	HEADER_TAGBASE		1000
 
 #ifdef __cplusplus
 }

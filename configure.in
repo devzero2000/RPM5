@@ -312,7 +312,7 @@ libdb2=""
 libdb1=""
 dnl Check for Berkeley db3 API.
 AC_CHECK_FUNC(db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],
-  AC_CHECK_LIB(db-3.1, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c" ; libdb3="-ldb-3.1"],
+  AC_CHECK_LIB(db-3.1, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.1"],
     AC_CHECK_LIB(db-3.0, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.0"],
       AC_CHECK_LIB(db, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb"],
       ,$libpthread)
@@ -930,17 +930,17 @@ AC_SUBST(LOCALEDIR)
 LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
 AC_SUBST(LIBDIR)
 RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
-
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR")
 AC_SUBST(RPMCONFIGDIR)
+
 SYSCONFIGDIR="`echo /etc/rpm`"
+AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR")
+AC_SUBST(SYSCONFIGDIR)
 
 MACROFILES="${RPMCONFIGDIR}/macros:${RPMCONFIGDIR}/%{_target_platform}/macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/macros.specspo:${SYSCONFIGDIR}/%{_target_platform}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES")
 AC_SUBST(MACROFILES)
 
-AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR")
-AC_SUBST(SYSCONFIGDIR)
 LIBRPMRC_FILENAME="${RPMCONFIGDIR}/rpmrc"
 AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME")
 AC_SUBST(LIBRPMRC_FILENAME)

@@ -272,6 +272,14 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Nov 21 2000 Jeff Johnson <jbj@redhat.com>
+- add brp-strip-shared script <rodrigob@conectiva.com.br>.
+- better item/task progress bars <rodrigob@conectiva.com.br>.
+- load headers as single contiguous region.
+- add region marker as RPM_BIN_TYPE in packages and database.
+- fix: don't headerCopy() relocateable packages if not relocating.
+- merge signatures into header after reading from package.
+
 * Mon Nov 20 2000 Jeff Johnson <jbj@redhat.com>
 - add doxygen and lclint annotations most everywhere.
 - consistent return for all signature verification.

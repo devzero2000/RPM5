@@ -62,6 +62,12 @@ struct entryInfo {
     int_32 count;		/*!< Number of tag elements. */
 };
 
+#define	REGION_TAG_TYPE		RPM_BIN_TYPE
+#define	REGION_TAG_COUNT	sizeof(struct entryInfo)
+
+#define	ENTRY_IS_REGION(_e)     ((_e)->info.tag < HEADER_I18NTABLE)
+#define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
+
 /**
  * A single tag from a Header.
  */
@@ -78,7 +84,7 @@ struct headerToken {
     struct indexEntry *index;	/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
-
+    int region_allocated;	/*!< Is 1st header region allocated? */
     int sorted; 		/*!< Are header entries sorted? */
 /*@refs@*/ int nrefs;	/*!< Reference count. */
 };
@@ -353,144 +359,137 @@ void headerSort(Header h)
     }
 }
 
+static int offsetCmp(const void *avp, const void *bvp) /*@*/
+{
+    const struct indexEntry * ap = avp;
+    const struct indexEntry * bp = bvp;
+    int rc = (ap->info.offset - bp->info.offset);
+
+    if (rc == 0)
+	rc = (ap->info.tag - bp->info.tag);
+    return rc;
+}
+
+void headerUnsort(Header h)
+{
+    qsort(h->index, h->indexUsed, sizeof(*h->index), offsetCmp);
+}
+
 Header headerCopy(Header h)
 {
+    Header res = headerNew();
+    HeaderIterator headerIter = headerInitIterator(h);
     int_32 tag, type, count;
     const void *ptr;
-    HeaderIterator headerIter;
-    Header res = headerNew();
+    int prevtag = 0;
    
-    headerIter = headerInitIterator(h);
-
     while (headerNextIterator(headerIter, &tag, &type, &ptr, &count)) {
+	if (prevtag && prevtag > tag)
+	    res->sorted = 0;
+	prevtag = tag;
 	headerAddEntry(res, tag, type, ptr, count);
-	if (type == RPM_STRING_ARRAY_TYPE || 
-	    type == RPM_I18NSTRING_TYPE) free((void *)ptr);
+	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
+	    free((void *)ptr);
     }
-
-    res->sorted = 1;
-
     headerFreeIterator(headerIter);
 
     return res;
 }
 
-/********************************************************************/
-/*                                                                  */
-/* Header loading and unloading                                     */
-/*                                                                  */
-/********************************************************************/
-#if 0
-static void fprIndexEntry(const char *msg, struct indexEntry *entry, int i)
-{
-    const char * val;
-    fprintf(stderr, "%6d %*s %p: %p[%d]",
-	i, (3*(entry->info.offset & 0xf)), "",
-	entry, entry->data, entry->length);
-
-    switch (entry->info.type) {
-    case RPM_STRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
-    case RPM_I18NSTRING_TYPE:
-	val = (const char *) entry->data;
-	break;
-    case RPM_CHAR_TYPE:
-	val = "CHAR";
-	break;
-    case RPM_INT8_TYPE:
-	val = "INT8";
-	break;
-    case RPM_INT16_TYPE:
-	val = "INT16";
-	break;
-    case RPM_INT32_TYPE:
-	val = "INT32";
-	break;
-    case RPM_BIN_TYPE:
-	val = "BIN";
-	break;
-    default:
-	val = "";
-	break;
-    }
-
-    fprintf(stderr, "\t%-8.8s %s(%d) %s\n",
-	val,
-	tagName(entry->info.tag), entry->info.tag,
-	(msg ? msg : ""));
-}
-#endif
-
 Header headerLoad(void *pv)
 {
-    int_32 il;			/* index length, data length */
-    char *p = pv;
+    int_32 *ei = (int_32 *) pv;
+    int_32 il = ntohl(ei[0]);		/* index length */
+    int_32 dl = ntohl(ei[1]);		/* data length */
+    int pvlen = sizeof(il) + sizeof(dl) +
+               (il * sizeof(struct entryInfo)) + dl;
+    char *p = (char *) &ei[2];
+    Header h = xcalloc(1, sizeof(*h));
+
     const char * dataStart;
     struct entryInfo * pe;
     struct indexEntry * entry; 
-    struct headerToken *h = xmalloc(sizeof(struct headerToken));
-    const char * src;
-    char * dst;
+    int prevtag = 0;
     int i;
-    int count;
 
-    il = ntohl(*((int_32 *) p));
-    p += sizeof(int_32);
-
-    /* we can skip the data length -- we only store this to allow reading
-       from disk */
-    p += sizeof(int_32);
-
-    h->indexAlloced = il;
+    h->indexAlloced = il + 1;
     h->indexUsed = il;
-    h->index = xmalloc(sizeof(struct indexEntry) * il);
+    h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
+    h->sorted = 1;
     h->nrefs = 1;
 
-    /* This assumes you only headerLoad() something you headerUnload()-ed */
-    h->sorted = 1;
-
     pe = (struct entryInfo *) p;
-    dataStart = (char *) (pe + h->indexUsed);
+    dataStart = (char *) (pe + il);
 
-    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++, pe++) {
+    entry = h->index;
+    i = 0;
+    if (!(htonl(pe->tag) < HEADER_I18NTABLE)) {
+	entry->info.type = REGION_TAG_TYPE;
+	prevtag = entry->info.tag = HEADER_IMAGE;
+	entry->info.count = REGION_TAG_COUNT;
+	entry->info.offset = ((char *)pe - dataStart);	/* negative offset */
+	entry->data = pv;
+	entry->length = pvlen;
+	entry++;
+	i++;
+	il++;
+	h->indexUsed++;
+    }
+
+    for (; i < h->indexUsed; i++, entry++, pe++) {
+	char * t;
+	int j;
+
 	entry->info.type = htonl(pe->type);
+	if (entry->info.type < RPM_MIN_TYPE || entry->info.type > RPM_MAX_TYPE)
+	    return NULL;
+
 	entry->info.tag = htonl(pe->tag);
+
+	/* Check that header entries are sorted. */
+	if (entry->info.tag < prevtag)
+	    h->sorted = 0;
+	prevtag = entry->info.tag;
+
 	entry->info.count = htonl(pe->count);
-	entry->info.offset = -1;
+	entry->info.offset = htonl(pe->offset);
 
-	if (entry->info.type < RPM_MIN_TYPE ||
-	    entry->info.type > RPM_MAX_TYPE) return NULL;
+	if (ENTRY_IS_REGION(entry)) {
+	    /* XXX Legacy: grab negative offset from binary data. */
+	    {	int_32 * stei = (int_32 *) (dataStart + entry->info.offset);
+		entry->info.offset = ntohl(stei[2]);
+	    }
+	    if (i == 0) {
+		entry->data = pv;
+		entry->length = pvlen;
+	    } else {
+		entry->data = dataStart + entry->info.offset;
+		entry->length = 0;
+	    }
+	    continue;
+	}
 
-	src = dataStart + htonl(pe->offset);
-	entry->length = dataLength(entry->info.type, src, 
-				   entry->info.count, 1);
-	entry->data = dst = xmalloc(entry->length);
+	entry->data = t = dataStart + entry->info.offset;
+	entry->length = dataLength(entry->info.type, t, entry->info.count, 1);
+	entry->info.offset = ((char *)pe - dataStart);	/* negative offset */
 
-	/* copy data w/ endian conversions */
+
+	/* Perform endian conversions. */
 	switch (entry->info.type) {
 	case RPM_INT32_TYPE:
-	    count = entry->info.count;
-	    while (count--) {
-		*((int_32 *)dst) = htonl(*((int_32 *)src));
-		src += sizeof(int_32);
-		dst += sizeof(int_32);
-	    }
+	    for (j = entry->info.count; j > 0; j--, t += sizeof(int_32))
+		*((int_32 *)t) = htonl(*((int_32 *)t));
 	    break;
-
 	case RPM_INT16_TYPE:
-	    count = entry->info.count;
-	    while (count--) {
-		*((int_16 *)dst) = htons(*((int_16 *)src));
-		src += sizeof(int_16);
-		dst += sizeof(int_16);
-	    }
+	    for (j = entry->info.count; j > 0; j--, t += sizeof(int_16))
+		*((int_16 *)t) = htons(*((int_16 *)t));
 	    break;
-
 	default:
-	    memcpy(dst, src, entry->length);
 	    break;
 	}
     }
+
+    if (!h->sorted) headerSort(h);
 
     return h;
 }
@@ -498,45 +497,73 @@ Header headerLoad(void *pv)
 static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	/*@modifies h, *lengthPtr @*/
 {
-    int i;
-    int type, diff;
-    void *p;
-    int_32 *pi;
+    int_32 * ei;
     struct entryInfo * pe;
+    const char * dataStart;
+    char * te;
+    unsigned pad = 0;
+    unsigned len;
+    int_32 il;
+    int_32 dl;
     struct indexEntry * entry; 
-    char * chptr, * src, * dataStart;
-    int count;
+    int i;
 
-    headerSort(h);
+    /* Sort entries by (region,tag) */
+    headerUnsort(h);
+    i = h->sorted;
+    h->sorted = 1;
+    len = headerSizeof(h, HEADER_MAGIC_NO);
+    h->sorted = i;
 
-    *lengthPtr = headerSizeof(h, 0);
-    pi = p = xmalloc(*lengthPtr);
+    il = h->indexUsed;
+    dl = len - (sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo)));
+    entry = h->index;
+    i = 0;
 
-    *pi++ = htonl(h->indexUsed);
+    ei = xmalloc(len);
+    ei[0] = htonl(il);
+    ei[1] = htonl(dl);
 
-    /* data length */
-    *pi++ = htonl(*lengthPtr - sizeof(int_32) - sizeof(int_32) -
-		(sizeof(struct entryInfo) * h->indexUsed));
+    pe = (struct entryInfo *) &ei[2];
+    dataStart = te = (char *) (pe + il);
 
-    pe = (struct entryInfo *) pi;
-    dataStart = chptr = (char *) (pe + h->indexUsed);
+    for (; i < h->indexUsed; i++, entry++, pe++) {
+	const char * src;
+	unsigned diff;
+	int_32 type;
+	int count;
 
-    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++, pe++) {
-	pe->type = htonl(entry->info.type);
 	pe->tag = htonl(entry->info.tag);
-	pe->count = htonl(entry->info.count);
+	pe->type = htonl(entry->info.type);
+
+	if (ENTRY_IS_REGION(entry)) {
+	    pe->offset = htonl(te - dataStart);
+	    pe->count = htonl(entry->info.count);
+	    if (entry->info.count > 0) {
+		/* XXX Legacy: hide negative offset in binary data. */
+		int_32 * stei = (int_32 *) (te);
+		stei[0] = pe->tag;
+                stei[1] = pe->type;
+                stei[2] = htonl(entry->info.offset);
+                stei[3] = pe->count;
+		te = (char *) &stei[4];
+	    }
+	    continue;
+	}
 
 	/* Alignment */
 	type = entry->info.type;
 	if (typeSizes[type] > 1) {
-	    diff = typeSizes[type] - ((chptr - dataStart) % typeSizes[type]);
+	    diff = typeSizes[type] - ((te - dataStart) % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
-		memset(chptr, 0, diff);
-		chptr += diff;
+		memset(te, 0, diff);
+		te += diff;
+		pad += diff;
 	    }
 	}
 
-	pe->offset = htonl(chptr - dataStart);
+	pe->count = htonl(entry->info.count);
+	pe->offset = htonl(te - dataStart);
 
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
@@ -544,8 +571,8 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((int_32 *)chptr) = htonl(*((int_32 *)src));
-		chptr += sizeof(int_32);
+		*((int_32 *)te) = htonl(*((int_32 *)src));
+		te += sizeof(int_32);
 		src += sizeof(int_32);
 	    }
 	    break;
@@ -554,20 +581,25 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((int_16 *)chptr) = htons(*((int_16 *)src));
-		chptr += sizeof(int_16);
+		*((int_16 *)te) = htons(*((int_16 *)src));
+		te += sizeof(int_16);
 		src += sizeof(int_16);
 	    }
 	    break;
 
 	default:
-	    memcpy(chptr, entry->data, entry->length);
-	    chptr += entry->length;
+	    memcpy(te, entry->data, entry->length);
+	    te += entry->length;
 	    break;
 	}
     }
    
-    return p;
+    if (lengthPtr)
+	*lengthPtr = len;
+
+    headerSort(h);
+
+    return (void *)ei;
 }
 
 void *headerUnload(Header h)
@@ -579,11 +611,21 @@ void *headerUnload(Header h)
 
 Header headerReload(Header h, int tag)
 {
+    Header nh;
     int length;
-    void * uh = doHeaderUnload(h, &length);
+    void * uh;
+
+    uh = doHeaderUnload(h, &length);
     headerFree(h);
-    h = headerLoad(uh);
-    return h;
+    nh = headerLoad(uh);
+    nh->region_allocated = 1;
+    if (ENTRY_IS_REGION(nh->index)) {
+	if (tag == HEADER_SIGNATURES)
+	    nh->index[0].info.tag = tag;
+	if (tag == HEADER_IMMUTABLE)
+	    nh->index[0].info.tag = tag;
+    }
+    return nh;
 }
 
 /********************************************************************/
@@ -607,10 +649,8 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
     case HEADER_MAGIC_NO:
 	break;
     }
-    
+
     nb = Fwrite(uh, sizeof(char), length, fd);
-    if (nb != length)
-	goto exit;
 
 exit:
     free((void *)uh);
@@ -621,11 +661,11 @@ Header headerRead(FD_t fd, enum hMagic magicp)
 {
     int_32 block[4];
     int_32 reserved;
-    int_32 * p;
-    int_32 il, dl;
+    int_32 * ei;
+    int_32 il;
+    int_32 dl;
     int_32 magic;
     Header h;
-    void * dataBlock;
     int len;
     int i;
 
@@ -634,15 +674,17 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     if (magicp == HEADER_MAGIC_YES)
 	i += 2;
 
-    if (timedRead(fd, (char *)block, i*sizeof(*block)) != (i * sizeof(*block)))
+    if (timedRead(fd, (char *)block, i*sizeof(*block)) != (i * sizeof(*block))) {
 	return NULL;
+    }
 
     i = 0;
 
     if (magicp == HEADER_MAGIC_YES) {
 	magic = block[i++];
-	if (memcmp(&magic, header_magic, sizeof(magic)))
+	if (memcmp(&magic, header_magic, sizeof(magic))) {
 	    return NULL;
+	}
 	reserved = block[i++];
     }
     
@@ -654,20 +696,22 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     /*
      * XXX Limit total size of header to 32Mb (~16 times largest known size).
      */
-    if (len > (32*1024*1024))
+    if (len > (32*1024*1024)) {
 	return NULL;
+    }
 
-    dataBlock = p = xmalloc(len);
-    *p++ = htonl(il);
-    *p++ = htonl(dl);
+    ei = xmalloc(len);
+    ei[0] = htonl(il);
+    ei[1] = htonl(dl);
+    len -= sizeof(il) + sizeof(dl);
 
-    len -= sizeof(int_32) + sizeof(int_32);
-    if (timedRead(fd, (char *)p, len) != len)
+    if (timedRead(fd, (char *)&ei[2], len) != len) {
+	free(ei);
 	return NULL;
+    }
     
-    h = headerLoad(dataBlock);
-
-    free(dataBlock);
+    h = headerLoad(ei);
+    h->region_allocated = 1;
 
     return h;
 }
@@ -813,8 +857,7 @@ static struct indexEntry *findEntry(Header h, int_32 tag, int_32 type)
     key.info.tag = tag;
 
     entry2 = entry = 
-	bsearch(&key, h->index, h->indexUsed, sizeof(struct indexEntry), 
-		indexCmp);
+	bsearch(&key, h->index, h->indexUsed, sizeof(*h->index), indexCmp);
     if (entry == NULL)
 	return NULL;
 
@@ -844,7 +887,7 @@ int headerIsEntry(Header h, int_32 tag)
 }
 
 int headerGetRawEntry(Header h, int_32 tag, int_32 * type, const void ** p,
-			int_32 * c)
+			int_32 *c)
 {
     struct indexEntry * entry;
 
@@ -1033,12 +1076,12 @@ Header headerNew()
 
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
-
-    h->sorted = 0;
+    h->region_allocated = 1;
+    h->sorted = 1;
     h->nrefs = 1;
 
     h->index = (h->indexAlloced
-	? xcalloc(h->indexAlloced, sizeof(struct indexEntry))
+	? xcalloc(h->indexAlloced, sizeof(*h->index))
 	: NULL);
 
     return h;
@@ -1053,7 +1096,12 @@ void headerFree(Header h)
 	struct indexEntry * entry = h->index;
 	int i;
 	for (i = 0; i < h->indexUsed; i++, entry++) {
-	    free(entry->data);
+	    if (h->region_allocated && ENTRY_IS_REGION(entry)) {
+		if (entry->length > 0)
+		    free(entry->data);
+	    } else if (!ENTRY_IN_REGION(entry)) {
+		free(entry->data);
+	    }
 	    entry->data = NULL;
 	}
 	free(h->index);
@@ -1078,7 +1126,7 @@ int headerUsageCount(Header h)
 unsigned int headerSizeof(Header h, enum hMagic magicp)
 {
     struct indexEntry * entry;
-    unsigned int size = 0;
+    unsigned int size = 0, pad = 0;
     int i;
 
     headerSort(h);
@@ -1094,12 +1142,20 @@ unsigned int headerSizeof(Header h, enum hMagic magicp)
 	unsigned diff;
 	int_32 type;
 
+        if (ENTRY_IS_REGION(entry)) {
+            if (entry->info.count > 0)
+                size += entry->info.count;
+            continue;
+        }
+
 	/* Alignment */
 	type = entry->info.type;
 	if (typeSizes[type] > 1) {
 	    diff = typeSizes[type] - (size % typeSizes[type]);
-	    if (diff != typeSizes[type])
+	    if (diff != typeSizes[type]) {
 		size += diff;
+		pad += diff;
+	    }
 	}
 
 	size += entry->length;
@@ -1161,8 +1217,6 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
 {
     struct indexEntry *entry;
 
-    h->sorted = 0;
-
     if (c <= 0) {
 	fprintf(stderr, _("Bad count for headerAddEntry(): %d\n"), (int) c);
 	exit(EXIT_FAILURE);
@@ -1181,11 +1235,12 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
     entry->info.tag = tag;
     entry->info.type = type;
     entry->info.count = c;
-    entry->info.offset = -1;
-
+    entry->info.offset = 0;
     entry->data = grabData(type, p, c, &entry->length);
 
-    h->sorted = 0;
+    if (h->indexUsed > 0 && tag < h->index[h->indexUsed-1].info.tag)
+	h->sorted = 0;
+
     h->indexUsed++;
 
     return 1;
@@ -1230,9 +1285,13 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	const char * charArray[2];
 	int count = 0;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
+	    /*@-observertrans@*/
 	    charArray[count++] = "C";
+	    /*@=observertrans@*/
 	} else {
+	    /*@-observertrans@*/
 	    charArray[count++] = "C";
+	    /*@=observertrans@*/
 	    charArray[count++] = lang;
 	}
 	if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
@@ -1251,7 +1310,13 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 
     if (langNum >= table->info.count) {
 	length = strlen(lang) + 1;
-	table->data = xrealloc(table->data, table->length + length);
+	if (ENTRY_IN_REGION(table)) {
+	    char * t = xmalloc(table->length + length);
+	    memcpy(t, table->data, table->length);
+	    table->data = t;
+	    table->info.offset = 0;
+	} else
+	    table->data = xrealloc(table->data, table->length + length);
 	memcpy(((char *)table->data) + table->length, lang, length);
 	table->length += length;
 	table->info.count++;
@@ -1268,7 +1333,13 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	ghosts = langNum - entry->info.count;
 	
 	length = strlen(string) + 1 + ghosts;
-	entry->data = xrealloc(entry->data, entry->length + length);
+	if (ENTRY_IN_REGION(entry)) {
+	    char * t = xmalloc(entry->length + length);
+	    memcpy(t, entry->data, entry->length);
+	    entry->data = t;
+	    entry->info.offset = 0;
+	} else
+	    entry->data = xrealloc(entry->data, entry->length + length);
 
 	memset(((char *)entry->data) + entry->length, '\0', ghosts);
 	strcpy(((char *)entry->data) + entry->length + ghosts, string);
@@ -1307,7 +1378,11 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	/* Replace I18N string array */
 	entry->length -= strlen(be) + 1;
 	entry->length += sn;
-	free(entry->data);
+	
+	if (ENTRY_IN_REGION(entry)) {
+	    entry->info.offset = 0;
+	} else
+	    free(entry->data);
 	entry->data = buf;
     }
 
@@ -1337,8 +1412,11 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     entry->info.type = type;
     entry->data = grabData(type, p, c, &entry->length);
 
-    free(oldData);
-    
+    if (ENTRY_IN_REGION(entry)) {
+	entry->info.offset = 0;
+    } else
+	free(oldData);
+
     return 1;
 }
 
@@ -1367,7 +1445,14 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
 
     length = dataLength(type, p, c, 0);
 
-    entry->data = xrealloc(entry->data, entry->length + length);
+    if (ENTRY_IN_REGION(entry)) {
+	char * t = xmalloc(entry->length + length);
+	memcpy(t, entry->data, entry->length);
+	entry->data = t;
+	entry->info.offset = 0;
+    } else
+	entry->data = xrealloc(entry->data, entry->length + length);
+
     copyData(type, ((char *) entry->data) + entry->length, p, c, length);
 
     entry->length += length;
@@ -1379,8 +1464,9 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
 
 int headerRemoveEntry(Header h, int_32 tag)
 {
-    struct indexEntry * last;
-    struct indexEntry * entry;
+    struct indexEntry * last = h->index + h->indexUsed;
+    struct indexEntry * entry, * first;
+    int ne;
 
     entry = findEntry(h, tag, RPM_NULL_TYPE);
     if (!entry) return 1;
@@ -1389,23 +1475,23 @@ int headerRemoveEntry(Header h, int_32 tag)
     while (entry > h->index && (entry - 1)->info.tag == tag)  
 	entry--;
 
-    /* We might be better off just counting the number of items off the
-       end and issuing one big memcpy, but memcpy() doesn't have to work
-       on overlapping regions thanks to ANSI <sigh>. A alloca() and two
-       memcpy() would probably still be a win (as our moving from the
-       end to the middle isn't very nice to the qsort() we'll have to
-       do to make up for this!), but I'm too lazy to implement it. Just
-       remember that this repeating this is basically nlogn thanks to this
-       dumb implementation (but n is the best we'd do anyway) */
-
-    last = h->index + h->indexUsed;
-    while (entry->info.tag == tag && entry < last) {
-	free(entry->data);
-	*(entry++) = *(--last);
+    /* Free data for tags being removed. */
+    for (first = entry; first < last; first++) {
+	if (first->info.tag != tag)
+	    break;
+	if (ENTRY_IN_REGION(first))
+	    continue;
+	free(first->data);
+	first->data = NULL;
     }
-    h->indexUsed = last - h->index;
 
-    h->sorted = 0;
+    ne = (first - entry);
+    if (ne > 0) {
+	h->indexUsed -= ne;
+	ne = last - first;
+	if (ne > 0)
+	    memmove(entry, first, (ne * sizeof(*entry)));
+    }
 
     return 0;
 }
@@ -1528,9 +1614,10 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
     format = xcalloc(numTokens, sizeof(*format));
     if (endPtr) *endPtr = NULL;
 
+    /*@-infloops@*/
     dst = start = str;
     currToken = -1;
-    while (*start && !done) {
+    while (*start) {
 	switch (*start) {
 	case '%':
 	    /* handle %% */
@@ -1573,7 +1660,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    chptr = start;
 	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
 	    if (!*chptr || *chptr == '%') {
+		/*@-observertrans@*/
 		*errmsg = _("missing { after %");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1601,7 +1690,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    next = start;
 	    while (*next && *next != '}') next++;
 	    if (!*next) {
+		/*@-observertrans@*/
 		*errmsg = _("missing } after %{");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1613,7 +1704,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if (*chptr) {
 		*chptr++ = '\0';
 		if (!*chptr) {
+		    /*@-observertrans@*/
 		    *errmsg = _("empty tag format");
+		    /*@=observertrans@*/
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
@@ -1623,7 +1716,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    }
 	    
 	    if (!*start) {
+		/*@-observertrans@*/
 		*errmsg = _("empty tag name");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1638,7 +1733,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		format[currToken].u.tag.ext = ext->u.tagFunction;
 		format[currToken].u.tag.extNum = ext - extensions;
 	    } else {
+		/*@-observertrans@*/
 		*errmsg = _("unknown tag");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1663,7 +1760,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    }
 
 	    if (!start) {
+		/*@-observertrans@*/
 		*errmsg = _("] expected at end of array");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1679,9 +1778,13 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if ((*start == ']' && state != PARSER_IN_ARRAY) ||
 	        (*start == '}' && state != PARSER_IN_EXPR)) {
 		if (*start == ']')
+		    /*@-observertrans@*/
 		    *errmsg = _("unexpected ]");
+		    /*@=observertrans@*/
 		else
+		    /*@-observertrans@*/
 		    *errmsg = _("unexpected }");
+		    /*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1705,7 +1808,10 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    }
 	    break;
 	}
+	if (done)
+	    break;
     }
+    /*@=infloops@*/
 
     *dst = '\0';
 
@@ -1736,14 +1842,18 @@ static int parseExpression(struct sprintfToken * token, char * str,
     while (*chptr && *chptr != '?') chptr++;
 
     if (*chptr != '?') {
+	/*@-observertrans@*/
 	*errmsg = _("? expected in expression");
+	/*@=observertrans@*/
 	return 1;
     }
 
     *chptr++ = '\0';;
 
     if (*chptr != '{') {
+	/*@-observertrans@*/
 	*errmsg = _("{ expected after ? in expression");
+	/*@=observertrans@*/
 	return 1;
     }
 
@@ -1754,7 +1864,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	return 1;
 
     if (!*end) {
+	/*@-observertrans@*/
 	*errmsg = _("} expected in expression");
+	/*@=observertrans@*/
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	token->u.cond.ifFormat = NULL;
 	return 1;
@@ -1762,7 +1874,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
     chptr = end;
     if (*chptr != ':' && *chptr != '|') {
+	/*@-observertrans@*/
 	*errmsg = _(": expected following ? subexpression");
+	/*@=observertrans@*/
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	token->u.cond.ifFormat = NULL;
 	return 1;
@@ -1776,7 +1890,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	chptr++;
 
 	if (*chptr != '{') {
+	    /*@-observertrans@*/
 	    *errmsg = _("{ expected after : in expression");
+	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
 	    return 1;
@@ -1789,7 +1905,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 			errmsg)) 
 	    return 1;
 	if (!*end) {
+	    /*@-observertrans@*/
 	    *errmsg = _("} expected in expression");
+	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
 	    return 1;
@@ -1797,7 +1915,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
 	chptr = end;
 	if (*chptr != '|') {
+	    /*@-observertrans@*/
 	    *errmsg = _("| expected at end of expression");
+	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
 	    freeFormat(token->u.cond.elseFormat, token->u.cond.numElseTokens);
@@ -1881,7 +2001,9 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     }
 
     if (tag->arrayCount) {
+	/*@-observertrans -modobserver@*/
 	if (type == RPM_STRING_ARRAY_TYPE) free((void *)data);
+	/*@=observertrans =modobserver@*/
 
 	countBuf = count;
 	data = &countBuf;
@@ -1922,7 +2044,9 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	    sprintf(val, buf, strarray[element]);
 	}
 
+	/*@-observertrans -modobserver@*/
 	if (mayfree) free((void *)data);
+	/*@=observertrans =modobserver@*/
 
 	break;
 

@@ -459,10 +459,10 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
 
     /* Rewrite the rpm */
     if (lead.type == RPMLEAD_SOURCE) {
-	rc = writeRPM(spec->packages->header, fno, (int)lead.type,
+	rc = writeRPM(&spec->packages->header, fno, (int)lead.type,
 		csa, spec->passPhrase, &(spec->cookie));
     } else {
-	rc = writeRPM(spec->packages->header, fno, (int)lead.type,
+	rc = writeRPM(&spec->packages->header, fno, (int)lead.type,
 		csa, spec->passPhrase, NULL);
     }
 
@@ -528,6 +528,10 @@ main(int argc, char *argv[])
     int arg;
     int ec = 0;
     injmode_t lastmode = INJ_UNKNOWN;
+
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    mtrace();  /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+#endif
 
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     (void)setlocale(LC_ALL, "" );

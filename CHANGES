@@ -32,6 +32,12 @@
 	- add cscope/ctags (Rodrigo Barbosa<rodrigob@conectiva.com.br>).
 	- remove getMacroBody() from rpmio API.
 	- add support for unzip <rodrigob@conectiva.com.br>
+	- add brp-strip-shared script <rodrigob@conectiva.com.br>.
+	- better item/task progress bars <rodrigob@conectiva.com.br>.
+	- load headers as single contiguous region.
+	- add region marker as RPM_BIN_TYPE in packages and database.
+	- fix: don't headerCopy() relocateable packages if not relocating.
+	- merge signatures into header after reading from package.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

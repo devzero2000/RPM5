@@ -1,4 +1,5 @@
-/** \file build/parsePrep.c
+/** \ingroup rpmbuild
+ * \file build/parsePrep.c
  *  Parse %prep section from spec file.
  */
 
@@ -22,6 +23,11 @@
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
+/**
+ * Check that file owner and group are known.
+ * @param urlfn		file url
+ * @return		0 on success
+ */
 static int checkOwners(const char *urlfn)
 {
     struct stat sb;
@@ -38,6 +44,16 @@ static int checkOwners(const char *urlfn)
     return 0;
 }
 
+/**
+ * Expand %patchN macro into %prep scriptlet.
+ * @param spec		build info
+ * @param c		patch index
+ * @param strip		patch level (i.e. patch -p argument)
+ * @param db		saved file suffix (i.e. patch --suffix argument)
+ * @param reverse	include -R?
+ * @param removeEmpties	include -E?
+ * @return		expanded %patch macro (NULL on error)
+ */
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
 {
@@ -121,11 +137,19 @@ static int checkOwners(const char *urlfn)
     return buf;
 }
 
+/**
+ * Expand %setup macro into %prep scriptlet.
+ * @param spec		build info
+ * @param c		source index
+ * @param quietly	should -vv be omitted from tar?
+ * @return		expanded %setup macro (NULL on error)
+ */
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
     char *taropts;
+    char *t = NULL;
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
@@ -182,27 +206,55 @@ static int checkOwners(const char *urlfn)
 	/*@notreached@*/ break;
     }
 
-    if (compressed) {
-	const char *zipper = rpmGetPath(
-	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
-	    NULL);
-	sprintf(buf,
-		"%s -dc %s | tar %s -\n"
+    if (compressed != COMPRESSED_NOT) {
+	const char *zipper;
+	int needtar = 1;
+
+	switch (compressed) {
+	case COMPRESSED_NOT:    /* XXX can't happen */
+	case COMPRESSED_OTHER:
+	    t = "%{_gzipbin} -dc";
+	    break;
+	case COMPRESSED_BZIP2:
+	    t = "%{_bzip2bin} -dc";
+	    break;
+	case COMPRESSED_ZIP:
+	    t = "%{_unzipbin}";
+	    needtar = 0;
+	    break;
+	}
+	zipper = rpmGetPath(t, NULL);
+	buf[0] = '\0';
+	t = stpcpy(buf, zipper);
+	xfree(zipper);
+	*t++ = ' ';
+	t = stpcpy(t, fn);
+	if (needtar)
+	    t = stpcpy( stpcpy( stpcpy(t, " | tar "), taropts), " -");
+	t = stpcpy(t,
+		"\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
-		"fi",
-		zipper,
-		fn, taropts);
-	xfree(zipper);
+		"fi");
     } else {
-	sprintf(buf, "tar %s %s", taropts, fn);
+	buf[0] = '\0';
+	t = stpcpy( stpcpy(buf, "tar "), taropts);
+	*t++ = ' ';
+	t = stpcpy(t, fn);
     }
 
     xfree(urlfn);
     return buf;
 }
 
+/**
+ * Parse %setup macro.
+ * @todo FIXME: Option -q broken when not immediately after %setup.
+ * @param spec		build info
+ * @param line		current line from spec file
+ * @return		0 on success
+ */
 static int doSetupMacro(Spec spec, char *line)
 {
     char buf[BUFSIZ];
@@ -345,6 +397,12 @@ static int doSetupMacro(Spec spec, char *line)
     return 0;
 }
 
+/**
+ * Parse %patch line.
+ * @param spec		build info
+ * @param line		current line from spec file
+ * @return		0 on success
+ */
 static int doPatchMacro(Spec spec, char *line)
 {
     char *opt_b;
@@ -447,7 +505,6 @@ static int doPatchMacro(Spec spec, char *line)
     return 0;
 }
 
-/** */
 int parsePrep(Spec spec)
 {
     int nextPart, res, rc;
@@ -484,9 +541,8 @@ int parsePrep(Spec spec)
 	}
     }
 
-    lines = splitString(getStringBuf(buf), strlen(getStringBuf(buf)), '\n');
-    saveLines = lines;
-    while (*lines) {
+    saveLines = splitString(getStringBuf(buf), strlen(getStringBuf(buf)), '\n');
+    for (lines = saveLines; *lines; lines++) {
 	res = 0;
 	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, *lines);
@@ -500,7 +556,6 @@ int parsePrep(Spec spec)
 	    freeStringBuf(buf);
 	    return res;
 	}
-	lines++;
     }
 
     freeSplitString(saveLines);
