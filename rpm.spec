@@ -234,24 +234,24 @@ fi
 %{__prefix}/lib/rpm/armv[34][lb]*
 %endif
 
-%lang(cs)	%{__prefix}%{__share}/locale/cs/LC_MESSAGES/rpm.mo
-%lang(da)	%{__prefix}%{__share}/locale/da/LC_MESSAGES/rpm.mo
-%lang(de)	%{__prefix}%{__share}/locale/de/LC_MESSAGES/rpm.mo
-%lang(fi)	%{__prefix}%{__share}/locale/fi/LC_MESSAGES/rpm.mo
-%lang(fr)	%{__prefix}%{__share}/locale/fr/LC_MESSAGES/rpm.mo
-%lang(is)	%{__prefix}%{__share}/locale/is/LC_MESSAGES/rpm.mo
-%lang(ja)	%{__prefix}%{__share}/locale/ja/LC_MESSAGES/rpm.mo
-%lang(no)	%{__prefix}%{__share}/locale/no/LC_MESSAGES/rpm.mo
-%lang(pl)	%{__prefix}%{__share}/locale/pl/LC_MESSAGES/rpm.mo
-%lang(pt)	%{__prefix}%{__share}/locale/pt/LC_MESSAGES/rpm.mo
-%lang(pt_BR)	%{__prefix}%{__share}/locale/pt_BR/LC_MESSAGES/rpm.mo
-%lang(ro)	%{__prefix}%{__share}/locale/ro/LC_MESSAGES/rpm.mo
-%lang(ru)	%{__prefix}%{__share}/locale/ru/LC_MESSAGES/rpm.mo
-%lang(sk)	%{__prefix}%{__share}/locale/sk/LC_MESSAGES/rpm.mo
-%lang(sl)	%{__prefix}%{__share}/locale/sl/LC_MESSAGES/rpm.mo
-%lang(sr)	%{__prefix}%{__share}/locale/sr/LC_MESSAGES/rpm.mo
-%lang(sv)	%{__prefix}%{__share}/locale/sv/LC_MESSAGES/rpm.mo
-%lang(tr)	%{__prefix}%{__share}/locale/tr/LC_MESSAGES/rpm.mo
+%lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
+%lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
+%lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/rpm.mo
+%lang(fi)	%{__prefix}/*/locale/fi/LC_MESSAGES/rpm.mo
+%lang(fr)	%{__prefix}/*/locale/fr/LC_MESSAGES/rpm.mo
+%lang(is)	%{__prefix}/*/locale/is/LC_MESSAGES/rpm.mo
+%lang(ja)	%{__prefix}/*/locale/ja/LC_MESSAGES/rpm.mo
+%lang(no)	%{__prefix}/*/locale/no/LC_MESSAGES/rpm.mo
+%lang(pl)	%{__prefix}/*/locale/pl/LC_MESSAGES/rpm.mo
+%lang(pt)	%{__prefix}/*/locale/pt/LC_MESSAGES/rpm.mo
+%lang(pt_BR)	%{__prefix}/*/locale/pt_BR/LC_MESSAGES/rpm.mo
+%lang(ro)	%{__prefix}/*/locale/ro/LC_MESSAGES/rpm.mo
+%lang(ru)	%{__prefix}/*/locale/ru/LC_MESSAGES/rpm.mo
+%lang(sk)	%{__prefix}/*/locale/sk/LC_MESSAGES/rpm.mo
+%lang(sl)	%{__prefix}/*/locale/sl/LC_MESSAGES/rpm.mo
+%lang(sr)	%{__prefix}/*/locale/sr/LC_MESSAGES/rpm.mo
+%lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/rpm.mo
+%lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
 
 %{__prefix}%{__share}/man/man[18]/*.[18]*
 %lang(pl)	%{__prefix}%{__share}/man/pl/man[18]/*.[18]*
@@ -319,22 +319,22 @@ fi
 %defattr(-,root,root)
 %{__prefix}/lib/libpopt.so.*
 %{__prefix}%{__share}/man/man3/popt.3*
-%lang(cs)	%{__prefix}%{__share}/locale/cs/LC_MESSAGES/popt.mo
-%lang(da)	%{__prefix}%{__share}/locale/da/LC_MESSAGES/popt.mo
-%lang(gl)	%{__prefix}%{__share}/locale/gl/LC_MESSAGES/popt.mo
-%lang(hu)	%{__prefix}%{__share}/locale/hu/LC_MESSAGES/popt.mo
-%lang(is)	%{__prefix}%{__share}/locale/is/LC_MESSAGES/popt.mo
-%lang(no)	%{__prefix}%{__share}/locale/no/LC_MESSAGES/popt.mo
-%lang(pt)	%{__prefix}%{__share}/locale/pt/LC_MESSAGES/popt.mo
-%lang(ro)	%{__prefix}%{__share}/locale/ro/LC_MESSAGES/popt.mo
-%lang(ru)	%{__prefix}%{__share}/locale/ru/LC_MESSAGES/popt.mo
-%lang(sk)	%{__prefix}%{__share}/locale/sk/LC_MESSAGES/popt.mo
-%lang(sl)	%{__prefix}%{__share}/locale/sl/LC_MESSAGES/popt.mo
-%lang(sv)	%{__prefix}%{__share}/locale/sv/LC_MESSAGES/popt.mo
-%lang(tr)	%{__prefix}%{__share}/locale/tr/LC_MESSAGES/popt.mo
-%lang(uk)	%{__prefix}%{__share}/locale/uk/LC_MESSAGES/popt.mo
-%lang(wa)	%{__prefix}%{__share}/locale/wa/LC_MESSAGES/popt.mo
-%lang(zh_CN)	%{__prefix}%{__share}/locale/zh_CN.GB2312/LC_MESSAGES/popt.mo
+%lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/popt.mo
+%lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/popt.mo
+%lang(gl)	%{__prefix}/*/locale/gl/LC_MESSAGES/popt.mo
+%lang(hu)	%{__prefix}/*/locale/hu/LC_MESSAGES/popt.mo
+%lang(is)	%{__prefix}/*/locale/is/LC_MESSAGES/popt.mo
+%lang(no)	%{__prefix}/*/locale/no/LC_MESSAGES/popt.mo
+%lang(pt)	%{__prefix}/*/locale/pt/LC_MESSAGES/popt.mo
+%lang(ro)	%{__prefix}/*/locale/ro/LC_MESSAGES/popt.mo
+%lang(ru)	%{__prefix}/*/locale/ru/LC_MESSAGES/popt.mo
+%lang(sk)	%{__prefix}/*/locale/sk/LC_MESSAGES/popt.mo
+%lang(sl)	%{__prefix}/*/locale/sl/LC_MESSAGES/popt.mo
+%lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/popt.mo
+%lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/popt.mo
+%lang(uk)	%{__prefix}/*/locale/uk/LC_MESSAGES/popt.mo
+%lang(wa)	%{__prefix}/*/locale/wa/LC_MESSAGES/popt.mo
+%lang(zh_CN)	%{__prefix}/*/locale/zh_CN.GB2312/LC_MESSAGES/popt.mo
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort now.
 %{__prefix}/lib/libpopt.a
