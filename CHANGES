@@ -97,6 +97,7 @@
 	- add callbacks on package erasure.
 	- fix: preserve cpio errno when using Fclose with libio.
 	- fix: initialize sigs everywhere in python header object.
+	- popt: support for float/double args.
 
 3.0.4 -> 3.0.5
 	- configure.in fiddles for BSD systems (Patrick Schoo).
