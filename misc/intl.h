@@ -4,7 +4,7 @@
 
 #if HAVE_LIBINTL_H
 #include <libintl.h>
-#define _(String) gettext((String))
+#define _(String) gettext(String)
 #else
 #define bindtextdomain(foo, bar)
 #define textdomain(foo)
