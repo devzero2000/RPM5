@@ -9,7 +9,7 @@ ulimit -c 0
 
 #
 # --- Set needed to 0 for traditional find-requires behavior.
-needed=0
+needed=1
 if [ X"$1" = Xldd ]; then
     needed=0
 elif [ X"$1" = Xobjdump ]; then
@@ -97,7 +97,11 @@ for f in $liblist $exelist ; do
 	/^$/ { START=0; }
 	/^Dynamic Section:$/ { START=1; }
 	(START==1) && /NEEDED/ {
-	    if (needed) { print $2 ; }
+	    if (needed) {
+		sub(/$/, "()'$mark64'", $2) ;
+		sub(/()$/, "", $2) ;
+		print $2 ;
+	    }
 	}
 	/^Version References:$/ { START=2; }
 	(START==2) && /required from/ {

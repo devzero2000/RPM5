@@ -981,7 +981,7 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
     otherLinks = hfd(otherLinks, oltype);
     mi = rpmdbFreeIterator(mi);
 
-    fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
+    fi->replaced = xrealloc(fi->replaced,
 			   sizeof(*fi->replaced) * (numReplaced + 1));
     fi->replaced[numReplaced].otherPkg = 0;
 

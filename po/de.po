@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-19 14:29-0400\n"
+"POT-Creation-Date: 2002-06-06 16:30-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3942,22 +3942,22 @@ msgstr "kann %s lock für die Datenbank nicht bekommen"
 msgid "locked   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/dbconfig.c:404
+#: rpmdb/dbconfig.c:405
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:442
+#: rpmdb/dbconfig.c:443
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:451
+#: rpmdb/dbconfig.c:452
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:460
+#: rpmdb/dbconfig.c:461
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -4238,68 +4238,68 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:660
+#: rpmio/rpmio.c:654
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:663
+#: rpmio/rpmio.c:657
 #, fuzzy
 msgid "Bad server response"
 msgstr "Nicht passende Antwort des FTP-Servers"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:660
 #, fuzzy
 msgid "Server I/O error"
 msgstr "FTP IO-Fehler"
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:663
 #, fuzzy
 msgid "Server timeout"
 msgstr "Timeout des FTP-Servers"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:666
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
 
-#: rpmio/rpmio.c:675
+#: rpmio/rpmio.c:669
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:672
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Verbindung zum FTP-Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:675
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:684
+#: rpmio/rpmio.c:678
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "IO-Fehler bei lokaler Datei"
 
-#: rpmio/rpmio.c:687
+#: rpmio/rpmio.c:681
 msgid "Error setting remote server to passive mode"
 msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
 
-#: rpmio/rpmio.c:690
+#: rpmio/rpmio.c:684
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:687
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:691
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 
-#: rpmio/rpmio.c:1369
+#: rpmio/rpmio.c:1363
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

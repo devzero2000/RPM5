@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 7x.21
+Release: 7x.22
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -377,7 +377,7 @@ fi
 %ifarch armv3l armv4l
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/armv[34][lb]*
 %endif
-%ifarch mips mipsel mipseb
+%ifarch mips mipsel
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/mips*
 %endif
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/noarch*
@@ -459,7 +459,6 @@ fi
 %files python
 %defattr(-,root,root)
 %{__prefix}/lib/python%{with_python_version}/site-packages/rpmmodule.so
-#%{__prefix}/lib/python%{with_python_version}/site-packages/poptmodule.so
 %endif
 
 %if %{with_perl_subpackage}
@@ -521,6 +520,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jun  6 2002 Jeff Johnson <jbj@redhat.com>
+- make peace with automake-1.6.1 et al.
+- backport all beecrypt/rpmio bits from 4.1 that don't break the API.
+
 * Thu May  2 2002 Jeff Johnson <jbj@redhat.com>
 - fix: include <sys/time.h> for 6.2 python modules.
 

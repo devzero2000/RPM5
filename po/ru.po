@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-19 14:29-0400\n"
+"POT-Creation-Date: 2002-06-06 16:30-0400\n"
 "PO-Revision-Date: 2002-04-09 16:44-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3682,22 +3682,22 @@ msgstr "невозможно получить блокировку %s на %s/%s\n"
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"
 
-#: rpmdb/dbconfig.c:404
+#: rpmdb/dbconfig.c:405
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
 
-#: rpmdb/dbconfig.c:442
+#: rpmdb/dbconfig.c:443
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "неверное числовое значение %s, пропущено\n"
 
-#: rpmdb/dbconfig.c:451
+#: rpmdb/dbconfig.c:452
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s имеет слишком малую или слишком большую величину long, пропущено\n"
 
-#: rpmdb/dbconfig.c:460
+#: rpmdb/dbconfig.c:461
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3979,59 +3979,59 @@ msgstr "Файл %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Длина файла %s меньше чем %u байт\n"
 
-#: rpmio/rpmio.c:660
+#: rpmio/rpmio.c:654
 msgid "Success"
 msgstr "Выполнено"
 
-#: rpmio/rpmio.c:663
+#: rpmio/rpmio.c:657
 msgid "Bad server response"
 msgstr "Неверный ответ сервера"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:660
 msgid "Server I/O error"
 msgstr "Ошибка ввода/вывода сервера"
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:663
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:666
 msgid "Unable to lookup server host address"
 msgstr "Не могу найти адрес сервера"
 
-#: rpmio/rpmio.c:675
+#: rpmio/rpmio.c:669
 msgid "Unable to lookup server host name"
 msgstr "Не могу найти имя сервера"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:672
 msgid "Failed to connect to server"
 msgstr "Не могу соединиться с сервером"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:675
 msgid "Failed to establish data connection to server"
 msgstr "Не могу установить соединение для данных с сервером"
 
-#: rpmio/rpmio.c:684
+#: rpmio/rpmio.c:678
 msgid "I/O error to local file"
 msgstr "Файловая ошибка ввода/вывода"
 
-#: rpmio/rpmio.c:687
+#: rpmio/rpmio.c:681
 msgid "Error setting remote server to passive mode"
 msgstr "Ошибка при переводе удаленного сервера в пассивный режим"
 
-#: rpmio/rpmio.c:690
+#: rpmio/rpmio.c:684
 msgid "File not found on server"
 msgstr "Файл не найден на сервере"
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:687
 msgid "Abort in progress"
 msgstr "Отмена в процессе"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:691
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: rpmio/rpmio.c:1369
+#: rpmio/rpmio.c:1363
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"

@@ -6,18 +6,15 @@ dnl it, why check it?
 
 AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
-
+AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
+AC_CONFIG_HEADERS
 AM_INIT_AUTOMAKE(rpm, 4.0.4)
 AM_CONFIG_HEADER(config.h)
-
-AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 
 dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
 ALL_LINGUAS="cs da de en_RN es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN.GB2312"
-
-LIBOBJS=
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -56,7 +53,8 @@ AC_CACHE_VAL(ac_cv_valistisarray,
 		    [ac_cv_valistisarray=false])])
 
 if test "$ac_cv_valistisarray" = true ; then
-	AC_DEFINE(HAVE_VA_LIST_AS_ARRAY)
+	AC_DEFINE(HAVE_VA_LIST_AS_ARRAY, 1,
+		[Define as 1 if your va_list type is an array])
 	AC_MSG_RESULT(yes)
 else
        AC_MSG_RESULT(no)
@@ -170,7 +168,9 @@ fi
 dnl
 dnl substitute this into config.h, so the C source picks it up.
 dnl
-AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}")
+AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}",
+[A full path to a program, possibly with arguments, that will create a
+   directory and all necessary parent directories, ala `mkdir -p'])
 AC_SUBST(MKDIR_P)
 
 AC_ISC_POSIX
@@ -189,30 +189,34 @@ AM_PROG_LIBTOOL
 
 AC_CHECK_TOOL(AR, ar, :)
 
-if test "$cross_compiling" != "yes"; then
 dnl
-dnl Set search path for common programs
+dnl use defaults if cross-compiling, otherwise use the default path.
 dnl
-    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
+if test "$cross_compiling" = "yes"; then
+    MYPATH=""
+else
+#    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
+    MYPATH=$PATH
+fi
 
 dnl
 dnl Find some common programs
 dnl
-    AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
-    AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
-    AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
-    AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
-    AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
-    AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
-    AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
-    AC_PATH_PROG(__FILE, file, /usr/bin/file, $MYPATH)
-    AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
-    AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
-    AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
-    AC_PATH_PROG(UNZIPBIN, unzip, /usr/bin/unzip, $MYPATH)
+AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
+AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
+AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
+AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
+AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
+AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
+AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
+AC_PATH_PROG(__FILE, file, /usr/bin/file, $MYPATH)
+AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
+AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
+AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
+AC_PATH_PROG(UNZIPBIN, unzip, /usr/bin/unzip, $MYPATH)
 
-    AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
-    AC_MSG_CHECKING(checking whether id supports -u)
+AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
+AC_MSG_CHECKING(checking whether id supports -u)
     if ${__ID} -u 2>&1 > /dev/null ; then
 	__ID_U="%{__id} -u"
 	AC_MSG_RESULT(yes)
@@ -221,38 +225,38 @@ dnl XXX Watchout for square brackets fed to m4.
 	__ID_U="%{__id} | %{__sed} 's/[[^=]]*=\\\\([[0-9]][[0-9]]*\\\\).*$/\\\\1/'"
 	AC_MSG_RESULT(no)
     fi
-    AC_SUBST(__ID_U)
+AC_SUBST(__ID_U)
 
-    AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
-    AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
-    AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
-    AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
-    AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
-    AC_MSG_CHECKING(old version of patch)
+AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
+AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
+AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
+AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
+AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
+AC_MSG_CHECKING(old version of patch)
     PATCHVERSION=`patch --version 2>&1`
 
     if test "$PATCHVERSION" = "Patch version 2.1"; then
-	AC_DEFINE(HAVE_OLDPATCH_21)
+	AC_DEFINE(HAVE_OLDPATCH_21, 1,
+		[Define if the patch call you'll be using is 2.1 or older])
 	AC_MSG_RESULT(patch older then 2.2 found)
     else
 	AC_MSG_RESULT(patch later then 2.2 found)
     fi
 
-    AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
-    AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
-    AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
-    AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
-    AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
-    AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
-    AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
-    AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
+AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
+AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
+AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
+AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
+AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
+AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
+AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
+AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
 
-    AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
-    AC_PATH_PROG(__NM, nm, /usr/bin/nm, $MYPATH)
-    AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
-    AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
-    AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
-fi
+AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
+AC_PATH_PROG(__NM, nm, /usr/bin/nm, $MYPATH)
+AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
+AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
+AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
 
 addlib() {
   l=$1
@@ -295,7 +299,7 @@ do
 	esac
 
 	AC_MSG_CHECKING(for $dir/lib in LIBS)
-	if test -d $dir/lib ; then
+	if test -d $dir/lib 2> /dev/null ; then
 		addlib $dir/lib
 		AC_MSG_RESULT(yes)
 	else
@@ -303,8 +307,10 @@ do
 	fi
 
 	AC_MSG_CHECKING(for $dir/include in INCPATH)
-	if test -d $dir/include ; then
-		INCPATH="$INCPATH -I$dir/include"
+	if test -d $dir/include 2>/dev/null ; then
+		if [ "$dir" != "/usr/local" ] ; then
+		    INCPATH="$INCPATH -I$dir/include"
+		fi
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_RESULT(no)
@@ -328,15 +334,6 @@ dnl
 dnl Check for features
 dnl
 
-dnl ### use option --enable-v5-packages to turn on support for rpm-5.x packages
-dnl AC_MSG_CHECKING(if you want experimental rpm-5.0 packages)
-dnl AC_ARG_ENABLE(v5-packages,
-dnl         [  --enable-v5-packages[=no]    [experimental] support for rpm-5.x packages],
-dnl         [with_v5_packages=$enableval],
-dnl         [with_v5_packages=no])
-dnl AC_MSG_RESULT($with_v5_packages)
-dnl test "$with_v5_packages" = yes && AC_DEFINE(ENABLE_V5_PACKAGES)
-
 dnl Checks for libraries.
 
 AC_CHECK_FUNC(setreuid, [], [
@@ -344,15 +341,27 @@ AC_CHECK_FUNC(setreuid, [], [
 ])
 
 AC_CHECK_FUNC(rand, [], [
-    AC_CHECK_LIB(rand, rand, [LIBS="$LIBS -lm"])
+    AC_CHECK_LIB(rand, rand)
 ])
 
 AC_CHECK_FUNC(getdomainname, [], [
-    AC_CHECK_LIB(nsl, getdomainname, [LIBS="$LIBS -lnsl"])
+    AC_CHECK_LIB(nsl, getdomainname)
 ])
 AC_CHECK_FUNC(socket, [], [
-    AC_CHECK_LIB(socket, socket, [LIBS="$LIBS -lsocket"])
+    AC_CHECK_LIB(socket, socket)
 ])
+
+AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
+
+AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
+  dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
+  AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [], [
+    AC_CHECK_LIB(thread, mutex_lock)
+  ])
+])
+
+AC_CHECK_HEADERS(aio.h)
+AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
 
 dnl Better not use fchmod at all.
 AC_CHECK_FUNC(fchmod)
@@ -365,17 +374,6 @@ dnl can hopefully be removed soon.  Please use the default action
 dnl for this macro (not LIBS=...), otherwise the check for dbopen
 dnl will fail.
 AC_CHECK_LIB(port, writev)
-
-libthread=""
-AC_CHECK_LIB(pthread, pthread_mutex_trylock, [libthread="-lpthread"], [
-  dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
-  AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [libthread="-lpthread"])
-])
-
-if test "x$libthread" = "x"; then
-	# Try in libthread too.
-	AC_CHECK_LIB(thread, mutex_lock, [libthread="-lthread"])
-fi
 
 WITH_DB_SUBDIR=
 WITH_INTERNAL_DB=0
@@ -400,10 +398,10 @@ AC_CHECK_FUNC(db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"],
     AC_CHECK_LIB(db-3.1, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.1"],
       AC_CHECK_LIB(db-3.0, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.0"],
         AC_CHECK_LIB(db, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb"],
-        ,$libthread)
-      ,$libthread)
-    ,$libthread)
-  ,$libthread)
+        )
+      )
+    )
+  )
 )
 
 if test X"$DBLIBSRCS" = X; then
@@ -421,7 +419,7 @@ fi
 
 else
 dnl ------------------ with    internal db
-  AC_DEFINE(HAVE_DB3_DB_H)
+  AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
   WITH_DB_SUBDIR=db3
   WITH_INTERNAL_DB=1
   DBLIBSRCS="db3.c"
@@ -443,22 +441,18 @@ AC_SUBST(libdb3a)
 
 for dbi in $DBLIBSRCS; do
   case $dbi in
-  db3.c) AC_DEFINE(USE_DB3) ;;
-  db1.c) AC_DEFINE(USE_DB1) ;;
+  db3.c) AC_DEFINE(USE_DB3, 1, [Use the Berkeley db3 API?]) ;;
+  db1.c) AC_DEFINE(USE_DB1, 1, [Use the Berkeley db1 retrofit to db3 API?]) ;;
   esac
 done
 
-AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
-	LIBOBJS=fakefork.o])
-
 dnl AmigaOS and IXEmul have a fork() dummy
-    case "$target" in
-	m68k-*-amigaos ) 
-		echo "Building for AmigaOS: using vfork() instead of fork()"; 
-		CFLAGS="$CFLAGS -Dfork=vfork" 
-		;;
-esac
-
+  case "$target" in
+    m68k-*-amigaos ) 
+	echo "Building for AmigaOS: using vfork() instead of fork()"; 
+	CFLAGS="$CFLAGS -Dfork=vfork" 
+	;;
+  esac
 
 if test -z "${WITH_ZLIB_LIB}" ; then
 for zlib in z gz ; do
@@ -471,25 +465,19 @@ for zlib in z gz ; do
 done
 
 dnl zlib-1.0.4 has not gzseek
-AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK)])
+AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
 fi
 
 AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
    AC_CHECK_LIB(bz2, BZ2_bzread, [
      WITH_BZIP2=1
      LIBS="$LIBS -lbz2"
-     AC_DEFINE(HAVE_BZ2_1_0) ], 
+     AC_DEFINE(HAVE_BZ2_1_0, 1, [Define as 1 if you bzip2 1.0]) ], 
      WITH_BZIP2=0))
 AC_SUBST(WITH_BZIP2)
 
 dnl Red Hat 4.x has not personality
 AC_CHECK_FUNCS(personality)
-
-dnl XXX these are needed only by rpmgettext right now
-AM_FUNC_ERROR_AT_LINE
-
-dnl ==> AM_GNU_GETTEXT does this (and more)
-dnl AC_CHECK_HEADERS(unistd.h limits.h locale.h malloc.h string.h sys/param.h)
 
 AM_GNU_GETTEXT
 dnl TVM:
@@ -518,20 +506,10 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
+AC_CHECK_HEADERS(pthread.h)
 
 dnl popt w float/double needs.
 AC_CHECK_HEADERS(float.h)
-
-dnl whether or not we should try to build rpmgettext/rpmputtext.
-if test X"$USE_NLS" = Xyes; then
-    BUILD_RPMNLSTOOLS="rpmgettext rpmputtext"
-    if test X"$USE_INCLUDED_LIBINTL" = Xyes; then
-	INCPATH="-I\$(top_builddir)/intl $INCPATH"
-    fi
-else
-    BUILD_RPMNLSTOOLS=
-fi
-AC_SUBST(BUILD_RPMNLSTOOLS)
 
 AC_CHECK_HEADERS(glob.h)
 
@@ -555,7 +533,8 @@ AC_TRY_COMPILE([
 #include <sys/statvfs.h> ],
 	[struct statvfs sfs;],
 	[AC_MSG_RESULT(in sys/statvfs.h)
-	AC_DEFINE(STATFS_IN_SYS_STATVFS)
+	AC_DEFINE(STATFS_IN_SYS_STATVFS, 1,
+		[statfs in <sys/statvfs.h> (for solaris 2.6+ systems)])
 	found_struct_statfs=yes],
 )
 fi
@@ -569,7 +548,7 @@ AC_TRY_COMPILE([
 #include <sys/vfs.h> ],
 	[struct statfs sfs;],
 	[AC_MSG_RESULT(in sys/vfs.h)
-	AC_DEFINE(STATFS_IN_SYS_VFS)
+	AC_DEFINE(STATFS_IN_SYS_VFS, 1, [statfs in <sys/vfs.h> (for linux systems)])
 	found_struct_statfs=yes],
 )
 fi
@@ -586,7 +565,7 @@ AC_TRY_COMPILE([
 #include <sys/mount.h> ],
 	[struct statfs sfs;],
 	[AC_MSG_RESULT(in sys/mount.h)
-	AC_DEFINE(STATFS_IN_SYS_MOUNT)
+	AC_DEFINE(STATFS_IN_SYS_MOUNT, 1, [statfs in <sys/mount.h> (for Digital Unix 4.0D systems)])
 	found_struct_statfs=yes],
 )
 fi
@@ -600,7 +579,7 @@ AC_TRY_COMPILE([
 #include <sys/statfs.h> ],
 	[struct statfs sfs;],
 	[AC_MSG_RESULT(in sys/statfs.h)
-	AC_DEFINE(STATFS_IN_SYS_STATFS)
+	AC_DEFINE(STATFS_IN_SYS_STATFS, 1, [statfs in <sys/statfs.h> (for Irix 6.4 systems)])
 	found_struct_statfs=yes],
 )
 fi
@@ -636,7 +615,7 @@ AC_TRY_COMPILE([
 	[STATFS_t sfs;
 	sfs.f_bavail = 0;],
 	[AC_MSG_RESULT(yes)
-	AC_DEFINE(STATFS_HAS_F_BAVAIL)],
+	AC_DEFINE(STATFS_HAS_F_BAVAIL, 1, [Define if struct statfs has the f_bavail member])],
 	[AC_MSG_RESULT(no)]
 )
 fi
@@ -664,7 +643,7 @@ main() {
 }
 ],
 	[AC_MSG_RESULT(yes)
-	AC_DEFINE(STAT_STATFS4)],
+	AC_DEFINE(STAT_STATFS4, 1, [Define if the statfs() call takes 4 arguments])],
 	[AC_MSG_RESULT(no)],
 	[AC_MSG_RESULT(no)]
 )
@@ -678,7 +657,7 @@ AC_MSG_CHECKING(if <netdb.h> defines h_errno)
 AC_TRY_LINK([#include <netdb.h>],printf("%d",h_errno),PROVIDES_ERRNO=yes)
 AC_MSG_RESULT($PROVIDES_ERRNO)
 if test $PROVIDES_ERRNO = yes; then
-	AC_DEFINE(HAVE_HERRNO)
+	AC_DEFINE(HAVE_HERRNO, 1, [ Define as 1 if <netdb.h> defines h_errno])
 fi
 
 dnl If a system doesn't have S_IFSOCK, define it as 0 which will
@@ -688,7 +667,7 @@ AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_IFSOCK),
 	HAS_S_IFSOCK=yes,HAS_S_IFSOCK=no)
 AC_MSG_RESULT($HAS_S_IFSOCK)
 if test $HAS_S_IFSOCK = yes; then
-	AC_DEFINE(HAVE_S_IFSOCK)
+	AC_DEFINE(HAVE_S_IFSOCK, 1, [Define as 1 if <sys/stat.h> defines S_IFSOCK])
 fi
 
 dnl Some Unix's are missing S_ISLNK, S_ISSOCK
@@ -697,7 +676,7 @@ AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISLNK(0755)),
 	HAS_S_ISLNK=yes,HAS_S_ISLNK=no)
 AC_MSG_RESULT($HAS_S_ISLNK)
 if test $HAS_S_ISLNK = yes; then
-	AC_DEFINE(HAVE_S_ISLNK)
+	AC_DEFINE(HAVE_S_ISLNK, 1, [Define as 1 if <sys/stat.h> defines S_ISLNK])
 fi
 
 AC_MSG_CHECKING(if <sys/stat.h> defines S_ISSOCK)
@@ -705,7 +684,7 @@ AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISSOCK(0755)),
 	HAS_S_ISSOCK=yes,HAS_S_ISSOCK=no)
 AC_MSG_RESULT($HAS_S_ISSOCK)
 if test $HAS_S_ISSOCK = yes; then
-	AC_DEFINE(HAVE_S_ISSOCK)
+	AC_DEFINE(HAVE_S_ISSOCK, 1, [Define as 1 if <sys/stat.h> defines S_ISSOCK])
 fi
 
 AC_MSG_CHECKING(if timezone is defined)
@@ -720,13 +699,6 @@ AC_TYPE_PID_T
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_VPRINTF
-
-AC_FUNC_FNMATCH
-if test $ac_cv_func_fnmatch_works = no; then
-   LIBOBJS="$LIBOBJS fnmatch.o"
-dnl XXX no expansion needed
-dnl AC_DEFINE_UNQUOTED(fnmatch, rpl_fnmatch)
-fi
 
 dnl XXX AC_FUNC_MEMCMP
 dnl XXX AC_FUNC_MMAP
@@ -767,8 +739,8 @@ dnl     fi
 dnl fi
 dnl 
 dnl if test $rpm_cv_regex = yes; then
-dnl     AC_DEFINE(USE_GNU_REGEX)
-dnl     LIBOBJS="$LIBOBJS regex.o"
+dnl     AC_DEFINE(USE_GNU_REGEX, 1)
+dnl     AC_LIBOBJ(regex)
 dnl fi
 
 dnl
@@ -806,8 +778,9 @@ main() {
 fi
 
 if test "$rpm_cv_glob" = yes; then
-    AC_DEFINE(USE_GNU_GLOB)
-    LIBOBJS="$LIBOBJS glob.o fnmatch.o"
+    AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
+    AC_LIBOBJ(glob)
+    AC_LIBOBJ(fnmatch)
 fi
 dnl
 dnl Auto-detect which python bindings should be built.
@@ -815,10 +788,7 @@ dnl
 withval=auto
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
-WITH_PYTHON_VERSION=
-if test -n "$withval" -a "$withval" != auto; then
-   WITH_PYTHON_VERSION=$withval
-fi
+WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
 
   AC_MSG_CHECKING(for python 2.2)
@@ -848,7 +818,7 @@ main() {
 
 fi
 
-if test -n "$WITH_PYTHON_VERSION" ; then
+if test "$WITH_PYTHON_VERSION" != no ; then
   WITH_PYTHON_SUBDIR=python
   WITH_PYTHON_SUBPACKAGE=1
 else
@@ -884,7 +854,7 @@ AC_SUBST(WITH_APIDOCS)
 withval=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
 if test $withval = yes ; then
-  AC_DEFINE(DMALLOC)
+  AC_DEFINE(DMALLOC, 1, [Build with dmalloc support?])
   LIBS="$LIBS -ldmalloc"
 fi
 
@@ -893,18 +863,18 @@ AC_CHECK_FUNCS(setlocale)
 dnl XXX Solaris <= 2.6 only permits 8 chars in password.
 AC_CHECK_FUNCS(getpassphrase)
 
-AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
-  AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL),[
-    AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R), [
+AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the getmntent() function]), [
+  AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL, 1, [Define as 1 if you have mntctl() (only aix?)]),[
+    AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R, 1, [Define as 1 if you have getmntinfo_r() (only osf?)]), [
       AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="$LIBS -lc_r"; 
-					AC_DEFINE(HAVE_GETMNTINFO_R)], [
+					AC_DEFINE(HAVE_GETMNTINFO_R, 1, [Define as 1 if you have getmntinfo_r() (only osf?)])], [
 		 AC_DEFINE([USE_GETMNTENT], 1, [Defined if getmntent replacement is used])
-                 LIBOBJS="$LIBOBJS getmntent.o"])])])])
+                 AC_LIBOBJ(getmntent)])])])])
 
 AC_CHECK_FUNC(lchown,
    [__CHOWN_RHF="%{__chown} -Rhf"
     __CHGRP_RHF="%{__chgrp} -Rhf"
-    AC_DEFINE(HAVE_LCHOWN)],
+    AC_DEFINE(HAVE_LCHOWN, 1, [Define as 1 if you have lchown()])],
    [__CHOWN_RHF="%{__chown} -Rf"
     __CHGRP_RHF="%{__chgrp} -Rf"
     dnl Does chown() follow symlinks? This should be a good enough test.
@@ -937,7 +907,7 @@ AC_CHECK_FUNC(lchown,
 
     AC_MSG_RESULT($result)
     if test $result = yes; then
-	    AC_DEFINE(CHOWN_FOLLOWS_SYMLINK)
+	    AC_DEFINE(CHOWN_FOLLOWS_SYMLINK, 1, [Define as 1 if chown() follows symlinks and you don't have lchown()])
     fi])
 AC_SUBST(__CHOWN_RHF)
 AC_SUBST(__CHGRP_RHF)
@@ -1007,14 +977,15 @@ AC_SUBST(tmpdir)
 
 if echo "$build_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
-	AC_DEFINE(NEED_STRINGS_H)
-	AC_DEFINE(HAVE_STRUCT_MNTTAB)
+	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
+	AC_DEFINE(HAVE_STRUCT_MNTTAB, 1,
+	[Define as 1 if you have "struct mnttab" (only sco?)])
 elif echo "$build_os" | grep sunos > /dev/null; then
 	echo "hacking things up for sunos"
 	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
-	AC_DEFINE(NEED_STRINGS_H)
-	AC_DEFINE(NEED_MYREALLOC)
-	LIBOBJS="$LIBOBJS myrealloc.o"
+	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
+	AC_DEFINE(NEED_MYREALLOC, 1, [Define as 1 if we need myrealloc])
+	AC_LIBOBJ(myrealloc)
 fi
 
 #
@@ -1091,11 +1062,12 @@ mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$build_vendor"
 case "${build_vendor}" in
-unknown|pc|ibm|redhat|pld|mandrake|conectiva)
+unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr)
 	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
 	test -f /etc/pld-release &&		RPMCANONVENDOR=pld
 	test -f /etc/mandrake-release &&	RPMCANONVENDOR=mandrake
 	test -f /etc/conectiva-release &&	RPMCANONVENDOR=conectiva
+	test -f /etc/lvr-release &&		RPMCANONVENDOR=lvr
 	;;
 esac
 RPMCANONOS="$build_os_noversion"
@@ -1103,58 +1075,56 @@ AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
 
-if test -n "$LIBOBJS" ; then
-    LIBMISC='$(top_builddir)/misc/libmisc.a'
-fi
-AC_SUBST(LIBOBJS)
-AC_SUBST(LIBMISC)
-
 if test X"$prefix" = XNONE ; then
     usrprefix="$ac_default_prefix"
 else
     usrprefix=$prefix
 fi
 LOCALEDIR="`echo ${usrprefix}/share/locale`"
-AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR")
+AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
+	[Full path to rpm locale directory (usually /usr/share/locale)])
 AC_SUBST(LOCALEDIR)
 LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
 AC_SUBST(LIBDIR)
 RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
-AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR")
+AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
+	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
 AC_SUBST(RPMCONFIGDIR)
 
 SYSCONFIGDIR="`echo /etc/rpm`"
-AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR")
+AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
+	[Full path to rpm system configuration directory (usually /etc/rpm)])
 AC_SUBST(SYSCONFIGDIR)
 
 MACROFILES="${RPMCONFIGDIR}/macros:${RPMCONFIGDIR}/%{_target_platform}/macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/macros.specspo:${SYSCONFIGDIR}/macros.db1:${SYSCONFIGDIR}/%{_target_platform}/macros:~/.rpmmacros"
-AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES")
+AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
+	[Colon separated paths of macro files to read.])
 AC_SUBST(MACROFILES)
 
 LIBRPMRC_FILENAME="${RPMCONFIGDIR}/rpmrc"
-AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME")
+AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME",
+	[Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc)])
 AC_SUBST(LIBRPMRC_FILENAME)
 
 LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt-${VERSION}"
-AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME")
+AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",
+	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
 AC_SUBST(LIBRPMALIAS_FILENAME)
 FINDREQUIRES="${RPMCONFIGDIR}/find-requires"
-AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES")
+AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES",
+	[Full path to find-requires script (usually /usr/lib/rpm/find-requires)])
 AC_SUBST(FINDREQUIRES)
 FINDPROVIDES="${RPMCONFIGDIR}/find-provides"
-AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES")
+AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
+	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
 AC_SUBST(FINDPROVIDES)
 
 testdir="`pwd`/tests"
 dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")
 AC_SUBST(testdir)
 
-if test -n "$LIBOBJS"; then
-    INCPATH="-I\$(top_builddir)/misc $INCPATH"
-fi
 AC_SUBST(INCPATH)
-
-AC_SUBST(LIBS)
+AC_SUBST(LIBMISC)
 
 AC_SUBST(RPM)
 
