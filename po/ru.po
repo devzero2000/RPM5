@@ -2,14 +2,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2002-02-13 18:04-0500\n"
-"PO-Revision-Date: 2001-08-29 13:55-0400\n"
-"Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
-"Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
+"PO-Revision-Date: 2002-03-05 12:51-0500\n"
+"Last-Translator: Eugene Kanter, <ekanter@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=KOI8-R\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Date: 1999-04-03 12:20+0200\n"
-"X-Generator: KBabel 0.8\n"
+"X-Generator: KBabel 0.9.5\n"
 
 #: build.c:39
 #, c-format
@@ -719,7 +718,7 @@ msgstr "list check (произвести проверку секции %files)"
 
 #: rpm.c:512
 msgid "compile (prep and compile)"
-msgstr "compile (исполнить %prep и %build)"
+msgstr "compile (prep и compile)"
 
 #: rpm.c:514
 msgid "install (prep, compile, install)"
@@ -1283,9 +1282,8 @@ msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
 #: rpmqv.c:1025
-#, fuzzy
 msgid "no packages given for erase"
-msgstr "не заданы пакеты для установки"
+msgstr "не заданы пакеты для удаления"
 
 #: build/build.c:125 build/pack.c:470
 msgid "Unable to open temp file.\n"
@@ -1473,9 +1471,9 @@ msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
 #: build/files.c:1568
-#, fuzzy, c-format
+#, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
-msgstr "Файл %4d: %07o %s.%s\t %s\n"
+msgstr "Файл%5d: %07o %s.%s\t %s\n"
 
 #: build/files.c:1673
 #, c-format
@@ -1511,7 +1509,7 @@ msgstr "Неверный файл %s: %s\n"
 #: build/files.c:2233
 #, c-format
 msgid "Couldn't exec %s: %s\n"
-msgstr "Невозможно вылнить %s: %s\n"
+msgstr "Невозможно выполнить %s: %s\n"
 
 #: build/files.c:2238
 #, c-format
@@ -1743,7 +1741,7 @@ msgid "bad date in %%changelog: %s\n"
 msgstr "неверная дата в %%changelog: %s\n"
 
 #: build/parseChangelog.c:155
-#, fuzzy, c-format
+#, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog не в нисходящем хронологическом порядке\n"
 
@@ -2370,13 +2368,12 @@ msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
 #: lib/depends.c:2008
-#, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
-"глубина)\n"
+"дерево, глубина)\n"
 
 #: lib/depends.c:2073
 msgid "========== successors only (presentation order)\n"
@@ -2396,18 +2393,16 @@ msgid "(not a number)"
 msgstr "(не число)"
 
 #: lib/formats.c:139
-#, fuzzy
 msgid "(not base64)"
-msgstr "(не число)"
+msgstr "(не base64)"
 
 #: lib/formats.c:149
 msgid "(invalid type)"
-msgstr ""
+msgstr "(неправильный тип)"
 
 #: lib/formats.c:211 lib/formats.c:256
-#, fuzzy
 msgid "(not a blob)"
-msgstr "(не число)"
+msgstr ""
 
 #: lib/fs.c:75
 #, c-format
@@ -2581,10 +2576,9 @@ msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
 
 #: lib/poptI.c:82
 msgid "rollback takes a time/date stamp argument"
-msgstr ""
+msgstr "откат требует аргумент времени"
 
 #: lib/poptI.c:86
-#, fuzzy
 msgid "malformed rollback time/date stamp argument"
 msgstr "неправильный формат времени отката"
 
@@ -2677,7 +2671,6 @@ msgid "save erased package files by repackaging"
 msgstr "сохранить подлежащие удалению файлы в новом пакете"
 
 #: lib/poptI.c:219
-#, fuzzy
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 "удалить новый(е) пакет(ы), переустановить старый(е) пакет(ы), обратно на "
@@ -2704,27 +2697,24 @@ msgid "query/verify package(s) owning file"
 msgstr "запросить/проверить пакет, которому принадлежит файл"
 
 #: lib/poptQV.c:92
-#, fuzzy
 msgid "query/verify package(s) with file identifier"
-msgstr "запросить/проверить пакет, которому принадлежит файл"
+msgstr "запросить/проверить пакет(ы) по идентификатору файла"
 
 #: lib/poptQV.c:94
 msgid "query/verify package(s) in group"
 msgstr "запросить/проверить пакеты в группе"
 
 #: lib/poptQV.c:96
-#, fuzzy
 msgid "query/verify package(s) with header identifier"
-msgstr "запросить/проверить пакет, которому принадлежит файл"
+msgstr "запросить/проверить пакет(ы), по идентификатору заголовка"
 
 #: lib/poptQV.c:98
 msgid "query/verify a package file (i.e. a binary *.rpm file)"
 msgstr "запросить/проверить файл пакета (т.е. *.rpm файл двоичного пакета)"
 
 #: lib/poptQV.c:100
-#, fuzzy
 msgid "query/verify package(s) with package identifier"
-msgstr "запросить/проверить пакет, которому принадлежит файл"
+msgstr "запросить/проверить пакет(ы) по идентификатору пакета"
 
 #: lib/poptQV.c:102
 msgid "rpm query mode"
@@ -2743,9 +2733,8 @@ msgid "<spec>"
 msgstr "<файл спецификации>"
 
 #: lib/poptQV.c:110
-#, fuzzy
 msgid "query/verify package(s) from install transaction"
-msgstr "запросить/проверить пакеты в группе"
+msgstr "запросить/проверить пакет(ы) из транзакции установки"
 
 #: lib/poptQV.c:112
 msgid "query the package(s) triggered by the package"
@@ -2919,14 +2908,14 @@ msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "пакет %s pre-transaction syscall(s): %s: ошибка: %s"
 
 #: lib/problems.c:184
-#, fuzzy, c-format
+#, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
-msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
+msgstr "пакет %s содержит неудовлетворенные требования: %s\n"
 
 #: lib/problems.c:188
-#, fuzzy, c-format
+#, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "пакет %s конфликтует с: %s\n"
+msgstr "пакет %s содержит неудовлетворенные Конфликты: %s\n"
 
 #: lib/problems.c:193
 #, c-format
@@ -3088,14 +3077,14 @@ msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
 #: lib/query.c:764 lib/query.c:785 lib/query.c:803 lib/query.c:833
-#, fuzzy, c-format
+#, c-format
 msgid "malformed %s: %s\n"
-msgstr "Невозможно прочесть %s: %s.\n"
+msgstr "ошибка формата %s: %s.\n"
 
 #: lib/query.c:773 lib/query.c:791 lib/query.c:809 lib/query.c:838
-#, fuzzy, c-format
+#, c-format
 msgid "no package matches %s: %s\n"
-msgstr "ни один из пакетов не взводит триггер %s\n"
+msgstr "ни один пакет не подходит к %s: %s\n"
 
 #: lib/query.c:849
 #, c-format
@@ -3315,7 +3304,7 @@ msgstr "Устанавливается %s\n"
 #: lib/rpminstall.c:1046
 #, c-format
 msgid "rollback (+%d,-%d) packages to %s"
-msgstr ""
+msgstr "откатить (+%d,-%d) пакеты к %s"
 
 #: lib/rpmlead.c:50
 #, c-format
@@ -3451,9 +3440,9 @@ msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
 #: lib/signature.c:297 lib/signature.c:390 lib/signature.c:639
 #: lib/signature.c:740 lib/signature.c:813 lib/signature.c:846
-#, fuzzy, c-format
+#, c-format
 msgid "Could not exec %s: %s\n"
-msgstr "Невозможно вылнить %s: %s\n"
+msgstr "Невозможно выполнить %s: %s\n"
 
 #: lib/signature.c:313
 msgid "pgp failed\n"
@@ -3526,7 +3515,7 @@ msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле\n"
 
 #: lib/signature.c:939
 msgid "Broken MD5 digest: UNSUPPORTED\n"
-msgstr ""
+msgstr "Контр. сумма MD5 повреждена: НЕ ПОДДЕРЖИВАЕТСЯ\n"
 
 #: lib/transaction.c:447
 msgid "========== relocations\n"
@@ -4085,9 +4074,9 @@ msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "внимание: u %p data %p nrefs != 0 (%s %s)\n"
 
 #: rpmio/url.c:167
-#, fuzzy, c-format
+#, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr "внимание: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgstr "предупреждение: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
 #: rpmio/url.c:264
 #, c-format
@@ -4108,25 +4097,3 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
-
-#~ msgid "getting list of mounted filesystems\n"
-#~ msgstr "получение списка смонтированных файловых систем\n"
-
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Нвозможно запустить pgp (%s)\n"
-
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Невозможно запустить gpg\n"
-
-#~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-#~ msgstr ""
-#~ "Нвозможно запустить pgp. Используйте --nopgp чтобы пропустить проверку "
-#~ "PGP подписей.\n"
-
-#~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-#~ msgstr ""
-#~ "Невозможно запустить gpg. Используйте --nogpg чтобы пропустить проверку "
-#~ "GPG подписей.\n"
-
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Невозможно запустить pgp\n"
