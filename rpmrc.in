@@ -1,9 +1,10 @@
 # $Id$
-
-#############################################################
-
-# Please send new entries to rpm-list@redhat.com
-
+#
+# This is a global RPM configuration file. All changes made here will
+# be lost when the rpm package is upgraded. Any per-system configuration
+# should be added to /etc/rpm/rpmrc, while per-user configuration should
+# be added to ~/.rpmrc.
+#
 #############################################################
 # Values for RPM_OPT_FLAGS for various platforms
 
