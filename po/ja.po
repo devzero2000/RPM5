@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-30 13:50-0400\n"
+"POT-Creation-Date: 2001-07-03 15:19-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1492,12 +1492,13 @@ msgstr "ファイルは \"/\" から始まらなければなりません: %s"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s"
 
-#: build/files.c:1024
+#. Two entries for the same file found, merge the entries.
+#: build/files.c:1026
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s"
 
-#: build/files.c:1166
+#: build/files.c:1159
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
@@ -1512,7 +1513,7 @@ msgstr "ファイルは prefix (%s) と一致しません: %s"
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1410 build/files.c:1962 build/parsePrep.c:45
+#: build/files.c:1410 build/files.c:1963 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
@@ -1542,43 +1543,43 @@ msgstr "%%files をオープンできません: %s"
 msgid "line: %s\n"
 msgstr "行目: %s"
 
-#: build/files.c:1950
+#: build/files.c:1951
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2021
+#: build/files.c:2022
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:2026
+#: build/files.c:2027
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:2108
+#: build/files.c:2109
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s 失敗"
 
-#: build/files.c:2112
+#: build/files.c:2113
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:2244
+#: build/files.c:2245
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:2270 build/files.c:2284
+#: build/files.c:2271 build/files.c:2285
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:2403
+#: build/files.c:2404
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -1592,14 +1593,22 @@ msgid "getUnameS: too many uid's\n"
 msgstr ""
 
 #: build/names.c:84
-msgid "getGname: too many gid's\n"
+msgid "getUidS: too many uid's\n"
 msgstr ""
 
 #: build/names.c:105
+msgid "getGname: too many gid's\n"
+msgstr ""
+
+#: build/names.c:126
 msgid "getGnameS: too many gid's\n"
 msgstr ""
 
-#: build/names.c:136
+#: build/names.c:147
+msgid "getGidS: too many gid's\n"
+msgstr ""
+
+#: build/names.c:178
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "ホスト名を正式なものにできません: %s\n"

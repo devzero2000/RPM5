@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-30 13:50-0400\n"
+"POT-Creation-Date: 2001-07-03 15:19-0400\n"
 "PO-Revision-Date: 2001-02-02 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -1392,12 +1392,13 @@ msgstr ""
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1024
+#. Two entries for the same file found, merge the entries.
+#: build/files.c:1026
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Skráin er tvítekin: %s\n"
 
-#: build/files.c:1166
+#: build/files.c:1159
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
@@ -1412,7 +1413,7 @@ msgstr ""
 msgid "File not found: %s\n"
 msgstr "Skráin fannst ekki: %s\n"
 
-#: build/files.c:1410 build/files.c:1962 build/parsePrep.c:45
+#: build/files.c:1410 build/files.c:1963 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
@@ -1442,43 +1443,43 @@ msgstr "Gat ekki opnað %%files skrána %s: %s\n"
 msgid "line: %s\n"
 msgstr "lína: %s\n"
 
-#: build/files.c:1950
+#: build/files.c:1951
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ógild skrá %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2021
+#: build/files.c:2022
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Gat ekki keyrt %s: %s\n"
 
-#: build/files.c:2026
+#: build/files.c:2027
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Gat ekki búið til undirferli (fork) %s: %s\n"
 
-#: build/files.c:2108
+#: build/files.c:2109
 #, c-format
 msgid "%s failed\n"
 msgstr "%s brást\n"
 
-#: build/files.c:2112
+#: build/files.c:2113
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "gat ekki ritað öll gögn í %s\n"
 
-#: build/files.c:2244
+#: build/files.c:2245
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2270 build/files.c:2284
+#: build/files.c:2271 build/files.c:2285
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "gat ekki fundið %s:\n"
 
-#: build/files.c:2403
+#: build/files.c:2404
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1492,14 +1493,22 @@ msgid "getUnameS: too many uid's\n"
 msgstr ""
 
 #: build/names.c:84
-msgid "getGname: too many gid's\n"
+msgid "getUidS: too many uid's\n"
 msgstr ""
 
 #: build/names.c:105
+msgid "getGname: too many gid's\n"
+msgstr ""
+
+#: build/names.c:126
 msgid "getGnameS: too many gid's\n"
 msgstr ""
 
-#: build/names.c:136
+#: build/names.c:147
+msgid "getGidS: too many gid's\n"
+msgstr ""
+
+#: build/names.c:178
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""

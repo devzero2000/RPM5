@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-06-30 13:50-0400\n"
+"POT-Creation-Date: 2001-07-03 15:19-0400\n"
 "PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -1421,12 +1421,13 @@ msgstr "파일은 반드시 \"/\" 로 시작해야함: %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "특정 %%doc 을 다른 형식과 함께 사용할 수 없음: %s\n"
 
-#: build/files.c:1024
+#. Two entries for the same file found, merge the entries.
+#: build/files.c:1026
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "파일 목록이 중복됨: %s\n"
 
-#: build/files.c:1166
+#: build/files.c:1159
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "BuildRoot 로 심볼릭링크함: %s -> %s\n"
@@ -1441,7 +1442,7 @@ msgstr "파일이 prefix (%s) (와)과 일치하지 않음: %s\n"
 msgid "File not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1410 build/files.c:1962 build/parsePrep.c:45
+#: build/files.c:1410 build/files.c:1963 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
@@ -1471,43 +1472,43 @@ msgstr "%s 파일의 %%files 를 열 수 없음: %s\n"
 msgid "line: %s\n"
 msgstr "줄(line): %s\n"
 
-#: build/files.c:1950
+#: build/files.c:1951
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2021
+#: build/files.c:2022
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s (을)를 실행할 수 없음: %s\n"
 
-#: build/files.c:2026
+#: build/files.c:2027
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s (을)를 fork 할 수 없음: %s\n"
 
-#: build/files.c:2108
+#: build/files.c:2109
 #, c-format
 msgid "%s failed\n"
 msgstr "%s (이)가 실패했습니다\n"
 
-#: build/files.c:2112
+#: build/files.c:2113
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "%s (으)로 모든 자료를 작성하는데 실패했습니다\n"
 
-#: build/files.c:2244
+#: build/files.c:2245
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s (을)를 찾는중: (%s 사용)...\n"
 
-#: build/files.c:2270 build/files.c:2284
+#: build/files.c:2271 build/files.c:2285
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s (을)를 찾는데 실패함:\n"
 
-#: build/files.c:2403
+#: build/files.c:2404
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "파일 처리중: %s-%s-%s\n"
@@ -1521,14 +1522,24 @@ msgid "getUnameS: too many uid's\n"
 msgstr "사용자 명(getUnameS): 'uid' 가 너무 많습니다\n"
 
 #: build/names.c:84
+#, fuzzy
+msgid "getUidS: too many uid's\n"
+msgstr "사용자 명(getUnameS): 'uid' 가 너무 많습니다\n"
+
+#: build/names.c:105
 msgid "getGname: too many gid's\n"
 msgstr "그룹 명(getGname): 'gid' 가 너무 많습니다\n"
 
-#: build/names.c:105
+#: build/names.c:126
 msgid "getGnameS: too many gid's\n"
 msgstr "그룹 명(getGnameS): 'gid' 가 너무 많습니다\n"
 
-#: build/names.c:136
+#: build/names.c:147
+#, fuzzy
+msgid "getGidS: too many gid's\n"
+msgstr "그룹 명(getGnameS): 'gid' 가 너무 많습니다\n"
+
+#: build/names.c:178
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "호스트 명을 정규화(canonicalize) 할 수 없음: %s\n"
