@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2002-08-31 18:32-0400\n"
+"POT-Creation-Date: 2002-09-03 08:09-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1406,7 +1406,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:386
-#: rpmdb/header.c:3140 rpmdb/header.c:3163 rpmdb/header.c:3187
+#: rpmdb/header.c:3138 rpmdb/header.c:3161 rpmdb/header.c:3185
 msgid "(not a number)"
 msgstr ""
 
@@ -2288,11 +2288,11 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:697
+#: lib/rpmal.c:693
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:774
+#: lib/rpmal.c:770
 msgid "(added provide)"
 msgstr ""
 
