@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 1
+Release: 2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -271,6 +271,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Aug 24 2000 Matt Wilson <msw@redhat.com>
+- corrected reference count to transaction header
+
 * Wed Aug 23 2000 Jeff Johnson <jbj@redhat.com>
 - rpm now needs /sbin/ldconfig in post/postun scriptlets.
 - python bindings to retrieve removed header on callback.
