@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-04-03 16:27-0400\n"
-"PO-Revision-Date: 2001-02-12 10:15+0100\n"
+"PO-Revision-Date: 2001-04-10 20:04+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -662,9 +662,8 @@ msgid "    --erase <package>"
 msgstr "    --erase <paket>"
 
 #: rpm.c:445
-#, fuzzy
 msgid "    -e <package>          "
-msgstr "    -i <paketfil>         "
+msgstr "    -e <paketfil>         "
 
 #: rpm.c:446 rpmqv.c:255 rpmqv.c:671
 msgid "erase (uninstall) package"
@@ -1526,9 +1525,8 @@ msgid "   --erase <package>"
 msgstr "   --erase <paket>  "
 
 #: rpmqv.c:670
-#, fuzzy
 msgid "   -e <package>           "
-msgstr "   -K <pkt>+             "
+msgstr "   -e <paket>             "
 
 #: rpmqv.c:688
 msgid "   --resign <pkg>+        "
@@ -3146,9 +3144,9 @@ msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går inte att fråga om\n"
 
 #: lib/query.c:555 lib/rpminstall.c:455
-#, fuzzy, c-format
+#, c-format
 msgid "%s: read manifest failed: %s\n"
-msgstr "%s: Fread misslyckades: %s\n"
+msgstr "%s: läsning av paketlista misslyckades: %s\n"
 
 #: lib/query.c:598
 #, c-format
@@ -4069,36 +4067,3 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
-
-#~ msgid "counting packages to install\n"
-#~ msgstr "räknar paket att installera\n"
-
-#~ msgid "found %d packages\n"
-#~ msgstr "hittade %d paket\n"
-
-#~ msgid "looking for packages to download\n"
-#~ msgstr "letar efter paket att hämta\n"
-
-#~ msgid "skipping %s - rpmGlob failed(%d)\n"
-#~ msgstr "hoppar över %s - rpmGlob misslyckades(%d)\n"
-
-#~ msgid "retrieved %d packages\n"
-#~ msgstr "hämtade %d paket\n"
-
-#~ msgid "%s does not appear to be a RPM package\n"
-#~ msgstr "%s verkar inte vara ett RPM-paket\n"
-
-#~ msgid "closed  db environment %s/%s(%s)\n"
-#~ msgstr "stängde  db-miljö      %s/%s(%s)\n"
-
-#~ msgid "removed db environment %s/%s(%s)\n"
-#~ msgstr "tog bort db-miljö      %s/%s(%s)\n"
-
-#~ msgid "opening db environment %s/%s(%s) %s\n"
-#~ msgstr "öppnar   db-miljö      %s/%s(%s) %s\n"
-
-#~ msgid "closed  db index       %s/%s(%s)\n"
-#~ msgstr "stängde  db-index      %s/%s(%s)\n"
-
-#~ msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-#~ msgstr "öppnar   db-index      %s/%s(%s) %s mod=0x%x\n"
