@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.38
+Release: 0.39
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -334,7 +334,9 @@ fi
 %rpmattr	%{__prefix}/bin/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs
+%rpmattr	%{__prefix}/lib/rpm/config.site
 %rpmattr	%{__prefix}/lib/rpm/cpanflute
+%rpmattr	%{__prefix}/lib/rpm/cross-build
 %rpmattr	%{__prefix}/lib/rpm/find-lang.sh
 %rpmattr	%{__prefix}/lib/rpm/find-prov.pl
 %rpmattr	%{__prefix}/lib/rpm/find-provides
@@ -412,10 +414,13 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jun 15 2001 Jeff Johnson <jbj@redhat.com>
+- alpha: don't add "()(64bit)" dependency markers.
+
 * Thu Jun 14 2001 Jeff Johnson <jbj@redhat.com>
 - fix: db1 end-of-file not detected in legacy compatible way.
 - fix: remove (harmless) chown error message from %post.
-- add --target/--host to %configure, add example cross-build/config.site
+- add --target/--host to %%configure, add example cross-build/config.site
   scripts to /usr/lib/rpm <arjanv@redhat.com> (#44581).
 - rpmdb iterator selectors permit default/strcmp/regex/glob matching.
 - rpmdb iterator selectors permit negative matches.
