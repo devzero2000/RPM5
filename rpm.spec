@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.88
+Release: 0.89
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Aug  8 2001 Jeff Johnson <jbj@redhat.com>
+- add legacy (compile only) wrappers for fdFileno et al.
+
 * Mon Aug  6 2001 Jeff Johnson <jbj@redhat.com>
 - python: add hiesenbug patch.
 

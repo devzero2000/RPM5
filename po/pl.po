@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-05 14:31-0400\n"
+"POT-Creation-Date: 2001-08-08 08:37-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -4001,61 +4001,61 @@ msgstr "Plik %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %d bajtów"
 
-#: rpmio/rpmio.c:584
+#: rpmio/rpmio.c:597
 msgid "Success"
 msgstr "Sukces"
 
-#: rpmio/rpmio.c:587
+#: rpmio/rpmio.c:600
 msgid "Bad server response"
 msgstr "B³êdna odpowied¼ serwera"
 
-#: rpmio/rpmio.c:590
+#: rpmio/rpmio.c:603
 #, fuzzy
 msgid "Server I/O error"
 msgstr "B³±d WE/WY(IO) serwera"
 
-#: rpmio/rpmio.c:593
+#: rpmio/rpmio.c:606
 msgid "Server timeout"
 msgstr "Przekroczony limit czasu serwera"
 
-#: rpmio/rpmio.c:596
+#: rpmio/rpmio.c:609
 msgid "Unable to lookup server host address"
 msgstr "Nie mo¿na znale¼æ adresu serwera"
 
-#: rpmio/rpmio.c:599
+#: rpmio/rpmio.c:612
 msgid "Unable to lookup server host name"
 msgstr "Nie mo¿na znale¼æ nazwy serwera"
 
-#: rpmio/rpmio.c:602
+#: rpmio/rpmio.c:615
 msgid "Failed to connect to server"
 msgstr "Po³±czenie z serwerem nie powiod³o siê"
 
-#: rpmio/rpmio.c:605
+#: rpmio/rpmio.c:618
 msgid "Failed to establish data connection to server"
 msgstr "Otwarcie transmisji danych z serwera nie powiod³o siê"
 
-#: rpmio/rpmio.c:608
+#: rpmio/rpmio.c:621
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "B³±d WE/WY(IO) na lokalnym pliku"
 
-#: rpmio/rpmio.c:611
+#: rpmio/rpmio.c:624
 msgid "Error setting remote server to passive mode"
 msgstr "B³±d: ustawienie zdalnego serwera w tryb pasywny nie powiod³o siê"
 
-#: rpmio/rpmio.c:614
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "Plik nie zosta³ znaleziony na serwerze"
 
-#: rpmio/rpmio.c:617
+#: rpmio/rpmio.c:630
 msgid "Abort in progress"
 msgstr "Przerywanie ..."
 
-#: rpmio/rpmio.c:621
+#: rpmio/rpmio.c:634
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:1242
+#: rpmio/rpmio.c:1255
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logowanie do %s jako %s, has³o %s\n"

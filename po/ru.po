@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-05 14:31-0400\n"
+"POT-Creation-Date: 2001-08-08 08:37-0400\n"
 "PO-Revision-Date: 2001-07-18 17:10-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3912,59 +3912,59 @@ msgstr "Файл %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Длина файла %s меньше чем %u байт\n"
 
-#: rpmio/rpmio.c:584
+#: rpmio/rpmio.c:597
 msgid "Success"
 msgstr "Выполнено"
 
-#: rpmio/rpmio.c:587
+#: rpmio/rpmio.c:600
 msgid "Bad server response"
 msgstr "Неверный ответ сервера"
 
-#: rpmio/rpmio.c:590
+#: rpmio/rpmio.c:603
 msgid "Server I/O error"
 msgstr "Ошибка ввода/вывода сервера"
 
-#: rpmio/rpmio.c:593
+#: rpmio/rpmio.c:606
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:596
+#: rpmio/rpmio.c:609
 msgid "Unable to lookup server host address"
 msgstr "Не могу найти адрес сервера"
 
-#: rpmio/rpmio.c:599
+#: rpmio/rpmio.c:612
 msgid "Unable to lookup server host name"
 msgstr "Не могу найти имя сервера"
 
-#: rpmio/rpmio.c:602
+#: rpmio/rpmio.c:615
 msgid "Failed to connect to server"
 msgstr "Не могу соединиться с сервером"
 
-#: rpmio/rpmio.c:605
+#: rpmio/rpmio.c:618
 msgid "Failed to establish data connection to server"
 msgstr "Не могу установить соединение для данных с сервером"
 
-#: rpmio/rpmio.c:608
+#: rpmio/rpmio.c:621
 msgid "I/O error to local file"
 msgstr "Файловая ошибка ввода/вывода"
 
-#: rpmio/rpmio.c:611
+#: rpmio/rpmio.c:624
 msgid "Error setting remote server to passive mode"
 msgstr "Ошибка при переводе удаленного сервера в пассивный режим"
 
-#: rpmio/rpmio.c:614
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "Файл не найден на сервере"
 
-#: rpmio/rpmio.c:617
+#: rpmio/rpmio.c:630
 msgid "Abort in progress"
 msgstr "Отмена в процессе"
 
-#: rpmio/rpmio.c:621
+#: rpmio/rpmio.c:634
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: rpmio/rpmio.c:1242
+#: rpmio/rpmio.c:1255
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"

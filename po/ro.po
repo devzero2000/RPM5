@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-05 14:31-0400\n"
+"POT-Creation-Date: 2001-08-08 08:37-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -3810,59 +3810,59 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:584
+#: rpmio/rpmio.c:597
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:587
+#: rpmio/rpmio.c:600
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:590
+#: rpmio/rpmio.c:603
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:593
+#: rpmio/rpmio.c:606
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:596
+#: rpmio/rpmio.c:609
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:599
+#: rpmio/rpmio.c:612
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:602
+#: rpmio/rpmio.c:615
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:605
+#: rpmio/rpmio.c:618
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:608
+#: rpmio/rpmio.c:621
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:611
+#: rpmio/rpmio.c:624
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:614
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:617
+#: rpmio/rpmio.c:630
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:621
+#: rpmio/rpmio.c:634
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1242
+#: rpmio/rpmio.c:1255
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
