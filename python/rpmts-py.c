@@ -363,6 +363,8 @@ rpmts_Check(rpmtsObject * s, PyObject * args)
     int i;
     int xx;
 
+rpmIncreaseVerbosity();
+rpmIncreaseVerbosity();
     memset(&cbInfo, 0, sizeof(cbInfo));
     if (!PyArg_ParseTuple(args, "|O:Check", &cbInfo.cb))
 	return NULL;
@@ -417,6 +419,9 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
 	    p = ps->probs + i;
 
+	    /* XXX autorelocated i386 on ia64, fix system-config-packages! */
+	    if (p->type == RPMPROB_BADRELOCATE)
+		continue;
 	    byName = p->pkgNEVR;
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';
