@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
 "POT-Creation-Date: 2001-06-01 17:48-0400\n"
-"PO-Revision-Date: 2001-05-15 02:36+0900\n"
+"PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
 "MIME-Version: 1.0\n"
@@ -280,9 +280,8 @@ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "        rpm {--rebuilddb} [--rcfile <파일>] [--dbpath <디렉토리>]"
 
 #: rpm.c:296
-#, fuzzy
 msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "        rpm {--rebuilddb} [--rcfile <파일>] [--dbpath <디렉토리>]"
+msgstr "        rpm {--verifydb} [--rcfile <파일>] [--dbpath <디렉토리>]"
 
 #: rpm.c:297
 msgid "       rpm {--querytags}"
@@ -844,9 +843,8 @@ msgid "rebuild database from existing database"
 msgstr "기존의 데이터베이스를 재 구축합니다"
 
 #: rpm.c:565 rpmqv.c:188
-#, fuzzy
 msgid "verify database files"
-msgstr "spec 파일을 질의합니다"
+msgstr "데이터베이스 파일을 검사합니다"
 
 #: rpm.c:573 rpmqv.c:586
 msgid ""
