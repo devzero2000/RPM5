@@ -512,14 +512,16 @@
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
 #	The path to the dependency universe database. The default value
-#	is the rpmdb-redhat location.
-%_sdbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat
+#	is the rpmdb-redhat location. The macro is usually defined in
+#	/etc/rpm/macros.solve, installed with the rpmdb-redhat package.
+#%_solve_dbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat
 
 #	The output binary package file name template used when suggesting
-#	binary packages that solve a dependency.
+#	binary packages that solve a dependency. The macro is usually defined
+#	in /etc/rpm/macros.solve, installed with the rpmdb-redhat package.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_solve_name_fmt	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+#%_solve_name_fmt	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
 #	The output binary package file name template used when repackaging
 #	erased packages.
