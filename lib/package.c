@@ -171,7 +171,7 @@ int rpmReadPackageHeader(FD_t fd, Header * hdrp, int * isSource, int * major,
     int rc = readPackageHeaders(fd, &lead, &sig, hdrp);
 
     if (rc)
-	return rc;
+	goto exit;
 
     if (hdrp && *hdrp && sig) {
 	headerMergeLegacySigs(*hdrp, sig);

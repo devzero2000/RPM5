@@ -130,14 +130,15 @@ extern const int rpmTagTableSize;
  */
 extern const struct headerSprintfExtension rpmHeaderFormats[];
 
-/* these pseudo-tags are used by the dbi iterator interface */
-#define	RPMDBI_PACKAGES		0
-#define	RPMDBI_DEPENDS		1
-#define	RPMDBI_LABEL		2	/* XXX remove rpmdbFindByLabel from API */
-#define	RPMDBI_ADDED		3
-#define	RPMDBI_REMOVED		4
-#define	RPMDBI_AVAILABLE	5
-
+/**
+ * Pseudo-tags used by the rpmdb iterator API.
+ */
+#define	RPMDBI_PACKAGES		0	/*!< Installed package headers. */
+#define	RPMDBI_DEPENDS		1	/*!< Dependency resolution cache. */
+#define	RPMDBI_LABEL		2	/*!< Fingerprint search marker. */
+#define	RPMDBI_ADDED		3	/*!< Added package headers. */
+#define	RPMDBI_REMOVED		4	/*!< Removed package headers. */
+#define	RPMDBI_AVAILABLE	5	/*!< Available package headers. */
 
 /**
  * Tags identify data in package headers.

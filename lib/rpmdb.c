@@ -906,6 +906,7 @@ int rpmdbInit (const char * prefix, int perms)
 
     rc = openDatabase(prefix, NULL, _dbapi, &rpmdb, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
     if (rpmdb) {
+	rpmdbOpenAll(rpmdb);
 	rpmdbClose(rpmdb);
 	rpmdb = NULL;
     }
@@ -2134,6 +2135,26 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 
     return 0;
 
+}
+
+char * db1basename (int rpmtag) {
+    char * base = NULL;
+    switch (rpmtag) {
+    case RPMDBI_PACKAGES:	base = "packages.rpm";		break;
+    case RPMTAG_NAME:		base = "nameindex.rpm";		break;
+    case RPMTAG_BASENAMES:	base = "fileindex.rpm";		break;
+    case RPMTAG_GROUP:		base = "groupindex.rpm";	break;
+    case RPMTAG_REQUIRENAME:	base = "requiredby.rpm";	break;
+    case RPMTAG_PROVIDENAME:	base = "providesindex.rpm";	break;
+    case RPMTAG_CONFLICTNAME:	base = "conflictsindex.rpm";	break;
+    case RPMTAG_TRIGGERNAME:	base = "triggerindex.rpm";	break;
+    default:
+      {	const char * tn = tagName(rpmtag);
+	base = alloca( strlen(tn) + sizeof(".idx") + 1 );
+	(void) stpcpy( stpcpy(base, tn), ".idx");
+      }	break;
+    }
+    return xstrdup(base);
 }
 
 static int rpmdbRemoveDatabase(const char * rootdir,
