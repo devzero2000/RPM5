@@ -35,6 +35,7 @@
 	- revert selinux patch until fc3 release.
 	- reprise file conflicts yet again, flip/flop/flip/flop ...
 	- fix: buffer overrun displaying ko_KR (#135389).
+	- remove verbose debugging messages (#137834).
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).
