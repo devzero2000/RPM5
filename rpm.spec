@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -272,5 +272,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Sep 26 2000 Jeff Johnson <jbj@redhat.com>
+- fix: avoid calling getpass twice as side effect of xstrdup macro (#17672).
+- order packages using tsort, clipping PreReq:'s in dependency loops.
+- handle possible db3 dependency on -lpthread more gracefully.
+
 * Thu Sep 14 2000 Jeff Johnson <jbj@redhat.com>
 - start rpm-4.0.1.

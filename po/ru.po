@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-09-13 14:00-0400\n"
+"POT-Creation-Date: 2000-09-26 17:52-0400\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2239,7 +2239,7 @@ msgid " failed - "
 msgstr "не удалось - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:456
+#: lib/depends.c:549
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2248,72 +2248,90 @@ msgstr ""
 "для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:485
+#: lib/depends.c:578
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:825
+#: lib/depends.c:932
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:874
+#: lib/depends.c:991
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:918
+#: lib/depends.c:1043
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr "%s: %-45s %-3s (cached)\n"
 
-#: lib/depends.c:935
+#: lib/depends.c:1062
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:951
+#: lib/depends.c:1079
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:972
+#: lib/depends.c:1100
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:985
+#: lib/depends.c:1113
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:998
+#: lib/depends.c:1126
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1019
+#: lib/depends.c:1147
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1073
+#: lib/depends.c:1205
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1140
+#: lib/depends.c:1272
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1266
-#, c-format
-msgid "loop in prerequisite chain: %s"
-msgstr "замкнутый цикл в цепочке требований для установки: %s"
+#: lib/depends.c:1458
+#, fuzzy, c-format
+msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
+msgstr "удаляется \"%s\" из индекса %s.\n"
+
+#. Record all relations.
+#: lib/depends.c:1511
+msgid "========== recording tsort relations\n"
+msgstr ""
+
+#. T4. Scan for zeroes.
+#: lib/depends.c:1568
+msgid "========== tsorting packages\n"
+msgstr ""
+
+#: lib/depends.c:1671
+msgid "LOOP:\n"
+msgstr ""
+
+#: lib/depends.c:1702
+msgid "========== continuing tsort ...\n"
+msgstr ""
 
 #: lib/db1.c:96 lib/db3.c:441
 #, c-format
@@ -3929,22 +3947,25 @@ msgstr "внимание: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgid "Password for %s@%s: "
 msgstr "Пароль для %s@%s: "
 
-#: rpmio/url.c:243 rpmio/url.c:269
+#: rpmio/url.c:245 rpmio/url.c:271
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "ошибка: %s порт должен быть числом\n"
 
-#: rpmio/url.c:405
+#: rpmio/url.c:407
 msgid "url port must be a number\n"
 msgstr "url порт должен быть числом\n"
 
-#: rpmio/url.c:445
+#: rpmio/url.c:447
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:462
+#: rpmio/url.c:464
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "loop in prerequisite chain: %s"
+#~ msgstr "замкнутый цикл в цепочке требований для установки: %s"

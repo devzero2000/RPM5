@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-09-13 14:00-0400\n"
+"POT-Creation-Date: 2000-09-26 17:52-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2308,7 +2308,7 @@ msgid " failed - "
 msgstr " neuspe¹no - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:456
+#: lib/depends.c:549
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2317,72 +2317,90 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:485
+#: lib/depends.c:578
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:825
+#: lib/depends.c:932
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s zadovoljen ob dodatnem seznamu datotek.\n"
 
-#: lib/depends.c:874
+#: lib/depends.c:991
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s zadovoljen ob dodatni ponudbi.\n"
 
-#: lib/depends.c:918
+#: lib/depends.c:1043
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:935
+#: lib/depends.c:1062
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:951
+#: lib/depends.c:1079
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:972
+#: lib/depends.c:1100
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:985
+#: lib/depends.c:1113
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s zadovoljen ob ponudbi db.\n"
 
-#: lib/depends.c:998
+#: lib/depends.c:1126
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1019
+#: lib/depends.c:1147
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1073
+#: lib/depends.c:1205
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s zahteva, a ni zadovoljeno: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1140
+#: lib/depends.c:1272
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s v sporu: %s\n"
 
-#: lib/depends.c:1266
-#, c-format
-msgid "loop in prerequisite chain: %s"
-msgstr "zanka v predpogojevani verigi: %s"
+#: lib/depends.c:1458
+#, fuzzy, c-format
+msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
+msgstr "odstranjujemo seznam skupin\n"
+
+#. Record all relations.
+#: lib/depends.c:1511
+msgid "========== recording tsort relations\n"
+msgstr ""
+
+#. T4. Scan for zeroes.
+#: lib/depends.c:1568
+msgid "========== tsorting packages\n"
+msgstr ""
+
+#: lib/depends.c:1671
+msgid "LOOP:\n"
+msgstr ""
+
+#: lib/depends.c:1702
+msgid "========== continuing tsort ...\n"
+msgstr ""
 
 #: lib/db1.c:96 lib/db3.c:441
 #, c-format
@@ -3986,25 +4004,28 @@ msgstr "opozorilo: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgid "Password for %s@%s: "
 msgstr "Geslo za %s@%s: "
 
-#: rpmio/url.c:243 rpmio/url.c:269
+#: rpmio/url.c:245 rpmio/url.c:271
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "napaka: vrata %s morajo biti ¹tevilka\n"
 
-#: rpmio/url.c:405
+#: rpmio/url.c:407
 msgid "url port must be a number\n"
 msgstr "vrata URL morajo biti ¹tevilka\n"
 
-#: rpmio/url.c:445
+#: rpmio/url.c:447
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:462
+#: rpmio/url.c:464
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#~ msgid "loop in prerequisite chain: %s"
+#~ msgstr "zanka v predpogojevani verigi: %s"
 
 #~ msgid ""
 #~ "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"

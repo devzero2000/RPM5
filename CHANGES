@@ -1,6 +1,10 @@
 4.0 -> 4.0.1
+	- fix: avoid calling getpass twice as side effect of xstrdup macro
+		(katzj@linuxpower.org) (#17672).
+	- order packages using tsort, clipping PreReq:'s in dependency loops.
+	- handle possible db3 dependency on -lpthread more gracefully.
 
-3.0.7 -> 4.0
+3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
 	- API: change dbi to pass by reference, not value.
 	- cram all of db1, db_185, and db2 interfaces into rpmlib.
