@@ -40,7 +40,7 @@ static unsigned char header_magic[8] = {
  * Alignment needs (and sizeof scalars types) for internal rpm data types.
  */
 static int typeSizes[] =  { 
-	-1,	/*!< RPM_NULL_TYPE */
+	0,	/*!< RPM_NULL_TYPE */
 	1,	/*!< RPM_CHAR_TYPE */
 	1,	/*!< RPM_INT8_TYPE */
 	2,	/*!< RPM_INT16_TYPE */
@@ -92,8 +92,7 @@ struct headerToken {
 /**
  */
 struct sprintfTag {
-    /* if NULL tag element is invalid */
-    headerTagTagFunction ext;   
+    headerTagTagFunction ext;   /*!< if NULL tag element is invalid */
     int extNum;
     int_32 tag;
     int justOne;
@@ -191,8 +190,16 @@ static void headerProbe(Header h, const char *msg)
 #define	HEADERPROBE(_h, _msg)
 #endif	/* HAVE_MCHECK_H */
 
+/**
+ * Retrieve data from header entry.
+ * @param entry		header entry
+ * @retval type		address of type (or NULL)
+ * @retval p		address of data (or NULL)
+ * @retval c		address of count (or NULL)
+ * @param minMem	string pointers refer to header memory?
+ */
 static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
-	/*@out@*/ const void ** p, /*@out@*/ int_32 * c, int minimizeMemory)
+	/*@out@*/ const void ** p, /*@out@*/ int_32 * c, int minMem)
 		/*@modifies *type, *p, *c @*/
 {
     if (type) 
@@ -217,7 +224,7 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 	int i = entry->info.count;
 	int tableSize = i * sizeof(char *);
 
-	if (minimizeMemory) {
+	if (minMem) {
 	    ptrEntry = *p = xmalloc(tableSize);
 	    chptr = entry->data;
 	} else {
@@ -239,17 +246,22 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
     }
 }
 
+/**
+ * Return length of entry data.
+ * @param type		entry data type
+ * @param p		entry data
+ * @param count		entry item count
+ * @param onDisk
+ * @return		no. bytes in data
+ */
 static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 	/*@*/
 {
-    int thisLen, length, i;
-    char ** src, * chptr;
+    int length = 0;
 
-    length = 0;
     switch (type) {
     case RPM_STRING_TYPE:
-	if (count == 1) {
-	    /* Special case -- p is just the string */
+	if (count == 1) {	/* Special case -- p is just the string */
 	    length = strlen(p) + 1;
 	    break;
 	}
@@ -260,46 +272,42 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
+    {	int i;
+
 	/* This is like RPM_STRING_TYPE, except it's *always* an array */
 	/* Compute sum of length of all strings, including null terminators */
 	i = count;
-	length = 0;
 
 	if (onDisk) {
-	    chptr = (char *) p;
+	    const char * chptr = p;
+	    int thisLen;
+
 	    while (i--) {
 		thisLen = strlen(chptr) + 1;
 		length += thisLen;
 		chptr += thisLen;
 	    }
 	} else {
-	    src = (char **) p;
+	    const char ** src = (const char **)p;
 	    while (i--) {
 		/* add one for null termination */
 		length += strlen(*src++) + 1;
 	    }
 	}
-	break;
+    }	break;
 
     default:
-	if (typeSizes[type] != -1)
+	if (typeSizes[type] != -1) {
 	    length = typeSizes[type] * count;
-	else {
-	    fprintf(stderr, _("Data type %d not supported\n"), (int) type);
-	    exit(EXIT_FAILURE);
-	    /*@notreached@*/
+	    break;
 	}
-	break;
+	fprintf(stderr, _("Data type %d not supported\n"), (int) type);
+	exit(EXIT_FAILURE);
+	/*@notreached@*/ break;
     }
 
     return length;
 }
-
-/********************************************************************/
-/*                                                                  */
-/* Header iteration and copying                                     */
-/*                                                                  */
-/********************************************************************/
 
 /**
  * Header tag iterator data structure.
@@ -346,8 +354,7 @@ int headerNextIterator(HeaderIterator iter,
 
 static int indexCmp(const void *avp, const void *bvp)	/*@*/
 {
-    const struct indexEntry * ap = avp;
-    const struct indexEntry * bp = bvp;
+    const struct indexEntry * ap = avp, * bp = bvp;
     return (ap->info.tag - bp->info.tag);
 }
 
@@ -361,8 +368,7 @@ void headerSort(Header h)
 
 static int offsetCmp(const void *avp, const void *bvp) /*@*/
 {
-    const struct indexEntry * ap = avp;
-    const struct indexEntry * bp = bvp;
+    const struct indexEntry * ap = avp, * bp = bvp;
     int rc = (ap->info.offset - bp->info.offset);
 
     if (rc == 0)
@@ -472,7 +478,6 @@ Header headerLoad(void *pv)
 	entry->data = t = dataStart + entry->info.offset;
 	entry->length = dataLength(entry->info.type, t, entry->info.count, 1);
 	entry->info.offset = ((char *)pe - dataStart);	/* negative offset */
-
 
 	/* Perform endian conversions. */
 	switch (entry->info.type) {
@@ -628,12 +633,6 @@ Header headerReload(Header h, int tag)
     return nh;
 }
 
-/********************************************************************/
-/*                                                                  */
-/* Reading and writing headers                                      */
-/*                                                                  */
-/********************************************************************/
-
 int headerWrite(FD_t fd, Header h, enum hMagic magicp)
 {
     int length;
@@ -712,12 +711,6 @@ Header headerRead(FD_t fd, enum hMagic magicp)
 
     return h;
 }
-
-/********************************************************************/
-/*                                                                  */
-/* Header dumping                                                   */
-/*                                                                  */
-/********************************************************************/
 
 void headerDump(Header h, FILE *f, int flags, 
 		const struct headerTagTableEntry * tags)
@@ -838,12 +831,13 @@ void headerDump(Header h, FILE *f, int flags,
     }
 }
 
-/********************************************************************/
-/*                                                                  */
-/* Entry lookup                                                     */
-/*                                                                  */
-/********************************************************************/
-
+/**
+ * Find matching (tag,type) entry in header.
+ * @param h		header
+ * @param tag		entry tag
+ * @param type		entry type
+ * @return 		header entry
+ */
 static struct indexEntry *findEntry(Header h, int_32 tag, int_32 type)
 {
     struct indexEntry * entry, * entry2, * last;
@@ -903,20 +897,29 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 * type, const void ** p,
     return 1;
 }
 
+/**
+ * Does locale match entry in header i18n table?
+ * 
+ * \verbatim
+ * The range [l,le) contains the next locale to match:
+ *    ll[_CC][.EEEEE][@dddd]
+ * where
+ *    ll	ISO language code (in lowercase).
+ *    CC	(optional) ISO coutnry code (in uppercase).
+ *    EEEEE	(optional) encoding (not really standardized).
+ *    dddd	(optional) dialect.
+ * \endverbatim
+ *
+ * @param td		header i18n table data, NUL terminated
+ * @param l		start of locale	to match
+ * @param le		end of locale to match
+ * @return		1 on match, 0 on no match
+ */
 static int headerMatchLocale(const char *td, const char *l, const char *le)
 	/*@*/
 {
     const char *fe;
 
-    /*
-     * The range [l,le) contains the next locale to match:
-     *    ll[_CC][.EEEEE][@dddd]
-     * where
-     *    ll	ISO language code (in lowercase).
-     *    CC	(optional) ISO coutnry code (in uppercase).
-     *    EEEEE	(optional) encoding (not really standardized).
-     *    dddd	(optional) dialect.
-     */
 
 #if 0
   { const char *s, *ll, *CC, *EE, *dd;
@@ -978,6 +981,12 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
     return 0;
 }
 
+/**
+ * Return i18n string from header that matches locale.
+ * @param h		header
+ * @param entry		i18n string data
+ * @return		matching i18n string (or 1st string if no match)
+ */
 /*@dependent@*/ static char *
 headerFindI18NString(Header h, struct indexEntry *entry)
 {
@@ -1020,52 +1029,68 @@ headerFindI18NString(Header h, struct indexEntry *entry)
     return entry->data;
 }
 
+/**
+ * Retrieve tag data from header.
+ * @param h		header
+ * @param tag		tag to retrieve
+ * @retval type		address of type (or NULL)
+ * @retval p		address of data (or NULL)
+ * @retval c		address of count (or NULL)
+ * @param minMem	string pointers reference header memory?
+ * @return		1 on success, 0 on not found
+ */
 static int intGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 	/*@out@*/ const void **p, /*@out@*/ int_32 *c, int minMem)
 		/*@modifies *type, *p, *c @*/
 {
     struct indexEntry * entry;
-    char * chptr;
 
     HEADERPROBE(h, "intGetEntry");
     /* First find the tag */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
-    if (!entry) {
+    if (entry == NULL) {
+	if (type) type = 0;
 	if (p) *p = NULL;
 	if (c) *c = 0;
 	return 0;
     }
 
-    if (entry->info.type == RPM_I18NSTRING_TYPE) {
-	chptr = headerFindI18NString(h, entry);
-
+    switch (entry->info.type) {
+    case RPM_I18NSTRING_TYPE:
 	if (type) *type = RPM_STRING_TYPE;
 	if (c) *c = 1;
-
-	/*@-dependenttrans@*/ *p = chptr; /*@=dependenttrans@*/
-    } else {
+	/*@-dependenttrans@*/
+	if (p) *p = headerFindI18NString(h, entry);
+	/*@=dependenttrans@*/
+	break;
+    case RPM_BIN_TYPE:
+	if (ENTRY_IS_REGION(entry)) {
+	    if (type) *type = entry->info.type;
+	    if (c) *c = entry->length;
+	    /*@-dependenttrans@*/
+	    if (p) *p = entry->data;
+	    /*@=dependenttrans@*/
+	    break;
+	}
+	/*@fallthrough@*/
+    default:
 	copyEntry(entry, type, p, c, minMem);
+	break;
     }
 
     return 1;
 }
 
-int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type, void **p, 
+int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type, const void **p, 
 			    int_32 *c)
 {
-    return intGetEntry(h, tag, type, (const void **)p, c, 1);
+    return intGetEntry(h, tag, type, p, c, 1);
 }
 
 int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 {
     return intGetEntry(h, tag, type, (const void **)p, c, 0);
 }
-
-/********************************************************************/
-/*                                                                  */
-/* Header creation and deletion                                     */
-/*                                                                  */
-/********************************************************************/
 
 Header headerNew()
 {
@@ -1131,8 +1156,13 @@ unsigned int headerSizeof(Header h, enum hMagic magicp)
     size += sizeof(int_32);	/* count of index entries */
     size += sizeof(int_32);	/* length of data */
     size += sizeof(struct entryInfo) * h->indexUsed;
-    if (magicp)
-	size += 8;
+    switch (magicp) {
+    case HEADER_MAGIC_YES:
+	size += sizeof(header_magic);
+	break;
+    case HEADER_MAGIC_NO:
+	break;
+    }
 
     entry = h->index;
     for (i = 0; i < h->indexUsed; i++, entry++) {
@@ -1190,6 +1220,14 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
     }
 }
 
+/**
+ * Return (malloc'ed) copy of entry data.
+ * @param type		entry data type
+ * @param p		entry data
+ * @param c		entry item count
+ * @retval lengthPtr	no. bytes in returned data
+ * @return 		(malloc'ed) copy of entry data
+ */
 static void * grabData(int_32 type, const void * p, int_32 c,
 	/*@out@*/ int * lengthPtr)
 		/*@modifies *lengthPtr @*/
@@ -1203,12 +1241,6 @@ static void * grabData(int_32 type, const void * p, int_32 c,
 	*lengthPtr = length;
     return data;
 }
-
-/********************************************************************/
-/*                                                                  */
-/* Adding and modifying entries                                     */
-/*                                                                  */
-/********************************************************************/
 
 int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
 {
@@ -1237,7 +1269,6 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
 
     if (h->indexUsed > 0 && tag < h->index[h->indexUsed-1].info.tag)
 	h->sorted = 0;
-
     h->indexUsed++;
 
     return 1;

@@ -162,6 +162,11 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 	if (h == NULL)
 	    break;
 	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
+
+	/* XXX Legacy headers have a HEADER_IMAGE tag added. */
+	if (headerIsEntry(h, RPMTAG_HEADERIMAGE))
+	    sigSize -= (16 + 16);
+
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);

@@ -401,7 +401,7 @@ int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  * @return		1 on success, 0 on failure
  */
 int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type,
-	/*@out@*/ void **p, /*@out@*/ int_32 *c)
+	/*@out@*/ const void **p, /*@out@*/ int_32 *c)
 		/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header

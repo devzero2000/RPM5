@@ -58,11 +58,5 @@ BUILT_SOURCES = tagtable.c
 lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
 
-tmacro: macro.c
-	$(CC) $(CFLAGS) $(DEFS) -DDEBUG_MACROS $(INCLUDES) -o $@ $<
-
-rpmeval: macro.c
-	$(CC) $(CFLAGS) $(DEFS) -DDEBUG_MACROS -DEVAL_MACROS $(INCLUDES) -o $@ $<
-
-tufdio: tufdio.c
+th: th.c librpm.la
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
