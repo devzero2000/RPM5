@@ -129,12 +129,16 @@ package or when debugging this package. \
 
 %_defaultdocdir		%{_usr}/doc
 
-#	Path to cripts to autogenerate package dependencies.
+#	Path to scripts to autogenerate package dependencies.
 %__find_provides	@FINDPROVIDES@
 %__find_requires	@FINDREQUIRES@
 #%__find_prereq		???
 #%__find_conflicts	???
 #%__find_obsoletes	???
+
+%__file_z_n		%{__file} -z -n -m @RPMCONFIGDIR@/magic
+%__perl_provides	@RPMCONFIGDIR@/perl.prov
+%__perl_requires	@RPMCONFIGDIR@/perl.req
 
 #
 # fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
