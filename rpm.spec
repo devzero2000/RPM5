@@ -9,7 +9,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 11.6x
+Release: 12.6x
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -197,6 +197,7 @@ fi
 %{__mandir}/man[18]/*.[18]*
 %lang(pl) %{__mandir}/pl/man[18]/*.[18]*
 %lang(ru) %{__mandir}/ru/man[18]/*.[18]*
+%lang(sk) %{__mandir}/sk/man[18]/*.[18]*
 
 %files build
 %defattr(-,root,root)
@@ -247,6 +248,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Aug 29 2000 Jeff Johnson <jbj@redhat.com>
+- translate rpm.8 man page (Peter Ivanyi <ivanyi@internet.sk>).
+
 * Wed Aug 23 2000 Jeff Johnson <jbj@redhat.com>
 - macroize manpath to build on FHS systems.
 

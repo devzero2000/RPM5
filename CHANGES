@@ -3,6 +3,7 @@
 	- add callbacks on package erasure.
 	- fix: preserve cpio errno when using Fclose with libio.
 	- fix: initialize sigs everywhere in python header object.
+	- translate rpm.8 man page (Peter Ivanyi <ivanyi@internet.sk>).
 
 3.0.4 -> 3.0.5
 	- fix: --define and --eval on alpha were broke.
