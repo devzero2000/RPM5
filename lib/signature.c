@@ -146,7 +146,7 @@ static unsigned char header_magic[8] = {
 rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 		const char ** msg)
 {
-    unsigned char buf[BUFSIZ];
+    char buf[BUFSIZ];
     int_32 block[4];
     int_32 il;
     int_32 dl;
@@ -173,7 +173,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
 	snprintf(buf, sizeof(buf),
-		_("sigh size(%d): BAD, read %d bytes\n"), sizeof(block), xx);
+		_("sigh size(%d): BAD, read returned %d\n"), sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, header_magic, sizeof(header_magic))) {
@@ -183,12 +183,14 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     }
     il = ntohl(block[2]);
     if (il < 0 || il > 32) {
-	snprintf(buf, sizeof(buf), _("sigh tags: BAD, found %d tags\n"), il);
+	snprintf(buf, sizeof(buf),
+		_("sigh tags: BAD, no. of tags(%d) out of range\n"), il);
 	goto exit;
     }
     dl = ntohl(block[3]);
     if (dl < 0 || dl > 8192) {
-	snprintf(buf, sizeof(buf), _("sigh data: BAD, found %d bytes\n"), dl);
+	snprintf(buf, sizeof(buf),
+		_("sigh data: BAD, no. of  bytes(%d) out of range\n"), dl);
 	goto exit;
     }
 
@@ -200,7 +202,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     dataStart = (unsigned char *) (pe + il);
     if ((xx = timedRead(fd, (char *)pe, nb)) != nb) {
 	snprintf(buf, sizeof(buf),
-		_("sigh blob(%d): BAD, read %d bytes\n"), nb, xx);
+		_("sigh blob(%d): BAD, read returned %d\n"), nb, xx);
 	goto exit;
     }
     
@@ -279,8 +281,10 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 
     /* OK, blob looks sane, load the header. */
     sigh = headerLoad(ei);
-    if (sigh == NULL)
+    if (sigh == NULL) {
+	snprintf(buf, sizeof(buf), _("sigh load: BAD\n"));
 	goto exit;
+    }
     sigh->flags |= HEADERFLAG_ALLOCATED;
 
     {	int sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);

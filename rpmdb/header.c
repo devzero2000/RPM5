@@ -106,13 +106,13 @@ static size_t headerMaxbytes = (32*1024*1024);
 #define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
 
 /**
- * Sanity check on data size and/or offset.
+ * Sanity check on data size and/or offset and/or count.
  * This check imposes a limit of 16Mb, more than enough.
  */ 
 #define hdrchkData(_nbytes)	((_nbytes) & 0xff000000)
 
 /**
- * Sanity check on data alignment for data type.
+ * Sanity check on alignment for data type.
  */
 #define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
 
@@ -3475,6 +3475,7 @@ int headerNextIterator(HeaderIterator hi,
     hi->next_index = slot;
     if (entry == NULL || slot >= h->indexUsed)
 	return 0;
+
     /*@-noeffect@*/	/* LCL: no clue */
     hi->next_index++;
     /*@=noeffect@*/

@@ -353,15 +353,17 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
-	sprintf(buf, _("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
-			uc, il, dl);
+	snprintf(buf, sizeof(buf),
+		_("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
+		uc, il, dl);
 	goto exit;
     }
 
     /* Check (and convert) the 1st tag element. */
     xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
     if (xx != -1) {
-	sprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+	snprintf(buf, sizeof(buf),
+		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		0, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
 	goto exit;
@@ -380,7 +382,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
     /* Is the offset within the data area? */
     if (entry->info.offset >= dl) {
-	sprintf(buf,
+	snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -401,7 +403,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
        && entry->info.type == RPM_BIN_TYPE
        && entry->info.count == REGION_TAG_COUNT))
     {
-	sprintf(buf,
+	snprintf(buf, sizeof(buf),
 		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -415,7 +417,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     /* Is the no. of tags in the region less than the total no. of tags? */
     ril = entry->info.offset/sizeof(*pe);
     if ((entry->info.offset % sizeof(*pe)) || ril > il) {
-	sprintf(buf, _("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
+	snprintf(buf, sizeof(buf),
+		_("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	goto exit;
     }
 
@@ -423,7 +426,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     for (i = ril; i < il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
 	if (xx != -1) {
-	    sprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+	    snprintf(buf, sizeof(buf),
+		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		i, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
 	    goto exit;
@@ -441,7 +445,10 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 		blen++;
 	    }
 	    if (entry->info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
+	    {
+		snprintf(buf, sizeof(buf), _("hdr SHA1: BAD, not hex\n"));
 		goto exit;
+	    }
 /*@=boundsread@*/
 	    if (info->tag == 0) {
 /*@-boundswrite@*/
@@ -456,8 +463,10 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 	case RPMTAG_DSAHEADER:
 	    if (vsflags & RPMVSF_NODSAHEADER)
 		/*@switchbreak@*/ break;
-	    if (entry->info.type != RPM_BIN_TYPE)
+	    if (entry->info.type != RPM_BIN_TYPE) {
+		snprintf(buf, sizeof(buf), _("hdr DSA: BAD, not binary\n"));
 		goto exit;
+	    }
 /*@-boundswrite@*/
 	    *info = entry->info;	/* structure assignment */
 /*@=boundswrite@*/
@@ -472,6 +481,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 exit:
     /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
     if (rc != RPMRC_NOTFOUND) {
+	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
 	return rc;
     }
@@ -481,14 +491,16 @@ exit:
 verifyinfo_exit:
 	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
 	if (xx != -1) {
-	    sprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+	    snprintf(buf, sizeof(buf),
+		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		xx+1, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
 	    rc = RPMRC_FAIL;
 	} else {
-	    sprintf(buf, "Header sanity check: OK\n");
+	    snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
 	    rc = RPMRC_OK;
 	}
+	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
 	return rc;
     }
@@ -598,8 +610,8 @@ verifyinfo_exit:
     rc = rpmVerifySignature(ts, buf);
 
 /*@-boundswrite@*/
-    if (msg != NULL)
-	*msg = xstrdup(buf);
+    buf[sizeof(buf)-1] = '\0';
+    if (msg) *msg = xstrdup(buf);
 /*@=boundswrite@*/
 
     rpmtsCleanDig(ts);
@@ -608,7 +620,7 @@ verifyinfo_exit:
 
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 {
-    unsigned char buf[BUFSIZ];
+    char buf[BUFSIZ];
     int_32 block[4];
     int_32 il;
     int_32 dl;
@@ -628,22 +640,24 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
 	snprintf(buf, sizeof(buf),
-	    _("hdr size(%d): BAD, read %d bytes\n"), sizeof(block), xx);
+		_("hdr size(%d): BAD, read returned %d\n"), sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, header_magic, sizeof(header_magic))) {
 	snprintf(buf, sizeof(buf), _("hdr magic: BAD\n"));
-
 	goto exit;
     }
     il = ntohl(block[2]);
     if (hdrchkTags(il)) {
-	snprintf(buf, sizeof(buf), _("hdr tags: BAD, found %d tags\n"), il);
+	snprintf(buf, sizeof(buf),
+		_("hdr tags: BAD, no. of tags(%d) out of range\n"), il);
+
 	goto exit;
     }
     dl = ntohl(block[3]);
     if (hdrchkData(dl)) {
-	snprintf(buf, sizeof(buf), _("hdr data: BAD, found %d bytes\n"), dl);
+	snprintf(buf, sizeof(buf),
+		_("hdr data: BAD, no. of bytes(%d) out of range\n"), dl);
 	goto exit;
     }
 
@@ -654,7 +668,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     ei[1] = block[3];
     if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
 	snprintf(buf, sizeof(buf),
-		_("hdr blob(%d): BAD, read %d bytes\n"), nb, xx);
+		_("hdr blob(%d): BAD, read returned %d\n"), nb, xx);
 	goto exit;
     }
 
@@ -665,8 +679,10 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 
     /* OK, blob looks sane, load the header. */
     h = headerLoad(ei);
-    if (h == NULL)
+    if (h == NULL) {
+	snprintf(buf, sizeof(buf), _("hdr load: BAD\n"));
         goto exit;
+    }
     h->flags |= HEADERFLAG_ALLOCATED;
     ei = NULL;	/* XXX will be freed with header */
     
