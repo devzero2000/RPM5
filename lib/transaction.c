@@ -911,8 +911,12 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
     uint_32 * otherSizes;
     uint_16 * otherModes;
     int numReplaced = 0;
+    static int conflictboom = -1000000000;
 
     rpmdbMatchIterator mi;
+
+    if (conflictboom == -1000000000)
+	conflictboom = rpmExpandNumeric("%_conflictboom");
 
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &shared->otherPkg, sizeof(shared->otherPkg));
     h = rpmdbNextIterator(mi);
@@ -942,7 +946,8 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 	if (XFA_SKIPPING(fi->actions[fileNum]))
 	    continue;
 
-	if (filecmp(otherModes[otherFileNum],
+	if (conflictboom-- == 1 ||
+	    filecmp(otherModes[otherFileNum],
 			otherMd5s[otherFileNum],
 			otherLinks[otherFileNum],
 			fi->fmodes[fileNum],
