@@ -7,7 +7,7 @@ use File::Copy;
 use Archive::Tar;
 
 use lib '/usr/lib/rpm';
-use RPM::Specfile;
+use Specfile;
 
 my %options;
 
@@ -37,8 +37,10 @@ copy($fullname, $tmpdir)
 
 if (not exists $options{noarch}) {
   my @files = Archive::Tar->list_archive("$tmpdir/$tarball");
-  $noarch = 1;
-  $noarch = 0 if grep { /\.(xs|c|cc|C)$/ } @files;
+  if (@files) {
+    $noarch = 1;
+    $noarch = 0 if grep { /\.(xs|c|cc|C)$/ } @files;
+  }
 }
 else {
   $noarch = $options{noarch};
