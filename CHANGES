@@ -29,6 +29,7 @@
 	- use /etc/security/selinux/file_contexts instead.
 	- selinux: ignore ENOTSUP return from lsetfilecon.
 	- add sparcv8 and enable elf32/elf64 Zon sparc64 (#117302).
+	- fix: --querybynumber looped.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
