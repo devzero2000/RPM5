@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -236,6 +236,7 @@ fi
 - fix: don't expand macros in false branch of %if (kasal@suse.cz).
 - fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).
 - uname on i370 has s390 as arch (#11456).
+- python: initdb binding (Dan Burcaw <dburcaw@terraplex.com>).
 
 * Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
 - handle version 4 packaging as input.
