@@ -128,6 +128,7 @@
 	- fix: memory leak (85522).
 	- build with internal elfutils if not installed.
 	- fix: close db cursors to remove rpmdb references on signal exit.
+	- fix: short option help missing string terminator.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
