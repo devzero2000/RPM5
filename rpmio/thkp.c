@@ -10,7 +10,7 @@
 static int _debug = 0;
 static int _printing = 0;
 
-extern int noNeon;
+int noNeon;
 
 #if 0
 #define	HKPPATH		"hkp://pgp.mit.edu:11371/pks/lookup?op=get&search=0xF5C75256"
@@ -35,11 +35,8 @@ static unsigned int keyids[] = {
 	0xfd372689, 0x897da07a,
 	0xe1385d4e, 0x1cddbca9,
 	0xb873641b, 0x2039b291,
-	0xbbe89728, 0x6afdb2e8,
-	0x1aa78495, 0x3eb24301,
-	0x58e727c4, 0xc621be0f,	/* XXX V4 Public Subkey(s), CRITICAL, revocations. */
 #endif
-	0x3919f3ae, 0xd142dbfb,
+	0x58e727c4, 0xc621be0f,
 	0
 };
 
