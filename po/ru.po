@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-18 20:49-0500\n"
-"PO-Revision-Date: 2000-08-08 01:20+0300\n"
+"PO-Revision-Date: 2001-01-21 11:20-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
@@ -3176,7 +3176,7 @@ msgstr "для установки пакета %s нужно %ld%cb на файловой системе %s"
 #: lib/problems.c:141
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
-msgstr "для установки пакета %s нужно %ld inodes на файловой системе %s"
+msgstr "для установки пакета %s нужно %ld дескрипторов файлов в разделе %s"
 
 #: lib/problems.c:146
 #, c-format
