@@ -29,9 +29,11 @@
 extern int _fsm_debug;
 /*@=redecl@*/
 
+#ifdef	DYING
 /*@-redecl -declundef -exportheadervar@*/
 extern const char * chroot_prefix;
 /*@=redecl =declundef =exportheadervar@*/
+#endif
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -1864,9 +1866,11 @@ assert(psm->mi == NULL);
 	    /*@=unrecog =superuser @*/
 	    psm->chrootDone = ts->chrootDone = 1;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 1;
+#ifdef	DYING
 	    /*@-onlytrans@*/
 	    chroot_prefix = ts->rootDir;
 	    /*@=onlytrans@*/
+#endif
 	}
 	break;
     case PSM_CHROOT_OUT:
@@ -1877,7 +1881,9 @@ assert(psm->mi == NULL);
 	    /*@=unrecog =superuser @*/
 	    psm->chrootDone = ts->chrootDone = 0;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 0;
+#ifdef	DYING
 	    chroot_prefix = NULL;
+#endif
 	    (void) chdir(ts->currDir);
 	}
 	break;

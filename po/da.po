@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-12-19 10:39-0500\n"
+"POT-Creation-Date: 2002-01-06 16:15-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1662,7 +1662,7 @@ msgstr "Kunne ikke læse hoved fra %s: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunne ikke åbne %s: %s\n"
 
-#: build/pack.c:571 lib/psm.c:1523
+#: build/pack.c:571 lib/psm.c:1525
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke skrive pakke: %s\n"
@@ -1692,7 +1692,7 @@ msgstr "Kunne ikke læse pakkeindhold fra %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke skrive pakkeindhold til %s: %s\n"
 
-#: build/pack.c:651 lib/psm.c:1782
+#: build/pack.c:651 lib/psm.c:1784
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -1728,8 +1728,8 @@ msgid "bad date in %%changelog: %s\n"
 msgstr "ugyldig dato i %%changelog: %s\n"
 
 #: build/parseChangelog.c:155
-#, c-format
-msgid "%%changelog not in decending chronological order\n"
+#, fuzzy, c-format
+msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog ikke i omvendt kronologisk rækkefølge\n"
 
 #: build/parseChangelog.c:163 build/parseChangelog.c:174
@@ -2311,7 +2311,7 @@ msgstr "%s oprettet som %s\n"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
 
-#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:400
+#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:402
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatype %d understøttes ikke\n"
@@ -2873,76 +2873,76 @@ msgstr "pakke %s prætransaktion-systemkald: %s mislykkedes: %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "ukendt fejl %d under arbejdet med pakken %s"
 
-#: lib/psm.c:594
+#: lib/psm.c:596
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "kan ikke oprette %s: %s\n"
 
-#: lib/psm.c:600
+#: lib/psm.c:602
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kunne ikke skrive til %s\n"
 
-#: lib/psm.c:638
+#: lib/psm.c:640
 msgid "source package expected, binary found\n"
 msgstr "kildepakke forventet, binær fundet\n"
 
-#: lib/psm.c:745
+#: lib/psm.c:747
 msgid "source package contains no .spec file\n"
 msgstr "kildepakke indeholder ingen .spec-fil\n"
 
-#: lib/psm.c:1003
+#: lib/psm.c:1005
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
 
-#: lib/psm.c:1010
+#: lib/psm.c:1012
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
 
-#: lib/psm.c:1328
+#: lib/psm.c:1330
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "pakke: %s-%s-%s filer test = %d\n"
 
-#: lib/psm.c:1445
+#: lib/psm.c:1447
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1560
+#: lib/psm.c:1562
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "bruger %s eksisterer ikke - bruger root\n"
 
-#: lib/psm.c:1569
+#: lib/psm.c:1571
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "gruppe %s eksisterer ikke - bruger root\n"
 
-#: lib/psm.c:1608
+#: lib/psm.c:1610
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: lib/psm.c:1609
+#: lib/psm.c:1611
 msgid " on file "
 msgstr " for fil "
 
-#: lib/psm.c:1790
+#: lib/psm.c:1792
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/psm.c:1793
+#: lib/psm.c:1795
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: lib/psm.c:1885
+#: lib/psm.c:1891
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "kører postinstallations-skript (hvis det findes)\n"
@@ -3467,46 +3467,46 @@ msgstr "Du skal angive \"%%_gpg_name\" i din makrofil\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du skal angive \"%%_pgp_name\" i din makrofil\n"
 
-#: lib/transaction.c:446
+#: lib/transaction.c:448
 msgid "========== relocations\n"
 msgstr "========== gemmer omrokeringer\n"
 
-#: lib/transaction.c:450
+#: lib/transaction.c:452
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d ekskluderer %s\n"
 
-#: lib/transaction.c:453
+#: lib/transaction.c:455
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d omrokerer %s -> %s\n"
 
-#: lib/transaction.c:523
+#: lib/transaction.c:525
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "ekskluderer multilib-sti %s%s\n"
 
-#: lib/transaction.c:586
+#: lib/transaction.c:588
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "ekskluderer %s %s\n"
 
-#: lib/transaction.c:596
+#: lib/transaction.c:598
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "omrokerer %s til %s\n"
 
-#: lib/transaction.c:674
+#: lib/transaction.c:676
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "omrokerer kataloget %s til %s\n"
 
-#: lib/transaction.c:808
+#: lib/transaction.c:810
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s oversprunget grundet manglende ok-flag\n"
 
-#: lib/transaction.c:1406
+#: lib/transaction.c:1408
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "ekskluderer kataloget %s\n"
@@ -3585,70 +3585,70 @@ msgstr "åbner db-fil      %s modus 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kunne ikke opnå %s lås på database\n"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1136
+#: rpmdb/db1.c:562 rpmdb/db3.c:1147
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1136
+#: rpmdb/db1.c:562 rpmdb/db3.c:1147
 msgid "shared"
 msgstr "delt"
 
-#: rpmdb/db3.c:112
+#: rpmdb/db3.c:110
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "lukkede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:128
+#: rpmdb/db3.c:126
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "fjernede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:166
+#: rpmdb/db3.c:163
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "åbner   db-miljø  %s/%s %s\n"
 
-#: rpmdb/db3.c:659
+#: rpmdb/db3.c:656
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:714
+#: rpmdb/db3.c:713
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:916
+#: rpmdb/db3.c:923
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1134
+#: rpmdb/db3.c:1145
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1140
+#: rpmdb/db3.c:1151
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste   db-index  %s/%s\n"
 
-#: rpmdb/dbconfig.c:391
+#: rpmdb/dbconfig.c:389
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "ukendt db-tilvalg: \"%s\" ignoreret\n"
 
-#: rpmdb/dbconfig.c:427
+#: rpmdb/dbconfig.c:425
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s har ugyldig talværdi, overspringes\n"
 
-#: rpmdb/dbconfig.c:436
+#: rpmdb/dbconfig.c:434
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s har for stor eller lille 'long'-værdi, overspringes\n"
 
-#: rpmdb/dbconfig.c:445
+#: rpmdb/dbconfig.c:443
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har for stor eller lille heltalsværdi, overspringes\n"
@@ -3715,7 +3715,7 @@ msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
-#: rpmdb/rpmdb.c:973
+#: rpmdb/rpmdb.c:977
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3724,118 +3724,118 @@ msgstr ""
 "database med det nye format\n"
 
 #. error
-#: rpmdb/rpmdb.c:1206
+#: rpmdb/rpmdb.c:1210
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "fejl(%d) ved optælling af pakker\n"
 
-#: rpmdb/rpmdb.c:1940 rpmdb/rpmdb.c:3122
+#: rpmdb/rpmdb.c:1944 rpmdb/rpmdb.c:3126
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:1991
+#: rpmdb/rpmdb.c:1995
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2256
+#: rpmdb/rpmdb.c:2260
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:2325
+#: rpmdb/rpmdb.c:2329
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2334
+#: rpmdb/rpmdb.c:2338
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2529
+#: rpmdb/rpmdb.c:2533
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:2607
+#: rpmdb/rpmdb.c:2611
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:2618
+#: rpmdb/rpmdb.c:2622
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:3011
+#: rpmdb/rpmdb.c:3015
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:3041
+#: rpmdb/rpmdb.c:3045
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:3068
+#: rpmdb/rpmdb.c:3072
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:3072
+#: rpmdb/rpmdb.c:3076
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:3078
+#: rpmdb/rpmdb.c:3082
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3080
+#: rpmdb/rpmdb.c:3084
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:3087
+#: rpmdb/rpmdb.c:3091
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3098
+#: rpmdb/rpmdb.c:3102
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3162
+#: rpmdb/rpmdb.c:3166
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:3180
+#: rpmdb/rpmdb.c:3184
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:3188
+#: rpmdb/rpmdb.c:3192
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:3190
+#: rpmdb/rpmdb.c:3194
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:3200
+#: rpmdb/rpmdb.c:3204
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:3202
+#: rpmdb/rpmdb.c:3206
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
