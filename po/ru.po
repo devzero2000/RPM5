@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2001-08-17 15:18-0400\n"
-"PO-Revision-Date: 2001-07-18 17:10-0400\n"
+"PO-Revision-Date: 2001-08-17 18:25-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
-"Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
+"Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=KOI8-R\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -122,8 +122,8 @@ msgstr ""
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                        [--prefix <кат.>] [--ignoreos] [--nodeps] [--"
-"allfiles]"
+"                        [--prefix <кат.>] [--ignoreos] [--nodeps] "
+"[--allfiles]"
 
 #: rpm.c:259 rpm.c:268 rpm.c:278
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
@@ -137,9 +137,8 @@ msgstr "                        [--httpproxy <адрес>] [--httpport <порт>]"
 msgid ""
 "                        [--justdb] [--noorder] [--relocate oldpath=newpath]"
 msgstr ""
-"                        [--justdb] [--noorder] [--"
-"relocate                                                       "
-"старыйпуть=новыйпуть]"
+"                        [--justdb] [--noorder] [--relocate                   "
+"                                    старыйпуть=новыйпуть]"
 
 #: rpm.c:262
 msgid ""
@@ -500,8 +499,8 @@ msgstr "вывести только файлы конфигурации пакета (подразумевает -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or -"
-"d)"
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
 msgstr ""
 "показать всю контрольную информацию для каждого файла пакета (должно "
 "использоваться с -l, -c или -d)"
@@ -979,8 +978,8 @@ msgstr "--includedocs может быть указан только при установке пакета"
 #: rpm.c:947 rpmqv.c:742
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
-"может быть использован только один из параметров --excludedocs или --"
-"includedocs"
+"может быть использован только один из параметров --excludedocs или "
+"--includedocs"
 
 #: rpm.c:951 rpmqv.c:746
 msgid "--ignorearch may only be specified during package installation"
@@ -1643,14 +1642,13 @@ msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читается заголовок из %s\n"
 
 #: build/pack.c:435
-#, fuzzy
 msgid "Unable to create immutable header region.\n"
-msgstr "Невозможно прочитать заголовок из %s: %s\n"
+msgstr "Невозможно поместить заголовок в нерперывную область памяти.\n"
 
 #: build/pack.c:453 build/pack.c:496
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write %s header\n"
-msgstr "Невозможно записать заголовок в %s: %s\n"
+msgstr "Невозможно записать %s заголовок\n"
 
 #: build/pack.c:461
 msgid "Bad CSA data\n"
@@ -1662,9 +1660,9 @@ msgid "Generating signature: %d\n"
 msgstr "Генерируется подпись: %d\n"
 
 #: build/pack.c:527
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to reload %s header.\n"
-msgstr "Невозможно прочитать заголовок из %s: %s\n"
+msgstr "Невозможно прочитать %s заголовок.\n"
 
 #: build/pack.c:535
 #, c-format
@@ -2113,7 +2111,7 @@ msgstr "Внутренняя ошибка"
 
 #: lib/cpio.c:217
 msgid "Archive file not in header"
-msgstr ""
+msgstr "Файл архива не найден в заголовке пакета"
 
 #: lib/cpio.c:226
 msgid " failed - "
@@ -2219,6 +2217,8 @@ msgstr "========== запись упорядоченных зависимостей\n"
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
+"========== сортировка пакетов (очередность, #predecessors, #succesors, "
+"глубина)\n"
 
 #: lib/depends.c:2001
 msgid "========== successors only (presentation order)\n"
@@ -2283,7 +2283,7 @@ msgstr "каталог %s создан с правами доступа %04o.\n"
 #: lib/fsm.c:1403
 #, c-format
 msgid "archive file %s was not found in header file list\n"
-msgstr ""
+msgstr "файл архива %s не найден в списке файлов заголовка\n"
 
 #: lib/fsm.c:1522 lib/fsm.c:1647
 #, c-format
@@ -2521,7 +2521,7 @@ msgstr "игнорировать ExcludeArch: в файле конфигурации"
 
 #: lib/poptBT.c:185
 msgid "debug file state machine"
-msgstr ""
+msgstr "отладка машины состояния файлов"
 
 #: lib/poptBT.c:187
 msgid "do not execute any stages of the build"
@@ -2554,7 +2554,7 @@ msgstr "искать строки I18N в каталоге файла спецификации"
 
 #: lib/poptI.c:75
 msgid "malformed rollback time"
-msgstr ""
+msgstr "неправильный формат времени отката"
 
 #: lib/poptI.c:99 lib/poptI.c:150
 msgid "do not execute package scriptlet(s)"
@@ -2643,6 +2643,8 @@ msgstr "сохранить подлежащие удалению файлы в новом пакете"
 #: lib/poptI.c:203
 msgid "deinstall new package(s), reinstall old package(s), back to date"
 msgstr ""
+"удалить новый(е) пакет(ы), переустановить старый(е) пакет(ы), обратно на "
+"указанную дату"
 
 #: lib/poptI.c:204
 msgid "<date>"
@@ -3518,7 +3520,7 @@ msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 #: lib/verify.c:559
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
-msgstr ""
+msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"
 
 #: rpmdb/db1.c:100 rpmdb/db3.c:84
 #, c-format
@@ -3642,8 +3644,8 @@ msgstr ""
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the rpm-list@redhat."
-"com mailing list\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "поврежден список свободных записей (%u) - пожалуйста запустите\n"
@@ -3721,7 +3723,7 @@ msgstr "запись номер %u в базе данных неверна, пропускается.\n"
 #: rpmdb/rpmdb.c:1987
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
-msgstr ""
+msgstr "rpmdb: получен поврежденный заголовок #%u, пропускается.\n"
 
 #: rpmdb/rpmdb.c:2252
 #, c-format
