@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.36
+Release: 0.38
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -343,6 +343,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Feb 14 2001 Jeff Johnson <jbj@redhat.com>
+- fix: permit packages to differ by 0 or 32 bytes (#26373).
+- fix: permit HEADER_IMMUTABLE tag queries.
+- split db configuration into separate file.
+
+* Tue Feb 13 2001 Jeff Johnson <jbj@redhat.com>
+- fix: remove fixed size buffer on output path (#26987,#26332).
+- resurrect rpmErrorCode in the API for Perl-RPM.
+
 * Sat Feb 10 2001 Jeff Johnson <jbj@redhat.com>
 - fix: diddle exit code for attempted installs of non-packages (#26850).
 - python binding diddles to reduce installer memory footprint by

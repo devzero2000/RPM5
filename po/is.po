@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-10 09:07-0500\n"
+"POT-Creation-Date: 2001-02-13 12:23-0500\n"
 "PO-Revision-Date: 2001-02-02 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -3998,22 +3998,22 @@ msgstr "Skrá %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Skráin %s er minni en %u bæti\n"
 
-#: rpmio/rpmlog.c:24
+#: rpmio/rpmlog.c:32
 msgid "(no error)"
 msgstr "(engin villa)"
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:83 rpmio/rpmlog.c:84 rpmio/rpmlog.c:85
+#: rpmio/rpmlog.c:91 rpmio/rpmlog.c:92 rpmio/rpmlog.c:93
 msgid "fatal error: "
 msgstr "banvæn villa: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:86
+#: rpmio/rpmlog.c:94
 msgid "error: "
 msgstr "villa: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:87
+#: rpmio/rpmlog.c:95
 msgid "warning: "
 msgstr "aðvörun: "
 

@@ -1,4 +1,4 @@
-4.0 -> 4.0.1
+4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
 		(katzj@linuxpower.org) (#17672).
 	- order packages using tsort, clipping Requires:'s in dependency loops.
@@ -122,6 +122,11 @@
 	- fix: diddle exit code for attempted installs of non-packages (#26850).
 	- python binding diddles to reduce installer memory footprint by
 	  delayed loading of file info.
+	- fix: remove fixed size buffer on output path (#26987,#26332).
+	- resurrect rpmErrorCode in the API for Perl-RPM.
+	- fix: permit packages to differ by 0 or 32 bytes (#26373).
+	- fix: permit HEADER_IMMUTABLE tag queries.
+	- split db configuration into separate file.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

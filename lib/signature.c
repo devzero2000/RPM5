@@ -132,6 +132,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
     int_32 type, count;
     int_32 *archSize;
     Header h = NULL;
+    int nb;
     int rc = 1;		/* assume failure */
 
     if (headerp)
@@ -175,7 +176,8 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count))
 	    break;
-	if (checkSize(fd, sigSize, pad, *archSize))
+	nb = checkSize(fd, sigSize, pad, *archSize);
+	if (!(nb == 0 || nb == -(16+16)))
 	    break;
 	if (pad) {
 	    if (timedRead(fd, buf, pad) != pad)

@@ -192,7 +192,7 @@ Header headerRead(FD_t fd, enum hMagic magicp)
  * @return		0 on success, 1 on error
  */
 int headerWrite(FD_t fd, Header h, enum hMagic magicp)
-	/*@modifies fd @*/;
+	/*@modifies fd, h @*/;
 
 /** \ingroup header
  * Return size of on-disk header representation in bytes.
@@ -200,14 +200,15 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
  * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
-unsigned int headerSizeof(Header h, enum hMagic magicp)	/*@*/;
+unsigned int headerSizeof(Header h, enum hMagic magicp)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Convert header to in-memory representation.
  * @param p		on-disk header (with offsets)
  * @return		header
  */
-Header headerLoad(void *p)	/*@*/;
+Header headerLoad(/*@kept@*/ void *p)	/*@*/;
 
 /** \ingroup header
  * Make a copy and convert header to in-memory representation.
@@ -221,7 +222,8 @@ Header headerCopyLoad(void *p)	/*@*/;
  * @param h		header (with pointers)
  * @return		on-disk header (with offsets)
  */
-void *headerUnload(Header h)	/*@*/;
+/*@only@*/ void * headerUnload(Header h)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Convert header to on-disk representation, and then reload.
@@ -230,7 +232,8 @@ void *headerUnload(Header h)	/*@*/;
  * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
-Header headerReload(/*@only@*/ Header h, int tag)	/*@*/;
+Header headerReload(/*@only@*/ Header h, int tag)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Create new (empty) header instance.
@@ -250,7 +253,7 @@ Header headerLink(Header h)
  * Dereference a header instance.
  * @param h		header
  */
-void headerFree( /*@only@*/ /*@null@*/ /*@killref@*/ Header h);
+void headerFree( /*@null@*/ /*@killref@*/ Header h);
 
 /** \ingroup header
  * Return header reference count.
@@ -324,14 +327,14 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
  * @param h		header
  * @return		array of locales (or NULL on error)
  */
-char ** headerGetLangs(Header h)	/*@*/;
+/*@only@*/ /*@null@*/ char ** headerGetLangs(Header h)	/*@*/;
 
 /** \ingroup header
  * Add locale specific tag to header.
  * A NULL lang is interpreted as the C locale. Here are the rules:
  * \verbatim
- *	- If the tag isn't in the Header, it's added with the passed string
- *	   as a version.
+ *	- If the tag isn't in the header, it's added with the passed string
+ *	   as new value.
  *	- If the tag occurs multiple times in entry, which tag is affected
  *	   by the operation is undefined.
  *	- If the tag is in the header w/ this language, the entry is
@@ -348,13 +351,14 @@ char ** headerGetLangs(Header h)	/*@*/;
  */
 int headerAddI18NString(Header h, int_32 tag, const char * string,
 	const char * lang)
-	/*@modifies h @*/;
+		/*@modifies h @*/;
 
 /** \ingroup header
  * Append element to tag array in header.
  * Appends item p to entry w/ tag and type as passed. Won't work on
- * RPM_STRING_TYPE. Any pointers from headerGetEntry() for this entry
- * are invalid after this call has been made!
+ * RPM_STRING_TYPE. Any pointers into header memory returned from
+ * headerGetEntryMinMemory() for this entry are invalid after this
+ * call has been made!
  *
  * @param h		header
  * @param tag		tag
@@ -368,6 +372,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
 
 /** \ingroup header
  * Add or append element to tag array in header.
+ * @todo Arg "p" should have const.
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type
@@ -375,8 +380,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
-			   void * p, int_32 c)
+int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
 		/*@modifies h @*/;
 
 /** \ingroup header
@@ -408,7 +412,7 @@ int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  * @retval c		address of number of values
  * @return		1 on success, 0 on failure
  */
-int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type,
+int headerGetEntryMinMemory(Header h, int_32 tag, /*@out@*/ int_32 *type,
 	/*@out@*/ const void **p, /*@out@*/ int_32 *c)
 		/*@modifies *type, *p, *c @*/;
 
@@ -534,10 +538,12 @@ typedef enum rpmTagType_e {
 /*@unused@*/ static inline /*@null@*/ void * headerFreeData(
 			/*@only@*/ const void * data, rpmTagType type)
 {
-    if (type == RPM_STRING_ARRAY_TYPE ||
-	type == RPM_I18NSTRING_TYPE ||
-	type == RPM_BIN_TYPE) {
-	if (data) free((void *)data);
+    if (data) {
+	if (type < 0 ||
+	    type == RPM_STRING_ARRAY_TYPE ||
+	    type == RPM_I18NSTRING_TYPE ||
+	    type == RPM_BIN_TYPE)
+		free((void *)data);
     }
     return NULL;
 }

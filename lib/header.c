@@ -78,7 +78,7 @@ struct entryInfo {
  */
 struct indexEntry {
     struct entryInfo info;	/*!< Description of tag data. */
-    void * data; 		/*!< Location of tag data. */
+/*@owned@*/ void * data; 	/*!< Location of tag data. */
     int length;			/*!< No. bytes of data. */
     int rdlen;			/*!< No. bytes of data in region. */
 };
@@ -87,7 +87,7 @@ struct indexEntry {
  * The Header data structure.
  */
 struct headerToken {
-    struct indexEntry *index;	/*!< Array of tags. */
+/*@owned@*/ struct indexEntry *index;	/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
     int region_allocated;	/*!< Is 1st header region allocated? */
@@ -289,16 +289,29 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
     if (p)
     switch (entry->info.type) {
     case RPM_BIN_TYPE:
-	count = entry->length;
-	*p = (!minMem
-		? memcpy(xmalloc(count), entry->data, count)
-		: entry->data);
+	/* XXX this only works for HEADER_IMMUTABLE */
 	if (ENTRY_IS_REGION(entry)) {
-	    struct entryInfo * pe = (struct entryInfo *) *p;
+	    int_32 * ei = ((int_32 *)entry->data) - 2;
+	    struct entryInfo * pe = (struct entryInfo *) (ei + 2);
+	    char * dataStart = (char *) (pe + ntohl(ei[0]));
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
-	    char * dataStart = (char *) (pe + ril);
+
+	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) +
+			entry->rdlen + REGION_TAG_COUNT;
+	    ei = (int_32 *) *p = xmalloc(count);
+	    ei[0] = htonl(ril);
+	    ei[1] = htonl(entry->rdlen + REGION_TAG_COUNT);
+	    pe = (struct entryInfo *) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
+	    dataStart = (char *) memcpy(pe + ril, dataStart,
+					(entry->rdlen + REGION_TAG_COUNT));
+
 	    (void) regionSwab(NULL, ril, 0, pe, dataStart, 0);
+	} else {
+	    count = entry->length;
+	    *p = (!minMem
+		? memcpy(xmalloc(count), entry->data, count)
+		: entry->data);
 	}
 	break;
     case RPM_STRING_TYPE:
@@ -315,11 +328,13 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 	int i;
 
 	if (minMem) {
-	    ptrEntry = (const char **) *p = xmalloc(tableSize);
+	    *p = xmalloc(tableSize);
+	    ptrEntry = (const char **) *p;
 	    t = entry->data;
 	} else {
 	    t = xmalloc(tableSize + entry->length);
-	    ptrEntry = (const char **) *p = (void *)t;
+	    *p = (void *)t;
+	    ptrEntry = (const char **) *p;
 	    t += tableSize;
 	    memcpy(t, entry->data, entry->length);
 	}
@@ -582,6 +597,38 @@ Header headerCopyLoad(void *uh)
     h->region_allocated = 1;
     return h;
 }
+
+#if 0
+int headerDrips(const Header h)
+{
+    struct indexEntry * entry; 
+    int i;
+
+    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
+	if (ENTRY_IS_REGION(entry)) {
+	    int rid = entry->info.offset;
+
+	    for (; i < h->indexUsed && entry->info.offset <= rid+1; i++, entry++) {
+		if (entry->info.offset <= rid)
+		    continue;
+
+fprintf(stderr, "***\t%3d dribble %s\n", i, tagName(entry->info.tag));
+	    }
+	    i--;
+	    entry--;
+	    continue;
+	}
+
+	/* Ignore deleted drips. */
+	if (entry->data == NULL || entry->length <= 0)
+	    continue;
+
+fprintf(stderr, "***\t%3d drip %s\n", i, tagName(entry->info.tag));
+
+    }
+    return 0;
+}
+#endif
 
 static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	/*@modifies h, *lengthPtr @*/
@@ -2240,7 +2287,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 
     if (tag->arrayCount) {
 	/*@-observertrans -modobserver@*/
-	headerFreeData(data, type);
+	data = headerFreeData(data, type);
 	/*@=observertrans =modobserver@*/
 
 	countBuf = count;
@@ -2411,7 +2458,7 @@ static const char * singleSprintf(Header h, struct sprintfToken * token,
 		if (!headerGetEntry(h, token->u.array.format[i].u.tag.tag, 
 				    &type, (void **) &val, &numElements))
 		    continue;
-		headerFreeData(val, type);
+		val = headerFreeData(val, type);
 	    } 
 	    break;
 	}
@@ -2674,6 +2721,6 @@ void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy)
 				(const void **) &s, &count))
 	    continue;
 	headerAddEntry(headerTo, *p, type, s, count);
-	headerFreeData(s, type);
+	s = headerFreeData(s, type);
     }
 }
