@@ -1034,6 +1034,7 @@ static int isDoc(FileList fl, const char * fileName)	/*@*/
 /**
  * Verify that file attributes scope over hardlinks correctly.
  * If partial hardlink sets are possible, then add tracking dependency.
+ * @todo Only %lang coloring is checked, %doc et al also need doing.
  * @param fl		package file tree walk data
  * @return		1 if partial hardlink sets can exist, 0 otherwise.
  */
@@ -1044,12 +1045,18 @@ static int checkHardLinks(FileList fl)
     int i, j;
 
     for (i = 0;  i < fl->fileListRecsUsed; i++) {
+
 	ilp = fl->fileList + i;
+
+	/* Is this a hard link? */
 	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
 
+	/* Find all members of hardlink set. */
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
+
+	    /* Member of same hardlink set? */
 	    if (!S_ISREG(jlp->fl_mode))
 		/*@innercontinue@*/ continue;
 	    if (ilp->fl_nlink != jlp->fl_nlink)
@@ -1058,6 +1065,10 @@ static int checkHardLinks(FileList fl)
 		/*@innercontinue@*/ continue;
 	    if (ilp->fl_dev != jlp->fl_dev)
 		/*@innercontinue@*/ continue;
+
+	    /* Identical locale coloring? */
+	    if (!strcmp(ilp->langs, jlp->langs))
+		continue;
 	    return 1;
 	}
     }
