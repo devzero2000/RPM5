@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-07-04 21:43-0400\n"
+"Project-Id-Version: rpm 4.0.3\n"
+"POT-Creation-Date: 2001-07-05 17:20-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
-"Last-Translator: Nilgün Belma Bugüner <nilgun@technologist.com>\n"
+"Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-9\n"
@@ -121,8 +121,8 @@ msgstr ""
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                        [--prefix <dizin>] [--ignoreos] [--nodeps] "
-"[--allfiles]"
+"                        [--prefix <dizin>] [--ignoreos] [--nodeps] [--"
+"allfiles]"
 
 #: rpm.c:259 rpm.c:268 rpm.c:278
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
@@ -229,8 +229,8 @@ msgstr ""
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
-"                        [--dbpath <dizin>] [--nodeps] [--nofiles] "
-"[--noscripts]"
+"                        [--dbpath <dizin>] [--nodeps] [--nofiles] [--"
+"noscripts]"
 
 #: rpm.c:284
 msgid "                        [--nomd5] [targets]"
@@ -499,8 +499,8 @@ msgstr "sadece yapýlandýrma dosyalarýný gösterir (-l ile)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or "
-"-d)"
+"show all verifiable information for each file (must be used with -l, -c, or -"
+"d)"
 msgstr ""
 "her dosya için doðrulanabilir bilgileri gösterir (-l, -c veya -d ile "
 "kullanýlmalý)"
@@ -2937,8 +2937,8 @@ msgstr "paket ne dosya sahibi ne de kimlik listesi içeriyor\n"
 msgid "can't query %s: %s\n"
 msgstr "%s sorgulanamýyor: %s\n"
 
-#: lib/query.c:536 lib/query.c:570 lib/rpminstall.c:325 lib/rpminstall.c:458
-#: lib/rpminstall.c:817
+#: lib/query.c:536 lib/query.c:570 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/rpminstall.c:816
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -2952,8 +2952,8 @@ msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "eski biçem kaynak paketleri sorgulanamaz\n"
 
-#: lib/query.c:580 lib/rpminstall.c:468
-#, c-format
+#: lib/query.c:580 lib/rpminstall.c:466
+#, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: bildirge okuma baþarýsýz: %s\n"
 
@@ -3011,7 +3011,7 @@ msgstr "paket kayýt numarasý: %u\n"
 msgid "record %u could not be read\n"
 msgstr "%u. kayýt okunamadý\n"
 
-#: lib/query.c:778 lib/rpminstall.c:605
+#: lib/query.c:778 lib/rpminstall.c:604
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu deðil\n"
@@ -3099,94 +3099,94 @@ msgstr ")"
 msgid "OK"
 msgstr "Tamam"
 
-#: lib/rpminstall.c:163
+#: lib/rpminstall.c:161
 msgid "Preparing..."
 msgstr "Hazýrlanýyor..."
 
-#: lib/rpminstall.c:165
+#: lib/rpminstall.c:163
 msgid "Preparing packages for installation..."
 msgstr "Kurulacak paketler hazýrlanýyor..."
 
-#: lib/rpminstall.c:276
+#: lib/rpminstall.c:274
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s alýnýyor\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:284
 #, c-format
 msgid " ... as %s\n"
 msgstr "... %s olarak\n"
 
-#: lib/rpminstall.c:290
+#: lib/rpminstall.c:288
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s atlanýyor - aktarým baþarýsýz - %s\n"
 
-#: lib/rpminstall.c:364
+#: lib/rpminstall.c:362
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabaný açýlamadý\n"
 
-#: lib/rpminstall.c:386
+#: lib/rpminstall.c:384
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "%s paketi yeniden konumlandýrýlamaz\n"
 
-#: lib/rpminstall.c:432
+#: lib/rpminstall.c:430
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s dosyasýndan okuma hatalý\n"
 
-#: lib/rpminstall.c:438
+#: lib/rpminstall.c:436
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s dosyasý RPM'nin daha yeni bir sürümünü gerektiriyor\n"
 
-#: lib/rpminstall.c:450 lib/rpminstall.c:676
+#: lib/rpminstall.c:448 lib/rpminstall.c:675
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s yüklenemedi\n"
 
-#: lib/rpminstall.c:482
+#: lib/rpminstall.c:480
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d kaynak ve %d icra edilebilir paketi bulundu\n"
 
-#: lib/rpminstall.c:497
+#: lib/rpminstall.c:495
 msgid "failed dependencies:\n"
 msgstr "baðýmlýlýklarda hata; gerekli paketler:\n"
 
-#: lib/rpminstall.c:518
+#: lib/rpminstall.c:516
 msgid "installing binary packages\n"
 msgstr "icra edilebilir paketleri kuruluyor\n"
 
-#: lib/rpminstall.c:536
+#: lib/rpminstall.c:535
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s dosyasý açýlamadý: %s\n"
 
-#: lib/rpminstall.c:592
+#: lib/rpminstall.c:591
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "%s/packages.rpm açýlamýyor\n"
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:607
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
 
-#: lib/rpminstall.c:631
+#: lib/rpminstall.c:630
 msgid "removing these packages would break dependencies:\n"
 msgstr "bu paketin silinmesi aþaðýdakilerin baðýmlýlýklarýný etkileyecektir:\n"
 
-#: lib/rpminstall.c:660
+#: lib/rpminstall.c:659
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/rpminstall.c:666
+#: lib/rpminstall.c:665
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s kuruluyor\n"
@@ -3469,17 +3469,17 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "paket hem grup ismi hem de kimlik listelerinden yoksun (bu hiç iyi deðil)\n"
 
-#: lib/verify.c:362
+#: lib/verify.c:355
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: deðiþmez baþlýk alaný özet denetimi baþarýsýz\n"
 
-#: lib/verify.c:421
+#: lib/verify.c:414
 #, c-format
 msgid "missing    %s"
 msgstr "eksik      %s"
 
-#: lib/verify.c:514
+#: lib/verify.c:507
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s için tatmin edici olmayan baðýmlýlýklar: "
@@ -3606,14 +3606,14 @@ msgstr "%s ya çok büyük ya da çok küçük 'integer' deðer içeriyor, atlandý\n"
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
+"More information is available from http://www.rpm.org or the rpm-list@redhat."
+"com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "serbest liste bozuk (%u)- lütfen \t\"rpm --rebuilddb\" ile çalýþtýrýn\n"
 "eðer \"rpm --rebuilddb\" çalýþmazsa problemin çözümü ve\n"
-"daha fazla bilgi için http://www.rpm.org adresine bakýn veya "
-"rpm-list@redhat.com e-posta listesine kaydolun.\n"
+"daha fazla bilgi için http://www.rpm.org adresine bakýn veya rpm-list@redhat."
+"com e-posta listesine kaydolun.\n"
 
 #: rpmdb/poptDB.c:22
 msgid "initialize database"
@@ -3666,8 +3666,8 @@ msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr ""
-"veritabaný eski sürüme ait; yeni sürüm bir veritabaný oluþturmak için "
-"--rebuilddb kullanýn\n"
+"veritabaný eski sürüme ait; yeni sürüm bir veritabaný oluþturmak için --"
+"rebuilddb kullanýn\n"
 
 #. @=nullpass@
 #. error

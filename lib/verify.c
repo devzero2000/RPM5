@@ -317,14 +317,7 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
     return rc;
 }
 
-/**
- * Check original header digest.
- * @todo Make digest check part of rpmdb iterator.
- * @param h		header
- * @return		0 on succes, 1 digest mismatch
- */
-static int verifyDigest(Header h)
-	/*@modifies nothing @*/
+int rpmVerifyDigest(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntry;	/* XXX headerGetEntryMinMemory? */
     HFD_t hfd = headerFreeData;
@@ -546,7 +539,7 @@ int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
     int rc;
 
     if (qva->qva_flags & VERIFY_DIGEST) {
-	if ((rc = verifyDigest(h)) != 0)
+	if ((rc = rpmVerifyDigest(h)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_DEPS) {

@@ -25,7 +25,7 @@
 static int hashesPrinted = 0;
 
 #ifdef FANCY_HASH
-static int packagesTotal = 0;
+int packagesTotal = 0;
 static int progressTotal = 0;
 static int progressCurrent = 0;
 #endif
@@ -78,10 +78,8 @@ static void printHash(const unsigned long amount, const unsigned long total)
     }
 }
 
-/**
- */
-static /*@null@*/
-void * showProgress(/*@null@*/ const void * arg, const rpmCallbackType what,
+void * rpmShowProgress(/*@null@*/ const void * arg,
+			const rpmCallbackType what,
 			const unsigned long amount,
 			const unsigned long total,
 			/*@null@*/ const void * pkgKey,
@@ -516,8 +514,9 @@ restart:
 	packagesTotal = numRPMS;
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	rc = rpmRunTransactions(ts, showProgress, (void *) ((long)notifyFlags),
-				    NULL, &probs, transFlags, probFilter);
+	rc = rpmRunTransactions(ts, rpmShowProgress,
+			(void *) ((long)notifyFlags),
+		 	NULL, &probs, transFlags, probFilter);
 
 	if (rc < 0) {
 	    numFailed += numRPMS;
@@ -541,7 +540,7 @@ restart:
 
 	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
 		rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, NULL,
-			showProgress, (void *) ((long)notifyFlags), NULL);
+			rpmShowProgress, (void *) ((long)notifyFlags), NULL);
 		if (rpmrc != RPMRC_OK) numFailed++;
 	    }
 

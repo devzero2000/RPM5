@@ -196,6 +196,15 @@ int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
 int showVerifyPackage(QVA_t qva, /*@only@*/ rpmdb db, Header h)
 	/*@modifies db, h, fileSystem @*/;
 
+/**
+ * Check original header digest.
+ * @todo Make digest check part of rpmdb iterator.
+ * @param h		header
+ * @return		0 on success (or unavailable), 1 on digest mismatch
+ */
+int rpmVerifyDigest(Header h)
+	/*@modifies nothing @*/;
+
 /** \ingroup rpmcli
  * Verify package install.
  * @param qva		parsed query/verify options
@@ -380,6 +389,30 @@ typedef /*@abstract@*/ struct IDTindex_s {
  */
 /*@only@*/ /*@null@*/ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	/*@modifies fileSystem @*/;
+
+
+/**
+ * The rpm CLI generic transaction callback.
+ * @deprecated Transaction callback arguments need to change, so don't rely on
+ * this routine in the rpmcli API.
+ *
+ * @param arg		per-callback private data (e.g. an rpm header)
+ * @param what		callback identifier
+ * @param amount	per-callback progress info
+ * @param total		per-callback progress info
+ * @param pkgkey	opaque header key (e.g. file name or PyObject)
+ * @param data		private data (e.g. rpmInstallInterfaceFlags)
+ * @return		per-callback data (e.g. an opened FD_t)
+ */
+/*@null@*/ void * rpmShowProgress(/*@null@*/ const void * arg,
+		const rpmCallbackType what,
+		const unsigned long amount,
+		const unsigned long total,
+		/*@null@*/ const void * pkgKey,
+		/*@null@*/ void * data)
+	/*@modifies fileSystem @*/;
+
+extern int packagesTotal;
 
 /** \ingroup rpmcli
  * Rollback transactions, erasing new, reinstalling old, package(s).
