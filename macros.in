@@ -437,7 +437,7 @@
 %_dbi_config_Packages		%{_dbi_htconfig} lockdbfd
 
 # "Depends" is a per-transaction cache of known dependency resolutions.
-%_dbi_config_Depends		%{_dbi_htconfig} %{__dbi_transient}
+%_dbi_config_Depends		%{_dbi_htconfig} temporary private
 
 %_dbi_config_Dirnames		%{_dbi_btconfig}
 %_dbi_config_Requireversion	%{_dbi_btconfig}

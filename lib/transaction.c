@@ -1526,9 +1526,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     int i, j;
     int ourrc = 0;
     struct availablePackage * alp;
-#ifdef	DYING
-    Header * hdrs;
-#endif
     int totalFileCount = 0;
     hashTable ht;
     TFI_t fi;
@@ -1627,10 +1624,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	if (dip) ts->di[i].bsize = 0;
     }
 
-#ifdef	DYING
-    hdrs = alloca(sizeof(*hdrs) * ts->addedPackages.size);
-#endif
-
     /* ===============================================
      * For packages being installed:
      * - verify package arch/os.
@@ -1722,22 +1715,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    fi->ap = tsGetAlp(tsi);
 	    fi->record = 0;
 	    loadFi(fi->ap->h, fi);
-	    if (fi->fc == 0) {
-#ifdef	DYING
-		hdrs[i] = headerLink(fi->h);
-#endif
+	    if (fi->fc == 0)
 		continue;
-	    }
 
-#ifdef	DYING
-	    /* Allocate file actions (and initialize to FA_UNKNOWN) */
-	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	    hdrs[i] = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
-#else
 	    {   Header foo = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
 		foo = headerFree(foo);
 	    }
-#endif
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    skipFiles(ts, fi);
@@ -1766,11 +1749,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    fi->fps = xmalloc(fi->fc * sizeof(*fi->fps));
     }
     tsi = tsFreeIterator(tsi);
-
-#ifdef	DYING
-    /* Open all database indices before installing. */
-    (void) rpmdbOpenAll(ts->rpmdb);
-#endif
 
     if (!ts->chrootDone) {
 	(void) chdir("/");
@@ -1984,16 +1962,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     {
 	*newProbs = ts->probs;
 
-#ifdef	DYING
-	for (alp = ts->addedPackages.list, fi = ts->flList;
-		(alp - ts->addedPackages.list) < ts->addedPackages.size;
-		alp++, fi++)
-	{
-	    hdrs[alp - ts->addedPackages.list] =
-		headerFree(hdrs[alp - ts->addedPackages.list]);
-	}
-#endif
-
 	ts->flList = freeFl(ts, ts->flList);
 	ts->flEntries = 0;
 	/*@-nullstate@*/
@@ -2046,11 +2014,8 @@ assert(alp == fi->ap);
 		if (alp->fd) {
 		    rpmRC rpmrc;
 
-#ifdef	DYING
-		    hdrs[i] = headerFree(hdrs[i]);
-#else
 		    h = headerFree(h);
-#endif
+
 		    /*@-mustmod@*/	/* LCL: segfault */
 		    rpmrc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
 		    /*@=mustmod@*/
@@ -2060,15 +2025,10 @@ assert(alp == fi->ap);
 			alp->fd = NULL;
 			ourrc++;
 		    } else {
-#ifdef	DYING
-			hdrs[i] = relocateFileList(ts, fi, alp, h, NULL);
-			h = headerFree(h);
-#else
 			Header foo = relocateFileList(ts, fi, alp, h, NULL);
 			h = headerFree(h);
 			h = headerLink(foo);
 			foo = headerFree(foo);
-#endif
 		    }
 		    if (alp->fd) gotfd = 1;
 		}
@@ -2081,11 +2041,7 @@ assert(alp == fi->ap);
 		    hsave = headerLink(fi->h);
 		    fi->h = headerFree(fi->h);
 		}
-#ifdef	DYING
-		fi->h = headerLink(hdrs[i]);
-#else
 		fi->h = headerLink(h);
-#endif
 		if (alp->multiLib)
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
@@ -2104,11 +2060,7 @@ assert(alp == fi->ap);
 		lastFailed = i;
 	    }
 
-#ifdef	DYING
-	    hdrs[i] = headerFree(hdrs[i]);
-#else
 	    h = headerFree(h);
-#endif
 
 	    if (gotfd) {
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
