@@ -6,7 +6,7 @@ Release: 1
 Group: Utilities/System
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
-BuildRoot: /var/tmp/rpm-%{version}
+BuildRoot: /var/tmp/rpm-%{version}-root
 Conflicts: patch < 2.5
 
 %description
