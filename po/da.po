@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1819,7 +1819,8 @@ msgid "do not execute package scriptlet(s)"
 msgstr "udfør ingen pakkespecifikke skripter"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+#, fuzzy
+msgid "relocate files in non-relocatable package"
 msgstr "omdirigér filer i ikke-omdirigérbar pakke"
 
 #: lib/poptI.c:176
@@ -2643,8 +2644,8 @@ msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
 #: lib/rpminstall.c:523
-#, c-format
-msgid "package %s is not relocateable\n"
+#, fuzzy, c-format
+msgid "package %s is not relocatable\n"
 msgstr "pakke %s kan ikke omrokeres\n"
 
 #: lib/rpminstall.c:573
@@ -2763,8 +2764,8 @@ msgid "package %s is already installed"
 msgstr "pakken %s er allerede installeret"
 
 #: lib/rpmps.c:223
-#, c-format
-msgid "path %s in package %s is not relocateable"
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocatable"
 msgstr "sti %s i pakke %s kan ikke omrokeres"
 
 #: lib/rpmps.c:228

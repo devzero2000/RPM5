@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -1847,7 +1847,7 @@ msgstr "‰l‰ aja mit‰‰n pakettikohtaisia skriptej‰"
 
 #: lib/poptI.c:173
 #, fuzzy
-msgid "relocate files in non-relocateable package"
+msgid "relocate files in non-relocatable package"
 msgstr "paketti %s ei ole asennettu\n"
 
 #: lib/poptI.c:176
@@ -2688,7 +2688,7 @@ msgstr "virhe: %s ei voida asentaa\n"
 
 #: lib/rpminstall.c:523
 #, fuzzy, c-format
-msgid "package %s is not relocateable\n"
+msgid "package %s is not relocatable\n"
 msgstr "paketti %s ei ole asennettu\n"
 
 #: lib/rpminstall.c:573
@@ -2809,7 +2809,7 @@ msgstr "paketti %s ei ole asennettu\n"
 
 #: lib/rpmps.c:223
 #, fuzzy, c-format
-msgid "path %s in package %s is not relocateable"
+msgid "path %s in package %s is not relocatable"
 msgstr "paketti %s ei ole asennettu\n"
 
 #: lib/rpmps.c:228

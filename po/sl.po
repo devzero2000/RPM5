@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1850,8 +1850,9 @@ msgid "do not execute package scriptlet(s)"
 msgstr "brez izvajanja skriptov paketa"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
-msgstr ""
+#, fuzzy
+msgid "relocate files in non-relocatable package"
+msgstr "poti %s ni mo¾no premakniti za paket %s-%s-%s"
 
 #: lib/poptI.c:176
 msgid "save erased package files by renaming into sub-directory"
@@ -2688,8 +2689,8 @@ msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
 #: lib/rpminstall.c:523
-#, c-format
-msgid "package %s is not relocateable\n"
+#, fuzzy, c-format
+msgid "package %s is not relocatable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
 #: lib/rpminstall.c:573
@@ -2809,7 +2810,7 @@ msgstr "paket %s-%s-%s je ¾e name¹èen"
 
 #: lib/rpmps.c:223
 #, fuzzy, c-format
-msgid "path %s in package %s is not relocateable"
+msgid "path %s in package %s is not relocatable"
 msgstr "paketa %s ni mo¾no prestaviti\n"
 
 #: lib/rpmps.c:228
@@ -5355,9 +5356,6 @@ msgstr ""
 
 #~ msgid "expected size   : %d\n"
 #~ msgstr "prièakovana vel.: %d\n"
-
-#~ msgid "path %s is not relocateable for package %s-%s-%s"
-#~ msgstr "poti %s ni mo¾no premakniti za paket %s-%s-%s"
 
 #~ msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
 #~ msgstr "RPMERR_INTERNAL: Dose¾ena omejitev v getUname()\n"

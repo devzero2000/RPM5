@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1870,7 +1870,7 @@ msgstr "パッケージ指定のスクリプトを実行しません"
 
 #: lib/poptI.c:173
 #, fuzzy
-msgid "relocate files in non-relocateable package"
+msgid "relocate files in non-relocatable package"
 msgstr "パス %s は再配置できません(パッケージ %s-%s-%s に対して)"
 
 #: lib/poptI.c:176
@@ -2728,7 +2728,7 @@ msgstr "%s をインストールできません\n"
 
 #: lib/rpminstall.c:523
 #, fuzzy, c-format
-msgid "package %s is not relocateable\n"
+msgid "package %s is not relocatable\n"
 msgstr "パッケージ %s は再配置できません"
 
 #: lib/rpminstall.c:573
@@ -2848,7 +2848,7 @@ msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
 #: lib/rpmps.c:223
 #, fuzzy, c-format
-msgid "path %s in package %s is not relocateable"
+msgid "path %s in package %s is not relocatable"
 msgstr "パッケージ %s は再配置できません"
 
 #: lib/rpmps.c:228

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1838,7 +1838,8 @@ msgid "do not execute package scriptlet(s)"
 msgstr "paket betikleri çalýþtýrýlmaz"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+#, fuzzy
+msgid "relocate files in non-relocatable package"
 msgstr "yeniden konumlanamayan paketin dosyalarýný yeniden konumlandýrýr"
 
 #: lib/poptI.c:176
@@ -2649,8 +2650,8 @@ msgid "%s cannot be installed\n"
 msgstr "%s yüklenemedi\n"
 
 #: lib/rpminstall.c:523
-#, c-format
-msgid "package %s is not relocateable\n"
+#, fuzzy, c-format
+msgid "package %s is not relocatable\n"
 msgstr "%s paketi yeniden konumlandýrýlamaz\n"
 
 #: lib/rpminstall.c:573
@@ -2769,8 +2770,8 @@ msgid "package %s is already installed"
 msgstr "%s zaten kurulu"
 
 #: lib/rpmps.c:223
-#, c-format
-msgid "path %s in package %s is not relocateable"
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocatable"
 msgstr "%s dosya yolu %s paketinde yeniden konumlandýrýlamaz"
 
 #: lib/rpmps.c:228

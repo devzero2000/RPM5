@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1802,7 +1802,8 @@ msgid "do not execute package scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+#, fuzzy
+msgid "relocate files in non-relocatable package"
 msgstr "przesuñ pliki w nieprzesuwalnym pakiecie"
 
 #: lib/poptI.c:176
@@ -2587,8 +2588,8 @@ msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
 
 #: lib/rpminstall.c:523
-#, c-format
-msgid "package %s is not relocateable\n"
+#, fuzzy, c-format
+msgid "package %s is not relocatable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
 #: lib/rpminstall.c:573
@@ -2707,8 +2708,8 @@ msgid "package %s is already installed"
 msgstr "pakiet %s jest ju¿ zainstalowany"
 
 #: lib/rpmps.c:223
-#, c-format
-msgid "path %s in package %s is not relocateable"
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocatable"
 msgstr "¶cie¿na %s w pakiecie %s nie jest przesuwalna"
 
 #: lib/rpmps.c:228

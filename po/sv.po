@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1795,7 +1795,8 @@ msgid "do not execute package scriptlet(s)"
 msgstr "kör inte paketskript"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+#, fuzzy
+msgid "relocate files in non-relocatable package"
 msgstr "relokera filer i ej relokerbart paket"
 
 #: lib/poptI.c:176
@@ -2583,8 +2584,8 @@ msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
 #: lib/rpminstall.c:523
-#, c-format
-msgid "package %s is not relocateable\n"
+#, fuzzy, c-format
+msgid "package %s is not relocatable\n"
 msgstr "paket %s är inte relokerbart\n"
 
 #: lib/rpminstall.c:573
@@ -2702,8 +2703,8 @@ msgid "package %s is already installed"
 msgstr "paket %s är redan installerat"
 
 #: lib/rpmps.c:223
-#, c-format
-msgid "path %s in package %s is not relocateable"
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocatable"
 msgstr "sökväg %s i paket %s är inte relokerbar"
 
 #: lib/rpmps.c:228

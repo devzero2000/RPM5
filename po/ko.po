@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1809,7 +1809,8 @@ msgid "do not execute package scriptlet(s)"
 msgstr "패키지 스크립틀릿(scriptlet)을 실행하지 않습니다"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+#, fuzzy
+msgid "relocate files in non-relocatable package"
 msgstr "재배치 기능이 없는 패키지의 파일을 재배치하여 설치합니다"
 
 #: lib/poptI.c:176
@@ -2621,8 +2622,8 @@ msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
 
 #: lib/rpminstall.c:523
-#, c-format
-msgid "package %s is not relocateable\n"
+#, fuzzy, c-format
+msgid "package %s is not relocatable\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
 
 #: lib/rpminstall.c:573
@@ -2741,8 +2742,8 @@ msgid "package %s is already installed"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
 #: lib/rpmps.c:223
-#, c-format
-msgid "path %s in package %s is not relocateable"
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocatable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
 #: lib/rpmps.c:228

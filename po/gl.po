@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1764,7 +1764,7 @@ msgid "do not execute package scriptlet(s)"
 msgstr ""
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+msgid "relocate files in non-relocatable package"
 msgstr ""
 
 #: lib/poptI.c:176
@@ -2546,7 +2546,7 @@ msgstr ""
 
 #: lib/rpminstall.c:523
 #, c-format
-msgid "package %s is not relocateable\n"
+msgid "package %s is not relocatable\n"
 msgstr ""
 
 #: lib/rpminstall.c:573
@@ -2665,7 +2665,7 @@ msgstr ""
 
 #: lib/rpmps.c:223
 #, c-format
-msgid "path %s in package %s is not relocateable"
+msgid "path %s in package %s is not relocatable"
 msgstr ""
 
 #: lib/rpmps.c:228

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1823,7 +1823,8 @@ msgid "do not execute package scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+#, fuzzy
+msgid "relocate files in non-relocatable package"
 msgstr "pøemístìní souborù v nepøemístitelném balíèku"
 
 #: lib/poptI.c:176
@@ -2633,7 +2634,7 @@ msgstr "neinstalován  "
 
 #: lib/rpminstall.c:523
 #, fuzzy, c-format
-msgid "package %s is not relocateable\n"
+msgid "package %s is not relocatable\n"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
 #: lib/rpminstall.c:573
@@ -2753,8 +2754,8 @@ msgid "package %s is already installed"
 msgstr "balíèek %s je ji¾ nainstalován"
 
 #: lib/rpmps.c:223
-#, c-format
-msgid "path %s in package %s is not relocateable"
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocatable"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
 #: lib/rpmps.c:228

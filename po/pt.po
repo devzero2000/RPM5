@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1825,7 +1825,8 @@ msgid "do not execute package scriptlet(s)"
 msgstr "não executar nenhuns scripts do pacote"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+#, fuzzy
+msgid "relocate files in non-relocatable package"
 msgstr "muda os ficheiros de sítio num pacote de localização fixa"
 
 #: lib/poptI.c:176
@@ -2633,8 +2634,8 @@ msgid "%s cannot be installed\n"
 msgstr "o %s não pode ser instalado\n"
 
 #: lib/rpminstall.c:523
-#, c-format
-msgid "package %s is not relocateable\n"
+#, fuzzy, c-format
+msgid "package %s is not relocatable\n"
 msgstr "o pacote %s não pode ser mudado de sítio\n"
 
 #: lib/rpminstall.c:573
@@ -2753,8 +2754,8 @@ msgid "package %s is already installed"
 msgstr "o pacote %s já está instalado"
 
 #: lib/rpmps.c:223
-#, c-format
-msgid "path %s in package %s is not relocateable"
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocatable"
 msgstr "a directoria %s no pacote %s não pode ser mudada de sítio"
 
 #: lib/rpmps.c:228

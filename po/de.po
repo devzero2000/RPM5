@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1962,7 +1962,7 @@ msgstr "Keine paketspezifischen Skripte ausführen"
 
 #: lib/poptI.c:173
 #, fuzzy
-msgid "relocate files in non-relocateable package"
+msgid "relocate files in non-relocatable package"
 msgstr "Paket %s ist nicht installiert\n"
 
 #: lib/poptI.c:176
@@ -2816,7 +2816,7 @@ msgstr "Fehler: %s kann nicht installiert werden\n"
 
 #: lib/rpminstall.c:523
 #, fuzzy, c-format
-msgid "package %s is not relocateable\n"
+msgid "package %s is not relocatable\n"
 msgstr "Paket %s ist nicht installiert\n"
 
 #: lib/rpminstall.c:573
@@ -2939,7 +2939,7 @@ msgstr "Paket %s ist nicht installiert\n"
 
 #: lib/rpmps.c:223
 #, fuzzy, c-format
-msgid "path %s in package %s is not relocateable"
+msgid "path %s in package %s is not relocatable"
 msgstr "Paket %s ist nicht installiert\n"
 
 #: lib/rpmps.c:228

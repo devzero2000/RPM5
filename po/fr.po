@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:32-0500\n"
+"POT-Creation-Date: 2003-12-30 08:15-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1831,7 +1831,8 @@ msgid "do not execute package scriptlet(s)"
 msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
 
 #: lib/poptI.c:173
-msgid "relocate files in non-relocateable package"
+#, fuzzy
+msgid "relocate files in non-relocatable package"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
 #: lib/poptI.c:176
@@ -2634,8 +2635,8 @@ msgid "%s cannot be installed\n"
 msgstr "%s ne peut être installé\n"
 
 #: lib/rpminstall.c:523
-#, c-format
-msgid "package %s is not relocateable\n"
+#, fuzzy, c-format
+msgid "package %s is not relocatable\n"
 msgstr "le paquetage %s n'est pas relogeable\n"
 
 #: lib/rpminstall.c:573
@@ -2762,8 +2763,8 @@ msgid "package %s is already installed"
 msgstr "paquetage %s déjà installé"
 
 #: lib/rpmps.c:223
-#, c-format
-msgid "path %s in package %s is not relocateable"
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocatable"
 msgstr "le chemin %s du paquetage %s n'est pas relogeable"
 
 #: lib/rpmps.c:228
