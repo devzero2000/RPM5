@@ -26,10 +26,9 @@ Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
-Prereq: gawk fileutils textutils mktemp shadow-utils
+Prereq: fileutils shadow-utils
 %endif
 Requires: popt = 1.7.1
-Requires: libelf >= 0.8.2
 Obsoletes: rpm-perl < %{version}
 
 BuildRequires: zlib-devel
@@ -179,8 +178,6 @@ gzip -9n apidocs/man/man*/* || :
 { cd $RPM_BUILD_ROOT
   rm -rf .%{__includedir}/beecrypt
   rm -f .%{__libdir}/libbeecrypt.{a,la,so.2.2.0}
-  rm -rf .%{__includedir}/libelf
-  rm -f .%{__libdir}/libelf.{a,la}
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
   rm -rf .%{__mandir}/{fr,ko}
 }

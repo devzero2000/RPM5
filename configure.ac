@@ -1198,7 +1198,7 @@ AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
        [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
 AC_SUBST(VENDORRPMRC_FILENAME)
 
-LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt-${VERSION}"
+LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt-4.1"
 AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",
 	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
 AC_SUBST(LIBRPMALIAS_FILENAME)
