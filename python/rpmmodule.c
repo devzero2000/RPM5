@@ -1973,8 +1973,7 @@ static int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag) {
 	    /* could be dupes */
 	    headerRemoveEntry(ho->h, tag);
 	    headerAddEntry(ho->h, tag, type, p, c);
-
-	    /* EWT we ened to free this item */
+	    headerFreeData(p, type);
 	}
 
 	headerFreeIterator(iter);
