@@ -1,6 +1,8 @@
 %define	with_python_subpackage	1
 %define	with_bzip2		1
 %define	with_apidocs		1
+%define strip_binaries		0
+%define	__spec_install_post	:
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -12,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.20
+Release: 0.21
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -131,10 +133,12 @@ cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
 
+%if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
   strip .%{__prefix}/bin/rpm2cpio
 }
+%endif
 
 %if %{with_apidocs}
 gzip -9n apidocs/man/* || :
