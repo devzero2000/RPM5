@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-13 02:35+0000\n"
+"POT-Creation-Date: 2004-03-30 16:49-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -63,11 +63,12 @@ msgid "Building for target %s\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
 #: rpm2cpio.c:55
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
 #: rpm2cpio.c:60
-#, fuzzy
+#, fuzzy, c-format
 msgid "error reading header from package\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
@@ -116,11 +117,12 @@ msgid "RPM version %s\n"
 msgstr "RPM versio %s\n"
 
 #: rpmqv.c:136
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
 #: rpmqv.c:137
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Tätä ohjelmaa voi vapaasti levittää GNU GPL:n puittessa"
@@ -279,6 +281,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametrit --root (-r):lle alettava /-merkillä"
 
 #: rpmqv.c:541
+#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -288,7 +291,7 @@ msgid "cannot access file %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
 #: rpmqv.c:565
-#, fuzzy
+#, fuzzy, c-format
 msgid "pgp not found: "
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
@@ -297,10 +300,12 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:572
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr ""
 
 #: rpmqv.c:576
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr ""
 
@@ -314,7 +319,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign: voidaan käyttää vain paketteja käännettäessä"
 
 #: rpmqv.c:605
-#, fuzzy
+#, fuzzy, c-format
 msgid "exec failed\n"
 msgstr "%s: avaus ei onnistunut\n"
 
@@ -1621,10 +1626,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1640,6 +1647,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1659,6 +1667,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2610,28 +2619,28 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:540 lib/rpmds.c:905
+#: lib/rpmds.c:735 lib/rpmds.c:1100
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:540 lib/rpmds.c:905
+#: lib/rpmds.c:735 lib/rpmds.c:1100
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:870
+#: lib/rpmds.c:1065
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:904
+#: lib/rpmds.c:1099
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:928
+#: lib/rpmds.c:1123
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ssä"
@@ -3093,6 +3102,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3117,6 +3127,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3189,6 +3200,9 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3232,10 +3246,12 @@ msgid "V3 DSA signature: "
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
 #: lib/signature.c:1357
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3813,6 +3829,7 @@ msgid "(no error)"
 msgstr "virhe: "
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "vakava virhe: "

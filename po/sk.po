@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-13 02:35+0000\n"
+"POT-Creation-Date: 2004-03-30 16:49-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -63,10 +63,12 @@ msgid "Building for target %s\n"
 msgstr "vyhµadáva sa balík %s\n"
 
 #: rpm2cpio.c:55
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "argument nie je RPM balík\n"
 
 #: rpm2cpio.c:60
+#, c-format
 msgid "error reading header from package\n"
 msgstr "chyba pri èítaní hlavièky balíka\n"
 
@@ -116,12 +118,12 @@ msgid "RPM version %s\n"
 msgstr "RPM verzia %s\n"
 
 #: rpmqv.c:136
-#, fuzzy
+#, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998 - Red Hat Software"
 
 #: rpmqv.c:137
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Program mô¾e by» voµne redistribuovaný v súlade s podmienkami GNU GPL"
@@ -277,6 +279,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty pre --root (-r) musia zaèína» znakom /"
 
 #: rpmqv.c:541
+#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -286,6 +289,7 @@ msgid "cannot access file %s\n"
 msgstr "nie je mo¾né pracova» so súborom %s\n"
 
 #: rpmqv.c:565
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp nebolo nájdené: "
 
@@ -294,10 +298,12 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:572
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Kontrola hesla zlyhala\n"
 
 #: rpmqv.c:576
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Heslo je v poriadku.\n"
 
@@ -311,6 +317,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign mô¾e by» pou¾íté iba poèas zostavenia balíka"
 
 #: rpmqv.c:605
+#, c-format
 msgid "exec failed\n"
 msgstr "vykonanie zlyhalo\n"
 
@@ -1624,10 +1631,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1643,6 +1652,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1662,6 +1672,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2607,29 +2618,29 @@ msgstr ")"
 msgid "OK"
 msgstr "V PORIADKU"
 
-#: lib/rpmds.c:540 lib/rpmds.c:905
+#: lib/rpmds.c:735 lib/rpmds.c:1100
 #, fuzzy
 msgid "NO "
 msgstr "NIE JE V PORIADKU"
 
-#: lib/rpmds.c:540 lib/rpmds.c:905
+#: lib/rpmds.c:735 lib/rpmds.c:1100
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:870
+#: lib/rpmds.c:1065
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:904
+#: lib/rpmds.c:1099
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:928
+#: lib/rpmds.c:1123
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
@@ -3091,6 +3102,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3115,6 +3127,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3187,6 +3200,9 @@ msgstr "Preèítaný GPG podpis obsahuje %d bajtov\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3231,10 +3247,12 @@ msgid "V3 DSA signature: "
 msgstr "Podpis nie je k dispozícii\n"
 
 #: lib/signature.c:1357
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3805,6 +3823,7 @@ msgid "(no error)"
 msgstr "(chyba 0x%x)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatálna chyba: "
