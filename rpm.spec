@@ -11,7 +11,7 @@
 
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 4.0.2
+%define version 4.0.1
 Version: %{version}
 Release: 0.41
 Group: System Environment/Base
