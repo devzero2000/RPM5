@@ -31,6 +31,7 @@ static int copyTagsDuringParse[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
+    RPMTAG_PREFIXES,
     0
 };
 
