@@ -1,4 +1,5 @@
 2.5.4 -> 2.5.5:
+	- return CPIO_BAD_HEADER instead of exiting. (Scott M. Stone)
 	- untranslate "(none)" for auto relocating script wrappers.
 	- update and rename Czech (Pavel Makovec <pavelm@terminal.cz>)
 	- non-linux arch/os identification (Eugene Kanter).
