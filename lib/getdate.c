@@ -1,4 +1,3 @@
-/*@-bounds@*/
 /*@-globstate -statictrans -unqualifiedtrans -noparams @*/
 /*@-retvalint -usedef -varuse -nullderef -nullassign @*/
 /*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/
@@ -1600,4 +1599,3 @@ yyaccept:
 /*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/
 /*@=retvalint =usedef =varuse =nullderef =nullassign @*/
 /*@=globstate =statictrans =unqualifiedtrans =noparams @*/
-/*@=bounds@*/
