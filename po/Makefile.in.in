@@ -54,8 +54,8 @@ depend:
 install:
 	for n in $(CATALOGS); do \
 	    l=`basename $$n .mo`; \
-	    $(INSTALL) -m 755 -d $(installprefix)/$(RPMNLSDIR)/$$l; \
-	    $(INSTALL) -m 755 -d $(installprefix)/$(RPMNLSDIR)/$$l/LC_MESSAGES; \
+	    $(top_srcdir)/mkinstalldirs \
+	        $(installprefix)/$(RPMNLSDIR)/$$l/LC_MESSAGES; \
 	    $(INSTALL) -m 644 $$n $(installprefix)/$(RPMNLSDIR)/$$l/LC_MESSAGES/rpm.mo; \
 	done
 
