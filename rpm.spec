@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.72
+Release: 1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -131,6 +131,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 rm -rf $RPM_BUILD_ROOT
 
 %post
+/sbin/ldconfig
 %ifos linux
 if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f %{__prefix}/lib/rpm/convertrpmrc.sh ] 
 then
@@ -139,6 +140,8 @@ fi
 %else
 /bin/rpm --initdb
 %endif
+
+%postun -p /sbin/ldconfig
 
 %ifos linux
 %post devel -p /sbin/ldconfig
@@ -268,6 +271,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Aug 23 2000 Jeff Johnson <jbj@redhat.com>
+- rpm now needs /sbin/ldconfig in post/postun scriptlets.
+- python bindings to retrieve removed header on callback.
+
 * Sun Aug 20 2000 Jeff Johnson <jbj@redhat.com>
 - add callbacks on package erasure.
 - fix: preserve cpio errno when using Fclose with libio.
