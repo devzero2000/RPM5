@@ -1,4 +1,5 @@
 %define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@ %{nil}
+%define	with_python_version	@WITH_PYTHON_VERSION@ %{nil}
 %define with_perl_subpackage	0
 %define	with_bzip2		@WITH_BZIP2@ %{nil}
 %define	with_apidocs		@WITH_APIDOCS@ %{nil}
@@ -19,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.6
+Release: 0.7
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -28,7 +29,6 @@ Conflicts: patch < 2.5
 Prereq: gawk fileutils textutils mktemp shadow-utils
 %endif
 Requires: popt = 1.6.4
-ExcludeArch: alpha
 
 %if !%{with_internal_db}
 BuildRequires: db3-devel
@@ -46,7 +46,7 @@ BuildRequires: zlib-devel
 BuildRequires: bzip2 >= 0.9.0c-2
 %endif
 %if %{with_python_subpackage}
-BuildRequires: python-devel >= 2.2
+BuildRequires: python-devel >= %{with_python_version}
 %endif
 %if %{with_perl_subpackage}
 BuildRequires: perl >= 0:5.00503
@@ -91,7 +91,7 @@ build packages using RPM.
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{rpm_version}
-Requires: python >= 2.2
+Requires: python >= %{with_python_version}
 Requires: popt = 1.6.4
 
 %description python
@@ -449,8 +449,8 @@ fi
 %if %{with_python_subpackage}
 %files python
 %defattr(-,root,root)
-%{__prefix}/lib/python2.2/site-packages/rpmmodule.so
-%{__prefix}/lib/python2.2/site-packages/poptmodule.so
+%{__prefix}/lib/python%{with_python_version}/site-packages/rpmmodule.so
+%{__prefix}/lib/python%{with_python_version}/site-packages/poptmodule.so
 %endif
 
 %if %{with_perl_subpackage}
@@ -514,6 +514,7 @@ fi
 %changelog
 * Mon Jan  7 2002 Jeff Johnson <jbj@redhat.com>
 - Depends should use CDB if configured.
+- autodetect python 1.5/2.2.
 
 * Sun Jan  6 2002 Jeff Johnson <jbj@redhat.com>
 - handle lazy db open's in chroot with absolute path, not prefix strip.
