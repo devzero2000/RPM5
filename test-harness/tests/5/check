@@ -1,0 +1,7 @@
+INSTALLED works-1-1
+NOTINSTALLED works-1-2
+NOTINSTALLED broken-1-1
+FILE /tmp/install_pre_sema_not_exist
+FILE /tmp/install_post_sema_not_exist
+FILE /tmp/rollback_pre_sema_exist
+FILE /tmp/rollback_post_sema_exist

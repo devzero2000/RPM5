@@ -1,0 +1,54 @@
+# vi: ts=4 sw=4
+
+TYPES: ARB = AUTOROLLBACK 
+       RB  = ROLLBACK
+
+TEST #	TYPE	COMMENTS
+==============================================================================
+1		ARB		Install a working one followed by a fail in %pre.  
+				Should rollback both working and broken packages.
+				thereafter (i.e. a rollback should occur).
+2		ARB		Install one that fails in %pre first.  It should be a wash.
+3				Install a working one, followed by one that fails in %post.
+				Both should be rolled back.
+4		ARB		Setup installs works-1-1, then the test attempts to upgrade 
+				to works-1-2 and install broken-1-1 which is broken in %pre.
+				The end result is a backout to works-1-1.
+5		ARB		This is test 4, but the scriplets check to see if the backout
+				semaphore exists or not and prints messages concerning its 
+				existance.  Also they touch a file if they saw the semaphore.
+6		ARB		Test 4 with relocations.
+7		ARB		Test an upgrade that does not need to rollback
+8		ARB		Same as test 4, but breaks in %post.
+9		ARB		Install works-1-1 and broken-1-1.  Now erase works-1-1 and
+				broken-1-1.  broken-1-1 will fail in %preun.
+10		ARB		Install works-1-1 and broken-1-1.  Now erase works-1-1 and
+				broken-1-1.  broken-1-1 will fail in %postun.
+11      ARB		Install works-1-1 and broken-1-1.  Now upgrade to works-1-2
+				and broken-1-2.  broken-1-1 will fail in %preun.
+12      ARB		Install works-1-1 and broken-1-1.  Now upgrade to works-1-2
+				and broken-1-2.  broken-1-1 will fail in %postun.
+13		ARB		Install t1-1-1 and t2-1-1.   t1 depends on t2.  t1 also has
+				a trigger on t2.  Then upgrade t1.  Nothing is broken
+				only cheking trigger instance counts.
+14 		ARB		Install t1-1-1 and t2-1-1.   t1 depends on t2.  t1 also has
+				a trigger on t2.  Then upgrade to t1-1-2 and t2-1-2.  Nothing is
+				broken only cheking trigger instance counts.  This by the way
+				tests a sucessfull upgrade with multiple te's.
+15		ARB		Install t1-1-1 which installs a config file that it modifies in
+				 %post.  Install t1-1-2 and broken-1-1.  broken-1-1 fails in 
+				%post.  Tests whether autorollback's are tolerant of 
+				repackaged packages with modified config files.
+16		ARB		Same as 15 except that it is a modified non-config file.
+17		ARB		Install works-1-1.  Then upgrade to works-1-2 and install 
+				broken-1-1 Finally upgrade to works-2-0 and broken-1-2.  
+				Broken 1-2 will fail in %pre.  Autorollback should rollback 
+				works-2-0 and then broken-1-2.  It should use the arbgoal to 
+				rollback the second transaction leaving only works-1-1 on the 
+				system.
+18		RB		install test-1-1, and then upgrade to test-1-2.  Finally roll
+				this back.  We should be left with test-1-1, and the order
+				of execution of the rollback transaction should be install
+				test-1-1 and then erase test-1-2
+19		RB		Same as 18 except we add package test2 and test3 which both
+				get installed and upgraded as before.

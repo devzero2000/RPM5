@@ -1,0 +1,38 @@
+TESTS="$@"
+LOG=testlog
+
+. conf.sh
+
+#
+# Build test caches (this way we don't have to build all the rpms for the
+# test every time...much faster hopefully).
+echo "Setting up for test run..."
+for TEST in $TESTS
+do
+	echo "	Setting up test ${TEST}..."
+	./test $TEST --buildCache > $LOG 2>&1
+	if [ $? != 0 ] 
+	then
+		echo "ERROR:  Could not build test #${TEST} cache!!!"
+		echo "ERROR:  ERROR LOG:  ${LOG}"
+		exit 1
+	fi
+done	
+
+echo "Running tests..."
+i=0
+while :
+do
+	i=$(($i + 1))
+	for TEST in $TESTS
+	do
+		./test --useCache $TEST > $LOG 2>&1
+		if [ $? != 0 ] 
+		then
+			echo "ERROR:  Test #${TEST} failed ${i}th iteration!!!"
+			echo "ERROR:  Test Log:  ${LOG}"
+			exit 1
+		fi
+		echo "Pass $i Test #${TEST}..."
+	done	
+done

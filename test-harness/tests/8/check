@@ -1,0 +1,21 @@
+INSTALLED works-1-1
+INSTALLED broken-1-1
+FILE /tmp/works_ran_pre_in_rollback
+FILE /tmp/works_ran_post_in_rollback
+FILE /tmp/broken_ran_pre_in_rollback
+FILE /tmp/broken_ran_post_in_rollback
+
+#
+# Instance counts
+FILE /tmp/works-1-1_pre_icount          1
+FILE /tmp/works-1-1_post_icount         1
+FILE /tmp/broken-1-1_pre_icount         1
+FILE /tmp/broken-1-1_post_icount        1
+FILE /tmp/broken-1-1_preun_icount       0
+
+#
+# I would like to check these, but I can't because
+# erasures are not ordered, and cannot guarantee that 
+# works will be removed before broken:
+# FILE /tmp/works-1-1_preun_icount        0
+# FILE /tmp/works-1-1_postun_icount       0

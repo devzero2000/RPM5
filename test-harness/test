@@ -1,0 +1,865 @@
+#!/bin/bash
+#
+# Set defaults that can be overridden by the CLI
+BUILD_CACHE=1
+BUILD_CACHE_ONLY=0
+
+#
+# Parse command line
+PO_ARGS=0
+while [ $# -ne 0 ]
+do
+	case $1 in
+	--*)
+		VAL=$(echo $1 | cut -d= -f2)
+		case $1 in
+		--buildCache)
+			BUILD_CACHE_ONLY=1
+			;;
+		--useCache)
+			BUILD_CACHE=0
+			;;
+		--verbose)
+			VERBOSE=v
+			;;
+		*)
+			echo "ERROR: Unknown option $1...exiting" 1>&2
+			exit 1
+			;;
+		esac
+		;;
+	#
+	# Positional args
+	*)
+		case $PO_ARGS in
+		0)
+			TEST=$1
+			;;	
+#XXX: BROKEN
+		1)
+			VERBOSE=$2
+			;;	
+		*)
+			echo "ERROR: Too many positional args!" 1>&2
+			;;
+		esac
+		PO_ARGS=$(($PO_ARGS + 1))
+		;;
+	esac
+	shift
+done
+
+#
+# Source in test suit configuration
+. conf.sh
+
+#
+# Test config defaults (maybe this should go in conf.sh)
+TEST_TYPE=AUTOROLLBACK
+TEST_SUBTYPE=UPGRADE
+
+#
+# Make the test cache dir specific to the test
+TEST_CACHE_DIR="${TEST_CACHE_DIR}/${TEST}"
+ERASE_LIST_PATH="${TEST_CACHE_DIR}/erase.list"
+TEST_LIST_PATH="${TEST_CACHE_DIR}/test.list"
+SETUP_DIR="setup/${TEST}"
+
+#
+# Make sure the test directory exists
+if [ ! -d "tests/${TEST}" ]
+then
+	echo "ERROR: Test ${TEST} does not exist!"
+	exit 1
+fi
+
+#
+# Source in individual test config if it exists.
+# Otherwise assume defaults (whatever they are (-;)
+if [ -r tests/$TEST/conf.sh ] 
+then
+	. tests/$TEST/conf.sh
+fi
+
+#
+# Make sure we can drop core
+ulimit -c 8192
+
+#
+# The test spec files scriptlets will generate semaphore files
+# to communicate to the harness that a certain event passed.
+# Just in case these did not get cleaned up properly (or we added
+# a new one that was used by another test) we remove these here.
+cleanup_semaphores() {
+	local CHECK=tests/$TEST/check
+	local -a fields
+
+	#
+	# Parse the check file and do checks
+	while read line
+	do
+		fields=($line)
+		case ${fields[0]} in 
+		FILE)
+			if [ -f "${fields[1]}" ]
+			then
+				rm "${fields[1]}"
+			fi
+			;;
+		*)
+			:
+			;;
+		esac
+	done < $CHECK
+
+	return 0
+}
+
+build_rpms() {
+	local tdir=$1
+	local tran=$2
+	local tcacheRPMDir="${TEST_CACHE_DIR}"
+	local rpms
+	local nvr
+	local filename
+	local cacheRPM
+	local eraseTestRPMS
+
+	#
+	# Little setup
+	[ ! -z "${tran}" ] && tcacheRPMDir="${tcacheRPMDir}/${tran}"
+
+	#
+	# Make cache directories as necessary:
+	mkdir -p "${TEST_CACHE_DIR}"
+	mkdir -p "${tcacheRPMDir}"
+
+	#
+	# Go to test directory and build rpms from existing spec files
+	echo "INFO:  Building tests rpms in ${tdir}..."
+	pushd $tdir #2>/dev/null >&2
+	for s in $(ls *.spec 2>/dev/null) --done
+	do
+		[ "${s}" = "--done" ] && break
+		filename="${RPM_DIR}/$(rpm -q --qf "%{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm" --specfile $s)"
+		nvr="$(rpm -q --qf "%{NAME}-%{VERSION}-%{RELEASE}" --specfile $s)"
+		cacheRPM="${tcacheRPMDir}/$(basename ${filename})"
+		
+		#
+		# Add to list of rpms
+		if [ -z "${rpms}" ]
+		then
+			rpms="${cacheRPM}"
+		else 
+			rpms="${rpms} ${cacheRPM}"
+		fi
+
+		#
+		# Append to erase test rpms
+		[ -z "${eraseTestRPMS}" ] && \
+			eraseTestRPMS="${nvr}" || \
+			eraseTestRPMS="${eraseTestRPMS} ${nvr}"
+
+		#
+		# Append to erase list...this is the list of rpms the
+		# test will need to remove before starting.
+		echo "${nvr}" >> "${ERASE_LIST_PATH}"
+
+		#
+		# Build the rpm
+		$RPMBUILD -ba --clean --rcfile "${RPM_RC_FILE}" $s
+		if [ $? != 0 ]
+		then
+			echo "Could not build $filename..."
+			return 1	
+		fi
+
+		#
+		# Copy rpm to test cache rpm dir
+		cp "${filename}" "${tcacheRPMDir}"
+	done
+
+	popd 2>/dev/null >&2
+
+	#
+	# If the a transaction number was provided put the rpm 
+	# list in the variable "RPMS#"
+	if [ ! -z "${tran}" ]
+	then
+		echo "RPMS${tran}='${rpms}'" >> "${TEST_LIST_PATH}"
+
+		#
+		# Setup rpms treated like a transaction (only with a special
+		# name.  For erase setups we need to save the list of rpms
+		# to erase
+		if [ "${TEST_SUBTYPE}" = "ERASE" ]
+		then
+			echo "ERASE_TEST_RPMS='${eraseTestRPMS}'" >> "${TEST_LIST_PATH}"
+		fi
+	else 
+		echo "RPMS='${rpms}'" >> "${TEST_LIST_PATH}"
+
+	fi
+
+	return 0
+}
+
+preEraseTestPkgs() {
+	local nvr
+
+	#
+	# Remove any rpms that were previously installed (just in case)...
+	for nvr in $(cat ${ERASE_LIST_PATH})
+	do
+		$MYQUERY ' ' "${nvr}" > /dev/null
+		if [ $? = 0 ]
+		then
+			echo "INFO: Removing ${nvr} before test..."
+			$RPM -ev${VERBOSE} \
+				--noscripts \
+				--nodeps \
+				--define "${DBPATH_OPT}" \
+				--define "_repackage_dir ${RPDIR}" \
+				--define "${TMPPATH_OPT}" \
+				${nvr}
+			if [ $? != 0 ]
+			then
+				echo "ERROR: Could not clean up previous test package!"
+				echo "ERROR: PKG: ${nvr}"
+				return 1
+			fi
+		fi
+	done
+
+	return 0
+}
+
+#
+# Check to make sure:
+#
+#	- the db has no locks associated with it.
+#	- the packages that should be installed are.
+#	- the packages that should not be installed are not.
+check() {
+	local CHECK=tests/$TEST/check
+	local -a fields
+	local CLEANUP
+	local rc=0
+	local data
+	local f
+	local tval
+
+	#
+	# Make sure there are no active locks on the test rpmdb
+	check_locks || rc=1
+
+	#
+	# Parse the check file and do checks
+	while read line
+	do
+		#
+		# Ignore blank lines
+		[ -z "${line}" ] && continue
+
+		#
+		# Ignore comment lines
+		[[ "${line}" == \#* ]] && continue
+
+		#
+		# Split line into words
+		fields=($line)
+
+		#
+		# Parse each test and execute
+		case ${fields[0]} in 
+		NOTINSTALLED)
+			$MYQUERY '' ${fields[1]} > /dev/null
+			if [ $? = 0 ]
+			then
+				echo "FAILED:  ${fields[1]} is installed!"
+				rc=1
+			fi
+			;;
+		INSTALLED)
+			$MYQUERY '' ${fields[1]} > /dev/null
+			if [ $? != 0 ]
+			then
+				echo "FAILED:  ${fields[1]} is not installed!"
+				rc=1
+			else
+				CLEANUP="${CLEANUP} ${fields[1]}"
+			fi
+			;;
+		FILE)
+			f="${fields[1]}"
+			tval="${fields[2]}"
+			if [ ! -f "${f}" ]
+			then
+				echo "FAILED:  file ${f} does not exist!"
+				rc=1
+			else
+				data=$(cat "${f}")
+				if [ "${tval}" != "${data}" ]
+				then
+					echo "FAILED: ${f} does not have proper value!"
+					echo "FAILED: EXPECTED: ${tval}"
+					echo "FAILED: RECEIVED: ${data}"	
+					rc=1
+				fi
+				rm "${f}" || echo "WARNING: Could not remove ${f}"
+			fi
+			;;
+		*)
+			echo "Invalid option!"
+			echo "Option:  ${fields[0]}"
+			return 1
+			;;
+		esac
+	done < $CHECK
+
+	#
+	# Remove any packages in prepration for the next test.
+	if [ ! -z "${CLEANUP}" ]
+	then
+		#
+		# Make sure to check for locks on db, though, before
+		# doing this.  We probably already caught them 
+		# above, but this is just a double safety.
+		echo "Cleaning rpmdb for next test..."
+		if check_locks 
+		then
+			$RPM -e \
+				--noscripts \
+				--nodeps \
+				--define "${DBPATH_OPT}" \
+				--define "${TMPPATH_OPT}" \
+				--define "_repackage_dir ${RPDIR}" \
+				${CLEANUP}
+		else
+			rc=1
+		fi
+	fi
+
+	return $rc
+}
+
+run_rb_test() {
+	local rc=0
+
+	case $TEST_SUBTYPE in
+	INSTALL|UPGRADE) 
+		run_rb_upgrade_install_test
+		rc=$?
+		;;
+	UPGRADE_MULTITRAN)
+		run_rb_multitran_test
+		rc=$?
+		;;
+	ERASE)
+		echo "Invalid Test sub type for test type ROLLBACK!"
+		echo "SUBTYPE: ERASE"
+		return 1;
+		;;
+	*)
+		echo "ERROR:  UNKNOWN TEST SUBTYPE!"
+		echo "ERROR:  SUBTYPE:  ${TEST_SUBTYPE}"
+		return 1
+		;;
+	esac
+}
+
+run_rb_upgrade_install_test() {
+	local rbgoal
+
+	#
+	# Get the time so we can set the time to rollback to.  This is used
+	# by regular rollback tests.
+	rb_goal=$(date "+%m/%d/%Y %H:%M:%S")
+	sleep 2
+
+	#
+	# Now install the set of RPMS.  We assume that this transaction
+	# should succeed.
+	echo "**** RUNNING CMD ****"
+	echo $RPM -Uv${VERBOSE}h \
+		--define \'${DBPATH_OPT}\' \
+		--define \'_repackage_dir ${RPDIR}\' \
+		--define \'${TMPPATH_OPT}\' \
+		$RPMS
+	echo "*********************"
+	$RPM -Uv${VERBOSE}h \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "${TMPPATH_OPT}" \
+		$RPMS
+	sleep 1			# Make sure we have seperate TID's
+
+	#
+	# Now rollback the transaction
+	echo "**** RUNNING CMD ****"
+	echo $RPM -Uv${VERBOSE}h \
+		--define \'${DBPATH_OPT}\' \
+		--define \'_repackage_dir ${RPDIR}\' \
+		--define \'${TMPPATH_OPT}\' \
+		--rollback \'${rb_goal}\'
+	echo "*********************"
+	$RPM -Uv${VERBOSE}h \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "${TMPPATH_OPT}" \
+		--rollback "${rb_goal}"
+	
+	return $?
+}
+
+run_rb_multitran_test() {
+	local rb_goal
+	local rc=0
+	local tran
+
+	#
+	# Get the time so we can set the time to rollback to.  This is used
+	# by regular rollback tests.
+	rb_goal=$(date "+%m/%d/%Y %H:%M:%S")
+	sleep 2
+
+	for tran in $(seq 0 9)
+	do
+		#
+		# Get list of rpms for this transaction.
+		eval "RPMS=\${RPMS${tran}}"
+		
+		#
+		# If the list is empty we are done.
+		[ -z "${RPMS}" ] && break
+
+		#
+		# Install/Upgrade this transaction
+		echo "**** RUNNING CMD ****"
+		echo $RPM -Uv${VERBOSE}h \
+			--define \'${DBPATH_OPT}\' \
+			--define \'_repackage_dir ${RPDIR}\' \
+			--define \'${TMPPATH_OPT}\' \
+			$RPMS
+		echo "*********************"
+		$RPM -Uv${VERBOSE}h \
+			--define "${DBPATH_OPT}" \
+			--define "_repackage_dir ${RPDIR}" \
+			--define "${TMPPATH_OPT}" \
+			$RPMS
+		rc=$?
+
+		#
+		# Sleep again to keep transactions distinct
+		sleep 2
+	done
+
+	#
+	# Now rollback the transaction
+	echo "**** RUNNING CMD ****"
+	echo $RPM -Uv${VERBOSE}h \
+		--define \'${DBPATH_OPT}\' \
+		--define \'_repackage_dir ${RPDIR}\' \
+		--define \'${TMPPATH_OPT}\' \
+		--rollback \'${rb_goal}\'
+	echo "*********************"
+	$RPM -Uv${VERBOSE}h \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "${TMPPATH_OPT}" \
+		--rollback "${rb_goal}"
+	rc=$?
+
+	return $rc
+}
+
+
+run_arb_test() {
+	local rc=0
+	
+	case $TEST_SUBTYPE in
+	INSTALL|UPGRADE) 
+		run_arb_upgrade_install_test
+		rc=$?
+		;;
+	UPGRADE_MULTITRAN)
+		run_arb_multitran_test
+		rc=$?
+		;;
+	ERASE)
+		run_arb_erase_test
+		rc=$?
+		;;
+	*)
+		echo "ERROR:  UNKNOWN TEST SUBTYPE!"
+		echo "ERROR:  SUBTYPE:  ${TEST_SUBTYPE}"
+		return 1
+		;;
+	esac
+
+	return 0
+}
+
+run_arb_upgrade_install_test() {
+	echo "**** RUNNING CMD ****"
+	echo $RPM -Uv${VERBOSE}h \
+		--define \'${DBPATH_OPT}\' \
+		--define \'_repackage_dir ${RPDIR}\' \
+		--define \'_rollback_transaction_on_failure 1\' \
+		--define \'${TMPPATH_OPT}\' \
+		$RPMS
+	echo "*********************"
+	$RPM -Uv${VERBOSE}h \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "_rollback_transaction_on_failure 1" \
+		--define "${TMPPATH_OPT}" \
+		$RPMS
+	return $?
+}
+
+run_arb_multitran_test() {
+	local arbgoal
+	local rc=0
+	local tran
+
+	#
+	# Sleep a couple of seconds to allow for the clock to give us
+	# a new TID
+	sleep 2
+
+	#
+	# Record date
+	arbgoal=$(date '+%m/%d/%Y %H:%M:%S')
+
+	for tran in $(seq 0 9)
+	do
+		#
+		# Get list of rpms for this transaction.
+		eval "RPMS=\${RPMS${tran}}"
+		
+		#
+		# If the list is empty we are done.
+		[ -z "${RPMS}" ] && break
+
+		#
+		# Install/Upgrade this transaction
+		echo "**** RUNNING CMD ****"
+		echo $RPM -Uv${VERBOSE}h \
+			--arbgoal \'${arbgoal}\' \
+			--define \'${DBPATH_OPT}\' \
+			--define \'_repackage_dir ${RPDIR}\' \
+			--define \'_rollback_transaction_on_failure 1\' \
+			--define \'${TMPPATH_OPT}\' \
+			$RPMS
+		echo "*********************"
+		$RPM -Uv${VERBOSE}h \
+			--arbgoal "${arbgoal}" \
+			--define "${DBPATH_OPT}" \
+			--define "_repackage_dir ${RPDIR}" \
+			--define "_rollback_transaction_on_failure 1" \
+			--define "${TMPPATH_OPT}" \
+			$RPMS
+		rc=$?
+
+		#
+		# Sleep again to keep transactions distinct
+		sleep 2
+	done
+	return $rc
+}
+
+run_arb_erase_test() {
+	echo "**** RUNNING CMD ****"
+	echo $RPM -ev${VERBOSE} \
+		--define \'${DBPATH_OPT}\' \
+		--define \'_repackage_dir ${RPDIR}\' \
+		--define \'_rollback_transaction_on_failure 1\' \
+		--define \'${TMPPATH_OPT}\' \
+		${ERASE_TEST_RPMS}
+	echo "*********************"
+	$RPM -ev${VERBOSE} \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "_rollback_transaction_on_failure 1" \
+		--define "${TMPPATH_OPT}" \
+		${ERASE_TEST_RPMS}
+	return $?
+}
+
+run_standard_test() {
+	local rc=0
+	
+	case $TEST_SUBTYPE in
+	INSTALL|UPGRADE) 
+		run_standard_upgrade_install_test
+		rc=$?
+		;;
+	UPGRADE_MULTITRAN)
+		run_standard_multitran_test
+		rc=$?
+		;;
+	ERASE)
+		run_standard_erase_test
+		rc=$?
+		;;
+	*)
+		echo "ERROR:  UNKNOWN TEST SUBTYPE!"
+		echo "ERROR:  SUBTYPE:  ${TEST_SUBTYPE}"
+		return 1
+		;;
+	esac
+
+	return 0
+}
+
+run_standard_upgrade_install_test() {
+	echo "**** RUNNING CMD ****"
+	echo $RPM -Uv${VERBOSE}h \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "${TMPPATH_OPT}" \
+		$RPMS
+	echo "*********************"
+	$RPM -Uv${VERBOSE}h \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "${TMPPATH_OPT}" \
+		$RPMS
+	return $?
+}
+
+run_standard_multitran_test() {
+	local arbgoal
+	local rc=0
+	local tran
+
+	for tran in $(seq 0 9)
+	do
+		#
+		# Get list of rpms for this transaction.
+		eval "RPMS=\${RPMS${tran}}"
+		
+		#
+		# If the list is empty we are done.
+		[ -z "${RPMS}" ] && break
+
+		#
+		# Install/Upgrade this transaction
+		echo "**** RUNNING CMD ****"
+		echo $RPM -Uv${VERBOSE}h \
+			--define \'${DBPATH_OPT}\' \
+			--define \'_repackage_dir ${RPDIR}\' \
+			--define \'${TMPPATH_OPT}\' \
+			$RPMS
+		echo "*********************"
+		$RPM -Uv${VERBOSE}h \
+			--define "${DBPATH_OPT}" \
+			--define "_repackage_dir ${RPDIR}" \
+			--define "${TMPPATH_OPT}" \
+			$RPMS
+		rc=$?
+	done
+	return $rc
+}
+
+run_standard_erase_test() {
+	echo "**** RUNNING CMD ****"
+	echo $RPM -ev${VERBOSE} \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "${TMPPATH_OPT}" \
+		${ERASE_TEST_RPMS}
+	echo "*********************"
+	$RPM -ev${VERBOSE} \
+		--define "${DBPATH_OPT}" \
+		--define "_repackage_dir ${RPDIR}" \
+		--define "${TMPPATH_OPT}" \
+		${ERASE_TEST_RPMS}
+	return $?
+}
+
+run_test() {
+	local rc=0
+
+	case $TEST_TYPE in
+	STANDARD)
+		run_standard_test
+		rc=$?
+		;;
+	AUTOROLLBACK)
+		run_arb_test
+		rc=$?
+		;;
+	ROLLBACK)
+		run_rb_test
+		rc=$?
+		;;
+	*)
+		echo "ERROR: UNKNOWN TEST TYPE!"
+		return 1
+		;;
+	esac
+
+	#
+	# Check the test
+	check $rc
+	if [ $? != 0 ] 
+	then
+		echo "*** TEST FAILED ***"
+		return 1
+	fi
+	echo "*** TEST PASSED ***" 
+	return 0	
+}
+
+setup_test() {
+	local trandir
+
+	#
+	# Make sure there are no active locks on the test rpmdb
+	check_locks || return 1
+
+	#
+	# Blowa away any test packages so they do not interfere with
+	# our test.
+	if ! preEraseTestPkgs 
+	then
+		echo "*** TEST SETUP FAILED! ***"
+		return 1
+	fi
+
+	#
+	# Cleanup sempaphores from previous run of this test or others
+	# that share the same names.
+	if ! cleanup_semaphores 
+	then
+		echo "*** TEST SETUP FAILED! ***"
+		return 1
+	fi
+
+	#
+	# See if we need to install any rpms for upgrade testing...
+	if [ -d "${SETUP_DIR}" ]
+	then
+		$RPM -Uv${VERBOSE}h \
+			--force \
+			--define "${DBPATH_OPT}" \
+			--define "_repackage_dir ${RPDIR}" \
+			--define "${TMPPATH_OPT}" \
+			$RPMS_SETUP
+		if [ $? != 0 ]
+		then
+			echo "ERROR: Could not install setup rpms!"
+			echo "ERROR: RPM LIST: ${RPMS}"
+			echo "*** TEST SETUP FAILED ***"
+			return 1
+		fi
+	fi
+
+
+	#
+	# Make sure there are no active locks on the test rpmdb
+	# after setup
+	check_locks || return 1
+
+	#
+	# Clean out the repackage dir.  We do this because there
+	# was a segfault when no packages of the same name existed
+	# in the repackage directory.  Also, some tests will fail if
+	# there was something in the repackage directory, as they were
+	# trying to test an install not an upgrade.
+	echo "INFO:  Cleaning repackage dir:  ${RPDIR}"
+	rm "${RPDIR}/"*.rpm 2> /dev/null
+
+	return 0
+}
+
+build_cache() {
+
+	#
+	# Cleanup old cache
+	rm -rf "${TEST_CACHE_DIR}"
+
+	#
+	# See if there are any setup rpms to build
+	if [ -d "${SETUP_DIR}" ]
+	then
+		build_rpms "${SETUP_DIR}" "_SETUP"
+		if [ $? != 0 ]
+		then
+			echo "*** TEST CACHE BUILD FAILED ***"
+			return 1
+		fi
+	fi
+
+	#
+	# Build rpms for the test
+	if [ "${TEST_SUBTYPE}" != "ERASE" ]
+	then
+		#
+		# Build any extra transactions rpms.
+		# This is for multi transaction tests
+		for trandir in $(ls -d tests/$TEST/[0-9] 2>/dev/null) --done
+		do
+			[ "${trandir}" = "--done" ] && break
+			build_rpms "${trandir}" $(basename $trandir)
+			if [ $? != 0 ]
+			then
+				echo "*** TEST CACHE BUILD FAILED ***"
+				return 1
+			fi
+		done
+
+		#
+		# Build default transactions rpms
+		build_rpms tests/$TEST
+		if [ $? != 0 ]
+		then
+			echo "*** TEST CACHE BUILD FAILED ***"
+			return 1
+		fi
+	fi
+
+	return 0
+}
+
+#
+# Build cache
+if [ "${BUILD_CACHE}" = "1" ]
+then
+	build_cache || exit 1
+fi
+
+#
+# If we were only supposed to build the cache lets stop here
+[ "${BUILD_CACHE_ONLY}" = "1" ] && exit 0
+
+#
+# Load the list of rpms for the transactions ran in the test
+if [ ! -f "${TEST_LIST_PATH}" ]
+then
+	echo "ERROR: NO CACHE EXISTS FOR THIS TEST!"
+	echo "ERROR: Try running without --useCache!"
+	exit 1
+fi
+. "${TEST_LIST_PATH}" 
+
+#
+# Setup for test
+setup_test || exit 1
+
+
+#
+# Run the test
+run_test || exit 1 
+
+#
+# OK, lets clean up the temp directory.  Basically, any scriptlets that
+# fail will leave temp files out int he temp directory.  If you run
+# these tests over and over you will get a temp dir with so many
+# temp files that certain activities on your system will slow to a 
+# crawl.
+rm -f "${TMPDIR}"/rpm-tmp.*
+
+exit 0

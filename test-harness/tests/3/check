@@ -1,0 +1,12 @@
+NOTINSTALLED works-1-1
+NOTINSTALLED broken-1-1
+FILE /tmp/ran_in_autorollback
+FILE /tmp/works-1-1_pre_icount          1
+FILE /tmp/works-1-1_post_icount         1
+FILE /tmp/works-1-1_preun_icount        0
+FILE /tmp/works-1-1_postun_icount       0
+FILE /tmp/broken-1-1_pre_icount         1
+FILE /tmp/broken-1-1_post_icount        1
+FILE /tmp/broken-1-1_preun_icount       0
+FILE /tmp/broken-1-1_postun_icount      0
+
