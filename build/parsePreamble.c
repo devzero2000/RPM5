@@ -407,11 +407,11 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	}
 	spec->docDir = strdup(field);
 	break;
-      case RPMTAG_SERIAL:
+      case RPMTAG_EPOCH:
 	SINGLE_TOKEN_ONLY;
 	if (parseNum(field, &num)) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Serial field must be a number: %s"),
+		     _("line %d: Epoch/Serial field must be a number: %s"),
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
@@ -508,7 +508,8 @@ static struct PreambleRec {
     {RPMTAG_NAME,		0, 0, "name"},
     {RPMTAG_VERSION,		0, 0, "version"},
     {RPMTAG_RELEASE,		0, 0, "release"},
-    {RPMTAG_SERIAL,		0, 0, "serial"},
+    {RPMTAG_EPOCH,		0, 0, "epoch"},
+    {RPMTAG_EPOCH,		0, 0, "serial"},
 /*    {RPMTAG_DESCRIPTION,	0, 0, "description"}, */
     {RPMTAG_SUMMARY,		0, 1, "summary"},
     {RPMTAG_LICENSE,		0, 0, "copyright"},
