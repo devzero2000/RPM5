@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.2
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -81,7 +81,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.6
+Version: 1.6.1
 
 %description -n popt
 Popt is a C library for parsing command line parameters.  Popt was
@@ -272,6 +272,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Sep 27 2000 Jeff Johnson <jbj@redhat.com>
+- bump popt version to 1.6.1.
+
 * Tue Sep 26 2000 Jeff Johnson <jbj@redhat.com>
 - fix: avoid calling getpass twice as side effect of xstrdup macro (#17672).
 - order packages using tsort, clipping PreReq:'s in dependency loops.

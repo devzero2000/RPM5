@@ -3,6 +3,7 @@
 		(katzj@linuxpower.org) (#17672).
 	- order packages using tsort, clipping PreReq:'s in dependency loops.
 	- handle possible db3 dependency on -lpthread more gracefully.
+	- bump popt version to 1.6.1.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
