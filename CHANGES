@@ -1,4 +1,5 @@
 2.5.3 -> 2.5.4:
+	- diagnostic message if unreadable/short source or patch file.
 	- eliminate redundant close in provide/require processing.
 	- solaris portability patch resurrection (Steve Sanberg).
 	- permit autogen.sh to work on non "prefix=/usr" hosts.
