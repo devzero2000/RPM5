@@ -3,10 +3,14 @@
 
 /* This is the *only* module users of rpmlib should need to include */
 
+#ifdef HAVE_DB1_DB_H
+#include <db1/db.h>
+#else
 #ifdef HAVE_DB_185_H
 #include <db_185.h>
 #else
 #include <db.h>
+#endif
 #endif
 
 /* it shouldn't need these :-( */

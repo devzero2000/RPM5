@@ -7,10 +7,14 @@ extern "C" {
 
 /* this will break if sizeof(int) != 4 */
 
+#ifdef HAVE_DB1_DB_H
+#include <db1/db.h>
+#else
 #ifdef HAVE_DB_185_H
 #include <db_185.h>
 #else
 #include <db.h>
+#endif
 #endif
 
 typedef struct {

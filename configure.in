@@ -323,8 +323,9 @@ AC_CHECK_FUNC(socket, [], [
 ])
 
 AC_CHECK_FUNC(dbopen, [],
-  AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
-(from the db package)]))
+  AC_CHECK_LIB(db1, dbopen, [],
+    AC_CHECK_LIB(db, dbopen, [],
+	AC_MSG_WARN([sorry this package needs libdb.a (from the db package)])))
            )
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
@@ -370,7 +371,7 @@ case $target in
 	;;
 esac
 
-AC_CHECK_HEADERS(db_185.h)
+AC_CHECK_HEADERS(db1/db.h db_185.h)
 
 if test "$PO" = po; then
     AC_CHECK_HEADERS(libintl.h)
