@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-09 18:15-0400\n"
+"POT-Creation-Date: 2001-05-10 23:19-0400\n"
 "PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1933,7 +1933,7 @@ msgstr "Генерируется подпись: %d\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:517 lib/psm.c:1460
+#: build/pack.c:517 lib/psm.c:1461
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -1963,7 +1963,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:599 lib/psm.c:1719
+#: build/pack.c:599 lib/psm.c:1720
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -2922,64 +2922,64 @@ msgstr "пакет %s pre-transaction syscall(s): %s: ошибка: %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
 
-#: lib/psm.c:559
+#: lib/psm.c:560
 #, fuzzy, c-format
 msgid "cannot create %s %s\n"
 msgstr "невозможно создать %s: %s\n"
 
-#: lib/psm.c:565
+#: lib/psm.c:566
 #, c-format
 msgid "cannot write to %s\n"
 msgstr "невозможно писать в %s\n"
 
-#: lib/psm.c:602
+#: lib/psm.c:603
 msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 
-#: lib/psm.c:710
+#: lib/psm.c:711
 msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
-#: lib/psm.c:960
+#: lib/psm.c:961
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
-#: lib/psm.c:967
+#: lib/psm.c:968
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
-#: lib/psm.c:1275
+#: lib/psm.c:1276
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/psm.c:1389
+#: lib/psm.c:1390
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1497
+#: lib/psm.c:1498
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "пользователь %s не существует - используется root\n"
 
-#: lib/psm.c:1506
+#: lib/psm.c:1507
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "группа %s не существует - используется root\n"
 
-#: lib/psm.c:1545
+#: lib/psm.c:1546
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:1546
+#: lib/psm.c:1547
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:1811
+#: lib/psm.c:1812
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "выполняется сценарий postinstall (если есть)\n"
@@ -3027,80 +3027,80 @@ msgstr "пакет не содержит списков ни хозяев файлов, ни их ID\n"
 msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
-#: lib/query.c:513 lib/query.c:545 lib/rpminstall.c:321 lib/rpminstall.c:452
+#: lib/query.c:515 lib/query.c:547 lib/rpminstall.c:321 lib/rpminstall.c:452
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/query.c:524
+#: lib/query.c:526
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:530
+#: lib/query.c:532
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
-#: lib/query.c:555 lib/rpminstall.c:462
+#: lib/query.c:557 lib/rpminstall.c:462
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: ошибка чтения списка файлов: %s\n"
 
-#: lib/query.c:598
+#: lib/query.c:600
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос файла спецификации %s не удался, невозможно разобрать файл\n"
 
-#: lib/query.c:620
+#: lib/query.c:622
 msgid "no packages\n"
 msgstr "нет пакетов\n"
 
-#: lib/query.c:631
+#: lib/query.c:633
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:641
+#: lib/query.c:643
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:651
+#: lib/query.c:653
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:662
+#: lib/query.c:664
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:696
+#: lib/query.c:698
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:700
+#: lib/query.c:702
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:726
+#: lib/query.c:728
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:729
+#: lib/query.c:731
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер записи пакета: %u\n"
 
-#: lib/query.c:734
+#: lib/query.c:736
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:745 lib/rpminstall.c:599
+#: lib/query.c:747 lib/rpminstall.c:599
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -3613,11 +3613,11 @@ msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных\n"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:930
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:930
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
 msgid "shared"
 msgstr "разделяемый"
 
@@ -3631,27 +3631,27 @@ msgstr "закрыто окружение базы данных %s/%s\n"
 msgid "removed db environment %s/%s\n"
 msgstr "удалено окружение базы данных %s/%s\n"
 
-#: rpmdb/db2.c:198 rpmdb/db3.c:189
+#: rpmdb/db2.c:198 rpmdb/db3.c:190
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr "открывается окружение базы данных %s/%s %s\n"
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:617
+#: rpmdb/db2.c:588 rpmdb/db3.c:621
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "закрыт индекс базы данных %s/%s\n"
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:781
+#: rpmdb/db2.c:679 rpmdb/db3.c:793
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:928
+#: rpmdb/db2.c:785 rpmdb/db3.c:963
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:935
+#: rpmdb/db2.c:792 rpmdb/db3.c:970
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"
@@ -3696,36 +3696,36 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: имя ключа \"%s\" не известно, игнорируется\n"
 
-#: rpmdb/rpmdb.c:284
+#: rpmdb/rpmdb.c:317
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "невозможно открыть индекс %s используя db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:304
+#: rpmdb/rpmdb.c:337
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "невозможно открыть индекс %s\n"
 
-#: rpmdb/rpmdb.c:390
+#: rpmdb/rpmdb.c:423
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "ошибка(%d) получения записей \"%s\" из индекса %s\n"
 
-#: rpmdb/rpmdb.c:515
+#: rpmdb/rpmdb.c:548
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "ошибка(%d) записи записи %s в %s\n"
 
-#: rpmdb/rpmdb.c:525
+#: rpmdb/rpmdb.c:558
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "ошибка(%d) удаления записи %s из %s\n"
 
-#: rpmdb/rpmdb.c:760
+#: rpmdb/rpmdb.c:793
 msgid "no dbpath has been set\n"
 msgstr "параметер dbpath не установлен\n"
 
-#: rpmdb/rpmdb.c:865
+#: rpmdb/rpmdb.c:898
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3733,111 +3733,112 @@ msgstr ""
 "найдена база данных старого формата; используйте --rebuilddb для генерации "
 "базы данных нового формата\n"
 
+#. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1056
+#: rpmdb/rpmdb.c:1091
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "ошибка(%d) при подсчёте пакетов\n"
 
-#: rpmdb/rpmdb.c:1112 rpmdb/rpmdb.c:1674
+#: rpmdb/rpmdb.c:1149 rpmdb/rpmdb.c:1738
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x\n"
 
-#: rpmdb/rpmdb.c:1377 rpmdb/rpmdb.c:2518
+#: rpmdb/rpmdb.c:1432 rpmdb/rpmdb.c:2586
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "запись номер %d в базе данных неверна, пропускается.\n"
 
-#: rpmdb/rpmdb.c:1741
+#: rpmdb/rpmdb.c:1805
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:1750
+#: rpmdb/rpmdb.c:1814
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:1940
+#: rpmdb/rpmdb.c:2004
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета\n"
 
-#: rpmdb/rpmdb.c:2018
+#: rpmdb/rpmdb.c:2082
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: rpmdb/rpmdb.c:2029
+#: rpmdb/rpmdb.c:2093
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: rpmdb/rpmdb.c:2411
+#: rpmdb/rpmdb.c:2475
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "удаляется %s после успешного завершения переиндекации базы в db3.\n"
 
-#: rpmdb/rpmdb.c:2439
+#: rpmdb/rpmdb.c:2505
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
-#: rpmdb/rpmdb.c:2464
+#: rpmdb/rpmdb.c:2532
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: rpmdb/rpmdb.c:2468
+#: rpmdb/rpmdb.c:2536
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "временная база данных %s уже существует\n"
 
-#: rpmdb/rpmdb.c:2474
+#: rpmdb/rpmdb.c:2542
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: rpmdb/rpmdb.c:2476
+#: rpmdb/rpmdb.c:2544
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "создаётся каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:2483
+#: rpmdb/rpmdb.c:2551
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2494
+#: rpmdb/rpmdb.c:2562
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2557
+#: rpmdb/rpmdb.c:2625
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "невозможно добавить запись (первоначально в %d)\n"
 
-#: rpmdb/rpmdb.c:2575
+#: rpmdb/rpmdb.c:2643
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: rpmdb/rpmdb.c:2583
+#: rpmdb/rpmdb.c:2651
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: rpmdb/rpmdb.c:2585
+#: rpmdb/rpmdb.c:2653
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: rpmdb/rpmdb.c:2595
+#: rpmdb/rpmdb.c:2663
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: rpmdb/rpmdb.c:2597
+#: rpmdb/rpmdb.c:2665
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"

@@ -1,5 +1,5 @@
 /**
- * \file lib/fprint.c
+ * \file rpmdb/fprint.c
  */
 
 #include "system.h"
@@ -31,7 +31,7 @@ void fpCacheFree(fingerPrintCache cache)
  * @param dirName	string to locate in cache
  * @return pointer to directory name entry (or NULL if not found).
  */
-static const struct fprintCacheEntry_s * cacheContainsDirectory(
+static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    fingerPrintCache cache,
 			    const char * dirName)
 {
@@ -100,7 +100,9 @@ static fingerPrint doLookup(fingerPrintCache cache,
     fp.entry = NULL;
     fp.subDir = NULL;
     fp.baseName = NULL;
+    /*@-nullret@*/
     if (cleanDirName == NULL) return fp;	/* XXX can't happen */
+    /*@=nullret@*/
 
     buf = strcpy(alloca(cdnl + 1), cleanDirName);
     end = buf + cdnl;

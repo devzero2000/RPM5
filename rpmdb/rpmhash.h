@@ -1,8 +1,8 @@
-#ifndef H_HASH
-#define H_HASH
+#ifndef H_RPMHASH
+#define H_RPMHASH
 
 /**
- * \file lib/hash.h
+ * \file rpmdb/rpmhash.h
  * Hash table implemenation.
  */
 

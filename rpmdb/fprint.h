@@ -2,11 +2,11 @@
 #define H_FINGERPRINT
 
 /** \ingroup rpmtrans
- * \file lib/fprint.h
+ * \file rpmdb/fprint.h
  * Identify a file name path by a unique "finger print".
  */
 
-#include "hash.h"
+#include "rpmhash.h"
 #include "header.h"
 
 /**

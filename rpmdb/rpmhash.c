@@ -1,11 +1,11 @@
 /**
- * \file lib/hash.c
+ * \file rpmdb/rpmhash.c
  * Hash table implemenation
  */
 
 #include "system.h"
 #include <rpmlib.h>
-#include "hash.h"
+#include "rpmhash.h"
 #include "debug.h"
 
 typedef /*@owned@*/ const void * voidptr;

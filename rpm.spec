@@ -208,7 +208,7 @@ fi
 %files
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
-%attr(4755, @rpm@, @rpm@)	/bin/rpm
+%attr(0755, @rpm@, @rpm@)	/bin/rpm
 %dir			/etc/rpm
 %config(missingok)	/etc/rpm/macros.db1
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/bin/rpm2cpio
@@ -229,7 +229,7 @@ fi
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/convertrpmrc.sh
 %attr(0644, @rpm@, @rpm@)	%{__prefix}/lib/rpm/macros
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/mkinstalldirs
-%attr(4755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/rpm[deiukqv]
+%attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/rpm[deiukqv]
 %attr(0644, @rpm@, @rpm@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @rpm@, @rpm@)	%{__prefix}/lib/rpm/rpmrc
 
@@ -323,7 +323,7 @@ fi
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/magic.req
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/perl.prov
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/perl.req
-%attr(4755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/rpm[bt]
+%attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/rpm[bt]
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/rpmdiff
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/rpmdiff.cgi
 %attr(0755, @rpm@, @rpm@)	%{__prefix}/lib/rpm/u_pkg.sh
@@ -383,9 +383,13 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Wed May  9 2001 Jeff Johnson <jbj@redhat.com>
-- rpm executables now setuid rpm.rpm to share write locks.
+* Thu May 10 2001 Jeff Johnson <jbj@redhat.com>
+- rpm database has rpm.rpm g+w permissions to share db3 mutexes.
 - expose more db3 macro configuration tokens.
+- move fprint.[ch] and hash.[ch] to rpmdb directory.
+- detect and fiddle incompatible mixtures of db3 env/open flags.
+- add DBI_WRITECURSOR to map to db3 flags with CDB database model.
+- add rpmdbSetIteratorRewrite to warn of pending lazy (re-)writes.
 
 * Mon May  7 2001 Jeff Johnson <jbj@redhat.com>
 - use internal db-3.2.9 sources to build by default.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-09 18:15-0400\n"
+"POT-Creation-Date: 2001-05-10 23:19-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -1848,7 +1848,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:517 lib/psm.c:1460
+#: build/pack.c:517 lib/psm.c:1461
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1878,7 +1878,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:599 lib/psm.c:1719
+#: build/pack.c:599 lib/psm.c:1720
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2819,64 +2819,64 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:559
+#: lib/psm.c:560
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/psm.c:565
+#: lib/psm.c:566
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/psm.c:602
+#: lib/psm.c:603
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:710
+#: lib/psm.c:711
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:960
+#: lib/psm.c:961
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:967
+#: lib/psm.c:968
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1275
+#: lib/psm.c:1276
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1389
+#: lib/psm.c:1390
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1497
+#: lib/psm.c:1498
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1506
+#: lib/psm.c:1507
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1545
+#: lib/psm.c:1546
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1546
+#: lib/psm.c:1547
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1811
+#: lib/psm.c:1812
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
@@ -2924,80 +2924,80 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:513 lib/query.c:545 lib/rpminstall.c:321 lib/rpminstall.c:452
+#: lib/query.c:515 lib/query.c:547 lib/rpminstall.c:321 lib/rpminstall.c:452
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:524
+#: lib/query.c:526
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:530
+#: lib/query.c:532
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:555 lib/rpminstall.c:462
+#: lib/query.c:557 lib/rpminstall.c:462
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
 
-#: lib/query.c:598
+#: lib/query.c:600
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:620
+#: lib/query.c:622
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:631
+#: lib/query.c:633
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:641
+#: lib/query.c:643
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:651
+#: lib/query.c:653
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:662
+#: lib/query.c:664
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:696
+#: lib/query.c:698
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:700
+#: lib/query.c:702
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:726
+#: lib/query.c:728
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:729
+#: lib/query.c:731
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:734
+#: lib/query.c:736
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:745 lib/rpminstall.c:599
+#: lib/query.c:747 lib/rpminstall.c:599
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3501,11 +3501,11 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:930
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:930
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
 msgid "shared"
 msgstr ""
 
@@ -3519,27 +3519,27 @@ msgstr ""
 msgid "removed db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db2.c:198 rpmdb/db3.c:189
+#: rpmdb/db2.c:198 rpmdb/db3.c:190
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:617
+#: rpmdb/db2.c:588 rpmdb/db3.c:621
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:781
+#: rpmdb/db2.c:679 rpmdb/db3.c:793
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:928
+#: rpmdb/db2.c:785 rpmdb/db3.c:963
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:935
+#: rpmdb/db2.c:792 rpmdb/db3.c:970
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""
@@ -3579,145 +3579,146 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:284
+#: rpmdb/rpmdb.c:317
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:304
+#: rpmdb/rpmdb.c:337
 #, c-format
 msgid "cannot open %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:390
+#: rpmdb/rpmdb.c:423
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:515
+#: rpmdb/rpmdb.c:548
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:525
+#: rpmdb/rpmdb.c:558
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:760
+#: rpmdb/rpmdb.c:793
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:865
+#: rpmdb/rpmdb.c:898
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr ""
 
+#. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1056
+#: rpmdb/rpmdb.c:1091
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1112 rpmdb/rpmdb.c:1674
+#: rpmdb/rpmdb.c:1149 rpmdb/rpmdb.c:1738
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1377 rpmdb/rpmdb.c:2518
+#: rpmdb/rpmdb.c:1432 rpmdb/rpmdb.c:2586
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1741
+#: rpmdb/rpmdb.c:1805
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1750
+#: rpmdb/rpmdb.c:1814
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1940
+#: rpmdb/rpmdb.c:2004
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2018
+#: rpmdb/rpmdb.c:2082
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2029
+#: rpmdb/rpmdb.c:2093
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2411
+#: rpmdb/rpmdb.c:2475
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2439
+#: rpmdb/rpmdb.c:2505
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2464
+#: rpmdb/rpmdb.c:2532
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2468
+#: rpmdb/rpmdb.c:2536
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2474
+#: rpmdb/rpmdb.c:2542
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2476
+#: rpmdb/rpmdb.c:2544
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2483
+#: rpmdb/rpmdb.c:2551
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2494
+#: rpmdb/rpmdb.c:2562
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2557
+#: rpmdb/rpmdb.c:2625
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2575
+#: rpmdb/rpmdb.c:2643
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2583
+#: rpmdb/rpmdb.c:2651
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2585
+#: rpmdb/rpmdb.c:2653
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2595
+#: rpmdb/rpmdb.c:2663
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2597
+#: rpmdb/rpmdb.c:2665
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
