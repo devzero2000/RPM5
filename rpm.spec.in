@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.9
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -134,7 +134,7 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 ./configure --prefix=%{__prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
-	$WITH_PYTHON --without-javaglue
+	$WITH_PYTHON --enable-posixmutexes --without-javaglue
 %else
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
@@ -482,7 +482,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.2-0.9
+* Wed Feb 11 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.10
+- re-add --enable-posixmutexes to build.
+
+* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.9
 - python: return None for NEVRAO, [] for everything else.
 
 * Mon Jan 12 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.7
