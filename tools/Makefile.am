@@ -50,7 +50,9 @@ rpmsort_SOURCES =	rpmsort.c
 rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
 
 striptofile_SOURCES =	striptofile.c sections.c utils.c
+striptofile_LDFLAGS =	-lelf
 
 unstripfile_SOURCES =	unstripfile.c sections.c utils.c
+unstripfile_LDFLAGS =	-lelf
 
 $(PROGRAMS): $(LDADD)

@@ -12,7 +12,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
-SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ libelf @WITH_DB_SUBDIR@ popt beecrypt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
+SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ @WITH_DB_SUBDIR@ popt beecrypt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \
@@ -59,13 +59,13 @@ rpmpopt-$(VERSION): rpmpopt
 noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =
-rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
+rpm_LDFLAGS =		$(myLDFLAGS) # @LDFLAGS_STATIC@
 rpm_LDADD =		rpm.o $(myLDADD)
 rpm.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
 
 #rpm_SOURCES =		rpm.c
-#rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
+#rpm_LDFLAGS =		$(myLDFLAGS) # @LDFLAGS_STATIC@
 #rpm_LDADD =		$(myLDADD)
 
 rpmb_SOURCES =		build.c
