@@ -55,7 +55,9 @@
 
 #include "system.h"
 
-#include <regex.h>
+#define	_RPMSX_INTERNAL
+#include "rpmsx.h"
+
 #include <sys/vfs.h>
 #define __USE_XOPEN_EXTENDED 1	/* nftw */
 #include <ftw.h>
@@ -83,40 +85,42 @@ static int rootpathlen = 0;
 /*
  * A file security context specification.
  */
-typedef struct spec {
+#ifdef	DYING
+typedef struct rpmsxp_s {
 /*@only@*/
     char *pattern;	/* regular expession string for diagnostic messages */
 /*@only@*/
-    char *type_str;	/* type string for diagnostic messages */
+    char *type;	/* type string for diagnostic messages */
 /*@only@*/
     char *context;	/* context string */
 /*@only@*/
     regex_t * preg;	/* compiled regular expression */
-    mode_t mode;	/* mode format value */
+    mode_t fmode;	/* mode format value */
     int matches;	/* number of matching pathnames */
     int hasMetaChars; 	/* indicates whether the RE has 
 			   any meta characters.  
 			   0 = no meta chars 
 			   1 = has one or more meta chars */
-    int stem_id;	/* indicates which of the stem-compression
+    int fstem;	/* indicates which of the stem-compression
 			   items it matches */
-} * spec_t;
+} * rpmsxp;
 
-typedef struct stem {
-	char *buf;
+typedef struct rpmsxs_s {
+	char * stem;
 	int len;
-} * stem_t;
+} * rpmsxs;
+#endif
 
-stem_t stem_arr = NULL;
-int num_stems = 0;
-int alloc_stems = 0;
+struct rpmsxs_s * stem_arr = NULL;
+int nsxs = 0;
+int maxsxs = 0;
 
-const char * const regex_chars = ".^$?*+|[({";
 
 /* Return the length of the text that can be considered the stem, returns 0
  * if there is no identifiable stem */
-static int get_stem_from_spec(const char * const buf)
+static int rpmsxsPStem(const char * const buf)
 {
+    static const char * const regex_chars = ".^$?*+|[({";
     const char *tmp = strchr(buf + 1, '/');
     const char *ind;
 
@@ -131,7 +135,7 @@ static int get_stem_from_spec(const char * const buf)
 }
 
 /* return the length of the text that is the stem of a file name */
-static int get_stem_from_file_name(const char * const buf)
+static int rpmsxsFStem(const char * const buf)
 {
     const char *tmp = strchr(buf + 1, '/');
 
@@ -142,52 +146,60 @@ static int get_stem_from_file_name(const char * const buf)
 
 /* find the stem of a file spec, returns the index into stem_arr for a new
  * or existing stem, (or -1 if there is no possible stem - IE for a file in
- * the root directory or a regex that is too complex for us).  Makes buf
+ * the root directory or a regex that is too complex for us).  Makes bpp
  * point to the text AFTER the stem. */
-static int find_stem_from_spec(const char **buf)
+static int rpmsxAdd(const char **bpp)
 {
-    int stem_len = get_stem_from_spec(*buf);
+    int stem_len = rpmsxsPStem(*bpp);
+    rpmsxs sxs;
     int i;
 
     if (!stem_len)
 	return -1;
-    for (i = 0; i < num_stems; i++) {
+    for (i = 0; i < nsxs; i++) {
 	if (stem_len != stem_arr[i].len)
 	    continue;
-	if (strncmp(*buf, stem_arr[i].buf, stem_len))
+	if (strncmp(*bpp, stem_arr[i].stem, stem_len))
 	    continue;
-	*buf += stem_len;
+	*bpp += stem_len;
 	return i;
     }
 
-    if (num_stems == alloc_stems) {
-	alloc_stems = alloc_stems * 2 + 16;
-	stem_arr = xrealloc(stem_arr, sizeof(*stem_arr) * alloc_stems);
+    if (nsxs == maxsxs) {
+	maxsxs = maxsxs * 2 + 16;
+	stem_arr = xrealloc(stem_arr, sizeof(*stem_arr) * maxsxs);
     }
-    stem_arr[num_stems].len = stem_len;
-    stem_arr[num_stems].buf = xmalloc(stem_len + 1);
-    memcpy(stem_arr[num_stems].buf, *buf, stem_len);
-    stem_arr[num_stems].buf[stem_len] = '\0';
-    num_stems++;
-    *buf += stem_len;
-    return num_stems - 1;
+    sxs = stem_arr + nsxs;
+    sxs->len = stem_len;
+#ifdef DYING
+    sxs->stem = xmalloc(stem_len + 1);
+    memcpy(sxs->stem, *bpp, stem_len);
+    sxs->stem[stem_len] = '\0';
+#else
+    sxs->stem = strndup(*bpp, stem_len);
+#endif
+    nsxs++;
+    *bpp += stem_len;
+    return nsxs - 1;
 }
 
 /* find the stem of a file name, returns the index into stem_arr (or -1 if
  * there is no match - IE for a file in the root directory or a regex that is
- * too complex for us).  Makes buf point to the text AFTER the stem. */
-static int find_stem_from_file(const char **buf)
+ * too complex for us).  Makes bpp point to the text AFTER the stem. */
+static int rpmsxFind(const rpmsx sx, const char ** bpp)
 {
-    int stem_len = get_stem_from_file_name(*buf);
+    int stem_len = rpmsxsFStem(*bpp);
+    rpmsxs sxs;
     int i;
 
     if (stem_len)
-    for (i = 0; i < num_stems; i++) {
-	if (stem_len != stem_arr[i].len)
+    for (i = 0; i < nsxs; i++) {
+	sxs = stem_arr + i;
+	if (stem_len != sxs->len)
 	    continue;
-	if (strncmp(*buf, stem_arr[i].buf, stem_len))
+	if (strncmp(*bpp, sxs->stem, stem_len))
 	    continue;
-	*buf += stem_len;
+	*bpp += stem_len;
 	return i;
     }
     return -1;
@@ -198,7 +210,7 @@ static int find_stem_from_file(const char **buf)
  * same order as in the specification file.
  * Sorting occurs based on hasMetaChars
  */
-static spec_t spec_arr;
+static rpmsxp spec_arr;
 static int nspec;
 
 /*
@@ -356,30 +368,30 @@ static int match(const char *name, struct stat *sb)
 	return -1;
     }
 
-    file_stem = find_stem_from_file(&buf);
+    file_stem = rpmsxFind(NULL, &buf);
 
     /* 
      * Check for matching specifications in reverse order, so that
      * the last matching specification is used.
      */
     for (i = nspec - 1; i >= 0; i--) {
-	spec_t sp;
+	rpmsxp sxp;
 
-	sp = spec_arr + i;
+	sxp = spec_arr + i;
 
 	/* if the spec in question matches no stem or has the same
 	 * stem as the file AND if the spec in question has no mode
 	 * specified or if the mode matches the file mode then we do
 	 * a regex check	*/
-	if (sp->stem_id != -1 && sp->stem_id != file_stem)
+	if (sxp->fstem != -1 && sxp->fstem != file_stem)
 	    continue;
-	if (sp->mode && (sb->st_mode & S_IFMT) != sp->mode)
+	if (sxp->fmode && (sb->st_mode & S_IFMT) != sxp->fmode)
 	    continue;
 
-	if (sp->stem_id == -1)
-	    ret = regexec(sp->preg, name, 0, NULL, 0);
+	if (sxp->fstem == -1)
+	    ret = regexec(sxp->preg, name, 0, NULL, 0);
 	else
-	    ret = regexec(sp->preg, buf, 0, NULL, 0);
+	    ret = regexec(sxp->preg, buf, 0, NULL, 0);
 	if (ret == 0)
 	    break;
 
@@ -387,9 +399,9 @@ static int match(const char *name, struct stat *sb)
 	    continue;
 
 	/* else it's an error */
-	regerror(ret, sp->preg, errbuf, sizeof errbuf);
+	regerror(ret, sxp->preg, errbuf, sizeof errbuf);
 	fprintf(stderr, "%s:  unable to match %s against %s:  %s\n",
-		__progname, name, sp->pattern, errbuf);
+		__progname, name, sxp->pattern, errbuf);
 	return -1;
     }
 
@@ -404,8 +416,8 @@ static int match(const char *name, struct stat *sb)
 static int spec_compare(const void* specA, const void* specB)
 {
     return (
-	((const spec_t)specB)->hasMetaChars -
-	((const spec_t)specA)->hasMetaChars
+	((const rpmsxp)specB)->hasMetaChars -
+	((const rpmsxp)specA)->hasMetaChars
 	); 
 }
 
@@ -420,14 +432,14 @@ static int nodups_specs(void)
     int i, j;
 
     for (i = 0; i < nspec; i++) {
-	spec_t sip = spec_arr + i;
+	rpmsxp sip = spec_arr + i;
 	for (j = i + 1; j < nspec; j++) { 
-	    spec_t sjp = spec_arr + j;
+	    rpmsxp sjp = spec_arr + j;
 
 	    /* Check if same RE string */
 	    if (strcmp(sjp->pattern, sip->pattern))
 		continue;
-	    if (sjp->mode && sip->mode && sjp->mode != sip->mode)
+	    if (sjp->fmode && sip->fmode && sjp->fmode != sip->fmode)
 		continue;
 
 	    /* Same RE string found */
@@ -457,13 +469,13 @@ static void usage(const char * const name, poptContext optCon)
 }
 
 /* Determine if the regular expression specification has any meta characters. */
-static void spec_hasMetaChars(spec_t sp)
+static void spec_hasMetaChars(rpmsxp sxp)
 {
-    char * c = sp->pattern;
+    const char * c = sxp->pattern;
     int len = strlen(c);
-    char * end = c + len;
+    const char * end = c + len;
 
-    sp->hasMetaChars = 0; 
+    sxp->hasMetaChars = 0; 
 
     /* Look at each character in the RE specification string for a 
      * meta character. Return when any meta character reached. */
@@ -479,7 +491,7 @@ static void spec_hasMetaChars(spec_t sp)
 	case '[':
 	case '(':
 	case '{':
-	    sp->hasMetaChars = 1;
+	    sxp->hasMetaChars = 1;
 	    return;
 	    break;
 	case '\\':		/* skip the next character */
@@ -507,7 +519,7 @@ static int apply_spec(const char *file,
     struct stat my_sb;
     int i, ret;
     char * context; 
-    spec_t sp;
+    rpmsxp sxp;
 
     /* Skip the extra slash at the beginning, if present. */
     if (file[0] == '/' && file[1] == '/')
@@ -525,7 +537,7 @@ static int apply_spec(const char *file,
     if (i < 0)
 	/* No matching specification. */
 	return 0;
-    sp = spec_arr + i;
+    sxp = spec_arr + i;
 
     /*
      * Try to add an association between this inode and
@@ -545,13 +557,13 @@ static int apply_spec(const char *file,
     }
 
     if (debug) {
-	if (sp->type_str) {
+	if (sxp->type) {
 	    printf("%s:  %s matched by (%s,%s,%s)\n", __progname,
-		       my_file, sp->pattern,
-		       sp->type_str, sp->context);
+		       my_file, sxp->pattern,
+		       sxp->type, sxp->context);
 	} else {
 	    printf("%s:  %s matched by (%s,%s)\n", __progname,
-		       my_file, sp->pattern, sp->context);
+		       my_file, sxp->pattern, sxp->context);
 	}
     }
 
@@ -573,8 +585,8 @@ static int apply_spec(const char *file,
      * <<none>> or the file is already labeled according to the 
      * specification.
      */
-    if ((strcmp(sp->context, "<<none>>") == 0) || 
-	(strcmp(sp->context, context) == 0))
+    if ((strcmp(sxp->context, "<<none>>") == 0) || 
+	(strcmp(sxp->context, context) == 0))
     {
 	freecon(context);
 	return 0;
@@ -582,7 +594,7 @@ static int apply_spec(const char *file,
 
     if (verbose) {
 	printf("%s:  relabeling %s from %s to %s\n", __progname,
-	       my_file, context, sp->context);
+	       my_file, context, sxp->context);
     }
 
     freecon(context);
@@ -596,11 +608,11 @@ static int apply_spec(const char *file,
     /*
      * Relabel the file to the specified context.
      */
-    ret = lsetfilecon(my_file, sp->context);
+    ret = lsetfilecon(my_file, sxp->context);
     if (ret) {
 	perror(my_file);
 	fprintf(stderr, "%s:  unable to relabel %s to %s\n",
-		__progname, my_file, sp->context);
+		__progname, my_file, sxp->context);
 	return 1;
     }
 
@@ -634,7 +646,7 @@ int parseREContexts(const char *fn)
     int lineno;
     int pass;
     int regerr;
-    spec_t sp;
+    rpmsxp sxp;
 
     if ((fp = fopen(fn, "r")) == NULL) {
 	perror(fn);
@@ -652,7 +664,7 @@ int parseREContexts(const char *fn)
     for (pass = 0; pass < 2; pass++) {
 	lineno = 0;
 	nspec = 0;
-	sp = spec_arr;
+	sxp = spec_arr;
 	while (fgets(buf, sizeof buf, fp)) {
 	    lineno++;
 	    len = strlen(buf);
@@ -689,8 +701,8 @@ int parseREContexts(const char *fn)
 	    if (pass == 1) {
 		/* On the second pass, compile and store the specification in spec. */
 		const char *reg_buf = regex;
-		sp->stem_id = find_stem_from_spec(&reg_buf);
-		sp->pattern = regex;
+		sxp->fstem = rpmsxAdd(&reg_buf);
+		sxp->pattern = regex;
 
 		/* Anchor the regular expression. */
 		len = strlen(reg_buf);
@@ -698,11 +710,11 @@ int parseREContexts(const char *fn)
 		sprintf(anchored_regex, "^%s$", reg_buf);
 
 		/* Compile the regular expression. */
-		sp->preg = xcalloc(1, sizeof(*sp->preg));
-		regerr = regcomp(sp->preg, anchored_regex,
+		sxp->preg = xcalloc(1, sizeof(*sxp->preg));
+		regerr = regcomp(sxp->preg, anchored_regex,
 			    REG_EXTENDED | REG_NOSUB);
 		if (regerr < 0) {
-		    regerror(regerr, sp->preg, errbuf, sizeof errbuf);
+		    regerror(regerr, sxp->preg, errbuf, sizeof errbuf);
 		    fprintf(stderr,
 			"%s:  unable to compile regular expression %s on line number %d:  %s\n",
 			fn, regex, lineno,
@@ -712,8 +724,8 @@ int parseREContexts(const char *fn)
 		free(anchored_regex);
 
 		/* Convert the type string to a mode format */
-		sp->type_str = type;
-		sp->mode = 0;
+		sxp->type = type;
+		sxp->fmode = 0;
 		if (!type)
 		    goto skip_type;
 		len = strlen(type);
@@ -726,25 +738,25 @@ int parseREContexts(const char *fn)
 		}
 		switch (type[1]) {
 		case 'b':
-		    sp->mode = S_IFBLK;
+		    sxp->fmode = S_IFBLK;
 		    break;
 		case 'c':
-		    sp->mode = S_IFCHR;
+		    sxp->fmode = S_IFCHR;
 		    break;
 		case 'd':
-		    sp->mode = S_IFDIR;
+		    sxp->fmode = S_IFDIR;
 		    break;
 		case 'p':
-		    sp->mode = S_IFIFO;
+		    sxp->fmode = S_IFIFO;
 		    break;
 		case 'l':
-		    sp->mode = S_IFLNK;
+		    sxp->fmode = S_IFLNK;
 		    break;
 		case 's':
-		    sp->mode = S_IFSOCK;
+		    sxp->fmode = S_IFSOCK;
 		    break;
 		case '-':
-		    sp->mode = S_IFREG;
+		    sxp->fmode = S_IFREG;
 		    break;
 		default:
 		    fprintf(stderr,
@@ -755,7 +767,7 @@ int parseREContexts(const char *fn)
 
 	      skip_type:
 
-		sp->context = context;
+		sxp->context = context;
 
 		if (strcmp(context, "<<none>>")) {
 		    if (security_check_context(context) < 0 && errno != ENOENT) {
@@ -768,8 +780,8 @@ int parseREContexts(const char *fn)
 
 		/* Determine if specification has 
 		 * any meta characters in the RE */
-		spec_hasMetaChars(sp);
-		sp++;
+		spec_hasMetaChars(sxp);
+		sxp++;
 	    }
 
 	    nspec++;
@@ -958,18 +970,18 @@ int main(int argc, char **argv)
 
     if (warn_no_match) {
 	for (i = 0; i < nspec; i++) {
-	    spec_t sp;
+	    rpmsxp sxp;
 
-	    sp = spec_arr + i;
-	    if (sp->matches > 0)
+	    sxp = spec_arr + i;
+	    if (sxp->matches > 0)
 		continue;
-	    if (sp->type_str) {
+	    if (sxp->type) {
 		printf("%s:  Warning!  No matches for (%s, %s, %s)\n",
-			 __progname, sp->pattern,
-			 sp->type_str, sp->context);
+			 __progname, sxp->pattern,
+			 sxp->type, sxp->context);
 	    } else {
 		printf("%s:  Warning!  No matches for (%s, %s)\n",
-			 __progname, sp->pattern, sp->context);
+			 __progname, sxp->pattern, sxp->context);
 	    }
 	}
     }
