@@ -594,7 +594,6 @@
 #	The cache database directory.
 %_cache_dbpath		/var/spool/up2date/cache
 
-#	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
 #==============================================================================
 # ---- per-platform macros.
 #	Macros that are specific to an individual platform. The values here
