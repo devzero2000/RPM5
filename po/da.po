@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-17 12:28-0500\n"
-"PO-Revision-Date: 2001-01-16 15:19+01:00\n"
-"Last-Translator: K. Christiansen <kenneth@gnu.org>\n"
-"Language-Team: Danish/Dansk <dansk@klid.dk>\n"
+"PO-Revision-Date: 2001-01-18 01:27+01:00\n"
+"Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
+"Language-Team: Danish <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -17,7 +17,7 @@ msgstr "Kan ikke åbne rpm-database i %s\n"
 
 #: build.c:36
 msgid "failed build dependencies:\n"
-msgstr "afhængighedskrav for pakkeopbygning kunne ikke mødes:\n"
+msgstr "afhængighedskrav for pakkeopbygning kunne ikke imødekommes:\n"
 
 #: build.c:65
 #, c-format
@@ -317,7 +317,7 @@ msgstr "    --eval '<name>+'      "
 
 #: rpm.c:299
 msgid "print the expansion of macro <name> to stdout"
-msgstr "udlæs udviddelsen af makro <navn> til standard-ud"
+msgstr "send udvidelsen af makro <navn> til standard-ud"
 
 #: rpm.c:300
 msgid "    --pipe <cmd>          "
@@ -345,7 +345,7 @@ msgstr "vis lidt flere detaljer"
 
 #: rpm.c:309 rpmqv.c:531
 msgid "be incredibly verbose (for debugging)"
-msgstr "vis rigtigt mange detaljer (for aflusning)"
+msgstr "vis rigtigt mange detaljer (til aflusning)"
 
 #: rpm.c:312
 msgid "   Install, upgrade and query (with -p) allow URL's to be used in place"
@@ -378,7 +378,7 @@ msgstr "      --httpproxy <vært>  "
 
 #: rpm.c:319 rpmqv.c:542
 msgid "hostname or IP of http proxy"
-msgstr "værtsnavm eller IP for http-stråmand"
+msgstr "værtsnavn eller IP for http-stråmand"
 
 #: rpm.c:320
 msgid "      --httpport <port>   "
@@ -390,7 +390,7 @@ msgstr "portnummer for http-vært (eller -stråmand)"
 
 #: rpm.c:325 rpmqv.c:564
 msgid "query mode"
-msgstr "forespørgselsmodus"
+msgstr "forespørgselstilstand"
 
 #: rpm.c:326 rpm.c:372 rpm.c:397 rpm.c:449 rpm.c:523
 msgid "      --dbpath <dir>      "
@@ -442,27 +442,27 @@ msgstr "forespørg (ikke-installeret) pakke <pakkefil>"
 
 #: rpm.c:339
 msgid "        --triggeredby <pkg>"
-msgstr "        --triggeredby <pak>"
+msgstr "        --triggeredby <pakke>"
 
 #: rpm.c:340
 msgid "query packages triggered by <pkg>"
-msgstr "forespørg pakker, der udløses af pakken <pak>"
+msgstr "forespørg pakker, der udløses af pakken <pakke>"
 
 #: rpm.c:341
 msgid "        --whatprovides <cap>"
-msgstr "        --whatprovides <evne>"
+msgstr "        --whatprovides <fac>"
 
 #: rpm.c:342
 msgid "query packages which provide <cap> capability"
-msgstr "forespørg pakker, der tilfører evnen <evne>"
+msgstr "forespørg pakker, der tilfører faciliteten <fac>"
 
 #: rpm.c:343
 msgid "        --whatrequires <cap>"
-msgstr "        --whatrequires <evne>"
+msgstr "        --whatrequires <fac>"
 
 #: rpm.c:344
 msgid "query packages which require <cap> capability"
-msgstr "forespørg pakker, der kræver evnen <evne>"
+msgstr "forespørg pakker, der kræver faciliteten <fac>"
 
 #: rpm.c:345
 msgid "      Information selection options:"
@@ -474,11 +474,11 @@ msgstr "vis pakkeinformation"
 
 #: rpm.c:349 rpmqv.c:572
 msgid "display the package's change log"
-msgstr "vis pakkes ændringshistorie"
+msgstr "vis ændringshistorie for pakke"
 
 #: rpm.c:351 rpmqv.c:574
 msgid "display package file list"
-msgstr "vis pakkes filliste"
+msgstr "vis filliste for pakke"
 
 #: rpm.c:353 rpmqv.c:576
 msgid "show file states (implies -l)"
@@ -500,7 +500,7 @@ msgstr "vis al verificérbar information om hver fil (kræver -l, -c eller -d)"
 
 #: rpm.c:361
 msgid "list capabilities package provides"
-msgstr "vis de evner, pakken tilbyder"
+msgstr "vis de faciliteter, pakken tilbyder"
 
 #: rpm.c:363
 msgid "list package dependencies"
@@ -508,11 +508,11 @@ msgstr "vis pakkeafhængigheder"
 
 #: rpm.c:365
 msgid "print the various [un]install scripts"
-msgstr "vi de forskellige [af]installations-skript"
+msgstr "vis de forskellige [af]installations-skripter"
 
 #: rpm.c:367
 msgid "show the trigger scripts contained in the package"
-msgstr "vis udløserskript indeholdt i pakke"
+msgstr "vis udløserskripter indeholdt i pakke"
 
 #: rpm.c:371 rpmqv.c:593
 msgid ""
@@ -531,7 +531,7 @@ msgstr "tjek ikke filers md5-checksummer"
 
 #: rpm.c:381 rpmqv.c:597
 msgid "do not verify file attributes"
-msgstr "tjek ikke filmodi"
+msgstr "tjek ikke filegenskaber"
 
 #: rpm.c:383 rpmqv.c:604
 msgid "list the tags that can be used in a query format"
@@ -622,11 +622,11 @@ msgstr ""
 
 #: rpm.c:423
 msgid "don't execute any installation scripts"
-msgstr "udfør ingen installationsskript"
+msgstr "udfør ingen installationsskripter"
 
 #: rpm.c:425 rpm.c:460 rpmqv.c:683
 msgid "don't execute any scripts triggered by this package"
-msgstr "udfør ingen skript, der måtte foranlediges af denne pakke"
+msgstr "udfør ingen skripter, der måtte foranlediges af denne pakke"
 
 #: rpm.c:427 rpmqv.c:306 rpmqv.c:651
 msgid "print percentages as package installs"
@@ -677,12 +677,12 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"fjern alle pakker, som passer på <pakke> (normalt ville det medføre en fejl, "
-"hvis <pakke> angav flere pakker)"
+"fjern alle pakker, som passer med <pakke> (normalt ville det medføre en "
+"fejl, hvis <pakke> angav flere pakker)"
 
 #: rpm.c:458 rpmqv.c:681
 msgid "do not execute any package specific scripts"
-msgstr "udfør ingen pakkespecifikke skrip"
+msgstr "udfør ingen pakkespecifikke skripter"
 
 #: rpm.c:464
 msgid "    -b<stage> <spec>      "
@@ -698,32 +698,32 @@ msgstr "opbyg pakke, hvor <stadie> er en af:"
 
 #: rpm.c:468
 msgid "prep (unpack sources and apply patches)"
-msgstr "prep (udpak kilderne og påfør lapper (patches))"
+msgstr "forbered (udpak kilderne og påfør lapper (patches))"
 
 #: rpm.c:470
 #, c-format
 msgid "list check (do some cursory checks on %files)"
-msgstr "list check (nogle hurtige tjek af %filer)"
+msgstr "listekontrol (nogle hurtige tjek af %filer)"
 
 #: rpm.c:472
 msgid "compile (prep and compile)"
-msgstr "compile (forbered og oversæt)"
+msgstr "oversæt (forbered og oversæt)"
 
 #: rpm.c:474
 msgid "install (prep, compile, install)"
-msgstr "install (forbered, oversæt og installér)"
+msgstr "installér (forbered, oversæt og installér)"
 
 #: rpm.c:476
 msgid "binary package (prep, compile, install, package)"
-msgstr "binary package (forbered, oversæt, installér, pak)"
+msgstr "binær pakke (forbered, oversæt, installér, pak)"
 
 #: rpm.c:478
 msgid "bin/src package (prep, compile, install, package)"
-msgstr "bin/src package (forbered, oversæt, installér, pak)"
+msgstr "binær og kilde-pakke (forbered, oversæt, installér, pak)"
 
 #: lib/poptBT.c:191 rpm.c:480
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "spring direkte til angiven stadie (kin for c,i)"
+msgstr "spring direkte til angivet stadie (kun for c,i)"
 
 #: lib/poptBT.c:172 rpm.c:482
 msgid "remove build tree when done"
@@ -807,15 +807,15 @@ msgstr "tilføj signatur til pakke"
 
 #: rpm.c:508
 msgid "    --checksig <pkg>+"
-msgstr "    --checksig <pak>+"
+msgstr "    --checksig <pakke>+"
 
 #: rpm.c:509
 msgid "    -K <pkg>+             "
-msgstr "    -K <pak>+             "
+msgstr "    -K <pakke>+           "
 
 #: rpm.c:510 rpmqv.c:227 rpmqv.c:695
 msgid "verify package signature"
-msgstr "verificér pakke signatur"
+msgstr "verificér pakkesignatur"
 
 #: rpm.c:512 rpmqv.c:230 rpmqv.c:697
 msgid "skip any PGP signatures"
@@ -1011,7 +1011,7 @@ msgid ""
 "recompilation, installation,erasure, and verification"
 msgstr ""
 "--nodeps kan kun angives ved opbygning, genopbygning, genoversættelse, "
-"installation, sletning og verificering"
+"installation, sletning og verifikation"
 
 #: rpm.c:926 rpmqv.c:1167
 msgid ""
@@ -1029,24 +1029,24 @@ msgstr ""
 
 #: rpm.c:942 rpmqv.c:1184
 msgid "arguments to --root (-r) must begin with a /"
-msgstr "parameteret til --root (-r) skal starte med et /"
+msgstr "parameteren til --root (-r) skal starte med et /"
 
 #: rpm.c:948 rpmqv.c:1191
 msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage må kun bruges ved opgraderinger"
+msgstr "--oldpackage kan kun bruges ved opgraderinger"
 
 #: rpm.c:951 rpmqv.c:1196
 msgid "--nopgp may only be used during signature checking"
-msgstr "--nopgp må kun bruges ved signaturkontrol"
+msgstr "--nopgp kan kun bruges ved signaturkontrol"
 
 #: rpm.c:954 rpmqv.c:1199
 msgid "--nogpg may only be used during signature checking"
-msgstr "--nogpg må kun bruges ved signaturkontrol"
+msgstr "--nogpg kan kun bruges ved signaturkontrol"
 
 #: rpm.c:957 rpmqv.c:1204
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
-msgstr "--nomd5 må kun bruges ved signaturkontrol og pakkeverifikation"
+msgstr "--nomd5 kan kun bruges ved signaturkontrol og pakkeverifikation"
 
 #: rpm.c:968 rpmqv.c:1220
 msgid "no files to sign\n"
@@ -1067,11 +1067,11 @@ msgstr "Indtast adgangskode: "
 
 #: rpm.c:994 rpmqv.c:1247
 msgid "Pass phrase check failed\n"
-msgstr "Adgangskoden er ikke godkendt\n"
+msgstr "Adgangskode ikke godkendt\n"
 
 #: rpm.c:997 rpmqv.c:1250
 msgid "Pass phrase is good.\n"
-msgstr "Adgangskoden er godkendt.\n"
+msgstr "Adgangskode godkendt.\n"
 
 #: rpm.c:1002 rpmqv.c:1255
 msgid "Invalid %%_signature spec in macro file.\n"
@@ -1115,7 +1115,7 @@ msgstr "ingen parametre angivet ved forespørgsel"
 
 #: rpm.c:1176 rpmqv.c:1535
 msgid "extra arguments given for verify of all packages"
-msgstr "extra parametre angivet ved verifikation af alle pakker"
+msgstr "ekstra parametre angivet ved verifikation af alle pakker"
 
 #: rpm.c:1180 rpmqv.c:1539
 msgid "no arguments given for verify"
@@ -1153,7 +1153,7 @@ msgstr "'<navn> <indhold>'"
 
 #: rpmqv.c:159
 msgid "print macro expansion of <expr>+"
-msgstr "udlæs makroudviddelse af <udtryk>+"
+msgstr "udlæs makroudvidelse af <udtryk>+"
 
 #: rpmqv.c:160
 msgid "<expr>+"
@@ -1230,11 +1230,11 @@ msgstr "<pakkefil>+"
 
 #: rpmqv.c:297 rpmqv.c:601
 msgid "do not execute scripts (if any)"
-msgstr "udfør ikke eventuelle skript"
+msgstr "udfør ikke eventuelle skripter"
 
 #: rpmqv.c:300 rpmqv.c:649
 msgid "don't execute any scriptlets triggered by this package"
-msgstr "udfør ikke småskript, der måtte udløses af denne pakke"
+msgstr "udfør ikke småskripter, der måtte udløses af denne pakke"
 
 #: rpmqv.c:313
 msgid "<oldpath>=<newpath>"
@@ -1266,7 +1266,7 @@ msgstr "Opbygningstilvalg med [ <spec-fil> | <tararkiv> | <kildepakke> ]:"
 
 #: rpmqv.c:373
 msgid "Common options for all rpm modes:"
-msgstr "Fælles tilvalg for alle rpm-modi:"
+msgstr "Fælles tilvalg for alle rpm-tilstande:"
 
 #: rpmqv.c:413
 #, c-format
@@ -1295,7 +1295,7 @@ msgstr ""
 msgid ""
 "                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
+"                        [--rcfile <fil>] [--ignorearch] [--dbpath <katalog>]"
 
 #: rpmqv.c:434
 #, fuzzy
@@ -1315,7 +1315,8 @@ msgstr ""
 #, fuzzy
 msgid ""
 "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
-msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
+msgstr ""
+"                        [--scripts] [--root <katalog>] [--rcfile <fil>]"
 
 #: rpmqv.c:456
 #, fuzzy, c-format
@@ -1341,10 +1342,10 @@ msgid ""
 msgstr "       %s {--resign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN\n"
 
 #: rpmqv.c:466
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-msgstr "       %s {--addsign} [--rcfile <fil:...>] pakke1 pakke2 ... pakkeN"
+msgstr "       %s {--addsign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN"
 
 #: rpmqv.c:467
 #, fuzzy, c-format
@@ -1356,7 +1357,7 @@ msgstr ""
 
 #: rpmqv.c:511
 msgid "  All modes support the following options:"
-msgstr "  Følgende tilvalg understøttes af samtlige modi:"
+msgstr "  Følgende tilvalg understøttes af samtlige tilstande:"
 
 #: rpmqv.c:512
 msgid "   --define '<name> <body>'"
@@ -1370,7 +1371,7 @@ msgstr "   --eval '<navn>+'       "
 #: rpmqv.c:515
 #, fuzzy
 msgid "print the expansion of macro <expr> to stdout"
-msgstr "vis versionen af rpm som benyttes"
+msgstr "send udvidelsen af makro <navn> til standard-ud"
 
 #: rpmqv.c:516
 msgid "   --pipe <cmd>           "
@@ -1382,8 +1383,9 @@ msgid "   --rcfile <file:...>    "
 msgstr "    --rcfile <fil>        "
 
 #: rpmqv.c:519
+#, fuzzy
 msgid "use <file:...> instead of default list of macro files"
-msgstr ""
+msgstr "læs <fil:...> i stedet for standard makrofil(er)"
 
 #: rpmqv.c:523
 msgid "   --dbpath <dir>         "
@@ -1397,7 +1399,7 @@ msgstr "   --root <katalog>       "
 msgid ""
 "  Install, upgrade and query (with -p) modes allow URL's to be used in place"
 msgstr ""
-"  Installations-, opgradering- og forespørgselsmodi (med -p) tillader at"
+"  Installations-, opgradering- og forespørgselstilstande (med -p) tillader at"
 
 #: rpmqv.c:536
 msgid "  of file names as well as the following options:"
@@ -1449,23 +1451,23 @@ msgstr "     --triggeredby <pakke>"
 
 #: rpmqv.c:557
 msgid "query/verify packages triggered by <pkg>"
-msgstr "forespørg/verificér pakker, der udløses af <pak>"
+msgstr "forespørg/verificér pakker, der udløses af <pakke>"
 
 #: rpmqv.c:558
 msgid "     --whatprovides <cap> "
-msgstr "     --whatprovides <evne>"
+msgstr "     --whatprovides <fac>"
 
 #: rpmqv.c:559
 msgid "query/verify packages which provide <cap> capability"
-msgstr "forespørg/verificér pakker, der tilfører evnen <evne>"
+msgstr "forespørg/verificér pakker, der tilfører faciliteten <fac>"
 
 #: rpmqv.c:560
 msgid "     --whatrequires <cap> "
-msgstr "     --whatrequires <evne>"
+msgstr "     --whatrequires <fac>"
 
 #: rpmqv.c:561
 msgid "query/verify packages which require <cap> capability"
-msgstr "forespørg/verificér pakker, som kræver evnen <evne>"
+msgstr "forespørg/verificér pakker, som kræver faciliteten <fac>"
 
 #: rpmqv.c:565
 msgid "     --queryformat <qfmt> "
@@ -1477,19 +1479,19 @@ msgstr "    Tilvalg for informationangivelse:"
 
 #: rpmqv.c:584
 msgid "list capabilities provided by package"
-msgstr "vis enver, der tilføres af pakke"
+msgstr "vis faciliteter, der tilføres af pakke"
 
 #: rpmqv.c:586
 msgid "list capabilities required by package"
-msgstr "vis evner, der kræves af pakke"
+msgstr "vis faciliteter, der pakken kræver"
 
 #: rpmqv.c:588
 msgid "print the various [un]install scriptlets"
-msgstr "vis de forskellige småskript til [af]installation"
+msgstr "vis de forskellige småskripter til [af]installation"
 
 #: rpmqv.c:590
 msgid "show the trigger scriptlets contained in the package"
-msgstr "vis de udløserskript, der indeholdes i pakken"
+msgstr "vis de udløserskripter, pakken indeholder"
 
 #: rpmqv.c:616
 msgid "   --install <packagefile>"
@@ -1505,7 +1507,7 @@ msgstr "     --excludepath <sti>  "
 
 #: rpmqv.c:647
 msgid "don't execute any installation scriptlets"
-msgstr "udfør ingen installations-småskript"
+msgstr "udfør ingen installations-småskripter"
 
 #: rpmqv.c:652
 msgid "     --prefix <dir>       "
@@ -1529,19 +1531,19 @@ msgstr "   --erase <pakke>  "
 
 #: rpmqv.c:688
 msgid "   --resign <pkg>+        "
-msgstr "   --resign <pak>+        "
+msgstr "   --resign <pakke>+      "
 
 #: rpmqv.c:690
 msgid "   --addsign <pkg>+       "
-msgstr "   --addsign <pak>+       "
+msgstr "   --addsign <pakke>+     "
 
 #: rpmqv.c:693
 msgid "   --checksig <pkg>+"
-msgstr "   --checksig <pak>+"
+msgstr "   --checksig <pakke>+"
 
 #: rpmqv.c:694
 msgid "   -K <pkg>+             "
-msgstr "   -K <pak>+             "
+msgstr "   -K <pakke>+           "
 
 #: rpmqv.c:707
 msgid "initalize database (unnecessary, legacy use)"
@@ -1579,7 +1581,7 @@ msgstr "ingen tararkiver angivet til opbygning"
 
 #: build/build.c:114 build/pack.c:370
 msgid "Unable to open temp file.\n"
-msgstr "Kunne ikke åbne temp-fil.\n"
+msgstr "Kunne ikke åbne midlertidig fil.\n"
 
 #: build/build.c:193
 #, c-format
@@ -1628,11 +1630,11 @@ msgstr "uparret (\n"
 
 #: build/expression.c:356
 msgid "- only on numbers\n"
-msgstr "- kun for numre\n"
+msgstr "- kun for tal\n"
 
 #: build/expression.c:372
 msgid "! only on numbers\n"
-msgstr "! kun for numre\n"
+msgstr "! kun for tal\n"
 
 #: build/expression.c:414 build/expression.c:462 build/expression.c:520
 #: build/expression.c:612
@@ -1673,12 +1675,12 @@ msgstr "Manglende ')' i %s %s\n"
 #: build/files.c:325 build/files.c:504
 #, c-format
 msgid "Invalid %s token: %s\n"
-msgstr "Ugyldigt %s-mærkat: %s\n"
+msgstr "Ugyldigt %s-symbol: %s\n"
 
 #: build/files.c:376
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
-msgstr "Ikke-blankt mellemrum efterfølger %s(): %s\n"
+msgstr "Ikke-mellemrum efterfølger %s(): %s\n"
 
 #: build/files.c:414
 #, c-format
@@ -1688,7 +1690,7 @@ msgstr "Ugyldig syntaks: %s(%s)\n"
 #: build/files.c:424
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
-msgstr "Ugyldig modus-spec: %s(%s)\n"
+msgstr "Ugyldig tilstandsangivelse: %s(%s)\n"
 
 #: build/files.c:436
 #, c-format
@@ -1715,7 +1717,7 @@ msgstr "Kun et parameter for %%docdir\n"
 #: build/files.c:741
 #, c-format
 msgid "Two files on one line: %s\n"
-msgstr "To filer på een linie: %s\n"
+msgstr "To filer på én linie: %s\n"
 
 #: build/files.c:755
 #, c-format
@@ -1729,7 +1731,7 @@ msgstr "Kan ikke blande special-%%doc med andre former: %s\n"
 #: build/files.c:861
 #, c-format
 msgid "File listed twice: %s\n"
-msgstr "Filer angivet to gange: %s\n"
+msgstr "Fil angivet to gange: %s\n"
 
 #: build/files.c:972
 #, c-format
@@ -1789,7 +1791,7 @@ msgstr "Kunne ikke udføre %s: %s\n"
 #: build/files.c:1701
 #, c-format
 msgid "Couldn't fork %s: %s\n"
-msgstr "Kunne ikke spalte %s: %s\n"
+msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
 
 #: build/files.c:1783
 #, c-format
@@ -1929,12 +1931,12 @@ msgstr "Kunne ikke åbne sigtarget %s: %s\n"
 #: build/pack.c:495
 #, c-format
 msgid "Unable to read header from %s: %s\n"
-msgstr "Kunne ikke læse hovede fra %s: %s\n"
+msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
 #: build/pack.c:509
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr "Kunne ikke skrive hovede til %s: %s\n"
+msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
 #: build/pack.c:519
 #, c-format
@@ -2171,19 +2173,19 @@ msgstr "linie %d: Ugyldigt '%%setup'-tilvalg %s: %s\n"
 
 #: build/parsePrep.c:446
 msgid "line %d: Need arg to %%patch -b: %s\n"
-msgstr "line %d: Kræver parameter til %%patch -b: %s\n"
+msgstr "linie %d: Kræver parameter til %%patch -b: %s\n"
 
 #: build/parsePrep.c:455
 msgid "line %d: Need arg to %%patch -z: %s\n"
-msgstr "line %d: Kræver parameter til %%patch -z: %s\n"
+msgstr "linie %d: Kræver parameter til %%patch -z: %s\n"
 
 #: build/parsePrep.c:467
 msgid "line %d: Need arg to %%patch -p: %s\n"
-msgstr "line %d: Kræver parameter til %%patch -p: %s\n"
+msgstr "linie %d: Kræver parameter til %%patch -p: %s\n"
 
 #: build/parsePrep.c:474
 msgid "line %d: Bad arg to %%patch -p: %s\n"
-msgstr "line %d: Ugyldigt parameter til %%patch -p: %s\n"
+msgstr "linie %d: Ugyldigt parameter til %%patch -p: %s\n"
 
 #: build/parsePrep.c:481
 msgid "Too many patches!\n"
@@ -2191,7 +2193,7 @@ msgstr "For mange lapper (patches)!\n"
 
 #: build/parsePrep.c:485
 msgid "line %d: Bad arg to %%patch: %s\n"
-msgstr "line %d: Ugyldigt parameter til %%patch: %s\n"
+msgstr "linie %d: Ugyldigt parameter til %%patch: %s\n"
 
 #: build/parsePrep.c:521
 msgid "line %d: second %%prep\n"
@@ -2202,7 +2204,7 @@ msgstr "linie %d: anden %%prep\n"
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"linie %d: Afhængigheds-mærkat skal starte med alfanumerisk, '_' eller '/': "
+"linie %d: Afhængigheds-symbol skal starte med alfanumerisk, '_' eller '/': "
 "%s\n"
 
 #: build/parseReqs.c:111
@@ -2505,17 +2507,17 @@ msgstr "delt"
 #: lib/db2.c:141
 #, c-format
 msgid "closed  db environment %s/%s(%s)\n"
-msgstr "lukket  db-miljø  %s/%s(%s)\n"
+msgstr "lukkede db-miljø  %s/%s(%s)\n"
 
 #: lib/db2.c:153
 #, c-format
 msgid "removed db environment %s/%s(%s)\n"
-msgstr "fjernet db-miljø  %s/%s(%s)\n"
+msgstr "fjernede db-miljø  %s/%s(%s)\n"
 
 #: lib/db2.c:190
 #, c-format
 msgid "opening db environment %s/%s(%s) %s\n"
-msgstr "åbner   db-miljø  %s/%s(%s) %s\n"
+msgstr "åbnede  db-miljø  %s/%s(%s) %s\n"
 
 #: lib/db2.c:565
 #, c-format
@@ -2535,7 +2537,7 @@ msgstr "ukendt db-tilvalg: \"%s\" ignoreret\n"
 #: lib/db3.c:297
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s her ugyldig talværdi, overspringes\n"
+msgstr "%s har ugyldig talværdi, overspringes\n"
 
 #: lib/db3.c:306
 #, c-format
@@ -2555,7 +2557,7 @@ msgstr "lukkede db-miljø  %s/%s\n"
 #: lib/db3.c:500
 #, c-format
 msgid "removed db environment %s/%s\n"
-msgstr "fjernet db-miljø  %s/%s\n"
+msgstr "fjernede db-miljø  %s/%s\n"
 
 #: lib/db3.c:537
 #, c-format
@@ -2675,7 +2677,7 @@ msgstr "ukendt mærke"
 #. @-observertrans@
 #: lib/header.c:1983
 msgid "] expected at end of array"
-msgstr "] forventet ved slutningen af array"
+msgstr "] forventet ved slutningen af tabel"
 
 #. @-observertrans@
 #: lib/header.c:2001
@@ -2931,7 +2933,8 @@ msgstr "<kildepakke>"
 #: lib/poptBT.c:166
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <kildpakke>"
+msgstr ""
+"opbyg gennem %install (%prep, %build, så installér) ud fra <kildepakke>"
 
 #: lib/poptBT.c:170
 msgid "override build root"
@@ -2980,7 +2983,7 @@ msgstr "forespørg/verificér en pakkefil (dvs. en binær *.rpm-fil)"
 
 #: lib/poptQV.c:76
 msgid "rpm query mode"
-msgstr "rpm forespørgselsmodus"
+msgstr "rpm forespørgselstilstand"
 
 #: lib/poptQV.c:80
 msgid "display known query tags"
@@ -3000,11 +3003,11 @@ msgstr "forespørg pakke(r), der udløses af pakken"
 
 #: lib/poptQV.c:86
 msgid "rpm verify mode"
-msgstr "rpm verificationsmodus"
+msgstr "rpm verifikationstilstand"
 
 #: lib/poptQV.c:88
 msgid "rpm verify mode (legacy)"
-msgstr "gammel rpm verificationsmodus"
+msgstr "gammel rpm verifikationstilstand"
 
 #: lib/poptQV.c:90
 msgid "query/verify the package(s) which require a dependency"
@@ -3105,7 +3108,7 @@ msgstr "installation af pakken %s kræver %ld inode'r på %s-filsystemet"
 #: lib/problems.c:146
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "pakke %s prætransaktion systemkald: %s mislykkedes: %s"
+msgstr "pakke %s prætransaktion-systemkald: %s mislykkedes: %s"
 
 #: lib/problems.c:153
 #, c-format
@@ -3349,7 +3352,7 @@ msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 
 #: lib/rpmdb.c:740
 msgid "no dbpath has been set\n"
-msgstr "der ikke sat nogen dbpath\n"
+msgstr "der er ikke sat nogen dbpath\n"
 
 #: lib/rpmdb.c:839
 msgid ""
@@ -3556,7 +3559,7 @@ msgstr "fandt %d kilde- og %d binærpakker\n"
 
 #: lib/rpminstall.c:431
 msgid "failed dependencies:\n"
-msgstr "afhængighedskrav, der ikke kunne mødes:\n"
+msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
 
 #: lib/rpminstall.c:452
 msgid "installing binary packages\n"
@@ -3584,7 +3587,7 @@ msgstr "kunne ikke åbne %s: %s\n"
 #: lib/rpminstall.c:608
 #, c-format
 msgid "Installing %s\n"
-msgstr "Installérer %s\n"
+msgstr "Installerer %s\n"
 
 #: lib/rpmlead.c:48
 #, c-format
@@ -3660,7 +3663,7 @@ msgstr "manglende parameter til %s ved %s:%d\n"
 #: lib/rpmrc.c:685 lib/rpmrc.c:707
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
-msgstr "%s-udviddelse mislykkedes ved %s:%d \"%s\"\n"
+msgstr "%s-udvidelse mislykkedes ved %s:%d \"%s\"\n"
 
 #: lib/rpmrc.c:694
 #, c-format
@@ -3686,7 +3689,7 @@ msgstr ""
 
 #: lib/rpmrc.c:1199
 msgid "Please contact rpm-list@redhat.com\n"
-msgstr "Kontakt venligst rpm-list@redhat.com (benyt engelsk)\n"
+msgstr "Kontakt venligst rpm-list@redhat.com (på engelsk)\n"
 
 #: lib/signature.c:115
 msgid "file is not regular -- skipping size check\n"
@@ -3941,11 +3944,11 @@ msgstr "Kunne ikke slå værtens navn op"
 
 #: rpmio/rpmio.c:552
 msgid "Failed to connect to server"
-msgstr "Kunne ikke opnå forbindelse til værten"
+msgstr "Kunne ikke etablere en forbindelse til værten"
 
 #: rpmio/rpmio.c:555
 msgid "Failed to establish data connection to server"
-msgstr "Kunne ikke opnå data-forbindelse til værten"
+msgstr "Kunne ikke etablere en data-forbindelse til værten"
 
 #: rpmio/rpmio.c:558
 msgid "I/O error to local file"
@@ -3953,7 +3956,7 @@ msgstr "I/O-fejl i lokal fil"
 
 #: rpmio/rpmio.c:561
 msgid "Error setting remote server to passive mode"
-msgstr "Kunne ikke sætte fjernserveren i passiv modus"
+msgstr "Kunne ikke sætte fjernserveren i passiv tilstand"
 
 #: rpmio/rpmio.c:564
 msgid "File not found on server"
@@ -3998,11 +4001,11 @@ msgstr "Makroen %%%s har et ugyldig navn (%%define)\n"
 
 #: rpmio/macro.c:590
 msgid "Macro %%%s has unterminated opts\n"
-msgstr "Makroen %%%s har uafsluttede parametre (opts)\n"
+msgstr "Makroen %%%s har uafsluttede parametre\n"
 
 #: rpmio/macro.c:595
 msgid "Macro %%%s has empty body\n"
-msgstr "Makroen %%%s har intet indhold (tom 'body')\n"
+msgstr "Makroen %%%s har intet indhold\n"
 
 #: rpmio/macro.c:600
 msgid "Macro %%%s failed to expand\n"
@@ -4115,3 +4118,6 @@ msgstr "kunne ikke oprette %s: %s\n"
 
 #~ msgid "Query/Verify options:"
 #~ msgstr "Tilvalg for Forespørgsel/Verifikation:"
+
+#~ msgid "   --rcfile <file>        "
+#~ msgstr "   --rcfile <fil>         "
