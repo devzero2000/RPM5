@@ -1,11 +1,15 @@
 /* The very final packaging steps */
 
+#include "miscfn.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/stat.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <string.h>
@@ -175,6 +179,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     int fromCpio[2];
     int toGzip[2];
     char * cpiobin;
+    char * gzipbin;
 
     int writeBytesLeft, bytesWritten;
 
@@ -188,7 +193,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     void *oldhandler;
 
     cpiobin = rpmGetVar(RPMVAR_CPIOBIN);
-    if (!cpiobin) cpiobin = "cpio";
+    gzipbin = rpmGetVar(RPMVAR_GZIPBIN);
  
     *archiveSize = 0;
     
@@ -254,7 +259,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	dup2(toGzip[0], 0);  /* Make stdin the in pipe       */
 	dup2(fd, 1);         /* Make stdout the passed-in fd */
 
-	execlp("gzip", "gzip", "-c9fn", NULL);
+	execlp(gzipbin, gzipbin, "-c9fn", NULL);
 	rpmError(RPMERR_EXEC, "Couldn't exec gzip");
 	_exit(RPMERR_EXEC);
     }
@@ -378,6 +383,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
     char *nametmp;
     char filename[1024];
     char sourcerpm[1024];
+    char * binrpm;
     char *icon;
     int iconFD;
     struct stat statbuf;
@@ -393,6 +399,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
     char *packager;
     char *packageVersion, *packageRelease;
     char *prefix, *prefixSave;
+    char * binformat, * errorString;
     int prefixLen;
     int size;
     StringBuf cpioFileList;
@@ -594,8 +601,17 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 
 	/* Make the output RPM filename */
 	if (doPackage == PACK_PACKAGE) {
-	    sprintf(filename, "%s/%s/%s.%s.rpm", rpmGetVar(RPMVAR_RPMDIR),
-		    rpmGetArchName(), name, rpmGetArchName());
+	    binformat = rpmGetVar(RPMVAR_RPMFILENAME);
+	    binrpm = headerSprintf(outHeader, binformat, rpmTagTable,
+				   rpmHeaderFormats, &errorString);
+
+	    if (!binrpm) {
+		rpmError(RPMERR_BADFILENAME, "could not generate output "
+			 "filename for package %s: %s\n", name, binrpm);
+	    }
+
+	    sprintf(filename, "%s/%s", rpmGetVar(RPMVAR_RPMDIR), binrpm);
+	    free(binrpm);
 
 	    if (generateRPM(name, filename, RPMLEAD_BINARY, outHeader, NULL,
 			    getStringBuf(cpioFileList), passPhrase, prefix)) {
@@ -628,13 +644,12 @@ int packageSource(Spec s, char *passPhrase)
     struct sources *source;
     struct PackageRec *package;
     char *tempdir;
-    char src[1024], dest[1024], fullname[1024], filename[1024];
+    char src[1024], dest[1024], fullname[1024], filename[1024], specFile[1024];
     char *version;
     char *release;
     char *vendor;
     char *dist;
     char *p;
-    char *specFile;
     Header outHeader;
     StringBuf filelist;
     StringBuf cpioFileList;
@@ -658,11 +673,11 @@ int packageSource(Spec s, char *passPhrase)
     
     /* Link in the spec file and all the sources */
     p = strrchr(s->specfile, '/');
-    specFile = p+1;
     sprintf(dest, "%s%s", tempdir, p);
+    strcpy(specFile, dest);
     symlink(s->specfile, dest);
     appendLineStringBuf(filelist, dest);
-    appendLineStringBuf(cpioFileList, specFile);
+    appendLineStringBuf(cpioFileList, p+1);
     source = s->sources;
     scount = 0;
     pcount = 0;
