@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-03 21:01-0500\n"
+"POT-Creation-Date: 2000-12-04 13:46-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2949,60 +2949,59 @@ msgstr " je nutné pro %s-%s-%s\n"
 msgid " conflicts with %s-%s-%s\n"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/problems.c:103
-#, c-format
-msgid "package %s-%s-%s is for a different architecture"
+#: lib/problems.c:98
+#, fuzzy, c-format
+msgid "package %s is for a different architecture"
 msgstr "balíèek %s-%s-%s je pro jinou architekturu"
 
-#: lib/problems.c:108
-#, c-format
-msgid "package %s-%s-%s is for a different operating system"
+#: lib/problems.c:102
+#, fuzzy, c-format
+msgid "package %s is for a different operating system"
 msgstr "balíèek %s-%s-%s je pro jiný operaèní systém"
 
-#: lib/problems.c:113
-#, c-format
-msgid "package %s-%s-%s is already installed"
+#: lib/problems.c:106
+#, fuzzy, c-format
+msgid "package %s is already installed"
 msgstr "balíèek %s-%s-%s je ji¾ nainstalován"
 
-#: lib/problems.c:118
-#, c-format
-msgid "path %s is not relocateable for package %s-%s-%s"
-msgstr "cesta %s není pøemístitelná pro balíèek %s-%s-%s"
+#: lib/problems.c:110
+#, fuzzy, c-format
+msgid "path %s in package %s is not relocateable"
+msgstr "balíèek %s není pøemístitelný\n"
 
-#: lib/problems.c:123
-#, c-format
-msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
+#: lib/problems.c:115
+#, fuzzy, c-format
+msgid "file %s conflicts between attemped installs of %s and %s"
 msgstr "soubor %s zpùsobuje konflikt mezi instalovaným %s-%s-%s a %s-%s-%s"
 
-#: lib/problems.c:129
-#, c-format
-msgid ""
-"file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
+#: lib/problems.c:120
+#, fuzzy, c-format
+msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "soubor %s z instalace %s-%s-%s koliduje se souborem z balíèku %s-%s-%s"
 
-#: lib/problems.c:135
-#, c-format
-msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
+#: lib/problems.c:125
+#, fuzzy, c-format
+msgid "package %s (which is newer than %s) is already installed"
 msgstr "balíèek %s-%s-%s (který je novìj¹í, ne¾ %s-%s-%s) je ji¾ nainstalován"
 
-#: lib/problems.c:141
-#, c-format
-msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
-msgstr "instalace balíèku %s-%s-%s potøebuje %ld%cb na systému souborù %s"
-
-#: lib/problems.c:151
+#: lib/problems.c:130
 #, fuzzy, c-format
-msgid "installing package %s-%s-%s needs %ld inodes on the %s filesystem"
+msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "instalace balíèku %s-%s-%s potøebuje %ld%cb na systému souborù %s"
 
-#: lib/problems.c:158
-#, c-format
-msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
+#: lib/problems.c:140
+#, fuzzy, c-format
+msgid "installing package %s needs %ld inodes on the %s filesystem"
+msgstr "instalace balíèku %s-%s-%s potøebuje %ld%cb na systému souborù %s"
+
+#: lib/problems.c:145
+#, fuzzy, c-format
+msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "v balíèku %s-%s-%s pøedtransakèní syscall(s): %s selhalo: %s"
 
-#: lib/problems.c:166
-#, c-format
-msgid "unknown error %d encountered while manipulating package %s-%s-%s"
+#: lib/problems.c:152
+#, fuzzy, c-format
+msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s-%s-%s"
 
 #: lib/query.c:150
@@ -3778,27 +3777,27 @@ msgstr "Musíte nastavit \"%%_gpg_name\" ve svém makro souboru"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Musíte nastavit \"%%_pgp_name\" ve svém makro souboru"
 
-#: lib/transaction.c:437
+#: lib/transaction.c:464
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr "vynechávám soubor %s%s\n"
 
-#: lib/transaction.c:463 lib/transaction.c:546
+#: lib/transaction.c:490 lib/transaction.c:573
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "vynechávám adresáø %s\n"
 
-#: lib/transaction.c:468
+#: lib/transaction.c:495
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "pøemís»uji %s do %s\n"
 
-#: lib/transaction.c:539
+#: lib/transaction.c:566
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "pøemís»uji adresáø %s do %s\n"
 
-#: lib/transaction.c:691
+#: lib/transaction.c:717
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pøeskoèeno, proto¾e chybí pøíznak\n"
@@ -4060,6 +4059,9 @@ msgstr "nemohu otevøít %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
+
+#~ msgid "path %s is not relocateable for package %s-%s-%s"
+#~ msgstr "cesta %s není pøemístitelná pro balíèek %s-%s-%s"
 
 #~ msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
 #~ msgstr "RPMERR_INTERNAL: Dosa¾en limit v getUname()\n"

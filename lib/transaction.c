@@ -162,9 +162,14 @@ static rpmProblemSet psCreate(void)
 }
 
 static void psAppend(rpmProblemSet probs, rpmProblemType type,
-		/*@dependent@*/ const void * key, Header h, const char * str1,
+		/*@dependent@*/ const void * key, Header h,
+		const char * dn, const char *bn,
 		Header altH, unsigned long ulong1)
 {
+    const char *n, *v, *r;
+    char *t;
+    rpmProblem p;
+
     if (probs->numProblems == probs->numProblemsAlloced) {
 	if (probs->numProblemsAlloced)
 	    probs->numProblemsAlloced *= 2;
@@ -174,24 +179,46 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 			probs->numProblemsAlloced * sizeof(*probs->probs));
     }
 
-    probs->probs[probs->numProblems].type = type;
-    probs->probs[probs->numProblems].key = key;
-    probs->probs[probs->numProblems].h = headerLink(h);
-    probs->probs[probs->numProblems].ulong1 = ulong1;
-    probs->probs[probs->numProblems].str1 = (str1 ? xstrdup(str1) : NULL);
-    probs->probs[probs->numProblems].altH = (altH ? headerLink(altH) : NULL);
-    probs->probs[probs->numProblems++].ignoreProblem = 0;
-}
+    p = probs->probs + probs->numProblems++;
+    p->type = type;
+    p->key = key;
+    p->ulong1 = ulong1;
+    p->ignoreProblem = 0;
 
-static void psAppendFile(rpmProblemSet probs, rpmProblemType type,
-		/*@dependent@*/ const void * key, Header h,
-		const char * dirName, const char * baseName,
-		Header altH, unsigned long ulong1)
-{
-    char * str = alloca(strlen(dirName) + strlen(baseName) + 1);
+    if (dn || bn) {
+	p->str1 =
+	    t = xmalloc((dn ? strlen(dn) : 0) + (bn ? strlen(bn) : 0) + 1);
+	if (dn) t = stpcpy(t, dn);
+	if (bn) t = stpcpy(t, bn);
+    } else
+	p->str1 = NULL;
 
-    (void) stpcpy( stpcpy(str, dirName), baseName);
-    psAppend(probs, type, key, h, str, altH, ulong1);
+    if (h) {
+	p->h = headerLink(h);
+	headerNVR(h, &n, &v, &r);
+	p->pkgNEVR =
+	    t = xmalloc(strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
+	t = stpcpy(t, n);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, v);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, r);
+    } else {
+	p->pkgNEVR = NULL;
+	p->h = NULL;
+    }
+
+    if (altH) {
+	headerNVR(altH, &n, &v, &r);
+	p->altNEVR =
+	    t = xmalloc(strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
+	t = stpcpy(t, n);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, v);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, r);
+    } else
+	p->altNEVR = NULL;
 }
 
 static int archOkay(Header h)
@@ -253,11 +280,11 @@ void rpmProblemSetFree(rpmProblemSet probs)
     int i;
 
     for (i = 0; i < probs->numProblems; i++) {
-	headerFree(probs->probs[i].h);
-	if (probs->probs[i].str1) xfree(probs->probs[i].str1);
-	if (probs->probs[i].altH) {
-	    headerFree(probs->probs[i].altH);
-	}
+	rpmProblem p = probs->probs + i;
+	if (p->h)	headerFree(p->h);
+	if (p->pkgNEVR)	xfree(p->pkgNEVR);
+	if (p->altNEVR)	xfree(p->altNEVR);
+	if (p->str1) xfree(p->str1);
     }
     free(probs);
 }
@@ -344,7 +371,7 @@ static Header relocateFileList(struct availablePackage * alp,
 		if (!strcmp(validRelocations[j], relocations[i].oldPath)) break;
 	    if (j == numValid && !allowBadRelocate)
 		psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h,
-			 relocations[i].oldPath, NULL,0 );
+			 relocations[i].oldPath, NULL, NULL, 0);
 	} else {
 	    relocations[i].newPath = NULL;
 	}
@@ -586,21 +613,20 @@ static Header relocateFileList(struct availablePackage * alp,
     return h;
 }
 
+/*
+ * As the problem sets are generated in an order solely dependent
+ * on the ordering of the packages in the transaction, and that
+ * ordering can't be changed, the problem sets must be parallel to
+ * one another. Additionally, the filter set must be a subset of the
+ * target set, given the operations available on transaction set.
+ * This is good, as it lets us perform this trim in linear time, rather
+ * then logarithmic or quadratic.
+ */
 static int psTrim(rpmProblemSet filter, rpmProblemSet target)
 {
-    /* As the problem sets are generated in an order solely dependent
-     * on the ordering of the packages in the transaction, and that
-     * ordering can't be changed, the problem sets must be parallel to
-     * one another. Additionally, the filter set must be a subset of the
-     * target set, given the operations available on transaction set.
-     * This is good, as it lets us perform this trim in linear time, rather
-     * then logarithmic or quadratic.
-     */
-    rpmProblem f, t;
+    rpmProblem f = filter->probs;
+    rpmProblem t = target->probs;
     int gotProblems = 0;
-
-    f = filter->probs;
-    t = target->probs;
 
     while ((f - filter->probs) < filter->numProblems) {
 	if (!f->ignoreProblem) {
@@ -835,9 +861,8 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
 	    if (reportConflicts)
-		psAppendFile(probs, RPMPROB_FILE_CONFLICT, fi->ap->key,
-			 fi->ap->h, fi->dnl[fi->dil[fileNum]], 
-			 fi->bnl[fileNum], h, 0);
+		psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key, fi->ap->h,
+			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum], h, 0);
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
 		if (!shared->isRemoved)
@@ -1028,7 +1053,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 			fi->fmd5s[i],
 			fi->flinks[i])) {
 		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap->key,
-			 fi->ap->h, filespec, recs[otherPkgNum]->ap->h, 0);
+			fi->ap->h, filespec, NULL, recs[otherPkgNum]->ap->h, 0);
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
@@ -1121,7 +1146,7 @@ static int ensureOlder(/*@unused@*/ rpmdb rpmdb, Header new, Header old, rpmProb
 	rc = 0;
     else if (result > 0) {
 	rc = 1;
-	psAppend(probs, RPMPROB_OLDPACKAGE, key, new, NULL, old, 0);
+	psAppend(probs, RPMPROB_OLDPACKAGE, key, new, NULL, NULL, old, 0);
     }
 
     return rc;
@@ -1330,10 +1355,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	alp++)
     {
 	if (!archOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
-	    psAppend(ts->probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL, 0);
+	    psAppend(ts->probs, RPMPROB_BADARCH, alp->key, alp->h,
+			NULL, NULL, NULL, 0);
 
 	if (!osOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
-	    psAppend(ts->probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL, 0);
+	    psAppend(ts->probs, RPMPROB_BADOS, alp->key, alp->h,
+			NULL, NULL, NULL, 0);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    rpmdbMatchIterator mi;
@@ -1352,7 +1379,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    rpmdbSetIteratorRelease(mi, alp->release);
 	    while (rpmdbNextIterator(mi) != NULL) {
 		psAppend(ts->probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h,
-			 NULL, NULL, 0);
+			NULL, NULL, NULL, 0);
 		break;
 	    }
 	    rpmdbFreeIterator(mi);
@@ -1630,12 +1657,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		break;
 	    for (i = 0; i < filesystemCount; i++) {
 		if (adj_fs_blocks(di[i].bneeded) > di[i].bavail)
-		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap->key, fi->ap->h,
-			filesystems[i], NULL,
-	 	    (adj_fs_blocks(di[i].bneeded) - di[i].bavail) * di[i].bsize);
+		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap->key,
+			fi->ap->h, filesystems[i], NULL, NULL,
+	 	   (adj_fs_blocks(di[i].bneeded) - di[i].bavail) * di[i].bsize);
 		if (adj_fs_blocks(di[i].ineeded) > di[i].iavail)
-		    psAppend(ts->probs, RPMPROB_DISKNODES, fi->ap->key, fi->ap->h,
-			filesystems[i], NULL,
+		    psAppend(ts->probs, RPMPROB_DISKNODES, fi->ap->key,
+			fi->ap->h, filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(di[i].ineeded) - di[i].iavail));
 	    }
 	    break;

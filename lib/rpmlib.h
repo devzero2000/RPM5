@@ -731,9 +731,10 @@ typedef enum rpmProblemType_e {
 /**
  */
 typedef /*@abstract@*/ struct rpmProblem_s {
-    Header h;
-    Header altH;
+/*@only@*/ /*@null@*/ const char * pkgNEVR;
+/*@only@*/ /*@null@*/ const char * altNEVR;
 /*@dependent@*/ const void * key;
+    Header h;
     rpmProblemType type;
     int ignoreProblem;
 /*@only@*/ const char * str1;

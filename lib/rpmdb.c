@@ -1994,7 +1994,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		case RPMTAG_REQUIRENAME:
 		    /* Filter out install prerequisites. */
 		    if (requireFlags && isInstallPreReq(requireFlags[i])) {
-		rpmMessage(RPMMESS_DEBUG, ("%6d %s\n"), i, rpmvals[i]);
+		rpmMessage(RPMMESS_DEBUG, ("%6d %s (install prerequisite) skipped\n"), i, rpmvals[i]);
 			continue;
 		    }
 		    rec->tagNum = i;

@@ -55,6 +55,7 @@
 	- autoconfigure generating rpm API doco.
 	- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
 	- use package version 3 if --nodirtokens is specified.
+	- add package names to problem sets early, don't save removed header.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
