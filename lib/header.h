@@ -37,6 +37,32 @@ struct headerTagTableEntry {
     int val;
 };
 
+enum headerSprintfExtenstionType { HEADER_EXT_LAST = 0, HEADER_EXT_FORMAT,
+				   HEADER_EXT_MORE, HEADER_EXT_TAG };
+
+/* This will only ever be passed RPM_TYPE_INT32 or RPM_TYPE_STRING to
+   help keep things simple */
+typedef char * (*headerTagFormatFunction)(int_32 type, const void * data, 
+					  char * formatPrefix,
+					  int padding, int element);
+typedef int (*headerTagTagFunction)(Header h, int_32 * type, void ** data,
+				       int_32 * count, int * freeData);
+
+struct headerSprintfExtension {
+    enum headerSprintfExtenstionType type;
+    char * name;
+    union {
+	void * generic;
+	headerTagFormatFunction formatFunction;
+	headerTagTagFunction tagFunction;
+	struct headerSprintfExtension * more;
+    } u;
+};
+
+/* This defines some basic conversions all header users would probably like
+   to have */
+extern const struct headerSprintfExtension headerDefaultFormats[];
+
 /* read and write a header from a file */
 Header headerRead(int fd, int magicp);
 void headerWrite(int fd, Header h, int magicp);
@@ -56,18 +82,42 @@ void headerFree(Header h);
 void headerDump(Header h, FILE *f, int flags, 
 		const struct headerTagTableEntry * tags);
 
+/* the returned string must be free()d */
+char * headerSprintf(Header h, const char * fmt, 
+		     const struct headerTagTableEntry * tags,
+		     const struct headerSprintfExtension * extentions,
+		     char ** error);
+
 #define HEADER_DUMP_INLINE   1
 
-/* I18N items need an RPM_STRING_TYPE entry (used by default) and an
-   RPM_18NSTRING_TYPE table added. Dups are okay, but only defined for
-   iteration (with the exceptions noted below) */
+/* Duplicate tags are okay, but only defined for iteration (with the 
+   exceptions noted below). While you are allowed to add i18n string
+   arrays through this function, you probably don't mean to. See
+   headerAddI18NString() instead */
 int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+
+/* For the C locale, lang should be *NULL*. Here are the rules:
+
+	1) If the tag isn't in the Header, it's added with the passed string
+	   as a version.
+	2) If the tag occurs multiple times in entry, which tag is affected
+	   by the operation is undefined.
+	2) If the tag is in the header w/ this language, the entry is
+	   *replaced* (like headerModifyEntry()).
+
+   This function is intended to just "do the right thing". If you need
+   more fine grained control use headerAddEntry() and headerModifyEntry()
+   but be careful!
+*/
+int headerAddI18NString(Header h, int_32 tag, char * string, char * lang);
 
 /* Appends item p to entry w/ tag and type as passed. Won't work on
    RPM_STRING_TYPE. Any pointers from headerGetEntry() for this entry
    are invalid after this call has been made! */
 int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c);
+int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
+			   void * p, int_32 c);
 
 /* Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements w/
    RPM_I18NSTRING_TYPE equivalent enreies are translated (if HEADER_I18NTABLE
@@ -87,6 +137,14 @@ HeaderIterator headerInitIterator(Header h);
 int headerNextIterator(HeaderIterator iter,
 		       int_32 *tag, int_32 *type, void **p, int_32 *c);
 void headerFreeIterator(HeaderIterator iter);
+
+/* reexamines LANGUAGE and LANG settings to set a new language for the
+   header; this only needs to be called if LANGUAGE or LANG may have changed
+   since the first headerGetEntry() on the header */
+void headerResetLang(Header h);
+/* sets the language path for the header; this doesn't need to be done if
+   the LANGUAGE or LANG enivronment variable are correct */
+void headerSetLangPath(Header h, char * lang);
 
 Header headerCopy(Header h);
 void headerSort(Header h);
