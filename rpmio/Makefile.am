@@ -30,7 +30,7 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release @VERSION@ \
+librpmio_la_LDFLAGS = -release 4.2 \
 	$(top_builddir)/file/libfmagic.la \
 	@WITH_ZLIB_LIB@ \
 	-lrt -lpthread

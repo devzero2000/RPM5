@@ -8,7 +8,7 @@ AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 AC_CONFIG_HEADERS
-AM_INIT_AUTOMAKE(rpm, 4.2)
+AM_INIT_AUTOMAKE(rpm, 4.2.1)
 AM_CONFIG_HEADER(config.h)
 
 dnl XXX AM_MAINTAINER_MODE
@@ -21,7 +21,7 @@ dnl ****************************************************************************
 dnl *                                                                          *
 dnl *                   *** WARNING WARNING WARNING ***                        *
 dnl *                                                                          *
-dnl * This is source code from the development branch of rpm-4.2.              *
+dnl * This is source code from the development branch of rpm-4.3.              *
 dnl *                                                                          *
 dnl * If you want the "production" rpm-4.0.4 or rpm-4.1 code, then you should  *
 dnl * either use an rpm-4.0.4 or rpm-4.1 src.rpm. Alternatively, if using a    *
@@ -32,10 +32,13 @@ dnl *       (no password, just carriage return)                                *
 dnl *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
 dnl *       cd rpm                                                             *
 dnl *                                                                          *
-dnl * Here's the rpm-4_1 branch:                                               *
+dnl * Here's the rpm-4_2 branch, latest is rpm-4.2.1:                          *
+dnl *       cvs up -r rpm-4_2                                                  *
+dnl *                                                                          *
+dnl * Here's the rpm-4_1 branch, latest is rpm-4.1.1:                          *
 dnl *       cvs up -r rpm-4_1                                                  *
 dnl *                                                                          *
-dnl * Here's the rpm-4_0 branch:                                               *
+dnl * Here's the rpm-4_0 branch, latest is rpm-4.0.5:                          *
 dnl *       cvs up -r rpm-4_0                                                  *
 dnl *                                                                          *
 dnl ****************************************************************************

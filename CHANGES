@@ -1,3 +1,5 @@
+4.2 -> 4.2.1:
+
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.
 	- db: don't return EACCES on db->close w/o environment.
