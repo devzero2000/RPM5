@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-25 17:22-0500\n"
+"POT-Creation-Date: 2004-03-03 00:20+0000\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -70,12 +70,10 @@ msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
 
 #: rpm2cpio.c:55
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "argument nie jest pakietem RPM\n"
 
 #: rpm2cpio.c:60
-#, c-format
 msgid "error reading header from package\n"
 msgstr "b³±d odczytu nag³ówka z pakietu\n"
 
@@ -124,12 +122,10 @@ msgid "RPM version %s\n"
 msgstr "RPM wersja %s\n"
 
 #: rpmqv.c:136
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:137
-#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -284,7 +280,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty dla --root (-r) musz± siê rozpoczynaæ od /"
 
 #: rpmqv.c:541
-#, c-format
 msgid "no files to sign\n"
 msgstr "brak plików do podpisania\n"
 
@@ -294,7 +289,6 @@ msgid "cannot access file %s\n"
 msgstr "brak dostêpu do pliku %s\n"
 
 #: rpmqv.c:565
-#, c-format
 msgid "pgp not found: "
 msgstr "nie znaleziono pgp: "
 
@@ -303,12 +297,10 @@ msgid "Enter pass phrase: "
 msgstr "Podaj has³o: "
 
 #: rpmqv.c:572
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Weryfikacja has³a nieudana\n"
 
 #: rpmqv.c:576
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Has³o jest prawid³owe.\n"
 
@@ -322,7 +314,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign mo¿na u¿yæ tylko w trakcie budowania pakietu"
 
 #: rpmqv.c:605
-#, c-format
 msgid "exec failed\n"
 msgstr "wykonanie nie powiod³o siê\n"
 
@@ -559,47 +550,47 @@ msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:1840
+#: build/files.c:1841
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:1864
+#: build/files.c:1865
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob niedozwolony: %s\n"
 
-#: build/files.c:1881 lib/rpminstall.c:361
+#: build/files.c:1882 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:1941
+#: build/files.c:1942
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:1952 build/pack.c:156
+#: build/files.c:1953 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
 
-#: build/files.c:2348
+#: build/files.c:2349
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2360 build/parsePrep.c:50
+#: build/files.c:2361 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:2404
+#: build/files.c:2405
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2427
+#: build/files.c:2428
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -608,7 +599,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2455
+#: build/files.c:2456
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s-%s-%s\n"
@@ -1557,17 +1548,17 @@ msgstr "%s unlink %s nie powiod³o siê: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s utworzony jako %s\n"
 
-#: lib/misc.c:42
+#: lib/misc.c:39
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "nie mo¿na utworzyæ %%%s %s\n"
 
-#: lib/misc.c:47
+#: lib/misc.c:44
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nie mo¿na zapisaæ do %%%s %s\n"
 
-#: lib/misc.c:189 lib/misc.c:194 lib/misc.c:200
+#: lib/misc.c:186 lib/misc.c:191 lib/misc.c:197
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "b³±d przy tworzeniu pliku tymczasowego %s\n"
@@ -1598,12 +1589,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "rozmiar obszaru: B£ÊDNY, ril(%d) > il(%d)\n"
 
 #: lib/package.c:453
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: B£ÊDNY, nie szesnastkowy\n"
 
 #: lib/package.c:471
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA: B£ÊDNY, nie binarny\n"
 
@@ -1619,7 +1608,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr rozmiar(%d): B£ÊDNY, read zwróci³o %d\n"
 
 #: lib/package.c:665
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: B£ÊDNY\n"
 
@@ -1639,7 +1627,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr blob(%d): B£ÊDNY, read zwróci³o %d\n"
 
 #: lib/package.c:709
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr load: B£ÊDNY\n"
 
@@ -2720,7 +2707,8 @@ msgstr ""
 "nazwy plików zapisano jako (dirName,baseName,dirIndex) a nie jako ¶cie¿ki."
 
 #: lib/rpmlibprov.c:35
-msgid "package payload is compressed using bzip2."
+#, fuzzy
+msgid "package payload can be compressed using bzip2."
 msgstr "dane pakietu s± skompresowane bzipem2."
 
 #: lib/rpmlibprov.c:38
@@ -3006,7 +2994,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "sigh rozmiar(%d): B£ÊDNY, read zwróci³o %d\n"
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "sigh magic: B£ÊDNY\n"
 
@@ -3031,7 +3018,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh etykieta[%d]: B£ÊDNA, etykieta %d typ %d offset %d licznik %d\n"
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr "sigh load: B£ÊDNY\n"
 
@@ -3099,9 +3085,6 @@ msgstr "Otrzymano %d bajtów sygnatury GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3142,12 +3125,10 @@ msgid "V3 DSA signature: "
 msgstr "Sygnatura V3 DSA: "
 
 #: lib/signature.c:1357
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Weryfikacja sygnatury: B£ÊDNE PARAMETRY\n"
 
 #: lib/signature.c:1384
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Uszkodzony skrót MD5: NIE OBS£UGIWANY\n"
 
@@ -3560,93 +3541,93 @@ msgstr "usuwanie katalogu %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
 
-#: rpmio/macro.c:236
+#: rpmio/macro.c:232
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktywny %d pusty %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:374
+#: rpmio/macro.c:370
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(pusty)"
 
-#: rpmio/macro.c:417
+#: rpmio/macro.c:413
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(pusty)\n"
 
-#: rpmio/macro.c:655
+#: rpmio/macro.c:651
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s ma nie zakoñczone cia³o\n"
 
-#: rpmio/macro.c:688
+#: rpmio/macro.c:684
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%define)\n"
 
-#: rpmio/macro.c:694
+#: rpmio/macro.c:690
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s ma nie zakoñczone opcje\n"
 
-#: rpmio/macro.c:699
+#: rpmio/macro.c:695
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s ma puste cia³o\n"
 
-#: rpmio/macro.c:705
+#: rpmio/macro.c:701
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Rozwiniêcie makra %%%s nie powiod³o siê\n"
 
-#: rpmio/macro.c:740
+#: rpmio/macro.c:736
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)\n"
 
-#: rpmio/macro.c:858
+#: rpmio/macro.c:854
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d\n"
 
-#: rpmio/macro.c:985
+#: rpmio/macro.c:981
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c w %s(%s)\n"
 
-#: rpmio/macro.c:1185
+#: rpmio/macro.c:1181
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "G³êboko¶æ rekursji(%d) wiêksza ni¿ maksymalna(%d)\n"
 
-#: rpmio/macro.c:1256 rpmio/macro.c:1273
+#: rpmio/macro.c:1252 rpmio/macro.c:1269
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakoñczone %c: %s\n"
 
-#: rpmio/macro.c:1314
+#: rpmio/macro.c:1310
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%\n"
 
-#: rpmio/macro.c:1443
+#: rpmio/macro.c:1439
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête\n"
 
-#: rpmio/macro.c:1514
+#: rpmio/macro.c:1739
 msgid "Target buffer overflow\n"
 msgstr "Przepe³nienie bufora docelowego\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1709 rpmio/macro.c:1715
+#: rpmio/macro.c:1944 rpmio/macro.c:1950
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/macro.c:1718
+#: rpmio/macro.c:1953
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
@@ -3713,7 +3694,6 @@ msgid "(no error)"
 msgstr "(brak b³êdu)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatalny b³±d: "
@@ -3768,56 +3748,56 @@ msgstr "port musi byæ liczb±\n"
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:514 tools/rpmgraph.c:269
 msgid "don't verify header+payload signature"
 msgstr "nie sprawdzaj sygnatury nag³ówka+danych"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:517
 msgid "don't update cache database, only print package paths"
 msgstr "nie uaktualniaj bazy danych bufora, tylko wypisz ¶cie¿ki pakietu"
 
-#: tools/rpmcache.c:522
+#: tools/rpmcache.c:521
 msgid "follow command line symlinks"
 msgstr "pod±¿aj za dowi±zaniami z linii poleceñ"
 
-#: tools/rpmcache.c:525
+#: tools/rpmcache.c:524
 msgid "logical walk"
 msgstr "przechod¼ logicznie"
 
-#: tools/rpmcache.c:528
+#: tools/rpmcache.c:527
 msgid "don't change directories"
 msgstr "nie zmieniaj katalogów"
 
-#: tools/rpmcache.c:531
+#: tools/rpmcache.c:530
 msgid "don't get stat info"
 msgstr "nie odczytuj informacji stat"
 
-#: tools/rpmcache.c:534
+#: tools/rpmcache.c:533
 msgid "physical walk"
 msgstr "przechod¼ fizycznie"
 
-#: tools/rpmcache.c:537
+#: tools/rpmcache.c:536
 msgid "return dot and dot-dot"
 msgstr "zwracaj kropkê i kropkê-kropkê"
 
-#: tools/rpmcache.c:540
+#: tools/rpmcache.c:539
 msgid "don't cross devices"
 msgstr "nie przechod¼ miêdzy urz±dzeniami"
 
-#: tools/rpmcache.c:543
+#: tools/rpmcache.c:542
 msgid "return whiteout information"
 msgstr "zwróæ informacje o whiteout"
 
-#: tools/rpmcache.c:546 tools/rpmdeps.c:34 tools/rpmgraph.c:276
+#: tools/rpmcache.c:545 tools/rpmdeps.c:34 tools/rpmgraph.c:276
 msgid "Common options for all rpm modes and executables:"
 msgstr "Wspólne opcje dla wszystkich trybów i binarek rpm-a:"
 
-#: tools/rpmcache.c:578
+#: tools/rpmcache.c:577
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr "%s: makro %%{_cache_dbpath} jest b³êdnie skonfigurowane.\n"
 
-#: tools/rpmcache.c:618
+#: tools/rpmcache.c:617
 #, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: operacja na cache nie powiod³a siê: ec %d.\n"

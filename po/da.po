@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-25 17:22-0500\n"
+"POT-Creation-Date: 2004-03-03 00:20+0000\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -64,12 +64,10 @@ msgid "Building for target %s\n"
 msgstr "Opbygger for mål %s\n"
 
 #: rpm2cpio.c:55
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "parameter er ikke en RPM-pakke\n"
 
 #: rpm2cpio.c:60
-#, c-format
 msgid "error reading header from package\n"
 msgstr "fejl ved læsning af hovedet på pakke\n"
 
@@ -118,12 +116,12 @@ msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: rpmqv.c:136
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:137
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Dette program kan frit distribueres under betingelserne i GNU GPL"
@@ -271,7 +269,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "parameteren til --root (-r) skal starte med et /"
 
 #: rpmqv.c:541
-#, c-format
 msgid "no files to sign\n"
 msgstr "ingen filer at underskrive\n"
 
@@ -281,7 +278,6 @@ msgid "cannot access file %s\n"
 msgstr "kan ikke tilgå filen %s\n"
 
 #: rpmqv.c:565
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp ikke fundet: "
 
@@ -290,12 +286,10 @@ msgid "Enter pass phrase: "
 msgstr "Indtast adgangskode: "
 
 #: rpmqv.c:572
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Adgangskode ikke godkendt\n"
 
 #: rpmqv.c:576
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Adgangskode godkendt.\n"
 
@@ -309,7 +303,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign kan kun bruges ved pakkeopbygning"
 
 #: rpmqv.c:605
-#, c-format
 msgid "exec failed\n"
 msgstr "eksekvering mislykkedes\n"
 
@@ -548,54 +541,54 @@ msgstr ""
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:1840
+#: build/files.c:1841
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1864
+#: build/files.c:1865
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:1881 lib/rpminstall.c:361
+#: build/files.c:1882 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1941
+#: build/files.c:1942
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1952 build/pack.c:156
+#: build/files.c:1953 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2348
+#: build/files.c:2349
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2360 build/parsePrep.c:50
+#: build/files.c:2361 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2404
+#: build/files.c:2405
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2427
+#: build/files.c:2428
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2455
+#: build/files.c:2456
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -1565,17 +1558,17 @@ msgstr "åbning af %s mislykkedes %s\n"
 msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"
 
-#: lib/misc.c:42
+#: lib/misc.c:39
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "kan ikke oprette %s: %s\n"
 
-#: lib/misc.c:47
+#: lib/misc.c:44
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kunne ikke skrive til %s\n"
 
-#: lib/misc.c:189 lib/misc.c:194 lib/misc.c:200
+#: lib/misc.c:186 lib/misc.c:191 lib/misc.c:197
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "fejl ved oprettelse af midlertidig fil %s\n"
@@ -1606,12 +1599,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1627,7 +1618,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1647,7 +1637,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2774,7 +2763,7 @@ msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
 #: lib/rpmlibprov.c:35
-msgid "package payload is compressed using bzip2."
+msgid "package payload can be compressed using bzip2."
 msgstr ""
 
 #: lib/rpmlibprov.c:38
@@ -3066,7 +3055,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3091,7 +3079,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3159,9 +3146,6 @@ msgstr "Fik %d byte GPG-signatur\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3206,12 +3190,10 @@ msgid "V3 DSA signature: "
 msgstr "Ingen signatur\n"
 
 #: lib/signature.c:1357
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3627,93 +3609,93 @@ msgstr "fjerner kataloget %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
 
-#: rpmio/macro.c:236
+#: rpmio/macro.c:232
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktiv %d tom %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:374
+#: rpmio/macro.c:370
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(tom)"
 
-#: rpmio/macro.c:417
+#: rpmio/macro.c:413
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(tom)\n"
 
-#: rpmio/macro.c:655
+#: rpmio/macro.c:651
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makroen %%%s har et uafsluttet indhold (body)\n"
 
-#: rpmio/macro.c:688
+#: rpmio/macro.c:684
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makroen %%%s har et ugyldig navn (%%define)\n"
 
-#: rpmio/macro.c:694
+#: rpmio/macro.c:690
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makroen %%%s har uafsluttede parametre\n"
 
-#: rpmio/macro.c:699
+#: rpmio/macro.c:695
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makroen %%%s har intet indhold\n"
 
-#: rpmio/macro.c:705
+#: rpmio/macro.c:701
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Makroen %%%s kunne ikke udfoldes\n"
 
-#: rpmio/macro.c:740
+#: rpmio/macro.c:736
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makroen %%%s har ugyldigt navn (%%undefine)\n"
 
-#: rpmio/macro.c:858
+#: rpmio/macro.c:854
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) blev ikke brugt under niveau %d\n"
 
-#: rpmio/macro.c:985
+#: rpmio/macro.c:981
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Ukendt tilvalg %c i %s(%s)\n"
 
-#: rpmio/macro.c:1185
+#: rpmio/macro.c:1181
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdybde(%d) overskrider maks(%d)\n"
 
-#: rpmio/macro.c:1256 rpmio/macro.c:1273
+#: rpmio/macro.c:1252 rpmio/macro.c:1269
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Uafsluttet %c: %s\n"
 
-#: rpmio/macro.c:1314
+#: rpmio/macro.c:1310
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Et %% efterfølges af en makro, der ikke kan tolkes\n"
 
-#: rpmio/macro.c:1443
+#: rpmio/macro.c:1439
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makroen %%%.*s blev ikke fundet, overspringer\n"
 
-#: rpmio/macro.c:1514
+#: rpmio/macro.c:1739
 msgid "Target buffer overflow\n"
 msgstr "Overløb i målbuffer\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1709 rpmio/macro.c:1715
+#: rpmio/macro.c:1944 rpmio/macro.c:1950
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:1718
+#: rpmio/macro.c:1953
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
@@ -3780,7 +3762,6 @@ msgid "(no error)"
 msgstr "(ingen fejl)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatal fejl: "
@@ -3835,61 +3816,61 @@ msgstr "url-port skal være et tal\n"
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:514 tools/rpmgraph.c:269
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "verificér pakkesignatur"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:517
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:522
+#: tools/rpmcache.c:521
 msgid "follow command line symlinks"
 msgstr ""
 
-#: tools/rpmcache.c:525
+#: tools/rpmcache.c:524
 msgid "logical walk"
 msgstr ""
 
-#: tools/rpmcache.c:528
+#: tools/rpmcache.c:527
 #, fuzzy
 msgid "don't change directories"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: tools/rpmcache.c:531
+#: tools/rpmcache.c:530
 msgid "don't get stat info"
 msgstr ""
 
-#: tools/rpmcache.c:534
+#: tools/rpmcache.c:533
 msgid "physical walk"
 msgstr ""
 
-#: tools/rpmcache.c:537
+#: tools/rpmcache.c:536
 msgid "return dot and dot-dot"
 msgstr ""
 
-#: tools/rpmcache.c:540
+#: tools/rpmcache.c:539
 msgid "don't cross devices"
 msgstr ""
 
-#: tools/rpmcache.c:543
+#: tools/rpmcache.c:542
 msgid "return whiteout information"
 msgstr ""
 
-#: tools/rpmcache.c:546 tools/rpmdeps.c:34 tools/rpmgraph.c:276
+#: tools/rpmcache.c:545 tools/rpmdeps.c:34 tools/rpmgraph.c:276
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "Fælles tilvalg for alle rpm-tilstande:"
 
-#: tools/rpmcache.c:578
+#: tools/rpmcache.c:577
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:618
+#: tools/rpmcache.c:617
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: åbning mislykkedes: %s\n"

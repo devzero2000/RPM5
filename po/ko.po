@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-25 17:22-0500\n"
+"POT-Creation-Date: 2004-03-03 00:20+0000\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -63,12 +63,10 @@ msgid "Building for target %s\n"
 msgstr "%s(을)를 제작하고 있습니다\n"
 
 #: rpm2cpio.c:55
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "인수 값으로 RPM 패키지가 지정되어야 합니다\n"
 
 #: rpm2cpio.c:60
-#, c-format
 msgid "error reading header from package\n"
 msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 
@@ -118,12 +116,12 @@ msgid "RPM version %s\n"
 msgstr "RPM 버전 - %s\n"
 
 #: rpmqv.c:136
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:137
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "이 프로그램은 GNU Public License 내에서 자유롭게 재배포할 수 있습니다"
@@ -271,7 +269,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
 #: rpmqv.c:541
-#, c-format
 msgid "no files to sign\n"
 msgstr "서명할 파일이 없습니다\n"
 
@@ -281,7 +278,6 @@ msgid "cannot access file %s\n"
 msgstr "%s 파일에 접근할 수 없습니다\n"
 
 #: rpmqv.c:565
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp를 찾을 수 없음: "
 
@@ -290,12 +286,10 @@ msgid "Enter pass phrase: "
 msgstr "패스 구문(pass phrase) 입력: "
 
 #: rpmqv.c:572
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "패스 구문(pass phrase)이 올바르지 않습니다\n"
 
 #: rpmqv.c:576
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "패스 구문(pass phrase)이 일치합니다.\n"
 
@@ -309,7 +303,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign 옵션은 패키지 제작시에만 사용할 수 있습니다"
 
 #: rpmqv.c:605
-#, c-format
 msgid "exec failed\n"
 msgstr "실행에 실패했습니다\n"
 
@@ -547,54 +540,54 @@ msgstr ""
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead이 실패했습니다\n"
 
-#: build/files.c:1840
+#: build/files.c:1841
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "파일은 \"/\" 로 시작해야함: %s\n"
 
-#: build/files.c:1864
+#: build/files.c:1865
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob을 사용할 수 없음: %s\n"
 
-#: build/files.c:1881 lib/rpminstall.c:361
+#: build/files.c:1882 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1941
+#: build/files.c:1942
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
 
-#: build/files.c:1952 build/pack.c:156
+#: build/files.c:1953 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "행: %s\n"
 
-#: build/files.c:2348
+#: build/files.c:2349
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
-#: build/files.c:2360 build/parsePrep.c:50
+#: build/files.c:2361 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
 
-#: build/files.c:2404
+#: build/files.c:2405
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: build/files.c:2427
+#: build/files.c:2428
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2455
+#: build/files.c:2456
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "파일 처리 중: %s-%s-%s\n"
@@ -1553,17 +1546,17 @@ msgstr "%s %s 링크 해제에 실패함: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
 
-#: lib/misc.c:42
+#: lib/misc.c:39
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "%%%s %s(을)를 생성할 수 없습니다\n"
 
-#: lib/misc.c:47
+#: lib/misc.c:44
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%%%s %s(을)를 작성할 수 없습니다\n"
 
-#: lib/misc.c:189 lib/misc.c:194 lib/misc.c:200
+#: lib/misc.c:186 lib/misc.c:191 lib/misc.c:197
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "임시 파일 %s(을)를 생성하는 도중 오류가 발생했습니다\n"
@@ -1594,12 +1587,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1615,7 +1606,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1635,7 +1625,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2752,7 +2741,7 @@ msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
 #: lib/rpmlibprov.c:35
-msgid "package payload is compressed using bzip2."
+msgid "package payload can be compressed using bzip2."
 msgstr ""
 
 #: lib/rpmlibprov.c:38
@@ -3044,7 +3033,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3069,7 +3057,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3137,9 +3124,6 @@ msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3184,12 +3168,10 @@ msgid "V3 DSA signature: "
 msgstr "서명이 없습니다\n"
 
 #: lib/signature.c:1357
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 
@@ -3608,93 +3590,93 @@ msgstr "%s 디렉토리를 삭제합니다\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: rpmio/macro.c:236
+#: rpmio/macro.c:232
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d 활성 %d 비어있음\n"
 
 #. XXX just in case
-#: rpmio/macro.c:374
+#: rpmio/macro.c:370
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(비어있음)"
 
-#: rpmio/macro.c:417
+#: rpmio/macro.c:413
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(비어있음)\n"
 
-#: rpmio/macro.c:655
+#: rpmio/macro.c:651
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "매크로 %%%s에 종료되지 않은 내용(body)이 있습니다\n"
 
-#: rpmio/macro.c:688
+#: rpmio/macro.c:684
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "매크로 %%%s에 부적합한 이름이 있습니다 (%%define)\n"
 
-#: rpmio/macro.c:694
+#: rpmio/macro.c:690
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "매크로 %%%s에 종료되지 않은 옵션이 있습니다\n"
 
-#: rpmio/macro.c:699
+#: rpmio/macro.c:695
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "매크로 %%%s에 비어있는 내용(body)이 있습니다\n"
 
-#: rpmio/macro.c:705
+#: rpmio/macro.c:701
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "매크로 %%%s(을)를 확장(expand)하는데 실패했습니다\n"
 
-#: rpmio/macro.c:740
+#: rpmio/macro.c:736
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "매크로 %%%s에 부적합한 이름이 있습니다 (%%undefine)\n"
 
-#: rpmio/macro.c:858
+#: rpmio/macro.c:854
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "매크로 %%%s (%s)는 레벨 %d 이하에서는 사용할 수 없습니다\n"
 
-#: rpmio/macro.c:985
+#: rpmio/macro.c:981
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%2$s(%3$s)에 알 수 없는 옵션 %1$c(이)가 있습니다\n"
 
-#: rpmio/macro.c:1185
+#: rpmio/macro.c:1181
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "반복 횟수(%d)가 최대치(%d) 보다 큽니다\n"
 
-#: rpmio/macro.c:1256 rpmio/macro.c:1273
+#: rpmio/macro.c:1252 rpmio/macro.c:1269
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c(이)가 종료되지 않음: %s\n"
 
-#: rpmio/macro.c:1314
+#: rpmio/macro.c:1310
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "'%%' 다음에 처리할 수 없는(unparseable) 매크로가 있습니다\n"
 
-#: rpmio/macro.c:1443
+#: rpmio/macro.c:1439
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "매크로 %%%.*s를 찾을 수 없습니다, 생략합니다\n"
 
-#: rpmio/macro.c:1514
+#: rpmio/macro.c:1739
 msgid "Target buffer overflow\n"
 msgstr "목표대상(Target) 버퍼 오버플로우\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1709 rpmio/macro.c:1715
+#: rpmio/macro.c:1944 rpmio/macro.c:1950
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: rpmio/macro.c:1718
+#: rpmio/macro.c:1953
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
@@ -3762,7 +3744,6 @@ msgid "(no error)"
 msgstr "(오류 없음)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "치명적 오류: "
@@ -3817,59 +3798,59 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 msgid "failed to create %s: %s\n"
 msgstr "%s(을)를 생성하는데 실패함: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:514 tools/rpmgraph.c:269
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "패키지의 서명을 검사합니다"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:517
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:522
+#: tools/rpmcache.c:521
 msgid "follow command line symlinks"
 msgstr ""
 
-#: tools/rpmcache.c:525
+#: tools/rpmcache.c:524
 msgid "logical walk"
 msgstr ""
 
-#: tools/rpmcache.c:528
+#: tools/rpmcache.c:527
 #, fuzzy
 msgid "don't change directories"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: tools/rpmcache.c:531
+#: tools/rpmcache.c:530
 msgid "don't get stat info"
 msgstr ""
 
-#: tools/rpmcache.c:534
+#: tools/rpmcache.c:533
 msgid "physical walk"
 msgstr ""
 
-#: tools/rpmcache.c:537
+#: tools/rpmcache.c:536
 msgid "return dot and dot-dot"
 msgstr ""
 
-#: tools/rpmcache.c:540
+#: tools/rpmcache.c:539
 msgid "don't cross devices"
 msgstr ""
 
-#: tools/rpmcache.c:543
+#: tools/rpmcache.c:542
 msgid "return whiteout information"
 msgstr ""
 
-#: tools/rpmcache.c:546 tools/rpmdeps.c:34 tools/rpmgraph.c:276
+#: tools/rpmcache.c:545 tools/rpmdeps.c:34 tools/rpmgraph.c:276
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "모든 rpm 모드에서의 일반적인 옵션:"
 
-#: tools/rpmcache.c:578
+#: tools/rpmcache.c:577
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:618
+#: tools/rpmcache.c:617
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: 여는데 실패했습니다: %s\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-25 17:22-0500\n"
+"POT-Creation-Date: 2004-03-03 00:20+0000\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -63,12 +63,10 @@ msgid "Building for target %s\n"
 msgstr "Sestavuji pro cíl %s\n"
 
 #: rpm2cpio.c:55
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "parametr není RPM balíèek\n"
 
 #: rpm2cpio.c:60
-#, c-format
 msgid "error reading header from package\n"
 msgstr "chyba pøi pøi ètení hlavièky balíèku\n"
 
@@ -118,12 +116,12 @@ msgid "RPM version %s\n"
 msgstr "RPM verze %s\n"
 
 #: rpmqv.c:136
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (c) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:137
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Tento program lze volnì ¹íøit podle podmínek GNU GPL."
@@ -276,7 +274,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametry pro --root (-r) musejí zaèínat znakem /"
 
 #: rpmqv.c:541
-#, c-format
 msgid "no files to sign\n"
 msgstr "¾ádné soubory k podepsání\n"
 
@@ -286,7 +283,6 @@ msgid "cannot access file %s\n"
 msgstr "pøístup k souboru %s se nezdaøil\n"
 
 #: rpmqv.c:565
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp nenalezeno: "
 
@@ -295,12 +291,10 @@ msgid "Enter pass phrase: "
 msgstr "Vlo¾te heslovou frázi: "
 
 #: rpmqv.c:572
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Chybná heslová fráze\n"
 
 #: rpmqv.c:576
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Heslová fráze je v poøádku.\n"
 
@@ -314,7 +308,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign mù¾e být pou¾it jen pøi sestavování balíèkù"
 
 #: rpmqv.c:605
-#, c-format
 msgid "exec failed\n"
 msgstr "spu¹tìní selhalo\n"
 
@@ -553,54 +546,54 @@ msgstr ""
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead selhalo\n"
 
-#: build/files.c:1840
+#: build/files.c:1841
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 
-#: build/files.c:1864
+#: build/files.c:1865
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: build/files.c:1881 lib/rpminstall.c:361
+#: build/files.c:1882 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
 
-#: build/files.c:1941
+#: build/files.c:1942
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nemohu otevøít %%files soubor %s: %s\n"
 
-#: build/files.c:1952 build/pack.c:156
+#: build/files.c:1953 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "øádek: %s\n"
 
-#: build/files.c:2348
+#: build/files.c:2349
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "©patný soubor: %s: %s\n"
 
-#: build/files.c:2360 build/parsePrep.c:50
+#: build/files.c:2361 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "©patný vlastník/skupina: %s\n"
 
-#: build/files.c:2404
+#: build/files.c:2405
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "rozbalování archívu selhalo %s%s: %s\n"
 
-#: build/files.c:2427
+#: build/files.c:2428
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2455
+#: build/files.c:2456
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Zpracovávám soubory: %s-%s-%s\n"
@@ -1567,17 +1560,17 @@ msgstr "%s unlink %s selhal: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s vytvoøen jako %s\n"
 
-#: lib/misc.c:42
+#: lib/misc.c:39
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/misc.c:47
+#: lib/misc.c:44
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nemohu zapsat do %%%s %s\n"
 
-#: lib/misc.c:189 lib/misc.c:194 lib/misc.c:200
+#: lib/misc.c:186 lib/misc.c:191 lib/misc.c:197
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
@@ -1608,12 +1601,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1629,7 +1620,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1649,7 +1639,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2764,7 +2753,7 @@ msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
 #: lib/rpmlibprov.c:35
-msgid "package payload is compressed using bzip2."
+msgid "package payload can be compressed using bzip2."
 msgstr ""
 
 #: lib/rpmlibprov.c:38
@@ -3051,7 +3040,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3076,7 +3064,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3149,9 +3136,6 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3196,12 +3180,10 @@ msgid "V3 DSA signature: "
 msgstr "generovat PGP/GPG podpis"
 
 #: lib/signature.c:1357
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3613,93 +3595,93 @@ msgstr ""
 msgid "failed to remove directory %s: %s\n"
 msgstr "Nelze pøejmenovat %s na %s: %m\n"
 
-#: rpmio/macro.c:236
+#: rpmio/macro.c:232
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: rpmio/macro.c:374
+#: rpmio/macro.c:370
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:417
+#: rpmio/macro.c:413
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:655
+#: rpmio/macro.c:651
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:688
+#: rpmio/macro.c:684
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:694
+#: rpmio/macro.c:690
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:699
+#: rpmio/macro.c:695
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:705
+#: rpmio/macro.c:701
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:740
+#: rpmio/macro.c:736
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:858
+#: rpmio/macro.c:854
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:985
+#: rpmio/macro.c:981
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Neznámý typ ikony: %s\n"
 
-#: rpmio/macro.c:1185
+#: rpmio/macro.c:1181
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1256 rpmio/macro.c:1273
+#: rpmio/macro.c:1252 rpmio/macro.c:1269
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: rpmio/macro.c:1314
+#: rpmio/macro.c:1310
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1443
+#: rpmio/macro.c:1439
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr ""
 
-#: rpmio/macro.c:1514
+#: rpmio/macro.c:1739
 msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1709 rpmio/macro.c:1715
+#: rpmio/macro.c:1944 rpmio/macro.c:1950
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: rpmio/macro.c:1718
+#: rpmio/macro.c:1953
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
@@ -3770,7 +3752,6 @@ msgid "(no error)"
 msgstr "(chyba: 0x%x)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 #, fuzzy
 msgid "fatal error: "
@@ -3828,59 +3809,59 @@ msgstr "øádek %d: Polo¾ka Epoch/Serial musí být èíslo: %s\n"
 msgid "failed to create %s: %s\n"
 msgstr "nemohu zjistit stav %s: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:514 tools/rpmgraph.c:269
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "ovìøit podpis v balíèku"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:517
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:522
+#: tools/rpmcache.c:521
 msgid "follow command line symlinks"
 msgstr ""
 
-#: tools/rpmcache.c:525
+#: tools/rpmcache.c:524
 msgid "logical walk"
 msgstr ""
 
-#: tools/rpmcache.c:528
+#: tools/rpmcache.c:527
 #, fuzzy
 msgid "don't change directories"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: tools/rpmcache.c:531
+#: tools/rpmcache.c:530
 msgid "don't get stat info"
 msgstr ""
 
-#: tools/rpmcache.c:534
+#: tools/rpmcache.c:533
 msgid "physical walk"
 msgstr ""
 
-#: tools/rpmcache.c:537
+#: tools/rpmcache.c:536
 msgid "return dot and dot-dot"
 msgstr ""
 
-#: tools/rpmcache.c:540
+#: tools/rpmcache.c:539
 msgid "don't cross devices"
 msgstr ""
 
-#: tools/rpmcache.c:543
+#: tools/rpmcache.c:542
 msgid "return whiteout information"
 msgstr ""
 
-#: tools/rpmcache.c:546 tools/rpmdeps.c:34 tools/rpmgraph.c:276
+#: tools/rpmcache.c:545 tools/rpmdeps.c:34 tools/rpmgraph.c:276
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "Spoleèné volby pro v¹echny módy:"
 
-#: tools/rpmcache.c:578
+#: tools/rpmcache.c:577
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:618
+#: tools/rpmcache.c:617
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: otevøení selhalo: %s\n"

@@ -25,6 +25,7 @@
 	- force FD_CLOEXEC on 1st 100 inherited fdno's.
 	- serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
 	- permit globs in macrofiles: directive (#117217).
+	- selinux: ignore ENOTSUP return from lsetfilecon.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

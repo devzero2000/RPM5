@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.16
+Release: 0.18
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -485,8 +485,13 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Mar  5 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.18
+- selinux: ignore ENOTSUP return from lsetfilecon.
+
 * Mon Mar  1 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.17
 - permit globs in macrofiles: directive (#117217).
+- fix: segfault generating transaction serialization lock path.
+- use /etc/security/selinux/file_contexts instead.
 
 * Wed Feb 25 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.15
 - serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
