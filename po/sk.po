@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-05 15:13-0400\n"
+"POT-Creation-Date: 2001-06-05 16:19-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3787,11 +3787,11 @@ msgstr "otvára sa databáza s právami 0x%x v %s\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr "výhradný"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "shared"
 msgstr "zdieµaný"
 
@@ -3825,32 +3825,32 @@ msgstr "odstraòuje sa index súborov pre %s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: rpmdb/db3.c:1132
+#: rpmdb/db3.c:1134
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: rpmdb/db3.c:1139
+#: rpmdb/db3.c:1141
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/dbconfig.c:385
+#: rpmdb/dbconfig.c:392
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:422
+#: rpmdb/dbconfig.c:429
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:431
+#: rpmdb/dbconfig.c:438
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:440
+#: rpmdb/dbconfig.c:447
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""

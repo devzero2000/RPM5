@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-05 15:13-0400\n"
+"POT-Creation-Date: 2001-06-05 16:19-0400\n"
 "PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3635,11 +3635,11 @@ msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных\n"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "shared"
 msgstr "разделяемый"
 
@@ -3673,32 +3673,32 @@ msgstr "закрыт индекс базы данных %s/%s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1132
+#: rpmdb/db3.c:1134
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:1139
+#: rpmdb/db3.c:1141
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"
 
-#: rpmdb/dbconfig.c:385
+#: rpmdb/dbconfig.c:392
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
 
-#: rpmdb/dbconfig.c:422
+#: rpmdb/dbconfig.c:429
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "неверное числовое значение %s, пропущено\n"
 
-#: rpmdb/dbconfig.c:431
+#: rpmdb/dbconfig.c:438
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s имеет слишком малую или слишком большую величину long, пропущено\n"
 
-#: rpmdb/dbconfig.c:440
+#: rpmdb/dbconfig.c:447
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""

@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-06-05 15:13-0400\n"
+msgstr "POT-Creation-Date: 2001-06-05 16:19-0400\n"
 
 # , c-format
 #: build.c:36
@@ -3980,11 +3980,11 @@ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 msgid "cannot get %s lock on database\n"
 msgstr "não foi passado pacote para desinstalação"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "shared"
 msgstr ""
 
@@ -4018,32 +4018,32 @@ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:1132
+#: rpmdb/db3.c:1134
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "não foi passado pacote para desinstalação"
 
-#: rpmdb/db3.c:1139
+#: rpmdb/db3.c:1141
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/dbconfig.c:385
+#: rpmdb/dbconfig.c:392
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:422
+#: rpmdb/dbconfig.c:429
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:431
+#: rpmdb/dbconfig.c:438
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:440
+#: rpmdb/dbconfig.c:447
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-05 15:13-0400\n"
+"POT-Creation-Date: 2001-06-05 16:19-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3772,11 +3772,11 @@ msgstr "odpiranje datoteke %s v naèinu 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "shared"
 msgstr "skupno"
 
@@ -3810,32 +3810,32 @@ msgstr "zaprto  db kazalo       %s/%s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
 
-#: rpmdb/db3.c:1132
+#: rpmdb/db3.c:1134
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:1139
+#: rpmdb/db3.c:1141
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "zaklenjeno  db kazalo       %s/%s\n"
 
-#: rpmdb/dbconfig.c:385
+#: rpmdb/dbconfig.c:392
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "dbiSetConfig: neprepoznana izbira db: \"%s\" prezrto\n"
 
-#: rpmdb/dbconfig.c:422
+#: rpmdb/dbconfig.c:429
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s ima neveljavno ¹tevilèno vrednost, prezrto\n"
 
-#: rpmdb/dbconfig.c:431
+#: rpmdb/dbconfig.c:438
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ima preveliko ali premajhno dolgo (long) vrednost, prezrto\n"
 
-#: rpmdb/dbconfig.c:440
+#: rpmdb/dbconfig.c:447
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""

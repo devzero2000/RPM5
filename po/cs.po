@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-05 15:13-0400\n"
+"POT-Creation-Date: 2001-06-05 16:19-0400\n"
 "PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3606,11 +3606,11 @@ msgstr "otevírám db soubor     %s mode 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nemohu vytvoøit zámek %s na databázi\n"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr "výhradní"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "shared"
 msgstr "sdílený"
 
@@ -3644,32 +3644,32 @@ msgstr "uzavøen db index       %s/%s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otevírám db index      %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1132
+#: rpmdb/db3.c:1134
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu zamknout databázi zámkem %s v %s/%s\n"
 
-#: rpmdb/db3.c:1139
+#: rpmdb/db3.c:1141
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "uzamèen db index       %s/%s\n"
 
-#: rpmdb/dbconfig.c:385
+#: rpmdb/dbconfig.c:392
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "neznámá db volba: \"%s\" ignorována\n"
 
-#: rpmdb/dbconfig.c:422
+#: rpmdb/dbconfig.c:429
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s má neplatnou numerickou hodnotu, pøeskoèeno\n"
 
-#: rpmdb/dbconfig.c:431
+#: rpmdb/dbconfig.c:438
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s má moc velkou nebo moc malou long hodnotu, pøeskoèeno\n"
 
-#: rpmdb/dbconfig.c:440
+#: rpmdb/dbconfig.c:447
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s má pøíli¹ velkou nebo moc malou celoèíselnou hodnotu, pøeskoèeno\n"

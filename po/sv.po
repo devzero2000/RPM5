@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-05 15:13-0400\n"
+"POT-Creation-Date: 2001-06-05 16:19-0400\n"
 "PO-Revision-Date: 2001-05-10 23:07+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3587,11 +3587,11 @@ msgstr "öppnar db-fil          %s rättighet 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kan inte få %s lås på databas\n"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1134
+#: rpmdb/db1.c:557 rpmdb/db3.c:1136
 msgid "shared"
 msgstr "delat"
 
@@ -3625,32 +3625,32 @@ msgstr "tog bort db-index      %s/%s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar   db-index      %s/%s %s rättighet=0x%x\n"
 
-#: rpmdb/db3.c:1132
+#: rpmdb/db3.c:1134
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1139
+#: rpmdb/db3.c:1141
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste    db-index      %s/%s\n"
 
-#: rpmdb/dbconfig.c:385
+#: rpmdb/dbconfig.c:392
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "okänd db-flagga: \"%s\" ignorerad\n"
 
-#: rpmdb/dbconfig.c:422
+#: rpmdb/dbconfig.c:429
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s har ogiltigt ogiltigt numeriskt värde, hoppar över\n"
 
-#: rpmdb/dbconfig.c:431
+#: rpmdb/dbconfig.c:438
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 
-#: rpmdb/dbconfig.c:440
+#: rpmdb/dbconfig.c:447
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
