@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.19
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -390,6 +390,7 @@ fi
 - detect and fiddle incompatible mixtures of db3 env/open flags.
 - add DBI_WRITECURSOR to map to db3 flags with CDB database model.
 - add rpmdbSetIteratorRewrite to warn of pending lazy (re-)writes.
+- harden rpmdb iterators from damaged header instance segfaults.
 
 * Mon May  7 2001 Jeff Johnson <jbj@redhat.com>
 - use internal db-3.2.9 sources to build by default.
