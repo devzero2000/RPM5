@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-05-29 15:43-0400\n"
+msgstr "POT-Creation-Date: 2001-05-30 18:25-0400\n"
 
 #: build.c:35
 #, fuzzy, c-format
@@ -3765,37 +3765,48 @@ msgstr ""
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:453
+#: rpmdb/db1.c:163
+#, c-format
+msgid ""
+"Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
+msgstr ""
+
+#: rpmdb/db1.c:175
+#, c-format
+msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
+msgstr ""
+
+#: rpmdb/db1.c:471
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:456
+#: rpmdb/db1.c:474
 #, c-format
 msgid "removed db file        %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:487
+#: rpmdb/db1.c:505
 #, fuzzy, c-format
 msgid "bad db file %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/db1.c:492
+#: rpmdb/db1.c:510
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:515
+#: rpmdb/db1.c:533
 #, fuzzy, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpmdb/db1.c:516 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1098
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:516 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1098
 msgid "shared"
 msgstr ""
 
@@ -3859,7 +3870,7 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/falloc.c:144
+#: rpmdb/falloc.c:145
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-29 15:43-0400\n"
+"POT-Creation-Date: 2001-05-30 18:25-0400\n"
 "PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3569,37 +3569,48 @@ msgstr "db%d chyba (%d) z %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d chyba (%d): %s\n"
 
-#: rpmdb/db1.c:453
+#: rpmdb/db1.c:163
+#, c-format
+msgid ""
+"Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
+msgstr ""
+
+#: rpmdb/db1.c:175
+#, c-format
+msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
+msgstr ""
+
+#: rpmdb/db1.c:471
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "zavøen db soubor       %s\n"
 
-#: rpmdb/db1.c:456
+#: rpmdb/db1.c:474
 #, c-format
 msgid "removed db file        %s\n"
 msgstr "odstranìn db soubor    %s\n"
 
-#: rpmdb/db1.c:487
+#: rpmdb/db1.c:505
 #, c-format
 msgid "bad db file %s\n"
 msgstr "¹patný db soubor %s\n"
 
-#: rpmdb/db1.c:492
+#: rpmdb/db1.c:510
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "otevírám db soubor     %s mode 0x%x\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:515
+#: rpmdb/db1.c:533
 #, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "nemohu vytvoøit zámek %s na databázi\n"
 
-#: rpmdb/db1.c:516 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1098
 msgid "exclusive"
 msgstr "výhradní"
 
-#: rpmdb/db1.c:516 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1098
 msgid "shared"
 msgstr "sdílený"
 
@@ -3663,7 +3674,7 @@ msgstr "%s má moc velkou nebo moc malou long hodnotu, pøeskoèeno\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s má pøíli¹ velkou nebo moc malou celoèíselnou hodnotu, pøeskoèeno\n"
 
-#: rpmdb/falloc.c:144
+#: rpmdb/falloc.c:145
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"

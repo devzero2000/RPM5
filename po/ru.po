@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-29 15:43-0400\n"
+"POT-Creation-Date: 2001-05-30 18:25-0400\n"
 "PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3598,37 +3598,48 @@ msgstr "ошибка(%d) db%d из %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "ошибка(%d) db%d: %s\n"
 
-#: rpmdb/db1.c:453
+#: rpmdb/db1.c:163
+#, c-format
+msgid ""
+"Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
+msgstr ""
+
+#: rpmdb/db1.c:175
+#, c-format
+msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
+msgstr ""
+
+#: rpmdb/db1.c:471
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "закрыт файл базы данных %s\n"
 
-#: rpmdb/db1.c:456
+#: rpmdb/db1.c:474
 #, c-format
 msgid "removed db file        %s\n"
 msgstr "удалён файл базы данных %s\n"
 
-#: rpmdb/db1.c:487
+#: rpmdb/db1.c:505
 #, c-format
 msgid "bad db file %s\n"
 msgstr "неверный файл базы данных %s\n"
 
-#: rpmdb/db1.c:492
+#: rpmdb/db1.c:510
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:515
+#: rpmdb/db1.c:533
 #, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных\n"
 
-#: rpmdb/db1.c:516 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1098
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db1.c:516 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1098
 msgid "shared"
 msgstr "разделяемый"
 
@@ -3693,7 +3704,7 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 "%s имеет слишком малую или слишком большую величину integer, пропущено\n"
 
-#: rpmdb/falloc.c:144
+#: rpmdb/falloc.c:145
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
