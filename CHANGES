@@ -16,6 +16,7 @@
 	- avoid "can't happen" recursion while retrieving pubkeys.
 	- add ppc32dy4 arch.
 	- make peace with automake 1.9.1.
+	- fix: defattr for rpm-libs (#130461).
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).

@@ -370,6 +370,7 @@ exit 0
 %lang(sk)	%{__mandir}/sk/man[18]/*.[18]*
 
 %files libs
+%defattr(-,root,root)
 %{__libdir}/librpm-4.3.so
 %{__libdir}/librpmdb-4.3.so
 %{__libdir}/librpmio-4.3.so
