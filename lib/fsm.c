@@ -1201,6 +1201,12 @@ static int fsmStat(FSM_t fsm)
 }
 #endif
 
+#define	IS_DEV_LOG(_x)	\
+	((_x) != NULL && strlen(_x) >= (sizeof("/dev/log")-1) && \
+	!strncmp((_x), "/dev/log", sizeof("/dev/log")-1) && \
+	((_x)[sizeof("/dev/log")-1] == '\0' || \
+	 (_x)[sizeof("/dev/log")-1] == ';'))
+
 /*@-compmempass@*/
 int fsmStage(FSM_t fsm, fileStage stage)
 {
@@ -1602,7 +1608,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmStage(fsm, FSM_MKNOD);
 	} else {
 	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-	    if (strncmp(fsm->path, "/dev/log", sizeof("/dev/log")-1))
+	    if (!IS_DEV_LOG(fsm->path))
 		rc = CPIOERR_UNKNOWN_FILETYPE;
 	}
 	if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
@@ -1723,9 +1729,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 
 	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
-	if (!S_ISSOCK(st->st_mode)
-	&&  strncmp(fsm->path, "/dev/log", sizeof("/dev/log")-1))
-	{
+	if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
 	    /* Rename temporary to final file name. */
 	    if (!S_ISDIR(st->st_mode) &&
 		(fsm->subdir || fsm->suffix || fsm->nsuffix))

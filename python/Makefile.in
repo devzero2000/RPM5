@@ -348,6 +348,14 @@ uninstall-pythonPROGRAMS:
 	  rm -f $(DESTDIR)$(pythondir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	done
 
+rpmmodule.so: $(rpmmodule_so_OBJECTS) $(rpmmodule_so_DEPENDENCIES)
+	@rm -f rpmmodule.so
+	$(LINK) $(rpmmodule_so_LDFLAGS) $(rpmmodule_so_OBJECTS) $(rpmmodule_so_LDADD) $(LIBS)
+
+poptmodule.so: $(poptmodule_so_OBJECTS) $(poptmodule_so_DEPENDENCIES)
+	@rm -f poptmodule.so
+	$(LINK) $(poptmodule_so_LDFLAGS) $(poptmodule_so_OBJECTS) $(poptmodule_so_LDADD) $(LIBS)
+
 tags: TAGS
 
 ID: $(HEADERS) $(SOURCES) $(LISP)
@@ -512,10 +520,10 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
-rpmmodule.so: $(librpmmodule_la_OBJECTS)
+rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(LINK) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
 
-poptmodule.so: $(poptmodule_so_OBJECTS)
+poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
 	$(LINK) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
 
 .PHONY:	lclint

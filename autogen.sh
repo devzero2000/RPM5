@@ -3,12 +3,12 @@
 export CFLAGS
 export LDFLAGS
 
-LTV="libtoolize (GNU libtool) 1.4"
+LTV="libtoolize (GNU libtool) 1.4.2"
 ACV="Autoconf version 2.13"
 AMV="automake (GNU automake) 1.4-p5"
 USAGE="
 This script documents the versions of the tools I'm using to build rpm:
-	libtool-1.4
+	libtool-1.4.2
 	autoconf-2.13
 	automake-1.4-p5
 Simply edit this script to change the libtool/autoconf/automake versions
@@ -41,7 +41,7 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
 	mandir=/usr/man
 	infodir=/usr/info
     fi
-    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} "$@"
+    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} --without-javaglue "$@"
 else
     ./configure "$@"
 fi

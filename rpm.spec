@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 7x.7
+Release: 7x.9
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -156,7 +156,7 @@ shell-like rules.
 %build
 
 %ifos linux
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man' --with-python=%{with_python_version}
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man' --with-python=%{with_python_version} --without-javaglue
 %else
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
 %endif
@@ -521,6 +521,17 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Mar 27 2002 Jeff Johnson <jbj@redhat.com>
+- fix: look for "/path" in Providename as well as Basenames (#59665).
+- fix: avoid /dev/log installation more carefully (#62012).
+- fix: don't compile beecrypt java bindings (#61992).
+- solaris: save main() envp in global environ for use with gpg.
+- don't add empty md5 strings to Filemd5's index.
+- create Filemd5 index with binary, not ascii, keys.
+
+* Fri Mar 22 2002 Jeff Johnson <jbj@redhat.com>
+- fix: make sure that .rpmsave files are created (#57078).
+
 * Mon Mar 18 2002 Jeff Johnson <jbj@redhat.com>
 - fix: one-step-too-far when searching added package provides (#61388).
 - fix: avoid libio misconfiguration with bleeding edge glibc.
