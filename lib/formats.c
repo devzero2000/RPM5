@@ -421,7 +421,8 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
     rc = headerGetEntry(h, tag, type, (void **)data, count);
 
     if (rc) {
-	*data = xstrdup(*data);
+	const char *t = *data;
+	*data = xstrdup(t);
 	*freeData = 1;
 	return 0;
     }
