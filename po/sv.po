@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2000-12-10 23:00-0500\n"
-"PO-Revision-Date: 2000-08-07 16:53+0200\n"
+"PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -2295,8 +2295,8 @@ msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
-"\"B\"-beroendet beghöver en epok (antar samma som \"A\")\n"
-"        A %s    B %s\n"
+"\"B\"-beroendet behöver en epok (antar samma som \"A\")\n"
+"\tA %s\tB %s\n"
 
 #: lib/depends.c:593
 #, c-format
@@ -3097,7 +3097,7 @@ msgstr "fil %s: %s\n"
 #: lib/query.c:665
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "filen %s ägs inte av något paket\n"
+msgstr "filen %s tillhör inget paket\n"
 
 #: lib/query.c:691
 #, c-format
@@ -3607,7 +3607,7 @@ msgstr "argument till %s saknas vid %s:%d"
 #: lib/rpmrc.c:692 lib/rpmrc.c:714
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
-msgstr "%s expansion misslyckade vid %s:%d \"%s\""
+msgstr "%s expansion misslyckades vid %s:%d \"%s\""
 
 #: lib/rpmrc.c:701
 #, c-format
@@ -3798,7 +3798,7 @@ msgstr "rmdir av %s misslyckades: %s"
 #: lib/uninstall.c:71
 #, c-format
 msgid "removal of %s failed: %s"
-msgstr "borttagning av %s misslyckades: %s"
+msgstr "kan inte ta bort %s: %s"
 
 #: lib/uninstall.c:134
 #, c-format
