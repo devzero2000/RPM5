@@ -382,7 +382,7 @@ fi
 %endif
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/noarch*
 
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/@RPMCANONVENDOR@
+#%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/@RPMCANONVENDOR@
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo

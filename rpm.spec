@@ -382,7 +382,7 @@ fi
 %endif
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/noarch*
 
-%attr(-, rpm, rpm)		%{__prefix}/lib/rpm/redhat
+#%attr(-, rpm, rpm)		%{__prefix}/lib/rpm/redhat
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
