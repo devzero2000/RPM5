@@ -99,7 +99,9 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     Spec spec = NULL;
     int rc;
 
+#ifndef	DYING
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
+#endif
 
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
@@ -215,7 +217,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	    goto exit;
 	}
 	if (! S_ISREG(st.st_mode)) {
-	    rpmError(RPMERR_BADSPEC, _("File %s does not appear to be a specfile."),
+	    rpmError(RPMERR_NOTREG, _("File %s is not a regular file."),
 		specURL);
 	    rc = 1;
 	    goto exit;
@@ -223,7 +225,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 
 	/* Try to verify that the file is actually a specfile */
 	if (!isSpecFile(specURL)) {
-	    rpmError(RPMERR_NOTREG, _("File %s is not a regular file."),
+	    rpmError(RPMERR_BADSPEC, _("File %s does not appear to be a specfile."),
 		specURL);
 	    rc = 1;
 	    goto exit;

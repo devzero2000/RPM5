@@ -1,7 +1,8 @@
 #ifndef _H_SPEC_
 #define _H_SPEC_
 
-/** \file build/rpmspec.h
+/** \ingroup rpmbuild
+ * \file build/rpmspec.h
  *  The Spec and Package data structures used during build.
  */
 
@@ -48,7 +49,7 @@ typedef struct ReadLevelEntry {
 /**
  */
 typedef struct OpenFileInfo {
-/*@only@*/ char *fileName;
+/*@only@*/ const char *fileName;
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
@@ -88,6 +89,9 @@ struct speclines {
 struct SpecStruct {
 /*@only@*/ const char *specFile;	/*!< Name of the spec file. */
 /*@only@*/ const char *sourceRpmName;
+/*@only@*/ const char *buildRootURL;
+/*@only@*/ const char *buildSubdir;
+/*@only@*/ const char *rootURL;
 
 /*@owned@*/ struct speclines *sl;
 /*@owned@*/ struct spectags *st;
@@ -111,8 +115,6 @@ struct SpecStruct {
     int anyarch;
 
     int gotBuildRootURL;
-/*@only@*/ const char *buildRootURL;
-/*@only@*/ const char *buildSubdir;
 
     char *passPhrase;
     int timeCheck;
@@ -128,10 +130,9 @@ struct SpecStruct {
 
 /*@dependent@*/ struct MacroContext *macros;
 
-/*@only@*/ const char *rootURL;
 /*@only@*/ StringBuf prep;		/*!< %prep scriptlet. */
 /*@only@*/ StringBuf build;		/*!< %build scriptlet. */
-/*@only@*/ StringBuf install;	/*!< %install scriptlet. */
+/*@only@*/ StringBuf install;		/*!< %install scriptlet. */
 /*@only@*/ StringBuf clean;		/*!< %clean scriptlet. */
 
 /*@owned@*/ struct PackageStruct *packages;	/*!< Package list. */
@@ -151,11 +152,11 @@ struct PackageStruct {
     int autoReq;
     int autoProv;
 
-    char *preInFile;		/*!< %pre scriptlet. */
-    char *postInFile;		/*!< %post scriptlet. */
-    char *preUnFile;		/*!< %preun scriptlet. */
-    char *postUnFile;		/*!< %postun scriptlet. */
-    char *verifyFile;		/*!< %verifyscript scriptlet. */
+/*@only@*/ const char *preInFile;	/*!< %pre scriptlet. */
+/*@only@*/ const char *postInFile;	/*!< %post scriptlet. */
+/*@only@*/ const char *preUnFile;	/*!< %preun scriptlet. */
+/*@only@*/ const char *postUnFile;	/*!< %postun scriptlet. */
+/*@only@*/ const char *verifyFile;	/*!< %verifyscript scriptlet. */
 
 /*@only@*/ StringBuf specialDoc;
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-11-21 14:16-0500\n"
+"POT-Creation-Date: 2000-11-21 16:37-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -23,44 +23,44 @@ msgstr ""
 msgid "Unable to open spec file %s: %s\n"
 msgstr ""
 
-#: build.c:128 build.c:140
+#: build.c:130 build.c:142
 #, c-format
 msgid "Failed to open tar pipe: %m"
 msgstr ""
 
 #. Give up
-#: build.c:147
+#: build.c:149
 #, c-format
 msgid "Failed to read spec file from %s"
 msgstr ""
 
-#: build.c:174
+#: build.c:176
 #, c-format
 msgid "Failed to rename %s to %s: %m"
 msgstr ""
 
-#: build.c:213
+#: build.c:215
 #, c-format
 msgid "failed to stat %s: %m"
 msgstr ""
 
-#: build.c:218
-#, c-format
-msgid "File %s does not appear to be a specfile."
-msgstr ""
-
-#: build.c:226
+#: build.c:220
 #, c-format
 msgid "File %s is not a regular file."
 msgstr ""
 
+#: build.c:228
+#, c-format
+msgid "File %s does not appear to be a specfile."
+msgstr ""
+
 #. parse up the build operators
-#: build.c:287
+#: build.c:289
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:302
+#: build.c:304
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
@@ -1460,23 +1460,30 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:110 build/pack.c:360
+#: build/build.c:111 build/pack.c:356
 msgid "Unable to open temp file."
 msgstr ""
 
-#: build/build.c:189
+#: build/build.c:190
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr ""
 
-#: build/build.c:195
+#: build/build.c:196
 #, c-format
 msgid "Exec of %s failed (%s): %s"
 msgstr ""
 
-#: build/build.c:203
+#: build/build.c:204
 #, c-format
 msgid "Bad exit status from %s (%s)"
+msgstr ""
+
+#: build/build.c:304
+msgid ""
+"\n"
+"\n"
+"RPM build errors:\n"
 msgstr ""
 
 #: build/expression.c:207
@@ -1528,181 +1535,185 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr ""
 
-#: build/files.c:204
+#: build/files.c:205
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:249 build/files.c:331 build/files.c:494
+#: build/files.c:250 build/files.c:332 build/files.c:495
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr ""
 
-#: build/files.c:260 build/files.c:448 build/files.c:505
+#: build/files.c:261 build/files.c:449 build/files.c:506
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr ""
 
-#: build/files.c:298 build/files.c:473
+#: build/files.c:299 build/files.c:474
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: build/files.c:347
+#: build/files.c:348
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
-#: build/files.c:385
+#: build/files.c:386
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr ""
 
-#: build/files.c:395
+#: build/files.c:396
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:407
+#: build/files.c:408
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:531
+#: build/files.c:532
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:541
+#: build/files.c:542
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:666
+#: build/files.c:667
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: build/files.c:672
+#: build/files.c:673
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:700
+#: build/files.c:701
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: build/files.c:713
+#: build/files.c:714
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: build/files.c:725
+#: build/files.c:726
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: build/files.c:812
+#: build/files.c:816
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: build/files.c:921
+#: build/files.c:925
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:1010
+#: build/files.c:1015
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: build/files.c:1020
+#: build/files.c:1025
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: build/files.c:1063
+#: build/files.c:1068
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1075
+#: build/files.c:1080
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1149
+#: build/files.c:1154
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1178
+#: build/files.c:1183
 #, c-format
 msgid "File not found by glob: %s"
 msgstr ""
 
-#: build/files.c:1230
+#: build/files.c:1235
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1239 build/pack.c:101
+#: build/files.c:1244 build/pack.c:101
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1566
+#: build/files.c:1571
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr ""
 
-#: build/files.c:1578 build/parsePrep.c:40
+#: build/files.c:1583 build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1633
+#: build/files.c:1638
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1638
+#: build/files.c:1643
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1720
+#: build/files.c:1725
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1724
+#: build/files.c:1729
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1844
+#: build/files.c:1849
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1872 build/files.c:1886
+#: build/files.c:1877 build/files.c:1891
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1996
+#: build/files.c:2001
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
 
-#: build/names.c:46 build/names.c:79
+#: build/names.c:41 build/names.c:69
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
 msgstr ""
 
-#: build/names.c:113 build/names.c:146
+#: build/names.c:98
 msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
 msgstr ""
 
-#: build/names.c:186
+#: build/names.c:126
+msgid "getUname: too many uid's\n"
+msgstr ""
+
+#: build/names.c:164
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
@@ -1722,116 +1733,116 @@ msgstr ""
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:156
+#: build/pack.c:152
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:163
+#: build/pack.c:159
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:170
+#: build/pack.c:166
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:177
+#: build/pack.c:173
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:185
+#: build/pack.c:181
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:200
+#: build/pack.c:196
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
 
-#: build/pack.c:226
+#: build/pack.c:222
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:236
+#: build/pack.c:232
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:257
+#: build/pack.c:253
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:263
+#: build/pack.c:259
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:372
+#: build/pack.c:368
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:413
+#: build/pack.c:409
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:423
+#: build/pack.c:419
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:459
+#: build/pack.c:455
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:474
+#: build/pack.c:470
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:484
+#: build/pack.c:480
 #, c-format
 msgid "Unable to read header from %s: %s"
 msgstr ""
 
-#: build/pack.c:498
+#: build/pack.c:494
 #, c-format
 msgid "Unable to write header to %s: %s"
 msgstr ""
 
-#: build/pack.c:508
+#: build/pack.c:504
 #, c-format
 msgid "Unable to read payload from %s: %s"
 msgstr ""
 
-#: build/pack.c:514
+#: build/pack.c:510
 #, c-format
 msgid "Unable to write payload to %s: %s"
 msgstr ""
 
-#: build/pack.c:541
+#: build/pack.c:537
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:606
+#: build/pack.c:602
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:623
+#: build/pack.c:619
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
 
-#: build/parseBuildInstallClean.c:31
+#: build/parseBuildInstallClean.c:27
 #, c-format
 msgid "line %d: second %s"
 msgstr ""
@@ -1892,118 +1903,118 @@ msgstr ""
 msgid "line %d: Second %%files list"
 msgstr ""
 
-#: build/parsePreamble.c:196
+#: build/parsePreamble.c:202
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:201
+#: build/parsePreamble.c:207
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:206
+#: build/parsePreamble.c:212
 #, c-format
 msgid "OS is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:211
+#: build/parsePreamble.c:217
 #, c-format
 msgid "OS is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:225
+#: build/parsePreamble.c:231
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:256
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:298
+#: build/parsePreamble.c:304
 #, c-format
 msgid "Unable to open icon %s: %s"
 msgstr ""
 
-#: build/parsePreamble.c:316
+#: build/parsePreamble.c:322
 #, c-format
 msgid "Unable to read icon %s: %s"
 msgstr ""
 
-#: build/parsePreamble.c:329
+#: build/parsePreamble.c:335
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr ""
 
-#: build/parsePreamble.c:395
+#: build/parsePreamble.c:401
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:409
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:425 build/parsePreamble.c:432
+#: build/parsePreamble.c:431 build/parsePreamble.c:438
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr ""
 
-#: build/parsePreamble.c:489 build/parseSpec.c:378
+#: build/parsePreamble.c:495 build/parseSpec.c:378
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:502
+#: build/parsePreamble.c:508
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:514
+#: build/parsePreamble.c:520
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr ""
 
-#: build/parsePreamble.c:526
+#: build/parsePreamble.c:532
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: build/parsePreamble.c:566 build/parsePreamble.c:577
+#: build/parsePreamble.c:572 build/parsePreamble.c:583
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s"
 msgstr ""
 
-#: build/parsePreamble.c:603
+#: build/parsePreamble.c:609
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: build/parsePreamble.c:612
+#: build/parsePreamble.c:618
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:751
+#: build/parsePreamble.c:756
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: build/parsePreamble.c:757
+#: build/parsePreamble.c:762
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:782
+#: build/parsePreamble.c:787
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:804
+#: build/parsePreamble.c:809
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2450,7 +2461,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2311 lib/header.c:2328 lib/header.c:2348
+#: lib/header.c:2308 lib/header.c:2325 lib/header.c:2345
 msgid "(not a number)"
 msgstr ""
 
@@ -2483,88 +2494,88 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:288 lib/header.c:834 lib/install.c:382
+#: lib/header.c:288 lib/header.c:831 lib/install.c:382
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1221
+#: lib/header.c:1218
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1664
+#: lib/header.c:1661
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1694
+#: lib/header.c:1691
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1708
+#: lib/header.c:1705
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1720
+#: lib/header.c:1717
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1737
+#: lib/header.c:1734
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1764
+#: lib/header.c:1761
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1782
+#: lib/header.c:1779
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1786
+#: lib/header.c:1783
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1846
+#: lib/header.c:1843
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1855
+#: lib/header.c:1852
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1868 lib/header.c:1909
+#: lib/header.c:1865 lib/header.c:1906
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1878
+#: lib/header.c:1875
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1894
+#: lib/header.c:1891
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1919
+#: lib/header.c:1916
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2090
+#: lib/header.c:2087
 msgid "(unknown type)"
 msgstr ""
 

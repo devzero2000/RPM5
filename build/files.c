@@ -1,4 +1,5 @@
-/** \file build/files.c
+/** \ingroup rpmbuild
+ * \file build/files.c
  *  The post-build, pre-packaging file tree walk to assemble the package
  *  manifest.
  */
@@ -780,6 +781,9 @@ static int isDoc(struct FileList *fl, const char *fileName)
     return 0;
 }
 
+/**
+ * @todo Should directories have %doc/%config attributes? (#14531)
+ */
 static void genCpioListAndHeader(struct FileList *fl,
 				 struct cpioFileMapping **cpioList,
 				 int *cpioCount, Header h, int isSrc)
@@ -937,6 +941,7 @@ static void genCpioListAndHeader(struct FileList *fl,
 	
 	if (!isSrc && isDoc(fl, flp->fileURL))
 	    flp->flags |= RPMFILE_DOC;
+	/* XXX Should directories have %doc/%config attributes? (#14531) */
 	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
 

@@ -108,20 +108,18 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
     return sb;
 }
 
-static int addFileToTag(Spec spec, char *file, Header h, int tag)
+static int addFileToTag(Spec spec, const char *file, Header h, int tag)
 {
-    StringBuf sb;
+    StringBuf sb = newStringBuf();
     char *s;
 
-    sb = newStringBuf();
     if (headerGetEntry(h, tag, NULL, (void **)&s, NULL)) {
 	appendLineStringBuf(sb, s);
 	headerRemoveEntry(h, tag);
     }
 
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL) {
+    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
-    }
     
     headerAddEntry(h, tag, RPM_STRING_TYPE, getStringBuf(sb), 1);
 
@@ -131,13 +129,11 @@ static int addFileToTag(Spec spec, char *file, Header h, int tag)
 
 static int addFileToArrayTag(Spec spec, char *file, Header h, int tag)
 {
-    StringBuf sb;
+    StringBuf sb = newStringBuf();
     char *s;
 
-    sb = newStringBuf();
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL) {
+    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
-    }
 
     s = getStringBuf(sb);
     headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, &s, 1);

@@ -674,17 +674,15 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     if (magicp == HEADER_MAGIC_YES)
 	i += 2;
 
-    if (timedRead(fd, (char *)block, i*sizeof(*block)) != (i * sizeof(*block))) {
+    if (timedRead(fd, (char *)block, i*sizeof(*block)) != (i * sizeof(*block)))
 	return NULL;
-    }
 
     i = 0;
 
     if (magicp == HEADER_MAGIC_YES) {
 	magic = block[i++];
-	if (memcmp(&magic, header_magic, sizeof(magic))) {
+	if (memcmp(&magic, header_magic, sizeof(magic)))
 	    return NULL;
-	}
 	reserved = block[i++];
     }
     
@@ -696,9 +694,8 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     /*
      * XXX Limit total size of header to 32Mb (~16 times largest known size).
      */
-    if (len > (32*1024*1024)) {
+    if (len > (32*1024*1024))
 	return NULL;
-    }
 
     ei = xmalloc(len);
     ei[0] = htonl(il);

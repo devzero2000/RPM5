@@ -19,17 +19,17 @@
  * Bit(s) to control buildSpec() operation.
  */
 typedef enum rpmBuildFlags_e {
-    RPMBUILD_PREP      = (1 << 0),	/*!< Execute %%prep. */
-    RPMBUILD_BUILD     = (1 << 1),	/*!< Execute %%build. */
-    RPMBUILD_INSTALL   = (1 << 2),	/*!< Execute %%install. */
-    RPMBUILD_CLEAN     = (1 << 3),	/*!< Execute %%clean. */
-    RPMBUILD_FILECHECK = (1 << 4),	/*!< Check %%files manifest. */
+    RPMBUILD_PREP	= (1 << 0),	/*!< Execute %%prep. */
+    RPMBUILD_BUILD	= (1 << 1),	/*!< Execute %%build. */
+    RPMBUILD_INSTALL	= (1 << 2),	/*!< Execute %%install. */
+    RPMBUILD_CLEAN	= (1 << 3),	/*!< Execute %%clean. */
+    RPMBUILD_FILECHECK	= (1 << 4),	/*!< Check %%files manifest. */
     RPMBUILD_PACKAGESOURCE = (1 << 5),	/*!< Create source package. */
     RPMBUILD_PACKAGEBINARY = (1 << 6),	/*!< Create binary package(s). */
-    RPMBUILD_RMSOURCE  = (1 << 7),	/*!< Remove source(s) and patch(s). */
-    RPMBUILD_RMBUILD   = (1 << 8),	/*!< Remove build sub-tree. */
-    RPMBUILD_STRINGBUF = (1 << 9),	/*!< only for doScript() */
-    RPMBUILD_RMSPEC    = (1 << 10)	/*!< Remove spec file. */
+    RPMBUILD_RMSOURCE	= (1 << 7),	/*!< Remove source(s) and patch(s). */
+    RPMBUILD_RMBUILD	= (1 << 8),	/*!< Remove build sub-tree. */
+    RPMBUILD_STRINGBUF	= (1 << 9),	/*!< only for doScript() */
+    RPMBUILD_RMSPEC	= (1 << 10)	/*!< Remove spec file. */
 } rpmBuildFlags;
 
 /* from build/misc.h */
@@ -159,7 +159,7 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
 /**
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parseBuildInstallClean(Spec spec, int parsePart);
+int parseBuildInstallClean(Spec spec, rpmParseState parsePart);
 
 /**
  * @return		>= 0 next rpmParseState, < 0 on error

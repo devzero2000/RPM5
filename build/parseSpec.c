@@ -438,7 +438,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    parsePart = parseFiles(spec);
 	    break;
 
-	  case PART_NONE:               /* XXX avoid gcc whining */
+	  case PART_NONE:		/* XXX avoid gcc whining */
 	  case PART_BUILDARCHITECTURES:
 	    break;
 	}

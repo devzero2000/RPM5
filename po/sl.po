@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-11-21 14:16-0500\n"
+"POT-Creation-Date: 2000-11-21 16:37-0500\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -28,44 +28,44 @@ msgstr "izdelava soodvisnosti neuspe¹na:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Datoteke spec %s ni mo¾no odpreti: %s\n"
 
-#: build.c:128 build.c:140
+#: build.c:130 build.c:142
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m"
 msgstr "Povezava s programom tar neuspe¹na: %s\n"
 
 #. Give up
-#: build.c:147
+#: build.c:149
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s"
 msgstr "Neuspe¹no branje datoteke spec iz %s\n"
 
-#: build.c:174
+#: build.c:176
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m"
 msgstr "Neuspe¹no preimenovanje %s v %s: %s\n"
 
-#: build.c:213
+#: build.c:215
 #, fuzzy, c-format
 msgid "failed to stat %s: %m"
 msgstr "status %s ni na voljo: %s"
 
-#: build.c:218
-#, fuzzy, c-format
-msgid "File %s does not appear to be a specfile."
-msgstr "Ne ka¾e, da je %s datoteka spec.\n"
-
-#: build.c:226
+#: build.c:220
 #, fuzzy, c-format
 msgid "File %s is not a regular file."
 msgstr "Datoteka ni obièajna datoteka: %s\n"
 
+#: build.c:228
+#, fuzzy, c-format
+msgid "File %s does not appear to be a specfile."
+msgstr "Ne ka¾e, da je %s datoteka spec.\n"
+
 #. parse up the build operators
-#: build.c:287
+#: build.c:289
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Izgradnja za ciljna strojna okolja: %s\n"
 
-#: build.c:302
+#: build.c:304
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Izgradnja za ciljni sistem %s\n"
@@ -1601,25 +1601,32 @@ msgstr "datoteka spec za izgradnjo manjka"
 msgid "no tar files given for build"
 msgstr "arhiv tar za izgradnjo manjka"
 
-#: build/build.c:110 build/pack.c:360
+#: build/build.c:111 build/pack.c:356
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Zaèasne datoteke ni mo¾no odpreti"
 
-#: build/build.c:189
+#: build/build.c:190
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Izvajamo(%s): %s\n"
 
-#: build/build.c:195
+#: build/build.c:196
 #, c-format
 msgid "Exec of %s failed (%s): %s"
 msgstr "Izvajanje %s neuspe¹no (%s): %s"
 
-#: build/build.c:203
+#: build/build.c:204
 #, c-format
 msgid "Bad exit status from %s (%s)"
 msgstr "%s javi neuspe¹no izhodno kodo (%s)"
+
+#: build/build.c:304
+msgid ""
+"\n"
+"\n"
+"RPM build errors:\n"
+msgstr ""
 
 #: build/expression.c:207
 msgid "syntax error while parsing =="
@@ -1670,181 +1677,185 @@ msgstr "&& in || nista podprta na nizih"
 msgid "syntax error in expression"
 msgstr "napaka v sklanji v izrazu"
 
-#: build/files.c:204
+#: build/files.c:205
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK neuspe¹en: %s\n"
 
-#: build/files.c:249 build/files.c:331 build/files.c:494
+#: build/files.c:250 build/files.c:332 build/files.c:495
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: build/files.c:260 build/files.c:448 build/files.c:505
+#: build/files.c:261 build/files.c:449 build/files.c:506
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "Manjkajoèi ,)` v %s(%s"
 
-#: build/files.c:298 build/files.c:473
+#: build/files.c:299 build/files.c:474
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr "Neveljaven ¾eton %s: %s"
 
-#: build/files.c:347
+#: build/files.c:348
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr "Neprazen znak sledi %s(): %s"
 
-#: build/files.c:385
+#: build/files.c:386
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "Okvarjena skladnja: %s(%s)"
 
-#: build/files.c:395
+#: build/files.c:396
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "Okvarjeno doloèilo naèina: %s(%s)"
 
-#: build/files.c:407
+#: build/files.c:408
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr "Okvarjeno doloèilo naèina imenika: %s(%s)"
 
-#: build/files.c:531
+#: build/files.c:532
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr "Nenavadna dol¾ina za locale: \"%.s\" pri %%lang(%s)"
 
-#: build/files.c:541
+#: build/files.c:542
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr "Podvojeni locale %.*s za %%lang(%s)"
 
-#: build/files.c:666
+#: build/files.c:667
 msgid "Hit limit for %%docdir"
 msgstr "Dosegli smo omejitev za %%docdir"
 
-#: build/files.c:672
+#: build/files.c:673
 msgid "Only one arg for %%docdir"
 msgstr "Samo en argument za %%docdir je podan"
 
 #. We already got a file -- error
-#: build/files.c:700
+#: build/files.c:701
 #, c-format
 msgid "Two files on one line: %s"
 msgstr "Dve datoteki v eni vrstici: %s"
 
-#: build/files.c:713
+#: build/files.c:714
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Ime datoteke se mora zaèeti z \"/\": %s"
 
-#: build/files.c:725
+#: build/files.c:726
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Posebnih %%doc ni mo¾no me¹ati z ostalimi oblikami: %s"
 
-#: build/files.c:812
+#: build/files.c:816
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Datoteka je navedena dvakrat: %s"
 
-#: build/files.c:921
+#: build/files.c:925
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
-#: build/files.c:1010
+#: build/files.c:1015
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Datoteka se ne ujema s predpono (%s): %s"
 
-#: build/files.c:1020
+#: build/files.c:1025
 #, c-format
 msgid "File not found: %s"
 msgstr "Datoteke ni najti: %s"
 
-#: build/files.c:1063
+#: build/files.c:1068
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Okvarjen lastnik/skupina: %s\n"
 
-#: build/files.c:1075
+#: build/files.c:1080
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Datoteka: %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1149
+#: build/files.c:1154
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:1178
+#: build/files.c:1183
 #, c-format
 msgid "File not found by glob: %s"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1230
+#: build/files.c:1235
 msgid "Could not open %%files file %s: %s"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1239 build/pack.c:101
+#: build/files.c:1244 build/pack.c:101
 #, c-format
 msgid "line: %s"
 msgstr "vrstica: %s"
 
-#: build/files.c:1566
+#: build/files.c:1571
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "Okvarjena datoteka: %s: %s"
 
-#: build/files.c:1578 build/parsePrep.c:40
+#: build/files.c:1583 build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Okvarjen lastnik/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1633
+#: build/files.c:1638
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Ni mo¾no izvesti %s: %s"
 
-#: build/files.c:1638
+#: build/files.c:1643
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Vejitev %s ni mo¾na: %s"
 
-#: build/files.c:1720
+#: build/files.c:1725
 #, c-format
 msgid "%s failed"
 msgstr "%s neuspe¹en"
 
-#: build/files.c:1724
+#: build/files.c:1729
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "pisanje podatkov na %s neuspe¹no"
 
-#: build/files.c:1844
+#: build/files.c:1849
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "I¹èemo  %s: (z uporabo %s)...\n"
 
-#: build/files.c:1872 build/files.c:1886
+#: build/files.c:1877 build/files.c:1891
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:1996
+#: build/files.c:2001
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdelujemo datoteke: %s-%s-%s\n"
 
-#: build/names.c:46 build/names.c:79
+#: build/names.c:41 build/names.c:69
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
 msgstr "RPMERR_INTERNAL: Dose¾ena omejitev v getUname()\n"
 
-#: build/names.c:113 build/names.c:146
+#: build/names.c:98
 msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
 msgstr "RPMERR_INTERNAL: Dose¾ena omejitev v getGname()\n"
 
-#: build/names.c:186
+#: build/names.c:126
+msgid "getUname: too many uid's\n"
+msgstr ""
+
+#: build/names.c:164
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Iskanje kanoniènega imena gostitelja neuspe¹no: %s\n"
@@ -1864,116 +1875,116 @@ msgstr "pisanje cpio_copy neuspe¹no: %s"
 msgid "cpio_copy read failed: %s"
 msgstr "branje cpio_copy neuspe¹no: %s"
 
-#: build/pack.c:156
+#: build/pack.c:152
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Datoteke PreIn ni mo¾no odpreti: %s"
 
-#: build/pack.c:163
+#: build/pack.c:159
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Datoteke PreUn ni mo¾no odpreti: %s"
 
-#: build/pack.c:170
+#: build/pack.c:166
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Datoteke PostIn ni mo¾no odpreti: %s"
 
-#: build/pack.c:177
+#: build/pack.c:173
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Datoteke PostUn ni mo¾no odpreti: %s"
 
-#: build/pack.c:185
+#: build/pack.c:181
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Datoteke VerifyScript ni mo¾no odpreti: %s"
 
-#: build/pack.c:200
+#: build/pack.c:196
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Skriptne datoteke Trigger ni mo¾no odpreti: %s"
 
-#: build/pack.c:226
+#: build/pack.c:222
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: odpiranje %s: %s\n"
 
-#: build/pack.c:236
+#: build/pack.c:232
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: branje %s: %s\n"
 
-#: build/pack.c:257
+#: build/pack.c:253
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s ni paket tipa RPM\n"
 
-#: build/pack.c:263
+#: build/pack.c:259
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: branje glave %s\n"
 
-#: build/pack.c:372
+#: build/pack.c:368
 msgid "Bad CSA data"
 msgstr "Okvarjeni podatki CSA"
 
-#: build/pack.c:413
+#: build/pack.c:409
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Izdelujemo podpis: %d\n"
 
-#: build/pack.c:423
+#: build/pack.c:419
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/pack.c:459
+#: build/pack.c:455
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Ni mo¾no zapisati paketa: %s"
 
-#: build/pack.c:474
+#: build/pack.c:470
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Ciljnega podpisa %s ni mo¾no odpreti: %s"
 
-#: build/pack.c:484
+#: build/pack.c:480
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/pack.c:498
+#: build/pack.c:494
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:508
+#: build/pack.c:504
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/pack.c:514
+#: build/pack.c:510
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:541
+#: build/pack.c:537
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
 
-#: build/pack.c:606
+#: build/pack.c:602
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Neuspe¹no ustvarjanje izhodne datoteke za paket %s: %s\n"
 
-#: build/pack.c:623
+#: build/pack.c:619
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ni mo¾no ustvariti %s: %s\n"
 
-#: build/parseBuildInstallClean.c:31
+#: build/parseBuildInstallClean.c:27
 #, c-format
 msgid "line %d: second %s"
 msgstr "vrstica %d: %s sekund"
@@ -2034,118 +2045,118 @@ msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%Files: %s"
 msgid "line %d: Second %%files list"
 msgstr "vrstica %d: Drugi seznam %%Files"
 
-#: build/parsePreamble.c:196
+#: build/parsePreamble.c:202
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Arhitektura je izkljuèena: %s"
 
-#: build/parsePreamble.c:201
+#: build/parsePreamble.c:207
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Arhitektura ni vkljuèena: %s"
 
-#: build/parsePreamble.c:206
+#: build/parsePreamble.c:212
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS je izkljuèen: %s"
 
-#: build/parsePreamble.c:211
+#: build/parsePreamble.c:217
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS ni vkljuèen: %s"
 
-#: build/parsePreamble.c:225
+#: build/parsePreamble.c:231
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "polje %s mora obstojati v paketu: %s"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:256
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Podvojeni vnosi %s v paketu: %s"
 
-#: build/parsePreamble.c:298
+#: build/parsePreamble.c:304
 #, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Ikone %s ni mo¾no odpreti: %s"
 
-#: build/parsePreamble.c:316
+#: build/parsePreamble.c:322
 #, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/parsePreamble.c:329
+#: build/parsePreamble.c:335
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Neznan tip ikone: %s"
 
-#: build/parsePreamble.c:395
+#: build/parsePreamble.c:401
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "vrstica %d: Deformirana znaèka: %s"
 
 #. Empty field
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:409
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "vrstica %d: Prazna znaèka: %s"
 
-#: build/parsePreamble.c:425 build/parsePreamble.c:432
+#: build/parsePreamble.c:431 build/parsePreamble.c:438
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:489 build/parseSpec.c:378
+#: build/parsePreamble.c:495 build/parseSpec.c:378
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot ne more biti \"/\": %s"
 
-#: build/parsePreamble.c:502
+#: build/parsePreamble.c:508
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "vrstica %d: Predpone se ne smejo konèati z /: %s"
 
-#: build/parsePreamble.c:514
+#: build/parsePreamble.c:520
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "vrstica %d: Docdir se mora zaèeti z \"/\": %s"
 
-#: build/parsePreamble.c:526
+#: build/parsePreamble.c:532
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "vrstica %d: polje Epoch/Serial mora biti ¹tevilo: %s"
 
-#: build/parsePreamble.c:566 build/parsePreamble.c:577
+#: build/parsePreamble.c:572 build/parsePreamble.c:583
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s"
 msgstr "vrstica %d: Okvarjeno ¹tevilo %s: %s\n"
 
-#: build/parsePreamble.c:603
+#: build/parsePreamble.c:609
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "vrstica %d: okvarjena oblika BuildArchitecture: %s"
 
-#: build/parsePreamble.c:612
+#: build/parsePreamble.c:618
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Interna napaka: Neprava znaèka %d"
 
-#: build/parsePreamble.c:751
+#: build/parsePreamble.c:756
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Okvarjeno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:757
+#: build/parsePreamble.c:762
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paket ¾e obstaja: %s"
 
-#: build/parsePreamble.c:782
+#: build/parsePreamble.c:787
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "vrstica %d: Neznana znaèka: %s"
 
-#: build/parsePreamble.c:804
+#: build/parsePreamble.c:809
 msgid "Spec file can't use BuildRoot"
 msgstr "Datoteka spec ne more uporabiti BuildRoot"
 
@@ -2600,7 +2611,7 @@ msgstr ""
 "na strani http://www.rpm.org ali po dopisni listi rpm-list@redhat.com.\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2311 lib/header.c:2328 lib/header.c:2348
+#: lib/header.c:2308 lib/header.c:2325 lib/header.c:2345
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -2633,88 +2644,88 @@ msgstr "datoteka %s se nahaja na neznani napravi"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "¹tevec grabData() RPM_STRING_TYPE mora biti 1.\n"
 
-#: lib/header.c:288 lib/header.c:834 lib/install.c:382
+#: lib/header.c:288 lib/header.c:831 lib/install.c:382
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Tip podatkov %d ni podprt\n"
 
-#: lib/header.c:1221
+#: lib/header.c:1218
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Okvarjen ¹tevec za headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1664
+#: lib/header.c:1661
 #, c-format
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 
 #. @-observertrans@
-#: lib/header.c:1694
+#: lib/header.c:1691
 msgid "missing } after %{"
 msgstr "manjkajoèi } za %{"
 
 #. @-observertrans@
-#: lib/header.c:1708
+#: lib/header.c:1705
 msgid "empty tag format"
 msgstr "oblika znaèke manjka"
 
 #. @-observertrans@
-#: lib/header.c:1720
+#: lib/header.c:1717
 msgid "empty tag name"
 msgstr "ime znaèke manjka"
 
 #. @-observertrans@
-#: lib/header.c:1737
+#: lib/header.c:1734
 msgid "unknown tag"
 msgstr "neznana znaèka"
 
 #. @-observertrans@
-#: lib/header.c:1764
+#: lib/header.c:1761
 msgid "] expected at end of array"
 msgstr "] ni prièakovan na koncu polja"
 
 #. @-observertrans@
-#: lib/header.c:1782
+#: lib/header.c:1779
 msgid "unexpected ]"
 msgstr "neprièakovan ]"
 
 #. @-observertrans@
-#: lib/header.c:1786
+#: lib/header.c:1783
 msgid "unexpected }"
 msgstr "neprièakovan }"
 
 #. @-observertrans@
-#: lib/header.c:1846
+#: lib/header.c:1843
 msgid "? expected in expression"
 msgstr "? prièakovan v izrazu"
 
 #. @-observertrans@
-#: lib/header.c:1855
+#: lib/header.c:1852
 msgid "{ expected after ? in expression"
 msgstr "{ prièakovan za ? v izrazu"
 
 #. @-observertrans@
-#: lib/header.c:1868 lib/header.c:1909
+#: lib/header.c:1865 lib/header.c:1906
 msgid "} expected in expression"
 msgstr "} prièakovan v izrazu"
 
 #. @-observertrans@
-#: lib/header.c:1878
+#: lib/header.c:1875
 msgid ": expected following ? subexpression"
 msgstr ": prièakovan za podizrazom ?"
 
 #. @-observertrans@
-#: lib/header.c:1894
+#: lib/header.c:1891
 msgid "{ expected after : in expression"
 msgstr "{ prièakovan za : v izrazu"
 
 #. @-observertrans@
-#: lib/header.c:1919
+#: lib/header.c:1916
 msgid "| expected at end of expression"
 msgstr "| prièakovan na koncu izraza"
 
-#: lib/header.c:2090
+#: lib/header.c:2087
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 

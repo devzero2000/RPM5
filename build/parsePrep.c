@@ -211,7 +211,7 @@ static int checkOwners(const char *urlfn)
 	int needtar = 1;
 
 	switch (compressed) {
-	case COMPRESSED_NOT:    /* XXX can't happen */
+	case COMPRESSED_NOT:	/* XXX can't happen */
 	case COMPRESSED_OTHER:
 	    t = "%{_gzipbin} -dc";
 	    break;
