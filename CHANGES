@@ -37,6 +37,7 @@
 	- fix: Red Hat 6.0 (5.2 also?) glibc-2.1.1 fclose fails using libio.
 	- add /usr/kerberos/man to brp-compress.
 	- build rpm with necessary autoconf options to get linux config correct.
+	- disable rpmlib(VersionedDependencies) by defining _noVersionedDependencies.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

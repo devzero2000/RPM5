@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-07-22 07:54-0400\n"
+"POT-Creation-Date: 2000-08-10 14:14-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1873,7 +1873,7 @@ msgstr "linia %d: Nazwa pliku niedozwolona: %s"
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "linia %d: Wersja w nazwach plików niedozwolona: %s"
 
-#: build/parseReqs.c:168
+#: build/parseReqs.c:169
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr "linia %d: Wymagana wersja: %s"

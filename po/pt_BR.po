@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-07-22 07:54-0400\n"
+msgstr "POT-Creation-Date: 2000-08-10 14:14-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:460
 #, c-format
@@ -2007,7 +2007,7 @@ msgid "line %d: Versioned file name not permitted: %s"
 msgstr ""
 
 # , c-format
-#: build/parseReqs.c:168
+#: build/parseReqs.c:169
 #, fuzzy, c-format
 msgid "line %d: Version required: %s"
 msgstr "Não consegui abrir: %s\n"

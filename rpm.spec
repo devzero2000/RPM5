@@ -1,5 +1,4 @@
-# XXX legacy requires './' payload prefix to be omitted from rpm packages.
-%define	_noPayloadPrefix	1
+%define	_noVersionedDependencies	1
 
 %define	__prefix	/usr
 %{expand:%%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
@@ -8,7 +7,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 9.6x
+Release: 10.6x
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -246,6 +245,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Aug 10 2000 Jeff Johnson <jbj@redhat.com>
+- disable rpmlib(VersionedDependencies) by defining _noVersionedDependencies.
+
 * Sat Jul 22 2000 Jeff Johnson <jbj@redhat.com>
 - build rpm with necessary autoconf options to get linux config correct.
 

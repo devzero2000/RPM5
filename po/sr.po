@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-22 07:54-0400\n"
+"POT-Creation-Date: 2000-08-10 14:14-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1908,7 +1908,7 @@ msgstr "paket %s nije naveden u %s"
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "paket %s nije naveden u %s"
 
-#: build/parseReqs.c:168
+#: build/parseReqs.c:169
 #, fuzzy, c-format
 msgid "line %d: Version required: %s"
 msgstr "neuspelo otvaranje %s: %s"
