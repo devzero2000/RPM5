@@ -395,7 +395,7 @@
 
 # Note: adding nofsync here speeds up --rebuilddb a lot.
 %__dbi_rebuild			nofsync !log !txn !cdb
-%__dbi_transient		%{__dbi_rebuild} temporary
+%__dbi_transient		%{__dbi_rebuild} temporary private
 %__dbi_perms			perms=0644
 
 #
