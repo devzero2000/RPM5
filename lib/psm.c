@@ -584,7 +584,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
 #if __ia64__
     /* XXX This assumes that all interpreters are elf executables. */
-    if (a != NULL && a[0] == 'i' && a[1] != '\0' && a[2] == '8' && a[3] == '6')
+    if ((a != NULL && a[0] == 'i' && a[1] != '\0' && a[2] == '8' && a[3] == '6')
+     && strcmp(argv[0], "/sbin/ldconfig"))
     {
 	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
 	const char * errstr;
