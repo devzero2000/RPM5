@@ -1774,6 +1774,10 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 	    if ((fi = rpmtsiFi(pi)) == NULL)
 		continue;	/* XXX can't happen */
 
+	    /* If no pre-transaction script, then don't bother. */
+	    if (fi->pretrans == NULL)
+		continue;
+
 	    p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
 			    rpmteKey(p), ts->notifyData);
 	    p->h = NULL;
@@ -1822,6 +1826,7 @@ assert(psm != NULL);
 				  rpmteKey(p), ts->notifyData);
 /*@=noeffectuncon =compdef =usereleased @*/
 		p->fd = NULL;
+		p->fi = rpmfiFree(p->fi);
 		p->h = headerFree(p->h);
 	    }
 /*@=branchstate@*/
@@ -2407,9 +2412,11 @@ assert(psm != NULL);
 	psm = rpmpsmFree(psm);
 /*@=nullstate@*/
 
+#ifdef DYING
 /*@-type@*/ /* FIX: p is almost opaque */
 	p->fi = rpmfiFree(p->fi);
 /*@=type@*/
+#endif
 
 	/* If we received an error lets break out and rollback, provided
 	 * autorollback is enabled.
@@ -2440,6 +2447,18 @@ assert(psm != NULL);
 	rpmMessage(RPMMESS_DEBUG, _("running post-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+	    int haspostscript;
+
+	    if ((fi = rpmtsiFi(pi)) == NULL)
+		continue;   /* XXX can't happen */
+
+	    haspostscript = (fi->posttrans != NULL ? 1 : 0);
+	    p->fi = rpmfiFree(p->fi);
+
+	    /* If no post-transaction script, then don't bother. */
+	    if (haspostscript)
+		continue;
+
 	    p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
 		rpmteKey(p), ts->notifyData);
 	    p->h = NULL;
@@ -2465,11 +2484,10 @@ assert(psm != NULL);
 	    }
 
 	    if (rpmteFd(p) != NULL) {
-		fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
-		if (fi != NULL) {	/* XXX can't happen */
-		    fi->te = p;
-		    p->fi = fi;
-		}
+		p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		if (p->fi != NULL)  /* XXX can't happen */
+		    p->fi->te = p;
+
 /*@-compdef -usereleased@*/	/* p->fi->te undefined */
 		psm = rpmpsmNew(ts, p, p->fi);
 /*@=compdef =usereleased@*/

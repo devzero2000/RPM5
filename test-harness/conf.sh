@@ -19,8 +19,9 @@ USE_BUILD_RPM=1
 
 #
 # Path to rpm build directory
+BUILD_DIR=$(cd ..; pwd)
 #BUILD_DIR=/home/rpm/rh9/build
-BUILD_DIR=/home/rpm/4.2.3/build
+#BUILD_DIR=/home/rpm/4.2.3/build
 #BUILD_DIR=/home/rootwork/rpm/4.2/build.orig.dev/rpm-4.2
 
 #
