@@ -78,6 +78,8 @@
 	- fix: queries that evaluated to "" incorrectly returned NULL.
 	- fix: packages produced by rpm-4.0 dinna merge signature tags.
 	- fix: rpmdb iterator memory leak in python bindings.
+	- fix: include <sys/time.h> for 6.2 python modules.
+	- remove vestiges of mipseb arch (#62408).
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

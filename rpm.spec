@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 7x.20
+Release: 7x.21
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -521,6 +521,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu May  2 2002 Jeff Johnson <jbj@redhat.com>
+- fix: include <sys/time.h> for 6.2 python modules.
+
 * Fri Apr 26 2002 Jeff Johnson <jbj@redhat.com>
 - fix: rpmdb iterator memory leak in python bindings.
 
