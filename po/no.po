@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-13 11:45-0400\n"
+"POT-Creation-Date: 2001-08-15 09:25-0400\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -2210,7 +2210,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2609 lib/header.c:2628 lib/header.c:2648
+#: lib/header.c:2615 lib/header.c:2634 lib/header.c:2654
 msgid "(not a number)"
 msgstr ""
 
@@ -2298,77 +2298,77 @@ msgid "Data type %d not supported\n"
 msgstr "Datatype %d ikke støttet\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1925
+#: lib/header.c:1931
 #, c-format
 msgid "missing { after %"
 msgstr "mangler { etter %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1955
+#: lib/header.c:1961
 msgid "missing } after %{"
 msgstr "mangler } etter %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1969
+#: lib/header.c:1975
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1983
+#: lib/header.c:1989
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2000
+#: lib/header.c:2006
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2027
+#: lib/header.c:2033
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2045
+#: lib/header.c:2051
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2049
+#: lib/header.c:2055
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2115
+#: lib/header.c:2121
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2124
+#: lib/header.c:2130
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2137 lib/header.c:2179
+#: lib/header.c:2143 lib/header.c:2185
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2147
+#: lib/header.c:2153
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2164
+#: lib/header.c:2170
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2189
+#: lib/header.c:2195
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2369
+#: lib/header.c:2375
 msgid "(unknown type)"
 msgstr "(ukjent type)"
 
@@ -3919,24 +3919,24 @@ msgstr ""
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/rpmlog.c:44
+#: rpmio/rpmlog.c:56
 msgid "(no error)"
 msgstr ""
 
 #. @-readonlytrans@
 #. FIX: double indeirection.
 #. @observer@
-#: rpmio/rpmlog.c:102 rpmio/rpmlog.c:103 rpmio/rpmlog.c:104
+#: rpmio/rpmlog.c:114 rpmio/rpmlog.c:115 rpmio/rpmlog.c:116
 msgid "fatal error: "
 msgstr "fatal feil: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:105
+#: rpmio/rpmlog.c:117
 msgid "error: "
 msgstr "feil: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:106
+#: rpmio/rpmlog.c:118
 msgid "warning: "
 msgstr "advarsel: "
 

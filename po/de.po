@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-13 11:45-0400\n"
+"POT-Creation-Date: 2001-08-15 09:25-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2401,7 +2401,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2609 lib/header.c:2628 lib/header.c:2648
+#: lib/header.c:2615 lib/header.c:2634 lib/header.c:2654
 msgid "(not a number)"
 msgstr "(keine Zahl)"
 
@@ -2493,80 +2493,80 @@ msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1925
+#: lib/header.c:1931
 #, c-format
 msgid "missing { after %"
 msgstr "fehlende { nach %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1955
+#: lib/header.c:1961
 msgid "missing } after %{"
 msgstr "fehlende } nach %{"
 
 # »Tag« übersetzen??? -ke-
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1969
+#: lib/header.c:1975
 msgid "empty tag format"
 msgstr "leeres »Tag«-Format"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1983
+#: lib/header.c:1989
 msgid "empty tag name"
 msgstr "leerer »Tag«-Name"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2000
+#: lib/header.c:2006
 msgid "unknown tag"
 msgstr "unbekannter »Tag«"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2027
+#: lib/header.c:2033
 msgid "] expected at end of array"
 msgstr "] am Ende des Arrays erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2045
+#: lib/header.c:2051
 msgid "unexpected ]"
 msgstr "unerwartete ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2049
+#: lib/header.c:2055
 msgid "unexpected }"
 msgstr "unerwartete }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2115
+#: lib/header.c:2121
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2124
+#: lib/header.c:2130
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ nach ? im Ausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2137 lib/header.c:2179
+#: lib/header.c:2143 lib/header.c:2185
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2147
+#: lib/header.c:2153
 msgid ": expected following ? subexpression"
 msgstr ": nach ? Unterausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2164
+#: lib/header.c:2170
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ nach : im Ausdruck erwartet"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2189
+#: lib/header.c:2195
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
-#: lib/header.c:2369
+#: lib/header.c:2375
 msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
@@ -4228,7 +4228,7 @@ msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/rpmlog.c:44
+#: rpmio/rpmlog.c:56
 #, fuzzy
 msgid "(no error)"
 msgstr "Fehler: "
@@ -4236,17 +4236,17 @@ msgstr "Fehler: "
 #. @-readonlytrans@
 #. FIX: double indeirection.
 #. @observer@
-#: rpmio/rpmlog.c:102 rpmio/rpmlog.c:103 rpmio/rpmlog.c:104
+#: rpmio/rpmlog.c:114 rpmio/rpmlog.c:115 rpmio/rpmlog.c:116
 msgid "fatal error: "
 msgstr "Fataler Fehler: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:105
+#: rpmio/rpmlog.c:117
 msgid "error: "
 msgstr "Fehler: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:106
+#: rpmio/rpmlog.c:118
 msgid "warning: "
 msgstr "Warnung: "
 

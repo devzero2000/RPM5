@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-13 11:45-0400\n"
+"POT-Creation-Date: 2001-08-15 09:25-0400\n"
 "PO-Revision-Date: 2001-07-18 17:10-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2233,7 +2233,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2609 lib/header.c:2628 lib/header.c:2648
+#: lib/header.c:2615 lib/header.c:2634 lib/header.c:2654
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -2321,77 +2321,77 @@ msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1925
+#: lib/header.c:1931
 #, c-format
 msgid "missing { after %"
 msgstr "отсутствует \"{\" после \"%\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1955
+#: lib/header.c:1961
 msgid "missing } after %{"
 msgstr "отсутствует \"}\" после \"%{\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1969
+#: lib/header.c:1975
 msgid "empty tag format"
 msgstr "пустой формат тэга"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1983
+#: lib/header.c:1989
 msgid "empty tag name"
 msgstr "пустое имя тэга"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2000
+#: lib/header.c:2006
 msgid "unknown tag"
 msgstr "неизвестный тэг"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2027
+#: lib/header.c:2033
 msgid "] expected at end of array"
 msgstr "в конце массива ожидалась \"]\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2045
+#: lib/header.c:2051
 msgid "unexpected ]"
 msgstr "неожиданная \"]\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2049
+#: lib/header.c:2055
 msgid "unexpected }"
 msgstr "неожиданная \"}\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2115
+#: lib/header.c:2121
 msgid "? expected in expression"
 msgstr "в выражении ожидалось \"?\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2124
+#: lib/header.c:2130
 msgid "{ expected after ? in expression"
 msgstr "в выражении после \"?\" ожидалось \"{\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2137 lib/header.c:2179
+#: lib/header.c:2143 lib/header.c:2185
 msgid "} expected in expression"
 msgstr "в выражении ожидалось \"}\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2147
+#: lib/header.c:2153
 msgid ": expected following ? subexpression"
 msgstr "в выражении после \"?\" ожидалось \":\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2164
+#: lib/header.c:2170
 msgid "{ expected after : in expression"
 msgstr "в выражении после \":\" ожидалось \"{\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2189
+#: lib/header.c:2195
 msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
-#: lib/header.c:2369
+#: lib/header.c:2375
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
@@ -3969,24 +3969,24 @@ msgstr "Неизвестная или неожиданная ошибка"
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
 
-#: rpmio/rpmlog.c:44
+#: rpmio/rpmlog.c:56
 msgid "(no error)"
 msgstr "(нет ошибки)"
 
 #. @-readonlytrans@
 #. FIX: double indeirection.
 #. @observer@
-#: rpmio/rpmlog.c:102 rpmio/rpmlog.c:103 rpmio/rpmlog.c:104
+#: rpmio/rpmlog.c:114 rpmio/rpmlog.c:115 rpmio/rpmlog.c:116
 msgid "fatal error: "
 msgstr "фатальная ошибка: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:105
+#: rpmio/rpmlog.c:117
 msgid "error: "
 msgstr "ошибка: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:106
+#: rpmio/rpmlog.c:118
 msgid "warning: "
 msgstr "предупреждение: "
 

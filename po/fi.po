@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-13 11:45-0400\n"
+"POT-Creation-Date: 2001-08-15 09:25-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2263,7 +2263,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2609 lib/header.c:2628 lib/header.c:2648
+#: lib/header.c:2615 lib/header.c:2634 lib/header.c:2654
 msgid "(not a number)"
 msgstr "(ei ole luku)"
 
@@ -2351,79 +2351,79 @@ msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1925
+#: lib/header.c:1931
 #, c-format
 msgid "missing { after %"
 msgstr "puuttuva '{' '%':n jälkeen"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1955
+#: lib/header.c:1961
 msgid "missing } after %{"
 msgstr "puuttuva '{' '%{':n jälkeen"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1969
+#: lib/header.c:1975
 msgid "empty tag format"
 msgstr "tyhjä nimiön formaatti"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1983
+#: lib/header.c:1989
 msgid "empty tag name"
 msgstr "tyhjä nimiön nimi"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2000
+#: lib/header.c:2006
 msgid "unknown tag"
 msgstr "tuntematon nimiö"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2027
+#: lib/header.c:2033
 msgid "] expected at end of array"
 msgstr "']' puuttuu taulukkomäärittelyn lopusta"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2045
+#: lib/header.c:2051
 msgid "unexpected ]"
 msgstr "odottamaton ']'"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2049
+#: lib/header.c:2055
 msgid "unexpected }"
 msgstr "odottamaton '}'"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2115
+#: lib/header.c:2121
 msgid "? expected in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2124
+#: lib/header.c:2130
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "odotin '{' '?'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2137 lib/header.c:2179
+#: lib/header.c:2143 lib/header.c:2185
 msgid "} expected in expression"
 msgstr "odotin '}'-merkkiä ilmauksessa"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2147
+#: lib/header.c:2153
 msgid ": expected following ? subexpression"
 msgstr "odotin ':' '?'-merkin jälkeen ali-ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2164
+#: lib/header.c:2170
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "odotin '{' ':'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2189
+#: lib/header.c:2195
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 
-#: lib/header.c:2369
+#: lib/header.c:2375
 msgid "(unknown type)"
 msgstr "(tuntematon tyyppi)"
 
@@ -4057,7 +4057,7 @@ msgstr "FTP:n tuntematon tai odottamaton virhe"
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/rpmlog.c:44
+#: rpmio/rpmlog.c:56
 #, fuzzy
 msgid "(no error)"
 msgstr "virhe: "
@@ -4065,17 +4065,17 @@ msgstr "virhe: "
 #. @-readonlytrans@
 #. FIX: double indeirection.
 #. @observer@
-#: rpmio/rpmlog.c:102 rpmio/rpmlog.c:103 rpmio/rpmlog.c:104
+#: rpmio/rpmlog.c:114 rpmio/rpmlog.c:115 rpmio/rpmlog.c:116
 msgid "fatal error: "
 msgstr "vakava virhe: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:105
+#: rpmio/rpmlog.c:117
 msgid "error: "
 msgstr "virhe: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:106
+#: rpmio/rpmlog.c:118
 msgid "warning: "
 msgstr "varoitus: "
 
