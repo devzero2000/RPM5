@@ -530,6 +530,8 @@
 #	The directory in which erased packages will be saved when using
 #	the --repackage option.
 %_repackage_dir		/var/spool/up2date
+
+#	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
 %_repackage_root	%{nil}
 
 #	Relations between package names that cause dependency loops
@@ -589,6 +591,10 @@
 %_bhVR          RedHat
 %_bhA           RPMS
 
+#	The cache database directory.
+%_cache_dbpath		/var/spool/up2date/cache
+
+#	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
 #==============================================================================
 # ---- per-platform macros.
 #	Macros that are specific to an individual platform. The values here
