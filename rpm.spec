@@ -412,6 +412,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jun 12 2001 Jeff Johnson <jbj@redhat.com>
+- remove rpmrc Provides: Yet Again, use virtual packages.
+- dump cursor debugging wrappers.
+- rpm --verify can disable rpmFileAttr checks.
+
 * Mon Jun 11 2001 Jeff Johnson <jbj@redhat.com>
 - remove dead code frpm popt table reorg.
 - more CLI typedefs/prototypes moved from rpmlib.h to rpmcli.h.
