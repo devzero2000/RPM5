@@ -21,6 +21,7 @@
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar */
+#include "legacy.h"	/* XXX domd5 */
 #include "rpmmacro.h"	/* XXX rpmCleanPath */
 
 #include "debug.h"
@@ -1310,23 +1311,35 @@ if (fi->actions == NULL)
 	newPath = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	fmt = _free(fmt);
 
+#if __ia64__
+	/* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
 	if (newPath != NULL && *newPath != '\0'
+	 && strlen(newPath) >= (sizeof("/emul/i386")-1)
+	 && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
+	 && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
+	 && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
+	{
+	    newPath[7] = 'a';
+	    newPath[8] = '3';
+	    newPath[9] = '2';
+	}
+#endif
+
+	/* XXX Make sure autoreloc is not already specified. */
+	i = p->nrelocs;
+	if (newPath != NULL && *newPath != '\0' && p->relocs != NULL)
+	for (i = 0; i < p->nrelocs; i++) {
+	   if (strcmp(p->relocs[i].oldPath, "/"))
+		continue;
+	   if (strcmp(p->relocs[i].newPath, newPath))
+		continue;
+	   break;
+	}
+
+	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs
 	 && hge(h, RPMTAG_ARCH, NULL, (void **) &harch, NULL)
 	 && harch != NULL && !rpmMachineScore(RPM_MACHTABLE_INSTARCH, harch) )
 	{
-
-#if __ia64__
-	    /* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
-	    if (strlen(newPath) >= (sizeof("/emul/i386")-1)
-	     && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
-	     && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
-	     && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
-	    {
-		newPath[7] = 'a';
-		newPath[8] = '3';
-		newPath[9] = '2';
-	    }
-#endif
 	    p->relocs =
 		xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));
 	    p->relocs[p->nrelocs].oldPath = xstrdup("/");
