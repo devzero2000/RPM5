@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-20 10:50-0400\n"
+"POT-Creation-Date: 2002-08-20 18:00-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -418,192 +418,192 @@ msgstr "&& og || understøttes ikke for strenge\n"
 msgid "syntax error in expression\n"
 msgstr "syntaksfejl i udtryk\n"
 
-#: build/files.c:288
+#: build/files.c:289
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fejl: %s\n"
 
-#: build/files.c:352 build/files.c:552 build/files.c:748
+#: build/files.c:353 build/files.c:553 build/files.c:749
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:363 build/files.c:682 build/files.c:759
+#: build/files.c:364 build/files.c:683 build/files.c:760
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Manglende ')' i %s %s\n"
 
-#: build/files.c:401 build/files.c:707
+#: build/files.c:402 build/files.c:708
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ugyldigt %s-symbol: %s\n"
 
-#: build/files.c:511
+#: build/files.c:512
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:568
+#: build/files.c:569
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Ikke-mellemrum efterfølger %s(): %s\n"
 
-#: build/files.c:606
+#: build/files.c:607
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Ugyldig syntaks: %s(%s)\n"
 
-#: build/files.c:616
+#: build/files.c:617
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Ugyldig tilstandsangivelse: %s(%s)\n"
 
-#: build/files.c:628
+#: build/files.c:629
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Ugyldig dirmode-spec: %s(%s)\n"
 
-#: build/files.c:786
+#: build/files.c:787
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Anormal locale-længde: \"%.*s\" i %%lang(%s)\n"
 
 #. @innercontinue@
-#: build/files.c:797
+#: build/files.c:798
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Dobbelt locale %.*s i %%lang(%s)\n"
 
-#: build/files.c:960
+#: build/files.c:961
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Træfningsgrænse for %%docdir\n"
 
-#: build/files.c:966
+#: build/files.c:967
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Kun et parameter for %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:994
+#: build/files.c:995
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "To filer på én linie: %s\n"
 
-#: build/files.c:1009
+#: build/files.c:1010
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Fil skal begynde med \"/\": %s\n"
 
-#: build/files.c:1022
+#: build/files.c:1023
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan ikke blande special-%%doc med andre former: %s\n"
 
-#: build/files.c:1174
+#: build/files.c:1175
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fil angivet to gange: %s\n"
 
-#: build/files.c:1318
+#: build/files.c:1319
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1564
+#: build/files.c:1567
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1588
+#: build/files.c:1591
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1631 build/files.c:2273 build/parsePrep.c:50
+#: build/files.c:1634 build/files.c:2276 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:1644
+#: build/files.c:1647
 #, fuzzy, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1761
+#: build/files.c:1764
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1784
+#: build/files.c:1787
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:1799
+#: build/files.c:1802
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1863
+#: build/files.c:1866
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1874 build/pack.c:156
+#: build/files.c:1877 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2261
+#: build/files.c:2264
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2337
+#: build/files.c:2340
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunne ikke udføre %s: %s\n"
 
-#: build/files.c:2342
+#: build/files.c:2345
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
 
-#: build/files.c:2426
+#: build/files.c:2429
 #, c-format
 msgid "%s failed\n"
 msgstr "%s mislykkedes\n"
 
-#: build/files.c:2430
+#: build/files.c:2433
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/files.c:2590
+#: build/files.c:2593
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Finder %s: (benytter %s)...\n"
 
-#: build/files.c:2620 build/files.c:2634
+#: build/files.c:2623 build/files.c:2637
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Kunne ikke finde %s:\n"
 
-#: build/files.c:2772
+#: build/files.c:2775
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2790
+#: build/files.c:2793
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2820
+#: build/files.c:2823
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -748,7 +748,7 @@ msgstr "Kunne ikke læse hoved fra %s: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunne ikke åbne %s: %s\n"
 
-#: build/pack.c:629 lib/psm.c:1806
+#: build/pack.c:629 lib/psm.c:1812
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke skrive pakke: %s\n"
@@ -778,7 +778,7 @@ msgstr "Kunne ikke læse pakkeindhold fra %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke skrive pakkeindhold til %s: %s\n"
 
-#: build/pack.c:710 lib/psm.c:2112
+#: build/pack.c:710 lib/psm.c:2118
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -2148,72 +2148,72 @@ msgstr "kildepakke indeholder ingen .spec-fil\n"
 msgid "%s: waitpid(%d) rc %d status %x\n"
 msgstr ""
 
-#: lib/psm.c:983
+#: lib/psm.c:985
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:991
+#: lib/psm.c:993
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:1153
+#: lib/psm.c:1155
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:1176
+#: lib/psm.c:1178
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "overspringer installation af %s-%s-%s, %%pre-småskript fejlede rc %d\n"
 
-#: lib/psm.c:1182
+#: lib/psm.c:1184
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
 
-#: lib/psm.c:1586
+#: lib/psm.c:1590
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "pakke: %s-%s-%s filer test = %d\n"
 
-#: lib/psm.c:1709
+#: lib/psm.c:1715
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1819
+#: lib/psm.c:1825
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: lib/psm.c:1865
+#: lib/psm.c:1871
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "bruger %s eksisterer ikke - bruger root\n"
 
-#: lib/psm.c:1874
+#: lib/psm.c:1880
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "gruppe %s eksisterer ikke - bruger root\n"
 
-#: lib/psm.c:1922
+#: lib/psm.c:1928
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: lib/psm.c:1923
+#: lib/psm.c:1929
 msgid " on file "
 msgstr " for fil "
 
-#: lib/psm.c:2120
+#: lib/psm.c:2126
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/psm.c:2123
+#: lib/psm.c:2129
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
@@ -2831,17 +2831,17 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Kontakt venligst rpm-list@redhat.com (på engelsk)\n"
 
-#: lib/rpmrc.c:1762
+#: lib/rpmrc.c:1764
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Kan ikke udfolde %s\n"
 
-#: lib/rpmrc.c:1767
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Kunne ikke læse %s, HOME er for stor.\n"
 
-#: lib/rpmrc.c:1784
+#: lib/rpmrc.c:1786
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kunne ikke åbne %s for læsning: %s.\n"
@@ -3259,13 +3259,13 @@ msgstr "kan ikke åbne '%s'-indeks\n"
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
-#: rpmdb/rpmdb.c:1223 rpmdb/rpmdb.c:1352 rpmdb/rpmdb.c:1403 rpmdb/rpmdb.c:2374
-#: rpmdb/rpmdb.c:2485 rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:1223 rpmdb/rpmdb.c:1352 rpmdb/rpmdb.c:1403 rpmdb/rpmdb.c:2378
+#: rpmdb/rpmdb.c:2489 rpmdb/rpmdb.c:3218
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:1639 rpmdb/rpmdb.c:2267 rpmdb/rpmdb.c:3017
+#: rpmdb/rpmdb.c:1639 rpmdb/rpmdb.c:2271 rpmdb/rpmdb.c:3021
 msgid "rpmdb: skipping"
 msgstr ""
 
@@ -3274,138 +3274,138 @@ msgstr ""
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:2294
+#: rpmdb/rpmdb.c:2298
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2577
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:2636
+#: rpmdb/rpmdb.c:2640
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:2751
+#: rpmdb/rpmdb.c:2755
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2755
+#: rpmdb/rpmdb.c:2759
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2783
+#: rpmdb/rpmdb.c:2787
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:2804
+#: rpmdb/rpmdb.c:2808
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:2814
+#: rpmdb/rpmdb.c:2818
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:2963
+#: rpmdb/rpmdb.c:2967
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:3189
+#: rpmdb/rpmdb.c:3193
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3193
+#: rpmdb/rpmdb.c:3197
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:3233
+#: rpmdb/rpmdb.c:3237
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:3632
+#: rpmdb/rpmdb.c:3636
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:3670
+#: rpmdb/rpmdb.c:3674
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:3702
+#: rpmdb/rpmdb.c:3706
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:3706
+#: rpmdb/rpmdb.c:3710
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:3712
+#: rpmdb/rpmdb.c:3716
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3714
+#: rpmdb/rpmdb.c:3718
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:3721
+#: rpmdb/rpmdb.c:3725
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3734
+#: rpmdb/rpmdb.c:3738
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3763
+#: rpmdb/rpmdb.c:3767
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:3803
+#: rpmdb/rpmdb.c:3807
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3825
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:3829
+#: rpmdb/rpmdb.c:3833
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:3831
+#: rpmdb/rpmdb.c:3835
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:3841
+#: rpmdb/rpmdb.c:3845
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:3843
+#: rpmdb/rpmdb.c:3847
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"

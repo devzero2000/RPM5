@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-20 10:50-0400\n"
+"POT-Creation-Date: 2002-08-20 18:00-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -486,197 +486,197 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr "? im Ausdruck erwartet"
 
-#: build/files.c:288
+#: build/files.c:289
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:352 build/files.c:552 build/files.c:748
+#: build/files.c:353 build/files.c:553 build/files.c:749
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "fehlende { nach %{"
 
-#: build/files.c:363 build/files.c:682 build/files.c:759
+#: build/files.c:364 build/files.c:683 build/files.c:760
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "fehlender ':' bei %s:%d"
 
-#: build/files.c:401 build/files.c:707
+#: build/files.c:402 build/files.c:708
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/files.c:511
+#: build/files.c:512
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "fehlende { nach %{"
 
-#: build/files.c:568
+#: build/files.c:569
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:606
+#: build/files.c:607
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build/files.c:616
+#: build/files.c:617
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build/files.c:628
+#: build/files.c:629
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:786
+#: build/files.c:787
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
 #. @innercontinue@
-#: build/files.c:797
+#: build/files.c:798
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:960
+#: build/files.c:961
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:966
+#: build/files.c:967
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 # , c-format
 #. We already got a file -- error
-#: build/files.c:994
+#: build/files.c:995
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:1009
+#: build/files.c:1010
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: build/files.c:1022
+#: build/files.c:1023
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1174
+#: build/files.c:1175
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:1318
+#: build/files.c:1319
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1564
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:1588
+#: build/files.c:1591
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1631 build/files.c:2273 build/parsePrep.c:50
+#: build/files.c:1634 build/files.c:2276 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1644
+#: build/files.c:1647
 #, fuzzy, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:1761
+#: build/files.c:1764
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: build/files.c:1784
+#: build/files.c:1787
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: build/files.c:1799
+#: build/files.c:1802
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1863
+#: build/files.c:1866
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
 # , c-format
-#: build/files.c:1874 build/pack.c:156
+#: build/files.c:1877 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/files.c:2261
+#: build/files.c:2264
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2337
+#: build/files.c:2340
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:2342
+#: build/files.c:2345
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:2426
+#: build/files.c:2429
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:2430
+#: build/files.c:2433
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:2590
+#: build/files.c:2593
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/files.c:2620 build/files.c:2634
+#: build/files.c:2623 build/files.c:2637
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:2772
+#: build/files.c:2775
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: build/files.c:2790
+#: build/files.c:2793
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -684,7 +684,7 @@ msgid ""
 msgstr ""
 
 # , c-format
-#: build/files.c:2820
+#: build/files.c:2823
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -837,7 +837,7 @@ msgid "Could not open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/pack.c:629 lib/psm.c:1806
+#: build/pack.c:629 lib/psm.c:1812
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
@@ -872,7 +872,7 @@ msgstr "Nicht möglich %s zu schreiben"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:710 lib/psm.c:2112
+#: build/pack.c:710 lib/psm.c:2118
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2309,74 +2309,74 @@ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 msgid "%s: waitpid(%d) rc %d status %x\n"
 msgstr ""
 
-#: lib/psm.c:983
+#: lib/psm.c:985
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:991
+#: lib/psm.c:993
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:1153
+#: lib/psm.c:1155
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:1176
+#: lib/psm.c:1178
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 
-#: lib/psm.c:1182
+#: lib/psm.c:1184
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/psm.c:1586
+#: lib/psm.c:1590
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/psm.c:1709
+#: lib/psm.c:1715
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
 # , c-format
-#: lib/psm.c:1819
+#: lib/psm.c:1825
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: lib/psm.c:1865
+#: lib/psm.c:1871
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1874
+#: lib/psm.c:1880
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/psm.c:1922
+#: lib/psm.c:1928
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/psm.c:1923
+#: lib/psm.c:1929
 msgid " on file "
 msgstr ""
 
 # , c-format
-#: lib/psm.c:2120
+#: lib/psm.c:2126
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/psm.c:2123
+#: lib/psm.c:2129
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp fehlgeschlagen"
@@ -3007,18 +3007,18 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1762
+#: lib/rpmrc.c:1764
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/rpmrc.c:1767
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmrc.c:1784
+#: lib/rpmrc.c:1786
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
@@ -3447,13 +3447,13 @@ msgstr "Fehler: kann %s nicht öffnen\n"
 msgid "no dbpath has been set\n"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: rpmdb/rpmdb.c:1223 rpmdb/rpmdb.c:1352 rpmdb/rpmdb.c:1403 rpmdb/rpmdb.c:2374
-#: rpmdb/rpmdb.c:2485 rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:1223 rpmdb/rpmdb.c:1352 rpmdb/rpmdb.c:1403 rpmdb/rpmdb.c:2378
+#: rpmdb/rpmdb.c:2489 rpmdb/rpmdb.c:3218
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "Fehler beim Eintrag %s von %s"
 
-#: rpmdb/rpmdb.c:1639 rpmdb/rpmdb.c:2267 rpmdb/rpmdb.c:3017
+#: rpmdb/rpmdb.c:1639 rpmdb/rpmdb.c:2271 rpmdb/rpmdb.c:3021
 msgid "rpmdb: skipping"
 msgstr ""
 
@@ -3462,140 +3462,140 @@ msgstr ""
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:2294
+#: rpmdb/rpmdb.c:2298
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2577
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
-#: rpmdb/rpmdb.c:2636
+#: rpmdb/rpmdb.c:2640
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "Fehler beim Eintrag %s von %s"
 
 # FIXME
-#: rpmdb/rpmdb.c:2751
+#: rpmdb/rpmdb.c:2755
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: rpmdb/rpmdb.c:2755
+#: rpmdb/rpmdb.c:2759
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:2783
+#: rpmdb/rpmdb.c:2787
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "Fehler beim Eintrag %s von %s"
 
-#: rpmdb/rpmdb.c:2804
+#: rpmdb/rpmdb.c:2808
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 
 # FIXME
-#: rpmdb/rpmdb.c:2814
+#: rpmdb/rpmdb.c:2818
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:2963
+#: rpmdb/rpmdb.c:2967
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: rpmdb/rpmdb.c:3189
+#: rpmdb/rpmdb.c:3193
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # FIXME
-#: rpmdb/rpmdb.c:3193
+#: rpmdb/rpmdb.c:3197
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:3233
+#: rpmdb/rpmdb.c:3237
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:3632
+#: rpmdb/rpmdb.c:3636
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3670
+#: rpmdb/rpmdb.c:3674
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: rpmdb/rpmdb.c:3702
+#: rpmdb/rpmdb.c:3706
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3706
+#: rpmdb/rpmdb.c:3710
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: rpmdb/rpmdb.c:3712
+#: rpmdb/rpmdb.c:3716
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3714
+#: rpmdb/rpmdb.c:3718
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3721
+#: rpmdb/rpmdb.c:3725
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3734
+#: rpmdb/rpmdb.c:3738
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3763
+#: rpmdb/rpmdb.c:3767
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: rpmdb/rpmdb.c:3803
+#: rpmdb/rpmdb.c:3807
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3825
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3829
+#: rpmdb/rpmdb.c:3833
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3831
+#: rpmdb/rpmdb.c:3835
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3841
+#: rpmdb/rpmdb.c:3845
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
 # , c-format
-#: rpmdb/rpmdb.c:3843
+#: rpmdb/rpmdb.c:3847
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
