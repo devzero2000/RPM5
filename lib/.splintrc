@@ -1,0 +1,64 @@
+-I. -I.. -I../build -I../rpmdb -I../rpmio -I../beecrypt -I../popt -I../elfutils/libelf -DHAVE_CONFIG_H -D_GNU_SOURCE
+
++partial
++forcehints
+
+-warnunixlib
+-warnposix
+
++unixlib
+
++access-slovak
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
++bounds
++slovak-fcns
+-redecl
+-bufferoverflowhigh
+
+# --- +partial artifacts
+-declundef
+-exportheadervar
+-exportlocal
+
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
++bounds			# 0
+-bitwisesigned		# 255
+-elseifcomplete		# 95 occurences
+-exportconst		# 839 occurences
+-exportfcn
+-exporttype
+-exportvar
+-fielduse		# 1 occurence <bits/sigset.h>
+-forblock		# tedious
+-ifblock		# tedious
+-namechecks		# 1843 tedious ANSI compliance checks
+-ptrarith		# 164
+
+-compdestroy		# 66
+-mustdefine		# 66
+-sys-dir-errors
+
+-strictops		# 46
+-whileblock		# 54
+
+# --- not-yet at checks level
++enumint		# 861
+-mustfree		# 671
+-predboolptr		# 311
+-usedef			# 191
+
+# --- not-yet at standard level
+-boolops		# 165
++boolint		# 106
++charint		# 173
++ignorequals		# 397
++matchanyintegral	# 115
