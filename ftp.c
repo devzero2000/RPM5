@@ -64,7 +64,7 @@ extern int h_errno;
 
 #include "ftp.h"
 
-static int ftpDebug = 1;
+static int ftpDebug = 0;
 static int ftpTimeoutSecs = TIMEOUT_SECS;
 
 static int ftpCheckResponse(int sock, char ** str);
@@ -365,7 +365,7 @@ fprintf(stderr, "-> ABOR\n");
 	    ;
     }
 
-    ftpTimeoutSecs = 1;
+    ftpTimeoutSecs = 10;
     if ((rc = ftpCheckResponse(sock, NULL)) == FTPERR_NIC_ABORT_IN_PROGRESS) {
 	rc = ftpCheckResponse(sock, NULL);
     }
