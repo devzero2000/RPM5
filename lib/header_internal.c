@@ -27,14 +27,14 @@ char ** headerGetLangs(Header h)
     /*@-nullret@*/ return table; /*@=nullret@*/	/* LCL: double indirection? */
 }
 
-void headerDump(Header h, FILE *f, int flags, 
-		const struct headerTagTableEntry * tags)
+void headerDump(Header h, FILE *f, int flags,
+	const struct headerTagTableEntry * tags)
 {
     int i;
-    struct indexEntry *p;
+    indexEntry p;
     const struct headerTagTableEntry * tage;
-    const char *tag;
-    char *type;
+    const char * tag;
+    char * type;
 
     /* First write out the length of the index (count of index entries) */
     fprintf(f, "Entry count: %d\n", h->indexUsed);

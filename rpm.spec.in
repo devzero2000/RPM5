@@ -414,6 +414,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jun 18 2001 Jeff Johnson <jbj@redhat.com>
+- preliminary abstraction to support per-header methods.
+
 * Sun Jun 17 2001 Jeff Johnson <jbj@redhat.com>
 - alpha: don't add "()(64bit)" dependency markers.
 - ia64/sparc: <arch>.{req,prov} identical to linux.{req,prov}.

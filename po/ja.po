@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-17 17:45-0400\n"
+"POT-Creation-Date: 2001-06-18 23:19-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2252,7 +2252,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2519 lib/header.c:2538 lib/header.c:2558
+#: lib/header.c:2195 lib/header.c:2214 lib/header.c:2234
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -2325,88 +2325,88 @@ msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
 
 #. This should not be allowed
-#: lib/header.c:90
+#: lib/header.c:212
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
-#: lib/header.c:125 lib/header_internal.c:139 lib/psm.c:390
+#: lib/header.c:247 lib/header_internal.c:139 lib/psm.c:390
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1850
+#: lib/header.c:1511
 #, c-format
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1880
+#: lib/header.c:1541
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1894
+#: lib/header.c:1555
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1906
+#: lib/header.c:1569
 msgid "empty tag name"
 msgstr "空のタグ名"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1923
+#: lib/header.c:1586
 msgid "unknown tag"
 msgstr "不明なタグ"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1950
+#: lib/header.c:1613
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1968
+#: lib/header.c:1631
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1972
+#: lib/header.c:1635
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2037
+#: lib/header.c:1701
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2046
+#: lib/header.c:1710
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2059 lib/header.c:2101
+#: lib/header.c:1723 lib/header.c:1765
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2069
+#: lib/header.c:1733
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2086
+#: lib/header.c:1750
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2111
+#: lib/header.c:1775
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
-#: lib/header.c:2287
+#: lib/header.c:1955
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
