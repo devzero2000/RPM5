@@ -8,7 +8,10 @@
 
 RPM_BUILD_ROOT=$1
 
-[ ! -d "$RPM_BUILD_ROOT" ] && exit 1
+if [ ! -d "$RPM_BUILD_ROOT" ] ; then
+	cat > /dev/null
+	exit 1
+fi
 
 [ "$TMPDIR" ] || TMPDIR=/tmp
 FILES_DISK=`mktemp $TMPDIR/rpmXXXXXX`
@@ -17,7 +20,7 @@ FILES_RPM=`mktemp $TMPDIR/rpmXXXXXX`
 find $RPM_BUILD_ROOT -type f | LC_ALL=C sort > $FILES_DISK
 LC_ALL=C sort > $FILES_RPM
 
-for f in `diff "$FILES_DISK" "$FILES_RPM" | grep "^< " | cut -c3-`; do
+for f in `diff -d "$FILES_DISK" "$FILES_RPM" | grep "^< " | cut -c3-`; do
 	echo $f | sed -e "s#^$RPM_BUILD_ROOT#   #g"
 done
 
