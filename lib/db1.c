@@ -39,6 +39,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 /*@access rpmdb@*/
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
+/*@-onlytrans@*/
 
 /* XXX remap DB3 types back into DB1 types */
 static inline DBTYPE db3_to_dbtype(int dbitype)
@@ -53,7 +54,9 @@ static inline DBTYPE db3_to_dbtype(int dbitype)
     /*@notreached@*/ return DB_HASH;
 }
 
+/*@-shadow@*/
 static /*@observer@*/ char * db_strerror(int error)
+/*@=shadow@*/
 {
     if (error == 0)
 	return ("Successful return: 0");
@@ -223,6 +226,7 @@ static int db1cclose(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, /*@unused@*/ uns
     return 0;
 }
 
+/*@-compmempass@*/
 static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
 		size_t * keylen, void ** datap, size_t * datalen,
 		/*@unused@*/ unsigned int flags)
@@ -235,10 +239,12 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
 
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
+    /*@-unqualifiedtrans@*/
     if (keyp)		key.data = *keyp;
     if (keylen)		key.size = *keylen;
     if (datap)		data.data = *datap;
     if (datalen)	data.size = *datalen;
+    /*@=unqualifiedtrans@*/
 
     if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	FD_t pkgs = dbi->dbi_db;
@@ -251,7 +257,9 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
 	    } else {
 		dbi->dbi_lastoffset = fadNextOffset(pkgs, dbi->dbi_lastoffset);
 	    }
+	    /*@-immediatetrans@*/
 	    key.data = &dbi->dbi_lastoffset;
+	    /*@=immediatetrans@*/
 	    key.size = sizeof(dbi->dbi_lastoffset);
 	}
 
@@ -304,6 +312,7 @@ if (keylen)	*keylen = key.size;
 
     return rc;
 }
+/*@=compmempass@*/
 
 static int db1cdel(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, const void * keyp,
 		size_t keylen, /*@unused@*/ unsigned int flags)
@@ -321,7 +330,9 @@ static int db1cdel(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, const void * keyp,
 
 	_mymemset(&key, 0, sizeof(key));
 
+	/*@-usedef@*/
 	key.data = (void *)keyp;
+	/*@=usedef@*/
 	key.size = keylen;
 
 	rc = db->del(db, &key, 0);
@@ -354,9 +365,8 @@ static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 
 	if (offset == 0) {	/* XXX simulated offset 0 record */
 	    /* XXX hack: return offset as data, free in db1cput */
-	    if (data.size == sizeof(offset)) {
-		free(data.data);
-	    }
+	    if (data.size == sizeof(offset))
+		/*@-unqualifiedtrans@*/ free(data.data); /*@=unqualifiedtrans@*/
 	} else {		/* XXX simulated DB_KEYLAST */
 	    Header h = headerLoad(data.data);
 	    int newSize = headerSizeof(h, HEADER_MAGIC_NO);
@@ -414,13 +424,15 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     return rc;
 }
 
-static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 {
+    /*@-nestedextern@*/
+    extern struct _dbiVec db1vec;
+    /*@=nestedextern@*/
     const char * base = NULL;
     const char * urlfn = NULL;
     const char * fn = NULL;
     dbiIndex dbi = NULL;
-    extern struct _dbiVec db1vec;
     int rc = 0;
 
     if (dbip)
@@ -492,6 +504,7 @@ exit:
 
     return rc;
 }
+/*@=onlytrans@*/
 
 /** \ingroup db1
  */
