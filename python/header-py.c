@@ -485,6 +485,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	}
     }
 
+    /* Retrieve data from extension or header. */
     if (ext) {
         ext->u.tagFunction(s->h, &type, (const void **) &data, &count, &freeData);
     } else {
@@ -492,9 +493,23 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }
-
-	if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count))
-	    return PyList_New(0);
+        
+	if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
+	    switch (tag) {
+	    case RPMTAG_EPOCH:
+	    case RPMTAG_NAME:
+	    case RPMTAG_VERSION:
+	    case RPMTAG_RELEASE:
+	    case RPMTAG_ARCH:
+	    case RPMTAG_OS:
+		Py_INCREF(Py_None);
+		return Py_None;
+		break;
+	    default:
+		return PyList_New(0);
+		break;
+	    }
+	}
     }
 
     switch (tag) {
@@ -977,6 +992,11 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
     if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
 			  &e1, &v1, &r1,
 			  &e2, &v2, &r2)) return NULL;
+
+    if (!v1 || !v2 || !r1  || !r2) {
+	PyErr_SetString(pyrpmError, "Invalid version or release - possibly None");
+	return NULL;
+    }
 
     if (e1 && !e2)
 	return Py_BuildValue("i", 1);
