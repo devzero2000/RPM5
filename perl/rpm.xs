@@ -77,16 +77,28 @@ CODE:
 	if (rc != 0) {
 	  switch(type) {
 	    case RPM_CHAR_TYPE:
-	        av_push(array, newSViv((char) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((char) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT8_TYPE:
-	        av_push(array, newSViv((int_8) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((int_8) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT16_TYPE:
-	        av_push(array, newSViv((int_16) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((int_16) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT32_TYPE:
-	        av_push(array, newSViv((int_32)value));
+		while (count-- > 0) {		    
+		    av_push(array, newSViv((int_32)value));
+		    value++;
+		}
 	        break;
 	    case RPM_STRING_TYPE:
 	        av_push(array, newSVpv((char *)value, 0));
@@ -131,16 +143,28 @@ HeaderItemByNameRef(header, tag)
 	if (rc != 0) {
 	  switch(type) {
 	    case RPM_CHAR_TYPE:
-	        av_push(array, newSViv((char) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((char) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT8_TYPE:
-	        av_push(array, newSViv((int_8) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((int_8) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT16_TYPE:
-	        av_push(array, newSViv((int_16) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((int_16) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT32_TYPE:
-	        av_push(array, newSViv((int_32)value));
+		while (count-- > 0) {		    
+		    av_push(array, newSViv((int_32)value));
+		    value++;
+		}
 	        break;
 	    case RPM_STRING_TYPE:
 	        av_push(array, newSVpv((char *)value, 0));
@@ -181,16 +205,28 @@ HeaderListRef(header)
 	  array = newAV();
 	  switch(type) {
 	    case RPM_CHAR_TYPE:
-		av_push(array, newSViv((char) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((char) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT8_TYPE:
-	        av_push(array, newSViv((int_8) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((int_8) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT16_TYPE:
-	        av_push(array, newSViv((int_16) (int) value));
+		while (count-- > 0) {
+		    av_push(array, newSViv((int_16) (int) value));
+		    value++;
+		}
 	        break;
 	    case RPM_INT32_TYPE:
-	        av_push(array, newSViv((int_32)value));
+		while (count-- > 0) {		    
+		    av_push(array, newSViv((int_32)value));
+		    value++;
+		}
 	        break;
 	    case RPM_STRING_TYPE:
 	        av_push(array, newSVpv((char *)value, 0));
