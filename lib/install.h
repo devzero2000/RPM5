@@ -1,7 +1,8 @@
 #ifndef H_INSTALL
 #define H_INSTALL
 
-/** \file lib/install.h
+/**
+ * \file lib/install.h
  *
  */
 

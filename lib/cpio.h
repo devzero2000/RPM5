@@ -149,7 +149,7 @@ int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
  * @param		error code
  * @return		formatted error string
  */
-/*@observer@*/ const char *cpioStrerror(int rc)		/*@*/;
+/*@observer@*/ const char *const cpioStrerror(int rc)		/*@*/;
 
 #ifdef __cplusplus
 }

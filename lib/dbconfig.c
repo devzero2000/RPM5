@@ -1,4 +1,4 @@
-/** \ingroup db3
+/** \ingroup rpmdb
  * \file lib/dbconfig.c
  */
 

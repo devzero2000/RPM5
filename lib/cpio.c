@@ -1241,7 +1241,7 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
     return 0;
 }
 
-const char * cpioStrerror(int rc)
+const char *const cpioStrerror(int rc)
 {
     static char msg[256];
     char *s;

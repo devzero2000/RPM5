@@ -8,6 +8,8 @@
 #define __power_pc() 0
 #endif
 
+/*@ access FD_t @*/		/* compared with NULL */
+
 #include <rpmlib.h>
 #include <rpmmacro.h>
 
@@ -925,7 +927,7 @@ static int is_athlon(void) {
 	char vendor[16];
 	int i;
 	
- 	cpuid (0, &eax, &ebx, &ecx, &edx);
+	cpuid (0, &eax, &ebx, &ecx, &edx);
 
  	/* If you care about space, you can just check ebx, ecx and edx directly
  	   instead of forming a string first and then doing a strcmp */

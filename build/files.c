@@ -21,10 +21,17 @@
 #include "md5.h"
 #include "debug.h"
 
+/*@access Header @*/
+/*@access StringBuf @*/
+/*@access TFI_t @*/
+/*@access FD_t @*/
+
 #define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
 
 #define MAXDOCDIR 1024
+
+extern int _noDirTokens;
 
 #define SPECD_DEFFILEMODE	(1<<0)
 #define SPECD_DEFDIRMODE	(1<<1)
@@ -940,6 +947,7 @@ static void checkHardLinks(struct FileList *fl)
 
 /**
  * @todo Should directories have %doc/%config attributes? (#14531)
+ * @todo Remove RPMTAG_OLDFILENAMES, add dirname/basename instead.
  * @param fl		package file tree walk data
  */
 static void genCpioListAndHeader(struct FileList *fl,
@@ -1160,9 +1168,11 @@ static void genCpioListAndHeader(struct FileList *fl,
 
 	headerAddOrAppendEntry(h, RPMTAG_FILEFLAGS, RPM_INT32_TYPE,
 			       &(flp->flags), 1);
+
     }
     headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
+
     /* XXX This should be added always so that packages look alike.
      * XXX However, there is logic in files.c/depends.c that checks for
      * XXX existence (rather than value) that will need to change as well.

@@ -3,11 +3,15 @@
 
 /** \ingroup rpmbuild
  * \file build/buildio.h
- *  XXX this information will move elsewhere eventually
+ * Routines to read and write packages.
+ * @deprecated this information will move elsewhere eventually.
+ * @todo Eliminate, merge into rpmlib.
  */
 
 #include "cpio.h"
 
+/**
+ */
 typedef struct cpioSourceArchive {
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;

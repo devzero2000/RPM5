@@ -89,6 +89,16 @@ struct diskspaceInfo {
 #define	XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)	free((void *)this);
+    return NULL;
+}
+
 static void freeFi(TFI_t fi)
 {
 	if (fi->h) {
@@ -1428,6 +1438,90 @@ static void skipFiles(TFI_t fi, int noDocs)
     if (languages) freeSplitString((char **)languages);
 }
 
+/**
+ * Iterator across transaction elements, forward on install, backward on erase.
+ */
+struct tsIterator_s {
+/*@kept@*/ rpmTransactionSet ts;	/*!< transaction set. */
+    int reverse;			/*!< reversed traversal? */
+    int ocsave;				/*!< last returned iterator index. */
+    int oc;				/*!< iterator index. */
+};
+
+/**
+ */
+static int tsGetOc(void * this) {
+    struct tsIterator_s * iter = this;
+    int oc = iter->ocsave;
+    return oc;
+}
+
+/**
+ */
+static struct availablePackage * tsGetAlp(void * this) {
+    struct tsIterator_s * iter = this;
+    struct availablePackage * alp = NULL;
+    int oc = iter->ocsave;
+
+    if (oc != -1) {
+	rpmTransactionSet ts = iter->ts;
+	TFI_t fi = ts->flList + oc;
+	if (fi->type == TR_ADDED)
+	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+    }
+    return alp;
+}
+
+/**
+ * Destroy transaction element iterator.
+ * @param this		transaction element iterator
+ * @retval		NULL always
+ */
+static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ const void * this)
+{
+    return _free((void *)this);
+}
+
+/**
+ * Create transaction element iterator.
+ * @param this		transaction set
+ * @return		transaction element iterator
+ */
+static void * tsInitIterator(/*@kept@*/ const void * this)
+{
+    rpmTransactionSet ts = (void *)this;
+    struct tsIterator_s * iter = NULL;
+
+    iter = xcalloc(1, sizeof(*iter));
+    iter->ts = ts;
+    iter->oc = ((ts->transFlags & RPMTRANS_FLAG_REVERSE)
+			? (ts->orderCount - 1) : 0);
+    iter->ocsave = iter->oc;
+    return iter;
+}
+
+/**
+ * Return next transaction element's file info.
+ * @param this		file info iterator
+ * @return		next index, -1 on termination
+ */
+static TFI_t tsNextIterator(void * this) {
+    struct tsIterator_s * iter = this;
+    rpmTransactionSet ts = iter->ts;
+    TFI_t fi = NULL;
+    int oc = -1;
+
+    if (iter->reverse) {
+	if (iter->oc >= 0)		oc = iter->oc--;
+    } else {
+    	if (iter->oc < ts->orderCount)	oc = iter->oc++;
+    }
+    iter->ocsave = oc;
+    if (oc != -1)
+	fi = ts->flList + oc;
+    return fi;
+}
+
 #define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmRunTransactions(	rpmTransactionSet ts,
@@ -1441,16 +1535,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     Header * hdrs;
     int totalFileCount = 0;
     hashTable ht;
-    TFI_t flList, fi;
+    TFI_t fi;
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
-    int flEntries;
     int nexti;
     int lastFailed;
     FD_t fd;
-    const char ** filesystems;
-    int filesystemCount;
-    struct diskspaceInfo * di = NULL;
     int oc;
     fingerPrintCache fpc;
 
@@ -1471,16 +1561,16 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     /* Get available space on mounted file systems. */
     if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
-		!rpmGetFilesystemList(&filesystems, &filesystemCount)) {
+		!rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount)) {
 	struct stat sb;
 
-	di = alloca(sizeof(*di) * (filesystemCount + 1));
+	ts->di = alloca(sizeof(*ts->di) * (ts->filesystemCount + 1));
 
-	for (i = 0; (i < filesystemCount) && di; i++) {
+	for (i = 0; (i < ts->filesystemCount) && ts->di; i++) {
 #if STATFS_IN_SYS_STATVFS
 	    struct statvfs sfb;
 	    memset(&sfb, 0, sizeof(sfb));
-	    if (statvfs(filesystems[i], &sfb))
+	    if (statvfs(ts->filesystems[i], &sfb))
 #else
 	    struct statfs sfb;
 #  if STAT_STATFS4
@@ -1490,37 +1580,37 @@ int rpmRunTransactions(	rpmTransactionSet ts,
  * filesystem, as we're doing.
  */
 	    memset(&sfb, 0, sizeof(sfb));
-	    if (statfs(filesystems[i], &sfb, sizeof(sfb), 0))
+	    if (statfs(ts->filesystems[i], &sfb, sizeof(sfb), 0))
 #  else
 	    memset(&sfb, 0, sizeof(sfb));
-	    if (statfs(filesystems[i], &sfb))
+	    if (statfs(ts->filesystems[i], &sfb))
 #  endif
 #endif
 	    {
-		di = NULL;
+		ts->di = NULL;
 	    } else {
-		di[i].bsize = sfb.f_bsize;
-		di[i].bneeded = 0;
-		di[i].ineeded = 0;
+		ts->di[i].bsize = sfb.f_bsize;
+		ts->di[i].bneeded = 0;
+		ts->di[i].ineeded = 0;
 #ifdef STATFS_HAS_F_BAVAIL
-		di[i].bavail = sfb.f_bavail;
+		ts->di[i].bavail = sfb.f_bavail;
 #else
 /* FIXME: the statfs struct doesn't have a member to tell how many blocks are
  * available for non-superusers.  f_blocks - f_bfree is probably too big, but
  * it's about all we can do.
  */
-		di[i].bavail = sfb.f_blocks - sfb.f_bfree;
+		ts->di[i].bavail = sfb.f_blocks - sfb.f_bfree;
 #endif
 		/* XXX Avoid FAT and other file systems that have not inodes. */
-		di[i].iavail = (!(sfb.f_ffree == 0 && sfb.f_files == 0))
+		ts->di[i].iavail = (!(sfb.f_ffree == 0 && sfb.f_files == 0))
 				? sfb.f_ffree : -1;
 
-		stat(filesystems[i], &sb);
-		di[i].dev = sb.st_dev;
+		stat(ts->filesystems[i], &sb);
+		ts->di[i].dev = sb.st_dev;
 	    }
 	}
 
-	if (di) di[i].bsize = 0;
+	if (ts->di) ts->di[i].bsize = 0;
     }
 
     ts->probs = *newProbs = psCreate();
@@ -1593,15 +1683,15 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* ===============================================
      * Initialize file list:
      */
-    flEntries = ts->addedPackages.size + ts->numRemovedPackages;
-    flList = alloca(sizeof(*flList) * (flEntries));
+    ts->flEntries = ts->addedPackages.size + ts->numRemovedPackages;
+    ts->flList = alloca(sizeof(*ts->flList) * (ts->flEntries));
 
     /*
      * FIXME?: we'd be better off assembling one very large file list and
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-    for (fi = flList, oc = 0; oc < ts->orderCount; fi++, oc++) {
+    for (oc = 0, fi = ts->flList; oc < ts->orderCount; fi++, oc++) {
 	const char **preTrans;
 	int preTransCount;
 
@@ -1723,7 +1813,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
-    for (fi = flList; (fi - flList) < flEntries; fi++) {
+    for (fi = ts->flList; (fi - ts->flList) < ts->flEntries; fi++) {
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 	for (i = 0; i < fi->fc; i++) {
 	    if (XFA_SKIPPING(fi->actions[i]))
@@ -1732,18 +1822,18 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
     }
 
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, flEntries,
+    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->flEntries,
 	NULL, ts->notifyData));
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-    for (fi = flList; (fi - flList) < flEntries; fi++) {
+    for (fi = ts->flList; (fi - ts->flList) < ts->flEntries; fi++) {
 	dbiIndexSet * matches;
 	int knownBad;
 
-	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
-	       NULL, ts->notifyData));
+	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - ts->flList),
+			ts->flEntries, NULL, ts->notifyData));
 
 	if (fi->fc == 0) continue;
 
@@ -1791,7 +1881,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
 	numShared = shared - sharedList;
 	shared->otherPkg = -1;
-	free((void *)matches);
+	matches = _free(matches);
 
 	/* Sort file info by other package index (otherPkg) */
 	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);
@@ -1836,15 +1926,15 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/* Update disk space needs on each partition for this package. */
 	handleOverlappedFiles(fi, ht,
 	       ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
-		    ? NULL : ts->probs), di);
+		    ? NULL : ts->probs), ts->di);
 
 	/* Check added package has sufficient space on each partition used. */
 	switch (fi->type) {
 	case TR_ADDED:
-	    if (!(di && fi->fc))
+	    if (!(ts->di && fi->fc))
 		break;
-	    for (i = 0; i < filesystemCount; i++) {
-		struct diskspaceInfo * dip = di + i;
+	    for (i = 0; i < ts->filesystemCount; i++) {
+		struct diskspaceInfo * dip = ts->di + i;
 
 		/* XXX Avoid FAT and other file systems that have not inodes. */
 		if (dip->iavail <= 0)
@@ -1852,12 +1942,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
 		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap->key,
-			fi->ap->h, filesystems[i], NULL, NULL,
+			fi->ap->h, ts->filesystems[i], NULL, NULL,
 	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
 
 		if (adj_fs_blocks(dip->ineeded) > dip->iavail)
 		    psAppend(ts->probs, RPMPROB_DISKNODES, fi->ap->key,
-			fi->ap->h, filesystems[i], NULL, NULL,
+			fi->ap->h, ts->filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
 	    }
 	    break;
@@ -1866,7 +1956,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
     }
 
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, flEntries,
+    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->flEntries,
 	NULL, ts->notifyData));
 
     chroot(".");
@@ -1877,7 +1967,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      * Free unused memory as soon as possible.
      */
 
-    for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+    for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++) {
 	if (fi->fc == 0)
 	    continue;
 	free(fi->bnl); fi->bnl = NULL;
@@ -1905,13 +1995,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
            (ts->probs->numProblems && (!okProbs || psTrim(okProbs, ts->probs)))) {
 	*newProbs = ts->probs;
 
-	for (alp = ts->addedPackages.list, fi = flList;
+	for (alp = ts->addedPackages.list, fi = ts->flList;
 	        (alp - ts->addedPackages.list) < ts->addedPackages.size;
 		alp++, fi++) {
 	    headerFree(hdrs[alp - ts->addedPackages.list]);
 	}
 
-	freeFl(ts, flList);
+	freeFl(ts, ts->flList);
 	return ts->orderCount;
     }
 
@@ -1920,7 +2010,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      */
 
     lastFailed = -2;
-    for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+    for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++) {
 	switch (ts->order[oc].type) {
 	case TR_ADDED:
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
@@ -2000,7 +2090,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	(void) rpmdbSync(ts->rpmdb);
     }
 
-    freeFl(ts, flList);
+    freeFl(ts, ts->flList);
 
     if (ourrc)
     	return -1;

@@ -1,9 +1,9 @@
 #ifndef H_FINGERPRINT
 #define H_FINGERPRINT
 
-/** \file lib/fprint.h
+/** \ingroup rpmtrans
+ * \file lib/fprint.h
  * Identify a file name path by a unique "finger print".
- *
  */
 
 #include "hash.h"
@@ -33,7 +33,7 @@ typedef /*@abstract@*/ struct fprintCache_s {
  * Associates a trailing sub-directory and final base name with an existing
  * directory finger print.
  */
-typedef struct fingerprint_s {
+typedef struct fingerPrint_s {
 /*! directory finger print entry (the directory path is stat(2)-able */
     const struct fprintCacheEntry_s * entry;
 /*! trailing sub-directory path (directories that are not stat(2)-able */

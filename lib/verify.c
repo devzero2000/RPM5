@@ -1,5 +1,6 @@
 /** \ingroup rpmcli
  * \file lib/verify.c
+ * Verify installed payload files from package metadata.
  */
 
 #include "system.h"
@@ -13,6 +14,9 @@
 #include "md5.h"
 #include "misc.h"
 #include "debug.h"
+
+/*@ access TFI_t */
+/*@ access PSM_t */
 
 static int _ie = 0x44332211;
 static union _vendian { int i; char b[4]; } *_endian = (union _vendian *)&_ie;
@@ -30,7 +34,7 @@ static union _vendian { int i; char b[4]; } *_endian = (union _vendian *)&_ie;
 static void verifyArgCallback(/*@unused@*/poptContext con,
 	/*@unused@*/enum poptCallbackReason reason,
 	const struct poptOption * opt, /*@unused@*/const char * arg,
-	const void * data)
+	/*@unused@*/ const void * data)
 {
     QVA_t *qva = &rpmQVArgs;
     switch (opt->val) {
@@ -66,6 +70,16 @@ struct poptOption rpmVerifyPoptTable[] = {
         NULL },
     POPT_TABLEEND
 };
+
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)	free((void *)this);
+    return NULL;
+}
 
 /* ======================================================================== */
 int rpmVerifyFile(const char * prefix, Header h, int filenum,
