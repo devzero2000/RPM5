@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-02-10 09:07-0500\n"
-"PO-Revision-Date: 2001-02-11 19:31GMT\n"
+"PO-Revision-Date: 2001-02-13 13:31GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: dansk <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
@@ -3293,7 +3293,7 @@ msgstr "%s: Ingen tilgængelig signatur (v1.0 RPM)\n"
 
 #: lib/rpmchecksig.c:438
 msgid "NOT OK"
-msgstr "IKKE OK"
+msgstr "IKKE O.K."
 
 #: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
 msgid " (MISSING KEYS:"
@@ -3313,7 +3313,7 @@ msgstr ")"
 
 #: lib/rpmchecksig.c:452
 msgid "OK"
-msgstr "OK"
+msgstr "O.K."
 
 #: lib/rpmdb.c:101
 #, c-format
