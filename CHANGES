@@ -1,4 +1,5 @@
 2.5.2 -> 2.5.3:
+	- build.c: fix incorrect check for successful open
 	- allow %define with leading whitespace
 
 2.5.1 -> 2.5.2:
