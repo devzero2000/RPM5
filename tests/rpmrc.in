@@ -1,4 +1,0 @@
-# $Id$
-#############################################################
-macrofiles:	@testdir@@MACROFILES@
-include:	@testdir@/../rpmrc

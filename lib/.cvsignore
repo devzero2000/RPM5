@@ -1,8 +1,0 @@
-.deps
-.depend
-Makefile
-Makefile.in
-tagtable.c
-.libs
-*.la
-*.lo
