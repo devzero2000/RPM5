@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-03-23 15:10-0500\n"
-"PO-Revision-Date: 2001-04-02 02:50+0100\n"
+"PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -668,9 +668,8 @@ msgid "    --erase <package>"
 msgstr "    --erase <balíèek>"
 
 #: rpm.c:445
-#, fuzzy
 msgid "    -e <package>          "
-msgstr "    -i <balíèek>     "
+msgstr "    -e <balíèek>          "
 
 #: rpm.c:446 rpmqv.c:255 rpmqv.c:671
 msgid "erase (uninstall) package"
@@ -1536,9 +1535,8 @@ msgid "   --erase <package>"
 msgstr "   --erase <balíèek>"
 
 #: rpmqv.c:670
-#, fuzzy
 msgid "   -e <package>           "
-msgstr "   -K <balíèek>+         "
+msgstr "   -e <balíèek>           "
 
 #: rpmqv.c:688
 msgid "   --resign <pkg>+        "
