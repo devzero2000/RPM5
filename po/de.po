@@ -37,14 +37,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-26 17:19-0400\n"
+"POT-Creation-Date: 2004-08-23 19:20-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -804,7 +804,7 @@ msgid "Could not open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/pack.c:632 lib/psm.c:1454
+#: build/pack.c:632 lib/psm.c:1457
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
@@ -839,7 +839,7 @@ msgstr "Nicht möglich %s zu schreiben"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:725 lib/psm.c:1723
+#: build/pack.c:725 lib/psm.c:1726
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2402,49 +2402,49 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:783
+#: lib/psm.c:785
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 
-#: lib/psm.c:789
+#: lib/psm.c:791
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/psm.c:1222
+#: lib/psm.c:1225
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/psm.c:1357
+#: lib/psm.c:1360
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
 # , c-format
-#: lib/psm.c:1466
+#: lib/psm.c:1469
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: lib/psm.c:1544
+#: lib/psm.c:1547
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/psm.c:1545
+#: lib/psm.c:1548
 msgid " on file "
 msgstr ""
 
 # , c-format
-#: lib/psm.c:1731
+#: lib/psm.c:1734
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/psm.c:1734
+#: lib/psm.c:1737
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp fehlgeschlagen"
@@ -3298,30 +3298,30 @@ msgstr "Paket installieren"
 msgid "V3 RSA/MD5 signature: "
 msgstr "alle MD5-Signaturen überspringen"
 
-#: lib/signature.c:1273
+#: lib/signature.c:1278
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1274
+#: lib/signature.c:1279
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "%s: Keine Signatur verfügbar\n"
 
-#: lib/signature.c:1357
+#: lib/signature.c:1362
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1384
+#: lib/signature.c:1389
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1388
+#: lib/signature.c:1393
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:894
+#: lib/transaction.c:902
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
@@ -3334,7 +3334,7 @@ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1007
+#: lib/transaction.c:1015
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3347,7 +3347,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1095
+#: lib/transaction.c:1103
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3355,7 +3355,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1176
+#: lib/transaction.c:1184
 msgid "computing file dispositions\n"
 msgstr ""
 

@@ -778,6 +778,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     (void) psmWait(psm);
 
+  /* XXX filter order dependent multilib "other" arch helper error. */
+  if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
     if (psm->sq.reaped < 0) {
 	rpmError(RPMERR_SCRIPT,
 		_("%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
@@ -790,6 +792,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		sln, n, v, r, WEXITSTATUS(psm->sq.status));
 	rc = RPMRC_FAIL;
     }
+  }
 
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
 

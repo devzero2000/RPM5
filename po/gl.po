@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-26 17:19-0400\n"
+"POT-Creation-Date: 2004-08-23 19:20-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -698,7 +698,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:632 lib/psm.c:1454
+#: build/pack.c:632 lib/psm.c:1457
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -728,7 +728,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:725 lib/psm.c:1723
+#: build/pack.c:725 lib/psm.c:1726
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2152,45 +2152,45 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:783
+#: lib/psm.c:785
 #, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/psm.c:789
+#: lib/psm.c:791
 #, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1222
+#: lib/psm.c:1225
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1357
+#: lib/psm.c:1360
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1466
+#: lib/psm.c:1469
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:1544
+#: lib/psm.c:1547
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1545
+#: lib/psm.c:1548
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1731
+#: lib/psm.c:1734
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1734
+#: lib/psm.c:1737
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -3008,29 +3008,29 @@ msgstr ""
 msgid "V3 RSA/MD5 signature: "
 msgstr ""
 
-#: lib/signature.c:1273
+#: lib/signature.c:1278
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1274
+#: lib/signature.c:1279
 msgid "V3 DSA signature: "
 msgstr ""
 
-#: lib/signature.c:1357
+#: lib/signature.c:1362
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1384
+#: lib/signature.c:1389
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1388
+#: lib/signature.c:1393
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:894
+#: lib/transaction.c:902
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
@@ -3043,7 +3043,7 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1007
+#: lib/transaction.c:1015
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3056,7 +3056,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1095
+#: lib/transaction.c:1103
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3064,7 +3064,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1176
+#: lib/transaction.c:1184
 msgid "computing file dispositions\n"
 msgstr ""
 
