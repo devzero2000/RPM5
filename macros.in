@@ -327,25 +327,28 @@ package or when debugging this package.\
 # Filter GLIBC_PRIVATE Provides: and Requires:
 %_filter_GLIBC_PRIVATE			0
 
-# Path to selinux source policy file context patterns.
-%__file_context_path /etc/security/selinux/file_contexts
+# Desired selinux policy tree
+%__policy_tree	targeted
+
+# Path to selinux file context patterns.
+%__file_context_path /etc/selinux/%{__policy_tree}/contexts/files/file_contexts
 
 #
-# Path to selinux src policy file context patterns used to add
+# Path to selinux file context patterns used to add
 # RPMTAG_FILECONTEXTS to packages when building.
 #
 # Undefined, missing or %{nil} will disable.
-%_build_file_context_path	%{__file_context_path}
+%_build_file_context_path	%{nil}
 
 #
-# Path to selinux src policy file context patterns used to set
+# Path to selinux file context patterns used to set
 # (or override package content) file contexts when installing.
 #
 # Undefined, missing or %{nil} will use package content (if available).
 %_install_file_context_path 	%{__file_context_path}
 
 #
-# Path to selinux src policy file context patterns used to verify
+# Path to selinux file context patterns used to verify
 # file contexts on file system.
 #
 # Undefined, missing or %{nil} will use package content (if available).
