@@ -210,10 +210,8 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 static char * permsString(int mode) {
     static char perms[11];
 
-    strcpy(perms, "-----------");
+    strcpy(perms, "----------");
    
-    if (mode & S_ISVTX) perms[10] = 't';
-
     if (mode & S_IRUSR) perms[1] = 'r';
     if (mode & S_IWUSR) perms[2] = 'w';
     if (mode & S_IXUSR) perms[3] = 'x';
@@ -225,6 +223,13 @@ static char * permsString(int mode) {
     if (mode & S_IROTH) perms[7] = 'r';
     if (mode & S_IWOTH) perms[8] = 'w';
     if (mode & S_IXOTH) perms[9] = 'x';
+
+    if (mode & S_ISVTX) {
+	if (mode & S_IXOTH)
+	    perms[9] = 't';
+	else
+	    perms[9] = 'T';
+    }
 
     if (mode & S_ISUID) {
 	if (mode & S_IXUSR) 
@@ -248,7 +253,7 @@ static char * permsString(int mode) {
     else if (S_ISFIFO(mode)) 
 	perms[0] = 'p';
     else if (S_ISSOCK(mode)) 
-	perms[0] = 'l';
+	perms[0] = 's';
     else if (S_ISCHR(mode)) {
 	perms[0] = 'c';
     } else if (S_ISBLK(mode)) {

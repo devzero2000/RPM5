@@ -35,6 +35,7 @@
 	- fixed --querytags to display virtual tags
 	- added --triggers and --triggered by to man page, help, and usage
 	- added support for epochs
+	- -qvl displayed sockets as 'l' (symlink) instead of 's'
 
 2.5.1 -> 2.5.2:
 	- added -bs to build just a source package
