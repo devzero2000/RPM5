@@ -12,7 +12,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.17
+Release: 0.18
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -299,6 +299,8 @@ fi
 %changelog
 * Thu Dec  7 2000 Jeff Johnson <jbj@redhat.com>
 - add rpmtransGetKeys() to retrieve transaction keys in tsort'ed order.
+- python bindings for rpmtransGetKeys().
+- fix: include alignment in count when swabbing header region.
 
 * Wed Dec  6 2000 Jeff Johnson <jbj@redhat.com>
 - improved find-{requires,provides} for aix4/hpux/irix6/osf.

@@ -72,6 +72,7 @@ struct indexEntry {
     struct entryInfo info;	/*!< Description of tag data. */
     void * data; 		/*!< Location of tag data. */
     int length;			/*!< No. bytes of data. */
+    int rdlen;			/*!< No. bytes of data in region. */
 };
 
 /**
@@ -266,6 +267,7 @@ static int regionSwab(struct indexEntry * entry, int il, int dl,
 {
     for (; il > 0; il--, pe++) {
 	struct indexEntry ie;
+	int_32 type;
 	void * t;
 
 	ie.info.tag = ntohl(pe->tag);
@@ -275,6 +277,7 @@ assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
 	ie.info.offset = ntohl(pe->offset);
 	ie.data = t = dataStart + ie.info.offset;
 	ie.length = dataLength(ie.info.type, ie.data, ie.info.count, 1);
+	ie.rdlen = 0;
 
 	if (entry) {
 	    ie.info.offset = regionid;
@@ -282,6 +285,15 @@ assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
 	    entry++;
 	}
 
+	/* Alignment */
+	type = ie.info.type;
+	if (typeSizes[type] > 1) {
+	    unsigned diff;
+	    diff = typeSizes[type] - (dl % typeSizes[type]);
+	    if (diff != typeSizes[type]) {
+		dl += diff;
+	    }
+	}
 	dl += ie.length;
 
 	/* Perform endian conversions */
@@ -478,6 +490,7 @@ Header headerLoad(void *uh)
     struct entryInfo * pe;
     char * dataStart;
     struct indexEntry * entry; 
+    int rdlen;
     int i;
 
     ei = (int_32 *) pv;
@@ -505,14 +518,14 @@ Header headerLoad(void *uh)
 	entry->info.offset = ((char *)pe - dataStart); /* negative offset */
 	entry->data = pe;
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
-	regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
+	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
+	entry->rdlen = rdlen;
 	entry++;
 	h->indexUsed++;
     } else {
 	int_32 * stei = memcpy(alloca(REGION_TAG_COUNT), dataStart + ntohl(pe->offset), REGION_TAG_COUNT);
 	int_32 rdl = -ntohl(stei[2]);	/* negative offset */
 	int_32 ril = rdl/sizeof(*pe);
-	int dlen;
 
 	h->legacy = 0;
 	entry->info.type = htonl(pe->type);
@@ -522,12 +535,13 @@ Header headerLoad(void *uh)
 	entry->info.count = htonl(pe->count);
 	entry->info.offset = -rdl;	/* negative offset */
 
-	entry->length = pvlen - sizeof(il) - sizeof(dl);
-	dlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, entry->info.offset);
 	entry->data = dataStart + entry->info.offset;
+	entry->length = pvlen - sizeof(il) - sizeof(dl);
+	rdlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, entry->info.offset);
+	entry->rdlen = rdlen;
 
 	if (ril < h->indexUsed) {
-	    dlen = regionSwab(entry+ril, h->indexUsed-ril, dlen, pe+ril, dataStart, entry->info.offset+1);
+	    rdlen = regionSwab(entry+ril, h->indexUsed-ril, rdlen, pe+ril, dataStart, entry->info.offset+1);
 	}
     }
 
@@ -562,13 +576,15 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
 
+	    dl += entry->rdlen;
+	    il += ril;
 	    /* XXX Legacy regions do not include the region tag and data. */
 	    if (i == 0 && h->legacy) {
+		il++;
 		ril++;
-		rdl -= sizeof(*pe);
+		dl += REGION_TAG_COUNT;
+		rdl += REGION_TAG_COUNT;
 	    }
-	    dl += entry->length - rdl;
-	    il += ril;
 	    i += (ril-1);
 	    entry += (ril-1);
 	    continue;
@@ -601,7 +617,7 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 const char *t;
 	const char * src;
 	int count;
-	int dlen;
+	int rdlen;
 
 t = te;
 	pe->tag = htonl(entry->info.tag);
@@ -614,7 +630,7 @@ t = te;
 	    int_32 stei[4];
 
 src = (char *)entry->data;
-dlen = entry->length - rdl;
+rdlen = entry->rdlen;
 	    stei[0] = pe->tag;
 	    stei[1] = pe->type;
 	    stei[3] = pe->count;
@@ -622,17 +638,17 @@ dlen = entry->length - rdl;
 	    /* XXX Legacy regions do not include the region tag and data. */
 	    if (i == 0 && h->legacy) {
 		memcpy(pe+1, src, rdl);
-		memcpy(te, src + rdl, dlen);
+		memcpy(te, src + rdl, rdlen);
 		count = regionSwab(NULL, ril, 0, pe+1, te, 0);
-		rdl += sizeof(*pe);
 		ril++;
+		rdl += REGION_TAG_COUNT;
 	    } else {
 		memcpy(pe+1, src + sizeof(*pe), rdl - sizeof(*pe));
-		memcpy(te, src + rdl, dlen);
+		memcpy(te, src + rdl, rdlen);
 		count = regionSwab(NULL, ril-1, 0, pe+1, te, 0);
 		te -= REGION_TAG_COUNT;
 	    }
-	    te += dlen;
+	    te += rdlen;
 	    stei[2] = htonl(-rdl);
 	    pe->offset = htonl(te - dataStart);
 	    memcpy(te, stei, REGION_TAG_COUNT);

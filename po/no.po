@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-07 12:30-0500\n"
+"POT-Creation-Date: 2000-12-07 17:55-0500\n"
 "PO-Revision-Date: 2000-08-17 20:22+02:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -2505,7 +2505,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2440 lib/header.c:2457 lib/header.c:2477
+#: lib/header.c:2456 lib/header.c:2473 lib/header.c:2493
 msgid "(not a number)"
 msgstr ""
 
@@ -2534,92 +2534,92 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:211
+#: lib/header.c:212
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:246 lib/header.c:925 lib/install.c:380
+#: lib/header.c:247 lib/header.c:941 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1351
+#: lib/header.c:1367
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1793
+#: lib/header.c:1809
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1823
+#: lib/header.c:1839
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1837
+#: lib/header.c:1853
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1849
+#: lib/header.c:1865
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1866
+#: lib/header.c:1882
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1893
+#: lib/header.c:1909
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1911
+#: lib/header.c:1927
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1915
+#: lib/header.c:1931
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1975
+#: lib/header.c:1991
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1984
+#: lib/header.c:2000
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1997 lib/header.c:2038
+#: lib/header.c:2013 lib/header.c:2054
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2007
+#: lib/header.c:2023
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2023
+#: lib/header.c:2039
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2048
+#: lib/header.c:2064
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2219
+#: lib/header.c:2235
 msgid "(unknown type)"
 msgstr ""
 

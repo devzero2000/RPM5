@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-07 12:30-0500\n"
+"POT-Creation-Date: 2000-12-07 17:55-0500\n"
 "PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2523,7 +2523,7 @@ msgstr ""
 "problemet.\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2440 lib/header.c:2457 lib/header.c:2477
+#: lib/header.c:2456 lib/header.c:2473 lib/header.c:2493
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -2552,93 +2552,93 @@ msgid "file %s is on an unknown device"
 msgstr "filen %s är på en okänd enhet"
 
 #. This should not be allowed
-#: lib/header.c:211
+#: lib/header.c:212
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
 
-#: lib/header.c:246 lib/header.c:925 lib/install.c:380
+#: lib/header.c:247 lib/header.c:941 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatyp %d stöds inte\n"
 
-#: lib/header.c:1351
+#: lib/header.c:1367
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Felaktigt antal till headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1793
+#: lib/header.c:1809
 #, c-format
 msgid "missing { after %"
 msgstr "{ fattas efter %"
 
 #. @-observertrans@
-#: lib/header.c:1823
+#: lib/header.c:1839
 msgid "missing } after %{"
 msgstr "} fattas efter %{"
 
 #. @-observertrans@
-#: lib/header.c:1837
+#: lib/header.c:1853
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
 #. @-observertrans@
-#: lib/header.c:1849
+#: lib/header.c:1865
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
 #. @-observertrans@
-#: lib/header.c:1866
+#: lib/header.c:1882
 msgid "unknown tag"
 msgstr "okänd tagg"
 
 #. @-observertrans@
-#: lib/header.c:1893
+#: lib/header.c:1909
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
 #. @-observertrans@
-#: lib/header.c:1911
+#: lib/header.c:1927
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
 #. @-observertrans@
-#: lib/header.c:1915
+#: lib/header.c:1931
 msgid "unexpected }"
 msgstr "oväntad }"
 
 #. @-observertrans@
-#: lib/header.c:1975
+#: lib/header.c:1991
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:1984
+#: lib/header.c:2000
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:1997 lib/header.c:2038
+#: lib/header.c:2013 lib/header.c:2054
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:2007
+#: lib/header.c:2023
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
 #. @-observertrans@
-#: lib/header.c:2023
+#: lib/header.c:2039
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:2048
+#: lib/header.c:2064
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: lib/header.c:2219
+#: lib/header.c:2235
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
