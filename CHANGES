@@ -29,6 +29,7 @@
 	  argument (#1026,#5006).
 	- diddle some names to keep my C++ brethern happy (i.e. kpackage port).
 	- fix: add ufdSeek.
+	- duplicate popt routine so that librpm.so needs not libpopt.so.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
