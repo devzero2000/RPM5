@@ -165,8 +165,8 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	if (*tfn == '\0') goto errxit;
 
 	switch (temput) {
-	case URL_IS_HKP:
 	case URL_IS_DASH:
+	case URL_IS_HKP:
 	    goto errxit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case URL_IS_HTTPS:

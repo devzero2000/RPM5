@@ -1,4 +1,4 @@
-4.3.2 -> 4.4:
+4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).
 	- cpuid() cleanups for PIC/non-PIC and gcc 3.4 (pluto@PLD).
 	- rpmGlob() is now locale independent (wiget@PLD).
@@ -32,6 +32,10 @@
 	- neon used by default for http/https transport.
 	- upgrade to db-4.3.21 final internal.
 	- sparcv8: optflags changed to -mtune=ultrasparc (#140420).
+	- add BuildRequires: neon-devel.
+	- fix: chunked davRead returns 0 is EOF.
+	- python: bleeping keywords broke labelCompare.
+	- add support for automagic pubkey retrieval using HKP.
 
 4.3.2 -> 4.3.3:
 	- bump micro version.
