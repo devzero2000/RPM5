@@ -28,6 +28,7 @@
 	- re-position callbacks with ts/fi in cpio payload layer.
 	- state machines for packages (psm.c) and payloads (fsm.c)
 	- add --repackage option to put erased bits back into a package.
+	- fix: (ppc) copy va_list in loop (#36845).
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
