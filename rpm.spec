@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.48
+Release: 0.49
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -119,7 +119,7 @@ capabilities.
 # XXX work around a (possible) compiler problem on ia64
 %ifarch ia64
 RPM_OPT_FLAGS="-O0"
-#endif
+%endif
 
 %ifos linux
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man'
@@ -241,7 +241,7 @@ fi
 %config(noreplace,missingok)	/etc/rpm/macros.db1
 %attr(0755, rpm, rpm)	%dir /var/lib/rpm
 
-%define	rpmdbattr %attr(0644, rpm, rpm) %verify(not md5 size mtime) %ghost %config(missingok)
+%define	rpmdbattr %attr(0644, rpm, rpm) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 %rpmdbattr	/var/lib/rpm/Basenames
 %rpmdbattr	/var/lib/rpm/Conflictname
 %rpmdbattr	/var/lib/rpm/__db.001
@@ -428,6 +428,9 @@ fi
 - fix: partial sets of hardlinked files permitted in payload.
 - fix: mark rpmdb files with %config to prevent erasure on downgrade.
 - work around a (possible) compiler problem on ia64.
+- fix: rpm -qlv link count for directories dinna include '..'.
+- fix: rpm -qlv size for directories should be zero.
+- add --noghost to filter non-payload files from rpm -qlv output.
 
 * Tue Jun 19 2001 Jeff Johnson <jbj@redhat.com>
 - finalize per-header methods, accessing headerFoo through vector.

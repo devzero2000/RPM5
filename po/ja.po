@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-20 11:33-0400\n"
+"POT-Creation-Date: 2001-06-20 15:37-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -904,8 +904,8 @@ msgstr ""
 "データベース中の所有者とグループに設定します"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:528 rpmqv.c:534 rpmqv.c:540
-#: rpmqv.c:574
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:529 rpmqv.c:535 rpmqv.c:541
+#: rpmqv.c:575
 msgid "only one major mode may be specified"
 msgstr "一つのメジャーモードのみを指定してください"
 
@@ -934,7 +934,7 @@ msgstr "再配置は = の次に / でなければなりません"
 msgid "exclude paths must begin with a /"
 msgstr "除外するパスは / から始まらなければなりません"
 
-#: rpm.c:850 rpmqv.c:481
+#: rpm.c:850 rpmqv.c:482
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -942,45 +942,45 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:856 rpmqv.c:488
+#: rpm.c:856 rpmqv.c:489
 #, fuzzy, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "引数処理(%d)での内部エラー :-(\n"
 
-#: rpm.c:891 rpmqv.c:555
+#: rpm.c:891 rpmqv.c:556
 msgid "one type of query/verify may be performed at a time"
 msgstr "問い合わせ/検証は一度に一つしか実行できません"
 
-#: rpm.c:896 rpmqv.c:559
+#: rpm.c:896 rpmqv.c:560
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "予期せぬ問い合わせのフラグ"
 
-#: rpm.c:899 rpmqv.c:562
+#: rpm.c:899 rpmqv.c:563
 #, fuzzy
 msgid "unexpected query format"
 msgstr "予期せぬ問い合わせのフォーマット"
 
-#: rpm.c:902 rpmqv.c:565
+#: rpm.c:902 rpmqv.c:566
 msgid "unexpected query source"
 msgstr "予期せぬ問い合わせのソース"
 
-#: rpm.c:905 rpmqv.c:590
+#: rpm.c:905 rpmqv.c:591
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "インストール、アップグレード、ソース削除、スペックファイル削除時のみ強制でき"
 "ます"
 
-#: rpm.c:908 rpmqv.c:592
+#: rpm.c:908 rpmqv.c:593
 msgid "files may only be relocated during package installation"
 msgstr "ファイルはパッケージインストール時のみ再配置できます"
 
-#: rpm.c:911 rpmqv.c:595
+#: rpm.c:911 rpmqv.c:596
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix もしくは --relocate のいずれかのみ使用できます"
 
-#: rpm.c:914 rpmqv.c:598
+#: rpm.c:914 rpmqv.c:599
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
@@ -988,64 +988,64 @@ msgstr ""
 "--relocate と --excludepath は新しいパッケージをインストールするときのみ使用"
 "できます"
 
-#: rpm.c:917 rpmqv.c:601
+#: rpm.c:917 rpmqv.c:602
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix は新規にパッケージをインストールするときのみ使用できます"
 
-#: rpm.c:920 rpmqv.c:604
+#: rpm.c:920 rpmqv.c:605
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix への引数は / から始まらねばなりません"
 
-#: rpm.c:923 rpmqv.c:607
+#: rpm.c:923 rpmqv.c:608
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:927 rpmqv.c:611
+#: rpm.c:927 rpmqv.c:612
 msgid "--percent may only be specified during package installation"
 msgstr "--percent はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:931 rpmqv.c:616
+#: rpm.c:931 rpmqv.c:617
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:935 rpmqv.c:620
+#: rpm.c:935 rpmqv.c:621
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:939 rpmqv.c:624
+#: rpm.c:939 rpmqv.c:625
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:943 rpmqv.c:628
+#: rpm.c:943 rpmqv.c:629
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:947 rpmqv.c:632
+#: rpm.c:947 rpmqv.c:633
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs と --includedocs はどちらか一方のみ指定できます"
 
-#: rpm.c:951 rpmqv.c:636
+#: rpm.c:951 rpmqv.c:637
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:955 rpmqv.c:640
+#: rpm.c:955 rpmqv.c:641
 msgid "--ignoreos may only be specified during package installation"
 msgstr "-ignoreos はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:959 rpmqv.c:645
+#: rpm.c:959 rpmqv.c:646
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "-ignoresize はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:963 rpmqv.c:649
+#: rpm.c:963 rpmqv.c:650
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches はパッケージの削除時のみ指定できます"
 
-#: rpm.c:967 rpmqv.c:653
+#: rpm.c:967 rpmqv.c:654
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:971 rpmqv.c:658
+#: rpm.c:971 rpmqv.c:659
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
@@ -1061,14 +1061,14 @@ msgstr "--noscripts はパッケージのインストール、削除、検証時のみ指定できます"
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles はパッケージのインストール時のみ指定できます"
 
-#: rpm.c:987 rpmqv.c:668
+#: rpm.c:987 rpmqv.c:669
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpm.c:991 rpmqv.c:672
+#: rpm.c:991 rpmqv.c:673
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1076,13 +1076,13 @@ msgid ""
 msgstr ""
 "--nodeps はパッケージの作成、インストール、削除、検証時のみ指定できます"
 
-#: rpm.c:996 rpmqv.c:677
+#: rpm.c:996 rpmqv.c:678
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test はパッケージのインストール、削除、作成時のみ指定できます"
 
-#: rpm.c:1000 rpmqv.c:682
+#: rpm.c:1000 rpmqv.c:683
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1090,7 +1090,7 @@ msgstr ""
 "--root (-r) はインストール、削除、問い合わせ、データベース再構築時のみ指定で"
 "きます"
 
-#: rpm.c:1012 rpmqv.c:694
+#: rpm.c:1012 rpmqv.c:695
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらねばなりません"
 
@@ -1113,79 +1113,79 @@ msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 は署名検査とパッケージ検証時のみ使用できます"
 
-#: rpm.c:1038 rpmqv.c:715
+#: rpm.c:1038 rpmqv.c:716
 msgid "no files to sign\n"
 msgstr "署名するためのファイルがありません\n"
 
-#: rpm.c:1043 rpmqv.c:720
+#: rpm.c:1043 rpmqv.c:721
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません\n"
 
-#: rpm.c:1058 rpmqv.c:739
+#: rpm.c:1058 rpmqv.c:740
 #, fuzzy
 msgid "pgp not found: "
 msgstr "pgp が見つかりません: "
 
-#: rpm.c:1062 rpmqv.c:744
+#: rpm.c:1062 rpmqv.c:745
 msgid "Enter pass phrase: "
 msgstr "パスフレーズを入力してください: "
 
-#: rpm.c:1064 rpmqv.c:746
+#: rpm.c:1064 rpmqv.c:747
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズチェックに失敗しました\n"
 
-#: rpm.c:1067 rpmqv.c:750
+#: rpm.c:1067 rpmqv.c:751
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です．\n"
 
-#: rpm.c:1072 rpmqv.c:755
+#: rpm.c:1072 rpmqv.c:756
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: rpm.c:1078 rpmqv.c:762
+#: rpm.c:1078 rpmqv.c:763
 msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ使用できます"
 
-#: rpm.c:1093 rpmqv.c:778
+#: rpm.c:1093 rpmqv.c:779
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
-#: rpm.c:1116 rpmqv.c:985
+#: rpm.c:1116 rpmqv.c:986
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags の引数が間違っています"
 
-#: rpm.c:1127 rpmqv.c:994
+#: rpm.c:1127 rpmqv.c:995
 msgid "no packages given for signature check"
 msgstr "署名検査のためのパッケージがありません"
 
-#: rpm.c:1138 rpmqv.c:1003
+#: rpm.c:1138 rpmqv.c:1004
 msgid "no packages given for signing"
 msgstr "署名のためのパッケージがありません"
 
-#: rpm.c:1154 rpmqv.c:896
+#: rpm.c:1154 rpmqv.c:897
 msgid "no packages given for uninstall"
 msgstr "アンインストールのためのパッケージがありません"
 
-#: rpm.c:1243 rpmqv.c:919
+#: rpm.c:1243 rpmqv.c:920
 msgid "no packages given for install"
 msgstr "インストールのためのパッケージがありません"
 
-#: rpm.c:1267 rpmqv.c:948
+#: rpm.c:1267 rpmqv.c:949
 msgid "extra arguments given for query of all packages"
 msgstr "全パッケージの問い合わせのために余分な引数があります"
 
-#: rpm.c:1272 rpmqv.c:957
+#: rpm.c:1272 rpmqv.c:958
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数がありません"
 
-#: rpm.c:1289 rpmqv.c:973
+#: rpm.c:1289 rpmqv.c:974
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "全パッケージの検証のために余分な引数があります"
 
-#: rpm.c:1293 rpmqv.c:977
+#: rpm.c:1293 rpmqv.c:978
 msgid "no arguments given for verify"
 msgstr "検証のための引数がありません"
 
@@ -1300,31 +1300,31 @@ msgstr "ファイル %s: %s\n"
 msgid "Usage: %s {--help}\n"
 msgstr "使用法: rpm {--help}"
 
-#: rpmqv.c:482
+#: rpmqv.c:483
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "-e か --erase を使ってください\n"
 
-#: rpmqv.c:584
+#: rpmqv.c:585
 msgid "--dbpath given for operation that does not use a database"
 msgstr "データベースを使用しないのに --dbpath が与えられています"
 
-#: rpmqv.c:663
+#: rpmqv.c:664
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpmqv.c:808
+#: rpmqv.c:809
 msgid "no packages files given for rebuild"
 msgstr "再作成するためのパッケージファイルがありません"
 
-#: rpmqv.c:877
+#: rpmqv.c:878
 msgid "no spec files given for build"
 msgstr "作成のための spec ファイルがありません"
 
-#: rpmqv.c:879
+#: rpmqv.c:880
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
@@ -2300,32 +2300,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "%d 行目: %s"
 
-#: lib/fsm.c:1110
+#: lib/fsm.c:1117
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1440 lib/fsm.c:1565
+#: lib/fsm.c:1447 lib/fsm.c:1572
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/fsm.c:1591
+#: lib/fsm.c:1598
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s を削除できません - ディレクトリが空でありません"
 
-#: lib/fsm.c:1597
+#: lib/fsm.c:1604
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s の rmdir に失敗: %s"
 
-#: lib/fsm.c:1607
+#: lib/fsm.c:1614
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/fsm.c:1626
+#: lib/fsm.c:1633
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
@@ -2767,74 +2767,89 @@ msgstr "基本的なファイル情報をダンプします"
 msgid "list files in package"
 msgstr "パッケージ中のファイルを列挙します\n"
 
-#: lib/poptQV.c:156
+#: lib/poptQV.c:157
+#, c-format
+msgid "skip %%ghost files"
+msgstr ""
+
+#: lib/poptQV.c:161
+#, c-format
+msgid "skip %%license files"
+msgstr ""
+
+#: lib/poptQV.c:164
+#, fuzzy, c-format
+msgid "skip %%readme files"
+msgstr "%s: readLead に失敗しました\n"
+
+#: lib/poptQV.c:170
 msgid "use the following query format"
 msgstr "以下の問い合わせフォーマットを使用します"
 
-#: lib/poptQV.c:158
+#: lib/poptQV.c:172
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "以下のカタログから i18n セクションを置き換えます"
 
-#: lib/poptQV.c:160
+#: lib/poptQV.c:174
 msgid "display the states of the listed files"
 msgstr "列挙したファイルの状態を表示します"
 
-#: lib/poptQV.c:162
+#: lib/poptQV.c:176
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "ファイルリストを冗長に表示します"
 
-#: lib/poptQV.c:178
+#: lib/poptQV.c:193
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptQV.c:181
+#: lib/poptQV.c:196
 #, fuzzy
 msgid "don't verify size of files"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptQV.c:184
+#: lib/poptQV.c:199
 #, fuzzy
 msgid "don't verify symlink path of files"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptQV.c:187
+#: lib/poptQV.c:202
 #, fuzzy
 msgid "don't verify owner of files"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:205
 #, fuzzy
 msgid "don't verify group of files"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:208
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:196 lib/poptQV.c:199
+#: lib/poptQV.c:211 lib/poptQV.c:214
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptQV.c:202
+#: lib/poptQV.c:217
 #, fuzzy
 msgid "don't verify files in package"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptQV.c:204
+#: lib/poptQV.c:219
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "パッケージの依存関係の検証をしません"
 
-#: lib/poptQV.c:206 lib/poptQV.c:209
+#: lib/poptQV.c:221 lib/poptQV.c:225
 #, fuzzy
 msgid "don't execute %verifyscript (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptQV.c:212
+#: lib/poptQV.c:228
 #, fuzzy
 msgid "don't verify header SHA1 digest"
 msgstr "パッケージ中のファイルの検証をしません"
@@ -2987,116 +3002,116 @@ msgstr "フォーマット中のエラー: %s\n"
 msgid "(contains no files)"
 msgstr "ファイルを含んでいません"
 
-#: lib/query.c:257
+#: lib/query.c:262
 msgid "normal        "
 msgstr "通常"
 
-#: lib/query.c:259
+#: lib/query.c:264
 msgid "replaced      "
 msgstr "置き換えられています"
 
-#: lib/query.c:261
+#: lib/query.c:266
 msgid "not installed "
 msgstr "インストールされていません"
 
-#: lib/query.c:263
+#: lib/query.c:268
 msgid "net shared    "
 msgstr "ネット共有"
 
-#: lib/query.c:265
+#: lib/query.c:270
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(未知の %3d)"
 
-#: lib/query.c:270
+#: lib/query.c:275
 msgid "(no state)    "
 msgstr "(何の状態もありません)"
 
-#: lib/query.c:289 lib/query.c:334
+#: lib/query.c:294 lib/query.c:346
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:393
+#: lib/query.c:405
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/query.c:524 lib/query.c:558 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:536 lib/query.c:570 lib/rpminstall.c:323 lib/rpminstall.c:456
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:537
+#: lib/query.c:549
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:543
+#: lib/query.c:555
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:568 lib/rpminstall.c:466
+#: lib/query.c:580 lib/rpminstall.c:466
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/query.c:610
+#: lib/query.c:622
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:632
+#: lib/query.c:644
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:651
+#: lib/query.c:663
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:661
+#: lib/query.c:673
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:671
+#: lib/query.c:683
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:682
+#: lib/query.c:694
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:717
+#: lib/query.c:729
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:721
+#: lib/query.c:733
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:747
+#: lib/query.c:759
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:750
+#: lib/query.c:762
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:755
+#: lib/query.c:767
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:766 lib/rpminstall.c:603
+#: lib/query.c:778 lib/rpminstall.c:603
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -3580,12 +3595,12 @@ msgstr ""
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: lib/verify.c:415
+#: lib/verify.c:421
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:508
+#: lib/verify.c:514
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"

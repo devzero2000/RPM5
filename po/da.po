@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-20 11:33-0400\n"
+"POT-Creation-Date: 2001-06-20 15:37-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -859,8 +859,8 @@ msgstr ""
 "tilvalg som -q"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:528 rpmqv.c:534 rpmqv.c:540
-#: rpmqv.c:574
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:529 rpmqv.c:535 rpmqv.c:541
+#: rpmqv.c:575
 msgid "only one major mode may be specified"
 msgstr "kun ét hovedtilvalg kan angives"
 
@@ -888,7 +888,7 @@ msgstr "i omrokeringer skal = efterfølges af /"
 msgid "exclude paths must begin with a /"
 msgstr "udeladte stier skal begynde med et /"
 
-#: rpm.c:850 rpmqv.c:481
+#: rpm.c:850 rpmqv.c:482
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "Tilvalget --rcfile er fjernet.\n"
 
@@ -898,101 +898,101 @@ msgstr ""
 "Brug --macros med en kolonsepareret liste over de makrofiler, der skal "
 "indlæses.\n"
 
-#: rpm.c:856 rpmqv.c:488
+#: rpm.c:856 rpmqv.c:489
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Intern fejl i parameterfortolkningen (%d) :-(\n"
 
-#: rpm.c:891 rpmqv.c:555
+#: rpm.c:891 rpmqv.c:556
 msgid "one type of query/verify may be performed at a time"
 msgstr "kun én af forespørgsel/verificér kan udføres ad gangen"
 
-#: rpm.c:896 rpmqv.c:559
+#: rpm.c:896 rpmqv.c:560
 msgid "unexpected query flags"
 msgstr "uventet forespørgselsflag"
 
-#: rpm.c:899 rpmqv.c:562
+#: rpm.c:899 rpmqv.c:563
 msgid "unexpected query format"
 msgstr "uventet forespørgselsformat"
 
-#: rpm.c:902 rpmqv.c:565
+#: rpm.c:902 rpmqv.c:566
 msgid "unexpected query source"
 msgstr "uventet forespørgselskilde"
 
-#: rpm.c:905 rpmqv.c:590
+#: rpm.c:905 rpmqv.c:591
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "kun installation, opgradering, rmsource og rmspec kan tvinges igennem"
 
-#: rpm.c:908 rpmqv.c:592
+#: rpm.c:908 rpmqv.c:593
 msgid "files may only be relocated during package installation"
 msgstr "filer kan kun omrokeres under installation"
 
-#: rpm.c:911 rpmqv.c:595
+#: rpm.c:911 rpmqv.c:596
 msgid "only one of --prefix or --relocate may be used"
 msgstr "kun én af --prefix eller --relocate kan bruges"
 
-#: rpm.c:914 rpmqv.c:598
+#: rpm.c:914 rpmqv.c:599
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate og --excludepath kan kun bruges, når nye pakker installeres"
 
-#: rpm.c:917 rpmqv.c:601
+#: rpm.c:917 rpmqv.c:602
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan kun bruges, når nye pakker installeres"
 
-#: rpm.c:920 rpmqv.c:604
+#: rpm.c:920 rpmqv.c:605
 msgid "arguments to --prefix must begin with a /"
 msgstr "parametre til --prefix skal starte med et /"
 
-#: rpm.c:923 rpmqv.c:607
+#: rpm.c:923 rpmqv.c:608
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan kun angives ved installation"
 
-#: rpm.c:927 rpmqv.c:611
+#: rpm.c:927 rpmqv.c:612
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan kun angives ved installation"
 
-#: rpm.c:931 rpmqv.c:616
+#: rpm.c:931 rpmqv.c:617
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles kan kun angives ved installation"
 
-#: rpm.c:935 rpmqv.c:620
+#: rpm.c:935 rpmqv.c:621
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan kun angives ved installation"
 
-#: rpm.c:939 rpmqv.c:624
+#: rpm.c:939 rpmqv.c:625
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs kan kun angives ved installation"
 
-#: rpm.c:943 rpmqv.c:628
+#: rpm.c:943 rpmqv.c:629
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs kan kun angives ved installation"
 
-#: rpm.c:947 rpmqv.c:632
+#: rpm.c:947 rpmqv.c:633
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "kun én af --excludedocs og --includedocs kan angives"
 
-#: rpm.c:951 rpmqv.c:636
+#: rpm.c:951 rpmqv.c:637
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch kan kun angives ved installation"
 
-#: rpm.c:955 rpmqv.c:640
+#: rpm.c:955 rpmqv.c:641
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos kan kun angives ved installation"
 
-#: rpm.c:959 rpmqv.c:645
+#: rpm.c:959 rpmqv.c:646
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize kan kun angives ved installation"
 
-#: rpm.c:963 rpmqv.c:649
+#: rpm.c:963 rpmqv.c:650
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches kan kun angives ved installation"
 
-#: rpm.c:967 rpmqv.c:653
+#: rpm.c:967 rpmqv.c:654
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles kan kun angives ved installation"
 
-#: rpm.c:971 rpmqv.c:658
+#: rpm.c:971 rpmqv.c:659
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb kan kun angives ved installation og sletning"
 
@@ -1008,14 +1008,14 @@ msgstr "--noscripts kan kun angives ved installation, sletning og verifikation"
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles kan kun angives ved installation"
 
-#: rpm.c:987 rpmqv.c:668
+#: rpm.c:987 rpmqv.c:669
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--notriggers kan kun angives ved installation og sletning af pakker"
 
-#: rpm.c:991 rpmqv.c:672
+#: rpm.c:991 rpmqv.c:673
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1023,13 +1023,13 @@ msgstr ""
 "--nodeps kan kun angives ved opbygning, genopbygning, genoversættelse, "
 "installation, sletning og verifikation"
 
-#: rpm.c:996 rpmqv.c:677
+#: rpm.c:996 rpmqv.c:678
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test kan kun angives ved installation, sletning og opbygning"
 
-#: rpm.c:1000 rpmqv.c:682
+#: rpm.c:1000 rpmqv.c:683
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1037,7 +1037,7 @@ msgstr ""
 "--root (-r) kan kun angives ved installation, sletning, forespørgsel og "
 "genopbygning af databasen"
 
-#: rpm.c:1012 rpmqv.c:694
+#: rpm.c:1012 rpmqv.c:695
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parameteren til --root (-r) skal starte med et /"
 
@@ -1058,77 +1058,77 @@ msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 kan kun bruges ved signaturkontrol og pakkeverifikation"
 
-#: rpm.c:1038 rpmqv.c:715
+#: rpm.c:1038 rpmqv.c:716
 msgid "no files to sign\n"
 msgstr "ingen filer at underskrive\n"
 
-#: rpm.c:1043 rpmqv.c:720
+#: rpm.c:1043 rpmqv.c:721
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "kan ikke tilgå filen %s\n"
 
-#: rpm.c:1058 rpmqv.c:739
+#: rpm.c:1058 rpmqv.c:740
 msgid "pgp not found: "
 msgstr "pgp ikke fundet: "
 
-#: rpm.c:1062 rpmqv.c:744
+#: rpm.c:1062 rpmqv.c:745
 msgid "Enter pass phrase: "
 msgstr "Indtast adgangskode: "
 
-#: rpm.c:1064 rpmqv.c:746
+#: rpm.c:1064 rpmqv.c:747
 msgid "Pass phrase check failed\n"
 msgstr "Adgangskode ikke godkendt\n"
 
-#: rpm.c:1067 rpmqv.c:750
+#: rpm.c:1067 rpmqv.c:751
 msgid "Pass phrase is good.\n"
 msgstr "Adgangskode godkendt.\n"
 
-#: rpm.c:1072 rpmqv.c:755
+#: rpm.c:1072 rpmqv.c:756
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Ugyldig angivelse af %%_signature i makrofil.\n"
 
-#: rpm.c:1078 rpmqv.c:762
+#: rpm.c:1078 rpmqv.c:763
 msgid "--sign may only be used during package building"
 msgstr "--sign kan kun bruges ved pakkeopbygning"
 
-#: rpm.c:1093 rpmqv.c:778
+#: rpm.c:1093 rpmqv.c:779
 msgid "exec failed\n"
 msgstr "eksekvering mislykkedes\n"
 
-#: rpm.c:1116 rpmqv.c:985
+#: rpm.c:1116 rpmqv.c:986
 msgid "unexpected arguments to --querytags "
 msgstr "uventede parametre til --querytags "
 
-#: rpm.c:1127 rpmqv.c:994
+#: rpm.c:1127 rpmqv.c:995
 msgid "no packages given for signature check"
 msgstr "ingen pakker angivet ved signatur-tjek"
 
-#: rpm.c:1138 rpmqv.c:1003
+#: rpm.c:1138 rpmqv.c:1004
 msgid "no packages given for signing"
 msgstr "ingen pakker angivet ved signering"
 
-#: rpm.c:1154 rpmqv.c:896
+#: rpm.c:1154 rpmqv.c:897
 msgid "no packages given for uninstall"
 msgstr "ingen pakker angivet ved afinstallation"
 
-#: rpm.c:1243 rpmqv.c:919
+#: rpm.c:1243 rpmqv.c:920
 msgid "no packages given for install"
 msgstr "ingen pakker angivet ved installation"
 
-#: rpm.c:1267 rpmqv.c:948
+#: rpm.c:1267 rpmqv.c:949
 msgid "extra arguments given for query of all packages"
 msgstr "ekstra parametre angivet ved forespørgsel på alle pakker"
 
-#: rpm.c:1272 rpmqv.c:957
+#: rpm.c:1272 rpmqv.c:958
 msgid "no arguments given for query"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: rpm.c:1289 rpmqv.c:973
+#: rpm.c:1289 rpmqv.c:974
 msgid "extra arguments given for verify of all packages"
 msgstr "ekstra parametre angivet ved verifikation af alle pakker"
 
-#: rpm.c:1293 rpmqv.c:977
+#: rpm.c:1293 rpmqv.c:978
 msgid "no arguments given for verify"
 msgstr "ingen parametre angivet ved verifikation"
 
@@ -1239,30 +1239,30 @@ msgstr "fil %s: %s\n"
 msgid "Usage: %s {--help}\n"
 msgstr "Brug: %s {--help}\n"
 
-#: rpmqv.c:482
+#: rpmqv.c:483
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Brug \"--macros <fil:...>\" i stedet..\n"
 
-#: rpmqv.c:584
+#: rpmqv.c:585
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath angivet ved en operation, der ikke benytter en database"
 
-#: rpmqv.c:663
+#: rpmqv.c:664
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb kan kun angives ved installation og sletning"
 
-#: rpmqv.c:808
+#: rpmqv.c:809
 msgid "no packages files given for rebuild"
 msgstr "ingen pakkefiler angivet til genopbygning"
 
-#: rpmqv.c:877
+#: rpmqv.c:878
 msgid "no spec files given for build"
 msgstr "ingen spec-fil angivet til opbygning"
 
-#: rpmqv.c:879
+#: rpmqv.c:880
 msgid "no tar files given for build"
 msgstr "ingen tar-arkiver angivet til opbygning"
 
@@ -2226,32 +2226,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "linie %d: %s\n"
 
-#: lib/fsm.c:1110
+#: lib/fsm.c:1117
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1440 lib/fsm.c:1565
+#: lib/fsm.c:1447 lib/fsm.c:1572
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gemt som %s\n"
 
-#: lib/fsm.c:1591
+#: lib/fsm.c:1598
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kan ikke fjerne %s - katalog ikke tomt\n"
 
-#: lib/fsm.c:1597
+#: lib/fsm.c:1604
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 
-#: lib/fsm.c:1607
+#: lib/fsm.c:1614
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/fsm.c:1626
+#: lib/fsm.c:1633
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"
@@ -2656,71 +2656,86 @@ msgstr "vis grundlæggende filinformation"
 msgid "list files in package"
 msgstr "vis liste over filerne i pakken"
 
-#: lib/poptQV.c:156
+#: lib/poptQV.c:157
+#, c-format
+msgid "skip %%ghost files"
+msgstr ""
+
+#: lib/poptQV.c:161
+#, c-format
+msgid "skip %%license files"
+msgstr ""
+
+#: lib/poptQV.c:164
+#, fuzzy, c-format
+msgid "skip %%readme files"
+msgstr "%s: readLead mislykkedes\n"
+
+#: lib/poptQV.c:170
 msgid "use the following query format"
 msgstr "brug følgende forespørgselsformat"
 
-#: lib/poptQV.c:158
+#: lib/poptQV.c:172
 msgid "substitute i18n sections into spec file"
 msgstr "erstat i18n-sektioner i spec-fil"
 
-#: lib/poptQV.c:160
+#: lib/poptQV.c:174
 msgid "display the states of the listed files"
 msgstr "vis filernes status"
 
-#: lib/poptQV.c:162
+#: lib/poptQV.c:176
 msgid "display a verbose file listing"
 msgstr "giv en detaljeret filliste"
 
-#: lib/poptQV.c:178
+#: lib/poptQV.c:193
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:181
+#: lib/poptQV.c:196
 #, fuzzy
 msgid "don't verify size of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:184
+#: lib/poptQV.c:199
 #, fuzzy
 msgid "don't verify symlink path of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:187
+#: lib/poptQV.c:202
 #, fuzzy
 msgid "don't verify owner of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:205
 #, fuzzy
 msgid "don't verify group of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:208
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:196 lib/poptQV.c:199
+#: lib/poptQV.c:211 lib/poptQV.c:214
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:202
+#: lib/poptQV.c:217
 msgid "don't verify files in package"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:204
+#: lib/poptQV.c:219
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: lib/poptQV.c:206 lib/poptQV.c:209
+#: lib/poptQV.c:221 lib/poptQV.c:225
 #, fuzzy
 msgid "don't execute %verifyscript (if any)"
 msgstr "udfør ikke eventuelt %verifyscript"
 
-#: lib/poptQV.c:212
+#: lib/poptQV.c:228
 #, fuzzy
 msgid "don't verify header SHA1 digest"
 msgstr "verificér ikke filerne i pakke"
@@ -2864,114 +2879,114 @@ msgstr "ugyldigt format: %s\n"
 msgid "(contains no files)"
 msgstr "(indeholder ingen filer)"
 
-#: lib/query.c:257
+#: lib/query.c:262
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:259
+#: lib/query.c:264
 msgid "replaced      "
 msgstr "erstattet     "
 
-#: lib/query.c:261
+#: lib/query.c:266
 msgid "not installed "
 msgstr "ej installeret"
 
-#: lib/query.c:263
+#: lib/query.c:268
 msgid "net shared    "
 msgstr "ej delt       "
 
-#: lib/query.c:265
+#: lib/query.c:270
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(ukendt %3d)  "
 
-#: lib/query.c:270
+#: lib/query.c:275
 msgid "(no state)    "
 msgstr "(ingen status)"
 
-#: lib/query.c:289 lib/query.c:334
+#: lib/query.c:294 lib/query.c:346
 msgid "package has neither file owner or id lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:393
+#: lib/query.c:405
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kunne ikke forespørge %s: %s\n"
 
-#: lib/query.c:524 lib/query.c:558 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:536 lib/query.c:570 lib/rpminstall.c:323 lib/rpminstall.c:456
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/query.c:537
+#: lib/query.c:549
 #, c-format
 msgid "query of %s failed\n"
 msgstr "forespørgsel af %s mislykkedes\n"
 
-#: lib/query.c:543
+#: lib/query.c:555
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:568 lib/rpminstall.c:466
+#: lib/query.c:580 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
 
-#: lib/query.c:610
+#: lib/query.c:622
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "forespørgsel af spec-fil %s mislykkedes, kunne ikke tolkes\n"
 
-#: lib/query.c:632
+#: lib/query.c:644
 msgid "no packages\n"
 msgstr "ingen pakker\n"
 
-#: lib/query.c:651
+#: lib/query.c:663
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s indeholder ingen pakker\n"
 
-#: lib/query.c:661
+#: lib/query.c:673
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:671
+#: lib/query.c:683
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#: lib/query.c:682
+#: lib/query.c:694
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/query.c:717
+#: lib/query.c:729
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:721
+#: lib/query.c:733
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tilhører ingen pakke\n"
 
-#: lib/query.c:747
+#: lib/query.c:759
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/query.c:750
+#: lib/query.c:762
 #, c-format
 msgid "package record number: %u\n"
 msgstr "pakkens post-nummer: %u\n"
 
-#: lib/query.c:755
+#: lib/query.c:767
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:766 lib/rpminstall.c:603
+#: lib/query.c:778 lib/rpminstall.c:603
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -3435,12 +3450,12 @@ msgstr ""
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: lib/verify.c:415
+#: lib/verify.c:421
 #, c-format
 msgid "missing    %s"
 msgstr "manglende  %s"
 
-#: lib/verify.c:508
+#: lib/verify.c:514
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "

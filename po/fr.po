@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-06-20 11:33-0400\n"
+msgstr "POT-Creation-Date: 2001-06-20 15:37-0400\n"
 
 #: build.c:36
 #, fuzzy, c-format
@@ -912,8 +912,8 @@ msgid ""
 msgstr ""
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:528 rpmqv.c:534 rpmqv.c:540
-#: rpmqv.c:574
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:529 rpmqv.c:535 rpmqv.c:541
+#: rpmqv.c:575
 msgid "only one major mode may be specified"
 msgstr "un seul mode majeur peut tre spcifi"
 
@@ -944,7 +944,7 @@ msgstr ""
 msgid "exclude paths must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: rpm.c:850 rpmqv.c:481
+#: rpm.c:850 rpmqv.c:482
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -952,122 +952,122 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:856 rpmqv.c:488
+#: rpm.c:856 rpmqv.c:489
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpm.c:891 rpmqv.c:555
+#: rpm.c:891 rpmqv.c:556
 msgid "one type of query/verify may be performed at a time"
 msgstr "un seul type de requte/vrification peut tre effectu  la fois"
 
-#: rpm.c:896 rpmqv.c:559
+#: rpm.c:896 rpmqv.c:560
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "source de requte inattendue"
 
-#: rpm.c:899 rpmqv.c:562
+#: rpm.c:899 rpmqv.c:563
 #, fuzzy
 msgid "unexpected query format"
 msgstr "source de requte inattendue"
 
-#: rpm.c:902 rpmqv.c:565
+#: rpm.c:902 rpmqv.c:566
 msgid "unexpected query source"
 msgstr "source de requte inattendue"
 
-#: rpm.c:905 rpmqv.c:590
+#: rpm.c:905 rpmqv.c:591
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "seules l'installation et la mise  jour peuvent tre forces"
 
-#: rpm.c:908 rpmqv.c:592
+#: rpm.c:908 rpmqv.c:593
 #, fuzzy
 msgid "files may only be relocated during package installation"
 msgstr ""
 "--replacefiles ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:911 rpmqv.c:595
+#: rpm.c:911 rpmqv.c:596
 #, fuzzy
 msgid "only one of --prefix or --relocate may be used"
 msgstr "un seul mode majeur peut tre spcifi"
 
-#: rpm.c:914 rpmqv.c:598
+#: rpm.c:914 rpmqv.c:599
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--clean ne peut tre spcifi que lors de la construction d'un package"
 
-#: rpm.c:917 rpmqv.c:601
+#: rpm.c:917 rpmqv.c:602
 #, fuzzy
 msgid "--prefix may only be used when installing new packages"
 msgstr "--sign ne peut tre spcifi que lors de la construction d'un package"
 
-#: rpm.c:920 rpmqv.c:604
+#: rpm.c:920 rpmqv.c:605
 #, fuzzy
 msgid "arguments to --prefix must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: rpm.c:923 rpmqv.c:607
+#: rpm.c:923 rpmqv.c:608
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:927 rpmqv.c:611
+#: rpm.c:927 rpmqv.c:612
 msgid "--percent may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:931 rpmqv.c:616
+#: rpm.c:931 rpmqv.c:617
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 "--replacefiles ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:935 rpmqv.c:620
+#: rpm.c:935 rpmqv.c:621
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 "--replacepkgs ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:939 rpmqv.c:624
+#: rpm.c:939 rpmqv.c:625
 #, fuzzy
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:943 rpmqv.c:628
+#: rpm.c:943 rpmqv.c:629
 #, fuzzy
 msgid "--includedocs may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:947 rpmqv.c:632
+#: rpm.c:947 rpmqv.c:633
 #, fuzzy
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "un seul mode majeur peut tre spcifi"
 
-#: rpm.c:951 rpmqv.c:636
+#: rpm.c:951 rpmqv.c:637
 #, fuzzy
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:955 rpmqv.c:640
+#: rpm.c:955 rpmqv.c:641
 #, fuzzy
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:959 rpmqv.c:645
+#: rpm.c:959 rpmqv.c:646
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:963 rpmqv.c:649
+#: rpm.c:963 rpmqv.c:650
 #, fuzzy
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 "--replacepkgs ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:967 rpmqv.c:653
+#: rpm.c:967 rpmqv.c:654
 #, fuzzy
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 "--replacefiles ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:971 rpmqv.c:658
+#: rpm.c:971 rpmqv.c:659
 #, fuzzy
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
@@ -1089,7 +1089,7 @@ msgid "--apply may only be specified during package installation"
 msgstr ""
 "--replacefiles ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpm.c:987 rpmqv.c:668
+#: rpm.c:987 rpmqv.c:669
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
@@ -1098,7 +1098,7 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpm.c:991 rpmqv.c:672
+#: rpm.c:991 rpmqv.c:673
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1107,7 +1107,7 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpm.c:996 rpmqv.c:677
+#: rpm.c:996 rpmqv.c:678
 #, fuzzy
 msgid ""
 "--test may only be specified during package installation, erasure, and "
@@ -1116,7 +1116,7 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpm.c:1000 rpmqv.c:682
+#: rpm.c:1000 rpmqv.c:683
 #, fuzzy
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
@@ -1125,7 +1125,7 @@ msgstr ""
 "--root (-r) ne peut tre spcifi que lors de l'installation, de la "
 "dsinstallation ou de l'interrogation d'un package"
 
-#: rpm.c:1012 rpmqv.c:694
+#: rpm.c:1012 rpmqv.c:695
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
@@ -1149,82 +1149,82 @@ msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--sign ne peut tre spcifi que lors de la construction d'un package"
 
-#: rpm.c:1038 rpmqv.c:715
+#: rpm.c:1038 rpmqv.c:716
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1043 rpmqv.c:720
+#: rpm.c:1043 rpmqv.c:721
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpm.c:1058 rpmqv.c:739
+#: rpm.c:1058 rpmqv.c:740
 #, fuzzy
 msgid "pgp not found: "
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpm.c:1062 rpmqv.c:744
+#: rpm.c:1062 rpmqv.c:745
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1064 rpmqv.c:746
+#: rpm.c:1064 rpmqv.c:747
 msgid "Pass phrase check failed\n"
 msgstr "La vrification du mot de passe a chou\n"
 
-#: rpm.c:1067 rpmqv.c:750
+#: rpm.c:1067 rpmqv.c:751
 msgid "Pass phrase is good.\n"
 msgstr "Mot de passe correct.\n"
 
-#: rpm.c:1072 rpmqv.c:755
+#: rpm.c:1072 rpmqv.c:756
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1078 rpmqv.c:762
+#: rpm.c:1078 rpmqv.c:763
 msgid "--sign may only be used during package building"
 msgstr "--sign ne peut tre spcifi que lors de la construction d'un package"
 
-#: rpm.c:1093 rpmqv.c:778
+#: rpm.c:1093 rpmqv.c:779
 #, fuzzy
 msgid "exec failed\n"
 msgstr "La construction a chou.\n"
 
-#: rpm.c:1116 rpmqv.c:985
+#: rpm.c:1116 rpmqv.c:986
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpm.c:1127 rpmqv.c:994
+#: rpm.c:1127 rpmqv.c:995
 msgid "no packages given for signature check"
 msgstr "aucun package n'a t spcifi pour la vrification de signature"
 
-#: rpm.c:1138 rpmqv.c:1003
+#: rpm.c:1138 rpmqv.c:1004
 #, fuzzy
 msgid "no packages given for signing"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpm.c:1154 rpmqv.c:896
+#: rpm.c:1154 rpmqv.c:897
 msgid "no packages given for uninstall"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpm.c:1243 rpmqv.c:919
+#: rpm.c:1243 rpmqv.c:920
 msgid "no packages given for install"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: rpm.c:1267 rpmqv.c:948
+#: rpm.c:1267 rpmqv.c:949
 #, fuzzy
 msgid "extra arguments given for query of all packages"
 msgstr "aucun argument n'a t fourni pour la requte"
 
-#: rpm.c:1272 rpmqv.c:957
+#: rpm.c:1272 rpmqv.c:958
 msgid "no arguments given for query"
 msgstr "aucun argument n'a t fourni pour la requte"
 
-#: rpm.c:1289 rpmqv.c:973
+#: rpm.c:1289 rpmqv.c:974
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "aucun argument n'a t fourni pour la requte"
 
-#: rpm.c:1293 rpmqv.c:977
+#: rpm.c:1293 rpmqv.c:978
 msgid "no arguments given for verify"
 msgstr "aucun argument n'a t fourni pour la vrification"
 
@@ -1336,16 +1336,16 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "Usage: %s {--help}\n"
 msgstr ""
 
-#: rpmqv.c:482
+#: rpmqv.c:483
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Utilisez de prfrence -e ou --erase.\n"
 
-#: rpmqv.c:584
+#: rpmqv.c:585
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: rpmqv.c:663
+#: rpmqv.c:664
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
@@ -1354,15 +1354,15 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpmqv.c:808
+#: rpmqv.c:809
 msgid "no packages files given for rebuild"
 msgstr "aucun package n'a t spcifi pour la reconstruction"
 
-#: rpmqv.c:877
+#: rpmqv.c:878
 msgid "no spec files given for build"
 msgstr "aucun package n'a t spcifi pour la construction"
 
-#: rpmqv.c:879
+#: rpmqv.c:880
 #, fuzzy
 msgid "no tar files given for build"
 msgstr "aucun package n'a t spcifi pour la construction"
@@ -2318,32 +2318,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1110
+#: lib/fsm.c:1117
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1440 lib/fsm.c:1565
+#: lib/fsm.c:1447 lib/fsm.c:1572
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1591
+#: lib/fsm.c:1598
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1597
+#: lib/fsm.c:1604
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1607
+#: lib/fsm.c:1614
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1626
+#: lib/fsm.c:1633
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -2785,72 +2785,87 @@ msgstr ""
 msgid "list files in package"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/poptQV.c:156
+#: lib/poptQV.c:157
+#, c-format
+msgid "skip %%ghost files"
+msgstr ""
+
+#: lib/poptQV.c:161
+#, c-format
+msgid "skip %%license files"
+msgstr ""
+
+#: lib/poptQV.c:164
+#, fuzzy, c-format
+msgid "skip %%readme files"
+msgstr "impossible d'ouvrir: %s\n"
+
+#: lib/poptQV.c:170
 #, fuzzy
 msgid "use the following query format"
 msgstr "source de requte inattendue"
 
-#: lib/poptQV.c:158
+#: lib/poptQV.c:172
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr ""
 "        -f <file>+        - interroge le package  qui appartient <file>"
 
-#: lib/poptQV.c:160
+#: lib/poptQV.c:174
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:162
+#: lib/poptQV.c:176
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "        -l                - affiche la liste des packages"
 
-#: lib/poptQV.c:178
+#: lib/poptQV.c:193
 msgid "don't verify MD5 digest of files"
 msgstr ""
 
-#: lib/poptQV.c:181
+#: lib/poptQV.c:196
 #, fuzzy
 msgid "don't verify size of files"
 msgstr ""
 "        -f <file>+        - interroge le package  qui appartient <file>"
 
-#: lib/poptQV.c:184
+#: lib/poptQV.c:199
 msgid "don't verify symlink path of files"
 msgstr ""
 
-#: lib/poptQV.c:187
+#: lib/poptQV.c:202
 msgid "don't verify owner of files"
 msgstr ""
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:205
 msgid "don't verify group of files"
 msgstr ""
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:208
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:196 lib/poptQV.c:199
+#: lib/poptQV.c:211 lib/poptQV.c:214
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr ""
 "        -f <file>+        - interroge le package  qui appartient <file>"
 
-#: lib/poptQV.c:202
+#: lib/poptQV.c:217
 msgid "don't verify files in package"
 msgstr ""
 
-#: lib/poptQV.c:204
+#: lib/poptQV.c:219
 msgid "don't verify package dependencies"
 msgstr ""
 
-#: lib/poptQV.c:206 lib/poptQV.c:209
+#: lib/poptQV.c:221 lib/poptQV.c:225
 #, fuzzy
 msgid "don't execute %verifyscript (if any)"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/poptQV.c:212
+#: lib/poptQV.c:228
 msgid "don't verify header SHA1 digest"
 msgstr ""
 
@@ -2992,117 +3007,117 @@ msgstr ""
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:257
+#: lib/query.c:262
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:259
+#: lib/query.c:264
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:261
+#: lib/query.c:266
 #, fuzzy
 msgid "not installed "
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/query.c:263
+#: lib/query.c:268
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:265
+#: lib/query.c:270
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:270
+#: lib/query.c:275
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:289 lib/query.c:334
+#: lib/query.c:294 lib/query.c:346
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/query.c:393
+#: lib/query.c:405
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/query.c:524 lib/query.c:558 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:536 lib/query.c:570 lib/rpminstall.c:323 lib/rpminstall.c:456
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/query.c:537
+#: lib/query.c:549
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:543
+#: lib/query.c:555
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:568 lib/rpminstall.c:466
+#: lib/query.c:580 lib/rpminstall.c:466
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/query.c:610
+#: lib/query.c:622
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:632
+#: lib/query.c:644
 #, fuzzy
 msgid "no packages\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/query.c:651
+#: lib/query.c:663
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:661
+#: lib/query.c:673
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/query.c:671
+#: lib/query.c:683
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:682
+#: lib/query.c:694
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:717
+#: lib/query.c:729
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:721
+#: lib/query.c:733
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:747
+#: lib/query.c:759
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:750
+#: lib/query.c:762
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:755
+#: lib/query.c:767
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:766 lib/rpminstall.c:603
+#: lib/query.c:778 lib/rpminstall.c:603
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
@@ -3572,12 +3587,12 @@ msgstr ""
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: lib/verify.c:415
+#: lib/verify.c:421
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:508
+#: lib/verify.c:514
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
