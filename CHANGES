@@ -1,4 +1,6 @@
 2.5.6 -> 2.5.7:
+	- headerGetEntry now returns count=0 if tag not found (Chris Blizzard).
+	- resurrect osf1 as canonical os name (Time Mooney).
 	- sub-packages should inheirit Prefixes tag (Ian Mortimer).
 	- permit mixing source/binary rpms on install cmd line.
 	- make '-' character illegal (again) in version/release.
