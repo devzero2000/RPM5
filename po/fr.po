@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-09-16 14:26-0400\n"
+"POT-Creation-Date: 2002-09-16 16:11-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1600,86 +1600,98 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/package.c:356
+#: lib/package.c:357
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:364 lib/package.c:426 lib/package.c:484 lib/signature.c:211
+#: lib/package.c:366 lib/package.c:430 lib/package.c:495 lib/signature.c:213
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:384 lib/signature.c:227
+#: lib/package.c:386 lib/signature.c:229
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:405 lib/signature.c:248
+#: lib/package.c:407 lib/signature.c:250
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:418 lib/signature.c:262
+#: lib/package.c:421 lib/signature.c:264
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:515 lib/package.c:555 lib/package.c:838 lib/package.c:862
-#: lib/package.c:892 lib/rpmchecksig.c:806
+#: lib/package.c:449
+msgid "hdr SHA1: BAD, not hex\n"
+msgstr ""
+
+#: lib/package.c:467
+msgid "hdr DSA: BAD, not binary\n"
+msgstr ""
+
+#: lib/package.c:527 lib/package.c:567 lib/package.c:854 lib/package.c:878
+#: lib/package.c:908 lib/rpmchecksig.c:806
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:631
+#: lib/package.c:643
 #, c-format
-msgid "hdr size(%d): BAD, read %d bytes\n"
+msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:635
+#: lib/package.c:647
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:641
+#: lib/package.c:653
 #, c-format
-msgid "hdr tags: BAD, found %d tags\n"
+msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:646
+#: lib/package.c:660
 #, c-format
-msgid "hdr data: BAD, found %d bytes\n"
+msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:657
+#: lib/package.c:671
 #, c-format
-msgid "hdr blob(%d): BAD, read %d bytes\n"
+msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:729
+#: lib/package.c:683
+msgid "hdr load: BAD\n"
+msgstr ""
+
+#: lib/package.c:745
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:737
+#: lib/package.c:753
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:748 lib/rpmchecksig.c:230 lib/rpmchecksig.c:721
+#: lib/package.c:764 lib/rpmchecksig.c:230 lib/rpmchecksig.c:721
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/package.c:755 lib/rpmchecksig.c:237 lib/rpmchecksig.c:729
+#: lib/package.c:771 lib/rpmchecksig.c:237 lib/rpmchecksig.c:729
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:802
+#: lib/package.c:818
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/package.c:905 lib/rpmchecksig.c:118 lib/rpmchecksig.c:644
+#: lib/package.c:921 lib/rpmchecksig.c:118 lib/rpmchecksig.c:644
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -2414,77 +2426,77 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:624 lib/rpminstall.c:599
+#: lib/query.c:625 lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/query.c:668
+#: lib/query.c:669
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:689
+#: lib/query.c:690
 #, fuzzy
 msgid "no packages\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/query.c:709
+#: lib/query.c:710
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:719
+#: lib/query.c:720
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/query.c:733 lib/query.c:755 lib/query.c:776 lib/query.c:811
+#: lib/query.c:734 lib/query.c:756 lib/query.c:777 lib/query.c:812
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/query.c:743 lib/query.c:761 lib/query.c:786 lib/query.c:816
+#: lib/query.c:744 lib/query.c:762 lib/query.c:787 lib/query.c:817
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/query.c:827
+#: lib/query.c:828
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:838
+#: lib/query.c:839
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:872
+#: lib/query.c:873
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:876
+#: lib/query.c:877
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:903
+#: lib/query.c:904
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:906
+#: lib/query.c:907
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:911
+#: lib/query.c:912
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:922 lib/rpminstall.c:771
+#: lib/query.c:923 lib/rpminstall.c:771
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
@@ -3014,151 +3026,155 @@ msgstr ""
 
 #: lib/signature.c:176
 #, c-format
-msgid "sigh size(%d): BAD, read %d bytes\n"
+msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:181
 msgid "sigh magic: BAD\n"
 msgstr ""
 
-#: lib/signature.c:186
+#: lib/signature.c:187
 #, c-format
-msgid "sigh tags: BAD, found %d tags\n"
+msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/signature.c:191
+#: lib/signature.c:193
 #, c-format
-msgid "sigh data: BAD, found %d bytes\n"
+msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/signature.c:203
+#: lib/signature.c:205
 #, c-format
-msgid "sigh blob(%d): BAD, read %d bytes\n"
+msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:273
+#: lib/signature.c:275
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/signature.c:293
+#: lib/signature.c:285
+msgid "sigh load: BAD\n"
+msgstr ""
+
+#: lib/signature.c:297
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr ""
 
-#: lib/signature.c:335
+#: lib/signature.c:339
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
 #. @=boundsread@
-#: lib/signature.c:427 lib/signature.c:541 lib/signature.c:816
-#: lib/signature.c:855
+#: lib/signature.c:431 lib/signature.c:545 lib/signature.c:820
+#: lib/signature.c:859
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:443
+#: lib/signature.c:447
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "La construction a chou.\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:450
+#: lib/signature.c:454
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:456
+#: lib/signature.c:460
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
 #. @=boundswrite@
-#: lib/signature.c:474 lib/signature.c:589
+#: lib/signature.c:478 lib/signature.c:593
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:479
+#: lib/signature.c:483
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:558
+#: lib/signature.c:562
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "La construction a chou.\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:565
+#: lib/signature.c:569
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:571
+#: lib/signature.c:575
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:594
+#: lib/signature.c:598
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:860 lib/signature.c:915
+#: lib/signature.c:864 lib/signature.c:919
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:892
+#: lib/signature.c:896
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:907
+#: lib/signature.c:911
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:956
+#: lib/signature.c:960
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:996
+#: lib/signature.c:1000
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1052
+#: lib/signature.c:1056
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1127
+#: lib/signature.c:1131
 msgid "V3 RSA/MD5 signature: "
 msgstr ""
 
-#: lib/signature.c:1244
+#: lib/signature.c:1248
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1245
+#: lib/signature.c:1249
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "      --sign            - genre une signature PGP"
 
-#: lib/signature.c:1324
+#: lib/signature.c:1328
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1351
+#: lib/signature.c:1355
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1355
+#: lib/signature.c:1359
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
