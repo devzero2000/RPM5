@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.20
+Release: 0.21
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -131,10 +131,21 @@ rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 
+%ifos linux
+
+# Save list of packages through cron
+mkdir -p ${RPM_BUILD_ROOT}/etc/cron.daily
+install -m 755 scripts/rpm.daily ${RPM_BUILD_ROOT}/etc/cron.daily/rpm
+
+mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
+install -m 755 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
+
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
+
+%endif
 
 %if %{with_apidocs}
 gzip -9n apidocs/man/man*/* || :
@@ -209,8 +220,14 @@ fi
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
 %attr(0755, rpm, rpm)	/bin/rpm
+
+%ifos linux
+%config(missingok)	/etc/cron.daily/rpm
+%config(missingok)	/etc/logrotate.d/rpm
 %dir			/etc/rpm
 %config(missingok)	/etc/rpm/macros.db1
+%endif
+
 %attr(0755, rpm, rpm)	%{__prefix}/bin/rpm2cpio
 %attr(0755, rpm, rpm)	%{__prefix}/bin/gendiff
 %attr(0755, rpm, rpm)	%{__prefix}/bin/rpmdb
@@ -229,6 +246,7 @@ fi
 %attr(0755, rpm, rpm)	%{__prefix}/lib/rpm/convertrpmrc.sh
 %attr(0644, rpm, rpm)	%{__prefix}/lib/rpm/macros
 %attr(0755, rpm, rpm)	%{__prefix}/lib/rpm/mkinstalldirs
+%attr(0755, rpm, rpm)	%{__prefix}/lib/rpm/rpm.*
 %attr(0755, rpm, rpm)	%{__prefix}/lib/rpm/rpm[deiukqv]
 %attr(0644, rpm, rpm)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, rpm, rpm)	%{__prefix}/lib/rpm/rpmrc
@@ -383,6 +401,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun May 13 2001 Jeff Johnson <jbj@redhat.com>
+- add cron/logrotate scripts to save installed package filenames.
+
 * Thu May 10 2001 Jeff Johnson <jbj@redhat.com>
 - rpm database has rpm.rpm g+w permissions to share db3 mutexes.
 - expose more db3 macro configuration tokens.
