@@ -148,6 +148,7 @@
 	- fix: sanity check for header size added in headerCopyLoad() (#46469).
 	- fix: redundant entries in file manifests handled correctly (#46914).
 	- map uid/gid from metadata into payload headers.
+	- add removetid to header during --repackage.
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro

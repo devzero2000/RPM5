@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.56
+Release: 0.57
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -429,6 +429,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jul  4 2001 Jeff Johnson <jbj@redhat.com>
+- add removetid to header during --repackage.
+
 * Tue Jul  3 2001 Jeff Johnson <jbj@redhat.com>
 - fix: redundant entries in file manifests handled correctly (#46914).
 - map uid/gid from metadata into payload headers.

@@ -313,7 +313,7 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
     rc = psmStage(psm, PSM_SCRIPT);
     freeFi(fi);
     fi = _free(fi);
-    rpmtransFree(ts);
+    ts = rpmtransFree(ts);
     return rc;
 }
 
@@ -486,17 +486,17 @@ exit:
 static int verifyDependencies(rpmdb rpmdb, Header h)
 	/*@modifies h @*/
 {
-    rpmTransactionSet rpmdep;
+    rpmTransactionSet ts;
     rpmDependencyConflict conflicts;
     int numConflicts;
     int rc = 0;		/* assume no problems */
     int i;
 
-    rpmdep = rpmtransCreateSet(rpmdb, NULL);
-    (void) rpmtransAddPackage(rpmdep, h, NULL, NULL, 0, NULL);
+    ts = rpmtransCreateSet(rpmdb, NULL);
+    (void) rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
 
-    (void) rpmdepCheck(rpmdep, &conflicts, &numConflicts);
-    rpmtransFree(rpmdep);
+    (void) rpmdepCheck(ts, &conflicts, &numConflicts);
+    ts = rpmtransFree(ts);
 
     if (numConflicts) {
 	const char *n, *v, *r;
