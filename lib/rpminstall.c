@@ -13,6 +13,7 @@
 /*@access rpmTransactionSet @*/	/* XXX compared with NULL */
 /*@access rpmProblemSet @*/	/* XXX compared with NULL */
 /*@access Header @*/		/* XXX compared with NULL */
+/*@access rpmdb @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX compared with NULL */
 /*@access IDTX @*/
 /*@access IDT @*/
@@ -183,6 +184,25 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     return rc;
 }	
 
+typedef /*@only@*/ /*@null@*/ const char * str_t;
+
+struct rpmEIU {
+/*@only@*/ rpmTransactionSet ts;
+/*@only@*/ /*@null@*/ rpmdb db;
+    int numFailed;
+    int numPkgs;
+/*@only@*/ /*@null@*/ str_t * pkgURL;
+/*@only@*/ /*@null@*/ char * pkgState;
+    int prevx;
+    int pkgx;
+    int numRPMS;
+    int numSRPMS;
+/*@only@*/ /*@null@*/ str_t * sourceURL;
+    int argc;
+/*@only@*/ /*@null@*/ str_t * argv;
+/*@temp@*/ rpmRelocation * relocations;
+};
+
 /** @todo Generalize --freshen policies. */
 int rpmInstall(const char * rootdir, const char ** fileArgv,
 		rpmtransFlags transFlags,
@@ -190,25 +210,15 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		rpmprobFilterFlags probFilter,
 		rpmRelocation * relocations)
 {
-    rpmTransactionSet ts = NULL;
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-    rpmdb db = NULL;
-    const char ** pkgURL = NULL;
-    char * pkgState = NULL;
-    const char ** fnp;
-    const char * fileURL = NULL;
-    int numPkgs = 0;
-    int numRPMS = 0;
-    int numSRPMS = 0;
-    int numFailed = 0;
+    str_t * fnp;
+    /*@only@*/ /*@null@*/ const char * fileURL = NULL;
+    struct rpmEIU * eiu = alloca(sizeof(*eiu));
     int stopInstall = 0;
-    int dbIsOpen = 0;
-    rpmRelocation * defaultReloc = relocations;
-    const char ** sourceURL = NULL;
+#ifdef	DYING
     int prevx;
     int pkgx;
-    const char ** argv = NULL;
-    int argc = 0;
+#endif
     const char ** av = NULL;
     int ac = 0;
     Header h;
@@ -218,52 +228,63 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 
     if (fileArgv == NULL) return 0;
 
-    while (defaultReloc && defaultReloc->oldPath)
-	defaultReloc++;
-    if (defaultReloc && !defaultReloc->newPath) defaultReloc = NULL;
+    memset(eiu, 0, sizeof(*eiu));
+
+    if ((eiu->relocations = relocations) != NULL) {
+	while (eiu->relocations->oldPath)
+	    eiu->relocations++;
+	if (eiu->relocations->newPath == NULL)
+	    eiu->relocations = NULL;
+    }
 
     /* Build fully globbed list of arguments in argv[argc]. */
-    for (fnp = fileArgv; *fnp; fnp++) {
+    for (fnp = fileArgv; *fnp != NULL; fnp++) {
 	av = _free(av);
 	ac = 0;
 	rc = rpmGlob(*fnp, &ac, &av);
 	if (rc || ac == 0) continue;
 
-	if (argv == NULL)
-	    argv = xmalloc((argc+ac+1) * sizeof(*argv));
+#ifdef	DYING
+	if (eiu->argv == NULL)
+	    eiu->argv = xmalloc((eiu->argc+ac+1) * sizeof(*eiu->argv));
 	else
-	    argv = xrealloc(argv, (argc+ac+1) * sizeof(*argv));
-	memcpy(argv+argc, av, ac * sizeof(*av));
-	argc += ac;
-	argv[argc] = NULL;
+#endif
+	    eiu->argv = xrealloc(eiu->argv, (eiu->argc+ac+1) * sizeof(*eiu->argv));
+	memcpy(eiu->argv+eiu->argc, av, ac * sizeof(*av));
+	eiu->argc += ac;
+	eiu->argv[eiu->argc] = NULL;
     }
     av = _free(av);
 
-    numPkgs = 0;
-    prevx = 0;
-    pkgx = 0;
+    eiu->numPkgs = 0;
+    eiu->prevx = 0;
+    eiu->pkgx = 0;
 
 restart:
     /* Allocate sufficient storage for next set of args. */
-    if (pkgx >= numPkgs) {
-	numPkgs = pkgx + argc;
-	if (pkgURL == NULL)
-	    pkgURL = xmalloc( (numPkgs + 1) * sizeof(*pkgURL));
+    if (eiu->pkgx >= eiu->numPkgs) {
+	eiu->numPkgs = eiu->pkgx + eiu->argc;
+#ifdef	DYING
+	if (eiu->pkgURL == NULL)
+	    eiu->pkgURL = xmalloc( (eiu->numPkgs + 1) * sizeof(*eiu->pkgURL));
 	else
-	    pkgURL = xrealloc(pkgURL, (numPkgs + 1) * sizeof(*pkgURL));
-	memset(pkgURL + pkgx, 0, ((argc + 1) * sizeof(*pkgURL)));
-	if (pkgState == NULL)
-	    pkgState = xmalloc( (numPkgs + 1) * sizeof(*pkgState));
+#endif
+	    eiu->pkgURL = xrealloc(eiu->pkgURL, (eiu->numPkgs + 1) * sizeof(*eiu->pkgURL));
+	memset(eiu->pkgURL + eiu->pkgx, 0, ((eiu->argc + 1) * sizeof(*eiu->pkgURL)));
+#ifdef	DYING
+	if (eiu->pkgState == NULL)
+	    eiu->pkgState = xmalloc( (eiu->numPkgs + 1) * sizeof(*eiu->pkgState));
 	else
-	    pkgState = xrealloc(pkgState, (numPkgs + 1) * sizeof(*pkgState));
-	memset(pkgState + pkgx, 0, ((argc + 1) * sizeof(*pkgState)));
+#endif
+	    eiu->pkgState = xrealloc(eiu->pkgState, (eiu->numPkgs + 1) * sizeof(*eiu->pkgState));
+	memset(eiu->pkgState + eiu->pkgx, 0, ((eiu->argc + 1) * sizeof(*eiu->pkgState)));
     }
 
     /* Retrieve next set of args, cache on local storage. */
-    for (i = 0; i < argc; i++) {
+    for (i = 0; i < eiu->argc; i++) {
 	fileURL = _free(fileURL);
-	fileURL = argv[i];
-	argv[i] = NULL;
+	fileURL = eiu->argv[i];
+	eiu->argv[i] = NULL;
 
 	switch (urlIsURL(fileURL)) {
 	case URL_IS_FTP:
@@ -287,29 +308,29 @@ restart:
 		rpmMessage(RPMMESS_ERROR,
 			_("skipping %s - transfer failed - %s\n"),
 			fileURL, ftpStrerror(rc));
-		numFailed++;
-		pkgURL[pkgx] = NULL;
+		eiu->numFailed++;
+		eiu->pkgURL[eiu->pkgx] = NULL;
 		tfn = _free(tfn);
 		break;
 	    }
-	    pkgState[pkgx] = 1;
-	    pkgURL[pkgx] = tfn;
-	    pkgx++;
+	    eiu->pkgState[eiu->pkgx] = 1;
+	    eiu->pkgURL[eiu->pkgx] = tfn;
+	    eiu->pkgx++;
 	}   break;
 	case URL_IS_PATH:
 	default:
-	    pkgURL[pkgx] = fileURL;
+	    eiu->pkgURL[eiu->pkgx] = fileURL;
 	    fileURL = NULL;
-	    pkgx++;
+	    eiu->pkgx++;
 	    break;
 	}
     }
     fileURL = _free(fileURL);
 
-    if (numFailed) goto exit;
+    if (eiu->numFailed) goto exit;
 
     /* Continue processing file arguments, building transaction set. */
-    for (fnp = pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
+    for (fnp = eiu->pkgURL+eiu->prevx; *fnp != NULL; fnp++, eiu->prevx++) {
 	const char * fileName;
 	rpmRC rpmrc;
 	int isSource;
@@ -323,7 +344,7 @@ restart:
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
 			Fstrerror(fd));
 	    if (fd) (void) Fclose(fd);
-	    numFailed++; *fnp = NULL;
+	    eiu->numFailed++; *fnp = NULL;
 	    continue;
 	}
 
@@ -333,56 +354,60 @@ restart:
 	(void) Fclose(fd);
 
 	if (rpmrc == RPMRC_FAIL || rpmrc == RPMRC_SHORTREAD) {
-	    numFailed++; *fnp = NULL;
+	    eiu->numFailed++; *fnp = NULL;
 	    continue;
 	}
 	if ((rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) && isSource) {
 	    rpmMessage(RPMMESS_DEBUG, "\tadded source package [%d]\n",
-		numSRPMS);
-	    if (sourceURL == NULL)
-		sourceURL = xmalloc((numSRPMS + 2) * sizeof(*sourceURL));
+		eiu->numSRPMS);
+#ifdef	DYING
+	    if (eiu->sourceURL == NULL)
+		eiu->sourceURL = xmalloc((eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
 	    else
-		sourceURL = xrealloc(sourceURL,
-				(numSRPMS + 2) * sizeof(*sourceURL));
-	    sourceURL[numSRPMS++] = *fnp;
-	    sourceURL[numSRPMS] = NULL;
+#endif
+		eiu->sourceURL = xrealloc(eiu->sourceURL,
+				(eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
+	    eiu->sourceURL[eiu->numSRPMS] = *fnp;
 	    *fnp = NULL;
+	    eiu->numSRPMS++;
+	    eiu->sourceURL[eiu->numSRPMS] = NULL;
 	    continue;
 	}
 	if (rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) {
-	    if (!dbIsOpen) {
+	    if (eiu->db == NULL) {
 		int mode = (transFlags & RPMTRANS_FLAG_TEST)
 				? O_RDONLY : (O_RDWR | O_CREAT);
 
-		if (rpmdbOpen(rootdir, &db, mode, 0644)) {
+		if (rpmdbOpen(rootdir, &eiu->db, mode, 0644)) {
 		    const char *dn;
 		    dn = rpmGetPath( (rootdir ? rootdir : ""),
 					"%{_dbpath}", NULL);
 		    rpmMessage(RPMMESS_ERROR,
 				_("cannot open Packages database in %s\n"), dn);
 		    dn = _free(dn);
-		    numFailed++; *fnp = NULL;
+		    eiu->numFailed++; *fnp = NULL;
 		    break;
 		}
-		ts = rpmtransCreateSet(db, rootdir);
-		dbIsOpen = 1;
+		/*@-onlytrans@*/
+		eiu->ts = rpmtransCreateSet(eiu->db, rootdir);
+		/*@=onlytrans@*/
 	    }
 
-	    if (defaultReloc) {
+	    if (eiu->relocations) {
 		const char ** paths;
 		int pft;
 		int c;
 
 		if (headerGetEntry(h, RPMTAG_PREFIXES, &pft,
 				       (void **) &paths, &c) && (c == 1)) {
-		    defaultReloc->oldPath = xstrdup(paths[0]);
+		    eiu->relocations->oldPath = xstrdup(paths[0]);
 		    paths = headerFreeData(paths, pft);
 		} else {
 		    const char * name;
 		    (void) headerNVR(h, &name, NULL, NULL);
 		    rpmMessage(RPMMESS_ERROR,
 			       _("package %s is not relocateable\n"), name);
-		    numFailed++;
+		    eiu->numFailed++;
 		    goto exit;
 		    /*@notreached@*/
 		}
@@ -396,7 +421,9 @@ restart:
 		int count;
 
 		(void) headerNVR(h, &name, NULL, NULL);
-		mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
+		/*@-onlytrans@*/
+		mi = rpmdbInitIterator(eiu->db, RPMTAG_NAME, name, 0);
+		/*@=onlytrans@*/
 		count = rpmdbGetIteratorCount(mi);
 		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
 		    if (rpmVersionCompare(oldH, h) < 0)
@@ -413,40 +440,40 @@ restart:
 		/* Package is newer than those currently installed. */
 	    }
 
-	    rc = rpmtransAddPackage(ts, h, NULL, fileName,
+	    rc = rpmtransAddPackage(eiu->ts, h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
 	    h = headerFree(h);	/* XXX reference held by transaction set */
-	    if (defaultReloc)
-		defaultReloc->oldPath = _free(defaultReloc->oldPath);
+	    if (eiu->relocations)
+		eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
 
 	    switch(rc) {
 	    case 0:
 		rpmMessage(RPMMESS_DEBUG, "\tadded binary package [%d]\n",
-			numRPMS);
+			eiu->numRPMS);
 		break;
 	    case 1:
 		rpmMessage(RPMMESS_ERROR,
 			    _("error reading from file %s\n"), *fnp);
-		numFailed++;
+		eiu->numFailed++;
 		goto exit;
 		/*@notreached@*/ break;
 	    case 2:
 		rpmMessage(RPMMESS_ERROR,
 			    _("file %s requires a newer version of RPM\n"),
 			    *fnp);
-		numFailed++;
+		eiu->numFailed++;
 		goto exit;
 		/*@notreached@*/ break;
 	    }
 
-	    numRPMS++;
+	    eiu->numRPMS++;
 	    continue;
 	}
 
 	if (rpmrc != RPMRC_BADMAGIC) {
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
-	    numFailed++; *fnp = NULL;
+	    eiu->numFailed++; *fnp = NULL;
 	    break;
 	}
 
@@ -456,12 +483,12 @@ restart:
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
 			Fstrerror(fd));
 	    if (fd) (void) Fclose(fd);
-	    numFailed++; *fnp = NULL;
+	    eiu->numFailed++; *fnp = NULL;
 	    break;
 	}
 
 	/* Read list of packages from manifest. */
-	rc = rpmReadPackageManifest(fd, &argc, &argv);
+	rc = rpmReadPackageManifest(fd, &eiu->argc, &eiu->argv);
 	if (rc)
 	    rpmError(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
 			*fnp, Fstrerror(fd));
@@ -469,25 +496,25 @@ restart:
 
 	/* If successful, restart the query loop. */
 	if (rc == 0) {
-	    prevx++;
+	    eiu->prevx++;
 	    goto restart;
 	}
 
-	numFailed++; *fnp = NULL;
+	eiu->numFailed++; *fnp = NULL;
 	break;
     }
 
     rpmMessage(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"),
-		numSRPMS, numRPMS);
+		eiu->numSRPMS, eiu->numRPMS);
 
-    if (numFailed) goto exit;
+    if (eiu->numFailed) goto exit;
 
-    if (numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
+    if (eiu->numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
 	rpmDependencyConflict conflicts;
 	int numConflicts;
 
-	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
-	    numFailed = numPkgs;
+	if (rpmdepCheck(eiu->ts, &conflicts, &numConflicts)) {
+	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
 
@@ -495,45 +522,47 @@ restart:
 	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
 	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
-	    numFailed = numPkgs;
+	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
     }
 
-    if (numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
-	if (rpmdepOrder(ts)) {
-	    numFailed = numPkgs;
+    if (eiu->numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
+	if (rpmdepOrder(eiu->ts)) {
+	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
     }
 
-    if (numRPMS && !stopInstall) {
+    if (eiu->numRPMS && !stopInstall) {
 	rpmProblemSet probs = NULL;
 
 #ifdef FANCY_HASH
-	packagesTotal = numRPMS + numSRPMS;
+	packagesTotal = eiu->numRPMS + eiu->numSRPMS;
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	rc = rpmRunTransactions(ts, rpmShowProgress,
+	rc = rpmRunTransactions(eiu->ts, rpmShowProgress,
 			(void *) ((long)notifyFlags),
 		 	NULL, &probs, transFlags, probFilter);
 
 	if (rc < 0) {
-	    numFailed += numRPMS;
+	    eiu->numFailed += eiu->numRPMS;
 	} else if (rc > 0) {
-	    numFailed += rc;
+	    eiu->numFailed += rc;
 	    rpmProblemSetPrint(stderr, probs);
 	}
 
 	if (probs != NULL) rpmProblemSetFree(probs);
     }
 
-    if (numSRPMS && !stopInstall) {
-	for (i = 0; i < numSRPMS; i++) {
-	    fd = Fopen(sourceURL[i], "r.ufdio");
+    if (eiu->numSRPMS && !stopInstall) {
+	if (eiu->sourceURL != NULL)
+	for (i = 0; i < eiu->numSRPMS; i++) {
+	    if (eiu->sourceURL[i] == NULL) continue;
+	    fd = Fopen(eiu->sourceURL[i], "r.ufdio");
 	    if (fd == NULL || Ferror(fd)) {
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
-			   sourceURL[i], Fstrerror(fd));
+			   eiu->sourceURL[i], Fstrerror(fd));
 		if (fd) (void) Fclose(fd);
 		continue;
 	    }
@@ -541,7 +570,7 @@ restart:
 	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
 		rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, NULL,
 			rpmShowProgress, (void *) ((long)notifyFlags), NULL);
-		if (rpmrc != RPMRC_OK) numFailed++;
+		if (rpmrc != RPMRC_OK) eiu->numFailed++;
 	    }
 
 	    (void) Fclose(fd);
@@ -549,17 +578,19 @@ restart:
     }
 
 exit:
-    ts = rpmtransFree(ts);
-    for (i = 0; i < numPkgs; i++) {
-	if (pkgState[i] == 1)
-	    (void) Unlink(pkgURL[i]);
-	pkgURL[i] = _free(pkgURL[i]);
+    eiu->ts = rpmtransFree(eiu->ts);
+    if (eiu->pkgURL != NULL)
+    for (i = 0; i < eiu->numPkgs; i++) {
+	if (eiu->pkgURL[i] == NULL) continue;
+	if (eiu->pkgState[i] == 1)
+	    (void) Unlink(eiu->pkgURL[i]);
+	eiu->pkgURL[i] = _free(eiu->pkgURL[i]);
     }
-    pkgState = _free(pkgState);
-    pkgURL = _free(pkgURL);
-    argv = _free(argv);
-    if (dbIsOpen) (void) rpmdbClose(db);
-    return numFailed;
+    eiu->pkgState = _free(eiu->pkgState);
+    eiu->pkgURL = _free(eiu->pkgURL);
+    eiu->argv = _free(eiu->argv);
+    if (eiu->db != NULL) (void) rpmdbClose(eiu->db);
+    return eiu->numFailed;
 }
 
 int rpmErase(const char * rootdir, const char ** argv,

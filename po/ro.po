@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-31 09:28-0400\n"
+"POT-Creation-Date: 2001-09-05 16:41-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -2899,8 +2899,8 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:323 lib/rpminstall.c:456
-#: lib/rpminstall.c:816
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:342 lib/rpminstall.c:481
+#: lib/rpminstall.c:845
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -2914,7 +2914,7 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:618 lib/rpminstall.c:466
+#: lib/query.c:618 lib/rpminstall.c:491
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
@@ -2973,7 +2973,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:816 lib/rpminstall.c:604
+#: lib/query.c:816 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3061,94 +3061,94 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpminstall.c:161
+#: lib/rpminstall.c:162
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:163
+#: lib/rpminstall.c:164
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:274
+#: lib/rpminstall.c:293
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:284
+#: lib/rpminstall.c:303
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:288
+#: lib/rpminstall.c:307
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:362
+#: lib/rpminstall.c:384
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:384
+#: lib/rpminstall.c:407
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:430
+#: lib/rpminstall.c:455
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:436
+#: lib/rpminstall.c:461
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:448 lib/rpminstall.c:675
+#: lib/rpminstall.c:473 lib/rpminstall.c:704
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:480
+#: lib/rpminstall.c:505
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:495
+#: lib/rpminstall.c:520
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:516
+#: lib/rpminstall.c:541
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:535
+#: lib/rpminstall.c:562
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:591
+#: lib/rpminstall.c:620
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:636
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:630
+#: lib/rpminstall.c:659
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:659
+#: lib/rpminstall.c:688
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:665
+#: lib/rpminstall.c:694
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3488,11 +3488,11 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1141
+#: rpmdb/db1.c:562 rpmdb/db3.c:1131
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1141
+#: rpmdb/db1.c:562 rpmdb/db3.c:1131
 msgid "shared"
 msgstr ""
 
@@ -3511,27 +3511,27 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:669
+#: rpmdb/db3.c:659
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:724
+#: rpmdb/db3.c:714
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:921
+#: rpmdb/db3.c:911
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1139
+#: rpmdb/db3.c:1129
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1145
+#: rpmdb/db3.c:1135
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""

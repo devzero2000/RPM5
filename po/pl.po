@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-08-31 09:28-0400\n"
+"POT-Creation-Date: 2001-09-05 16:41-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3065,8 +3065,8 @@ msgstr "pakiet nie ma ani w³a¶ciciela pliku ani list id"
 msgid "can't query %s: %s\n"
 msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 
-#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:323 lib/rpminstall.c:456
-#: lib/rpminstall.c:816
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:342 lib/rpminstall.c:481
+#: lib/rpminstall.c:845
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê\n"
@@ -3080,7 +3080,7 @@ msgstr "odpytywanie %s nie powiod³o siê\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
-#: lib/query.c:618 lib/rpminstall.c:466
+#: lib/query.c:618 lib/rpminstall.c:491
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
@@ -3140,7 +3140,7 @@ msgstr "numer rekordu pakietu: %d\n"
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:816 lib/rpminstall.c:604
+#: lib/query.c:816 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -3229,95 +3229,95 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpminstall.c:161
+#: lib/rpminstall.c:162
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:163
+#: lib/rpminstall.c:164
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "nie podano nazw plików do zainstalowania"
 
-#: lib/rpminstall.c:274
+#: lib/rpminstall.c:293
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "¦ci±ganie %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:284
+#: lib/rpminstall.c:303
 #, c-format
 msgid " ... as %s\n"
 msgstr "... jako %s\n"
 
-#: lib/rpminstall.c:288
+#: lib/rpminstall.c:307
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:362
+#: lib/rpminstall.c:384
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/rpminstall.c:384
+#: lib/rpminstall.c:407
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:430
+#: lib/rpminstall.c:455
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "b³±d czytania z pliku %s\n"
 
-#: lib/rpminstall.c:436
+#: lib/rpminstall.c:461
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "plik %s wymaga nowszej wersji RPM\n"
 
-#: lib/rpminstall.c:448 lib/rpminstall.c:675
+#: lib/rpminstall.c:473 lib/rpminstall.c:704
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
 
-#: lib/rpminstall.c:480
+#: lib/rpminstall.c:505
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "znaleziono %d pakietów ¼ród³owych i %d binarnych\n"
 
-#: lib/rpminstall.c:495
+#: lib/rpminstall.c:520
 msgid "failed dependencies:\n"
 msgstr "niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:516
+#: lib/rpminstall.c:541
 msgid "installing binary packages\n"
 msgstr "instalacja pakietów binarnych\n"
 
-#: lib/rpminstall.c:535
+#: lib/rpminstall.c:562
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
 
-#: lib/rpminstall.c:591
+#: lib/rpminstall.c:620
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:636
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:630
+#: lib/rpminstall.c:659
 msgid "removing these packages would break dependencies:\n"
 msgstr "usuniêcie tych pakietów zerwie zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:659
+#: lib/rpminstall.c:688
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: lib/rpminstall.c:665
+#: lib/rpminstall.c:694
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
@@ -3675,11 +3675,11 @@ msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 msgid "cannot get %s lock on database\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1141
+#: rpmdb/db1.c:562 rpmdb/db3.c:1131
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1141
+#: rpmdb/db1.c:562 rpmdb/db3.c:1131
 msgid "shared"
 msgstr ""
 
@@ -3698,27 +3698,27 @@ msgstr "usuwanie indeksu plików dla %s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:669
+#: rpmdb/db3.c:659
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:724
+#: rpmdb/db3.c:714
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:921
+#: rpmdb/db3.c:911
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: rpmdb/db3.c:1139
+#: rpmdb/db3.c:1129
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db3.c:1145
+#: rpmdb/db3.c:1135
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
