@@ -246,6 +246,17 @@ WARN_FORMAT            = "$file:$line: $text"
 
 INPUT                  = \
 	./Doxyheader \
+	./doc/manual/builddependencies \
+	./doc/manual/buildroot \
+	./doc/manual/dependencies \
+	./doc/manual/format \
+	./doc/manual/macros \
+	./doc/manual/multiplebuilds \
+	./doc/manual/queryformat \
+	./doc/manual/signatures \
+	./doc/manual/relocatable \
+	./doc/manual/spec \
+	./doc/manual/triggers \
 	./build.c \
 	./build.h \
 	./config.h \

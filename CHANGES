@@ -1,4 +1,6 @@
 4.0.2 -> 4.0.3:
+	- update per-interpreter dependency scripts, add sql/tcl (#20295).
+	- fix: rpmvercmp("1.a", "1.") returned -1, not +1 (#21392).
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
