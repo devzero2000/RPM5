@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.13
+Release: 0.14
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -485,6 +485,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Mar 17 2004 Jeff Johnson <jbj@redhat.com> 4.2.2-0.14
+- fix: handle elf64 note sections correctly.
+- fix: grrr, skip notes on non-i386 entirely.
+
 * Tue Mar  9 2004 Jeff Johnson <jbj@jbj.org> 4.2.2-0.13
 - fix: sq->reaped needs sighold(SIGCHLD)/sigrelease(SIGCHLD) (#117620).
 

@@ -29,6 +29,8 @@
 	- revert to db-4.1.25 without --enable-posixmutexes.
 	- fix: double free of file *.mgc path (#116948).
 	- fix: sq->reaped needs sighold(SIGCHLD)/sigrelease(SIGCHLD) (#117620).
+	- fix: handle elf64 note sections correctly.
+	- fix: grrr, skip notes on non-i386 entirely.
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.
