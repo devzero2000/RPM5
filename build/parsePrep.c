@@ -275,7 +275,7 @@ static char *doUntar(Spec spec, int c, int quietly)
 
     if (compressed) {
 	sprintf(buf,
-		"%s -dc %s | tar %s -\n"
+		"%s -d < %s | tar %s -\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"

@@ -492,7 +492,6 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 	if ((rc = getNextHeader(&fd, &ch))) {
 	    fprintf(stderr, _("error %d reading header: %s\n"), rc, strerror(errno));
 	    return CPIO_BAD_HEADER;
-	    exit(1);
 	}
 
 	if (!strcmp(ch.path, TRAILER)) {
