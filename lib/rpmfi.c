@@ -984,7 +984,9 @@ dColors[dirIndexes[i]] |= fColors[i];
 	for (j = numRelocations - 1; j >= 0; j--) {
 
 	    /* XXX Don't autorelocate uncolored directories. */
-if (j == p->autorelocatex && (dColors[i] == 0 || !(dColors[i] & 0x1))) continue;
+	    if (j == p->autorelocatex
+	     && (dColors[i] == 0 || !(dColors[i] & 0x1)))
+		/*@innercontinue@*/ continue;
 
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
 		/*@innercontinue@*/ continue;

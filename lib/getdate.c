@@ -2,6 +2,7 @@
 /*@-retvalint -usedef -varuse -nullderef -nullassign @*/
 /*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/
 /*@-globs -evalorderuncon -modobserveruncon -modnomods @*/
+/*@-bounds @*/
 /*@unused@*/
 #ifndef lint
 static char const 
@@ -1595,6 +1596,7 @@ yyabort:
 yyaccept:
     return (0);
 }
+/*@=bounds @*/
 /*@=globs =evalorderuncon =modobserveruncon =modnomods @*/
 /*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/
 /*@=retvalint =usedef =varuse =nullderef =nullassign @*/

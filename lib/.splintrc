@@ -1,4 +1,4 @@
--I. -I.. -I../build -I../rpmdb -I../rpmio -I../beecrypt -I../popt -I../elfutils/libelf -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I../build -I../rpmdb -I../rpmio -I/usr/include/beecrypt -I../popt -I../elfutils/libelf -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 +forcehints
@@ -18,6 +18,14 @@
 +slovak-fcns
 -redecl
 -bufferoverflowhigh
+
+-compdef
+-globs
+-globstate
+-globuse
+-internalglobs
+-moduncon
+-noeffectuncon
 
 # --- +partial artifacts
 -declundef

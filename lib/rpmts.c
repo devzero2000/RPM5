@@ -182,10 +182,12 @@ int rpmtsVerifyDB(rpmts ts)
     return rpmdbVerify(ts->rootDir);
 }
 
+/*@-boundsread@*/
 static int isArch(const char * arch)
 	/*@*/
 {
     const char ** av;
+    /*@observer@*/
     static const char *arches[] = {
 	"i386", "i486", "i586", "i686", "athlon", "x86_64",
 	"alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
@@ -210,6 +212,7 @@ static int isArch(const char * arch)
     }
     return 0;
 }
+/*@=boundsread@*/
 
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
@@ -222,7 +225,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	return NULL;
 
     /* Parse out "N(EVR).A" tokens from a label key. */
-/*@-branchstate@*/
+/*@-bounds -branchstate@*/
     if (rpmtag == RPMDBI_LABEL && keyp != NULL) {
 	const char * s = keyp;
 	const char *se;
@@ -236,7 +239,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	    switch (c) {
 	    default:
 		*t++ = c;
-		break;
+		/*@switchbreak@*/ break;
 	    case '(':
 		/* XXX Fail if nested parens. */
 		if (level++ != 0) {
@@ -245,7 +248,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		}
 		/* Parse explicit epoch. */
 		for (se = s; *se && xisdigit(*se); se++)
-		    ;
+		    {};
 		if (*se == ':') {
 		    /* XXX skip explicit epoch's (for now) */
 		    *t++ = '-';
@@ -254,7 +257,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		    /* No Epoch: found. Convert '(' to '-' and chug. */
 		    *t++ = '-';
 		}
-		break;
+		/*@switchbreak@*/ break;
 	    case ')':
 		/* XXX Fail if nested parens. */
 		if (--level != 0) {
@@ -262,7 +265,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		    return NULL;
 		}
 		/* Don't copy trailing ')' */
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}
 	if (level) {
@@ -278,7 +281,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	   arch = t;
 	}
     }
-/*@=branchstate@*/
+/*@=bounds =branchstate@*/
 
     mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
 

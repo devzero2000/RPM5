@@ -1631,19 +1631,10 @@ int rpmtsCheck(rpmts ts)
 	if (rc)
 	    goto exit;
 
-#if defined(DYING) || defined(__LCLINT__)
-	/* XXX all packages now have Provides: name = version-release */
-	/* Adding: check name against conflicts matches. */
-	rc = checkDependentConflicts(ts, rpmteN(p));
-	if (rc)
-	    goto exit;
-#endif
-
 	rc = 0;
 	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
 	provides = rpmdsInit(provides);
-	if (provides == NULL || rpmdsN(provides) == NULL)
-	    continue;
+	if (provides != NULL)
 	while (rpmdsNext(provides) >= 0) {
 	    const char * Name;
 

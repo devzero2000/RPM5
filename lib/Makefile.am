@@ -50,6 +50,7 @@ getdate.c: getdate.y
 	   echo "/*@-retvalint -usedef -varuse -nullderef -nullassign @*/";\
 	   echo "/*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/";\
 	   echo "/*@-globs -evalorderuncon -modobserveruncon -modnomods @*/";\
+	   echo "/*@-bounds @*/";\
 	   echo "/*@unused@*/";\
 	   sed	-e 's,y.tab.c,getdate.c,' y.tab.c \
 		-e 's,^YYSTYPE ,static &,' \
@@ -57,6 +58,7 @@ getdate.c: getdate.y
 		-e 's,^const short ,static &,' \
 		-e 's,^int yydebug,/*@unused@*/ static &,' \
 		-e 's,^int ,static &,' ;\
+	   echo "/*@=bounds @*/";\
 	   echo "/*@=globs =evalorderuncon =modobserveruncon =modnomods @*/";\
 	   echo "/*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/";\
 	   echo "/*@=retvalint =usedef =varuse =nullderef =nullassign @*/";\
