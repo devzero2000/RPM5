@@ -1,7 +1,7 @@
 4.0 -> 4.0.1
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
 		(katzj@linuxpower.org) (#17672).
-	- order packages using tsort, clipping PreReq:'s in dependency loops.
+	- order packages using tsort, clipping Requires:'s in dependency loops.
 	- handle possible db3 dependency on -lpthread more gracefully.
 	- bump popt version to 1.6.1.
 	- fix: more (possible) xstrdup side effects.
@@ -49,6 +49,7 @@
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 	- portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
 	- python: bind package removal (#21274).
+	- autoconfigure building python bindings.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

@@ -197,6 +197,7 @@ dnl XXX Watchout for square brackets fed to m4.
 
     AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
     AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
+    AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
     AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
     AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
     AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
@@ -391,9 +392,11 @@ AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK)])
 
 AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
    AC_CHECK_LIB(bz2, BZ2_bzread, [
+     WITH_BZIP2=1
      LIBS="$LIBS -lbz2"
      AC_DEFINE(HAVE_BZ2_1_0) ], 
-     AC_MSG_WARN([rpm needs libbz2.a (from the bzip2 package)])))
+     WITH_BZIP2=0))
+AC_SUBST(WITH_BZIP2)
 
 dnl Red Hat 4.x has not personality
 AC_CHECK_FUNCS(personality)
@@ -684,7 +687,6 @@ dnl XXX Glob *is* broken on linux with libc5, solaris and possibly aix when
 dnl %files gets something like
 dnl	/usr/*/locale/*/LC_MESSAGES/*.mo
 dnl (Note: more than one asterisk in glob pattern.)
-dnl The next version of rpm is going to need GNU extensions anyways, so ...
 dnl
 AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
     [rpm_cv_glob=yes],
@@ -717,6 +719,30 @@ if test $rpm_cv_glob = yes; then
     AC_DEFINE(USE_GNU_GLOB)
     LIBOBJS="$LIBOBJS glob.o fnmatch.o"
 fi
+
+AC_ARG_WITH(python, [  --with-python           build rpm python bindings ],
+    rpm_cv_python=yes, rpm_cv_python=no)
+
+if test $rpm_cv_python = no ; then
+    AC_MSG_CHECKING(for python 1.5.2)
+    AC_TRY_RUN([
+#include <python1.5/Python.h>
+main() {
+  exit(strcmp("1.5.2", PY_VERSION));
+} ],
+    rpm_cv_python=yes, rpm_cv_python=no, rpm_cv_python=no)
+    AC_MSG_RESULT([$rpm_cv_python])
+fi
+
+if test $rpm_cv_python = yes; then
+  WITH_PYTHON_SUBDIR=python
+  WITH_PYTHON_SUBPACKAGE=1
+else
+  WITH_PYTHON_SUBDIR=
+  WITH_PYTHON_SUBPACKAGE=0
+fi
+AC_SUBST(WITH_PYTHON_SUBDIR)
+AC_SUBST(WITH_PYTHON_SUBPACKAGE)
 
 AC_CHECK_FUNCS(setlocale)
 
@@ -940,7 +966,7 @@ SYSCONFIGDIR="`echo /etc/rpm`"
 AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR")
 AC_SUBST(SYSCONFIGDIR)
 
-MACROFILES="${RPMCONFIGDIR}/macros:${RPMCONFIGDIR}/%{_target_platform}/macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/macros.specspo:${SYSCONFIGDIR}/%{_target_platform}/macros:~/.rpmmacros"
+MACROFILES="${RPMCONFIGDIR}/macros:${RPMCONFIGDIR}/%{_target_platform}/macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/macros.specspo:${SYSCONFIGDIR}/macros.db1:${SYSCONFIGDIR}/%{_target_platform}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES")
 AC_SUBST(MACROFILES)
 
@@ -974,7 +1000,6 @@ AC_SUBST(LIBS)
 
 AC_SUBST(RPM)
 
-AC_DEFINE_UNQUOTED(OBJDUMP, "$OBJDUMP")
 AC_SUBST(OBJDUMP)
 
 dnl XXX this causes popt to depend on zlib et al
@@ -982,7 +1007,7 @@ dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT([Doxyfile Makefile rpmrc macros platform rpmpopt scripts/brp-redhat
+AC_OUTPUT([Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec scripts/brp-redhat
 	rpmio/Makefile lib/Makefile build/Makefile tools/Makefile
 	scripts/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile

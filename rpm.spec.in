@@ -1,5 +1,5 @@
-%define	with_python_subpackage	1
-%define	with_bzip2		1
+%define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@
+%define	with_bzip2		@WITH_BZIP2@
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -9,7 +9,7 @@
 
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 4.0.1
+%define version @VERSION@
 Version: %{version}
 Release: 0.15
 Group: System Environment/Base
@@ -19,6 +19,7 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils sh-utils mktemp
 Requires: popt
+%endif
 
 BuildRequires: db3-devel
 
@@ -251,6 +252,7 @@ fi
 %{__prefix}/lib/rpm/get_magic.pl
 %{__prefix}/lib/rpm/getpo.sh
 %{__prefix}/lib/rpm/http.req
+%{__prefix}/lib/rpm/javadeps
 %{__prefix}/lib/rpm/magic.prov
 %{__prefix}/lib/rpm/magic.req
 %{__prefix}/lib/rpm/perl.prov

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-11-30 19:10-0500\n"
+"POT-Creation-Date: 2000-12-03 15:44-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1787,7 +1787,7 @@ msgstr "RPMERR_INTERNAL: Достигнут предел в getGname()\n"
 msgid "getUname: too many uid's\n"
 msgstr ""
 
-#: build/names.c:164
+#: build/names.c:162
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Невозможно канонизировать имя компьютера: %s\n"
@@ -2404,47 +2404,47 @@ msgstr ""
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/db1.c:102 lib/db3.c:449
+#: lib/db1.c:88 lib/db3.c:449
 #, c-format
 msgid "db%d error(%d)"
 msgstr "db%d ошибка(%d)"
 
-#: lib/db1.c:104 lib/db3.c:451
+#: lib/db1.c:90 lib/db3.c:451
 #, c-format
 msgid " performing %s"
 msgstr " исполняется %s"
 
-#: lib/db1.c:396
+#: lib/db1.c:382
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "закрыт файл базы данных %s\n"
 
-#: lib/db1.c:399
+#: lib/db1.c:385
 #, c-format
 msgid "removed db file        %s\n"
 msgstr "удалён файл базы данных %s\n"
 
-#: lib/db1.c:430
+#: lib/db1.c:416
 #, c-format
 msgid "bad db file %s"
 msgstr "неверный файл базы данных %s"
 
-#: lib/db1.c:435
+#: lib/db1.c:421
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 
 #. XXX check errno validity
-#: lib/db1.c:458
+#: lib/db1.c:444
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "невозможно получить блокировку %s базы данных"
 
-#: lib/db1.c:459 lib/db3.c:1112
+#: lib/db1.c:445 lib/db3.c:1112
 msgid "exclusive"
 msgstr "исключительный"
 
-#: lib/db1.c:459 lib/db3.c:1112
+#: lib/db1.c:445 lib/db3.c:1112
 msgid "shared"
 msgstr "разделяемый"
 
@@ -3316,7 +3316,7 @@ msgstr "ошибка(%d) записи записи %s в %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "ошибка(%d) удаления записи %s из %s"
 
-#: lib/rpmdb.c:772 lib/rpmdb.c:2320
+#: lib/rpmdb.c:772 lib/rpmdb.c:2341
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
@@ -3329,111 +3329,111 @@ msgstr ""
 "базы данных нового формата"
 
 #. error
-#: lib/rpmdb.c:1082
+#: lib/rpmdb.c:1083
 #, c-format
 msgid "error(%d) counting packages"
 msgstr "ошибка(%d) при подсчёте пакетов"
 
-#: lib/rpmdb.c:1141 lib/rpmdb.c:1675
+#: lib/rpmdb.c:1142 lib/rpmdb.c:1676
 #, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%s: невозможно прочесть заголовок в 0x%x"
 
-#: lib/rpmdb.c:1728
+#: lib/rpmdb.c:1729
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "удаляется 0 записей %s.\n"
 
-#: lib/rpmdb.c:1739
+#: lib/rpmdb.c:1740
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: lib/rpmdb.c:1748
+#: lib/rpmdb.c:1749
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: lib/rpmdb.c:1890
+#: lib/rpmdb.c:1891
 #, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета"
 
-#: lib/rpmdb.c:1953
+#: lib/rpmdb.c:1954
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr "добавляется 0 записей %s.\n"
 
-#: lib/rpmdb.c:1969
+#: lib/rpmdb.c:1970
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: lib/rpmdb.c:1978
+#: lib/rpmdb.c:1979
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: lib/rpmdb.c:2345
+#: lib/rpmdb.c:2366
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: lib/rpmdb.c:2349
+#: lib/rpmdb.c:2370
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rpmdb.c:2355
+#: lib/rpmdb.c:2376
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: lib/rpmdb.c:2357
+#: lib/rpmdb.c:2378
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rpmdb.c:2364
+#: lib/rpmdb.c:2385
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2375
+#: lib/rpmdb.c:2396
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2398
+#: lib/rpmdb.c:2419
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе данных неверна, пропускается."
 
-#: lib/rpmdb.c:2430
+#: lib/rpmdb.c:2451
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "невозможно добавить запись (первоначально в %d)"
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2469
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: lib/rpmdb.c:2456
+#: lib/rpmdb.c:2477
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: lib/rpmdb.c:2458
+#: lib/rpmdb.c:2479
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: lib/rpmdb.c:2468
+#: lib/rpmdb.c:2489
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: lib/rpmdb.c:2470
+#: lib/rpmdb.c:2491
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"
@@ -3559,98 +3559,98 @@ msgstr "Устанавливается %s\n"
 msgid "read failed: %s (%d)"
 msgstr "ошибка чтения: %s (%d)"
 
-#: lib/rpmrc.c:147
+#: lib/rpmrc.c:149
 #, c-format
 msgid "missing second ':' at %s:%d"
 msgstr "отсутствует второе ':' в %s:%d"
 
-#: lib/rpmrc.c:150
+#: lib/rpmrc.c:152
 #, c-format
 msgid "missing architecture name at %s:%d"
 msgstr "отсутствует название архитектуры в %s:%d"
 
-#: lib/rpmrc.c:310
+#: lib/rpmrc.c:312
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr "Неполная строка данных в %s:%d"
 
-#: lib/rpmrc.c:314
+#: lib/rpmrc.c:316
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr "Слишком много аргументов в строке данных в %s:%d"
 
-#: lib/rpmrc.c:321
+#: lib/rpmrc.c:323
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr "Неверный номер arch/os: %s (%s:%d)"
 
-#: lib/rpmrc.c:356
+#: lib/rpmrc.c:358
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr "Неполная строка по умолчанию в %s:%d"
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:363
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr "Слишком много аргументов в строке по умолчанию в %s:%d"
 
-#: lib/rpmrc.c:551
+#: lib/rpmrc.c:553
 #, c-format
 msgid "Cannot expand %s"
 msgstr "Невозможно раскрыть %s"
 
-#: lib/rpmrc.c:556
+#: lib/rpmrc.c:558
 #, c-format
 msgid "Cannot read %s, HOME is too large."
 msgstr "Невозможно прочитать %s, значение HOME слишком велико."
 
-#: lib/rpmrc.c:573
+#: lib/rpmrc.c:575
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "Невозможно открыть %s для чтения: %s."
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:618
+#: lib/rpmrc.c:620
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr "Невозможно прочесть %s: %s."
 
-#: lib/rpmrc.c:655
+#: lib/rpmrc.c:657
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
 msgstr "отсутствует ':' (найден 0x%02x) в %s:%d"
 
-#: lib/rpmrc.c:672 lib/rpmrc.c:746
+#: lib/rpmrc.c:674 lib/rpmrc.c:748
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr "отсутствует аргумент для %s в %s:%d"
 
-#: lib/rpmrc.c:689 lib/rpmrc.c:711
+#: lib/rpmrc.c:691 lib/rpmrc.c:713
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr "ошибка раскрытия %s на %s:%d \"%s\""
 
-#: lib/rpmrc.c:698
+#: lib/rpmrc.c:700
 #, c-format
 msgid "cannot open %s at %s:%d: %s"
 msgstr "невозможно открыть %s в %s:%d %s"
 
-#: lib/rpmrc.c:738
+#: lib/rpmrc.c:740
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr "отсутствует архитектура для %s в %s:%d"
 
-#: lib/rpmrc.c:805
+#: lib/rpmrc.c:807
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr "неверная опция '%s' в %s:%d"
 
-#: lib/rpmrc.c:1202
+#: lib/rpmrc.c:1204
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1203
+#: lib/rpmrc.c:1205
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
@@ -3862,12 +3862,12 @@ msgstr "в пакете нет ни имен пользователей, ни их ID (так не должно быть)"
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr "в пакете нет ни имен групп, ни их ID (так не должно быть)"
 
-#: lib/verify.c:285
+#: lib/verify.c:286
 #, c-format
 msgid "missing    %s\n"
 msgstr "отсутствует %s\n"
 
-#: lib/verify.c:347
+#: lib/verify.c:348
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
