@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2003-03-14 12:49-0500\n"
+"POT-Creation-Date: 2003-05-29 18:25-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -906,7 +906,7 @@ msgstr "linha %d: Opção em branco: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linha %d: Carácter '-' ilegal no %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:427
+#: build/parsePreamble.c:588 build/parseSpec.c:429
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "O BuildRoot não pode ser o \"/\": %s\n"
@@ -1088,31 +1088,31 @@ msgstr "Incapaz de aceder ao %s: %s\n"
 msgid "Unclosed %%if\n"
 msgstr "%%if não fechado\n"
 
-#: build/parseSpec.c:301
+#: build/parseSpec.c:303
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: o parseExpressionBoolean devolve %d\n"
 
-#: build/parseSpec.c:310
+#: build/parseSpec.c:312
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Descobri um %%else sem um %%if\n"
 
-#: build/parseSpec.c:322
+#: build/parseSpec.c:324
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Descobri um %%endif sem um %%if\n"
 
-#: build/parseSpec.c:336 build/parseSpec.c:345
+#: build/parseSpec.c:338 build/parseSpec.c:347
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "instrução %%include desorganizada\n"
 
-#: build/parseSpec.c:546
+#: build/parseSpec.c:548
 msgid "No compatible architectures found for build\n"
 msgstr "Não foram encontradas arquitecturas compatíveis para as quais criar\n"
 
-#: build/parseSpec.c:607
+#: build/parseSpec.c:609
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "O pacote não tem uma %%description: %s\n"
@@ -1361,73 +1361,73 @@ msgstr " falhou - "
 msgid "package %s was already added, replacing with %s\n"
 msgstr "o pacote %s já está instalado"
 
-#: lib/depends.c:394
+#: lib/depends.c:395
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:421
+#: lib/depends.c:422
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:438
+#: lib/depends.c:439
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:467
+#: lib/depends.c:468
 #, fuzzy
 msgid "(db files)"
 msgstr "ficheiro db inválido %s\n"
 
-#: lib/depends.c:480
+#: lib/depends.c:481
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:493
+#: lib/depends.c:494
 #, fuzzy
 msgid "(db package)"
 msgstr "nenhum pacote\n"
 
-#: lib/depends.c:847
+#: lib/depends.c:848
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorar relações entre o nome do pacote [%d]\t%s -> %s\n"
 
-#: lib/depends.c:969
+#: lib/depends.c:970
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1200
+#: lib/depends.c:1201
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1292
+#: lib/depends.c:1293
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 "========== ordenar pacotes (order, #predecessors, #succesors, tree, depth)\n"
 
-#: lib/depends.c:1377
+#: lib/depends.c:1378
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1447
+#: lib/depends.c:1448
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1482
+#: lib/depends.c:1483
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1487
+#: lib/depends.c:1488
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3582,59 +3582,59 @@ msgstr "Ficheiro %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:637
 msgid "Success"
 msgstr "Sucesso"
 
-#: rpmio/rpmio.c:667
+#: rpmio/rpmio.c:640
 msgid "Bad server response"
 msgstr "Resposta errada do servidor"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:643
 msgid "Server I/O error"
 msgstr "Erro de E/S do servidor"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:646
 msgid "Server timeout"
 msgstr "Tempo de espera pelo servidor expirado"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:649
 msgid "Unable to lookup server host address"
 msgstr "Incapaz de descobrir o endereço da máquina do servidor"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:652
 msgid "Unable to lookup server host name"
 msgstr "Incapaz de descobrir o nome da máquina do servidor"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:655
 msgid "Failed to connect to server"
 msgstr "Não consegui ligar ao servidor"
 
-#: rpmio/rpmio.c:685
+#: rpmio/rpmio.c:658
 msgid "Failed to establish data connection to server"
 msgstr "Não consigo estabelecer uma ligação de dados ao servidor"
 
-#: rpmio/rpmio.c:688
+#: rpmio/rpmio.c:661
 msgid "I/O error to local file"
 msgstr "Erro de E/S no ficheiro local"
 
-#: rpmio/rpmio.c:691
+#: rpmio/rpmio.c:664
 msgid "Error setting remote server to passive mode"
 msgstr "Erro ao configurar o servidor remoto para o modo passivo"
 
-#: rpmio/rpmio.c:694
+#: rpmio/rpmio.c:667
 msgid "File not found on server"
 msgstr "Ficheiro não encontrado no servidor"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:670
 msgid "Abort in progress"
 msgstr "Interrupção em progresso"
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:674
 msgid "Unknown or unexpected error"
 msgstr "Erro desconhecido ou inesperado"
 
-#: rpmio/rpmio.c:1401
+#: rpmio/rpmio.c:1372
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "a ligar ao %s como %s com senha %s\n"

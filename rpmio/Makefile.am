@@ -10,6 +10,7 @@ EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
+	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
@@ -20,7 +21,7 @@ pkginc_HEADERS = \
 	ugid.h
 noinst_HEADERS = rpmio_internal.h
 
-BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
+BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
 
 LDFLAGS = -L$(DESTDIR)$(usrlibdir)
 
@@ -31,19 +32,20 @@ librpmio_la_SOURCES = \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -release 4.2 \
+	@WITH_BEECRYPT_LIB@ \
 	$(top_builddir)/file/libfmagic.la \
 	@WITH_ZLIB_LIB@ \
 	-lrt -lpthread
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = .created
 
-$(top_builddir)/beecrypt/listobjs:
-	${MAKE} -C $(top_builddir)/beecrypt listobjs
-
-.created: $(top_builddir)/beecrypt/listobjs
+.created:
+	if test X"@WITH_BEECRYPT_SUBDIR@" != X; then \
+	${MAKE} -C $(top_builddir)/@WITH_BEECRYPT_SUBDIR@ listobjs ; \
 	for lo in $(BEECRYPTLOBJS); do \
-	  [ -f $$lo ] || $(LN_S) $(top_builddir)/beecrypt/$$lo $$lo ; \
-	done
+	  [ -f $$lo ] || $(LN_S) $(top_builddir)/@WITH_BEECRYPT_SUBDIR@/$$lo $$lo ; \
+	done \
+	fi
 	touch $@
 
 clean-local:

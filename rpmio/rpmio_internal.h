@@ -9,19 +9,19 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
-#include <beecrypt/types.h>
+#include <beecrypt.api.h>
 #include <rpmpgp.h>
 
 /* Drag in the beecrypt includes. */
-#include <beecrypt/beecrypt.h>
-#include <beecrypt/base64.h>
-#include <beecrypt/dsa.h>
-#include <beecrypt/endianness.h>
-#include <beecrypt/md5.h>
-#include <beecrypt/mp32.h>
-#include <beecrypt/rsa.h>
-#include <beecrypt/rsapk.h>
-#include <beecrypt/sha1.h>
+#include <beecrypt.h>
+#include <base64.h>
+#include <dsa.h>
+#include <endianness.h>
+#include <md5.h>
+#include <mp.h>
+#include <rsa.h>
+#include <rsapk.h>
+#include <sha1.h>
 
 /** \ingroup rpmio
  * Values parsed from OpenPGP signature/pubkey packet(s).
@@ -77,26 +77,28 @@ struct pgpDig_s {
     size_t md5len;		/*!< (rsa) V3 signature hash length. */
 
     /* DSA parameters. */
-    mp32barrett p;
-    mp32barrett q;
-    mp32number g;
-    mp32number y;
-    mp32number hm;
-    mp32number r;
-    mp32number s;
+    mpbarrett p;
+    mpbarrett q;
+    mpnumber g;
+    mpnumber y;
+    mpnumber hm;
+    mpnumber r;
+    mpnumber s;
 
     /* RSA parameters. */
     rsapk rsa_pk;
-    mp32number m;
-    mp32number c;
-    mp32number rsahm;
+    mpnumber m;
+    mpnumber c;
+    mpnumber rsahm;
 };
 
 /** \ingroup rpmio
  */
 typedef struct _FDSTACK_s {
+/*@exposed@*/
     FDIO_t		io;
-/*@dependent@*/ void *	fp;
+/*@dependent@*/
+    void *		fp;
     int			fdno;
 } FDSTACK_t;
 
@@ -139,7 +141,8 @@ typedef struct _FDDIGEST_s {
  * The FD_t File Handle data structure.
  */
 struct _FD_s {
-/*@refs@*/ int	nrefs;
+/*@refs@*/
+    int		nrefs;
     int		flags;
 #define	RPMIO_DEBUG_IO		0x40000000
 #define	RPMIO_DEBUG_REFS	0x20000000
@@ -149,7 +152,8 @@ struct _FD_s {
     FDSTACK_t	fps[8];
     int		urlType;	/* ufdio: */
 
-/*@dependent@*/ void *	url;	/* ufdio: URL info */
+/*@dependent@*/
+    void *	url;	/* ufdio: URL info */
     int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
     ssize_t	bytesRemain;	/* ufdio: */
     ssize_t	contentLength;	/* ufdio: */
@@ -157,7 +161,8 @@ struct _FD_s {
     int		wr_chunked;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
-/*@observer@*/ const void *errcookie;	/* gzdio/bzdio/ufdio: */
+/*@observer@*/
+    const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
     FDSTAT_t	stats;		/* I/O statistics */
 
@@ -185,7 +190,9 @@ extern int _ftp_debug;
 /*@=redecl@*/
 
 #define DBG(_f, _m, _x) \
-    if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x
+    /*@-modfilesys@*/ \
+    if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x \
+    /*@=modfilesys@*/
 
 #if defined(__LCLINT__XXX)
 #define DBGIO(_f, _x)

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-03-14 12:49-0500\n"
+"POT-Creation-Date: 2003-05-29 18:25-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -906,7 +906,7 @@ msgstr "øádek %d: Prázdná znaèka: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "øádek %d: Nepøípustný znak '-' v %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:427
+#: build/parsePreamble.c:588 build/parseSpec.c:429
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot nemù¾e být \"/\": %s\n"
@@ -1088,31 +1088,31 @@ msgstr "Nemohu otevøít %s: %s\n"
 msgid "Unclosed %%if\n"
 msgstr "Neuzavøený %%if\n"
 
-#: build/parseSpec.c:301
+#: build/parseSpec.c:303
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean vrátil %d\n"
 
-#: build/parseSpec.c:310
+#: build/parseSpec.c:312
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%else bez poèíteèního %%if\n"
 
-#: build/parseSpec.c:322
+#: build/parseSpec.c:324
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%endif bez poèáteèního %%if\n"
 
-#: build/parseSpec.c:336 build/parseSpec.c:345
+#: build/parseSpec.c:338 build/parseSpec.c:347
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "po¹kozený pøíkaz %%include\n"
 
-#: build/parseSpec.c:546
+#: build/parseSpec.c:548
 msgid "No compatible architectures found for build\n"
 msgstr "Nenalezeny ¾ádné kompatibilní architektury pro sestavení\n"
 
-#: build/parseSpec.c:607
+#: build/parseSpec.c:609
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Balíèek nemá ¾ádné %%description: %s\n"
@@ -1359,52 +1359,52 @@ msgstr "selhal - "
 msgid "package %s was already added, replacing with %s\n"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/depends.c:394
+#: lib/depends.c:395
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:421
+#: lib/depends.c:422
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
-#: lib/depends.c:438
+#: lib/depends.c:439
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:467
+#: lib/depends.c:468
 #, fuzzy
 msgid "(db files)"
 msgstr "©patný soubor: %s: %s\n"
 
-#: lib/depends.c:480
+#: lib/depends.c:481
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:493
+#: lib/depends.c:494
 #, fuzzy
 msgid "(db package)"
 msgstr "¾ádné balíèky\n"
 
-#: lib/depends.c:847
+#: lib/depends.c:848
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:969
+#: lib/depends.c:970
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1200
+#: lib/depends.c:1201
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1292
+#: lib/depends.c:1293
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1412,21 +1412,21 @@ msgid ""
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:1377
+#: lib/depends.c:1378
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1447
+#: lib/depends.c:1448
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1482
+#: lib/depends.c:1483
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1487
+#: lib/depends.c:1488
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3582,62 +3582,62 @@ msgstr "soubor %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:637
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:667
+#: rpmio/rpmio.c:640
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:643
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:646
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:649
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Nemohu otevøít cíl pro podepsání %s: %s\n"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:652
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:655
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:685
+#: rpmio/rpmio.c:658
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:688
+#: rpmio/rpmio.c:661
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:691
+#: rpmio/rpmio.c:664
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:694
+#: rpmio/rpmio.c:667
 #, fuzzy
 msgid "File not found on server"
 msgstr "Soubor nenalezen: %s\n"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:670
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:674
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "neoèekávaný zdroj dotazu"
 
-#: rpmio/rpmio.c:1401
+#: rpmio/rpmio.c:1372
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

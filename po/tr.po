@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-03-14 12:49-0500\n"
+"POT-Creation-Date: 2003-05-29 18:25-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -911,7 +911,7 @@ msgstr "satýr %d: Etiket boþ: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:427
+#: build/parsePreamble.c:588 build/parseSpec.c:429
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
@@ -1093,31 +1093,31 @@ msgstr "%s açýlamadý: %s\n"
 msgid "Unclosed %%if\n"
 msgstr "%%if kapanmamýþ\n"
 
-#: build/parseSpec.c:301
+#: build/parseSpec.c:303
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean %d ile döner\n"
 
-#: build/parseSpec.c:310
+#: build/parseSpec.c:312
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%if'siz bir  %%else alýndý\n"
 
-#: build/parseSpec.c:322
+#: build/parseSpec.c:324
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%if'siz bir %%endif alýndý\n"
 
-#: build/parseSpec.c:336 build/parseSpec.c:345
+#: build/parseSpec.c:338 build/parseSpec.c:347
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "%%include deyimi bozuk\n"
 
-#: build/parseSpec.c:546
+#: build/parseSpec.c:548
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:607
+#: build/parseSpec.c:609
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -1373,52 +1373,52 @@ msgstr " baþarýsýz - "
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s zaten kurulu"
 
-#: lib/depends.c:394
+#: lib/depends.c:395
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:421
+#: lib/depends.c:422
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:438
+#: lib/depends.c:439
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:467
+#: lib/depends.c:468
 #, fuzzy
 msgid "(db files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/depends.c:480
+#: lib/depends.c:481
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:493
+#: lib/depends.c:494
 #, fuzzy
 msgid "(db package)"
 msgstr "paket yok\n"
 
-#: lib/depends.c:847
+#: lib/depends.c:848
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:969
+#: lib/depends.c:970
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1200
+#: lib/depends.c:1201
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1292
+#: lib/depends.c:1293
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1426,21 +1426,21 @@ msgid ""
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1377
+#: lib/depends.c:1378
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1447
+#: lib/depends.c:1448
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1482
+#: lib/depends.c:1483
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1487
+#: lib/depends.c:1488
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3594,59 +3594,59 @@ msgstr "%s dosyasý: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:637
 msgid "Success"
 msgstr "Baþarýlý"
 
-#: rpmio/rpmio.c:667
+#: rpmio/rpmio.c:640
 msgid "Bad server response"
 msgstr "Sunucudan kötü yanýt"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:643
 msgid "Server I/O error"
 msgstr "Sunucu G/Ç hatasý"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:646
 msgid "Server timeout"
 msgstr "Sunucu zaman aþýmý"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:649
 msgid "Unable to lookup server host address"
 msgstr "Sunucu makina adresi bulunamadý"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:652
 msgid "Unable to lookup server host name"
 msgstr "Sunucu makina ismi bulunamadý"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:655
 msgid "Failed to connect to server"
 msgstr "Sunucuya baðlanýlamadý"
 
-#: rpmio/rpmio.c:685
+#: rpmio/rpmio.c:658
 msgid "Failed to establish data connection to server"
 msgstr "Sunucuya veri baðlantýsý kurulamadý"
 
-#: rpmio/rpmio.c:688
+#: rpmio/rpmio.c:661
 msgid "I/O error to local file"
 msgstr "Yerel dosyaya G/Ç hatasý"
 
-#: rpmio/rpmio.c:691
+#: rpmio/rpmio.c:664
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokma ayarlarýnda hata"
 
-#: rpmio/rpmio.c:694
+#: rpmio/rpmio.c:667
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:670
 msgid "Abort in progress"
 msgstr "Kesme iþlemi sürüyor"
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:674
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1401
+#: rpmio/rpmio.c:1372
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"

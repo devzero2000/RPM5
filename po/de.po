@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-03-14 12:49-0500\n"
+"POT-Creation-Date: 2003-05-29 18:25-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1002,7 +1002,7 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:427
+#: build/parsePreamble.c:588 build/parseSpec.c:429
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
@@ -1196,32 +1196,32 @@ msgstr "Öffnen von %s fehlgeschlagen\n"
 msgid "Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:301
+#: build/parseSpec.c:303
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#: build/parseSpec.c:310
+#: build/parseSpec.c:312
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:322
+#: build/parseSpec.c:324
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:336 build/parseSpec.c:345
+#: build/parseSpec.c:338 build/parseSpec.c:347
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:546
+#: build/parseSpec.c:548
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: build/parseSpec.c:607
+#: build/parseSpec.c:609
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
@@ -1487,72 +1487,72 @@ msgstr "pgp fehlgeschlagen"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/depends.c:394
+#: lib/depends.c:395
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:421
+#: lib/depends.c:422
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:438
+#: lib/depends.c:439
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
 # , c-format
-#: lib/depends.c:467
+#: lib/depends.c:468
 #, fuzzy
 msgid "(db files)"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/depends.c:480
+#: lib/depends.c:481
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:493
+#: lib/depends.c:494
 #, fuzzy
 msgid "(db package)"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/depends.c:847
+#: lib/depends.c:848
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
 # FIXME
-#: lib/depends.c:969
+#: lib/depends.c:970
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 #. Record all relations.
-#: lib/depends.c:1200
+#: lib/depends.c:1201
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1292
+#: lib/depends.c:1293
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1377
+#: lib/depends.c:1378
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1447
+#: lib/depends.c:1448
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1482
+#: lib/depends.c:1483
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1487
+#: lib/depends.c:1488
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3781,68 +3781,68 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:637
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:667
+#: rpmio/rpmio.c:640
 #, fuzzy
 msgid "Bad server response"
 msgstr "Nicht passende Antwort des FTP-Servers"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:643
 #, fuzzy
 msgid "Server I/O error"
 msgstr "FTP IO-Fehler"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:646
 #, fuzzy
 msgid "Server timeout"
 msgstr "Timeout des FTP-Servers"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:649
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:652
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:655
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Verbindung zum FTP-Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:685
+#: rpmio/rpmio.c:658
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:688
+#: rpmio/rpmio.c:661
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "IO-Fehler bei lokaler Datei"
 
-#: rpmio/rpmio.c:691
+#: rpmio/rpmio.c:664
 msgid "Error setting remote server to passive mode"
 msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
 
-#: rpmio/rpmio.c:694
+#: rpmio/rpmio.c:667
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:670
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:674
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 
-#: rpmio/rpmio.c:1401
+#: rpmio/rpmio.c:1372
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

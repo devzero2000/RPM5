@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-03-14 12:49-0500\n"
+"POT-Creation-Date: 2003-05-29 18:25-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -923,7 +923,7 @@ msgstr "linia %d: Pusta etykieta: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linia %d: Nielegalny znak '-' w %s: %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:427
+#: build/parsePreamble.c:588 build/parseSpec.c:429
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "linia %d: wpis BuildRoot nie mo¿e byæ \"/\": %s"
@@ -1106,32 +1106,32 @@ msgstr "Nie mo¿na otworzyæ: %s\n"
 msgid "Unclosed %%if\n"
 msgstr "Niedomkniête %%if"
 
-#: build/parseSpec.c:301
+#: build/parseSpec.c:303
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#: build/parseSpec.c:310
+#: build/parseSpec.c:312
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Napotkano %%else bez if"
 
-#: build/parseSpec.c:322
+#: build/parseSpec.c:324
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Napotkano %%endif bez if"
 
-#: build/parseSpec.c:336 build/parseSpec.c:345
+#: build/parseSpec.c:338 build/parseSpec.c:347
 #, fuzzy, c-format
 msgid "malformed %%include statement\n"
 msgstr "b³ednie sformatowany wpis %%include"
 
-#: build/parseSpec.c:546
+#: build/parseSpec.c:548
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Nie mo¿na budowaæ na takie architektury"
 
-#: build/parseSpec.c:607
+#: build/parseSpec.c:609
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie ma %%description: %s"
@@ -1388,71 +1388,71 @@ msgstr " nie powiod³o siê -"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/depends.c:394
+#: lib/depends.c:395
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:421
+#: lib/depends.c:422
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:438
+#: lib/depends.c:439
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:467
+#: lib/depends.c:468
 #, fuzzy
 msgid "(db files)"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/depends.c:480
+#: lib/depends.c:481
 #, fuzzy
 msgid "(db provides)"
 msgstr "Udostêpniane zasoby:"
 
-#: lib/depends.c:493
+#: lib/depends.c:494
 #, fuzzy
 msgid "(db package)"
 msgstr "znaleziono %d pakietów\n"
 
-#: lib/depends.c:847
+#: lib/depends.c:848
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:969
+#: lib/depends.c:970
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie indeksu grupy\n"
 
 #. Record all relations.
-#: lib/depends.c:1200
+#: lib/depends.c:1201
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1292
+#: lib/depends.c:1293
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1377
+#: lib/depends.c:1378
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1447
+#: lib/depends.c:1448
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1482
+#: lib/depends.c:1483
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1487
+#: lib/depends.c:1488
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3641,61 +3641,61 @@ msgstr "Plik %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %d bajtów"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:637
 msgid "Success"
 msgstr "Sukces"
 
-#: rpmio/rpmio.c:667
+#: rpmio/rpmio.c:640
 msgid "Bad server response"
 msgstr "B³êdna odpowied¼ serwera"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:643
 #, fuzzy
 msgid "Server I/O error"
 msgstr "B³±d WE/WY(IO) serwera"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:646
 msgid "Server timeout"
 msgstr "Przekroczony limit czasu serwera"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:649
 msgid "Unable to lookup server host address"
 msgstr "Nie mo¿na znale¼æ adresu serwera"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:652
 msgid "Unable to lookup server host name"
 msgstr "Nie mo¿na znale¼æ nazwy serwera"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:655
 msgid "Failed to connect to server"
 msgstr "Po³±czenie z serwerem nie powiod³o siê"
 
-#: rpmio/rpmio.c:685
+#: rpmio/rpmio.c:658
 msgid "Failed to establish data connection to server"
 msgstr "Otwarcie transmisji danych z serwera nie powiod³o siê"
 
-#: rpmio/rpmio.c:688
+#: rpmio/rpmio.c:661
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "B³±d WE/WY(IO) na lokalnym pliku"
 
-#: rpmio/rpmio.c:691
+#: rpmio/rpmio.c:664
 msgid "Error setting remote server to passive mode"
 msgstr "B³±d: ustawienie zdalnego serwera w tryb pasywny nie powiod³o siê"
 
-#: rpmio/rpmio.c:694
+#: rpmio/rpmio.c:667
 msgid "File not found on server"
 msgstr "Plik nie zosta³ znaleziony na serwerze"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:670
 msgid "Abort in progress"
 msgstr "Przerywanie ..."
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:674
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:1401
+#: rpmio/rpmio.c:1372
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logowanie do %s jako %s, has³o %s\n"

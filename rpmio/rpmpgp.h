@@ -10,11 +10,11 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
-#if !defined(_BEECRYPT_TYPES_H)
+#if !defined(_BEECRYPT_API_H)
 /*@-redef@*/
 typedef unsigned char byte;
 /*@=redef@*/
-#endif	/* _BEECRYPT_TYPES_H */
+#endif	/* _BEECRYPT_API_H */
 
 /**
  */
@@ -1367,7 +1367,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
  * @param flags		bit(s) to control digest operation
  * @return		digest context
  */
-/*@only@*/
+/*@only@*/ /*@null@*/
 DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	/*@*/;
 
@@ -1378,7 +1378,7 @@ DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
  * @param len		no. bytes of data
  * @return		0 on success
  */
-int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
+int rpmDigestUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
 	/*@modifies ctx @*/;
 
 /** \ingroup rpmio
@@ -1392,7 +1392,7 @@ int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
  * @param asAscii	return digest as ascii string?
  * @return		0 on success
  */
-int rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx,
+int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
 	/*@null@*/ /*@out@*/ void ** datap,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
