@@ -22,7 +22,7 @@ target_platform="`$RPM --eval '%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
 case "$arch" in
-  sparc*) SUBSTS='s_sparc64_sparc_ s_sparc\([^6]\)_sparc64\1_' ;;
+  sparc*) SUBSTS='s_sparc64_sparc_ s_sparc\([^6]\|\)_sparc64\1_' ;;
   *) SUBSTS=y___ ;;
 esac
 
@@ -56,6 +56,9 @@ for SUBST in $SUBSTS; do
   # Better try to create these too until the smoke clears. Yuck.
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
+
+  [ "$ARCH" = sparc ] && ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/sparcv9-${OS}
+  [ "$ARCH" = sparc ] && ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/sparcv9-${VENDOR}-${OS}
 
 done
 
