@@ -11,15 +11,19 @@
 # include <alloca.h>
 #endif
 
+#include <netinet/in.h>
+#include <netdb.h>
+
+#ifndef IPPORT_FTP
+# define IPPORT_FTP 21
+#endif
+
 #include "ftp.h"
 #include "intl.h"
 #include "messages.h"
 #include "miscfn.h"
 #include "rpmlib.h"
 #include "url.h"
-
-#include <netinet/in.h>
-#include <netdb.h>
 
 #ifndef	FREE
 #define	FREE(_x)   { if ((_x) != NULL) { free((void *)(_x)); (_x) = NULL; } }
