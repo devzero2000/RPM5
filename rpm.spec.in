@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 7x.2
+Release: 7x.7
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -525,6 +525,14 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Mar 18 2002 Jeff Johnson <jbj@redhat.com>
+- fix: one-step-too-far when searching added package provides (#61388).
+- fix: avoid libio misconfiguration with bleeding edge glibc.
+
+* Fri Mar 15 2002 Jeff Johnson <jbj@redhat.com>
+- re-enable FD_CLOEXEC, the problem is in zlib through mmap.
+- add toy python callbacks for payload unpacking failure(s).
+
 * Wed Feb 13 2002 Jeff Johnson <jbj@redhat.com>
 - don't do close-on-exec, 2 powertools packages cannot be read when doing.
 - reapply Berkeley DB patch #4491.

@@ -1246,7 +1246,7 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
 /** \ingroup rpmtrans
  * Create an empty transaction set.
  * @param rpmdb		rpm database (may be NULL if database is not accessed)
- * @param rootdir	path to top of install tree
+ * @param rootDir	path to top of install tree
  * @return		transaction set
  */
 /*@only@*/ rpmTransactionSet rpmtransCreateSet(
@@ -1546,7 +1546,7 @@ int rpmRunTransactions(rpmTransactionSet ts,
 
 /**
  * Return value of tag from name.
- * @param targstr	name of tag
+ * @param tagstr	name of tag
  * @return		tag value
  */
 int tagValue(const char *tagstr)

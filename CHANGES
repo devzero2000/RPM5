@@ -56,6 +56,10 @@
 	- don't do close-on-exec, 2 powertools packages cannot be read when
 	  doing.
 	- reapply Berkeley DB patch #4491.
+	- re-enable FD_CLOEXEC, the problem is in zlib through mmap.
+	- add toy python callbacks for payload unpacking failure(s).
+	- fix: one-step-too-far when searching added package provides (#61388).
+	- fix: avoid libio misconfiguration with bleeding edge glibc.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

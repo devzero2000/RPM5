@@ -1105,7 +1105,7 @@ alAllSatisfiesDepend(const availableList al,
 	match--;
 
     for (ret = NULL, found = 0;
-	 match <= al->index.index + al->index.size &&
+	 match < al->index.index + al->index.size &&
 		indexcmp(match, &needle) == 0;
 	 match++)
     {
@@ -1176,7 +1176,7 @@ alSatisfiesDepend(const availableList al,
 /**
  * Check key for an unsatisfied dependency.
  * @todo Eliminate rpmrc provides.
- * @param al		available list
+ * @param ts		transaction set
  * @param keyType	type of dependency
  * @param keyDepend	dependency string representation
  * @param keyName	dependency name string
@@ -1864,8 +1864,8 @@ static inline int addRelation( const rpmTransactionSet ts,
 
 /**
  * Compare ordered list entries by index (qsort/bsearch).
- * @param a		1st ordered list entry
- * @param b		2nd ordered list entry
+ * @param one		1st ordered list entry
+ * @param two		2nd ordered list entry
  * @return		result of comparison
  */
 static int orderListIndexCmp(const void * one, const void * two)	/*@*/

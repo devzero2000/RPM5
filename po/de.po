@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-13 18:04-0500\n"
+"POT-Creation-Date: 2002-03-18 19:23-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1569,105 +1569,105 @@ msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1113
+#: build/files.c:1124
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:1257
+#: build/files.c:1268
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1488
+#: build/files.c:1499
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:1512
+#: build/files.c:1523
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1555 build/files.c:2171 build/parsePrep.c:50
+#: build/files.c:1566 build/files.c:2182 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1568
+#: build/files.c:1579
 #, fuzzy, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:1673
+#: build/files.c:1684
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: build/files.c:1696
+#: build/files.c:1707
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: build/files.c:1711
+#: build/files.c:1722
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1773
+#: build/files.c:1784
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
 # , c-format
-#: build/files.c:1784 build/pack.c:149
+#: build/files.c:1795 build/pack.c:149
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/files.c:2159
+#: build/files.c:2170
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2233
+#: build/files.c:2244
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:2238
+#: build/files.c:2249
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:2322
+#: build/files.c:2333
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:2326
+#: build/files.c:2337
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:2482
+#: build/files.c:2493
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:2511 build/files.c:2525
+#: build/files.c:2522 build/files.c:2536
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:2647
+#: build/files.c:2658
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -1855,7 +1855,7 @@ msgstr "Nicht möglich %s zu schreiben"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:674 lib/psm.c:1845
+#: build/pack.c:674 lib/psm.c:1852
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2389,17 +2389,17 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: build/spec.c:227
+#: build/spec.c:228
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/spec.c:233
+#: build/spec.c:234
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/spec.c:294
+#: build/spec.c:295
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
@@ -3218,17 +3218,17 @@ msgid " on file "
 msgstr ""
 
 # , c-format
-#: lib/psm.c:1853
+#: lib/psm.c:1860
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/psm.c:1856
+#: lib/psm.c:1863
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp fehlgeschlagen"
 
-#: lib/psm.c:1955
+#: lib/psm.c:1968
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "Keine Stufen ausführen"
@@ -3278,8 +3278,8 @@ msgstr "Paket hat keinen Namen"
 msgid "can't query %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/query.c:613 lib/query.c:647 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:855
+#: lib/query.c:613 lib/query.c:647 lib/rpminstall.c:327 lib/rpminstall.c:471
+#: lib/rpminstall.c:858
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
@@ -3293,7 +3293,7 @@ msgstr "Anfrage von %s fehlgeschlagen\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:657 lib/rpminstall.c:481
+#: lib/query.c:657 lib/rpminstall.c:484
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: »readLead« fehlgeschlagen\n"
@@ -3366,7 +3366,7 @@ msgstr "ungültige Paket-Nummer: %s\n"
 msgid "record %u could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:942 lib/rpminstall.c:632
+#: lib/query.c:942 lib/rpminstall.c:635
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
@@ -3466,93 +3466,93 @@ msgid "Preparing packages for installation..."
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
 # , c-format
-#: lib/rpminstall.c:274
+#: lib/rpminstall.c:277
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hole %s heraus\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:284
+#: lib/rpminstall.c:287
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:288
+#: lib/rpminstall.c:291
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 
-#: lib/rpminstall.c:370
+#: lib/rpminstall.c:373
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
-#: lib/rpminstall.c:393
+#: lib/rpminstall.c:396
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/rpminstall.c:442
+#: lib/rpminstall.c:445
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpminstall.c:448
+#: lib/rpminstall.c:451
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:460 lib/rpminstall.c:705
+#: lib/rpminstall.c:463 lib/rpminstall.c:708
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "Fehler: %s kann nicht installiert werden\n"
 
-#: lib/rpminstall.c:496
+#: lib/rpminstall.c:499
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1053
+#: lib/rpminstall.c:515 lib/rpminstall.c:1056
 msgid "failed dependencies:\n"
 msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#: lib/rpminstall.c:533
+#: lib/rpminstall.c:536
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "Paket installieren"
 
-#: lib/rpminstall.c:554
+#: lib/rpminstall.c:557
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/rpminstall.c:619
+#: lib/rpminstall.c:622
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
-#: lib/rpminstall.c:635
+#: lib/rpminstall.c:638
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" bezeichnet mehrere Pakete\n"
 
 # oder besser: "... verletzen" ?
-#: lib/rpminstall.c:659
+#: lib/rpminstall.c:662
 msgid "removing these packages would break dependencies:\n"
 msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
 
-#: lib/rpminstall.c:689
+#: lib/rpminstall.c:692
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/rpminstall.c:695
+#: lib/rpminstall.c:698
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
 
-#: lib/rpminstall.c:1046
+#: lib/rpminstall.c:1049
 #, fuzzy, c-format
 msgid "rollback (+%d,-%d) packages to %s"
 msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
@@ -4039,114 +4039,114 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: rpmdb/rpmdb.c:2064 rpmdb/rpmdb.c:3338
+#: rpmdb/rpmdb.c:2065 rpmdb/rpmdb.c:3339
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: rpmdb/rpmdb.c:2117
+#: rpmdb/rpmdb.c:2118
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2387
+#: rpmdb/rpmdb.c:2388
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
 # FIXME
-#: rpmdb/rpmdb.c:2507
+#: rpmdb/rpmdb.c:2508
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: rpmdb/rpmdb.c:2511
+#: rpmdb/rpmdb.c:2512
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:2680
+#: rpmdb/rpmdb.c:2681
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: rpmdb/rpmdb.c:2839
+#: rpmdb/rpmdb.c:2840
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # FIXME
-#: rpmdb/rpmdb.c:2843
+#: rpmdb/rpmdb.c:2844
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:3224
+#: rpmdb/rpmdb.c:3225
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3257
+#: rpmdb/rpmdb.c:3258
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: rpmdb/rpmdb.c:3284
+#: rpmdb/rpmdb.c:3285
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3288
+#: rpmdb/rpmdb.c:3289
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: rpmdb/rpmdb.c:3294
+#: rpmdb/rpmdb.c:3295
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3296
+#: rpmdb/rpmdb.c:3297
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3303
+#: rpmdb/rpmdb.c:3304
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3314
+#: rpmdb/rpmdb.c:3315
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3378
+#: rpmdb/rpmdb.c:3379
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: rpmdb/rpmdb.c:3396
+#: rpmdb/rpmdb.c:3397
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3404
+#: rpmdb/rpmdb.c:3405
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3406
+#: rpmdb/rpmdb.c:3407
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3416
+#: rpmdb/rpmdb.c:3417
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
 # , c-format
-#: rpmdb/rpmdb.c:3418
+#: rpmdb/rpmdb.c:3419
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -4243,68 +4243,68 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:660
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:663
 #, fuzzy
 msgid "Bad server response"
 msgstr "Nicht passende Antwort des FTP-Servers"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:666
 #, fuzzy
 msgid "Server I/O error"
 msgstr "FTP IO-Fehler"
 
-#: rpmio/rpmio.c:683
+#: rpmio/rpmio.c:669
 #, fuzzy
 msgid "Server timeout"
 msgstr "Timeout des FTP-Servers"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:672
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
 
-#: rpmio/rpmio.c:689
+#: rpmio/rpmio.c:675
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
 
-#: rpmio/rpmio.c:692
+#: rpmio/rpmio.c:678
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Verbindung zum FTP-Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:695
+#: rpmio/rpmio.c:681
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:698
+#: rpmio/rpmio.c:684
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "IO-Fehler bei lokaler Datei"
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:687
 msgid "Error setting remote server to passive mode"
 msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:690
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpmio/rpmio.c:707
+#: rpmio/rpmio.c:693
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:711
+#: rpmio/rpmio.c:697
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 
-#: rpmio/rpmio.c:1383
+#: rpmio/rpmio.c:1369
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

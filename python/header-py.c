@@ -170,7 +170,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 
 	sprintf(buf, "%d", 100);
 	PyTuple_SetItem(tuple, 1, PyString_FromString(buf));
-	sprintf(buf, "%ld", sb.st_size);
+	sprintf(buf, "%ld", (long)sb.st_size);
 	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
 	PyList_Append(list, tuple);
 	Py_DECREF(tuple);
@@ -835,7 +835,7 @@ PyObject * rhnLoad(PyObject * self, PyObject * args) {
 	    headerAddEntry(hdr, RPMTAG_RHNPLATFORM, at, arch, 1);
     }
 
-    h = createHeaderObject(h);
+    h = createHeaderObject(hdr);
 
     return (PyObject *) h;
 }

@@ -62,7 +62,7 @@ typedef struct _FDDIGEST_s {
 
 /** \ingroup rpmio
  * Duplicate a digest context.
- * @param ctx		existing digest context
+ * @param octx		existing digest context
  * @return		duplicated digest context
  */
 /*@only@*/ /*@unused@*/

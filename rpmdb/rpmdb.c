@@ -1623,7 +1623,8 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
 
 /**
  * Return pattern match.
- * @param mi		rpm database iterator
+ * @param mire		match iterator regex
+ * @param val		value to match
  * @return		0 if pattern matches
  */
 static int miregexec(miRE mire, const char * val)

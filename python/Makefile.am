@@ -14,7 +14,8 @@ INCLUDES = \
 	-I/usr/include/python${PYVER} \
 	@INCPATH@
 
-EXTRA_DIST = hash.h upgrade.h
+EXTRA_DIST = db-py.c db-py.h hash.h header-py.c header-py.h upgrade.h
+
 mylibs= \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \

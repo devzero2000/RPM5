@@ -166,6 +166,9 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     case RPMCALLBACK_UNINST_PROGRESS:
     case RPMCALLBACK_UNINST_START:
     case RPMCALLBACK_UNINST_STOP:
+    case RPMCALLBACK_UNPACK_ERROR:
+    case RPMCALLBACK_CPIO_ERROR:
+    default:
 	/* ignore */
 	break;
     }

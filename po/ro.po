@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-13 18:04-0500\n"
+"POT-Creation-Date: 2002-03-18 19:23-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -1380,98 +1380,98 @@ msgstr ""
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1113
+#: build/files.c:1124
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1257
+#: build/files.c:1268
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1488
+#: build/files.c:1499
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1512
+#: build/files.c:1523
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1555 build/files.c:2171 build/parsePrep.c:50
+#: build/files.c:1566 build/files.c:2182 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1568
+#: build/files.c:1579
 #, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1673
+#: build/files.c:1684
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1696
+#: build/files.c:1707
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:1711
+#: build/files.c:1722
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1773
+#: build/files.c:1784
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1784 build/pack.c:149
+#: build/files.c:1795 build/pack.c:149
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:2159
+#: build/files.c:2170
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2233
+#: build/files.c:2244
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:2238
+#: build/files.c:2249
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:2322
+#: build/files.c:2333
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:2326
+#: build/files.c:2337
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2482
+#: build/files.c:2493
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2511 build/files.c:2525
+#: build/files.c:2522 build/files.c:2536
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2647
+#: build/files.c:2658
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1640,7 +1640,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:674 lib/psm.c:1845
+#: build/pack.c:674 lib/psm.c:1852
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2132,17 +2132,17 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: build/spec.c:227
+#: build/spec.c:228
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr ""
 
-#: build/spec.c:233
+#: build/spec.c:234
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr ""
 
-#: build/spec.c:294
+#: build/spec.c:295
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
@@ -2895,17 +2895,17 @@ msgstr ""
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1853
+#: lib/psm.c:1860
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1856
+#: lib/psm.c:1863
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/psm.c:1955
+#: lib/psm.c:1968
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
@@ -2953,8 +2953,8 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:613 lib/query.c:647 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:855
+#: lib/query.c:613 lib/query.c:647 lib/rpminstall.c:327 lib/rpminstall.c:471
+#: lib/rpminstall.c:858
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -2968,7 +2968,7 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:657 lib/rpminstall.c:481
+#: lib/query.c:657 lib/rpminstall.c:484
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
@@ -3037,7 +3037,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:942 lib/rpminstall.c:632
+#: lib/query.c:942 lib/rpminstall.c:635
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3133,91 +3133,91 @@ msgstr ""
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:274
+#: lib/rpminstall.c:277
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:284
+#: lib/rpminstall.c:287
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:288
+#: lib/rpminstall.c:291
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:370
+#: lib/rpminstall.c:373
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:393
+#: lib/rpminstall.c:396
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:442
+#: lib/rpminstall.c:445
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:448
+#: lib/rpminstall.c:451
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:460 lib/rpminstall.c:705
+#: lib/rpminstall.c:463 lib/rpminstall.c:708
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:496
+#: lib/rpminstall.c:499
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1053
+#: lib/rpminstall.c:515 lib/rpminstall.c:1056
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:533
+#: lib/rpminstall.c:536
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:554
+#: lib/rpminstall.c:557
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:619
+#: lib/rpminstall.c:622
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: lib/rpminstall.c:635
+#: lib/rpminstall.c:638
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:659
+#: lib/rpminstall.c:662
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:689
+#: lib/rpminstall.c:692
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:695
+#: lib/rpminstall.c:698
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1046
+#: lib/rpminstall.c:1049
 #, c-format
 msgid "rollback (+%d,-%d) packages to %s"
 msgstr ""
@@ -3684,109 +3684,109 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2064 rpmdb/rpmdb.c:3338
+#: rpmdb/rpmdb.c:2065 rpmdb/rpmdb.c:3339
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2117
+#: rpmdb/rpmdb.c:2118
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2387
+#: rpmdb/rpmdb.c:2388
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2507
+#: rpmdb/rpmdb.c:2508
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2511
+#: rpmdb/rpmdb.c:2512
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2680
+#: rpmdb/rpmdb.c:2681
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2839
+#: rpmdb/rpmdb.c:2840
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2843
+#: rpmdb/rpmdb.c:2844
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3224
+#: rpmdb/rpmdb.c:3225
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3257
+#: rpmdb/rpmdb.c:3258
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3284
+#: rpmdb/rpmdb.c:3285
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3288
+#: rpmdb/rpmdb.c:3289
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3294
+#: rpmdb/rpmdb.c:3295
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3296
+#: rpmdb/rpmdb.c:3297
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3303
+#: rpmdb/rpmdb.c:3304
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3314
+#: rpmdb/rpmdb.c:3315
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3378
+#: rpmdb/rpmdb.c:3379
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3396
+#: rpmdb/rpmdb.c:3397
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3404
+#: rpmdb/rpmdb.c:3405
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3406
+#: rpmdb/rpmdb.c:3407
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3416
+#: rpmdb/rpmdb.c:3417
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3418
+#: rpmdb/rpmdb.c:3419
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3882,59 +3882,59 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:660
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:663
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:666
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:683
+#: rpmio/rpmio.c:669
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:672
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:689
+#: rpmio/rpmio.c:675
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:692
+#: rpmio/rpmio.c:678
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:695
+#: rpmio/rpmio.c:681
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:698
+#: rpmio/rpmio.c:684
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:687
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:690
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:707
+#: rpmio/rpmio.c:693
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:711
+#: rpmio/rpmio.c:697
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1383
+#: rpmio/rpmio.c:1369
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
