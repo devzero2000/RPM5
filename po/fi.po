@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-05-21 10:40-0400\n"
+"POT-Creation-Date: 2001-05-23 10:09-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1696,7 +1696,7 @@ msgstr "käännökselle ei annettu määrittelytiedostoja"
 msgid "no tar files given for build"
 msgstr "käännökselle ei määritelty tar-tiedostoja"
 
-#: build/build.c:119 build/pack.c:411
+#: build/build.c:119 build/pack.c:408
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "En voi avata %s luettavaksi: %s."
@@ -2015,71 +2015,71 @@ msgstr "en voinut avata %s: %s"
 msgid "readRPM: read %s: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/pack.c:296
+#: build/pack.c:293
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "virhe: %s ei vaikuta RPM paketilta\n"
 
-#: build/pack.c:305
+#: build/pack.c:302
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "virhe luettaessa tietuetta %s %s:stä"
 
-#: build/pack.c:424
+#: build/pack.c:421
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:466
+#: build/pack.c:463
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "generoi PGP-allekirjoitus"
 
-#: build/pack.c:480
+#: build/pack.c:477
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus epäonnistui\n"
 
-#: build/pack.c:517 lib/psm.c:1461
+#: build/pack.c:514 lib/psm.c:1464
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:532
+#: build/pack.c:529
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:542
+#: build/pack.c:539
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:556
+#: build/pack.c:553
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:566
+#: build/pack.c:563
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:572
+#: build/pack.c:569
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:599 lib/psm.c:1720
+#: build/pack.c:593 lib/psm.c:1723
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:667
+#: build/pack.c:661
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:684
+#: build/pack.c:678
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
@@ -2413,17 +2413,17 @@ msgstr "älä tarkista paketin arkkitehtuuria"
 msgid "Package has no %%description: %s\n"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: build/spec.c:225
+#: build/spec.c:224
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/spec.c:231
+#: build/spec.c:230
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/spec.c:290
+#: build/spec.c:289
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
@@ -2580,7 +2580,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2720 lib/header.c:2737 lib/header.c:2755
+#: lib/header.c:2762 lib/header.c:2781 lib/header.c:2801
 msgid "(not a number)"
 msgstr "(ei ole luku)"
 
@@ -2653,94 +2653,94 @@ msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
 #. This should not be allowed
-#: lib/header.c:173
+#: lib/header.c:183
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:208 lib/header.c:1168 lib/psm.c:372
+#: lib/header.c:218 lib/header.c:1181 lib/psm.c:372
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1608
+#: lib/header.c:1623
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2067
+#: lib/header.c:2095
 #, c-format
 msgid "missing { after %"
 msgstr "puuttuva '{' '%':n jälkeen"
 
 #. @-observertrans@
-#: lib/header.c:2097
+#: lib/header.c:2125
 msgid "missing } after %{"
 msgstr "puuttuva '{' '%{':n jälkeen"
 
 #. @-observertrans@
-#: lib/header.c:2111
+#: lib/header.c:2139
 msgid "empty tag format"
 msgstr "tyhjä nimiön formaatti"
 
 #. @-observertrans@
-#: lib/header.c:2123
+#: lib/header.c:2151
 msgid "empty tag name"
 msgstr "tyhjä nimiön nimi"
 
 #. @-observertrans@
-#: lib/header.c:2140
+#: lib/header.c:2168
 msgid "unknown tag"
 msgstr "tuntematon nimiö"
 
 #. @-observertrans@
-#: lib/header.c:2167
+#: lib/header.c:2195
 msgid "] expected at end of array"
 msgstr "']' puuttuu taulukkomäärittelyn lopusta"
 
 #. @-observertrans@
-#: lib/header.c:2185
+#: lib/header.c:2213
 msgid "unexpected ]"
 msgstr "odottamaton ']'"
 
 #. @-observertrans@
-#: lib/header.c:2189
+#: lib/header.c:2217
 msgid "unexpected }"
 msgstr "odottamaton '}'"
 
 #. @-observertrans@
-#: lib/header.c:2252
+#: lib/header.c:2282
 msgid "? expected in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
 #. @-observertrans@
-#: lib/header.c:2261
+#: lib/header.c:2291
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "odotin '{' '?'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans@
-#: lib/header.c:2274 lib/header.c:2316
+#: lib/header.c:2304 lib/header.c:2346
 msgid "} expected in expression"
 msgstr "odotin '}'-merkkiä ilmauksessa"
 
 #. @-observertrans@
-#: lib/header.c:2284
+#: lib/header.c:2314
 msgid ": expected following ? subexpression"
 msgstr "odotin ':' '?'-merkin jälkeen ali-ilmauksessa "
 
 #. @-observertrans@
-#: lib/header.c:2301
+#: lib/header.c:2331
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "odotin '{' ':'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans@
-#: lib/header.c:2326
+#: lib/header.c:2356
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 
-#: lib/header.c:2497
+#: lib/header.c:2531
 msgid "(unknown type)"
 msgstr "(tuntematon tyyppi)"
 
@@ -3072,55 +3072,55 @@ msgstr "en voinut avata tiedostoa %s: "
 msgid "cannot write to %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/psm.c:603
+#: lib/psm.c:602
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:711
+#: lib/psm.c:709
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/psm.c:961
+#: lib/psm.c:959
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "skriptin ajo epäonnistui"
 
-#: lib/psm.c:968
+#: lib/psm.c:966
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "skriptin ajo epäonnistui"
 
-#: lib/psm.c:1276
+#: lib/psm.c:1279
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "paketti %s-%s-%s  sisältää jaettuja tiedostoja\n"
 
-#: lib/psm.c:1390
+#: lib/psm.c:1393
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1498
+#: lib/psm.c:1501
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1507
+#: lib/psm.c:1510
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "ryhmässä %s ei ole paketteja\n"
 
-#: lib/psm.c:1546
+#: lib/psm.c:1549
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/psm.c:1547
+#: lib/psm.c:1550
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1812
+#: lib/psm.c:1810
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "älä suorita mitään vaiheita"
@@ -3269,7 +3269,7 @@ msgstr "%s: readLead  epäonnistui\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead  epäonnistui\n"
 
-#: lib/rpmchecksig.c:127 lib/rpmchecksig.c:262
+#: lib/rpmchecksig.c:127 lib/rpmchecksig.c:260
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead  epäonnistui\n"
@@ -3284,12 +3284,12 @@ msgstr "%s: En voi allekirjoittaa v1.0 RPM:ää\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: En voi uudelleen allekirjoittaa v2.0 RPM:ää\n"
 
-#: lib/rpmchecksig.c:145 lib/rpmchecksig.c:278
+#: lib/rpmchecksig.c:145 lib/rpmchecksig.c:276
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature epäonnistui\n"
 
-#: lib/rpmchecksig.c:149 lib/rpmchecksig.c:283
+#: lib/rpmchecksig.c:149 lib/rpmchecksig.c:281
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
@@ -3304,33 +3304,33 @@ msgstr "%s: readLead  epäonnistui\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmReadSignature epäonnistui\n"
 
-#: lib/rpmchecksig.c:268
+#: lib/rpmchecksig.c:266
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ei allekirjoitusta saatavilla (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:439
+#: lib/rpmchecksig.c:437
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
+#: lib/rpmchecksig.c:438 lib/rpmchecksig.c:452
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr "(PUUTTUVAT AVAIMET)"
 
-#: lib/rpmchecksig.c:442 lib/rpmchecksig.c:456
+#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:443 lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:445 lib/rpmchecksig.c:459
+#: lib/rpmchecksig.c:443 lib/rpmchecksig.c:457
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:451
 msgid "OK"
 msgstr ""
 
@@ -3891,109 +3891,109 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
-#: rpmdb/rpmdb.c:1156 rpmdb/rpmdb.c:1750
+#: rpmdb/rpmdb.c:1156 rpmdb/rpmdb.c:1748
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:stä päivittäessä"
 
-#: rpmdb/rpmdb.c:1438 rpmdb/rpmdb.c:2598
+#: rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2596
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:1490
+#: rpmdb/rpmdb.c:1488
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1817
+#: rpmdb/rpmdb.c:1815
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: rpmdb/rpmdb.c:1826
+#: rpmdb/rpmdb.c:1824
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: rpmdb/rpmdb.c:2016
+#: rpmdb/rpmdb.c:2014
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
-#: rpmdb/rpmdb.c:2094
+#: rpmdb/rpmdb.c:2092
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2105
+#: rpmdb/rpmdb.c:2103
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: rpmdb/rpmdb.c:2487
+#: rpmdb/rpmdb.c:2485
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2517
+#: rpmdb/rpmdb.c:2515
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:2544
+#: rpmdb/rpmdb.c:2542
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:2548
+#: rpmdb/rpmdb.c:2546
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "väliaikainen tietokanta %s on jo olemassa"
 
-#: rpmdb/rpmdb.c:2554
+#: rpmdb/rpmdb.c:2552
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:2556
+#: rpmdb/rpmdb.c:2554
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:2563
+#: rpmdb/rpmdb.c:2561
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:2574
+#: rpmdb/rpmdb.c:2572
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:2637
+#: rpmdb/rpmdb.c:2634
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "en voi lisätä tietuetta %d:stä"
 
-#: rpmdb/rpmdb.c:2655
+#: rpmdb/rpmdb.c:2652
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2663
+#: rpmdb/rpmdb.c:2660
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2665
+#: rpmdb/rpmdb.c:2662
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2675
+#: rpmdb/rpmdb.c:2672
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:2677
+#: rpmdb/rpmdb.c:2674
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"
