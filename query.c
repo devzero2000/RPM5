@@ -28,6 +28,7 @@
 #include "miscfn.h"
 #include "rpmlib.h"
 #include "query.h"
+#include "build/spec.h"
 #include "url.h"
 
 static char * permsString(int mode);
@@ -368,10 +369,16 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     int isUrl = 0;
     char path[PATH_MAX];
 
-    if (source != QUERY_RPM) {
+    switch (source) {
+    default:
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
+	    fprintf(stderr, _("rpmQuery: rpmdbOpen() failed\n"));
 	    exit(1);
 	}
+	break;
+    case QUERY_RPM:
+    case QUERY_SPECFILE:
+	break;
     }
 
     switch (source) {
@@ -422,6 +429,38 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 		
 	break;
+
+      case QUERY_SPECFILE:
+      { Spec spec = NULL;
+	Package pkg;
+	char * buildRoot = NULL;
+	int inBuildArch = 0;
+	char * passPhrase = "";
+	char *cookie = NULL;
+	int anyarch = 1;
+	int force = 1;
+	rc = parseSpec(&spec, arg, buildRoot, inBuildArch, passPhrase, cookie,
+	    anyarch, force);
+	if (rc || spec == NULL) {
+	    
+	    fprintf(stderr, _("query of specfile %s failed, can't parse\n"), arg);
+	    if (spec != NULL) freeSpec(spec);
+	    retcode = 1;
+	    break;
+	}
+	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+#if 0
+	    char *binRpm, *errorString;
+	    binRpm = headerSprintf(pkg->header, rpmGetVar(RPMVAR_RPMFILENAME),
+		rpmTagTable, rpmHeaderFormats, &errorString);
+	    if (!(pkg == spec->packages && pkg->next == NULL))
+		fprintf(stdout, "====== %s\n", binRpm);
+	    free(binRpm);
+#endif
+	    printHeader(pkg->header, queryFlags, queryFormat);
+	}
+	freeSpec(spec);
+      }	break;
 
       case QUERY_ALL:
 	offset = rpmdbFirstRecNum(db);
@@ -551,8 +590,13 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	break;
     }
    
-    if (source != QUERY_RPM) {
+    switch (source) {
+    default:
 	rpmdbClose(db);
+	break;
+    case QUERY_RPM:
+    case QUERY_SPECFILE:
+	break;
     }
 
     return retcode;

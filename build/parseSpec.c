@@ -41,6 +41,9 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     }
     spec->docDir = strdup(rpmGetVar(RPMVAR_DEFAULTDOCDIR));
     spec->inBuildArchitectures = inBuildArch;
+    spec->anyarch = anyarch;
+    spec->force = force;
+
     if (passPhrase) {
 	spec->passPhrase = strdup(passPhrase);
     }
@@ -71,11 +74,11 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     while (parsePart != PART_NONE) {
 	switch (parsePart) {
 	  case PART_PREAMBLE:
-	    parsePart = parsePreamble(spec, initialPackage, anyarch);
+	    parsePart = parsePreamble(spec, initialPackage);
 	    initialPackage = 0;
 	    break;
 	  case PART_PREP:
-	    parsePart = parsePrep(spec, force);
+	    parsePart = parsePrep(spec);
 	    break;
 	  case PART_BUILD:
 	  case PART_INSTALL:

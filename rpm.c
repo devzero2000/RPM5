@@ -47,6 +47,7 @@
 #define GETOPT_RELOCATE		1016
 #define GETOPT_TRIGGEREDBY	1017
 #define	GETOPT_SHOWRC		1018
+#define GETOPT_QUERYSPECFILE	1019
 
 char * version = VERSION;
 
@@ -164,6 +165,7 @@ static struct poptOption optionsTable[] = {
 	{ "short-circuit", '\0', 0, &shortCircuit, 0 },
 	{ "showrc", '\0', 0, &showrc, GETOPT_SHOWRC },
 	{ "sign", '\0', 0, &signIt, 0 },
+	{ "specfile", '\0', 0, 0, GETOPT_QUERYSPECFILE },
 	{ "state", 's', 0, 0, 's' },
 	{ "tarball", 't', POPT_ARG_STRING, 0, 't' },
 	{ "test", '\0', 0, &test, 0 },
@@ -864,6 +866,13 @@ int main(int argc, char ** argv) {
 			    "time"));
 	    querySource = QUERY_DBOFFSET;
 	    verifySource = VERIFY_RPM;
+	    break;
+
+	  case GETOPT_QUERYSPECFILE:
+	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SPECFILE)
+		argerror(_("one type of query may be performed at a " 
+			    "time"));
+	    querySource = QUERY_SPECFILE;
 	    break;
 
 	  case GETOPT_TIMECHECK:
