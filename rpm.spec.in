@@ -19,7 +19,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1.02
+Release: 1.03
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Sep  6 2001 Jeff Johnson <jbj@redhat.com>
+- fix: hash page nelem failure to verify.
+
 * Fri Aug 31 2001 Jeff Johnson <jbj@redhat.com>
 - fix: Provides: /path did not work with added packages (#52183).
 - fix: progress bar scaling did not include source rpm count.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-05 16:41-0400\n"
+"POT-Creation-Date: 2001-09-06 10:40-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2990,8 +2990,8 @@ msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 msgid "can't query %s: %s\n"
 msgstr "kunne ikke forespørge %s: %s\n"
 
-#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:342 lib/rpminstall.c:481
-#: lib/rpminstall.c:845
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:347 lib/rpminstall.c:490
+#: lib/rpminstall.c:865
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
@@ -3005,7 +3005,7 @@ msgstr "forespørgsel af %s mislykkedes\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:618 lib/rpminstall.c:491
+#: lib/query.c:618 lib/rpminstall.c:503
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
@@ -3064,7 +3064,7 @@ msgstr "pakkens post-nummer: %u\n"
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:816 lib/rpminstall.c:633
+#: lib/query.c:816 lib/rpminstall.c:653
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -3160,86 +3160,86 @@ msgstr "Forbereder..."
 msgid "Preparing packages for installation..."
 msgstr "Forbereder pakker til installation..."
 
-#: lib/rpminstall.c:293
+#: lib/rpminstall.c:300
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Modtager %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:303
+#: lib/rpminstall.c:310
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:307
+#: lib/rpminstall.c:314
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "overspringer %s - overførsel mislykkedes - %s\n"
 
-#: lib/rpminstall.c:384
+#: lib/rpminstall.c:393
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
-#: lib/rpminstall.c:407
+#: lib/rpminstall.c:416
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakke %s kan ikke omrokeres\n"
 
-#: lib/rpminstall.c:455
+#: lib/rpminstall.c:464
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fejl ved læsning fra filen %s\n"
 
-#: lib/rpminstall.c:461
+#: lib/rpminstall.c:470
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s kræver en nyere version af RPM\n"
 
-#: lib/rpminstall.c:473 lib/rpminstall.c:704
+#: lib/rpminstall.c:482 lib/rpminstall.c:724
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
-#: lib/rpminstall.c:505
+#: lib/rpminstall.c:518
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "fandt %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:520
+#: lib/rpminstall.c:533
 msgid "failed dependencies:\n"
 msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
 
-#: lib/rpminstall.c:541
+#: lib/rpminstall.c:554
 msgid "installing binary packages\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:562
+#: lib/rpminstall.c:575
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kunne ikke åbne fil %s: %s\n"
 
-#: lib/rpminstall.c:620
+#: lib/rpminstall.c:640
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kunne ikke åbne %s/packages.rpm\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:656
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" angiver flere pakker\n"
 
-#: lib/rpminstall.c:659
+#: lib/rpminstall.c:679
 msgid "removing these packages would break dependencies:\n"
 msgstr "fjernelse af disse pakker ville bryde afhængighederne:\n"
 
-#: lib/rpminstall.c:688
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/rpminstall.c:694
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"

@@ -229,6 +229,7 @@
 	- python: teach rhnLoad about RPMTAG_SHA1RHN as well.
 	- fix: Provides: /path did not work with added packages (#52183).
 	- fix: progress bar scaling did not include source rpm count.
+	- fix: hash page nelem failure to verify.
 
 4.0 -> 4.0.2
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
