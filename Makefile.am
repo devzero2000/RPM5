@@ -179,7 +179,7 @@ nextsrpm: all archive
 doxygen @WITH_APIDOCS_TARGET@: Doxyfile
 	rm -rf $@
 	mkdir -p $@
-	[ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
+	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
 
 ctags:
 	find . -type f -name "*.[ch]*" | xargs @CTAGS@
