@@ -1,4 +1,6 @@
 2.5.4 -> 2.5.5:
+	- getOutputFrom(): fix race between last read on pipe and child death
+	  (introduced in 2.5.4).
 
 2.5.3 -> 2.5.4:
 	- add Slovak translation (Stanislav Meduna <stano@trillian.eunet.sk>)
