@@ -58,7 +58,7 @@
 PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
 export PATH
 
-for f in `cat -`
+for f in `cat - | xargs file | egrep 'COFF.*shared library' | cut -d: -f1`
 do
 	odump -D $f 2>/dev/null | awk '
 
