@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c tput.c tglob.c tinv.c tkey.c trpmio.c
 
-EXTRA_PROGRAMS = tax tdigest tdir tfts tget tput tglob tinv tkey tring trpmio tsw dumpasn1
+EXTRA_PROGRAMS = tax tdigest tdir tfts tget tput tglob tinv tkey tring trpmio tsw html-parse dumpasn1
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
@@ -112,6 +112,12 @@ tsw_SOURCES = tsw.c
 tsw_LDFLAGS = librpmio.la
 
 dumpasn1_SOURCES = dumpasn1.c
+
+html_parse_SOURCES = html-parse.c
+html_parse_CPPFLAGS = -DSTANDALONE
+html_parse_LDFLAGS = -all-static
+html_parse_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 

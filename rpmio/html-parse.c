@@ -88,22 +88,49 @@ so, delete this exception statement from your version.  */
 /* To test as standalone, compile with `-DSTANDALONE -I.'.  You'll
    still need Wget headers to compile.  */
 
-#include <config.h>
+#include "system.h"
 
-#ifdef STANDALONE
-# define I_REALLY_WANT_CTYPE_MACROS
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
 #include <assert.h>
 
-#include "wget.h"
+/* XXX uncouple from wget.h baggage. */
+
+#ifndef PARAMS
+# if PROTOTYPES
+#  define PARAMS(args) args
+# else
+#  define PARAMS(args) ()
+# endif
+#endif
+
+/* Copy the data delimited with BEG and END to alloca-allocated
+   storage, and zero-terminate it.  Arguments are evaluated only once,
+   in the order BEG, END, PLACE.  */
+#define BOUNDED_TO_ALLOCA(beg, end, place) do {	\
+  const char *BTA_beg = (beg);			\
+  int BTA_len = (end) - BTA_beg;		\
+  char **BTA_dest = &(place);			\
+  *BTA_dest = alloca (BTA_len + 1);		\
+  memcpy (*BTA_dest, BTA_beg, BTA_len);		\
+  (*BTA_dest)[BTA_len] = '\0';			\
+} while (0)
+
+/* Convert an ASCII hex digit to the corresponding number between 0
+   and 15.  X should be a hexadecimal digit that satisfies isxdigit;
+   otherwise, the result is undefined.  */
+#define XDIGIT_TO_NUM(x) ((x) < 'A' ? (x) - '0' : TOUPPER (x) - 'A' + 10)
+
+/* Returns the number of elements in an array with fixed
+   initialization.  For example:
+
+   static char a[] = "foo";     -- countof(a) == 4 (for terminating \0)
+
+   int a[5] = {1, 2};           -- countof(a) == 5
+
+   char *a[] = {                -- countof(a) == 3
+     "foo", "bar", "baz"
+   }; */
+#define countof(array) (sizeof (array) / sizeof (*(array)))
+
 #include "html-parse.h"
 
 #ifdef STANDALONE
@@ -1011,6 +1038,20 @@ map_html_tags (const char *text, int size,
 #undef SKIP_NON_WS
 
 #ifdef STANDALONE
+
+#include "rpmio.h"
+
+extern int _rpmio_debug;
+extern int _dav_debug;
+extern int _ftp_debug;
+
+#if 0
+#define	HTMLPATH	"http://download.fedora.redhat.com/pub/fedora/linux/core/3/i386/os/Fedora/RPMS/"
+#else
+#define HTMLPATH        "http://localhost/rawhide/"
+#endif
+static const char * htmlpath = HTMLPATH;
+
 static void
 test_mapper (struct taginfo *taginfo, void *arg)
 {
@@ -1030,13 +1071,21 @@ int main ()
   int length = 0;
   int read_count;
   int tag_counter = 0;
+  FD_t fd;
 
-  while ((read_count = fread (x + length, 1, size - length, stdin)))
+_rpmio_debug = 0;
+_dav_debug = 0;
+  fd = Fopen(htmlpath, "r.ufdio");
+  while ((read_count = Fread (x + length, 1, size - length, fd)))
     {
       length += read_count;
+      if (read_count != size)
+	break;
       size <<= 1;
       x = (char *)xrealloc (x, size);
     }
+
+   (void) Fclose(fd);
 
   map_html_tags (x, length, test_mapper, &tag_counter, 0, NULL, NULL);
   printf ("TAGS: %d\n", tag_counter);
