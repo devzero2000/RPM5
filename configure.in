@@ -213,7 +213,7 @@ dnl
 
     AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
     AC_MSG_CHECKING(checking whether id supports -u)
-    if `${__ID} -u 2>&1 > /dev/null` ; then
+    if ${__ID} -u 2>&1 > /dev/null ; then
 	__ID_U="%{__id} -u"
 	AC_MSG_RESULT(yes)
     else
