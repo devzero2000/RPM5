@@ -1,3 +1,5 @@
+2.5.6 -> 2.5.7:
+
 2.5.5 -> 2.5.6:
 	- ultrapenguin 1.1.9 sparc64 changes.
 	- attempt ftp ABOR on query/verify url's.
