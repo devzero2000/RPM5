@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2000-12-28 16:42-0500\n"
-"POT-Creation-Date: 2000-12-26 14:34-0500\n"
-"Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
+"PO-Revision-Date: 2000-12-29 22:14+0100\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
@@ -47,7 +47,7 @@ msgstr "kunde inte ta status på %s: %m"
 #: build.c:221
 #, c-format
 msgid "File %s is not a regular file."
-msgstr "Filen %s är inte en ordinär fil."
+msgstr "Filen %s är inte en vanlig fil."
 
 #: build.c:229
 #, c-format
@@ -292,7 +292,7 @@ msgstr "visa vilken version av rpm som används"
 
 #: rpm.c:295
 msgid "   All modes support the following arguments:"
-msgstr "   Alla arbetssätt stödjer följande argument:"
+msgstr "   Alla lägen stödjer följande argument:"
 
 #: rpm.c:296
 msgid "    --define '<name> <body>'"
@@ -353,7 +353,7 @@ msgstr "      --ftpproxy <värd>   "
 
 #: rpm.c:315 rpmqv.c:432
 msgid "hostname or IP of ftp proxy"
-msgstr "ftp-ombudets (proxy) värdnamn eller IP"
+msgstr "ftp-proxyns värdnamn eller IP"
 
 #: rpm.c:316
 msgid "      --ftpport <port>    "
@@ -361,7 +361,7 @@ msgstr "      --ftpport <port>    "
 
 #: rpm.c:317 rpmqv.c:434
 msgid "port number of ftp server (or proxy)"
-msgstr "ftp-servers (eller ombuds (proxy)) portnummer"
+msgstr "ftp-servers (eller proxy) portnummer"
 
 #: rpm.c:318
 msgid "      --httpproxy <host>  "
@@ -369,7 +369,7 @@ msgstr "      --httpproxy <värd>  "
 
 #: rpm.c:319 rpmqv.c:436
 msgid "hostname or IP of http proxy"
-msgstr "http-ombudets värdnamn eller IP"
+msgstr "http-proxyns värdnamn eller IP"
 
 #: rpm.c:320
 msgid "      --httpport <port>   "
@@ -377,7 +377,7 @@ msgstr "      --httpport <port>   "
 
 #: rpm.c:321 rpmqv.c:438
 msgid "port number of http server (or proxy)"
-msgstr "http-servers (eller ombuds) portnummer"
+msgstr "http-servers (eller proxys) portnummer"
 
 #: rpm.c:325 rpmqv.c:458
 msgid "query mode"
@@ -670,7 +670,7 @@ msgid ""
 "<package> specified multiple packages)"
 msgstr ""
 "ta bort alla paket som matchar <paket> (normalt ger det ett fel om <paket> "
-"specificerar flera paket)"
+"anger flera paket)"
 
 #: rpm.c:458 rpmqv.c:575
 msgid "do not execute any package specific scripts"
@@ -682,7 +682,7 @@ msgstr "    -b<steg> <spec>       "
 
 #: rpm.c:465
 msgid "    -t<stage> <tarball>   "
-msgstr "    -t<steg> <tarboll>    "
+msgstr "    -t<steg> <tar-arkiv>  "
 
 #: rpm.c:466 rpmqv.c:584
 msgid "build package, where <stage> is one of:"
@@ -850,7 +850,7 @@ msgstr ""
 #: rpmqv.c:846 rpmqv.c:853 rpmqv.c:888 rpmqv.c:896 rpmqv.c:902 rpmqv.c:910
 #: rpmqv.c:978
 msgid "only one major mode may be specified"
-msgstr "enbart ett läge kan specifieras"
+msgstr "enbart ett huvudläge kan anges"
 
 #: rpm.c:679 rpmqv.c:827
 msgid "-u and --uninstall are deprecated and no longer work.\n"
@@ -958,7 +958,7 @@ msgstr "--includedocs kan enbart användas vid paketinstallation"
 
 #: rpm.c:884 rpmqv.c:1067
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "enbart en av --excludedocs och --includedocs kan specifieras"
+msgstr "enbart en av --excludedocs och --includedocs kan användas"
 
 #: rpm.c:888 rpmqv.c:1071
 msgid "--ignorearch may only be specified during package installation"
@@ -1072,7 +1072,7 @@ msgstr "Lösenfrasen är ok.\n"
 
 #: rpm.c:1002 rpmqv.c:1200
 msgid "Invalid %%_signature spec in macro file.\n"
-msgstr "Felaktig %%_signature spec i makrofil.\n"
+msgstr "Felaktig %%_signature-spec i makrofil.\n"
 
 #: rpm.c:1008 rpmqv.c:1206
 msgid "--sign may only be used during package building"
@@ -1257,7 +1257,7 @@ msgstr ""
 
 #: rpmqv.c:405
 msgid "  All modes support the following options:"
-msgstr "  Alla arbetssätt stödjer följande argument:"
+msgstr "  Alla lägen stödjer följande argument:"
 
 #: rpmqv.c:406
 msgid "   --define '<name> <body>'"
@@ -1439,7 +1439,7 @@ msgstr "   -t<steg> <tar-arkiv>   "
 
 #: rpmqv.c:598
 msgid "package src rpm only"
-msgstr "paket endast källrpm"
+msgstr "paketera endast källrpm"
 
 #: rpmqv.c:609
 msgid "     --buildroot <dir>    "
@@ -2046,7 +2046,7 @@ msgstr "rad %d: Felaktigt %s: bestämningar: %s"
 #: build/parsePreamble.c:610
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
-msgstr "rad %d: Felaktig BuildArchitecture-format: %s"
+msgstr "rad %d: Felaktigt BuildArchitecture-format: %s"
 
 #: build/parsePreamble.c:619
 #, c-format
@@ -2056,7 +2056,7 @@ msgstr "Internt fel: felaktig tagg %d"
 #: build/parsePreamble.c:757
 #, c-format
 msgid "Bad package specification: %s"
-msgstr "Felaktig paketspecifikation: %s"
+msgstr "Felaktig paketangivelse %s"
 
 #: build/parsePreamble.c:763
 #, c-format
@@ -2265,7 +2265,7 @@ msgstr "Felaktigt/oläsbart huvud"
 
 #: lib/cpio.c:1265
 msgid "Header size too big"
-msgstr "Huvudstorlek för stor"
+msgstr "Huvudstorleken för stor"
 
 #: lib/cpio.c:1266
 msgid "Unknown file type"
@@ -2335,7 +2335,7 @@ msgstr "%s: %-45s JA (db-filer)\n"
 #: lib/depends.c:1130
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
-msgstr "%s: %-45s JA (db tillhandahållande)\n"
+msgstr "%s: %-45s JA (db-tillhandahållande)\n"
 
 #: lib/depends.c:1144
 #, c-format
@@ -2767,7 +2767,7 @@ msgstr "endast paket med huvudnummer <= 4 stöds av denna version av RPM"
 
 #: lib/poptBT.c:84
 msgid "buildroot already specified"
-msgstr "buildroot redan specificerad"
+msgstr "buildroot redan angett"
 
 #: lib/poptBT.c:110
 msgid "build through %%prep stage from spec file"
@@ -3636,7 +3636,7 @@ msgstr "Okänt system: %s\n"
 
 #: lib/rpmrc.c:1206
 msgid "Please contact rpm-list@redhat.com\n"
-msgstr "Var god kontakta rpm-list@redhat.com\n"
+msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
 
 #: lib/signature.c:115
 msgid "file is not regular -- skipping size check\n"
@@ -3703,7 +3703,7 @@ msgstr "kan inte läsa signaturen"
 #: lib/signature.c:312
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
-msgstr "Fick %d byte PGPsignatur\n"
+msgstr "Fick %d byte PGP-signatur\n"
 
 #: lib/signature.c:350 lib/signature.c:693
 msgid "Couldn't exec gpg"
@@ -3722,12 +3722,12 @@ msgstr "gpg kunde inte skriva signatur"
 #: lib/signature.c:373
 #, c-format
 msgid "GPG sig size: %d\n"
-msgstr "GPG signaturstorlek: %d\n"
+msgstr "GPG-signaturstorlek: %d\n"
 
 #: lib/signature.c:389
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
-msgstr "Fick %d byte GPGsignatur\n"
+msgstr "Fick %d byte GPG-signatur\n"
 
 #: lib/signature.c:416
 msgid "Generating signature using PGP.\n"
@@ -3741,10 +3741,6 @@ msgstr "Genererar signatur med GPG.\n"
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Kunde inte köra pgp.  Använd --nopgp för att hoppa över PGP-kontroll."
 
-#: lib/signature.c:561 lib/signature.c:634
-msgid "exec failed!\n"
-msgstr "exec misslyckades!\n"
-
 #: lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Kunde inte köra gpg.  Använd --nogpg för att hoppa över GPG-kontroll."
@@ -3757,7 +3753,7 @@ msgstr "Kunde inte köra pgp"
 #. This case should have been screened out long ago.
 #: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
-msgstr "Ogiltig %%_signature specifikation i makrofil"
+msgstr "Ogiltig %%_signature-specifikation i makrofil"
 
 #: lib/signature.c:759
 msgid "You must set \"%%_gpg_name\" in your macro file"
@@ -3770,7 +3766,7 @@ msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil"
 #: lib/transaction.c:496
 #, c-format
 msgid "excluding file %s%s\n"
-msgstr "hoppar över %s%s\n"
+msgstr "hoppar över fil %s%s\n"
 
 #: lib/transaction.c:522 lib/transaction.c:605
 #, c-format
@@ -3828,12 +3824,12 @@ msgstr "verifiera inte filerna i paketet"
 #: lib/verify.c:219
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
-"paket saknar både användarnamn och id-listor (detta borde aldrig inträffa)"
+"paketet saknar både användarnamn och id-listor (detta borde aldrig inträffa)"
 
 #: lib/verify.c:237
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
-"paket saknar både gruppnamn och id-listor (detta borde aldrig inträffa)"
+"paketet saknar både gruppnamn och id-listor (detta borde aldrig inträffa)"
 
 #: lib/verify.c:299
 #, c-format
@@ -3971,7 +3967,7 @@ msgstr "Inget makro %%%.*s hittat, hoppar över"
 
 #: rpmio/macro.c:1312
 msgid "Target buffer overflow"
-msgstr "Målbuffer översvämmad"
+msgstr "Målbuffert översvämmad"
 
 #. XXX Fstrerror
 #: rpmio/macro.c:1492 rpmio/macro.c:1498
