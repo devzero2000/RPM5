@@ -31,6 +31,7 @@ static void printMemStats(char *mess)
 }
 #endif
 
+int pkgCompare(void * first, void * second);	/* XXX make gcc shut up. */
 int pkgCompare(void * first, void * second) {
     struct packageInfo ** a = first;
     struct packageInfo ** b = second;

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-12 14:48-0400\n"
+"POT-Creation-Date: 2001-05-14 16:00-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -3589,11 +3589,11 @@ msgstr "åbner db-fil      %s modus 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kunne ikke opnå %s lås på database\n"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:983
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:983
 msgid "shared"
 msgstr "delt"
 
@@ -3612,22 +3612,22 @@ msgstr "fjernede db-miljø  %s/%s\n"
 msgid "opening db environment %s/%s %s\n"
 msgstr "åbner   db-miljø  %s/%s %s\n"
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:620
+#: rpmdb/db2.c:588 rpmdb/db3.c:629
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:792
+#: rpmdb/db2.c:679 rpmdb/db3.c:801
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:961
+#: rpmdb/db2.c:785 rpmdb/db3.c:981
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:968
+#: rpmdb/db2.c:792 rpmdb/db3.c:988
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "låste   db-index  %s/%s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-05-12 14:48-0400\n"
+"POT-Creation-Date: 2001-05-14 16:00-0400\n"
 "PO-Revision-Date: 2001-05-15 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -3580,11 +3580,11 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:983
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:983
 msgid "shared"
 msgstr ""
 
@@ -3603,22 +3603,22 @@ msgstr ""
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:620
+#: rpmdb/db2.c:588 rpmdb/db3.c:629
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:792
+#: rpmdb/db2.c:679 rpmdb/db3.c:801
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:961
+#: rpmdb/db2.c:785 rpmdb/db3.c:981
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:968
+#: rpmdb/db2.c:792 rpmdb/db3.c:988
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""

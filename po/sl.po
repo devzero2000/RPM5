@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-12 14:48-0400\n"
+"POT-Creation-Date: 2001-05-14 16:00-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3750,11 +3750,11 @@ msgstr "odpiranje datoteke %s v naèinu 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:983
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:983
 msgid "shared"
 msgstr "skupno"
 
@@ -3773,22 +3773,22 @@ msgstr "odstranjeno db okolje %s/%s\n"
 msgid "opening db environment %s/%s %s\n"
 msgstr "odpiranje db okolja %s/%s %s\n"
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:620
+#: rpmdb/db2.c:588 rpmdb/db3.c:629
 #, fuzzy, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:792
+#: rpmdb/db2.c:679 rpmdb/db3.c:801
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:961
+#: rpmdb/db2.c:785 rpmdb/db3.c:981
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:968
+#: rpmdb/db2.c:792 rpmdb/db3.c:988
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "zaklenjeno  db kazalo       %s/%s\n"

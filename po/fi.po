@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-05-12 14:48-0400\n"
+"POT-Creation-Date: 2001-05-14 16:00-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -3770,11 +3770,11 @@ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 msgid "cannot get %s lock on database\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:983
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:983
 msgid "shared"
 msgstr "jaettua"
 
@@ -3793,22 +3793,22 @@ msgstr ""
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:620
+#: rpmdb/db2.c:588 rpmdb/db3.c:629
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:792
+#: rpmdb/db2.c:679 rpmdb/db3.c:801
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:961
+#: rpmdb/db2.c:785 rpmdb/db3.c:981
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:968
+#: rpmdb/db2.c:792 rpmdb/db3.c:988
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""

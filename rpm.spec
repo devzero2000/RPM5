@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.21
+Release: 0.22
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -401,6 +401,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon May 14 2001 Jeff Johnson <jbj@redhat.com>
+- upgrade to db-3.3.4.
+
 * Sun May 13 2001 Jeff Johnson <jbj@redhat.com>
 - add cron/logrotate scripts to save installed package filenames.
 
