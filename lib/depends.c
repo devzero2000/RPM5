@@ -1080,6 +1080,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 			keyType, keyDepend+2);
 	    goto exit;
 	}
+	goto unsatisfied.
     }
 
     if (alSatisfiesDepend(&rpmdep->addedPackages, keyType, keyDepend, keyName, keyEVR, keyFlags)) {
@@ -1123,6 +1124,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	*suggestion = alSatisfiesDepend(&rpmdep->availablePackages, NULL, NULL,
 				keyName, keyEVR, keyFlags);
 
+unsatisfied:
     rpmMessage(RPMMESS_DEBUG, _("%s: %-45s NO\n"), keyType, keyDepend+2);
     rc = 1;	/* dependency is unsatisfied */
 

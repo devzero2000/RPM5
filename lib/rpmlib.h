@@ -630,6 +630,16 @@ void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 #define	RPMTRANS_FLAG_MULTILIB		(1 << 8)
 
 /**
+ * Return copy of rpmlib internal provides.
+ * @retval		address of array of rpmlib internal provide names
+ * @retval		address of array of rpmlib internal provide flags
+ * @retval		address of array of rpmlib internal provide versions
+ * @return		no. of entries
+ */
+int rpmGetRpmlibProvides(/*@out@*/ const char ***provNames,
+	/*@out@*/ int **provFlags, /*@out@*/ const char ***provVersions) /*@*/;
+
+/**
  */
 int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
         const char *BName, const char *BEVR, int BFlags);
