@@ -1,3 +1,6 @@
+#/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
+# \verbatim
+#
 # $Id$
 #
 # This is a global RPM configuration file. All changes made here will
@@ -294,3 +297,5 @@ buildarch_compat: s390: noarch
 
 macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros.specspo:@SYSCONFIGDIR@/macros.db1:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 
+# \endverbatim
+#*/

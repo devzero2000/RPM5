@@ -1,4 +1,4 @@
-#/*! \page mconfig Current default macro definitions
+#/*! \page config_macros Default configuration: /usr/lib/rpm/macros
 # \verbatim
 #
 # $Id$
