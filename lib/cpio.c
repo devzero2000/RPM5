@@ -1022,7 +1022,7 @@ const char * cpioStrerror(int rc)
 	if (l > 0) strncat(msg, s, l);
 	l -= strlen(s);
     }
-    if (rc & CPIOERR_CHECK_ERRNO) {
+    if ((rc & CPIOERR_CHECK_ERRNO) && myerrno) {
 	s = _(" failed - ");
 	if (l > 0) strncat(msg, s, l);
 	l -= strlen(s);
