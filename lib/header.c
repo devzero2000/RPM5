@@ -10,8 +10,6 @@
 #include "config.h"
 #include "miscfn.h"
 
-#include <zlib.h>
-
 #if HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
@@ -26,6 +24,7 @@
 #include <netinet/in.h>
 
 #include "header.h"
+
 #include "intl.h"
 #include "tread.h"
 
@@ -142,6 +141,8 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 			  struct extensionCache * extcache, int element);
 static char * octalFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);
+static char * hexFormat(int_32 type, const void * data, char * formatPrefix, 
+			int padding, int element);
 static char * dateFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);
 static char * dayFormat(int_32 type, const void * data, 
@@ -155,6 +156,7 @@ char *headerFindI18NString(Header h, struct indexEntry *entry);
 
 const struct headerSprintfExtension headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal", { octalFormat } },
+    { HEADER_EXT_FORMAT, "hex", { hexFormat } },
     { HEADER_EXT_FORMAT, "date", { dateFormat } },
     { HEADER_EXT_FORMAT, "day", { dayFormat } },
     { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
@@ -443,9 +445,6 @@ Header headerLoad(void *pv)
 	entry->info.tag = htonl(pe->tag);
 	entry->info.count = htonl(pe->count);
 	entry->info.offset = -1;
-
-	if (entry->info.type < RPM_MIN_TYPE ||
-	    entry->info.type > RPM_MAX_TYPE) return NULL;
 
 	src = dataStart + htonl(pe->offset);
 	entry->length = dataLength(entry->info.type, src, 
@@ -787,7 +786,6 @@ int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 {
     struct indexEntry * entry;
     char * chptr;
-    int i;
 
     if (!p) return headerIsEntry(h, tag);
 
@@ -1922,6 +1920,22 @@ static char * octalFormat(int_32 type, const void * data,
     } else {
 	val = malloc(20 + padding);
 	strcat(formatPrefix, "o");
+	sprintf(val, formatPrefix, *((int_32 *) data));
+    }
+
+    return val;
+}
+
+static char * hexFormat(int_32 type, const void * data, 
+		          char * formatPrefix, int padding, int element) {
+    char * val;
+
+    if (type != RPM_INT32_TYPE) {
+	val = malloc(20);
+	strcpy(val, _("(not a number)"));
+    } else {
+	val = malloc(20 + padding);
+	strcat(formatPrefix, "x");
 	sprintf(val, formatPrefix, *((int_32 *) data));
     }
 
