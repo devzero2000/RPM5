@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2001-05-30 18:25-0400\n"
+"POT-Creation-Date: 2001-05-31 18:14-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2359,7 +2359,7 @@ msgid " failed - "
 msgstr " falhou - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:552
+#: lib/depends.c:559
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2368,107 +2368,107 @@ msgstr ""
 "A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
 "\t %s\tB %s\n"
 
-#: lib/depends.c:581
+#: lib/depends.c:588
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s     A %s\tB %s\n"
 
-#: lib/depends.c:582 lib/depends.c:1087 lib/depends.c:1215
+#: lib/depends.c:589 lib/depends.c:1196 lib/depends.c:1329
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:582 lib/depends.c:1087 lib/depends.c:1215
+#: lib/depends.c:589 lib/depends.c:1196 lib/depends.c:1329
 #, fuzzy
 msgid "NO "
 msgstr "NÃO-OK"
 
-#: lib/depends.c:976
+#: lib/depends.c:1000
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s SIM (ficheiros adicionados)\n"
 
-#: lib/depends.c:1034
+#: lib/depends.c:1105
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:1086
+#: lib/depends.c:1195
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (em cache)\n"
 
-#: lib/depends.c:1110
+#: lib/depends.c:1224
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1241
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:1149
+#: lib/depends.c:1265
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s SIM (ficheiros db)\n"
 
-#: lib/depends.c:1162
+#: lib/depends.c:1278
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:1176
+#: lib/depends.c:1292
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s SIM (pacote db)\n"
 
-#: lib/depends.c:1194
+#: lib/depends.c:1308
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NÃO\n"
 
-#: lib/depends.c:1215
+#: lib/depends.c:1329
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) adicionado à cache de dependências.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1276
+#: lib/depends.c:1400
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1344
+#: lib/depends.c:1483
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "o pacote %s está em conflito: %s\n"
 
-#: lib/depends.c:1564
+#: lib/depends.c:1723
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1712
+#: lib/depends.c:1872
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1770
+#: lib/depends.c:1930
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1822
+#: lib/depends.c:1980
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1874
+#: lib/depends.c:2032
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1903
+#: lib/depends.c:2061
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
@@ -2640,11 +2640,11 @@ msgstr "(tipo desconhecido)"
 msgid "error creating temporary file %s\n"
 msgstr "erro ao criar o ficheiro temporário %s\n"
 
-#: lib/package.c:124
+#: lib/package.c:126
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "a versão 1 dos pacotes não é suportada por esta versão do RPM\n"
 
-#: lib/package.c:186
+#: lib/package.c:188
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "só os pacotes com versão <= 4 são suportados por esta versão do RPM\n"
@@ -2861,71 +2861,71 @@ msgstr "mostrar os estados dos ficheiros listados"
 msgid "display a verbose file listing"
 msgstr "mostrar uma listagem descritiva do ficheiro"
 
-#: lib/problems.c:81
+#: lib/problems.c:83
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " é necessário pelo %s-%s-%s\n"
 
-#: lib/problems.c:84
+#: lib/problems.c:86
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " está em conflito com o %s-%s-%s\n"
 
-#: lib/problems.c:119
+#: lib/problems.c:121
 #, c-format
 msgid "package %s is for a different architecture"
 msgstr "o pacote %s é para uma arquitectura diferente"
 
-#: lib/problems.c:124
+#: lib/problems.c:126
 #, c-format
 msgid "package %s is for a different operating system"
 msgstr "o pacote %s é para um sistema operativo diferente"
 
-#: lib/problems.c:129
+#: lib/problems.c:131
 #, c-format
 msgid "package %s is already installed"
 msgstr "o pacote %s já está instalado"
 
-#: lib/problems.c:134
+#: lib/problems.c:136
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "a directoria %s no pacote %s não pode ser mudada de sítio"
 
-#: lib/problems.c:139
+#: lib/problems.c:141
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "o ficheiro %s está em conflito com as tentativas de instalação do %s e %s"
 
-#: lib/problems.c:144
+#: lib/problems.c:146
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "o ficheiro %s da instalação do %s está em conflito com o ficheiro do pacote "
 "%s"
 
-#: lib/problems.c:149
+#: lib/problems.c:151
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "o pacote %s (que é mais recente que o %s) já está instalado"
 
-#: lib/problems.c:154
+#: lib/problems.c:156
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "a instalação do pacote %s precisa de %ld%cb no sistema de ficheiros %s"
 
-#: lib/problems.c:164
+#: lib/problems.c:166
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "a instalação do pacote %s precisa de %ld 'inodes' no sistema de ficheiros %s"
 
-#: lib/problems.c:169
+#: lib/problems.c:171
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "a(s) chamada(s) de pré-transacção do pacote %s: %s falhou: %s"
 
-#: lib/problems.c:176
+#: lib/problems.c:178
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "encontrado o erro desconhecido %d ao manipular o pacote %s"
@@ -3578,12 +3578,12 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "o pacote não tem o nome do grupo nem as listas de IDs (nunca deve ocorrer)\n"
 
-#: lib/verify.c:360
+#: lib/verify.c:365
 #, c-format
 msgid "missing    %s"
 msgstr "falta     %s"
 
-#: lib/verify.c:441
+#: lib/verify.c:452
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Dependências não satisfeitas para o %s-%s-%s: "
@@ -3635,11 +3635,11 @@ msgstr "a aceder ao ficheiro db %s modo 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "não consegui adquirir exclusivamente o %s na base de dados\n"
 
-#: rpmdb/db1.c:534 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1103
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db1.c:534 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1103
 msgid "shared"
 msgstr "partilhado"
 
@@ -3658,27 +3658,27 @@ msgstr "removi o ambiente do db %s/%s\n"
 msgid "opening db environment %s/%s %s\n"
 msgstr "a aceder ao ambiente do db %s/%s %s\n"
 
-#: rpmdb/db3.c:703
+#: rpmdb/db3.c:708
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "fechei o índice do db  %s/%s\n"
 
-#: rpmdb/db3.c:739
+#: rpmdb/db3.c:744
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "fechei o índice do db  %s/%s\n"
 
-#: rpmdb/db3.c:916
+#: rpmdb/db3.c:921
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "a abrir o índice do db   %s/%s %s modo=0x%x\n"
 
-#: rpmdb/db3.c:1096
+#: rpmdb/db3.c:1101
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "não consigo trancar o %s no %s/%s\n"
 
-#: rpmdb/db3.c:1103
+#: rpmdb/db3.c:1108
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "tranquei o índice do db     %s/%s\n"

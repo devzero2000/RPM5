@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-30 18:25-0400\n"
+"POT-Creation-Date: 2001-05-31 18:14-0400\n"
 "PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2345,7 +2345,7 @@ msgid " failed - "
 msgstr "selhal - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:552
+#: lib/depends.c:559
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2354,107 +2354,107 @@ msgstr ""
 "Závislost \"B\" potøebuje období (pøedpokládáno stejné jako \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:581
+#: lib/depends.c:588
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:582 lib/depends.c:1087 lib/depends.c:1215
+#: lib/depends.c:589 lib/depends.c:1196 lib/depends.c:1329
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:582 lib/depends.c:1087 lib/depends.c:1215
+#: lib/depends.c:589 lib/depends.c:1196 lib/depends.c:1329
 #, fuzzy
 msgid "NO "
 msgstr "NENÍ OK"
 
-#: lib/depends.c:976
+#: lib/depends.c:1000
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s ANO (pøidány soubory)\n"
 
-#: lib/depends.c:1034
+#: lib/depends.c:1105
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s ANO (pøidáno poskytuje)\n"
 
-#: lib/depends.c:1086
+#: lib/depends.c:1195
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (ke¹ováno)\n"
 
-#: lib/depends.c:1110
+#: lib/depends.c:1224
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1241
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:1149
+#: lib/depends.c:1265
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s ANO (db soubory)\n"
 
-#: lib/depends.c:1162
+#: lib/depends.c:1278
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:1176
+#: lib/depends.c:1292
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s ANO (db balíèek)\n"
 
-#: lib/depends.c:1194
+#: lib/depends.c:1308
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NE\n"
 
-#: lib/depends.c:1215
+#: lib/depends.c:1329
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) pøidáno do ke¹e závislostí.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1276
+#: lib/depends.c:1400
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1344
+#: lib/depends.c:1483
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balíèek %s koliduje: %s\n"
 
-#: lib/depends.c:1564
+#: lib/depends.c:1723
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1712
+#: lib/depends.c:1872
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1770
+#: lib/depends.c:1930
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1822
+#: lib/depends.c:1980
 msgid "========== successors only (presentation order)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1874
+#: lib/depends.c:2032
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1903
+#: lib/depends.c:2061
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
@@ -2626,11 +2626,11 @@ msgstr "(neznámý typ)"
 msgid "error creating temporary file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/package.c:124
+#: lib/package.c:126
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "práce s balíèky verze 1 není podporována touto verzí RPM\n"
 
-#: lib/package.c:186
+#: lib/package.c:188
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "tato verze RPM podporuje práci s balíèky s verzí <= 4\n"
@@ -2844,67 +2844,67 @@ msgstr "zobrazit stav vypsaných souborù"
 msgid "display a verbose file listing"
 msgstr "zobrazit roz¹íøený výpis souborù"
 
-#: lib/problems.c:81
+#: lib/problems.c:83
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " je nutné pro %s-%s-%s\n"
 
-#: lib/problems.c:84
+#: lib/problems.c:86
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/problems.c:119
+#: lib/problems.c:121
 #, c-format
 msgid "package %s is for a different architecture"
 msgstr "balíèek %s je pro jinou architekturu"
 
-#: lib/problems.c:124
+#: lib/problems.c:126
 #, c-format
 msgid "package %s is for a different operating system"
 msgstr "balíèek %s je pro jiný operaèní systém"
 
-#: lib/problems.c:129
+#: lib/problems.c:131
 #, c-format
 msgid "package %s is already installed"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/problems.c:134
+#: lib/problems.c:136
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/problems.c:139
+#: lib/problems.c:141
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "soubor %s zpùsobuje konflikt mezi instalovaným %s a %s"
 
-#: lib/problems.c:144
+#: lib/problems.c:146
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "soubor %s z instalace %s koliduje se souborem z balíèku %s"
 
-#: lib/problems.c:149
+#: lib/problems.c:151
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "balíèek %s (který je novìj¹í, ne¾ %s) je ji¾ nainstalován"
 
-#: lib/problems.c:154
+#: lib/problems.c:156
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld%cB na systému souborù %s"
 
-#: lib/problems.c:164
+#: lib/problems.c:166
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld inodù na systému souborù %s"
 
-#: lib/problems.c:169
+#: lib/problems.c:171
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "pøedtransakèní syscall v balíèku %s: %s selhalo: %s"
 
-#: lib/problems.c:176
+#: lib/problems.c:178
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s"
@@ -3549,12 +3549,12 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "balíèek neobsahuje ani jména skupin ani seznam id (nemìlo by se nikdy stát)\n"
 
-#: lib/verify.c:360
+#: lib/verify.c:365
 #, c-format
 msgid "missing    %s"
 msgstr "chybí      %s"
 
-#: lib/verify.c:441
+#: lib/verify.c:452
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
@@ -3606,11 +3606,11 @@ msgstr "otevírám db soubor     %s mode 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nemohu vytvoøit zámek %s na databázi\n"
 
-#: rpmdb/db1.c:534 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1103
 msgid "exclusive"
 msgstr "výhradní"
 
-#: rpmdb/db1.c:534 rpmdb/db3.c:1098
+#: rpmdb/db1.c:534 rpmdb/db3.c:1103
 msgid "shared"
 msgstr "sdílený"
 
@@ -3629,27 +3629,27 @@ msgstr "odstranìno db prostøedí %s/%s\n"
 msgid "opening db environment %s/%s %s\n"
 msgstr "otevírám db environment %s/%s %s\n"
 
-#: rpmdb/db3.c:703
+#: rpmdb/db3.c:708
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "uzavøen db index       %s/%s\n"
 
-#: rpmdb/db3.c:739
+#: rpmdb/db3.c:744
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "uzavøen db index       %s/%s\n"
 
-#: rpmdb/db3.c:916
+#: rpmdb/db3.c:921
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otevírám db index      %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1096
+#: rpmdb/db3.c:1101
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu zamknout databázi zámkem %s v %s/%s\n"
 
-#: rpmdb/db3.c:1103
+#: rpmdb/db3.c:1108
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "uzamèen db index       %s/%s\n"

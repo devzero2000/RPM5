@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.29
+Release: 0.30
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -405,6 +405,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu May 31 2001 Jeff Johnson <jbj@redhat.com>
+- return multiple suggested packages (Pawel Kolodziej <pawelk@pld.org.pl>).
+- fix: return suggested packages when using Depends cache.
+
 * Wed May 30 2001 Jeff Johnson <jbj@redhat.com>
 - fix: for busted db1, attempt chain reconnection to following record.
 
