@@ -265,12 +265,6 @@ int main(int argc, const char ** argv)
     }
 #endif
 
-    /* XXX Eliminate query linkage loop */
-    /*@-type@*/	/* FIX: casts? */
-    parseSpecVec = parseSpec;
-    freeSpecVec = freeSpec;
-    /*@=type@*/
-
 #if defined(ENABLE_NLS)
     /* set up the correct locale */
     (void) setlocale(LC_ALL, "" );
@@ -391,7 +385,7 @@ int main(int argc, const char ** argv)
 	else if (eflags)
 	    bigMode = MODE_ERASE;
     }
-#endif	/* IAM_RPMQV */
+#endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMK
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_K)) {
@@ -421,7 +415,7 @@ int main(int argc, const char ** argv)
 	argerror(_("files may only be relocated during package installation"));
 
     if (ia->relocations && ia->prefix)
-	argerror(_("only one of --prefix or --relocate may be used"));
+	argerror(_("cannot use --prefix with --relocate or --excludepath"));
 
     if (bigMode != MODE_INSTALL && ia->relocations)
 	argerror(_("--relocate and --excludepath may only be used when installing new packages"));
@@ -616,8 +610,6 @@ int main(int argc, const char ** argv)
 	(void) close(p[1]);
     }
 	
-    _noDirTokens = rpmExpandNumeric("%{?_noDirTokens}");
-
     ts = rpmtsCreate();
     (void) rpmtsSetRootDir(ts, rpmcliRootDir);
     switch (bigMode) {
@@ -648,7 +640,8 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages files given for rebuild"));
 
-	ba->buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL;
+	ba->buildAmount =
+	    RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL | RPMBUILD_CHECK;
 	if (bigMode == MODE_REBUILD) {
 	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    ba->buildAmount |= RPMBUILD_RMSOURCE;
@@ -692,6 +685,7 @@ int main(int argc, const char ** argv)
 	    /*@fallthrough@*/
 	case 'i':
 	    ba->buildAmount |= RPMBUILD_INSTALL;
+	    ba->buildAmount |= RPMBUILD_CHECK;
 	    if ((ba->buildChar == 'i') && ba->shortCircuit)
 		/*@innerbreak@*/ break;
 	    /*@fallthrough@*/
@@ -795,9 +789,10 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_QUERY:
 	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
 	    argerror(_("no arguments given for query"));
+
+	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
-	/* XXX don't overflow single byte exit status */
-	if (ec > 255) ec = 255;
+	qva->qva_specQuery = NULL;
 	break;
 
     case MODE_VERIFY:
@@ -809,8 +804,6 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
 	    argerror(_("no arguments given for verify"));
 	ec = rpmcliVerify(ts, qva, (const char **) poptGetArgs(optCon));
-	/* XXX don't overflow single byte exit status */
-	if (ec > 255) ec = 255;
     }	break;
 #endif	/* IAM_RPMQV */
 
@@ -827,8 +820,6 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	    argerror(_("no arguments given"));
 	ka->passPhrase = passPhrase;
 	ec = rpmcliSign(ts, ka, (const char **)poptGetArgs(optCon));
-	/* XXX don't overflow single byte exit status */
-	if (ec > 255) ec = 255;
     	break;
 #endif	/* IAM_RPMK */
 	
@@ -856,8 +847,10 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_ERASE:
 #endif
     case MODE_UNKNOWN:
-	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose())
+	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose()) {
 	    printUsage(optCon, stdout, 0);
+	    ec = argc;
+	}
 	break;
     }
 
@@ -878,7 +871,6 @@ exit:
     }
 
     /* keeps memory leak checkers quiet */
-    freeNames();
     freeFilesystems();
 /*@i@*/	urlFreeCache();
     rpmlogClose();
@@ -889,6 +881,7 @@ exit:
 #endif
 
 #ifdef	IAM_RPMBT
+    freeNames();
     ba->buildRootOverride = _free(ba->buildRootOverride);
     ba->targets = _free(ba->targets);
 #endif
@@ -905,6 +898,10 @@ exit:
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
     /*@=noeffect@*/
 #endif
+
+    /* XXX don't overflow single byte exit status */
+    if (ec > 255) ec = 255;
+
     /*@-globstate@*/
     return ec;
     /*@=globstate@*/

@@ -101,6 +101,8 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     /*@=branchstate@*/
 
     ds->DNEVR = _free(ds->DNEVR);
+    ds->Color = _free(ds->Color);
+    ds->Refs = _free(ds->Refs);
 
     (void) rpmdsUnlink(ds, ds->Type);
     /*@-refcounttrans -usereleased@*/
@@ -174,6 +176,8 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
 /*@=boundsread@*/
+	ds->Color = xcalloc(Count, sizeof(*ds->Color));
+	ds->Refs = xcalloc(Count, sizeof(*ds->Refs));
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
@@ -198,13 +202,15 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     if (dspfx)	nb += strlen(dspfx) + 1;
 /*@-boundsread@*/
     if (ds->N[ds->i])	nb += strlen(ds->N[ds->i]);
-    if (ds->Flags[ds->i] & RPMSENSE_SENSEMASK) {
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (nb)	nb++;
 	if (ds->Flags[ds->i] & RPMSENSE_LESS)	nb++;
 	if (ds->Flags[ds->i] & RPMSENSE_GREATER) nb++;
 	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	nb++;
     }
-    if (ds->EVR[ds->i] && *ds->EVR[ds->i]) {
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
 	if (nb)	nb++;
 	nb += strlen(ds->EVR[ds->i]);
     }
@@ -218,13 +224,15 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     }
     if (ds->N[ds->i])
 	t = stpcpy(t, ds->N[ds->i]);
-    if (ds->Flags[ds->i] & RPMSENSE_SENSEMASK) {
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (t != tbuf)	*t++ = ' ';
 	if (ds->Flags[ds->i] & RPMSENSE_LESS)	*t++ = '<';
 	if (ds->Flags[ds->i] & RPMSENSE_GREATER) *t++ = '>';
 	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	*t++ = '=';
     }
-    if (ds->EVR[ds->i] && *ds->EVR[ds->i]) {
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
 	if (t != tbuf)	*t++ = ' ';
 	t = stpcpy(t, ds->EVR[ds->i]);
     }
@@ -269,6 +277,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 /*@-boundswrite@*/
     N = (const char **) t;
     t += sizeof(*N);
+    *t = '\0';
     N[0] = t;
     t = stpcpy(t, n);
 
@@ -276,12 +285,11 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 		(ep ? 20 : 0) + strlen(v) + strlen(r) + sizeof("-"));
     EVR = (const char **) t;
     t += sizeof(*EVR);
+    *t = '\0';
     EVR[0] = t;
     if (ep) {
 	sprintf(t, "%d:", *ep);
-/*@-compdef@*/
 	t += strlen(t);
-/*@=compdef@*/
     }
     t = stpcpy( stpcpy( stpcpy( t, v), "-"), r);
 /*@=boundswrite@*/
@@ -439,9 +447,8 @@ rpmTag rpmdsTagN(const rpmds ds)
 {
     rpmTag tagN = 0;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL)
 	tagN = ds->tagN;
-    }
     return tagN;
 }
 
@@ -463,6 +470,62 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote)
 	ds->nopromote = nopromote;
     }
     return onopromote;
+}
+
+uint_32 rpmdsColor(const rpmds ds)
+{
+    uint_32 Color = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
+	if (ds->Color != NULL)
+	    Color = ds->Color[ds->i];
+/*@=boundsread@*/
+    }
+    return Color;
+}
+
+uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
+{
+    uint_32 ocolor = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-bounds@*/
+	if (ds->Color != NULL) {
+	    ocolor = ds->Color[ds->i];
+	    ds->Color[ds->i] = color;
+	}
+/*@=bounds@*/
+    }
+    return ocolor;
+}
+
+int_32 rpmdsRefs(const rpmds ds)
+{
+    int_32 Refs = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
+	if (ds->Refs != NULL)
+	    Refs = ds->Refs[ds->i];
+/*@=boundsread@*/
+    }
+    return Refs;
+}
+
+int_32 rpmdsSetRefs(const rpmds ds, int_32 refs)
+{
+    int_32 orefs = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-bounds@*/
+	if (ds->Refs != NULL) {
+	    orefs = ds->Refs[ds->i];
+	    ds->Refs[ds->i] = refs;
+	}
+/*@=bounds@*/
+    }
+    return orefs;
 }
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)
@@ -517,6 +580,189 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
     /*@=refcounttrans@*/
 }
 
+/*@-bounds@*/
+static /*@null@*/
+const char ** rpmdsDupArgv(/*@null@*/ const char ** argv, int argc)
+	/*@*/
+{
+    const char ** av;
+    size_t nb = 0;
+    int ac = 0;
+    char * t;
+
+    if (argv == NULL)
+	return NULL;
+    for (ac = 0; ac < argc; ac++) {
+assert(argv[ac] != NULL);
+	nb += strlen(argv[ac]) + 1;
+    }
+    nb += (ac + 1) * sizeof(*av);
+
+    av = xmalloc(nb);
+    t = (char *) (av + ac + 1);
+    for (ac = 0; ac < argc; ac++) {
+	av[ac] = t;
+	t = stpcpy(t, argv[ac]) + 1;
+    }
+    av[ac] = NULL;
+    return av;
+}
+/*@=bounds@*/
+
+static rpmds rpmdsDup(const rpmds ods)
+	/*@modifies ods @*/
+{
+    rpmds ds = xcalloc(1, sizeof(*ds));
+    size_t nb;
+
+    ds->h = (ods->h != NULL ? headerLink(ods->h) : NULL);
+/*@-assignexpose@*/
+    ds->Type = ods->Type;
+/*@=assignexpose@*/
+    ds->tagN = ods->tagN;
+    ds->Count = ods->Count;
+    ds->i = ods->i;
+    ds->l = ods->l;
+    ds->u = ods->u;
+
+    nb = (ds->Count+1) * sizeof(*ds->N);
+    ds->N = (ds->h != NULL
+	? memcpy(xmalloc(nb), ods->N, nb)
+	: rpmdsDupArgv(ods->N, ods->Count) );
+    ds->Nt = ods->Nt;
+
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+assert(ods->EVR != NULL);
+assert(ods->Flags != NULL);
+
+    nb = (ds->Count+1) * sizeof(*ds->EVR);
+    ds->EVR = (ds->h != NULL
+	? memcpy(xmalloc(nb), ods->EVR, nb)
+	: rpmdsDupArgv(ods->EVR, ods->Count) );
+    ds->EVRt = ods->EVRt;
+
+    nb = (ds->Count * sizeof(*ds->Flags));
+    ds->Flags = (ds->h != NULL
+	? ods->Flags
+	: memcpy(xmalloc(nb), ods->Flags, nb) );
+    ds->Ft = ods->Ft;
+
+/*@-compmempass@*/ /* FIX: ds->Flags is kept, not only */
+    return rpmdsLink(ds, (ds ? ds->Type : NULL));
+/*@=compmempass@*/
+
+}
+
+int rpmdsFind(rpmds ds, rpmds ods)
+{
+    int comparison;
+
+    if (ds == NULL || ods == NULL)
+	return -1;
+
+    ds->l = 0;
+    ds->u = ds->Count;
+    while (ds->l < ds->u) {
+	ds->i = (ds->l + ds->u) / 2;
+
+	comparison = strcmp(ods->N[ods->i], ds->N[ds->i]);
+
+	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullderef@*/
+	if (comparison == 0 && ods->EVR && ds->EVR)
+	    comparison = strcmp(ods->EVR[ods->i], ds->EVR[ds->i]);
+	if (comparison == 0 && ods->Flags && ds->Flags)
+	    comparison = (ods->Flags[ods->i] - ds->Flags[ds->i]);
+/*@=nullderef@*/
+
+	if (comparison < 0)
+	    ds->u = ds->i;
+	else if (comparison > 0)
+	    ds->l = ds->i + 1;
+	else
+	    return ds->i;
+    }
+    return -1;
+}
+
+int rpmdsMerge(rpmds * dsp, rpmds ods)
+{
+    rpmds ds;
+    const char ** N;
+    const char ** EVR;
+    int_32 * Flags;
+    int j;
+int save;
+
+    if (dsp == NULL || ods == NULL)
+	return -1;
+
+    /* If not initialized yet, dup the 1st entry. */
+/*@-branchstate@*/
+    if (*dsp == NULL) {
+	save = ods->Count;
+	ods->Count = 1;
+	*dsp = rpmdsDup(ods);
+	ods->Count = save;
+    }
+/*@=branchstate@*/
+    ds = *dsp;
+
+    /*
+     * Add new entries.
+     */
+save = ods->i;
+    ods = rpmdsInit(ods);
+    if (ods != NULL)
+    while (rpmdsNext(ods) >= 0) {
+	/*
+	 * If this entry is already present, don't bother.
+	 */
+	if (rpmdsFind(ds, ods) >= 0)
+	    continue;
+
+	/*
+	 * Insert new entry.
+	 */
+	for (j = ds->Count; j > ds->u; j--)
+	    ds->N[j] = ds->N[j-1];
+	ds->N[ds->u] = ods->N[ods->i];
+	N = rpmdsDupArgv(ds->N, ds->Count+1);
+	ds->N = _free(ds->N);
+	ds->N = N;
+	
+	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullderef -nullpass -nullptrarith @*/
+assert(ods->EVR != NULL);
+assert(ods->Flags != NULL);
+
+	for (j = ds->Count; j > ds->u; j--)
+	    ds->EVR[j] = ds->EVR[j-1];
+	ds->EVR[ds->u] = ods->EVR[ods->i];
+	EVR = rpmdsDupArgv(ds->EVR, ds->Count+1);
+	ds->EVR = _free(ds->EVR);
+	ds->EVR = EVR;
+
+	Flags = xmalloc((ds->Count+1) * sizeof(*Flags));
+	if (ds->u > 0)
+	    memcpy(Flags, ds->Flags, ds->u * sizeof(*Flags));
+	if (ds->u < ds->Count)
+	    memcpy(Flags + ds->u + 1, ds->Flags + ds->u, (ds->Count - ds->u) * sizeof(*Flags));
+	Flags[ds->u] = ods->Flags[ods->i];
+	ds->Flags = _free(ds->Flags);
+	ds->Flags = Flags;
+/*@=nullderef =nullpass =nullptrarith @*/
+
+	ds->i = ds->Count;
+	ds->Count++;
+
+    }
+/*@-nullderef@*/
+ods->i = save;
+/*@=nullderef@*/
+    return 0;
+}
+
 /**
  * Split EVR into epoch, version, and release components.
  * @param evr		[epoch:]version[-release] string
@@ -530,6 +776,7 @@ void parseEVR(char * evr,
 		/*@exposed@*/ /*@out@*/ const char ** vp,
 		/*@exposed@*/ /*@out@*/ const char ** rp)
 	/*@modifies *ep, *vp, *rp @*/
+	/*@requires maxSet(ep) >= 0 /\ maxSet(vp) >= 0 /\ maxSet(rp) >= 0 @*/
 {
     const char *epoch;
     const char *version;		/* assume only version is present */
@@ -537,7 +784,6 @@ void parseEVR(char * evr,
     char *s, *se;
 
     s = evr;
-/*@-boundsread@*/
     while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
     se = strrchr(s, '-');		/* se points to version terminator */
 
@@ -552,7 +798,6 @@ void parseEVR(char * evr,
 	epoch = NULL;	/* XXX disable epoch compare if missing */
 	version = evr;
     }
-/*@=boundsread@*/
     if (se) {
 /*@-boundswrite@*/
 	*se++ = '\0';
@@ -562,11 +807,9 @@ void parseEVR(char * evr,
 	release = NULL;
     }
 
-/*@-boundswrite@*/
     if (ep) *ep = epoch;
     if (vp) *vp = version;
     if (rp) *rp = release;
-/*@=boundswrite@*/
 }
 
 int rpmdsCompare(const rpmds A, const rpmds B)
@@ -585,6 +828,13 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	goto exit;
     }
 
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullderef@*/
+    if (!(A->EVR && A->Flags && B->EVR && B->Flags)) {
+	result = 1;
+	goto exit;
+    }
+
     /* Same name. If either A or B is an existence test, always overlap. */
     if (!((A->Flags[A->i] & RPMSENSE_SENSEMASK) && (B->Flags[B->i] & RPMSENSE_SENSEMASK))) {
 	result = 1;
@@ -598,10 +848,12 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     }
 
     /* Both AEVR and BEVR exist. */
+/*@-boundswrite@*/
     aEVR = xstrdup(A->EVR[A->i]);
     parseEVR(aEVR, &aE, &aV, &aR);
     bEVR = xstrdup(B->EVR[B->i]);
     parseEVR(bEVR, &bE, &bV, &bR);
+/*@=boundswrite@*/
 
     /* Compare {A,B} [epoch:]version[-release] */
     sense = 0;
@@ -640,6 +892,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	 ((A->Flags[A->i] & RPMSENSE_GREATER) && (B->Flags[B->i] & RPMSENSE_GREATER)))) {
 	result = 1;
     }
+/*@=nullderef@*/
 
 exit:
     if (_noisy_range_comparison_debug_message)
@@ -685,6 +938,10 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     int scareMem = 1;
     rpmds provides = NULL;
     int result = 0;
+
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (req->EVR == NULL || req->Flags == NULL)
+	return 1;
 
 /*@-boundsread@*/
     if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
@@ -741,6 +998,10 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     int_32 pkgFlags = RPMSENSE_EQUAL;
     rpmds pkg;
     int rc = 1;	/* XXX assume match, names already match here */
+
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (req->EVR == NULL || req->Flags == NULL)
+	return rc;
 
 /*@-boundsread@*/
     if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))

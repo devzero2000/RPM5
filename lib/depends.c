@@ -127,11 +127,18 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
+    uint_32 tscolor = rpmtsColor(ts);
+    uint_32 dscolor;
+    uint_32 hcolor;
     rpmdbMatchIterator mi;
     Header oh;
+    uint_32 ohcolor;
     int isSource;
     int duplicate = 0;
     rpmtsi pi; rpmte p;
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    const char * arch;
+    const char * os;
     rpmds add;
     rpmds obsoletes;
     alKey pkgKey;	/* addedPackages key */
@@ -141,17 +148,34 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int oc;
 
     /*
-     * Check for previously added versions with the same name.
+     * Check for previously added versions with the same name and arch/os.
      * FIXME: only catches previously added, older packages.
      */
     add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
+    arch = NULL;
+    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    os = NULL;
+    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    hcolor = hGetColor(h);
+
     pkgKey = RPMAL_NOMATCH;
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
+	const char * parch;
+	const char * pos;
 	rpmds this;
 
 	/* XXX Only added packages need be checked for dupes. */
 	if (rpmteType(p) == TR_REMOVED)
 	    continue;
+
+	if (tscolor) {
+	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
+		continue;
+	    if (os == NULL || (pos = rpmteO(p)) == NULL)
+		continue;
+	    if (strcmp(arch, parch) || strcmp(os, pos))
+		continue;
+	}
 
 	if ((this = rpmteDS(p, RPMTAG_NAME)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -201,7 +225,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     
     pkgKey = rpmalAdd(&ts->addedPackages, pkgKey, rpmteKey(p),
 			rpmteDS(p, RPMTAG_PROVIDENAME),
-			rpmteFI(p, RPMTAG_BASENAMES));
+			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
     if (pkgKey == RPMAL_NOMATCH) {
 /*@-boundswrite@*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
@@ -228,18 +252,23 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    goto exit;
     }
 
-/*@-boundsread@*/
+    /* On upgrade, erase older packages of same color (if any). */
+
     mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 
+	/* Ignore colored packages not in our rainbow. */
+	ohcolor = hGetColor(oh);
+	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
+	    continue;
+
 	/* Skip packages that contain identical NEVR. */
 	if (rpmVersionCompare(h, oh) == 0)
-		continue;
+	    continue;
 
 	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
     }
     mi = rpmdbFreeIterator(mi);
-/*@=boundsread@*/
 
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
@@ -250,23 +279,33 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if ((Name = rpmdsN(obsoletes)) == NULL)
 	    continue;	/* XXX can't happen */
 
+	/* Ignore colored obsoletes not in our rainbow. */
+	dscolor = rpmdsColor(obsoletes);
+	if (tscolor && dscolor && !(tscolor & dscolor))
+	    continue;
+
 	/* XXX avoid self-obsoleting packages. */
 	if (!strcmp(rpmteN(p), Name))
-		continue;
+	    continue;
 
 	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
 
 	xx = rpmdbPruneIterator(mi,
-		ts->removedPackages, ts->numRemovedPackages, 1);
+	    ts->removedPackages, ts->numRemovedPackages, 1);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
-		/*
-		 * Rpm prior to 3.0.3 does not have versioned obsoletes.
-		 * If no obsoletes version info is available, match all names.
-		 */
-		if (rpmdsEVR(obsoletes) == NULL
-		 || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
-		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+	    /* Ignore colored packages not in our rainbow. */
+	    ohcolor = hGetColor(oh);
+	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
+		/*@innercontinue@*/ continue;
+
+	    /*
+	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
+	     * If no obsoletes version info is available, match all names.
+	     */
+	    if (rpmdsEVR(obsoletes) == NULL
+	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
+		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
 	}
 	mi = rpmdbFreeIterator(mi);
     }
@@ -529,20 +568,20 @@ exit:
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
  * @param depName	dependency name to filter (or NULL)
- * @param multiLib	skip multilib colored dependencies?
+ * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
 static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
-		/*@null@*/ const char * depName, uint_32 multiLib, int adding)
+		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies ts, requires, conflicts, rpmGlobalMacroContext,
 		fileSystem, internalState */
 {
+    uint_32 dscolor;
     const char * Name;
-    int_32 Flags;
     int rc;
     int ourrc = 0;
 
@@ -557,11 +596,9 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	if (depName != NULL && strcmp(depName, Name))
 	    continue;
 
-	Flags = rpmdsFlags(requires);
-
-	/* If this requirement comes from the core package only, not libraries,
-	   then if we're installing the libraries only, don't count it in. */
-	if (multiLib && !isDependsMULTILIB(Flags))
+	/* Ignore colored requires not in our rainbow. */
+	dscolor = rpmdsColor(requires);
+	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
 	rc = unsatisfiedDepend(ts, requires, adding);
@@ -601,11 +638,9 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	if (depName != NULL && strcmp(depName, Name))
 	    continue;
 
-	Flags = rpmdsFlags(conflicts);
-
-	/* If this requirement comes from the core package only, not libraries,
-	   then if we're installing the libraries only, don't count it in. */
-	if (multiLib && !isDependsMULTILIB(Flags))
+	/* Ignore colored conflicts not in our rainbow. */
+	dscolor = rpmdsColor(conflicts);
+	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
 	rc = unsatisfiedDepend(ts, conflicts, adding);
@@ -912,10 +947,10 @@ zapRelation(rpmte q, rpmte p,
     {
 	int_32 Flags;
 
-	/*@-abstract@*/
+	/*@-abstractcompare@*/
 	if (tsi->tsi_suc != p)
 	    continue;
-	/*@=abstract@*/
+	/*@=abstractcompare@*/
 
 	if (requires == NULL) continue;		/* XXX can't happen */
 
@@ -976,10 +1011,14 @@ static inline int addRelation(rpmts ts,
     int i = 0;
 
     if ((Name = rpmdsN(requires)) == NULL)
-	return 0;	/* XXX can't happen */
+	return 0;
 
     /* Avoid rpmlib feature dependencies. */
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
+	return 0;
+
+    /* Avoid package config dependencies. */
+    if (!strncmp(Name, "config(", sizeof("config(")-1))
 	return 0;
 
     pkgKey = RPMAL_NOMATCH;
@@ -1110,12 +1149,7 @@ int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
     int_32 Flags;
-
-#ifdef	DYING
-    int chainsaw = rpmtsFlags(ts) & RPMTRANS_FLAG_CHAINSAW;
-#else
-    int chainsaw = 1;
-#endif
+    int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
@@ -1132,11 +1166,8 @@ int rpmtsOrder(rpmts ts)
     int nrescans = 10;
     int _printed = 0;
     char deptypechar;
-#ifdef	DYING
-    int oType = TR_ADDED;
-#else
+    size_t tsbytes;
     int oType = 0;
-#endif
     int treex;
     int depth;
     int qlen;
@@ -1158,6 +1189,7 @@ int rpmtsOrder(rpmts ts)
      }
     ordering = alloca(sizeof(*ordering) * (numOrderList + 1));
     loopcheck = numOrderList;
+    tsbytes = 0;
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL)
@@ -1167,7 +1199,6 @@ int rpmtsOrder(rpmts ts)
     /* Record all relations. */
     rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
     pi = rpmtsiInit(ts);
-    /* XXX Only added packages are ordered (for now). */
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
 	if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) == NULL)
@@ -1191,17 +1222,13 @@ int rpmtsOrder(rpmts ts)
 	    case TR_REMOVED:
 		/* Skip if not %preun/%postun requires or legacy prereq. */
 		if (isInstallPreReq(Flags)
-		 || !( isErasePreReq(Flags)
-		    || isLegacyPreReq(Flags) )
-		    )
+		 || !( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if not %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
-		 || !( isInstallPreReq(Flags)
-		    || isLegacyPreReq(Flags) )
-		    )
+		 || !( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1222,17 +1249,13 @@ int rpmtsOrder(rpmts ts)
 	    case TR_REMOVED:
 		/* Skip if %preun/%postun requires or legacy prereq. */
 		if (isInstallPreReq(Flags)
-		 ||  ( isErasePreReq(Flags)
-		    || isLegacyPreReq(Flags) )
-		    )
+		 ||  ( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
-		 ||  ( isInstallPreReq(Flags)
-		    || isLegacyPreReq(Flags) )
-		    )
+		 ||  ( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1275,8 +1298,8 @@ rescan:
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
-	/* Prefer packages in chainsaw or presentation order. */
-	if (!chainsaw)
+	/* Prefer packages in chainsaw or anaconda presentation order. */
+	if (anaconda)
 	    rpmteTSI(p)->tsi_qcnt = (ts->orderCount - rpmtsiOc(pi));
 
 	if (rpmteTSI(p)->tsi_count != 0)
@@ -1319,6 +1342,7 @@ rescan:
 	treex = rpmteTree(q);
 	depth = rpmteDepth(q);
 	(void) rpmteSetDegree(q, 0);
+	tsbytes += rpmtePkgFileSize(q);
 
 	ordering[orderingCount] = rpmteAddedKey(q);
 	orderingCount++;
@@ -1350,7 +1374,7 @@ rescan:
 	    _printed++;
 	    (void) rpmtsUnorderedSuccessors(ts, orderingCount);
 	    rpmMessage(RPMMESS_DEBUG,
-		_("========== successors only (presentation order)\n"));
+		_("========== successors only (%d bytes)\n"), (int)tsbytes);
 
 	    /* Relink the queue in presentation order. */
 	    tsi = rpmteTSI(q);
@@ -1519,7 +1543,7 @@ rescan:
 
 	newOrder[newOrderCount++] = q;
 	ts->order[j] = NULL;
-	if (!chainsaw)
+	if (anaconda)
 	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
 	    if ((q = ts->order[j]) == NULL)
 		/*@innerbreak@*/ break;
@@ -1560,6 +1584,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
+    uint_32 tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
@@ -1586,12 +1611,15 @@ int rpmtsCheck(rpmts ts)
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmds provides;
 
-        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , rpmteNEVR(p));
+/*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
+	rpmMessage(RPMMESS_DEBUG,  "========== +++ %s %s/%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+/*@=nullpass@*/
 	rc = checkPackageDeps(ts, rpmteNEVR(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			NULL,
-			rpmteMultiLib(p), 1);
+			tscolor, 1);
 	if (rc)
 	    goto exit;
 
@@ -1633,7 +1661,10 @@ int rpmtsCheck(rpmts ts)
 	rpmds provides;
 	rpmfi fi;
 
-	rpmMessage(RPMMESS_DEBUG,  "========== --- %s\n" , rpmteNEVR(p));
+/*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
+	rpmMessage(RPMMESS_DEBUG,  "========== --- %s %s/%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+/*@=nullpass@*/
 
 #if defined(DYING) || defined(__LCLINT__)
 	/* XXX all packages now have Provides: name = version-release */

@@ -107,47 +107,31 @@
 #	The location of the rpm database file(s) after "rpm --rebuilddb".
 %_dbpath_rebuild	%{_dbpath}
 
+#
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
 %__debug_install_post   \
-   @RPMCONFIGDIR@/find-debuginfo.sh \
+   @RPMCONFIGDIR@/find-debuginfo.sh %{_builddir}/%{?buildsubdir}\
 %{nil}
 
 #	Template for debug information sub-package.
 %debug_package \
+%ifnarch noarch\
 %global __debug_package 1\
-%package debug \
-Summary: Debug information for package %{name} \
-Group: Development/Debug \
-Requires: %{name} = %{version} \
-%description debug \
-This package provides debug information for package %{name}. \
-Debug information is useful when developing applications that use this \
-package or when debugging this package. \
-%files debug -f debugfiles.list \
-%defattr(-,root,root)  \
+%package debug\
+Summary: Debug information for package %{name}\
+Group: Development/Debug\
+AutoReqProv: 0\
+%description debug\
+This package provides debug information for package %{name}.\
+Debug information is useful when developing applications that use this\
+package or when debugging this package.\
+%files debug -f debugfiles.list\
+%defattr(-,root,root)\
+%endif\
 %{nil}
 
 %_defaultdocdir		%{_usr}/doc
-
-#	Path to cripts to autogenerate package dependencies.
-%__find_provides	@FINDPROVIDES@
-%__find_requires	@FINDREQUIRES@
-#%__find_prereq		???
-#%__find_conflicts	???
-#%__find_obsoletes	???
-
-#
-# fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
-# These macros are necessary only for legacy compatibility, and have moved
-# to per-platform macro configuration (i.e. @RPMCONFIGDIR@/<arch>-<os>/macros)
-#%__id_u		@__ID_U@
-#%__chown_Rhf		@__CHOWN_RHF@
-#%__chgrp_Rhf		@__CHGRP_RHF@
-#%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
-#%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
-#%_fixperms		%{__chmod} -Rf @FIXPERMS@
-#
 
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
@@ -249,6 +233,16 @@ package or when debugging this package. \
 #	
 %_install_langs	all
 
+#	The value of CLASSPATH in build scriptlets (iff configured).
+#	
+#%_javaclasspath	all
+
+#	Import packaging conventions from jpackage.org (prefixed with _
+#	to avoid name collisions).
+#	
+%_javadir      %{_datadir}/java
+%_javadocdir   %{_datadir}/javadoc
+
 #
 #	Deprecated.
 #
@@ -325,6 +319,45 @@ package or when debugging this package. \
 # Note: The default value should be 0 for legacy compatibility.
 %_missing_doc_files_terminate_build	1
 
+#
+# Use internal dependency generator rather than external helpers?
+%_use_internal_dependency_generator	0
+
+#
+# Path to scripts to autogenerate package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is zero.
+#%__find_provides	@RPMCONFIGDIR@/rpmdeps --provides
+#%__find_requires	@RPMCONFIGDIR@/rpmdeps --requires
+%__find_provides	@RPMCONFIGDIR@/find-provides
+%__find_requires	@RPMCONFIGDIR@/find-requires
+#%__find_conflicts	???
+#%__find_obsoletes	???
+
+#
+# Path to scripts to autogenerate per-interpreter package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires).
+#%__perl_provides	@RPMCONFIGDIR@/perldeps --provides
+#%__perl_requires	@RPMCONFIGDIR@/perldeps --requires
+%__perl_provides	@RPMCONFIGDIR@/perl.prov
+%__perl_requires	@RPMCONFIGDIR@/perl.req
+
+#
+# fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
+# These macros are necessary only for legacy compatibility, and have moved
+# to per-platform macro configuration (i.e. @RPMCONFIGDIR@/<arch>-<os>/macros)
+#
+# Note: These are no longer enabled by default.
+#%__id_u		@__ID_U@
+#%__chown_Rhf		@__CHOWN_RHF@
+#%__chgrp_Rhf		@__CHGRP_RHF@
+#%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
+#%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
+#%_fixperms		%{__chmod} -Rf @FIXPERMS@
+#
+
 #==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.
@@ -366,8 +399,8 @@ package or when debugging this package. \
 #   token	works?	Berkeley db flag or value
 #==================================================
 #---------------------- DBENV->open parameters and tunable values:
-#   mp_mmapsize=8Mb	DBENV->set_mp_mmapsize
-#   mp_size=512Kb	DBENV->set_cachesize
+#   mmapsize=16Mb	DBENV->set_mp_mmapsize
+#   cachesize=1Mb	DBENV->set_cachesize, DB->set_cachesize
 #---------------------- DBENV->open and DB->open common bits:
 #   create		DB_CREATE
 #   thread	???	DB_THREAD	(useless w/o posix mutexes on linux)
@@ -386,7 +419,6 @@ package or when debugging this package. \
 #   lockdown	???	DB_LOCKDOWN
 #   shared	+++	DB_SYSTEM_MEM
 #---------------------- DB->open parameters and tunable values:
-#   cachesize=512Kb +++	DB->set_cachesize	(meaningless if mp_size is used)
 #   pagesize=512 +++	DB->set_pagesize
 #---------------------- DB->open bits:
 #   excl	???	DB_EXCL
@@ -416,9 +448,9 @@ package or when debugging this package. \
 #				mp_mmapsize=8Mb mp_size=512Kb
 
 # Use a CDB database model for concurrent access.
+# XXX Add "private" here for legacy interoperation transiting to glibc+nptl.
 %__dbi_cdb			create cdb mpool mp_mmapsize=16Mb mp_size=1Mb
 
-# XXX The "traditional" rpmdb shared/exclusive fcntl(2) lock on Packages model:
 %__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_cdb}
 
 # Note: adding nofsync here speeds up --rebuilddb a lot.
@@ -540,6 +572,13 @@ package or when debugging this package. \
 # XXX	Note: escaped %% for use in headerSprintf()
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
+#	The default transaction color. This value is a set of bits to
+#	determine file and dependency affinity for this arch.
+#		0	uncolored (i.e. use only arch as install hint)
+#		1	Elf32 permitted
+#		2	Elf64 permitted
+%_transaction_color	@RPMCANONCOLOR@
+
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-redhat location. The macro is usually defined in
 #	/etc/rpm/macros.solve, installed with the rpmdb-redhat package.
@@ -645,6 +684,11 @@ package or when debugging this package. \
 	%{?_dependency_whiteout_5_2}	\
 	%{nil}
 
+#
+# Default headerSprintf() output format string for rpm -qa
+#
+# XXX	Note: escaped %% for use in headerSprintf()
+%_query_all_fmt		%%{name}-%%{version}-%%{release}
 
 #==============================================================================
 # ---- Cache configuration macros.
@@ -707,6 +751,8 @@ package or when debugging this package. \
   export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
   %{?buildroot:RPM_BUILD_ROOT=\"%{u2p:%{buildroot}}\"\
   export RPM_BUILD_ROOT}\
+  %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
+  export CLASSPATH}\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
@@ -773,6 +819,20 @@ package or when debugging this package. \
 
 #%{__spec_install_body}\
 #%{__spec_install_post}\
+#%{nil}
+
+%__spec_check_shell	%{___build_shell}
+%__spec_check_args	%{___build_args}
+%__spec_check_cmd	%{___build_cmd}
+%__spec_check_pre	%{___build_pre}
+%__spec_check_body	%{___build_body}
+%__spec_check_post	%{___build_post}
+%__spec_check_template	#!%{__spec_check_shell}\
+%{__spec_check_pre}\
+%{nil}
+
+#%{__spec_check_body}\
+#%{__spec_check_post}\
 #%{nil}
 
 #%__spec_autodep_shell	%{___build_shell}

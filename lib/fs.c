@@ -1,4 +1,3 @@
-/*@-mods@*/
 /**
  * \file lib/fs.c
  */
@@ -24,6 +23,8 @@ struct fsinfo {
 static int numFilesystems = 0;
 
 void freeFilesystems(void)
+	/*@globals filesystems, fsnames, numFilesystems @*/
+	/*@modifies filesystems, fsnames, numFilesystems @*/
 {
     int i;
 
@@ -133,8 +134,10 @@ static int getFilesystemList(void)
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies fileSystem, internalState@*/
+	/*@globals filesystems, fsnames, numFilesystems,
+		fileSystem, internalState @*/
+	/*@modifies filesystems, fsnames, numFilesystems,
+		fileSystem, internalState @*/
 {
     int numAlloced = 10;
     struct stat sb;
@@ -197,16 +200,23 @@ static int getFilesystemList(void)
 	    return 1;
 	}
 
-	numFilesystems++;
-	if ((numFilesystems + 1) == numAlloced) {
+	if ((numFilesystems + 2) == numAlloced) {
 	    numAlloced += 10;
 	    filesystems = xrealloc(filesystems, 
 				  sizeof(*filesystems) * (numAlloced + 1));
 	}
 
-	filesystems[numFilesystems-1].dev = sb.st_dev;
-	filesystems[numFilesystems-1].mntPoint = xstrdup(mntdir);
-	filesystems[numFilesystems-1].rdonly = rdonly;
+	filesystems[numFilesystems].dev = sb.st_dev;
+	filesystems[numFilesystems].mntPoint = xstrdup(mntdir);
+	filesystems[numFilesystems].rdonly = rdonly;
+#if 0
+	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%04x %s %s\n"),
+		numFilesystems,
+		(unsigned) filesystems[numFilesystems].dev,
+		(filesystems[numFilesystems].rdonly ? "ro" : "rw"),
+		filesystems[numFilesystems].mntPoint);
+#endif
+	numFilesystems++;
     }
 
 #   if GETMNTENT_ONE || GETMNTENT_TWO
@@ -353,4 +363,3 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
     return 0;
 }
 /*@=usereleased =onlytrans@*/
-/*@=mods@*/

@@ -17,10 +17,6 @@
 #include "debug.h"
 
 /*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
-/*@access rpmps @*/	/* XXX compared with NULL */
-/*@access Header @*/		/* XXX compared with NULL */
-/*@access rpmdb @*/		/* XXX compared with NULL */
-/*@access FD_t @*/		/* XXX compared with NULL */
 /*@access IDTX @*/
 /*@access IDT @*/
 
@@ -52,8 +48,10 @@ static void printHash(const unsigned long amount, const unsigned long total)
     rpmcliHashesTotal = (isatty (STDOUT_FILENO) ? 44 : 50);
 
     if (rpmcliHashesCurrent != rpmcliHashesTotal) {
+/*@+relaxtypes@*/
 	float pct = (total ? (((float) amount) / total) : 1.0);
 	hashesNeeded = (rpmcliHashesTotal * pct) + 0.5;
+/*@=relaxtypes@*/
 	while (hashesNeeded > rpmcliHashesCurrent) {
 	    if (isatty (STDOUT_FILENO)) {
 		int i;
@@ -77,9 +75,11 @@ static void printHash(const unsigned long amount, const unsigned long total)
 	    if (isatty(STDOUT_FILENO)) {
 	        for (i = 1; i < rpmcliHashesCurrent; i++)
 		    (void) putchar ('#');
+/*@+relaxtypes@*/
 		pct = (rpmcliProgressTotal
 		    ? (((float) rpmcliProgressCurrent) / rpmcliProgressTotal)
 		    : 1);
+/*@=relaxtypes@*/
 		fprintf(stdout, " [%3d%%]", (int)((100 * pct) + 0.5));
 	    }
 	    fprintf(stdout, "\n");
@@ -99,15 +99,15 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	/*@modifies rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
 		fileSystem @*/
 {
-    /*@-castexpose@*/
+/*@-abstract -castexpose @*/
     Header h = (Header) arg;
-    /*@=castexpose@*/
+/*@=abstract =castexpose @*/
     char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
-    /*@-assignexpose -abstract @*/
+/*@-abstract -assignexpose @*/
     const char * filename = (const char *)key;
-    /*@=assignexpose =abstract @*/
+/*@=abstract =assignexpose @*/
     static FD_t fd = NULL;
     int xx;
 
@@ -122,21 +122,23 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
 			Fstrerror(fd));
-	    if (fd) {
+	    if (fd != NULL) {
 		xx = Fclose(fd);
 		fd = NULL;
 	    }
 	} else
 	    fd = fdLink(fd, "persist (showProgress)");
 	/*@=type@*/
-	return fd;
+/*@+voidabstract@*/
+	return (void *)fd;
+/*@=voidabstract@*/
 	/*@notreached@*/ break;
 
     case RPMCALLBACK_INST_CLOSE_FILE:
 	/*@-type@*/ /* FIX: still necessary? */
 	fd = fdFree(fd, "persist (showProgress)");
 	/*@=type@*/
-	if (fd) {
+	if (fd != NULL) {
 	    xx = Fclose(fd);
 	    fd = NULL;
 	}
@@ -167,12 +169,14 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 
     case RPMCALLBACK_TRANS_PROGRESS:
     case RPMCALLBACK_INST_PROGRESS:
+/*@+relaxtypes@*/
 	if (flags & INSTALL_PERCENT)
 	    fprintf(stdout, "%%%% %f\n", (double) (total
 				? ((((float) amount) / total) * 100)
 				: 100.0));
 	else if (flags & INSTALL_HASH)
 	    printHash(amount, total);
+/*@=relaxtypes@*/
 	(void) fflush(stdout);
 	break;
 
@@ -339,7 +343,10 @@ int rpmInstall(rpmts ts,
     /*@=temptrans@*/
 	av = _free(av);	ac = 0;
 	rc = rpmGlob(*eiu->fnp, &ac, &av);
-	if (rc || ac == 0) continue;
+	if (rc || ac == 0) {
+	    rpmError(RPMERR_OPEN, _("File not found by glob: %s\n"), *eiu->fnp);
+	    continue;
+	}
 
 	eiu->argv = xrealloc(eiu->argv, (eiu->argc+ac+1) * sizeof(*eiu->argv));
 	memcpy(eiu->argv+eiu->argc, av, ac * sizeof(*av));
@@ -454,7 +461,7 @@ if (fileURL[0] == '=') {
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
 			Fstrerror(eiu->fd));
-	    if (eiu->fd) {
+	    if (eiu->fd != NULL) {
 		xx = Fclose(eiu->fd);
 		eiu->fd = NULL;
 	    }
@@ -585,7 +592,7 @@ maybe_manifest:
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
 			Fstrerror(eiu->fd));
-	    if (eiu->fd) {
+	    if (eiu->fd != NULL) {
 		xx = Fclose(eiu->fd);
 		eiu->fd = NULL;
 	    }
@@ -688,7 +695,7 @@ maybe_manifest:
 	    if (eiu->fd == NULL || Ferror(eiu->fd)) {
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
 			   eiu->sourceURL[i], Fstrerror(eiu->fd));
-		if (eiu->fd) {
+		if (eiu->fd != NULL) {
 		    xx = Fclose(eiu->fd);
 		    eiu->fd = NULL;
 		}
@@ -833,7 +840,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
     fd = Fopen(arg, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
-	if (fd) (void) Fclose(fd);
+	if (fd != NULL) (void) Fclose(fd);
 	return 1;
     }
 
@@ -932,6 +939,9 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 
     /*@-branchstate@*/
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
+#ifdef	NOTYET
+    (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
+#endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmTagType type = RPM_NULL_TYPE;
 	int_32 count = 0;
@@ -993,7 +1003,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	if (fd == NULL || Ferror(fd)) {
             rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), av[i],
                         Fstrerror(fd));
-	    if (fd) (void) Fclose(fd);
+	    if (fd != NULL) (void) Fclose(fd);
 	    continue;
 	}
 
@@ -1098,6 +1108,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    goto exit;
 	}
 	rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID);
+
 	if (rtids != NULL) {
 	    rp = rtids->idt;
 	    nrids = rtids->nidt;

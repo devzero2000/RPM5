@@ -10,6 +10,8 @@ static int _debug = 0;
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
+#include "rpmds.h"
+#include "rpmts.h"
 #include "debug.h"
 
 /*@access FD_t @*/	/* compared with NULL */
@@ -20,12 +22,14 @@ static int _debug = 0;
 static struct PartRec {
     int part;
     int len;
-/*@observer@*/ /*@null@*/ const char * token;
+/*@observer@*/ /*@null@*/
+    const char * token;
 } partList[] = {
     { PART_PREAMBLE,      0, "%package"},
     { PART_PREP,          0, "%prep"},
     { PART_BUILD,         0, "%build"},
     { PART_INSTALL,       0, "%install"},
+    { PART_CHECK,         0, "%check"},
     { PART_CLEAN,         0, "%clean"},
     { PART_PREUN,         0, "%preun"},
     { PART_POSTUN,        0, "%postun"},
@@ -387,7 +391,7 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 
 /*@todo Skip parse recursion if os is not compatible. @*/
 /*@-boundswrite@*/
-int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
+int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		const char *buildRootURL, int recursing, const char *passPhrase,
 		char *cookie, int anyarch, int force)
 {
@@ -426,8 +430,6 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 	spec->gotBuildRootURL = 1;
 	spec->buildRootURL = xstrdup(buildRootURL);
 	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
-if (_debug)
-fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootURL, spec->buildRootURL, buildRoot);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->recursing = recursing;
@@ -459,6 +461,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    /*@switchbreak@*/ break;
 	case PART_BUILD:
 	case PART_INSTALL:
+	case PART_CHECK:
 	case PART_CLEAN:
 	    parsePart = parseBuildInstallClean(spec, parsePart);
 	    /*@switchbreak@*/ break;
@@ -518,13 +521,15 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 #endif
 		spec->BASpecs[index] = NULL;
-		if (parseSpec(&(spec->BASpecs[index]),
-				  specFile, spec->rootURL, buildRootURL, 1,
-				  passPhrase, cookie, anyarch, force))
+		if (parseSpec(ts, specFile, spec->rootURL, buildRootURL, 1,
+				  passPhrase, cookie, anyarch, force)
+		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;
+/*@-nullstate@*/
 			spec = freeSpec(spec);
 			return RPMERR_BADSPEC;
+/*@=nullstate@*/
 		}
 #ifdef	DYING
 		rpmSetMachine(saveArch, NULL);
@@ -537,10 +542,12 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 
 	    spec->BACount = index;
 	    if (! index) {
-		spec = freeSpec(spec);
 		rpmError(RPMERR_BADSPEC,
 			_("No compatible architectures found for build\n"));
+/*@-nullstate@*/
+		spec = freeSpec(spec);
 		return RPMERR_BADSPEC;
+/*@=nullstate@*/
 	    }
 
 	    /*
@@ -561,7 +568,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    }
 	    /*@=branchstate@*/
 
-	    *specp = spec;
+	    (void) rpmtsSetSpec(ts, spec);
 	    return 0;
 	}
     }
@@ -611,6 +618,9 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 		RPM_STRING_TYPE, arch, 1);
 	(void) headerAddEntry(pkg->header, RPMTAG_PLATFORM,
 		RPM_STRING_TYPE, platform, 1);
+
+	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+
     }
 
 #ifdef	DYING
@@ -623,7 +633,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
   }
 
     closeSpec(spec);
-    *specp = spec;
+    (void) rpmtsSetSpec(ts, spec);
 
     return 0;
 }

@@ -23,7 +23,7 @@ rpm \- RPM Package Manager
 
 
 
-\fBrpm\fR {\fB-K|--checksig\fR} [\fB--nogpg\fR] [\fB--nopgp\fR] [\fB--nomd5\fR]
+\fBrpm\fR {\fB-K|--checksig\fR} [\fB--nosignature\fR] [\fB--nodigest\fR]
     \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .SS "INSTALLING, UPGRADING, AND REMOVING PACKAGES:"
@@ -737,7 +737,7 @@ The general forms of rpm digital signature commands are
 \fBrpm\fR \fB--import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
 
 
-\fBrpm\fR {\fB--checksig\fR} [\fB--nogpg\fR] [\fB--nopgp\fR] [\fB--nomd5\fR]
+\fBrpm\fR {\fB--checksig\fR} [\fB--nosignature\fR] [\fB--nodigest\fR]
     \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
@@ -783,7 +783,7 @@ In order to sign packages using GPG, \fBrpm\fR
 must be configured to run GPG and be able to find a key
 ring with the appropriate keys. By default,
 \fBrpm\fR uses the same conventions as GPG
-to find key rings, namely the \fB$GPGPATH\fR environment
+to find key rings, namely the \fB$GNUPGHOME\fR environment
 variable.  If your key rings are not located where GPG expects
 them to be, you will need to configure the macro
 \fB%_gpg_path\fR

@@ -11,58 +11,55 @@
 #############################################################
 # Values for RPM_OPT_FLAGS for various platforms
 
-# XXX this is the i386 optflags that rpm has traditionally used in the past.
-#optflags: i386 -O2 -m486 -fno-strength-reduce
-optflags: i386 -O2 -march=i386 -mcpu=i686
-optflags: i486 -O2 -march=i486
-optflags: i586 -O2 -march=i586
-optflags: i686 -O2 -march=i686
-optflags: athlon -O2 -march=athlon
-optflags: ia64 -O2
-optflags: x86_64 -O2
+optflags: i386 -O2 -g -march=i386 -mcpu=i686
+optflags: i486 -O2 -g -march=i486
+optflags: i586 -O2 -g -march=i586
+optflags: i686 -O2 -g -march=i686
+optflags: athlon -O2 -g -march=athlon
+optflags: ia64 -O2 -g
+optflags: x86_64 -O2 -g
 
-# XXX Please note that -mieee has been added in rpm-3.0.5.
-optflags: alpha -O2 -mieee
-optflags: alphaev5 -O2 -mieee -mcpu=ev5
-optflags: alphaev56 -O2 -mieee -mcpu=ev56
-optflags: alphapca56 -O2 -mieee -mcpu=pca56
-optflags: alphaev6 -O2 -mieee -mcpu=ev6
-optflags: alphaev67 -O2 -mieee -mcpu=ev67
+optflags: alpha -O2 -g -mieee
+optflags: alphaev5 -O2 -g -mieee -mcpu=ev5
+optflags: alphaev56 -O2 -g -mieee -mcpu=ev56
+optflags: alphapca56 -O2 -g -mieee -mcpu=pca56
+optflags: alphaev6 -O2 -g -mieee -mcpu=ev6
+optflags: alphaev67 -O2 -g -mieee -mcpu=ev67
 
-optflags: sparc -O2 -m32 -mtune=ultrasparc
-optflags: sparcv9 -O2 -m32 -mcpu=ultrasparc
-optflags: sparc64 -O2 -m64 -mcpu=ultrasparc
+optflags: sparc -O2 -g -m32 -mtune=ultrasparc
+optflags: sparcv9 -O2 -g -m32 -mcpu=ultrasparc
+optflags: sparc64 -O2 -g -m64 -mcpu=ultrasparc
 
-optflags: m68k -O2 -fomit-frame-pointer
+optflags: m68k -O2 -g -fomit-frame-pointer
 
-optflags: ppc -O2 -fsigned-char
-optflags: ppciseries -O2 -fsigned-char
-optflags: ppcpseries -O2 -fsigned-char
-optflags: ppc64 -O2 -fsigned-char
+optflags: ppc -O2 -g -fsigned-char
+optflags: ppciseries -O2 -g -fsigned-char
+optflags: ppcpseries -O2 -g -fsigned-char
+optflags: ppc64 -O2 -g -fsigned-char
 
-optflags: parisc -O2 -mpa-risc-1-0
-optflags: hppa1.0 -O2 -mpa-risc-1-0
-optflags: hppa1.1 -O2 -mpa-risc-1-0
-optflags: hppa1.2 -O2 -mpa-risc-1-0
-optflags: hppa2.0 -O2 -mpa-risc-1-0
+optflags: parisc -O2 -g -mpa-risc-1-0
+optflags: hppa1.0 -O2 -g -mpa-risc-1-0
+optflags: hppa1.1 -O2 -g -mpa-risc-1-0
+optflags: hppa1.2 -O2 -g -mpa-risc-1-0
+optflags: hppa2.0 -O2 -g -mpa-risc-1-0
 
-optflags: mips -O2
-optflags: mipsel -O2
+optflags: mips -O2 -g
+optflags: mipsel -O2 -g
 
-optflags: armv3l -O2 -fsigned-char -fomit-frame-pointer -march=armv3
-optflags: armv4b -O2 -fsigned-char -fomit-frame-pointer -march=armv4
-optflags: armv4l -O2 -fsigned-char -fomit-frame-pointer -march=armv4
+optflags: armv3l -O2 -g -fsigned-char -fomit-frame-pointer -march=armv3
+optflags: armv4b -O2 -g -fsigned-char -fomit-frame-pointer -march=armv4
+optflags: armv4l -O2 -g -fsigned-char -fomit-frame-pointer -march=armv4
 
-optflags: atarist -O2 -fomit-frame-pointer
-optflags: atariste -O2 -fomit-frame-pointer
-optflags: ataritt -O2 -fomit-frame-pointer
-optflags: falcon -O2 -fomit-frame-pointer
-optflags: atariclone -O2 -fomit-frame-pointer
-optflags: milan -O2 -fomit-frame-pointer
-optflags: hades -O2 -fomit-frame-pointer
+optflags: atarist -O2 -g -fomit-frame-pointer
+optflags: atariste -O2 -g -fomit-frame-pointer
+optflags: ataritt -O2 -g -fomit-frame-pointer
+optflags: falcon -O2 -g -fomit-frame-pointer
+optflags: atariclone -O2 -g -fomit-frame-pointer
+optflags: milan -O2 -g -fomit-frame-pointer
+optflags: hades -O2 -g -fomit-frame-pointer
 
-optflags: s390 -O2
-optflags: s390x -O2 
+optflags: s390 -O2 -g
+optflags: s390x -O2 -g
 
 #############################################################
 # Canonical arch names and numbers
@@ -72,6 +69,7 @@ arch_canon:	i686:	i686	1
 arch_canon:	i586:	i586	1
 arch_canon:	i486:	i486	1
 arch_canon:	i386:	i386	1
+arch_canon:	x86_64:	x86_64	1
 
 arch_canon:	alpha:	alpha	2
 arch_canon:	alphaev5: alphaev5	2
@@ -120,7 +118,9 @@ arch_canon:	i370: i370	14
 arch_canon:	s390x: s390x	15
 
 arch_canon:	ppc64:	ppc64	16
-arch_canon:	x86_64:	x86_64	17
+
+arch_canon:	sh: sh		17
+arch_canon:	xtensa: xtensa	18
 
 #############################################################
 # Canonical OS names and numbers

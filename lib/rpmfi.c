@@ -11,6 +11,8 @@
 #include "cpio.h"	/* XXX CPIO_FOO */
 #include "fsm.h"	/* XXX newFSM() */
 
+#include "rpmds.h"
+
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
@@ -19,6 +21,7 @@
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar */
+#include "rpmmacro.h"	/* XXX rpmCleanPath */
 
 #include "debug.h"
 
@@ -263,6 +266,58 @@ int_32 rpmfiFInode(rpmfi fi)
     return finode;
 }
 
+uint_32 rpmfiFColor(rpmfi fi)
+{
+    int_32 fcolor = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->fcolors != NULL)
+	    /* XXX ignore all but lsnibble for now. */
+	    fcolor = (fi->fcolors[fi->i] & 0x0f);
+/*@=boundsread@*/
+    }
+    return fcolor;
+}
+
+const char * rpmfiFClass(rpmfi fi)
+{
+    const char * fclass = NULL;
+    int cdictx;
+
+    if (fi != NULL && fi->fcdictx != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	cdictx = fi->fcdictx[fi->i];
+	if (fi->cdict != NULL && cdictx >= 0 && cdictx < fi->ncdict)
+	    fclass = fi->cdict[cdictx];
+/*@=boundsread@*/
+    }
+    return fclass;
+}
+
+int_32 rpmfiFDepends(rpmfi fi, const int_32 ** fddictp)
+{
+    int fddictx = -1;
+    int fddictn = 0;
+    const int_32 * fddict = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->fddictn != NULL)
+	    fddictn = fi->fddictn[fi->i];
+	if (fddictn > 0 && fi->fddictx != NULL)
+	    fddictx = fi->fddictx[fi->i];
+	if (fi->ddict != NULL && fddictx >= 0 && (fddictx+fddictn) <= fi->nddict)
+	    fddict = fi->ddict + fddictx;
+/*@=boundsread@*/
+    }
+/*@-boundswrite -dependenttrans -onlytrans @*/
+    if (fddictp)
+	*fddictp = fddict;
+/*@=boundswrite =dependenttrans =onlytrans @*/
+    return fddictn;
+}
+
 int_32 rpmfiFNlink(rpmfi fi)
 {
     int_32 nlink = 0;
@@ -461,7 +516,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, fileAction * actions)
 	/*@modifies ts, fi, origH, actions @*/
 {
-    rpmte p = fi->te;
+    rpmte p = rpmtsRelocateElement(ts);
     HGE_t hge = fi->hge;
     HAE_t hae = fi->hae;
     HME_t hme = fi->hme;
@@ -495,6 +550,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 			(void **) &validRelocations, &numValid))
 	numValid = 0;
 
+assert(p != NULL);
     numRelocations = 0;
     if (p->relocs)
 	while (p->relocs[numRelocations].newPath ||
@@ -670,19 +726,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	fileTypes ft;
 	int fnlen;
 
-	/*
-	 * If only adding libraries of different arch into an already
-	 * installed package, skip all other files.
-	 */
-	if (rpmteMultiLib(p) && !isFileMULTILIB((fFlags[i]))) {
-	    if (actions) {
-		actions[i] = FA_SKIPMULTILIB;
-		rpmMessage(RPMMESS_DEBUG, _("excluding multilib path %s%s\n"), 
-			dirNames[dirIndexes[i]], baseNames[i]);
-	    }
-	    continue;
-	}
-
 	len = reldel +
 		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
 	/*@-branchstate@*/
@@ -828,8 +871,16 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	    if (relocations[j].newPath) { /* Relocate the path */
 		const char * s = relocations[j].newPath;
 		char * t = alloca(strlen(s) + strlen(dirNames[i]) - len + 1);
+		size_t slen;
 
 		(void) stpcpy( stpcpy(t, s) , dirNames[i] + len);
+
+		/* Unfortunatly rpmCleanPath strips the trailing slash.. */
+		(void) rpmCleanPath(t);
+		slen = strlen(t);
+		t[slen] = '/';
+		t[slen+1] = '\0';
+
 		if (actions)
 		    rpmMessage(RPMMESS_DEBUG,
 			_("relocating directory %s to %s\n"), dirNames[i], t);
@@ -907,6 +958,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->fmd5s = hfd(fi->fmd5s, -1);
 	fi->md5s = _free(fi->md5s);
 
+	fi->cdict = hfd(fi->cdict, -1);
+
 	fi->fuser = hfd(fi->fuser, -1);
 	fi->fuids = _free(fi->fuids);
 	fi->fgroup = hfd(fi->fgroup, -1);
@@ -924,6 +977,13 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	    fi->frdevs = _free(fi->frdevs);
 	    fi->finodes = _free(fi->finodes);
 	    fi->dil = _free(fi->dil);
+
+	    fi->fcolors = _free(fi->fcolors);
+	    fi->fcdictx = _free(fi->fcdictx);
+	    fi->ddict = _free(fi->ddict);
+	    fi->fddictx = _free(fi->fddictx);
+	    fi->fddictn = _free(fi->fddictn);
+
 	}
 	/*@=evalorder@*/
     }
@@ -980,6 +1040,7 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     HFD_t hfd = headerFreeData;
+    rpmte p;
     rpmfi fi = NULL;
     const char * Type;
     uint_32 * uip;
@@ -1032,6 +1093,15 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
     xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
     xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, (void **) &fi->vflags, NULL);
     xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
+
+    xx = hge(h, RPMTAG_FILECOLORS, NULL, (void **) &fi->fcolors, NULL);
+    xx = hge(h, RPMTAG_CLASSDICT, NULL, (void **) &fi->cdict, &fi->ncdict);
+    xx = hge(h, RPMTAG_FILECLASS, NULL, (void **) &fi->fcdictx, NULL);
+
+    xx = hge(h, RPMTAG_DEPENDSDICT, NULL, (void **) &fi->ddict, &fi->nddict);
+    xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, (void **) &fi->fddictx, NULL);
+    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, (void **) &fi->fddictn, NULL);
+
     xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
     if (xx == 0 || fi->fstates == NULL)
 	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
@@ -1053,24 +1123,28 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
     xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
 
+    fi->fmd5s = NULL;
     xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
 
-    t = xmalloc(fi->fc * 16);
-    fi->md5s = t;
-    for (i = 0; i < fi->fc; i++) {
-	const char * fmd5;
-	int j;
+    fi->md5s = NULL;
+    if (fi->fmd5s) {
+	t = xmalloc(fi->fc * 16);
+	fi->md5s = t;
+	for (i = 0; i < fi->fc; i++) {
+	    const char * fmd5;
+	    int j;
 
-	fmd5 = fi->fmd5s[i];
-	if (!(fmd5 && *fmd5 != '\0')) {
-	    memset(t, 0, 16);
-	    t += 16;
-	    continue;
+	    fmd5 = fi->fmd5s[i];
+	    if (!(fmd5 && *fmd5 != '\0')) {
+		memset(t, 0, 16);
+		t += 16;
+		continue;
+	    }
+	    for (j = 0; j < 16; j++, t++, fmd5 += 2)
+		*t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
 	}
-	for (j = 0; j < 16; j++, t++, fmd5 += 2)
-	    *t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
+	fi->fmd5s = hfd(fi->fmd5s, -1);
     }
-    fi->fmd5s = hfd(fi->fmd5s, -1);
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs or finodes */
     xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
@@ -1086,7 +1160,7 @@ if (fi->actions == NULL)
 
     if (ts != NULL)
     if (fi != NULL)
-    if (fi->te != NULL && rpmteType(fi->te) == TR_ADDED) {
+    if ((p = rpmtsRelocateElement(ts)) != NULL && rpmteType(p) == TR_ADDED) {
 	Header foo;
 /* XXX DYING */
 if (fi->actions == NULL)
@@ -1108,6 +1182,17 @@ if (fi->actions == NULL)
 	_fdupe(fi, vflags);
 	_fdupe(fi, fmodes);
 	_fdupe(fi, dil);
+
+	_fdupe(fi, fcolors);
+	_fdupe(fi, fcdictx);
+
+	if (fi->ddict != NULL)
+	    fi->ddict = memcpy(xmalloc(fi->nddict * sizeof(*fi->ddict)),
+			fi->ddict, fi->nddict * sizeof(*fi->ddict));
+
+	_fdupe(fi, fddictx);
+	_fdupe(fi, fddictn);
+
 	fi->h = headerFree(fi->h);
     }
 
@@ -1136,4 +1221,158 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
     /*@-compdef -nullstate@*/ /* FIX: rpmfi null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
     /*@=compdef =nullstate@*/
+}
+
+void rpmfiBuildFClasses(Header h,
+	/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
+{
+    int scareMem = 1;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    const char * FClass;
+    const char ** av;
+    int ac;
+    size_t nb;
+    char * t;
+
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
+    }
+
+    /* Compute size of file class argv array blob. */
+    nb = (ac + 1) * sizeof(*av);
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	FClass = rpmfiFClass(fi);
+	if (FClass && *FClass != '\0')
+	    nb += strlen(FClass);
+	nb += 1;
+    }
+
+    /* Create and load file class argv array. */
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	FClass = rpmfiFClass(fi);
+	av[ac++] = t;
+	if (FClass && *FClass != '\0')
+	    t = stpcpy(t, FClass);
+	*t++ = '\0';
+    }
+    av[ac] = NULL;
+    /*@=branchstate@*/
+
+exit:
+    fi = rpmfiFree(fi);
+    /*@-branchstate@*/
+    if (fclassp)
+	*fclassp = av;
+    else
+	av = _free(av);
+    /*@=branchstate@*/
+    if (fcp) *fcp = ac;
+}
+
+void rpmfiBuildFDeps(Header h, rpmTag tagN,
+	/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
+{
+    int scareMem = 1;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    rpmds ds = NULL;
+    const char ** av;
+    int ac;
+    size_t nb;
+    char * t;
+    char deptype = 'R';
+    char mydt;
+    const char * DNEVR;
+    const int_32 * ddict;
+    unsigned ix;
+    int ndx;
+
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
+    }
+
+    if (tagN == RPMTAG_PROVIDENAME)
+	deptype = 'P';
+    else if (tagN == RPMTAG_REQUIRENAME)
+	deptype = 'R';
+
+    ds = rpmdsNew(h, tagN, scareMem);
+
+    /* Compute size of file depends argv array blob. */
+    nb = (ac + 1) * sizeof(*av);
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	ddict = NULL;
+	ndx = rpmfiFDepends(fi, &ddict);
+	if (ddict != NULL)
+	while (ndx-- > 0) {
+	    ix = *ddict++;
+	    mydt = ((ix >> 24) & 0xff);
+	    if (mydt != deptype)
+		/*@innercontinue@*/ continue;
+	    ix &= 0x00ffffff;
+	    (void) rpmdsSetIx(ds, ix-1);
+	    if (rpmdsNext(ds) < 0)
+		/*@innercontinue@*/ continue;
+	    DNEVR = rpmdsDNEVR(ds);
+	    if (DNEVR != NULL)
+		nb += strlen(DNEVR+2) + 1;
+	}
+	nb += 1;
+    }
+
+    /* Create and load file depends argv array. */
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    ac = 0;
+    /*@-branchstate@*/
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	av[ac++] = t;
+	ddict = NULL;
+	ndx = rpmfiFDepends(fi, &ddict);
+	if (ddict != NULL)
+	while (ndx-- > 0) {
+	    ix = *ddict++;
+	    mydt = ((ix >> 24) & 0xff);
+	    if (mydt != deptype)
+		/*@innercontinue@*/ continue;
+	    ix &= 0x00ffffff;
+	    (void) rpmdsSetIx(ds, ix-1);
+	    if (rpmdsNext(ds) < 0)
+		/*@innercontinue@*/ continue;
+	    DNEVR = rpmdsDNEVR(ds);
+	    if (DNEVR != NULL) {
+		t = stpcpy(t, DNEVR+2);
+		*t++ = ' ';
+		*t = '\0';
+	    }
+	}
+	*t++ = '\0';
+    }
+    /*@=branchstate@*/
+    av[ac] = NULL;
+
+exit:
+    fi = rpmfiFree(fi);
+    ds = rpmdsFree(ds);
+    /*@-branchstate@*/
+    if (fdepsp)
+	*fdepsp = av;
+    else
+	av = _free(av);
+    /*@=branchstate@*/
+    if (fcp) *fcp = ac;
 }

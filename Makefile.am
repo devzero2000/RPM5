@@ -12,7 +12,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	xmlspec/examples/*.sh xmlspec/examples/*.lst \
 	xmlspec/examples/*.xmlspec \
 	po/*.in po/*.po po/rpm.pot \
-	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
+	rpm.magic rpmpopt-4.1 rpmqv.c rpm.c
 
 SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ file @WITH_DB_SUBDIR@ popt beecrypt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
@@ -33,7 +33,6 @@ myLDFLAGS = # @LDFLAGS_STATIC@
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
 # XXX top_builddir ldpaths are wrong building in tree
 myLDADD = \
-	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
@@ -51,28 +50,24 @@ bin_SCRIPTS =		gendiff
 
 pkglibdir =		@RPMCONFIGDIR@
 pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
-pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
+pkglib_DATA =		rpmrc rpmpopt-4.1 macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub config.site
 
-rpmpopt-$(VERSION): rpmpopt
+rpmpopt-4.1: rpmpopt
 	cp rpmpopt $@
 
 noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =
-rpm_LDFLAGS =		$(myLDFLAGS) # @LDFLAGS_STATIC@
-rpm_LDADD =		rpm.o $(myLDADD)
+rpm_LDFLAGS =		$(myLDFLAGS) @LDFLAGS_STATIC@
+rpm_LDADD =		rpm.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpm.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
 
-#rpm_SOURCES =		rpm.c
-#rpm_LDFLAGS =		$(myLDFLAGS) # @LDFLAGS_STATIC@
-#rpm_LDADD =		$(myLDADD)
-
 rpmb_SOURCES =		build.c
 rpmb_LDFLAGS =		$(myLDFLAGS)
-rpmb_LDADD =		rpmb.o $(myLDADD)
+rpmb_LDADD =		rpmb.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c rpmqv.c
 
@@ -96,7 +91,7 @@ rpmk.o:	rpmqv.c
 
 rpmq_SOURCES =
 rpmq_LDFLAGS =		$(myLDFLAGS)
-rpmq_LDADD =		rpmq.o $(myLDADD)
+rpmq_LDADD =		rpmq.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmq.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMQV -o $@ -c rpmqv.c
 

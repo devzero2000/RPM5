@@ -113,8 +113,8 @@
  */
 static rpmmiObject *
 rpmdb_Match (rpmdbObject * s, PyObject * args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     PyObject *TagN = NULL;
     char *key = NULL;
@@ -148,7 +148,8 @@ static struct PyMethodDef rpmdb_methods[] = {
  */
 static int
 rpmdb_length(rpmdbObject * s)
-	/*@modifies s @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     rpmdbMatchIterator mi;
     int count = 0;
@@ -165,7 +166,8 @@ rpmdb_length(rpmdbObject * s)
  */
 static hdrObject *
 rpmdb_subscript(rpmdbObject * s, PyObject * key)
-	/*@modifies s @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     int offset;
     hdrObject * ho;
@@ -208,7 +210,7 @@ static void rpmdb_dealloc(rpmdbObject * s)
 {
     if (s->db)
 	rpmdbClose(s->db);
-    PyMem_DEL(s);
+    PyObject_Del(s);
 }
 
 /**
@@ -229,7 +231,7 @@ static char rpmdb_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmdb_Type = {
-	PyObject_HEAD_INIT(NULL)
+	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
 	"rpm.db",			/* tp_name */
 	sizeof(rpmdbObject),		/* tp_size */
@@ -290,7 +292,7 @@ rpmdbObject * rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args) {
 
     if (!PyArg_ParseTuple(args, "|is", &forWrite, &root)) return NULL;
 
-    o = PyObject_NEW(rpmdbObject, &rpmdb_Type);
+    o = PyObject_New(rpmdbObject, &rpmdb_Type);
     o->db = NULL;
 
     if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, 0644)) {

@@ -12,19 +12,15 @@
 #endif
 
 #include <rpmcli.h>
-#include <rpmbuild.h>
 
 #include "rpmdb.h"
 #include "rpmfi.h"
 #include "rpmts.h"
 
 #include "manifest.h"
+#include "misc.h"	/* XXX for rpmGlob() */
 
 #include "debug.h"
-
-/*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
-/*@access Header@*/			/* XXX compared with NULL */
-/*@access FD_t@*/			/* XXX compared with NULL */
 
 /**
  */
@@ -123,9 +119,9 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     return str;
 }
 
-int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
+int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
-    int scareMem = 1;
+    int scareMem = 0;
     rpmfi fi = NULL;
     char * t, * te;
     char * prefix = NULL;
@@ -137,18 +133,6 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 /*@-boundswrite@*/
     *te = '\0';
 /*@=boundswrite@*/
-
-    if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL)
-    {
-	const char * name, * version, * release;
-	(void) headerNVR(h, &name, &version, &release);
-/*@-boundswrite@*/
-	te = stpcpy(te, name);
-	te = stpcpy( stpcpy(te, "-"), version);
-	te = stpcpy( stpcpy(te, "-"), release);
-/*@=boundswrite@*/
-	goto exit;
-    }
 
     if (qva->qva_queryFormat != NULL) {
 	const char * str = queryHeader(h, qva->qva_queryFormat);
@@ -254,6 +238,9 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 	    case RPMFILE_STATE_NETSHARED:
 		te = stpcpy(te, _("net shared    "));
 		/*@switchbreak@*/ break;
+	    case RPMFILE_STATE_WRONGCOLOR:
+		te = stpcpy(te, _("wrong color   "));
+		/*@switchbreak@*/ break;
 	    case RPMFILE_STATE_MISSING:
 		te = stpcpy(te, _("(no state)    "));
 		/*@switchbreak@*/ break;
@@ -343,121 +330,6 @@ exit:
     return rc;
 }
 
-/**
- * Print copy of spec file, filling in Group/Description/Summary from specspo.
- * @param spec		spec file control structure
- */
-static void
-printNewSpecfile(Spec spec)
-	/*@globals fileSystem @*/
-	/*@modifies spec->sl->sl_lines[], fileSystem @*/
-{
-    Header h;
-    speclines sl = spec->sl;
-    spectags st = spec->st;
-    const char * msgstr = NULL;
-    int i, j;
-
-    if (sl == NULL || st == NULL)
-	return;
-
-    /*@-branchstate@*/
-    for (i = 0; i < st->st_ntags; i++) {
-	spectag t = st->st_t + i;
-	const char * tn = tagName(t->t_tag);
-	const char * errstr;
-	char fmt[1024];
-
-	fmt[0] = '\0';
-	if (t->t_msgid == NULL)
-	    h = spec->packages->header;
-	else {
-	    Package pkg;
-	    char *fe;
-
-/*@-bounds@*/
-	    strcpy(fmt, t->t_msgid);
-	    for (fe = fmt; *fe && *fe != '('; fe++)
-		{} ;
-	    if (*fe == '(') *fe = '\0';
-/*@=bounds@*/
-	    h = NULL;
-	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-		const char *pkgname;
-		h = pkg->header;
-		(void) headerNVR(h, &pkgname, NULL, NULL);
-		if (!strcmp(pkgname, fmt))
-		    /*@innerbreak@*/ break;
-	    }
-	    if (pkg == NULL || h == NULL)
-		h = spec->packages->header;
-	}
-
-	if (h == NULL)
-	    continue;
-
-	fmt[0] = '\0';
-/*@-boundswrite@*/
-	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}");
-/*@=boundswrite@*/
-	msgstr = _free(msgstr);
-
-	/* XXX this should use queryHeader(), but prints out tn as well. */
-	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
-	if (msgstr == NULL) {
-	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
-	    return;
-	}
-
-/*@-boundswrite@*/
-	switch(t->t_tag) {
-	case RPMTAG_SUMMARY:
-	case RPMTAG_GROUP:
-	    /*@-unqualifiedtrans@*/
-	    sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
-	    /*@=unqualifiedtrans@*/
-	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
-		continue;
-	    {   char *buf = xmalloc(strlen(tn) + sizeof(": ") + strlen(msgstr));
-		(void) stpcpy( stpcpy( stpcpy(buf, tn), ": "), msgstr);
-		sl->sl_lines[t->t_startx] = buf;
-	    }
-	    /*@switchbreak@*/ break;
-	case RPMTAG_DESCRIPTION:
-	    for (j = 1; j < t->t_nlines; j++) {
-		if (*sl->sl_lines[t->t_startx + j] == '%')
-		    /*@innercontinue@*/ continue;
-		/*@-unqualifiedtrans@*/
-		sl->sl_lines[t->t_startx + j] =
-			_free(sl->sl_lines[t->t_startx + j]);
-		/*@=unqualifiedtrans@*/
-	    }
-	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG)) {
-		sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
-		continue;
-	    }
-	    sl->sl_lines[t->t_startx + 1] = xstrdup(msgstr);
-	    if (t->t_nlines > 2)
-		sl->sl_lines[t->t_startx + 2] = xstrdup("\n\n");
-	    /*@switchbreak@*/ break;
-	}
-/*@=boundswrite@*/
-    }
-    /*@=branchstate@*/
-    msgstr = _free(msgstr);
-
-/*@-boundsread@*/
-    for (i = 0; i < sl->sl_nlines; i++) {
-	const char * s = sl->sl_lines[i];
-	if (s == NULL)
-	    continue;
-	printf("%s", s);
-	if (strchr(s, '\n') == NULL && s[strlen(s)-1] != '\n')
-	    printf("\n");
-    }
-/*@=boundsread@*/
-}
-
 void rpmDisplayQueryTags(FILE * fp)
 {
     const struct headerTagTableEntry_s * t;
@@ -516,19 +388,6 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
-/*@-redecl@*/
-/**
- * @todo Eliminate linkage loop into librpmbuild.a
- */
-int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
-		const char *buildRoot, int recursing, const char *passPhrase,
-		char *cookie, int anyarch, int force) = NULL;
-/**
- * @todo Eliminate linkage loop into librpmbuild.a
- */
-/*@null@*/ Spec	(*freeSpecVec) (Spec spec) = NULL;
-/*@=redecl@*/
-
 /*@-bounds@*/ /* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
@@ -536,9 +395,9 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     int res = 0;
     Header h;
     int rc;
-    int xx;
     const char * s;
     int i;
+    int provides_checked = 0;
 
     (void) rpmdbCheckSignals();
 
@@ -568,7 +427,7 @@ restart:
 	    if (fd == NULL || Ferror(fd)) {
 		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
 			Fstrerror(fd));
-		if (fd) (void) Fclose(fd);
+		if (fd != NULL) (void) Fclose(fd);
 		res = 1;
 		/*@loopbreak@*/ break;
 	    }
@@ -615,7 +474,7 @@ restart:
 	    if (fd == NULL || Ferror(fd)) {
 		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
 			Fstrerror(fd));
-		if (fd) (void) Fclose(fd);
+		if (fd != NULL) (void) Fclose(fd);
 		res = 1;
 		/*@loopbreak@*/ break;
 	    }
@@ -646,45 +505,9 @@ restart:
     }	break;
 
     case RPMQV_SPECFILE:
-	if (qva->qva_showPackage != showQueryPackage)
-	    return 1;
-
-	/* XXX Eliminate linkage dependency loop */
-	if (parseSpecVec == NULL || freeSpecVec == NULL)
-	    return 1;
-
-      { Spec spec = NULL;
-	Package pkg;
-	char * buildRoot = NULL;
-	int recursing = 0;
-	char * passPhrase = "";
-	char *cookie = NULL;
-	int anyarch = 1;
-	int force = 1;
-
-	/*@-mods@*/ /* FIX: make spec abstract */
-	rc = parseSpecVec(&spec, arg, "/", buildRoot, recursing, passPhrase,
-		cookie, anyarch, force);
-	/*@=mods@*/
-	if (rc || spec == NULL) {
-	    rpmError(RPMERR_QUERY,
-	    		_("query of specfile %s failed, can't parse\n"), arg);
-	    spec = freeSpecVec(spec);
-	    res = 1;
-	    break;
-	}
-
-	if (specedit) {
-	    printNewSpecfile(spec);
-	    spec = freeSpecVec(spec);
-	    res = 0;
-	    break;
-	}
-
-	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-	    xx = qva->qva_showPackage(qva, ts, pkg->header);
-	spec = freeSpecVec(spec);
-      }	break;
+	res = ((qva->qva_specQuery != NULL)
+		? qva->qva_specQuery(ts, qva, arg) : 1);
+	break;
 
     case RPMQV_ALL:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
@@ -711,9 +534,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO,
 		_("group %s does not contain any packages\n"), arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
 
     case RPMQV_TRIGGEREDBY:
@@ -721,9 +543,8 @@ restart:
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package triggers %s\n"), arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
 
     case RPMQV_PKGID:
@@ -746,9 +567,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"pkgid", arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
     }	break;
 
     case RPMQV_HDRID:
@@ -764,9 +584,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"hdrid", arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
 
     case RPMQV_FILEID:
@@ -789,9 +608,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"fileid", arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
     }	break;
 
     case RPMQV_TID:
@@ -819,9 +637,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"tid", arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
     }	break;
 
     case RPMQV_WHATREQUIRES:
@@ -829,25 +646,25 @@ restart:
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package requires %s\n"), arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
 
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/') {
+	    provides_checked = 1;
 	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, arg, 0);
 	    if (qva->qva_mi == NULL) {
 		rpmError(RPMERR_QUERYINFO, _("no package provides %s\n"), arg);
 		res = 1;
-	    } else {
+	    } else
 		res = rpmcliShowMatches(qva, ts);
-	    }
 	    break;
 	}
 	/*@fallthrough@*/
     case RPMQV_PATH:
     {   char * fn;
+	int myerrno = 0;
 
 	for (s = arg; *s != '\0'; s++)
 	    if (!(*s == '.' || *s == '/'))
@@ -866,23 +683,22 @@ restart:
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
 	if (qva->qva_mi == NULL) {
-	    int myerrno = 0;
 	    if (access(fn, F_OK) != 0)
 		myerrno = errno;
-	    switch (myerrno) {
-	    default:
-		rpmError(RPMERR_QUERY,
-			_("file %s: %s\n"), fn, strerror(myerrno));
-		/*@innerbreak@*/ break;
-	    case 0:
-		rpmError(RPMERR_QUERYINFO,
-			_("file %s is not owned by any package\n"), fn);
-		/*@innerbreak@*/ break;
-	    }
-	    res = 1;
-	} else {
-	    res = rpmcliShowMatches(qva, ts);
+	    else if (!provides_checked)
+		qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
 	}
+
+	if (myerrno != 0) {
+	    rpmError(RPMERR_QUERY, _("file %s: %s\n"), fn, strerror(myerrno));
+	    res = 1;
+	} else if (qva->qva_mi == NULL) {
+	    rpmError(RPMERR_QUERYINFO,
+		_("file %s is not owned by any package\n"), fn);
+	    res = 1;
+	} else
+	    res = rpmcliShowMatches(qva, ts);
+
 	fn = _free(fn);
     }	break;
 
@@ -913,9 +729,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO,
 		_("record %u could not be read\n"), recOffset);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
     }	break;
 
     case RPMQV_PACKAGE:
@@ -924,9 +739,8 @@ restart:
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
     }
     /*@=branchstate@*/
@@ -943,6 +757,15 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;
+
+    /* If --queryformat unspecified, then set default now. */
+    if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL) {
+	qva->qva_queryFormat = rpmExpand("%{?_query_all_fmt}\n", NULL);
+	if (!(qva->qva_queryFormat != NULL && *qva->qva_queryFormat != '\0')) {
+	    qva->qva_queryFormat = _free(qva->qva_queryFormat);
+	    qva->qva_queryFormat = xstrdup("%{name}-%{version}-%{release}\n");
+	}
+    }
 
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
     if (qva->qva_flags & VERIFY_DIGEST)

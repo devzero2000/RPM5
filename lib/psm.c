@@ -30,7 +30,7 @@
 
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
-#include "legacy.h"		/* XXX buildOrigFileList() */
+#include "legacy.h"		/* XXX rpmfiBuildFNames() */
 #include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
 #include "misc.h"		/* XXX stripTrailingChar() */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
@@ -331,7 +331,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     i = fi->fc;
 
     if (fi->h != NULL) {	/* XXX can't happen */
-	rpmBuildFileList(fi->h, &fi->apath, NULL);
+	rpmfiBuildFNames(fi->h, RPMTAG_BASENAMES, &fi->apath, NULL);
 
 	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
 	    for (i = 0; i < fi->fc; i++)
@@ -1404,6 +1404,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
+    uint_32 tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -1444,6 +1445,12 @@ assert(psm->mi == NULL);
 			rpmteV(psm->te));
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
 			rpmteR(psm->te));
+	    if (tscolor) {
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_ARCH, RPMMIRE_DEFAULT,
+			rpmteA(psm->te));
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_OS, RPMMIRE_DEFAULT,
+			rpmteO(psm->te));
+	    }
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi)) != NULL) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
@@ -1475,9 +1482,9 @@ assert(psm->mi == NULL);
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	
 	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
-		buildOrigFileList(fi->h, &fi->apath, NULL);
+		rpmfiBuildFNames(fi->h, RPMTAG_ORIGBASENAMES, &fi->apath, NULL);
 	    else
-		rpmBuildFileList(fi->h, &fi->apath, NULL);
+		rpmfiBuildFNames(fi->h, RPMTAG_BASENAMES, &fi->apath, NULL);
 	
 	    if (fi->fuser == NULL)
 		xx = hge(fi->h, RPMTAG_FILEUSERNAME, NULL,
@@ -1522,6 +1529,17 @@ psm->te->h = headerLink(fi->h);
 	break;
     case PSM_PRE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+
+/* XXX insure that trigger index is opened before entering chroot. */
+#ifdef	NOTYET
+ { static int oneshot = 0;
+   dbiIndex dbi;
+   if (!oneshot) {
+     dbi = dbiOpen(rpmtsGetRdb(ts), RPMTAG_TRIGGERNAME, 0);
+     oneshot++;
+   }
+ }
+#endif
 
 	/* Change root directory if requested and not already done. */
 	rc = rpmpsmStage(psm, PSM_CHROOT_IN);
@@ -1842,6 +1860,9 @@ psm->te->h = headerLink(fi->h);
 
 	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
+
+	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
+				&tscolor, 1);
 
 	    /*
 	     * If this package has already been installed, remove it from

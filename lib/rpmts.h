@@ -80,8 +80,8 @@ struct diskspaceInfo_s {
     signed long bneeded;	/*!< No. of blocks needed. */
     signed long ineeded;	/*!< No. of inodes needed. */
     int bsize;			/*!< File system block size. */
-    signed long bavail;		/*!< No. of blocks available. */
-    signed long iavail;		/*!< No. of inodes available. */
+    signed long long bavail;	/*!< No. of blocks available. */
+    signed long long iavail;	/*!< No. of inodes available. */
 };
 
 /** \ingroup rpmts
@@ -156,6 +156,9 @@ struct rpmts_s {
     int numAvailablePackages;	/*!< No. available package instances. */
 #endif
 
+/*@null@*/
+    rpmte relocateElement;	/*!< Element to use when relocating packages. */
+
 /*@owned@*/ /*@relnull@*/
     rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
@@ -171,6 +174,8 @@ struct rpmts_s {
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
     int_32 tid;			/*!< Transaction id. */
+
+    uint_32 color;		/*!< Transaction color bits. */
 
     rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
 
@@ -189,6 +194,9 @@ struct rpmts_s {
 
 /*@null@*/
     pgpDig dig;			/*!< Current signature/pubkey parameters. */
+
+/*@null@*/
+    Spec spec;			/*!< Spec file control structure. */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -734,6 +742,61 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
+ * Get spec control structure from transaction set.
+ * @param ts		transaction set
+ * @return		spec control structure
+ */
+/*@null@*/
+Spec rpmtsSpec(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set a spec control structure in transaction set.
+ * @param ts		transaction set
+ * @param spec		new spec control structure
+ * @return		previous spec control structure
+ */
+/*@null@*/
+Spec rpmtsSetSpec(rpmts ts, /*@null@*/ Spec spec)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get current relocate transaction element.
+ * @param ts		transaction set
+ * @return		current relocate transaction element
+ */
+/*@null@*/
+rpmte rpmtsRelocateElement(rpmts ts)
+	/*@*/;
+
+/**
+ * Retrieve color bits of transaction set.
+ * @param ts		transaction set
+ * @return		color bits
+ */
+uint_32 rpmtsColor(rpmts ts)
+	/*@*/;
+
+/**
+ * Set color bits of transaction set.
+ * @param ts		transaction set
+ * @param color		new color bits
+ * @return		previous color bits
+ */
+uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Set current relocate transaction element.
+ * @param ts		transaction set
+ * @param relocateElement new relocate transaction element
+ * @return		previous relocate transaction element
+ */
+/*@null@*/
+rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
  * Set transaction notify callback function and argument.
  *
  * @warning This call must be made before rpmtsRun() for
@@ -755,7 +818,8 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmts
  * Add package to be installed to transaction set.
@@ -812,6 +876,14 @@ int rpmtsGetKeys(rpmts ts,
  */
 /*@only@*/ char * hGetNEVR(Header h, /*@null@*/ /*@out@*/ const char ** np )
 	/*@modifies *np @*/;
+
+/**
+ * Return header color.
+ * @param h		header
+ * @return		header color
+ */
+uint_32 hGetColor(Header h)
+	/*@modifies h @*/;
 
 #ifdef __cplusplus
 }

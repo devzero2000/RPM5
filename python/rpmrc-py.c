@@ -12,30 +12,16 @@
 
 #include "structmember.h"
 
-/*@unchecked@*/
-extern PyTypeObject PyDictIter_Type;
+#include "rpmdebug-py.c"
 
 #include <rpmcli.h>
 
 #include "rpmrc-py.h"
 
-#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
-#include "header-py.h"	/* XXX debug only */
-#include "rpmal-py.h"	/* XXX debug only */
-#include "rpmds-py.h"	/* XXX debug only */
-#include "rpmfd-py.h"	/* XXX debug only */
-#include "rpmfi-py.h"	/* XXX debug only */
-#include "rpmmi-py.h"	/* XXX debug only */
-#include "rpmte-py.h"	/* XXX debug only */
-#include "rpmts-py.h"	/* XXX debug only */
-#endif
-
 #include "debug.h"
 
-#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
 /*@unchecked@*/
 static int _rc_debug = 0;
-#endif
 
 /** \ingroup python
  * \class Rpmrc
@@ -78,75 +64,6 @@ PyObject * rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args)
 }
 
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
-/**
- */
-
-static const char * lbl(void * s)
-	/*@*/
-{
-    PyObject * o = s;
-
-    if (o == NULL)	return "null";
-
-    if (o->ob_type == &PyType_Type)	return o->ob_type->tp_name;
-
-    if (o->ob_type == &PyClass_Type)	return "Class";
-    if (o->ob_type == &PyComplex_Type)	return "Complex";
-    if (o->ob_type == &PyDict_Type)	return "Dict";
-    if (o->ob_type == &PyDictIter_Type)	return "DictIter";
-    if (o->ob_type == &PyFile_Type)	return "File";
-    if (o->ob_type == &PyFloat_Type)	return "Float";
-    if (o->ob_type == &PyFunction_Type)	return "Function";
-    if (o->ob_type == &PyInt_Type)	return "Int";
-    if (o->ob_type == &PyList_Type)	return "List";
-    if (o->ob_type == &PyLong_Type)	return "Long";
-    if (o->ob_type == &PyMethod_Type)	return "Method";
-    if (o->ob_type == &PyModule_Type)	return "Module";
-    if (o->ob_type == &PyString_Type)	return "String";
-    if (o->ob_type == &PyTuple_Type)	return "Tuple";
-    if (o->ob_type == &PyType_Type)	return "Type";
-    if (o->ob_type == &PyUnicode_Type)	return "Unicode";
-
-    if (o->ob_type == &hdr_Type)	return "hdr";
-    if (o->ob_type == &rpmal_Type)	return "rpmal";
-    if (o->ob_type == &rpmds_Type)	return "rpmds";
-    if (o->ob_type == &rpmfd_Type)	return "rpmfd";
-    if (o->ob_type == &rpmfi_Type)	return "rpmfi";
-    if (o->ob_type == &rpmmi_Type)	return "rpmmi";
-    if (o->ob_type == &rpmrc_Type)	return "rpmrc";
-    if (o->ob_type == &rpmte_Type)	return "rpmte";
-    if (o->ob_type == &rpmts_Type)	return "rpmts";
-
-    return "Unknown";
-}
-
-/**
- */
-static PyObject *
-rpmrc_getstate(rpmrcObject *s, PyObject *args)
-	/*@*/
-{
-    if (!PyArg_ParseTuple(args, ":getstate"))
-	return NULL;
-    return PyInt_FromLong(s->state);
-}
-
-/**
- */
-static PyObject *
-rpmrc_setstate(rpmrcObject *s, PyObject *args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
-{
-    int state;
-
-    if (!PyArg_ParseTuple(args, "i:setstate", &state))
-	return NULL;
-    s->state = state;
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 /**
  */
 static void rpmrc_dealloc(PyObject * s)
@@ -332,15 +249,6 @@ fprintf(stderr, "*** rpmrc_next(%p[%s],%p)\n", s, lbl(s), args);
     return NULL;
 }
 
-/*@-fullinitblock@*/
-/*@unchecked@*/ /*@observer@*/
-static PyMemberDef rpmrc_members[] = {
-    {"state", T_INT, offsetof(rpmrcObject, state), READONLY,
-         "an int variable for demonstration purposes"},
-    {0}
-};
-/*@=fullinitblock@*/
-
 /** \ingroup python
  */
 static int rpmrc_init(PyObject * s, PyObject *args, PyObject *kwds)
@@ -350,7 +258,6 @@ if (_rc_debug)
 fprintf(stderr, "*** rpmrc_init(%p[%s],%p,%p)\n", s, lbl(s), args, kwds);
     if (PyDict_Type.tp_init(s, args, kwds) < 0)
 	return -1;
-    ((rpmrcObject *)s)->state = 0;
     return 0;
 }
 
@@ -408,10 +315,6 @@ static struct PyMethodDef rpmrc_methods[] = {
     { "delMacro",	(PyCFunction) rpmrc_DelMacro, METH_VARARGS,
 	NULL },
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
-    { "getstate",	(PyCFunction) rpmrc_getstate, METH_VARARGS,
-	"getstate() -> state"},
-    { "setstate",	(PyCFunction) rpmrc_setstate, METH_VARARGS,
-	"setstate(state)"},
     { "next",		(PyCFunction) rpmrc_next,     METH_VARARGS,
 	"next() -- get the next value, or raise StopIteration"},
 #endif
@@ -453,7 +356,7 @@ PyTypeObject rpmrc_Type = {
 	rpmrc_iter,			/* tp_iter */
 	rpmrc_iternext,			/* tp_iternext */
 	rpmrc_methods,			/* tp_methods */
-	rpmrc_members,			/* tp_members */
+	0,				/* tp_members */
 	0,				/* tp_getset */
 	&PyDict_Type,			/* tp_base */
 	0,				/* tp_dict */

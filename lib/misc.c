@@ -14,12 +14,9 @@ const char * RPMVERSION = VERSION;
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 #include <rpmlib.h>
-
+#include "legacy.h"
 #include "misc.h"
 #include "debug.h"
-
-/*@access Header@*/		/* XXX compared with NULL */
-/*@access FD_t@*/		/* XXX compared with NULL */
 
 rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 {
@@ -220,22 +217,21 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 errxit:
     tempfn = _free(tempfn);
     /*@-usereleased@*/
-    if (fd) (void) Fclose(fd);
+    if (fd != NULL) (void) Fclose(fd);
     /*@=usereleased@*/
     return 1;
 }
 
 char * currentDirectory(void)
 {
-    int currDirLen;
-    char * currDir;
+    int currDirLen = 0;
+    char * currDir = NULL;
 
-    currDirLen = 50;
-    currDir = xmalloc(currDirLen);
-    while (!getcwd(currDir, currDirLen) && errno == ERANGE) {
-	currDirLen += 50;
+    do {
+	currDirLen += 128;
 	currDir = xrealloc(currDir, currDirLen);
-    }
+	memset(currDir, 0, currDirLen);
+    } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
 
     return currDir;
 }
@@ -403,7 +399,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
     case RPMTAG_OLDFILENAMES:
     {	const char ** fl = NULL;
 	int count;
-	rpmBuildFileList(h, &fl, &count);
+	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fl, &count);
 	if (count > 0) {
 	    *p = fl;
 	    if (c)	*c = count;

@@ -30,14 +30,18 @@ noinst_PROGRAMS = \
 	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = javadeps rpmcache rpmfile striptofile unstripfile
+pkgbin_PROGRAMS = javadeps rpmcache rpmdeps rpmfile striptofile unstripfile
 
 bin_PROGRAMS =	rpmgraph
 
 javadeps_SOURCES =	javadeps.c
 
 rpmcache_SOURCES =	rpmcache.c
-#rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
+#rpmcache_LDFLAGS =	$(staticLDFLAGS)
+
+rpmdeps_SOURCES =	rpmdeps.c
+rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
+#rpmdeps_LDFLAGS =	$(staticLDFLAGS)
 
 rpmfile.c: $(top_builddir)/file/file.c
 	rm -f $@

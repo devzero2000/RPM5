@@ -316,7 +316,7 @@ INPUT                  = \
 	@top_srcdir@/debug.h \
 	@top_srcdir@/macros \
 	@top_srcdir@/rpmqv.c \
-	@top_srcdir@/rpmpopt-@VERSION@ \
+	@top_srcdir@/rpmpopt-4.1 \
 	@top_srcdir@/rpmrc \
 	@top_srcdir@/rpm2cpio.c \
 	@top_srcdir@/system.h \

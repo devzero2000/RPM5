@@ -8,7 +8,7 @@ AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 AC_CONFIG_HEADERS
-AM_INIT_AUTOMAKE(rpm, 4.1)
+AM_INIT_AUTOMAKE(rpm, 4.1.1)
 AM_CONFIG_HEADER(config.h)
 
 dnl XXX AM_MAINTAINER_MODE
@@ -51,6 +51,7 @@ export CFLAGS
 
 AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
+AC_SYS_LARGEFILE
 
 dnl Does this platform require array notation to assign to a va_list?
 dnl If cross-compiling, we assume va_list is "normal".  If this breaks
@@ -1101,13 +1102,13 @@ AC_SUBST(MARK64)
 dnl Determine the canonical arch-vendor-os for the build machine
 case "${build_cpu}" in
 *86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
-x86_64*)	RPMCANONCOLOR=3; RPMCANONARCH=x86_64 ;;
+x86_64*)	RPMCANONCOLOR=0; RPMCANONARCH=x86_64 ;;
 alpha*)		RPMCANONCOLOR=0; RPMCANONARCH=alpha ;;
 sparc*)		RPMCANONCOLOR=0; RPMCANONARCH=sparc ;;
 ia64*)		RPMCANONCOLOR=0; RPMCANONARCH=ia64 ;;
-s390x*)		RPMCANONCOLOR=3; RPMCANONARCH=s390x ;;
+s390x*)		RPMCANONCOLOR=0; RPMCANONARCH=s390x ;;
 s390*)		RPMCANONCOLOR=0; RPMCANONARCH=s390 ;;
-powerpc64*|ppc64*)	RPMCANONCOLOR=3; RPMCANONARCH=ppc64 ;;
+powerpc64*|ppc64*)	RPMCANONCOLOR=0; RPMCANONARCH=ppc64 ;;
 powerpc*|ppc*)	RPMCANONCOLOR=0; RPMCANONARCH=ppc ;;
 armv3l*)	RPMCANONCOLOR=0; RPMCANONARCH=armv3l ;;
 armv4l*)	RPMCANONCOLOR=0; RPMCANONARCH=armv4l ;;

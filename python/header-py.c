@@ -215,7 +215,7 @@ static void mungeFilelist(Header h)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
 	compressFilelist(h);
     
-    rpmBuildFileList(h, &fileNames, &count);
+    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
 
     if (fileNames == NULL || count <= 0)
 	return;
@@ -336,9 +336,9 @@ static int hdr_compare(hdrObject * a, hdrObject * b)
     return rpmVersionCompare(a->h, b->h);
 }
 
-static long hdr_hash(hdrObject *h)
+static long hdr_hash(PyObject * h)
 {
-    return h;
+    return (long) h;
 }
 
 /** \ingroup python
@@ -387,7 +387,7 @@ static void hdr_dealloc(hdrObject * s)
     s->md5list = _free(s->md5list);
     s->fileList = _free(s->fileList);
     s->linkList = _free(s->linkList);
-    PyMem_DEL(s);
+    PyObject_Del(s);
 }
 
 /** \ingroup python
@@ -585,7 +585,7 @@ static char hdr_doc[] =
  */
 /*@unchecked@*/ /*@observer@*/
 PyTypeObject hdr_Type = {
-	PyObject_HEAD_INIT(NULL)
+	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
 	"rpm.hdr",			/* tp_name */
 	sizeof(hdrObject),		/* tp_size */
@@ -632,7 +632,7 @@ PyTypeObject hdr_Type = {
 
 hdrObject * hdr_Wrap(Header h)
 {
-    hdrObject * hdr = PyObject_NEW(hdrObject, &hdr_Type);
+    hdrObject * hdr = PyObject_New(hdrObject, &hdr_Type);
     hdr->h = headerLink(h);
     hdr->fileList = hdr->linkList = hdr->md5list = NULL;
     hdr->uids = hdr->gids = hdr->mtimes = hdr->fileSizes = NULL;

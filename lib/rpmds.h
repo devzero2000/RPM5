@@ -27,25 +27,28 @@ extern int _rpmds_nopromote;
  * A package dependency set.
  */
 struct rpmds_s {
-    int i;			/*!< Element index. */
-
 /*@observer@*/
     const char * Type;		/*!< Tag name. */
 /*@only@*/ /*@null@*/
     const char * DNEVR;		/*!< Formatted dependency string. */
-
-    rpmTag tagN;		/*!< Header tag. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
-
 /*@only@*/
     const char ** N;		/*!< Name. */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
-/*@only@*/
-    int_32 * Flags;		/*!< Flags identifying context/comparison. */
+/*@only@*/ /*@null@*/
+    int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
+/*@only@*/ /*@null@*/
+    uint_32 * Color;		/*!< Bit(s) calculated from file color(s). */
+/*@only@*/ /*@null@*/
+    int_32 * Refs;		/*!< No. of file refs. */
+    rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
+    int i;			/*!< Element index. */
+    unsigned l;			/*!< Low element (bsearch). */
+    unsigned u;			/*!< High element (bsearch). */
     int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -239,6 +242,40 @@ int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
 	/*@modifies ds @*/;
 
 /**
+ * Return current dependency color.
+ * @param ds		dependency set
+ * @return		current dependency color
+ */
+uint_32 rpmdsColor(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
+ * Return current dependency color.
+ * @param ds		dependency set
+ * @param color		new dependency color
+ * @return		previous dependency color
+ */
+uint_32 rpmdsSetColor(/*@null@*/ const rpmds ds, uint_32 color)
+	/*@modifies ds @*/;
+
+/**
+ * Return current dependency file refs.
+ * @param ds		dependency set
+ * @return		current dependency file refs, -1 on global
+ */
+int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
+ * Return current dependency color.
+ * @param ds		dependency set
+ * @param refs		new dependency refs
+ * @return		previous dependency refs
+ */
+int_32 rpmdsSetRefs(/*@null@*/ const rpmds ds, int_32 refs)
+	/*@modifies ds @*/;
+
+/**
  * Notify of results of dependency match.
  * @param ds		dependency set
  * @param where		where dependency was resolved (or NULL)
@@ -266,6 +303,26 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 /*@null@*/
 rpmds rpmdsInit(/*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
+
+/**
+ * Find a dependency set element using binary search.
+ * @param ds		dependency set to search
+ * @param ods		dependency set element to find.
+ * @return		dependency index (or -1 if not found)
+ */
+/*@null@*/
+int rpmdsFind(rpmds ds, /*@null@*/ rpmds ods)
+	/*@modifies ds, ods @*/;
+
+/**
+ * Merge a dependency set maintaining (N,EVR,Flags) sorted order.
+ * @retval *dsp		(merged) dependency set
+ * @param ods		dependency set to merge
+ * @return		(merged) dependency index
+ */
+/*@null@*/
+int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
+	/*@modifies *dsp, ods @*/;
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.
@@ -301,7 +358,6 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 
 /**
  * Compare package name-version-release from header with a single dependency.
- * @deprecated Remove from API when obsoletes is correctly implemented.
  * @param h		header
  * @param req		dependency set
  * @param nopromote	Don't promote Epoch: in comparison?

@@ -3,11 +3,14 @@
 .libs
 Makefile
 Makefile.in
+convertdb1
+debugedit
 dump
 dumpdb
 javadeps
 rpmarchive
 rpmcache
+rpmdeps
 rpmheader
 rpmgraph
 rpminject
@@ -15,4 +18,5 @@ rpmlead
 rpmsort
 rpmsignature
 striptofile
+tpkgid
 unstripfile

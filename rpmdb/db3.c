@@ -848,7 +848,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 			(dbfile ? dbfile : tagName(dbi->dbi_rpmtag)));
 
 		xx = db->close(db, 0);
-		xx = cvtdberr(dbi, "db->close", xx, _debug);
+		/* XXX ignore not found error messages. */
+		_printit = (xx == ENOENT ? 0 : _debug);
+		xx = cvtdberr(dbi, "db->close", xx, _printit);
 		db = NULL;
 		if (rc == 0 && xx) rc = xx;
 

@@ -85,6 +85,22 @@ rpmds_TagN(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsTagN(s->ds));
 }
 
+static PyObject *
+rpmds_Color(rpmdsObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":Color")) return NULL;
+    return Py_BuildValue("i", rpmdsColor(s->ds));
+}
+
+static PyObject *
+rpmds_Refs(rpmdsObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":Refs")) return NULL;
+    return Py_BuildValue("i", rpmdsRefs(s->ds));
+}
+
 static int
 rpmds_compare(rpmdsObject * a, rpmdsObject * b)
 	/*@*/
@@ -94,7 +110,7 @@ rpmds_compare(rpmdsObject * a, rpmdsObject * b)
 
 static PyObject *
 rpmds_iter(rpmdsObject * s)
-	/*@modifies s @*/
+	/*@*/
 {
     Py_INCREF(s);
     return (PyObject *)s;
@@ -156,17 +172,33 @@ rpmds_Next(rpmdsObject * s, PyObject *args)
     return result;
 }
 
-#ifdef	NOTYET
+static PyObject *
+rpmds_SetNoPromote(rpmdsObject * s, PyObject * args)
+	/*@modifies s @*/
+{
+    int nopromote;
+
+    if (!PyArg_ParseTuple(args, "i:SetNoPromote", &nopromote))
+	return NULL;
+    return Py_BuildValue("i", rpmdsSetNoPromote(s->ds, nopromote));
+}
+
 static PyObject *
 rpmds_Notify(rpmdsObject * s, PyObject * args)
-	/*@*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, ":Notify"))
+    const char * where;
+    int rc;
+
+    if (!PyArg_ParseTuple(args, "si:Notify", &where, &rc))
 	return NULL;
+    rpmdsNotify(s->ds, where, rc);
     Py_INCREF(Py_None);
     return Py_None;
 }
 
+#ifdef	NOTYET
 static PyObject *
 rpmds_Problem(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -197,12 +229,18 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.Flags -> Flags	- Return current Flags.\n" },
  {"TagN",	(PyCFunction)rpmds_TagN,	METH_VARARGS,
 	"ds.TagN -> TagN	- Return current TagN.\n" },
+ {"Color",	(PyCFunction)rpmds_Color,	METH_VARARGS,
+	"ds.Color -> Color      - Return current Color.\n" },
+ {"Refs",	(PyCFunction)rpmds_Refs,	METH_VARARGS,
+	"ds.Refs -> Refs        - Return current Refs.\n" },
  {"next",	(PyCFunction)rpmds_Next,	METH_VARARGS,
 "ds.next() -> (N, EVR, Flags)\n\
 - Retrieve next dependency triple.\n" }, 
-#ifdef	NOTYET
+ {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS,
+	NULL},
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS,
 	NULL},
+#ifdef	NOTYET
  {"Problem",	(PyCFunction)rpmds_Problem,	METH_VARARGS,
 	NULL},
 #endif
@@ -218,7 +256,7 @@ rpmds_dealloc(rpmdsObject * s)
 {
     if (s) {
 	s->ds = rpmdsFree(s->ds);
-	PyMem_DEL(s);
+	PyObject_Del(s);
     }
 }
 
@@ -262,7 +300,9 @@ rpmds_subscript(rpmdsObject * s, PyObject * key)
     }
 
     ix = (int) PyInt_AsLong(key);
-    rpmdsSetIx(s->ds, ix);
+    /* XXX make sure that DNEVR exists. */
+    rpmdsSetIx(s->ds, ix-1);
+    (void) rpmdsNext(s->ds);
     return Py_BuildValue("s", rpmdsDNEVR(s->ds));
 }
 
@@ -337,7 +377,7 @@ rpmds dsFromDs(rpmdsObject * s)
 rpmdsObject *
 rpmds_Wrap(rpmds ds)
 {
-    rpmdsObject * s = PyObject_NEW(rpmdsObject, &rpmds_Type);
+    rpmdsObject * s = PyObject_New(rpmdsObject, &rpmds_Type);
 
     if (s == NULL)
 	return NULL;

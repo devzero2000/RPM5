@@ -223,10 +223,25 @@ typedef struct rpmQVKArguments_s * QVA_t;
  * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h		header to use for query/verify
+ * @return		0 on success
  */
 typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h)
 	/*@globals fileSystem@*/
 	/*@modifies qva, ts, fileSystem @*/;
+
+/** \ingroup rpmcli
+ * Function to query spec file.
+ *
+ * @param ts		transaction set
+ * @param qva		parsed query/verify options
+ * @param arg		query argument
+ * @return		0 on success
+ */
+typedef	int (*QSpecF_t) (rpmts ts, QVA_t qva, const char * arg)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, qva, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Describe query/verify/signature command line operation.
@@ -240,6 +255,8 @@ struct rpmQVKArguments_s {
     rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
 /*@null@*/
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
+/*@null@*/
+    QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
 /*@unused@*/
     int qva_verbose;		/*!< (unused) */
 /*@only@*/ /*@null@*/
@@ -359,7 +376,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
  * @todo gnorpm and python bindings prevent this from being static.
  * @param ts		transaction set
  * @param fi		file info (with linked header and current file index)
- * @retval res		address of bit(s) returned to indicate failure
+ * @retval *res		bit(s) returned to indicate failure
  * @param omitMask	bit(s) to disable verify checks
  * @return		0 on success (or not installed), 1 on error
  */
@@ -486,7 +503,8 @@ extern int rpmcliProgressTotal;
  * @param data		private data (e.g. rpmInstallInterfaceFlags)
  * @return		per-callback data (e.g. an opened FD_t)
  */
-/*@null@*/ void * rpmShowProgress(/*@null@*/ const void * arg,
+/*@null@*/
+void * rpmShowProgress(/*@null@*/ const void * arg,
 		const rpmCallbackType what,
 		const unsigned long amount,
 		const unsigned long total,
@@ -503,8 +521,8 @@ extern int rpmcliProgressTotal;
  * Install source rpm package.
  * @param ts		transaction set
  * @param arg		source rpm file name
- * @retval specFilePtr	address of (installed) spec file name
- * @retval cookie
+ * @retval *specFilePtr	(installed) spec file name
+ * @retval *cookie
  * @return		0 on success
  */
 int rpmInstallSource(rpmts ts, const char * arg,

@@ -82,11 +82,13 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 
     (void) elf_version(EV_CURRENT);
 
+/*@-evalorder@*/
     if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
      || elf_kind(elf) != ELF_K_ELF
      || gelf_getehdr(elf, &ehdr) == NULL
      || !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
 	goto exit;
+/*@=evalorder@*/
 
     bingo = 0;
     /*@-branchstate -uniondef @*/
@@ -402,6 +404,65 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 	fileNames = _free(fileNames);
     /*@=branchstate@*/
     if (fileCountPtr) *fileCountPtr = count;
+}
+
+void rpmfiBuildFNames(Header h, rpmTag tagN,
+	/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char ** baseNames;
+    const char ** dirNames;
+    int * dirIndexes;
+    int count;
+    const char ** fileNames;
+    int size;
+    rpmTag dirNameTag = 0;
+    rpmTag dirIndexesTag = 0;
+    rpmTagType bnt, dnt;
+    char * t;
+    int i, xx;
+
+    if (tagN == RPMTAG_BASENAMES) {
+	dirNameTag = RPMTAG_DIRNAMES;
+	dirIndexesTag = RPMTAG_DIRINDEXES;
+    } else if (tagN == RPMTAG_ORIGBASENAMES) {
+	dirNameTag = RPMTAG_ORIGDIRNAMES;
+	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
+    }
+
+    if (!hge(h, tagN, &bnt, (void **) &baseNames, &count)) {
+	if (fnp) *fnp = NULL;
+	if (fcp) *fcp = 0;
+	return;		/* no file list */
+    }
+
+    xx = hge(h, dirNameTag, &dnt, (void **) &dirNames, NULL);
+    xx = hge(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
+
+    size = sizeof(*fileNames) * count;
+    for (i = 0; i < count; i++)
+	size += strlen(baseNames[i]) + strlen(dirNames[dirIndexes[i]]) + 1;
+
+    fileNames = xmalloc(size);
+    t = ((char *) fileNames) + (sizeof(*fileNames) * count);
+    /*@-branchstate@*/
+    for (i = 0; i < count; i++) {
+	fileNames[i] = t;
+	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
+	*t++ = '\0';
+    }
+    /*@=branchstate@*/
+    baseNames = hfd(baseNames, bnt);
+    dirNames = hfd(dirNames, dnt);
+
+    /*@-branchstate@*/
+    if (fnp)
+	*fnp = fileNames;
+    else
+	fileNames = _free(fileNames);
+    /*@=branchstate@*/
+    if (fcp) *fcp = count;
 }
 
 void expandFilelist(Header h)

@@ -51,7 +51,7 @@ struct rpmfi_s {
 /*@only@*/ /*@null@*/
     const char ** flangs;	/*!< File lang(s) (from header) */
 
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
           uint_32 * dil;	/*!< Directory indice(s) (from header) */
 /*@only@*/ /*?null?*/
     const uint_32 * fflags;	/*!< File flag(s) (from header) */
@@ -77,6 +77,23 @@ struct rpmfi_s {
 
 /*@only@*/ /*@null@*/
     char * fstates;		/*!< File state(s) (from header) */
+
+/*@only@*/ /*@null@*/
+    const uint_32 * fcolors;	/*!< File color bits (header) */
+
+/*@only@*/ /*@null@*/
+    const char ** cdict;	/*!< File class dictionary (header) */
+    int_32 ncdict;		/*!< No. of class entries. */
+/*@only@*/ /*@null@*/
+    const uint_32 * fcdictx;	/*!< File class dictionary index (header) */
+
+/*@only@*/ /*@null@*/
+    const uint_32 * ddict;	/*!< File depends dictionary (header) */
+    int_32 nddict;		/*!< No. of depends entries. */
+/*@only@*/ /*@null@*/
+    const uint_32 * fddictx;	/*!< File depends dictionary start (header) */
+/*@only@*/ /*@null@*/
+    const uint_32 * fddictn;	/*!< File depends dictionary count (header) */
 
 /*@only@*/ /*?null?*/
     const uint_32 * vflags;	/*!< File verify flag(s) (from header) */
@@ -151,6 +168,7 @@ extern "C" {
 /**
  * Unreference a file info set instance.
  * @param fi		file info set
+ * @param msg
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
@@ -158,7 +176,13 @@ rpmfi rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 		/*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 
-/** @todo Remove debugging entry from the ABI. */
+/** @todo Remove debugging entry from the ABI.
+ * @param fi		file info set
+ * @param msg
+ * @param fn
+ * @param ln
+ * @return		NULL always
+ */
 /*@-exportlocal@*/
 /*@null@*/
 rpmfi XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
@@ -170,13 +194,20 @@ rpmfi XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 /**
  * Reference a file info set instance.
  * @param fi		file info set
+ * @param msg
  * @return		new file info set reference
  */
 /*@unused@*/
 rpmfi rpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 
-/** @todo Remove debugging entry from the ABI. */
+/** @todo Remove debugging entry from the ABI.
+ * @param fi		file info set
+ * @param msg
+ * @param fn
+ * @param ln
+ * @return		NULL always
+ */
 rpmfi XrpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies fi @*/;
@@ -228,7 +259,7 @@ int rpmfiDX(/*@null@*/ rpmfi fi)
 /**
  * Set current directory index in file info set.
  * @param fi		file info set
- * @param fx		new directory index
+ * @param dx		new directory index
  * @return		current directory index
  */
 int rpmfiSetDX(/*@null@*/ rpmfi fi, int dx)
@@ -336,6 +367,35 @@ int_32 rpmfiFInode(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
+ * Return current file color bits from file info set.
+ * @param fi		file info set
+ * @return		current file color, 0 on invalid
+ */
+uint_32 rpmfiFColor(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
+ * Return current file class from file info set.
+ * @param fi		file info set
+ * @return		current file class, 0 on invalid
+ */
+/*@-exportlocal@*/
+/*@observer@*/ /*@null@*/
+extern const char * rpmfiFClass(/*@null@*/ rpmfi fi)
+	/*@*/;
+/*@=exportlocal@*/
+
+/**
+ * Return current file depends dictionary from file info set.
+ * @param fi		file info set
+ * @retval *fddictp	file depends dictionary array (or NULL)
+ * @return		no. of file depends entries, 0 on invalid
+ */
+int_32 rpmfiFDepends(/*@null@*/ rpmfi fi,
+		/*@out@*/ /*@null@*/ const int_32 ** fddictp)
+	/*@modifies *fddictp @*/;
+
+/**
  * Return (calculated) current file nlink count from file info set.
  * @param fi		file info set
  * @return		current file nlink count, 0 on invalid
@@ -418,7 +478,7 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 
 /**
  * Create and load a file info set.
- * @param ts		transaction set
+ * @param ts		transaction set (NULL skips path relocation)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
  * @param scareMem	Use pointers to refcounted header memory?
@@ -428,6 +488,35 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
 	/*@globals fileSystem @*/
 	/*@modifies ts, h, fileSystem @*/;
+
+/**
+ * Retrieve file classes from header.
+ *
+ * This function is used to retrieve file classes from the header.
+ * 
+ * @param h		header
+ * @retval *fclassp	array of file classes
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildFClasses(Header h,
+		/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
+	/*@globals fileSystem @*/
+	/*@modifies h, *fclassp, *fcp, fileSystem @*/;
+
+/**
+ * Retrieve per-file dependencies from header.
+ *
+ * This function is used to retrieve per-file dependencies from the header.
+ * 
+ * @param h		header
+ * @param tagN		RPMTAG_PROVIDENAME | RPMTAG_REQUIRENAME
+ * @retval *fdepsp	array of file dependencies
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildFDeps(Header h, rpmTag tagN,
+		/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
+	/*@globals fileSystem @*/
+	/*@modifies h, *fdepsp, *fcp, fileSystem @*/;
 
 /**
  * Return file type from mode_t.

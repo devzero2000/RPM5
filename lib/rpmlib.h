@@ -67,6 +67,10 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 
+/** \ingroup rpmbuild
+ */
+typedef struct Spec_s * Spec;
+
 /** \ingroup rpmtrans
  * An added/available package retrieval key.
  */
@@ -120,6 +124,24 @@ int headerNVR(Header h,
 	/*@modifies *np, *vp, *rp @*/;
 
 /** \ingroup header
+ * Return name, epoch, version, release, arch strings from header.
+ * @param h		header
+ * @retval *np		name pointer (or NULL)
+ * @retval *ep		epoch pointer (or NULL)
+ * @retval *vp		version pointer (or NULL)
+ * @retval *rp		release pointer (or NULL)
+ * @retval *ap		arch pointer (or NULL)
+ * @return		0 always
+ */
+int headerNEVRA(Header h,
+		/*@null@*/ /*@out@*/ const char ** np,
+		/*@null@*/ /*@out@*/ /*@unused@*/ const char ** ep,
+		/*@null@*/ /*@out@*/ const char ** vp,
+		/*@null@*/ /*@out@*/ const char ** rp,
+		/*@null@*/ /*@out@*/ const char ** ap)
+	/*@modifies *np, *vp, *rp, *ap @*/;
+
+/** \ingroup header
  * Translate and merge legacy signature tags into header.
  * @todo Remove headerSort() through headerInitIterator() modifies sig.
  * @param h		header
@@ -140,6 +162,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 
 /** \ingroup header
  * Retrieve file names from header.
+ * @deprecated Use rpmHeaderGetEntry() instead.
  * The representation of file names in package headers changed in rpm-4.0.
  * Originally, file names were stored as an array of paths. In rpm-4.0,
  * file names are stored as separate arrays of dirname's and basename's,
@@ -426,29 +449,21 @@ typedef	enum rpmfileAttrs_e {
 /*@-enummemuse@*/
     RPMFILE_NONE	= 0,
 /*@=enummemuse@*/
-    RPMFILE_CONFIG	= (1 << 0),	/*!< from %%config */
-    RPMFILE_DOC		= (1 << 1),	/*!< from %%doc */
-/*@-enummemuse@*/
-    RPMFILE_DONOTUSE	= (1 << 2),	/*!< @todo (unimplemented) from %donotuse. */
-/*@=enummemuse@*/
-    RPMFILE_MISSINGOK	= (1 << 3),	/*!< from %%config(missingok) */
-    RPMFILE_NOREPLACE	= (1 << 4),	/*!< from %%config(noreplace) */
-    RPMFILE_SPECFILE	= (1 << 5),	/*!< @todo (unnecessary) marks 1st file in srpm. */
-    RPMFILE_GHOST	= (1 << 6),	/*!< from %%ghost */
-    RPMFILE_LICENSE	= (1 << 7),	/*!< from %%license */
-    RPMFILE_README	= (1 << 8),	/*!< from %%readme */
-    RPMFILE_EXCLUDE	= (1 << 9),	/*!< from %%exclude */
+    RPMFILE_CONFIG	= (1 <<  0),	/*!< from %%config */
+    RPMFILE_DOC		= (1 <<  1),	/*!< from %%doc */
+    RPMFILE_ICON	= (1 <<  2),	/*!< from %%donotuse. */
+    RPMFILE_MISSINGOK	= (1 <<  3),	/*!< from %%config(missingok) */
+    RPMFILE_NOREPLACE	= (1 <<  4),	/*!< from %%config(noreplace) */
+    RPMFILE_SPECFILE	= (1 <<  5),	/*!< @todo (unnecessary) marks 1st file in srpm. */
+    RPMFILE_GHOST	= (1 <<  6),	/*!< from %%ghost */
+    RPMFILE_LICENSE	= (1 <<  7),	/*!< from %%license */
+    RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
+    RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude */
     RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
     RPMFILE_PUBKEY	= (1 << 11)	/*!< from %%pubkey */
 } rpmfileAttrs;
-#define	RPMFILE_MULTILIB_SHIFT		9
-#define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
-#define	RPMFILE_MULTILIB_MASK		RPMFILE_MULTILIB(7)
 
 #define	RPMFILE_ALL	~(RPMFILE_NONE)
-
-/* XXX Check file flags for multilib marker. */
-#define	isFileMULTILIB(_fflags)		((_fflags) & RPMFILE_MULTILIB_MASK)
 
 /**
  * Dependency Attributes.
@@ -477,7 +492,7 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_TRIGGERIN	= (1 << 16),	/*!< %triggerin dependency. */
     RPMSENSE_TRIGGERUN	= (1 << 17),	/*!< %triggerun dependency. */
     RPMSENSE_TRIGGERPOSTUN = (1 << 18),	/*!< %triggerpostun dependency. */
-    RPMSENSE_MULTILIB	= (1 << 19),
+	/* (1 << 19) unused. */
     RPMSENSE_SCRIPT_PREP = (1 << 20),	/*!< %prep build dependency. */
     RPMSENSE_SCRIPT_BUILD = (1 << 21),	/*!< %build build dependency. */
     RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
@@ -496,8 +511,6 @@ typedef	enum rpmsenseFlags_e {
 
 #define	RPMSENSE_TRIGGER	\
 	(RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | RPMSENSE_TRIGGERPOSTUN)
-
-#define	isDependsMULTILIB(_dflags)	((_dflags) & RPMSENSE_MULTILIB)
 
 #define	_ALL_REQUIRES_MASK	(\
     RPMSENSE_INTERP | \
@@ -803,11 +816,11 @@ typedef enum fileAction_e {
     FA_ERASE,		/*!< ... to be removed. */
     FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
     FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
-    FA_SKIPMULTILIB	/*!< ... untouched. @todo state "multilib" ???. */
+    FA_SKIPCOLOR	/*!< ... untouched, state "wrong color". */
 } fileAction;
 
 #define XFA_SKIPPING(_a)	\
-    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
 /**
  * File types.
@@ -930,7 +943,7 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
 /*@=enummemuse@*/
-    RPMTRANS_FLAG_MULTILIB	= (1 <<  8),	/*!< @todo Document. */
+	/* (1 << 8) unused. */
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
 

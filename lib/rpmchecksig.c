@@ -17,7 +17,6 @@
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
-/*?access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX stealing digests */
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
@@ -564,7 +563,7 @@ rpmtsClean(ts);
 	pkt = _free(pkt);
 
 	/* Read pgp packet. */
-	if ((rc =  pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
+	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
 	    rpmError(RPMERR_IMPORT, _("%s: import read failed.\n"), fn);
 	    res++;
 	    continue;
@@ -576,7 +575,7 @@ rpmtsClean(ts);
 	}
 
 	/* Import pubkey packet(s). */
-	if ((rc =  rpmcliImportPubkey(ts, pkt, pktlen)) != 0) {
+	if ((rc = rpmcliImportPubkey(ts, pkt, pktlen)) != 0) {
 	    rpmError(RPMERR_IMPORT, _("%s: import failed.\n"), fn);
 	    res++;
 	    continue;

@@ -6,7 +6,6 @@ extern PyTypeObject PyDictIter_Type;
 /*@unchecked@*/
 extern PyTypeObject PyFrame_Type;
 
-#include "rpmbc-py.h"   /* XXX debug only */
 #include <rpmcli.h>	/* XXX debug only */
 
 #include "header-py.h"	/* XXX debug only */
@@ -14,7 +13,6 @@ extern PyTypeObject PyFrame_Type;
 #include "rpmds-py.h"	/* XXX debug only */
 #include "rpmfd-py.h"	/* XXX debug only */
 #include "rpmfi-py.h"	/* XXX debug only */
-#include "rpmfts-py.h"	/* XXX debug only */
 #include "rpmmi-py.h"	/* XXX debug only */
 #include "rpmrc-py.h"	/* XXX debug only */
 #include "rpmte-py.h"	/* XXX debug only */
@@ -60,11 +58,9 @@ static const char * lbl(void * s)
 
     if (o->ob_type == &hdr_Type)	return "hdr";
     if (o->ob_type == &rpmal_Type)	return "rpmal";
-    if (o->ob_type == &rpmbc_Type)	return "rpmbc";
     if (o->ob_type == &rpmds_Type)	return "rpmds";
     if (o->ob_type == &rpmfd_Type)	return "rpmfd";
     if (o->ob_type == &rpmfi_Type)	return "rpmfi";
-    if (o->ob_type == &rpmfts_Type)	return "rpmfts";
     if (o->ob_type == &rpmmi_Type)	return "rpmmi";
     if (o->ob_type == &rpmrc_Type)	return "rpmrc";
     if (o->ob_type == &rpmte_Type)	return "rpmte";

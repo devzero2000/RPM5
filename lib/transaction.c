@@ -30,11 +30,9 @@
 
 #include "debug.h"
 
-/*@access FD_t @*/		/* XXX compared with NULL */
-/*@access Header @*/		/* XXX compared with NULL */
+/*@access Header @*/		/* XXX ts->notify arg1 is void ptr */
 /*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
 /*@access dbiIndexSet @*/
-/*@access rpmdb @*/
 
 /*@access rpmpsm @*/
 
@@ -161,7 +159,7 @@ static fileAction decideFileFate(const rpmts ts,
 	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
 	    return FA_SKIP;	/* identical file, don't bother. */
 /*@=nullpass@*/
-     }
+    }
 
     /*
      * The config file on the disk has been modified, but
@@ -215,6 +213,9 @@ static int handleInstInstalledFiles(const rpmts ts,
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    uint_32 tscolor = rpmtsColor(ts);
+    uint_32 otecolor, tecolor;
+    uint_32 oficolor, ficolor;
     const char * altNEVR = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
@@ -235,6 +236,18 @@ static int handleInstInstalledFiles(const rpmts ts,
 	mi = rpmdbFreeIterator(mi);
     }
 
+    /* Compute package color. */
+    tecolor = rpmteColor(p);
+    tecolor &= tscolor;
+
+    /* Compute other pkg color. */
+    otecolor = 0;
+    otherFi = rpmfiInit(otherFi, 0);
+    if (otherFi != NULL)
+    while (rpmfiNext(otherFi) >= 0)
+	otecolor |= rpmfiFColor(otherFi);
+    otecolor &= tscolor;
+
     if (otherFi == NULL)
 	return 1;
 
@@ -247,9 +260,13 @@ static int handleInstInstalledFiles(const rpmts ts,
 
 	otherFileNum = shared->otherFileNum;
 	(void) rpmfiSetFX(otherFi, otherFileNum);
+	oficolor = rpmfiFColor(otherFi);
+	oficolor &= tscolor;
 
 	fileNum = shared->pkgFileNum;
 	(void) rpmfiSetFX(fi, fileNum);
+	ficolor = rpmfiFColor(fi);
+	ficolor &= tscolor;
 
 	isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
@@ -263,6 +280,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    continue;
 
 	if (filecmp(otherFi, fi)) {
+	    /* Report conflicts only for packages/files of same color. */
+	    if (tscolor == 0 || (tecolor == otecolor && ficolor == oficolor))
 	    if (reportConflicts) {
 		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
 			rpmteNEVR(p), rpmteKey(p),
@@ -604,7 +623,7 @@ static void handleOverlappedFiles(const rpmts ts,
 
 assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
-	    if ((rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES)
+	    if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES)
 	     && filecmp(otherFi, fi))
 	    {
 		rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
@@ -661,8 +680,8 @@ assert(otherFi != NULL);
 /*@=boundswrite@*/
 
 	/* Update disk space info for a file. */
-	rpmtsUpdateDSI(ts, fiFps->entry->dev,
-                rpmfiFSize(fi), fi->replacedSizes[i], fixupSize, fi->actions[i]);
+	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
+		fi->replacedSizes[i], fixupSize, fi->actions[i]);
 
     }
     ps = rpmpsFree(ps);
@@ -722,6 +741,9 @@ static int ensureOlder(rpmts ts,
 }
 
 /**
+ * Skip any files that do not match install policies.
+ * @param ts		transaction set
+ * @param fi		file info set
  */
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
 /*@-bounds@*/
@@ -729,6 +751,9 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
 {
+    uint_32 tscolor = rpmtsColor(ts);
+    uint_32 ficolor;
+    int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
     const char ** languages;
@@ -773,7 +798,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (fi != NULL)	/* XXX lclint */
     while ((i = rpmfiNext(fi)) >= 0)
     {
-	char **nsp;
+	char ** nsp;
 
 	bn = rpmfiBN(fi);
 	bnlen = strlen(bn);
@@ -787,7 +812,15 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
 	/* Don't bother with skipped files */
 	if (XFA_SKIPPING(fi->actions[i])) {
-	    drc[ix]--;
+	    drc[ix]--; dff[ix] = 1;
+	    continue;
+	}
+
+	/* Ignore colored files not in our rainbow. */
+	ficolor = rpmfiFColor(fi);
+	if (tscolor && ficolor && !(tscolor & ficolor)) {
+	    drc[ix]--;	dff[ix] = 1;
+	    fi->actions[i] = FA_SKIPCOLOR;
 	    continue;
 	}
 
@@ -851,6 +884,15 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 		fi->actions[i] = FA_SKIPNSTATE;
 		continue;
 	    }
+	}
+
+	/*
+	 * Skip config files if requested.
+	 */
+	if (noConfigs && (rpmfiFFlags(fi) & RPMFILE_CONFIG)) {
+	    drc[ix]--;	dff[ix] = 1;
+	    fi->actions[i] = FA_SKIPNSTATE;
+	    continue;
 	}
 
 	/*
@@ -954,6 +996,7 @@ rpmfi rpmtsiFi(const rpmtsi tsi)
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
+    uint_32 tscolor = rpmtsColor(ts);
     int i, j;
     int ourrc = 0;
     int totalFileCount = 0;
@@ -971,15 +1014,16 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     int numRemoved;
     int xx;
 
-    /* FIXME: what if the same package is included in ts twice? */
+    /* XXX programmer error segfault avoidance. */
+    if (rpmtsNElements(ts) <= 0)
+	return -1;
 
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
 
-    /* XXX MULTILIB is broken, as packages can and do execute /sbin/ldconfig. */
-    if (rpmtsFlags(ts) & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
 
     ts->probs = rpmpsFree(ts->probs);
@@ -1030,7 +1074,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH) && !tscolor)
 	    if (!archOkay(rpmteA(p)))
 		rpmpsAppend(ps, RPMPROB_BADARCH,
 			rpmteNEVR(p), rpmteKey(p),
@@ -1052,8 +1096,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 	    mi = rpmdbFreeIterator(mi);
 	}
 
-	/* XXX multilib should not display "already installed" problems */
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG) && !rpmteMultiLib(p)) {
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_DEFAULT,
 				rpmteE(p));
@@ -1061,6 +1104,12 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 				rpmteV(p));
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
 				rpmteR(p));
+	    if (tscolor) {
+		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT,
+				rpmteA(p));
+		xx = rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_DEFAULT,
+				rpmteO(p));
+	    }
 
 	    while (rpmdbNextIterator(mi) != NULL) {
 		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
@@ -1364,7 +1413,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 				7, numRemoved, NULL, ts->notifyData));
 
 		NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_PROGRESS, progress,
-                        numRemoved, NULL, ts->notifyData));
+			numRemoved, NULL, ts->notifyData));
 		progress++;
 
 	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
@@ -1460,11 +1509,16 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		{
 		    char * fstates = fi->fstates;
 		    fileAction * actions = fi->actions;
+		    rpmte savep;
 
 		    fi->fstates = NULL;
 		    fi->actions = NULL;
 		    fi = rpmfiFree(fi);
+
+		    savep = rpmtsSetRelocateElement(ts, p);
 		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		    (void) rpmtsSetRelocateElement(ts, savep);
+
 		    if (fi != NULL) {	/* XXX can't happen */
 			fi->te = p;
 			fi->fstates = _free(fi->fstates);
@@ -1475,11 +1529,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		    }
 		}
 		psm->fi = rpmfiLink(p->fi, NULL);
-
-		if (rpmteMultiLib(p))
-		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_MULTILIB));
-		else
-		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) & ~RPMTRANS_FLAG_MULTILIB));
 
 /*@-nullstate@*/ /* FIX: psm->fi may be NULL */
 		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {

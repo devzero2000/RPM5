@@ -52,12 +52,10 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 
 /*@access rpmdb @*/		/* XXX db->db_chrootDone, NULL */
 
-/*@access FD_t @*/		/* XXX compared with NULL */
 /*@access rpmps @*/
 /*@access rpmDiskSpaceInfo @*/
 /*@access rpmte @*/
 /*@access rpmtsi @*/
-/*@access rpmts @*/
 /*@access fnpyKey @*/
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
@@ -82,6 +80,29 @@ char * hGetNEVR(Header h, const char ** np)
 	*np = n;
 /*@=boundswrite@*/
     return NVR;
+}
+
+uint_32 hGetColor(Header h)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    uint_32 hcolor = 0;
+    uint_32 * fcolors;
+    int_32 ncolors;
+    int i;
+
+    fcolors = NULL;
+    ncolors = 0;
+    if (hge(h, RPMTAG_FILECOLORS, NULL, (void **)&fcolors, &ncolors)
+     && fcolors != NULL && ncolors > 0)
+    {
+/*@-boundsread@*/
+	for (i = 0; i < ncolors; i++)
+	    hcolor |= fcolors[i];
+/*@=boundsread@*/
+    }
+    hcolor &= 0x0f;
+
+    return hcolor;
 }
 
 rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
@@ -440,7 +461,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), str,
 			Fstrerror(fd));
-            if (fd) {
+            if (fd != NULL) {
                 xx = Fclose(fd);
                 fd = NULL;
             }
@@ -754,8 +775,10 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsSetScriptFd");
 	    ts->scriptFd = NULL;
 	}
+/*@+voidabstract@*/
 	if (scriptFd != NULL)
-	    ts->scriptFd = fdLink(scriptFd, "rpmtsSetScriptFd");
+	    ts->scriptFd = fdLink((void *)scriptFd, "rpmtsSetScriptFd");
+/*@=voidabstract@*/
     }
 }
 
@@ -897,13 +920,15 @@ int rpmtsInitDSI(const rpmts ts)
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
 	return 0;
 
+    rpmMessage(RPMMESS_DEBUG, _("mounted filesystems:\n"));
+    rpmMessage(RPMMESS_DEBUG,
+	_("    i    dev bsize       bavail       iavail mount point\n"));
+
     rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
     if (rc || ts->filesystems == NULL || ts->filesystemCount <= 0)
 	return rc;
 
     /* Get available space on mounted file systems. */
-
-    rpmMessage(RPMMESS_DEBUG, _("getting list of mounted filesystems\n"));
 
     ts->dsi = _free(ts->dsi);
     ts->dsi = xcalloc((ts->filesystemCount + 1), sizeof(*ts->dsi));
@@ -953,6 +978,10 @@ int rpmtsInitDSI(const rpmts ts)
 	/* XXX Avoid FAT and other file systems that have not inodes. */
 	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
+	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%04x %5u %12ld %12ld %s\n"),
+		i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
+		(signed long) dsi->bavail, (signed long) dsi->iavail,
+		ts->filesystems[i]);
     }
     return rc;
 }
@@ -1101,6 +1130,53 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
     return otransFlags;
 }
 
+Spec rpmtsSpec(rpmts ts)
+{
+/*@-compdef -retexpose -usereleased@*/
+    return ts->spec;
+/*@=compdef =retexpose =usereleased@*/
+}
+
+Spec rpmtsSetSpec(rpmts ts, Spec spec)
+{
+    Spec ospec = ts->spec;
+/*@-assignexpose -temptrans@*/
+    ts->spec = spec;
+/*@=assignexpose =temptrans@*/
+    return ospec;
+}
+
+rpmte rpmtsRelocateElement(rpmts ts)
+{
+/*@-compdef -retexpose -usereleased@*/
+    return ts->relocateElement;
+/*@=compdef =retexpose =usereleased@*/
+}
+
+rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement)
+{
+    rpmte orelocateElement = ts->relocateElement;
+/*@-assignexpose -temptrans@*/
+    ts->relocateElement = relocateElement;
+/*@=assignexpose =temptrans@*/
+    return orelocateElement;
+}
+
+uint_32 rpmtsColor(rpmts ts)
+{
+    return (ts != NULL ? ts->color : 0);
+}
+
+uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
+{
+    uint_32 ocolor = 0;
+    if (ts != NULL) {
+	ocolor = ts->color;
+	ts->color = color;
+    }
+    return ocolor;
+}
+
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {
@@ -1164,6 +1240,8 @@ rpmts rpmtsCreate(void)
     ts->scriptFd = NULL;
     ts->tid = (int_32) time(NULL);
     ts->delta = 5;
+
+    ts->color = rpmExpandNumeric("%{?_transaction_color}");
 
     ts->numRemovedPackages = 0;
     ts->allocedRemovedPackages = ts->delta;

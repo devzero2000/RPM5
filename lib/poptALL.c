@@ -45,6 +45,10 @@ extern int _rpmdb_debug;
 /*@unchecked@*/
 extern int _rpmds_debug;
 
+/* XXX avoid -lrpmbuild linkage. */
+/*@unchecked@*/
+       int _rpmfc_debug;
+
 /*@unchecked@*/
 extern int _rpmfi_debug;
 
@@ -278,6 +282,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "rpmdsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_debug, -1,
 	NULL, NULL},
+ { "rpmfcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfc_debug, -1,
+	NULL, NULL},
  { "rpmfidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfi_debug, -1,
 	NULL, NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
@@ -332,12 +338,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 /*@=globs =mods@*/
 
-#if defined(ENABLE_NLS)
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
     (void) setlocale(LC_ALL, "" );
-
-#ifdef	__LCLINT__
-#define LOCALEDIR	"/usr/share/locale"
-#endif
     (void) bindtextdomain(PACKAGE, LOCALEDIR);
     (void) textdomain(PACKAGE);
 #endif

@@ -96,6 +96,12 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
 	break;
+    case RPMBUILD_CHECK:
+	name = "%check";
+	sb = spec->check;
+	mTemplate = "%{__spec_check_template}";
+	mPost = "%{__spec_check_post}";
+	break;
     case RPMBUILD_CLEAN:
 	name = "%clean";
 	sb = spec->clean;
@@ -264,7 +270,7 @@ fprintf(stderr, "*** delMacros\n");
     return rc;
 }
 
-int buildSpec(Spec spec, int what, int test)
+int buildSpec(rpmts ts, Spec spec, int what, int test)
 {
     int rc = 0;
 
@@ -275,7 +281,7 @@ int buildSpec(Spec spec, int what, int test)
 	if (spec->BASpecs != NULL)
 	for (x = 0; x < spec->BACount; x++) {
 /*@-boundsread@*/
-	    if ((rc = buildSpec(spec->BASpecs[x],
+	    if ((rc = buildSpec(ts, spec->BASpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
 				test))) {
@@ -294,6 +300,10 @@ int buildSpec(Spec spec, int what, int test)
 
 	if ((what & RPMBUILD_INSTALL) &&
 	    (rc = doScript(spec, RPMBUILD_INSTALL, NULL, NULL, test)))
+		goto exit;
+
+	if ((what & RPMBUILD_CHECK) &&
+	    (rc = doScript(spec, RPMBUILD_CHECK, NULL, NULL, test)))
 		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&

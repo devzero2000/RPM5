@@ -63,6 +63,8 @@ struct rpmte_s {
     Header h;			/*!< Package header. */
 /*@only@*/
     const char * NEVR;		/*!< Package name-version-release. */
+/*@only@*/
+    const char * NEVRA;		/*!< Package name-version-release.arch. */
 /*@owned@*/
     const char * name;		/*!< Name: */
 /*@only@*/ /*@null@*/
@@ -97,7 +99,8 @@ struct rpmte_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 
-    uint_32 multiLib;		/*!< (TR_ADDED) MULTILIB */
+    uint_32 color;		/*!< Color bit(s) from package dependencies. */
+    uint_32 pkgFileSize;	/*!< No. of bytes in package file (approx). */
 
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
@@ -230,21 +233,30 @@ extern const char * rpmteO(rpmte te)
 	/*@*/;
 
 /**
- * Retrieve multlib flags of transaction element.
+ * Retrieve color bits of transaction element.
  * @param te		transaction element
- * @return		multilib flags
+ * @return		color bits
  */
-int rpmteMultiLib(rpmte te)
+uint_32 rpmteColor(rpmte te)
 	/*@*/;
 
 /**
- * Set multlib flags of transaction element.
+ * Set color bits of transaction element.
  * @param te		transaction element
- * @param nmultiLib	new multilib flags
- * @return		previous multilib flags
+ * @param color		new color bits
+ * @return		previous color bits
  */
-int rpmteSetMultiLib(rpmte te, int nmultiLib)
+uint_32 rpmteSetColor(rpmte te, uint_32 color)
 	/*@modifies te @*/;
+
+/**
+ * Retrieve size in bytes of package file.
+ * @todo Signature header is estimated at 256b.
+ * @param te		transaction element
+ * @return		size in bytes of package file.
+ */
+uint_32 rpmtePkgFileSize(rpmte te)
+	/*@*/;
 
 /**
  * Retrieve tsort tree depth of transaction element.
@@ -409,6 +421,17 @@ extern const char * rpmteNEVR(rpmte te)
 	/*@*/;
 
 /**
+ * Retrieve name-version-release.arch string from transaction element.
+ * @param te		transaction element
+ * @return		name-version-release.arch string
+ */
+/*@-exportlocal@*/
+/*@observer@*/
+extern const char * rpmteNEVRA(rpmte te)
+	/*@*/;
+/*@=exportlocal@*/
+
+/**
  * Retrieve file handle from transaction element.
  * @param te		transaction element
  * @return		file handle
@@ -437,11 +460,21 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 /**
  * Retrieve file info tag set from transaction element.
  * @param te		transaction element
- * @param tag		file info tag
+ * @param tag		file info tag (RPMTAG_BASENAMES)
  * @return		file info tag set
  */
 rpmfi rpmteFI(rpmte te, rpmTag tag)
 	/*@*/;
+
+/**
+ * Calculate transaction element dependency colors/refs from file info.
+ * @param te		transaction element
+ * @param tag		dependency tag (RPMTAG_PROVIDENAME, RPMTAG_REQUIRENAME)
+ */
+/*@-exportlocal@*/
+void rpmteColorDS(rpmte te, rpmTag tag)
+        /*@modifies te @*/;
+/*@=exportlocal@*/
 
 /**
  * Return transaction element index.

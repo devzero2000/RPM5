@@ -13,13 +13,11 @@
 
 #include "legacy.h"	/* XXX domd5(), uidToUname(), gnameToGid */
 #include "ugid.h"
-#include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
 /*@access rpmps @*/
 /*@access rpmProblem @*/
 /*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
-/*@access FD_t @*/	/* XXX compared with NULL */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
@@ -67,6 +65,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     case RPMFILE_STATE_NETSHARED:
     case RPMFILE_STATE_REPLACED:
     case RPMFILE_STATE_NOTINSTALLED:
+    case RPMFILE_STATE_WRONGCOLOR:
 	return 0;
 	/*@notreached@*/ break;
     case RPMFILE_STATE_NORMAL:
@@ -288,6 +287,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
 			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
+			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
 		te += strlen(te);
@@ -329,6 +329,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
 			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
+			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
 	    te += strlen(te);
@@ -449,7 +450,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    FD_t fdo = fdDup(STDOUT_FILENO);
 	    if ((rc = rpmVerifyScript(qva, ts, fi, fdo)) != 0)
 		ec = rc;
-	    if (fdo)
+	    if (fdo != NULL)
 		rc = Fclose(fdo);
 	}
 
