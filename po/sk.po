@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-10 23:19-0400\n"
+"POT-Creation-Date: 2001-05-11 11:54-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3765,11 +3765,11 @@ msgstr "otvára sa databáza s právami 0x%x v %s\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
 msgid "exclusive"
 msgstr "výhradný"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
 msgid "shared"
 msgstr "zdieµaný"
 
@@ -3788,22 +3788,22 @@ msgstr "odstraòuje sa index súborov pre %s\n"
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:621
+#: rpmdb/db2.c:588 rpmdb/db3.c:620
 #, fuzzy, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:793
+#: rpmdb/db2.c:679 rpmdb/db3.c:792
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:963
+#: rpmdb/db2.c:785 rpmdb/db3.c:961
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:970
+#: rpmdb/db2.c:792 rpmdb/db3.c:968
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"

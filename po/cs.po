@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-10 23:19-0400\n"
+"POT-Creation-Date: 2001-05-11 11:54-0400\n"
 "PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3584,11 +3584,11 @@ msgstr "otevírám db soubor     %s mode 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nemohu vytvoøit zámek %s na databázi\n"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
 msgid "exclusive"
 msgstr "výhradní"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
 msgid "shared"
 msgstr "sdílený"
 
@@ -3607,22 +3607,22 @@ msgstr "odstranìno db prostøedí %s/%s\n"
 msgid "opening db environment %s/%s %s\n"
 msgstr "otevírám db environment %s/%s %s\n"
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:621
+#: rpmdb/db2.c:588 rpmdb/db3.c:620
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "uzavøen db index       %s/%s\n"
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:793
+#: rpmdb/db2.c:679 rpmdb/db3.c:792
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "otevírám db index      %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:963
+#: rpmdb/db2.c:785 rpmdb/db3.c:961
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu zamknout databázi zámkem %s v %s/%s\n"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:970
+#: rpmdb/db2.c:792 rpmdb/db3.c:968
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "uzamèen db index       %s/%s\n"

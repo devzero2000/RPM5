@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-10 23:19-0400\n"
+"POT-Creation-Date: 2001-05-11 11:54-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -3799,11 +3799,11 @@ msgstr "データベースモード 0x%x のオープン (%s)\n"
 msgid "cannot get %s lock on database\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
 msgid "exclusive"
 msgstr "除外"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
 msgid "shared"
 msgstr "共有"
 
@@ -3822,22 +3822,22 @@ msgstr "%s 用の file インデックスを削除します\n"
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:621
+#: rpmdb/db2.c:588 rpmdb/db3.c:620
 #, fuzzy, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:793
+#: rpmdb/db2.c:679 rpmdb/db3.c:792
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:963
+#: rpmdb/db2.c:785 rpmdb/db3.c:961
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:970
+#: rpmdb/db2.c:792 rpmdb/db3.c:968
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"

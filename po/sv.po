@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-10 23:19-0400\n"
+"POT-Creation-Date: 2001-05-11 11:54-0400\n"
 "PO-Revision-Date: 2001-05-10 23:07+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3565,11 +3565,11 @@ msgstr "öppnar db-fil          %s rättighet 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kan inte få %s lås på databas\n"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:965
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:963
 msgid "shared"
 msgstr "delat"
 
@@ -3588,22 +3588,22 @@ msgstr "tar bort db-miljö      %s/%s\n"
 msgid "opening db environment %s/%s %s\n"
 msgstr "öppnar   db-miljö      %s/%s %s\n"
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:621
+#: rpmdb/db2.c:588 rpmdb/db3.c:620
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "tog bort db-index      %s/%s\n"
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:793
+#: rpmdb/db2.c:679 rpmdb/db3.c:792
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar   db-index      %s/%s %s rättighet=0x%x\n"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:963
+#: rpmdb/db2.c:785 rpmdb/db3.c:961
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:970
+#: rpmdb/db2.c:792 rpmdb/db3.c:968
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "låste    db-index      %s/%s\n"
