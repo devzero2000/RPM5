@@ -58,7 +58,8 @@ struct availablePackage {
 struct availableIndexEntry {
 /*@dependent@*/ struct availablePackage * package; /*!< Containing package. */
 /*@dependent@*/ const char * entry;	/*!< Available item name. */
-    size_t entryLen;			/*!< No. of bytes in name. */
+    int entryLen;			/*!< No. of bytes in name. */
+    int entryIx;			/*!< Item index. */
     enum indexEntryType {
 	IET_PROVIDES=1		/*!< A Provides: dependency. */
     } type;				/*!< Type of available item. */

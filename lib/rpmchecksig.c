@@ -160,8 +160,13 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 
 	/* Generate the new signatures */
 	if (flags != RESIGN_ADD_SIGNATURE) {
-	    sig = rpmFreeSignature(sig);
-	    sig = rpmNewSignature();
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP5);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_GPG);
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 	}

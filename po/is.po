@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-05 15:12-0500\n"
+"POT-Creation-Date: 2001-11-06 15:45-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -2077,113 +2077,113 @@ msgid " failed - "
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:567
+#: lib/depends.c:568
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:596
+#: lib/depends.c:597
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:597 lib/depends.c:1223 lib/depends.c:1356
+#: lib/depends.c:598 lib/depends.c:1220 lib/depends.c:1353
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:597 lib/depends.c:1223 lib/depends.c:1356
+#: lib/depends.c:598 lib/depends.c:1220 lib/depends.c:1353
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:1021
+#: lib/depends.c:1022
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1131
+#: lib/depends.c:1128
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1222
+#: lib/depends.c:1219
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1251
+#: lib/depends.c:1248
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1268
+#: lib/depends.c:1265
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1292
+#: lib/depends.c:1289
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1305
+#: lib/depends.c:1302
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1319
+#: lib/depends.c:1316
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1335
+#: lib/depends.c:1332
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1356
+#: lib/depends.c:1353
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1428
+#: lib/depends.c:1425
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1507
+#: lib/depends.c:1504
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1753
+#: lib/depends.c:1750
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1902
+#: lib/depends.c:1899
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1960
+#: lib/depends.c:1957
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2010
+#: lib/depends.c:2007
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2062
+#: lib/depends.c:2059
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2091
+#: lib/depends.c:2088
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3022,7 +3022,7 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:128 lib/rpmchecksig.c:260
+#: lib/rpmchecksig.c:128 lib/rpmchecksig.c:265
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
@@ -3037,52 +3037,52 @@ msgstr ""
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:146 lib/rpmchecksig.c:276
+#: lib/rpmchecksig.c:146 lib/rpmchecksig.c:281
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:281
+#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:286
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:183
+#: lib/rpmchecksig.c:188
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:189
+#: lib/rpmchecksig.c:194
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:266
+#: lib/rpmchecksig.c:271
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:437
+#: lib/rpmchecksig.c:442
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:438 lib/rpmchecksig.c:452
+#: lib/rpmchecksig.c:443 lib/rpmchecksig.c:457
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
+#: lib/rpmchecksig.c:445 lib/rpmchecksig.c:459
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
+#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:443 lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:448 lib/rpmchecksig.c:462
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:456
 msgid "OK"
 msgstr ""
 

@@ -468,6 +468,7 @@ static void alMakeIndex(availableList al)
 		ai->index[k].package = al->list + i;
 		ai->index[k].entry = al->list[i].provides[j];
 		ai->index[k].entryLen = strlen(al->list[i].provides[j]);
+		ai->index[k].entryIx = j;
 		ai->index[k].type = IET_PROVIDES;
 		k++;
 	    }
@@ -1099,12 +1100,12 @@ alAllSatisfiesDepend(const availableList al,
     if (match == NULL) return NULL;
 
     /* rewind to the first match */
-    while (match > al->index.index && indexcmp(match-1,&needle) == 0)
+    while (match > al->index.index && indexcmp(match-1, &needle) == 0)
 	match--;
 
     for (ret = NULL, found = 0;
 	 match <= al->index.index + al->index.size &&
-		indexcmp(match,&needle) == 0;
+		indexcmp(match, &needle) == 0;
 	 match++)
     {
 
@@ -1112,13 +1113,9 @@ alAllSatisfiesDepend(const availableList al,
 	rc = 0;
 	switch (match->type) {
 	case IET_PROVIDES:
-	    for (i = 0; i < p->providesCount; i++) {
-		const char * proEVR;
+	    i = match->entryIx;
+	    {	const char * proEVR;
 		int proFlags;
-
-		/* Filter out provides that came along for the ride. */
-		if (strcmp(p->provides[i], keyName))
-		    continue;
 
 		proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
 		proFlags = (p->provideFlags ? p->provideFlags[i] : 0);

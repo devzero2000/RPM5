@@ -511,6 +511,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Nov 26 2001 Jeff Johnson <jbj@redhat.com>
+- rpm-4.0.3 released.
+
 * Mon Nov  5 2001 Jeff Johnson <jbj@redhat.com>
 - fix: harmless typo in db3 chroot hack.
 - fix: big-endian's with sizeof(time_t) != sizeof(int_32) mtime broken.
