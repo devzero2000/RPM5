@@ -285,551 +285,574 @@ msgstr "        rpm {--querytags}"
 
 #: rpm.c:327 rpmqv.c:477
 msgid "Usage:"
-msgstr ""
+msgstr "  사용법:"
 
 #: rpm.c:329 rpmqv.c:479
 msgid "print this message"
-msgstr ""
+msgstr "이 메세지를 출력합니다"
 
 #: rpm.c:331 rpmqv.c:128 rpmqv.c:481
 msgid "print the version of rpm being used"
-msgstr ""
+msgstr "현재 사용 중인 rpm 버전을 표시합니다"
 
 #: rpm.c:334
 msgid "   All modes support the following arguments:"
-msgstr ""
+msgstr "   모든 모드에서 다음의 인수들을 사용하실 수 있습니다:"
 
 #: rpm.c:335
 msgid "    --define '<name> <body>'"
-msgstr ""
+msgstr "    --define '<이름> <본문>'"
 
 #: rpm.c:336 rpmqv.c:135 rpmqv.c:486
 msgid "define macro <name> with value <body>"
-msgstr ""
+msgstr "<본문> 의 내용을 <이름> 매크로로 정의합니다"
 
 #: rpm.c:337
 msgid "    --eval '<name>+'      "
-msgstr ""
+msgstr "    --eval '<이름>+'      "
 
 #: rpm.c:338
 msgid "print the expansion of macro <name> to stdout"
-msgstr ""
+msgstr "<이름> 매크로의 확장을 표준출력으로 출력합니다"
 
 #: rpm.c:339
 msgid "    --pipe <cmd>          "
-msgstr ""
+msgstr "    --pipe <명령>         "
 
 #: rpm.c:340 rpmqv.c:141 rpmqv.c:490
 msgid "send stdout to <cmd>"
-msgstr ""
+msgstr "표준출력을 <명령> 으로 보냅니다"
 
 #: rpm.c:341
 msgid "    --rcfile <file>       "
-msgstr ""
+msgstr "    --rcfile <파일>       "
 
 #: rpm.c:342
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-msgstr ""
+msgstr "/etc/rpmrc 와 $HOME/.rpmrc 파일 대신에 <파일> 을 사용합니다"
 
 #: rpm.c:344 rpmqv.c:159 rpmqv.c:494
 msgid "display final rpmrc and macro configuration"
-msgstr ""
+msgstr "현재 설정되어 있는 rpmrc 의 내용과 매크로를 보여줍니다"
 
 #: rpm.c:346 rpmqv.c:502
 msgid "be a little more verbose"
-msgstr ""
+msgstr "화면에 출력되는 메세지의 내용을 자세히 보여줍니다"
 
 #: rpm.c:348 rpmqv.c:504
 msgid "be incredibly verbose (for debugging)"
-msgstr ""
+msgstr "화면에 출력되는 메세지의 내용을 아주 상세히 보여줍니다 (디버깅 용)"
 
 #: rpm.c:351
 msgid "   Install, upgrade and query (with -p) allow URL's to be used in place"
 msgstr ""
+"     설치, 업그레이드 및 질의시 (-p 옵션과 함께 사용시) 파일명을 적는 곳에"
 
 #: rpm.c:352
 msgid "   of file names as well as the following options:"
-msgstr ""
+msgstr "      파일이 위치한 URL 과 함께 다음의 옵션을 사용하실 수 있습니다:"
 
 #: rpm.c:353
 msgid "      --ftpproxy <host>   "
-msgstr ""
+msgstr "      --ftpproxy <호스트> "
 
 #: rpm.c:354 rpmqv.c:511
 msgid "hostname or IP of ftp proxy"
-msgstr ""
+msgstr "ftp 프록시의 호스트 명 또는 IP"
 
 #: rpm.c:355
 msgid "      --ftpport <port>    "
-msgstr ""
+msgstr "      --ftpport <포트>    "
 
 #: rpm.c:356 rpmqv.c:513
 msgid "port number of ftp server (or proxy)"
-msgstr ""
+msgstr "ftp 서버 (또는 프록시) 의 포트 번호"
 
 #: rpm.c:357
 msgid "      --httpproxy <host>  "
-msgstr ""
+msgstr "      --httpproxy <호스트>"
 
 #: rpm.c:358 rpmqv.c:515
 msgid "hostname or IP of http proxy"
-msgstr ""
+msgstr "http 프록시의 호스트 명 또는 IP"
 
 #: rpm.c:359
 msgid "      --httpport <port>   "
-msgstr ""
+msgstr "      --httpport <포트>   "
 
 #: rpm.c:360 rpmqv.c:517
 msgid "port number of http server (or proxy)"
-msgstr ""
+msgstr "http 서버 (또는 프록시) 의 포트 번호"
 
 #: rpm.c:364 rpmqv.c:537
 msgid "query mode"
-msgstr ""
+msgstr "질의 모드"
 
 #: rpm.c:365 rpm.c:411 rpm.c:436 rpm.c:488 rpm.c:560
 msgid "      --dbpath <dir>      "
-msgstr ""
+msgstr "      --dbpath <디렉토리> "
 
 #: rpm.c:366 rpm.c:412 rpm.c:437 rpm.c:489 rpm.c:561 rpmqv.c:497
 msgid "use <dir> as the directory for the database"
-msgstr ""
+msgstr "<디렉토리> 를 데이터베이스 디렉토리로 사용합니다"
 
 #: rpm.c:367
 msgid "      --queryformat <qfmt>"
-msgstr ""
+msgstr "      --queryformat <질의형식>"
 
 #: rpm.c:368 rpmqv.c:539
 msgid "use <qfmt> as the header format (implies --info)"
-msgstr ""
+msgstr "<질의형식> 을 헤더 형식으로 사용합니다 (--info 옵션이 포함되어 있음)"
 
 #: rpm.c:369 rpm.c:413 rpm.c:471 rpm.c:500
 msgid "      --root <dir>        "
-msgstr ""
+msgstr "      --root <디렉토리>   "
 
 #: rpm.c:370 rpm.c:414 rpm.c:472 rpm.c:501 rpm.c:563 rpmqv.c:144 rpmqv.c:499
 msgid "use <dir> as the top level directory"
-msgstr ""
+msgstr "<디렉토리> 를 최상위 디렉토리로 사용합니다"
 
 #: rpm.c:371
 msgid "      Package specification options:"
-msgstr ""
+msgstr "       패키지 지정 옵션:"
 
 #: rpm.c:373
 msgid "query all packages"
-msgstr ""
+msgstr "모든 패키지에 대해 질의합니다"
 
 #: rpm.c:374
 msgid "        -f <file>+        "
-msgstr ""
+msgstr "        -f <파일>+        "
 
 #: rpm.c:375
 msgid "query package owning <file>"
-msgstr ""
+msgstr "<파일> 이 포함되어 있는 패키지에 대해 질의합니다"
 
 #: rpm.c:376
 msgid "        -p <packagefile>+ "
-msgstr ""
+msgstr "        -p <패키지파일>+  "
 
 #: rpm.c:377
 msgid "query (uninstalled) package <packagefile>"
-msgstr ""
+msgstr "(설치되지 않은) <패키지파일> 에 대해 질의합니다"
 
 #: rpm.c:378
 msgid "        --triggeredby <pkg>"
-msgstr ""
+msgstr "        --triggeredby <패키지>"
 
 #: rpm.c:379
 msgid "query packages triggered by <pkg>"
-msgstr ""
+msgstr "<패키지> 로 인하여 발생되는 패키지에 대해 질의합니다"
 
 #: rpm.c:380
 msgid "        --whatprovides <cap>"
-msgstr ""
+msgstr "        --whatprovides <기능>"
 
 #: rpm.c:381
 msgid "query packages which provide <cap> capability"
-msgstr ""
+msgstr "<기능> 을 제공하는 패키지에 대해 질의합니다"
 
 #: rpm.c:382
 msgid "        --whatrequires <cap>"
-msgstr ""
+msgstr "        --whatrequires <기능>"
 
 #: rpm.c:383
 msgid "query packages which require <cap> capability"
-msgstr ""
+msgstr "<기능> 을 필요로 하는 패키지에 대해 질의합니다"
 
 #: rpm.c:384
 msgid "      Information selection options:"
-msgstr ""
+msgstr "       정보 선택 옵션:"
 
 #: rpm.c:386 rpmqv.c:543
 msgid "display package information"
-msgstr ""
+msgstr "패키지에 대한 정보를 보여줍니다"
 
 #: rpm.c:388 rpmqv.c:545
 msgid "display the package's change log"
-msgstr ""
+msgstr "패키지의 변경 사항(change log)을 보여줍니다"
 
 #: rpm.c:390 rpmqv.c:547
 msgid "display package file list"
-msgstr ""
+msgstr "패키지 안에 포함된 파일의 목록을 보여줍니다"
 
 #: rpm.c:392 rpmqv.c:549
 msgid "show file states (implies -l)"
-msgstr ""
+msgstr "패키지 안에 포함된 파일의 상태를 보여줍니다 (-l 옵션이 포함되어 있음)"
 
 #: rpm.c:394 rpmqv.c:551
 msgid "list only documentation files (implies -l)"
 msgstr ""
+"패키지 안에 포함된 파일 중 문서 파일만 보여줍니다 (-l 옵션이 포함되어 있음)"
 
 #: rpm.c:396 rpmqv.c:553
 msgid "list only configuration files (implies -l)"
 msgstr ""
+"패키지 안에 포함된 파일 중 설정 파일만 보여줍니다 (-l 옵션이 포함되어 있음)"
 
 #: rpm.c:398 rpmqv.c:555
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
 msgstr ""
+"패키지 안의 각 파일에 대해 검증할 수 있는 정보는 모두 보여줍니다 (-l, -c, "
+"또는 -d 옵션과 함께 사용해야 합니다)"
 
 #: rpm.c:400
 msgid "list capabilities package provides"
-msgstr ""
+msgstr "패키지가 제공하는 기능을 나열합니다"
 
 #: rpm.c:402
 msgid "list package dependencies"
-msgstr ""
+msgstr "패키지와 의존성이 있는 패키지를 나열합니다"
 
 #: rpm.c:404
 msgid "print the various [un]install scripts"
-msgstr ""
+msgstr "[제거]설치시에 사용되는 스크립트를 출력합니다"
 
 #: rpm.c:406
 msgid "show the trigger scripts contained in the package"
-msgstr ""
+msgstr "패키지에 포함된 트리거 스크립트를 보여줍니다"
 
 #: rpm.c:410 rpmqv.c:566
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr ""
+"-q 옵션과 같은 패키지 지정 옵션을 사용하여 설치되어 있는 패키지를 검사합니다"
 
 #: lib/poptBT.c:187 lib/verify.c:60 rpm.c:416 rpm.c:458 rpm.c:493 rpmqv.c:268
 #: rpmqv.c:568 rpmqv.c:616 rpmqv.c:650
 msgid "do not verify package dependencies"
-msgstr ""
+msgstr "패키지의 의존성을 검사하지 않습니다"
 
 #: lib/verify.c:66 rpm.c:418 rpmqv.c:208 rpmqv.c:572
 msgid "do not verify file md5 checksums"
-msgstr ""
+msgstr "파일의 md5 체크섬을 검사하지 않습니다"
 
 #: rpm.c:420 rpmqv.c:570
 msgid "do not verify file attributes"
-msgstr ""
+msgstr "파일의 속성을 검사하지 않습니다"
 
 #: rpm.c:422 rpmqv.c:577
 msgid "list the tags that can be used in a query format"
-msgstr ""
+msgstr "질의 형식에서 사용될 수 있는 태그를 나열합니다"
 
 #: rpm.c:425
 msgid "    --install <packagefile>"
-msgstr ""
+msgstr "    --install <패키지파일>"
 
 #: rpm.c:426
 msgid "    -i <packagefile>      "
-msgstr ""
+msgstr "    -i <패키지파일>       "
 
 #: rpm.c:427 rpmqv.c:264 rpmqv.c:591
 msgid "install package"
-msgstr ""
+msgstr "패키지를 설치합니다"
 
 #: rpm.c:428
 msgid "      --excludepath <path>"
-msgstr ""
+msgstr "      --excludepath <경로>"
 
 #: rpm.c:429
 msgid "skip files in path <path>"
-msgstr ""
+msgstr "<경로> 안의 파일은 설치하지 않습니다"
 
 #: rpm.c:430
 msgid "      --relocate <oldpath>=<newpath>"
-msgstr ""
+msgstr "      --relocate <이전경로>=<새로운경로>"
 
 #: rpm.c:431 rpmqv.c:628
 msgid "relocate files from <oldpath> to <newpath>"
-msgstr ""
+msgstr "<이전경로> 에서 <새로운경로> 로 파일을 재 배치하여 설치합니다"
 
 #: rpm.c:433 rpmqv.c:236 rpmqv.c:596
 msgid "relocate files in non-relocateable package"
-msgstr ""
+msgstr "재 배치 기능이 없는 패키지의 파일을 재 배치하여 설치합니다"
 
 #: rpm.c:434
 msgid "      --prefix <dir>      "
-msgstr ""
+msgstr "      --prefix <디렉토리> "
 
 #: rpm.c:435 rpmqv.c:311 rpmqv.c:626
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
+"재 배치 기능이 있는 패키지의 경우, 지정된 <디렉토리> 로 재 배치하여 "
+"설치합니다"
 
 #: rpm.c:439 rpmqv.c:242 rpmqv.c:598
 msgid "do not install documentation"
-msgstr ""
+msgstr "패키지 안에 포함된 문서 파일을 설치하지 않습니다"
 
 #: rpm.c:441 rpmqv.c:247 rpmqv.c:602
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr ""
+msgstr "--replacepkgs 와 --replacefiles 옵션을 동시에 사용합니다"
 
 #: rpm.c:443 rpmqv.c:253 rpmqv.c:604
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
+"패키지 설치를 해시마크(#) 로 표시합니다 (-v 옵션과 함께 사용하는 것이 "
+"좋습니다)"
 
 #: rpm.c:445 rpmqv.c:224 rpmqv.c:593
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr ""
+msgstr "어떠한 설정에 상관없이 패키지 안의 모든 파일을 설치합니다"
 
 #: rpm.c:448 rpmqv.c:255 rpmqv.c:606
 msgid "don't verify package architecture"
-msgstr ""
+msgstr "패키지의 아키텍쳐를 검사하지 않습니다"
 
 #: rpm.c:450 rpmqv.c:260 rpmqv.c:608
 msgid "don't check disk space before installing"
-msgstr ""
+msgstr "패키지를 설치하기 전에 디스크 공간을 검사하지 않습니다"
 
 #: rpm.c:452 rpmqv.c:257 rpmqv.c:610
 msgid "don't verify package operating system"
-msgstr ""
+msgstr "패키지의 운영체제를 검사하지 않습니다"
 
 #: rpm.c:454 rpmqv.c:262 rpmqv.c:612
 msgid "install documentation"
-msgstr ""
+msgstr "패키지 안에 포함된 문서 파일을 설치합니다"
 
 #: rpm.c:456 rpm.c:491 rpmqv.c:266 rpmqv.c:614 rpmqv.c:648
 msgid "update the database, but do not modify the filesystem"
-msgstr ""
+msgstr "파일시스템을 변경하지 않고, 데이터베이스를 갱신합니다"
 
 #: rpm.c:460 rpm.c:495 rpmqv.c:270 rpmqv.c:618 rpmqv.c:652
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr ""
+msgstr "의존성이 있는 패키지를 설치하도록 재 요구하지 않습니다"
 
 #: rpm.c:462
 msgid "don't execute any installation scripts"
-msgstr ""
+msgstr "패키지 설치시 어떠한 설치관련 스크립트도 실행하지 않습니다"
 
 #: rpm.c:464 rpm.c:499 rpmqv.c:656
 msgid "don't execute any scripts triggered by this package"
-msgstr ""
+msgstr "이 패키지로 인하여 발생되는 스크립트를 실행하지 않습니다"
 
 #: rpm.c:466 rpmqv.c:309 rpmqv.c:624
 msgid "print percentages as package installs"
-msgstr ""
+msgstr "패키지 설치를 퍼센트(%) 로 표시합니다"
 
 #: rpm.c:468 rpmqv.c:320 rpmqv.c:630
 msgid "install even if the package replaces installed files"
-msgstr ""
+msgstr "패키지 설치시 기존에 설치되어 있는 파일을 덮어씁니다"
 
 #: rpm.c:470 rpmqv.c:322 rpmqv.c:632
 msgid "reinstall if the package is already present"
-msgstr ""
+msgstr "패키지가 이미 설치되어 있는 경우에도 설치합니다"
 
 #: rpm.c:474 rpmqv.c:324 rpmqv.c:634
 msgid "don't install, but tell if it would work or not"
-msgstr ""
+msgstr "패키지를 설치하지 않고, 제대로 설치되는지의 여부만 알려줍니다"
 
 #: rpm.c:477
 msgid "    --upgrade <packagefile>"
-msgstr ""
+msgstr "    --upgrade <패키지파일>"
 
 #: rpm.c:478
 msgid "    -U <packagefile>      "
-msgstr ""
+msgstr "    -U <패키지파일>       "
 
 #: rpm.c:479 rpmqv.c:638
 msgid "upgrade package (same options as --install, plus)"
-msgstr ""
+msgstr "패키지를 업그레이드 합니다 (--install 옵션에 몇가지 옵션이 추가됨)"
 
 #: rpm.c:481 rpmqv.c:306 rpmqv.c:640
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
+"이전 버전의 패키지로 다운그레이드 합니다 (--force 옵션을 사용시에는 이 "
+"옵션이 자동으로 적용됩니다)"
 
 #: rpm.c:483
 msgid "    --erase <package>"
-msgstr ""
+msgstr "    --erase <패키지>"
 
 #: rpm.c:484
 msgid "    -e <package>          "
-msgstr ""
+msgstr "    -e <패키지>           "
 
 #: rpm.c:485 rpmqv.c:240 rpmqv.c:644
 msgid "erase (uninstall) package"
-msgstr ""
+msgstr "패키지를 (제거) 삭제합니다"
 
 #: rpm.c:487 rpmqv.c:227 rpmqv.c:646
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
+"<패키지> 이름과 일치하는 패키지는 모두 제거합니다 (<패키지> 에 여러개의 "
+"패키지가 지정될 경우에는 오류가 발생됩니다)"
 
 #: rpm.c:497 rpmqv.c:654
 msgid "do not execute any package specific scripts"
-msgstr ""
+msgstr "패키지 제거시 어떠한 제거관련 스크립트도 실행하지 않습니다"
 
 #: rpm.c:503
 msgid "    -b<stage> <spec>      "
-msgstr ""
+msgstr "    -b<단계> <spec파일>   "
 
 #: rpm.c:504
 msgid "    -t<stage> <tarball>   "
-msgstr ""
+msgstr "    -t<단계> <tar파일>    "
 
 #: rpm.c:505
 msgid "build package, where <stage> is one of:"
-msgstr ""
+msgstr "패키지를 제작하며, <단계> 에 사용되는 옵션은 다음과 같습니다:"
 
 #: rpm.c:507
 msgid "prep (unpack sources and apply patches)"
-msgstr ""
+msgstr "준비 과정 (소스 파일을 풀고 패치를 적용합니다)"
 
 #: rpm.c:509
 #, c-format
 msgid "list check (do some cursory checks on %files)"
-msgstr ""
+msgstr "파일 목록 확인 (%files 항목에 대해 간단한 검사를 합니다)"
 
 #: rpm.c:511
 msgid "compile (prep and compile)"
-msgstr ""
+msgstr "컴파일 (준비 과정과 컴파일을 합니다)"
 
 #: rpm.c:513
 msgid "install (prep, compile, install)"
-msgstr ""
+msgstr "설치 (준비 과정, 컴파일, 설치를 합니다)"
 
 #: rpm.c:515
 msgid "binary package (prep, compile, install, package)"
 msgstr ""
+"바이너리 패키지 제작 (준비 과정, 컴파일, 설치, 바이너리 패키지를 제작합니다)"
 
 #: rpm.c:517
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
+"바이너리와 소스 패키지 제작 (준비 과정, 컴파일, 설치, 바이너리와 소스 "
+"패키지를 제작합니다)"
 
 #: lib/poptBT.c:198 rpm.c:519
 msgid "skip straight to specified stage (only for c,i)"
-msgstr ""
+msgstr "지정된 단계로 바로 진행합니다 (c,i 에서만 사용 가능)"
 
 #: lib/poptBT.c:177 rpm.c:521
 msgid "remove build tree when done"
-msgstr ""
+msgstr "패키지 제작 후에 소스 파일을 풀고 작업한 디렉토리를 삭제합니다"
 
 #: lib/poptBT.c:194 rpm.c:523
 msgid "remove sources when done"
-msgstr ""
+msgstr "패키지 제작 후에 소스 파일을 삭제합니다"
 
 #: rpm.c:525
 msgid "remove spec file when done"
-msgstr ""
+msgstr "패키지 제작 후에 spec 파일을 삭제합니다"
 
 #: lib/poptBT.c:200 rpm.c:527 rpmqv.c:200
 msgid "generate PGP/GPG signature"
-msgstr ""
+msgstr "PGP/GPG 서명을 작성합니다"
 
 #: rpm.c:528
 msgid "      --buildroot <dir>   "
-msgstr ""
+msgstr "      --buildroot <디렉토리>"
 
 #: rpm.c:529
 msgid "use <dir> as the build root"
-msgstr ""
+msgstr "<디렉토리> 를 패키지 제작을 위한 루트 디렉토리로 사용합니다"
 
 #: rpm.c:530
 msgid "      --target=<platform>+"
-msgstr ""
+msgstr "      --target=<플랫폼>+  "
 
 #: rpm.c:531
 msgid "build the packages for the build targets platform1...platformN."
-msgstr ""
+msgstr "지정된 플랫폼1...플랫폼N 의 패키지를 제작합니다"
 
 #: rpm.c:533
 msgid "do not execute any stages"
-msgstr ""
+msgstr "패키지 제작시 어떠한 단계도 실행하지 않습니다"
 
 #: rpm.c:535
 msgid "    --rebuild <src_pkg>   "
-msgstr ""
+msgstr "    --rebuild <소스_패키지>"
 
 #: rpm.c:536
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
+"<소스_패키지> 로 바이너리 패키지를 제작하며, 패키지 제작 후에는 spec, 소스, "
+"패치, 아이콘 파일을 삭제합니다"
 
 #: rpm.c:537
 msgid "    --recompile <src_pkg> "
-msgstr ""
+msgstr "    --recompile <소스_패키지>"
 
 #: rpm.c:538
 msgid "like --rebuild, but don't build any package"
-msgstr ""
+msgstr "--rebuild 옵션과 같으나, 어떠한 패키지도 제작하지 않습니다"
 
 #: rpm.c:541
 msgid "    --resign <pkg>+       "
-msgstr ""
+msgstr "    --resign <패키지>+    "
 
 #: rpm.c:542 rpmqv.c:198 rpmqv.c:662
 msgid "sign a package (discard current signature)"
-msgstr ""
+msgstr "패키지에 서명합니다 (기존의 서명은 삭제됩니다)"
 
 #: rpm.c:543
 msgid "    --addsign <pkg>+      "
-msgstr ""
+msgstr "    --addsign <패키지>+   "
 
 #: rpm.c:544 rpmqv.c:196 rpmqv.c:664
 msgid "add a signature to a package"
-msgstr ""
+msgstr "패키지에 서명을 추가합니다"
 
 #: rpm.c:545
 msgid "    --checksig <pkg>+"
-msgstr ""
+msgstr "    --checksig <패키지>+"
 
 #: rpm.c:546
 msgid "    -K <pkg>+             "
-msgstr ""
+msgstr "    -K <패키지>+          "
 
 #: rpm.c:547 rpmqv.c:202 rpmqv.c:668
 msgid "verify package signature"
-msgstr ""
+msgstr "패키지에 서명된 내용을 검사합니다"
 
 #: rpm.c:549 rpmqv.c:204 rpmqv.c:670
 msgid "skip any PGP signatures"
-msgstr ""
+msgstr "PGP 서명은 검사하지 않습니다"
 
 #: rpm.c:551 rpmqv.c:206 rpmqv.c:672
 msgid "skip any GPG signatures"
-msgstr ""
+msgstr "GPG 서명은 검사하지 않습니다"
 
 #: rpm.c:553 rpmqv.c:674
 msgid "skip any MD5 signatures"
-msgstr ""
+msgstr "MD5 서명은 검사하지 않습니다"
 
 #: rpm.c:557
 msgid "make sure a valid database exists"
-msgstr ""
+msgstr "유효한 데이터베이스가 존재하는지 확인합니다"
 
 #: rpm.c:559
 msgid "rebuild database from existing database"
-msgstr ""
+msgstr "기존의 데이터베이스를 재 구축합니다"
 
 #: rpm.c:567 rpmqv.c:579
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
+"-q 옵션과 같은 패키지 지정 옵션을 사용하여 패키지 데이터베이스에 있는 파일의 "
+"허가권(permission) 을 설정합니다"
 
 #: rpm.c:570 rpmqv.c:582
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
+"-q 옵션과 같은 패키지 지정 옵션을 사용하여 패키지 데이터베이스에 있는 파일의 "
+"소유자와 그룹을 설정합니다"
 
 #: rpm.c:722 rpm.c:728 rpm.c:737 rpm.c:759 rpm.c:765 rpm.c:772 rpm.c:780
 #: rpm.c:788 rpm.c:809 rpm.c:872 rpmqv.c:867 rpmqv.c:873 rpmqv.c:880
