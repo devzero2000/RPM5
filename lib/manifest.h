@@ -3,6 +3,7 @@
 
 /**
  * \file lib/manifest.h
+ * Routines to expand a manifest containing glob expressions into an argv list.
  */
 
 #ifdef __cplusplus
