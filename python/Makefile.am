@@ -7,7 +7,7 @@ LINT = splint
 pylibdir = ${prefix}/lib@MARK64@/python@WITH_PYTHON_VERSION@
 pyincdir = $(prefix)/include/python@WITH_PYTHON_VERSION@
 
-SUBDIRS = rpmdb test
+SUBDIRS = # rpmdb test
 
 EXTRA_DIST = rpmdebug-py.c
 
@@ -38,9 +38,7 @@ pythondir = $(pylibdir)/site-packages
 python_PROGRAMS = rpmmodule.so
 
 rpmdbdir = $(pylibdir)/site-packages/rpmdb
-rpmdb_PROGRAMS = _rpmdb.so
-
-noinst_PROGRAMS = poptmodule.so
+noinst_PROGRAMS = _rpmdb.so poptmodule.so
 
 rpmmodule_so_SOURCES =
 rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so

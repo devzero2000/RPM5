@@ -53,7 +53,7 @@ AC_PROG_CXX
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_prog_gcc" = yes; then
-    CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-strict-aliasing"
+    CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
 fi
 export CFLAGS
 
@@ -791,7 +791,6 @@ AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
-AC_TYPE_ST_RDEV_T
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
@@ -1293,8 +1292,6 @@ AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	doc/ru/Makefile
 	doc/sk/Makefile
 	python/Makefile
-	python/rpmdb/Makefile
-	python/test/Makefile
   ], [	echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
   ]

@@ -4,6 +4,12 @@
 
 #include "system.h"
 
+#include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
+
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 

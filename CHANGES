@@ -26,6 +26,8 @@
 	- python: return [], not None, accessing header tags (#112794).
 	- python: avoid invoking python to acquire ill-specified parameters.
 	- add ia32e arch.
+	- revert to db-4.1.25 without --enable-posixmutexes.
+	- fix: double free of file *.mgc path (#116948).
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.
