@@ -511,8 +511,8 @@ FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
 	--infodir=%{_infodir}
 #------------------------------------------------------------------------------
 # The make install analogue of %configure:
-%makeinstall { \
-   make install \
+%makeinstall \
+   make \
 	prefix=%{?buildroot:%{buildroot}}%{_prefix} \
 	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \
 	bindir=%{?buildroot:%{buildroot}}%{_bindir} \
@@ -526,7 +526,7 @@ FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
 	sharedstatedir=%{?buildroot:%{buildroot}}%{_sharedstatedir} \
 	mandir=%{?buildroot:%{buildroot}}%{_mandir} \
 	infodir=%{?buildroot:%{buildroot}}%{_infodir} \
-   }
+   install
 
 #------------------------------------------------------------------------------
 # The GNUconfigure macro does the following:
