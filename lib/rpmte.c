@@ -193,10 +193,10 @@ rpmte rpmteNew(const rpmts ts, Header h,
     int_32 * ep;
     int xx;
 
+    p->type = type;
     addTE(ts, p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
-	p->type = type;
 	p->u.addedKey = pkgKey;
 	ep = NULL;
 	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, (void **)&ep, NULL);
@@ -205,7 +205,6 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	    p->pkgFileSize += 96 + 256 + *ep;
 	break;
     case TR_REMOVED:
-	p->type = type;
 	p->u.removed.dependsOnKey = pkgKey;
 	p->u.removed.dboffset = dboffset;
 	break;
