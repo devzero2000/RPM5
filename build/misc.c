@@ -107,7 +107,6 @@ StringBuf getOutputFrom(char *dir, char *argv[],
 			int failNonZero)
 {
     int progPID;
-    int progDead;
     int toProg[2];
     int fromProg[2];
     int status;
@@ -154,12 +153,7 @@ StringBuf getOutputFrom(char *dir, char *argv[],
     
     readBuff = newStringBuf();
 
-    progDead = 0;
     do {
-	if (waitpid(progPID, &status, WNOHANG)) {
-	    progDead = 1;
-	}
-
 	/* Write some stuff to the process if possible */
         if (writeBytesLeft) {
 	    if ((bytesWritten =
@@ -173,22 +167,22 @@ StringBuf getOutputFrom(char *dir, char *argv[],
 	    }
 	    writeBytesLeft -= bytesWritten;
 	    writePtr += bytesWritten;
-	} else {
+	} else if (toProg[1] >= 0) {
 	    close(toProg[1]);
+	    toProg[1] = -1;
 	}
 	
 	/* Read any data from prog */
-	bytes = read(fromProg[0], buf, sizeof(buf)-1);
-	while (bytes > 0) {
+	while ((bytes = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
 	    buf[bytes] = '\0';
 	    appendStringBuf(readBuff, buf);
-	    bytes = read(fromProg[0], buf, sizeof(buf)-1);
 	}
 
 	/* terminate when prog dies */
-    } while (!progDead);
+    } while (!waitpid(progPID, &status, WNOHANG));
 
-    close(toProg[1]);
+    if (toProg[1] >= 0)
+    	close(toProg[1]);
     close(fromProg[0]);
     signal(SIGPIPE, oldhandler);
 
