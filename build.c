@@ -129,7 +129,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
     close(fd);
     s = buf;
     while(count--) {
-	if (! (isprint(*s) || isspace(*s))) {
+	if (! (isprint(*s) || isspace(*s) || (*s == 0x1b))) {
 	    fprintf(stderr, _("File contains non-printable characters(%c): %s\n"), *s,
 		    specfile);
 	    return 1;
