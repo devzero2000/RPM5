@@ -11,8 +11,19 @@
 #include "misc.h"
 #include "debug.h"
 
+/*@access rpmTransactionSet@*/	/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
+
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
+}
 
 /* Define if you want percentage progress in the hash bars when
  * writing to a tty (ordinary hash bars otherwise) --claudio
@@ -27,6 +38,8 @@ static int progressTotal = 0;
 static int progressCurrent = 0;
 #endif
 
+/**
+ */
 static void printHash(const unsigned long amount, const unsigned long total)
 {
     int hashesNeeded;
@@ -34,43 +47,46 @@ static void printHash(const unsigned long amount, const unsigned long total)
 
 #ifdef FANCY_HASH
     if (isatty (STDOUT_FILENO))
-       hashesTotal = 44;
+	hashesTotal = 44;
 #endif
 
     if (hashesPrinted != hashesTotal) {
-        hashesNeeded = hashesTotal * (total ? (((float) amount) / total) : 1);
+	hashesNeeded = hashesTotal * (total ? (((float) amount) / total) : 1);
 	while (hashesNeeded > hashesPrinted) {
 #ifdef FANCY_HASH
-           if (isatty (STDOUT_FILENO)) {
-               int i;
-               for (i = 0; i < hashesPrinted; i++) putchar ('#');
-               for (; i < hashesTotal; i++) putchar (' ');
-               printf ("(%3d%%)", (int)(100 * (total ? (((float) amount) / total) : 1)));
-               for (i = 0; i < (hashesTotal + 6); i++) putchar ('\b');
-           } else
+	    if (isatty (STDOUT_FILENO)) {
+		int i;
+		for (i = 0; i < hashesPrinted; i++) putchar ('#');
+		for (; i < hashesTotal; i++) putchar (' ');
+		printf ("(%3d%%)",
+			(int)(100 * (total ? (((float) amount) / total) : 1)));
+		for (i = 0; i < (hashesTotal + 6); i++) putchar ('\b');
+	    } else
 #endif
-               fprintf(stdout, "#");
+	    fprintf(stdout, "#");
 
-	    fflush(stdout);
 	    hashesPrinted++;
 	}
 	fflush(stdout);
 	hashesPrinted = hashesNeeded;
 
-       if (hashesPrinted == hashesTotal) {
+	if (hashesPrinted == hashesTotal) {
 #ifdef FANCY_HASH
-           int i;
-           progressCurrent++;
-           for (i = 1; i < hashesPrinted; i++) putchar ('#');
-           printf (" [%3d%%]\n", (int)(100 * (progressTotal ?
-               (((float) progressCurrent) / progressTotal) : 1)));
+	    int i;
+	    progressCurrent++;
+	    for (i = 1; i < hashesPrinted; i++) putchar ('#');
+	    printf (" [%3d%%]\n", (int)(100 * (progressTotal ?
+			(((float) progressCurrent) / progressTotal) : 1)));
 #else
-           fprintf (stdout, "\n");
+	    fprintf (stdout, "\n");
 #endif
-       }
+	}
+	fflush(stdout);
     }
 }
 
+/**
+ */
 static void * showProgress(const void * arg, const rpmCallbackType what, 
 			   const unsigned long amount, 
 			   const unsigned long total,
@@ -84,12 +100,14 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
     static FD_t fd;
 
     switch (what) {
-      case RPMCALLBACK_INST_OPEN_FILE:
+    case RPMCALLBACK_INST_OPEN_FILE:
 	fd = Fopen(filename, "r.ufdio");
-	fd = fdLink(fd, "persist (showProgress)");
+	if (fd)
+	    fd = fdLink(fd, "persist (showProgress)");
 	return fd;
+	/*@notreached@*/ break;
 
-      case RPMCALLBACK_INST_CLOSE_FILE:
+    case RPMCALLBACK_INST_CLOSE_FILE:
 	fd = fdFree(fd, "persist (showProgress)");
 	if (fd) {
 	    Fclose(fd);
@@ -97,70 +115,67 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	}
 	break;
 
-      case RPMCALLBACK_INST_START:
+    case RPMCALLBACK_INST_START:
 	hashesPrinted = 0;
-	if (flags & INSTALL_LABEL) {
-	    if (flags & INSTALL_HASH) {
-		s = headerSprintf(h, "%{NAME}",
-				  rpmTagTable, rpmHeaderFormats, NULL);
+	if (!(flags & INSTALL_LABEL))
+	    break;
+	if (flags & INSTALL_HASH) {
+	    s = headerSprintf(h, "%{NAME}", rpmTagTable, rpmHeaderFormats,NULL);
 #ifdef FANCY_HASH
-               if (isatty (STDOUT_FILENO))
-                   fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
-              else
+	    if (isatty (STDOUT_FILENO))
+		fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
+	    else
 #else
-                   fprintf(stdout, "%-28s", s);
+		fprintf(stdout, "%-28s", s);
 #endif
-		fflush(stdout);
-	    } else {
-		s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
+	    fflush(stdout);
+	} else {
+	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
 				  rpmTagTable, rpmHeaderFormats, NULL);
-		fprintf(stdout, "%s\n", s);
-	    }
-	    free(s);
+	    fprintf(stdout, "%s\n", s);
+	    fflush(stdout);
 	}
+	s = _free(s);
 	break;
 
-      case RPMCALLBACK_TRANS_PROGRESS:
-      case RPMCALLBACK_INST_PROGRESS:
-	if (flags & INSTALL_PERCENT) {
+    case RPMCALLBACK_TRANS_PROGRESS:
+    case RPMCALLBACK_INST_PROGRESS:
+	if (flags & INSTALL_PERCENT)
 	    fprintf(stdout, "%%%% %f\n", (total
 				? ((float) ((((float) amount) / total) * 100))
 				: 100.0));
-	    fflush(stdout);
-	} else if (flags & INSTALL_HASH) {
+	else if (flags & INSTALL_HASH)
 	    printHash(amount, total);
-	}
+	fflush(stdout);
 	break;
 
-      case RPMCALLBACK_TRANS_START:
-       hashesPrinted = 0;
+    case RPMCALLBACK_TRANS_START:
+	hashesPrinted = 0;
 #ifdef FANCY_HASH
-       progressTotal = 1;
-       progressCurrent = 0;
+	progressTotal = 1;
+	progressCurrent = 0;
 #endif
-       if (flags & INSTALL_LABEL) {
-           if (flags & INSTALL_HASH) {
-               fprintf(stdout, "%-28s", _("Preparing..."));
-               fflush(stdout);
-           } else {
-               printf("%s\n", _("Preparing packages for installation..."));
-           }
-       }
-       break;
+	if (!(flags & INSTALL_LABEL))
+	    break;
+	if (flags & INSTALL_HASH)
+	    fprintf(stdout, "%-28s", _("Preparing..."));
+	else
+	    printf("%s\n", _("Preparing packages for installation..."));
+	fflush(stdout);
+	break;
 
-      case RPMCALLBACK_TRANS_STOP:
-       if (flags & INSTALL_HASH) {
-           printHash(1, 1);            /* Fixes "preparing..." progress bar */
-       }
+    case RPMCALLBACK_TRANS_STOP:
+	if (flags & INSTALL_HASH)
+	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
 #ifdef FANCY_HASH
-       progressTotal = packagesTotal;
-       progressCurrent = 0;
+	progressTotal = packagesTotal;
+	progressCurrent = 0;
 #endif
-       break;
+	break;
 
-      case RPMCALLBACK_UNINST_PROGRESS:
-      case RPMCALLBACK_UNINST_START:
-      case RPMCALLBACK_UNINST_STOP:
+    case RPMCALLBACK_UNINST_PROGRESS:
+    case RPMCALLBACK_UNINST_START:
+    case RPMCALLBACK_UNINST_STOP:
 	/* ignore */
 	break;
     }
@@ -187,7 +202,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     int numFailed = 0;
     Header h;
     int isSource;
-    rpmTransactionSet rpmdep = NULL;
+    rpmTransactionSet ts = NULL;
     int numConflicts;
     int stopInstall = 0;
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -222,8 +237,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	{   int myrc;
 	    int j;
 	    const char *tfn;
-	    const char ** argv;
-	    int argc;
+	    int argc = 0;
+	    const char ** argv = NULL;
 
 	    myrc = rpmGlob(*fileURL, &argc, &argv);
 	    if (myrc) {
@@ -261,16 +276,15 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 			argv[j], ftpStrerror(myrc));
 		    numFailed++;
 		    pkgURL[i] = NULL;
-		    free((void *)tfn);
+		    tfn = _free(tfn);
 		} else {
 		    tmppkgURL[numTmpPkgs++] = pkgURL[i++] = tfn;
 		}
 	    }
 	    if (argv) {
 		for (j = 0; j < argc; j++)
-		    free((void *)argv[j]);
-		free((void *)argv);
-		argv = NULL;
+		    argv[j] = _free(argv[j]);
+		argv = _free(argv);
 	    }
 	}   break;
 	case URL_IS_PATH:
@@ -298,8 +312,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	(void) urlPath(*fileURL, &fileName);
 	fd = Fopen(*fileURL, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), *fileURL,
-		Fstrerror(fd));
+	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
+				*fileURL, Fstrerror(fd));
 	    if (fd) Fclose(fd);
 	    numFailed++;
 	    pkgURL[i] = NULL;
@@ -334,12 +348,12 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 					"%{_dbpath}", NULL);
 			rpmMessage(RPMMESS_ERROR, 
 				_("cannot open Packages database in %s\n"), dn);
-			free((void *)dn);
+			dn = _free(dn);
 			numFailed++;
 			pkgURL[i] = NULL;
 			break;
 		    }
-		    rpmdep = rpmtransCreateSet(db, rootdir);
+		    ts = rpmtransCreateSet(db, rootdir);
 		    dbIsOpen = 1;
 		}
 
@@ -350,7 +364,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
 				       (void **) &paths, &c) && (c == 1)) {
 			defaultReloc->oldPath = xstrdup(paths[0]);
-			free((void *)paths);
+			paths = _free(paths);
 		    } else {
 			const char * name;
 			headerNVR(h, &name, NULL, NULL);
@@ -388,7 +402,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		    /* Package is newer than those currently installed. */
 		}
 
-		rc = rpmtransAddPackage(rpmdep, h, NULL, fileName,
+		rc = rpmtransAddPackage(ts, h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
 
@@ -411,10 +425,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 			/*@notreached@*/ break;
 		}
 
-		if (defaultReloc) {
-		    free((void *)defaultReloc->oldPath);
-		    defaultReloc->oldPath = NULL;
-		}
+		defaultReloc->oldPath = _free(defaultReloc->oldPath);
 
 		numRPMS++;
 	    }
@@ -422,14 +433,14 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	}
     }
 
-    if (numFailed) goto errxit;
-
     rpmMessage(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"), 
 		numSRPMS, numRPMS);
 
+    if (numFailed) goto errxit;
+
     if (numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
 	struct rpmDependencyConflict * conflicts;
-	if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
+	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
 	    numFailed = numPkgs;
 	    stopInstall = 1;
 	}
@@ -444,7 +455,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     }
 
     if (numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
-	if (rpmdepOrder(rpmdep)) {
+	if (rpmdepOrder(ts)) {
 	    numFailed = numPkgs;
 	    stopInstall = 1;
 	}
@@ -454,10 +465,10 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	rpmProblemSet probs = NULL;
 
 #ifdef FANCY_HASH
-       packagesTotal = numRPMS;
+	packagesTotal = numRPMS;
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	rc = rpmRunTransactions(rpmdep, showProgress, (void *) ((long)notifyFlags), 
+	rc = rpmRunTransactions(ts, showProgress, (void *) ((long)notifyFlags), 
 				    NULL, &probs, transFlags, probFilter);
 
 	if (rc < 0) {
@@ -470,7 +481,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	if (probs) rpmProblemSetFree(probs);
     }
 
-    if (numRPMS && rpmdep) rpmtransFree(rpmdep);
+    if (numRPMS && ts) rpmtransFree(ts);
 
     if (numSRPMS && !stopInstall) {
 	for (i = 0; i < numSRPMS; i++) {
@@ -492,10 +503,10 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 
     for (i = 0; i < numTmpPkgs; i++) {
 	Unlink(tmppkgURL[i]);
-	free((void *)tmppkgURL[i]);
+	tmppkgURL[i] = _free(tmppkgURL[i]);
     }
-    free((void *)tmppkgURL);	tmppkgURL = NULL;
-    free((void *)pkgURL);	pkgURL = NULL;
+    tmppkgURL = _free(tmppkgURL);
+    pkgURL = _free(pkgURL);
 
     /* FIXME how do we close our various fd's? */
 
@@ -504,14 +515,13 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     return numFailed;
 
 errxit:
-    if (numRPMS && rpmdep) rpmtransFree(rpmdep);
+    if (numRPMS && ts) rpmtransFree(ts);
     if (tmppkgURL) {
 	for (i = 0; i < numTmpPkgs; i++)
-	    free((void *)tmppkgURL[i]);
-	free((void *)tmppkgURL);
+	    tmppkgURL[i] = _free(tmppkgURL[i]);
+	tmppkgURL = _free(tmppkgURL);
     }
-    if (pkgURL)
-	free((void *)pkgURL);
+    pkgURL = _free(pkgURL);
     if (dbIsOpen) rpmdbClose(db);
     return numPkgs;
 }
@@ -525,7 +535,7 @@ int rpmErase(const char * rootdir, const char ** argv,
     int count;
     const char ** arg;
     int numFailed = 0;
-    rpmTransactionSet rpmdep;
+    rpmTransactionSet ts;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     int stopUninstall = 0;
@@ -541,11 +551,11 @@ int rpmErase(const char * rootdir, const char ** argv,
 	const char *dn;
 	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
-	free((void *)dn);
+	dn = _free(dn);
 	return -1;
     }
 
-    rpmdep = rpmtransCreateSet(db, rootdir);
+    ts = rpmtransCreateSet(db, rootdir);
     for (arg = argv; *arg; arg++) {
 	rpmdbMatchIterator mi;
 
@@ -564,7 +574,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset) {
-		    rpmtransRemovePackage(rpmdep, recOffset);
+		    rpmtransRemovePackage(ts, recOffset);
 		    numPackages++;
 		}
 	    }
@@ -573,7 +583,7 @@ int rpmErase(const char * rootdir, const char ** argv,
     }
 
     if (!(interfaceFlags & UNINSTALL_NODEPS)) {
-	if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
+	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
 	    numFailed = numPackages;
 	    stopUninstall = 1;
 	}
@@ -589,11 +599,11 @@ int rpmErase(const char * rootdir, const char ** argv,
     }
 
     if (!stopUninstall) {
-	numFailed += rpmRunTransactions(rpmdep, NULL, NULL, NULL, &probs,
+	numFailed += rpmRunTransactions(ts, NULL, NULL, NULL, &probs,
 					transFlags, 0);
     }
 
-    rpmtransFree(rpmdep);
+    rpmtransFree(ts);
     rpmdbClose(db);
 
     return numFailed;
@@ -619,14 +629,10 @@ int rpmInstallSource(const char * rootdir, const char * arg,
 				 cookie);
     if (rc == 1) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
-	if (specFile && *specFile) {
-	    free((void *)*specFile);
-	    *specFile = NULL;
-	}
-	if (cookie && *cookie) {
-	    free(*cookie);
-	    *cookie = NULL;
-	}
+	if (specFile && *specFile)
+	    *specFile = _free(*specFile);
+	if (cookie && *cookie)
+	    *cookie = _free(*cookie);
     }
 
     Fclose(fd);

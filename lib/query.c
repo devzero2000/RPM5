@@ -509,7 +509,7 @@ restart:
 
 	    /* Try to read the header from a package file. */
 	    fd = Fopen(fileURL, "r.ufdio");
-	    if (Ferror(fd)) {
+	    if (fd == NULL || Ferror(fd)) {
 		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
 			Fstrerror(fd));
 		if (fd) Fclose(fd);
