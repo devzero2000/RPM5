@@ -43,6 +43,7 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
 
 /** \ingroup rpmbuild
  * Return output from helper script.
+ * @todo Use poll(2) rather than select(2), if available.
  * @param dir		directory to run in (or NULL)
  * @param argv		program and arguments to run
  * @param writePtr	bytes to feed to script on stdin (or NULL)
