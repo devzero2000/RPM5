@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2001-07-23 22:35-0400\n"
-"PO-Revision-Date: 2001-07-24 08:56+0100\n"
+"PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1223,7 +1223,7 @@ msgstr ""
 
 #: rpmqv.c:194
 msgid "Install/Upgrade/Erase options:"
-msgstr ""
+msgstr "Volby pro Instalaci/Aktualizaci/Mazání:"
 
 #: rpmqv.c:199
 msgid "Common options for all rpm modes:"
@@ -2185,6 +2185,7 @@ msgstr "========== ukládání tsort relací\n"
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
+"========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
 #: lib/depends.c:2001
 msgid "========== successors only (presentation order)\n"
@@ -2234,7 +2235,7 @@ msgstr "soubor %s je na neznámém zaøízení\n"
 
 #: lib/fsm.c:292
 msgid "========= Directories not explictly included in package:\n"
-msgstr ""
+msgstr "========= Adresáøe, které nebyly explicitnì zaøazeny do balíèku:\n"
 
 #: lib/fsm.c:294
 #, c-format
@@ -2244,7 +2245,7 @@ msgstr "%9d %s\n"
 #: lib/fsm.c:1130
 #, c-format
 msgid "%s directory created with perms %04o.\n"
-msgstr ""
+msgstr "vytvoøen adresáø %s s právy %04o.\n"
 
 #: lib/fsm.c:1513 lib/fsm.c:1638
 #, c-format
@@ -2477,7 +2478,7 @@ msgstr "ignorovat ExcludeArch: direktivy ve spec souboru"
 
 #: lib/poptBT.c:185
 msgid "debug file state machine"
-msgstr ""
+msgstr "ladit nástroj stavu souborù"
 
 #: lib/poptBT.c:187
 msgid "do not execute any stages of the build"
@@ -2509,7 +2510,7 @@ msgstr "vyhledat i18N øetìzce ve specfile katalogu"
 
 #: lib/poptI.c:75
 msgid "malformed rollback time"
-msgstr ""
+msgstr "poru¹ený rollback èas"
 
 #: lib/poptI.c:99 lib/poptI.c:150
 msgid "do not execute package scriptlet(s)"
@@ -2517,7 +2518,7 @@ msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
 #: lib/poptI.c:106
 msgid "save erased package files by renaming into sub-directory"
-msgstr ""
+msgstr "uchovat smazané soubory pøesunem do podadresáøe"
 
 #: lib/poptI.c:109
 msgid "<package>+"
@@ -2529,7 +2530,7 @@ msgstr "pøeskoèit soubory s úvodní cestou <cesta> "
 
 #: lib/poptI.c:115
 msgid "<path>"
-msgstr ""
+msgstr "<cesta>"
 
 #: lib/poptI.c:121
 msgid "upgrade package(s) if already installed"
@@ -2593,15 +2594,15 @@ msgstr "<stará_cesta>=<nová_cesta>"
 
 #: lib/poptI.c:195
 msgid "save erased package files by repackaging"
-msgstr ""
+msgstr "uchovat smazané soubory pomocí pøebalení"
 
 #: lib/poptI.c:203
 msgid "deinstall new package(s), reinstall old package(s), back to date"
-msgstr ""
+msgstr "odinstalovat nové balíèky, reinstalovat staré balíèky zpìt do data"
 
 #: lib/poptI.c:204
 msgid "<date>"
-msgstr ""
+msgstr "<datum>"
 
 #: lib/poptI.c:209
 msgid "upgrade package(s)"
@@ -2682,17 +2683,17 @@ msgstr "vypsat soubory v balíèku"
 #: lib/poptQV.c:157
 #, c-format
 msgid "skip %%ghost files"
-msgstr ""
+msgstr "vynechat %%ghost soubory"
 
 #: lib/poptQV.c:161
 #, c-format
 msgid "skip %%license files"
-msgstr ""
+msgstr "vynechat %%license soubory"
 
 #: lib/poptQV.c:164
 #, c-format
 msgid "skip %%readme files"
-msgstr "%s: readLead selhalo\n"
+msgstr "vynechat %%readme soubory"
 
 #: lib/poptQV.c:170
 msgid "use the following query format"
@@ -2712,31 +2713,31 @@ msgstr "zobrazit roz¹íøený výpis souborù"
 
 #: lib/poptQV.c:193
 msgid "don't verify MD5 digest of files"
-msgstr "nekontrolovat soubory v balíèku"
+msgstr "nekontrolovat MD5 souborù v balíèku"
 
 #: lib/poptQV.c:196
 msgid "don't verify size of files"
-msgstr "nekontrolovat soubory v balíèku"
+msgstr "nekontrolovat velikost souborù"
 
 #: lib/poptQV.c:199
 msgid "don't verify symlink path of files"
-msgstr "nekontrolovat soubory v balíèku"
+msgstr "nekontrolovat cesty symbolických linek"
 
 #: lib/poptQV.c:202
 msgid "don't verify owner of files"
-msgstr "nekontrolovat soubory v balíèku"
+msgstr "nekontrolovat vlastníka souborù"
 
 #: lib/poptQV.c:205
 msgid "don't verify group of files"
-msgstr "nekontrolovat soubory v balíèku"
+msgstr "nekontrolovat skupinu souborù"
 
 #: lib/poptQV.c:208
 msgid "don't verify modification time of files"
-msgstr ""
+msgstr "nekontrolovat èas zmìny souboru"
 
 #: lib/poptQV.c:211 lib/poptQV.c:214
 msgid "don't verify mode of files"
-msgstr "nekontrolovat soubory v balíèku"
+msgstr "nekontrolovat mód souborù"
 
 #: lib/poptQV.c:217
 msgid "don't verify files in package"
@@ -2748,11 +2749,11 @@ msgstr "nekontrolovat závislosti balíèkù"
 
 #: lib/poptQV.c:221 lib/poptQV.c:225
 msgid "don't execute %verifyscript (if any)"
-msgstr "nespou¹tìt %verifyscript (pokud je nìjaký)"
+msgstr "nespou¹tìt %verifyscript (pokud existuje)"
 
 #: lib/poptQV.c:228
 msgid "don't verify header SHA1 digest"
-msgstr "nekontrolovat soubory v balíèku"
+msgstr "nekontrolovat SHA1 digest v hlavièce"
 
 #: lib/problems.c:83
 #, c-format
@@ -2827,7 +2828,7 @@ msgstr "nemohu vytvoøit %s: %s\n"
 #: lib/psm.c:594
 #, c-format
 msgid "cannot write to %%%s %s\n"
-msgstr "nemohu zapsat do %s\n"
+msgstr "nemohu zapsat do %%%s %s\n"
 
 #: lib/psm.c:632
 msgid "source package expected, binary found\n"
@@ -2840,7 +2841,7 @@ msgstr "zdrojový balíèek neobsahuje .spec soubor\n"
 #: lib/psm.c:995
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-msgstr "provedení %s skripletu z %s-%s-%s selhalo, návratový kód: %d\n"
+msgstr "provedení skripletu %s z %s-%s-%s selhalo, návratový kód byl: %s\n"
 
 #: lib/psm.c:1002
 #, c-format
@@ -2850,12 +2851,12 @@ msgstr "provedení %s skripletu z %s-%s-%s selhalo, návratový kód: %d\n"
 #: lib/psm.c:1320
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
-msgstr "balíèek: %s-%s-%s test souborù = %d\n"
+msgstr "%s: %s-%s-%s obsahuje %d souborù, test = %d\n"
 
 #: lib/psm.c:1437
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
-msgstr ""
+msgstr "%s: scriptlet %s selhal (%d), pøeskakuji %s-%s-%s\n"
 
 #: lib/psm.c:1552
 #, c-format
@@ -2879,7 +2880,7 @@ msgstr " na souboru "
 #: lib/psm.c:1870
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
-msgstr "spou¹tím pøípadný postinstalaèní skript\n"
+msgstr "%s: spou¹tím %s skript(y) (pokud existují)\n"
 
 #: lib/query.c:115
 #, c-format
@@ -3308,7 +3309,7 @@ msgstr "Starý (pouze interní) podpis! Jak jste to získali!?\n"
 #: lib/signature.c:229
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
-msgstr "Velikost podpisu: %d\n"
+msgstr "Podpisu: velikost(%d)+vata(%d)\n"
 
 #: lib/signature.c:289
 #, c-format
@@ -3468,7 +3469,7 @@ msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 #: lib/verify.c:542
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
-msgstr ""
+msgstr "%s-%s-%s: kontrola digestu v hlavièce selhala\n"
 
 #: rpmdb/db1.c:100 rpmdb/db3.c:84
 #, c-format
@@ -3485,11 +3486,12 @@ msgstr "db%d chyba (%d): %s\n"
 msgid ""
 "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
 msgstr ""
+"Poru¹ený øetìzec v balíèku na offsetu %d(0x%08x), zkou¹ím znovu pøipojit...\n"
 
 #: rpmdb/db1.c:180
 #, c-format
 msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
-msgstr ""
+msgstr "Pøipojuji poru¹ený øetìzec na offsetu %d(0x%08x).\n"
 
 #: rpmdb/db1.c:497
 #, c-format
@@ -3666,7 +3668,7 @@ msgstr "záznam èíslo %d v databázi je chybný -- vynechávám.\n"
 #: rpmdb/rpmdb.c:1986
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
-msgstr ""
+msgstr "rpmdb: poru¹ená polo¾ka hlavièky #%u, pøeskakuji.\n"
 
 #: rpmdb/rpmdb.c:2248
 #, c-format
