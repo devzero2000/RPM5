@@ -19,7 +19,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.99
+Release: 1.00
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Aug 28 2001 Jeff Johnson <jbj@redhat.com>
+- python: teach rhnLoad about RPMTAG_SHA1RHN as well.
+
 * Mon Aug 27 2001 Jeff Johnson <jbj@redhat.com>
 - fix: error message on failed package installs resurrected.
 - python: memory leaks in headerLoad/headerunload bindings.
