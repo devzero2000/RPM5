@@ -406,21 +406,23 @@ typedef	enum rpmsenseFlags_e {
 #define	RPMVAR_NUM			55	/* number of RPMVAR entries */
 
 /** \ingroup rpmrc
- * Return value of rpmrc variable.
+ * Return value of an rpmrc variable.
  * @deprecated Use rpmExpand() with appropriate macro expression.
  * @todo Eliminate from API.
  */
 const char * rpmGetVar(int var);
 
 /** \ingroup rpmrc
- * Set value of rpmrc variable.
+ * Set value of an rpmrc variable.
  * @deprecated Use rpmDefineMacro() to change appropriate macro instead.
  * @todo Eliminate from API.
  */
 void rpmSetVar(int var, const char *val);
 
 /** \ingroup rpmrc
- * List of macro files to read for configuring rpm.
+ * List of macro files to read when configuring rpm.
+ * This is a colon separated list of files. URI's are permitted as well,
+ * identified by the token '://', so file paths must not begin with '//'.
  */
 const char * macrofiles;
 
@@ -429,12 +431,12 @@ const char * macrofiles;
  * @todo Eliminate from API.
  */
 enum rpm_machtable_e {
-    RPM_MACHTABLE_INSTARCH	= 0,
-    RPM_MACHTABLE_INSTOS	= 1,
-    RPM_MACHTABLE_BUILDARCH	= 2,
-    RPM_MACHTABLE_BUILDOS	= 3
+    RPM_MACHTABLE_INSTARCH	= 0,	/*!< Install platform architecture. */
+    RPM_MACHTABLE_INSTOS	= 1,	/*!< Install platform operating system. */
+    RPM_MACHTABLE_BUILDARCH	= 2,	/*!< Build platform architecture. */
+    RPM_MACHTABLE_BUILDOS	= 3	/*!< Build platform operating system. */
 };
-#define	RPM_MACHTABLE_COUNT		4	/* number of arch/os tables */
+#define	RPM_MACHTABLE_COUNT	4	/*!< No. of arch/os tables. */
 
 /** \ingroup rpmrc
  * Read macro configuration file(s) for a target.
@@ -469,16 +471,16 @@ void rpmGetOsInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
 
 /** \ingroup rpmrc
  * Return arch/os score of a name.
- * An arch score measures the nearness of an arch name to the currently
- * running (or defined) platform arch. For example, the score of "i586"
- * on an i686 platform is (usually) 1. The arch score is used to select
- * one of several otherwise identical packages based on the arch/os hints
- * in the header of the intended platform.
+ * An arch/os score measures the "nearness" of a name to the currently
+ * running (or defined) platform arch/os. For example, the score of arch
+ * "i586" on an i686 platform is (usually) 2. The arch/os score is used
+ * to select one of several otherwise identical packages using the arch/os
+ * tags from the header as hints of the intended platform for the package.
  * @todo Rewrite to use RE's against config.guess target platform output.
  *
  * @param type		any of the RPM_MACHTABLE_* constants
  * @param name		name
- * @return		arch score
+ * @return		arch score (0 is no match, lower is preferred)
  */
 int rpmMachineScore(int type, const char * name);
 
