@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-09-26 17:52-0400\n"
+"POT-Creation-Date: 2000-09-29 15:20-0400\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3824,84 +3824,84 @@ msgstr "Неизвестная или неожиданная ошибка"
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
 
-#: rpmio/macro.c:161
+#: rpmio/macro.c:183
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "====================== активных %d пустых %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:256
+#: rpmio/macro.c:297
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(пусто)"
 
-#: rpmio/macro.c:291
+#: rpmio/macro.c:338
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(пусто)\n"
 
-#: rpmio/macro.c:470
+#: rpmio/macro.c:551
 msgid "Macro %%%s has unterminated body"
 msgstr "Незакрытый макрос %%%s"
 
-#: rpmio/macro.c:496
+#: rpmio/macro.c:577
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr "Недопустимое имя (%%define) макроса %%%s"
 
-#: rpmio/macro.c:502
+#: rpmio/macro.c:583
 msgid "Macro %%%s has unterminated opts"
 msgstr "Незакрытые опции в макросе %%%s"
 
-#: rpmio/macro.c:507
+#: rpmio/macro.c:588
 msgid "Macro %%%s has empty body"
 msgstr "Макрос %%%s пуст"
 
-#: rpmio/macro.c:512
+#: rpmio/macro.c:593
 msgid "Macro %%%s failed to expand"
 msgstr "Невозможно раскрыть макрос %%%s"
 
-#: rpmio/macro.c:537
+#: rpmio/macro.c:624
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr "Недопустимое имя (%%undefine) макроса %%%s"
 
-#: rpmio/macro.c:614
+#: rpmio/macro.c:717
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Макрос %%%s (%s) не был использован ниже уровня %d"
 
-#: rpmio/macro.c:698
+#: rpmio/macro.c:809
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Неизвестная опция %c в %s(%s)"
 
-#: rpmio/macro.c:854
+#: rpmio/macro.c:985
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Глубина рекурсии(%d) больше допустимой(%d)"
 
-#: rpmio/macro.c:920 rpmio/macro.c:936
+#: rpmio/macro.c:1051 rpmio/macro.c:1067
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Незакрытая %c: %s"
 
-#: rpmio/macro.c:976
+#: rpmio/macro.c:1107
 msgid "A %% is followed by an unparseable macro"
 msgstr "непонятный макрос после %%"
 
-#: rpmio/macro.c:1102
+#: rpmio/macro.c:1233
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Макрос %%%.*s не найден, пропускаю"
 
-#: rpmio/macro.c:1183
+#: rpmio/macro.c:1314
 msgid "Target buffer overflow"
 msgstr "Переполнение целевого буфера"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1363 rpmio/macro.c:1369
+#: rpmio/macro.c:1493 rpmio/macro.c:1499
 #, c-format
 msgid "File %s: %s"
 msgstr "Файл %s: %s"
 
-#: rpmio/macro.c:1372
+#: rpmio/macro.c:1502
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Длина файла %s меньше чем %d байт"
@@ -3947,22 +3947,22 @@ msgstr "внимание: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgid "Password for %s@%s: "
 msgstr "Пароль для %s@%s: "
 
-#: rpmio/url.c:245 rpmio/url.c:271
+#: rpmio/url.c:244 rpmio/url.c:270
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "ошибка: %s порт должен быть числом\n"
 
-#: rpmio/url.c:407
+#: rpmio/url.c:406
 msgid "url port must be a number\n"
 msgstr "url порт должен быть числом\n"
 
-#: rpmio/url.c:447
+#: rpmio/url.c:446
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:464
+#: rpmio/url.c:463
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"

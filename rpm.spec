@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -272,6 +272,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Sep 29 2000 Jeff Johnson <jbj@redhat.com>
+- fix: more (possible) xstrdup side effects.
+
 * Wed Sep 27 2000 Jeff Johnson <jbj@redhat.com>
 - bump popt version to 1.6.1.
 

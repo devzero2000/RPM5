@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-09-26 17:52-0400\n"
+msgstr "POT-Creation-Date: 2000-09-29 15:20-0400\n"
 
 #: build.c:25 lib/rpminstall.c:451
 #, c-format
@@ -3960,85 +3960,85 @@ msgstr ""
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/macro.c:161
+#: rpmio/macro.c:183
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: rpmio/macro.c:256
+#: rpmio/macro.c:297
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:291
+#: rpmio/macro.c:338
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:470
+#: rpmio/macro.c:551
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: rpmio/macro.c:496
+#: rpmio/macro.c:577
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: rpmio/macro.c:502
+#: rpmio/macro.c:583
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: rpmio/macro.c:507
+#: rpmio/macro.c:588
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: rpmio/macro.c:512
+#: rpmio/macro.c:593
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: rpmio/macro.c:537
+#: rpmio/macro.c:624
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: rpmio/macro.c:614
+#: rpmio/macro.c:717
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: rpmio/macro.c:698
+#: rpmio/macro.c:809
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: rpmio/macro.c:854
+#: rpmio/macro.c:985
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: rpmio/macro.c:920 rpmio/macro.c:936
+#: rpmio/macro.c:1051 rpmio/macro.c:1067
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: rpmio/macro.c:976
+#: rpmio/macro.c:1107
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: rpmio/macro.c:1102
+#: rpmio/macro.c:1233
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpmio/macro.c:1183
+#: rpmio/macro.c:1314
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1363 rpmio/macro.c:1369
+#: rpmio/macro.c:1493 rpmio/macro.c:1499
 #, fuzzy, c-format
 msgid "File %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmio/macro.c:1372
+#: rpmio/macro.c:1502
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -4084,22 +4084,22 @@ msgstr ""
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: rpmio/url.c:245 rpmio/url.c:271
+#: rpmio/url.c:244 rpmio/url.c:270
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:407
+#: rpmio/url.c:406
 msgid "url port must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:447
+#: rpmio/url.c:446
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:464
+#: rpmio/url.c:463
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"

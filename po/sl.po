@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-09-26 17:52-0400\n"
+"POT-Creation-Date: 2000-09-29 15:20-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3881,84 +3881,84 @@ msgstr "Neznana ali neprièakovana napaka"
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"
 
-#: rpmio/macro.c:161
+#: rpmio/macro.c:183
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktivni %d prazni %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:256
+#: rpmio/macro.c:297
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(prazni)"
 
-#: rpmio/macro.c:291
+#: rpmio/macro.c:338
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(prazni)\n"
 
-#: rpmio/macro.c:470
+#: rpmio/macro.c:551
 msgid "Macro %%%s has unterminated body"
 msgstr "Makro %%%s vsebuje nezakljuèeno telo"
 
-#: rpmio/macro.c:496
+#: rpmio/macro.c:577
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr "Makro %%%s vsebuje nedovoljeno ime (%%define)"
 
-#: rpmio/macro.c:502
+#: rpmio/macro.c:583
 msgid "Macro %%%s has unterminated opts"
 msgstr "Makro %%%s vsebuje nezakljuèene izbire"
 
-#: rpmio/macro.c:507
+#: rpmio/macro.c:588
 msgid "Macro %%%s has empty body"
 msgstr "Makro %%%s vsebuje prazno telo"
 
-#: rpmio/macro.c:512
+#: rpmio/macro.c:593
 msgid "Macro %%%s failed to expand"
 msgstr "Makro %%%s se ne raz¹iri"
 
-#: rpmio/macro.c:537
+#: rpmio/macro.c:624
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr "Makro %%%s vsebuje nedovoljeno ime (%%undefine)"
 
-#: rpmio/macro.c:614
+#: rpmio/macro.c:717
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) ni bil uporabljen pod ravnijo %d"
 
-#: rpmio/macro.c:698
+#: rpmio/macro.c:809
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Neznana izbira %c v %s(%s)"
 
-#: rpmio/macro.c:854
+#: rpmio/macro.c:985
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Globina rekurzije (%d) veèja od maksimalne (%d)"
 
-#: rpmio/macro.c:920 rpmio/macro.c:936
+#: rpmio/macro.c:1051 rpmio/macro.c:1067
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Nezakljuèeni %c: %s"
 
-#: rpmio/macro.c:976
+#: rpmio/macro.c:1107
 msgid "A %% is followed by an unparseable macro"
 msgstr "Oznaki %% sledi nerazèlenljiv makro"
 
-#: rpmio/macro.c:1102
+#: rpmio/macro.c:1233
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Makro %%%.*s ni najden, preskoèimo"
 
-#: rpmio/macro.c:1183
+#: rpmio/macro.c:1314
 msgid "Target buffer overflow"
 msgstr "Ciljni medpomnilnik prekoraèen"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1363 rpmio/macro.c:1369
+#: rpmio/macro.c:1493 rpmio/macro.c:1499
 #, c-format
 msgid "File %s: %s"
 msgstr "Datoteka %s: %s"
 
-#: rpmio/macro.c:1372
+#: rpmio/macro.c:1502
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"
@@ -4004,22 +4004,22 @@ msgstr "opozorilo: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgid "Password for %s@%s: "
 msgstr "Geslo za %s@%s: "
 
-#: rpmio/url.c:245 rpmio/url.c:271
+#: rpmio/url.c:244 rpmio/url.c:270
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "napaka: vrata %s morajo biti ¹tevilka\n"
 
-#: rpmio/url.c:407
+#: rpmio/url.c:406
 msgid "url port must be a number\n"
 msgstr "vrata URL morajo biti ¹tevilka\n"
 
-#: rpmio/url.c:447
+#: rpmio/url.c:446
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:464
+#: rpmio/url.c:463
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
