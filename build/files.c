@@ -136,7 +136,7 @@ int processSourceFiles(Spec spec)
 	  case RPMTAG_PACKAGER:
 	  case RPMTAG_DISTRIBUTION:
 	  case RPMTAG_VENDOR:
-	  case RPMTAG_COPYRIGHT:
+	  case RPMTAG_LICENSE:
 	  case RPMTAG_GROUP:
 	  case RPMTAG_OS:
 	  case RPMTAG_ARCH:

@@ -48,19 +48,20 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_VENDOR			1011
 #define RPMTAG_GIF			1012
 #define RPMTAG_XPM			1013
-#define RPMTAG_COPYRIGHT                1014
-#define RPMTAG_PACKAGER                 1015
-#define RPMTAG_GROUP                    1016
-#define RPMTAG_CHANGELOG                1017 /* internal */
-#define RPMTAG_SOURCE                   1018
-#define RPMTAG_PATCH                    1019
-#define RPMTAG_URL                      1020
-#define RPMTAG_OS                       1021
-#define RPMTAG_ARCH                     1022
-#define RPMTAG_PREIN                    1023
-#define RPMTAG_POSTIN                   1024
-#define RPMTAG_PREUN                    1025
-#define RPMTAG_POSTUN                   1026
+#define RPMTAG_LICENSE			1014
+#define	RPMTAG_COPYRIGHT	RPMTAG_LICENSE	/* backward comaptibility */
+#define RPMTAG_PACKAGER			1015
+#define RPMTAG_GROUP			1016
+#define RPMTAG_CHANGELOG		1017 /* internal */
+#define RPMTAG_SOURCE			1018
+#define RPMTAG_PATCH			1019
+#define RPMTAG_URL			1020
+#define RPMTAG_OS			1021
+#define RPMTAG_ARCH			1022
+#define RPMTAG_PREIN			1023
+#define RPMTAG_POSTIN			1024
+#define RPMTAG_PREUN			1025
+#define RPMTAG_POSTUN			1026
 #define RPMTAG_FILENAMES		1027
 #define RPMTAG_FILESIZES		1028
 #define RPMTAG_FILESTATES		1029
@@ -72,66 +73,66 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_FILEMD5S			1035
 #define RPMTAG_FILELINKTOS		1036
 #define RPMTAG_FILEFLAGS		1037
-#define RPMTAG_ROOT                     1038
-#define RPMTAG_FILEUSERNAME             1039
-#define RPMTAG_FILEGROUPNAME            1040
-#define RPMTAG_EXCLUDE                  1041 /* internal - depricated */
-#define RPMTAG_EXCLUSIVE                1042 /* internal - depricated */
-#define RPMTAG_ICON                     1043
-#define RPMTAG_SOURCERPM                1044
-#define RPMTAG_FILEVERIFYFLAGS          1045
-#define RPMTAG_ARCHIVESIZE              1046
-#define RPMTAG_PROVIDES                 1047
-#define RPMTAG_REQUIREFLAGS             1048
-#define RPMTAG_REQUIRENAME              1049
-#define RPMTAG_REQUIREVERSION           1050
-#define RPMTAG_NOSOURCE                 1051 /* internal */
-#define RPMTAG_NOPATCH                  1052 /* internal */
-#define RPMTAG_CONFLICTFLAGS            1053
-#define RPMTAG_CONFLICTNAME             1054
-#define RPMTAG_CONFLICTVERSION          1055
-#define RPMTAG_DEFAULTPREFIX            1056 /* internal - deprecated */
-#define RPMTAG_BUILDROOT                1057
+#define RPMTAG_ROOT			1038
+#define RPMTAG_FILEUSERNAME		1039
+#define RPMTAG_FILEGROUPNAME		1040
+#define RPMTAG_EXCLUDE			1041 /* internal - depricated */
+#define RPMTAG_EXCLUSIVE		1042 /* internal - depricated */
+#define RPMTAG_ICON			1043
+#define RPMTAG_SOURCERPM		1044
+#define RPMTAG_FILEVERIFYFLAGS		1045
+#define RPMTAG_ARCHIVESIZE		1046
+#define RPMTAG_PROVIDES			1047
+#define RPMTAG_REQUIREFLAGS		1048
+#define RPMTAG_REQUIRENAME		1049
+#define RPMTAG_REQUIREVERSION		1050
+#define RPMTAG_NOSOURCE			1051 /* internal */
+#define RPMTAG_NOPATCH			1052 /* internal */
+#define RPMTAG_CONFLICTFLAGS		1053
+#define RPMTAG_CONFLICTNAME		1054
+#define RPMTAG_CONFLICTVERSION		1055
+#define RPMTAG_DEFAULTPREFIX		1056 /* internal - deprecated */
+#define RPMTAG_BUILDROOT		1057
 #define RPMTAG_INSTALLPREFIX		1058 /* internal - deprecated */
-#define RPMTAG_EXCLUDEARCH              1059
-#define RPMTAG_EXCLUDEOS                1060
-#define RPMTAG_EXCLUSIVEARCH            1061
-#define RPMTAG_EXCLUSIVEOS              1062
-#define RPMTAG_AUTOREQPROV              1063 /* internal */
+#define RPMTAG_EXCLUDEARCH		1059
+#define RPMTAG_EXCLUDEOS		1060
+#define RPMTAG_EXCLUSIVEARCH		1061
+#define RPMTAG_EXCLUSIVEOS		1062
+#define RPMTAG_AUTOREQPROV		1063 /* internal */
 #define RPMTAG_RPMVERSION		1064
-#define RPMTAG_TRIGGERSCRIPTS           1065
-#define RPMTAG_TRIGGERNAME              1066
-#define RPMTAG_TRIGGERVERSION           1067
-#define RPMTAG_TRIGGERFLAGS             1068
-#define RPMTAG_TRIGGERINDEX             1069
-#define RPMTAG_VERIFYSCRIPT             1079
-#define RPMTAG_CHANGELOGTIME            1080
-#define RPMTAG_CHANGELOGNAME            1081
-#define RPMTAG_CHANGELOGTEXT            1082
-#define RPMTAG_BROKENMD5                1083 /* internal */
-#define RPMTAG_PREREQ                   1084 /* internal */
-#define RPMTAG_PREINPROG                1085
-#define RPMTAG_POSTINPROG               1086
-#define RPMTAG_PREUNPROG                1087
-#define RPMTAG_POSTUNPROG               1088
-#define RPMTAG_BUILDARCHS               1089
-#define RPMTAG_OBSOLETES                1090
-#define RPMTAG_VERIFYSCRIPTPROG         1091
-#define RPMTAG_TRIGGERSCRIPTPROG        1092
-#define RPMTAG_DOCDIR                   1093 /* internal */
-#define RPMTAG_COOKIE                   1094
-#define RPMTAG_FILEDEVICES              1095
-#define RPMTAG_FILEINODES               1096
-#define RPMTAG_FILELANGS                1097
-#define RPMTAG_PREFIXES                 1098
-#define RPMTAG_INSTPREFIXES             1099
-#define RPMTAG_TRIGGERIN                1100 /* internal */
-#define RPMTAG_TRIGGERUN                1101 /* internal */
-#define RPMTAG_TRIGGERPOSTUN            1102 /* internal */
-#define RPMTAG_AUTOREQ                  1103 /* internal */
-#define RPMTAG_AUTOPROV                 1104 /* internal */
+#define RPMTAG_TRIGGERSCRIPTS		1065
+#define RPMTAG_TRIGGERNAME		1066
+#define RPMTAG_TRIGGERVERSION		1067
+#define RPMTAG_TRIGGERFLAGS		1068
+#define RPMTAG_TRIGGERINDEX		1069
+#define RPMTAG_VERIFYSCRIPT		1079
+#define RPMTAG_CHANGELOGTIME		1080
+#define RPMTAG_CHANGELOGNAME		1081
+#define RPMTAG_CHANGELOGTEXT		1082
+#define RPMTAG_BROKENMD5		1083 /* internal */
+#define RPMTAG_PREREQ			1084 /* internal */
+#define RPMTAG_PREINPROG		1085
+#define RPMTAG_POSTINPROG		1086
+#define RPMTAG_PREUNPROG		1087
+#define RPMTAG_POSTUNPROG		1088
+#define RPMTAG_BUILDARCHS		1089
+#define RPMTAG_OBSOLETES		1090
+#define RPMTAG_VERIFYSCRIPTPROG		1091
+#define RPMTAG_TRIGGERSCRIPTPROG	1092
+#define RPMTAG_DOCDIR			1093 /* internal */
+#define RPMTAG_COOKIE			1094
+#define RPMTAG_FILEDEVICES		1095
+#define RPMTAG_FILEINODES		1096
+#define RPMTAG_FILELANGS		1097
+#define RPMTAG_PREFIXES			1098
+#define RPMTAG_INSTPREFIXES		1099
+#define RPMTAG_TRIGGERIN		1100 /* internal */
+#define RPMTAG_TRIGGERUN		1101 /* internal */
+#define RPMTAG_TRIGGERPOSTUN		1102 /* internal */
+#define RPMTAG_AUTOREQ			1103 /* internal */
+#define RPMTAG_AUTOPROV			1104 /* internal */
 #define	RPMTAG_CAPABILITY		1105
-    
+
 #define RPMTAG_EXTERNAL_TAG		1000000
 
 #define RPMFILE_STATE_NORMAL 		0
@@ -142,31 +143,31 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 /* these can be ORed together */
 #define RPMFILE_CONFIG			(1 << 0)
 #define RPMFILE_DOC			(1 << 1)
-#define RPMFILE_DONOTUSE                (1 << 2)
-#define RPMFILE_MISSINGOK               (1 << 3)
-#define RPMFILE_NOREPLACE               (1 << 4)
-#define RPMFILE_SPECFILE                (1 << 5)
-#define RPMFILE_GHOST                   (1 << 6)
-    
-#define RPMINSTALL_REPLACEPKG           (1 << 0)
-#define RPMINSTALL_REPLACEFILES         (1 << 1)
-#define RPMINSTALL_TEST                 (1 << 2)
-#define RPMINSTALL_UPGRADE              (1 << 3)
-#define RPMINSTALL_UPGRADETOOLD         (1 << 4)
-#define RPMINSTALL_NODOCS               (1 << 5)
-#define RPMINSTALL_NOSCRIPTS            (1 << 6)
-#define RPMINSTALL_NOARCH               (1 << 7)
-#define RPMINSTALL_NOOS                 (1 << 8)
-#define RPMINSTALL_ALLFILES             (1 << 9)
-#define RPMINSTALL_JUSTDB               (1 << 10)
-#define RPMINSTALL_KEEPOBSOLETE         (1 << 11)
-#define RPMINSTALL_FORCERELOCATE        (1 << 12)
-#define RPMINSTALL_NOTRIGGERS           (1 << 13)
+#define RPMFILE_DONOTUSE		(1 << 2)
+#define RPMFILE_MISSINGOK		(1 << 3)
+#define RPMFILE_NOREPLACE		(1 << 4)
+#define RPMFILE_SPECFILE		(1 << 5)
+#define RPMFILE_GHOST			(1 << 6)
 
-#define RPMUNINSTALL_TEST               (1 << 0)
-#define RPMUNINSTALL_NOSCRIPTS          (1 << 1)
-#define RPMUNINSTALL_JUSTDB             (1 << 2)
-#define RPMUNINSTALL_NOTRIGGERS         (1 << 3)
+#define RPMINSTALL_REPLACEPKG		(1 << 0)
+#define RPMINSTALL_REPLACEFILES		(1 << 1)
+#define RPMINSTALL_TEST			(1 << 2)
+#define RPMINSTALL_UPGRADE		(1 << 3)
+#define RPMINSTALL_UPGRADETOOLD		(1 << 4)
+#define RPMINSTALL_NODOCS		(1 << 5)
+#define RPMINSTALL_NOSCRIPTS		(1 << 6)
+#define RPMINSTALL_NOARCH		(1 << 7)
+#define RPMINSTALL_NOOS			(1 << 8)
+#define RPMINSTALL_ALLFILES		(1 << 9)
+#define RPMINSTALL_JUSTDB		(1 << 10)
+#define RPMINSTALL_KEEPOBSOLETE		(1 << 11)
+#define RPMINSTALL_FORCERELOCATE	(1 << 12)
+#define RPMINSTALL_NOTRIGGERS		(1 << 13)
+
+#define RPMUNINSTALL_TEST		(1 << 0)
+#define RPMUNINSTALL_NOSCRIPTS		(1 << 1)
+#define RPMUNINSTALL_JUSTDB		(1 << 2)
+#define RPMUNINSTALL_NOTRIGGERS		(1 << 3)
 
 #define RPMVERIFY_NONE             0
 #define RPMVERIFY_MD5              (1 << 0)
@@ -230,7 +231,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMVAR_PACKAGER                 28
 #define RPMVAR_FTPPROXY                 29
 #define RPMVAR_TMPPATH                  30
-/* #define RPMVAR_CPIOBIN                  31 -- No longer used */
+/* #define RPMVAR_CPIOBIN               31 -- No longer used */
 #define RPMVAR_FTPPORT			32
 #define RPMVAR_NETSHAREDPATH		33
 #define RPMVAR_DEFAULTDOCDIR		34
