@@ -73,6 +73,7 @@
 	- fix: (transaction.c) assume file state normal if tag is missing.
 	- fix: failed signature read headerFree segfault.
 	- fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.
+	- fix: synthesized callbacks for removed packages have not a pkgkey.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
