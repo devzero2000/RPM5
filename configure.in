@@ -53,6 +53,7 @@ AC_MSG_CHECKING(what additional CFLAGS are needed to link statically)
 if test X"$GCC" = Xyes ; then
 	case "$target" in
 		*-*-hpux*)		LDFLAGS_STATIC="-Wl,-a,archive_shared";; #works better
+		*-*-solaris)		LDFLAGS_STATIC="";;
 		*-*-*)			LDFLAGS_STATIC="-static";;
 	esac
 elif test X"$CC" = Xcc ; then
