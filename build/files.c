@@ -1348,7 +1348,13 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
 	/*@=dependenttrans@*/
+#define	HACK
+#ifdef IA64_SUCKS_ROCKS
+	(void) stpcpy(d, flp->diskURL);
+	d += strlen(d);
+#else
 	d = stpcpy(d, flp->diskURL);
+#endif
 
 	/* Make room for the dirName NUL, find start of baseName. */
 	for (b = d; b > fi->dnl[fi->dil[i]] && *b != '/'; b--)
@@ -1362,8 +1368,20 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@-dependenttrans@*/	/* FIX: xstrdup? nah ... */
 	fi->apath[i] = a;
  	/*@=dependenttrans@*/
-	if (_addDotSlash) a = stpcpy(a, "./");
+	if (_addDotSlash) {
+#ifdef IA64_SUCKS_ROCKS
+	    (void) stpcpy(a, "./");
+	    a += strlen(a);
+#else
+	    a = stpcpy(a, "./");
+#endif
+	}
+#ifdef IA64_SUCKS_ROCKS
+	(void) stpcpy(a, (flp->fileURL + skipLen));
+	a += strlen(a);
+#else
 	a = stpcpy(a, (flp->fileURL + skipLen));
+#endif
 	a++;		/* skip apath NUL */
 
 	if (flp->flags & RPMFILE_GHOST) {
