@@ -1,4 +1,5 @@
 2.5.4 -> 2.5.5:
+	- update and rename Czech (Pavel Makovec <pavelm@terminal.cz>)
 	- non-linux arch/os identification (Eugene Kanter).
 	- portable mode_t/pid_t typedefs.
 	- fix check for trailing / in Prefix:
