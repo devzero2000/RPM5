@@ -27,7 +27,7 @@ and is always available from ftp://ftp.rpm.org/pub/rpm/dist";
 
 /* Functins and datatypes needed for the context object */
 typedef struct poptContext_s {
-    PyObject_HEAD;
+    PyObject_HEAD
     struct poptOption *options;
     int optionsNo;
     poptContext ctx;
