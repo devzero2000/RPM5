@@ -752,12 +752,12 @@ dnl
 dnl Auto-detect whether doxygen generated API docs should be included.
 dnl
 AC_ARG_WITH(apidocs, [  --with-apidocs           build rpm API docs ],
-  [ if test __DOXYGEN = no; then
+  [ if test X"$__DOXYGEN" = Xno; then
       AC_MSG_ERROR(--> rpm API docs need doxygen in PATH)
     fi
     rpm_cv_apidocs=yes
   ],
-  [ if test __DOXYGEN = no; then
+  [ if test X"$__DOXYGEN" = Xno; then
       rpm_cv_apidocs=no
     else
       rpm_cv_apidocs=yes

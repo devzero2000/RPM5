@@ -1,6 +1,6 @@
 %define	with_python_subpackage	1
 %define	with_bzip2		1
-%define	with_apidocs		1
+%define	with_apidocs		0
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -274,7 +274,7 @@ fi
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
-%doc apidocs
+%doc 
 %endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a
@@ -300,7 +300,7 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Sun Dec  3 2000 Jeff Johnson <jbj@redhat.com>
+* Mon Dec  4 2000 Jeff Johnson <jbj@redhat.com>
 - improved find-{requires,provides} for aix4/hpux/irix6/osf.
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 - portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
@@ -310,6 +310,8 @@ fi
 - fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
 - unify rpmError and rpmMessge interfaces through rpmlog.
 - collect and display rpm build error messages at end of build.
+- use package version 3 if --nodirtokens is specified.
+- add package names to problem sets early, don't save removed header.
 
 * Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
 - add missing headerFree for legacy signature header.
