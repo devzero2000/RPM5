@@ -55,6 +55,7 @@ typedef enum rpmDigestFlags_e {
     RPMDIGEST_MD5	= (1 <<  0),	/*!< MD5 digest. */
     RPMDIGEST_SHA1	= (1 <<  1),	/*!< SHA1 digest. */
     RPMDIGEST_REVERSE	= (1 << 16),	/*!< Should bytes be reversed? */
+    RPMDIGEST_BCSWAP	= (1 << 17),	/*!< Should bit count be reversed? */
 } rpmDigestFlags;
 
 typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;

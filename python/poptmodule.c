@@ -35,6 +35,9 @@ typedef struct poptContext_s {
     int opt;
 } poptContextObject;
 
+/* The exception */
+static PyObject *pypoptError;
+
 /* Misc functions */
 void __printPopt(struct poptOption *opts)
 {

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-20 12:35-0400\n"
+"POT-Creation-Date: 2001-07-21 11:34-0400\n"
 "PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -3482,17 +3482,17 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "패키지에 그룹 이름과 id 목록이 없습니다 (절대로 이렇게 되어서는 안됩니다)\n"
 
-#: lib/verify.c:405
+#: lib/verify.c:410
 #, c-format
 msgid "missing    %s"
 msgstr "다음을 찾을 수 없습니다    %s"
 
-#: lib/verify.c:498
+#: lib/verify.c:503
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 에 의존성 문제 발생: "
 
-#: lib/verify.c:537
+#: lib/verify.c:542
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

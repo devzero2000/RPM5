@@ -518,7 +518,8 @@ rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
     memset(p, 0, count - sizeof(ctx->bits));
     if (ctx->doByteReverse)
 	byteReverse(ctx->in, ctx->datalen - sizeof(ctx->bits));
-    if (ctx->transform == MD5Transform) {
+
+    if (ctx->flags & (RPMDIGEST_MD5|RPMDIGEST_BCSWAP)) {
 	((uint32 *) ctx->in)[14] = ctx->bits[0];
 	((uint32 *) ctx->in)[15] = ctx->bits[1];
     } else {
