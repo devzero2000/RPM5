@@ -1,7 +1,7 @@
 %define	with_python_subpackage	1
-%define	with_bzip2		1
-%define	with_apidocs		1
-%define strip_binaries		0
+%define	with_bzip2		
+%define	with_apidocs		0
+%define strip_binaries		1
 %define	__spec_install_post	:
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.22
+Release: 0.24
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -284,7 +284,7 @@ fi
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
-%doc apidocs
+%doc 
 %endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a
@@ -310,8 +310,14 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
+- fix: (transaction.c) assume file state normal if tag is missing.
+- fix: failed signature read headerFree segfault.
+- fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.
+
 * Tue Dec 12 2000 Jeff Johnson <jbj@redhat.com>
 - bail on header regions.
+- resurrect rpmrc Provides: as well as implicit dependency on packge info.
 
 * Sun Dec 10 2000 Jeff Johnson <jbj@redhat.com>
 - handle added dirtoken tags (mostly) correctly with header regions.
