@@ -1,6 +1,8 @@
 2.5.5 -> 2.5.6:
 	- fix off-by-1 alloca that prevented relocating /.
 	- add %include (Tom Dyas<tdyas@remus.rutgers.edu>)
+	- their must be a { between two % in a query format (unless %% is
+	  used)
 
 2.5.4 -> 2.5.5:
 	- fix install relocate for prefix=/ (Eugene Kanter).
