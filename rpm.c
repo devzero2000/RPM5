@@ -200,61 +200,61 @@ static void printVersion(void) {
 }
 
 static void printBanner(void) {
-    fputs(_("Copyright (C) 1998 - Red Hat Software"), stdout);
-    fputs(_("This may be freely redistributed under the terms of the GNU "
-	   "Public License"), stdout);
+    puts(_("Copyright (C) 1998 - Red Hat Software"));
+    puts(_("This may be freely redistributed under the terms of the GNU "
+	   "Public License"));
 }
 
 static void printUsage(void) {
     printVersion();
     printBanner();
-    fputs(_(""), stdout);
+    puts(_(""));
 
-    fputs(_("usage: rpm {--help}"), stdout);
-    fputs(_("       rpm {--version}"), stdout);
-    fputs(_("       rpm {--initdb}   [--dbpath <dir>]"), stdout);
-    fputs(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"), stdout);
-    fputs(_("                        [--replacepkgs] [--replacefiles] [--root <dir>]"), stdout);
-    fputs(_("                        [--excludedocs] [--includedocs] [--noscripts]"), stdout);
-    fputs(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"), stdout);
-    fputs(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"), stdout);
-    fputs(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"), stdout);
-    fputs(_("                        [--noorder] [--relocate oldpath=newpath]"), stdout);
-    fputs(_("                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"), stdout);
-    fputs(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"), stdout);
-    fputs(_("                        [--oldpackage] [--root <dir>] [--noscripts]"), stdout);
-    fputs(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"), stdout);
-    fputs(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "), stdout);
-    fputs(_("                        [--ftpproxy <host>] [--ftpport <port>]"), stdout);
-    fputs(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"), stdout);
-    fputs(_("                        [--noorder] [--relocate oldpath=newpath]"), stdout);
-    fputs(_("                        [--badreloc] file1.rpm ... fileN.rpm"), stdout);
-    fputs(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"), stdout);
-    fputs(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"), stdout);
-    fputs(_("                        [--whatprovides] [--whatrequires] [--requires]"), stdout);
-    fputs(_("                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"), stdout);
-    fputs(_("                        [--ftpport <port>] [--provides] [--triggers] [--dump]"), stdout);
-    fputs(_("                        [--changelog] [--dbpath <dir>] [targets]"), stdout);
-    fputs(_("       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"), stdout);
-    fputs(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"), stdout);
-    fputs(_("                        [--nomd5] [targets]"), stdout);
-    fputs(_("       rpm {--setperms} [-afpg] [target]"), stdout);
-    fputs(_("       rpm {--setugids} [-afpg] [target]"), stdout);
-    fputs(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"), stdout);
-    fputs(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"), stdout);
-    fputs(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"), stdout);
-    fputs(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"), stdout);
-    fputs(_("                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"), stdout);
-    fputs(_("                        [--buildarch <arch>] [--rmsource] specfile"), stdout);
-    fputs(_("       rpm {--rmsource} [--rcfile <file>] [-v] specfile"), stdout);
-    fputs(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"), stdout);
-    fputs(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"), stdout);
-    fputs(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"), stdout);
-    fputs(_("       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"), stdout);
-    fputs(_("       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"), stdout);
-    fputs(_("                           package1 ... packageN"), stdout);
-    fputs(_("       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"), stdout);
-    fputs(_("       rpm {--querytags}"), stdout);
+    puts(_("usage: rpm {--help}"));
+    puts(_("       rpm {--version}"));
+    puts(_("       rpm {--initdb}   [--dbpath <dir>]"));
+    puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
+    puts(_("                        [--replacepkgs] [--replacefiles] [--root <dir>]"));
+    puts(_("                        [--excludedocs] [--includedocs] [--noscripts]"));
+    puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
+    puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
+    puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
+    puts(_("                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"));
+    puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
+    puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
+    puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
+    puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"));
+    puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
+    puts(_("                        [--badreloc] file1.rpm ... fileN.rpm"));
+    puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
+    puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
+    puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
+    puts(_("                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"));
+    puts(_("                        [--ftpport <port>] [--provides] [--triggers] [--dump]"));
+    puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));
+    puts(_("       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"));
+    puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
+    puts(_("                        [--nomd5] [targets]"));
+    puts(_("       rpm {--setperms} [-afpg] [target]"));
+    puts(_("       rpm {--setugids} [-afpg] [target]"));
+    puts(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"));
+    puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
+    puts(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"));
+    puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
+    puts(_("                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"));
+    puts(_("                        [--buildarch <arch>] [--rmsource] specfile"));
+    puts(_("       rpm {--rmsource} [--rcfile <file>] [-v] specfile"));
+    puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
+    puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
+    puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
+    puts(_("       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"));
+    puts(_("       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"));
+    puts(_("                           package1 ... packageN"));
+    puts(_("       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"));
+    puts(_("       rpm {--querytags}"));
 }
 
 static void printHelpLine(char * prefix, char * help) {
@@ -280,20 +280,20 @@ static void printHelpLine(char * prefix, char * help) {
 	helpLength = strlen(help);
     }
 
-    if (helpLength) fputs(help, stdout);
+    if (helpLength) puts(help);
 }
 
 static void printHelp(void) {
     printVersion();
     printBanner();
-    fputs(_(""), stdout);
+    puts(_(""));
 
-    fputs(_("usage:"), stdout);
+    puts(_("usage:"));
     printHelpLine("   --help                 ", 
 		  _("print this message"));
     printHelpLine("   --version              ",
 		  _("print the version of rpm being used"));
-    fputs(_("   all modes support the following arguments:"), stdout);
+    puts(_("   all modes support the following arguments:"));
     printHelpLine(_("      --rcfile <file>     "),
 		  _("use <file> instead of /etc/rpmrc and $HOME/.rpmrc"));
     printHelpLine("     -v                   ",
@@ -308,13 +308,13 @@ static void printHelp(void) {
 		  _("use <dir> as the directory for the database"));
     printHelpLine(_("      --queryformat <qfmt>   "),
 		  _("use qfmt as the header format (implies -i)"));
-    fputs(_("   install, upgrade and query (with -p) allow ftp URL's to be used in place"), stdout);
-    fputs(_("   of file names as well as the following options:\n"), stdout);
+    puts(_("   install, upgrade and query (with -p) allow ftp URL's to be used in place"));
+    puts(_("   of file names as well as the following options:\n"));
     printHelpLine(_("      --ftpproxy <host>   "),
 		  _("hostname or IP of ftp proxy"));
     printHelpLine(_("      --ftpport <port>    "),
 		  _("port number of ftp server (or proxy)"));
-    fputs(        _("      Package specification options:"), stdout);
+    puts(        _("      Package specification options:"));
     printHelpLine(  "        -a                ",
 		  _("query all packages"));
     printHelpLine(_("        -f <file>+        "),
@@ -327,7 +327,7 @@ static void printHelp(void) {
 		  _("query packages which provide <icap> capability"));
     printHelpLine(_("        --whatrequires <icap>"),
 		  _("query packages which require <icap> capability"));
-    fputs(_("      Information selection options:"), stdout);
+    puts(_("      Information selection options:"));
     printHelpLine("        -i                ",
 		  _("display package information"));
     printHelpLine("        --changelog       ",
@@ -344,16 +344,16 @@ static void printHelp(void) {
 		  _("show all verifiable information for each file (must be used with -l, -c, or -d)"));
     printHelpLine("        --provides        ",
 		  _("list capabilities package provides"));
-    fputs(       _("        --requires"), stdout);
+    puts(       _("        --requires"));
     printHelpLine("        -R                ",
 		  _("list package dependencies"));
     printHelpLine("        --scripts         ",
 		  _("print the various [un]install scripts"));
     printHelpLine("        --triggers        ",
 		  _("show the trigger scripts contained in the package"));
-    fputs(         "", stdout);
-    fputs(         "    -V", stdout);
-    fputs(         "    -y", stdout);
+    puts(         "");
+    puts(         "    -V");
+    puts(         "    -y");
     printHelpLine(_("    --pipe <cmd>        "),
 		  _("send stdout to <cmd>"));
     printHelpLine("    --verify              ",
@@ -368,7 +368,7 @@ static void printHelp(void) {
 		  _("do not verify file md5 checksums"));
     printHelpLine("      --nofiles           ",
 		  _("do not verify file attributes"));
-    fputs("", stdout);
+    puts("");
     printHelpLine("    --setperms            ",
 		  _("set the file permissions to those in the package database"
 		    " using the same package specification options as -q"));
@@ -376,8 +376,8 @@ static void printHelp(void) {
 		  _("set the file owner and group to those in the package "
 		    "database using the same package specification options as "
 		    "-q"));
-    fputs("", stdout);
-    fputs(         _("    --install <packagefile>"), stdout);
+    puts("");
+    puts(         _("    --install <packagefile>"));
     printHelpLine(_("    -i <packagefile>      "),
 		  _("install package"));
     printHelpLine(_("      --relocate <oldpath>=<newpath>"),
@@ -392,7 +392,7 @@ static void printHelp(void) {
 		  _("do not install documentation"));
     printHelpLine("      --force             ",
 		  _("short hand for --replacepkgs --replacefiles"));
-    fputs(         "      -h", stdout);
+    puts(         "      -h");
     printHelpLine("      --hash              ",
 		  _("print hash marks as package installs (good with -v)"));
     printHelpLine("      --allfiles          ",
@@ -424,14 +424,14 @@ static void printHelp(void) {
 		  _("use <dir> as the top level directory"));
     printHelpLine("      --test              ",
 		  _("don't install, but tell if it would work or not"));
-    fputs("", stdout);
-    fputs(        _("    --upgrade <packagefile>"), stdout);
+    puts("");
+    puts(        _("    --upgrade <packagefile>"));
     printHelpLine(_("    -U <packagefile>      "),
 		  _("upgrade package (same options as --install, plus)"));
     printHelpLine("      --oldpackage        ",
 		  _("upgrade to an old version of the package (--force on upgrades does this automatically)"));
-    fputs("", stdout);
-    fputs(        _("    --erase <package>"), stdout);
+    puts("");
+    puts(        _("    --erase <package>"));
     printHelpLine("    -e <package>          ",
 		  _("erase (uninstall) package"));
     printHelpLine("      --allmatches        ",
@@ -450,8 +450,8 @@ static void printHelp(void) {
 		  _("don't execute any scripts triggered by this package"));
     printHelpLine(_("      --root <dir>        "),
 		  _("use <dir> as the top level directory"));
-    fputs("", stdout);
-    fputs(        _("    -b<stage> <spec>      "), stdout);
+    puts("");
+    puts(        _("    -b<stage> <spec>      "));
     printHelpLine(_("    -t<stage> <tarball>      "),
 		  _("build package, where <stage> is one of:"));
     printHelpLine("          p               ",
@@ -484,7 +484,7 @@ static void printHelp(void) {
 		  _("do not execute any stages"));
     printHelpLine("      --timecheck <secs>     ",
 		  _("set the time check to <secs> seconds (0 disables it)"));
-    fputs("", stdout);
+    puts("");
     printHelpLine(_("    --rebuild <src_pkg>   "),
 		  _("install source package, build binary package and remove spec file, sources, patches, and icons."));
     printHelpLine(_("    --rmsource <spec>   "),
@@ -495,7 +495,7 @@ static void printHelp(void) {
 		  _("sign a package (discard current signature)"));
     printHelpLine(_("    --addsign <pkg>+      "),
 		  _("add a signature to a package"));
-    fputs(         "    -K", stdout);
+    puts(         "    -K");
     printHelpLine(_("    --checksig <pkg>+     "),
 		  _("verify package signature"));
     printHelpLine("      --nopgp             ",
