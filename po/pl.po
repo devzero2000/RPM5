@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-11-12 12:11-0500\n"
+"POT-Creation-Date: 2001-02-23 12:53-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2123,30 +2123,30 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
-#: lib/header.c:2105 lib/header.c:2121 lib/header.c:2140
+#: lib/header.c:2108 lib/header.c:2124 lib/header.c:2143
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
-#: lib/fs.c:56
+#: lib/fs.c:58
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
-#: lib/fs.c:91 lib/fs.c:261
+#: lib/fs.c:93 lib/fs.c:263
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr "stat nie powiod³o siê %s: %s"
 
-#: lib/fs.c:127
+#: lib/fs.c:129
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/fs.c:132
+#: lib/fs.c:134
 #, c-format
 msgid "failed to open %s: %s"
 msgstr "nie mo¿na otworzyæ %s: %s"
 
-#: lib/fs.c:283
+#: lib/fs.c:285
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr "plik %s jest na nieznanym urz±dzeniu"
@@ -2156,74 +2156,74 @@ msgstr "plik %s jest na nieznanym urz±dzeniu"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
 
-#: lib/header.c:251 lib/header.c:730
+#: lib/header.c:251 lib/header.c:733
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ danych %d nie jest obs³ugiwany\n"
 
-#: lib/header.c:1089
+#: lib/header.c:1092
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "B³edny licznik dla headerAddEntry(): %d\n"
 
-#: lib/header.c:1498
+#: lib/header.c:1501
 #, c-format
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: lib/header.c:1526
+#: lib/header.c:1529
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: lib/header.c:1538
+#: lib/header.c:1541
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: lib/header.c:1548
+#: lib/header.c:1551
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: lib/header.c:1563
+#: lib/header.c:1566
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: lib/header.c:1589
+#: lib/header.c:1592
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: lib/header.c:1605
+#: lib/header.c:1608
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: lib/header.c:1607
+#: lib/header.c:1610
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: lib/header.c:1661
+#: lib/header.c:1664
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: lib/header.c:1668
+#: lib/header.c:1671
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: lib/header.c:1678 lib/header.c:1713
+#: lib/header.c:1681 lib/header.c:1716
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: lib/header.c:1686
+#: lib/header.c:1689
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: lib/header.c:1700
+#: lib/header.c:1703
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: lib/header.c:1721
+#: lib/header.c:1724
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: lib/header.c:1889
+#: lib/header.c:1892
 msgid "(unknown type)"
 msgstr "(nieznany typ)"
 
@@ -2486,7 +2486,7 @@ msgstr "nie mo¿na u¿yæ ¶cie¿ki %s przy przesuwaniu pakietu %s-%s-%s"
 
 #: lib/problems.c:86
 #, c-format
-msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
+msgid "file %s conflicts between attempted installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
 
 #: lib/problems.c:92

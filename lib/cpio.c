@@ -611,7 +611,7 @@ int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
 	    }
 		
 	    if ((ch.nlink > 1) && S_ISREG(ch.mode) && !ch.size &&
-		li->createdPath == -1) {
+		li->createdPath == -1 && linkNum < (li->nlink - 1)) {
 		/* defer file creation */
 	    } else if ((ch.nlink > 1) && S_ISREG(ch.mode) && 
 		       (li->createdPath != -1)) {
