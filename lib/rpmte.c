@@ -106,10 +106,22 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
-    p->arch = (arch != NULL ? xstrdup(arch) : NULL);
+    if (arch != NULL) {
+	p->arch = xstrdup(arch);
+	p->archScore = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
+    } else {
+	p->arch = NULL;
+	p->archScore = 0;
+    }
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
-    p->os = (os != NULL ? xstrdup(os) : NULL);
+    if (os != NULL) {
+	p->os = xstrdup(os);
+	p->osScore = rpmMachineScore(RPM_MACHTABLE_INSTOS, os);
+    } else {
+	p->os = NULL;
+	p->osScore = 0;
+    }
 
     nb = strlen(p->NEVR) + 1;
     if (p->arch)
@@ -148,6 +160,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->relocs[i].oldPath = NULL;
 	p->relocs[i].newPath = NULL;
     }
+    p->autorelocatex = -1;
 
     p->key = key;
     p->fd = NULL;

@@ -22,6 +22,7 @@
 	- fix: IDTXglob should return REMOVETID sorted headers (#89857).
 	- resolve elf32/elf64 file conflicts to prefer elf64.
 	- apply debugedit patch necessary to produce kernel -debuginfo files.
+	- ia64: autorelocate only colored, not every, file when installing.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.
