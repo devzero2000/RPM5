@@ -1,14 +1,15 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.0.3\n"
+"Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-07-18 05:59-0400\n"
-"PO-Revision-Date: 2001-02-20 15:45-0500\n"
+"PO-Revision-Date: 2001-07-18 16:42-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=koi8-r\n"
+"Content-Type: text/plain; charset=KOI8-R\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Date: 1999-04-03 12:20+0200\n"
+"X-Generator: KBabel 0.8\n"
 
 #: build.c:36
 #, c-format
@@ -121,8 +122,8 @@ msgstr ""
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                        [--prefix <кат.>] [--ignoreos] [--nodeps] [--"
-"allfiles]"
+"                        [--prefix <кат.>] [--ignoreos] [--nodeps] "
+"[--allfiles]"
 
 #: rpm.c:259 rpm.c:268 rpm.c:278
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
@@ -136,9 +137,8 @@ msgstr "                        [--httpproxy <адрес>] [--httpport <порт>]"
 msgid ""
 "                        [--justdb] [--noorder] [--relocate oldpath=newpath]"
 msgstr ""
-"                        [--justdb] [--noorder] [--"
-"relocate                                                       "
-"старыйпуть=новыйпуть]"
+"                        [--justdb] [--noorder] [--relocate                   "
+"                                    старыйпуть=новыйпуть]"
 
 #: rpm.c:262
 msgid ""
@@ -284,9 +284,8 @@ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <файл>] [--dbpath <каталог>]"
 
 #: rpm.c:296
-#, fuzzy
 msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "       rpm {--rebuilddb} [--rcfile <файл>] [--dbpath <каталог>]"
+msgstr "       rpm {--verifydb} [--rcfile <файл>] [--dbpath <каталог>]"
 
 #: rpm.c:297
 msgid "       rpm {--querytags}"
@@ -500,8 +499,8 @@ msgstr "вывести только файлы конфигурации пакета (подразумевает -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or -"
-"d)"
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
 msgstr ""
 "показать всю контрольную информацию для каждого файла пакета (должно "
 "использоваться с -l, -c или -d)"
@@ -843,9 +842,8 @@ msgid "rebuild database from existing database"
 msgstr "перестроить базу данных из существующей базы"
 
 #: rpm.c:565 rpmdb/poptDB.c:27
-#, fuzzy
 msgid "verify database files"
-msgstr "запросить файл спецификации"
+msgstr "проверить файлы базы данных"
 
 #: rpm.c:573
 msgid ""
@@ -980,8 +978,8 @@ msgstr "--includedocs может быть указан только при установке пакета"
 #: rpm.c:947 rpmqv.c:723
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
-"может быть использован только один из параметров --excludedocs или --"
-"includedocs"
+"может быть использован только один из параметров --excludedocs или "
+"--includedocs"
 
 #: rpm.c:951 rpmqv.c:727
 msgid "--ignorearch may only be specified during package installation"
@@ -1008,27 +1006,24 @@ msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb может быть указан только при установке или удалении пакета"
 
 #: rpm.c:978
-#, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation, "
 "erasure, and verification"
 msgstr ""
-"--noscripts может быть указан только при установке, удалении и проверки "
-"пакета"
+"параметры запрета сценариев могут быть указаны только при установке, "
+"удалении и проверки пакета"
 
 #: rpm.c:982
-#, fuzzy
 msgid "--apply may only be specified during package installation"
-msgstr "--allfiles может быть указан только при установке пакета"
+msgstr "--apply может быть указан только при установке пакета"
 
 #: rpm.c:987 rpmqv.c:759
-#, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"параметр --notriggers может быть указан только при установке или удалении "
-"пакета(ов)"
+"параметры запрета триггеров могут быть указан только при установке или "
+"удалении пакета(ов)"
 
 #: rpm.c:991 rpmqv.c:763
 msgid ""
@@ -1242,16 +1237,16 @@ msgstr ""
 
 #: rpmqv.c:194
 msgid "Install/Upgrade/Erase options:"
-msgstr ""
+msgstr "Параметры Установки/Обновления/Удаления:"
 
 #: rpmqv.c:199
 msgid "Common options for all rpm modes:"
 msgstr "Общие параметры для всех режимов:"
 
 #: lib/poptI.c:25 rpmqv.c:215
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s\n"
-msgstr "файл %s: %s\n"
+msgstr "%s: %s\n"
 
 #: rpmqv.c:240
 #, c-format
@@ -1267,11 +1262,12 @@ msgid "--dbpath given for operation that does not use a database"
 msgstr "параметр --dbpath задан для операции, не использующей базу данных"
 
 #: rpmqv.c:754
-#, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr "--justdb может быть указан только при установке или удалении пакета"
+msgstr ""
+"параметры запрета сценариев могут быть указаны только при установке или "
+"удалении пакета"
 
 #: rpmqv.c:899
 msgid "no packages files given for rebuild"
@@ -1493,7 +1489,7 @@ msgstr "Файл не найден: %s\n"
 #: build/files.c:1733
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
-msgstr "Невозможно открыть файл %%files: %s\n"
+msgstr "Невозможно открыть файл %%files %s: %s\n"
 
 #: build/files.c:1744 build/pack.c:141
 #, c-format
@@ -1550,9 +1546,8 @@ msgid "getUnameS: too many uid's\n"
 msgstr "getUnameS: слишком много uid\n"
 
 #: build/names.c:84
-#, fuzzy
 msgid "getUidS: too many uid's\n"
-msgstr "getUnameS: слишком много uid\n"
+msgstr "getUidS: слишком много пользовательских идентификаторов\n"
 
 #: build/names.c:105
 msgid "getGname: too many gid's\n"
@@ -1563,9 +1558,8 @@ msgid "getGnameS: too many gid's\n"
 msgstr "getGnameS: слишком много gid\n"
 
 #: build/names.c:147
-#, fuzzy
 msgid "getGidS: too many gid's\n"
-msgstr "getGnameS: слишком много gid\n"
+msgstr "getGidS: слишком много идентификаторов групп.\n"
 
 #: build/names.c:178
 #, c-format
@@ -1578,9 +1572,9 @@ msgid "create archive failed on file %s: %s\n"
 msgstr "ошибка создания архива на файле %s: %s\n"
 
 #: build/pack.c:81 lib/psm.c:1780
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "ошибка создания архива на файле %s: %s\n"
+msgstr "ошибка создания архива: %s\n"
 
 #: build/pack.c:103
 #, c-format
@@ -1633,9 +1627,9 @@ msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: чтение %s: %s\n"
 
 #: build/pack.c:292 build/pack.c:485
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Fseek failed: %s\n"
-msgstr "%s: ошибка Fread: %s\n"
+msgstr "%s: ошибка Fseek: %s\n"
 
 #: build/pack.c:308
 #, c-format
@@ -1822,9 +1816,9 @@ msgid "Unknown icon type: %s\n"
 msgstr "Неизвестный тип пиктограммы: %s\n"
 
 #: build/parsePreamble.c:423
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Tag takes single token only: %s\n"
-msgstr "строка %d: Неверный параметр %s: %s\n"
+msgstr "строка %d: Ярлык требует только один аргумент: %s\n"
 
 #: build/parsePreamble.c:459
 #, c-format
@@ -1922,9 +1916,9 @@ msgid "Error parsing %%setup: %s\n"
 msgstr "Ошибка анализа %%setup: %s\n"
 
 #: build/parsePrep.c:303
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
-msgstr "строка %d: Неверный аргумент для %%setup %c: %s\n"
+msgstr "строка %d: Неверный аргумент для %%setup %s\n"
 
 #: build/parsePrep.c:321
 #, c-format
@@ -2045,9 +2039,8 @@ msgid "malformed %%include statement\n"
 msgstr "неверное объявление %%include\n"
 
 #: build/parseSpec.c:508
-#, fuzzy
 msgid "No compatible architectures found for build\n"
-msgstr "Нет архитектур, для которых возможна сборка\n"
+msgstr "Не найдены совместимые архитектуры для сборки.\n"
 
 #: build/parseSpec.c:563
 #, c-format
@@ -2091,7 +2084,6 @@ msgid "Unknown file type"
 msgstr "Неизвестный тип файла"
 
 #: lib/cpio.c:214
-#, fuzzy
 msgid "Missing hard link(s)"
 msgstr "Отсутствует жесткая ссылка"
 
@@ -2124,12 +2116,11 @@ msgstr "  %s    A %s\tB %s\n"
 
 #: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
 msgid "YES"
-msgstr ""
+msgstr "ДА"
 
 #: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
-#, fuzzy
 msgid "NO "
-msgstr "НЕ OК"
+msgstr "НЕT"
 
 #: lib/depends.c:1018
 #, c-format
@@ -2142,9 +2133,9 @@ msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
 #: lib/depends.c:1216
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %-45s %-s (cached)\n"
-msgstr "%s: %-45s %-3s (cached)\n"
+msgstr "%s: %-45s %-s (cached)\n"
 
 #: lib/depends.c:1245
 #, c-format
@@ -2257,17 +2248,17 @@ msgstr "файл %s - на неизвестном устройстве\n"
 
 #: lib/fsm.c:292
 msgid "========= Directories not explictly included in package:\n"
-msgstr ""
+msgstr "========= Каталоги, которые не включены в пакет явно:\n"
 
 #: lib/fsm.c:294
-#, fuzzy, c-format
+#, c-format
 msgid "%9d %s\n"
-msgstr "строка %d: %s\n"
+msgstr "%9d %s\n"
 
 #: lib/fsm.c:1128
 #, c-format
 msgid "%s directory created with perms %04o.\n"
-msgstr ""
+msgstr "каталог %s создан с правами доступа %04o.\n"
 
 #: lib/fsm.c:1511 lib/fsm.c:1636
 #, c-format
@@ -2275,19 +2266,19 @@ msgid "%s saved as %s\n"
 msgstr "%s сохранен как %s\n"
 
 #: lib/fsm.c:1662
-#, fuzzy, c-format
+#, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
-msgstr "невозможно удалить %s - каталог не пуст\n"
+msgstr "%s невозможно удалить %s: каталог не пуст\n"
 
 #: lib/fsm.c:1668
-#, fuzzy, c-format
+#, c-format
 msgid "%s rmdir of %s failed: %s\n"
-msgstr "ошибка удаления каталога %s: %s\n"
+msgstr "%s ошибка удаления каталога %s: %s\n"
 
 #: lib/fsm.c:1678
-#, fuzzy, c-format
+#, c-format
 msgid "%s unlink of %s failed: %s\n"
-msgstr "невозможно открыть %s: %s\n"
+msgstr "%s невозможно удалить %s: %s\n"
 
 #: lib/fsm.c:1697
 #, c-format
@@ -2512,9 +2503,8 @@ msgid "do not execute any stages of the build"
 msgstr "не выполнять никаких этапов сборки"
 
 #: lib/poptBT.c:189
-#, fuzzy
 msgid "do not verify build dependencies"
-msgstr "не проверять зависимости пакета"
+msgstr "не проверять зависимости пакета перед сборкой"
 
 #: lib/poptBT.c:191
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
@@ -2542,18 +2532,16 @@ msgid "malformed rollback time"
 msgstr ""
 
 #: lib/poptI.c:99 lib/poptI.c:150
-#, fuzzy
 msgid "do not execute package scriptlet(s)"
-msgstr "не исполнять никаких сценариев, специфичных для пакета"
+msgstr "не исполнять никаких сценариев пакета(ов)"
 
 #: lib/poptI.c:106
 msgid "save erased package files by renaming into sub-directory"
-msgstr ""
+msgstr "сохранить в подкаталоге подлежащие удалению файлы пакета"
 
 #: lib/poptI.c:109
-#, fuzzy
 msgid "<package>+"
-msgstr "<пакет>"
+msgstr "<пакет>+"
 
 #: lib/poptI.c:114
 msgid "skip files with leading component <path> "
@@ -2561,75 +2549,71 @@ msgstr "пропустить файлы в пути <путь>"
 
 #: lib/poptI.c:115
 msgid "<path>"
-msgstr ""
+msgstr "<путь>"
 
 #: lib/poptI.c:121
-#, fuzzy
 msgid "upgrade package(s) if already installed"
-msgstr "обновлённый пакет уже установлен"
+msgstr "обновить пакет(ы) если уже установлен"
 
 #: lib/poptI.c:122 lib/poptI.c:138 lib/poptI.c:210
 msgid "<packagefile>+"
 msgstr "<файл пакета>+"
 
 #: lib/poptI.c:153
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %%pre scriptlet (if any)"
-msgstr "не исполнять никаких сценариев (если есть)"
+msgstr "не исполнять  %%pre сценариев (если есть)"
 
 #: lib/poptI.c:156
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %%post scriptlet (if any)"
-msgstr "не исполнять никаких сценариев (если есть)"
+msgstr "не исполнять %%post сценариев (если есть)"
 
 #: lib/poptI.c:159
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %%preun scriptlet (if any)"
-msgstr "не исполнять никаких сценариев (если есть)"
+msgstr "не исполнять %%preun сценариев (если есть)"
 
 #: lib/poptI.c:162
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %%postun scriptlet (if any)"
-msgstr "не исполнять никаких сценариев (если есть)"
+msgstr "не исполнять %%postun сценариев (если есть)"
 
 #: lib/poptI.c:166
-#, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
-msgstr "не исполнять триггер-сценариев, взведенных на этот пакет"
+msgstr "не исполнять триггер-сценариев, взведенных этим пакетом"
 
 #: lib/poptI.c:169
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
-msgstr "не исполнять никаких сценариев, специфичных для пакета"
+msgstr "не исполнять %%triggerprein сценариев"
 
 #: lib/poptI.c:172
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
-msgstr "не исполнять каких-либо установочных сценариев"
+msgstr "не исполнять %%triggerin сценариев"
 
 #: lib/poptI.c:175
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
-msgstr "не исполнять каких-либо установочных сценариев"
+msgstr "не исполнять %%triggerun сценариев"
 
 #: lib/poptI.c:178
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
-msgstr "не исполнять каких-либо установочных сценариев"
+msgstr "не исполнять %%triggerpostun сценариев"
 
 #: lib/poptI.c:191
-#, fuzzy
 msgid "relocate files from path <old> to <new>"
-msgstr "переместить файлы из <oldpath> в <newpath>"
+msgstr "переместить файлы из пути <old> в <new>"
 
 #: lib/poptI.c:192
-#, fuzzy
 msgid "<old>=<new>"
-msgstr "<oldpath>=<newpath>"
+msgstr "<old>=<new>"
 
 #: lib/poptI.c:195
 msgid "save erased package files by repackaging"
-msgstr ""
+msgstr "сохранить подлежащие удалению файлы в новом пакете"
 
 #: lib/poptI.c:203
 msgid "deinstall new package(s), reinstall old package(s), back to date"
@@ -2640,14 +2624,12 @@ msgid "<date>"
 msgstr ""
 
 #: lib/poptI.c:209
-#, fuzzy
 msgid "upgrade package(s)"
-msgstr "обновить пакет"
+msgstr "обновить пакет(ы)"
 
 #: lib/poptK.c:56
-#, fuzzy
 msgid "generate signature"
-msgstr "генерировать PGP/GPG-подпись"
+msgstr "генерировать подпись"
 
 #: lib/poptQV.c:72
 msgid "query/verify all packages"
@@ -2720,17 +2702,17 @@ msgstr "показать список файлов пакета"
 #: lib/poptQV.c:157
 #, c-format
 msgid "skip %%ghost files"
-msgstr ""
+msgstr "пропустить файлы %%ghost"
 
 #: lib/poptQV.c:161
 #, c-format
 msgid "skip %%license files"
-msgstr ""
+msgstr "пропустить файлы %%license"
 
 #: lib/poptQV.c:164
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%readme files"
-msgstr "%s: ошибка readLead\n"
+msgstr "пропустить файлы %%readme"
 
 #: lib/poptQV.c:170
 msgid "use the following query format"
@@ -2749,57 +2731,48 @@ msgid "display a verbose file listing"
 msgstr "показать детальный список файлов"
 
 #: lib/poptQV.c:193
-#, fuzzy
 msgid "don't verify MD5 digest of files"
-msgstr "не проверять файлы пакета"
+msgstr "не проверять файлы на контрольную сумму MD5"
 
 #: lib/poptQV.c:196
-#, fuzzy
 msgid "don't verify size of files"
-msgstr "не проверять файлы пакета"
+msgstr "не проверять размер файлов"
 
 #: lib/poptQV.c:199
-#, fuzzy
 msgid "don't verify symlink path of files"
-msgstr "не проверять файлы пакета"
+msgstr "не проверять путь символических ссылок"
 
 #: lib/poptQV.c:202
-#, fuzzy
 msgid "don't verify owner of files"
-msgstr "не проверять файлы пакета"
+msgstr "не проверять хозяина файлов"
 
 #: lib/poptQV.c:205
-#, fuzzy
 msgid "don't verify group of files"
-msgstr "не проверять файлы пакета"
+msgstr "не проверять группу файлов"
 
 #: lib/poptQV.c:208
 msgid "don't verify modification time of files"
-msgstr ""
+msgstr "не проверять время модификации файлов"
 
 #: lib/poptQV.c:211 lib/poptQV.c:214
-#, fuzzy
 msgid "don't verify mode of files"
-msgstr "не проверять файлы пакета"
+msgstr "не проверять права доступа файлов пакета"
 
 #: lib/poptQV.c:217
 msgid "don't verify files in package"
 msgstr "не проверять файлы пакета"
 
 #: lib/poptQV.c:219
-#, fuzzy
 msgid "don't verify package dependencies"
 msgstr "не проверять зависимости пакета"
 
 #: lib/poptQV.c:221 lib/poptQV.c:225
-#, fuzzy
 msgid "don't execute %verifyscript (if any)"
 msgstr "не исполнять %verifyscript (если есть)"
 
 #: lib/poptQV.c:228
-#, fuzzy
 msgid "don't verify header SHA1 digest"
-msgstr "не проверять файлы пакета"
+msgstr "не проверять контрольную сумму SHA1 заголовка пакета"
 
 #: lib/problems.c:83
 #, c-format
@@ -2867,14 +2840,14 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
 
 #: lib/psm.c:588
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create %%%s %s\n"
-msgstr "невозможно создать %s: %s\n"
+msgstr "невозможно создать %%%s %s\n"
 
 #: lib/psm.c:594
-#, fuzzy, c-format
+#, c-format
 msgid "cannot write to %%%s %s\n"
-msgstr "невозможно писать в %s\n"
+msgstr "невозможно писать в %%%s %s\n"
 
 #: lib/psm.c:632
 msgid "source package expected, binary found\n"
@@ -2885,9 +2858,9 @@ msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
 #: lib/psm.c:993
-#, fuzzy, c-format
+#, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
+msgstr "ошибка выполнения сценария %s из %s-%s-%s, waitpid() возвратил %s\n"
 
 #: lib/psm.c:1000
 #, c-format
@@ -2895,14 +2868,14 @@ msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
 #: lib/psm.c:1318
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
-msgstr "пакет: %s-%s-%s файлов; test = %d\n"
+msgstr "%s: %s-%s-%s содержит %d файлов, test = %d\n"
 
 #: lib/psm.c:1435
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
-msgstr ""
+msgstr "%s: ошибка сценария %s (%d), %s-%s-%s пропускается\n"
 
 #: lib/psm.c:1550
 #, c-format
@@ -2924,9 +2897,9 @@ msgid " on file "
 msgstr " на файле "
 
 #: lib/psm.c:1868
-#, fuzzy, c-format
+#, c-format
 msgid "%s: running %s script(s) (if any)\n"
-msgstr "выполняется сценарий postinstall (если есть)\n"
+msgstr "%s: выполняется сценарий %s (если есть)\n"
 
 #: lib/query.c:115
 #, c-format
@@ -3041,9 +3014,9 @@ msgid "package record number: %u\n"
 msgstr "номер записи пакета: %u\n"
 
 #: lib/query.c:773
-#, fuzzy, c-format
+#, c-format
 msgid "record %u could not be read\n"
-msgstr "запись %d не читается\n"
+msgstr "невозможно прочитать запись %u\n"
 
 #: lib/query.c:784 lib/rpminstall.c:604
 #, c-format
@@ -3353,9 +3326,9 @@ msgstr ""
 "Старая (только для внутреннего использования) подпись! Где вы ЭТО взяли!?\n"
 
 #: lib/signature.c:229
-#, fuzzy, c-format
+#, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
-msgstr "Размер подписи: %d\n"
+msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
 #: lib/signature.c:289
 #, c-format
@@ -3537,11 +3510,12 @@ msgstr "ошибка(%d) db%d: %s\n"
 msgid ""
 "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
 msgstr ""
+"Цепочка пакетов оборвана на смещении %d(0x%08x), попытка соединения...\n"
 
 #: rpmdb/db1.c:180
 #, c-format
 msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
-msgstr ""
+msgstr "Соединяется оборванная связь в смещении %d(0x%08x).\n"
 
 #: rpmdb/db1.c:497
 #, c-format
@@ -3578,32 +3552,32 @@ msgid "shared"
 msgstr "разделяемый"
 
 #: rpmdb/db3.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "закрыто окружение базы данных %s/%s\n"
 
 #: rpmdb/db3.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "удалено окружение базы данных %s/%s\n"
 
 #: rpmdb/db3.c:166
-#, fuzzy, c-format
+#, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "открывается окружение базы данных %s/%s %s\n"
 
 #: rpmdb/db3.c:629
-#, fuzzy, c-format
+#, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "закрыт индекс базы данных %s/%s\n"
 
 #: rpmdb/db3.c:665
-#, fuzzy, c-format
+#, c-format
 msgid "verified db index       %s/%s\n"
-msgstr "закрыт индекс базы данных %s/%s\n"
+msgstr "проверен индекс базы данных %s/%s\n"
 
 #: rpmdb/db3.c:848
-#, fuzzy, c-format
+#, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
@@ -3613,12 +3587,12 @@ msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
 #: rpmdb/db3.c:1064
-#, fuzzy, c-format
+#, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"
 
 #: rpmdb/dbconfig.c:389
-#, fuzzy, c-format
+#, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
 
@@ -3643,8 +3617,8 @@ msgstr ""
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the rpm-list@redhat."
-"com mailing list\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "поврежден список свободных записей (%u) - пожалуйста запустите\n"
@@ -3715,9 +3689,9 @@ msgid "error(%d) counting packages\n"
 msgstr "ошибка(%d) при подсчёте пакетов\n"
 
 #: rpmdb/rpmdb.c:1935 rpmdb/rpmdb.c:3099
-#, fuzzy, c-format
+#, c-format
 msgid "record number %u in database is bad -- skipping.\n"
-msgstr "запись номер %d в базе данных неверна, пропускается.\n"
+msgstr "запись номер %u в базе данных неверна, пропускается.\n"
 
 #: rpmdb/rpmdb.c:1986
 #, c-format
@@ -3794,9 +3768,9 @@ msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
 #: rpmdb/rpmdb.c:3139
-#, fuzzy, c-format
+#, c-format
 msgid "cannot add record originally at %u\n"
-msgstr "невозможно добавить запись (первоначально в %d)\n"
+msgstr "невозможно добавить запись (первоначально в %u)\n"
 
 #: rpmdb/rpmdb.c:3157
 msgid "failed to rebuild database: original database remains in place\n"
@@ -4030,332 +4004,3 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
-
-#, fuzzy
-#~ msgid "generate GPG/PGP signature"
-#~ msgstr "генерировать PGP/GPG-подпись"
-
-#~ msgid "cannot open package: %s\n"
-#~ msgstr "невозможно открыть пакет: %s\n"
-
-#~ msgid "Bad count for headerAddEntry(): %d\n"
-#~ msgstr "Неверное число для headerAddEntry(): %d\n"
-
-#~ msgid "  All modes support the following options:"
-#~ msgstr "   Все режимы поддерживают следующие аргументы:"
-
-#~ msgid "   --define '<name> <body>'"
-#~ msgstr "   --define '<имя> <подстановка>'"
-
-#~ msgid "   --eval '<expr>+'       "
-#~ msgstr "   --eval '<имя>+'        "
-
-#~ msgid "print the expansion of macro <expr> to stdout"
-#~ msgstr "вывести значение макроса <имя>"
-
-#~ msgid "   --pipe <cmd>           "
-#~ msgstr "   --pipe <команда>       "
-
-#~ msgid "   --rcfile <file:...>    "
-#~ msgstr "    --rcfile <файл:...>   "
-
-#~ msgid "use <file:...> instead of default list of macro files"
-#~ msgstr "использовать <файл:...> вместо списка макрофайла(ов) по умолчанию"
-
-#~ msgid "   --dbpath <dir>         "
-#~ msgstr "   --dbpath <каталог>     "
-
-#~ msgid "   --root <dir>           "
-#~ msgstr "   --root <каталог>       "
-
-#~ msgid ""
-#~ "  Install, upgrade and query (with -p) modes allow URL's to be used in "
-#~ "place"
-#~ msgstr ""
-#~ "  Установка, обновление и запрос (с -p) допускают использование ftp URL "
-#~ "вместо"
-
-#~ msgid "  of file names as well as the following options:"
-#~ msgstr "   имен файлов а также следующие параметры:"
-
-#~ msgid "     --ftpproxy <host>    "
-#~ msgstr "     --ftpproxy <адрес>   "
-
-#~ msgid "     --ftpport <port>     "
-#~ msgstr "      --ftpport <порт>    "
-
-#~ msgid "     --httpproxy <host>   "
-#~ msgstr "     --httpproxy <адрес>  "
-
-#~ msgid "     --httpport <port>    "
-#~ msgstr "      --httpport <порт>    "
-
-#~ msgid "  Package specification options:"
-#~ msgstr "  Параметры спецификации пакета:"
-
-#~ msgid "     -f <file>+           "
-#~ msgstr "        -f <файл>+        "
-
-#~ msgid "query/verify package owning <file>"
-#~ msgstr "найти/проверить пакет, которому принадлежит <файл>"
-
-#~ msgid "     -p <packagefile>+    "
-#~ msgstr "     -p <файл пакета>+    "
-
-#~ msgid "query/verify (uninstalled) package <packagefile>"
-#~ msgstr "запросить/проверить (неустановленный) пакет <файл пакета>"
-
-#~ msgid "     --triggeredby <pkg>  "
-#~ msgstr "     --triggeredby <пакет>"
-
-#~ msgid "query/verify packages triggered by <pkg>"
-#~ msgstr "запросить/проверить пакеты с триггер-сценариями на пакет <пакет>"
-
-#~ msgid "     --whatprovides <cap> "
-#~ msgstr "     --whatprovides <сервис>"
-
-#~ msgid "query/verify packages which provide <cap> capability"
-#~ msgstr "найти/проверить пакеты, предоставляющие сервис <сервис>"
-
-#~ msgid "     --whatrequires <cap> "
-#~ msgstr "     --whatrequires <сервис>"
-
-#~ msgid "query/verify packages which require <cap> capability"
-#~ msgstr "найти/проверить пакеты, требующие сервис <сервис>"
-
-#~ msgid "     --queryformat <qfmt> "
-#~ msgstr "     --queryformat <qfmt> "
-
-#~ msgid "    Information selection options:"
-#~ msgstr "      Параметры выбора информации:"
-
-#~ msgid "list capabilities provided by package"
-#~ msgstr "показать сервисы, предоставляемые пакетом"
-
-#~ msgid "list capabilities required by package"
-#~ msgstr "показать сервисы, необходимые для пакета"
-
-#~ msgid "print the various [un]install scriptlets"
-#~ msgstr "вывести разнообразные [де]инсталляционные сценарии"
-
-#~ msgid "show the trigger scriptlets contained in the package"
-#~ msgstr "показать триггер-сценарии, содержащиеся в пакете"
-
-#~ msgid "do not execute scripts (if any)"
-#~ msgstr "не исполнять никаких сценариев (если есть)"
-
-#~ msgid "   --install <packagefile>"
-#~ msgstr "   --install <файл пакета>"
-
-#~ msgid "   -i <packagefile>       "
-#~ msgstr "   -i <файл пакета>       "
-
-#~ msgid "     --excludepath <path> "
-#~ msgstr "     --excludepath <путь> "
-
-#~ msgid "don't execute any installation scriptlets"
-#~ msgstr "не исполнять каких-либо установочных сценариев"
-
-#~ msgid "don't execute any scriptlets triggered by this package"
-#~ msgstr "не исполнять триггер-сценариев, взведенных на этот пакет"
-
-#~ msgid "     --prefix <dir>       "
-#~ msgstr "     --prefix <каталог>   "
-
-#~ msgid "     --relocate <oldpath>=<newpath>"
-#~ msgstr "     --relocate <oldpath>=<newpath>"
-
-#~ msgid "   --upgrade <packagefile>"
-#~ msgstr "   --upgrade <файл пакета>"
-
-#~ msgid "   -U <packagefile>       "
-#~ msgstr "   -U <файл пакета>       "
-
-#~ msgid "   --erase <package>"
-#~ msgstr "   --erase <пакет>  "
-
-#~ msgid "   -e <package>           "
-#~ msgstr "   -е <пакет>             "
-
-#~ msgid "   --resign <pkg>+        "
-#~ msgstr "   --resign <pkg>+        "
-
-#~ msgid "   --addsign <pkg>+       "
-#~ msgstr "   --addsign <pkg>+       "
-
-#~ msgid "   --checksig <pkg>+"
-#~ msgstr "   --checksig <pkg>+"
-
-#~ msgid "   -K <pkg>+             "
-#~ msgstr "   -K <pkg>+             "
-
-#~ msgid "initalize database (unnecessary, legacy use)"
-#~ msgstr "создать базу данных (не обязательно)"
-
-#~ msgid "rebuild database indices from existing database headers"
-#~ msgstr "переиндексировать базу данных"
-
-#~ msgid "closed  db environment %s/%s\n"
-#~ msgstr "закрыто окружение базы данных %s/%s\n"
-
-#~ msgid "removed db environment %s/%s\n"
-#~ msgstr "удалено окружение базы данных %s/%s\n"
-
-#~ msgid "closed  db index       %s/%s\n"
-#~ msgstr "закрыт индекс базы данных %s/%s\n"
-
-#~ msgid "opening db index       %s/%s %s mode=0x%x\n"
-#~ msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
-
-#~ msgid "locked  db index       %s/%s\n"
-#~ msgstr "заблокирован индекс базы данных %s/%s\n"
-
-#~ msgid "========== tsorting packages\n"
-#~ msgstr "========== сортировка пакетов\n"
-
-#~ msgid ""
-#~ "--notriggers may only be specified during package installation, erasure, "
-#~ "and verification"
-#~ msgstr ""
-#~ "--notriggers может быть указан только при установке, удалении и проверки "
-#~ "пакета"
-
-#~ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
-#~ msgstr "       %s {--initdb}   [--dbpath <каталог>]\n"
-
-#~ msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-#~ msgstr ""
-#~ "       %s {--rebuilddb} [--rcfile <файл:...>] [--dbpath <каталог>]\n"
-
-#~ msgid ""
-#~ "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-#~ msgstr ""
-#~ "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-
-#~ msgid ""
-#~ "                        [--rcfile <file:...>] [--ignorearch] [--dbpath "
-#~ "<dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <файл:...>] [--ignorearch] [--dbpath "
-#~ "<кат.>]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<file:...>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<файл:...>]"
-
-#~ msgid ""
-#~ "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:..."
-#~ ">]\n"
-#~ msgstr ""
-#~ "       %s {--erase -e} [--root <каталог>] [--noscripts] [--rcfile "
-#~ "<файл:...>]\n"
-
-#~ msgid ""
-#~ "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <каталог>] [--rcfile <файл:..."
-#~ ">]"
-
-#~ msgid ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <каталог>] [--rcfile <файл:..."
-#~ ">]\n"
-
-#~ msgid "       %s {--setperms} [-afpg] [target]\n"
-#~ msgstr "       %s {--setperms} [-afpg] [цель]\n"
-
-#~ msgid "       %s {--setugids} [-afpg] [target]\n"
-#~ msgstr "       %s {--setugids} [-afpg] [цель]\n"
-
-#~ msgid ""
-#~ "       %s {--resign} [--rcfile <file:...>] package1 package2 ... "
-#~ "packageN\n"
-#~ msgstr ""
-#~ "       %s {--resign} [--rcfile <файл:...>] пакет1 пакет2 ... пакетN\n"
-
-#~ msgid ""
-#~ "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-#~ msgstr ""
-#~ "       %s {--addsign} [--rcfile <файл:...>] пакет1 пакет2 ... пакетN"
-
-#~ msgid ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<файл:...>]\n"
-
-#~ msgid "archive = %s, fs = %s\n"
-#~ msgstr "архив = %s, fs = %s\n"
-
-#~ msgid "can't rename %s to %s: %s\n"
-#~ msgstr "невозможно переименовать %s в %s: %s\n"
-
-#~ msgid "can't unlink %s: %s\n"
-#~ msgstr "невозможно удалить ссылку %s: %s\n"
-
-#~ msgid "getNextHeader: %s\n"
-#~ msgstr "getNextHeader: %s\n"
-
-#~ msgid "   file: %s action: %s\n"
-#~ msgstr "файл : %s действие: %s\n"
-
-#~ msgid "installing a source package\n"
-#~ msgstr "устанавливается исходный пакет\n"
-
-#~ msgid "cannot create sourcedir %s\n"
-#~ msgstr "невозможно создать sourcedir %s\n"
-
-#~ msgid "sources in: %s\n"
-#~ msgstr "исходники в: %s\n"
-
-#~ msgid "cannot create specdir %s\n"
-#~ msgstr "невозможно создать каталог для файла спецификаций %s\n"
-
-#~ msgid "spec file in: %s\n"
-#~ msgstr "файл spec в: %s\n"
-
-#~ msgid "renaming %s to %s\n"
-#~ msgstr "переименовывается %s в %s\n"
-
-#~ msgid "rename of %s to %s failed: %s\n"
-#~ msgstr "ошибка переименования %s в %s: %s\n"
-
-#~ msgid "stopping install as we're running --test\n"
-#~ msgstr "установка прекращается, т.к. мы исполняем --test\n"
-
-#~ msgid "running preinstall script (if any)\n"
-#~ msgstr "исполняется сценарий preinstall (если есть)\n"
-
-#~ msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
-#~ msgstr ""
-#~ "пропускается установка %s-%s-%s, ошибка сценария %%pre: код возврата: %d\n"
-
-#~ msgid "Signature pad : %d\n"
-#~ msgstr "Заполнитель подписи : %d\n"
-
-#~ msgid "removal of %s failed: %s\n"
-#~ msgstr "ошибка удаления %s: %s\n"
-
-#~ msgid "will remove files test = %d\n"
-#~ msgstr "файлы будут удалены; test = %d\n"
-
-#~ msgid "running postuninstall script (if any)\n"
-#~ msgstr "выполняется сценарий postuninstall (если есть)\n"
-
-#~ msgid ""
-#~ "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
-#~ "returned %s\n"
-#~ msgstr ""
-#~ "ошибка получения кода возврата сценария %s из %s-%s-%s, waitpid вернул %"
-#~ "s\n"
-
-#~ msgid "      --timecheck <secs>  "
-#~ msgstr "      --timecheck <secs>  "
-
-#~ msgid "set the time check to <secs> seconds (0 disables)"
-#~ msgstr "установить проверку времени в <secs> секунд (0 отменяет её)"
