@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-06-22 21:18-0400\n"
+"POT-Creation-Date: 2000-07-09 17:44-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -322,8 +322,7 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: rpm.c:250
-msgid ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 msgstr ""
 
 #: rpm.c:252
@@ -1338,7 +1337,7 @@ msgstr "パッケージからヘッダの読み込みのエラー\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "ファイル %s をオープンできません"
 
-#: build/build.c:110 build/pack.c:346
+#: build/build.c:110 build/pack.c:347
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "一時ファイルをオープンできません"
@@ -1496,88 +1495,88 @@ msgstr "ファイルが2回表記されています: %s"
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:948
+#: build/files.c:952
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:958
+#: build/files.c:962
 #, c-format
 msgid "File not found: %s"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1001
+#: build/files.c:1005
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:1015
+#: build/files.c:1019
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1084
+#: build/files.c:1088
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1113
+#: build/files.c:1117
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1159
+#: build/files.c:1163
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1169 build/pack.c:99
+#: build/files.c:1173 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1496
+#: build/files.c:1500
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1508 build/parsePrep.c:34
+#: build/files.c:1512 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1563
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1568
+#: build/files.c:1572
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1650
+#: build/files.c:1654
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1654
+#: build/files.c:1658
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1744
+#: build/files.c:1748
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1772 build/files.c:1781
+#: build/files.c:1776 build/files.c:1785
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:1888
+#: build/files.c:1892
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -1660,51 +1659,51 @@ msgstr "readRPM: %s は RPM パッケージではありません\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からのヘッダの読み込み\n"
 
-#: build/pack.c:358
+#: build/pack.c:359
 msgid "Bad CSA data"
 msgstr "不正な CSA データ"
 
-#: build/pack.c:394
+#: build/pack.c:395
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:426
+#: build/pack.c:427
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:441
+#: build/pack.c:442
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の生成中: %d\n"
 
-#: build/pack.c:457
+#: build/pack.c:458
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:467
+#: build/pack.c:468
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:477
+#: build/pack.c:478
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:492
+#: build/pack.c:493
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:560
+#: build/pack.c:561
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:577
+#: build/pack.c:578
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"

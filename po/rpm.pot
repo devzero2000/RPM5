@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-22 21:18-0400\n"
+"POT-Creation-Date: 2000-07-10 14:32-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -287,8 +287,7 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: rpm.c:250
-msgid ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 msgstr ""
 
 #: rpm.c:252
@@ -1234,7 +1233,7 @@ msgstr ""
 msgid "cannot re-open payload: %s\n"
 msgstr ""
 
-#: build/build.c:110 build/pack.c:346
+#: build/build.c:110 build/pack.c:347
 msgid "Unable to open temp file."
 msgstr ""
 
@@ -1387,87 +1386,87 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:948
+#: build/files.c:952
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: build/files.c:958
+#: build/files.c:962
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: build/files.c:1001
+#: build/files.c:1005
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1015
+#: build/files.c:1019
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1084
+#: build/files.c:1088
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1113
+#: build/files.c:1117
 #, c-format
 msgid "File not found by glob: %s"
 msgstr ""
 
-#: build/files.c:1159
+#: build/files.c:1163
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1169 build/pack.c:99
+#: build/files.c:1173 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1496
+#: build/files.c:1500
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr ""
 
-#: build/files.c:1508 build/parsePrep.c:34
+#: build/files.c:1512 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1563
+#: build/files.c:1567
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1568
+#: build/files.c:1572
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1650
+#: build/files.c:1654
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1654
+#: build/files.c:1658
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1744
+#: build/files.c:1748
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1772 build/files.c:1781
+#: build/files.c:1776 build/files.c:1785
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1888
+#: build/files.c:1892
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1550,51 +1549,51 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:358
+#: build/pack.c:359
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:394
+#: build/pack.c:395
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:426
+#: build/pack.c:427
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:441
+#: build/pack.c:442
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:457
+#: build/pack.c:458
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:467
+#: build/pack.c:468
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:477
+#: build/pack.c:478
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr ""
 
-#: build/pack.c:492
+#: build/pack.c:493
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:560
+#: build/pack.c:561
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:577
+#: build/pack.c:578
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -2018,69 +2017,69 @@ msgstr ""
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:784
+#: lib/depends.c:787
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:823
+#: lib/depends.c:826
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr ""
 
-#: lib/depends.c:840
+#: lib/depends.c:843
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:871
+#: lib/depends.c:874
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:899
+#: lib/depends.c:902
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:921
+#: lib/depends.c:924
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:943
+#: lib/depends.c:946
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:959
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:966
+#: lib/depends.c:969
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1014
+#: lib/depends.c:1017
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1076
+#: lib/depends.c:1079
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1131 lib/depends.c:1430
+#: lib/depends.c:1134 lib/depends.c:1433
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: lib/depends.c:1226
+#: lib/depends.c:1229
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -3399,8 +3398,9 @@ msgstr ""
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:404
-msgid "execution of script failed"
+#: lib/uninstall.c:408
+#, c-format
+msgid "execution of %s-%s-%s script failed, exit status %d"
 msgstr ""
 
 #: lib/url.c:88

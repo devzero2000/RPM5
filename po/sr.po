@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-22 21:18-0400\n"
+"POT-Creation-Date: 2000-07-09 17:44-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -305,9 +305,9 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: rpm.c:250
-msgid ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
-msgstr ""
+#, fuzzy
+msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
+msgstr "\t\t\t   paket1 ...paketN"
 
 #: rpm.c:252
 msgid ""
@@ -1331,7 +1331,7 @@ msgstr "gre¹ka potrage za paketom %s\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: build/build.c:110 build/pack.c:346
+#: build/build.c:110 build/pack.c:347
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
@@ -1490,88 +1490,88 @@ msgstr "Neuspelo èitanje %s: %s."
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:948
+#: build/files.c:952
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:958
+#: build/files.c:962
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1001
+#: build/files.c:1005
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1015
+#: build/files.c:1019
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:1084
+#: build/files.c:1088
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1113
+#: build/files.c:1117
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1159
+#: build/files.c:1163
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/files.c:1169 build/pack.c:99
+#: build/files.c:1173 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1496
+#: build/files.c:1500
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:1508 build/parsePrep.c:34
+#: build/files.c:1512 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1563
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: build/files.c:1568
+#: build/files.c:1572
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Ne mogu da proèitam 'sigtarget'"
 
-#: build/files.c:1650
+#: build/files.c:1654
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "PGP omanuo"
 
-#: build/files.c:1654
+#: build/files.c:1658
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:1744
+#: build/files.c:1748
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1772 build/files.c:1781
+#: build/files.c:1776 build/files.c:1785
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1892
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -1654,51 +1654,51 @@ msgstr "gre¹ka: èini se da %s nije RPM paket\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "gre¹ka kod uzimanja sloga %s iz %s"
 
-#: build/pack.c:358
+#: build/pack.c:359
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:394
+#: build/pack.c:395
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "neuspelo otvaranje %s\n"
 
-#: build/pack.c:426
+#: build/pack.c:427
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:441
+#: build/pack.c:442
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "napravi PGP potpis"
 
-#: build/pack.c:457
+#: build/pack.c:458
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:467
+#: build/pack.c:468
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:477
+#: build/pack.c:478
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:492
+#: build/pack.c:493
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:560
+#: build/pack.c:561
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:577
+#: build/pack.c:578
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "

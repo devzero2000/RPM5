@@ -17,6 +17,8 @@
 	- internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
 	- support for separate source/binary compression policy.
 	- support for bzip payloads.
+	- fix: payload compression tag not nul terminated.
+	- identify package when install scriptlet fails (#12448).
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

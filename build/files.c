@@ -934,6 +934,10 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
 	    fileURL += strlen(fl->buildRootURL);
     }
 
+    /* XXX make sure '/' can be packaged also */
+    if (*fileURL == '\0')
+	fileURL = "/";
+
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
 	const char *prefixTest;

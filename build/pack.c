@@ -330,8 +330,9 @@ int writeRPM(Header h, const char *fileName, int type,
 			RPMSENSE_PREREQ|(RPMSENSE_GREATER|RPMSENSE_EQUAL),
 			"rpm", "3.0.5", 0);
 	}
-	(void) stpncpy(buf, rpmio_flags+1, (s - rpmio_flags - 1));
-	headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf, 1);
+	strcpy(buf, rpmio_flags);
+	buf[s - rpmio_flags] = '\0';
+	headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf+1, 1);
     }
 
     /* Create and add the cookie */

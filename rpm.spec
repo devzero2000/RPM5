@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 0.5
+Release: 0.7
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -234,6 +234,12 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue Jul 11 2000 Jeff Johnson <jbj@redhat.com>
+- identify package when install scriptlet fails (#12448).
+
+* Sun Jul  9 2000 Jeff Johnson <jbj@redhat.com>
+- fix: payload compression tag not nul terminated.
+
 * Thu Jun 22 2000 Jeff Johnson <jbj@redhat.com>
 - internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
 - support for separate source/binary compression policy.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-06-22 21:18-0400\n"
+"POT-Creation-Date: 2000-07-09 17:44-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -306,8 +306,8 @@ msgstr ""
 "                           [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:250
-msgid ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+#, fuzzy
+msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 msgstr ""
 "                           [--triggeredby] [--ftpuseport] [--ftpproxy "
 "<poèítaè>]"
@@ -1307,7 +1307,7 @@ msgstr "chyba pri èítaní hlavièky balíka\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s\n"
 
-#: build/build.c:110 build/pack.c:346
+#: build/build.c:110 build/pack.c:347
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Nie je mo¾né otvori» doèasný súbor"
@@ -1465,88 +1465,88 @@ msgstr "Súbor zadaný dvakrát: %s."
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:948
+#: build/files.c:952
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Súbor nesúhlasí s prefixom (%s): %s."
 
-#: build/files.c:958
+#: build/files.c:962
 #, c-format
 msgid "File not found: %s"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1001
+#: build/files.c:1005
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Chybný vlastník/skupina: %s\n"
 
-#: build/files.c:1015
+#: build/files.c:1019
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1084
+#: build/files.c:1088
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 
-#: build/files.c:1113
+#: build/files.c:1117
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1159
+#: build/files.c:1163
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: build/files.c:1169 build/pack.c:99
+#: build/files.c:1173 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "riadok: %s"
 
-#: build/files.c:1496
+#: build/files.c:1500
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "súbor %s: %s\n"
 
-#: build/files.c:1508 build/parsePrep.c:34
+#: build/files.c:1512 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Chybný vlastník/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1563
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: build/files.c:1568
+#: build/files.c:1572
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: build/files.c:1650
+#: build/files.c:1654
 #, c-format
 msgid "%s failed"
 msgstr "%s zlyhalo"
 
-#: build/files.c:1654
+#: build/files.c:1658
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: build/files.c:1744
+#: build/files.c:1748
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: build/files.c:1772 build/files.c:1781
+#: build/files.c:1776 build/files.c:1785
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/files.c:1888
+#: build/files.c:1892
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
@@ -1629,51 +1629,51 @@ msgstr "readRPM: %s nie je RPM balík\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: èítanie hlavièky %s\n"
 
-#: build/pack.c:358
+#: build/pack.c:359
 msgid "Bad CSA data"
 msgstr "Chybné CSA dáta"
 
-#: build/pack.c:394
+#: build/pack.c:395
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: build/pack.c:426
+#: build/pack.c:427
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:441
+#: build/pack.c:442
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: build/pack.c:457
+#: build/pack.c:458
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Nie je preèíta» sigtarget: %s"
 
-#: build/pack.c:467
+#: build/pack.c:468
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Nie je preèíta» sigtarget: %s"
 
-#: build/pack.c:477
+#: build/pack.c:478
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:492
+#: build/pack.c:493
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
 
-#: build/pack.c:560
+#: build/pack.c:561
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
 
-#: build/pack.c:577
+#: build/pack.c:578
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie je mo¾né zapísa» do %s: "
