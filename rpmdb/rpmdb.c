@@ -5,10 +5,6 @@
 
 #include "system.h"
 
-/*@unchecked@*/
-static int _debug = 0;
-#define	INLINE
-
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/signal.h>
@@ -44,6 +40,10 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access dbiIndexItem@*/
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
+
+/*@unchecked@*/
+static int _debug = 0;
+#define	INLINE
 
 /*@-redecl@*/
 extern int _noDirTokens;
