@@ -6,6 +6,7 @@
 	- use current autotools,
 	- use splint, not lclint.
 	- delete rpm-4.1 header-only signatures/digests when signing.
+	- fix: nested %if handling, optind initialization posix vs. glibc.
 
 4.0.3 -> 4.0.4:
 	- turn off rpm-perl until it's self-hosting.
