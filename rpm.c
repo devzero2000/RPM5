@@ -1100,7 +1100,7 @@ int main(int argc, char ** argv) {
 	argerror(_("--nopgp may only be used during signature checking"));
 
     if (noMd5 && bigMode != MODE_CHECKSIG && bigMode != MODE_VERIFY)
-	argerror(_("--nopgp may only be used during signature checking and "
+	argerror(_("--nomd5 may only be used during signature checking and "
 		   "package verification"));
 
     if (ftpProxy) rpmSetVar(RPMVAR_FTPPROXY, ftpProxy);
