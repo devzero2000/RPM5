@@ -11,8 +11,9 @@ EXTRA_PROGRAMS = tax tdigest tdir tfts tget thkp tput tglob tinv tkey tring trpm
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	@WITH_BEECRYPT_INCLUDE@ \
+	@WITH_NEON_INCLUDE@ \
 	@WITH_LUA_INCLUDE@ \
-	-I$(top_srcdir)/popt \
+	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
@@ -33,12 +34,13 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c rpmdav.c \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
+librpmio_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
+	@WITH_NEON_LIB@ \
 	@WITH_LUA_LIB@ \
-	$(top_builddir)/file/src/libmagic.la \
+	@WITH_MAGIC_LIB@ \
 	@WITH_ZLIB_LIB@ \
-	-lneon -lpthread
+	-lpthread
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
 

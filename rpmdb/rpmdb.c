@@ -63,7 +63,7 @@ static int _db_filter_dups = 0;
 int dbiTagsMax = 0;
 
 /* We use this to comunicate back to the the rpm transaction
- * what their install instance was on a rpmdbAdd().
+ *  what their install instance was on a rpmdbAdd().
  */ 
 /*@unchecked@*/
 unsigned int myinstall_instance = 0;
@@ -244,8 +244,7 @@ extern struct _dbiVec db3vec;
 #define DB3vec		NULL
 #endif
 
-#define	HAVE_SQLITE_DB_H	1
-#ifdef HAVE_SQLITE_DB_H
+#ifdef HAVE_SQLITE3_H
 /*@-exportheadervar -declundef @*/
 /*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec sqlitevec;
@@ -334,7 +333,8 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
     }
 
 /* We don't ever _REQUIRE_ conversion... */
-#if 0
+#define	SQLITE_HACK
+#ifdef	SQLITE_HACK_XXX
     /* Require conversion. */
     if (rc && _dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
 	rc = (_rebuildinprogress ? 0 : 1);
@@ -1356,6 +1356,10 @@ key->size = strlen(name);
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+#ifndef	SQLITE_HACK
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+#endif
 
     if (rc == 0) {		/* success */
 	dbiIndexSet matches;
@@ -1377,8 +1381,10 @@ key->size = strlen(name);
 	rc = -1;
     }
 
+#ifdef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
+#endif
 
     return rc;
 }
@@ -2380,15 +2386,20 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
-
+#ifndef	SQLITE_HACK
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+#endif
 
     if (rc) {			/* error/not found */
 	if (rc != DB_NOTFOUND)
 	    rpmError(RPMERR_DBGETINDEX,
 		_("error(%d) getting \"%s\" records from %s index\n"),
 		rc, key->data, tagName(dbi->dbi_rpmtag));
-       xx = dbiCclose(dbi, dbcursor, 0);
-       dbcursor = NULL;
+#ifdef	SQLITE_HACK
+	xx = dbiCclose(dbi, dbcursor, 0);
+	dbcursor = NULL;
+#endif
 	return rc;
     }
 
@@ -2397,8 +2408,10 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
     for (i = 0; i < set->count; i++)
 	set->recs[i].fpNum = fpNum;
 
+#ifdef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
+#endif
 
 /*@-branchstate@*/
     if (mi->mi_set == NULL) {
@@ -3564,7 +3577,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 
     switch (_dbapi) {
     case 4:
-        /* Let it fall through */
+	/*@fallthrough@*/
     case 3:
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
@@ -3688,11 +3701,11 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    sprintf(ofilename, "%s/%s/__db.%03d", prefix, olddbpath, i);
 	    (void)rpmCleanPath(ofilename);
 	    if (rpmioFileExists(ofilename))
-	      xx = unlink(ofilename);
+		xx = unlink(ofilename);
 	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
 	    (void)rpmCleanPath(nfilename);
 	    if (rpmioFileExists(nfilename))
-	      xx = unlink(nfilename);
+		xx = unlink(nfilename);
 	}
 	break;
     case 2:
@@ -3700,7 +3713,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     case 0:
 	break;
     }
-#if 0
+#ifdef	SQLITE_HACK_XXX
     if (rc || _olddbapi == _newdbapi)
 	return rc;
 

@@ -3,14 +3,14 @@
 export CFLAGS
 export LDFLAGS
 
-LTV="libtoolize (GNU libtool) 1.5.10"
+LTV="libtoolize (GNU libtool) 1.5.14"
 ACV="autoconf (GNU Autoconf) 2.59"
-AMV="automake (GNU automake) 1.9.3"
+AMV="automake (GNU automake) 1.9.5"
 USAGE="
 This script documents the versions of the tools I'm using to build rpm:
-	libtool-1.5.10
+	libtool-1.5.14
 	autoconf-2.59
-	automake-1.9.3
+	automake-1.9.5
 Simply edit this script to change the libtool/autoconf/automake versions
 checked if you need to, as rpm should build (and has built) with all
 recent versions of libtool/autoconf/automake.
@@ -30,8 +30,9 @@ esac
 [ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" && exit 1
 [ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" # && exit 1
 
+myopts=
 if [ X"$@" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
-    export myprefix=/opt/local
+    export myopts="--prefix=/usr --disable-nls"
     export CPPFLAGS="-I${myprefix}/include"
 fi
 
@@ -80,5 +81,5 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
     fi
     ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} "$@"
 else
-    ./configure --prefix=${myprefix} "$@"
+    ./configure ${myopts} "$@"
 fi

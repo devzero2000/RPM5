@@ -1206,7 +1206,7 @@ static inline unsigned char nibble(char c)
 /* XXX Ick, not SEF. */
 #define _fdupestring(_h, _tag, _data) \
     if (hge((_h), (_tag), NULL, (void **) &(_data), NULL)) \
-   _data = xstrdup(_data)
+	_data = xstrdup(_data)
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 {

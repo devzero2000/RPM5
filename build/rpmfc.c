@@ -1095,6 +1095,7 @@ int rpmfcApply(rpmfc fc)
 	    }
 	}
 
+	if (fc->fcolor->vals[fc->ix])
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
 		/*@innercontinue@*/ continue;
@@ -1216,6 +1217,9 @@ assert(s != NULL);
 /*@-branchstate@*/
 	if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
 	    ftype = "Perl5 module source text";
+	/* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
+	else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
+	    ftype = "";
 	else {
 	    ftype = magic_file(ms, s);
 	    if (ftype == NULL) {
@@ -1522,6 +1526,7 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
     fc->tracked = 0;
+    fc->brlen = (spec->buildRootURL ? strlen(spec->buildRootURL) : 0);
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {

@@ -219,6 +219,7 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
     return 0;
 }
 
+#if 0
 #if HAVE_LIBPTHREAD
 #if HAVE_PTHREAD_H
 #include <pthread.h>
@@ -268,6 +269,7 @@ static int db3_pthread_nptl(void)
     return ret;
 }
 /*@=compdef =moduncon =noeffectuncon @*/
+#endif
 #endif
 
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
@@ -997,6 +999,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      */
     if (dbi->dbi_use_dbenv) {
 
+#if 0
 #if HAVE_LIBPTHREAD
 	if (rpmdb->db_dbenv == NULL) {
 	    /* Set DB_PRIVATE if posix mutexes are not shared. */
@@ -1006,6 +1009,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		rpmMessage(RPMMESS_DEBUG, _("unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"), xx);
 	    }
 	}
+#endif
 #endif
 
 	if (access(dbhome, W_OK) == -1) {

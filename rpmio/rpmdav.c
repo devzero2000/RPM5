@@ -9,11 +9,11 @@
 #include <pthread.h>
 #endif
 
-#include <neon/ne_alloc.h>
-#include <neon/ne_auth.h>
-#include <neon/ne_basic.h>
-#include <neon/ne_dates.h>
-#include <neon/ne_locks.h>
+#include "ne_alloc.h"
+#include "ne_auth.h"
+#include "ne_basic.h"
+#include "ne_dates.h"
+#include "ne_locks.h"
 
 #define	NEONBLOWSCHUNKS
 #ifndef	NEONBLOWSCHUNKS
@@ -21,11 +21,11 @@
 #include "../neon/src/ne_private.h"
 #endif
 
-#include <neon/ne_props.h>
-#include <neon/ne_request.h>
-#include <neon/ne_socket.h>
-#include <neon/ne_string.h>
-#include <neon/ne_utils.h>
+#include "ne_props.h"
+#include "ne_request.h"
+#include "ne_socket.h"
+#include "ne_string.h"
+#include "ne_utils.h"
 
 #include <rpmio_internal.h>
 
