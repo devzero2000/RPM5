@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-06 10:40-0400\n"
+"POT-Creation-Date: 2001-09-12 22:32-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2990,8 +2990,8 @@ msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 msgid "can't query %s: %s\n"
 msgstr "kunne ikke forespørge %s: %s\n"
 
-#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:347 lib/rpminstall.c:490
-#: lib/rpminstall.c:865
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:309 lib/rpminstall.c:453
+#: lib/rpminstall.c:826
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
@@ -3005,7 +3005,7 @@ msgstr "forespørgsel af %s mislykkedes\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:618 lib/rpminstall.c:503
+#: lib/query.c:618 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
@@ -3064,7 +3064,7 @@ msgstr "pakkens post-nummer: %u\n"
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:816 lib/rpminstall.c:653
+#: lib/query.c:816 lib/rpminstall.c:615
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -3152,94 +3152,94 @@ msgstr ")"
 msgid "OK"
 msgstr "O.K."
 
-#: lib/rpminstall.c:162
+#: lib/rpminstall.c:140
 msgid "Preparing..."
 msgstr "Forbereder..."
 
-#: lib/rpminstall.c:164
+#: lib/rpminstall.c:142
 msgid "Preparing packages for installation..."
 msgstr "Forbereder pakker til installation..."
 
-#: lib/rpminstall.c:300
+#: lib/rpminstall.c:259
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Modtager %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:310
+#: lib/rpminstall.c:269
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:314
+#: lib/rpminstall.c:273
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "overspringer %s - overførsel mislykkedes - %s\n"
 
-#: lib/rpminstall.c:393
+#: lib/rpminstall.c:355
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
-#: lib/rpminstall.c:416
+#: lib/rpminstall.c:378
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakke %s kan ikke omrokeres\n"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:427
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fejl ved læsning fra filen %s\n"
 
-#: lib/rpminstall.c:470
+#: lib/rpminstall.c:433
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s kræver en nyere version af RPM\n"
 
-#: lib/rpminstall.c:482 lib/rpminstall.c:724
+#: lib/rpminstall.c:445 lib/rpminstall.c:686
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
-#: lib/rpminstall.c:518
+#: lib/rpminstall.c:481
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "fandt %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:533
+#: lib/rpminstall.c:496
 msgid "failed dependencies:\n"
 msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
 
-#: lib/rpminstall.c:554
+#: lib/rpminstall.c:516
 msgid "installing binary packages\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:575
+#: lib/rpminstall.c:537
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kunne ikke åbne fil %s: %s\n"
 
-#: lib/rpminstall.c:640
+#: lib/rpminstall.c:602
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kunne ikke åbne %s/packages.rpm\n"
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:618
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" angiver flere pakker\n"
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:641
 msgid "removing these packages would break dependencies:\n"
 msgstr "fjernelse af disse pakker ville bryde afhængighederne:\n"
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:670
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/rpminstall.c:714
+#: lib/rpminstall.c:676
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"
@@ -3523,17 +3523,17 @@ msgstr ""
 "pakken har hverken en liste over gruppenavne eller id (det burde ikke kunne "
 "ske)\n"
 
-#: lib/verify.c:429
+#: lib/verify.c:430
 #, c-format
 msgid "missing    %s"
 msgstr "manglende  %s"
 
-#: lib/verify.c:522
+#: lib/verify.c:523
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
 
-#: lib/verify.c:561
+#: lib/verify.c:562
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

@@ -18,18 +18,11 @@
 /*@access IDTX @*/
 /*@access IDT @*/
 
-/* Define if you want percentage progress in the hash bars when
- * writing to a tty (ordinary hash bars otherwise) --claudio
- */
-#define FANCY_HASH
-
 static int hashesPrinted = 0;
 
-#ifdef FANCY_HASH
 int packagesTotal = 0;
 static int progressTotal = 0;
 static int progressCurrent = 0;
-#endif
 
 /**
  */
@@ -39,15 +32,12 @@ static void printHash(const unsigned long amount, const unsigned long total)
     int hashesNeeded;
     int hashesTotal = 50;
 
-#ifdef FANCY_HASH
     if (isatty (STDOUT_FILENO))
 	hashesTotal = 44;
-#endif
 
     if (hashesPrinted != hashesTotal) {
 	hashesNeeded = hashesTotal * (total ? (((float) amount) / total) : 1);
 	while (hashesNeeded > hashesPrinted) {
-#ifdef FANCY_HASH
 	    if (isatty (STDOUT_FILENO)) {
 		int i;
 		for (i = 0; i < hashesPrinted; i++) (void) putchar ('#');
@@ -56,8 +46,7 @@ static void printHash(const unsigned long amount, const unsigned long total)
 			(int)(100 * (total ? (((float) amount) / total) : 1)));
 		for (i = 0; i < (hashesTotal + 6); i++) (void) putchar ('\b');
 	    } else
-#endif
-	    fprintf(stdout, "#");
+		fprintf(stdout, "#");
 
 	    hashesPrinted++;
 	}
@@ -65,15 +54,11 @@ static void printHash(const unsigned long amount, const unsigned long total)
 	hashesPrinted = hashesNeeded;
 
 	if (hashesPrinted == hashesTotal) {
-#ifdef FANCY_HASH
 	    int i;
 	    progressCurrent++;
 	    for (i = 1; i < hashesPrinted; i++) (void) putchar ('#');
 	    printf (" [%3d%%]\n", (int)(100 * (progressTotal ?
 			(((float) progressCurrent) / progressTotal) : 1)));
-#else
-	    fprintf (stdout, "\n");
-#endif
 	}
 	(void) fflush(stdout);
     }
@@ -121,13 +106,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (flags & INSTALL_HASH) {
 	    s = headerSprintf(h, "%{NAME}",
 				rpmTagTable, rpmHeaderFormats, NULL);
-#ifdef FANCY_HASH
 	    if (isatty (STDOUT_FILENO))
 		fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
-	    else
-#else
-		fprintf(stdout, "%-28s", s);
-#endif
 	    (void) fflush(stdout);
 	    s = _free(s);
 	} else {
@@ -152,10 +132,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 
     case RPMCALLBACK_TRANS_START:
 	hashesPrinted = 0;
-#ifdef FANCY_HASH
 	progressTotal = 1;
 	progressCurrent = 0;
-#endif
 	if (!(flags & INSTALL_LABEL))
 	    break;
 	if (flags & INSTALL_HASH)
@@ -168,10 +146,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     case RPMCALLBACK_TRANS_STOP:
 	if (flags & INSTALL_HASH)
 	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
-#ifdef FANCY_HASH
 	progressTotal = packagesTotal;
 	progressCurrent = 0;
-#endif
 	break;
 
     case RPMCALLBACK_UNINST_PROGRESS:
@@ -194,7 +170,7 @@ struct rpmEIU {
     int numFailed;
     int numPkgs;
 /*@only@*/ /*@null@*/ str_t * pkgURL;
-    str_t * fnp;
+/*@dependent@*/ /*@null@*/ str_t * fnp;
 /*@only@*/ /*@null@*/ char * pkgState;
     int prevx;
     int pkgx;
@@ -215,15 +191,9 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		rpmprobFilterFlags probFilter,
 		rpmRelocation * relocations)
 {
-    int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-#ifdef DYING
-    str_t * fnp;
-    Header h;
-    FD_t fd;
-    int isSource;
-#endif
-    /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     struct rpmEIU * eiu = alloca(sizeof(*eiu));
+    int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+    /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
     int ac = 0;
@@ -234,6 +204,9 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     if (fileArgv == NULL) return 0;
 
     memset(eiu, 0, sizeof(*eiu));
+    eiu->numPkgs = 0;
+    eiu->prevx = 0;
+    eiu->pkgx = 0;
 
     if ((eiu->relocations = relocations) != NULL) {
 	while (eiu->relocations->oldPath)
@@ -243,46 +216,32 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     }
 
     /* Build fully globbed list of arguments in argv[argc]. */
+    /*@-temptrans@*/
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
-	av = _free(av);
-	ac = 0;
+    /*@=temptrans@*/
+	av = _free(av);	ac = 0;
 	rc = rpmGlob(*eiu->fnp, &ac, &av);
 	if (rc || ac == 0) continue;
 
-#ifdef	DYING
-	if (eiu->argv == NULL)
-	    eiu->argv = xmalloc((eiu->argc+ac+1) * sizeof(*eiu->argv));
-	else
-#endif
-	    eiu->argv = xrealloc(eiu->argv, (eiu->argc+ac+1) * sizeof(*eiu->argv));
+	eiu->argv = xrealloc(eiu->argv, (eiu->argc+ac+1) * sizeof(*eiu->argv));
 	memcpy(eiu->argv+eiu->argc, av, ac * sizeof(*av));
 	eiu->argc += ac;
 	eiu->argv[eiu->argc] = NULL;
     }
-    av = _free(av);
-
-    eiu->numPkgs = 0;
-    eiu->prevx = 0;
-    eiu->pkgx = 0;
+    av = _free(av);	ac = 0;
 
 restart:
     /* Allocate sufficient storage for next set of args. */
     if (eiu->pkgx >= eiu->numPkgs) {
 	eiu->numPkgs = eiu->pkgx + eiu->argc;
-#ifdef	DYING
-	if (eiu->pkgURL == NULL)
-	    eiu->pkgURL = xmalloc( (eiu->numPkgs + 1) * sizeof(*eiu->pkgURL));
-	else
-#endif
-	    eiu->pkgURL = xrealloc(eiu->pkgURL, (eiu->numPkgs + 1) * sizeof(*eiu->pkgURL));
-	memset(eiu->pkgURL + eiu->pkgx, 0, ((eiu->argc + 1) * sizeof(*eiu->pkgURL)));
-#ifdef	DYING
-	if (eiu->pkgState == NULL)
-	    eiu->pkgState = xmalloc( (eiu->numPkgs + 1) * sizeof(*eiu->pkgState));
-	else
-#endif
-	    eiu->pkgState = xrealloc(eiu->pkgState, (eiu->numPkgs + 1) * sizeof(*eiu->pkgState));
-	memset(eiu->pkgState + eiu->pkgx, 0, ((eiu->argc + 1) * sizeof(*eiu->pkgState)));
+	eiu->pkgURL = xrealloc(eiu->pkgURL,
+			(eiu->numPkgs + 1) * sizeof(*eiu->pkgURL));
+	memset(eiu->pkgURL + eiu->pkgx, 0,
+			((eiu->argc + 1) * sizeof(*eiu->pkgURL)));
+	eiu->pkgState = xrealloc(eiu->pkgState,
+			(eiu->numPkgs + 1) * sizeof(*eiu->pkgState));
+	memset(eiu->pkgState + eiu->pkgx, 0,
+			((eiu->argc + 1) * sizeof(*eiu->pkgState)));
     }
 
     /* Retrieve next set of args, cache on local storage. */
@@ -335,7 +294,10 @@ restart:
     if (eiu->numFailed) goto exit;
 
     /* Continue processing file arguments, building transaction set. */
-    for (eiu->fnp = eiu->pkgURL+eiu->prevx; *eiu->fnp != NULL; eiu->fnp++, eiu->prevx++) {
+    for (eiu->fnp = eiu->pkgURL+eiu->prevx;
+	 *eiu->fnp != NULL;
+	 eiu->fnp++, eiu->prevx++)
+    {
 	const char * fileName;
 
 	rpmMessage(RPMMESS_DEBUG, "============== %s\n", *eiu->fnp);
@@ -355,8 +317,9 @@ restart:
 	}
 
 	/*@-mustmod@*/	/* LCL: segfault */
-	eiu->rpmrc = rpmReadPackageHeader(eiu->fd, &eiu->h, &eiu->isSource, NULL, NULL);
-	/*@-mustmod@*/
+	eiu->rpmrc = rpmReadPackageHeader(eiu->fd, &eiu->h,
+				&eiu->isSource, NULL, NULL);
+	/*@=mustmod@*/
 	xx = Fclose(eiu->fd);
 	eiu->fd = NULL;
 
@@ -364,15 +327,13 @@ restart:
 	    eiu->numFailed++; *eiu->fnp = NULL;
 	    continue;
 	}
-	if ((eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE) && eiu->isSource) {
+
+	if (eiu->isSource &&
+		(eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE))
+	{
 	    rpmMessage(RPMMESS_DEBUG, "\tadded source package [%d]\n",
 		eiu->numSRPMS);
-#ifdef	DYING
-	    if (eiu->sourceURL == NULL)
-		eiu->sourceURL = xmalloc((eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
-	    else
-#endif
-		eiu->sourceURL = xrealloc(eiu->sourceURL,
+	    eiu->sourceURL = xrealloc(eiu->sourceURL,
 				(eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
 	    eiu->sourceURL[eiu->numSRPMS] = *eiu->fnp;
 	    *eiu->fnp = NULL;
@@ -380,6 +341,7 @@ restart:
 	    eiu->sourceURL[eiu->numSRPMS] = NULL;
 	    continue;
 	}
+
 	if (eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE) {
 	    if (eiu->db == NULL) {
 		int mode = (transFlags & RPMTRANS_FLAG_TEST)
@@ -450,7 +412,8 @@ restart:
 	    rc = rpmtransAddPackage(eiu->ts, eiu->h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
-	    eiu->h = headerFree(eiu->h);	/* XXX reference held by transaction set */
+	    /* XXX reference held by transaction set */
+	    eiu->h = headerFree(eiu->h);
 	    if (eiu->relocations)
 		eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
 
@@ -548,9 +511,8 @@ restart:
     if (eiu->numRPMS && !stopInstall) {
 	rpmProblemSet probs = NULL;
 
-#ifdef FANCY_HASH
 	packagesTotal = eiu->numRPMS + eiu->numSRPMS;
-#endif
+
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 	rc = rpmRunTransactions(eiu->ts, rpmShowProgress,
 			(void *) ((long)notifyFlags),
@@ -849,8 +811,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
     int rc;
     int i;
 
-    ac = 0;
-    av = NULL;
+    av = NULL;	ac = 0;
     rc = rpmGlob(globstr, &ac, &av);
 
     if (rc == 0)
@@ -868,7 +829,9 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	    continue;
 	}
 
+	/*@-mustmod@*/	/* LCL: segfault */
 	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	/*@=mustmod@*/
 	if (rpmrc != RPMRC_OK || isSource) {
 	    (void) Fclose(fd);
 	    continue;
@@ -900,7 +863,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 
     for (i = 0; i < ac; i++)
 	av[i] = _free(av[i]);
-    av = _free(av);
+    av = _free(av);	ac = 0;
 
     return idtx;
 }

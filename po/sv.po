@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-06 10:40-0400\n"
+"POT-Creation-Date: 2001-09-12 22:32-0400\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -489,8 +489,8 @@ msgstr "visa enbart konfigurationsfiler (implicerar -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or "
-"-d)"
+"show all verifiable information for each file (must be used with -l, -c, or -"
+"d)"
 msgstr ""
 "visa all verifierbar information för varje fil (måste användas med -l, -c "
 "eller -d)"
@@ -2432,8 +2432,8 @@ msgstr "bygg endast källpaket från <specfil>"
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
-"bygg till och med %prep (packa upp källkod samt applicera patchar) från "
-"<tar-arkiv>"
+"bygg till och med %prep (packa upp källkod samt applicera patchar) från <tar-"
+"arkiv>"
 
 #: lib/poptBT.c:149 lib/poptBT.c:152 lib/poptBT.c:155 lib/poptBT.c:158
 #: lib/poptBT.c:161 lib/poptBT.c:164 lib/poptBT.c:167
@@ -2953,8 +2953,8 @@ msgstr "paketet har varken filägare eller id-listor\n"
 msgid "can't query %s: %s\n"
 msgstr "kan inte fråga %s: %s\n"
 
-#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:347 lib/rpminstall.c:490
-#: lib/rpminstall.c:865
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:309 lib/rpminstall.c:453
+#: lib/rpminstall.c:826
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
@@ -2968,7 +2968,7 @@ msgstr "fråga av %s misslyckades\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går inte att fråga om\n"
 
-#: lib/query.c:618 lib/rpminstall.c:503
+#: lib/query.c:618 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: läsning av paketlista misslyckades: %s\n"
@@ -3027,7 +3027,7 @@ msgstr "paketpost nummer: %u\n"
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:816 lib/rpminstall.c:653
+#: lib/query.c:816 lib/rpminstall.c:615
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -3115,94 +3115,94 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpminstall.c:162
+#: lib/rpminstall.c:140
 msgid "Preparing..."
 msgstr "Förbereder..."
 
-#: lib/rpminstall.c:164
+#: lib/rpminstall.c:142
 msgid "Preparing packages for installation..."
 msgstr "Förbereder paket för installation ..."
 
-#: lib/rpminstall.c:300
+#: lib/rpminstall.c:259
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hämtar %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:310
+#: lib/rpminstall.c:269
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:314
+#: lib/rpminstall.c:273
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "hoppar över %s - överföring misslyckades - %s\n"
 
-#: lib/rpminstall.c:393
+#: lib/rpminstall.c:355
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/rpminstall.c:416
+#: lib/rpminstall.c:378
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paket %s är inte relokerbart\n"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:427
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fel vid läsning från fil %s\n"
 
-#: lib/rpminstall.c:470
+#: lib/rpminstall.c:433
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s behöver en nyare version av RPM\n"
 
-#: lib/rpminstall.c:482 lib/rpminstall.c:724
+#: lib/rpminstall.c:445 lib/rpminstall.c:686
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
-#: lib/rpminstall.c:518
+#: lib/rpminstall.c:481
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "hittade %d käll- och %d binärpaket\n"
 
-#: lib/rpminstall.c:533
+#: lib/rpminstall.c:496
 msgid "failed dependencies:\n"
 msgstr "ouppfyllda beroenden:\n"
 
-#: lib/rpminstall.c:554
+#: lib/rpminstall.c:516
 msgid "installing binary packages\n"
 msgstr "installerar binärpaket\n"
 
-#: lib/rpminstall.c:575
+#: lib/rpminstall.c:537
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kan inte öppna filen %s: %s\n"
 
-#: lib/rpminstall.c:640
+#: lib/rpminstall.c:602
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kan inte öppna %s/packages.rpm\n"
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:618
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:641
 msgid "removing these packages would break dependencies:\n"
 msgstr "att ta bort dessa paket skulle göra sönder beroenden:\n"
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:670
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:714
+#: lib/rpminstall.c:676
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
@@ -3315,8 +3315,8 @@ msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
-"Förväntad storlek: %12d = "
-"inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%d)\n"
+"Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
+"d)\n"
 
 #: lib/signature.c:139
 #, c-format
@@ -3487,17 +3487,17 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "paketet saknar både gruppnamn och id-listor (detta borde aldrig inträffa)\n"
 
-#: lib/verify.c:429
+#: lib/verify.c:430
 #, c-format
 msgid "missing    %s"
 msgstr "saknas     %s"
 
-#: lib/verify.c:522
+#: lib/verify.c:523
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
-#: lib/verify.c:561
+#: lib/verify.c:562
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrollsumma för oföränderlig huvudregion misslyckades\n"
@@ -3622,8 +3622,8 @@ msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
+"More information is available from http://www.rpm.org or the rpm-list@redhat."
+"com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "frilistan trasig (%u)- var god kör\n"

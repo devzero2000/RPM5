@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-06 10:40-0400\n"
+"POT-Creation-Date: 2001-09-12 22:32-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -3112,8 +3112,8 @@ msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:347 lib/rpminstall.c:490
-#: lib/rpminstall.c:865
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:309 lib/rpminstall.c:453
+#: lib/rpminstall.c:826
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -3127,7 +3127,7 @@ msgstr "%s への問い合わせに失敗しました\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:618 lib/rpminstall.c:503
+#: lib/query.c:618 lib/rpminstall.c:466
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -3187,7 +3187,7 @@ msgstr "パッケージレコード番号 %d\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:816 lib/rpminstall.c:653
+#: lib/query.c:816 lib/rpminstall.c:615
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -3277,95 +3277,95 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpminstall.c:162
+#: lib/rpminstall.c:140
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:164
+#: lib/rpminstall.c:142
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "インストールのためのパッケージがありません"
 
-#: lib/rpminstall.c:300
+#: lib/rpminstall.c:259
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s を取得しています\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:310
+#: lib/rpminstall.c:269
 #, c-format
 msgid " ... as %s\n"
 msgstr "%s として...\n"
 
-#: lib/rpminstall.c:314
+#: lib/rpminstall.c:273
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/rpminstall.c:393
+#: lib/rpminstall.c:355
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/rpminstall.c:416
+#: lib/rpminstall.c:378
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:427
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s からの読み込みエラー "
 
-#: lib/rpminstall.c:470
+#: lib/rpminstall.c:433
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
 
-#: lib/rpminstall.c:482 lib/rpminstall.c:724
+#: lib/rpminstall.c:445 lib/rpminstall.c:686
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
 
-#: lib/rpminstall.c:518
+#: lib/rpminstall.c:481
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:533
+#: lib/rpminstall.c:496
 msgid "failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:554
+#: lib/rpminstall.c:516
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:575
+#: lib/rpminstall.c:537
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/rpminstall.c:640
+#: lib/rpminstall.c:602
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:618
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:641
 msgid "removing these packages would break dependencies:\n"
 msgstr "これらのパッケージを削除すると依存性を破壊します:\n"
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:670
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpminstall.c:714
+#: lib/rpminstall.c:676
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
@@ -3666,17 +3666,17 @@ msgstr ""
 "パッケージはグループ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:429
+#: lib/verify.c:430
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:522
+#: lib/verify.c:523
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: lib/verify.c:561
+#: lib/verify.c:562
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

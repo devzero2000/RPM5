@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-06 10:40-0400\n"
+"POT-Creation-Date: 2001-09-12 22:32-0400\n"
 
 # , c-format
 #: build.c:36
@@ -3235,8 +3235,8 @@ msgstr "no foi passado pacote para instalao"
 msgid "can't query %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:347 lib/rpminstall.c:490
-#: lib/rpminstall.c:865
+#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:309 lib/rpminstall.c:453
+#: lib/rpminstall.c:826
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "Construo falhou.\n"
@@ -3251,7 +3251,7 @@ msgid "old format source packages cannot be queried\n"
 msgstr ""
 
 # , c-format
-#: lib/query.c:618 lib/rpminstall.c:503
+#: lib/query.c:618 lib/rpminstall.c:466
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -3311,7 +3311,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:816 lib/rpminstall.c:653
+#: lib/query.c:816 lib/rpminstall.c:615
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "no foi passado pacote para instalao"
@@ -3404,11 +3404,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpminstall.c:162
+#: lib/rpminstall.c:140
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:164
+#: lib/rpminstall.c:142
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "no foi passado pacote para instalao"
@@ -3421,92 +3421,92 @@ msgstr "no foi passado pacote para instalao"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpminstall.c:300
+#: lib/rpminstall.c:259
 #, fuzzy, c-format
 msgid "Retrieving %s\n"
 msgstr "RPM verso %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:310
+#: lib/rpminstall.c:269
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:314
+#: lib/rpminstall.c:273
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
 # , c-format
-#: lib/rpminstall.c:393
+#: lib/rpminstall.c:355
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:416
+#: lib/rpminstall.c:378
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:427
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:470
+#: lib/rpminstall.c:433
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:482 lib/rpminstall.c:724
+#: lib/rpminstall.c:445 lib/rpminstall.c:686
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpminstall.c:518
+#: lib/rpminstall.c:481
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:533
+#: lib/rpminstall.c:496
 #, fuzzy
 msgid "failed dependencies:\n"
 msgstr "lista dependncias do pacote"
 
-#: lib/rpminstall.c:554
+#: lib/rpminstall.c:516
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "instale pacote"
 
 # , c-format
-#: lib/rpminstall.c:575
+#: lib/rpminstall.c:537
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:640
+#: lib/rpminstall.c:602
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:618
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:641
 #, fuzzy
 msgid "removing these packages would break dependencies:\n"
 msgstr "lista dependncias do pacote"
 
 # , c-format
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:670
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:714
+#: lib/rpminstall.c:676
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3838,17 +3838,17 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:429
+#: lib/verify.c:430
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:522
+#: lib/verify.c:523
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: lib/verify.c:561
+#: lib/verify.c:562
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1.03
+Release: 1.04
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Sep 13 2001 Jeff Johnson <jbj@redhat.com>
+- fix: initialize "verify" transaction stepName with -vv (#53582).
+- fix: ftp remote globs broken (#46892).
+- popt: clarify X consortium license in popt.3 man page.
+
 * Thu Sep  6 2001 Jeff Johnson <jbj@redhat.com>
 - fix: hash page nelem failure to verify.
 
