@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
 
 EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
@@ -13,26 +15,25 @@ INCLUDES = -I. \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	fts.h \
+	argv.h fts.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	ugid.h
 noinst_HEADERS = rpmio_internal.h
 
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
-lib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = digest.c fts.c macro.c \
+usrlibdir = $(libdir)@MARK64@
+usrlib_LTLIBRARIES = librpmio.la
+librpmio_la_SOURCES = \
+	argv.c digest.c fts.c macro.c \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release @VERSION@ @WITH_ZLIB_LIB@ -lrt -lpthread
+librpmio_la_LDFLAGS = -release 4.1 \
+	$(top_builddir)/file/libfmagic.la \
+	@WITH_ZLIB_LIB@ \
+	-lrt -lpthread
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = .created
-
-# XXX Add internal libtool dependence
-install-data-local:
-	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lpopt|" < librpmio.la > .librpmio.la && \
-	mv .librpmio.la librpmio.la
 
 $(top_builddir)/beecrypt/listobjs:
 	${MAKE} -C $(top_builddir)/beecrypt listobjs
@@ -55,9 +56,9 @@ rpmio.lcd: Makefile.am ${librpmio_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS
 sources:
 	@echo $(librpmio_la_SOURCES:%=rpmio/%)
 
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
+.PHONY:	lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
 tdigest_SOURCES = tdigest.c
 tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la

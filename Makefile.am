@@ -2,8 +2,10 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
-	RPM-GPG-KEY RPM-PGP-KEY \
+	RPM-GPG-KEY RPM-PGP-KEY BETA-GPG-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
 	xmlspec/Makefile xmlspec/*.c xmlspec/*.h \
@@ -12,7 +14,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
-SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ @WITH_DB_SUBDIR@ popt beecrypt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
+SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ file @WITH_DB_SUBDIR@ popt beecrypt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \
@@ -114,14 +116,15 @@ splint:
 	    -load popt/popt.lcd \
 		$(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES)
 
-.PHONY:	lclint
-lclint:
-	lclint -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
+.PHONY:	lint
+lint:
+	$(LINT) -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
 		`make -s sources -C build` \
 		`make -s sources -C lib` \
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` \
 		`make -s sources -C beecrypt` \
+		`make -s sources -C file` \
 		`make -s sources -C popt`
 
 CVSTAG = r$(subst .,-,$(VERSION))

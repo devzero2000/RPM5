@@ -108,9 +108,9 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 /** \ingroup header
  * Return name, version, release strings from header.
  * @param h		header
- * @retval np		address of name pointer (or NULL)
- * @retval vp		address of version pointer (or NULL)
- * @retval rp		address of release pointer (or NULL)
+ * @retval *np		name pointer (or NULL)
+ * @retval *vp		version pointer (or NULL)
+ * @retval *rp		release pointer (or NULL)
  * @return		0 always
  */
 int headerNVR(Header h,
@@ -378,7 +378,7 @@ typedef enum rpmTag_e {
     RPMTAG_PAYLOADFORMAT	= 1124,
     RPMTAG_PAYLOADCOMPRESSOR	= 1125,
     RPMTAG_PAYLOADFLAGS		= 1126,
-    RPMTAG_MULTILIBS		= 1127,
+    RPMTAG_INSTALLCOLOR		= 1127, /*!< transaction color when installed */
     RPMTAG_INSTALLTID		= 1128,
     RPMTAG_REMOVETID		= 1129,
 /*@-enummemuse@*/
@@ -393,6 +393,13 @@ typedef enum rpmTag_e {
     RPMTAG_CACHEPKGPATH		= 1137,
     RPMTAG_CACHEPKGSIZE		= 1138,
     RPMTAG_CACHEPKGMTIME	= 1139,
+    RPMTAG_FILECOLORS		= 1140,
+    RPMTAG_FILECLASS		= 1141,
+    RPMTAG_CLASSDICT		= 1142,
+    RPMTAG_FILEDEPENDSX		= 1143,
+    RPMTAG_FILEDEPENDSN		= 1144,
+    RPMTAG_DEPENDSDICT		= 1145,
+    RPMTAG_SOURCEPKGID		= 1146,
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/
@@ -407,7 +414,8 @@ typedef enum rpmfileState_e {
     RPMFILE_STATE_NORMAL 	= 0,
     RPMFILE_STATE_REPLACED 	= 1,
     RPMFILE_STATE_NOTINSTALLED	= 2,
-    RPMFILE_STATE_NETSHARED	= 3
+    RPMFILE_STATE_NETSHARED	= 3,
+    RPMFILE_STATE_WRONGCOLOR	= 4
 } rpmfileState;
 #define	RPMFILE_STATE_MISSING	-1	/* XXX used for unavailable data */
 
@@ -430,7 +438,8 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_LICENSE	= (1 << 7),	/*!< from %%license */
     RPMFILE_README	= (1 << 8),	/*!< from %%readme */
     RPMFILE_EXCLUDE	= (1 << 9),	/*!< from %%exclude */
-    RPMFILE_UNPATCHED	= (1 << 10)	/*!< placeholder (SuSE) */
+    RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
+    RPMFILE_PUBKEY	= (1 << 11)	/*!< from %%pubkey */
 } rpmfileAttrs;
 #define	RPMFILE_MULTILIB_SHIFT		9
 #define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
@@ -478,7 +487,8 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< @todo Implement %triggerprein. */
 /*@=enummemuse@*/
     RPMSENSE_KEYRING	= (1 << 26),
-    RPMSENSE_PATCHES	= (1 << 27)
+    RPMSENSE_PATCHES	= (1 << 27),
+    RPMSENSE_CONFIG	= (1 << 28)
 } rpmsenseFlags;
 
 #define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */
@@ -947,12 +957,11 @@ typedef enum rpmtransFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
-/*@-enummemuse@*/
-    RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
-/*@=enummemuse@*/
+    RPMTRANS_FLAG_ANACONDA	= (1 << 26),
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< from --nosuggest */
-    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29)
+    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */
+    RPMTRANS_FLAG_NOCONFIGS	= (1 << 30)	/*!< from --noconfigs */
 } rpmtransFlags;
 
 #define	_noTransScripts		\

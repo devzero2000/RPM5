@@ -70,31 +70,31 @@ typedef struct FileListRec_s {
 #define	fl_size	fl_st.st_size
 #define	fl_mtime fl_st.st_mtime
 
-/*@only@*/ const char * diskURL;	/* get file from here       */
-/*@only@*/ const char * fileURL;	/* filename in cpio archive */
-/*@observer@*/ const char * uname;
-/*@observer@*/ const char * gname;
+/*@only@*/
+    const char *diskURL;	/* get file from here       */
+/*@only@*/
+    const char *fileURL;	/* filename in cpio archive */
+/*@observer@*/
+    const char *uname;
+/*@observer@*/
+    const char *gname;
     unsigned	flags;
     specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
     unsigned	verifyFlags;
-/*@only@*/ const char *langs;	/* XXX locales separated with | */
+/*@only@*/
+    const char *langs;		/* XXX locales separated with | */
 } * FileListRec;
 
 /**
  */
 typedef struct AttrRec_s {
-    const char * ar_fmodestr;
-    const char * ar_dmodestr;
-    const char * ar_user;
-    const char * ar_group;
+    const char *ar_fmodestr;
+    const char *ar_dmodestr;
+    const char *ar_user;
+    const char *ar_group;
     mode_t	ar_fmode;
     mode_t	ar_dmode;
 } * AttrRec;
-
-/**
- */
-/*@unchecked@*/
-static int multiLib = 0;	/* MULTILIB */
 
 /* list of files */
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -106,8 +106,10 @@ static int check_fileListLen = 0;
  * Package file tree walk data.
  */
 typedef struct FileList_s {
-/*@only@*/ const char * buildRootURL;
-/*@only@*/ const char * prefix;
+/*@only@*/
+    const char * buildRootURL;
+/*@only@*/
+    const char * prefix;
 
     int fileCount;
     int totalFileSize;
@@ -131,14 +133,16 @@ typedef struct FileList_s {
     specdFlags defSpecdFlags;
     int defVerifyFlags;
     int nLangs;
-/*@only@*/ /*@null@*/ const char ** currentLangs;
+/*@only@*/ /*@null@*/
+    const char ** currentLangs;
 
     /* Hard coded limit of MAXDOCDIR docdirs.         */
     /* If you break it you are doing something wrong. */
     const char * docDirs[MAXDOCDIR];
     int docDirCount;
     
-/*@only@*/ FileListRec fileList;
+/*@only@*/
+    FileListRec fileList;
     int fileListRecsAlloced;
     int fileListRecsUsed;
 } * FileList;
@@ -318,7 +322,7 @@ VFA_t verifyAttrs[] = {
 
 /**
  * Parse %verify and %defverify from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -416,7 +420,7 @@ static int parseForVerify(char * buf, FileList fl)
 
 /**
  * Parse %dev from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -518,7 +522,7 @@ exit:
 
 /**
  * Parse %attr and %defattr from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -651,14 +655,13 @@ static int parseForAttr(char * buf, FileList fl)
 
 /**
  * Parse %config from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
 /*@-boundswrite@*/
 static int parseForConfig(char * buf, FileList fl)
-	/*@modifies buf, fl->processingFailed,
-		fl->currentFlags @*/
+	/*@modifies buf, fl->processingFailed, fl->currentFlags @*/
 {
     char *p, *pe, *q;
     const char *name;
@@ -666,8 +669,9 @@ static int parseForConfig(char * buf, FileList fl)
     if ((p = strstr(buf, (name = "%config"))) == NULL)
 	return 0;
 
-    fl->currentFlags = RPMFILE_CONFIG;
+    fl->currentFlags |= RPMFILE_CONFIG;
 
+    /* Erase "%config" token. */
     for (pe = p; (pe-p) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
@@ -685,7 +689,7 @@ static int parseForConfig(char * buf, FileList fl)
 	return RPMERR_BADSPEC;
     }
 
-    /* Localize. Erase parsed string */
+    /* Localize. Erase parsed string. */
     q = alloca((pe-p) + 1);
     strncpy(q, p, pe-p);
     q[pe-p] = '\0';
@@ -727,7 +731,7 @@ static int langCmp(const void * ap, const void * bp)
 
 /**
  * Parse %lang from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -762,7 +766,7 @@ static int parseForLang(char * buf, FileList fl)
 	return RPMERR_BADSPEC;
     }
 
-    /* Localize. Erase parsed string */
+    /* Localize. Erase parsed string. */
     q = alloca((pe-p) + 1);
     strncpy(q, p, pe-p);
     q[pe-p] = '\0';
@@ -836,9 +840,9 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
     const char *s;
 
     if (! initialized) {
-	const char *patt = rpmExpand("%{_langpatt}", NULL);
+	const char *patt = rpmExpand("%{?_langpatt}", NULL);
 	int rc = 0;
-	if (!(patt && *patt != '%'))
+	if (!(patt && *patt != '\0'))
 	    rc = 1;
 	else if (regcomp(&compiledPatt, patt, REG_EXTENDED))
 	    rc = -1;
@@ -868,40 +872,6 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 
 /**
  */
-/*@-boundswrite@*/
-static int parseForRegexMultiLib(const char *fileName)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/
-{
-    static int initialized = 0;
-    static int hasRegex = 0;
-    static regex_t compiledPatt;
-
-    if (! initialized) {
-	const char *patt;
-	int rc = 0;
-
-	initialized = 1;
-	patt = rpmExpand("%{_multilibpatt}", NULL);
-	if (!(patt && *patt != '%'))
-	    rc = 1;
-	else if (regcomp(&compiledPatt, patt, REG_EXTENDED | REG_NOSUB))
-	    rc = -1;
-	patt = _free(patt);
-	if (rc)
-	    return rc;
-	hasRegex = 1;
-    }
-
-    if (! hasRegex || regexec(&compiledPatt, fileName, 0, NULL, 0))
-	return 1;
-
-    return 0;
-}
-/*@=boundswrite@*/
-
-/**
- */
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
 VFA_t virtualFileAttributes[] = {
@@ -911,7 +881,6 @@ VFA_t virtualFileAttributes[] = {
 	{ "%exclude",	RPMFILE_EXCLUDE },
 	{ "%readme",	RPMFILE_README },
 	{ "%license",	RPMFILE_LICENSE },
-	{ "%multilib",	0 },
 
 #if WHY_NOT
 	{ "%spec",	RPMFILE_SPEC },
@@ -929,9 +898,9 @@ VFA_t virtualFileAttributes[] = {
  * Parse simple attributes (e.g. %dir) from file manifest.
  * @param spec
  * @param pkg
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
- * @retval fileName
+ * @retval *fileName	file name
  * @return		0 on success
  */
 /*@-boundswrite@*/
@@ -979,8 +948,6 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    if (!vfa->flag) {
 		if (!strcmp(s, "%dir"))
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
-		else if (!strcmp(s, "%multilib"))
-		    fl->currentFlags |= multiLib;
 	    } else
 		fl->currentFlags |= vfa->flag;
 	    /*@innerbreak@*/ break;
@@ -1139,7 +1106,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
-    uint_32 multiLibMask = 0;
     int apathlen = 0;
     int dpathlen = 0;
     int skipLen = 0;
@@ -1220,11 +1186,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	/* Leave room for both dirname and basename NUL's */
 	dpathlen += (strlen(flp->diskURL) + 2);
-
-	if (flp->flags & RPMFILE_MULTILIB_MASK)
-	    multiLibMask |=
-		(1u << ((flp->flags & RPMFILE_MULTILIB_MASK))
-		      >> RPMFILE_MULTILIB_SHIFT);
 
 	/*
 	 * Make the header, the OLDFILENAMES will get converted to a 
@@ -1343,16 +1304,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 			       &(flp->flags), 1);
 
     }
+
     (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
-
-    /* XXX This should be added always so that packages look alike.
-     * XXX However, there is logic in files.c/depends.c that checks for
-     * XXX existence (rather than value) that will need to change as well.
-     */
-    if (multiLibMask)
-	(void) headerAddEntry(h, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
-		       &multiLibMask, 1);
 
     if (_addDotSlash)
 	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
@@ -1386,9 +1340,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     *d = '\0';
 
     fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
-    /*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
+/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
     fi->dil = (int *)(fi->bnl + fi->fc);
-    /*@=dependenttrans@*/
+/*@=dependenttrans@*/
 
     fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen);
     a = (char *)(fi->apath + fi->fc);
@@ -1421,15 +1375,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
-	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
+/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
-	/*@=dependenttrans@*/
-#ifdef IA64_SUCKS_ROCKS
-	(void) stpcpy(d, flp->diskURL);
-	d += strlen(d);
-#else
+/*@=dependenttrans@*/
 	d = stpcpy(d, flp->diskURL);
-#endif
 
 	/* Make room for the dirName NUL, find start of baseName. */
 	for (b = d; b > fi->dnl[fi->dil[i]] && *b != '/'; b--)
@@ -1443,20 +1392,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@-dependenttrans@*/	/* FIX: xstrdup? nah ... */
 	fi->apath[i] = a;
  	/*@=dependenttrans@*/
-	if (_addDotSlash) {
-#ifdef IA64_SUCKS_ROCKS
-	    (void) stpcpy(a, "./");
-	    a += strlen(a);
-#else
+	if (_addDotSlash)
 	    a = stpcpy(a, "./");
-#endif
-	}
-#ifdef IA64_SUCKS_ROCKS
-	(void) stpcpy(a, (flp->fileURL + skipLen));
-	a += strlen(a);
-#else
 	a = stpcpy(a, (flp->fileURL + skipLen));
-#endif
 	a++;		/* skip apath NUL */
 
 	if (flp->flags & RPMFILE_GHOST) {
@@ -1472,8 +1410,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	if (isSrc)
 	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
-	if (flp->flags & RPMFILE_MULTILIB_MASK)
-	    fi->fmapflags[i] |= CPIO_MULTILIB;
 
     }
     /*@-branchstate@*/
@@ -1629,30 +1565,17 @@ static int addFile(FileList fl, const char * diskURL,
 	fileGname = getGname(fileGid);
     }
 	
-#if 0	/* XXX this looks dumb to me */
-    if (! (fileUname && fileGname)) {
-	rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskName);
-	fl->processingFailed = 1;
-	return RPMERR_BADSPEC;
-    }
-#else
     /* Default user/group to builder's user/group */
     if (fileUname == NULL)
 	fileUname = getUname(getuid());
     if (fileGname == NULL)
 	fileGname = getGname(getgid());
-#endif
     
-#ifdef	DYING	/* XXX duplicates with %exclude, use psm.c output instead. */
-    rpmMessage(RPMMESS_DEBUG, _("File%5d: %07o %s.%s\t %s\n"), fl->fileCount,
-	(unsigned)fileMode, fileUname, fileGname, fileURL);
-#endif
-
     /* S_XXX macro must be consistent with type in find call at check-files script */
     if (check_fileList && S_ISREG(fileMode)) {
-      appendStringBuf(check_fileList, diskURL);
-      appendStringBuf(check_fileList, "\n");
-      check_fileListLen += strlen(diskURL) + 1;
+	appendStringBuf(check_fileList, diskURL);
+	appendStringBuf(check_fileList, "\n");
+	check_fileListLen += strlen(diskURL) + 1;
     }
 
     /* Add to the file list */
@@ -1700,12 +1623,6 @@ static int addFile(FileList fl, const char * diskURL,
 	flp->specdFlags = fl->currentSpecdFlags;
 	flp->verifyFlags = fl->currentVerifyFlags;
 
-	if (multiLib
-	    && !(flp->flags & RPMFILE_MULTILIB_MASK)
-	    && !parseForRegexMultiLib(fileURL))
-	    flp->flags |= multiLib;
-
-
 	/* Hard links need be counted only once. */
 	if (S_ISREG(flp->fl_mode) && flp->fl_nlink > 1) {
 	    FileListRec ilp;
@@ -1742,7 +1659,6 @@ static int addFile(FileList fl, const char * diskURL,
  * @param fileURL
  * @return		0 on success
  */
-/*@-boundswrite@*/
 static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1783,6 +1699,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	int argc = 0;
 	int i;
 
+	/* XXX for %dev marker in file manifest only */
 	if (fl->noGlob) {
 	    rpmError(RPMERR_BADSPEC, _("Glob not permitted: %s\n"),
 			diskURL);
@@ -1795,13 +1712,16 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
+/*@-boundswrite@*/
 		argv[i] = _free(argv[i]);
+/*@=boundswrite@*/
 	    }
 	    argv = _free(argv);
 	} else {
 	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s\n"),
 			diskURL);
 	    rc = 1;
+	    goto exit;
 	}
 	/*@=branchstate@*/
     } else {
@@ -1810,11 +1730,12 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 
 exit:
     diskURL = _free(diskURL);
-    if (rc)
+    if (rc) {
 	fl->processingFailed = 1;
+	rc = RPMERR_BADSPEC;
+    }
     return rc;
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -1836,12 +1757,6 @@ static int processPackageFiles(Spec spec, Package pkg,
     AttrRec specialDocAttrRec = &arbuf;
     char *specialDoc = NULL;
 
-#ifdef MULTILIB
-    multiLib = rpmExpandNumeric("%{_multilibno}");
-    if (multiLib)
-	multiLib = RPMFILE_MULTILIB(multiLib);
-#endif /* MULTILIB */
-    
     nullAttrRec(specialDocAttrRec);
     pkg->cpioList = NULL;
 
@@ -2002,9 +1917,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	} else {
-	    /*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
+/*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
 	    (void) processBinaryFile(pkg, &fl, fileName);
-	    /*@=nullstate@*/
+/*@=nullstate@*/
 	}
 	/*@=branchstate@*/
     }
@@ -2497,7 +2412,7 @@ DepMsg_t depMsgs[] = {
 /**
  */
 /*@-bounds@*/
-static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
+static int generateDepends(Spec spec, Package pkg, rpmfi cpioList)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies cpioList, rpmGlobalMacroContext,
@@ -2524,12 +2439,6 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
     
     writeBuf = newStringBuf();
     for (i = 0, writeBytes = 0; i < fi->fc; i++) {
-
-	if (fi->fmapflags && multiLib == 2) {
-	    if (!(fi->fmapflags[i] & CPIO_MULTILIB))
-		continue;
-	    fi->fmapflags[i] &= ~CPIO_MULTILIB;
-	}
 
 	appendStringBuf(writeBuf, fi->dnl[fi->dil[i]]);
 	writeBytes += strlen(fi->dnl[fi->dil[i]]);
@@ -2626,10 +2535,6 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 
 	/* Parse dependencies into header */
 	tagflags &= ~RPMSENSE_MULTILIB;
-	if (multiLib > 1)
-	    tagflags |=  RPMSENSE_MULTILIB;
-	else
-	    tagflags &= ~RPMSENSE_MULTILIB;
 	rc = parseRCPOT(spec, pkg, getStringBuf(readBuf), tag, 0, tagflags);
 	readBuf = freeStringBuf(readBuf);
 
@@ -2664,9 +2569,6 @@ static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
 	    bingo = 1;
 	}
 	rpmMessage(RPMMESS_NORMAL, " %s", *names);
-
-	if (hasFlags && isDependsMULTILIB(*flags))
-	    rpmMessage(RPMMESS_NORMAL, " (multilib)");
 
 	if (hasVersions && !(*versions != NULL && **versions != '\0'))
 	    continue;
@@ -2825,22 +2727,14 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;
 
-    /* XXX This should be added always so that packages look alike.
-     * XXX However, there is logic in files.c/depends.c that checks for
-     * XXX existence (rather than value) that will need to change as well.
-     */
-	if (headerIsEntry(pkg->header, RPMTAG_MULTILIBS)) {
-	    (void) generateDepends(spec, pkg, pkg->cpioList, 1);
-	    (void) generateDepends(spec, pkg, pkg->cpioList, 2);
-	} else
-	    (void) generateDepends(spec, pkg, pkg->cpioList, 0);
+	(void) generateDepends(spec, pkg, pkg->cpioList);
 	/*@-noeffect@*/
 	printDeps(pkg->header);
 	/*@=noeffect@*/
     }
 
     /* Now we have in fileList list of files from all packages.
-     * We pass it to a script which do the work of finding missing
+     * We pass it to a script which does the work of finding missing
      * and duplicated files.
      */
     

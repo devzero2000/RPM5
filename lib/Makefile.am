@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
@@ -19,16 +21,11 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h
 
-mylibpaths = \
-	-L$(top_builddir)/lib \
-	-L$(top_builddir)/rpmdb \
-	-L$(top_builddir)/rpmio \
-	-L$(top_builddir)/popt
-
-mylibs = -lrpm -lrpmdb -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
+mylibs = librpm.la
 LIBS =
 
-lib_LTLIBRARIES = librpm.la
+usrlibdir = $(libdir)@MARK64@
+usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	manifest.c misc.c package.c \
@@ -37,13 +34,10 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c
-librpm_la_LDFLAGS = -release @VERSION@
-
-# XXX Add internal libtool dependence
-install-data-local:
-	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lrpmdb-@VERSION@ -lrpmio-@VERSION@ -lpopt|" < librpm.la > .librpm.la && \
-	mv .librpm.la librpm.la
+librpm_la_LDFLAGS = -release 4.1 \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
@@ -83,18 +77,18 @@ rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 sources:
 	@echo $(librpm_la_SOURCES:%=lib/%)
 
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
+.PHONY:	lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
 
 th: th.c librpm.la
-	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
 trb: trb.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trb.o $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
 tplatform: tplatform.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ tplatform.o $(mylibpaths) $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
 trhn: trhn.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trhn.o $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)

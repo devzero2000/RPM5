@@ -2,7 +2,6 @@
 %define	with_python_version	@WITH_PYTHON_VERSION@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
-%define with_internal_db	@WITH_INTERNAL_DB@%{nil}
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -11,6 +10,10 @@
 %{?!_lib: %define _lib lib}
 %{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
+%define __bindir	%{__prefix}/bin
+%define __includedir	%{__prefix}/include
+%define __libdir	%{__prefix}/%{_lib}
+%define __mandir	%{__prefix}%{__share}/man
 
 Summary: The RPM package management system.
 Name: rpm
@@ -25,19 +28,9 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils mktemp shadow-utils
 %endif
-Requires: popt = 1.7
+Requires: popt = 1.7.1
 Requires: libelf >= 0.8.2
 Obsoletes: rpm-perl < %{version}
-
-%if !%{with_internal_db}
-BuildRequires: db3-devel
-
-# XXX glibc-2.1.92 has incompatible locale changes that affect statically
-# XXX linked binaries like /bin/rpm.
-%ifnarch ia64
-Requires: glibc >= 2.1.92
-%endif
-%endif
 
 BuildRequires: zlib-devel
 # XXX Red Hat 5.2 has not bzip2 or python
@@ -102,7 +95,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.7
+Version: 1.7.1
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -119,6 +112,9 @@ shell-like rules.
 
 %build
 
+# XXX rpm needs functioning nptl for configure tests
+unset LD_ASSUME_KERNEL
+
 %ifos linux
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man' --with-python=%{with_python_version} --without-javaglue
 %else
@@ -128,6 +124,9 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
 make
 
 %install
+# XXX rpm needs functioning nptl for configure tests
+unset LD_ASSUME_KERNEL
+
 rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR="$RPM_BUILD_ROOT" install
@@ -146,9 +145,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 mkdir -p $RPM_BUILD_ROOT/var/spool/repackage
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
 for dbi in \
-	Basenames Conflictname Dirnames Group Installtid Name Providename \
-	Provideversion Removetid Requirename Requireversion Triggername \
-	Sigmd5 Sha1header Filemd5s Packages \
+	Basenames Conflictname Dirnames Group Installtid Name Packages \
+	Providename Provideversion Requirename Requireversion Triggername \
+	Filemd5s Pubkeys Sha1header Sigmd5 \
 	__db.001 __db.002 __db.003 __db.004 __db.005 __db.006 __db.007 \
 	__db.008 __db.009
 do
@@ -163,12 +162,12 @@ gzip -9n apidocs/man/man*/* || :
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
-  rm -rf .%{__prefix}/include/beecrypt
-  rm -f .%{__prefix}/%{_lib}/libbeecrypt.{a,la,so.2.2.0}
-  rm -rf .%{__prefix}/include/libelf
-  rm -f .%{__prefix}/%{_lib}/libelf.{a,la}
+  rm -rf .%{__includedir}/beecrypt
+  rm -f .%{__libdir}/libbeecrypt.{a,la,so.2.2.0}
+  rm -rf .%{__includedir}/libelf
+  rm -f .%{__libdir}/libelf.{a,la}
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
-  rm -rf .%{__prefix}%{__share}/man/{fr,ko}
+  rm -rf .%{__mandir}/{fr,ko}
 }
 
 %clean
@@ -207,7 +206,6 @@ if [ $1 = 0 ]; then
 fi
 exit 0
 
-
 %post devel -p /sbin/ldconfig
 %postun devel -p /sbin/ldconfig
 
@@ -224,7 +222,7 @@ exit 0
 
 %files
 %defattr(-,root,root)
-%doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
+%doc RPM-PGP-KEY RPM-GPG-KEY BETA-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
 
 %ifos linux
@@ -236,38 +234,22 @@ exit 0
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
 
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
-%rpmdbattr	/var/lib/rpm/Basenames
-%rpmdbattr	/var/lib/rpm/Conflictname
-%rpmdbattr	/var/lib/rpm/__db.0*
-%rpmdbattr	/var/lib/rpm/Dirnames
-%rpmdbattr	/var/lib/rpm/Filemd5s
-%rpmdbattr	/var/lib/rpm/Group
-%rpmdbattr	/var/lib/rpm/Installtid
-%rpmdbattr	/var/lib/rpm/Name
-%rpmdbattr	/var/lib/rpm/Packages
-%rpmdbattr	/var/lib/rpm/Providename
-%rpmdbattr	/var/lib/rpm/Provideversion
-%rpmdbattr	/var/lib/rpm/Removetid
-%rpmdbattr	/var/lib/rpm/Requirename
-%rpmdbattr	/var/lib/rpm/Requireversion
-%rpmdbattr	/var/lib/rpm/Sigmd5
-%rpmdbattr	/var/lib/rpm/Sha1header
-%rpmdbattr	/var/lib/rpm/Triggername
 
+%rpmdbattr	/var/lib/rpm/*
 %endif
 
-%rpmattr	%{__prefix}/bin/rpm2cpio
-%rpmattr	%{__prefix}/bin/gendiff
-%rpmattr	%{__prefix}/bin/rpmdb
-#%rpmattr	%{__prefix}/bin/rpm[eiu]
-%rpmattr	%{__prefix}/bin/rpmsign
-%rpmattr	%{__prefix}/bin/rpmquery
-%rpmattr	%{__prefix}/bin/rpmverify
+%rpmattr	%{__bindir}/rpm2cpio
+%rpmattr	%{__bindir}/gendiff
+%rpmattr	%{__bindir}/rpmdb
+#%rpmattr	%{__bindir}/rpm[eiu]
+%rpmattr	%{__bindir}/rpmsign
+%rpmattr	%{__bindir}/rpmquery
+%rpmattr	%{__bindir}/rpmverify
 
-%{__prefix}/%{_lib}/librpm-@VERSION@.so
-%{__prefix}/%{_lib}/librpmdb-@VERSION@.so
-%{__prefix}/%{_lib}/librpmio-@VERSION@.so
-%{__prefix}/%{_lib}/librpmbuild-@VERSION@.so
+%{__libdir}/librpm-@VERSION@.so
+%{__libdir}/librpmdb-@VERSION@.so
+%{__libdir}/librpmio-@VERSION@.so
+%{__libdir}/librpmbuild-@VERSION@.so
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
 %rpmattr	%{__prefix}/lib/rpm/config.guess
@@ -295,7 +277,7 @@ exit 0
 %ifarch ia64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/ia64*
 %endif
-%ifarch powerpc ppc ppciseries ppcpseries ppcmac
+%ifarch powerpc ppc ppciseries ppcpseries ppcmac ppc64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/ppc*
 %endif
 %ifarch s390 s390x
@@ -333,13 +315,13 @@ exit 0
 %lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/rpm.mo
 %lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
 
-%{__prefix}%{__share}/man/man1/gendiff.1*
-%{__prefix}%{__share}/man/man8/rpm.8*
-%{__prefix}%{__share}/man/man8/rpm2cpio.8*
-%lang(ja)	%{__prefix}%{__share}/man/ja/man[18]/*.[18]*
-%lang(pl)	%{__prefix}%{__share}/man/pl/man[18]/*.[18]*
-%lang(ru)	%{__prefix}%{__share}/man/ru/man[18]/*.[18]*
-%lang(sk)	%{__prefix}%{__share}/man/sk/man[18]/*.[18]*
+%{__mandir}/man1/gendiff.1*
+%{__mandir}/man8/rpm.8*
+%{__mandir}/man8/rpm2cpio.8*
+%lang(ja)	%{__mandir}/ja/man[18]/*.[18]*
+%lang(pl)	%{__mandir}/pl/man[18]/*.[18]*
+%lang(ru)	%{__mandir}/ru/man[18]/*.[18]*
+%lang(sk)	%{__mandir}/sk/man[18]/*.[18]*
 
 %files build
 %defattr(-,root,root)
@@ -350,7 +332,7 @@ exit 0
 %dir %{__prefix}/src/@RPMCANONVENDOR@/SRPMS
 %dir %{__prefix}/src/@RPMCANONVENDOR@/RPMS
 %{__prefix}/src/@RPMCANONVENDOR@/RPMS/*
-%rpmattr	%{__prefix}/bin/rpmbuild
+%rpmattr	%{__bindir}/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-files
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs
@@ -368,8 +350,13 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/getpo.sh
 %rpmattr	%{__prefix}/lib/rpm/http.req
 %rpmattr	%{__prefix}/lib/rpm/javadeps
+%rpmattr	%{__prefix}/lib/rpm/magic
+%rpmattr	%{__prefix}/lib/rpm/magic.mgc
+%rpmattr	%{__prefix}/lib/rpm/magic.mime
+%rpmattr	%{__prefix}/lib/rpm/magic.mime.mgc
 %rpmattr	%{__prefix}/lib/rpm/magic.prov
 %rpmattr	%{__prefix}/lib/rpm/magic.req
+%rpmattr	%{__prefix}/lib/rpm/perldeps.pl
 %rpmattr	%{__prefix}/lib/rpm/perl.prov
 %rpmattr	%{__prefix}/lib/rpm/perl.req
 
@@ -381,13 +368,13 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
-%{__prefix}%{__share}/man/man8/rpmbuild.8*
+%{__mandir}/man8/rpmbuild.8*
 
 %if %{with_python_subpackage}
 %files python
 %defattr(-,root,root)
-%{__prefix}/lib/python%{with_python_version}/site-packages/rpmmodule.so
-%{__prefix}/lib/python%{with_python_version}/site-packages/rpmdb
+%{__libdir}/python%{with_python_version}/site-packages/rpmmodule.so
+%{__libdir}/python%{with_python_version}/site-packages/rpmdb
 %endif
 
 %files devel
@@ -395,28 +382,36 @@ exit 0
 %if %{with_apidocs}
 %doc @WITH_APIDOCS_TARGET@
 %endif
-%{__prefix}/include/rpm
-%{__prefix}/%{_lib}/librpm.a
-%{__prefix}/%{_lib}/librpm.la
-%{__prefix}/%{_lib}/librpm.so
-%{__prefix}/%{_lib}/librpmdb.a
-%{__prefix}/%{_lib}/librpmdb.la
-%{__prefix}/%{_lib}/librpmdb.so
-%{__prefix}/%{_lib}/librpmio.a
-%{__prefix}/%{_lib}/librpmio.la
-%{__prefix}/%{_lib}/librpmio.so
-%{__prefix}/%{_lib}/librpmbuild.a
-%{__prefix}/%{_lib}/librpmbuild.la
-%{__prefix}/%{_lib}/librpmbuild.so
-%{__prefix}%{__share}/man/man8/rpmcache.8*
-%{__prefix}%{__share}/man/man8/rpmgraph.8*
+%{__includedir}/rpm
+%{__libdir}/librpm.a
+%{__libdir}/librpm.la
+%{__libdir}/librpm.so
+%{__libdir}/librpmdb.a
+%{__libdir}/librpmdb.la
+%{__libdir}/librpmdb.so
+%{__libdir}/librpmio.a
+%{__libdir}/librpmio.la
+%{__libdir}/librpmio.so
+%{__libdir}/librpmbuild.a
+%{__libdir}/librpmbuild.la
+%{__libdir}/librpmbuild.so
+%{__mandir}/man8/rpmcache.8*
+%{__mandir}/man8/rpmgraph.8*
 %rpmattr	%{__prefix}/lib/rpm/rpmcache
-%rpmattr	%{__prefix}/bin/rpmgraph
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_deadlock
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_dump
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_load
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_loadcvt
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_svc
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_stat
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_verify
+%rpmattr	%{__prefix}/lib/rpm/rpmfile
+%rpmattr	%{__bindir}/rpmgraph
 
 %files -n popt
 %defattr(-,root,root)
-%{__prefix}/%{_lib}/libpopt.so.*
-%{__prefix}%{__share}/man/man3/popt.3*
+%{__libdir}/libpopt.so.*
+%{__mandir}/man3/popt.3*
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/popt.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/popt.mo
 %lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/popt.mo
@@ -447,11 +442,11 @@ exit 0
 %lang(zh)	%{__prefix}/*/locale/zh/LC_MESSAGES/popt.mo
 %lang(zh_CN)	%{__prefix}/*/locale/zh_CN.GB2312/LC_MESSAGES/popt.mo
 
-# XXX These may end up in popt-devel but it hardly seems worth the effort now.
-%{__prefix}/%{_lib}/libpopt.a
-%{__prefix}/%{_lib}/libpopt.la
-%{__prefix}/%{_lib}/libpopt.so
-%{__prefix}/include/popt.h
+# XXX These may end up in popt-devel but it hardly seems worth the effort.
+%{__libdir}/libpopt.a
+%{__libdir}/libpopt.la
+%{__libdir}/libpopt.so
+%{__includedir}/popt.h
 
 %changelog
 * Wed Nov  6 2002 Jeff Johnson <jbj@redhat.com> 4.1-11

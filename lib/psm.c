@@ -40,12 +40,7 @@
 /*@unchecked@*/
 int _psm_debug = _PSM_DEBUG;
 
-/*@access Header @*/		/* compared with NULL */
-/*@access rpmdbMatchIterator @*//* compared with NULL */
-/*@access FD_t @*/		/* compared with NULL */
-/*@access rpmdb @*/		/* compared with NULL */
-
-/*@access FSM_t @*/		/* compared with NULL */
+/*@access FD_t @*/		/* XXX void ptr args */
 /*@access rpmpsm @*/
 
 /*@access rpmfi @*/
@@ -155,193 +150,6 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
 }
 
 /**
- * Copy file data from h to newH.
- * @param fi		transaction element file info
- * @param h		header from
- * @param newH		header to
- * @return		0 on success
- */
-/*@-boundswrite@*/
-static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
-	/*@modifies h @*/
-{
-    HGE_t hge = (HGE_t)fi->hge;
-    HME_t hme = (HME_t)fi->hme;
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    fileAction * actions = fi->actions;
-    int i, j, k, fc, xx;
-    rpmTagType type = 0;
-    int_32 count = 0;
-    int_32 dirNamesCount, dirCount;
-    void * data, * newdata;
-    int_32 * dirIndexes, * newDirIndexes;
-    uint_32 * fileSizes, fileSize;
-    const char ** dirNames;
-    const char ** newDirNames;
-    static rpmTag mergeTags[] = {
-	RPMTAG_FILESIZES,
-	RPMTAG_FILESTATES,
-	RPMTAG_FILEMODES,
-	RPMTAG_FILERDEVS,
-	RPMTAG_FILEMTIMES,
-	RPMTAG_FILEMD5S,
-	RPMTAG_FILELINKTOS,
-	RPMTAG_FILEFLAGS,
-	RPMTAG_FILEUSERNAME,
-	RPMTAG_FILEGROUPNAME,
-	RPMTAG_FILEVERIFYFLAGS,
-	RPMTAG_FILEDEVICES,
-	RPMTAG_FILEINODES,
-	RPMTAG_FILELANGS,
-	RPMTAG_BASENAMES,
-	0,
-    };
-    static rpmTag requireTags[] = {
-	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
-	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
-	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS
-    };
-
-    xx = hge(h, RPMTAG_SIZE, NULL, (void **) &fileSizes, NULL);
-    fileSize = *fileSizes;
-    xx = hge(newH, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, &count);
-    for (i = 0, fc = 0; i < count; i++)
-	if (actions[i] != FA_SKIPMULTILIB) {
-	    fc++;
-	    fileSize += fileSizes[i];
-	}
-    xx = hme(h, RPMTAG_SIZE, RPM_INT32_TYPE, &fileSize, 1);
-
-    /*@-sizeoftype@*/
-    for (i = 0; mergeTags[i]; i++) {
-        if (!hge(newH, mergeTags[i], &type, (void **) &data, &count))
-	    continue;
-	switch (type) {
-	case RPM_CHAR_TYPE:
-	case RPM_INT8_TYPE:
-	    newdata = xcalloc(fc, sizeof(int_8));
-	    for (j = 0, k = 0; j < count; j++)
-		if (actions[j] != FA_SKIPMULTILIB)
-			((int_8 *) newdata)[k++] = ((int_8 *) data)[j];
-	    xx = headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
-	    free (newdata);
-	    /*@switchbreak@*/ break;
-	case RPM_INT16_TYPE:
-	    newdata = xcalloc(fc, sizeof(int_16));
-	    for (j = 0, k = 0; j < count; j++)
-		if (actions[j] != FA_SKIPMULTILIB)
-		    ((int_16 *) newdata)[k++] = ((int_16 *) data)[j];
-	    xx = headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
-	    free (newdata);
-	    /*@switchbreak@*/ break;
-	case RPM_INT32_TYPE:
-	    newdata = xcalloc(fc, sizeof(int_32));
-	    for (j = 0, k = 0; j < count; j++)
-		if (actions[j] != FA_SKIPMULTILIB)
-		    ((int_32 *) newdata)[k++] = ((int_32 *) data)[j];
-	    xx = headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
-	    free (newdata);
-	    /*@switchbreak@*/ break;
-	case RPM_STRING_ARRAY_TYPE:
-	    newdata = xcalloc(fc, sizeof(char *));
-	    for (j = 0, k = 0; j < count; j++)
-		if (actions[j] != FA_SKIPMULTILIB)
-		    ((char **) newdata)[k++] = ((char **) data)[j];
-	    xx = headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
-	    free (newdata);
-	    /*@switchbreak@*/ break;
-	default:
-	    rpmError(RPMERR_DATATYPE, _("Data type %d not supported\n"),
-			(int) type);
-	    return RPMRC_FAIL;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
-	data = hfd(data, type);
-    }
-    /*@=sizeoftype@*/
-    xx = hge(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes, &count);
-    xx = hge(newH, RPMTAG_DIRNAMES, NULL, (void **) &newDirNames, NULL);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &data, &dirNamesCount);
-
-    dirNames = xcalloc(dirNamesCount + fc, sizeof(*dirNames));
-    for (i = 0; i < dirNamesCount; i++)
-	dirNames[i] = ((char **) data)[i];
-    dirCount = dirNamesCount;
-    newdata = xcalloc(fc, sizeof(*newDirIndexes));
-    for (i = 0, k = 0; i < count; i++) {
-	if (actions[i] == FA_SKIPMULTILIB)
-	    continue;
-	for (j = 0; j < dirCount; j++)
-	    if (!strcmp(dirNames[j], newDirNames[newDirIndexes[i]]))
-		/*@innerbreak@*/ break;
-	if (j == dirCount)
-	    dirNames[dirCount++] = newDirNames[newDirIndexes[i]];
-	((int_32 *) newdata)[k++] = j;
-    }
-    xx = headerAddOrAppendEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, newdata, fc);
-    if (dirCount > dirNamesCount)
-	xx = headerAddOrAppendEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
-			       dirNames + dirNamesCount,
-			       dirCount - dirNamesCount);
-    data = hfd(data, -1);
-    newDirNames = hfd(newDirNames, -1);
-    free (newdata);
-    free (dirNames);
-
-    for (i = 0; i < 9; i += 3) {
-	const char **Names, **EVR, **newNames, **newEVR;
-	rpmTagType nnt, nvt, rnt;
-	uint_32 *Flags, *newFlags;
-	int Count = 0, newCount = 0;
-
-	if (!hge(newH, requireTags[i], &nnt, (void **) &newNames, &newCount))
-	    continue;
-
-	xx = hge(newH, requireTags[i+1], &nvt, (void **) &newEVR, NULL);
-	xx = hge(newH, requireTags[i+2], NULL, (void **) &newFlags, NULL);
-	if (hge(h, requireTags[i], &rnt, (void **) &Names, &Count))
-	{
-	    xx = hge(h, requireTags[i+1], NULL, (void **) &EVR, NULL);
-	    xx = hge(h, requireTags[i+2], NULL, (void **) &Flags, NULL);
-	    for (j = 0; j < newCount; j++)
-		for (k = 0; k < Count; k++)
-		    if (!strcmp (newNames[j], Names[k])
-			&& !strcmp (newEVR[j], EVR[k])
-			&& (newFlags[j] & RPMSENSE_SENSEMASK) ==
-			   (Flags[k] & RPMSENSE_SENSEMASK))
-		    {
-			newNames[j] = NULL;
-			/*@innerbreak@*/ break;
-		    }
-	}
-	for (j = 0, k = 0; j < newCount; j++) {
-	    if (!newNames[j] || !isDependsMULTILIB(newFlags[j]))
-		/*@innercontinue@*/ continue;
-	    if (j != k) {
-		newNames[k] = newNames[j];
-		newEVR[k] = newEVR[j];
-		newFlags[k] = newFlags[j];
-	    }
-	    k++;
-	}
-	if (k) {
-	    xx = headerAddOrAppendEntry(h, requireTags[i],
-				       RPM_STRING_ARRAY_TYPE, newNames, k);
-	    xx = headerAddOrAppendEntry(h, requireTags[i+1],
-				       RPM_STRING_ARRAY_TYPE, newEVR, k);
-	    xx = headerAddOrAppendEntry(h, requireTags[i+2], RPM_INT32_TYPE,
-				       newFlags, k);
-	}
-	newNames = hfd(newNames, nnt);
-	newEVR = hfd(newEVR, nvt);
-	Names = hfd(Names, rnt);
-    }
-    return RPMRC_OK;
-}
-/*@=boundswrite@*/
-
-/**
  * Mark files in database shared with this package as "replaced".
  * @param psm		package state machine data
  * @return		0 always
@@ -439,6 +247,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     rpmRC rc;
     int i;
 
+    memset(psm, 0, sizeof(*psm));
+    psm->ts = rpmtsLink(ts, "InstallSourcePackage");
+
     rc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
     switch (rc) {
     case RPMRC_NOTTRUSTED:
@@ -462,7 +273,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
+    (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     h = headerFree(h);
@@ -484,10 +295,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
 /*@i@*/ (void) rpmInstallLoadMacros(fi, fi->h);
 
-    memset(psm, 0, sizeof(*psm));
+    psm->fi = rpmfiLink(fi, NULL);
     /*@-assignexpose -usereleased @*/
-    psm->ts = rpmtsLink(ts, "InstallSourcePackage");
-    psm->fi = fi;
     psm->te = fi->te;
     /*@=assignexpose =usereleased @*/
 
@@ -561,9 +370,12 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 /*@i@*/	fi->dnl = hfd(fi->dnl, -1);
 
 	fi->dc = 2;
-	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl) + fi->fc * sizeof(*fi->dil) +
-			speclen + sourcelen);
+	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl)
+			+ fi->fc * sizeof(*fi->dil)
+			+ speclen + sourcelen);
+	/*@-dependenttrans@*/
 	fi->dil = (int *)(fi->dnl + fi->dc);
+	/*@=dependenttrans@*/
 	memset(fi->dil, 0, fi->fc * sizeof(*fi->dil));
 	fi->dil[i] = 1;
 	/*@-dependenttrans@*/
@@ -600,21 +412,21 @@ exit:
     _specdir = _free(_specdir);
     _sourcedir = _free(_sourcedir);
 
-    if (h) h = headerFree(h);
+    psm->fi = rpmfiFree(psm->fi);
+    psm->te = NULL;
+
+    if (h != NULL) h = headerFree(h);
 
     /*@-branchstate@*/
-    if (fi) {
+    if (fi != NULL) {
 	fi->te->h = headerFree(fi->te->h);
-	if (fi->te->fd)
+	if (fi->te->fd != NULL)
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
 	fi->te = NULL;
 	fi = rpmfiFree(fi);
     }
     /*@=branchstate@*/
-
-    psm->fi = NULL;
-    psm->te = NULL;
 
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
@@ -672,11 +484,11 @@ static void handler(int signum)
 static struct sigtbl_s {
     int signum;
     int active;
-    struct sigaction act;
+    void (*handler) (int signum);
     struct sigaction oact;
 } satbl[] = {
-    { SIGCHLD,	0, { {handler} } },
-    { -1,	0, { {NULL}    } },
+    { SIGCHLD,	0, handler },
+    { -1,	0, NULL },
 };
 /*@=fullinitblock@*/
 
@@ -739,6 +551,7 @@ static int enableSignal(int signum)
 {
     sigset_t newMask, oldMask;
     struct sigtbl_s * tbl;
+    struct sigaction act;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
@@ -751,7 +564,9 @@ fprintf(stderr, "    Enable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms
 /*@=modfilesys@*/
 	if (tbl->active++ <= 0) {
 	    (void) sigdelset(&caught, tbl->signum);
-	    (void) sigaction(tbl->signum, &tbl->act, &tbl->oact);
+	    memset(&act, 0, sizeof(act));
+	    act.sa_handler = tbl->handler;
+	    (void) sigaction(tbl->signum, &act, &tbl->oact);
 	}
 	break;
     }
@@ -856,11 +671,8 @@ static int psmWaitUnregister(rpmpsm psm, pid_t child)
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
     
     /*@-infloops@*/
-    while (psm->reaped != psm->child) {
-	(void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
-	sleep(1);	/* XXX sleep guarantees loop traversal. */
-	(void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    }
+    while (psm->reaped != psm->child)
+	(void) sigsuspend(&oldMask);
     /*@=infloops@*/
 
 /*@-modfilesys@*/
@@ -987,6 +799,11 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
+
+    /* XXX bash must have functional libtermcap.so.2 */
+    if (!strcmp(n, "libtermcap"))
+	ldconfig_done = 0;
+
     /*
      * If a successor node, and ldconfig was just run, don't bother.
      */
@@ -1589,7 +1406,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
-    HME_t hme = fi->hme;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     rpmRC rc = psm->rc;
     int saveerrno;
@@ -1629,12 +1445,9 @@ assert(psm->mi == NULL);
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
 			rpmteR(psm->te));
 
-	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
+	    while ((psm->oh = rpmdbNextIterator(psm->mi)) != NULL) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
-		if (rpmtsFlags(ts) & RPMTRANS_FLAG_MULTILIB)
-		    psm->oh = headerCopy(psm->oh);
-		else
-		    psm->oh = NULL;
+		psm->oh = NULL;
 		/*@loopbreak@*/ break;
 	    }
 	    psm->mi = rpmdbFreeIterator(psm->mi);
@@ -1844,7 +1657,7 @@ psm->te->h = headerLink(fi->h);
 	    }
 
 	    /* Add remove transaction id to header. */
-	    if (psm->oh)
+	    if (psm->oh != NULL)
 	    {	int_32 tid = rpmtsGetTid(ts);
 		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
 			RPM_INT32_TYPE, &tid, 1);
@@ -2030,24 +1843,6 @@ psm->te->h = headerLink(fi->h);
 	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
 
-	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_MULTILIB) {
-		uint_32 multiLib, * newMultiLib, * p;
-
-		if (hge(fi->h, RPMTAG_MULTILIBS, NULL,
-				(void **) &newMultiLib, NULL) &&
-		    hge(psm->oh, RPMTAG_MULTILIBS, NULL,
-				(void **) &p, NULL))
-		{
-		    multiLib = *p;
-		    multiLib |= *newMultiLib;
-		    xx = hme(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
-				      &multiLib, 1);
-		}
-		rc = mergeFiles(fi, psm->oh, fi->h);
-		if (rc) break;
-	    }
-
-
 	    /*
 	     * If this package has already been installed, remove it from
 	     * the database before adding the new one.
@@ -2116,7 +1911,7 @@ psm->te->h = headerLink(fi->h);
 	/* Restore root directory if changed. */
 	xx = rpmpsmStage(psm, PSM_CHROOT_OUT);
 
-	if (psm->fd) {
+	if (psm->fd != NULL) {
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    xx = Fclose(psm->fd);
 	    psm->fd = NULL;
@@ -2150,13 +1945,15 @@ psm->te->h = headerLink(fi->h);
 	    /*@=nullstate@*/
 	}
 
+/*@-branchstate@*/
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
-if (psm->te)
-if (psm->te->h)
+if (psm->te != NULL)
+if (psm->te->h != NULL)
 psm->te->h = headerFree(psm->te->h);
-	    if (fi->h)
+	    if (fi->h != NULL)
 		fi->h = headerFree(fi->h);
  	}
+/*@=branchstate@*/
 	psm->oh = headerFree(psm->oh);
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
@@ -2279,11 +2076,11 @@ assert(psm->mi == NULL);
 				&fi->record, sizeof(fi->record));
 
 	fi->h = rpmdbNextIterator(psm->mi);
-	if (fi->h)
+	if (fi->h != NULL)
 	    fi->h = headerLink(fi->h);
 
 	psm->mi = rpmdbFreeIterator(psm->mi);
-	rc = (fi->h ? RPMRC_OK : RPMRC_FAIL);
+	rc = (fi->h != NULL ? RPMRC_OK : RPMRC_FAIL);
 	break;
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;

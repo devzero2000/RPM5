@@ -124,6 +124,18 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
     return ocb;
 }
 
+/*@unchecked@*/ /*@null@*/
+static FILE * _stdlog = NULL;
+
+FILE * rpmlogSetFile(FILE * fp)
+	/*@globals _stdlog @*/
+	/*@modifies _stdlog @*/
+{
+    FILE * ofp = _stdlog;
+    _stdlog = fp;
+    return ofp;
+}
+
 /*@-readonlytrans@*/	/* FIX: double indirection. */
 /*@observer@*/ /*@unchecked@*/
 static char *rpmlogMsgPrefix[] = {
@@ -158,7 +170,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     /*@unused@*/ unsigned fac = RPMLOG_FAC(code);
     char *msgbuf, *msg;
     int msgnb = BUFSIZ, nb;
-    FILE * msgout = stderr;
+    FILE * msgout = (_stdlog ? _stdlog : stderr);
 
     if ((mask & rpmlogMask) == 0)
 	return;
@@ -179,7 +191,9 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	else			/* glibc 2.0 */
 	    msgnb *= 2;
 	msgbuf = xrealloc(msgbuf, msgnb);
+/*@-mods@*/
 	va_end(apc);
+/*@=mods@*/
     }
     msgbuf[msgnb - 1] = '\0';
     msg = msgbuf;
@@ -214,7 +228,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     switch (pri) {
     case RPMLOG_INFO:
     case RPMLOG_NOTICE:
-	msgout = stdout;
+	msgout = (_stdlog ? _stdlog : stdout);
 	break;
 
     case RPMLOG_EMERG:

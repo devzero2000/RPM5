@@ -536,6 +536,7 @@ verifyinfo_exit:
 		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
+	    sig = _free(sig);
 	    goto verifyinfo_exit;
 	}
 
@@ -576,6 +577,7 @@ verifyinfo_exit:
 		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
+	    sig = _free(sig);
 	    goto verifyinfo_exit;
 	}
 	/*@fallthrough@*/

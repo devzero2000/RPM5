@@ -11,6 +11,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_ZLIB_INCLUDE@ \
+	-I$(top_srcdir)/file \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
@@ -19,19 +20,17 @@ EXTRA_DIST =	rpminject.c rpmsort.c sections.h utils.h
 EXTRA_PROGRAMS = rpminject rpmsort
 
 LDADD = \
-	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la \
 	@WITH_LIBELF_LIB@ \
 	@INTLLIBS@
+
+staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
 noinst_PROGRAMS = \
 	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = javadeps rpmcache striptofile unstripfile
+pkgbin_PROGRAMS = javadeps rpmcache rpmfile striptofile unstripfile
 
 bin_PROGRAMS =	rpmgraph
 
@@ -40,14 +39,22 @@ javadeps_SOURCES =	javadeps.c
 rpmcache_SOURCES =	rpmcache.c
 #rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
 
+rpmfile.c: $(top_builddir)/file/file.c
+	rm -f $@
+	ln -s $< $@
+
+rpmfile_SOURCES =	rpmfile.c
+rpmfile_LDADD =		$(top_builddir)/rpmio/librpmio.la
+#rpmfile_LDFLAGS =	$(staticLDFLAGS)
+
 rpmgraph_SOURCES =	rpmgraph.c
-#rpmgraph_LDFLAGS =	@LDFLAGS_STATIC@
+#rpmgraph_LDFLAGS =	$(staticLDFLAGS)
 
 rpminject_SOURCES =	rpminject.c
-rpminject_LDFLAGS =	@LDFLAGS_STATIC@
+#rpminject_LDFLAGS =	$(staticLDFLAGS)
 
 rpmsort_SOURCES =	rpmsort.c
-rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
+#rpmsort_LDFLAGS =	$(staticLDFLAGS)
 
 striptofile_SOURCES =	striptofile.c sections.c utils.c
 striptofile_LDFLAGS =	-lelf

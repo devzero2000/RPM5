@@ -127,7 +127,8 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    rpmdbMatchIterator mi;
+    Header oh;
     int isSource;
     int duplicate = 0;
     rpmtsi pi; rpmte p;
@@ -210,30 +211,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
     (void) rpmteSetAddedKey(p, pkgKey);
 
-#ifdef	NOYET
-  /* XXX this needs a search over ts->order, not ts->addedPackages */
-  { uint_32 *pp = NULL;
-
-    /* XXX This should be added always so that packages look alike.
-     * XXX However, there is logic in files.c/depends.c that checks for
-     * XXX existence (rather than value) that will need to change as well.
-     */
-    if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
-	multiLibMask = *pp;
-
-    if (multiLibMask) {
-	for (i = 0; i < pkgNum - 1; i++) {
-	    if (!strcmp (rpmteN(p), al->list[i].name)
-		&& hge(al->list[i].h, RPMTAG_MULTILIBS, NULL,
-				  (void **) &pp, NULL)
-		&& !rpmVersionCompare(p->h, al->list[i].h)
-		&& *pp && !(*pp & multiLibMask))
-		    (void) rpmteSetMultiLib(p, multiLibMask);
-	}
-    }
-  }
-#endif
-
     if (!duplicate) {
 	ts->numAddedPackages++;
     }
@@ -252,29 +229,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
 /*@-boundsread@*/
-    {	rpmdbMatchIterator mi;
-	Header h2;
+    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
+    while((oh = rpmdbNextIterator(mi)) != NULL) {
 
-	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
-	while((h2 = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmVersionCompare(h, h2))
-		xx = removePackage(ts, h2, rpmdbGetIteratorOffset(mi), pkgKey);
-	    else {
-		uint_32 *pp, multiLibMask = 0, oldmultiLibMask = 0;
+	/* Skip packages that contain identical NEVR. */
+	if (rpmVersionCompare(h, oh) == 0)
+		continue;
 
-		if (hge(h2, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
-		    oldmultiLibMask = *pp;
-		if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
-		    multiLibMask = *pp;
-		if (oldmultiLibMask && multiLibMask
-		 && !(oldmultiLibMask & multiLibMask))
-		{
-		    (void) rpmteSetMultiLib(p, multiLibMask);
-		}
-	    }
-	}
-	mi = rpmdbFreeIterator(mi);
+	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
     }
+    mi = rpmdbFreeIterator(mi);
 /*@=boundsread@*/
 
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
@@ -290,25 +254,21 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if (!strcmp(rpmteN(p), Name))
 		continue;
 
-	{   rpmdbMatchIterator mi;
-	    Header h2;
+	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
 
-	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-
-	    xx = rpmdbPruneIterator(mi,
+	xx = rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
 
-	    while((h2 = rpmdbNextIterator(mi)) != NULL) {
+	while((oh = rpmdbNextIterator(mi)) != NULL) {
 		/*
 		 * Rpm prior to 3.0.3 does not have versioned obsoletes.
 		 * If no obsoletes version info is available, match all names.
 		 */
 		if (rpmdsEVR(obsoletes) == NULL
-		 || rpmdsAnyMatchesDep(h2, obsoletes, _rpmds_nopromote))
-		    xx = removePackage(ts, h2, rpmdbGetIteratorOffset(mi), pkgKey);
-	    }
-	    mi = rpmdbFreeIterator(mi);
+		 || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
+		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
 	}
+	mi = rpmdbFreeIterator(mi);
     }
     obsoletes = rpmdsFree(obsoletes);
 
