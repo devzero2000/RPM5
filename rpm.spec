@@ -1,6 +1,6 @@
 %define	with_python_subpackage	1
-%define	with_bzip2		
-%define	with_apidocs		0
+%define	with_bzip2		1
+%define	with_apidocs		1
 %define strip_binaries		1
 %define	__spec_install_post	:
 
@@ -284,7 +284,7 @@ fi
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
-%doc 
+%doc apidocs
 %endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a
@@ -311,6 +311,7 @@ fi
 
 %changelog
 * Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
+- change dependency loop message to RPMMESS_WARNING to use stderr, not stdout.
 - fix: (transaction.c) assume file state normal if tag is missing.
 - fix: failed signature read headerFree segfault.
 - fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.

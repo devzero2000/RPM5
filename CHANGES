@@ -68,6 +68,8 @@
 	- bail on header regions.
 	- resurrect rpmrc Provides: as well as implicit dependency on packge
 		info.
+	- change dependency loop message to RPMMESS_WARNING to use stderr, not
+                stdout.
 	- fix: (transaction.c) assume file state normal if tag is missing.
 	- fix: failed signature read headerFree segfault.
 	- fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.

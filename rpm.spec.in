@@ -311,6 +311,7 @@ fi
 
 %changelog
 * Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
+- change dependency loop message to RPMMESS_WARNING to use stderr, not stdout.
 - fix: (transaction.c) assume file state normal if tag is missing.
 - fix: failed signature read headerFree segfault.
 - fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.
