@@ -1415,7 +1415,6 @@ static struct badDeps_s {
     { "compat-glibc", "db2" },
     { "compat-glibc", "db1" },
     { "pam", "initscripts" },
-    { "kernel", "initscripts" },
     { "initscripts", "sysklogd" },
     /* 6.2 */
     { "egcs-c++", "libstdc++" },

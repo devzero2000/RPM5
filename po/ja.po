@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-03 16:27-0400\n"
+"POT-Creation-Date: 2001-04-17 16:44-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -406,11 +406,11 @@ msgstr "http (¤â¤·¤¯¤Ï¥×¥í¥­¥·)¥µ¡¼¥Ð¤Î¥Ý¡¼¥ÈÈÖ¹æ"
 msgid "query mode"
 msgstr "Ìä¤¤¹ç¤ï¤»¥â¡¼¥É"
 
-#: rpm.c:326 rpm.c:372 rpm.c:397 rpm.c:449 rpm.c:523
+#: rpm.c:326 rpm.c:372 rpm.c:397 rpm.c:449 rpm.c:521
 msgid "      --dbpath <dir>      "
 msgstr ""
 
-#: rpm.c:327 rpm.c:373 rpm.c:398 rpm.c:450 rpm.c:524 rpmqv.c:524
+#: rpm.c:327 rpm.c:373 rpm.c:398 rpm.c:450 rpm.c:522 rpmqv.c:524
 msgid "use <dir> as the directory for the database"
 msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹ÍÑ¤Î¥Ç¥£¥ì¥¯¥È¥ê¤È¤·¤Æ <dir> ¤òÍÑ¤¤¤Þ¤¹"
 
@@ -427,7 +427,7 @@ msgstr "¥Ø¥Ã¥À¥Õ¥©¡¼¥Þ¥Ã¥È¤È¤·¤Æ <qfmt> ¤ò»ÈÍÑ¤·¤Þ¤¹ (-i ¤ÎÆ¯¤­¤ò´Þ¤ß¤Þ¤¹)"
 msgid "      --root <dir>        "
 msgstr ""
 
-#: rpm.c:331 rpm.c:375 rpm.c:433 rpm.c:462 rpm.c:526 rpmqv.c:165 rpmqv.c:526
+#: rpm.c:331 rpm.c:375 rpm.c:433 rpm.c:462 rpm.c:524 rpmqv.c:165 rpmqv.c:526
 msgid "use <dir> as the top level directory"
 msgstr "¥È¥Ã¥×¥Ç¥£¥ì¥¯¥È¥ê¤È¤·¤Æ <dir> ¤ò»ÈÍÑ¤·¤Þ¤¹"
 
@@ -809,19 +809,11 @@ msgstr ""
 msgid "do not execute any stages"
 msgstr "¤É¤ÎÃÊ³¬¤â¼Â¹Ô¤·¤Þ¤»¤ó"
 
-#: rpm.c:495
-msgid "      --timecheck <secs>  "
-msgstr ""
-
 #: rpm.c:496
-msgid "set the time check to <secs> seconds (0 disables)"
-msgstr "¥¿¥¤¥à¥Á¥§¥Ã¥¯´ü¸Â¤òÀßÄê¤·¤Þ¤¹(0¤ÇÌµ¸ú)"
-
-#: rpm.c:498
 msgid "    --rebuild <src_pkg>   "
 msgstr ""
 
-#: rpm.c:499
+#: rpm.c:497
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
@@ -830,64 +822,64 @@ msgstr ""
 "\t\t\t     ¥¸¤òºîÀ®¤·¡¢spec¥Õ¥¡¥¤¥ë¡¢¥½¡¼¥¹¥Õ¥¡¥¤¥ë¡¢¥Ñ¥Ã¥Á¡¢\n"
 "\t\t\t     ¥¢¥¤¥³¥ó¤òºï½ü¤·¤Þ¤¹"
 
-#: rpm.c:500
+#: rpm.c:498
 msgid "    --recompile <src_pkg> "
 msgstr ""
 
-#: rpm.c:501
+#: rpm.c:499
 msgid "like --rebuild, but don't build any package"
 msgstr "--rebuild ¤Ë»÷¤Æ¤¤¤Þ¤¹¤¬¡¢¥Ñ¥Ã¥±¡¼¥¸¤òºîÀ®¤·¤Þ¤»¤ó"
 
-#: rpm.c:504
+#: rpm.c:502
 msgid "    --resign <pkg>+       "
 msgstr ""
 
-#: rpm.c:505 rpmqv.c:221 rpmqv.c:689
+#: rpm.c:503 rpmqv.c:221 rpmqv.c:689
 msgid "sign a package (discard current signature)"
 msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë½ðÌ¾¤·¤Þ¤¹(¸½ºß¤Î½ðÌ¾¤Ï¼Î¤Æ¤é¤ì¤Þ¤¹)"
 
-#: rpm.c:506
+#: rpm.c:504
 msgid "    --addsign <pkg>+      "
 msgstr ""
 
-#: rpm.c:507 rpmqv.c:218 rpmqv.c:691
+#: rpm.c:505 rpmqv.c:218 rpmqv.c:691
 msgid "add a signature to a package"
 msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë½ðÌ¾¤òÄÉ²Ã¤·¤Þ¤¹"
 
-#: rpm.c:508
+#: rpm.c:506
 msgid "    --checksig <pkg>+"
 msgstr ""
 
-#: rpm.c:509
+#: rpm.c:507
 msgid "    -K <pkg>+             "
 msgstr ""
 
-#: rpm.c:510 rpmqv.c:227 rpmqv.c:695
+#: rpm.c:508 rpmqv.c:227 rpmqv.c:695
 msgid "verify package signature"
 msgstr "½ðÌ¾¤Î¸¡¾Ú¤ò¤·¤Þ¤¹"
 
-#: rpm.c:512 rpmqv.c:230 rpmqv.c:697
+#: rpm.c:510 rpmqv.c:230 rpmqv.c:697
 msgid "skip any PGP signatures"
 msgstr "PGP ½ðÌ¾¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹"
 
-#: rpm.c:514 rpmqv.c:233 rpmqv.c:699
+#: rpm.c:512 rpmqv.c:233 rpmqv.c:699
 #, fuzzy
 msgid "skip any GPG signatures"
 msgstr "GPG ½ðÌ¾¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹"
 
-#: rpm.c:516 rpmqv.c:701
+#: rpm.c:514 rpmqv.c:701
 msgid "skip any MD5 signatures"
 msgstr "MD5 ½ðÌ¾¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹"
 
-#: rpm.c:520
+#: rpm.c:518
 msgid "make sure a valid database exists"
 msgstr "Í­¸ú¤Ê¥Ç¡¼¥¿¥Ù¡¼¥¹¤¬Â¸ºß¤¹¤ë¤³¤È¤ò³Î¤«¤á¤Þ¤¹"
 
-#: rpm.c:522
+#: rpm.c:520
 msgid "rebuild database from existing database"
 msgstr "´ûÂ¸¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹¤«¤é¥Ç¡¼¥¿¥Ù¡¼¥¹¤òºÆ¹½ÃÛ¤·¤Þ¤¹"
 
-#: rpm.c:530 rpmqv.c:606
+#: rpm.c:528 rpmqv.c:606
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
@@ -895,7 +887,7 @@ msgstr ""
 "-q ¤ÈÆ±ÍÍ¤ËÆ±¤¸¥Ñ¥Ã¥±¡¼¥¸»ØÄê¥ª¥×¥·¥ç¥ó¤ò¼è¤ê\n"
 "¥Ç¡¼¥¿¥Ù¡¼¥¹Ãæ¤Îµö²ÄÂ°À­¤ËÀßÄê¤·¤Þ¤¹"
 
-#: rpm.c:533 rpmqv.c:609
+#: rpm.c:531 rpmqv.c:609
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
@@ -903,85 +895,85 @@ msgstr ""
 "-q ¤ÈÆ±ÍÍ¤ËÆ±¤¸¥Ñ¥Ã¥±¡¼¥¸»ØÄê¥ª¥×¥·¥ç¥ó¤ò¼è¤ê\n"
 "¥Ç¡¼¥¿¥Ù¡¼¥¹Ãæ¤Î½êÍ­¼Ô¤È¥°¥ë¡¼¥×¤ËÀßÄê¤·¤Þ¤¹"
 
-#: rpm.c:671 rpm.c:677 rpm.c:686 rpm.c:708 rpm.c:714 rpm.c:721 rpm.c:729
-#: rpm.c:737 rpm.c:758 rpm.c:821 rpmqv.c:889 rpmqv.c:898 rpmqv.c:904
+#: rpm.c:669 rpm.c:675 rpm.c:684 rpm.c:706 rpm.c:712 rpm.c:719 rpm.c:727
+#: rpm.c:735 rpm.c:756 rpm.c:819 rpmqv.c:889 rpmqv.c:898 rpmqv.c:904
 #: rpmqv.c:910 rpmqv.c:917 rpmqv.c:952 rpmqv.c:960 rpmqv.c:966 rpmqv.c:974
 #: rpmqv.c:1042
 msgid "only one major mode may be specified"
 msgstr "°ì¤Ä¤Î¥á¥¸¥ã¡¼¥â¡¼¥É¤Î¤ß¤ò»ØÄê¤·¤Æ¤¯¤À¤µ¤¤"
 
-#: rpm.c:679 rpmqv.c:891
+#: rpm.c:677 rpmqv.c:891
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u ¤È --uninstall ¤Ï¤â¤Ï¤äÆ°ºî¤·¤Þ¤»¤ó\n"
 
-#: rpm.c:681 rpmqv.c:893
+#: rpm.c:679 rpmqv.c:893
 msgid "Use -e or --erase instead.\n"
 msgstr "-e ¤« --erase ¤ò»È¤Ã¤Æ¤¯¤À¤µ¤¤\n"
 
-#: rpm.c:764 rpmqv.c:936
+#: rpm.c:762 rpmqv.c:936
 msgid "relocations must begin with a /"
 msgstr "ºÆÇÛÃÖ¤Ï / ¤«¤é»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:766 rpmqv.c:938
+#: rpm.c:764 rpmqv.c:938
 msgid "relocations must contain a ="
 msgstr "ºÆÇÛÃÖ¤Ï = ¤ò´Þ¤ó¤Ç¤¤¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:769 rpmqv.c:941
+#: rpm.c:767 rpmqv.c:941
 msgid "relocations must have a / following the ="
 msgstr "ºÆÇÛÃÖ¤Ï = ¤Î¼¡¤Ë / ¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:778 rpmqv.c:925
+#: rpm.c:776 rpmqv.c:925
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "½ü³°¤¹¤ë¥Ñ¥¹¤Ï / ¤«¤é»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:787 rpmqv.c:995
+#: rpm.c:785 rpmqv.c:995
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
-#: rpm.c:788
+#: rpm.c:786
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:793 rpmqv.c:1001
+#: rpm.c:791 rpmqv.c:1001
 #, fuzzy, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "°ú¿ô½èÍý(%d)¤Ç¤ÎÆâÉô¥¨¥é¡¼ :-(\n"
 
-#: rpm.c:828 rpmqv.c:1057
+#: rpm.c:826 rpmqv.c:1057
 msgid "one type of query/verify may be performed at a time"
 msgstr "Ìä¤¤¹ç¤ï¤»/¸¡¾Ú¤Ï°ìÅÙ¤Ë°ì¤Ä¤·¤«¼Â¹Ô¤Ç¤­¤Þ¤»¤ó"
 
-#: rpm.c:833 rpmqv.c:1061
+#: rpm.c:831 rpmqv.c:1061
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥Õ¥é¥°"
 
-#: rpm.c:836 rpmqv.c:1064
+#: rpm.c:834 rpmqv.c:1064
 #, fuzzy
 msgid "unexpected query format"
 msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥Õ¥©¡¼¥Þ¥Ã¥È"
 
-#: rpm.c:839 rpmqv.c:1067
+#: rpm.c:837 rpmqv.c:1067
 msgid "unexpected query source"
 msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥½¡¼¥¹"
 
-#: rpm.c:842 rpmqv.c:1077
+#: rpm.c:840 rpmqv.c:1077
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "¥¤¥ó¥¹¥È¡¼¥ë¡¢¥¢¥Ã¥×¥°¥ì¡¼¥É¡¢¥½¡¼¥¹ºï½ü¡¢¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ëºï½ü»þ¤Î¤ß¶¯À©¤Ç¤­¤"
 "Þ¤¹"
 
-#: rpm.c:845 rpmqv.c:1082
+#: rpm.c:843 rpmqv.c:1082
 msgid "files may only be relocated during package installation"
 msgstr "¥Õ¥¡¥¤¥ë¤Ï¥Ñ¥Ã¥±¡¼¥¸¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ßºÆÇÛÃÖ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:848 rpmqv.c:1085
+#: rpm.c:846 rpmqv.c:1085
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix ¤â¤·¤¯¤Ï --relocate ¤Î¤¤¤º¤ì¤«¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:851 rpmqv.c:1088
+#: rpm.c:849 rpmqv.c:1088
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
@@ -989,80 +981,80 @@ msgstr ""
 "--relocate ¤È --excludepath "
 "¤Ï¿·¤·¤¤¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¤È¤­¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:854 rpmqv.c:1091
+#: rpm.c:852 rpmqv.c:1091
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix ¤Ï¿·µ¬¤Ë¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¤È¤­¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:857 rpmqv.c:1094
+#: rpm.c:855 rpmqv.c:1094
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix ¤Ø¤Î°ú¿ô¤Ï / ¤«¤é»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:860 rpmqv.c:1097
+#: rpm.c:858 rpmqv.c:1097
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:864 rpmqv.c:1101
+#: rpm.c:862 rpmqv.c:1101
 msgid "--percent may only be specified during package installation"
 msgstr "--percent ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:868 rpmqv.c:1105
+#: rpm.c:866 rpmqv.c:1105
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:872 rpmqv.c:1109
+#: rpm.c:870 rpmqv.c:1109
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:876 rpmqv.c:1113
+#: rpm.c:874 rpmqv.c:1113
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:880 rpmqv.c:1117
+#: rpm.c:878 rpmqv.c:1117
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:884 rpmqv.c:1121
+#: rpm.c:882 rpmqv.c:1121
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs ¤È --includedocs ¤Ï¤É¤Á¤é¤«°ìÊý¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:888 rpmqv.c:1125
+#: rpm.c:886 rpmqv.c:1125
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:892 rpmqv.c:1129
+#: rpm.c:890 rpmqv.c:1129
 msgid "--ignoreos may only be specified during package installation"
 msgstr "-ignoreos ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:896 rpmqv.c:1133
+#: rpm.c:894 rpmqv.c:1133
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "-ignoresize ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:900 rpmqv.c:1137
+#: rpm.c:898 rpmqv.c:1137
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Îºï½ü»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:904 rpmqv.c:1141
+#: rpm.c:902 rpmqv.c:1141
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:908 rpmqv.c:1145
+#: rpm.c:906 rpmqv.c:1145
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:913 rpmqv.c:1152
+#: rpm.c:911 rpmqv.c:1152
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr "--noscripts ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢¸¡¾Ú»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:917
+#: rpm.c:915
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
 msgstr "--notriggers ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢¸¡¾Ú»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:921 rpmqv.c:1162
+#: rpm.c:919 rpmqv.c:1162
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1070,13 +1062,13 @@ msgid ""
 msgstr ""
 "--nodeps ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤ÎºîÀ®¡¢¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢¸¡¾Ú»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:926 rpmqv.c:1167
+#: rpm.c:924 rpmqv.c:1167
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢ºîÀ®»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:930 rpmqv.c:1172
+#: rpm.c:928 rpmqv.c:1172
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1084,101 +1076,101 @@ msgstr ""
 "--root (-r) "
 "¤Ï¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢Ìä¤¤¹ç¤ï¤»¡¢¥Ç¡¼¥¿¥Ù¡¼¥¹ºÆ¹½ÃÛ»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:942 rpmqv.c:1184
+#: rpm.c:940 rpmqv.c:1184
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) ¤Î°ú¿ô¤Ï / ¤«¤é»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
 
-#: rpm.c:948 rpmqv.c:1191
+#: rpm.c:946 rpmqv.c:1191
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage ¤Ï¥¢¥Ã¥×¥°¥ì¡¼¥É»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:951 rpmqv.c:1196
+#: rpm.c:949 rpmqv.c:1196
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp ¤Ï½ðÌ¾¸¡ºº»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:954 rpmqv.c:1199
+#: rpm.c:952 rpmqv.c:1199
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg ¤Ï½ðÌ¾¸¡ºº»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:957 rpmqv.c:1204
+#: rpm.c:955 rpmqv.c:1204
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 ¤Ï½ðÌ¾¸¡ºº¤È¥Ñ¥Ã¥±¡¼¥¸¸¡¾Ú»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:968 rpmqv.c:1220
+#: rpm.c:966 rpmqv.c:1220
 msgid "no files to sign\n"
 msgstr "½ðÌ¾¤¹¤ë¤¿¤á¤Î¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó\n"
 
-#: rpm.c:973 rpmqv.c:1225
+#: rpm.c:971 rpmqv.c:1225
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "¥Õ¥¡¥¤¥ë %s ¤Ë¥¢¥¯¥»¥¹¤Ç¤­¤Þ¤»¤ó\n"
 
-#: rpm.c:988 rpmqv.c:1241
+#: rpm.c:986 rpmqv.c:1241
 #, fuzzy
 msgid "pgp not found: "
 msgstr "pgp ¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó: "
 
-#: rpm.c:992 rpmqv.c:1245
+#: rpm.c:990 rpmqv.c:1245
 msgid "Enter pass phrase: "
 msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¤òÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤: "
 
-#: rpm.c:994 rpmqv.c:1247
+#: rpm.c:992 rpmqv.c:1247
 msgid "Pass phrase check failed\n"
 msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¥Á¥§¥Ã¥¯¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
 
-#: rpm.c:997 rpmqv.c:1250
+#: rpm.c:995 rpmqv.c:1250
 msgid "Pass phrase is good.\n"
 msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¤ÏÀµ¾ï¤Ç¤¹¡¥\n"
 
-#: rpm.c:1002 rpmqv.c:1255
+#: rpm.c:1000 rpmqv.c:1255
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "¥Þ¥¯¥í¥Õ¥¡¥¤¥ëÃæ¤ÎÌµ¸ú¤Ê %%_signature ¡£\n"
 
-#: rpm.c:1008 rpmqv.c:1261
+#: rpm.c:1006 rpmqv.c:1261
 msgid "--sign may only be used during package building"
 msgstr "--sign ¤Ï¥Ñ¥Ã¥±¡¼¥¸ºîÀ®»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
 
-#: rpm.c:1023 rpmqv.c:1277
+#: rpm.c:1021 rpmqv.c:1277
 msgid "exec failed\n"
 msgstr "¼Â¹Ô¼ºÇÔ\n"
 
-#: rpm.c:1042 rpmqv.c:1547
+#: rpm.c:1040 rpmqv.c:1547
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags ¤Î°ú¿ô¤¬´Ö°ã¤Ã¤Æ¤¤¤Þ¤¹"
 
-#: rpm.c:1053 rpmqv.c:1569
+#: rpm.c:1051 rpmqv.c:1569
 msgid "no packages given for signature check"
 msgstr "½ðÌ¾¸¡ºº¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1064 rpmqv.c:1580
+#: rpm.c:1062 rpmqv.c:1580
 msgid "no packages given for signing"
 msgstr "½ðÌ¾¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1080 rpmqv.c:1417
+#: rpm.c:1078 rpmqv.c:1417
 msgid "no packages given for uninstall"
 msgstr "¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1131 rpmqv.c:1468
+#: rpm.c:1129 rpmqv.c:1468
 msgid "no packages given for install"
 msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1154 rpmqv.c:1508
+#: rpm.c:1152 rpmqv.c:1508
 msgid "extra arguments given for query of all packages"
 msgstr "Á´¥Ñ¥Ã¥±¡¼¥¸¤ÎÌä¤¤¹ç¤ï¤»¤Î¤¿¤á¤ËÍ¾Ê¬¤Ê°ú¿ô¤¬¤¢¤ê¤Þ¤¹"
 
-#: rpm.c:1159 rpmqv.c:1513
+#: rpm.c:1157 rpmqv.c:1513
 msgid "no arguments given for query"
 msgstr "Ìä¤¤¹ç¤ï¤»¤Î¤¿¤á¤Î°ú¿ô¤¬¤¢¤ê¤Þ¤»¤ó"
 
-#: rpm.c:1176 rpmqv.c:1535
+#: rpm.c:1174 rpmqv.c:1535
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "Á´¥Ñ¥Ã¥±¡¼¥¸¤Î¸¡¾Ú¤Î¤¿¤á¤ËÍ¾Ê¬¤Ê°ú¿ô¤¬¤¢¤ê¤Þ¤¹"
 
-#: rpm.c:1180 rpmqv.c:1539
+#: rpm.c:1178 rpmqv.c:1539
 msgid "no arguments given for verify"
 msgstr "¸¡¾Ú¤Î¤¿¤á¤Î°ú¿ô¤¬¤¢¤ê¤Þ¤»¤ó"
 
@@ -2571,30 +2563,30 @@ msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤Ï require ¤¬Ëþ¤¿¤µ¤ì¤Æ¤¤¤Þ¤»¤ó: %s\n"
 msgid "package %s conflicts: %s\n"
 msgstr "%s ¤È¶¥¹ç¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤¹: %s\n"
 
-#: lib/depends.c:1522
+#: lib/depends.c:1521
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "group ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
 
 #. Record all relations.
-#: lib/depends.c:1661
+#: lib/depends.c:1660
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1708
+#: lib/depends.c:1707
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1753
+#: lib/depends.c:1752
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1802
+#: lib/depends.c:1801
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1833
+#: lib/depends.c:1832
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3208,66 +3200,66 @@ msgstr "¤Ï %s-%s-%s ¤ËÉ¬Í×¤È¤µ¤ì¤Æ¤¤¤Þ¤¹\n"
 msgid " conflicts with %s-%s-%s\n"
 msgstr " %s-%s-%s ¤È¶¥¹ç¤·¤Þ¤¹\n"
 
-#: lib/problems.c:99
+#: lib/problems.c:118
 #, fuzzy, c-format
 msgid "package %s is for a different architecture"
 msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Ï°Û¤Ê¤ë¥¢¡¼¥­¥Æ¥¯¥Á¥ã¸þ¤±¤Ç¤¹"
 
-#: lib/problems.c:103
+#: lib/problems.c:122
 #, fuzzy, c-format
 msgid "package %s is for a different operating system"
 msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Ï°Û¤Ê¤ë OS ¸þ¤±¤Ç¤¹"
 
-#: lib/problems.c:107
+#: lib/problems.c:126
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Ï¤¹¤Ç¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤Æ¤¤¤Þ¤¹"
 
-#: lib/problems.c:111
+#: lib/problems.c:130
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤ÏºÆÇÛÃÖ¤Ç¤­¤Þ¤»¤ó"
 
-#: lib/problems.c:116
+#: lib/problems.c:135
 #, fuzzy, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "¥Õ¥¡¥¤¥ë %s ¤Ï %s-%s-%s ¤È %s-%s-%s ¤Î¥¤¥ó¥¹¥È¡¼¥ë¤Î¥Õ¥¡¥¤¥ë¤È¶¥¹ç¤·¤Æ¤¤¤Þ¤¹"
 
-#: lib/problems.c:121
+#: lib/problems.c:140
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "%s-%s-%s ¤Î¥¤¥ó¥¹¥È¡¼¥ë¤«¤é¤Î¥Õ¥¡¥¤¥ë %s ¤Ï¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s "
 "¤«¤é¤Î¥Õ¥¡¥¤¥ë¤È¶¥¹ç¤·¤Æ¤¤¤Þ¤¹"
 
-#: lib/problems.c:126
+#: lib/problems.c:145
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s (%s-%s-%s¤è¤ê¤â¿·¤·¤¤¤â¤Î) "
 "¤Ï¤¹¤Ç¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤Æ¤¤¤Þ¤¹"
 
-#: lib/problems.c:131
+#: lib/problems.c:150
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Î¥¤¥ó¥¹¥È¡¼¥ë¤Ï %ld%cb ¤¬É¬Í×¤Ç¤¹(%s "
 "¥Õ¥¡¥¤¥ë¥·¥¹¥Æ¥à¾å¤Ç)"
 
-#: lib/problems.c:141
+#: lib/problems.c:160
 #, fuzzy, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Î¥¤¥ó¥¹¥È¡¼¥ë¤Ï %ld%cb ¤¬É¬Í×¤Ç¤¹(%s "
 "¥Õ¥¡¥¤¥ë¥·¥¹¥Æ¥à¾å¤Ç)"
 
-#: lib/problems.c:146
+#: lib/problems.c:165
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:153
+#: lib/problems.c:172
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "ÉÔÌÀ¤Ê¥¨¥é¡¼ %d ¤¬¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤ÎÁàºîÃæ¤Ë¤ª¤­¤Þ¤·¤¿"
@@ -4299,6 +4291,9 @@ msgstr "url ¥Ý¡¼¥È¤Ï¿ô»ú¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s ¤ÎºîÀ®¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#~ msgid "set the time check to <secs> seconds (0 disables)"
+#~ msgstr "¥¿¥¤¥à¥Á¥§¥Ã¥¯´ü¸Â¤òÀßÄê¤·¤Þ¤¹(0¤ÇÌµ¸ú)"
 
 #~ msgid "counting packages to install\n"
 #~ msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤ò¿ô¤¨¤Æ¤¤¤Þ¤¹\n"

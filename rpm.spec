@@ -13,11 +13,13 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
+# XXX rpm-4.0.3 has not db1 support
+Conflicts: rpm < 4.0.2
 %ifos linux
 Prereq: gawk fileutils textutils mktemp
 Requires: popt
@@ -54,6 +56,8 @@ the package like its version, a description, etc.
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{version}, popt
+# XXX rpm-4.0.3 has not db1 support
+Conflicts: rpm < 4.0.2
 
 %description devel
 This package contains the RPM C library and header files.  These
@@ -70,6 +74,8 @@ will manipulate RPM packages and databases.
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
 Requires: rpm = %{version}
+# XXX rpm-4.0.3 has not db1 support
+Conflicts: rpm < 4.0.2
 
 %description build
 This package contains scripts and executable programs that are used to
@@ -83,6 +89,8 @@ BuildRequires: popt >= 1.5
 Requires: rpm = %{version}
 Requires: popt >= 1.5
 Requires: python >= 1.5.2
+# XXX rpm-4.0.3 has not db1 support
+Conflicts: rpm < 4.0.2
 
 %description python
 The rpm-python package contains a module which permits applications
@@ -129,9 +137,6 @@ rm -rf $RPM_BUILD_ROOT
 make DESTDIR="$RPM_BUILD_ROOT" install
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
-cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
-%%_dbapi		1
-E_O_F
 
 %if %{with_apidocs}
 gzip -9n apidocs/man/man*/* || :
@@ -148,12 +153,14 @@ gzip -9n apidocs/man/man*/* || :
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-if [ -f /var/lib/rpm/Packages -a -f /var/lib/rpm/packages.rpm ]; then
+if [ -f /var/lib/rpm/packages.rpm ]; then
 #    echo "
-#You have both
+#
+#You still have a db1 format database
 #	/var/lib/rpm/packages.rpm	db1 format installed package headers
-#	/var/lib/rpm/Packages		db3 format installed package headers
-#Please remove (or at least rename) one of those files, and re-install.
+#Please convert from db1 -> db3 by installing rpm-4.0.2 and doing a
+# rpm --rebuilddb.
+#
 #"
     exit 1
 fi
@@ -163,16 +170,7 @@ exit 0
 %ifos linux
 /sbin/ldconfig
 %endif
-if [ -f /var/lib/rpm/packages.rpm ]; then
-    : # do nothing
-elif [ -f /var/lib/rpm/Packages ]; then
-    # undo db1 configuration
-    rm -f /etc/rpm/macros.db1
-else
-    # initialize db3 database
-    rm -f /etc/rpm/macros.db1
-    /bin/rpm --initdb
-fi
+/bin/rpm --initdb
 
 %ifos linux
 %postun -p /sbin/ldconfig
@@ -194,7 +192,6 @@ fi
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
 /bin/rpm
 %dir			/etc/rpm
-%config(missingok)	/etc/rpm/macros.db1
 %{__prefix}/bin/rpm2cpio
 %{__prefix}/bin/gendiff
 %{__prefix}/bin/rpmdb
@@ -344,6 +341,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Apr 17 2001 Jeff Johnson <jbj@redhat.com>
+- fix: s390 (and ppc?) could return CPIOERR_BAD_HEADER (#28645).
+- fix: Fwrite's are optimized out by aggressive compiler(irix) (#34711).
+- portability: vsnprintf/snprintf wrappers for those without (#34657).
+- don't build with db1 support, don't install with packages.rpm present.
+
 * Wed Apr  4 2001 Jeff Johnson <jbj@redhat.com>
 - fix: parameterized macro segfault (Jakub Bogusz <qboosh@pld.org.pl>)
 - fix: i18n tags in rpm-2.5.x had wrong offset/length (#33478).
