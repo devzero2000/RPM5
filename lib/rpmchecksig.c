@@ -160,6 +160,17 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 
 	/* Generate the new signatures */
 	if (flags != RESIGN_ADD_SIGNATURE) {
+	    void * uh = NULL;
+	    int_32 uht, uhc;
+
+	    /* Dump the immutable region (if present). */
+	    if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
+		Header nh = headerCopyLoad(uh);
+		headerFree(sig);
+		sig = headerLink(nh);
+		headerFree(nh);
+	    }
+
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);

@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.9
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -454,7 +454,7 @@ fi
 %files python
 %defattr(-,root,root)
 %{__prefix}/lib/python%{with_python_version}/site-packages/rpmmodule.so
-%{__prefix}/lib/python%{with_python_version}/site-packages/poptmodule.so
+#%{__prefix}/lib/python%{with_python_version}/site-packages/poptmodule.so
 %endif
 
 %if %{with_perl_subpackage}
@@ -516,6 +516,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jan 10 2002 Jeff Johnson <jbj@redhat.com>
+- fix: signing multiple times dinna work, discard immutable region.
+- remove poptmodule.so for separate packaging.
+
 * Wed Jan  9 2002 Jeff Johnson <jbj@redhat.com>
 - permit gpg/pgp/pgp5 execs to be reconfigured.
 

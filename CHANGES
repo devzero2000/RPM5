@@ -16,6 +16,8 @@
 	- use db-4.0.14 final internally.
 	- make rpm-perl package self-hosting (#57748).
 	- permit gpg/pgp/pgp5 execs to be reconfigured.
+	- fix: signing multiple times dinna work, discard immutable region.
+	- remove poptmodule.so for separate packaging.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
