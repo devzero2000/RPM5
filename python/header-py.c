@@ -1008,7 +1008,7 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
     if (!rc) {
 	rc = compare_values(v1, v2);
 	if (!rc)
-	    rc = compare_values(r1, r2))
+	    rc = compare_values(r1, r2);
     }
     return Py_BuildValue("i", rc);
 }
