@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-06-16 15:22-0400\n"
+"POT-Creation-Date: 2000-06-20 10:37-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -3213,67 +3213,67 @@ msgstr "%s をオープンできません\n"
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:781
 msgid "Success"
 msgstr "成功"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:784
 #, fuzzy
 msgid "Bad server response"
 msgstr "サーバから正常な応答がありません"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:787
 #, fuzzy
 msgid "Server IO error"
 msgstr "サーバ IO エラー"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:790
 #, fuzzy
 msgid "Server timeout"
 msgstr "サーバタイムアウト"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:793
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:796
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:799
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "サーバへの接続に失敗しました"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:802
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータコネクションの確立に失敗しました"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:805
 msgid "IO error to local file"
 msgstr "ローカルファイルの IO エラー"
 
-#: lib/rpmio.c:814
+#: lib/rpmio.c:808
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバのパッシブモード設定エラー"
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:811
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません"
 
-#: lib/rpmio.c:820
+#: lib/rpmio.c:814
 msgid "Abort in progress"
 msgstr "処理中のアボート"
 
-#: lib/rpmio.c:824
+#: lib/rpmio.c:818
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "不明もしくは予期せぬエラー"
 
-#: lib/rpmio.c:1357
+#: lib/rpmio.c:1351
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s へ %s pw %s としてログイン中\n"
