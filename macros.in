@@ -252,6 +252,16 @@ package or when debugging this package. \
 #	
 %_install_langs	all
 
+#	The value of CLASSPATH in build scriptlets (iff configured).
+#	
+#%_javaclasspath	all
+
+#	Import packaging conventions from jpackage.org (prefixed with _
+#	to avoid name collisions).
+#	
+%_javadir      %{_datadir}/java
+%_javadocdir   %{_datadir}/javadoc
+
 #
 #	Deprecated.
 #
@@ -708,6 +718,8 @@ package or when debugging this package. \
   export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
   %{?buildroot:RPM_BUILD_ROOT=\"%{u2p:%{buildroot}}\"\
   export RPM_BUILD_ROOT}\
+  %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
+  export CLASSPATH}\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
