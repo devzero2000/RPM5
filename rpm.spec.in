@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.11
+Release: 0.12
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -345,6 +345,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Apr 29 2001 Jeff Johnson <jbj@redhat.com>
+- transaction iterator(s) need to run in reverse order on pure erasures.
+- erasures not yet strict, warn & chug on unlink(2)/rmdir(2) failure.
+- more boring lclint annotations and fiddles.
+
 * Sat Apr 28 2001 Jeff Johnson <jbj@redhat.com>
 - globalize _free(3) wrapper in rpmlib.h, consistent usage throughout.
 - internalize locale insensitive ctype(3) in rpmio.h
