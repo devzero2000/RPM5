@@ -834,11 +834,12 @@ static void hexdump(const unsigned char * buf, ssize_t len)
 }
 #endif
 
-#ifdef	OLDNEON
-static void davAcceptRanges(void * userdata, const char * value)
+static void davAcceptRanges(void * userdata, /*@null@*/ const char * value)
+	/*@modifies userdata @*/
 {
     urlinfo u = userdata;
 
+    if (!(u && value)) return;
 if (_dav_debug < 0)
 fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, value);
     if (!strcmp(value, "bytes"))
@@ -847,18 +848,23 @@ fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, value);
 	u->httpHasRange = 0;
 }
 
+#if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
 static void davAllHeaders(void * userdata, const char * value)
 {
     FD_t ctrl = userdata;
 
+    if (!(ctrl && value)) return;
 if (_dav_debug)
 fprintf(stderr, "<- %s\n", value);
 }
+#endif
 
-static void davContentLength(void * userdata, const char * value)
+static void davContentLength(void * userdata, /*@null@*/ const char * value)
+	/*@modifies userdata @*/
 {
     FD_t ctrl = userdata;
 
+    if (!(ctrl && value)) return;
 if (_dav_debug < 0)
 fprintf(stderr, "*** fd %p Content-Length: %s\n", ctrl, value);
 /*@-unrecog@*/
@@ -866,10 +872,12 @@ fprintf(stderr, "*** fd %p Content-Length: %s\n", ctrl, value);
 /*@=unrecog@*/
 }
 
-static void davConnection(void * userdata, const char * value)
+static void davConnection(void * userdata, /*@null@*/ const char * value)
+	/*@modifies userdata @*/
 {
     FD_t ctrl = userdata;
 
+    if (!(ctrl && value)) return;
 if (_dav_debug < 0)
 fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, value);
     if (!strcasecmp(value, "close"))
@@ -877,7 +885,6 @@ fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, value);
     else if (!strcasecmp(value, "Keep-Alive"))
 	ctrl->persist = 1;
 }
-#endif
 
 /*@-mustmod@*/ /* HACK: stash error in *str. */
 int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
@@ -924,7 +931,7 @@ assert(ctrl->req != NULL);
 
     ne_set_request_private(ctrl->req, "fd", ctrl);
 
-#ifdef	OLDNEON
+#if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     ne_add_response_header_catcher(ctrl->req, davAllHeaders, ctrl);
 
     ne_add_response_header_handler(ctrl->req, "Content-Length",
@@ -942,7 +949,7 @@ assert(ctrl->req != NULL);
     } else {
 	/* HACK: possible Last-Modified: Tue, 02 Nov 2004 14:29:36 GMT */
 	/* HACK: possible ETag: "inode-size-mtime" */
-#ifdef	OLDNEON
+#if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
 	ne_add_response_header_handler(ctrl->req, "Accept-Ranges",
 			davAcceptRanges, u);
 #endif
@@ -960,6 +967,16 @@ assert(ctrl->req != NULL);
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davReq(%p,%s,\"%s\") exit sess %p req %p rc %d\n", ctrl, httpCmd, (httpArg ? httpArg : ""), u->sess, ctrl->req, rc);
+
+#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
+    davContentLength(ctrl,
+		ne_get_response_header(ctrl->req, "Content-Length");
+    davConnection(ctrl,
+		ne_get_response_header(ctrl->req, "Connection");
+    if (strcmp(httpCmd, "PUT"))
+	davAcceptRanges(u,
+		ne_get_response_header(ctrl->req, "Accept-Ranges");
+#endif
 
     ctrl = fdLink(ctrl, "open data (davReq)");
     return 0;

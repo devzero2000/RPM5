@@ -444,9 +444,9 @@ WITH_NEON_LIB=
 AC_CHECK_HEADER([neon/ne_session.h], [
 	AC_CHECK_LIB(neon, ne_session_create, [
 	    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the `neon' library (-lneon).])
-dnl	    AC_CHECK_LIB(neon, ne_get_response_header, [
-dnl		AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header in libneon.])
-dnl		])
+	    AC_CHECK_LIB(neon, ne_get_response_header, [
+		AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
+		])
 	    WITH_NEON_INCLUDE="-I/usr/include/neon"
 	    WITH_NEON_LIB="-lneon"
 	])
