@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-07 19:30-0400\n"
+"POT-Creation-Date: 2001-05-09 18:15-0400\n"
 "PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3548,12 +3548,12 @@ msgstr "chybí      %s"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 
-#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:102
+#: rpmdb/db1.c:99 rpmdb/db2.c:117 rpmdb/db3.c:106
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d chyba (%d) z %s: %s\n"
 
-#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:105
+#: rpmdb/db1.c:102 rpmdb/db2.c:120 rpmdb/db3.c:109
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d chyba (%d): %s\n"
@@ -3584,65 +3584,65 @@ msgstr "otevírám db soubor     %s mode 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nemohu vytvoøit zámek %s na databázi\n"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:798
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:930
 msgid "exclusive"
 msgstr "výhradní"
 
-#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:798
+#: rpmdb/db1.c:481 rpmdb/db2.c:787 rpmdb/db3.c:930
 msgid "shared"
 msgstr "sdílený"
 
-#: rpmdb/db2.c:145 rpmdb/db3.c:131
+#: rpmdb/db2.c:145 rpmdb/db3.c:135
 #, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr "uzavøeno DB prostøedí %s/%s\n"
 
-#: rpmdb/db2.c:161 rpmdb/db3.c:147
+#: rpmdb/db2.c:161 rpmdb/db3.c:151
 #, c-format
 msgid "removed db environment %s/%s\n"
 msgstr "odstranìno db prostøedí %s/%s\n"
 
-#: rpmdb/db2.c:198 rpmdb/db3.c:186
+#: rpmdb/db2.c:198 rpmdb/db3.c:189
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr "otevírám db environment %s/%s %s\n"
 
-#: rpmdb/db2.c:588 rpmdb/db3.c:591
+#: rpmdb/db2.c:588 rpmdb/db3.c:617
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "uzavøen db index       %s/%s\n"
 
-#: rpmdb/db2.c:679 rpmdb/db3.c:686
+#: rpmdb/db2.c:679 rpmdb/db3.c:781
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "otevírám db index      %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db2.c:785 rpmdb/db3.c:796
+#: rpmdb/db2.c:785 rpmdb/db3.c:928
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu zamknout databázi zámkem %s v %s/%s\n"
 
-#: rpmdb/db2.c:792 rpmdb/db3.c:803
+#: rpmdb/db2.c:792 rpmdb/db3.c:935
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "uzamèen db index       %s/%s\n"
 
-#: rpmdb/dbconfig.c:260
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored\n"
+#: rpmdb/dbconfig.c:380
+#, fuzzy, c-format
+msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "neznámá db volba: \"%s\" ignorována\n"
 
-#: rpmdb/dbconfig.c:289
+#: rpmdb/dbconfig.c:417
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s má neplatnou numerickou hodnotu, pøeskoèeno\n"
 
-#: rpmdb/dbconfig.c:298
+#: rpmdb/dbconfig.c:426
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s má moc velkou nebo moc malou long hodnotu, pøeskoèeno\n"
 
-#: rpmdb/dbconfig.c:307
+#: rpmdb/dbconfig.c:435
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s má pøíli¹ velkou nebo moc malou celoèíselnou hodnotu, pøeskoèeno\n"
@@ -3661,41 +3661,41 @@ msgstr ""
 "Pokud tento pøíkaz nevyøe¹í problém, naleznete více informací\n"
 "na http://www.rpm.org nebo v diskuzním listu rpm-list@redhat.com.\n"
 
-#: rpmdb/rpmdb.c:102
+#: rpmdb/rpmdb.c:104
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: neznámá znaèka: \"%s\" ignorována\n"
 
-#: rpmdb/rpmdb.c:280
+#: rpmdb/rpmdb.c:284
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "nemohu otevøít index %s pøi pou¾ívání db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:300
+#: rpmdb/rpmdb.c:304
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "nemohu otevøít index %s\n"
 
-#: rpmdb/rpmdb.c:386
+#: rpmdb/rpmdb.c:390
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "chyba(%d) pøi získávání záznamu \"%s\" z indexu %s\n"
 
-#: rpmdb/rpmdb.c:511
+#: rpmdb/rpmdb.c:515
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "chyba(%d) pøi ukládání záznamu %s do %s\n"
 
-#: rpmdb/rpmdb.c:521
+#: rpmdb/rpmdb.c:525
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "chyba(%d) pøi odstraòování záznamu %s z %s\n"
 
-#: rpmdb/rpmdb.c:753
+#: rpmdb/rpmdb.c:760
 msgid "no dbpath has been set\n"
 msgstr "nebyla nastavena dbpath\n"
 
-#: rpmdb/rpmdb.c:854
+#: rpmdb/rpmdb.c:865
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3703,110 +3703,110 @@ msgstr ""
 "databáze je ve starém formátu; pou¾ijte --rebuilddb pro pøevod do nového\n"
 
 #. error
-#: rpmdb/rpmdb.c:1044
+#: rpmdb/rpmdb.c:1056
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "chyba(%d) pøi poèítání balíèkù\n"
 
-#: rpmdb/rpmdb.c:1100 rpmdb/rpmdb.c:1662
+#: rpmdb/rpmdb.c:1112 rpmdb/rpmdb.c:1674
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nemohu èíst hlavièku na adrese 0x%x\n"
 
-#: rpmdb/rpmdb.c:1365 rpmdb/rpmdb.c:2505
+#: rpmdb/rpmdb.c:1377 rpmdb/rpmdb.c:2518
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "záznam èíslo %d v databázi je chybný -- vynechávám.\n"
 
-#: rpmdb/rpmdb.c:1729
+#: rpmdb/rpmdb.c:1741
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
-#: rpmdb/rpmdb.c:1738
+#: rpmdb/rpmdb.c:1750
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuji %d polo¾ek z indexu %s.\n"
 
-#: rpmdb/rpmdb.c:1928
+#: rpmdb/rpmdb.c:1940
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba(%d) pøi alokaci nové instance balíèku\n"
 
-#: rpmdb/rpmdb.c:2006
+#: rpmdb/rpmdb.c:2018
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "pøidávám \"%s\" do indexu %s\n"
 
-#: rpmdb/rpmdb.c:2017
+#: rpmdb/rpmdb.c:2029
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "pøidávám %d polo¾ek do indexu %s.\n"
 
-#: rpmdb/rpmdb.c:2399
+#: rpmdb/rpmdb.c:2411
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "odstraòuji %s po úspì¹ném znovusestavení db3.\n"
 
-#: rpmdb/rpmdb.c:2427
+#: rpmdb/rpmdb.c:2439
 msgid "no dbpath has been set"
 msgstr "nebyla nastavena dbpath"
 
-#: rpmdb/rpmdb.c:2452
+#: rpmdb/rpmdb.c:2464
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "databázi %s pøevádím do %s\n"
 
-#: rpmdb/rpmdb.c:2456
+#: rpmdb/rpmdb.c:2468
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "doèasná databáze %s ji¾ existuje\n"
 
-#: rpmdb/rpmdb.c:2462
+#: rpmdb/rpmdb.c:2474
 #, c-format
 msgid "creating directory %s\n"
 msgstr "vytváøím adresáø %s\n"
 
-#: rpmdb/rpmdb.c:2464
+#: rpmdb/rpmdb.c:2476
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "vytváøím adresáø %s: %s\n"
 
-#: rpmdb/rpmdb.c:2471
+#: rpmdb/rpmdb.c:2483
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otevírám starou databázi s dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2482
+#: rpmdb/rpmdb.c:2494
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otevírám novou databázi s dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2544
+#: rpmdb/rpmdb.c:2557
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nemohu pøidat záznam - pùvodnì u %d\n"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2575
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "databázi nelze zvovu vytvoøit; pùvodní databáze zùstává na svém místì\n"
 
-#: rpmdb/rpmdb.c:2570
+#: rpmdb/rpmdb.c:2583
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: rpmdb/rpmdb.c:2572
+#: rpmdb/rpmdb.c:2585
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "pro obnovení nahraïte soubory v %s soubory z %s"
 
-#: rpmdb/rpmdb.c:2582
+#: rpmdb/rpmdb.c:2595
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ma¾u adresáø %s\n"
 
-#: rpmdb/rpmdb.c:2584
+#: rpmdb/rpmdb.c:2597
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nemohu odstranit adresáø %s: %s\n"
