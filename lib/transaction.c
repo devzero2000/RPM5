@@ -33,6 +33,8 @@
 # endif
 #endif
 
+#include "debug.h"
+
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access dbiIndexSet@*/
@@ -127,7 +129,7 @@ static void freeFi(TFI_t *fi)
 		free(fi->fstates); fi->fstates = NULL;
 	    }
 	    if (fi->dil) {
-		xfree(fi->dil); fi->dil = NULL;
+		free((void *)fi->dil); fi->dil = NULL;
 	    }
 	    break;
 	case TR_ADDED:
@@ -282,9 +284,9 @@ void rpmProblemSetFree(rpmProblemSet probs)
     for (i = 0; i < probs->numProblems; i++) {
 	rpmProblem p = probs->probs + i;
 	if (p->h)	headerFree(p->h);
-	if (p->pkgNEVR)	xfree(p->pkgNEVR);
-	if (p->altNEVR)	xfree(p->altNEVR);
-	if (p->str1) xfree(p->str1);
+	if (p->pkgNEVR)	free((void *)p->pkgNEVR);
+	if (p->altNEVR)	free((void *)p->altNEVR);
+	if (p->str1) free((void *)p->str1);
     }
     free(probs);
 }
@@ -330,7 +332,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
 		headerAddEntry(origH, RPMTAG_INSTPREFIXES,
 			RPM_STRING_ARRAY_TYPE, validRelocations, numValid);
-	    xfree(validRelocations);
+	    free((void *)validRelocations);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
 	return headerLink(origH);
@@ -421,8 +423,8 @@ static Header relocateFileList(struct availablePackage * alp,
 	    headerAddEntry(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
 		       (void **) actualRelocations, numActual);
 
-	xfree(actualRelocations);
-	xfree(validRelocations);
+	free((void *)actualRelocations);
+	free((void *)validRelocations);
     }
 
     /* For all relocations, we go through sorted file and relocation lists 
@@ -586,12 +588,12 @@ static Header relocateFileList(struct availablePackage * alp,
 	p = NULL;
 	headerGetEntry(h, RPMTAG_BASENAMES, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGBASENAMES, t, p, c);
-	xfree(p);
+	free((void *)p);
 
 	p = NULL;
 	headerGetEntry(h, RPMTAG_DIRNAMES, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGDIRNAMES, t, p, c);
-	xfree(p);
+	free((void *)p);
 
 	p = NULL;
 	headerGetEntry(h, RPMTAG_DIRINDEXES, &t, &p, &c);
@@ -1166,7 +1168,7 @@ static void skipFiles(TFI_t * fi, int noDocs)
     {	const char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
 	if (tmpPath && *tmpPath != '%')
 	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
-	xfree(tmpPath);
+	free((void *)tmpPath);
     }
 
     if (!headerGetEntry(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fileLangs,
@@ -1175,12 +1177,12 @@ static void skipFiles(TFI_t * fi, int noDocs)
 
     s = rpmExpand("%{_install_langs}", NULL);
     if (!(s && *s != '%')) {
-	if (s) xfree(s);
+	if (s) free((void *)s);
 	s = NULL;
     }
     if (s) {
 	languages = (const char **) splitString(s, strlen(s), ':');
-	xfree(s);
+	free((void *)s);
     } else
 	languages = NULL;
 
@@ -1283,7 +1285,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     ts->notifyData = notifyData;
     ts->ignoreSet = ignoreSet;
     if (ts->currDir)
-	xfree(ts->currDir);
+	free((void *)ts->currDir);
     ts->currDir = currentDirectory();
 
     /* Get available space on mounted file systems. */
@@ -1560,6 +1562,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
 	       NULL, ts->notifyData));
 
+	if (fi->fc == 0) continue;
+
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(sizeof(*matches), fi->fc);
 	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fi->fc))
@@ -1604,7 +1608,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
 	numShared = shared - sharedList;
 	shared->otherPkg = -1;
-	xfree(matches);
+	free((void *)matches);
 
 	/* Sort file info by other package index (otherPkg) */
 	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);
@@ -1648,7 +1652,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	/* Update disk space needs on each partition for this package. */
 	handleOverlappedFiles(fi, ht,
-	       (ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES) ? NULL : ts->probs, di);
+	       ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
+		    ? NULL : ts->probs), di);
 
 	/* Check added package has sufficient space on each partition used. */
 	switch (fi->type) {
@@ -1693,7 +1698,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	case TR_REMOVED:
-	    xfree(fi->dil); fi->dil = NULL;
+	    free((void *)fi->dil); fi->dil = NULL;
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	}

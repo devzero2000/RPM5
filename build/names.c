@@ -7,6 +7,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "debug.h"
 
 static uid_t uids[1024];
 /*@owned@*/ /*@null@*/ static const char *unames[1024];

@@ -56,6 +56,8 @@
 	- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
 	- use package version 3 if --nodirtokens is specified.
 	- add package names to problem sets early, don't save removed header.
+	- make sure that replaced tags in region are counted in headerSizeof().
+	- support for dmalloc debugging.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

@@ -19,6 +19,7 @@
 
 #include "myftw.h"
 #include "md5.h"
+#include "debug.h"
 
 #define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}

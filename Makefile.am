@@ -43,7 +43,7 @@ rpmpopt-$(VERSION): rpmpopt
 	cp $< $@
 
 noinst_HEADERS = \
-	acconfig.h	build.h		system.h
+	acconfig.h	build.h		debug.h		system.h
 
 rpm_SOURCES =		rpm.c
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)

@@ -7,6 +7,7 @@
 
 #include "rpmbuild.h"
 #include "buildio.h"
+#include "debug.h"
 
 extern int specedit;
 extern MacroContext rpmGlobalMacroContext;

@@ -8,6 +8,7 @@
 
 #include "depends.h"
 #include "misc.h"
+#include "debug.h"
 
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
@@ -162,7 +163,7 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
 {
     const char *msg = rpmProblemString(prob);
     fprintf(fp, "%s\n", msg);
-    xfree(msg);
+    free((void *)msg);
 }
 
 void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)

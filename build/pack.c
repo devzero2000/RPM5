@@ -12,6 +12,7 @@
 #include "misc.h"
 #include "signature.h"
 #include "rpmlead.h"
+#include "debug.h"
 
 extern int _noDirTokens;
 

@@ -64,6 +64,7 @@ marc@redhat.com and ewt@redhat.com.
 */
 
 #include <stdarg.h>
+#include "debug.h"
 
 /*---------typedefs---------*/
 

@@ -8,6 +8,8 @@
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
 
+#include "debug.h"
+
 static int _build_debug = 0;
 
 static void doRmSource(Spec spec)

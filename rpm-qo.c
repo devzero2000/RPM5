@@ -1,12 +1,13 @@
 #include "system.h"
 
-#include "build/rpmbuild.h"
+#include <rpmbuild.h>
 
 #include "install.h"
 #include "lib/signature.h"
 #include "query.h"
 #include "verify.h"
 #include "checksig.h"
+#include "debug.h"
 
 #define GETOPT_QUERYFORMAT	1000
 #define GETOPT_WHATREQUIRES	1001

@@ -1,8 +1,8 @@
-#include "system.h"
-
 /** \ingroup db1
  * \file lib/db1.c
  */
+
+#include "system.h"
 
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
@@ -32,6 +32,9 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #define	DBC	void
 #include "rpmdb.h"
+
+#include "debug.h"
+
 /*@access rpmdb@*/
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
@@ -388,9 +391,9 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
     db3Free(dbi);
     if (base)
-	xfree(base);
+	free((void *)base);
     if (urlfn)
-	xfree(urlfn);
+	free((void *)urlfn);
     return rc;
 }
 
@@ -468,11 +471,11 @@ exit:
 	db1close(dbi, 0);
 
     if (base) {
-	xfree(base);
+	free((void *)base);
 	base = NULL;
     }
     if (urlfn) {
-	xfree(urlfn);
+	free((void *)urlfn);
 	urlfn = NULL;
     }
 

@@ -159,7 +159,7 @@ if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f %{__prefix}/lib/rpm/convertrpmr
 fi
 %endif
 /bin/rpm --initdb
-if [ -f /var/lib/rpm/Packages]; then
+if [ -f /var/lib/rpm/Packages ]; then
     rm -f /etc/rpm/macros.db1
 fi
 
@@ -312,6 +312,8 @@ fi
 - collect and display rpm build error messages at end of build.
 - use package version 3 if --nodirtokens is specified.
 - add package names to problem sets early, don't save removed header.
+- make sure that replaced tags in region are counted in headerSizeof().
+- support for dmalloc debugging.
 
 * Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
 - add missing headerFree for legacy signature header.

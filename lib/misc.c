@@ -11,6 +11,7 @@ static int _debug = 0;
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
 #include "misc.h"
+#include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
@@ -245,11 +246,11 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	char tfnbuf[64];
 #ifndef	NOTYET
 	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
-	if (tempfn)	xfree(tempfn);
+	if (tempfn)	free((void *)tempfn);
 	tempfn = rpmGenPath(prefix, "%{_tmppath}/", tfnbuf);
 #else
 	strcpy(tfnbuf, "rpm-tmp.XXXXXX");
-	if (tempfn)	xfree(tempfn);
+	if (tempfn)	free((void *)tempfn);
 	tempfn = rpmGenPath(prefix, "%{_tmppath}/", mktemp(tfnbuf));
 #endif
 
@@ -300,7 +301,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     if (fnptr)
 	*fnptr = tempfn;
     else if (tempfn) {
-	xfree(tempfn);
+	free((void *)tempfn);
 	tempfn = NULL;
     }
     *fdptr = fd;
@@ -308,7 +309,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     return 0;
 
 errxit:
-    if (tempfn) xfree(tempfn);
+    if (tempfn) free((void *)tempfn);
     if (fd) Fclose(fd);
     return 1;
 }
@@ -402,7 +403,7 @@ exit:
     headerAddEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			baseNames, count);
 
-    xfree(fileNames);
+    free((void *)fileNames);
 
     headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
 }
@@ -444,8 +445,8 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 	data = stpcpy( stpcpy(data, dirNames[dirIndexes[i]]), baseNames[i]);
 	*data++ = '\0';
     }
-    xfree(baseNames);
-    xfree(dirNames);
+    free((void *)baseNames);
+    free((void *)dirNames);
 
     *fileListPtr = fileNames;
     *fileCountPtr = count;
@@ -465,7 +466,7 @@ void expandFilelist(Header h)
     headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			fileNames, count);
 
-    xfree(fileNames);
+    free((void *)fileNames);
 
     headerRemoveEntry(h, RPMTAG_BASENAMES);
     headerRemoveEntry(h, RPMTAG_DIRNAMES);
@@ -601,7 +602,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 	    argv[argc++] = xstrdup(globURL);
 	}
 	Globfree(&gl);
-	xfree(globURL);
+	free((void *)globURL);
     }
     if (argv != NULL && argc > 0) {
 	argv[argc] = NULL;
@@ -616,11 +617,11 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 
 exit:
     if (av)
-	xfree(av);
+	free((void *)av);
     if ((rc || argvPtr == NULL) && argv) {
 	for (i = 0; i < argc; i++)
-	    xfree(argv[i]);
-	xfree(argv);
+	    free((void *)argv[i]);
+	free((void *)argv);
 	argv = NULL;
     }
     return rc;
@@ -778,8 +779,8 @@ void providePackageNVR(Header h)
     }
 
 exit:
-    if (provides) xfree(provides);
-    if (providesEVR) xfree(providesEVR);
+    if (provides) free((void *)provides);
+    if (providesEVR) free((void *)providesEVR);
 
     if (bingo) {
 	headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,

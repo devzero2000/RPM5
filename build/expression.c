@@ -13,8 +13,10 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
-#include "rpmlib.h"
+#include <rpmbuild.h>
+#include <rpmlib.h>
+
+#include "debug.h"
 
 /* #define DEBUG_PARSER 1 */
 
@@ -24,7 +26,6 @@
 #else
 #define DEBUG(x)
 #endif
-
 
 /*
  * Encapsulation of a "value"

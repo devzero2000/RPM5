@@ -751,7 +751,7 @@ AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
 dnl
 dnl Auto-detect whether doxygen generated API docs should be included.
 dnl
-AC_ARG_WITH(apidocs, [  --with-apidocs           build rpm API docs ],
+AC_ARG_WITH(apidocs, [  --with-apidocs          build rpm API docs ],
   [ if test X"$__DOXYGEN" = Xno; then
       AC_MSG_ERROR(--> rpm API docs need doxygen in PATH)
     fi
@@ -773,6 +773,14 @@ else
 fi
 AC_SUBST(WITH_APIDOCS_TARGET)
 AC_SUBST(WITH_APIDOCS)
+
+AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ],
+  rpm_cv_dmalloc=yes, rpm_cv_dmalloc=no)
+
+if test $rpm_cv_dmalloc = yes ; then
+  AC_DEFINE(DMALLOC)
+  LIBS="$LIBS -ldmalloc"
+fi
 
 AC_CHECK_FUNCS(setlocale)
 
