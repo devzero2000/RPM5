@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-30 08:15-0500\n"
+"POT-Creation-Date: 2004-02-24 14:50-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -19,53 +19,55 @@ msgstr "Ouppfyllda byggberoenden:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Kan inte öppna specfilen %s: %s\n"
 
-#: build.c:152 build.c:164
+#: build.c:150 build.c:162
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Kunde inte öppna \"tar\"-rör: %m\n"
 
 #. Give up
-#: build.c:171
+#: build.c:169
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Kunde inte läsa specfil från %s\n"
 
-#: build.c:199
+#: build.c:197
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Kunde inte byta namn på %s till %s: %m\n"
 
-#: build.c:239
+#: build.c:237
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "kunde inte ta status på %s: %m\n"
 
-#: build.c:244
+#: build.c:242
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Filen %s är inte en vanlig fil.\n"
 
-#: build.c:253
+#: build.c:251
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Filen %s tycks inte vara en specfil.\n"
 
 #. parse up the build operators
-#: build.c:324
+#: build.c:322
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: build.c:339
+#: build.c:337
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger för målet %s\n"
 
 #: rpm2cpio.c:55
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "argumentet är inte ett RPM-paket\n"
 
 #: rpm2cpio.c:60
+#, c-format
 msgid "error reading header from package\n"
 msgstr "fel vid läsning av pakethuvud\n"
 
@@ -114,10 +116,12 @@ msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: rpmqv.c:136
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright © 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:137
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Detta program kan distribueras fritt enligt villkoren i GNU GPL\n"
@@ -269,6 +273,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "argument till --root (-r) måste börja med /"
 
 #: rpmqv.c:541
+#, c-format
 msgid "no files to sign\n"
 msgstr "inga filer att signera\n"
 
@@ -278,6 +283,7 @@ msgid "cannot access file %s\n"
 msgstr "kan inte komma åt filen %s\n"
 
 #: rpmqv.c:565
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp hittades inte: "
 
@@ -286,10 +292,12 @@ msgid "Enter pass phrase: "
 msgstr "Ange lösenfras: "
 
 #: rpmqv.c:572
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Kontrollen av lösenfrasen misslyckades\n"
 
 #: rpmqv.c:576
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Lösenfrasen är ok.\n"
 
@@ -303,6 +311,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign kan enbart användas vid paketbyggnation"
 
 #: rpmqv.c:605
+#, c-format
 msgid "exec failed\n"
 msgstr "exec misslyckades\n"
 
@@ -898,7 +907,7 @@ msgstr "rad %d: Tom tagg: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:429
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan inte vara \"/\": %s\n"
@@ -1063,47 +1072,47 @@ msgstr "rad %d: skriptprogram måste börja med \"/\": %s\n"
 msgid "line %d: Second %s\n"
 msgstr "rad %d: En andra %s\n"
 
-#: build/parseSpec.c:161
+#: build/parseSpec.c:158
 #, c-format
 msgid "line %d: %s\n"
 msgstr "rad %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:213
+#: build/parseSpec.c:210
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Kan inte öppna %s: %s\n"
 
-#: build/parseSpec.c:229
+#: build/parseSpec.c:226
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Oavslutat %%if\n"
 
-#: build/parseSpec.c:303
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean returnerar %d\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Fick ett %%else utan något %%if\n"
 
-#: build/parseSpec.c:324
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Fick ett %%endif utan något %%if\n"
 
-#: build/parseSpec.c:338 build/parseSpec.c:347
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "felformaterad %%include-sats\n"
 
-#: build/parseSpec.c:548
+#: build/parseSpec.c:545
 msgid "No compatible architectures found for build\n"
 msgstr "Hittade inga kompatibla arkitekturer att bygga\n"
 
-#: build/parseSpec.c:609
+#: build/parseSpec.c:606
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paketet har ingen %%description: %s\n"
@@ -1416,7 +1425,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:499
-#: rpmdb/header.c:3509 rpmdb/header.c:3538 rpmdb/header.c:3562
+#: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -1567,10 +1576,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "regionstorlek: FEL, ril(%d) > il(%d)\n"
 
 #: lib/package.c:453
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hvd SHA1: FEL, ej hex\n"
 
 #: lib/package.c:471
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hvd DSA: FEL, ej binär\n"
 
@@ -1586,6 +1597,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hvdstorlek(%d): FEL, läsning returnerade %d\n"
 
 #: lib/package.c:665
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hvdmagi: FEL\n"
 
@@ -1605,6 +1617,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hvdklick(%d): FEL, läsning returnerade %d\n"
 
 #: lib/package.c:709
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr "hvdlast: FEL\n"
 
@@ -2583,10 +2596,20 @@ msgstr "hoppar över %s - överföring misslyckades - %s\n"
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
+#: lib/rpminstall.c:498
+#, fuzzy, c-format
+msgid "\tadded source package [%d]\n"
+msgstr "<källpaket>"
+
 #: lib/rpminstall.c:523
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paket %s är inte relokerbart\n"
+
+#: lib/rpminstall.c:568
+#, fuzzy, c-format
+msgid "\tadded binary package [%d]\n"
+msgstr "installerar binärpaket\n"
 
 #: lib/rpminstall.c:573
 #, c-format
@@ -2917,6 +2940,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "sighstorlek(%d): FEL, läsning returnerade %d\n"
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "sighmagi: FEL\n"
 
@@ -2941,6 +2965,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sightagg[%d]: FEL, tagg %d typ %d position %d antal %d\n"
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr "sighlast: FEL\n"
 
@@ -3008,6 +3033,9 @@ msgstr "Fick %d byte GPG-signatur\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3048,10 +3076,12 @@ msgid "V3 DSA signature: "
 msgstr "V3 DSA-signatur: "
 
 #: lib/signature.c:1357
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
 #: lib/signature.c:1384
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Trasig MD5-summa: STÖDS EJ\n"
 
@@ -3193,77 +3223,77 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#: rpmdb/header.c:2685
+#: rpmdb/header.c:2686
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#: rpmdb/header.c:2715
+#: rpmdb/header.c:2716
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#: rpmdb/header.c:2731
+#: rpmdb/header.c:2732
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: rpmdb/header.c:2743
+#: rpmdb/header.c:2744
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: rpmdb/header.c:2752
+#: rpmdb/header.c:2753
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2780
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: rpmdb/header.c:2792
+#: rpmdb/header.c:2793
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: rpmdb/header.c:2805
+#: rpmdb/header.c:2806
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: rpmdb/header.c:2869
+#: rpmdb/header.c:2870
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: rpmdb/header.c:2876
+#: rpmdb/header.c:2877
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: rpmdb/header.c:2888 rpmdb/header.c:2928
+#: rpmdb/header.c:2889 rpmdb/header.c:2929
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: rpmdb/header.c:2896
+#: rpmdb/header.c:2897
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: rpmdb/header.c:2914
+#: rpmdb/header.c:2915
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: rpmdb/header.c:2936
+#: rpmdb/header.c:2937
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3037
+#: rpmdb/header.c:3038
 msgid "(index out of range)"
 msgstr "(index utanför intervall)"
 
-#: rpmdb/header.c:3284
+#: rpmdb/header.c:3285
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 
-#: rpmdb/header.c:3600
+#: rpmdb/header.c:3601
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3616
+#: rpmdb/header.c:3617
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3513,42 +3543,42 @@ msgstr "Makro %%%s har otillåtet namn (%%undefine)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) användes inte under nivå %d\n"
 
-#: rpmio/macro.c:984
+#: rpmio/macro.c:985
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Okänd flagga %c i %s(%s)\n"
 
-#: rpmio/macro.c:1184
+#: rpmio/macro.c:1185
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdjup(%d) större än max(%d)\n"
 
-#: rpmio/macro.c:1255 rpmio/macro.c:1272
+#: rpmio/macro.c:1256 rpmio/macro.c:1273
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Oavslutad %c: %s\n"
 
-#: rpmio/macro.c:1313
+#: rpmio/macro.c:1314
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 
-#: rpmio/macro.c:1442
+#: rpmio/macro.c:1443
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Inget makro %%%.*s hittat, hoppar över\n"
 
-#: rpmio/macro.c:1513
+#: rpmio/macro.c:1514
 msgid "Target buffer overflow\n"
 msgstr "Målbuffert översvämmad\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1708 rpmio/macro.c:1714
+#: rpmio/macro.c:1709 rpmio/macro.c:1715
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:1717
+#: rpmio/macro.c:1718
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
@@ -3615,6 +3645,7 @@ msgid "(no error)"
 msgstr "(inget fel)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "ödesdigert fel: "

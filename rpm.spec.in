@@ -19,7 +19,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-%{expand: %%define rpm_version %{version}}
+%{expand: %%1efine rpm_version %{version}}
 Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
@@ -139,6 +139,9 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
 %endif
+
+# XXX hack out O_DIRECT support in db4 for now.
+perl -pi -e 's/#define HAVE_O_DIRECT 1/#undef HAVE_O_DIRECT/' db3/db_config.h
 
 make %{_smp_mflags}
 
@@ -482,6 +485,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Tue Feb 24 2004 Jeff Johnson <jbj@jbj.org> 4.2.2-0.11
+- revert to db-4.1.25 without --enable-posixmutexes.
+
 * Sun Feb 22 2004 Jeff Johnson <jbj@jbj.org> 4.2.2-0.10
 - add ia32e arch.
 

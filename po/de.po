@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-30 08:15-0500\n"
+"POT-Creation-Date: 2004-02-24 14:50-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -58,57 +58,58 @@ msgid "Unable to open spec file %s: %s\n"
 msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
 
 # , c-format
-#: build.c:152 build.c:164
+#: build.c:150 build.c:162
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
 #. Give up
-#: build.c:171
+#: build.c:169
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build.c:199
+#: build.c:197
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build.c:239
+#: build.c:237
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build.c:244
+#: build.c:242
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
-#: build.c:253
+#: build.c:251
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
 #. parse up the build operators
-#: build.c:324
+#: build.c:322
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:339
+#: build.c:337
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
 #: rpm2cpio.c:55
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
 #: rpm2cpio.c:60
-#, fuzzy
+#, fuzzy, c-format
 msgid "error reading header from package\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
@@ -159,12 +160,12 @@ msgid "RPM version %s\n"
 msgstr "RPM Version %s\n"
 
 #: rpmqv.c:136
-#, fuzzy
+#, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright © 1998 - Red Hat Software"
 
 #: rpmqv.c:137
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Dies darf unter den Bedingungen der »GNU GPL« frei verteilt werden"
@@ -329,6 +330,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "Argumente zu --root (-r) müssen mit einem / beginnen"
 
 #: rpmqv.c:541
+#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -338,7 +340,7 @@ msgid "cannot access file %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
 #: rpmqv.c:565
-#, fuzzy
+#, fuzzy, c-format
 msgid "pgp not found: "
 msgstr "Datei auf dem Server nicht gefunden"
 
@@ -347,10 +349,12 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:572
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
 
 #: rpmqv.c:576
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Das Passwort ist richtig.\n"
 
@@ -364,7 +368,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paketerstellung benutzt werden"
 
 #: rpmqv.c:605
-#, fuzzy
+#, fuzzy, c-format
 msgid "exec failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
@@ -1003,7 +1007,7 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:429
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
@@ -1180,49 +1184,49 @@ msgid "line %d: Second %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/parseSpec.c:161
+#: build/parseSpec.c:158
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
 #. XXX Fstrerror
-#: build/parseSpec.c:213
+#: build/parseSpec.c:210
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
-#: build/parseSpec.c:229
+#: build/parseSpec.c:226
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:303
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:324
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:338 build/parseSpec.c:347
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:548
+#: build/parseSpec.c:545
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: build/parseSpec.c:609
+#: build/parseSpec.c:606
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
@@ -1559,7 +1563,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:499
-#: rpmdb/header.c:3509 rpmdb/header.c:3538 rpmdb/header.c:3562
+#: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(keine Zahl)"
 
@@ -1716,10 +1720,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1735,6 +1741,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1754,6 +1761,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2814,10 +2822,20 @@ msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 msgid "%s cannot be installed\n"
 msgstr "Fehler: %s kann nicht installiert werden\n"
 
+#: lib/rpminstall.c:498
+#, fuzzy, c-format
+msgid "\tadded source package [%d]\n"
+msgstr "Anfrage an alle Pakete"
+
 #: lib/rpminstall.c:523
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "Paket %s ist nicht installiert\n"
+
+#: lib/rpminstall.c:568
+#, fuzzy, c-format
+msgid "\tadded binary package [%d]\n"
+msgstr "Paket installieren"
 
 #: lib/rpminstall.c:573
 #, fuzzy, c-format
@@ -3158,6 +3176,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3182,6 +3201,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3254,6 +3274,9 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3297,10 +3320,12 @@ msgid "V3 DSA signature: "
 msgstr "%s: Keine Signatur verfügbar\n"
 
 #: lib/signature.c:1357
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3441,80 +3466,80 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2685
+#: rpmdb/header.c:2686
 msgid "missing { after %"
 msgstr "fehlende { nach %{"
 
-#: rpmdb/header.c:2715
+#: rpmdb/header.c:2716
 msgid "missing } after %{"
 msgstr "fehlende } nach %{"
 
 # »Tag« übersetzen??? -ke-
-#: rpmdb/header.c:2731
+#: rpmdb/header.c:2732
 msgid "empty tag format"
 msgstr "leeres »Tag«-Format"
 
-#: rpmdb/header.c:2743
+#: rpmdb/header.c:2744
 msgid "empty tag name"
 msgstr "leerer »Tag«-Name"
 
-#: rpmdb/header.c:2752
+#: rpmdb/header.c:2753
 msgid "unknown tag"
 msgstr "unbekannter »Tag«"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2780
 msgid "] expected at end of array"
 msgstr "] am Ende des Arrays erwartet"
 
-#: rpmdb/header.c:2792
+#: rpmdb/header.c:2793
 msgid "unexpected ]"
 msgstr "unerwartete ]"
 
-#: rpmdb/header.c:2805
+#: rpmdb/header.c:2806
 msgid "unexpected }"
 msgstr "unerwartete }"
 
-#: rpmdb/header.c:2869
+#: rpmdb/header.c:2870
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: rpmdb/header.c:2876
+#: rpmdb/header.c:2877
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ nach ? im Ausdruck erwartet"
 
-#: rpmdb/header.c:2888 rpmdb/header.c:2928
+#: rpmdb/header.c:2889 rpmdb/header.c:2929
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
-#: rpmdb/header.c:2896
+#: rpmdb/header.c:2897
 msgid ": expected following ? subexpression"
 msgstr ": nach ? Unterausdruck erwartet"
 
-#: rpmdb/header.c:2914
+#: rpmdb/header.c:2915
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ nach : im Ausdruck erwartet"
 
-#: rpmdb/header.c:2936
+#: rpmdb/header.c:2937
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3037
+#: rpmdb/header.c:3038
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3284
+#: rpmdb/header.c:3285
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3600
+#: rpmdb/header.c:3601
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3616
+#: rpmdb/header.c:3617
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3773,43 +3798,43 @@ msgstr ""
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:984
+#: rpmio/macro.c:985
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "(unbekannter Typ)"
 
-#: rpmio/macro.c:1184
+#: rpmio/macro.c:1185
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1255 rpmio/macro.c:1272
+#: rpmio/macro.c:1256 rpmio/macro.c:1273
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: rpmio/macro.c:1313
+#: rpmio/macro.c:1314
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1442
+#: rpmio/macro.c:1443
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: rpmio/macro.c:1513
+#: rpmio/macro.c:1514
 msgid "Target buffer overflow\n"
 msgstr ""
 
 # , c-format
 #. XXX Fstrerror
-#: rpmio/macro.c:1708 rpmio/macro.c:1714
+#: rpmio/macro.c:1709 rpmio/macro.c:1715
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: rpmio/macro.c:1717
+#: rpmio/macro.c:1718
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
@@ -3886,6 +3911,7 @@ msgid "(no error)"
 msgstr "Fehler: "
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "Fataler Fehler: "

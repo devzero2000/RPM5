@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-30 08:15-0500\n"
+"POT-Creation-Date: 2004-02-24 14:50-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -25,55 +25,55 @@ msgstr "依存性の欠如:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "spec ファイルをオープンできません: %s\n"
 
-#: build.c:152 build.c:164
+#: build.c:150 build.c:162
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar パイプのオープンに失敗: %s\n"
 
 #. Give up
-#: build.c:171
+#: build.c:169
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました\n"
 
-#: build.c:199
+#: build.c:197
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s を %s にする名前の変更に失敗しました: %s\n"
 
-#: build.c:239
+#: build.c:237
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat %s に失敗: %s"
 
-#: build.c:244
+#: build.c:242
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "普通のファイルではありません: %s\n"
 
-#: build.c:253
+#: build.c:251
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は スペックファイルではないようです。\n"
 
 #. parse up the build operators
-#: build.c:324
+#: build.c:322
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "作成中ターゲットプラットフォーム: %s\n"
 
-#: build.c:339
+#: build.c:337
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
 
 #: rpm2cpio.c:55
-#, fuzzy
+#, fuzzy, c-format
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません\n"
 
 #: rpm2cpio.c:60
-#, fuzzy
+#, fuzzy, c-format
 msgid "error reading header from package\n"
 msgstr "パッケージからヘッダの読み込みのエラー\n"
 
@@ -123,7 +123,7 @@ msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
 
 #: rpmqv.c:136
-#, fuzzy
+#, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 "著作権 (C) 1998 - Red Hat Software\n"
@@ -131,7 +131,7 @@ msgstr ""
 "誤訳等は神田まで"
 
 #: rpmqv.c:137
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "GNU一般公有使用許諾書の下で自由に配布できます"
@@ -288,6 +288,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらねばなりません"
 
 #: rpmqv.c:541
+#, c-format
 msgid "no files to sign\n"
 msgstr "署名するためのファイルがありません\n"
 
@@ -297,7 +298,7 @@ msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません\n"
 
 #: rpmqv.c:565
-#, fuzzy
+#, fuzzy, c-format
 msgid "pgp not found: "
 msgstr "pgp が見つかりません: "
 
@@ -306,10 +307,12 @@ msgid "Enter pass phrase: "
 msgstr "パスフレーズを入力してください: "
 
 #: rpmqv.c:572
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズチェックに失敗しました\n"
 
 #: rpmqv.c:576
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です．\n"
 
@@ -323,6 +326,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ使用できます"
 
 #: rpmqv.c:605
+#, c-format
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
@@ -933,7 +937,7 @@ msgstr "%d 行目: 空のタグ: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:429
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
@@ -1100,48 +1104,48 @@ msgstr "%d 行目: スクリプトプログラムは '/' で始まらなければなりません: %s"
 msgid "line %d: Second %s\n"
 msgstr "%d 行目: 2番目の %s"
 
-#: build/parseSpec.c:161
+#: build/parseSpec.c:158
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "%d 行目: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:213
+#: build/parseSpec.c:210
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "オープンできません: %s\n"
 
-#: build/parseSpec.c:229
+#: build/parseSpec.c:226
 #, fuzzy, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if が閉じていません"
 
-#: build/parseSpec.c:303
+#: build/parseSpec.c:300
 #, fuzzy, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s%d: parseExpressionBoolean が %d を返しました"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:309
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: if がないのに %%else があります"
 
-#: build/parseSpec.c:324
+#: build/parseSpec.c:321
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: if がないのに %%endif があります"
 
-#: build/parseSpec.c:338 build/parseSpec.c:347
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, fuzzy, c-format
 msgid "malformed %%include statement\n"
 msgstr "おかしな %%include ステートメントです"
 
-#: build/parseSpec.c:548
+#: build/parseSpec.c:545
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "作成(build)可能なアーキテクチャはありません"
 
-#: build/parseSpec.c:609
+#: build/parseSpec.c:606
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "パッケージには %%description がありません: %s"
@@ -1477,7 +1481,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:499
-#: rpmdb/header.c:3509 rpmdb/header.c:3538 rpmdb/header.c:3562
+#: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -1629,10 +1633,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:453
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:471
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1648,6 +1654,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:665
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1667,6 +1674,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:709
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2726,10 +2734,20 @@ msgstr "%s をスキップします - 転送失敗 - %s\n"
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
 
+#: lib/rpminstall.c:498
+#, fuzzy, c-format
+msgid "\tadded source package [%d]\n"
+msgstr "%d 個のパッケージを見つけました\n"
+
 #: lib/rpminstall.c:523
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "パッケージ %s は再配置できません"
+
+#: lib/rpminstall.c:568
+#, fuzzy, c-format
+msgid "\tadded binary package [%d]\n"
+msgstr "古いスタイルのバイナリパッケージ\n"
 
 #: lib/rpminstall.c:573
 #, fuzzy, c-format
@@ -3070,6 +3088,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3094,6 +3113,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3166,6 +3186,9 @@ msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3210,10 +3233,12 @@ msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
 #: lib/signature.c:1357
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1384
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3354,77 +3379,77 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2685
+#: rpmdb/header.c:2686
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
-#: rpmdb/header.c:2715
+#: rpmdb/header.c:2716
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
-#: rpmdb/header.c:2731
+#: rpmdb/header.c:2732
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
-#: rpmdb/header.c:2743
+#: rpmdb/header.c:2744
 msgid "empty tag name"
 msgstr "空のタグ名"
 
-#: rpmdb/header.c:2752
+#: rpmdb/header.c:2753
 msgid "unknown tag"
 msgstr "不明なタグ"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2780
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
-#: rpmdb/header.c:2792
+#: rpmdb/header.c:2793
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
-#: rpmdb/header.c:2805
+#: rpmdb/header.c:2806
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
-#: rpmdb/header.c:2869
+#: rpmdb/header.c:2870
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
-#: rpmdb/header.c:2876
+#: rpmdb/header.c:2877
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
-#: rpmdb/header.c:2888 rpmdb/header.c:2928
+#: rpmdb/header.c:2889 rpmdb/header.c:2929
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
-#: rpmdb/header.c:2896
+#: rpmdb/header.c:2897
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
-#: rpmdb/header.c:2914
+#: rpmdb/header.c:2915
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
-#: rpmdb/header.c:2936
+#: rpmdb/header.c:2937
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3037
+#: rpmdb/header.c:3038
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3284
+#: rpmdb/header.c:3285
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3600
+#: rpmdb/header.c:3601
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3616
+#: rpmdb/header.c:3617
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3679,43 +3704,43 @@ msgstr "マクロ %%%s は違法な名前です(%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "マクロ %%%s (%s) はレベル %d 以下で使用されませんでした"
 
-#: rpmio/macro.c:984
+#: rpmio/macro.c:985
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)"
 
-#: rpmio/macro.c:1184
+#: rpmio/macro.c:1185
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ(%d)が最大値(%d)よりも大きい"
 
-#: rpmio/macro.c:1255 rpmio/macro.c:1272
+#: rpmio/macro.c:1256 rpmio/macro.c:1273
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s"
 
-#: rpmio/macro.c:1313
+#: rpmio/macro.c:1314
 #, fuzzy, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "A %% は構文解析できないマクロが続いています"
 
-#: rpmio/macro.c:1442
+#: rpmio/macro.c:1443
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません、スキップします"
 
-#: rpmio/macro.c:1513
+#: rpmio/macro.c:1514
 #, fuzzy
 msgid "Target buffer overflow\n"
 msgstr "ターゲットバッファオーバーフロー"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1708 rpmio/macro.c:1714
+#: rpmio/macro.c:1709 rpmio/macro.c:1715
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s"
 
-#: rpmio/macro.c:1717
+#: rpmio/macro.c:1718
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s: は %d バイトより小さいです"
@@ -3792,6 +3817,7 @@ msgid "(no error)"
 msgstr "(エラー 0x%x)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "致命的なエラー: "
@@ -4856,9 +4882,6 @@ msgstr ""
 
 #~ msgid "archive offset is %d\n"
 #~ msgstr "アーカイブオフセットは %d\n"
-
-#~ msgid "old style binary package\n"
-#~ msgstr "古いスタイルのバイナリパッケージ\n"
 
 #, fuzzy
 #~ msgid "%s: %-45s YES (rpmlib version)\n"
