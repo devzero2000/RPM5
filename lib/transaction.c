@@ -1159,11 +1159,13 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 
     /* Get the TID of the current transaction */
     tid = rpmtsGetTid(ts);
+
     /* Need the repackage dir if the user want to
      * rollback on a failure.
      */
     _repackage_dir = rpmExpand("%{?_repackage_dir}", NULL);
-    if (_repackage_dir == NULL) goto exit;
+    if (_repackage_dir && _repackage_dir == '\0') goto exit;
+    rpmMessage(RPMMESS_DEBUG, _("\tRepackage Dir = %s...\n"), _repackage_dir);
 
     /* Build the glob string to find the possible repackaged
      * packages for this package.
