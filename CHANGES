@@ -74,6 +74,11 @@
 	- fix: failed signature read headerFree segfault.
 	- fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.
 	- fix: synthesized callbacks for removed packages have not a pkgkey.
+	- identify install scriptlet failures with the name of the scriptlet.
+	- handle install chroot's identically throughout the install process.
+	- add rpmlib(HeaderLoadSortsTags) for tracking header regions
+		"just in case".
+	- create _tmppath on the fly if not present.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

@@ -2,7 +2,6 @@
 %define	with_bzip2		1
 %define	with_apidocs		1
 %define strip_binaries		1
-%define	__spec_install_post	:
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -14,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.25
+Release: 0.26
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -141,7 +140,7 @@ E_O_F
 %endif
 
 %if %{with_apidocs}
-gzip -9n apidocs/man/* || :
+gzip -9n apidocs/man/man*/* || :
 %endif
 
 %clean
@@ -310,6 +309,13 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Dec 19 2000 Jeff Johnson <jbj@redhat.com>
+- gendiff: generate ChangeLog patches more intelligently (#22356).
+- identify install scriptlet failures with the name of the scriptlet.
+- handle install chroot's identically throughout the install process.
+- add rpmlib(HeaderLoadSortsTags) for tracking header regions "just in case".
+- create _tmppath on the fly if not present.
+
 * Thu Dec 14 2000 Jeff Johnson <jbj@redhat.com>
 - fix: synthesized callbacks for removed packages have not a pkgkey.
 
