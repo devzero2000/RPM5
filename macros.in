@@ -808,10 +808,9 @@
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
   FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
-  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force ;} \
-  ./configure \\\
-	%{?_gnu: --host=%{_host} --target=%{_target_platform}} \\\
-	%{!?_gnu: %{_target_platform}} \\\
+  ./configure --host=%{_host} --build=%{_build} \\\
+	--target=%{_target_platform} \\\
+	--program-prefix=%{?_program_prefix} \\\
  	--prefix=%{_prefix} \\\
 	--exec-prefix=%{_exec_prefix} \\\
 	--bindir=%{_bindir} \\\
