@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-05-29 09:15-0400\n"
+"POT-Creation-Date: 2001-05-29 15:43-0400\n"
 "PO-Revision-Date: 2001-05-15 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -865,9 +865,9 @@ msgstr ""
 "소유자와 그룹을 설정합니다"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:891 rpmqv.c:897 rpmqv.c:904
-#: rpmqv.c:910 rpmqv.c:948 rpmqv.c:953 rpmqv.c:961 rpmqv.c:967 rpmqv.c:975
-#: rpmqv.c:1048
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:882 rpmqv.c:888 rpmqv.c:895
+#: rpmqv.c:901 rpmqv.c:939 rpmqv.c:944 rpmqv.c:952 rpmqv.c:958 rpmqv.c:966
+#: rpmqv.c:1039
 msgid "only one major mode may be specified"
 msgstr "하나의 주요(major) 모드만 지정할 수 있습니다"
 
@@ -879,23 +879,23 @@ msgstr "-u 와 --uninstall 옵션은 이제 더이상 사용되지 않습니다.\n"
 msgid "Use -e or --erase instead.\n"
 msgstr "대신 -e 또는 --erase 옵션을 사용합니다.\n"
 
-#: rpm.c:827 rpmqv.c:930
+#: rpm.c:827 rpmqv.c:921
 msgid "relocations must begin with a /"
 msgstr "재 배치시에는 반드시 '/' 로 시작되어야 합니다"
 
-#: rpm.c:829 rpmqv.c:932
+#: rpm.c:829 rpmqv.c:923
 msgid "relocations must contain a ="
 msgstr "재 배치시에는 반드시 '=' 이 포함되어야 합니다"
 
-#: rpm.c:832 rpmqv.c:935
+#: rpm.c:832 rpmqv.c:926
 msgid "relocations must have a / following the ="
 msgstr "재 배치시에는 반드시 '=' 뒤에 '/' 가 와야 합니다"
 
-#: rpm.c:841 rpmqv.c:917
+#: rpm.c:841 rpmqv.c:908
 msgid "exclude paths must begin with a /"
 msgstr "제외시킬 경로는 반드시 '/' 로 시작되어야 합니다"
 
-#: rpm.c:850 rpmqv.c:1001
+#: rpm.c:850 rpmqv.c:992
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "--rcfile 옵션이 제거되었습니다.\n"
 
@@ -904,103 +904,103 @@ msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 "--macros 옵션은 콜론(:)으로 구분된 매크로 목록 파일과 함께 사용합니다.\n"
 
-#: rpm.c:856 rpmqv.c:1008
+#: rpm.c:856 rpmqv.c:999
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "(%d) 개의 인수를 처리하는 과정에서 내부 오류가 발생했습니다 :-(\n"
 
-#: rpm.c:891 rpmqv.c:1063
+#: rpm.c:891 rpmqv.c:1054
 msgid "one type of query/verify may be performed at a time"
 msgstr "질의/검증 유형은 동시에 수행할 수 있습니다"
 
-#: rpm.c:896 rpmqv.c:1067
+#: rpm.c:896 rpmqv.c:1058
 msgid "unexpected query flags"
 msgstr "올바르지 못한 질의 플래그 입니다"
 
-#: rpm.c:899 rpmqv.c:1070
+#: rpm.c:899 rpmqv.c:1061
 msgid "unexpected query format"
 msgstr "올바르지 못한 질의 형식 입니다"
 
-#: rpm.c:902 rpmqv.c:1073
+#: rpm.c:902 rpmqv.c:1064
 msgid "unexpected query source"
 msgstr "올바르지 못한 질의 소스 입니다"
 
-#: rpm.c:905 rpmqv.c:1083
+#: rpm.c:905 rpmqv.c:1074
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "설치, 업그레이드, 소스 삭제, spec 파일 삭제시에만 효력이 있습니다"
 
-#: rpm.c:908 rpmqv.c:1088
+#: rpm.c:908 rpmqv.c:1079
 msgid "files may only be relocated during package installation"
 msgstr "패키지 설치시에만 파일을 재 배치할 수 있습니다"
 
-#: rpm.c:911 rpmqv.c:1091
+#: rpm.c:911 rpmqv.c:1082
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix 또는 --relocate 옵션만 사용할 수 있습니다"
 
-#: rpm.c:914 rpmqv.c:1094
+#: rpm.c:914 rpmqv.c:1085
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate 와 --excludepath 옵션은 최신의 패키지를 설치하실 때에만 사용할 수 "
 "있습니다"
 
-#: rpm.c:917 rpmqv.c:1097
+#: rpm.c:917 rpmqv.c:1088
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix 옵션은 최신의 패키지를 설치하실 때에만 사용할 수 있습니다"
 
-#: rpm.c:920 rpmqv.c:1100
+#: rpm.c:920 rpmqv.c:1091
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix 옵션의 인수는 반드시 '/' 로 시작되어야 합니다"
 
-#: rpm.c:923 rpmqv.c:1103
+#: rpm.c:923 rpmqv.c:1094
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:927 rpmqv.c:1107
+#: rpm.c:927 rpmqv.c:1098
 msgid "--percent may only be specified during package installation"
 msgstr "--percent 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:931 rpmqv.c:1112
+#: rpm.c:931 rpmqv.c:1103
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:935 rpmqv.c:1116
+#: rpm.c:935 rpmqv.c:1107
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:939 rpmqv.c:1120
+#: rpm.c:939 rpmqv.c:1111
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:943 rpmqv.c:1124
+#: rpm.c:943 rpmqv.c:1115
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:947 rpmqv.c:1128
+#: rpm.c:947 rpmqv.c:1119
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs 와 --includedocs 옵션만 지정할 수 있습니다"
 
-#: rpm.c:951 rpmqv.c:1132
+#: rpm.c:951 rpmqv.c:1123
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:955 rpmqv.c:1136
+#: rpm.c:955 rpmqv.c:1127
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:959 rpmqv.c:1141
+#: rpm.c:959 rpmqv.c:1132
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:963 rpmqv.c:1145
+#: rpm.c:963 rpmqv.c:1136
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches 옵션은 패키지 삭제시에만 지정할 수 있습니다"
 
-#: rpm.c:967 rpmqv.c:1149
+#: rpm.c:967 rpmqv.c:1140
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:971 rpmqv.c:1154
+#: rpm.c:971 rpmqv.c:1145
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
@@ -1014,13 +1014,13 @@ msgstr "스크립트 해제 옵션은 패키지 설치, 삭제, 검증시에만 지정할 수 있습니다"
 msgid "--apply may only be specified during package installation"
 msgstr "--apply 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpm.c:987 rpmqv.c:1166
+#: rpm.c:987 rpmqv.c:1157
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "트리거 해제 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpm.c:991 rpmqv.c:1170
+#: rpm.c:991 rpmqv.c:1161
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1028,13 +1028,13 @@ msgstr ""
 "--nodeps 옵션은 패키지 제작, 재 제작(rebuild), 재 컴파일(recompile), 설치, "
 "삭제, 검증시에만 지정할 수 있습니다"
 
-#: rpm.c:996 rpmqv.c:1175
+#: rpm.c:996 rpmqv.c:1166
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test 옵션은 패키지 설치, 삭제, 제작시에만 지정할 수 있습니다"
 
-#: rpm.c:1000 rpmqv.c:1180
+#: rpm.c:1000 rpmqv.c:1171
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1042,7 +1042,7 @@ msgstr ""
 "--root (-r) 옵션은 패키지 설치, 삭제, 질의, 데이터베이스 재 구축시에만 "
 "지정할 수 있습니다"
 
-#: rpm.c:1012 rpmqv.c:1192
+#: rpm.c:1012 rpmqv.c:1183
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 옵션의 인수는 반드시 '/' 로 시작되어야 합니다"
 
@@ -1050,89 +1050,89 @@ msgstr "--root (-r) 옵션의 인수는 반드시 '/' 로 시작되어야 합니다"
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage 옵션은 업그레이드시에만 사용할 수 있습니다"
 
-#: rpm.c:1021 rpmqv.c:1199
+#: rpm.c:1021 rpmqv.c:1190
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp 옵션은 서명 검사시에만 사용할 수 있습니다"
 
-#: rpm.c:1024 rpmqv.c:1202
+#: rpm.c:1024 rpmqv.c:1193
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg 옵션은 서명 검사시에만 사용할 수 있습니다"
 
-#: rpm.c:1027 rpmqv.c:1207
+#: rpm.c:1027 rpmqv.c:1198
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 옵션은 서명 검사와 패키지 검증시에만 사용할 수 있습니다"
 
-#: rpm.c:1038 rpmqv.c:1223
+#: rpm.c:1038 rpmqv.c:1214
 msgid "no files to sign\n"
 msgstr "서명할 파일이 없습니다\n"
 
-#: rpm.c:1043 rpmqv.c:1228
+#: rpm.c:1043 rpmqv.c:1219
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "%s 파일에 접근할 수 없습니다\n"
 
-#: rpm.c:1058 rpmqv.c:1247
+#: rpm.c:1058 rpmqv.c:1238
 msgid "pgp not found: "
 msgstr "pgp 를 찾을 수 없음: "
 
-#: rpm.c:1062 rpmqv.c:1252
+#: rpm.c:1062 rpmqv.c:1243
 msgid "Enter pass phrase: "
 msgstr "Pass 구문(phrase) 입력: "
 
-#: rpm.c:1064 rpmqv.c:1254
+#: rpm.c:1064 rpmqv.c:1245
 msgid "Pass phrase check failed\n"
 msgstr "Pass 구문(phrase) 검사에 실패했습니다\n"
 
-#: rpm.c:1067 rpmqv.c:1258
+#: rpm.c:1067 rpmqv.c:1249
 msgid "Pass phrase is good.\n"
 msgstr "Pass 구문(phrase)이 올바릅니다.\n"
 
-#: rpm.c:1072 rpmqv.c:1263
+#: rpm.c:1072 rpmqv.c:1254
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "매크로 파일에 올바르지 못한 \"%%_signature\" 가 지정되어 있습니다.\n"
 
-#: rpm.c:1078 rpmqv.c:1270
+#: rpm.c:1078 rpmqv.c:1261
 msgid "--sign may only be used during package building"
 msgstr "--sign 옵션은 패키지 제작시에만 사용할 수 있습니다"
 
-#: rpm.c:1093 rpmqv.c:1286
+#: rpm.c:1093 rpmqv.c:1277
 msgid "exec failed\n"
 msgstr "실행에 실패했습니다\n"
 
-#: rpm.c:1116 rpmqv.c:1541
+#: rpm.c:1116 rpmqv.c:1532
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags 옵션에 올바르지 못한 인수가 지정되었습니다 "
 
-#: rpm.c:1127 rpmqv.c:1566
+#: rpm.c:1127 rpmqv.c:1557
 msgid "no packages given for signature check"
 msgstr "서명 검사를 위해 주어진 패키지가 없습니다"
 
-#: rpm.c:1138 rpmqv.c:1577
+#: rpm.c:1138 rpmqv.c:1568
 msgid "no packages given for signing"
 msgstr "서명을 위해 주어진 패키지가 없습니다"
 
-#: rpm.c:1154 rpmqv.c:1434
+#: rpm.c:1154 rpmqv.c:1425
 msgid "no packages given for uninstall"
 msgstr "설치된 패키지를 제거(uninstall)하기 위해 주어진 패키지가 없습니다"
 
-#: rpm.c:1243 rpmqv.c:1463
+#: rpm.c:1243 rpmqv.c:1454
 msgid "no packages given for install"
 msgstr "설치를 위해 주어진 패키지가 없습니다"
 
-#: rpm.c:1267 rpmqv.c:1507
+#: rpm.c:1267 rpmqv.c:1498
 msgid "extra arguments given for query of all packages"
 msgstr "모든 패키지에 대해 질의하는데 필요 이상의 인수가 주어졌습니다"
 
-#: rpm.c:1272 rpmqv.c:1512
+#: rpm.c:1272 rpmqv.c:1503
 msgid "no arguments given for query"
 msgstr "질의를 위해 주어진 인수가 없습니다"
 
-#: rpm.c:1289 rpmqv.c:1529
+#: rpm.c:1289 rpmqv.c:1520
 msgid "extra arguments given for verify of all packages"
 msgstr "모든 패키지에 대해 검증하는데 필요 이상의 인수가 주어졌습니다"
 
-#: rpm.c:1293 rpmqv.c:1533
+#: rpm.c:1293 rpmqv.c:1524
 msgid "no arguments given for verify"
 msgstr "검증을 위해 주어진 인수가 없습니다"
 
@@ -1548,29 +1548,29 @@ msgstr "데이터베이스를 초기화 합니다 (불필요하며, 상속적으로 사용)"
 msgid "rebuild database indices from existing database headers"
 msgstr "기존의 데이터베이스 헤더로부터 데이터베이스 인덱스를 재 작성합니다"
 
-#: rpmqv.c:1002
+#: rpmqv.c:993
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "대신 \"--macros <파일:..>\" 을 사용합니다.\n"
 
-#: rpmqv.c:1077
+#: rpmqv.c:1068
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath 는 데이터베이스를 사용하지 않기 위한 옵션입니다"
 
-#: rpmqv.c:1161
+#: rpmqv.c:1152
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "스크립트 해제 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:1331
+#: rpmqv.c:1322
 msgid "no packages files given for rebuild"
 msgstr "패키지를 재 제작(rebuild)하기 위한 패키지 파일이 없습니다"
 
-#: rpmqv.c:1400
+#: rpmqv.c:1391
 msgid "no spec files given for build"
 msgstr "패키지 제작을 위한 spec 파일이 없습니다"
 
-#: rpmqv.c:1402
+#: rpmqv.c:1393
 msgid "no tar files given for build"
 msgstr "패키지 제작을 위한 tar 파일이 없습니다"
 

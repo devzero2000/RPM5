@@ -396,6 +396,8 @@ fi
 - fix: popt arg sanity checks broken, optarg != optArg.
 - fix: popt range checks on floats/doubles broken.
 - popt: return POPT_ERROR_ERRNO on config open/read/close failure.
+- fix: popt exec doesn't add '--', --target et al no longer need '='.
+- fix: popt consume-next-arg "!#:+" w/o side effect (#41956).
 
 * Fri May 25 2001 Jeff Johnson <jbj@redhat.com>
 - perform db->verify when closing db files.

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-05-29 09:15-0400\n"
+msgstr "POT-Creation-Date: 2001-05-29 15:43-0400\n"
 
 #: build.c:35
 #, fuzzy, c-format
@@ -913,9 +913,9 @@ msgid ""
 msgstr ""
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:891 rpmqv.c:897 rpmqv.c:904
-#: rpmqv.c:910 rpmqv.c:948 rpmqv.c:953 rpmqv.c:961 rpmqv.c:967 rpmqv.c:975
-#: rpmqv.c:1048
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:882 rpmqv.c:888 rpmqv.c:895
+#: rpmqv.c:901 rpmqv.c:939 rpmqv.c:944 rpmqv.c:952 rpmqv.c:958 rpmqv.c:966
+#: rpmqv.c:1039
 msgid "only one major mode may be specified"
 msgstr "un seul mode majeur peut être spécifié"
 
@@ -928,25 +928,25 @@ msgstr "-u et --uninstall sont obsolètes et seront bientôt supprimés.\n"
 msgid "Use -e or --erase instead.\n"
 msgstr "Utilisez de préférence -e ou --erase.\n"
 
-#: rpm.c:827 rpmqv.c:930
+#: rpm.c:827 rpmqv.c:921
 #, fuzzy
 msgid "relocations must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: rpm.c:829 rpmqv.c:932
+#: rpm.c:829 rpmqv.c:923
 msgid "relocations must contain a ="
 msgstr ""
 
-#: rpm.c:832 rpmqv.c:935
+#: rpm.c:832 rpmqv.c:926
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: rpm.c:841 rpmqv.c:917
+#: rpm.c:841 rpmqv.c:908
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: rpm.c:850 rpmqv.c:1001
+#: rpm.c:850 rpmqv.c:992
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -954,129 +954,129 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:856 rpmqv.c:1008
+#: rpm.c:856 rpmqv.c:999
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpm.c:891 rpmqv.c:1063
+#: rpm.c:891 rpmqv.c:1054
 msgid "one type of query/verify may be performed at a time"
 msgstr "un seul type de requête/vérification peut être effectué à la fois"
 
-#: rpm.c:896 rpmqv.c:1067
+#: rpm.c:896 rpmqv.c:1058
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "source de requête inattendue"
 
-#: rpm.c:899 rpmqv.c:1070
+#: rpm.c:899 rpmqv.c:1061
 #, fuzzy
 msgid "unexpected query format"
 msgstr "source de requête inattendue"
 
-#: rpm.c:902 rpmqv.c:1073
+#: rpm.c:902 rpmqv.c:1064
 msgid "unexpected query source"
 msgstr "source de requête inattendue"
 
-#: rpm.c:905 rpmqv.c:1083
+#: rpm.c:905 rpmqv.c:1074
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "seules l'installation et la mise à jour peuvent être forcées"
 
-#: rpm.c:908 rpmqv.c:1088
+#: rpm.c:908 rpmqv.c:1079
 #, fuzzy
 msgid "files may only be relocated during package installation"
 msgstr ""
 "--replacefiles ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:911 rpmqv.c:1091
+#: rpm.c:911 rpmqv.c:1082
 #, fuzzy
 msgid "only one of --prefix or --relocate may be used"
 msgstr "un seul mode majeur peut être spécifié"
 
-#: rpm.c:914 rpmqv.c:1094
+#: rpm.c:914 rpmqv.c:1085
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--clean ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:917 rpmqv.c:1097
+#: rpm.c:917 rpmqv.c:1088
 #, fuzzy
 msgid "--prefix may only be used when installing new packages"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:920 rpmqv.c:1100
+#: rpm.c:920 rpmqv.c:1091
 #, fuzzy
 msgid "arguments to --prefix must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: rpm.c:923 rpmqv.c:1103
+#: rpm.c:923 rpmqv.c:1094
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 "--hash (-h) ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:927 rpmqv.c:1107
+#: rpm.c:927 rpmqv.c:1098
 msgid "--percent may only be specified during package installation"
 msgstr ""
 "--percent ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:931 rpmqv.c:1112
+#: rpm.c:931 rpmqv.c:1103
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 "--replacefiles ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:935 rpmqv.c:1116
+#: rpm.c:935 rpmqv.c:1107
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 "--replacepkgs ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:939 rpmqv.c:1120
+#: rpm.c:939 rpmqv.c:1111
 #, fuzzy
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 "--percent ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:943 rpmqv.c:1124
+#: rpm.c:943 rpmqv.c:1115
 #, fuzzy
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 "--percent ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:947 rpmqv.c:1128
+#: rpm.c:947 rpmqv.c:1119
 #, fuzzy
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "un seul mode majeur peut être spécifié"
 
-#: rpm.c:951 rpmqv.c:1132
+#: rpm.c:951 rpmqv.c:1123
 #, fuzzy
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 "--percent ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:955 rpmqv.c:1136
+#: rpm.c:955 rpmqv.c:1127
 #, fuzzy
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 "--percent ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:959 rpmqv.c:1141
+#: rpm.c:959 rpmqv.c:1132
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 "--percent ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:963 rpmqv.c:1145
+#: rpm.c:963 rpmqv.c:1136
 #, fuzzy
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 "--replacepkgs ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:967 rpmqv.c:1149
+#: rpm.c:967 rpmqv.c:1140
 #, fuzzy
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 "--replacefiles ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:971 rpmqv.c:1154
+#: rpm.c:971 rpmqv.c:1145
 #, fuzzy
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
@@ -1098,7 +1098,7 @@ msgid "--apply may only be specified during package installation"
 msgstr ""
 "--replacefiles ne peut être spécifié que lors de l'installation d'un package"
 
-#: rpm.c:987 rpmqv.c:1166
+#: rpm.c:987 rpmqv.c:1157
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
@@ -1107,7 +1107,7 @@ msgstr ""
 "--test ne peut être spécifié que lors de l'installation ou désinstallation "
 "d'un package"
 
-#: rpm.c:991 rpmqv.c:1170
+#: rpm.c:991 rpmqv.c:1161
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1116,7 +1116,7 @@ msgstr ""
 "--test ne peut être spécifié que lors de l'installation ou désinstallation "
 "d'un package"
 
-#: rpm.c:996 rpmqv.c:1175
+#: rpm.c:996 rpmqv.c:1166
 #, fuzzy
 msgid ""
 "--test may only be specified during package installation, erasure, and "
@@ -1125,7 +1125,7 @@ msgstr ""
 "--test ne peut être spécifié que lors de l'installation ou désinstallation "
 "d'un package"
 
-#: rpm.c:1000 rpmqv.c:1180
+#: rpm.c:1000 rpmqv.c:1171
 #, fuzzy
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
@@ -1134,7 +1134,7 @@ msgstr ""
 "--root (-r) ne peut être spécifié que lors de l'installation, de la "
 "désinstallation ou de l'interrogation d'un package"
 
-#: rpm.c:1012 rpmqv.c:1192
+#: rpm.c:1012 rpmqv.c:1183
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
@@ -1142,97 +1142,97 @@ msgstr "les arguments de --root (-r) doivent commencer par un /"
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage ne peut être spécifié que lors de mises à jour"
 
-#: rpm.c:1021 rpmqv.c:1199
+#: rpm.c:1021 rpmqv.c:1190
 #, fuzzy
 msgid "--nopgp may only be used during signature checking"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1024 rpmqv.c:1202
+#: rpm.c:1024 rpmqv.c:1193
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1027 rpmqv.c:1207
+#: rpm.c:1027 rpmqv.c:1198
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1038 rpmqv.c:1223
+#: rpm.c:1038 rpmqv.c:1214
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1043 rpmqv.c:1228
+#: rpm.c:1043 rpmqv.c:1219
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpm.c:1058 rpmqv.c:1247
+#: rpm.c:1058 rpmqv.c:1238
 #, fuzzy
 msgid "pgp not found: "
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpm.c:1062 rpmqv.c:1252
+#: rpm.c:1062 rpmqv.c:1243
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1064 rpmqv.c:1254
+#: rpm.c:1064 rpmqv.c:1245
 msgid "Pass phrase check failed\n"
 msgstr "La vérification du mot de passe a échoué\n"
 
-#: rpm.c:1067 rpmqv.c:1258
+#: rpm.c:1067 rpmqv.c:1249
 msgid "Pass phrase is good.\n"
 msgstr "Mot de passe correct.\n"
 
-#: rpm.c:1072 rpmqv.c:1263
+#: rpm.c:1072 rpmqv.c:1254
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1078 rpmqv.c:1270
+#: rpm.c:1078 rpmqv.c:1261
 msgid "--sign may only be used during package building"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1093 rpmqv.c:1286
+#: rpm.c:1093 rpmqv.c:1277
 #, fuzzy
 msgid "exec failed\n"
 msgstr "La construction a échoué.\n"
 
-#: rpm.c:1116 rpmqv.c:1541
+#: rpm.c:1116 rpmqv.c:1532
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpm.c:1127 rpmqv.c:1566
+#: rpm.c:1127 rpmqv.c:1557
 msgid "no packages given for signature check"
 msgstr "aucun package n'a été spécifié pour la vérification de signature"
 
-#: rpm.c:1138 rpmqv.c:1577
+#: rpm.c:1138 rpmqv.c:1568
 #, fuzzy
 msgid "no packages given for signing"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpm.c:1154 rpmqv.c:1434
+#: rpm.c:1154 rpmqv.c:1425
 msgid "no packages given for uninstall"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpm.c:1243 rpmqv.c:1463
+#: rpm.c:1243 rpmqv.c:1454
 msgid "no packages given for install"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: rpm.c:1267 rpmqv.c:1507
+#: rpm.c:1267 rpmqv.c:1498
 #, fuzzy
 msgid "extra arguments given for query of all packages"
 msgstr "aucun argument n'a été fourni pour la requête"
 
-#: rpm.c:1272 rpmqv.c:1512
+#: rpm.c:1272 rpmqv.c:1503
 msgid "no arguments given for query"
 msgstr "aucun argument n'a été fourni pour la requête"
 
-#: rpm.c:1289 rpmqv.c:1529
+#: rpm.c:1289 rpmqv.c:1520
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "aucun argument n'a été fourni pour la requête"
 
-#: rpm.c:1293 rpmqv.c:1533
+#: rpm.c:1293 rpmqv.c:1524
 msgid "no arguments given for verify"
 msgstr "aucun argument n'a été fourni pour la vérification"
 
@@ -1695,16 +1695,16 @@ msgstr ""
 msgid "rebuild database indices from existing database headers"
 msgstr ""
 
-#: rpmqv.c:1002
+#: rpmqv.c:993
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Utilisez de préférence -e ou --erase.\n"
 
-#: rpmqv.c:1077
+#: rpmqv.c:1068
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: rpmqv.c:1161
+#: rpmqv.c:1152
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
@@ -1713,15 +1713,15 @@ msgstr ""
 "--test ne peut être spécifié que lors de l'installation ou désinstallation "
 "d'un package"
 
-#: rpmqv.c:1331
+#: rpmqv.c:1322
 msgid "no packages files given for rebuild"
 msgstr "aucun package n'a été spécifié pour la reconstruction"
 
-#: rpmqv.c:1400
+#: rpmqv.c:1391
 msgid "no spec files given for build"
 msgstr "aucun package n'a été spécifié pour la construction"
 
-#: rpmqv.c:1402
+#: rpmqv.c:1393
 #, fuzzy
 msgid "no tar files given for build"
 msgstr "aucun package n'a été spécifié pour la construction"
