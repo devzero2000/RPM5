@@ -51,19 +51,15 @@
 # define	_LARGEFILE64_SOURCE
 #endif
 
+#if defined(sun)
+# define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
+#endif
+
 #endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
-
-/* The fts interface is incompatible with the LFS interface which
-   transparently uses the 64-bit file access functions.  */
-
-#ifdef __USE_FILE_OFFSET64
-# error "<fts.h> cannot be used with -D_FILE_OFFSET_BITS==64"
-#endif
-
 
 typedef struct {
 /*@owned@*/
