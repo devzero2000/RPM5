@@ -628,4 +628,7 @@ fi
 export LIBS INCPATH
 
 AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile $NBMAKEFILE tools/Makefile po/Makefile misc/Makefile scripts/Makefile)
+AC_OUTPUT([Makefile Makefile.inc lib-rpmrc lib/Makefile
+	build/Makefile $NBMAKEFILE tools/Makefile
+	po/Makefile.in misc/Makefile scripts/Makefile],
+	[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])

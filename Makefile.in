@@ -72,7 +72,7 @@ rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
 		-DVERSION=\"$(VERSION)\"  \
 		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
 		-DLIBRPMALIAS_FILENAME="\"$(LIBRPMALIAS_FILENAME)"\" \
-		-c $(srcdir)/rpm.c
+		-c $<
 
 # these rules should be in here, but they drive me batty
 #Makefile: Makefile.in misc/Makefile.in lib/Makefile.in build/Makefile.in \
@@ -180,7 +180,7 @@ distclean:
 depend:
 	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
 	/bin/rm -f .depend ; \
-	$(CPP) -MM $(CFLAGS) $(srcdir)/$(SOURCES) | \
+	$(CPP) -MM $(CFLAGS) $(srcdir)/*.c | \
 		sed s+$$topdir_path+$(top_srcdir)+g > .depend ; \
 	for d in $(ALLSUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
