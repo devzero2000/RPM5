@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-06 19:13-0400\n"
+"POT-Creation-Date: 2002-06-07 17:27-0400\n"
 "PO-Revision-Date: 2002-04-09 16:44-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1369,175 +1369,175 @@ msgstr "синтаксическая ошибка в выражении\n"
 msgid "TIMECHECK failure: %s\n"
 msgstr "Ошибка TIMECHECK: %s\n"
 
-#: build/files.c:333 build/files.c:525 build/files.c:708
+#: build/files.c:334 build/files.c:530 build/files.c:719
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Отсутствует '(' в %s %s\n"
 
-#: build/files.c:344 build/files.c:650 build/files.c:719
+#: build/files.c:345 build/files.c:658 build/files.c:730
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "отсутствует ')' в %s(%s\n"
 
-#: build/files.c:382 build/files.c:675
+#: build/files.c:383 build/files.c:683
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Неверный токен %s: %s\n"
 
-#: build/files.c:488
+#: build/files.c:491
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Отсутствует %s в %s %s\n"
 
-#: build/files.c:541
+#: build/files.c:546
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Не пробел следует после %s(): %s\n"
 
-#: build/files.c:579
+#: build/files.c:584
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Неверный синтаксис: %s(%s)\n"
 
-#: build/files.c:589
+#: build/files.c:594
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Неверные права: %s(%s)\n"
 
-#: build/files.c:601
+#: build/files.c:606
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Неверные права на каталог %s(%s)\n"
 
-#: build/files.c:746
+#: build/files.c:757
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Необычная длина locale: \"%.*s\" в %%lang(%s)\n"
 
 #. @innercontinue@
-#: build/files.c:757
+#: build/files.c:768
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Дубликат locale %.*s в %%lang(%s)\n"
 
-#: build/files.c:908
+#: build/files.c:925
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Лимит для %%docdir превышен\n"
 
-#: build/files.c:914
+#: build/files.c:931
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Только один аргумент для %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:942
+#: build/files.c:959
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Два файла в одной строке: %s\n"
 
-#: build/files.c:957
+#: build/files.c:974
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:970
+#: build/files.c:987
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s\n"
 
-#: build/files.c:1124
+#: build/files.c:1149
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s\n"
 
-#: build/files.c:1268
+#: build/files.c:1293
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1499
+#: build/files.c:1529
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s\n"
 
-#: build/files.c:1523
+#: build/files.c:1553
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1566 build/files.c:2182 build/parsePrep.c:50
+#: build/files.c:1596 build/files.c:2216 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
-#: build/files.c:1579
+#: build/files.c:1609
 #, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "Файл%5d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1684
+#: build/files.c:1718
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:1707
+#: build/files.c:1741
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob не разрешаются: %s\n"
 
-#: build/files.c:1722
+#: build/files.c:1756
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1784
+#: build/files.c:1818
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files %s: %s\n"
 
-#: build/files.c:1795 build/pack.c:149
+#: build/files.c:1829 build/pack.c:149
 #, c-format
 msgid "line: %s\n"
 msgstr "строка: %s\n"
 
-#: build/files.c:2170
+#: build/files.c:2204
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2244
+#: build/files.c:2278
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Невозможно выполнить %s: %s\n"
 
-#: build/files.c:2249
+#: build/files.c:2283
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Сбой ветвления %s: %s\n"
 
-#: build/files.c:2333
+#: build/files.c:2367
 #, c-format
 msgid "%s failed\n"
 msgstr "%s не удалось\n"
 
-#: build/files.c:2337
+#: build/files.c:2371
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "запись всех данных в %s не удалась\n"
 
-#: build/files.c:2493
+#: build/files.c:2527
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Поиск %s (используя %s): ...\n"
 
-#: build/files.c:2522 build/files.c:2536
+#: build/files.c:2556 build/files.c:2570
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:\n"
 
-#: build/files.c:2658
+#: build/files.c:2692
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
@@ -3570,17 +3570,17 @@ msgstr ""
 "в пакете нет ни имен групп, ни списка их идентификаторов (такого не должно "
 "быть)\n"
 
-#: lib/verify.c:392
+#: lib/verify.c:393
 #, c-format
 msgid "missing    %s"
 msgstr "отсутствует %s"
 
-#: lib/verify.c:487
+#: lib/verify.c:488
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: lib/verify.c:527
+#: lib/verify.c:528
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"
