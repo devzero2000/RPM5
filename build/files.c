@@ -26,6 +26,18 @@
 
 #define MAXDOCDIR 1024
 
+#define SPECD_DEFFILEMODE	(1<<0)
+#define SPECD_DEFDIRMODE	(1<<1)
+#define SPECD_DEFUID		(1<<2)
+#define SPECD_DEFGID		(1<<3)
+#define SPECD_DEFVERIFY		(1<<4)
+
+#define SPECD_FILEMODE		(1<<8)
+#define SPECD_DIRMODE		(1<<9)
+#define SPECD_UID		(1<<10)
+#define SPECD_GID		(1<<11)
+#define SPECD_VERIFY		(1<<12)
+
 /**
  */
 typedef struct {
@@ -45,6 +57,7 @@ typedef struct {
     /*@observer@*/ const char *uname;
     /*@observer@*/ const char *gname;
     int		flags;
+    int		specdFlags;	/* which attributes have been explicitly specified. */
     int		verifyFlags;
     const char *langs;	/* XXX locales separated with | */
 } FileListRec;
@@ -81,9 +94,11 @@ struct FileList {
     int isDir;
     int inFtw;
     int currentFlags;
+    int currentSpecdFlags;
     int currentVerifyFlags;
     AttrRec cur_ar;
     AttrRec def_ar;
+    int defSpecdFlags;
     int defVerifyFlags;
     int nLangs;
     /*@only@*/ const char **currentLangs;
@@ -261,11 +276,14 @@ static int parseForVerify(char *buf, struct FileList *fl)
     int *resultVerify;
     int not;
     int verifyFlags;
+    int *specdFlags;
 
     if ((p = strstr(buf, (name = "%verify"))) != NULL) {
 	resultVerify = &(fl->currentVerifyFlags);
+	specdFlags = &fl->currentSpecdFlags;
     } else if ((p = strstr(buf, (name = "%defverify"))) != NULL) {
 	resultVerify = &(fl->defVerifyFlags);
+	specdFlags = &fl->defSpecdFlags;
     } else
 	return 0;
 
@@ -331,6 +349,7 @@ static int parseForVerify(char *buf, struct FileList *fl)
     }
 
     *resultVerify = not ? ~(verifyFlags) : verifyFlags;
+    *specdFlags |= SPECD_VERIFY;
 
     return 0;
 }
@@ -346,11 +365,14 @@ static int parseForAttr(char *buf, struct FileList *fl)
     const char *name;
     int x;
     AttrRec arbuf, *ar = &arbuf, *ret_ar;
+    int *specdFlags = NULL;
 
     if ((p = strstr(buf, (name = "%attr"))) != NULL) {
 	ret_ar = &(fl->cur_ar);
+	specdFlags = &fl->currentSpecdFlags;
     } else if ((p = strstr(buf, (name = "%defattr"))) != NULL) {
 	ret_ar = &(fl->def_ar);
+	specdFlags = &fl->defSpecdFlags;
     } else
 	return 0;
 
@@ -409,7 +431,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     }
     if (*p && ret_ar == &(fl->def_ar)) {	/* %defattr */
 	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
-        ar->ar_dmodestr = p;
+	ar->ar_dmodestr = p;
 	p = pe; SKIPWHITE(p);
     }
 
@@ -451,6 +473,9 @@ static int parseForAttr(char *buf, struct FileList *fl)
 	ar->ar_group = NULL;
 
     dupAttrRec(ar, ret_ar);
+
+    /* XXX fix all this */
+    *specdFlags |= SPECD_UID | SPECD_GID | SPECD_FILEMODE | SPECD_DIRMODE;
     
     return 0;
 }
@@ -685,6 +710,7 @@ VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	RPMFILE_DOC },
 	{ "%ghost",	RPMFILE_GHOST },
+	{ "%exclude",	RPMFILE_EXCLUDE },
 	{ "%readme",	RPMFILE_README },
 	{ "%license",	RPMFILE_LICENSE },
 	{ "%multilib",	0 },
@@ -836,9 +862,8 @@ static int isDoc(struct FileList *fl, const char *fileName)
     int x = fl->docDirCount;
 
     while (x--) {
-        if (strstr(fileName, fl->docDirs[x]) == fileName) {
+	if (strstr(fileName, fl->docDirs[x]) == fileName)
 	    return 1;
-        }
     }
     return 0;
 }
@@ -945,11 +970,62 @@ static void genCpioListAndHeader(struct FileList *fl,
     clp = *cpioList = xmalloc(sizeof(**cpioList) * fl->fileListRecsUsed);
 
     for (flp = fl->fileList, count = fl->fileListRecsUsed; count > 0; flp++, count--) {
+
+#ifdef	DYING
 	if ((count > 1) && !strcmp(flp->fileURL, flp[1].fileURL)) {
 	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s\n"),
 		flp->fileURL);
 	    fl->processingFailed = 1;
 	}
+#endif
+	/* Merge duplicate entries. */
+	while ((count > 1) && !strcmp(flp->fileURL, flp[1].fileURL)) {
+
+	    /* Two entries for the same file found, merge the entries. */
+
+	    /* file flags */
+	    flp[1].flags |= flp->flags;	
+ 
+	    /* file mode */
+	    if (S_ISDIR(flp->fl_mode)) {
+		if ((flp[1].specdFlags & (SPECD_DIRMODE | SPECD_DEFDIRMODE)) <
+		    (flp->specdFlags & (SPECD_DIRMODE | SPECD_DEFDIRMODE)))
+			flp[1].fl_mode = flp->fl_mode;
+	    } else {
+		if ((flp[1].specdFlags & (SPECD_FILEMODE | SPECD_DEFFILEMODE)) <
+		    (flp->specdFlags & (SPECD_FILEMODE | SPECD_DEFFILEMODE)))
+			flp[1].fl_mode = flp->fl_mode;
+	    }
+
+	    /* uid */
+	    if ((flp[1].specdFlags & (SPECD_UID | SPECD_DEFUID)) <
+		(flp->specdFlags & (SPECD_UID | SPECD_DEFUID)))
+	    {
+		flp[1].fl_uid = flp->fl_uid;
+		flp[1].uname = flp->uname;
+	    }
+
+	    /* gid */
+	    if ((flp[1].specdFlags & (SPECD_GID | SPECD_DEFGID)) <
+		(flp->specdFlags & (SPECD_GID | SPECD_DEFGID)))
+	    {
+		flp[1].fl_gid = flp->fl_gid;
+		flp[1].gname = flp->gname;
+	    }
+
+	    /* verify flags */
+	    if ((flp[1].specdFlags & (SPECD_VERIFY | SPECD_DEFVERIFY)) <
+		(flp->specdFlags & (SPECD_VERIFY | SPECD_DEFVERIFY)))
+		    flp[1].verifyFlags = flp->verifyFlags;
+
+	    /* XXX to-do: language */
+
+	    flp++; count--;
+	}
+
+	/* Skip files that were marked with %exclude. */
+	if (flp->flags & RPMFILE_EXCLUDE) continue;
+
 
 	if (flp->flags & RPMFILE_MULTILIB_MASK)
 	    multiLibMask |=
@@ -983,9 +1059,11 @@ static void genCpioListAndHeader(struct FileList *fl,
 	    (*cpioCount)++;
 	}
 	
-	/* Make the header, the OLDFILENAMES will get converted to a 
-	   compressed file list write before we write the actual package to
-	   disk. */
+	/*
+	 * Make the header, the OLDFILENAMES will get converted to a
+	 * compressed file list write before we write the actual package to
+	 * disk.
+	 */
 	headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->fileURL), 1);
 
@@ -1262,6 +1340,7 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
 	}
 
 	flp->flags = fl->currentFlags;
+	flp->specdFlags = fl->currentSpecdFlags;
 	flp->verifyFlags = fl->currentVerifyFlags;
 
 	if (multiLib
@@ -1427,6 +1506,9 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.nLangs = 0;
     fl.currentLangs = NULL;
 
+    fl.currentSpecdFlags = 0;
+    fl.defSpecdFlags = 0;
+
     fl.docDirCount = 0;
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/doc");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/man");
@@ -1458,6 +1540,8 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.isDir = 0;
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
+	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
+	fl.currentSpecdFlags = fl.defSpecdFlags>>8;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
 	fl.isSpecialDoc = 0;
 
@@ -1554,7 +1638,7 @@ exit:
 
     freeFileList(fl.fileList, fl.fileListRecsUsed);
     while (fl.docDirCount--) {
-        FREE(fl.docDirs[fl.docDirCount]);
+	FREE(fl.docDirs[fl.docDirCount]);
     }
     return fl.processingFailed;
 }
