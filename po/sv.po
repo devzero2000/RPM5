@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-20 18:13-0400\n"
+"POT-Creation-Date: 2000-08-24 16:26-0400\n"
 "PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"

@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 2
+Release: 3
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -271,6 +271,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Aug 24 2000 Jeff Johnson <jbj@redhat.com>
+- Pass NULL as pkgKey on RPMCALLBACK_UNINST_*.
+
 * Thu Aug 24 2000 Matt Wilson <msw@redhat.com>
 - corrected reference count to transaction header
 

@@ -1736,6 +1736,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		rpmdbFreeIterator(mi);
 	    }
 
+	    /* XXX FIXME: NULL pkgKey arg */
 	    if (removeBinaryPackage(ts->rootDir, ts->rpmdb, offset, dbh,
 				transFlags,
 				notify, notifyData, NULL, fi->actions,
