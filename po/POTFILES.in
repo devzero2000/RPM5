@@ -9,7 +9,6 @@ build/build.c
 build/expression.c
 build/files.c
 build/misc.c
-build/myftw.c
 build/names.c
 build/pack.c
 build/parseBuildInstallClean.c
@@ -23,6 +22,7 @@ build/parseScript.c
 build/parseSpec.c
 build/poptBT.c
 build/reqprov.c
+build/rpmfc.c
 build/spec.c
 lib/cpio.c
 lib/depends.c
@@ -65,6 +65,7 @@ rpmdb/poptDB.c
 rpmdb/rpmdb.c
 rpmdb/rpmhash.c
 rpmdb/tagname.c
+rpmio/argv.c
 rpmio/digest.c
 rpmio/fts.c
 rpmio/macro.c
@@ -76,4 +77,5 @@ rpmio/rpmrpc.c
 rpmio/ugid.c
 rpmio/url.c
 tools/rpmcache.c
+tools/rpmdeps.c
 tools/rpmgraph.c
