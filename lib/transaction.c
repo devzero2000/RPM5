@@ -1669,12 +1669,29 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		   notifyData);
 	    break;
 	case TR_REMOVED:
+	  { unsigned int offset = fi->record;
+	    Header dbh;
+
+	    /* If install failed, then we shouldn't erase. */
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		break;
-	    if (removeBinaryPackage(ts->root, ts->db, fi->record,
-				    transFlags, fi->actions, ts->scriptFd))
+
+	    dbh = rpmdbGetRecord(ts->db, offset);
+	    if (dbh == NULL) {
+		rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for uninstall"),
+			offset);
 		ourrc++;
-	    break;
+		break;
+	    }
+
+	    if (removeBinaryPackage(ts->root, ts->db, offset, dbh,
+				transFlags,
+				notify, notifyData, dbh, fi->actions,
+				ts->scriptFd))
+
+		ourrc++;
+	    headerFree(dbh);
+	  } break;
 	}
     }
 

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-08-19 09:41-0400\n"
+"POT-Creation-Date: 2000-08-20 18:08-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2375,7 +2375,7 @@ msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
 # , c-format
-#: lib/install.c:142 lib/uninstall.c:191
+#: lib/install.c:142 lib/uninstall.c:190
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -2396,90 +2396,91 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:378
+#. XXX FIXME: Fclose with libio destroys errno
+#: lib/install.c:381
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:379
+#: lib/install.c:382
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:422
+#: lib/install.c:425
 #, fuzzy
 msgid "installing a source package\n"
 msgstr "Paket installieren"
 
-#: lib/install.c:442
+#: lib/install.c:445
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/install.c:448 lib/install.c:478
+#: lib/install.c:451 lib/install.c:481
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/install.c:452
+#: lib/install.c:455
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:472
+#: lib/install.c:475
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "kann Datei %s nicht öffnen: "
 
 # , c-format
-#: lib/install.c:482
+#: lib/install.c:485
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/install.c:516 lib/install.c:544
+#: lib/install.c:519 lib/install.c:547
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/install.c:566
+#: lib/install.c:569
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:568 lib/install.c:847 lib/uninstall.c:30
+#: lib/install.c:571 lib/install.c:850 lib/uninstall.c:30
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
 
-#: lib/install.c:659
+#: lib/install.c:662
 msgid "source package expected, binary found"
 msgstr ""
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/install.c:716
+#: lib/install.c:719
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/install.c:777
+#: lib/install.c:780
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:782
+#: lib/install.c:785
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:807
+#: lib/install.c:810
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:843
+#: lib/install.c:846
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:917
+#: lib/install.c:920
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -3080,7 +3081,7 @@ msgstr "Paket %s wird nicht in %s aufgeführt"
 msgid "package %s not found in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:508 lib/uninstall.c:90
+#: lib/rpmdb.c:508 lib/transaction.c:1681
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
@@ -3609,25 +3610,25 @@ msgstr "Entfernen von %s fehlgeschlagen: %s"
 msgid "removal of %s failed: %s"
 msgstr "öffnen von %s fehlgeschlagen: %s"
 
-#: lib/uninstall.c:104
+#: lib/uninstall.c:97
 #, fuzzy, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
-#: lib/uninstall.c:137
+#: lib/uninstall.c:130
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:205
+#: lib/uninstall.c:214
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:219
+#: lib/uninstall.c:228
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:408
+#: lib/uninstall.c:414
 #, fuzzy, c-format
 msgid "execution of %s-%s-%s script failed, exit status %d"
 msgstr "Ausführung des Skripts fehlgeschlagen"

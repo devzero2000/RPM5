@@ -7,7 +7,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 10.6x
+Release: 11.6x
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -245,6 +245,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Aug 20 2000 Jeff Johnson <jbj@redhat.com>
+- python bindings to query and verify signatures.
+- add callbacks on package erasure.
+- fix: preserve cpio errno when using Fclose with libio.
+- fix: initialize sigs everywhere in python header object.
+
 * Thu Aug 10 2000 Jeff Johnson <jbj@redhat.com>
 - disable rpmlib(VersionedDependencies) by defining _noVersionedDependencies.
 

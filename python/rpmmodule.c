@@ -584,6 +584,7 @@ static PyObject * rpmReadHeaders (FD_t fd) {
     while (header) {
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
 	h->h = header;
+	h->sigs = NULL;
 	h->fileList = h->linkList = h->md5list = NULL;
 	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
 	h->modes = h->rdevs = NULL;
@@ -634,6 +635,7 @@ static PyObject * hdrLoad(PyObject * self, PyObject * args) {
 
     h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
     h->h = hdr;
+    h->sigs = NULL;
     h->fileList = h->linkList = h->md5list = NULL;
     h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
     h->modes = h->rdevs = NULL;
@@ -924,6 +926,7 @@ static hdrObject * rpmdbSubscript(rpmdbObject * s, PyObject * key) {
 
     h = PyObject_NEW(hdrObject, &hdrType);
     h->h = NULL;
+    h->sigs = NULL;
     h->h = rpmdbGetRecord(s->db, offset);
     h->fileList = h->linkList = h->md5list = NULL;
     h->uids = h->gids = h->mtimes = h->fileSizes = NULL;

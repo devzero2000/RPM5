@@ -70,28 +70,21 @@ static int removeFile(const char * file, unsigned int flags, short mode,
 }
 
 /** */
-int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset, 
-			int flags, enum fileActions * actions, FD_t scriptFd)
+int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
+			Header h,
+			int flags, rpmCallbackFunction notify,
+			void * notifyData, const void * pkgKey,
+			enum fileActions * actions, FD_t scriptFd)
 {
-    Header h = NULL;
-    int i;
-    int fileCount;
     const char * name, * version, * release;
     const char ** baseNames;
-    int type;
     int scriptArg;
     int rc = 0;
+    int fileCount;
+    int i;
 
     if (flags & RPMTRANS_FLAG_JUSTDB)
 	flags |= RPMTRANS_FLAG_NOSCRIPTS;
-
-    h = rpmdbGetRecord(db, offset);
-    if (h == NULL) {
-	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for uninstall"),
-	      offset);
-	rc = 1;
-	goto exit;
-    }
 
     headerNVR(h, &name, &version, &release);
 
@@ -145,6 +138,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	int_16 * fileModesList;
 	const char ** dirNames;
 	int_32 * dirIndexes;
+	int type;
 	char * fileName;
 	int fnmaxlen;
 	int prefixlen = (prefix && !(prefix[0] == '/' && prefix[1] == '\0'))
@@ -182,6 +176,11 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
 		 &fileCount);
 
+	if (notify) {
+	    (void)notify(h, RPMCALLBACK_UNINST_START, fileCount, fileCount,
+		pkgKey, notifyData);
+	}
+
 	/* Traverse filelist backwards to help insure that rmdir() will work. */
 	for (i = fileCount - 1; i >= 0; i--) {
 
@@ -191,10 +190,20 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
 			fileName, fileActionString(actions[i]));
 
-	    if (!(flags & RPMTRANS_FLAG_TEST))
+	    if (!(flags & RPMTRANS_FLAG_TEST)) {
+		if (notify) {
+		    (void)notify(h, RPMCALLBACK_UNINST_PROGRESS,
+			i, actions[i], fileName, notifyData);
+		}
 		removeFile(fileName, fileFlagsList[i], fileModesList[i], 
 			   actions[i]);
+	    }
 	}
+
+	if (notify) {
+	    (void)notify(h, RPMCALLBACK_UNINST_STOP, 0, fileCount,
+			pkgKey, notifyData);
+        }
 
 	free(baseNames);
 	free(dirNames);
@@ -228,9 +237,6 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     rc = 0;
 
  exit:
-    if (h) {
-	headerFree(h);
-    }
     return rc;
 }
 
