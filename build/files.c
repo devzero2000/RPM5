@@ -8,7 +8,6 @@
 #endif
 
 #include <string.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <regex.h>
