@@ -54,7 +54,7 @@ typedef	/*@abstract@*/ struct {
 typedef enum rpmDigestFlags_e {
     RPMDIGEST_MD5	= (1 <<  0),	/*!< MD5 digest. */
     RPMDIGEST_SHA1	= (1 <<  1),	/*!< SHA1 digest. */
-    RPMDIGEST_NATIVE	= (1 << 16),	/*!< Should bytes be reversed? */
+    RPMDIGEST_REVERSE	= (1 << 16),	/*!< Should bytes be reversed? */
 } rpmDigestFlags;
 
 typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
@@ -417,7 +417,7 @@ FD_t c2f(/*@null@*/ void * cookie)
 void fdInitMD5(FD_t fd, int flags)
 	/*@modifies fd @*/
 {
-    if (flags) flags = RPMDIGEST_NATIVE;
+    if (flags) flags = RPMDIGEST_REVERSE;
     flags |= RPMDIGEST_MD5;
     fd->digest = rpmDigestInit(flags);
 }
@@ -425,10 +425,12 @@ void fdInitMD5(FD_t fd, int flags)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-void fdInitSHA1(FD_t fd)
+void fdInitSHA1(FD_t fd, int flags)
 	/*@modifies fd @*/
 {
-    fd->digest = rpmDigestInit(RPMDIGEST_SHA1);
+    if (flags) flags = RPMDIGEST_REVERSE;
+    flags |= RPMDIGEST_SHA1;
+    fd->digest = rpmDigestInit(flags);
 }
 
 /** \ingroup rpmio

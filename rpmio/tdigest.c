@@ -15,7 +15,7 @@ const char * cdigest = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 static struct poptOption optionsTable[] = {
  { "md5", '\0', POPT_BIT_SET, 	&flags, RPMDIGEST_MD5,	NULL, NULL },
  { "sha1",'\0', POPT_BIT_SET, 	&flags, RPMDIGEST_SHA1,	NULL, NULL },
- { "native",'\0', POPT_BIT_SET, &flags, RPMDIGEST_NATIVE,	NULL, NULL },
+ { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
  { "fipsa",'\0', POPT_BIT_SET, &fips, 1,	NULL, NULL },
  { "fipsb",'\0', POPT_BIT_SET, &fips, 2,	NULL, NULL },
  { "fipsc",'\0', POPT_BIT_SET, &fips, 3,	NULL, NULL },
@@ -40,6 +40,7 @@ main(int argc, const char *argv[])
     const char * digest;
     size_t digestlen;
     int asAscii = 1;
+    int reverse;
     int rc;
     char appendix;
     int i;
@@ -48,8 +49,10 @@ main(int argc, const char *argv[])
     while ((rc = poptGetNextOpt(optCon)) > 0)
 	;
 
+    reverse = (flags & RPMDIGEST_REVERSE);
     if (fips) {
-	flags = RPMDIGEST_SHA1;
+	flags &= ~RPMDIGEST_MD5;
+	flags |= RPMDIGEST_SHA1;
 	ctx = rpmDigestInit(flags);
 	ifn = NULL;
 	appendix = ' ';
@@ -127,7 +130,7 @@ main(int argc, const char *argv[])
 	    continue;
 	}
 	idigest = NULL;
-	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ifd) : fdInitMD5(ifd, 0);
+	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ifd, reverse) : fdInitMD5(ifd, reverse);
 
 	ofd = Fopen(ofn, "w.ufdio");
 	if (ofd == NULL || Ferror(ofd)) {
@@ -138,7 +141,7 @@ main(int argc, const char *argv[])
 	    continue;
 	}
 	odigest = NULL;
-	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ofd) : fdInitMD5(ofd, 0);
+	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ofd, reverse) : fdInitMD5(ofd, reverse);
 
 	ctx = rpmDigestInit(flags);
 
