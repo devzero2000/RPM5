@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-26 10:49-0500\n"
+"POT-Creation-Date: 2002-01-27 09:49-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2988,8 +2988,8 @@ msgstr "balíèek nemá vlastníka souboru ani seznamy id\n"
 msgid "can't query %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:319 lib/rpminstall.c:463
-#: lib/rpminstall.c:843
+#: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
+#: lib/rpminstall.c:848
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
@@ -3003,7 +3003,7 @@ msgstr "dotaz na %s se nezdaøil\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "nelze provést dotaz na zdrojové balíèky starého formátu\n"
 
-#: lib/query.c:639 lib/rpminstall.c:476
+#: lib/query.c:639 lib/rpminstall.c:481
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
@@ -3062,7 +3062,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:837 lib/rpminstall.c:627
+#: lib/query.c:837 lib/rpminstall.c:632
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -3151,98 +3151,98 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpminstall.c:148
+#: lib/rpminstall.c:153
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:150
+#: lib/rpminstall.c:155
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: lib/rpminstall.c:269
+#: lib/rpminstall.c:274
 #, fuzzy, c-format
 msgid "Retrieving %s\n"
 msgstr "RPM verze %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:279
+#: lib/rpminstall.c:284
 #, fuzzy, c-format
 msgid " ... as %s\n"
 msgstr "%s ulo¾eno jako %s\n"
 
-#: lib/rpminstall.c:283
+#: lib/rpminstall.c:288
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:365
+#: lib/rpminstall.c:370
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: lib/rpminstall.c:388
+#: lib/rpminstall.c:393
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/rpminstall.c:437
+#: lib/rpminstall.c:442
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/rpminstall.c:443
+#: lib/rpminstall.c:448
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:455 lib/rpminstall.c:700
+#: lib/rpminstall.c:460 lib/rpminstall.c:705
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "neinstalován  "
 
-#: lib/rpminstall.c:491
+#: lib/rpminstall.c:496
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "vytvoøení zdrojového a binárního balíèku z <tar_soubor>"
 
-#: lib/rpminstall.c:507
+#: lib/rpminstall.c:512
 #, fuzzy
 msgid "failed dependencies:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: lib/rpminstall.c:528
+#: lib/rpminstall.c:533
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "nainstalovat balíèek"
 
-#: lib/rpminstall.c:549
+#: lib/rpminstall.c:554
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:614
+#: lib/rpminstall.c:619
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "nemohu znovu otevøít payload: %s\n"
 
-#: lib/rpminstall.c:630
+#: lib/rpminstall.c:635
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s\n"
 
-#: lib/rpminstall.c:654
+#: lib/rpminstall.c:659
 #, fuzzy
 msgid "removing these packages would break dependencies:\n"
 msgstr "dotaz/ovìøení balíèkù vy¾adujících závislost"
 
-#: lib/rpminstall.c:684
+#: lib/rpminstall.c:689
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:690
+#: lib/rpminstall.c:695
 #, fuzzy, c-format
 msgid "Installing %s\n"
 msgstr "øádek: %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-26 10:49-0500\n"
+"POT-Creation-Date: 2002-01-27 09:49-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3008,8 +3008,8 @@ msgstr "пакет не содержит списков ни хозяев файлов, ни их ID\n"
 msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
-#: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:319 lib/rpminstall.c:463
-#: lib/rpminstall.c:843
+#: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
+#: lib/rpminstall.c:848
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
@@ -3023,7 +3023,7 @@ msgstr "ошибка запроса %s\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
-#: lib/query.c:639 lib/rpminstall.c:476
+#: lib/query.c:639 lib/rpminstall.c:481
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: ошибка чтения списка файлов: %s\n"
@@ -3082,7 +3082,7 @@ msgstr "номер записи пакета: %u\n"
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:837 lib/rpminstall.c:627
+#: lib/query.c:837 lib/rpminstall.c:632
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -3170,94 +3170,94 @@ msgstr ")"
 msgid "OK"
 msgstr "OК"
 
-#: lib/rpminstall.c:148
+#: lib/rpminstall.c:153
 msgid "Preparing..."
 msgstr "Подготовка..."
 
-#: lib/rpminstall.c:150
+#: lib/rpminstall.c:155
 msgid "Preparing packages for installation..."
 msgstr "Подготовка пакетов для установки..."
 
-#: lib/rpminstall.c:269
+#: lib/rpminstall.c:274
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Загружается %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:279
+#: lib/rpminstall.c:284
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... как %s\n"
 
-#: lib/rpminstall.c:283
+#: lib/rpminstall.c:288
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s пропускается - ошибка передачи - %s\n"
 
-#: lib/rpminstall.c:365
+#: lib/rpminstall.c:370
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
-#: lib/rpminstall.c:388
+#: lib/rpminstall.c:393
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "пакет %s - не перемещаемый\n"
 
-#: lib/rpminstall.c:437
+#: lib/rpminstall.c:442
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ошибка чтения из файла %s\n"
 
-#: lib/rpminstall.c:443
+#: lib/rpminstall.c:448
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "для файла %s необходима более новая версия RPM\n"
 
-#: lib/rpminstall.c:455 lib/rpminstall.c:700
+#: lib/rpminstall.c:460 lib/rpminstall.c:705
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
 
-#: lib/rpminstall.c:491
+#: lib/rpminstall.c:496
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:507
+#: lib/rpminstall.c:512
 msgid "failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
 
-#: lib/rpminstall.c:528
+#: lib/rpminstall.c:533
 msgid "installing binary packages\n"
 msgstr "устанавливаю бинарные пакеты\n"
 
-#: lib/rpminstall.c:549
+#: lib/rpminstall.c:554
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "невозможно открыть файл %s: %s\n"
 
-#: lib/rpminstall.c:614
+#: lib/rpminstall.c:619
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "ошибка открытия %s/packages.rpm\n"
 
-#: lib/rpminstall.c:630
+#: lib/rpminstall.c:635
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:654
+#: lib/rpminstall.c:659
 msgid "removing these packages would break dependencies:\n"
 msgstr "удаление этих пакетов нарушит зависимости:\n"
 
-#: lib/rpminstall.c:684
+#: lib/rpminstall.c:689
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:690
+#: lib/rpminstall.c:695
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"

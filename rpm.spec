@@ -164,11 +164,6 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --loc
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
 %endif
 
-# XXX workaround alpha sha1 digest miscompilation
-%ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
-make CFLAGS="-g -O0" digest.o digest.lo -C rpmio
-%endif
-
 # XXX workaround ia64 gcc-3.1-0.18 miscompilation
 %ifarch ia64
 make CFLAGS="-g -O0 -DIA64_SUCKS_ROCKS" files.o files.lo -C build
@@ -521,6 +516,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Jan 27 2002 Jeff Johnson <jbj@redhat.com>
+- fix: fancy hash fiddles if not a tty.
+- fix: handle /.../ correctly in rpmCleanPath().
+
 * Sat Jan 26 2002 Jeff Johnson <jbj@redhat.com>
 - fix: %exclude functional (again).
 - trap SIGILL for ppc64 inline asm voodoo fix from cross-dressed ppc32.
