@@ -970,6 +970,32 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 	}
 #	endif	/* sparc*-linux */
 
+#	if defined(__GNUC__) && defined(__alpha__)
+	{
+	    unsigned long amask, implver;
+	    register long v0 __asm__("$0") = -1;
+	    __asm__ (".long 0x47e00c20" : "=r"(v0) : "0"(v0));
+	    amask = ~v0;
+	    __asm__ (".long 0x47e03d80" : "=r"(v0));
+	    implver = v0;
+	    switch (implver) {
+	    case 1:
+	    	switch (amask) {
+	    	case 0: strcpy(un.machine, "alphaev5"); break;
+	    	case 1: strcpy(un.machine, "alphaev56"); break;
+	    	case 0x101: strcpy(un.machine, "alphapca56"); break;
+	    	}
+	    	break;
+	    case 2:
+	    	switch (amask) {
+	    	case 0x303: strcpy(un.machine, "alphaev6"); break;
+	    	case 0x307: strcpy(un.machine, "alphaev67"); break;
+	    	}
+	    	break;
+	    }
+	}
+#	endif
+
 	/* the uname() result goes through the arch_canon table */
 	canon = lookupInCanonTable(un.machine,
 				   tables[RPM_MACHTABLE_INSTARCH].canons,

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-09-13 13:05-0400\n"
+"POT-Creation-Date: 2000-09-13 14:00-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3420,12 +3420,12 @@ msgstr ""
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:1176
+#: lib/rpmrc.c:1202
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1177
+#: lib/rpmrc.c:1203
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

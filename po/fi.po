@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-09-13 13:05-0400\n"
+"POT-Creation-Date: 2000-09-13 14:00-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -3651,12 +3651,12 @@ msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
 msgid "bad option '%s' at %s:%d"
 msgstr "huono parametri '%s', %s:%d"
 
-#: lib/rpmrc.c:1176
+#: lib/rpmrc.c:1202
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1177
+#: lib/rpmrc.c:1203
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

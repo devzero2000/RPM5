@@ -125,7 +125,8 @@ install-data-local:
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i586;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i686;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/athlon ;;\
-	alpha*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alpha ;;\
+	alpha*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alpha;\
+		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alphaev6 ;;\
 	sparc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparcv9;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc64 ;;\

@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 3.1
+Release: 4.1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -272,6 +272,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Sep 13 2000 Jeff Johnson <jbj@redhat.com>
+- popt: support for float/double args.
+- fix: honor --test when doing --freshen.
+- add alpha* architectures.
+
 * Tue Aug 29 2000 Jeff Johnson <jbj@redhat.com>
 - translate rpm.8 man page (Peter Ivanyi <ivanyi@internet.sk>).
 
