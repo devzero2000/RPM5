@@ -127,6 +127,7 @@ struct rpmtsScoreEntry_s {
     rpmElementType te_types;		/*!<te types this entry represents */
     int            installed;		/*!<Was the new header installed   */
     int            erased;		/*!<Was the old header removed     */
+    int            tid;             /*!<Install tid of removed header  */
 };
 
 typedef /*@abstract@*/ struct rpmtsScoreEntry_s * rpmtsScoreEntry;
@@ -335,6 +336,8 @@ struct rpmts_s {
 
 /*@kept@*/ /*@null@*/
     rpmtsScore score;		/*!< Transaction Score (autorollback). */
+
+    uint_32 arbgoal;		/*!< Autorollback Goal  */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -585,6 +588,22 @@ rpmtsType rpmtsGetType(rpmts ts)
  */
 void rpmtsSetType(rpmts ts, rpmtsType type)
 	/*@modifies ts @*/;
+
+/**
+ * Set autorollback goal.   
+ * @param ts		transaction set
+ * @param goal		uint_32
+ * @return		void
+ */
+void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
+        /*@modifies ts @*/;
+
+/**
+ * Return the autorollback goal. 
+ * @param ts		transaction set
+ * @return		autorollback goal (uint_32)
+ */
+uint_32 rpmtsGetARBGoal(rpmts ts);
 
 /**
  * Return current transaction set problems.

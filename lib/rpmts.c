@@ -954,6 +954,21 @@ rpmtsType rpmtsGetType(rpmts ts)
 	return 0;
 }
 
+void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
+{
+    if(ts != NULL) {
+	ts->arbgoal = goal;
+    }	 
+}
+
+uint_32 rpmtsGetARBGoal(rpmts ts) 
+{
+    if(ts != NULL) 
+	return ts->arbgoal;
+    else
+	return 0;
+}
+
 int rpmtsUnorderedSuccessors(rpmts ts, int first)
 {
     int unorderedSuccessors = 0;
@@ -1592,6 +1607,9 @@ rpmts rpmtsCreate(void)
      */
     ts->score = NULL;
 
+    /* Set autorollback goal to the end of time. */
+    ts->arbgoal = 0xffffffff;
+
     ts->nrefs = 0;
 
     return rpmtsLink(ts, "tsCreate");
@@ -1664,6 +1682,7 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
 	    se->te_types  = rpmteType(p); 
 	    se->installed = 0;
 	    se->erased    = 0; 
+	    se->tid       = 0xffffffff; 
 	    score->scores[score->entries] = se;
 	    score->entries++;
 	} else {
@@ -1673,6 +1692,45 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
     	    rpmMessage(RPMMESS_DEBUG, _("\tUpdating entry for %s in score board.\n"),
 		rpmteN(p));
 	    score->scores[i]->te_types |= rpmteType(p);
+	    se = score->scores[i];
+	}
+
+	/* Now if this is an erase element then get its install tid, and set
+	 * it in the score entry.
+	 */
+	if(rpmteType(p) == TR_REMOVED) {
+	    int_32 * tidp = NULL;
+	    int db_instance = rpmteDBOffset(p);
+	    Header h;
+	    rpmdbMatchIterator mi;
+	    int xx;
+
+	    /* Get the header from the DB */
+	    mi = rpmtsInitIterator(runningTS, RPMDBI_PACKAGES,
+		&db_instance, sizeof(db_instance));
+	    h = rpmdbNextIterator(mi);
+	    if(h != NULL) h = headerLink(h);
+	    mi = rpmdbFreeIterator(mi);
+	    if(h == NULL) {
+ 		/* Header was not there??? */
+		rpmMessage(RPMMESS_ERROR,
+  		    _("Could not get header for transaction score!\n"));
+		rpmMessage(RPMMESS_ERROR, _("NEVRA: %s"), rpmteNEVRA);
+		goto cleanup;
+            }
+
+	    /* Now get install tid from header, and set in score entry. */
+	    xx = headerGetEntry(h, RPMTAG_INSTALLTID, NULL, (void **) &tidp, 
+		NULL);
+	    if(tidp == NULL) {
+		rpmMessage(RPMMESS_ERROR, 
+		    _("\tCould not get INSTALLTID for %s.\n"), rpmteNEVRA(p));
+		rc = RPMRC_FAIL;
+		goto cleanup;
+	    }
+	    rpmMessage(RPMMESS_DEBUG, 
+		    _("\tINSTALLTID for %s is 0x%08x.\n"), rpmteNEVRA(p), *tidp);
+	    se->tid = *tidp;
 	}
 	 
     }
@@ -1687,6 +1745,7 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
     rollbackTS->score = score;
     score->nrefs++;
 
+cleanup:
     return rc;
 }
 

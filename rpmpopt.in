@@ -116,6 +116,11 @@ rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendo
 rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatrequires \
 	--POPTdesc=$"find package name that contains a required capability (needs rpmdb-redhat package installed)"
 
+#
+# Autorollback aliases
+rpm alias --autorollback --define '_rollback_transaction_on_failure 1' \
+	--POPTdesc=$"Failed transactions will be rolled back automatically"
+
 # colon separated i18n domains to use as PO catalogue lookaside for
 * retrieving header group/description/summary.
 #

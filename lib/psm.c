@@ -253,45 +253,65 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
  */
 rpmRC psmRPMDBAdd(rpmts ts, rpmte te, Header h) {
     rpmRC rc;
+    int_32 tid;
+    rpmtsScoreEntry se = NULL;
 
-    /* Add header to db, doing header check if requested */
-    if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, ts, headerCheck);
-    else
-	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
-
-    if(rc) goto cleanup;
-
-    /* XXX: Should do anything else if I have a failure? */
-    /* Set the database instance so consumers (i.e. rpmtsRun())
-     * can add this to a rollback transaction.
+    /* Get the score for this transaction if it exists, and then
+     * the appropriate score entry.
      */
-    rpmteSetDBInstance(te, myinstall_instance);
-
-    /*
-     * If the score exists and this is not a rollback or autorollback
-     * then lets check off installed for this package.
-     */
-    if(rpmtsGetScore(ts) != NULL &&
-	rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
-	rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
-    {
+    if(rpmtsGetScore(ts) != NULL) {
 	/* Get the score, if its not NULL, get the appropriate
 	 * score entry.
 	 */
 	rpmtsScore score = rpmtsGetScore(ts);
 	if(score != NULL) {
-	    rpmtsScoreEntry se;
 	    /* OK, we got a real score so lets get the appropriate
 	     * score entry.
 	     */
-	    rpmMessage(RPMMESS_DEBUG,
-		_("Attempting to mark %s as installed in score board(%p).\n"),
-		rpmteN(te), (unsigned) score);
 	    se = rpmtsScoreGetEntry(score, rpmteN(te));
-	    if(se != NULL) se->installed = 1;
+	    if(se == NULL) {
+		rpmMessage(RPMMESS_ERROR,
+		    _("Could not aquire transaction score entry for %s\n"),
+		    rpmteNEVRA(te));
+		rc = RPMRC_FAIL;
+	    }
 	}
     }
+
+    /* IIF this is an autorolback transaction, then we need to set
+     * the TID of the header to that of its remove tid 
+     */
+    tid = rpmtsGetTid(ts);
+    if(rpmtsGetType(ts) == RPMTRANS_TYPE_AUTOROLLBACK) {
+	rpmMessage(RPMMESS_DEBUG, _("Setting %s to TID of 0x%08x\n"),
+	    rpmteNEVRA(te), se->tid);
+	if(se) tid = se->tid;
+    }
+
+    /* Add header to db, doing header check if requested */
+    if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
+	rc = rpmdbAdd(rpmtsGetRdb(ts), tid, h, ts, headerCheck);
+    else
+	rc = rpmdbAdd(rpmtsGetRdb(ts), tid, h, NULL, NULL);
+
+    if(rc) goto cleanup;
+
+    /* If the score exists and this is not a rollback or autorollback
+     * then lets check off installed for this package.
+     */
+    if(se &&
+	rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
+	rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)  {
+	rpmMessage(RPMMESS_DEBUG,
+	    _("Attempting to mark %s as installed in trasaction score\n"),
+	    rpmteN(te));
+	se->installed = 1;
+    }
+
+    /* Set the database instance so consumers (i.e. rpmtsRun())
+     * can add this to a rollback transaction.
+     */
+    rpmteSetDBInstance(te, myinstall_instance);
 
 cleanup:
     /* Convert return code to appropriate RPMRC code */
@@ -1757,6 +1777,7 @@ psm->te->h = headerLink(fi->h);
 	    /* Add remove transaction id to header. */
 	    if (psm->oh != NULL)
 	    {	int_32 tid = rpmtsGetTid(ts);
+
 		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
 			RPM_INT32_TYPE, &tid, 1);
 	    }

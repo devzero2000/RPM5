@@ -323,6 +323,17 @@ int rpmInstall(rpmts ts,
     }
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
+    /* Display and set autorollback goal if provided 
+     * iif autorollback requested. 
+     */
+    if(rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
+	if(ia->arbtid) {
+	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s\n"),
+		ctime(&(ia->arbtid)));
+	    rpmtsSetARBGoal(ts, ia->arbtid);
+	}
+    }
+
     probFilter = ia->probFilter;
     relocations = ia->relocations;
 
@@ -777,6 +788,17 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
+    /* Display and set autorollback goal if provided 
+     * iif autorollback requested. 
+     */
+    if(rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
+	if(ia->arbtid) {
+	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s\n"), 
+		ctime(&(ia->arbtid)));
+	    rpmtsSetARBGoal(ts, ia->arbtid);
+	}	
+    }
+
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
     {	int notifyFlags;
 	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -1220,6 +1242,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 /*@-abstract@*/
 		rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
 			       0, ia->relocations);
+
 /*@=abstract@*/
 		if (rc != 0)
 		    goto exit;

@@ -573,6 +573,7 @@ struct rpmInstallArguments_s {
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;
     rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
+    uint_32 arbtid;		/*!< from --arbgoal  */
     uint_32 rbtid;		/*!< from --rollback */
     uint_32 *rbtidExcludes;	/*!< from --rollback */
     int numrbtidExcludes;	/*!< from --rollback */
