@@ -49,7 +49,7 @@ struct availablePackage {
     int requiresCount;			/*!< No. of Require:'s in header. */
     int filesCount;			/*!< No. of files in header. */
 
-    transactionElement parent;		/*!< Parent transaction element. */
+    struct availablePackage *  parent;	/*!< Parent package. */
     int degree;				/*!< No. of immediate children. */
     int depth;				/*!< Max. depth in dependency tree. */
     int npreds;				/*!< No. of predecessors. */
