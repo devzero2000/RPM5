@@ -240,6 +240,108 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 }
 /*@=bounds@*/
 
+/**
+ * Add package header to RPM DB.
+ * @param ts           RPM Transaction
+ * @param te           RPM Transaction Element
+ * @param h            Package Header
+ * @return             RPMRC_OK on success, RPMRC_FAIL on failure.
+ */
+/* XXX: Jeff, you may want to rename and move this elsewhere.  The thought was
+ * I needed to force add package's header that failed before post, and
+ * did not want to replicate this code.
+ */
+rpmRC psmRPMDBAdd(rpmts ts, rpmte te, Header h) {
+    rpmRC rc;
+
+    /* Add header to db, doing header check if requested */
+    if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
+	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, ts, headerCheck);
+    else
+	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
+
+    if(rc) goto cleanup;
+
+    /* XXX: Should do anything else if I have a failure? */
+    /* Set the database instance so consumers (i.e. rpmtsRun())
+     * can add this to a rollback transaction.
+     */
+    rpmteSetDBInstance(te, myinstall_instance);
+
+    /*
+     * If the score exists and this is not a rollback or autorollback
+     * then lets check off installed for this package.
+     */
+    if(rpmtsGetScore(ts) != NULL &&
+	rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
+	rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
+    {
+	/* Get the score, if its not NULL, get the appropriate
+	 * score entry.
+	 */
+	rpmtsScore score = rpmtsGetScore(ts);
+	if(score != NULL) {
+	    rpmtsScoreEntry se;
+	    /* OK, we got a real score so lets get the appropriate
+	     * score entry.
+	     */
+	    rpmMessage(RPMMESS_DEBUG,
+		_("Attempting to mark %s as installed in score board(%p).\n"),
+		rpmteN(te), (unsigned) score);
+	    se = rpmtsScoreGetEntry(score, rpmteN(te));
+	    if(se != NULL) se->installed = 1;
+	}
+    }
+
+cleanup:
+    /* Convert return code to appropriate RPMRC code */
+    rc = rc ? RPMRC_FAIL : RPMRC_OK;
+    return rc;
+}
+
+/**
+ * Remove package header from RPM DB.
+ * @param ts           RPM Transaction
+ * @param te           RPM Transaction Element
+ * @param record       Database instance number of header in DB
+ * @return             RPMRC_OK on success, RPMRC_FAIL on failure.
+ */
+rpmRC psmRPMDBRemove(rpmts ts, rpmte te, int record) {
+    rpmRC rc;
+    rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), record, NULL, NULL);
+    if(rc) goto cleanup;
+
+    /*
+     * If the score exists and this is not a rollback or autorollback
+     * then lets check off erased for this package.
+     */
+    if(rpmtsGetScore(ts) != NULL &&
+	rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
+	rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
+    {
+	/* Get the score, if its not NULL, get the appropriate
+	 * score entry.
+	 */
+	rpmtsScore score = rpmtsGetScore(ts);
+
+	if(score != NULL) { /* XXX: Can't happen */
+	    rpmtsScoreEntry se;
+	    /* OK, we got a real score so lets get the appropriate
+	     * score entry.
+	     */
+	    rpmMessage(RPMMESS_DEBUG,
+		_("Attempting to mark %s as erased in score board(%p).\n"),
+		rpmteNEVRA(te), (unsigned) score);
+	    se = rpmtsScoreGetEntry(score, rpmteN(te));
+	    if(se != NULL) se->erased = 1;
+	}
+    }
+
+cleanup:
+    rc = rc ? RPMRC_FAIL : RPMRC_OK;
+    return rc;
+}
+
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		const char ** specFilePtr, const char ** cookie)
 {
@@ -1372,12 +1474,13 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	/* If we have a score then autorollback is enabled.  If autorollback is
  	 * enabled, and this is an autorollback transaction, then we may need to
-	 * adjust the pkgs installed count.
+	 * adjust the package instance count.
 	 *
 	 * If all this is true, this adjustment should only be made if the PSM goal
 	 * is an install.  No need to make this adjustment on the erase
 	 * component of the upgrade, or even more absurd to do this when doing a
-	 * PKGSAVE.
+	 * PKGSAVE.  XXX: Why not on an erase (I know I was correct, but I need
+	 *                explain why in the comment (-;)
 	 */
 	if (rpmtsGetScore(ts) != NULL &&
 	    rpmtsGetType(ts) == RPMTRANS_TYPE_AUTOROLLBACK &&
@@ -1396,14 +1499,15 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		/* IF the header for the install element has been installed,
 		 * but the header for the erase element has not been erased,
 		 * then decrement the instance count.  This is because in an
-		 * autorollback, if the header was added in the initial transaction
-		 * then in the case of an upgrade the instance count will be
-		 * 2 instead of one when re-installing the old package, and 3 when
-		 * erasing the new package.
+		 * autorollback, if the header was added in the initial 
+		 * transaction then in the case of an upgrade the instance 
+		 * count will be 2 instead of one when re-installing the old 
+		 * package, and 3 when erasing the new package.
 		 *
 		 * Another wrinkle is we only want to make this adjustement
-		 * if the thing we are rollback was an upgrade of package.  A pure
-		 * install or erase does not need the adjustment
+		 * if the thing we are rolling back was an upgrade of 
+		 * the package.  A pure install or erase does not need the 
+		 * adjustment.
 		 */
 		if (se && se->installed &&
 	 	    !se->erased &&
@@ -2067,76 +2171,13 @@ assert(psm->mi == NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h == NULL)	break;	/* XXX can't happen */
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
-	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
-				ts, headerCheck);
-	else
-	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
-				NULL, NULL);
-
-	/* Set the database instance so consumers (i.e. rpmtsRun())
-	 * can add this to a rollback transaction.
-	 */
-	rpmteSetDBInstance(psm->te, myinstall_instance);
-
-	/*
-	 * If the score exists and this is not a rollback or autorollback
-	 * then lets check off installed for this package.
-	 */
-	if (rpmtsGetScore(ts) != NULL &&
-	    rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
-	    rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
-	{
-	    /* Get the score, if its not NULL, get the appropriate
- 	     * score entry.
-	     */
-	    rpmtsScore score = rpmtsGetScore(ts);
-	    if (score != NULL) {
-		rpmtsScoreEntry se;
-		/* OK, we got a real score so lets get the appropriate
-		 * score entry.
-		 */
-		rpmMessage(RPMMESS_DEBUG,
-		    _("Attempting to mark %s as installed in score board(%u).\n"),
-		    rpmteN(psm->te), (unsigned) score);
-		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
-		if (se != NULL) se->installed = 1;
-	    }
-	}
+	rc = psmRPMDBAdd(ts, psm->te, fi->h);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	break;
     case PSM_RPMDB_REMOVE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
-				NULL, NULL);
-
-	/*
-	 * If the score exists and this is not a rollback or autorollback
-	 * then lets check off erased for this package.
-	 */
-	if (rpmtsGetScore(ts) != NULL &&
-	   rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
-	   rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
-	{
-	    /* Get the score, if its not NULL, get the appropriate
-	     * score entry.
-	     */
-	    rpmtsScore score = rpmtsGetScore(ts);
-
-	    if (score != NULL) { /* XXX: Can't happen */
-		rpmtsScoreEntry se;
-		/* OK, we got a real score so lets get the appropriate
-		 * score entry.
-		 */
-		rpmMessage(RPMMESS_DEBUG,
-		    _("Attempting to mark %s as erased in score board(0x%x).\n"),
-		    rpmteN(psm->te), (unsigned) score);
-		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
-		if (se != NULL) se->erased = 1;
-	    }
-	}
-
+	rc = psmRPMDBRemove(ts, psm->te, fi->record);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	break;
 

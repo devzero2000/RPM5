@@ -183,6 +183,24 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 #define	rpmpsmUNSAFE	rpmpsmSTAGE
 
+/**
+ * Add package header to RPM DB.
+ * @param ts            RPM Transaction
+ * @param te            RPM Transaction Element
+ * @param h             Package Header
+ * @return              RPMRC_OK on success, RPMRC_FAIL on failure.
+ */
+rpmRC psmRPMDBAdd(rpmts ts, rpmte te, Header h);
+
+/**
+ * Remove package header from RPM DB.
+ * @param ts            RPM Transaction
+ * @param te            RPM Transaction Element
+ * @param record        Database instance number of header in DB
+ * @return              RPMRC_OK on success, RPMRC_FAIL on failure.
+ */
+rpmRC psmRPMDBRemove(rpmts ts, rpmte te, int record);
+
 #ifdef __cplusplus
 }
 #endif

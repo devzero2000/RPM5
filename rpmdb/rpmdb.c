@@ -63,7 +63,7 @@ static int _db_filter_dups = 0;
 int dbiTagsMax = 0;
 
 /* We use this to comunicate back to the the rpm transaction
- *  what their install instance was on a rpmdbAdd().
+ * what their install instance was on a rpmdbAdd().
  */ 
 /*@unchecked@*/
 unsigned int myinstall_instance = 0;
