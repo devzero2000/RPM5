@@ -315,8 +315,9 @@ static int cpio_gzip(int fd, struct cpioFileMapping *cpioList,
 {
     char *gzipbin;
     void *oldhandler;
-    int rc, gzipPID, toGzip[2], status;
+    int gzipPID, toGzip[2], status;
     char *failedFile;
+    int rc;
 
     gzipbin = rpmGetVar(RPMVAR_GZIPBIN);
     oldhandler = signal(SIGPIPE, SIG_IGN);
@@ -342,26 +343,21 @@ static int cpio_gzip(int fd, struct cpioFileMapping *cpioList,
 
     rc = cpioBuildArchive(toGzip[1], cpioList, cpioCount, NULL, NULL,
 			  archiveSize, &failedFile);
+    if (rc) {
+	rpmError(RPMERR_CPIO, _("cpio failed on file %s: %s"),
+		     failedFile, cpioStrerror(rc));
+	rc = 1;
+    }
 
     close(toGzip[1]);
     signal(SIGPIPE, oldhandler);
     waitpid(gzipPID, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_GZIP, _("Execution of gzip failed"));
-	return 1;
+	rc = 1;
     }
 
-    if (rc) {
-	if (rc & CPIO_CHECK_ERRNO)
-	    rpmError(RPMERR_CPIO, _("cpio failed on file %s: %s"),
-		     failedFile, strerror(errno));
-	else
-	    rpmError(RPMERR_CPIO, _("cpio failed on file %s: %d"),
-		     failedFile, rc);
-	return 1;
-    }
-
-    return 0;
+    return rc;
 }
 
 static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb)
