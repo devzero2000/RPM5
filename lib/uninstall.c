@@ -433,7 +433,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
 
     if (waitpid(child, &status, 0) < 0) {
 	rpmError(RPMERR_SCRIPT,
-		 _("execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"),
+		 _("retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"),
 		 sln, n, v, r, strerror (errno));
 	/* XXX what to do here? */
 	rc = 0;
