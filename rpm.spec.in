@@ -60,7 +60,6 @@ the package like its version, a description, etc.
 %package libs
 Summary:  Libraries for manipulating RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{rpm_version}-%{release}
 
 %description libs
 This package contains the RPM shared libraries.
