@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.0.1\n"
+"Project-Id-Version: rpm\n"
 "POT-Creation-Date: 2000-12-13 16:53-0500\n"
-"PO-Revision-Date: 2000-08-01 21:11+01:00\n"
-"Last-Translator: Pedro Morais <morais@poli.org>\n"
-"Language-Team: pt <morais@poli.org>\n"
+"PO-Revision-Date: 2000-06-22 01:13+01:00\n"
+"Last-Translator: Pedro Morais <morais@kde.org>\n"
+"Language-Team: pt <morais@kde.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-latin1\n"
 "Content-Transfer-Encoding: none\n"
@@ -12,240 +12,261 @@ msgstr ""
 #: build.c:26
 #, fuzzy, c-format
 msgid "cannot open rpm database in %s\n"
-msgstr ""
-"não consegui abrir %s/packages.rpm\n"
-"\n"
+msgstr "não consigo abrir %s/packages.rpm\n"
 
 #: build.c:36
 msgid "failed build dependencies:\n"
-msgstr ""
+msgstr "não consegui construir dependencias:\n"
 
 #: build.c:65
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr "não consigo abrir ficheiro spec %s: %s\n"
+msgstr "Não consegui abrir ficheiro spec %s: %s\n"
 
 #: build.c:131 build.c:143
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m"
-msgstr "não consigo abrir ficheiro spec %s: %s\n"
+msgstr "Não consegui abrir \"pipe\" para o tar: %s\n"
 
 #. Give up
 #: build.c:150
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s"
-msgstr "não consigo abrir ficheiro spec %s: %s\n"
+msgstr "Não consegui ler ficheiro spec de %s\n"
 
 #: build.c:177
-#, c-format
+#, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m"
-msgstr ""
+msgstr "Não consegui mudar o nome de %s para %s: %s\n"
 
 #: build.c:216
-#, c-format
+#, fuzzy, c-format
 msgid "failed to stat %s: %m"
-msgstr ""
+msgstr "Não consegui mudar o nome de %s para %s: %s\n"
 
 #: build.c:221
-#, c-format
+#, fuzzy, c-format
 msgid "File %s is not a regular file."
-msgstr ""
+msgstr "Ficheiro não é um ficheiro normal: %s\n"
 
 #: build.c:229
-#, c-format
+#, fuzzy, c-format
 msgid "File %s does not appear to be a specfile."
-msgstr ""
+msgstr "Ficheiro %s não parece estar no formato spec.\n"
 
 #. parse up the build operators
 #: build.c:289
 #, c-format
 msgid "Building target platforms: %s\n"
-msgstr ""
+msgstr "A construir plataformas alvo: %s\n"
 
 #: build.c:304
 #, c-format
 msgid "Building for target %s\n"
-msgstr ""
+msgstr "A construir para o alvo %s\n"
 
 #: rpm.c:185 rpmqv.c:269
 #, c-format
 msgid "rpm: %s\n"
-msgstr ""
+msgstr "rpm: %s\n"
 
 #: rpm.c:196 rpmqv.c:280
 #, c-format
 msgid "RPM version %s\n"
-msgstr ""
+msgstr "RPM versão %s\n"
 
 #: rpm.c:200 rpmqv.c:284
 msgid "Copyright (C) 1998 - Red Hat Software"
-msgstr ""
+msgstr "Copyright (C) 1998 - Red Hat Software"
 
 #: rpm.c:201 rpmqv.c:285
 msgid "This may be freely redistributed under the terms of the GNU GPL"
-msgstr ""
+msgstr "Pode ser distribuido livremente sob os termos da GPL da GNU"
 
 #: rpm.c:209
 msgid "Usage: rpm {--help}"
-msgstr ""
+msgstr "Utilização: rpm {--help}"
 
 #: rpm.c:210
 msgid "       rpm {--version}"
-msgstr ""
+msgstr "       rpm {--version}"
 
 #: rpm.c:211
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
-msgstr ""
+msgstr "       rpm {--initdb}   [--dbpath <dir>]"
 
 #: rpm.c:212
 msgid ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
+"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
 #: rpm.c:213 rpmqv.c:306
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
+"                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 
 #: rpm.c:214 rpmqv.c:307
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
-msgstr ""
+msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
 #: rpm.c:215 rpmqv.c:308
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
+"                        [--rcfile <ficheiro>] [--ignorearch] [--dbpath <dir>]"
 
 #: rpm.c:216 rpmqv.c:309
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
+"                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 
 #: rpm.c:217 rpm.c:226 rpm.c:236 rpmqv.c:310 rpmqv.c:319 rpmqv.c:335
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-msgstr ""
+msgstr "                        [--ftpproxy <servidor>] [--ftpport <porto>]"
 
 #: rpm.c:218 rpm.c:237 rpmqv.c:311 rpmqv.c:320 rpmqv.c:336
+#, fuzzy
 msgid "                        [--httpproxy <host>] [--httpport <port>]"
-msgstr ""
+msgstr "                        [--httpproxy <servidor>] [--httpport <porto>] "
 
 #: rpm.c:219 rpmqv.c:312
+#, fuzzy
 msgid ""
 "                        [--justdb] [--noorder] [--relocate oldpath=newpath]"
-msgstr ""
+msgstr "                        [--noorder] [--relocate oldpath=newpath]"
 
 #: rpm.c:220 rpmqv.c:313
 msgid ""
 "                        [--badreloc] [--notriggers] [--excludepath <path>]"
 msgstr ""
+"                        [--badreloc] [--notriggers] [--excludepath <local>]"
 
 #: rpm.c:221 rpmqv.c:314
 msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
-msgstr ""
+msgstr "                        [--ignoresize] file1.rpm ... fileN.rpm"
 
 #: rpm.c:222
 msgid ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
+"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 
 #: rpm.c:223 rpmqv.c:316
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-msgstr ""
+msgstr "                        [--oldpackage] [--root <dir>] [--noscripts]"
 
 #: rpm.c:224 rpmqv.c:317
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
+"                        [--excludedocs] [--includedocs] [--rcfile <ficheiro>]"
 
 #: rpm.c:225 rpmqv.c:318
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
+"                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 
 #: rpm.c:227
 msgid "                        [--httpproxy <host>] [--httpport <port>] "
-msgstr ""
+msgstr "                        [--httpproxy <servidor>] [--httpport <porto>] "
 
 #: rpm.c:228 rpmqv.c:321
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 msgstr ""
+"                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
 #: rpm.c:229 rpmqv.c:322
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
-msgstr ""
+msgstr "                        [--noorder] [--relocate oldpath=newpath]"
 
 #: rpm.c:230 rpmqv.c:323
 msgid ""
 "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
 msgstr ""
+"                        [--badreloc] [--excludepath <local>] [--ignoresize]"
 
 #: rpm.c:231 rpmqv.c:324
 msgid "                        file1.rpm ... fileN.rpm"
-msgstr ""
+msgstr "                        ficheiro1.rpm ... ficheiroN.rpm"
 
 #: rpm.c:232
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-msgstr ""
+msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
 #: rpm.c:233 rpmqv.c:332
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr ""
+"                        [--scripts] [--root <dir>] [--rcfile <ficheiro>]"
 
 #: rpm.c:234 rpmqv.c:333
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
-msgstr ""
+msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:235 rpmqv.c:334
+#, fuzzy
 msgid "                        [--triggeredby]"
-msgstr ""
+msgstr "                        [--nomd5] [targets]"
 
 #: rpm.c:238 rpmqv.c:337
+#, fuzzy
 msgid "                        [--provides] [--triggers] [--dump]"
 msgstr ""
+"                        [--ftpport <porto>] [--provides] [--triggers] "
+"[--dump]"
 
 #: rpm.c:239 rpmqv.c:338
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-msgstr ""
+msgstr "                        [--changelog] [--dbpath <dir>] [alvos]"
 
 #: rpm.c:240
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr ""
+"       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <ficheiro>]"
 
 #: rpm.c:241 rpmqv.c:340
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
+"                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 
 #: rpm.c:242 rpmqv.c:341
 msgid "                        [--nomd5] [targets]"
-msgstr ""
+msgstr "                        [--nomd5] [targets]"
 
 #: rpm.c:243
 msgid "       rpm {--setperms} [-afpg] [target]"
-msgstr ""
+msgstr "       rpm {--setperms} [-afpg] [target]"
 
 #: rpm.c:244
 msgid "       rpm {--setugids} [-afpg] [target]"
-msgstr ""
+msgstr "       rpm {--setugids} [-afpg] [target]"
 
 #: rpm.c:245
 msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
-msgstr ""
+msgstr "       rpm {--freshen -F} ficheiro1.rpm ... ficheiroN.rpm"
 
 #: rpm.c:246
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
+"       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <ficheiro>]"
 
 #: rpm.c:247 rpmqv.c:326
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-msgstr ""
+msgstr "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 
 #: rpm.c:248 rpmqv.c:327
+#, fuzzy
 msgid "                        [--justdb] [--notriggers] package1 ... packageN"
 msgstr ""
+"                        [--justdb] [--notriggers] rpackage1 ... packageN"
 
 #: rpm.c:249
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr ""
+"       rpm {--resign} [--rcfile <ficheiro>] pacote1 pacote2 ... pacoteN"
 
 #: rpm.c:250
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
@@ -518,11 +539,11 @@ msgstr ""
 
 #: rpm.c:386
 msgid "    --install <packagefile>"
-msgstr ""
+msgstr "    --install <pacote>"
 
 #: rpm.c:387
 msgid "    -i <packagefile>      "
-msgstr ""
+msgstr "    -i <pacote>      "
 
 #: rpm.c:388 rpmqv.c:512
 msgid "install package"
@@ -530,7 +551,7 @@ msgstr ""
 
 #: rpm.c:389
 msgid "      --excludepath <path>"
-msgstr ""
+msgstr "      --excludepath <local>"
 
 #: rpm.c:390
 msgid "skip files in path <path>"
@@ -550,7 +571,7 @@ msgstr ""
 
 #: rpm.c:395
 msgid "      --prefix <dir>      "
-msgstr ""
+msgstr "      --prefix <dir>      "
 
 #: rpm.c:396 rpmqv.c:547
 msgid "relocate the package to <dir>, if relocatable"
@@ -780,8 +801,9 @@ msgid "    --checksig <pkg>+"
 msgstr ""
 
 #: rpm.c:509
+#, fuzzy
 msgid "    -K <pkg>+             "
-msgstr ""
+msgstr "    -i <pacote>      "
 
 #: rpm.c:510 rpmqv.c:631
 msgid "verify package signature"
@@ -1168,11 +1190,11 @@ msgstr ""
 
 #: rpmqv.c:350
 msgid "                        [--target=platform1[,platform2...]]"
-msgstr ""
+msgstr "                        [--target=plataforma1[,plataforma2...]]"
 
 #: rpmqv.c:351
 msgid "                        [--rmsource] [--rmspec] specfile"
-msgstr ""
+msgstr "                        [--rmsource] [--rmspec] ficheiro_spec"
 
 #: rpmqv.c:352
 #, c-format
@@ -1274,16 +1296,18 @@ msgid "query/verify all packages"
 msgstr ""
 
 #: rpmqv.c:446
+#, fuzzy
 msgid "     -f <file>+           "
-msgstr ""
+msgstr "    -i <pacote>      "
 
 #: rpmqv.c:447
 msgid "query/verify package owning <file>"
 msgstr ""
 
 #: rpmqv.c:448
+#, fuzzy
 msgid "     -p <packagefile>+    "
-msgstr ""
+msgstr "    -i <pacote>      "
 
 #: rpmqv.c:449
 msgid "query/verify (uninstalled) package <packagefile>"
@@ -1816,22 +1840,22 @@ msgstr ""
 #: build/pack.c:480
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s"
-msgstr "não consigo abrir ficheiro spec %s: %s\n"
+msgstr "Não consegui abrir ficheiro spec %s: %s\n"
 
 #: build/pack.c:494
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s"
-msgstr "não consigo abrir ficheiro spec %s: %s\n"
+msgstr "Não consegui mudar o nome de %s para %s: %s\n"
 
 #: build/pack.c:504
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s"
-msgstr "não consigo abrir ficheiro spec %s: %s\n"
+msgstr "Não consegui abrir ficheiro spec %s: %s\n"
 
 #: build/pack.c:510
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s"
-msgstr "não consigo abrir ficheiro spec %s: %s\n"
+msgstr "Não consegui abrir ficheiro spec %s: %s\n"
 
 #: build/pack.c:537
 #, c-format
@@ -3155,9 +3179,7 @@ msgstr ""
 #: lib/rpmdb.c:299
 #, fuzzy, c-format
 msgid "cannot open %s index"
-msgstr ""
-"não consegui abrir %s/packages.rpm\n"
-"\n"
+msgstr "não consigo abrir %s/packages.rpm\n"
 
 #: lib/rpmdb.c:314
 #, c-format
@@ -3383,9 +3405,9 @@ msgid "%s cannot be installed\n"
 msgstr ""
 
 #: lib/rpminstall.c:331
-#, c-format
+#, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr ""
+msgstr "não consigo abrir %s/packages.rpm\n"
 
 #: lib/rpminstall.c:351
 #, c-format
@@ -3418,9 +3440,7 @@ msgstr ""
 #: lib/rpminstall.c:533
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
-msgstr ""
-"não consegui abrir %s/packages.rpm\n"
-"\n"
+msgstr "não consigo abrir %s/packages.rpm\n"
 
 #: lib/rpminstall.c:549
 #, c-format
@@ -3946,3 +3966,49 @@ msgstr ""
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""
+
+#~ msgid "RPM database already exists"
+#~ msgstr "Base de dados RPM já existe"
+
+#~ msgid "Old db is missing"
+#~ msgstr "Não encontro a base de dados antiga"
+
+#~ msgid "Old db is corrupt"
+#~ msgstr "A base de dados antiga está corrumpida"
+
+#~ msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+#~ msgstr "oldrpmdbGetPackageInfo falhou &olddb = %p olddb.packages = %p\n"
+
+#~ msgid ""
+#~ "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
+#~ msgstr ""
+#~ "                        [--ftpproxy <servidor>] [--ftpport <porto>] "
+#~ "[--justdb]"
+
+#~ msgid ""
+#~ "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+#~ msgstr ""
+#~ "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+
+#~ msgid ""
+#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
+#~ "<file>]"
+#~ msgstr ""
+#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
+#~ "<file>]"
+
+#~ msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
+#~ msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
+
+#~ msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
+#~ msgstr "       rpm {--rmsource} [--rcfile <file>] [-v] ficheiro_spec"
+
+#~ msgid ""
+#~ "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+#~ msgstr ""
+#~ "       rpm {--rebuild} [--rcfile <ficheiro>] [-v] fonte1.rpm ... fonteN.rpm"
+
+#~ msgid ""
+#~ "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+#~ msgstr ""
+#~ "       rpm {--recompile} [--rcfile <ficheiro>] [-v] fonte1.rpm ... fonteN.rpm"
