@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-06-20 17:35-0400\n"
+"POT-Creation-Date: 2000-06-21 19:27-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1800,7 +1800,7 @@ msgstr "riadok %d: Prázdny popis: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:443 build/parseSpec.c:375
+#: build/parsePreamble.c:443 build/parseSpec.c:378
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "riadok %d: BuildRoot nemô¾e by» \"/\": %s"
@@ -1955,45 +1955,45 @@ msgstr "riadok %d: program skriptu musí zaèína» '/': %s"
 msgid "line %d: Second %s"
 msgstr "riadok %d: Druhý %s"
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:138
 #, c-format
 msgid "line %d: %s"
 msgstr "riadok %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:189
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "otvorenie zlyhalo: %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:201
 msgid "Unclosed %%if"
 msgstr "Neuzavretý %%if"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:262
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:270
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: %%else bez if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:281
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: %%endif bez if"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:295 build/parseSpec.c:304
 msgid "malformed %%include statement"
 msgstr "znetvorený príkaz %%include"
 
-#: build/parseSpec.c:470
+#: build/parseSpec.c:473
 msgid "No buildable architectures"
 msgstr "®iadne zostaviteµné architektúry"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:521
 msgid "Package has no %%description: %s"
 msgstr "Balík neobsahuje %%description: %s"
 
@@ -2438,40 +2438,40 @@ msgstr "Makro %%%s obsahuje chybný názov (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) nebolo pou¾ité pod úrovòou %d "
 
-#: lib/macro.c:711
+#: lib/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Neznáma voµba %c v %s(%s)"
 
-#: lib/macro.c:891
+#: lib/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Håbka rekurzie (%d) väè¹ia ako maximálna (%d)"
 
-#: lib/macro.c:957 lib/macro.c:973
+#: lib/macro.c:920 lib/macro.c:936
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Neukonèené %c: %s"
 
-#: lib/macro.c:1013
+#: lib/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: lib/macro.c:1139
+#: lib/macro.c:1102
 msgid "Macro %%%.*s not found, skipping"
 msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 
-#: lib/macro.c:1220
+#: lib/macro.c:1183
 msgid "Target buffer overflow"
 msgstr "Preplnenie cieµovej vyrovnávacej pamäti"
 
 #. XXX Fstrerror
-#: lib/macro.c:1400 lib/macro.c:1406
+#: lib/macro.c:1363 lib/macro.c:1369
 #, c-format
 msgid "File %s: %s"
 msgstr "Súbor %s: %s"
 
-#: lib/macro.c:1409
+#: lib/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Súbor %s je men¹í ako %d bajtov"

@@ -75,8 +75,8 @@ arch_canon:	falcon: m68kmint	13
 arch_canon:	atariclone: m68kmint	13
 arch_canon:	milan: m68kmint		13
 arch_canon:	hades: m68kmint		13
+arch_canon:	s390: s390	14
 arch_canon:	i370: i370	14
-arch_canon:	i390: i390	15
 
 #############################################################
 # Canonical OS names and numbers
@@ -204,7 +204,7 @@ arch_compat: atariclone: m68kmint noarch
 arch_compat: milan: m68kmint noarch
 arch_compat: hades: m68kmint noarch
 
-arch_compat: i390: i370
+arch_compat: s390: i370
 arch_compat: i370: noarch
 
 arch_compat: ia64: noarch

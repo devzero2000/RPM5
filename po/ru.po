@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-20 17:35-0400\n"
+"POT-Creation-Date: 2000-06-21 19:27-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1797,7 +1797,7 @@ msgstr "строка %d: Пустой тэг: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s"
 
-#: build/parsePreamble.c:443 build/parseSpec.c:375
+#: build/parsePreamble.c:443 build/parseSpec.c:378
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "строка %d: BuildRoot не может быть \"/\": %s"
@@ -1952,45 +1952,45 @@ msgstr "строка %d: Программы в скриптах должны начинаться с '/': %s"
 msgid "line %d: Second %s"
 msgstr "строка %d: Второе %s"
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:138
 #, c-format
 msgid "line %d: %s"
 msgstr "строка %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:189
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Не могу открыть %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:201
 msgid "Unclosed %%if"
 msgstr "Незакрытый %%if"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:262
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:270
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Найден %%else без if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:281
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Найден %%endif без if"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:295 build/parseSpec.c:304
 msgid "malformed %%include statement"
 msgstr "неверное объявление %%include"
 
-#: build/parseSpec.c:470
+#: build/parseSpec.c:473
 msgid "No buildable architectures"
 msgstr "Нет архитектур, которые можно построить"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:521
 msgid "Package has no %%description: %s"
 msgstr "Пакет не имеет %%description: %s"
 
@@ -2435,40 +2435,40 @@ msgstr "Макрос %%%s имеет недопустимое имя (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Макрос %%%s (%s) не был использован ниже уровня %d"
 
-#: lib/macro.c:711
+#: lib/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Неизвестная опция %c в %s(%s)"
 
-#: lib/macro.c:891
+#: lib/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Глубина рекурсии(%d) больше max(%d)"
 
-#: lib/macro.c:957 lib/macro.c:973
+#: lib/macro.c:920 lib/macro.c:936
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Незакрытая %c: %s"
 
-#: lib/macro.c:1013
+#: lib/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr "%% с последующим неразбираемым макросом"
 
-#: lib/macro.c:1139
+#: lib/macro.c:1102
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Макрос %s не найден, пропускаю"
 
-#: lib/macro.c:1220
+#: lib/macro.c:1183
 msgid "Target buffer overflow"
 msgstr "Переполнение целевого буфера"
 
 #. XXX Fstrerror
-#: lib/macro.c:1400 lib/macro.c:1406
+#: lib/macro.c:1363 lib/macro.c:1369
 #, c-format
 msgid "File %s: %s"
 msgstr "Файл %s: %s"
 
-#: lib/macro.c:1409
+#: lib/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Файл %s меньше %d байт"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-20 17:35-0400\n"
+"POT-Creation-Date: 2000-06-21 19:27-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1770,7 +1770,7 @@ msgstr "rad %d: Tom tagg: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s"
 
-#: build/parsePreamble.c:443 build/parseSpec.c:375
+#: build/parsePreamble.c:443 build/parseSpec.c:378
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot kan inte vara \"/\": %s"
@@ -1925,45 +1925,45 @@ msgstr "rad %d: skriptprogram måste börja med \"/\": %s"
 msgid "line %d: Second %s"
 msgstr "rad %d: Andra %s"
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:138
 #, c-format
 msgid "line %d: %s"
 msgstr "rad %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:189
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Kan inte öppna %s: %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:201
 msgid "Unclosed %%if"
 msgstr "Oavslutat %%if"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:262
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s:%d: parseExpressionBoolean returnerar %d"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:270
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Fick ett %%else utan något if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:281
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Fick ett %%endif utan något if"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:295 build/parseSpec.c:304
 msgid "malformed %%include statement"
 msgstr "felformatterad %%include-sats"
 
-#: build/parseSpec.c:470
+#: build/parseSpec.c:473
 msgid "No buildable architectures"
 msgstr "Inga byggbara arkitekturer"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:521
 msgid "Package has no %%description: %s"
 msgstr "Paketet har ingen %%description: %s"
 
@@ -2414,40 +2414,40 @@ msgstr "Makro %%%s har otillåtet namn (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) var inte använd under nivå %d"
 
-#: lib/macro.c:711
+#: lib/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Okänd flagga %c i %s(%s)"
 
-#: lib/macro.c:891
+#: lib/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Rekursionsdjup(%d) större än max(%d)"
 
-#: lib/macro.c:957 lib/macro.c:973
+#: lib/macro.c:920 lib/macro.c:936
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Oavslutad %c: %s"
 
-#: lib/macro.c:1013
+#: lib/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr "Ett %% följs av ett makro som inte kan parsas"
 
-#: lib/macro.c:1139
+#: lib/macro.c:1102
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Inget makro %%%.*s hittat, hoppar över"
 
-#: lib/macro.c:1220
+#: lib/macro.c:1183
 msgid "Target buffer overflow"
 msgstr "Målbuffer översvämmad"
 
 #. XXX Fstrerror
-#: lib/macro.c:1400 lib/macro.c:1406
+#: lib/macro.c:1363 lib/macro.c:1369
 #, c-format
 msgid "File %s: %s"
 msgstr "Fil %s: %s"
 
-#: lib/macro.c:1409
+#: lib/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Fil %s är mindre än %d byte"
