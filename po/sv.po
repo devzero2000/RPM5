@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-05-07 19:30-0400\n"
-"PO-Revision-Date: 2001-04-10 20:04+0200\n"
+"PO-Revision-Date: 2001-05-08 12:27+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -982,26 +982,24 @@ msgstr ""
 "--justdb kan enbart användas vid installation och avinstallation av paket"
 
 #: rpm.c:966
-#, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation, "
 "erasure, and verification"
 msgstr ""
-"--noscripts kan enbart användas vid paketinstallation, avinstallation och "
-"verifiering"
+"skriptdeaktiveringsflaggor kan enbart användas vid paketinstallation, "
+"avinstallation och verifiering"
 
 #: rpm.c:970
-#, fuzzy
 msgid "--apply may only be specified during package installation"
-msgstr "--allfiles kan enbart användas vid paketinstallation"
+msgstr "--apply kan enbart användas vid paketinstallation"
 
 #: rpm.c:975 rpmqv.c:1151
-#, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"--notriggers kan enbart användas vid installation och avinstallation av paket"
+"utlösardeaktiveringsflaggor kan enbart användas vid installation och "
+"avinstallation av paket"
 
 #: rpm.c:979 rpmqv.c:1155
 msgid ""
@@ -1211,18 +1209,16 @@ msgid "generate headers compatible with rpm4 packaging"
 msgstr "generera huvuden kompatibla med rpm4-paketering"
 
 #: rpmqv.c:235 rpmqv.c:277
-#, fuzzy
 msgid "do not execute package scriptlet(s)"
-msgstr "kör inte paketspecifika skript"
+msgstr "kör inte paketskript"
 
 #: rpmqv.c:240
 msgid "save erased package files by renaming into sub-directory"
-msgstr ""
+msgstr "sparade raderade paketfiler genom att spara dem i underkatalog"
 
 #: rpmqv.c:242
-#, fuzzy
 msgid "<package>+"
-msgstr "<paket>"
+msgstr "<paket>+"
 
 #: rpmqv.c:246 rpmqv.c:602
 msgid "skip files with leading component <path> "
@@ -1230,78 +1226,65 @@ msgstr "hoppa över filer med inledande <sökväg>"
 
 #: rpmqv.c:247
 msgid "<path>"
-msgstr ""
+msgstr "<sökväg>"
 
 #: rpmqv.c:252
-#, fuzzy
 msgid "upgrade package(s) if already installed"
-msgstr "uppgradera paket om redan installerat"
+msgstr "uppgradera paket om redan installerat/de"
 
 #: rpmqv.c:253 rpmqv.c:266 rpmqv.c:329
 msgid "<packagefile>+"
 msgstr "<paketfil>+"
 
 #: rpmqv.c:280
-#, fuzzy
 msgid "do not execute %%pre scriptlet (if any)"
-msgstr "utför inte (eventuellt) skript"
+msgstr "utför inte (eventuellt) %%pre-skript"
 
 #: rpmqv.c:283
-#, fuzzy
 msgid "do not execute %%post scriptlet (if any)"
-msgstr "utför inte (eventuellt) skript"
+msgstr "utför inte (eventuellt) %%post-skript"
 
 #: rpmqv.c:286
-#, fuzzy
 msgid "do not execute %%preun scriptlet (if any)"
-msgstr "utför inte (eventuellt) skript"
+msgstr "utför inte (eventuellt) %%preun-skript"
 
 #: rpmqv.c:289
-#, fuzzy
 msgid "do not execute %%postun scriptlet (if any)"
-msgstr "utför inte (eventuellt) skript"
+msgstr "utför inte (eventuellt) %%postun-skript"
 
 #: rpmqv.c:293
-#, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
-msgstr "kör inte utlösningsskript utlösta av detta paket"
+msgstr "kör inte skript utlösta av detta paket"
 
 #: rpmqv.c:296
-#, fuzzy
 msgid "do not execute any %%triggerprein scriptlet(s)"
-msgstr "kör inte paketspecifika skript"
+msgstr "kör inte %%triggerprein-skript"
 
 #: rpmqv.c:299
-#, fuzzy
 msgid "do not execute any %%triggerin scriptlet(s)"
-msgstr "kör inte installationsskript"
+msgstr "kör inte %%triggerin-skript"
 
 #: rpmqv.c:302
-#, fuzzy
 msgid "do not execute any %%triggerun scriptlet(s)"
-msgstr "kör inte installationsskript"
+msgstr "kör inte %%triggerun-skript"
 
 #: rpmqv.c:305
-#, fuzzy
 msgid "do not execute any %%triggerpostun scriptlet(s)"
-msgstr "kör inte installationsskript"
+msgstr "kör inte %%triggerpostun-skript"
 
 #: rpmqv.c:316
-#, fuzzy
 msgid "relocate files from path <old> to <new>"
-msgstr "flytta filer från <frånskv> till <tillskv>"
+msgstr "relokera filer från <gammal> till <ny>"
 
 #: rpmqv.c:317
-#, fuzzy
 msgid "<old>=<new>"
-msgstr "<frånskv>=<tillskv>"
+msgstr "<gammal>=<ny>"
 
 #: rpmqv.c:319
 msgid "save erased package files by repackaging"
-msgstr ""
+msgstr "spara raderade paketfiler genom ompaketering"
 
 #: rpmqv.c:328
-#, fuzzy
 msgid "upgrade package(s)"
 msgstr "uppgradera paket"
 
@@ -1327,7 +1310,7 @@ msgstr "Byggflaggor med [ <specfil> | <tar-arkiv> | <källpaket> ]:"
 
 #: rpmqv.c:375
 msgid "Install/Upgrade/Erase options:"
-msgstr ""
+msgstr "Installera-/Uppdatera-/Raderaflaggor"
 
 #: rpmqv.c:380
 msgid "Common options for all rpm modes:"
@@ -1553,12 +1536,12 @@ msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath angivet för en operation som inte använder någon databas"
 
 #: rpmqv.c:1146
-#, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"--justdb kan enbart användas vid installation och avinstallation av paket"
+"skriptdeaktiveringsflaggor kan enbart användas vid installation och "
+"avinstallation av paket"
 
 #: rpmqv.c:1313
 msgid "no packages files given for rebuild"
@@ -2157,9 +2140,8 @@ msgid "Error parsing %%setup: %s\n"
 msgstr "Fel i tolkning av %%setup: %s\n"
 
 #: build/parsePrep.c:298
-#, fuzzy
 msgid "line %d: Bad arg to %%setup: %s\n"
-msgstr "rad %d: Felaktigt argument till %%setup %c: %s\n"
+msgstr "rad %d: Felaktigt argument till %%setup: %s\n"
 
 #: build/parsePrep.c:316
 msgid "line %d: Bad %%setup option %s: %s\n"
@@ -2268,9 +2250,8 @@ msgid "malformed %%include statement\n"
 msgstr "felformaterad %%include-sats\n"
 
 #: build/parseSpec.c:505
-#, fuzzy
 msgid "No compatible architectures found for build\n"
-msgstr "Inga byggbara arkitekturer\n"
+msgstr "Hittade inga kompatibla arkitekturer att bygga\n"
 
 #: build/parseSpec.c:559
 msgid "Package has no %%description: %s\n"
@@ -2345,12 +2326,11 @@ msgstr "  %s    A %s\tB %s\n"
 
 #: lib/depends.c:595 lib/depends.c:1075 lib/depends.c:1200
 msgid "YES"
-msgstr ""
+msgstr "JA"
 
 #: lib/depends.c:595 lib/depends.c:1075 lib/depends.c:1200
-#, fuzzy
 msgid "NO "
-msgstr "EJ OK"
+msgstr "NEJ "
 
 #: lib/depends.c:964
 #, c-format
@@ -2363,9 +2343,9 @@ msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s JA (lade till tillhandahållande)\n"
 
 #: lib/depends.c:1074
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %-45s %-s (cached)\n"
-msgstr "%s: %-45s %-3s (cachad)\n"
+msgstr "%s: %-45s %-s (cachad)\n"
 
 #: lib/depends.c:1095
 #, c-format
@@ -2429,6 +2409,7 @@ msgstr "========== noterar alla relationer\n"
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
+"========== tsort:erar paket (ordning, #föregångare, #efterföljare, djup)\n"
 
 #: lib/depends.c:1807
 msgid "========== successors only (presentation order)\n"
@@ -2478,17 +2459,17 @@ msgstr "filen %s är på en okänd enhet\n"
 
 #: lib/fsm.c:280
 msgid "========= Directories not explictly included in package:\n"
-msgstr ""
+msgstr "========= Kataloger ej uttryckligen inkluderade i paketet:\n"
 
 #: lib/fsm.c:282
-#, fuzzy, c-format
+#, c-format
 msgid "%9d %s\n"
-msgstr "rad %d: %s\n"
+msgstr "%9d %s\n"
 
 #: lib/fsm.c:1089
 #, c-format
 msgid "%s directory created with perms %04o.\n"
-msgstr ""
+msgstr "katalog %s skapad med rättigheter %04o.\n"
 
 #: lib/fsm.c:1398 lib/fsm.c:1523
 #, c-format
@@ -2496,19 +2477,19 @@ msgid "%s saved as %s\n"
 msgstr "%s sparades som %s\n"
 
 #: lib/fsm.c:1549
-#, fuzzy, c-format
+#, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
-msgstr "kan inte ta bort %s - katalogen är inte tom\n"
+msgstr "%s rmdir av %s misslyckades: Katalogen är inte tom\n"
 
 #: lib/fsm.c:1555
-#, fuzzy, c-format
+#, c-format
 msgid "%s rmdir of %s failed: %s\n"
-msgstr "rmdir av %s misslyckades: %s\n"
+msgstr "%s rmdir av %s misslyckades: %s\n"
 
 #: lib/fsm.c:1565
-#, fuzzy, c-format
+#, c-format
 msgid "%s unlink of %s failed: %s\n"
-msgstr "misslyckades med att öppna %s: %s\n"
+msgstr "%s unlink av %s misslyckades: %s\n"
 
 #: lib/fsm.c:1584
 #, c-format
@@ -2723,7 +2704,7 @@ msgstr "ignorera ExcludeArch:-direktiv från specfil"
 
 #: lib/poptBT.c:183
 msgid "debug file state machine"
-msgstr ""
+msgstr "felsök filtillståndsmaskin"
 
 #: lib/poptBT.c:185
 msgid "do not execute any stages of the build"
@@ -2895,9 +2876,9 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
 
 #: lib/psm.c:559
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create %s %s\n"
-msgstr "kan inte skapa %s: %s\n"
+msgstr "kan inte skapa %s %s\n"
 
 #: lib/psm.c:565
 #, c-format
@@ -2913,9 +2894,10 @@ msgid "source package contains no .spec file\n"
 msgstr "källpaket innehåller ingen .spec-fil\n"
 
 #: lib/psm.c:960
-#, fuzzy, c-format
+#, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-msgstr "körning av %s-skript från %s-%s-%s misslyckades, slutstatus %d\n"
+msgstr ""
+"körning av %s-skript från %s-%s-%s misslyckades, waitpid returnerade %s\n"
 
 #: lib/psm.c:967
 #, c-format
@@ -2923,14 +2905,14 @@ msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "körning av %s-skript från %s-%s-%s misslyckades, slutstatus %d\n"
 
 #: lib/psm.c:1275
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
-msgstr "paket: %s-%s-%s filtest = %d\n"
+msgstr "%s: %s-%s-%s har %d filer, test = %d\n"
 
 #: lib/psm.c:1389
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
-msgstr ""
+msgstr "%s: %s-skript misslyckades (%d), hoppar över %s-%s-%s\n"
 
 #: lib/psm.c:1497
 #, c-format
@@ -2952,9 +2934,9 @@ msgid " on file "
 msgstr " vid fil "
 
 #: lib/psm.c:1811
-#, fuzzy, c-format
+#, c-format
 msgid "%s: running %s script(s) (if any)\n"
-msgstr "kör (eventuellt) postinstallationsskript\n"
+msgstr "%s: kör (eventuellt) %s-skript\n"
 
 #: lib/query.c:115
 #, c-format
@@ -3068,9 +3050,9 @@ msgid "package record number: %u\n"
 msgstr "paketpost nummer: %u\n"
 
 #: lib/query.c:734
-#, fuzzy, c-format
+#, c-format
 msgid "record %u could not be read\n"
-msgstr "post %d kunde inte läsas\n"
+msgstr "post %u kunde inte läsas\n"
 
 #: lib/query.c:745 lib/rpminstall.c:599
 #, c-format
@@ -3381,9 +3363,9 @@ msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?\n"
 
 #: lib/signature.c:228
-#, fuzzy, c-format
+#, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
-msgstr "Signaturstorlek  : %d\n"
+msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
 
 #: lib/signature.c:287
 #, c-format
@@ -3715,9 +3697,9 @@ msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan inte läsa huvud vid 0x%x\n"
 
 #: rpmdb/rpmdb.c:1365 rpmdb/rpmdb.c:2505
-#, fuzzy, c-format
+#, c-format
 msgid "record number %u in database is bad -- skipping.\n"
-msgstr "post nummer %d i databasen är felaktig -- hoppar över den.\n"
+msgstr "post nummer %u i databasen är felaktig -- hoppar över den.\n"
 
 #: rpmdb/rpmdb.c:1729
 #, c-format
@@ -3784,9 +3766,9 @@ msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas med dbapi %d\n"
 
 #: rpmdb/rpmdb.c:2544
-#, fuzzy, c-format
+#, c-format
 msgid "cannot add record originally at %u\n"
-msgstr "kan inte lägga till post ursprungligen vid %d\n"
+msgstr "kan inte lägga till post ursprungligen vid %u\n"
 
 #: rpmdb/rpmdb.c:2562
 msgid "failed to rebuild database: original database remains in place\n"
@@ -4008,143 +3990,3 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
-
-#~ msgid "========== tsorting packages\n"
-#~ msgstr "========== tsorterar paket\n"
-
-#~ msgid ""
-#~ "--notriggers may only be specified during package installation, erasure, and "
-#~ "verification"
-#~ msgstr ""
-#~ "--notriggers kan enbart användas vid installation, avinstallation och "
-#~ "verifiering"
-
-#~ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
-#~ msgstr "       %s {--initdb}   [--dbpath <kat>]\n"
-
-#~ msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-#~ msgstr "       %s {--rebuilddb} [--rcfile <fil:...>] [--dbpath <kat>]\n"
-
-#~ msgid ""
-#~ "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-#~ msgstr ""
-#~ "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-
-#~ msgid ""
-#~ "                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <fil:...>] [--ignorearch] [--dbpath <kat>]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <file:...>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <fil:...>]"
-
-#~ msgid ""
-#~ "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--erase -e} [--root <kat>] [--noscripts] [--rcfile <fil:...>]\n"
-
-#~ msgid ""
-#~ "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <kat>] [--rcfile <fil:...>]"
-
-#~ msgid ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil:...>]\n"
-
-#~ msgid "       %s {--setperms} [-afpg] [target]\n"
-#~ msgstr "       %s {--setperms} [-afpg] [mål]\n"
-
-#~ msgid "       %s {--setugids} [-afpg] [target]\n"
-#~ msgstr "       %s {--setugids} [-afpg] [mål]\n"
-
-#~ msgid ""
-#~ "       %s {--resign} [--rcfile <file:...>] package1 package2 ... packageN\n"
-#~ msgstr ""
-#~ "       %s {--resign} [--rcfile <fil:...>] paket1 paket2 ... paketN\n"
-
-#~ msgid ""
-#~ "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-#~ msgstr "       %s {--addsign} [--rcfile <fil:...>] paket1 paket2 ... paketN"
-
-#~ msgid ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<fil:...>]\n"
-
-#~ msgid "archive = %s, fs = %s\n"
-#~ msgstr "arkiv = %s, fs = %s\n"
-
-#~ msgid "can't rename %s to %s: %s\n"
-#~ msgstr "kan inte flytta %s till %s: %s\n"
-
-#~ msgid "can't unlink %s: %s\n"
-#~ msgstr "kan inte ta bort %s: %s\n"
-
-#~ msgid "getNextHeader: %s\n"
-#~ msgstr "getNextHeader: %s\n"
-
-#~ msgid "   file: %s action: %s\n"
-#~ msgstr "   fil: %s åtgärd: %s\n"
-
-#~ msgid "installing a source package\n"
-#~ msgstr "installerar källpaket\n"
-
-#~ msgid "cannot create sourcedir %s\n"
-#~ msgstr "kan inte skapa källkatalog %s\n"
-
-#~ msgid "sources in: %s\n"
-#~ msgstr "källkod i: %s\n"
-
-#~ msgid "cannot create specdir %s\n"
-#~ msgstr "kan inte skapa spec-katalog %s\n"
-
-#~ msgid "spec file in: %s\n"
-#~ msgstr "specfil i: %s\n"
-
-#~ msgid "renaming %s to %s\n"
-#~ msgstr "byter namn på %s till %s\n"
-
-#~ msgid "rename of %s to %s failed: %s\n"
-#~ msgstr "namnbyte från %s till %s misslyckades: %s\n"
-
-#~ msgid "stopping install as we're running --test\n"
-#~ msgstr "avbryter installation eftersom vi kör --test\n"
-
-#~ msgid "running preinstall script (if any)\n"
-#~ msgstr "kör (eventuellt) preinstallationsskript\n"
-
-#~ msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
-#~ msgstr ""
-#~ "hoppar över installation av %s-%s-%s, %%pre-skriptet misslyckades med kod "
-#~ "%d\n"
-
-#~ msgid "Signature pad : %d\n"
-#~ msgstr "Signaturutfyllnad: %d\n"
-
-#~ msgid "removal of %s failed: %s\n"
-#~ msgstr "kan inte ta bort %s: %s\n"
-
-#~ msgid "will remove files test = %d\n"
-#~ msgstr "tar bort filer test = %d\n"
-
-#~ msgid "running postuninstall script (if any)\n"
-#~ msgstr "kör (eventuellt) postavinstallationsskript\n"
-
-#~ msgid ""
-#~ "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
-#~ "returned %s\n"
-#~ msgstr ""
-#~ "uppfångandet av returkod från %s-skript från %s-%s-%s misslyckades,\n"
-#~ "waitpid returnerade %s\n"
-
-#~ msgid "      --timecheck <secs>  "
-#~ msgstr "      --timecheck <sek>   "
-
-#~ msgid "set the time check to <secs> seconds (0 disables)"
-#~ msgstr "sätt tidskontrollen till <sek> sekunder (0 slår av)"
