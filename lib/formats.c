@@ -350,12 +350,19 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     }
 /*@=branchstate@*/
 
-    nb = 2 * strlen(xtag) + sizeof("\t<></>") + xmlstrlen(s);
-    te = t = alloca(nb);
-    te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
-    te = xmlstrcpy(te, s);
-    te += strlen(te);
-    te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
+    nb = xmlstrlen(s);
+    if (nb == 0) {
+	nb += strlen(xtag) + sizeof("\t</>");
+	te = t = alloca(nb);
+	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), "/>");
+    } else {
+	nb += 2 * strlen(xtag) + sizeof("\t<></>");
+	te = t = alloca(nb);
+	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
+	te = xmlstrcpy(te, s);
+	te += strlen(te);
+	te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
+    }
 
     /* XXX s was malloc'd */
 /*@-branchstate@*/
@@ -921,9 +928,9 @@ static int recontextsTag(Header h, /*@out@*/ rpmTagType * type,
 static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -945,9 +952,9 @@ static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
 static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
