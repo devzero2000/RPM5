@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.2
+Release: 0.3
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -485,6 +485,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Thu Apr 15 2004 Jeff Johnson <jbj@jbj.org> 4.3.1-0.3
+- make peace with libtool-1.5.6.
+- fix: follow current is_selinux_enabled() return (#121004).
+
 * Wed Apr  7 2004 Jeff Johnson <jbj@jbj.org> 4.3.1-0.2
 - fix: segfault on --recontext if file_contexts unreadable (#117374).
 - fix: /etc/security/selinux/file_contexts is default path.
