@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2001-07-16 10:39-0400\n"
-"PO-Revision-Date: 2001-07-16 19:28+0200\n"
+"PO-Revision-Date: 2001-07-16 21:31+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1360,9 +1360,9 @@ msgid "Invalid %s token: %s\n"
 msgstr "Ogiltig %s token: %s\n"
 
 #: build/files.c:479
-#, fuzzy, c-format
+#, c-format
 msgid "Missing %s in %s %s\n"
-msgstr "Saknad \"(\" i %s %s\n"
+msgstr "Saknad %s i %s %s\n"
 
 #: build/files.c:532
 #, c-format
@@ -1457,9 +1457,9 @@ msgid "File needs leading \"/\": %s\n"
 msgstr "Filen behöver inledande \"/\": %s\n"
 
 #: build/files.c:1661
-#, fuzzy, c-format
+#, c-format
 msgid "Glob not permitted: %s\n"
-msgstr "rad %d: Filnamn inte tillåtna: %s\n"
+msgstr "Matchning inte tillåtet: %s\n"
 
 #: build/files.c:1675
 #, c-format
