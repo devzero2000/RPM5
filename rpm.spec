@@ -393,6 +393,7 @@ fi
 %changelog
 * Wed May 23 2001 Jeff Johnson <jbj@redhat.com>
 - headerFree() returns NULL, _free is C++ safe.
+- remove all header region assertion failures, return NULL instead.
 
 * Mon May 21 2001 Jeff Johnson <jbj@redhat.com>
 - fix: skip %ghost files when building packages (#38218).

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-05-23 10:09-0400\n"
+"POT-Creation-Date: 2001-05-23 11:37-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2552,7 +2552,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2762 lib/header.c:2781 lib/header.c:2801
+#: lib/header.c:2750 lib/header.c:2769 lib/header.c:2789
 msgid "(not a number)"
 msgstr "(nije broj)"
 
@@ -2629,90 +2629,90 @@ msgstr "Ne mogu da otvorim datoteku %s: "
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:218 lib/header.c:1181 lib/psm.c:372
+#: lib/header.c:218 lib/header.c:1170 lib/psm.c:372
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1623
+#: lib/header.c:1611
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2095
+#: lib/header.c:2083
 #, c-format
 msgid "missing { after %"
 msgstr "nedostaje { posle %"
 
 #. @-observertrans@
-#: lib/header.c:2125
+#: lib/header.c:2113
 msgid "missing } after %{"
 msgstr "nedostaje } posle %"
 
 #. @-observertrans@
-#: lib/header.c:2139
+#: lib/header.c:2127
 msgid "empty tag format"
 msgstr "prazan 'tag' format'"
 
 #. @-observertrans@
-#: lib/header.c:2151
+#: lib/header.c:2139
 msgid "empty tag name"
 msgstr "prazno ime tag-a"
 
 #. @-observertrans@
-#: lib/header.c:2168
+#: lib/header.c:2156
 msgid "unknown tag"
 msgstr "nepoznat tag"
 
 #. @-observertrans@
-#: lib/header.c:2195
+#: lib/header.c:2183
 msgid "] expected at end of array"
 msgstr "] oèekivano na kraju niza"
 
 #. @-observertrans@
-#: lib/header.c:2213
+#: lib/header.c:2201
 msgid "unexpected ]"
 msgstr "neoèekivano ]"
 
 #. @-observertrans@
-#: lib/header.c:2217
+#: lib/header.c:2205
 msgid "unexpected }"
 msgstr "neoèekivano }"
 
 #. @-observertrans@
-#: lib/header.c:2282
+#: lib/header.c:2270
 msgid "? expected in expression"
 msgstr "oèekivan znak ? u izrazu"
 
 #. @-observertrans@
-#: lib/header.c:2291
+#: lib/header.c:2279
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ oèekivano posle ? u izrazu"
 
 #. @-observertrans@
-#: lib/header.c:2304 lib/header.c:2346
+#: lib/header.c:2292 lib/header.c:2334
 msgid "} expected in expression"
 msgstr "} oèekivano u izrazu"
 
 #. @-observertrans@
-#: lib/header.c:2314
+#: lib/header.c:2302
 msgid ": expected following ? subexpression"
 msgstr "oèekivano : praæeno ? podizrazom"
 
 #. @-observertrans@
-#: lib/header.c:2331
+#: lib/header.c:2319
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ oèekivano posle : u izrazu"
 
 #. @-observertrans@
-#: lib/header.c:2356
+#: lib/header.c:2344
 msgid "| expected at end of expression"
 msgstr "| oèekivano na kraju izraza"
 
-#: lib/header.c:2531
+#: lib/header.c:2519
 msgid "(unknown type)"
 msgstr "(nepoznat tip)"
 

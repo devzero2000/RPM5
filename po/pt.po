@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2001-05-23 10:09-0400\n"
+"POT-Creation-Date: 2001-05-23 11:37-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2462,7 +2462,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2762 lib/header.c:2781 lib/header.c:2801
+#: lib/header.c:2750 lib/header.c:2769 lib/header.c:2789
 msgid "(not a number)"
 msgstr "(não é um número)"
 
@@ -2539,88 +2539,88 @@ msgstr "%s criado como %s\n"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "o valor RPM_STRING_TYPE do dataLength() tem de ser 1.\n"
 
-#: lib/header.c:218 lib/header.c:1181 lib/psm.c:372
+#: lib/header.c:218 lib/header.c:1170 lib/psm.c:372
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "O tipo de dados %d não é suportado\n"
 
-#: lib/header.c:1623
+#: lib/header.c:1611
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Número do headerAddEntry inválido: %d\n"
 
 #. @-observertrans@
-#: lib/header.c:2095
+#: lib/header.c:2083
 #, c-format
 msgid "missing { after %"
 msgstr "falta um { depois do %"
 
 #. @-observertrans@
-#: lib/header.c:2125
+#: lib/header.c:2113
 msgid "missing } after %{"
 msgstr "falta um } depois do %{"
 
 #. @-observertrans@
-#: lib/header.c:2139
+#: lib/header.c:2127
 msgid "empty tag format"
 msgstr "formato da opção em branco"
 
 #. @-observertrans@
-#: lib/header.c:2151
+#: lib/header.c:2139
 msgid "empty tag name"
 msgstr "nome da opção em branco"
 
 #. @-observertrans@
-#: lib/header.c:2168
+#: lib/header.c:2156
 msgid "unknown tag"
 msgstr "opção desconhecida"
 
 #. @-observertrans@
-#: lib/header.c:2195
+#: lib/header.c:2183
 msgid "] expected at end of array"
 msgstr "] esperado no fim do vector"
 
 #. @-observertrans@
-#: lib/header.c:2213
+#: lib/header.c:2201
 msgid "unexpected ]"
 msgstr "] inesperado"
 
 #. @-observertrans@
-#: lib/header.c:2217
+#: lib/header.c:2205
 msgid "unexpected }"
 msgstr "} inesperado"
 
 #. @-observertrans@
-#: lib/header.c:2282
+#: lib/header.c:2270
 msgid "? expected in expression"
 msgstr "esperado um ? na expressão"
 
 #. @-observertrans@
-#: lib/header.c:2291
+#: lib/header.c:2279
 msgid "{ expected after ? in expression"
 msgstr "esperado um { a seguir ao ? na expressão"
 
 #. @-observertrans@
-#: lib/header.c:2304 lib/header.c:2346
+#: lib/header.c:2292 lib/header.c:2334
 msgid "} expected in expression"
 msgstr "esperado um } na expressão"
 
 #. @-observertrans@
-#: lib/header.c:2314
+#: lib/header.c:2302
 msgid ": expected following ? subexpression"
 msgstr "esperado um : a seguir à sub-expressão ?"
 
 #. @-observertrans@
-#: lib/header.c:2331
+#: lib/header.c:2319
 msgid "{ expected after : in expression"
 msgstr "esperado um { a seguir ao : na expressão"
 
 #. @-observertrans@
-#: lib/header.c:2356
+#: lib/header.c:2344
 msgid "| expected at end of expression"
 msgstr "esperado um | no fim da expressão"
 
-#: lib/header.c:2531
+#: lib/header.c:2519
 msgid "(unknown type)"
 msgstr "(tipo desconhecido)"
 
