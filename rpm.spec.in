@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1.02
+Release: 1.03
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -521,6 +521,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Aug 30 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.03
+- fix: common sanity check on headers, prevent segfault (#72590).
+- limit number of NOKEY/UNTRUSTED keys that will be warned once.
+- libadd -lelf to rpmdb (#73024).
+- portability: non-linux is easier, more to do (#72893).
+
 * Tue Aug 27 2002 Jeff Johnson <jbj@redhat.com> 4.1-1.02
 - portability: carry libelf in src rpm, include signal.h.
 - fix: segfault with --checksig, plug memory leak (#72455).

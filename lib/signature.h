@@ -41,14 +41,14 @@ Header rpmNewSignature(void)
  * Read (and verify header+payload size) signature header.
  * If an old-style signature is found, we emulate a new style one.
  * @param fd		file handle
- * @retval headerp	address of (signature) header (or NULL)
+ * @retval sighp	address of (signature) header (or NULL)
  * @param sig_type	type of signature header to read (from lead)
  * @return		rpmRC return code
  */
-rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *headerp,
+rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
 		sigType sig_type)
 	/*@globals fileSystem @*/
-	/*@modifies fd, *headerp, fileSystem @*/;
+	/*@modifies fd, *sighp, fileSystem @*/;
 
 /** \ingroup signature
  * Write signature header.

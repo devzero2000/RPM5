@@ -33,9 +33,13 @@
 static int _print_pkts = 0;
 
 /*@unchecked@*/
-static int nkeyids = 0;
+static unsigned int nkeyids_max = 256;
+/*@unchecked@*/
+static unsigned int nkeyids = 0;
+/*@unchecked@*/
+static unsigned int nextkeyid  = 0;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-static int * keyids;
+static unsigned int * keyids;
 
 /*@unchecked@*/
 static unsigned char header_magic[8] = {
@@ -235,18 +239,22 @@ static int rpmtsStashKeyid(rpmts ts)
 /*@=boundsread@*/
     }
 
-    keyids = xrealloc(keyids, (nkeyids + 1) * sizeof(*keyids));
+    if (nkeyids < nkeyids_max) {
+	nkeyids++;
+	keyids = xrealloc(keyids, nkeyids * sizeof(*keyids));
+    }
 /*@-boundswrite@*/
-    keyids[nkeyids] = keyid;
+    keyids[nextkeyid] = keyid;
 /*@=boundswrite@*/
-    nkeyids++;
+    nextkeyid++;
+    nextkeyid %= nkeyids_max;
 
     return 0;
 }
 
 int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 {
-    const entryInfo pe = pev;
+    entryInfo pe = (entryInfo) pev;
     entryInfo info = iv;
     int i;
 
@@ -549,8 +557,6 @@ verifyinfo_exit:
 	break;
     }
 
-/** @todo Implement disable/enable/warn/error/anal policy. */
-
 /*@-boundswrite@*/
     buf[0] = '\0';
 /*@=boundswrite@*/
@@ -565,8 +571,60 @@ verifyinfo_exit:
     return rc;
 }
 
-int rpmReadPackageFile(rpmts ts, FD_t fd,
-		const char * fn, Header * hdrp)
+rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
+{
+    int_32 block[4];
+    int_32 il;
+    int_32 dl;
+    int_32 * ei = NULL;
+    size_t uc;
+    int_32 nb;
+    Header h = NULL;
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
+
+    if (hdrp)
+	*hdrp = NULL;
+
+    if (timedRead(fd, (char *)block, sizeof(block)) != sizeof(block))
+	goto exit;
+    if (memcmp(block, header_magic, sizeof(header_magic)))
+	goto exit;
+    il = ntohl(block[2]);
+    if (hdrchkTags(il))
+	goto exit;
+    dl = ntohl(block[3]);
+    if (hdrchkData(dl))
+	goto exit;
+
+    nb = (il * sizeof(struct entryInfo_s)) + dl;
+    uc = sizeof(il) + sizeof(dl) + nb;
+    ei = xmalloc(uc);
+    ei[0] = block[2];
+    ei[1] = block[3];
+    if (timedRead(fd, (char *)&ei[2], nb) != nb)
+	goto exit;
+
+    /* Sanity check header tags */
+    rc = headerCheck(ts, ei, uc, msg);
+    if (rc != RPMRC_OK)
+	goto exit;
+
+    /* OK, blob looks sane, load the header. */
+    h = headerLoad(ei);
+    if (h == NULL)
+        goto exit;
+    h->flags |= HEADERFLAG_ALLOCATED;
+    ei = NULL;	/* XXX will be freed with header */
+    
+exit:
+    if (rc == RPMRC_OK && hdrp)
+	*hdrp = headerLink(h);
+    ei = _free(ei);
+    h = headerFree(h);
+    return rc;
+}
+
+int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     pgpDig dig;
     byte buf[8*BUFSIZ];
@@ -578,6 +636,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     const void * sig;
     int_32 siglen;
     Header h = NULL;
+    const char * msg;
     int hmagic;
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
@@ -640,10 +699,12 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     /* Figger the most effective available signature. */
     sigtag = 0;
     vsflags = rpmtsVSFlags(ts);
+#ifdef	DYING
     if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_DSA))
 	sigtag = RPMSIGTAG_DSA;
     if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_RSA))
 	sigtag = RPMSIGTAG_RSA;
+#endif
     if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD) &&
 	headerIsEntry(sigh, RPMSIGTAG_GPG))
     {
@@ -656,8 +717,10 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 	sigtag = RPMSIGTAG_PGP;
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
     }
+#ifdef	DYING
     if (_chk(RPMVSF_NOSHA1HEADER) && headerIsEntry(sigh, RPMSIGTAG_SHA1))
 	sigtag = RPMSIGTAG_SHA1;
+#endif
     if (_chk(RPMVSF_NOMD5|RPMVSF_NEEDPAYLOAD) &&
 	headerIsEntry(sigh, RPMSIGTAG_MD5))
     {
@@ -666,13 +729,15 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     }
 
     /* Read the metadata, computing digest(s) on the fly. */
-    hmagic = ((l->major >= 3) ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-    h = headerRead(fd, hmagic);
-    if (h == NULL) {
-	rpmError(RPMERR_FREAD, _("%s: headerRead failed\n"), fn);
-	rc = RPMRC_FAIL;
+    h = NULL;
+    msg = NULL;
+    rc = rpmReadHeader(ts, fd, &h, &msg);
+    if (rc != RPMRC_OK || h == NULL) {
+	rpmError(RPMERR_FREAD, _("%s: headerRead failed: %s\n"), fn, msg);
+	msg = _free(msg);
 	goto exit;
     }
+    msg = _free(msg);
 
     /* Any signatures to check? */
     if (sigtag == 0) {
@@ -765,6 +830,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 	/*@fallthrough@*/
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
+	hmagic = ((l->major >= 3) ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
 	dig->nbytes += headerSizeof(h, hmagic);
 	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    dig->nbytes += count;

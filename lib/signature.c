@@ -143,7 +143,7 @@ static unsigned char header_magic[8] = {
     0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
-rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
+rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type)
 {
     int_32 block[4];
     int_32 il;
@@ -158,8 +158,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     int xx;
     int i;
 
-    if (headerp)
-	*headerp = NULL;
+    if (sighp)
+	*sighp = NULL;
 
     if (sig_type != RPMSIGTYPE_HEADERSIG)
 	goto exit;
@@ -183,7 +183,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     if (timedRead(fd, (char *)pe, nb) != nb)
 	goto exit;
     
-    /* Sanity check signtaure tags */
+    /* Sanity check signature tags */
     memset(info, 0, sizeof(*info));
     for (i = 0; i < il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
@@ -211,8 +211,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     }
 
 exit:
-    if (rc == RPMRC_OK && headerp && sigh)
-	*headerp = headerLink(sigh);
+    if (rc == RPMRC_OK && sighp && sigh)
+	*sighp = headerLink(sigh);
     sigh = headerFree(sigh);
     return rc;
 }

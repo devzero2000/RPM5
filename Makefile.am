@@ -6,9 +6,10 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	RPM-GPG-KEY RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
-	xmlspec/Makefile xmlspec/*.cpp xmlspec/*.h xmlspec/*.xml \
-	xmlspec/doc/*.html \
-	Perl-RPM po/*.in po/*.po po/rpm.pot \
+	xmlspec/Makefile xmlspec/*.c xmlspec/*.h \
+	xmlspec/examples/*.sh xmlspec/examples/*.lst \
+	xmlspec/examples/*.xmlspec \
+	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
 SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ libelf @WITH_DB_SUBDIR@ popt beecrypt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
