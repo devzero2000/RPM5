@@ -63,6 +63,12 @@
 %_dbpath		%{_var}/lib/rpm
 %_defaultdocdir		%{_usr}/doc
 #
+%__find_provides	@FINDPROVIDES@
+%__find_requires	@FINDREQUIRES@
+#%__find_prereq		???
+#%__find_conflicts	???
+#%__find_obsoletes	???
+#
 # XXX fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
 %_fixowner		[ `%{__id} -u` = '0' ] && %{__chown} -Rf root
 %_fixgroup		[ `%{__id} -u` = '0' ] && %{__chgrp} -Rf @ROOT_GROUP@
