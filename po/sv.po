@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-31 13:42-0400\n"
+"POT-Creation-Date: 2001-08-03 00:55-0400\n"
 "PO-Revision-Date: 2001-08-02 14:13+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -489,8 +489,8 @@ msgstr "visa enbart konfigurationsfiler (implicerar -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or "
-"-d)"
+"show all verifiable information for each file (must be used with -l, -c, or -"
+"d)"
 msgstr ""
 "visa all verifierbar information för varje fil (måste användas med -l, -c "
 "eller -d)"
@@ -584,8 +584,8 @@ msgstr "kortform för --replacepkgs --replacefiles"
 #: lib/poptI.c:124 rpm.c:447
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
-"skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med "
-"-v)"
+"skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med -"
+"v)"
 
 #: lib/poptI.c:89 rpm.c:449
 msgid "install all files, even configurations which might otherwise be skipped"
@@ -2211,7 +2211,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2578 lib/header.c:2597 lib/header.c:2617
+#: lib/header.c:2586 lib/header.c:2605 lib/header.c:2625
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -2299,77 +2299,77 @@ msgid "Data type %d not supported\n"
 msgstr "Datatyp %d stöds inte\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1894
+#: lib/header.c:1902
 #, c-format
 msgid "missing { after %"
 msgstr "{ fattas efter %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1924
+#: lib/header.c:1932
 msgid "missing } after %{"
 msgstr "} fattas efter %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1938
+#: lib/header.c:1946
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1952
+#: lib/header.c:1960
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1969
+#: lib/header.c:1977
 msgid "unknown tag"
 msgstr "okänd tagg"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1996
+#: lib/header.c:2004
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2014
+#: lib/header.c:2022
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2018
+#: lib/header.c:2026
 msgid "unexpected }"
 msgstr "oväntad }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2084
+#: lib/header.c:2092
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2093
+#: lib/header.c:2101
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2106 lib/header.c:2148
+#: lib/header.c:2114 lib/header.c:2156
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2116
+#: lib/header.c:2124
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2133
+#: lib/header.c:2141
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2158
+#: lib/header.c:2166
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: lib/header.c:2338
+#: lib/header.c:2346
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
@@ -2433,8 +2433,8 @@ msgstr "bygg endast källpaket från <specfil>"
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
-"bygg till och med %prep (packa upp källkod samt applicera patchar) från "
-"<tar-arkiv>"
+"bygg till och med %prep (packa upp källkod samt applicera patchar) från <tar-"
+"arkiv>"
 
 #: lib/poptBT.c:149 lib/poptBT.c:152 lib/poptBT.c:155 lib/poptBT.c:158
 #: lib/poptBT.c:161 lib/poptBT.c:164 lib/poptBT.c:167
@@ -3305,8 +3305,8 @@ msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
-"Förväntad storlek: %12d = "
-"inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%d)\n"
+"Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
+"d)\n"
 
 #: lib/signature.c:139
 #, c-format
@@ -3612,8 +3612,8 @@ msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the "
-"rpm-list@redhat.com mailing list\n"
+"More information is available from http://www.rpm.org or the rpm-list@redhat."
+"com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 "frilistan trasig (%u)- var god kör\n"
@@ -3682,7 +3682,7 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "fel(%d) när paket räknades\n"
 
-#: rpmdb/rpmdb.c:1933 rpmdb/rpmdb.c:3108
+#: rpmdb/rpmdb.c:1933 rpmdb/rpmdb.c:3109
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "post nummer %u i databasen är felaktig -- hoppar över den.\n"
@@ -3707,84 +3707,84 @@ msgstr "tar bort \"%s\" från %s-indexet.\n"
 msgid "removing %d entries from %s index.\n"
 msgstr "tar bort %d poster från %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:2515
+#: rpmdb/rpmdb.c:2516
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fel(%d) vid allokering av ny paketinstans\n"
 
-#: rpmdb/rpmdb.c:2593
+#: rpmdb/rpmdb.c:2594
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "lägger till \"%s\" till %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:2604
+#: rpmdb/rpmdb.c:2605
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "lägger till %d poster till %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:2997
+#: rpmdb/rpmdb.c:2998
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "tar bort %s efter lyckad db3-ombyggnad.\n"
 
-#: rpmdb/rpmdb.c:3027
+#: rpmdb/rpmdb.c:3028
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
-#: rpmdb/rpmdb.c:3054
+#: rpmdb/rpmdb.c:3055
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "bygger om databas %s till %s\n"
 
-#: rpmdb/rpmdb.c:3058
+#: rpmdb/rpmdb.c:3059
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tillfällig databas %s existerar redan\n"
 
-#: rpmdb/rpmdb.c:3064
+#: rpmdb/rpmdb.c:3065
 #, c-format
 msgid "creating directory %s\n"
 msgstr "skapar katalog %s\n"
 
-#: rpmdb/rpmdb.c:3066
+#: rpmdb/rpmdb.c:3067
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "skapar katalog %s: %s\n"
 
-#: rpmdb/rpmdb.c:3073
+#: rpmdb/rpmdb.c:3074
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "öppnar gammal databas med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3084
+#: rpmdb/rpmdb.c:3085
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3148
+#: rpmdb/rpmdb.c:3149
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kan inte lägga till post ursprungligen vid %u\n"
 
-#: rpmdb/rpmdb.c:3166
+#: rpmdb/rpmdb.c:3167
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
 
-#: rpmdb/rpmdb.c:3174
+#: rpmdb/rpmdb.c:3175
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: rpmdb/rpmdb.c:3176
+#: rpmdb/rpmdb.c:3177
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: rpmdb/rpmdb.c:3186
+#: rpmdb/rpmdb.c:3187
 #, c-format
 msgid "removing directory %s\n"
 msgstr "tar bort katalog %s\n"
 
-#: rpmdb/rpmdb.c:3188
+#: rpmdb/rpmdb.c:3189
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-31 13:42-0400\n"
+"POT-Creation-Date: 2001-08-03 00:55-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2167,7 +2167,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2578 lib/header.c:2597 lib/header.c:2617
+#: lib/header.c:2586 lib/header.c:2605 lib/header.c:2625
 msgid "(not a number)"
 msgstr ""
 
@@ -2255,77 +2255,77 @@ msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1894
+#: lib/header.c:1902
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1924
+#: lib/header.c:1932
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1938
+#: lib/header.c:1946
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1952
+#: lib/header.c:1960
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1969
+#: lib/header.c:1977
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1996
+#: lib/header.c:2004
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2014
+#: lib/header.c:2022
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2018
+#: lib/header.c:2026
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2084
+#: lib/header.c:2092
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2093
+#: lib/header.c:2101
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2106 lib/header.c:2148
+#: lib/header.c:2114 lib/header.c:2156
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2116
+#: lib/header.c:2124
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2133
+#: lib/header.c:2141
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2158
+#: lib/header.c:2166
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2338
+#: lib/header.c:2346
 msgid "(unknown type)"
 msgstr ""
 
@@ -3617,7 +3617,7 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1933 rpmdb/rpmdb.c:3108
+#: rpmdb/rpmdb.c:1933 rpmdb/rpmdb.c:3109
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
@@ -3642,84 +3642,84 @@ msgstr ""
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2515
+#: rpmdb/rpmdb.c:2516
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2593
+#: rpmdb/rpmdb.c:2594
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2604
+#: rpmdb/rpmdb.c:2605
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2997
+#: rpmdb/rpmdb.c:2998
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3027
+#: rpmdb/rpmdb.c:3028
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3054
+#: rpmdb/rpmdb.c:3055
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3058
+#: rpmdb/rpmdb.c:3059
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3064
+#: rpmdb/rpmdb.c:3065
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3066
+#: rpmdb/rpmdb.c:3067
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3073
+#: rpmdb/rpmdb.c:3074
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3084
+#: rpmdb/rpmdb.c:3085
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3148
+#: rpmdb/rpmdb.c:3149
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3166
+#: rpmdb/rpmdb.c:3167
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3174
+#: rpmdb/rpmdb.c:3175
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3176
+#: rpmdb/rpmdb.c:3177
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3186
+#: rpmdb/rpmdb.c:3187
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3188
+#: rpmdb/rpmdb.c:3189
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
