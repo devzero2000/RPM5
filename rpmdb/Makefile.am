@@ -28,7 +28,7 @@ LIBS =
 DB3LOBJS = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
 
 lib_LTLIBRARIES = librpmdb.la
-librpmdb_la_SOURCES = $(DBLIBSRCS) \
+librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c poptDB.c rpmhash.c rpmdb.c
 librpmdb_la_LDFLAGS = -release @VERSION@ @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
