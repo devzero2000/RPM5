@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-19 17:27-0500\n"
+"POT-Creation-Date: 2000-12-20 16:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2317,26 +2317,26 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1532
+#: lib/depends.c:1522
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1636
+#: lib/depends.c:1626
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1686
+#: lib/depends.c:1676
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1789
+#: lib/depends.c:1779
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1820
+#: lib/depends.c:1810
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2475,7 +2475,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2088 lib/header.c:2104 lib/header.c:2123
+#: lib/header.c:2552 lib/header.c:2569 lib/header.c:2589
 msgid "(not a number)"
 msgstr ""
 
@@ -2504,78 +2504,92 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:215
-msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+#: lib/header.c:218
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:246 lib/header.c:717 lib/install.c:365
+#: lib/header.c:253 lib/header.c:1035 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1074
+#: lib/header.c:1460
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1481
+#. @-observertrans@
+#: lib/header.c:1905
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: lib/header.c:1509
+#. @-observertrans@
+#: lib/header.c:1935
 msgid "missing } after %{"
 msgstr ""
 
-#: lib/header.c:1521
+#. @-observertrans@
+#: lib/header.c:1949
 msgid "empty tag format"
 msgstr ""
 
-#: lib/header.c:1531
+#. @-observertrans@
+#: lib/header.c:1961
 msgid "empty tag name"
 msgstr ""
 
-#: lib/header.c:1546
+#. @-observertrans@
+#: lib/header.c:1978
 msgid "unknown tag"
 msgstr ""
 
-#: lib/header.c:1571
+#. @-observertrans@
+#: lib/header.c:2005
 msgid "] expected at end of array"
 msgstr ""
 
-#: lib/header.c:1587
+#. @-observertrans@
+#: lib/header.c:2023
 msgid "unexpected ]"
 msgstr ""
 
-#: lib/header.c:1589
+#. @-observertrans@
+#: lib/header.c:2027
 msgid "unexpected }"
 msgstr ""
 
-#: lib/header.c:1644
+#. @-observertrans@
+#: lib/header.c:2087
 msgid "? expected in expression"
 msgstr ""
 
-#: lib/header.c:1651
+#. @-observertrans@
+#: lib/header.c:2096
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: lib/header.c:1662 lib/header.c:1697
+#. @-observertrans@
+#: lib/header.c:2109 lib/header.c:2150
 msgid "} expected in expression"
 msgstr ""
 
-#: lib/header.c:1670
+#. @-observertrans@
+#: lib/header.c:2119
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: lib/header.c:1684
+#. @-observertrans@
+#: lib/header.c:2135
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: lib/header.c:1705
+#. @-observertrans@
+#: lib/header.c:2160
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:1870
+#: lib/header.c:2331
 msgid "(unknown type)"
 msgstr ""
 
@@ -2684,7 +2698,7 @@ msgstr ""
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:336 lib/misc.c:341 lib/misc.c:347
+#: lib/misc.c:339 lib/misc.c:344 lib/misc.c:350
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
