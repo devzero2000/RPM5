@@ -4,12 +4,6 @@
 
 #include "system.h"
 
-#include "Python.h"
-#ifdef __LCLINT__
-#undef  PyObject_HEAD
-#define PyObject_HEAD   int _PyObjectHead;
-#endif
-
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
@@ -498,11 +492,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }
-
-        if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
+        
     }
 
     switch (tag) {
@@ -541,6 +531,16 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	break;
     default:
         break;
+    }
+
+    if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
+	if (forceArray) {
+	    return PyList_New(0);
+	}
+	else {
+            Py_INCREF(Py_None);
+            return Py_None;
+	}
     }
 
     switch (type) {
