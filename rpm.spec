@@ -9,7 +9,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.7
 Version: %{version}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -250,6 +250,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Oct 16 2000 Jeff Johnson <jbj@redhat.com>
+- sync python bindings with rpm4.
+
 * Mon Sep 18 2000 Jeff Johnson <jbj@redhat.com>
 - conflicts should permit installation with glibc-2.1.3.
 
