@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-18 20:49-0500\n"
-"PO-Revision-Date: 2001-01-16 11:55+0100\n"
+"PO-Revision-Date: 2001-01-20 19:06+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr "ouppfyllda byggberoenden:\n"
 #: build.c:65
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr "Kan inte öppna spec-filen %s: %s\n"
+msgstr "Kan inte öppna specfilen %s: %s\n"
 
 #: build.c:130 build.c:142
 #, c-format
@@ -32,7 +32,7 @@ msgstr "Kunde inte öppna \"tar\"-rör: %m\n"
 #: build.c:149
 #, c-format
 msgid "Failed to read spec file from %s\n"
-msgstr "Kunde inte läsa spec-fil från %s\n"
+msgstr "Kunde inte läsa specfil från %s\n"
 
 #: build.c:177
 #, c-format
@@ -52,7 +52,7 @@ msgstr "Filen %s är inte en vanlig fil.\n"
 #: build.c:230
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
-msgstr "Filen %s tycks inte vara en spec-fil.\n"
+msgstr "Filen %s tycks inte vara en specfil.\n"
 
 #. parse up the build operators
 #: build.c:287
@@ -728,7 +728,7 @@ msgstr "ta bort källkod efteråt"
 
 #: rpm.c:486
 msgid "remove spec file when done"
-msgstr "ta bort spec-fil efteråt"
+msgstr "ta bort specfil efteråt"
 
 #: lib/poptBT.c:193 rpm.c:488 rpmqv.c:224
 msgid "generate PGP/GPG signature"
@@ -771,7 +771,7 @@ msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
-"installera källpaket, tillverka binärpaket och ta bort spec-fil, källkod, "
+"installera källpaket, tillverka binärpaket och ta bort specfil, källkod, "
 "patchar och ikoner."
 
 #: rpm.c:500
@@ -1199,7 +1199,7 @@ msgstr "initiera databas"
 
 #: rpmqv.c:202
 msgid "rebuild database inverted lists from installed package headers"
-msgstr "bygg om databasens inverterade lister från installerade pakets huvuden"
+msgstr "bygg om databasens inverterade listor från installerade pakets huvuden"
 
 #: rpmqv.c:205
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
@@ -1259,7 +1259,7 @@ msgstr "Databasflaggor:"
 
 #: rpmqv.c:368
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr "Byggflaggor med [ <spec-fil> | <tar-arkiv> | <källpaket> ]:"
+msgstr "Byggflaggor med [ <specfil> | <tar-arkiv> | <källpaket> ]:"
 
 #: rpmqv.c:373
 msgid "Common options for all rpm modes:"
@@ -1276,9 +1276,9 @@ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
 msgstr "       %s {--initdb}   [--dbpath <kat>]\n"
 
 #: rpmqv.c:418
-#, fuzzy, c-format
+#, c-format
 msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-msgstr "       %s {--rebuilddb} [--rcfile <fil>] [--dbpath <kat>]\n"
+msgstr "       %s {--rebuilddb} [--rcfile <fil:...>] [--dbpath <kat>]\n"
 
 #: rpmqv.c:422
 #, c-format
@@ -1288,36 +1288,36 @@ msgstr ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 
 #: rpmqv.c:425
-#, fuzzy
 msgid ""
 "                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
+"                        [--rcfile <fil:...>] [--ignorearch] [--dbpath <kat>]"
 
 #: rpmqv.c:434
-#, fuzzy
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file:...>]"
 msgstr ""
-"                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
+"                        [--excludedocs] [--includedocs] [--rcfile <fil:...>]"
 
 #: rpmqv.c:442
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:...>]\n"
-msgstr "       %s {--erase -e} [--root <kat>] [--noscripts] [--rcfile <fil>]\n"
+msgstr ""
+"       %s {--erase -e} [--root <kat>] [--noscripts] [--rcfile <fil:...>]\n"
 
 #: rpmqv.c:449
-#, fuzzy
 msgid ""
 "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
-msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
+msgstr ""
+"                        [--scripts] [--root <kat>] [--rcfile <fil:...>]"
 
 #: rpmqv.c:456
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
-msgstr "       %s {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil>]\n"
+msgstr ""
+"       %s {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil:...>]\n"
 
 #: rpmqv.c:460
 #, c-format
@@ -1330,24 +1330,25 @@ msgid "       %s {--setugids} [-afpg] [target]\n"
 msgstr "       %s {--setugids} [-afpg] [mål]\n"
 
 #: rpmqv.c:465
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--resign} [--rcfile <file:...>] package1 package2 ... packageN\n"
-msgstr "       %s {--resign} [--rcfile <fil>] paket1 paket2 ... paketN\n"
+msgstr "       %s {--resign} [--rcfile <fil:...>] paket1 paket2 ... paketN\n"
 
 #: rpmqv.c:466
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-msgstr "       %s {--addsign} [--rcfile <fil>] paket1 paket2 ... paketN"
+msgstr "       %s {--addsign} [--rcfile <fil:...>] paket1 paket2 ... paketN"
 
 #: rpmqv.c:467
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
 "<file:...>]\n"
 msgstr ""
-"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]\n"
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
+"<fil:...>]\n"
 
 #: rpmqv.c:511
 msgid "  All modes support the following options:"
@@ -1358,28 +1359,24 @@ msgid "   --define '<name> <body>'"
 msgstr "   --define '<namn> <kropp>'"
 
 #: rpmqv.c:514
-#, fuzzy
 msgid "   --eval '<expr>+'       "
-msgstr "   --eval '<namn>+'       "
+msgstr "   --eval '<uttr>+'       "
 
 #: rpmqv.c:515
-#, fuzzy
 msgid "print the expansion of macro <expr> to stdout"
-msgstr "skriv ut expansionen av makrot <namn> på standard ut"
+msgstr "skriv ut expansionen av makrot <uttr> på standard ut"
 
 #: rpmqv.c:516
 msgid "   --pipe <cmd>           "
 msgstr "   --pipe <kommando>      "
 
 #: rpmqv.c:518
-#, fuzzy
 msgid "   --rcfile <file:...>    "
-msgstr "      --rcfile <fil>      "
+msgstr "   --rcfile <fil:...>     "
 
 #: rpmqv.c:519
-#, fuzzy
 msgid "use <file:...> instead of default list of macro files"
-msgstr "läs <fil:...> istället för standardmakrofil(er)"
+msgstr "använd <fil:...> istället för standardlistan av makrofiler"
 
 #: rpmqv.c:523
 msgid "   --dbpath <dir>         "
@@ -1548,7 +1545,6 @@ msgid "rebuild database indices from existing database headers"
 msgstr "bygg om databasindex från existerande databashuvuden"
 
 #: rpmqv.c:996
-#, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Använd \"--macros <fil:...>\" istället.\n"
 
@@ -1568,7 +1564,7 @@ msgstr "inga paketfiler angivna för omtillverkning"
 
 #: rpmqv.c:1386
 msgid "no spec files given for build"
-msgstr "ingen spec-filer angivna för tillverkning"
+msgstr "ingen specfiler angivna för tillverkning"
 
 #: rpmqv.c:1388
 msgid "no tar files given for build"
@@ -2132,7 +2128,7 @@ msgstr "rad %d: Okänd tagg: %s\n"
 
 #: build/parsePreamble.c:837
 msgid "Spec file can't use BuildRoot\n"
-msgstr "Spec-fil kan inte använda BuildRoot\n"
+msgstr "Specfil kan inte använda BuildRoot\n"
 
 #: build/parsePrep.c:37
 #, c-format
@@ -2455,12 +2451,12 @@ msgstr "========== fortsätter med tsort ...\n"
 #: lib/db1.c:92 lib/db2.c:112 lib/db3.c:456
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
-msgstr "db%d fel(%d) från %s: %s\n"
+msgstr "db%d-fel(%d) från %s: %s\n"
 
 #: lib/db1.c:95 lib/db2.c:115 lib/db3.c:459
 #, c-format
 msgid "db%d error(%d): %s\n"
-msgstr "db%d fel(%d): %s\n"
+msgstr "db%d-fel(%d): %s\n"
 
 #: lib/db1.c:387
 #, c-format
@@ -2604,7 +2600,7 @@ msgstr "mntctl() kunde inte returnera storlek: %s\n"
 #: lib/fs.c:84
 #, c-format
 msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() kunde inte returnera monteringspunkt: %s\n"
+msgstr "mntctl() kunde inte returnera monteringspunkter: %s\n"
 
 #: lib/fs.c:104 lib/fs.c:184 lib/fs.c:287
 #, c-format
@@ -2769,7 +2765,7 @@ msgstr "kan inte skapa spec-katalog %s\n"
 #: lib/install.c:763
 #, c-format
 msgid "spec file in: %s\n"
-msgstr "spec-fil i: %s\n"
+msgstr "specfil i: %s\n"
 
 #: lib/install.c:796 lib/install.c:825
 msgid "source package contains no .spec file\n"
@@ -2805,7 +2801,8 @@ msgstr "kör (eventuellt) preinstallationsskript\n"
 #: lib/install.c:1036
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
-"hoppar över %s-%s-%s installation, %%pre-skriptet misslyckades med kod %d\n"
+"hoppar över installation av %s-%s-%s, %%pre-skriptet misslyckades med kod "
+"%d\n"
 
 #: lib/install.c:1069
 #, c-format
@@ -2844,38 +2841,38 @@ msgstr "buildroot redan angett, ignorerar %s\n"
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
-"bygg till %prep (packa upp källkod samt applicera patchar) från <spec-fil>"
+"bygg till %prep (packa upp källkod samt applicera patchar) från <specfil>"
 
 #: lib/poptBT.c:120 lib/poptBT.c:123 lib/poptBT.c:126 lib/poptBT.c:129
 #: lib/poptBT.c:132 lib/poptBT.c:135 lib/poptBT.c:138
 msgid "<specfile>"
-msgstr "<spec-fil>"
+msgstr "<specfil>"
 
 #: lib/poptBT.c:122
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "bygg till och med %build (%prep, sedan kompilera) från <spec-fil>"
+msgstr "bygg till och med %build (%prep, sedan kompilera) från <specfil>"
 
 #: lib/poptBT.c:125
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
-"bygg till och med %install (%prep, %build, sedan installera) från <spec-fil>"
+"bygg till och med %install (%prep, %build, sedan installera) från <specfil>"
 
 #: lib/poptBT.c:128
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "verifiera %files-sektionen i <spec-fil>"
+msgstr "verifiera %files-sektionen i <specfil>"
 
 #: lib/poptBT.c:131
 msgid "build source and binary packages from <specfile>"
-msgstr "bygg käll- och binärpaket från <spec-fil>"
+msgstr "bygg käll- och binärpaket från <specfil>"
 
 #: lib/poptBT.c:134
 msgid "build binary package only from <specfile>"
-msgstr "bygg endast binärpaket från <spec-fil>"
+msgstr "bygg endast binärpaket från <specfil>"
 
 #: lib/poptBT.c:137
 msgid "build source package only from <specfile>"
-msgstr "bygg endast källpaket från <spec-fil>"
+msgstr "bygg endast källpaket från <specfil>"
 
 #: lib/poptBT.c:141
 #, c-format
@@ -2935,7 +2932,7 @@ msgstr "åsidosätt tillverkningsrot"
 
 #: lib/poptBT.c:176
 msgid "ignore ExcludeArch: directives from spec file"
-msgstr "ignorera ExcludeArch:-direktiv från spec-fil"
+msgstr "ignorera ExcludeArch:-direktiv från specfil"
 
 #: lib/poptBT.c:178
 msgid "do not execute any stages of the build"
@@ -2947,11 +2944,11 @@ msgstr "generera pakethuvud(en) kompatibla med (äldre) rpm[23]-paketering"
 
 #: lib/poptBT.c:185
 msgid "do not accept i18N msgstr's from specfile"
-msgstr "acceptera inte översatta \"msgstr\" från spec-filen"
+msgstr "acceptera inte översatta \"msgstr\" från specfilen"
 
 #: lib/poptBT.c:189
 msgid "remove specfile when done"
-msgstr "ta bort spec-fil efteråt"
+msgstr "ta bort specfil efteråt"
 
 #: lib/poptBT.c:195
 msgid "override target platform"
@@ -2959,7 +2956,7 @@ msgstr "åsidosätt målplattform"
 
 #: lib/poptBT.c:197
 msgid "lookup i18N strings in specfile catalog"
-msgstr "slå upp översatta strängar i spec-fil katalog"
+msgstr "slå upp översatta strängar i specfilkatalog"
 
 #: lib/poptQV.c:70
 msgid "query/verify package(s) owning file"
@@ -2983,7 +2980,7 @@ msgstr "visa kända frågetaggar"
 
 #: lib/poptQV.c:82
 msgid "query a spec file"
-msgstr "fråga en spec-fil"
+msgstr "fråga en specfil"
 
 #: lib/poptQV.c:82
 msgid "<spec>"
@@ -3031,7 +3028,7 @@ msgstr "använd följande frågeformat"
 
 #: lib/poptQV.c:146
 msgid "substitute i18n sections into spec file"
-msgstr "ersätt översatta sektioner till spec-fil"
+msgstr "ersätt översatta sektioner till specfil"
 
 #: lib/poptQV.c:148
 msgid "display the states of the listed files"
@@ -3172,7 +3169,7 @@ msgstr "fråga av %s misslyckades\n"
 #: lib/query.c:601
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr "fråga av spec-fil %s misslyckades, kan inte tolka\n"
+msgstr "fråga av specfil %s misslyckades, kan inte tolka\n"
 
 #: lib/query.c:624
 msgid "no packages\n"
@@ -4102,6 +4099,3 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
-
-#~ msgid "Query/Verify options:"
-#~ msgstr "Fråge-/verifieringsflaggor:"
