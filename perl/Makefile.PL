@@ -9,7 +9,7 @@ WriteMakefile(
 	      'VERSION_FROM' => 'rpm.pm',		# finds $VERSION
 	      'MAKEFILE'=> 'PMakefile',
 	      'LIBS'	=> [' -L/usr/local/lib  -ldb1 -lz -lbz2'],			# e.g., '-lm' 
-	      'CCFLAGS' => '-pg -O2 -D_GNU_SOURCE -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts',
+	      'CCFLAGS' => '-g -O2 -D_GNU_SOURCE -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts',
 	      'OPTIMIZE'=> '-g',
 	      'DEFINE'	=> '-Dbool=char -DHAS_BOOL',
 	      'INC'	=> ' -I../build -I../lib -I../popt -I/usr/include/rpm',
