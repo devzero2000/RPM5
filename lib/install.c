@@ -543,9 +543,11 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 #else
 	    urltype = urlPath(files[i].relativePath, &map[mappedFiles].fsPath);
 #endif
-	    /* XXX Can't do src rpm MD5 sum verification yet. */
-	    map[mappedFiles].md5sum =
-		specFile == NULL ? files[i].md5sum : NULL;
+	    /* XXX Can't do src rpm MD5 sum verification (yet). */
+    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
+	    map[mappedFiles].md5sum = headerIsEntry(h, RPMTAG_SOURCERPM)
+                    ?  files[i].md5sum : NULL;
+
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;

@@ -20,6 +20,7 @@
 	- hide libio lossage in prototype, not API.
 	- add support for SHA1 as well as MD5 message digests.
 	- don't verify src rpm MD5 sums (yet).
+	- md5 sums are little endian (no swap) so big endian needs the swap.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

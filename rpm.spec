@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.11
+Release: 0.12
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -274,6 +274,7 @@ fi
 %changelog
 * Thu Nov 16 2000 Jeff Johnson <jbj@redhat.com>
 - don't verify src rpm MD5 sums (yet).
+- md5 sums are little endian (no swap) so big endian needs the swap.
 
 * Wed Nov 15 2000 Jeff Johnson <jbj@redhat.com>
 - fix: segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" (#20595).
