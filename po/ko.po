@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-02-02 16:55-0500\n"
+"POT-Creation-Date: 2002-02-02 19:30-0500\n"
 "PO-Revision-Date: 2002-01-31 22:29+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3012,7 +3012,7 @@ msgid "can't query %s: %s\n"
 msgstr "%s(을)를 질의할 수 없음: %s\n"
 
 #: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:848
+#: lib/rpminstall.c:855
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
@@ -3229,7 +3229,7 @@ msgstr "%s(은)는 설치할 수 없습니다\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d의 소스와 %d의 바이너리 패키지가 검색되었습니다\n"
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1029
+#: lib/rpminstall.c:512 lib/rpminstall.c:1040
 msgid "failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
 
@@ -3266,7 +3266,7 @@ msgstr "%s(을)를 열 수 없음: %s\n"
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1033
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr "%d의 패키지를 %s(으)로 롤백(rollback) 합니다"

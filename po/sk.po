@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-02 16:55-0500\n"
+"POT-Creation-Date: 2002-02-02 19:30-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3113,7 +3113,7 @@ msgid "can't query %s: %s\n"
 msgstr "zmazanie %s zlyhalo: %s\n"
 
 #: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:848
+#: lib/rpminstall.c:855
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
@@ -3332,7 +3332,7 @@ msgstr "%s nie je mo¾né nain¹talova»\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1029
+#: lib/rpminstall.c:512 lib/rpminstall.c:1040
 msgid "failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
 
@@ -3369,7 +3369,7 @@ msgstr "nie je mo¾né otvori» %s\n"
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1033
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""

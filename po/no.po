@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-02 16:55-0500\n"
+"POT-Creation-Date: 2002-02-02 19:30-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -2994,7 +2994,7 @@ msgid "can't query %s: %s\n"
 msgstr "kan ikke spørre på %s: %s\n"
 
 #: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:848
+#: lib/rpminstall.c:855
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "feil under åpning av %s: %s\n"
@@ -3210,7 +3210,7 @@ msgstr ""
 msgid "found %d source and %d binary packages\n"
 msgstr "fant %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1029
+#: lib/rpminstall.c:512 lib/rpminstall.c:1040
 msgid "failed dependencies:\n"
 msgstr "feilede avhengigheter:\n"
 
@@ -3247,7 +3247,7 @@ msgstr "kan ikke åpne %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1033
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""

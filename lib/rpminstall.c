@@ -725,8 +725,14 @@ static int IDTintcmp(const void * a, const void * b)
 	/*@*/
 {
     /*@-castexpose@*/
-    return ( reverse * (((IDT)a)->val.u32 - ((IDT)b)->val.u32) );
+    IDT ap = (IDT)a;
+    IDT bp = (IDT)b;
     /*@=castexpose@*/
+    int rc = ((int)ap->val.u32 - (int)bp->val.u32);
+
+    if (rc)
+	return ( reverse * rc );
+    return ( strcmp(ap->n, bp->n) );
 }
 
 IDTX IDTXfree(IDTX idtx)
@@ -808,7 +814,8 @@ IDTX IDTXload(rpmdb db, rpmTag tag)
 	    /*@-nullderef@*/
 	    idt = idtx->idt + idtx->nidt;
 	    /*@=nullderef@*/
-	    idt->h = NULL;
+	    idt->h = headerLink(h);
+	    (void) headerNVR(idt->h, &idt->n, &idt->v, &idt->r);
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
 	    idt->val.u32 = *tidp;
@@ -872,6 +879,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	    {	IDT idt;
 		idt = idtx->idt + idtx->nidt;
 		idt->h = headerLink(h);
+		(void) headerNVR(idt->h, &idt->n, &idt->v, &idt->r);
 		idt->key = xstrdup(av[i]);
 		idt->instance = 0;
 		idt->val.u32 = *tidp;
@@ -888,7 +896,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	av[i] = _free(av[i]);
     av = _free(av);	ac = 0;
 
-    return idtx;
+    return IDTXsort(idtx);
 }
 
 int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
@@ -907,6 +915,8 @@ int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
     int nrids = 0;
     IDT ip;
     int niids = 0;
+    int packagesIn;
+    int packagesOut;
     int rc;
     int i;
     int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
@@ -951,6 +961,8 @@ int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
 	prevtid = thistid;
 	rc = 0;
 	packagesTotal = 0;
+	packagesIn = 0;
+	packagesOut = 0;
 	ia->installInterfaceFlags &= ~ifmask;
 
 	/* Find larger of the remaining install/erase transaction id's. */
@@ -969,16 +981,19 @@ int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
 	/* Install the previously erased packages for this transaction. */
 	while (rp != NULL && rp->val.u32 == thistid) {
 
-	    rpmMessage(RPMMESS_DEBUG, "\t+++ %s\n", rp->key);
+	    rpmMessage(RPMMESS_DEBUG, "\t+++ %s-%s-%s\t(from %s)\n", rp->n, rp->v, rp->r, basename(rp->key));
+
+	    if (!(ia->installInterfaceFlags & ifmask))
+		ia->installInterfaceFlags |= INSTALL_INSTALL;
 
 	    rc = rpmtransAddPackage(ts, rp->h, NULL, rp->key,
-			0, ia->relocations);
+			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
+			ia->relocations);
 	    if (rc != 0)
 		goto exit;
 
 	    packagesTotal++;
-	    if (!(ia->installInterfaceFlags & ifmask))
-		ia->installInterfaceFlags |= INSTALL_UPGRADE;
+	    packagesIn++;
 
 #ifdef	NOTYET
 	    rp->h = headerFree(rp->h);
@@ -990,19 +1005,28 @@ int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
 		rp = NULL;
 	}
 
+	/*
+	 * XXX OK, let's prevent disaster right here, as rollbacks will merrily
+	 * XXX erase everything in order to achieve the desired goal.
+	 */
+	if (packagesIn == 0)
+	    break;
+
 	/* Erase the previously installed packages for this transaction. */
 	while (ip != NULL && ip->val.u32 == thistid) {
 
 	    rpmMessage(RPMMESS_DEBUG,
-			"\t--- rpmdb instance #%u\n", ip->instance);
+			"\t--- %s-%s-%s\t(from rpmdb instance #%u)\n", ip->n, ip->v, ip->r, ip->instance);
+
+	    if (!(ia->installInterfaceFlags & ifmask))
+		ia->installInterfaceFlags |= INSTALL_ERASE;
 
 	    rc = rpmtransRemovePackage(ts, ip->instance);
 	    if (rc != 0)
 		goto exit;
 
 	    packagesTotal++;
-	    if (!(ia->installInterfaceFlags & ifmask))
-		ia->installInterfaceFlags |= INSTALL_ERASE;
+	    packagesOut++;
 
 #ifdef	NOTYET
 	    ip->instance = 0;
@@ -1019,8 +1043,8 @@ int rpmRollback(struct rpmInstallArguments_s * ia, const char ** argv)
 	    break;
 
 	tid = (time_t)thistid;
-	rpmMessage(RPMMESS_DEBUG, _("rollback %d packages to %s"),
-			packagesTotal, ctime(&tid));
+	rpmMessage(RPMMESS_DEBUG, _("rollback (+%d,-%d) packages to %s"),
+			packagesIn, packagesOut, ctime(&tid));
 
 	conflicts = NULL;
 	numConflicts = 0;

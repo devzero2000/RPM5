@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-02 16:55-0500\n"
+"POT-Creation-Date: 2002-02-02 19:30-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -3136,7 +3136,7 @@ msgid "can't query %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
 #: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:848
+#: lib/rpminstall.c:855
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
@@ -3356,7 +3356,7 @@ msgstr "virhe: %s ei voida asentaa\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1029
+#: lib/rpminstall.c:512 lib/rpminstall.c:1040
 msgid "failed dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
 
@@ -3394,7 +3394,7 @@ msgstr "virhe: en voi avata %s\n"
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1033
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "poistolle ei m‰‰ritelty paketteja"

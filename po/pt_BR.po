@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-02 16:55-0500\n"
+"POT-Creation-Date: 2002-02-02 19:30-0500\n"
 
 # , c-format
 #: build.c:39
@@ -3276,7 +3276,7 @@ msgid "can't query %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 #: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:848
+#: lib/rpminstall.c:855
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "Construo falhou.\n"
@@ -3509,7 +3509,7 @@ msgstr "no foi passado pacote para instalao"
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1029
+#: lib/rpminstall.c:512 lib/rpminstall.c:1040
 #, fuzzy
 msgid "failed dependencies:\n"
 msgstr "lista dependncias do pacote"
@@ -3551,7 +3551,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1033
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "no foi passado pacote para desinstalao"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-02 16:55-0500\n"
+"POT-Creation-Date: 2002-02-02 19:30-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3009,7 +3009,7 @@ msgid "can't query %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
 #: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:848
+#: lib/rpminstall.c:855
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
@@ -3227,7 +3227,7 @@ msgstr "neinstalován  "
 msgid "found %d source and %d binary packages\n"
 msgstr "vytvoøení zdrojového a binárního balíèku z <tar_soubor>"
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1029
+#: lib/rpminstall.c:512 lib/rpminstall.c:1040
 #, fuzzy
 msgid "failed dependencies:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
@@ -3267,7 +3267,7 @@ msgstr "nemohu vytvoøit %s: %s\n"
 msgid "Installing %s\n"
 msgstr "øádek: %s\n"
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1033
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""

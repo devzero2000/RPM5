@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-02 16:55-0500\n"
+"POT-Creation-Date: 2002-02-02 19:30-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3036,7 +3036,7 @@ msgid "can't query %s: %s\n"
 msgstr "%s sorgulanamýyor: %s\n"
 
 #: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
-#: lib/rpminstall.c:848
+#: lib/rpminstall.c:855
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -3252,7 +3252,7 @@ msgstr "%s yüklenemedi\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d kaynak ve %d icra edilebilir paketi bulundu\n"
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:1029
+#: lib/rpminstall.c:512 lib/rpminstall.c:1040
 msgid "failed dependencies:\n"
 msgstr "baðýmlýlýklarda hata; gerekli paketler:\n"
 
@@ -3289,7 +3289,7 @@ msgstr "%s açýlamadý: %s\n"
 msgid "Installing %s\n"
 msgstr "%s kuruluyor\n"
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1033
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""

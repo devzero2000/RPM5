@@ -354,6 +354,9 @@ typedef /*@abstract@*/ struct IDT_s {
 /*@owned@*/ /*@null@*/
     const char * key;		/*! removed package file name. */
     Header h;			/*!< removed package header. */
+    const char * n;		/*!< package name. */
+    const char * v;		/*!< package version. */
+    const char * r;		/*!< package release. */
     union {
 	uint_32 u32;		/*!< install/remove transaction id */
     } val;
