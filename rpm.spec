@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1.00
+Release: 1.01
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -511,6 +511,8 @@ fi
 %changelog
 * Tue Aug 28 2001 Jeff Johnson <jbj@redhat.com>
 - python: teach rhnLoad about RPMTAG_SHA1RHN as well.
+- dependency whiteout for libgnomeprint -> gnome-print (ordering only).
+- dependency whiteout for nautilus -> nautilus-mozilla (ordering only).
 
 * Mon Aug 27 2001 Jeff Johnson <jbj@redhat.com>
 - fix: error message on failed package installs resurrected.
