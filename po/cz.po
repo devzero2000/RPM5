@@ -1,7 +1,7 @@
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-27 16:11-0400\n"
+"POT-Creation-Date: 1998-09-28 16:00-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1111,123 +1111,123 @@ msgstr "chyba v formátu: %s\n"
 msgid "(contains no files)"
 msgstr "(neobsahuje ¾ádné soubory)"
 
-#: ../query.c:137
+#: ../query.c:138
 msgid "normal        "
 msgstr ""
 
-#: ../query.c:139
+#: ../query.c:140
 msgid "replaced      "
 msgstr ""
 
-#: ../query.c:141
+#: ../query.c:142
 msgid "net shared    "
 msgstr ""
 
-#: ../query.c:143
+#: ../query.c:144
 #, fuzzy
 msgid "not installed "
 msgstr "balíèek %s není nainstalován\n"
 
-#: ../query.c:145
+#: ../query.c:146
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(neznámý typ)"
 
-#: ../query.c:149
+#: ../query.c:150
 msgid "(no state)    "
 msgstr ""
 
-#: ../query.c:165 ../query.c:194
+#: ../query.c:166 ../query.c:196
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../query.c:339
+#: ../query.c:341
 #, c-format
 msgid "querying record number %d\n"
 msgstr ""
 
-#: ../query.c:344 ../verify.c:142
+#: ../query.c:346 ../verify.c:142
 msgid "error: could not read database record\n"
 msgstr "chyba: nelze naèíst databázový záznam\n"
 
-#: ../query.c:380 ../query.c:387 ../verify.c:198 ../verify.c:205
+#: ../query.c:382 ../query.c:389 ../verify.c:198 ../verify.c:205
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
 
-#: ../query.c:403
+#: ../query.c:405
 msgid "old format source packages cannot be queried\n"
 msgstr "zdrojové balíèky ve starém formátu nelze dotazovat\n"
 
-#: ../query.c:412
+#: ../query.c:414
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "nezdá se, ¾e by %s byl balíèek RPM\n"
 
-#: ../query.c:416
+#: ../query.c:418
 #, c-format
 msgid "query of %s failed\n"
 msgstr "dotaz na %s selhal\n"
 
-#: ../query.c:429 ../verify.c:182
+#: ../query.c:431 ../verify.c:182
 msgid "could not read database record!\n"
 msgstr "nelze naèíst databázový záznam!\n"
 
-#: ../query.c:440 ../verify.c:228
+#: ../query.c:442 ../verify.c:228
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
-#: ../query.c:450
+#: ../query.c:452
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾ádný balíèek neposkytuje %s\n"
 
-#: ../query.c:460
+#: ../query.c:462
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neuvolní %s\n"
 
-#: ../query.c:470
+#: ../query.c:472
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: ../query.c:488 ../query.c:494
+#: ../query.c:490 ../query.c:496
 msgid "maximum path length exceeded\n"
 msgstr ""
 
-#: ../query.c:506
+#: ../query.c:508
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "otevøení %s selhalo: %s"
 
-#: ../query.c:509 ../verify.c:242
+#: ../query.c:511 ../verify.c:242
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "¾ádný balíèek nevlastní soubor %s\n"
 
-#: ../query.c:522
+#: ../query.c:524
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: ../query.c:525
+#: ../query.c:527
 #, c-format
 msgid "showing package: %d\n"
 msgstr "zobrazen balíèek: %d\n"
 
-#: ../query.c:529
+#: ../query.c:531
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "záznam %d nelze naèíst\n"
 
-#: ../install.c:332 ../query.c:541 ../verify.c:253
+#: ../install.c:332 ../query.c:543 ../verify.c:253
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: ../query.c:544 ../verify.c:255
+#: ../query.c:546 ../verify.c:255
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
@@ -1523,6 +1523,37 @@ msgstr "Soubor nebyl na serveru nalezen"
 #: ../ftp.c:476
 msgid "FTP Unknown or unexpected error"
 msgstr "Neznámá nebo neèekaná chyba FTP"
+
+#: ../build.c:47 ../build.c:58
+#, fuzzy, c-format
+msgid "Failed to open tar pipe: %s\n"
+msgstr "otevøení %s selhalo\n"
+
+#. Give up
+#: ../build.c:64
+#, fuzzy, c-format
+msgid "Failed to read spec file from %s\n"
+msgstr "Selhalo ètení %s: %s."
+
+#: ../build.c:87
+#, fuzzy, c-format
+msgid "Failed to rename %s to %s: %s\n"
+msgstr "otevøení %s selhalo: %s"
+
+#: ../build.c:119
+#, fuzzy, c-format
+msgid "File is not a regular file: %s\n"
+msgstr "Selhalo ètení %s: %s."
+
+#: ../build.c:124
+#, fuzzy, c-format
+msgid "Unable to open spec file: %s\n"
+msgstr "Nelze otevøít %s pro ètení: %s."
+
+#: ../build.c:132
+#, c-format
+msgid "File contains non-printable characters(%c): %s\n"
+msgstr ""
 
 #: ../build/build.c:140 ../build/pack.c:204
 #, fuzzy

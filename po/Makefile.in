@@ -17,7 +17,7 @@ CATALOGS = $(shell ls *.po | sed 's/po/mo/')
 POTFILES  = ../rpm.c 		../query.c 		\
 	../install.c 		../verify.c 		\
 	../checksig.c	 	../url.c		\
-	../ftp.c					\
+	../ftp.c		../build.c		\
 	../build/build.c	../build/files.c	\
 	../build/macro.c	../build/misc.c		\
 	../build/myftw.c	../build/names.c	\
