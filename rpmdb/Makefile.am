@@ -39,7 +39,8 @@ LIBS =
 DB3LO = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
 DB3LOBJS = $(DB3LO:%.lo=%.o)
 
-LDFLAGS = -L$(DESTDIR)$(usrlibdir)
+# XXX grrr, RPM_BUILD_ROOT prevents build pollution if/when -lrpm different
+LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmdb.la
