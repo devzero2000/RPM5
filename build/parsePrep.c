@@ -133,7 +133,7 @@ static int checkOwners(const char * urlfn)
 
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"%s -d < %s | patch -p%d %s -s\n"
+		"%s -d < %s | patch -p%d '%s' -s\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
@@ -145,7 +145,7 @@ static int checkOwners(const char * urlfn)
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"patch -p%d %s -s < %s", c, (const char *) basename(fn),
+		"patch -p%d %s -s < '%s'", c, (const char *) basename(fn),
 		strip, args, fn);
     }
 
