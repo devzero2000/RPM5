@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-05 17:49-0400\n"
+"POT-Creation-Date: 2001-06-06 08:21-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2581,7 +2581,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2776 lib/header.c:2795 lib/header.c:2815
+#: lib/header.c:2770 lib/header.c:2789 lib/header.c:2809
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -2670,77 +2670,77 @@ msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Nepravilno stanje ¹tevca za headerAddEntry(): %d\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2104
+#: lib/header.c:2101
 #, c-format
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2134
+#: lib/header.c:2131
 msgid "missing } after %{"
 msgstr "manjkajoèi } za %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2148
+#: lib/header.c:2145
 msgid "empty tag format"
 msgstr "oblika znaèke manjka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2160
+#: lib/header.c:2157
 msgid "empty tag name"
 msgstr "ime znaèke manjka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2177
+#: lib/header.c:2174
 msgid "unknown tag"
 msgstr "neznana znaèka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2204
+#: lib/header.c:2201
 msgid "] expected at end of array"
 msgstr "na koncu polja je prièakovan ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2222
+#: lib/header.c:2219
 msgid "unexpected ]"
 msgstr "neprièakovan ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2226
+#: lib/header.c:2223
 msgid "unexpected }"
 msgstr "neprièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2291
+#: lib/header.c:2288
 msgid "? expected in expression"
 msgstr "v izrazu je prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2300
+#: lib/header.c:2297
 msgid "{ expected after ? in expression"
 msgstr "v izrazu je za { prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2313 lib/header.c:2355
+#: lib/header.c:2310 lib/header.c:2352
 msgid "} expected in expression"
 msgstr "v izrazu je prièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2323
+#: lib/header.c:2320
 msgid ": expected following ? subexpression"
 msgstr "za podizrazom ? je prièakovano :"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2340
+#: lib/header.c:2337
 msgid "{ expected after : in expression"
 msgstr "v izrazu je za : prièakovan {"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2365
+#: lib/header.c:2362
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
-#: lib/header.c:2544
+#: lib/header.c:2538
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
@@ -3772,11 +3772,11 @@ msgstr "odpiranje datoteke %s v naèinu 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1136
+#: rpmdb/db1.c:557 rpmdb/db3.c:1162
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1136
+#: rpmdb/db1.c:557 rpmdb/db3.c:1162
 msgid "shared"
 msgstr "skupno"
 
@@ -3810,12 +3810,12 @@ msgstr "zaprto  db kazalo       %s/%s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
 
-#: rpmdb/db3.c:1134
+#: rpmdb/db3.c:1160
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:1141
+#: rpmdb/db3.c:1167
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "zaklenjeno  db kazalo       %s/%s\n"
@@ -3856,42 +3856,42 @@ msgstr ""
 "Èe \"rpm --rebuilddb\" ne re¹i problema, so dodatne informacije na voljo\n"
 "na strani http://www.rpm.org ali po dopisni listi rpm-list@redhat.com.\n"
 
-#: rpmdb/rpmdb.c:107
+#: rpmdb/rpmdb.c:106
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: neprepoznano ime znaèke: \"%s\" prezrto\n"
 
-#: rpmdb/rpmdb.c:347
+#: rpmdb/rpmdb.c:349
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "ni mo¾no odpreti kazala %s z uporabo db%d - %s (%d)"
 
-#: rpmdb/rpmdb.c:367
+#: rpmdb/rpmdb.c:369
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "ni mo¾no odpreti kazala %s:"
 
-#: rpmdb/rpmdb.c:455
+#: rpmdb/rpmdb.c:460
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "napaka(%d) pri branju zapisov \"%s\" iz kazala %s"
 
-#: rpmdb/rpmdb.c:581
+#: rpmdb/rpmdb.c:588
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "napaka(%d) pri pisanju zapisa %s v %s"
 
-#: rpmdb/rpmdb.c:591
+#: rpmdb/rpmdb.c:598
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "napaka(%d) pri brisanju zapisa %s iz %s"
 
-#: rpmdb/rpmdb.c:846
+#: rpmdb/rpmdb.c:856
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath ni nastavljena"
 
-#: rpmdb/rpmdb.c:952
+#: rpmdb/rpmdb.c:963
 #, fuzzy
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
@@ -3901,117 +3901,117 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1189
+#: rpmdb/rpmdb.c:1195
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "napaka(%d) pri ¹tetju paketov"
 
-#: rpmdb/rpmdb.c:1248 rpmdb/rpmdb.c:1852
+#: rpmdb/rpmdb.c:1253 rpmdb/rpmdb.c:1857
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ni mo¾no prebrati glave pri 0x%x"
 
-#: rpmdb/rpmdb.c:1534 rpmdb/rpmdb.c:2697
+#: rpmdb/rpmdb.c:1540 rpmdb/rpmdb.c:2706
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/rpmdb.c:1585
+#: rpmdb/rpmdb.c:1591
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1919
+#: rpmdb/rpmdb.c:1924
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstranjevanje \"%s\" iz kazala %s.\n"
 
-#: rpmdb/rpmdb.c:1928
+#: rpmdb/rpmdb.c:1933
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstranjevanje %d vnosov iz kazala %s\n"
 
-#: rpmdb/rpmdb.c:2115
+#: rpmdb/rpmdb.c:2124
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "napaka(%d) pri iskanju paketa %s\n"
 
-#: rpmdb/rpmdb.c:2193
+#: rpmdb/rpmdb.c:2202
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "dodajanje \"%s\" v kazalo %s.\n"
 
-#: rpmdb/rpmdb.c:2204
+#: rpmdb/rpmdb.c:2213
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "dodajanje %d vnosov v kazalo %s.\n"
 
-#: rpmdb/rpmdb.c:2586
+#: rpmdb/rpmdb.c:2595
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2616
+#: rpmdb/rpmdb.c:2625
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
-#: rpmdb/rpmdb.c:2643
+#: rpmdb/rpmdb.c:2652
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
-#: rpmdb/rpmdb.c:2647
+#: rpmdb/rpmdb.c:2656
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "zaèasna podatkovna zbirka %s ¾e obstaja"
 
-#: rpmdb/rpmdb.c:2653
+#: rpmdb/rpmdb.c:2662
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ustvarjanje imenika: %s\n"
 
-#: rpmdb/rpmdb.c:2655
+#: rpmdb/rpmdb.c:2664
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ustvarjanje imenika: %s\n"
 
-#: rpmdb/rpmdb.c:2662
+#: rpmdb/rpmdb.c:2671
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "odpiranje stare podatkovne zbirke\n"
 
-#: rpmdb/rpmdb.c:2673
+#: rpmdb/rpmdb.c:2682
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "odpiramo nove podatkovne zbirke z dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2735
+#: rpmdb/rpmdb.c:2744
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: rpmdb/rpmdb.c:2753
+#: rpmdb/rpmdb.c:2762
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke je bila neuspe¹na; stara ostaja na\n"
 "istem mestu\n"
 
-#: rpmdb/rpmdb.c:2761
+#: rpmdb/rpmdb.c:2770
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo je bila neuspe¹na!\n"
 
-#: rpmdb/rpmdb.c:2763
+#: rpmdb/rpmdb.c:2772
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "poskus povrnitve z nadomestitvijo datotek v %s z datotekami v %s"
 
-#: rpmdb/rpmdb.c:2773
+#: rpmdb/rpmdb.c:2782
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "odstranjevanje imenika: %s\n"
 
-#: rpmdb/rpmdb.c:2775
+#: rpmdb/rpmdb.c:2784
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"

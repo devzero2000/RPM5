@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-05 17:49-0400\n"
+"POT-Creation-Date: 2001-06-06 08:21-0400\n"
 "PO-Revision-Date: 2001-02-20 15:45-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2477,7 +2477,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2776 lib/header.c:2795 lib/header.c:2815
+#: lib/header.c:2770 lib/header.c:2789 lib/header.c:2809
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -2565,77 +2565,77 @@ msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Неверное число для headerAddEntry(): %d\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2104
+#: lib/header.c:2101
 #, c-format
 msgid "missing { after %"
 msgstr "отсутствует \"{\" после \"%\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2134
+#: lib/header.c:2131
 msgid "missing } after %{"
 msgstr "отсутствует \"}\" после \"%{\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2148
+#: lib/header.c:2145
 msgid "empty tag format"
 msgstr "пустой формат тэга"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2160
+#: lib/header.c:2157
 msgid "empty tag name"
 msgstr "пустое имя тэга"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2177
+#: lib/header.c:2174
 msgid "unknown tag"
 msgstr "неизвестный тэг"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2204
+#: lib/header.c:2201
 msgid "] expected at end of array"
 msgstr "в конце массива ожидалась \"]\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2222
+#: lib/header.c:2219
 msgid "unexpected ]"
 msgstr "неожиданная \"]\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2226
+#: lib/header.c:2223
 msgid "unexpected }"
 msgstr "неожиданная \"}\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2291
+#: lib/header.c:2288
 msgid "? expected in expression"
 msgstr "в выражении ожидалось \"?\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2300
+#: lib/header.c:2297
 msgid "{ expected after ? in expression"
 msgstr "в выражении после \"?\" ожидалось \"{\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2313 lib/header.c:2355
+#: lib/header.c:2310 lib/header.c:2352
 msgid "} expected in expression"
 msgstr "в выражении ожидалось \"}\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2323
+#: lib/header.c:2320
 msgid ": expected following ? subexpression"
 msgstr "в выражении после \"?\" ожидалось \":\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2340
+#: lib/header.c:2337
 msgid "{ expected after : in expression"
 msgstr "в выражении после \":\" ожидалось \"{\""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2365
+#: lib/header.c:2362
 msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
-#: lib/header.c:2544
+#: lib/header.c:2538
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
@@ -3635,11 +3635,11 @@ msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных\n"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1136
+#: rpmdb/db1.c:557 rpmdb/db3.c:1162
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db1.c:557 rpmdb/db3.c:1136
+#: rpmdb/db1.c:557 rpmdb/db3.c:1162
 msgid "shared"
 msgstr "разделяемый"
 
@@ -3673,12 +3673,12 @@ msgstr "закрыт индекс базы данных %s/%s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1134
+#: rpmdb/db3.c:1160
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:1141
+#: rpmdb/db3.c:1167
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"
@@ -3718,41 +3718,41 @@ msgstr ""
 "Более подробная информация доступна на http://www.rpm.org или в списке "
 "рассылки rpm-list@redhat.com\n"
 
-#: rpmdb/rpmdb.c:107
+#: rpmdb/rpmdb.c:106
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: имя ключа \"%s\" не известно, игнорируется\n"
 
-#: rpmdb/rpmdb.c:347
+#: rpmdb/rpmdb.c:349
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "невозможно открыть индекс %s используя db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:367
+#: rpmdb/rpmdb.c:369
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "невозможно открыть индекс %s\n"
 
-#: rpmdb/rpmdb.c:455
+#: rpmdb/rpmdb.c:460
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "ошибка(%d) получения записей \"%s\" из индекса %s\n"
 
-#: rpmdb/rpmdb.c:581
+#: rpmdb/rpmdb.c:588
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "ошибка(%d) записи записи %s в %s\n"
 
-#: rpmdb/rpmdb.c:591
+#: rpmdb/rpmdb.c:598
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "ошибка(%d) удаления записи %s из %s\n"
 
-#: rpmdb/rpmdb.c:846
+#: rpmdb/rpmdb.c:856
 msgid "no dbpath has been set\n"
 msgstr "параметер dbpath не установлен\n"
 
-#: rpmdb/rpmdb.c:952
+#: rpmdb/rpmdb.c:963
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3762,115 +3762,115 @@ msgstr ""
 
 #. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1189
+#: rpmdb/rpmdb.c:1195
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "ошибка(%d) при подсчёте пакетов\n"
 
-#: rpmdb/rpmdb.c:1248 rpmdb/rpmdb.c:1852
+#: rpmdb/rpmdb.c:1253 rpmdb/rpmdb.c:1857
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x\n"
 
-#: rpmdb/rpmdb.c:1534 rpmdb/rpmdb.c:2697
+#: rpmdb/rpmdb.c:1540 rpmdb/rpmdb.c:2706
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "запись номер %d в базе данных неверна, пропускается.\n"
 
-#: rpmdb/rpmdb.c:1585
+#: rpmdb/rpmdb.c:1591
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1919
+#: rpmdb/rpmdb.c:1924
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:1928
+#: rpmdb/rpmdb.c:1933
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:2115
+#: rpmdb/rpmdb.c:2124
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета\n"
 
-#: rpmdb/rpmdb.c:2193
+#: rpmdb/rpmdb.c:2202
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: rpmdb/rpmdb.c:2204
+#: rpmdb/rpmdb.c:2213
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: rpmdb/rpmdb.c:2586
+#: rpmdb/rpmdb.c:2595
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "удаляется %s после успешного завершения переиндекации базы в db3.\n"
 
-#: rpmdb/rpmdb.c:2616
+#: rpmdb/rpmdb.c:2625
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
-#: rpmdb/rpmdb.c:2643
+#: rpmdb/rpmdb.c:2652
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: rpmdb/rpmdb.c:2647
+#: rpmdb/rpmdb.c:2656
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "временная база данных %s уже существует\n"
 
-#: rpmdb/rpmdb.c:2653
+#: rpmdb/rpmdb.c:2662
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: rpmdb/rpmdb.c:2655
+#: rpmdb/rpmdb.c:2664
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "создаётся каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:2662
+#: rpmdb/rpmdb.c:2671
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2673
+#: rpmdb/rpmdb.c:2682
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:2735
+#: rpmdb/rpmdb.c:2744
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "невозможно добавить запись (первоначально в %d)\n"
 
-#: rpmdb/rpmdb.c:2753
+#: rpmdb/rpmdb.c:2762
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: rpmdb/rpmdb.c:2761
+#: rpmdb/rpmdb.c:2770
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: rpmdb/rpmdb.c:2763
+#: rpmdb/rpmdb.c:2772
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: rpmdb/rpmdb.c:2773
+#: rpmdb/rpmdb.c:2782
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: rpmdb/rpmdb.c:2775
+#: rpmdb/rpmdb.c:2784
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"

@@ -405,9 +405,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Tue Jun  5 2001 Jeff Johnson <jbj@redhat.com>
+* Wed Jun  6 2001 Jeff Johnson <jbj@redhat.com>
 - fix typos in linux.{req,prov}.
 - always use db cursors.
+- permit duplicates for btree indices.
 
 * Fri Jun  1 2001 Jeff Johnson <jbj@redhat.com>
 - merge sparc64/ia64 fiddles back into linux.{req,prov}.
