@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-05-14 16:37-0400\n"
+"POT-Creation-Date: 2001-05-16 12:09-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2268,118 +2268,118 @@ msgid " failed - "
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:565
+#: lib/depends.c:566
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:594
+#: lib/depends.c:595
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:595 lib/depends.c:1075 lib/depends.c:1200
+#: lib/depends.c:596 lib/depends.c:1083 lib/depends.c:1211
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:595 lib/depends.c:1075 lib/depends.c:1200
+#: lib/depends.c:596 lib/depends.c:1083 lib/depends.c:1211
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:964
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1022
+#: lib/depends.c:1030
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1074
+#: lib/depends.c:1082
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1095
+#: lib/depends.c:1106
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1112
+#: lib/depends.c:1123
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1134
+#: lib/depends.c:1145
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1147
+#: lib/depends.c:1158
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1161
+#: lib/depends.c:1172
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1179
+#: lib/depends.c:1190
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1200
+#: lib/depends.c:1211
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1261
+#: lib/depends.c:1272
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1329
+#: lib/depends.c:1340
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1549
+#: lib/depends.c:1560
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1697
+#: lib/depends.c:1708
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1755
+#: lib/depends.c:1766
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1807
+#: lib/depends.c:1818
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1859
+#: lib/depends.c:1870
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1888
+#: lib/depends.c:1899
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2715 lib/header.c:2732 lib/header.c:2750
+#: lib/header.c:2719 lib/header.c:2736 lib/header.c:2754
 msgid "(not a number)"
 msgstr ""
 
@@ -2421,32 +2421,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1089
+#: lib/fsm.c:1088
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1398 lib/fsm.c:1523
+#: lib/fsm.c:1397 lib/fsm.c:1522
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1549
+#: lib/fsm.c:1548
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1555
+#: lib/fsm.c:1554
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1565
+#: lib/fsm.c:1564
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1584
+#: lib/fsm.c:1583
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2456,88 +2456,88 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:208 lib/header.c:1164 lib/psm.c:372
+#: lib/header.c:208 lib/header.c:1168 lib/psm.c:372
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1603
+#: lib/header.c:1607
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2062
+#: lib/header.c:2066
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2092
+#: lib/header.c:2096
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2106
+#: lib/header.c:2110
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2118
+#: lib/header.c:2122
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2135
+#: lib/header.c:2139
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2162
+#: lib/header.c:2166
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2180
+#: lib/header.c:2184
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2184
+#: lib/header.c:2188
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2247
+#: lib/header.c:2251
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2256
+#: lib/header.c:2260
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2269 lib/header.c:2311
+#: lib/header.c:2273 lib/header.c:2315
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2279
+#: lib/header.c:2283
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2296
+#: lib/header.c:2300
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2321
+#: lib/header.c:2325
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2492
+#: lib/header.c:2496
 msgid "(unknown type)"
 msgstr ""
 
