@@ -7,7 +7,7 @@ PYVER= @WITH_PYTHON_VERSION@
 EXTRA_DIST = \
 	__init__.py dbobj.py db.py dbrecio.py dbshelve.py dbtables.py dbutils.py
 
-pylibdir = $(shell python -c 'import sys; print sys.path[1]')
+pylibdir = $(shell python -c 'import sys; print sys.path[2]')
 
 rpmdbdir = $(pylibdir)/site-packages/rpmdb
 rpmdb_SCRIPTS = \
