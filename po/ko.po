@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
 "POT-Creation-Date: 2001-04-29 18:19-0400\n"
-"PO-Revision-Date: 2001-05-01 01:40+0900\n"
+"PO-Revision-Date: 2001-05-01 03:30+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
 "MIME-Version: 1.0\n"
@@ -297,7 +297,7 @@ msgstr "현재 사용 중인 rpm 버전을 표시합니다"
 
 #: rpm.c:334
 msgid "   All modes support the following arguments:"
-msgstr "   모든 모드에서 다음의 인수들을 사용하실 수 있습니다:"
+msgstr "   모든 모드에서 다음의 인수를 사용하실 수 있습니다:"
 
 #: rpm.c:335
 msgid "    --define '<name> <body>'"
@@ -1319,212 +1319,213 @@ msgstr ""
 #: rpmqv.c:413
 #, c-format
 msgid "Usage: %s {--help}\n"
-msgstr ""
+msgstr " 사용법: %s {--help}\n"
 
 #: rpmqv.c:484
 msgid "  All modes support the following options:"
-msgstr ""
+msgstr "  모든 모드에서 다음의 옵션을 사용하실 수 있습니다:"
 
 #: rpmqv.c:485
 msgid "   --define '<name> <body>'"
-msgstr ""
+msgstr "   --define '<이름> <본문>'"
 
 #: rpmqv.c:487
 msgid "   --eval '<expr>+'       "
-msgstr ""
+msgstr "   --eval '<표현식>+'     "
 
 #: rpmqv.c:488
 msgid "print the expansion of macro <expr> to stdout"
-msgstr ""
+msgstr "<표현식> 매크로의 확장을 표준출력으로 출력합니다"
 
 #: rpmqv.c:489
 msgid "   --pipe <cmd>           "
-msgstr ""
+msgstr "   --pipe <명령>          "
 
 #: rpmqv.c:491
 msgid "   --rcfile <file:...>    "
-msgstr ""
+msgstr "   --rcfile <파일:...>    "
 
 #: rpmqv.c:492
 msgid "use <file:...> instead of default list of macro files"
-msgstr ""
+msgstr "기본 값으로 사용되는 매크로 파일 대신에 <파일:...> 을 사용합니다"
 
 #: rpmqv.c:496
 msgid "   --dbpath <dir>         "
-msgstr ""
+msgstr "   --dbpath <디렉토리>    "
 
 #: rpmqv.c:498
 msgid "   --root <dir>           "
-msgstr ""
+msgstr "   --root <디렉토리>      "
 
 #: rpmqv.c:508
 msgid ""
 "  Install, upgrade and query (with -p) modes allow URL's to be used in place"
 msgstr ""
+"    설치, 업그레이드 및 질의시 (-p 옵션과 함께 사용시) 파일명을 적는 곳에"
 
 #: rpmqv.c:509
 msgid "  of file names as well as the following options:"
-msgstr ""
+msgstr "     파일이 위치한 URL 과 함께 다음의 옵션을 사용하실 수 있습니다:"
 
 #: rpmqv.c:510
 msgid "     --ftpproxy <host>    "
-msgstr ""
+msgstr "     --ftpproxy <호스트>  "
 
 #: rpmqv.c:512
 msgid "     --ftpport <port>     "
-msgstr ""
+msgstr "     --ftpport <포트>     "
 
 #: rpmqv.c:514
 msgid "     --httpproxy <host>   "
-msgstr ""
+msgstr "     --httpproxy <호스트> "
 
 #: rpmqv.c:516
 msgid "     --httpport <port>    "
-msgstr ""
+msgstr "     --httpport <포트>    "
 
 #: rpmqv.c:522
 msgid "  Package specification options:"
-msgstr ""
+msgstr "      패키지 지정 옵션:"
 
 #: lib/poptQV.c:68 rpmqv.c:524
 msgid "query/verify all packages"
-msgstr ""
+msgstr "모든 패키지에 대해 질의/검증합니다"
 
 #: rpmqv.c:525
 msgid "     -f <file>+           "
-msgstr ""
+msgstr "     -f <파일>+           "
 
 #: rpmqv.c:526
 msgid "query/verify package owning <file>"
-msgstr ""
+msgstr "<파일> 이 포함되어 있는 패키지에 대해 질의/검증합니다"
 
 #: rpmqv.c:527
 msgid "     -p <packagefile>+    "
-msgstr ""
+msgstr "     -p <패키지파일>+     "
 
 #: rpmqv.c:528
 msgid "query/verify (uninstalled) package <packagefile>"
-msgstr ""
+msgstr "(설치되지 않은) <패키지파일> 에 대해 질의/검증합니다"
 
 #: rpmqv.c:529
 msgid "     --triggeredby <pkg>  "
-msgstr ""
+msgstr "     --triggeredby <패키지>"
 
 #: rpmqv.c:530
 msgid "query/verify packages triggered by <pkg>"
-msgstr ""
+msgstr "<패키지> 로 인하여 발생되는 패키지에 대해 질의/검증합니다"
 
 #: rpmqv.c:531
 msgid "     --whatprovides <cap> "
-msgstr ""
+msgstr "     --whatprovides <기능>"
 
 #: rpmqv.c:532
 msgid "query/verify packages which provide <cap> capability"
-msgstr ""
+msgstr "<기능> 을 제공하는 패키지에 대해 질의/검증합니다"
 
 #: rpmqv.c:533
 msgid "     --whatrequires <cap> "
-msgstr ""
+msgstr "     --whatrequires <기능>"
 
 #: rpmqv.c:534
 msgid "query/verify packages which require <cap> capability"
-msgstr ""
+msgstr "<기능> 을 필요로 하는 패키지에 대해 질의/검증합니다"
 
 #: rpmqv.c:538
 msgid "     --queryformat <qfmt> "
-msgstr ""
+msgstr "     --queryformat <질의형식>"
 
 #: rpmqv.c:541
 msgid "    Information selection options:"
-msgstr ""
+msgstr "      정보 선택 옵션:"
 
 #: rpmqv.c:557
 msgid "list capabilities provided by package"
-msgstr ""
+msgstr "패키지가 제공하는 기능을 나열합니다"
 
 #: rpmqv.c:559
 msgid "list capabilities required by package"
-msgstr ""
+msgstr "패키지가 필요로 하는 기능을 나열합니다"
 
 #: rpmqv.c:561
 msgid "print the various [un]install scriptlets"
-msgstr ""
+msgstr "[제거]설치시에 사용되는 스크립트를 출력합니다"
 
 #: rpmqv.c:563
 msgid "show the trigger scriptlets contained in the package"
-msgstr ""
+msgstr "패키지에 포함된 트리거 스크립트를 보여줍니다"
 
 #: rpmqv.c:574
 msgid "do not execute scripts (if any)"
-msgstr ""
+msgstr "스크립트 (있을 경우) 를 실행하지 않습니다"
 
 #: rpmqv.c:589
 msgid "   --install <packagefile>"
-msgstr ""
+msgstr "   --install <패키지파일> "
 
 #: rpmqv.c:590
 msgid "   -i <packagefile>       "
-msgstr ""
+msgstr "   -i <패키지파일>        "
 
 #: rpmqv.c:599
 msgid "     --excludepath <path> "
-msgstr ""
+msgstr "     --excludepath <경로> "
 
 #: rpmqv.c:620
 msgid "don't execute any installation scriptlets"
-msgstr ""
+msgstr "패키지 설치시 어떠한 설치관련 스크립트도 실행하지 않습니다"
 
 #: rpmqv.c:622
 msgid "don't execute any scriptlets triggered by this package"
-msgstr ""
+msgstr "이 패키지로 인하여 발생되는 스크립트를 실행하지 않습니다"
 
 #: rpmqv.c:625
 msgid "     --prefix <dir>       "
-msgstr ""
+msgstr "     --prefix <디렉토리>  "
 
 #: rpmqv.c:627
 msgid "     --relocate <oldpath>=<newpath>"
-msgstr ""
+msgstr "     --relocate <이전경로>=<새로운경로>"
 
 #: rpmqv.c:636
 msgid "   --upgrade <packagefile>"
-msgstr ""
+msgstr "   --upgrade <패키지파일>"
 
 #: rpmqv.c:637
 msgid "   -U <packagefile>       "
-msgstr ""
+msgstr "   -U <패키지파일>        "
 
 #: rpmqv.c:642
 msgid "   --erase <package>"
-msgstr ""
+msgstr "   --erase <패키지>"
 
 #: rpmqv.c:643
 msgid "   -e <package>           "
-msgstr ""
+msgstr "   -e <패키지>            "
 
 #: rpmqv.c:661
 msgid "   --resign <pkg>+        "
-msgstr ""
+msgstr "   --resign <패키지>+     "
 
 #: rpmqv.c:663
 msgid "   --addsign <pkg>+       "
-msgstr ""
+msgstr "   --addsign <패키지>+    "
 
 #: rpmqv.c:666
 msgid "   --checksig <pkg>+"
-msgstr ""
+msgstr "   --checksig <패키지>+"
 
 #: rpmqv.c:667
 msgid "   -K <pkg>+             "
-msgstr ""
+msgstr "   -K <패키지>+          "
 
 #: rpmqv.c:680
 msgid "initalize database (unnecessary, legacy use)"
-msgstr ""
+msgstr "데이터베이스를 초기화 합니다 (불필요하며, 상속적으로 사용)"
 
 #: rpmqv.c:682
 msgid "rebuild database indices from existing database headers"
-msgstr ""
+msgstr "기존의 데이터베이스 헤더로부터 데이터베이스 인덱스를 재 작성합니다"
 
 #: rpmqv.c:964
 msgid "Use \"--macros <file:...>\" instead.\n"
