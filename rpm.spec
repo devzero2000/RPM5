@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.33
+Release: 0.34
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Dec 29 2000 Jeff Johnson <jbj@redhat.com>
+- fix: hack around alpha mis-compilation signature problems.
+- rpmmodule.c(handleDbResult): return empty list when nothing matches.
+
 * Thu Dec 28 2000 Jeff Johnson <jbj@redhat.com>
 - fix: avoid FAT and other brain-dead file systems that have not inodes.
 
