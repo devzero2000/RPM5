@@ -124,7 +124,6 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
   strip .%{__prefix}/bin/rpm2cpio
-  strip .%{__prefix}/lib/rpm/rpmputtext .%{__prefix}/lib/rpm/rpmgettext
 }
 
 %clean
@@ -234,8 +233,6 @@ fi
 %{__prefix}/lib/rpm/rpm[bt]
 %{__prefix}/lib/rpm/rpmdiff
 %{__prefix}/lib/rpm/rpmdiff.cgi
-%{__prefix}/lib/rpm/rpmgettext
-%{__prefix}/lib/rpm/rpmputtext
 %{__prefix}/lib/rpm/u_pkg.sh
 %{__prefix}/lib/rpm/vpkg-provides.sh
 %{__prefix}/lib/rpm/vpkg-provides2.sh
@@ -272,9 +269,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Nov 11 2000 Jeff Johnson <jbj@redhat.com>
+- fix: runTriggers was not adding countCorrection.
+- add rpmGetRpmlibProvides() to retrieve rpmlib(...) provides
+	"Pawel A. Gajda" <mis@k2.net.pl>.
+- syntax to specify source of Requires: (PreReq: now legacy).
+- rip out rpm{get,put}text, use getpo.sh and specspo instead.
+
 * Wed Oct 11 2000 Jeff Johnson <jbj@redhat.com>
 - fix: rpm2cpio error check wrong on non-libio platforms.
-- work around alpha miscompilation?
 
 * Fri Sep 29 2000 Jeff Johnson <jbj@redhat.com>
 - fix: more (possible) xstrdup side effects.

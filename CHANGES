@@ -6,11 +6,11 @@
 	- bump popt version to 1.6.1.
 	- fix: more (possible) xstrdup side effects.
 	- fix: rpm2cpio error check wrong on non-libio platforms.
-	- work around alpha miscompilation?
 	- fix: runTriggers was not adding countCorrection.
 	- add rpmGetRpmlibProvides() to retrieve rpmlib(...) provides
 		"Pawel A. Gajda" <mis@k2.net.pl>.
 	- syntax to specify source of Requires: (PreReq: now legacy).
+	- rip out rpm{get,put}text, use getpo.sh and specspo instead.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
