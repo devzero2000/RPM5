@@ -155,7 +155,7 @@ static int getNextHeader(struct ourfd * fd, struct cpioHeader * chPtr) {
     char * end;
     int major, minor;
 
-    if (ourread(fd, &physHeader, PHYS_HDR_SIZE) != sizeof(PHYS_HDR_SIZE)) 
+    if (ourread(fd, &physHeader, PHYS_HDR_SIZE) != PHYS_HDR_SIZE) 
 	return CPIO_READ_FAILED;
 
     if (strncmp(CPIO_CRC_MAGIC, physHeader.magic, strlen(CPIO_CRC_MAGIC)) &&
