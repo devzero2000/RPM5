@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.6
+Release: 0.7
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -345,6 +345,19 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Apr 21 2001 Jeff Johnson <jbj@redhat.com>
+- fix: s390 (and ppc?) could return CPIOERR_BAD_HEADER (#28645).
+- fix: Fwrite's are optimized out by aggressive compiler(irix) (#34711).
+- portability: vsnprintf/snprintf wrappers for those without (#34657).
+- more info provided by rpmdepOrder() debugging messages.
+- merge (compatible) changes from top-of-stack into rpmlib.h.
+- cpio mappings carry dirname/basename, not absolute path.
+- fix: check waitpid return code.
+- remove support for v1 src rpm's.
+- re-position callbacks with ts/fi in cpio payload layer.
+- state machines for packages (psm.c) and payloads (fsm.c)
+- add --repackage option to put erased bits back into a package.
+
 * Tue Apr 17 2001 Jeff Johnson <jbj@redhat.com>
 - fix: s390 (and ppc?) could return CPIOERR_BAD_HEADER (#28645).
 - fix: Fwrite's are optimized out by aggressive compiler(irix) (#34711).
