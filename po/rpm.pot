@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-11-12 12:11-0500\n"
+"POT-Creation-Date: 2000-12-14 18:02-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2057,26 +2057,26 @@ msgstr ""
 msgid "(not a number)"
 msgstr ""
 
-#: lib/fs.c:56
+#: lib/fs.c:58
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
-#: lib/fs.c:91 lib/fs.c:261
+#: lib/fs.c:93 lib/fs.c:263
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr ""
 
-#: lib/fs.c:127
+#: lib/fs.c:129
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/fs.c:132
+#: lib/fs.c:134
 #, c-format
 msgid "failed to open %s: %s"
 msgstr ""
 
-#: lib/fs.c:283
+#: lib/fs.c:285
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr ""

@@ -9,7 +9,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.7
 Version: %{version}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -253,6 +253,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Dec 14 2000 Jeff Johnson <jbj@redhat.com>
+- fix: synthesized callbacks for removed packages have not a pkgkey.
+
 * Sun Nov 12 2000 Jeff Johnson <jbj@redhat.com>
 - fix: duplicate headerFree() on instalBinaryPackage error return.
 

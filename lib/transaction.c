@@ -1686,7 +1686,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	    if (removeBinaryPackage(ts->root, ts->db, offset, dbh,
 				transFlags,
-				notify, notifyData, dbh, fi->actions,
+				notify, notifyData, NULL, fi->actions,
 				ts->scriptFd))
 
 		ourrc++;
