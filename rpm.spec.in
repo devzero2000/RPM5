@@ -14,15 +14,15 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.67
+Release: 0.69
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils mktemp shadow-utils
-Requires: popt
 %endif
+Requires: popt = 1.6.3
 
 %if !%{with_internal_db}
 BuildRequires: db3-devel
@@ -54,7 +54,7 @@ the package like its version, a description, etc.
 %package devel
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{version}, popt
+Requires: rpm = %{version}, popt = 1.6.3
 
 %description devel
 This package contains the RPM C library and header files.  These
@@ -82,6 +82,7 @@ Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{version}
 Requires: python >= 1.5.2
+Requires: popt = 1.6.3
 
 %description python
 The rpm-python package contains a module which permits applications
@@ -429,11 +430,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jul 12 2001 Jeff Johnson <jbj@redhat.com>
+- fix: scope multi-mode options like --nodeps correctly (#48825).
+
 * Wed Jul 11 2001 Jeff Johnson <jbj@redhat.com>
 - fix: adjust arg count for --POPTdesc/--POPTargs deletion.
 - add linux per-platform macro %_smp_mflags <sopwith@redhat.com>.
 - document more popt aliases for --help usage.
 - remove --tarbuild from man page(s), use -t[abpcils] instead (#48666).
+- add explicit version to Requires: popt
 
 * Tue Jul 10 2001 Jeff Johnson <jbj@redhat.com>
 - fix: -i CLI context broken Yet Again.

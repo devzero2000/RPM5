@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-07-11 00:53-0400\n"
+"POT-Creation-Date: 2001-07-12 15:44-0400\n"
 "PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -70,16 +70,16 @@ msgstr "Sestavuji pro cíl %s\n"
 msgid "rpm: %s\n"
 msgstr "rpm: %s\n"
 
-#: rpm.c:238 rpmqv.c:218
+#: rpm.c:238 rpmqv.c:222
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM verze %s\n"
 
-#: rpm.c:242 rpmqv.c:224
+#: rpm.c:242 rpmqv.c:228
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr "Copyright (c) 1998-2000 - Red Hat, Inc."
 
-#: rpm.c:243 rpmqv.c:225
+#: rpm.c:243 rpmqv.c:229
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "Tento program lze volnì ¹íøit podle podmínek GNU GPL."
 
@@ -297,7 +297,7 @@ msgstr "pou¾ití:"
 msgid "print this message"
 msgstr "vypsat tuto zprávu"
 
-#: rpm.c:335 rpmqv.c:102
+#: rpm.c:335 rpmqv.c:106
 msgid "print the version of rpm being used"
 msgstr "vypsat pou¾ívanou verzi rpm"
 
@@ -309,7 +309,7 @@ msgstr "   v¹echny re¾imy podporují tyto parametry:"
 msgid "    --define '<name> <body>'"
 msgstr "    --define '<jméno> <tìlo>'"
 
-#: rpm.c:340 rpmqv.c:109
+#: rpm.c:340 rpmqv.c:113
 msgid "define macro <name> with value <body>"
 msgstr "definování makra <jméno> s obsahem <tìlo>"
 
@@ -325,7 +325,7 @@ msgstr "vypsat pou¾ívanou verzi rpm"
 msgid "    --pipe <cmd>          "
 msgstr "    --pipe <pøíkaz>       "
 
-#: rpm.c:344 rpmqv.c:115
+#: rpm.c:344 rpmqv.c:119
 msgid "send stdout to <cmd>"
 msgstr "odeslat stdout do <pøíkazu>"
 
@@ -337,7 +337,7 @@ msgstr "      --rcfile <soubor>    "
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "pou¾ijte <soubor> místo /etc/rpmrc a $HOME/.rpmrc"
 
-#: rpm.c:348 rpmqv.c:133
+#: rpm.c:348 rpmqv.c:137
 msgid "display final rpmrc and macro configuration"
 msgstr "zobrazit finální konfiguraci rpmrc a maker"
 
@@ -414,7 +414,7 @@ msgstr "pou¾ít <qfmt> jako hlavièkový formát (implikuje -i)"
 msgid "      --root <dir>        "
 msgstr "      --root <adr>        "
 
-#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:118
+#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:122
 msgid "use <dir> as the top level directory"
 msgstr "pou¾ít <adr> jako adresáø nejvy¹¹í úrovnì"
 
@@ -526,7 +526,7 @@ msgstr ""
 "ovìøit instalaci balíèku pou¾itím stejných voleb pro specifikaci balíèku, "
 "jako pro -q"
 
-#: lib/poptBT.c:189 lib/poptI.c:142 rpm.c:420 rpm.c:462 rpm.c:497
+#: lib/poptI.c:142 rpm.c:420 rpm.c:462 rpm.c:497
 msgid "do not verify package dependencies"
 msgstr "nekontrolovat závislosti balíèkù"
 
@@ -858,8 +858,8 @@ msgstr ""
 "pomocí stejných voleb pro specifikaci balíèku, jako pro -q"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:536 rpmqv.c:542 rpmqv.c:548
-#: rpmqv.c:586
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:598 rpmqv.c:604 rpmqv.c:610
+#: rpmqv.c:648
 msgid "only one major mode may be specified"
 msgstr "specifikovat lze jen jeden hlavní re¾im"
 
@@ -887,7 +887,7 @@ msgstr "pøemístìní musejí mít za znakem = znak /"
 msgid "exclude paths must begin with a /"
 msgstr "vynechané cesty musí zaèínat znakem /"
 
-#: rpm.c:850 rpmqv.c:488
+#: rpm.c:850 rpmqv.c:550
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "Volba --rcfile byla odstranìna.\n"
 
@@ -895,104 +895,104 @@ msgstr "Volba --rcfile byla odstranìna.\n"
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr "Pou¾ijte --macros se seznamem makro souborù oddìlených kolonou.\n"
 
-#: rpm.c:856 rpmqv.c:495
+#: rpm.c:856 rpmqv.c:557
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Interní chyba pøi zpracování parametrù (%d) :-(\n"
 
-#: rpm.c:891 rpmqv.c:565
+#: rpm.c:891 rpmqv.c:627
 msgid "one type of query/verify may be performed at a time"
 msgstr "najednou lze provést jen jeden typ dotazu èi ovìøení"
 
-#: rpm.c:896 rpmqv.c:569
+#: rpm.c:896 rpmqv.c:631
 msgid "unexpected query flags"
 msgstr "neoèekávaný pøíznak pro dotaz"
 
-#: rpm.c:899 rpmqv.c:572
+#: rpm.c:899 rpmqv.c:634
 msgid "unexpected query format"
 msgstr "neoèekávaný formát dotazu"
 
-#: rpm.c:902 rpmqv.c:575
+#: rpm.c:902 rpmqv.c:637
 msgid "unexpected query source"
 msgstr "neoèekávaný zdroj dotazu"
 
-#: rpm.c:905 rpmqv.c:619
+#: rpm.c:905 rpmqv.c:681
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "vynucena mù¾e být jen instalace, aktualizace, smazání zdrojových kódù a spec "
 "souboru"
 
-#: rpm.c:908 rpmqv.c:621
+#: rpm.c:908 rpmqv.c:683
 msgid "files may only be relocated during package installation"
 msgstr "soubory mohou být pøemístìny jen pøi instalaci balíèkù"
 
-#: rpm.c:911 rpmqv.c:624
+#: rpm.c:911 rpmqv.c:686
 msgid "only one of --prefix or --relocate may be used"
 msgstr "pou¾ít lze jen jeden z parametrù --prefix nebo --relocate"
 
-#: rpm.c:914 rpmqv.c:627
+#: rpm.c:914 rpmqv.c:689
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate a --excludepath je mo¾no pou¾ít jen pøi instalaci nových balíèkù"
 
-#: rpm.c:917 rpmqv.c:630
+#: rpm.c:917 rpmqv.c:692
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix je mo¾no pou¾ít jen pøi instalaci nových balíèkù"
 
-#: rpm.c:920 rpmqv.c:633
+#: rpm.c:920 rpmqv.c:695
 msgid "arguments to --prefix must begin with a /"
 msgstr "parametry pro --prefix musejí zaèínat znakem /"
 
-#: rpm.c:923 rpmqv.c:636
+#: rpm.c:923 rpmqv.c:698
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:927 rpmqv.c:640
+#: rpm.c:927 rpmqv.c:702
 msgid "--percent may only be specified during package installation"
 msgstr "--percent mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:931 rpmqv.c:645
+#: rpm.c:931 rpmqv.c:707
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:935 rpmqv.c:649
+#: rpm.c:935 rpmqv.c:711
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:939 rpmqv.c:653
+#: rpm.c:939 rpmqv.c:715
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:943 rpmqv.c:657
+#: rpm.c:943 rpmqv.c:719
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:947 rpmqv.c:661
+#: rpm.c:947 rpmqv.c:723
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "pou¾ít lze jen jeden z parametrù --excludedocs a --includedocs"
 
-#: rpm.c:951 rpmqv.c:665
+#: rpm.c:951 rpmqv.c:727
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:955 rpmqv.c:669
+#: rpm.c:955 rpmqv.c:731
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:959 rpmqv.c:674
+#: rpm.c:959 rpmqv.c:736
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:963 rpmqv.c:678
+#: rpm.c:963 rpmqv.c:740
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:967 rpmqv.c:682
+#: rpm.c:967 rpmqv.c:744
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:971 rpmqv.c:687
+#: rpm.c:971 rpmqv.c:749
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb mù¾e být pou¾it jen pøi instalaci a odstraòování balíèkù"
 
@@ -1010,14 +1010,14 @@ msgstr ""
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpm.c:987 rpmqv.c:697
+#: rpm.c:987 rpmqv.c:759
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "----notriggers mù¾e být pou¾ito jen pøi instalaci nebo mazání balíèkù"
 
-#: rpm.c:991 rpmqv.c:701
+#: rpm.c:991 rpmqv.c:763
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1025,13 +1025,13 @@ msgstr ""
 "--nodeps mù¾e být pou¾it jen pøi sestavování, rekompilaci, instalaci, "
 "odstraòování a kontrole"
 
-#: rpm.c:996 rpmqv.c:706
+#: rpm.c:996 rpmqv.c:768
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test mù¾e být pou¾it jen pøi instalaci, odstraòování a sestavování"
 
-#: rpm.c:1000 rpmqv.c:711
+#: rpm.c:1000 rpmqv.c:773
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1039,7 +1039,7 @@ msgstr ""
 "--root (-r) mù¾e být pou¾it jen pøi instalaci, odstraòování, dotazech nebo "
 "znovuvytvoøení databáze"
 
-#: rpm.c:1012 rpmqv.c:723
+#: rpm.c:1012 rpmqv.c:785
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametry pro --root (-r) musejí zaèínat znakem /"
 
@@ -1060,77 +1060,77 @@ msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 mù¾e být pou¾it jen pøi kontrole podpisù a ovìøování balíèkù"
 
-#: rpm.c:1038 rpmqv.c:744
+#: rpm.c:1038 rpmqv.c:806
 msgid "no files to sign\n"
 msgstr "¾ádné soubory k podepsání\n"
 
-#: rpm.c:1043 rpmqv.c:749
+#: rpm.c:1043 rpmqv.c:811
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "pøístup k souboru %s se nezdaøil\n"
 
-#: rpm.c:1058 rpmqv.c:768
+#: rpm.c:1058 rpmqv.c:830
 msgid "pgp not found: "
 msgstr "pgp nenalezeno: "
 
-#: rpm.c:1062 rpmqv.c:773
+#: rpm.c:1062 rpmqv.c:835
 msgid "Enter pass phrase: "
 msgstr "Vlo¾te heslovou frázi: "
 
-#: rpm.c:1064 rpmqv.c:775
+#: rpm.c:1064 rpmqv.c:837
 msgid "Pass phrase check failed\n"
 msgstr "Chybná heslová fráze\n"
 
-#: rpm.c:1067 rpmqv.c:779
+#: rpm.c:1067 rpmqv.c:841
 msgid "Pass phrase is good.\n"
 msgstr "Heslová fráze je v poøádku.\n"
 
-#: rpm.c:1072 rpmqv.c:784
+#: rpm.c:1072 rpmqv.c:846
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "©patná %%_signature spec v souboru maker.\n"
 
-#: rpm.c:1078 rpmqv.c:791
+#: rpm.c:1078 rpmqv.c:853
 msgid "--sign may only be used during package building"
 msgstr "--sign mù¾e být pou¾it jen pøi sestavování balíèkù"
 
-#: rpm.c:1093 rpmqv.c:807
+#: rpm.c:1093 rpmqv.c:869
 msgid "exec failed\n"
 msgstr "spu¹tìní selhalo\n"
 
-#: rpm.c:1116 rpmqv.c:1020
+#: rpm.c:1116 rpmqv.c:1082
 msgid "unexpected arguments to --querytags "
 msgstr "neoèekávané parametry pro --querytags "
 
-#: rpm.c:1127 rpmqv.c:1029
+#: rpm.c:1127 rpmqv.c:1091
 msgid "no packages given for signature check"
 msgstr "ke kontrole podpisu nezadány ¾ádné balíèky"
 
-#: rpm.c:1138 rpmqv.c:1038
+#: rpm.c:1138 rpmqv.c:1100
 msgid "no packages given for signing"
 msgstr "k podepsání nezadány ¾ádné balíèky"
 
-#: rpm.c:1154 rpmqv.c:925
+#: rpm.c:1154 rpmqv.c:987
 msgid "no packages given for uninstall"
 msgstr "nezadány ¾ádné balíèky pro odstranìní"
 
-#: rpm.c:1243 rpmqv.c:936
+#: rpm.c:1243 rpmqv.c:998
 msgid "no packages given for install"
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: rpm.c:1267 rpmqv.c:983
+#: rpm.c:1267 rpmqv.c:1045
 msgid "extra arguments given for query of all packages"
 msgstr "k dotazu na v¹echny balíèky zadány parametry navíc"
 
-#: rpm.c:1272 rpmqv.c:992
+#: rpm.c:1272 rpmqv.c:1054
 msgid "no arguments given for query"
 msgstr "k dotazu nezadány ¾ádné parametry"
 
-#: rpm.c:1289 rpmqv.c:1008
+#: rpm.c:1289 rpmqv.c:1070
 msgid "extra arguments given for verify of all packages"
 msgstr "pro kontrolu v¹ech balíèkù zadány parametry navíc"
 
-#: rpm.c:1293 rpmqv.c:1012
+#: rpm.c:1293 rpmqv.c:1074
 msgid "no arguments given for verify"
 msgstr "pro kontrolu nezadány ¾ádné balíèky"
 
@@ -1147,125 +1147,125 @@ msgstr "chyba pøi pøi ètení hlavièky balíèku\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "nemohu znovu otevøít payload: %s\n"
 
-#: rpmqv.c:105
+#: rpmqv.c:109
 msgid "provide less detailed output"
 msgstr "poskytnout výstu s ménì detaily"
 
-#: rpmqv.c:107
+#: rpmqv.c:111
 msgid "provide more detailed output"
 msgstr "poskytnout detailnìj¹í výstup"
 
-#: rpmqv.c:110
+#: rpmqv.c:114
 msgid "'<name> <body>'"
 msgstr "'<jméno> <tìlo>'"
 
-#: rpmqv.c:112
+#: rpmqv.c:116
 msgid "print macro expansion of <expr>+"
 msgstr "vypsat expanzi makra <výraz>+"
 
-#: rpmqv.c:113
+#: rpmqv.c:117
 msgid "<expr>+"
 msgstr "<výraz>+"
 
-#: rpmqv.c:116
+#: rpmqv.c:120
 msgid "<cmd>"
 msgstr "<pøík>"
 
-#: lib/poptI.c:189 rpmqv.c:119
+#: lib/poptI.c:189 rpmqv.c:123
 msgid "<dir>"
 msgstr "<adresáø>"
 
-#: rpmqv.c:121
+#: rpmqv.c:125
 msgid "read <file:...> instead of default macro file(s)"
 msgstr "èíst <soubor:...> místo implicitního makro souboru"
 
-#: rpmqv.c:122 rpmqv.c:126 rpmqv.c:130
+#: rpmqv.c:126 rpmqv.c:130 rpmqv.c:134
 msgid "<file:...>"
 msgstr "<soubor:...>"
 
-#: rpmqv.c:125 rpmqv.c:129
+#: rpmqv.c:129 rpmqv.c:133
 msgid "read <file:...> instead of default rpmrc file(s)"
 msgstr "èíst <soubor:...> místo implicitního rpmrc souboru"
 
-#: rpmqv.c:138
+#: rpmqv.c:142
 msgid "disable use of libio(3) API"
 msgstr "zakázat pou¾ití libio(3) API"
 
-#: rpmqv.c:141
+#: rpmqv.c:145
 msgid "debug protocol data stream"
 msgstr "ladit protokol datového toku"
 
-#: rpmqv.c:143
+#: rpmqv.c:147
 msgid "debug rpmio I/O"
 msgstr "ladit rpmio I/O"
 
-#: rpmqv.c:145
+#: rpmqv.c:149
 msgid "debug URL cache handling"
 msgstr "ladit manipulaci s URL cache"
 
-#: rpmqv.c:163
+#: rpmqv.c:167
 msgid "Query options (with -q or --query):"
 msgstr "Volby dotazù (s -q or --query):"
 
-#: rpmqv.c:166
+#: rpmqv.c:170
 msgid "Verify options (with -V or --verify):"
 msgstr "Vollby kontroly (s -V or --verify):"
 
-#: rpmqv.c:172
+#: rpmqv.c:176
 msgid "Signature options:"
 msgstr "Volby signatury:"
 
-#: rpmqv.c:178
+#: rpmqv.c:182
 msgid "Database options:"
 msgstr "Volby databáze:"
 
-#: rpmqv.c:184
+#: rpmqv.c:188
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "Sestavovací volby s [ <spec_soubor> | <tar_soubor> | <zdrojový_balíèek> ]:"
 
-#: rpmqv.c:190
+#: rpmqv.c:194
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:195
+#: rpmqv.c:199
 msgid "Common options for all rpm modes:"
 msgstr "Spoleèné volby pro v¹echny módy:"
 
-#: lib/poptI.c:25 rpmqv.c:211
+#: lib/poptI.c:25 rpmqv.c:215
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: rpmqv.c:236
+#: rpmqv.c:240
 #, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "Pou¾ití: %s {--help}\n"
 
-#: rpmqv.c:489
+#: rpmqv.c:551
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Pou¾ijte volbu \"--macros <soubor:...>\".\n"
 
-#: rpmqv.c:613
+#: rpmqv.c:675
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath zadána pro operaci, která databázi nepou¾ívá"
 
-#: rpmqv.c:692
+#: rpmqv.c:754
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb mù¾e být pou¾it jen pøi instalaci a odstraòování balíèkù"
 
-#: rpmqv.c:837
+#: rpmqv.c:899
 msgid "no packages files given for rebuild"
 msgstr "ke znovusestavení nezadány ¾ádné balíèky"
 
-#: rpmqv.c:906
+#: rpmqv.c:968
 msgid "no spec files given for build"
 msgstr "pro sestavení nezadány ¾ádné spec soubory"
 
-#: rpmqv.c:908
+#: rpmqv.c:970
 msgid "no tar files given for build"
 msgstr "pro sestavení nezadány ¾ádné tar soubory"
 
@@ -2479,6 +2479,11 @@ msgstr ""
 #: lib/poptBT.c:187
 msgid "do not execute any stages of the build"
 msgstr "nespou¹tìt ¾ádné etapy vytváøení balíèku"
+
+#: lib/poptBT.c:189
+#, fuzzy
+msgid "do not verify build dependencies"
+msgstr "nekontrolovat závislosti balíèkù"
 
 #: lib/poptBT.c:191
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
