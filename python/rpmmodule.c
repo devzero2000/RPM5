@@ -214,9 +214,11 @@ static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args) {
     PyObject * key;
     char * how = NULL;
     int isUpgrade = 0;
-    PyObject * hObj = (PyObject *) h;
+    PyObject * hObj;
 
     if (!PyArg_ParseTuple(args, "OO|s", &h, &key, &how)) return NULL;
+
+    hObj = (PyObject *) h;
     if (hObj->ob_type != &hdrType) {
 	PyErr_SetString(PyExc_TypeError, "bad type for header argument");
 	return NULL;
@@ -278,10 +280,11 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
 static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
     rpmDependencyConflict conflicts;
     int numConflicts;
-    PyObject * list, * cf;
-    int i;
+    PyObject * list, * cf, * suggestions;
+    int i, j;
+    int allSuggestions = 0;
 
-    if (!PyArg_ParseTuple(args, "")) return NULL;
+    if (!PyArg_ParseTuple(args, "|i", &allSuggestions)) return NULL;
 
     rpmdepCheck(s->ts, &conflicts, &numConflicts);
     if (numConflicts) {
@@ -289,6 +292,18 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 
 	/* XXX TODO: rpmlib-4.0.3 can return multiple suggested packages. */
 	for (i = 0; i < numConflicts; i++) {
+	    if (!conflicts[i].suggestedPackages)
+		suggestions = Py_None;
+	    else if (!allSuggestions)
+		suggestions = conflicts[i].suggestedPackages[0];
+	    else {
+		suggestions = PyList_New(0);
+
+		for (j = 0; conflicts[i].suggestedPackages[j]; j++)
+		    PyList_Append(suggestions, 
+				  conflicts[i].suggestedPackages[j]);
+	    }
+
 	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName,
 			       conflicts[i].byVersion, conflicts[i].byRelease,
 
@@ -296,8 +311,7 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 			       conflicts[i].needsVersion,
 
 			       conflicts[i].needsFlags,
-			       conflicts[i].suggestedPackages ?
-				   conflicts[i].suggestedPackages[0] : Py_None,
+			       suggestions,
 			       conflicts[i].sense);
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);
@@ -374,6 +388,7 @@ static void * tsCallback(const void * hd, const rpmCallbackType what,
     const Header h = (Header) hd;
 
     if (cbInfo->pythonError) return NULL;
+    if (cbInfo->cb == Py_None) return NULL;
 
     if (!pkgKey) pkgKey = Py_None;
     transactionSetHeader = h;    
