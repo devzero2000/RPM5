@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-07 06:45-0400\n"
+"POT-Creation-Date: 2002-10-08 13:05-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1470,26 +1470,26 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:386
+#: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:387
 #: rpmdb/header.c:3236 rpmdb/header.c:3259 rpmdb/header.c:3283
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
-#: lib/formats.c:160
+#: lib/formats.c:161
 #, fuzzy
 msgid "(not base64)"
 msgstr "(nie je èíslo)"
 
-#: lib/formats.c:170
+#: lib/formats.c:171
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:236 lib/formats.c:285
+#: lib/formats.c:237 lib/formats.c:286
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(nie je èíslo)"
 
-#: lib/formats.c:310
+#: lib/formats.c:311
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "vynecha» akékoµvek PGP podpisy"
@@ -2369,7 +2369,7 @@ msgid "can't query %s: %s\n"
 msgstr "zmazanie %s zlyhalo: %s\n"
 
 #: lib/query.c:569 lib/query.c:616 lib/rpminstall.c:123 lib/rpminstall.c:455
-#: lib/rpminstall.c:586 lib/rpminstall.c:995 lib/rpmts.c:441
+#: lib/rpminstall.c:586 lib/rpminstall.c:994 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2454,7 +2454,7 @@ msgstr "po¾aduje sa záznam èíslo %d\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:925 lib/rpminstall.c:771
+#: lib/query.c:925 lib/rpminstall.c:770
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
@@ -2677,7 +2677,7 @@ msgstr "... ako %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s vynechané - prenos zlyhal - %s\n"
 
-#: lib/rpminstall.c:474 lib/rpminstall.c:852 tools/rpmgraph.c:147
+#: lib/rpminstall.c:474 lib/rpminstall.c:851 tools/rpmgraph.c:147
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
@@ -2702,7 +2702,7 @@ msgstr ""
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: lib/rpminstall.c:628 lib/rpminstall.c:799 lib/rpminstall.c:1215
+#: lib/rpminstall.c:628 lib/rpminstall.c:798 lib/rpminstall.c:1214
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2721,22 +2721,22 @@ msgstr "in¹talujú sa binárne balíky\n"
 msgid "cannot open file %s: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s: %s"
 
-#: lib/rpminstall.c:774
+#: lib/rpminstall.c:773
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
-#: lib/rpminstall.c:836
+#: lib/rpminstall.c:835
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpminstall.c:842
+#: lib/rpminstall.c:841
 #, c-format
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpminstall.c:1209
+#: lib/rpminstall.c:1208
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
