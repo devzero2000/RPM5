@@ -666,7 +666,7 @@ fi
 # get rid of the 4-th tuple, if config.guess returned "linux-gnu" for build_os
 #
 if echo "$build_os" | grep '.*-gnu' > /dev/null ; then
-	build_os=`echo "${build_os}" | sed 's/-gnu$//'`
+	build_os=`echo "${build_os}" | sed 's/-gnu*$//'`
 fi
 
 changequote(<, >)
