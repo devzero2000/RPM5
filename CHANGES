@@ -1,4 +1,5 @@
 2.5.2 -> 2.5.3:
+	- add RPMTAG_EPOCH
 	- fix infinite recursion on non-ERANGE return from getcwd() during
 	  install (Matt Wilson).
 	- rm .depend for multiple builds in same tree (Will Partain)
