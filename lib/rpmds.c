@@ -115,7 +115,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 }
 
 /*@unchecked@*/ /*@observer@*/
-static const char * beehiveToken = "archFilter";
+static const char * beehiveToken = "archfilter";
 
 /**
  * Return archScore filter boolean.
