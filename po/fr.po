@@ -11,14 +11,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-18 20:13-0400\n"
+"POT-Creation-Date: 2004-09-04 16:43-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -72,12 +72,10 @@ msgid "Building for target %s\n"
 msgstr "Construction pour cible %s\n"
 
 #: rpm2cpio.c:55
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "l'argument n'est pas un paquetage RPM\n"
 
 #: rpm2cpio.c:60
-#, c-format
 msgid "error reading header from package\n"
 msgstr "erreur dans la lecteur de l'entête du paquetage\n"
 
@@ -117,7 +115,7 @@ msgid "Common options for all rpm modes:"
 msgstr "Options communes à tous les modes de rpm:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:121 lib/poptI.c:43
+#: rpmqv.c:121 lib/poptI.c:42
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
@@ -128,12 +126,10 @@ msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: rpmqv.c:136
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:137
-#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -289,7 +285,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "les arguments ed --root (-r) doivent commencer par un /"
 
 #: rpmqv.c:536
-#, c-format
 msgid "no files to sign\n"
 msgstr "aucun fichier à signer\n"
 
@@ -299,7 +294,6 @@ msgid "cannot access file %s\n"
 msgstr "ne peut accéder au fichier %s\n"
 
 #: rpmqv.c:560
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp non trouvé: "
 
@@ -308,12 +302,10 @@ msgid "Enter pass phrase: "
 msgstr "Entrez la phrase de passe: "
 
 #: rpmqv.c:567
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Mauvaise phrase de passe\n"
 
 #: rpmqv.c:571
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Phrase de passe bonne.\n"
 
@@ -327,7 +319,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign est réservé à la construction d'un paquetage"
 
 #: rpmqv.c:600
-#, c-format
 msgid "exec failed\n"
 msgstr "echec de l'exec\n"
 
@@ -752,7 +743,7 @@ msgstr "Impossible de recharger l'entête de la signature.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Impossible d'ouvrir %s: %s\n"
 
-#: build/pack.c:632 lib/psm.c:1552
+#: build/pack.c:632 lib/psm.c:1562
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Impossible d'écrire le paquetage: %s\n"
@@ -782,7 +773,7 @@ msgstr "Impossible de lire la charge utile dans %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Impossible d'écrire la charge utile dans %s: %s\n"
 
-#: build/pack.c:725 lib/psm.c:1821
+#: build/pack.c:725 lib/psm.c:1831
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Ecrit: %s\n"
@@ -1279,17 +1270,17 @@ msgstr "ne pas vérifier les dépendances de construction"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "générer un(des) entête(s) compatible(s) avec l'emballage rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:240 lib/poptI.c:278 lib/poptQV.c:335
+#: build/poptBT.c:229 lib/poptALL.c:240 lib/poptI.c:277 lib/poptQV.c:335
 #: lib/poptQV.c:344 lib/poptQV.c:383
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: build/poptBT.c:231 lib/poptALL.c:242 lib/poptI.c:280 lib/poptQV.c:338
+#: build/poptBT.c:231 lib/poptALL.c:242 lib/poptI.c:279 lib/poptQV.c:338
 #: lib/poptQV.c:346 lib/poptQV.c:386
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier l'entête de la base de données à la récupération"
 
-#: build/poptBT.c:233 lib/poptALL.c:248 lib/poptI.c:282 lib/poptQV.c:341
+#: build/poptBT.c:233 lib/poptALL.c:248 lib/poptI.c:281 lib/poptQV.c:341
 #: lib/poptQV.c:348 lib/poptQV.c:388
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la(les) signature(s) du paquetage"
@@ -1620,12 +1611,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: MAUVAIS, non hexa\n"
 
 #: lib/package.c:473
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr SDA: MAUVAIS, non binaire\n"
 
@@ -1641,7 +1630,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr taille(%d): PASBON, la lecture renvoie %d\n"
 
 #: lib/package.c:672
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1661,7 +1649,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr blob(%d): PASBON, la lecture renvoie %d\n"
 
 #: lib/package.c:716
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -1805,40 +1792,40 @@ msgstr "déboguer la manipulation de cache d'URL"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: table d'option mal configurée (%d)\n"
 
-#: lib/poptI.c:71
+#: lib/poptI.c:70
 msgid "exclude paths must begin with a /"
 msgstr "les chemins d'exclusions doivent commencer par un /"
 
-#: lib/poptI.c:85
+#: lib/poptI.c:84
 msgid "relocations must begin with a /"
 msgstr "les relogements doivent commencer par un /"
 
-#: lib/poptI.c:88
+#: lib/poptI.c:87
 msgid "relocations must contain a ="
 msgstr "les relogement doivent contenir un ="
 
-#: lib/poptI.c:91
+#: lib/poptI.c:90
 msgid "relocations must have a / following the ="
 msgstr "dans les relogements un / doit suivre le ="
 
-#: lib/poptI.c:106
+#: lib/poptI.c:105
 msgid "rollback takes a time/date stamp argument"
 msgstr "le roulement arrière prend comme argument une date"
 
-#: lib/poptI.c:113
+#: lib/poptI.c:112
 msgid "malformed rollback time/date stamp argument"
 msgstr "argument date du roulement arrière malformé"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:168
 msgid "add suggested packages to transaction"
 msgstr "rajouter à la transaction les paquetages suggérés"
 
-#: lib/poptI.c:173
+#: lib/poptI.c:172
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installer tous les fichiers, meme si les configurations disent le contraire"
 
-#: lib/poptI.c:177
+#: lib/poptI.c:176
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1846,165 +1833,165 @@ msgstr ""
 "retirer tous les paquetages qui correspondent à <paquetage> (normalement on "
 "retourne une erreur si le <paquetage> correspond à plusieurs paquetages"
 
-#: lib/poptI.c:182 tools/rpmgraph.c:273
+#: lib/poptI.c:181 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr "utiliser la \"présentation\" d'anaconda"
 
-#: lib/poptI.c:187 lib/poptI.c:262
+#: lib/poptI.c:186 lib/poptI.c:261
 msgid "do not execute package scriptlet(s)"
 msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
 
-#: lib/poptI.c:191
+#: lib/poptI.c:190
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:194
+#: lib/poptI.c:193
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 "sauver les fichiers du paquetage désinstallé en les renommant dans un sous-"
 "répertoire"
 
-#: lib/poptI.c:197
+#: lib/poptI.c:196
 msgid "erase (uninstall) package"
 msgstr "désinstaller un paquetage"
 
-#: lib/poptI.c:197
+#: lib/poptI.c:196
 msgid "<package>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:200 lib/poptI.c:240
+#: lib/poptI.c:199 lib/poptI.c:239
 msgid "do not install configuration files"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:203 lib/poptI.c:245
+#: lib/poptI.c:202 lib/poptI.c:244
 msgid "do not install documentation"
 msgstr "ne pas installer la documentation"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:204
 msgid "skip files with leading component <path> "
 msgstr "sauter les fichiers commence par le <chemin> indiqué"
 
-#: lib/poptI.c:206
+#: lib/poptI.c:205
 msgid "<path>"
 msgstr "<chemin>"
 
-#: lib/poptI.c:210
+#: lib/poptI.c:209
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:211
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "raccourci pour --replacepkgs --replacefiles"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:215
 msgid "upgrade package(s) if already installed"
 msgstr "met à jour le(s) paquetage(s) déjà installé(s)"
 
-#: lib/poptI.c:217 lib/poptI.c:233 lib/poptI.c:329
+#: lib/poptI.c:216 lib/poptI.c:232 lib/poptI.c:328
 msgid "<packagefile>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:219
+#: lib/poptI.c:218
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "afficher des marqueurs au fur et à mesure que le paquetage s'installe (avec -"
 "v c'est bien(tm))"
 
-#: lib/poptI.c:222
+#: lib/poptI.c:221
 msgid "don't verify package architecture"
 msgstr "ne pas vérifier l'architecture du paquetage"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:224
 msgid "don't verify package operating system"
 msgstr "ne pas vérifier le système d'exploitation du paquetage"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:227
 msgid "don't check disk space before installing"
 msgstr "ne pas vérifier l'espace disque avant l'installation"
 
-#: lib/poptI.c:230
+#: lib/poptI.c:229
 msgid "install documentation"
 msgstr "installer la documentation"
 
-#: lib/poptI.c:233
+#: lib/poptI.c:232
 msgid "install package(s)"
 msgstr "installer le(s) paquetage(s)"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:235
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 "mettre à jour la base données, mais ne pas modifier le système de fichiers"
 
-#: lib/poptI.c:242
+#: lib/poptI.c:241
 msgid "do not verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquetage"
 
-#: lib/poptI.c:248 lib/poptQV.c:279 lib/poptQV.c:282
+#: lib/poptI.c:247 lib/poptQV.c:279 lib/poptQV.c:282
 msgid "don't verify MD5 digest of files"
 msgstr "ne pas vérifier les sommes MD5 des fichiers"
 
-#: lib/poptI.c:250
+#: lib/poptI.c:249
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:253
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "ne pas ré-arranger l'ordre d'installation des paquetages pour satisfaire les "
 "dépendances"
 
-#: lib/poptI.c:259
+#: lib/poptI.c:258
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "ne pas suggérer de résolution pour les dépendances manquantes"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:265
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%pre (s'il existe)"
 
-#: lib/poptI.c:269
+#: lib/poptI.c:268
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%post (s'il existe)"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:271
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%preun (s'il existe)"
 
-#: lib/poptI.c:275
+#: lib/poptI.c:274
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%postun (s'il existe)"
 
-#: lib/poptI.c:285
+#: lib/poptI.c:284
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "n'exécuter aucun scriptlet trigger activé par ce paquetage"
 
-#: lib/poptI.c:288
+#: lib/poptI.c:287
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerprein"
 
-#: lib/poptI.c:291
+#: lib/poptI.c:290
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerin"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:293
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerun"
 
-#: lib/poptI.c:297
+#: lib/poptI.c:296
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerpostun"
 
-#: lib/poptI.c:301
+#: lib/poptI.c:300
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2012,54 +1999,54 @@ msgstr ""
 "mettre à jour avec un paquetage plus ancien (une m-à-j avec --force fait ça "
 "automatiquement"
 
-#: lib/poptI.c:305
+#: lib/poptI.c:304
 msgid "print percentages as package installs"
 msgstr "afficher le pourcentage d'installation du paquetage"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:306
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "reloge le paquetage vers <rep>, si relogeable"
 
-#: lib/poptI.c:308
+#: lib/poptI.c:307
 msgid "<dir>"
 msgstr "<rep>"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:309
 msgid "relocate files from path <old> to <new>"
 msgstr "reloge les fichiers du <vieux> chemin vers <nouveau>"
 
-#: lib/poptI.c:311
+#: lib/poptI.c:310
 msgid "<old>=<new>"
 msgstr "<vieux>=<nouveau>"
 
-#: lib/poptI.c:314
+#: lib/poptI.c:313
 msgid "save erased package files by repackaging"
 msgstr ""
 "sauvegarder les fichiers du paquetage désinstallé en les ré-empaquetant"
 
-#: lib/poptI.c:317
+#: lib/poptI.c:316
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:320
+#: lib/poptI.c:319
 msgid "reinstall if the package is already present"
 msgstr "réinstalle si le paquetage est déjà installé"
 
-#: lib/poptI.c:322
+#: lib/poptI.c:321
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 "désinstaller le(s) nouveau(x), ré-installer le(s) vieux paquetages, comme "
 "c'était le cas pour cette <date>"
 
-#: lib/poptI.c:323
+#: lib/poptI.c:322
 msgid "<date>"
 msgstr "<date>"
 
-#: lib/poptI.c:325
+#: lib/poptI.c:324
 msgid "don't install, but tell if it would work or not"
 msgstr "n'installe pas, mais dit si ça marcherait ou pas"
 
-#: lib/poptI.c:328
+#: lib/poptI.c:327
 msgid "upgrade package(s)"
 msgstr "mises à jour des paquetages"
 
@@ -2273,60 +2260,60 @@ msgid ""
 "Continuing ...\n"
 msgstr ""
 
-#: lib/psm.c:631
+#: lib/psm.c:637
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s) redondance ignorée \"%s\".\n"
 
-#: lib/psm.c:639
+#: lib/psm.c:645
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s) début du scriplet %ssynchrone\n"
 
-#: lib/psm.c:850
+#: lib/psm.c:857
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:883
+#: lib/psm.c:892
 #, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s) échec du scriptlet, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:889
+#: lib/psm.c:898
 #, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) échec du scriplet, code de sortie %d\n"
 
-#: lib/psm.c:1320
+#: lib/psm.c:1330
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s avait %d fichiers, test = %d\n"
 
-#: lib/psm.c:1455
+#: lib/psm.c:1465
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: échec du scriptlet %s (%d), on saute %s\n"
 
-#: lib/psm.c:1564
+#: lib/psm.c:1574
 msgid "Unable to reload signature header\n"
 msgstr "Impossible de recharger l'entête de signature\n"
 
-#: lib/psm.c:1642
+#: lib/psm.c:1652
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "échec du déballage de l'archive %s%s: %s\n"
 
-#: lib/psm.c:1643
+#: lib/psm.c:1653
 msgid " on file "
 msgstr " dans fichier "
 
-#: lib/psm.c:1829
+#: lib/psm.c:1839
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "échec de %s sur le fichier %s: %s\n"
 
-#: lib/psm.c:1832
+#: lib/psm.c:1842
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "échec %s: %s\n"
@@ -2470,11 +2457,11 @@ msgstr "impossible de lire l'article %u\n"
 msgid "package %s is not installed\n"
 msgstr "le paquetage %s n'est pas installé\n"
 
-#: lib/rpmal.c:694
+#: lib/rpmal.c:704
 msgid "(added files)"
 msgstr "(fichiers ajoutés)"
 
-#: lib/rpmal.c:772
+#: lib/rpmal.c:782
 msgid "(added provide)"
 msgstr "(fourniture ajoutée)"
 
@@ -3069,7 +3056,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "taille du sigh(%d): PASBON, la lecture retourne %d\n"
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3094,7 +3080,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3162,9 +3147,6 @@ msgstr "J'ai %d octets de sig GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3209,12 +3191,10 @@ msgid "V3 DSA signature: "
 msgstr "signature V3 DSA: "
 
 #: lib/signature.c:1362
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verification de signature: MAUVAIS PARAMETRES\n"
 
 #: lib/signature.c:1389
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Somme MD5 erronée: NONSUPPORTE\n"
 
@@ -3224,7 +3204,7 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signature: INCONNUE (%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:896
+#: lib/transaction.c:900
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "répertoire %s exclus\n"
@@ -3237,7 +3217,7 @@ msgstr "répertoire %s exclus\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1019
+#: lib/transaction.c:1023
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "vérification de santé de %d éléments\n"
@@ -3250,7 +3230,7 @@ msgstr "vérification de santé de %d éléments\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1107
+#: lib/transaction.c:1111
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "calcul de %d empreintes de fichier\n"
@@ -3258,7 +3238,7 @@ msgstr "calcul de %d empreintes de fichier\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1188
+#: lib/transaction.c:1192
 msgid "computing file dispositions\n"
 msgstr "calcul de la disposition des fichiers\n"
 
@@ -3786,7 +3766,6 @@ msgid "(no error)"
 msgstr "(pas d'erreur)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "erreur fatale: "

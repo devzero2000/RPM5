@@ -6,14 +6,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-18 20:13-0400\n"
+"POT-Creation-Date: 2004-09-04 16:43-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: EUC-JP\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -68,12 +68,12 @@ msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
 
 #: rpm2cpio.c:55
-#, fuzzy, c-format
+#, fuzzy
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません\n"
 
 #: rpm2cpio.c:60
-#, fuzzy, c-format
+#, fuzzy
 msgid "error reading header from package\n"
 msgstr "パッケージからヘッダの読み込みのエラー\n"
 
@@ -112,7 +112,7 @@ msgid "Common options for all rpm modes:"
 msgstr ""
 
 #. @-modfilesys -globs @
-#: rpmqv.c:121 lib/poptI.c:43
+#: rpmqv.c:121 lib/poptI.c:42
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "ファイル %s: %s\n"
@@ -123,7 +123,7 @@ msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
 
 #: rpmqv.c:136
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 "著作権 (C) 1998 - Red Hat Software\n"
@@ -131,7 +131,7 @@ msgstr ""
 "誤訳等は神田まで"
 
 #: rpmqv.c:137
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "GNU一般公有使用許諾書の下で自由に配布できます"
@@ -284,7 +284,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらねばなりません"
 
 #: rpmqv.c:536
-#, c-format
 msgid "no files to sign\n"
 msgstr "署名するためのファイルがありません\n"
 
@@ -294,7 +293,7 @@ msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません\n"
 
 #: rpmqv.c:560
-#, fuzzy, c-format
+#, fuzzy
 msgid "pgp not found: "
 msgstr "pgp が見つかりません: "
 
@@ -303,12 +302,10 @@ msgid "Enter pass phrase: "
 msgstr "パスフレーズを入力してください: "
 
 #: rpmqv.c:567
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズチェックに失敗しました\n"
 
 #: rpmqv.c:571
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です．\n"
 
@@ -322,7 +319,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ使用できます"
 
 #: rpmqv.c:600
-#, c-format
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
@@ -762,7 +758,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:632 lib/psm.c:1552
+#: build/pack.c:632 lib/psm.c:1562
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -792,7 +788,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:725 lib/psm.c:1821
+#: build/pack.c:725 lib/psm.c:1831
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1290,19 +1286,19 @@ msgstr "パッケージの依存関係の検証をしません"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:240 lib/poptI.c:278 lib/poptQV.c:335
+#: build/poptBT.c:229 lib/poptALL.c:240 lib/poptI.c:277 lib/poptQV.c:335
 #: lib/poptQV.c:344 lib/poptQV.c:383
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "パッケージの依存関係の検証をしません"
 
-#: build/poptBT.c:231 lib/poptALL.c:242 lib/poptI.c:280 lib/poptQV.c:338
+#: build/poptBT.c:231 lib/poptALL.c:242 lib/poptI.c:279 lib/poptQV.c:338
 #: lib/poptQV.c:346 lib/poptQV.c:386
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "パッケージの対象アーキテクチャの検証をしません"
 
-#: build/poptBT.c:233 lib/poptALL.c:248 lib/poptI.c:282 lib/poptQV.c:341
+#: build/poptBT.c:233 lib/poptALL.c:248 lib/poptI.c:281 lib/poptQV.c:341
 #: lib/poptQV.c:348 lib/poptQV.c:388
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1644,12 +1640,10 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:473
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1665,7 +1659,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:672
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1685,7 +1678,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:716
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -1836,41 +1828,41 @@ msgstr ""
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
 
-#: lib/poptI.c:71
+#: lib/poptI.c:70
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "除外するパスは / から始まらなければなりません"
 
-#: lib/poptI.c:85
+#: lib/poptI.c:84
 msgid "relocations must begin with a /"
 msgstr "再配置は / から始まらなければなりません"
 
-#: lib/poptI.c:88
+#: lib/poptI.c:87
 msgid "relocations must contain a ="
 msgstr "再配置は = を含んでいなければなりません"
 
-#: lib/poptI.c:91
+#: lib/poptI.c:90
 msgid "relocations must have a / following the ="
 msgstr "再配置は = の次に / でなければなりません"
 
-#: lib/poptI.c:106
+#: lib/poptI.c:105
 msgid "rollback takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:113
+#: lib/poptI.c:112
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:169
+#: lib/poptI.c:168
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "グループ中のパッケージについて問い合わせます\n"
 
-#: lib/poptI.c:173
+#: lib/poptI.c:172
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr "設定をスキップし、全ファイルをインストールします"
 
-#: lib/poptI.c:177
+#: lib/poptI.c:176
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1878,173 +1870,173 @@ msgstr ""
 "<package> と一致するパッケージ全てを削除します(一般\n"
 "\t\t\t      的に複数のパッケージを指定するとエラーになります)"
 
-#: lib/poptI.c:182 tools/rpmgraph.c:273
+#: lib/poptI.c:181 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptI.c:187 lib/poptI.c:262
+#: lib/poptI.c:186 lib/poptI.c:261
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "パッケージ指定のスクリプトを実行しません"
 
-#: lib/poptI.c:191
+#: lib/poptI.c:190
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "パス %s は再配置できません(パッケージ %s-%s-%s に対して)"
 
-#: lib/poptI.c:194
+#: lib/poptI.c:193
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:197
+#: lib/poptI.c:196
 msgid "erase (uninstall) package"
 msgstr "パッケージを削除(アンインストール)します"
 
-#: lib/poptI.c:197
+#: lib/poptI.c:196
 #, fuzzy
 msgid "<package>+"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/poptI.c:200 lib/poptI.c:240
+#: lib/poptI.c:199 lib/poptI.c:239
 #, fuzzy
 msgid "do not install configuration files"
 msgstr "全ての設定ファイルを列挙します"
 
-#: lib/poptI.c:203 lib/poptI.c:245
+#: lib/poptI.c:202 lib/poptI.c:244
 msgid "do not install documentation"
 msgstr "ドキュメントをインストールしません"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:204
 #, fuzzy
 msgid "skip files with leading component <path> "
 msgstr "パス <path> 中のファイルをスキップします"
 
-#: lib/poptI.c:206
+#: lib/poptI.c:205
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:210
+#: lib/poptI.c:209
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "パス %s は再配置できません(パッケージ %s-%s-%s に対して)"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:211
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs と --replacefiles を短縮したもの"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:215
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/poptI.c:217 lib/poptI.c:233 lib/poptI.c:329
+#: lib/poptI.c:216 lib/poptI.c:232 lib/poptI.c:328
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "パッケージファイルについて問い合わせます"
 
-#: lib/poptI.c:219
+#: lib/poptI.c:218
 msgid "print hash marks as package installs (good with -v)"
 msgstr "インストールする際に '#' で表示します(-v を使用すると良い)"
 
-#: lib/poptI.c:222
+#: lib/poptI.c:221
 msgid "don't verify package architecture"
 msgstr "パッケージの対象アーキテクチャの検証をしません"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:224
 msgid "don't verify package operating system"
 msgstr "パッケージ対象OSの検証をしません"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:227
 msgid "don't check disk space before installing"
 msgstr "インストール前にディスクの容量チェックをしません"
 
-#: lib/poptI.c:230
+#: lib/poptI.c:229
 msgid "install documentation"
 msgstr "ドキュメントをインストールします"
 
-#: lib/poptI.c:233
+#: lib/poptI.c:232
 #, fuzzy
 msgid "install package(s)"
 msgstr "パッケージをインストールします"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:235
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 "データベースを更新しますが、\n"
 "ファイルシステムの変更しません"
 
-#: lib/poptI.c:242
+#: lib/poptI.c:241
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証をしません"
 
-#: lib/poptI.c:248 lib/poptQV.c:279 lib/poptQV.c:282
+#: lib/poptI.c:247 lib/poptQV.c:279 lib/poptQV.c:282
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptI.c:250
+#: lib/poptI.c:249
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "全ての設定ファイルを列挙します"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:253
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "依存性を満たすためのパッケージの\n"
 "インストールを要求しません"
 
-#: lib/poptI.c:259
+#: lib/poptI.c:258
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:266
+#: lib/poptI.c:265
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptI.c:269
+#: lib/poptI.c:268
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:271
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptI.c:275
+#: lib/poptI.c:274
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptI.c:285
+#: lib/poptI.c:284
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr ""
 "このパッケージによってトリガーされるスクリプトを\n"
 "実行しません"
 
-#: lib/poptI.c:288
+#: lib/poptI.c:287
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "パッケージ指定のスクリプトを実行しません"
 
-#: lib/poptI.c:291
+#: lib/poptI.c:290
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "インストールスクリプトを実行しません"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:293
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "インストールスクリプトを実行しません"
 
-#: lib/poptI.c:297
+#: lib/poptI.c:296
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "インストールスクリプトを実行しません"
 
-#: lib/poptI.c:301
+#: lib/poptI.c:300
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2052,55 +2044,55 @@ msgstr ""
 "古いバージョンのパッケージにアップグレードします\n"
 "(アップグレード時の --force はこれを自動的に行います)"
 
-#: lib/poptI.c:305
+#: lib/poptI.c:304
 msgid "print percentages as package installs"
 msgstr "インストールする際に '%' で表示します"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:306
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 "再配置可能なパッケージに対し、インストールパス\n"
 "接頭辞を <dir> に設定します"
 
-#: lib/poptI.c:308
+#: lib/poptI.c:307
 msgid "<dir>"
 msgstr ""
 
-#: lib/poptI.c:310
+#: lib/poptI.c:309
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "<oldpath> から <newpath> にファイルを再配置させます"
 
-#: lib/poptI.c:311
+#: lib/poptI.c:310
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "<oldpath> から <newpath> にファイルを再配置させます"
 
-#: lib/poptI.c:314
+#: lib/poptI.c:313
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:317
+#: lib/poptI.c:316
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:320
+#: lib/poptI.c:319
 msgid "reinstall if the package is already present"
 msgstr "既に存在するパッケージでも再インストールします"
 
-#: lib/poptI.c:322
+#: lib/poptI.c:321
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:323
+#: lib/poptI.c:322
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:325
+#: lib/poptI.c:324
 msgid "don't install, but tell if it would work or not"
 msgstr "インストールせずに、テストのみ行います"
 
-#: lib/poptI.c:328
+#: lib/poptI.c:327
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "パッケージファイルについて問い合わせます"
@@ -2349,62 +2341,62 @@ msgid ""
 "Continuing ...\n"
 msgstr ""
 
-#: lib/psm.c:631
+#: lib/psm.c:637
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:639
+#: lib/psm.c:645
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:850
+#: lib/psm.c:857
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:883
+#: lib/psm.c:892
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/psm.c:889
+#: lib/psm.c:898
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1320
+#: lib/psm.c:1330
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:1455
+#: lib/psm.c:1465
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1564
+#: lib/psm.c:1574
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: lib/psm.c:1642
+#: lib/psm.c:1652
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:1643
+#: lib/psm.c:1653
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:1829
+#: lib/psm.c:1839
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:1832
+#: lib/psm.c:1842
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2549,12 +2541,12 @@ msgstr "レコード %d を読むことができませんでした\n"
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
 
-#: lib/rpmal.c:694
+#: lib/rpmal.c:704
 #, fuzzy
 msgid "(added files)"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/rpmal.c:772
+#: lib/rpmal.c:782
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %s は provide に加えることによって満されます。\n"
@@ -3149,7 +3141,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:186
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3174,7 +3165,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:300
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3247,9 +3237,6 @@ msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:879 lib/signature.c:934
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3294,12 +3281,10 @@ msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
 #: lib/signature.c:1362
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1389
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3309,7 +3294,7 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
 
 #. @innercontinue@
-#: lib/transaction.c:896
+#: lib/transaction.c:900
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
@@ -3322,7 +3307,7 @@ msgstr "ディレクトリの除外: %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1019
+#: lib/transaction.c:1023
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3335,7 +3320,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1107
+#: lib/transaction.c:1111
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3343,7 +3328,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1188
+#: lib/transaction.c:1192
 msgid "computing file dispositions\n"
 msgstr ""
 
@@ -3878,7 +3863,6 @@ msgid "(no error)"
 msgstr "(エラー 0x%x)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "致命的なエラー: "

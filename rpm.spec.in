@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.9
+Release: 1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -495,6 +495,14 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sat Sep  4 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-1
+- ia64: make sure that autorelocated file dependencies are satisfied.
+- ia64: relocate all scriptlet interpreters.
+- ia64: don't bother trying to preload autorelocated modules.
+- fix: filesystem package needs mail/lock w/o getgrnam.
+- fix: do getpwnam/getgrnam to load correct modules before chroot.
+- restore file conflict detection traditional behavior.
+
 * Fri Aug 20 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-0.9
 - fix: static glibc/libgcc helpers always installed (#127522).
 - fix: defattr for rpm-libs (#130461).
