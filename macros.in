@@ -552,8 +552,9 @@
 #	Note: the %_vsflags_erase applies to --upgrade/--freshen modes as
 #	well as --erase.
 #
-%_vsflags_install	8
+%_vsflags_build		8
 %_vsflags_erase		8
+%_vsflags_install	8
 %_vsflags_query		8
 %_vsflags_rebuilddb	0
 %_vsflags_verify	0
