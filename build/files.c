@@ -1737,6 +1737,8 @@ typedef struct {
     int xor;
 } DepMsg_t;
 
+#define	_notpre(_x)	((_x) & ~RPMSENSE_PREREQ)
+
 /** */
 DepMsg_t depMsgs[] = {
   { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
@@ -1745,6 +1747,27 @@ DepMsg_t depMsgs[] = {
   { "PreReq",		{ "%{__find_prereq}", NULL, NULL, NULL },
 	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_PREREQ, 0 },
+  { "Requires(interp)",	{ "%{__find_prereq}", "interp", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	_notpre(RPMSENSE_INTERP), 0 },
+  { "Requires(rpmlib)",	{ "%{__find_prereq}", "rpmlib", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	_notpre(RPMSENSE_RPMLIB), 0 },
+  { "Requires(verify)",	{ "%{__find_prereq}", "verify", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_SCRIPT_VERIFY, 0 },
+  { "Requires(pre)",	{ "%{__find_prereq}", "pre", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	_notpre(RPMSENSE_SCRIPT_PRE), 0 },
+  { "Requires(post)",	{ "%{__find_prereq}", "post", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	_notpre(RPMSENSE_SCRIPT_POST), 0 },
+  { "Requires(preun)",	{ "%{__find_prereq}", "preun", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	_notpre(RPMSENSE_SCRIPT_PREUN), 0 },
+  { "Requires(postun)",	{ "%{__find_prereq}", "postun", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	_notpre(RPMSENSE_SCRIPT_POSTUN), 0 },
   { "Requires",		{ "%{__find_requires}", NULL, NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
 	RPMSENSE_PREREQ, RPMSENSE_PREREQ },
@@ -1789,20 +1812,23 @@ static int generateDepends(Spec spec, Package pkg,
     }
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {
-	int i, tag;
+	int i, tag, tagflags;
 
 	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
+	tagflags = 0;
 
 	switch(tag) {
 	case RPMTAG_PROVIDEFLAGS:
 	    if (!pkg->autoProv)
 		continue;
 	    failnonzero = 1;
+	    tagflags = RPMSENSE_FIND_PROVIDES;
 	    break;
 	case RPMTAG_REQUIREFLAGS:
 	    if (!pkg->autoReq)
 		continue;
 	    failnonzero = 0;
+	    tagflags = RPMSENSE_FIND_REQUIRES;
 	    break;
 	default:
 	    continue;
@@ -1850,8 +1876,12 @@ static int generateDepends(Spec spec, Package pkg,
 	}
 
 	/* Parse dependencies into header */
-	rc = parseRCPOT(spec, pkg, getStringBuf(readBuf), tag, 0,
-			multiLib > 1 ? RPMSENSE_MULTILIB : 0);
+	tagflags &= ~RPMSENSE_MULTILIB;
+	if (multiLib > 1)
+	    tagflags |=  RPMSENSE_MULTILIB;
+	else
+	    tagflags &= ~RPMSENSE_MULTILIB;
+	rc = parseRCPOT(spec, pkg, getStringBuf(readBuf), tag, 0, tagflags);
 	freeStringBuf(readBuf);
 
 	if (rc) {
@@ -1869,9 +1899,9 @@ static void printDepMsg(DepMsg_t *dm, int count, const char **names,
 {
     int hasVersions = (versions != NULL);
     int hasFlags = (flags != NULL);
-    int i, bingo;
+    int bingo = 0;
+    int i;
 
-    bingo = 0;
     for (i = 0; i < count; i++, names++, versions++, flags++) {
 	if (hasFlags && !((*flags & dm->mask) ^ dm->xor))
 	    continue;

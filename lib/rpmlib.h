@@ -258,6 +258,16 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMSENSE_CONFLICTS	(1 << 5) /* only used internally by builds */
 #define	RPMSENSE_PREREQ		(1 << 6)
 #define	RPMSENSE_OBSOLETES	(1 << 7) /* only used internally by builds */
+
+#define RPMSENSE_INTERP		(1 << 8)
+#define RPMSENSE_SCRIPT_PRE	((1 << 9) | RPMSENSE_PREREQ)
+#define RPMSENSE_SCRIPT_POST	((1 << 10) | RPMSENSE_PREREQ)
+#define RPMSENSE_SCRIPT_PREUN	((1 << 11) | RPMSENSE_PREREQ)
+#define RPMSENSE_SCRIPT_POSTUN	((1 << 12) | RPMSENSE_PREREQ)
+#define RPMSENSE_SCRIPT_VERIFY	(1 << 13)
+#define	RPMSENSE_FIND_REQUIRES	(1 << 14)
+#define	RPMSENSE_FIND_PROVIDES	(1 << 15)
+
 #define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */
 
@@ -269,7 +279,29 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 
 #define	RPMSENSE_MULTILIB	(1 << 19)
 
+#define RPMSENSE_SCRIPT_PREP	(1 << 20)
+#define RPMSENSE_SCRIPT_BUILD	(1 << 21)
+#define RPMSENSE_SCRIPT_INSTALL	(1 << 22)
+#define RPMSENSE_SCRIPT_CLEAN	(1 << 23)
+#define	RPMSENSE_RPMLIB		((1 << 24) | RPMSENSE_PREREQ)
+#define RPMSENSE_TRIGGERPRE	(1 << 25)	/* unimplemented */.
+
+
 #define	isDependsMULTILIB(_dflags)	((_dflags) & RPMSENSE_MULTILIB)
+
+#define	RPMSENSE_REQUIRESMASK	(\
+    RPMSENSE_INTERP | \
+    RPMSENSE_SCRIPT_PRE | \
+    RPMSENSE_SCRIPT_POST | \
+    RPMSENSE_SCRIPT_PREUN | \
+    RPMSENSE_SCRIPT_POSTUN | \
+    RPMSENSE_SCRIPT_VERIFY | \
+    RPMSENSE_FIND_REQUIRES | \
+    RPMSENSE_SCRIPT_PREP | \
+    RPMSENSE_SCRIPT_BUILD | \
+    RPMSENSE_SCRIPT_INSTALL | \
+    RPMSENSE_SCRIPT_CLEAN | \
+    RPMSENSE_RPMLIB )
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 

@@ -10,6 +10,7 @@
 	- fix: runTriggers was not adding countCorrection.
 	- add rpmGetRpmlibProvides() to retrieve rpmlib(...) provides
 		"Pawel A. Gajda" <mis@k2.net.pl>.
+	- syntax to specify source of Requires: (PreReq: now legacy).
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
