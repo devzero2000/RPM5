@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.8
+Release: 0.9
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -269,6 +269,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Nov 13 2000 Jeff Johnson <jbj@redhat.com>
+- fix: work around for (mis-compilation?!) segfaults on signature paths.
+
 * Sun Nov 12 2000 Jeff Johnson <jbj@redhat.com>
 - fix: duplicate headerFree() on instalBinaryPackage() error return.
 

@@ -89,30 +89,28 @@ exit:
     return rc;
 }
 
-#ifdef	ALPHA_LOSSAGE
-static void dumpLead(struct rpmlead *l)
-{
-    fprintf(stderr, "\t%02x%02x%02x%02x %x.%x type %x arch %x os %x sig %x %s\n",
-	(l->magic[0] & 0xff), (l->magic[1] & 0xff),
-	(l->magic[2] & 0xff), (l->magic[3] & 0xff),
-	l->major, l->minor, l->type, l->archnum, l->osnum, l->signature_type,
-	l->name);
-}
-#endif
+/*
+ * XXX gcc-2.96-60 on alpha (at least) needs ALPHA_LOSSAGE defined.
+ *
+ * Otherwise, the (mis-compilation?!) symptom is the inability to pass sig_type
+ * correctly to rpmReadSignature(FD_t *fd, Header *header, short sig_type)
+ * (Note: the short in both struct rpmlead and in the prototype).
+ */
+#define	ALPHA_LOSSAGE
 
 int rpmReSign(int add, char *passPhrase, const char **argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
     struct rpmlead lead, *l = &lead;
-    unsigned short sigtype;
+    int sigtype;
     const char *rpm, *trpm;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sig = NULL;
     int rc = EXIT_FAILURE;
     
-#ifndef	ALPHA_LOSSAGE
+#ifdef	ALPHA_LOSSAGE
 l = malloc(sizeof(*l));
 #endif
     tmprpm[0] = '\0';
@@ -140,9 +138,6 @@ l = malloc(sizeof(*l));
 	    break;
 	}
 
-#ifdef	ALPHA_LOSSAGE
-dumpLead(l);
-#endif
 	if (rpmReadSignature(fd, &sig, l->signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    goto exit;
@@ -250,10 +245,8 @@ int rpmCheckSig(int flags, const char **argv)
     void *ptr;
     int res = 0;
 
-#if 0
-#ifndef	ALPHA_LOSSAGE
+#ifdef	ALPHA_LOSSAGE
 l = malloc(sizeof(*l));
-#endif
 #endif
     while ((rpm = *argv++) != NULL) {
 
@@ -276,19 +269,13 @@ l = malloc(sizeof(*l));
 	default:
 	    break;
 	}
-#if 0
-#ifdef	ALPHA_LOSSAGE
-dumpLead(l);
-#endif
-#endif
+
 	if (rpmReadSignature(fd, &sig, l->signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
 	    goto bottom;
 	}
-#if 0
 if (l != &lead) free(l);
-#endif
 	if (sig == NULL) {
 	    fprintf(stderr, _("%s: No signature available\n"), rpm);
 	    res++;

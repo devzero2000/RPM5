@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-11-12 14:06-0500\n"
+"POT-Creation-Date: 2000-11-13 16:30-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3076,67 +3076,67 @@ msgstr "%s: ошибка Fwrite: %s\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
 
-#: lib/rpmchecksig.c:127 lib/rpmchecksig.c:266
+#: lib/rpmchecksig.c:125 lib/rpmchecksig.c:259
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: ошибка readLead\n"
 
-#: lib/rpmchecksig.c:132
+#: lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Не могу подписать RPM v1.0\n"
 
-#: lib/rpmchecksig.c:136
+#: lib/rpmchecksig.c:134
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Не могу переподписать RPM v2.0\n"
 
-#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:285
+#: lib/rpmchecksig.c:142 lib/rpmchecksig.c:274
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/rpmchecksig.c:151 lib/rpmchecksig.c:293
+#: lib/rpmchecksig.c:146 lib/rpmchecksig.c:280
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
 
-#: lib/rpmchecksig.c:184
+#: lib/rpmchecksig.c:179
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: ошибка writeLead: %s\n"
 
-#: lib/rpmchecksig.c:191
+#: lib/rpmchecksig.c:186
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
-#: lib/rpmchecksig.c:272
+#: lib/rpmchecksig.c:265
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Подписи нет (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:443
+#: lib/rpmchecksig.c:430
 msgid "NOT OK"
 msgstr "НЕ OК"
 
-#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
+#: lib/rpmchecksig.c:431 lib/rpmchecksig.c:445
 msgid " (MISSING KEYS:"
 msgstr " (ОТСУТСТВУЮТ КЛЮЧИ:"
 
-#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
+#: lib/rpmchecksig.c:433 lib/rpmchecksig.c:447
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:447 lib/rpmchecksig.c:461
+#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:449 lib/rpmchecksig.c:463
+#: lib/rpmchecksig.c:436 lib/rpmchecksig.c:450
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:444
 msgid "OK"
 msgstr "OК"
 
@@ -3596,12 +3596,12 @@ msgid "New Header signature\n"
 msgstr "Новая подпись заголовка\n"
 
 #. 8-byte pad
-#: lib/signature.c:161 lib/signature.c:203
+#: lib/signature.c:161 lib/signature.c:204
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Размер подписи: %d\n"
 
-#: lib/signature.c:162 lib/signature.c:204
+#: lib/signature.c:162 lib/signature.c:205
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Заполнитель подписи : %d\n"

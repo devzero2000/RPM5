@@ -182,6 +182,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 	break;
       default:
 	return 1;
+	/*@notreached@*/ break;
     }
 
     return 0;
@@ -190,7 +191,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 int rpmWriteSignature(FD_t fd, Header header)
 {
     int sigSize, pad;
-    unsigned char buf[8];
+    static unsigned char buf[8] = "\000\000\000\000\000\000\000\000";
     int rc = 0;
     
     rc = headerWrite(fd, header, HEADER_MAGIC_YES);
@@ -202,7 +203,6 @@ int rpmWriteSignature(FD_t fd, Header header)
     if (pad) {
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
-	memset(buf, 0, pad);
 	if (Fwrite(buf, sizeof(buf[0]), pad, fd) != pad)
 	    rc = 1;
     }

@@ -13,6 +13,7 @@
 	- rip out rpm{get,put}text, use getpo.sh and specspo instead.
 	- fine-grained Requires, remove install PreReq's from Requires db.
 	- fix: duplicate headerFree() on instalBinaryPackage() error return.
+	- fix: work around for (mis-compilation?!) segfaults on signature paths.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
