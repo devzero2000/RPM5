@@ -17,7 +17,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.70
+Release: 0.71
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -436,6 +436,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jul 16 2001 Jeff Johnson <jbj@redhat.com>
+- fix: don't total hard linked file size multiple times (#46286).
+- add %dev(type,major,minor) directive to permit non-root dev build.
+
 * Fri Jul 13 2001 Jeff Johnson <jbj@redhat.com>
 - isolate cdb access configuration (experimental, use at your own risk).
 - fix: hard fail on locked dbopen if CDB locking not in use.

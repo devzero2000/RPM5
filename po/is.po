@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-14 15:53-0400\n"
+"POT-Creation-Date: 2001-07-16 10:39-0400\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -1314,170 +1314,180 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr ""
 
-#: build/files.c:263
+#: build/files.c:268
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:321 build/files.c:415 build/files.c:598
+#: build/files.c:326 build/files.c:516 build/files.c:699
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "vantar '(' í  %s %s\n"
 
-#: build/files.c:332 build/files.c:540 build/files.c:609
+#: build/files.c:337 build/files.c:641 build/files.c:710
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "vantar ')' í %s %s\n"
 
-#: build/files.c:370 build/files.c:565
+#: build/files.c:375 build/files.c:666
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ógilt %s tákn: %s\n"
 
-#: build/files.c:431
+#: build/files.c:479
+#, fuzzy, c-format
+msgid "Missing %s in %s %s\n"
+msgstr "vantar '(' í  %s %s\n"
+
+#: build/files.c:532
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:469
+#: build/files.c:570
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:479
+#: build/files.c:580
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:491
+#: build/files.c:592
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:636
+#: build/files.c:737
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:647
+#: build/files.c:748
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:793
+#: build/files.c:894
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:799
+#: build/files.c:900
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:827
+#: build/files.c:928
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Tvær skrár á einni línu: %s\n"
 
-#: build/files.c:841
+#: build/files.c:942
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:853
+#: build/files.c:954
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1026
+#: build/files.c:1127
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Skráin er tvítekin: %s\n"
 
-#: build/files.c:1159
+#: build/files.c:1260
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1357
+#: build/files.c:1458
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1367
+#: build/files.c:1482
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Skráin fannst ekki: %s\n"
 
-#: build/files.c:1410 build/files.c:1963 build/parsePrep.c:45
+#: build/files.c:1525 build/files.c:2123 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1422
+#: build/files.c:1537
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1503
+#: build/files.c:1638
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1533
+#: build/files.c:1661
+#, fuzzy, c-format
+msgid "Glob not permitted: %s\n"
+msgstr "Gat ekki opnað PreUn skrá: %s\n"
+
+#: build/files.c:1675
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Skráin fannst ekki með 'glob': %s\n"
 
-#: build/files.c:1591
+#: build/files.c:1733
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Gat ekki opnað %%files skrána %s: %s\n"
 
-#: build/files.c:1602 build/pack.c:141
+#: build/files.c:1744 build/pack.c:141
 #, c-format
 msgid "line: %s\n"
 msgstr "lína: %s\n"
 
-#: build/files.c:1951
+#: build/files.c:2111
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ógild skrá %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2022
+#: build/files.c:2182
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Gat ekki keyrt %s: %s\n"
 
-#: build/files.c:2027
+#: build/files.c:2187
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Gat ekki búið til undirferli (fork) %s: %s\n"
 
-#: build/files.c:2109
+#: build/files.c:2269
 #, c-format
 msgid "%s failed\n"
 msgstr "%s brást\n"
 
-#: build/files.c:2113
+#: build/files.c:2273
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "gat ekki ritað öll gögn í %s\n"
 
-#: build/files.c:2245
+#: build/files.c:2405
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2271 build/files.c:2285
+#: build/files.c:2431 build/files.c:2445
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "gat ekki fundið %s:\n"
 
-#: build/files.c:2404
+#: build/files.c:2564
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2196,32 +2206,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1116
+#: lib/fsm.c:1122
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1499 lib/fsm.c:1624
+#: lib/fsm.c:1505 lib/fsm.c:1630
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s vistað sem %s\n"
 
-#: lib/fsm.c:1650
+#: lib/fsm.c:1656
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1656
+#: lib/fsm.c:1662
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s brást: %s\n"
 
-#: lib/fsm.c:1666
+#: lib/fsm.c:1672
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s gat ekki eytt %s: %s\n"
 
-#: lib/fsm.c:1685
+#: lib/fsm.c:1691
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s búið til sem %s\n"
@@ -2837,119 +2847,119 @@ msgstr ""
 msgid "incorrect format: %s\n"
 msgstr ""
 
-#: lib/query.c:203
+#: lib/query.c:209
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:262
+#: lib/query.c:268
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:264
+#: lib/query.c:270
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:266
+#: lib/query.c:272
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:268
+#: lib/query.c:274
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:270
+#: lib/query.c:276
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:275
+#: lib/query.c:281
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:294 lib/query.c:346
+#: lib/query.c:300 lib/query.c:352
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:405
+#: lib/query.c:411
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:536 lib/query.c:570 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:542 lib/query.c:576 lib/rpminstall.c:323 lib/rpminstall.c:456
 #: lib/rpminstall.c:816
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:549
+#: lib/query.c:555
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:555
+#: lib/query.c:561
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:580 lib/rpminstall.c:466
+#: lib/query.c:586 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: gat ekki lesið manifest: %s\n"
 
-#: lib/query.c:622
+#: lib/query.c:628
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:644
+#: lib/query.c:650
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:663
+#: lib/query.c:669
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:673
+#: lib/query.c:679
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:683
+#: lib/query.c:689
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:694
+#: lib/query.c:700
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:729
+#: lib/query.c:735
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:733
+#: lib/query.c:739
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:759
+#: lib/query.c:765
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:762
+#: lib/query.c:768
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:767
+#: lib/query.c:773
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:778 lib/rpminstall.c:604
+#: lib/query.c:784 lib/rpminstall.c:604
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3594,116 +3604,115 @@ msgid ""
 "database\n"
 msgstr ""
 
-#. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1207
+#: rpmdb/rpmdb.c:1205
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1937 rpmdb/rpmdb.c:3103
+#: rpmdb/rpmdb.c:1935 rpmdb/rpmdb.c:3099
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1988
+#: rpmdb/rpmdb.c:1986
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2252
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2321
+#: rpmdb/rpmdb.c:2317
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2330
+#: rpmdb/rpmdb.c:2326
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2521
+#: rpmdb/rpmdb.c:2517
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2599
+#: rpmdb/rpmdb.c:2595
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2610
+#: rpmdb/rpmdb.c:2606
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2992
+#: rpmdb/rpmdb.c:2988
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3022
+#: rpmdb/rpmdb.c:3018
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3049
+#: rpmdb/rpmdb.c:3045
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3053
+#: rpmdb/rpmdb.c:3049
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3059
+#: rpmdb/rpmdb.c:3055
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3061
+#: rpmdb/rpmdb.c:3057
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3068
+#: rpmdb/rpmdb.c:3064
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3079
+#: rpmdb/rpmdb.c:3075
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3143
+#: rpmdb/rpmdb.c:3139
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3161
+#: rpmdb/rpmdb.c:3157
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3169
+#: rpmdb/rpmdb.c:3165
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3171
+#: rpmdb/rpmdb.c:3167
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3181
+#: rpmdb/rpmdb.c:3177
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3183
+#: rpmdb/rpmdb.c:3179
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-14 15:53-0400\n"
+"POT-Creation-Date: 2001-07-16 10:39-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1344,170 +1344,180 @@ msgstr "&& og || understøttes ikke for strenge\n"
 msgid "syntax error in expression\n"
 msgstr "syntaksfejl i udtryk\n"
 
-#: build/files.c:263
+#: build/files.c:268
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fejl: %s\n"
 
-#: build/files.c:321 build/files.c:415 build/files.c:598
+#: build/files.c:326 build/files.c:516 build/files.c:699
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:332 build/files.c:540 build/files.c:609
+#: build/files.c:337 build/files.c:641 build/files.c:710
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Manglende ')' i %s %s\n"
 
-#: build/files.c:370 build/files.c:565
+#: build/files.c:375 build/files.c:666
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ugyldigt %s-symbol: %s\n"
 
-#: build/files.c:431
+#: build/files.c:479
+#, fuzzy, c-format
+msgid "Missing %s in %s %s\n"
+msgstr "Manglende '(' i %s %s\n"
+
+#: build/files.c:532
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Ikke-mellemrum efterfølger %s(): %s\n"
 
-#: build/files.c:469
+#: build/files.c:570
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Ugyldig syntaks: %s(%s)\n"
 
-#: build/files.c:479
+#: build/files.c:580
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Ugyldig tilstandsangivelse: %s(%s)\n"
 
-#: build/files.c:491
+#: build/files.c:592
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Ugyldig dirmode-spec: %s(%s)\n"
 
-#: build/files.c:636
+#: build/files.c:737
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Anormal locale-længde: \"%.*s\" i %%lang(%s)\n"
 
-#: build/files.c:647
+#: build/files.c:748
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Dobbelt locale %.*s i %%lang(%s)\n"
 
-#: build/files.c:793
+#: build/files.c:894
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Træfningsgrænse for %%docdir\n"
 
-#: build/files.c:799
+#: build/files.c:900
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Kun et parameter for %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:827
+#: build/files.c:928
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "To filer på én linie: %s\n"
 
-#: build/files.c:841
+#: build/files.c:942
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Fil skal begynde med \"/\": %s\n"
 
-#: build/files.c:853
+#: build/files.c:954
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan ikke blande special-%%doc med andre former: %s\n"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1026
+#: build/files.c:1127
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fil angivet to gange: %s\n"
 
-#: build/files.c:1159
+#: build/files.c:1260
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1357
+#: build/files.c:1458
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1367
+#: build/files.c:1482
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1410 build/files.c:1963 build/parsePrep.c:45
+#: build/files.c:1525 build/files.c:2123 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:1422
+#: build/files.c:1537
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1503
+#: build/files.c:1638
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1533
+#: build/files.c:1661
+#, fuzzy, c-format
+msgid "Glob not permitted: %s\n"
+msgstr "linie %d: Filnavn ikke tilladt: %s\n"
+
+#: build/files.c:1675
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1591
+#: build/files.c:1733
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1602 build/pack.c:141
+#: build/files.c:1744 build/pack.c:141
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:1951
+#: build/files.c:2111
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2022
+#: build/files.c:2182
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunne ikke udføre %s: %s\n"
 
-#: build/files.c:2027
+#: build/files.c:2187
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
 
-#: build/files.c:2109
+#: build/files.c:2269
 #, c-format
 msgid "%s failed\n"
 msgstr "%s mislykkedes\n"
 
-#: build/files.c:2113
+#: build/files.c:2273
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/files.c:2245
+#: build/files.c:2405
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Finder %s: (benytter %s)...\n"
 
-#: build/files.c:2271 build/files.c:2285
+#: build/files.c:2431 build/files.c:2445
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Kunne ikke finde %s:\n"
 
-#: build/files.c:2404
+#: build/files.c:2564
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -2237,32 +2247,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "linie %d: %s\n"
 
-#: lib/fsm.c:1116
+#: lib/fsm.c:1122
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1499 lib/fsm.c:1624
+#: lib/fsm.c:1505 lib/fsm.c:1630
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gemt som %s\n"
 
-#: lib/fsm.c:1650
+#: lib/fsm.c:1656
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kan ikke fjerne %s - katalog ikke tomt\n"
 
-#: lib/fsm.c:1656
+#: lib/fsm.c:1662
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 
-#: lib/fsm.c:1666
+#: lib/fsm.c:1672
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/fsm.c:1685
+#: lib/fsm.c:1691
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"
@@ -2903,119 +2913,119 @@ msgstr "kører postinstallations-skript (hvis det findes)\n"
 msgid "incorrect format: %s\n"
 msgstr "ugyldigt format: %s\n"
 
-#: lib/query.c:203
+#: lib/query.c:209
 msgid "(contains no files)"
 msgstr "(indeholder ingen filer)"
 
-#: lib/query.c:262
+#: lib/query.c:268
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:264
+#: lib/query.c:270
 msgid "replaced      "
 msgstr "erstattet     "
 
-#: lib/query.c:266
+#: lib/query.c:272
 msgid "not installed "
 msgstr "ej installeret"
 
-#: lib/query.c:268
+#: lib/query.c:274
 msgid "net shared    "
 msgstr "ej delt       "
 
-#: lib/query.c:270
+#: lib/query.c:276
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(ukendt %3d)  "
 
-#: lib/query.c:275
+#: lib/query.c:281
 msgid "(no state)    "
 msgstr "(ingen status)"
 
-#: lib/query.c:294 lib/query.c:346
+#: lib/query.c:300 lib/query.c:352
 msgid "package has neither file owner or id lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:405
+#: lib/query.c:411
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kunne ikke forespørge %s: %s\n"
 
-#: lib/query.c:536 lib/query.c:570 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:542 lib/query.c:576 lib/rpminstall.c:323 lib/rpminstall.c:456
 #: lib/rpminstall.c:816
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/query.c:549
+#: lib/query.c:555
 #, c-format
 msgid "query of %s failed\n"
 msgstr "forespørgsel af %s mislykkedes\n"
 
-#: lib/query.c:555
+#: lib/query.c:561
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:580 lib/rpminstall.c:466
+#: lib/query.c:586 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
 
-#: lib/query.c:622
+#: lib/query.c:628
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "forespørgsel af spec-fil %s mislykkedes, kunne ikke tolkes\n"
 
-#: lib/query.c:644
+#: lib/query.c:650
 msgid "no packages\n"
 msgstr "ingen pakker\n"
 
-#: lib/query.c:663
+#: lib/query.c:669
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s indeholder ingen pakker\n"
 
-#: lib/query.c:673
+#: lib/query.c:679
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:683
+#: lib/query.c:689
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#: lib/query.c:694
+#: lib/query.c:700
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/query.c:729
+#: lib/query.c:735
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:733
+#: lib/query.c:739
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tilhører ingen pakke\n"
 
-#: lib/query.c:759
+#: lib/query.c:765
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/query.c:762
+#: lib/query.c:768
 #, c-format
 msgid "package record number: %u\n"
 msgstr "pakkens post-nummer: %u\n"
 
-#: lib/query.c:767
+#: lib/query.c:773
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:778 lib/rpminstall.c:604
+#: lib/query.c:784 lib/rpminstall.c:604
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -3674,120 +3684,119 @@ msgstr ""
 "gammelt databaseformat til stede; brug --rebuilddb for at oprette en "
 "database med det nye format\n"
 
-#. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1207
+#: rpmdb/rpmdb.c:1205
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "fejl(%d) ved optælling af pakker\n"
 
-#: rpmdb/rpmdb.c:1937 rpmdb/rpmdb.c:3103
+#: rpmdb/rpmdb.c:1935 rpmdb/rpmdb.c:3099
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:1988
+#: rpmdb/rpmdb.c:1986
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2252
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:2321
+#: rpmdb/rpmdb.c:2317
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2330
+#: rpmdb/rpmdb.c:2326
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2521
+#: rpmdb/rpmdb.c:2517
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:2599
+#: rpmdb/rpmdb.c:2595
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:2610
+#: rpmdb/rpmdb.c:2606
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:2992
+#: rpmdb/rpmdb.c:2988
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:3022
+#: rpmdb/rpmdb.c:3018
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:3049
+#: rpmdb/rpmdb.c:3045
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:3053
+#: rpmdb/rpmdb.c:3049
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:3059
+#: rpmdb/rpmdb.c:3055
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3061
+#: rpmdb/rpmdb.c:3057
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:3068
+#: rpmdb/rpmdb.c:3064
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3079
+#: rpmdb/rpmdb.c:3075
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3143
+#: rpmdb/rpmdb.c:3139
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:3161
+#: rpmdb/rpmdb.c:3157
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:3169
+#: rpmdb/rpmdb.c:3165
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:3171
+#: rpmdb/rpmdb.c:3167
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:3181
+#: rpmdb/rpmdb.c:3177
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:3183
+#: rpmdb/rpmdb.c:3179
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
