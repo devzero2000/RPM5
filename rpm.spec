@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.59
+Release: 0.62
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -268,10 +268,10 @@ fi
 %rpmattr	%{__prefix}/bin/rpmquery
 %rpmattr	%{__prefix}/bin/rpmverify
 
-%{__prefix}/lib/librpm.so.*
-%{__prefix}/lib/librpmdb.so.*
-%{__prefix}/lib/librpmio.so.*
-%{__prefix}/lib/librpmbuild.so.*
+%{__prefix}/lib/librpm-4.0.3.so
+%{__prefix}/lib/librpmdb-4.0.3.so
+%{__prefix}/lib/librpmio-4.0.3.so
+%{__prefix}/lib/librpmbuild-4.0.3.so
 
 %rpmattr	%{__prefix}/lib/rpm/config.guess
 %rpmattr	%{__prefix}/lib/rpm/config.sub
@@ -429,6 +429,14 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jul 10 2001 Jeff Johnson <jbj@redhat.com>
+- fix: -i CLI context broken Yet Again.
+
+* Mon Jul  9 2001 Jeff Johnson <jbj@redhat.com>
+- package version now configureable, default v3.
+- rename rpm libraries to have version with libtool -release.
+- revert rpmqv.c change for now.
+
 * Sun Jul  8 2001 Jeff Johnson <jbj@redhat.com>
 - python: rhnLoad/rhnUnload to check header digest.
 
