@@ -15,11 +15,16 @@ extern int noNeon;
 #if 0
 #define	HKPPATH		"hkp://pgp.mit.edu:11371/pks/lookup?op=get&search=0xF5C75256"
 #else
+#if 0
 #define	HKPPATH		"hkp://pgp.mit.edu"
+#else
+#define	HKPPATH		"hkp://sks.keyserver.penguin.de"
+#endif
 #endif
 static char * hkppath = HKPPATH;
 
 static unsigned int keyids[] = {
+#if 0
 	0xc2b079fc, 0xf5c75256,
 	0x94cd5742, 0xe418e3aa,
 	0xb44269d0, 0x4f2a6fd2,
@@ -30,6 +35,8 @@ static unsigned int keyids[] = {
 	0xfd372689, 0x897da07a,
 	0xe1385d4e, 0x1cddbca9,
 	0xb873641b, 0x2039b291,
+#endif
+	0x58e727c4, 0xc621be0f,
 	0
 };
 
