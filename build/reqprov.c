@@ -35,7 +35,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	nametag = RPMTAG_REQUIRENAME;
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = flag & RPMSENSE_REQUIRESMASK;
+	extra = flag & _ALL_REQUIRES_MASK;
     } else if (flag & RPMSENSE_TRIGGER) {
 	nametag = RPMTAG_TRIGGERNAME;
 	versiontag = RPMTAG_TRIGGERVERSION;
@@ -46,7 +46,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	nametag = RPMTAG_REQUIRENAME;
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = flag & RPMSENSE_REQUIRESMASK;
+	extra = flag & _ALL_REQUIRES_MASK;
     }
 
     flag = (flag & (RPMSENSE_SENSEMASK | RPMSENSE_MULTILIB)) | extra;

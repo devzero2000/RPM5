@@ -250,8 +250,10 @@ int rpmCheckSig(int flags, const char **argv)
     void *ptr;
     int res = 0;
 
+#if 0
 #ifndef	ALPHA_LOSSAGE
 l = malloc(sizeof(*l));
+#endif
 #endif
     while ((rpm = *argv++) != NULL) {
 
@@ -274,15 +276,19 @@ l = malloc(sizeof(*l));
 	default:
 	    break;
 	}
+#if 0
 #ifdef	ALPHA_LOSSAGE
 dumpLead(l);
+#endif
 #endif
 	if (rpmReadSignature(fd, &sig, l->signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
 	    goto bottom;
 	}
+#if 0
 if (l != &lead) free(l);
+#endif
 	if (sig == NULL) {
 	    fprintf(stderr, _("%s: No signature available\n"), rpm);
 	    res++;

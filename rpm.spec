@@ -275,6 +275,7 @@ fi
 	"Pawel A. Gajda" <mis@k2.net.pl>.
 - syntax to specify source of Requires: (PreReq: now legacy).
 - rip out rpm{get,put}text, use getpo.sh and specspo instead.
+- fine-grained Requires, remove install PreReq's from Requires db.
 
 * Wed Oct 11 2000 Jeff Johnson <jbj@redhat.com>
 - fix: rpm2cpio error check wrong on non-libio platforms.

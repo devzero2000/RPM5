@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-10-11 15:40-0400\n"
+"POT-Creation-Date: 2000-11-11 16:41-0500\n"
 "PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1694,17 +1694,17 @@ msgstr "%s misslyckades"
 msgid "failed to write all data to %s"
 msgstr "kunde inte skriva all data till %s"
 
-#: build/files.c:1820
+#: build/files.c:1844
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Letar upp %s: (använder %s)...\n"
 
-#: build/files.c:1848 build/files.c:1858
+#: build/files.c:1872 build/files.c:1886
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Misslyckades med att hitta %s:"
 
-#: build/files.c:1968
+#: build/files.c:1996
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"
@@ -1869,17 +1869,17 @@ msgstr "ingen beskrivning i %%changelog"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "rad %d: Fel i parsning av %%description: %s"
 
-#: build/parseDescription.c:51 build/parseFiles.c:46 build/parseScript.c:173
+#: build/parseDescription.c:51 build/parseFiles.c:46 build/parseScript.c:181
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "rad %d: otillåten flagga %s: %s"
 
-#: build/parseDescription.c:64 build/parseFiles.c:58 build/parseScript.c:186
+#: build/parseDescription.c:64 build/parseFiles.c:58 build/parseScript.c:193
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "rad %d: För många namn: %s"
 
-#: build/parseDescription.c:74 build/parseFiles.c:67 build/parseScript.c:196
+#: build/parseDescription.c:74 build/parseFiles.c:67 build/parseScript.c:202
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "rad %d: Paketet existerar inte: %s"
@@ -1897,113 +1897,118 @@ msgstr "rad %d: Fel i parsning av %%files: %s"
 msgid "line %d: Second %%files list"
 msgstr "rad %d: En andra %%files-lista"
 
-#: build/parsePreamble.c:142
+#: build/parsePreamble.c:196
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Arkitekturen är utesluten: %s"
 
-#: build/parsePreamble.c:147
+#: build/parsePreamble.c:201
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Arkitekturen är inte medtagen: %s"
 
-#: build/parsePreamble.c:152
+#: build/parsePreamble.c:206
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS är uteslutet: %s"
 
-#: build/parsePreamble.c:157
+#: build/parsePreamble.c:211
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS är inte medtaget: %s"
 
-#: build/parsePreamble.c:171
+#: build/parsePreamble.c:225
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "%s-fält måste finnas med i paketet: %s"
 
-#: build/parsePreamble.c:196
+#: build/parsePreamble.c:250
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Dubbla %s-poster i paketet: %s"
 
-#: build/parsePreamble.c:244
+#: build/parsePreamble.c:298
 #, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Kan inte öppna ikon %s: %s"
 
-#: build/parsePreamble.c:262
+#: build/parsePreamble.c:316
 #, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Kan inte läsa ikon %s: %s"
 
-#: build/parsePreamble.c:275
+#: build/parsePreamble.c:329
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Okänd ikontyp: %s"
 
-#: build/parsePreamble.c:338
+#: build/parsePreamble.c:395
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "rad %d: Felaktig tagg: %s"
 
 #. Empty field
-#: build/parsePreamble.c:346
+#: build/parsePreamble.c:403
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "rad %d: Tom tagg: %s"
 
-#: build/parsePreamble.c:368 build/parsePreamble.c:375
+#: build/parsePreamble.c:425 build/parsePreamble.c:432
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s"
 
-#: build/parsePreamble.c:432 build/parseSpec.c:376
+#: build/parsePreamble.c:489 build/parseSpec.c:370
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot kan inte vara \"/\": %s"
 
-#: build/parsePreamble.c:445
+#: build/parsePreamble.c:502
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "rad %d: Prefix får inte sluta med \"/\": %s"
 
-#: build/parsePreamble.c:457
+#: build/parsePreamble.c:514
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "rad %d: Docdir måste börja med \"/\": %s"
 
-#: build/parsePreamble.c:469
+#: build/parsePreamble.c:526
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "rad %d: Epoch/Serial-fält måste vara numeriskt: %s"
 
-#: build/parsePreamble.c:527
+#: build/parsePreamble.c:566 build/parsePreamble.c:577
+#, fuzzy, c-format
+msgid "line %d: Bad %s: qualifiers: %s"
+msgstr "rad %d: Felaktigt %s-tal: %s\n"
+
+#: build/parsePreamble.c:603
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "rad %d: Felaktig BuildArchitecture-format: %s"
 
-#: build/parsePreamble.c:536
+#: build/parsePreamble.c:612
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Internt fel: felaktig tagg %d"
 
-#: build/parsePreamble.c:675
+#: build/parsePreamble.c:751
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Felaktig paketspecifikation: %s"
 
-#: build/parsePreamble.c:681
+#: build/parsePreamble.c:757
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paketet existerar redan: %s"
 
-#: build/parsePreamble.c:708
+#: build/parsePreamble.c:782
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "rad %d: Okänd tagg: %s"
 
-#: build/parsePreamble.c:733
+#: build/parsePreamble.c:804
 msgid "Spec file can't use BuildRoot"
 msgstr "Spec-fil kan inte använda BuildRoot"
 
@@ -2088,65 +2093,65 @@ msgstr "rad %d: Versionsfilnamn inte tillåtet: %s"
 msgid "line %d: Version required: %s"
 msgstr "rad %d: Version krävs: %s"
 
-#: build/parseScript.c:141
+#: build/parseScript.c:150
 #, c-format
 msgid "line %d: triggers must have --: %s"
 msgstr "rad %d: utlösare måste ha --: %s"
 
-#: build/parseScript.c:151 build/parseScript.c:214
+#: build/parseScript.c:160 build/parseScript.c:218
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "rad %d: Fel vid parsning av %s: %s"
 
-#: build/parseScript.c:161
+#: build/parseScript.c:170
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "rad %d: skriptprogram måste börja med \"/\": %s"
 
-#: build/parseScript.c:205
+#: build/parseScript.c:210
 #, c-format
 msgid "line %d: Second %s"
 msgstr "rad %d: En andra %s"
 
-#: build/parseSpec.c:137
+#: build/parseSpec.c:131
 #, c-format
 msgid "line %d: %s"
 msgstr "rad %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:188
+#: build/parseSpec.c:182
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Kan inte öppna %s: %s\n"
 
-#: build/parseSpec.c:200
+#: build/parseSpec.c:194
 msgid "Unclosed %%if"
 msgstr "Oavslutat %%if"
 
-#: build/parseSpec.c:261
+#: build/parseSpec.c:255
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s:%d: parseExpressionBoolean returnerar %d"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:269
+#: build/parseSpec.c:263
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Fick ett %%else utan något if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:280
+#: build/parseSpec.c:274
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Fick ett %%endif utan något if"
 
-#: build/parseSpec.c:294 build/parseSpec.c:303
+#: build/parseSpec.c:288 build/parseSpec.c:297
 msgid "malformed %%include statement"
 msgstr "felformaterad %%include-sats"
 
-#: build/parseSpec.c:471
+#: build/parseSpec.c:465
 msgid "No buildable architectures"
 msgstr "Inga byggbara arkitekturer"
 
-#: build/parseSpec.c:520
+#: build/parseSpec.c:514
 msgid "Package has no %%description: %s"
 msgstr "Paketet har ingen %%description: %s"
 
@@ -2258,58 +2263,58 @@ msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s JA (rpmlib tillhandahåller)\n"
 
-#: lib/depends.c:1100
+#: lib/depends.c:1101
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:1113
+#: lib/depends.c:1114
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db tillhandahållande)\n"
 
-#: lib/depends.c:1126
+#: lib/depends.c:1128
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1147
+#: lib/depends.c:1149
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1205
+#: lib/depends.c:1207
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1272
+#: lib/depends.c:1274
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1458
+#: lib/depends.c:1500
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tar bort \"%s\" från %s-indexet.\n"
 
 #. Record all relations.
-#: lib/depends.c:1511
+#: lib/depends.c:1604
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1568
+#: lib/depends.c:1654
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1671
+#: lib/depends.c:1757
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1702
+#: lib/depends.c:1788
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2667,11 +2672,11 @@ msgstr "kör (eventuellt) postinstallationsskript\n"
 msgid "error creating temporary file %s"
 msgstr "fel när tämporärfil %s skapades"
 
-#: lib/package.c:52
+#: lib/package.c:50
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "paket med versionsnummer 1 stöds inte av denna version av RPM"
 
-#: lib/package.c:112
+#: lib/package.c:110
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr "endast paket med huvudnummer <= 4 stöds av denna version av RPM"
@@ -3049,7 +3054,7 @@ msgstr "%s: Fwrite misslyckades: %s\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:127 lib/rpmchecksig.c:264
+#: lib/rpmchecksig.c:127 lib/rpmchecksig.c:266
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead misslyckades\n"
@@ -3064,12 +3069,12 @@ msgstr "%s: Kan inte signera v1.0 RPM\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Kan inte signera om v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:281
+#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:285
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature misslyckades\n"
 
-#: lib/rpmchecksig.c:151 lib/rpmchecksig.c:287
+#: lib/rpmchecksig.c:151 lib/rpmchecksig.c:293
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
@@ -3084,32 +3089,32 @@ msgstr "%s: writeLead misslyckades: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:270
+#: lib/rpmchecksig.c:272
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen signatur tillgänglig (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:437
+#: lib/rpmchecksig.c:443
 msgid "NOT OK"
 msgstr "EJ OK"
 
-#: lib/rpmchecksig.c:438 lib/rpmchecksig.c:452
+#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
+#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
+#: lib/rpmchecksig.c:447 lib/rpmchecksig.c:461
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:443 lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:449 lib/rpmchecksig.c:463
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:457
 msgid "OK"
 msgstr "OK"
 
@@ -3207,7 +3212,7 @@ msgstr "fel(%d) när post %s sparades i %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "fel(%d) när post %s togs bort ur %s"
 
-#: lib/rpmdb.c:766 lib/rpmdb.c:2300
+#: lib/rpmdb.c:766 lib/rpmdb.c:2315
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
@@ -3250,80 +3255,80 @@ msgstr "tar bort %d poster från %s-indexet.\n"
 msgid "error(%d) allocating new package instance"
 msgstr "fel(%d) vid allokering av ny paketinstans"
 
-#: lib/rpmdb.c:1942
+#: lib/rpmdb.c:1948
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr "lägger till 0 %s-poster.\n"
 
-#: lib/rpmdb.c:1958
+#: lib/rpmdb.c:1964
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "lägger till \"%s\" till %s-indexet.\n"
 
-#: lib/rpmdb.c:1967
+#: lib/rpmdb.c:1973
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "lägger till %d poster till %s-indexet.\n"
 
-#: lib/rpmdb.c:2325
+#: lib/rpmdb.c:2340
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "bygger om databas %s till %s\n"
 
-#: lib/rpmdb.c:2329
+#: lib/rpmdb.c:2344
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "tillfällig databas %s existerar redan"
 
-#: lib/rpmdb.c:2335
+#: lib/rpmdb.c:2350
 #, c-format
 msgid "creating directory %s\n"
 msgstr "skapar katalog %s\n"
 
-#: lib/rpmdb.c:2337
+#: lib/rpmdb.c:2352
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "fel när katalog skapades %s: %s"
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2359
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "öppnar gammal databas med dbapi %d\n"
 
-#: lib/rpmdb.c:2355
+#: lib/rpmdb.c:2370
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas med dbapi %d\n"
 
-#: lib/rpmdb.c:2378
+#: lib/rpmdb.c:2393
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "post nummer %d i databasen är felaktig -- hoppar över den."
 
-#: lib/rpmdb.c:2410
+#: lib/rpmdb.c:2425
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kan inte lägga till post ursprungligen vid %d"
 
-#: lib/rpmdb.c:2428
+#: lib/rpmdb.c:2443
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
 
-#: lib/rpmdb.c:2436
+#: lib/rpmdb.c:2451
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: lib/rpmdb.c:2438
+#: lib/rpmdb.c:2453
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2463
 #, c-format
 msgid "removing directory %s\n"
 msgstr "tar bort katalog %s\n"
 
-#: lib/rpmdb.c:2450
+#: lib/rpmdb.c:2465
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"

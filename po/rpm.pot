@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-11-10 20:45-0500\n"
+"POT-Creation-Date: 2000-11-11 16:41-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1651,17 +1651,17 @@ msgstr ""
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1846
+#: build/files.c:1844
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1874 build/files.c:1888
+#: build/files.c:1872 build/files.c:1886
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1998
+#: build/files.c:1996
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2250,26 +2250,26 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1460
+#: lib/depends.c:1500
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1513
+#: lib/depends.c:1604
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1570
+#: lib/depends.c:1654
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1673
+#: lib/depends.c:1757
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1704
+#: lib/depends.c:1788
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3001,7 +3001,7 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:127 lib/rpmchecksig.c:264
+#: lib/rpmchecksig.c:127 lib/rpmchecksig.c:266
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
@@ -3016,12 +3016,12 @@ msgstr ""
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:281
+#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:285
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:151 lib/rpmchecksig.c:287
+#: lib/rpmchecksig.c:151 lib/rpmchecksig.c:293
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
@@ -3036,32 +3036,32 @@ msgstr ""
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:270
+#: lib/rpmchecksig.c:272
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:437
+#: lib/rpmchecksig.c:443
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:438 lib/rpmchecksig.c:452
+#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
+#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
+#: lib/rpmchecksig.c:447 lib/rpmchecksig.c:461
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:443 lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:449 lib/rpmchecksig.c:463
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:457
 msgid "OK"
 msgstr ""
 
@@ -3135,7 +3135,7 @@ msgstr ""
 msgid "error(%d) removing record %s from %s"
 msgstr ""
 
-#: lib/rpmdb.c:766 lib/rpmdb.c:2300
+#: lib/rpmdb.c:766 lib/rpmdb.c:2315
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -3176,80 +3176,80 @@ msgstr ""
 msgid "error(%d) allocating new package instance"
 msgstr ""
 
-#: lib/rpmdb.c:1942
+#: lib/rpmdb.c:1948
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1958
+#: lib/rpmdb.c:1964
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1967
+#: lib/rpmdb.c:1973
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2325
+#: lib/rpmdb.c:2340
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2329
+#: lib/rpmdb.c:2344
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rpmdb.c:2335
+#: lib/rpmdb.c:2350
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2337
+#: lib/rpmdb.c:2352
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2359
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2355
+#: lib/rpmdb.c:2370
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2378
+#: lib/rpmdb.c:2393
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:2410
+#: lib/rpmdb.c:2425
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:2428
+#: lib/rpmdb.c:2443
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2436
+#: lib/rpmdb.c:2451
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2438
+#: lib/rpmdb.c:2453
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2463
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2450
+#: lib/rpmdb.c:2465
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

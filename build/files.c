@@ -1737,35 +1737,33 @@ typedef struct {
     int xor;
 } DepMsg_t;
 
-#define	_notpre(_x)	((_x) & ~RPMSENSE_PREREQ)
-
 /** */
 DepMsg_t depMsgs[] = {
   { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
 	0, -1 },
-  { "PreReq",		{ "%{__find_prereq}", NULL, NULL, NULL },
+  { "PreReq",		{ NULL, NULL, NULL, NULL },
 	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_PREREQ, 0 },
-  { "Requires(interp)",	{ "%{__find_prereq}", "interp", NULL, NULL },
+  { "Requires(interp)",	{ NULL, "interp", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_INTERP), 0 },
-  { "Requires(rpmlib)",	{ "%{__find_prereq}", "rpmlib", NULL, NULL },
+  { "Requires(rpmlib)",	{ NULL, "rpmlib", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_RPMLIB), 0 },
-  { "Requires(verify)",	{ "%{__find_prereq}", "verify", NULL, NULL },
+  { "Requires(verify)",	{ NULL, "verify", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_SCRIPT_VERIFY, 0 },
-  { "Requires(pre)",	{ "%{__find_prereq}", "pre", NULL, NULL },
+  { "Requires(pre)",	{ NULL, "pre", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_PRE), 0 },
-  { "Requires(post)",	{ "%{__find_prereq}", "post", NULL, NULL },
+  { "Requires(post)",	{ NULL, "post", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_POST), 0 },
-  { "Requires(preun)",	{ "%{__find_prereq}", "preun", NULL, NULL },
+  { "Requires(preun)",	{ NULL, "preun", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_PREUN), 0 },
-  { "Requires(postun)",	{ "%{__find_prereq}", "postun", NULL, NULL },
+  { "Requires(postun)",	{ NULL, "postun", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_POSTUN), 0 },
   { "Requires",		{ "%{__find_requires}", NULL, NULL, NULL },
@@ -1836,7 +1834,7 @@ static int generateDepends(Spec spec, Package pkg,
 	}
 
 	/* Get the script name to run */
-	myargv[0] = rpmExpand(dm->argv[0], NULL);
+	myargv[0] = (dm->argv[0] ? rpmExpand(dm->argv[0], NULL) : NULL);
 
 	if (!(myargv[0] && *myargv[0] != '%')) {
 	    free(myargv[0]);

@@ -286,10 +286,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMSENSE_RPMLIB		((1 << 24) | RPMSENSE_PREREQ)
 #define RPMSENSE_TRIGGERPRE	(1 << 25)	/* unimplemented */.
 
-
 #define	isDependsMULTILIB(_dflags)	((_dflags) & RPMSENSE_MULTILIB)
 
-#define	RPMSENSE_REQUIRESMASK	(\
+#define	_ALL_REQUIRES_MASK	(\
     RPMSENSE_INTERP | \
     RPMSENSE_SCRIPT_PRE | \
     RPMSENSE_SCRIPT_POST | \
@@ -302,6 +301,16 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
     RPMSENSE_SCRIPT_INSTALL | \
     RPMSENSE_SCRIPT_CLEAN | \
     RPMSENSE_RPMLIB )
+
+#define	_notpre(_x)		((_x) & ~RPMSENSE_PREREQ)
+#define	_INSTALL_ONLY_MASK \
+    _notpre(RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_POST|RPMSENSE_RPMLIB)
+#define	_ERASE_ONLY_MASK  \
+    _notpre(RPMSENSE_SCRIPT_PREUN|RPMSENSE_SCRIPT_POSTUN)
+
+#define	isLegacyPreReq(_x)  (((_x) & _ALL_REQUIRES_MASK) == RPMSENSE_PREREQ)
+#define	isInstallPreReq(_x)	((_x) & _INSTALL_ONLY_MASK)
+#define	isErasePreReq(_x)	((_x) & _ERASE_ONLY_MASK)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
