@@ -1,447 +1,1775 @@
-#: ../rpm.c:76 ../rpm.c:95 ../rpm.c:101 ../rpm.c:114 ../rpm.c:119 ../rpm.c:123 ../rpm.c:138 ../rpm.c:141
 msgid ""
-msgstr ""
+msgstr "POT-Creation-Date: 1998-09-25 05:05-0400\n"
 
-#: ../rpm.c:40
+#: /home/devel/jbj/src/rpm3/rpm.c:188
+#, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
-#: ../rpm.c:44
-msgid "Copyright (C) 1995 - Red Hat Software"
+#: /home/devel/jbj/src/rpm3/rpm.c:192
+#, fuzzy
+msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr "Copyright (C) 1995 - Red Hat Software"
 
-#: ../rpm.c:45
-msgid "This may be freely redistributed under the terms of the GNU Public License"
-msgstr "Den här programvaran kan distribueras fritt med hänsyn till GNU Public License"
+#: /home/devel/jbj/src/rpm3/rpm.c:193
+msgid ""
+"This may be freely redistributed under the terms of the GNU Public License"
+msgstr ""
+"Den här programvaran kan distribueras fritt med hänsyn till GNU Public "
+"License"
 
-#: ../rpm.c:54
+#: /home/devel/jbj/src/rpm3/rpm.c:202
 msgid "usage: rpm {--help}"
 msgstr "använd: rpm {--help}"
 
-#: ../rpm.c:55
+#: /home/devel/jbj/src/rpm3/rpm.c:203
 msgid "       rpm {--version}"
 msgstr "       rpm {--version}"
 
-#: ../rpm.c:56
-msgid "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-msgstr "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+#: /home/devel/jbj/src/rpm3/rpm.c:204
+msgid "       rpm {--initdb}   [--dbpath <dir>]"
+msgstr ""
 
-#: ../rpm.c:57
-msgid "                          [--replacepkgs] [--replacefiles] [--search]"
+#: /home/devel/jbj/src/rpm3/rpm.c:205
+msgid ""
+"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgstr ""
+"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:206
+#, fuzzy
+msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
 
-#: ../rpm.c:58
-msgid "                          [--root <dir>] file1.rpm ... filen.rpm"
-msgstr "                          [--root <dir>] file1.rpm ... filen.rpm"
+#: /home/devel/jbj/src/rpm3/rpm.c:207
+#, fuzzy
+msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
+msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
 
-#: ../rpm.c:59
-msgid "       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-msgstr "       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#: ../rpm.c:60
-msgid "                          [--search] [--oldpackage] [--root <dir>]"
+#: /home/devel/jbj/src/rpm3/rpm.c:208
+#, fuzzy
+msgid ""
+"                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr "                          [--search] [--oldpackage] [--root <dir>]"
 
-#: ../rpm.c:61
-msgid "                          file1.rpm ... fileN.rpm"
-msgstr "                          file1.rpm ... fileN.rpm"
-
-#: ../rpm.c:62
-msgid "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "
-msgstr "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "
-
-#: ../rpm.c:63
-msgid "                        [--root <dir>] [targets]"
-msgstr "                        [--root <dir>] [targets]"
-
-#: ../rpm.c:64
-msgid "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
-msgstr "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
-
-#: ../rpm.c:65
-msgid "       rpm {--erase -e] [--root <dir>] package1 package2 ... packageN"
-msgstr "       rpm {--erase -e] [--root <dir>] paket1 paket2 ... paketN"
-
-#: ../rpm.c:66
-msgid "       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]"
-msgstr "       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]"
-
-#: ../rpm.c:67
-msgid "                        [--sign] [--test] [--time-check <s>] specfile"
+#: /home/devel/jbj/src/rpm3/rpm.c:209
+#, fuzzy
+msgid ""
+"                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr "                        [--sign] [--test] [--time-check <s>] specfil"
 
-#: ../rpm.c:68
-msgid "       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"
+#: /home/devel/jbj/src/rpm3/rpm.c:210
+#, fuzzy
+msgid ""
+"                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
+msgstr "                        [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:211 /home/devel/jbj/src/rpm3/rpm.c:219
+#, fuzzy
+msgid "                        [--noorder] [--relocate oldpath=newpath]"
+msgstr "                        [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:212
+#, fuzzy
+msgid ""
+"                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"
+msgstr "                          [--root <dir>] file1.rpm ... filen.rpm"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:213
+#, fuzzy
+msgid ""
+"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgstr ""
+"       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:214
+#, fuzzy
+msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
+msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:215
+#, fuzzy
+msgid ""
+"                        [--excludedocs] [--includedocs] [--rcfile <file>]"
+msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:216
+#, fuzzy
+msgid ""
+"                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
+msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:217
+#, fuzzy
+msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
+msgstr "                        [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:218
+#, fuzzy
+msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
+msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:220
+#, fuzzy
+msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
+msgstr "                          file1.rpm ... fileN.rpm"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:221
+#, fuzzy
+msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+msgstr "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "
+
+#: /home/devel/jbj/src/rpm3/rpm.c:222
+#, fuzzy
+msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
+msgstr "                          [--root <dir>] file1.rpm ... filen.rpm"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:223
+#, fuzzy
+msgid "                        [--whatprovides] [--whatrequires] [--requires]"
+msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:224
+#, fuzzy
+msgid ""
+"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:225
+#, fuzzy
+msgid ""
+"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
+msgstr "                        [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:226
+#, fuzzy
+msgid "                        [--changelog] [--dbpath <dir>] [targets]"
+msgstr "                        [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:227
+#, fuzzy
+msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
+msgstr "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:228
+#, fuzzy
+msgid ""
+"                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
+msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:229
+#, fuzzy
+msgid "                        [--nomd5] [targets]"
+msgstr "                        [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:230
+#, fuzzy
+msgid "       rpm {--setperms} [-afpg] [target]"
+msgstr "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:231
+#, fuzzy
+msgid "       rpm {--setugids} [-afpg] [target]"
+msgstr "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:232
+#, fuzzy
+msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
+msgstr "       rpm {--erase -e] [--root <dir>] paket1 paket2 ... paketN"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:233
+#, fuzzy
+msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
+msgstr "                        [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:234
+#, fuzzy
+msgid ""
+"                        [--justdb] [--notriggers] rpackage1 ... packageN"
+msgstr ""
+"                        - installera källkods paket, tillverka binär paket,"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:235
+#, fuzzy
+msgid ""
+"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
+msgstr ""
+"       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:236
+#, fuzzy
+msgid "                        [--sign] [--test] [--timecheck <s>] ]"
+msgstr "                        [--sign] [--test] [--time-check <s>] specfil"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:237
+#, fuzzy
+msgid "                        [--buildplatform=platform1[,platform2...]]"
+msgstr "        -i                - visa paket information"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:238
+#, fuzzy
+msgid "                        [--rmsource] specfile"
+msgstr "                        [--root <dir>] [targets]"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:239
+msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:240
+#, fuzzy
+msgid ""
+"       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr "       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"
 
-#: ../rpm.c:69
-msgid "       rpm {--where} package1 package2 ... packageN"
-msgstr "       rpm {--where} paket1 paket2 ... paketN"
+#: /home/devel/jbj/src/rpm3/rpm.c:241
+#, fuzzy
+msgid ""
+"       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgstr "       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"
 
-#: ../rpm.c:70
-msgid "       rpm {--checksig} package1 package2 ... packageN"
-msgstr "       rpm {--checksig} paket1 paket2 ... paketN"
+#: /home/devel/jbj/src/rpm3/rpm.c:242
+#, fuzzy
+msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
+msgstr "       rpm {--erase -e] [--root <dir>] paket1 paket2 ... paketN"
 
-#: ../rpm.c:78
+#: /home/devel/jbj/src/rpm3/rpm.c:243
+#, fuzzy
+msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
+msgstr "       rpm {--erase -e] [--root <dir>] paket1 paket2 ... paketN"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:244
+msgid "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:245
+#, fuzzy
+msgid "                           package1 ... packageN"
+msgstr "                          som matchar <pkg>"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:246
+msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:247
+#, fuzzy
+msgid "       rpm {--querytags}"
+msgstr "       rpm {--version}"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:281
 msgid "usage:"
 msgstr "använd:"
 
-#: ../rpm.c:79
-msgid "   --help\t\t- print this message"
+#: /home/devel/jbj/src/rpm3/rpm.c:283
+#, fuzzy
+msgid "print this message"
 msgstr "   --help\t\t- visa det här meddelandet"
 
-#: ../rpm.c:80
-msgid "   --version\t\t- print the version of rpm being used"
+#: /home/devel/jbj/src/rpm3/rpm.c:285
+#, fuzzy
+msgid "print the version of rpm being used"
 msgstr "   --version\t\t- visa vilken version av rpm som används"
 
-#: ../rpm.c:81
-msgid "    -q                  - query mode"
-msgstr "    -q                  - undersök läge"
+#: /home/devel/jbj/src/rpm3/rpm.c:286
+msgid "   all modes support the following arguments:"
+msgstr ""
 
-#: ../rpm.c:82 ../rpm.c:100 ../rpm.c:113 ../rpm.c:122
-msgid "      --root <dir>\t- use <dir> as the top level directory"
+#: /home/devel/jbj/src/rpm3/rpm.c:288
+msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:290
+msgid "be a little more verbose"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:292
+msgid "be incredibly verbose (for debugging)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:294
+msgid "query mode"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:296 /home/devel/jbj/src/rpm3/rpm.c:354
+#: /home/devel/jbj/src/rpm3/rpm.c:414 /home/devel/jbj/src/rpm3/rpm.c:442
+#: /home/devel/jbj/src/rpm3/rpm.c:502
+#, fuzzy
+msgid "use <dir> as the top level directory"
 msgstr "      --root <dir>\t- använd <dir> som start bibliotek"
 
-#: ../rpm.c:83
+#: /home/devel/jbj/src/rpm3/rpm.c:298 /home/devel/jbj/src/rpm3/rpm.c:352
+#: /home/devel/jbj/src/rpm3/rpm.c:380 /home/devel/jbj/src/rpm3/rpm.c:430
+#: /home/devel/jbj/src/rpm3/rpm.c:500
+msgid "use <dir> as the directory for the database"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:300
+msgid "use s as the header format (implies -i)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:301
+msgid ""
+"   install, upgrade and query (with -p) allow ftp URL's to be used in place"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:302
+msgid "   of file names as well as the following options:\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:304
+msgid "hostname or IP of ftp proxy"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:306
+msgid "port number of ftp server (or proxy)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:307
 msgid "      Package specification options:"
 msgstr "      Paket urvals parametrar:"
 
-#: ../rpm.c:84
-msgid "        -a                - query all packages"
-msgstr "        -a                - undersök alla paket"
+#: /home/devel/jbj/src/rpm3/rpm.c:309
+msgid "query all packages"
+msgstr ""
 
-#: ../rpm.c:85
-msgid "        -f <file>+        - query package owning <file>"
+#: /home/devel/jbj/src/rpm3/rpm.c:311
+#, fuzzy
+msgid "query package owning <file>"
 msgstr "        -f <fil>+         - undersök paket som äger <fil>"
 
-#: ../rpm.c:86
-msgid "        -F                - like -f, but read file names from stdin"
-msgstr "        -F                - liksom -f, men läser filnamn från stdin"
-
-#: ../rpm.c:87
-msgid "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
+#: /home/devel/jbj/src/rpm3/rpm.c:313
+#, fuzzy
+msgid "query (uninstalled) package <packagefile>"
 msgstr "        -p <paketfil>+    - undersök (uninstalled) paket <packagefile>"
 
-#: ../rpm.c:88
-msgid "        -P                - like -f, but read package names from stdin"
-msgstr "        -P                - liksom -f, men läser paket namn från stdin"
+#: /home/devel/jbj/src/rpm3/rpm.c:315
+msgid "query packages triggered by <package>"
+msgstr ""
 
-#: ../rpm.c:89
+#: /home/devel/jbj/src/rpm3/rpm.c:317
+msgid "query packages which provide <i> capability"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:319
+msgid "query packages which require <i> capability"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:320
 msgid "      Information selection options:"
 msgstr "      Information urvals parametrar:"
 
-#: ../rpm.c:90
-msgid "        -i                - display package information"
+#: /home/devel/jbj/src/rpm3/rpm.c:322
+#, fuzzy
+msgid "display package information"
 msgstr "        -i                - visa paket information"
 
-#: ../rpm.c:91
-msgid "        -l                - display package file list"
+#: /home/devel/jbj/src/rpm3/rpm.c:324
+msgid "display the package's change log"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:326
+#, fuzzy
+msgid "display package file list"
 msgstr "        -l                - visa paketets fil lista"
 
-#: ../rpm.c:92
-msgid "        -s                - show file states (implies -l)"
+#: /home/devel/jbj/src/rpm3/rpm.c:328
+#, fuzzy
+msgid "show file states (implies -l)"
 msgstr "        -s                - visa filers status (implicerar -l)"
 
-#: ../rpm.c:93
-msgid "        -d                - list only documentation files (implies -l)"
-msgstr "        -d                - visa enbart dokumentation filer (implicerar -l)"
+#: /home/devel/jbj/src/rpm3/rpm.c:330
+#, fuzzy
+msgid "list only documentation files (implies -l)"
+msgstr ""
+"        -d                - visa enbart dokumentation filer (implicerar -l)"
 
-#: ../rpm.c:94
-msgid "        -c                - list only configuration files (implies -l)"
-msgstr "        -c                - visa enbart konfiguration filer (implicerar -l)"
+#: /home/devel/jbj/src/rpm3/rpm.c:332
+#, fuzzy
+msgid "list only configuration files (implies -l)"
+msgstr ""
+"        -c                - visa enbart konfiguration filer (implicerar -l)"
 
-#: ../rpm.c:96
-msgid "    -V"
-msgstr "    -V"
+#: /home/devel/jbj/src/rpm3/rpm.c:334
+msgid ""
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
+msgstr ""
 
-#: ../rpm.c:97
-msgid "    -y"
-msgstr "    -y"
+#: /home/devel/jbj/src/rpm3/rpm.c:336
+msgid "list capabilities package provides"
+msgstr ""
 
-#: ../rpm.c:98
-msgid "    --verify            - verify a package installation"
-msgstr "    --verify            - verifiera en paket installation"
+#: /home/devel/jbj/src/rpm3/rpm.c:337
+#, fuzzy
+msgid "        --requires"
+msgstr "       rpm {--version}"
 
-#: ../rpm.c:99
-msgid "\t\t\t  same package specification options as -q"
+#: /home/devel/jbj/src/rpm3/rpm.c:339
+msgid "list package dependencies"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:341
+msgid "print the various [un]install scripts"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:343
+msgid "show the trigger scripts contained in the package"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:348
+msgid "send stdout to <cmd>"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:350
+#, fuzzy
+msgid ""
+"verify a package installation using the same same package specification "
+"options as -q"
 msgstr "\t\t\t  samma paket urvals parametrar som -q"
 
-#: ../rpm.c:102
-msgid "    --install <packagefile>"
+#: /home/devel/jbj/src/rpm3/rpm.c:356 /home/devel/jbj/src/rpm3/rpm.c:400
+#: /home/devel/jbj/src/rpm3/rpm.c:434
+msgid "do not verify package dependencies"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:358
+msgid "do not verify file md5 checksums"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:360
+msgid "do not verify file attributes"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:363
+msgid ""
+"set the file permissions to those in the package database using the same "
+"package specification options as -q"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:366
+msgid ""
+"set the file owner and group to those in the package database using the same "
+"package specification options as -q"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:372
+#, fuzzy
+msgid "install package"
 msgstr "    --install <paketfil>"
 
-#: ../rpm.c:103
-msgid "    -i <packagefile>\t- install package"
-msgstr "    -i <paketfil>\t- installera paket"
+#: /home/devel/jbj/src/rpm3/rpm.c:374
+msgid "relocate files from <oldpath> to <newpath>"
+msgstr ""
 
-#: ../rpm.c:104
-msgid "       -v\t        - be a little verbose "
-msgstr "       -v\t        - visa lite mer information "
+#: /home/devel/jbj/src/rpm3/rpm.c:376
+msgid "relocate files even though the package doesn't allow it"
+msgstr ""
 
-#: ../rpm.c:105
-msgid "       -h"
-msgstr "       -h"
+#: /home/devel/jbj/src/rpm3/rpm.c:378
+msgid "relocate the package to <dir>, if relocatable"
+msgstr ""
 
-#: ../rpm.c:106
-msgid "      --hash            - print hash marks as package installs (good with -v)"
-msgstr "      --hash            - skriv ut brädgårdar eftersom paketet installeras (bra tillsammans med -v)"
+#: /home/devel/jbj/src/rpm3/rpm.c:382
+msgid "do not install documentation"
+msgstr ""
 
-#: ../rpm.c:107
-msgid "      --percent         - print percentages as package installs"
-msgstr "      --percent         - skriv procent eftersom paketet installeras"
-
-#: ../rpm.c:108
-msgid "      --replacepkgs      - reinstall if the package is already present"
-msgstr "      --replacepkgs      - installera om ifall paketet redan är installerat"
-
-#: ../rpm.c:109
-msgid "      --replacefiles    - install even if the package replaces installed files"
-msgstr "      --replacefiles    - installera även om paketet som det byter ut installerade filer"
-
-#: ../rpm.c:110
-msgid "      --force           - short hand for --replacepkgs --replacefiles"
+#: /home/devel/jbj/src/rpm3/rpm.c:384
+#, fuzzy
+msgid "short hand for --replacepkgs --replacefiles"
 msgstr "      --force           - förkortning för --replacepkgs --replacefiles"
 
-#: ../rpm.c:111
-msgid "      --test            - don't install, but tell if it would work or not"
-msgstr "      --test            - installera inte, men tala om ifall det skulle fungera eller inte"
+#: /home/devel/jbj/src/rpm3/rpm.c:387
+#, fuzzy
+msgid "print hash marks as package installs (good with -v)"
+msgstr ""
+"      --hash            - skriv ut brädgårdar eftersom paketet installeras "
+"(bra tillsammans med -v)"
 
-#: ../rpm.c:112
-msgid "      --search          - search the paths listed in /etc/rpmrc for rpms"
-msgstr "      --search          - leta i de sökvägar som finns i /etc/rpmrc efter rpms"
+#: /home/devel/jbj/src/rpm3/rpm.c:389
+msgid "install all files, even configurations which might otherwise be skipped"
+msgstr ""
 
-#: ../rpm.c:115
-msgid "    --upgrade <packagefile>"
-msgstr "    --upgrade <paketfil>"
+#: /home/devel/jbj/src/rpm3/rpm.c:392
+msgid "don't verify package architecture"
+msgstr ""
 
-#: ../rpm.c:116
-msgid "    -U <packagefile>\t- upgrade package (same options as --install, plus)"
-msgstr "    -U <paketfil>\t- upgradera paket (samma argument som --install, samt)"
+#: /home/devel/jbj/src/rpm3/rpm.c:394
+msgid "don't verify package operating system"
+msgstr ""
 
-#: ../rpm.c:117
-msgid "      --oldpackage      - upgrade to an old version of the package (--force"
-msgstr "      --oldpackage      - upgradera till en gammal version av paketet (--force"
+#: /home/devel/jbj/src/rpm3/rpm.c:396
+msgid "install documentation"
+msgstr ""
 
-#: ../rpm.c:118
-msgid "                          on upgrades does this automatically)"
-msgstr "                          vid uppgraderingar sker detta automatiskt)"
+#: /home/devel/jbj/src/rpm3/rpm.c:398 /home/devel/jbj/src/rpm3/rpm.c:432
+msgid "update the database, but do not modify the filesystem"
+msgstr ""
 
-#: ../rpm.c:120
-msgid "    --erase <package>"
-msgstr "    --erase <paket>"
+#: /home/devel/jbj/src/rpm3/rpm.c:402 /home/devel/jbj/src/rpm3/rpm.c:436
+msgid "do not reorder package installation to satisfy dependencies"
+msgstr ""
 
-#: ../rpm.c:121
-msgid "    -e <package>        - uninstall (erase) package"
-msgstr "    -e <paket>        - avinstallera (radera) paket"
+#: /home/devel/jbj/src/rpm3/rpm.c:404
+msgid "don't execute any installation scripts"
+msgstr ""
 
-#: ../rpm.c:124
-msgid "    -b<stage> <spec>    - build package, where <stage> is one of:"
+#: /home/devel/jbj/src/rpm3/rpm.c:406 /home/devel/jbj/src/rpm3/rpm.c:440
+msgid "don't execute any scripts triggered by this package"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:408
+#, fuzzy
+msgid "print percentages as package installs"
+msgstr "      --percent         - skriv procent eftersom paketet installeras"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:410
+#, fuzzy
+msgid "install even if the package replaces installed files"
+msgstr ""
+"      --replacefiles    - installera även om paketet som det byter ut "
+"installerade filer"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:412
+#, fuzzy
+msgid "reinstall if the package is already present"
+msgstr ""
+"      --replacepkgs      - installera om ifall paketet redan är installerat"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:416
+#, fuzzy
+msgid "don't install, but tell if it would work or not"
+msgstr ""
+"      --test            - installera inte, men tala om ifall det skulle "
+"fungera eller inte"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:420
+#, fuzzy
+msgid "upgrade package (same options as --install, plus)"
+msgstr ""
+"    -U <paketfil>\t- upgradera paket (samma argument som --install, samt)"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:422
+#, fuzzy
+msgid ""
+"upgrade to an old version of the package (--force on upgrades does this "
+"automatically)"
+msgstr ""
+"      --oldpackage      - upgradera till en gammal version av paketet "
+"(--force"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:426
+#, fuzzy
+msgid "erase (uninstall) package"
+msgstr "    --install <paketfil>"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:428
+msgid ""
+"remove all packages which match <package> (normally an error is generated if "
+"<package> specified multiple packages)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:438
+msgid "do not execute any package specific scripts"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:444
+msgid "    -b<stage> <spec>      "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:446
+#, fuzzy
+msgid "build package, where <stage> is one of:"
 msgstr "    -b<steg> <spec>    - tillverka paket, där <steg> är något av:"
 
-#: ../rpm.c:125
-msgid "\t\t\t  p - prep (unpack sources and apply patches)"
+#: /home/devel/jbj/src/rpm3/rpm.c:448
+#, fuzzy
+msgid "prep (unpack sources and apply patches)"
 msgstr "\t\t\t  p - förbered (packa upp källkod samt applicera patchar)"
 
-#: ../rpm.c:126
-msgid "\t\t\t  l - list check (do some cursory checks on %files)"
+#: /home/devel/jbj/src/rpm3/rpm.c:450
+#, fuzzy, c-format
+msgid "list check (do some cursory checks on %files)"
 msgstr "\t\t\t  l - kontrollera (gör några enkla kontroller på %files)"
 
-#: ../rpm.c:127
-msgid "\t\t\t  c - compile (prep and compile)"
+#: /home/devel/jbj/src/rpm3/rpm.c:452
+#, fuzzy
+msgid "compile (prep and compile)"
 msgstr "\t\t\t  c - kompilera (förbered och kompilera)"
 
-#: ../rpm.c:128
-msgid "\t\t\t  i - install (prep, compile, install)"
+#: /home/devel/jbj/src/rpm3/rpm.c:454
+#, fuzzy
+msgid "install (prep, compile, install)"
 msgstr "\t\t\t  i - installera (förbered, kompilera, installera)"
 
-#: ../rpm.c:129
-msgid "\t\t\t  b - binary package (prep, compile, install, package)"
+#: /home/devel/jbj/src/rpm3/rpm.c:456
+#, fuzzy
+msgid "binary package (prep, compile, install, package)"
 msgstr "\t\t\t  b - binär paketera (förbered, kompilera, installera, paketera)"
 
-#: ../rpm.c:130
-msgid "\t\t\t  a - bin/src package (prep, compile, install, package)"
-msgstr "\t\t\t  a - bin/src paketera (förbered, kompilera, installera, paketera)"
+#: /home/devel/jbj/src/rpm3/rpm.c:458
+#, fuzzy
+msgid "bin/src package (prep, compile, install, package)"
+msgstr ""
+"\t\t\t  a - bin/src paketera (förbered, kompilera, installera, paketera)"
 
-#: ../rpm.c:131
-msgid "      --short-circuit   - skip straight to specified stage (only for c,i)"
-msgstr "      --short-circuit   - hoppa direkt till specifierat steg (enbart för c,i)"
+#: /home/devel/jbj/src/rpm3/rpm.c:460
+#, fuzzy
+msgid "skip straight to specified stage (only for c,i)"
+msgstr ""
+"      --short-circuit   - hoppa direkt till specifierat steg (enbart för c,i)"
 
-#: ../rpm.c:132
-msgid "      --clean           - remove build tree when done"
-msgstr "      --clean           - tag bort biblioteket där filerna kompilerades när det är klart"
+#: /home/devel/jbj/src/rpm3/rpm.c:462
+#, fuzzy
+msgid "remove build tree when done"
+msgstr ""
+"      --clean           - tag bort biblioteket där filerna kompilerades när "
+"det är klart"
 
-#: ../rpm.c:133
-msgid "      --sign            - generate PGP signature"
+#: /home/devel/jbj/src/rpm3/rpm.c:464
+msgid "remove sources and spec file when done"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:466
+#, fuzzy
+msgid "generate PGP signature"
 msgstr "      --sign            - tillverka en PGP signatur"
 
-#: ../rpm.c:134
-msgid "      --keep-temps      - do not delete scripts (or any temp files) in /tmp"
-msgstr "      --keep-temps      - tag inte bort några skripts (eller några temporär filer) i /tmp"
+#: /home/devel/jbj/src/rpm3/rpm.c:468
+msgid "use <dir> as the build root"
+msgstr ""
 
-#: ../rpm.c:135
-msgid "      --test            - do not execute any stages, implies --keep-temps"
-msgstr "      --test            - utför inte några steg, implicerar --keep-temps"
+#: /home/devel/jbj/src/rpm3/rpm.c:470
+msgid "build the packages for the platform1...platformN build targets."
+msgstr ""
 
-#: ../rpm.c:136
-msgid "\t\t\t  in /tmp - useful for testing"
-msgstr "\t\t\t  i /tmp - bra för att testa"
+#: /home/devel/jbj/src/rpm3/rpm.c:472
+msgid "do not execute any stages"
+msgstr ""
 
-#: ../rpm.c:137
-msgid "      --time-check <s>  - set the time check to S seconds (0 disables it)"
-msgstr "      --time-check <s>  - sätt tidskontrollen till S sekunder (0 slår av den)"
+#: /home/devel/jbj/src/rpm3/rpm.c:474
+#, fuzzy
+msgid "set the time check to S seconds (0 disables it)"
+msgstr ""
+"      --time-check <s>  - sätt tidskontrollen till S sekunder (0 slår av den)"
 
-#: ../rpm.c:139
-msgid "    --where <pkg>+      - search paths listed in /etc/rpmrc for rpms"
-msgstr "    --where <pkg>+      - leta i sökvägarna som finns i /etc/rpmrc efter rpms"
+#: /home/devel/jbj/src/rpm3/rpm.c:477
+#, fuzzy
+msgid ""
+"install source package, build binary package and remove spec file, sources, "
+"patches, and icons."
+msgstr ""
+"                          och ta bort spec filen, källkoden, patchar, och "
+"ikoner."
 
-#: ../rpm.c:140
-msgid "                          matching <pkg>"
-msgstr "                          som matchar <pkg>"
+#: /home/devel/jbj/src/rpm3/rpm.c:479
+msgid "remove sources and spec file"
+msgstr ""
 
-#: ../rpm.c:142
-msgid "    --rebuild <source_package>"
-msgstr "    --rebuild <källkods_paket>"
+#: /home/devel/jbj/src/rpm3/rpm.c:481
+msgid "like --rebuild, but don't build any package"
+msgstr ""
 
-#: ../rpm.c:143
-msgid "                        - install source package, build binary package,"
-msgstr "                        - installera källkods paket, tillverka binär paket,"
+#: /home/devel/jbj/src/rpm3/rpm.c:483
+msgid "sign a package (discard current signature)"
+msgstr ""
 
-#: ../rpm.c:144
-msgid "                          and remove spec file, sources, patches, and icons."
-msgstr "                          och ta bort spec filen, källkoden, patchar, och ikoner."
+#: /home/devel/jbj/src/rpm3/rpm.c:485
+msgid "add a signature to a package"
+msgstr ""
 
-#: ../rpm.c:145
-msgid "    -K"
-msgstr "    -K"
+#: /home/devel/jbj/src/rpm3/rpm.c:488
+msgid "verify package signature"
+msgstr ""
 
-#: ../rpm.c:146
-msgid "    --checksig <pkg>+  - verify PGP signature"
-msgstr "    --checksig <pkg>+  - verifiera PGP signatur"
+#: /home/devel/jbj/src/rpm3/rpm.c:490
+msgid "skip any PGP signatures"
+msgstr ""
 
-#: ../rpm.c:166
-msgid "unable to open: %s\n"
-msgstr "kan inte öppna: %s\n"
+#: /home/devel/jbj/src/rpm3/rpm.c:492
+msgid "skip any MD5 signatures"
+msgstr ""
 
-#: ../rpm.c:173 ../rpm.c:183
-msgid "Build failed.\n"
-msgstr "Tillverkningen misslyckades.\n"
+#: /home/devel/jbj/src/rpm3/rpm.c:494
+msgid "list the tags that can be used in a query format"
+msgstr ""
 
-#: ../rpm.c:181
-msgid "%s doesn't build on this architecture\n"
-msgstr "%s går inte att tillverka på den här platformen\n"
+#: /home/devel/jbj/src/rpm3/rpm.c:496
+msgid "make sure a valid database exists"
+msgstr ""
 
-#: ../rpm.c:280 ../rpm.c:292 ../rpm.c:306 ../rpm.c:312 ../rpm.c:321 ../rpm.c:327 ../rpm.c:377 ../rpm.c:469
+#: /home/devel/jbj/src/rpm3/rpm.c:498
+msgid "rebuild database from existing database"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:637 /home/devel/jbj/src/rpm3/rpm.c:643
+#: /home/devel/jbj/src/rpm3/rpm.c:650 /home/devel/jbj/src/rpm3/rpm.c:656
+#: /home/devel/jbj/src/rpm3/rpm.c:665 /home/devel/jbj/src/rpm3/rpm.c:672
+#: /home/devel/jbj/src/rpm3/rpm.c:718 /home/devel/jbj/src/rpm3/rpm.c:724
+#: /home/devel/jbj/src/rpm3/rpm.c:813 /home/devel/jbj/src/rpm3/rpm.c:820
+#: /home/devel/jbj/src/rpm3/rpm.c:826 /home/devel/jbj/src/rpm3/rpm.c:834
+#: /home/devel/jbj/src/rpm3/rpm.c:840 /home/devel/jbj/src/rpm3/rpm.c:848
+#: /home/devel/jbj/src/rpm3/rpm.c:881 /home/devel/jbj/src/rpm3/rpm.c:927
+#: /home/devel/jbj/src/rpm3/rpm.c:933
 msgid "only one major mode may be specified"
 msgstr "enbart ett läge kan specifieras"
 
-#: ../rpm.c:286
-msgid "only one type of query may be performed at a time"
-msgstr "enbart en slags undersökningar kan utföras åt gången"
-
-#: ../rpm.c:299
-msgid "only one type of verify may be performed at a time"
-msgstr "enbart en slags verifieringar kan utföras åt gången"
-
-#: ../rpm.c:314
-msgid "-u and --uninstall are depricated and will be removed soon.\n"
+#: /home/devel/jbj/src/rpm3/rpm.c:658
+#, fuzzy
+msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u och --uninstall är föråldrade och vill snart bli borttagna.\n"
 
-#: ../rpm.c:316
+#: /home/devel/jbj/src/rpm3/rpm.c:660
 msgid "Use -e or --erase instead.\n"
 msgstr "Använd -e eller --erase istället.\n"
 
-#: ../rpm.c:331
+#: /home/devel/jbj/src/rpm3/rpm.c:676
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr "--build (-b) kräver en av a,b,i,c,p,l som dess enda argument"
 
-#: ../rpm.c:400 ../rpm.c:408 ../rpm.c:415 ../rpm.c:423 ../rpm.c:432 ../rpm.c:440 ../rpm.c:448
+#: /home/devel/jbj/src/rpm3/rpm.c:680
+#, fuzzy
+msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
+msgstr "--build (-b) kräver en av a,b,i,c,p,l som dess enda argument"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:747 /home/devel/jbj/src/rpm3/rpm.c:754
+#: /home/devel/jbj/src/rpm3/rpm.c:762 /home/devel/jbj/src/rpm3/rpm.c:770
+#: /home/devel/jbj/src/rpm3/rpm.c:790 /home/devel/jbj/src/rpm3/rpm.c:798
+#: /home/devel/jbj/src/rpm3/rpm.c:806
 msgid "one type of query/verify may be performed at a time"
 msgstr "en typ av undersökning/verifiering kan utföras åt gången"
 
-#: ../rpm.c:460
-msgid "arguments to --root (-r) must begin with a /"
+#: /home/devel/jbj/src/rpm3/rpm.c:856
+#, fuzzy
+msgid "arguments to --dbpath must begin with a /"
 msgstr "argument till --root (-r) måste börja med /"
 
-#: ../rpm.c:485
+#: /home/devel/jbj/src/rpm3/rpm.c:863
+#, fuzzy
+msgid "one type of query may be performed at a time"
+msgstr "enbart en slags undersökningar kan utföras åt gången"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:887
+#, fuzzy
+msgid "relocations must begin with a /"
+msgstr "argument till --root (-r) måste börja med /"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:889
+msgid "relocations must contain a ="
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:892
+msgid "relocations must have a / following the ="
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:945
+msgid "--dbpath given for operation that does not use a database"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:950
+#, fuzzy
+msgid "--timecheck may only be used during package builds"
+msgstr "--clean kan enbart användas vid paket tillverkning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:953 /home/devel/jbj/src/rpm3/rpm.c:956
 msgid "unexpected query specifiers"
 msgstr "oväntade undersöknings parameterar"
 
-#: ../rpm.c:489
+#: /home/devel/jbj/src/rpm3/rpm.c:960
 msgid "unexpected query source"
 msgstr "oväntad undersöknings källa"
 
-#: ../rpm.c:492
+#: /home/devel/jbj/src/rpm3/rpm.c:963
 msgid "only installation and upgrading may be forced"
 msgstr "enbart installation och upgradering kan bli tvingade"
 
-#: ../rpm.c:495
+#: /home/devel/jbj/src/rpm3/rpm.c:966
+#, fuzzy
+msgid "files may only be relocated during package installation"
+msgstr "--replacefiles kan enbart användas vid paket installation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:969
+#, fuzzy
+msgid "only one of --prefix or --relocate may be used"
+msgstr "enbart ett läge kan specifieras"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:972
+#, fuzzy
+msgid "--relocate may only be used when installing new packages"
+msgstr "--clean kan enbart användas vid paket tillverkning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:975
+#, fuzzy
+msgid "--prefix may only be used when installing new packages"
+msgstr "--sign kan enbart användas vid paket tillverkning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:978
+#, fuzzy
+msgid "arguments to --prefix must begin with a /"
+msgstr "argument till --root (-r) måste börja med /"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:981
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan enbart användas vid paket installation"
 
-#: ../rpm.c:499
+#: /home/devel/jbj/src/rpm3/rpm.c:985
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan enbart användas vid paket installation"
 
-#: ../rpm.c:503
+#: /home/devel/jbj/src/rpm3/rpm.c:989
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles kan enbart användas vid paket installation"
 
-#: ../rpm.c:507
+#: /home/devel/jbj/src/rpm3/rpm.c:993
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan enbart användas vid paket installation"
 
-#: ../rpm.c:511
-msgid "--test may only be specified during package installation and uninstallation"
+#: /home/devel/jbj/src/rpm3/rpm.c:997
+#, fuzzy
+msgid "--excludedocs may only be specified during package installation"
+msgstr "--percent kan enbart användas vid paket installation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1001
+#, fuzzy
+msgid "--includedocs may only be specified during package installation"
+msgstr "--percent kan enbart användas vid paket installation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1005
+#, fuzzy
+msgid "only one of --excludedocs and --includedocs may be specified"
+msgstr "enbart ett läge kan specifieras"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1009
+#, fuzzy
+msgid "--ignorearch may only be specified during package installation"
+msgstr "--percent kan enbart användas vid paket installation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1013
+#, fuzzy
+msgid "--ignoreos may only be specified during package installation"
+msgstr "--percent kan enbart användas vid paket installation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1017
+#, fuzzy
+msgid "--allmatches may only be specified during package erasure"
+msgstr "--replacepkgs kan enbart användas vid paket installation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1021
+#, fuzzy
+msgid "--allfiles may only be specified during package installation"
+msgstr "--replacefiles kan enbart användas vid paket installation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1025
+#, fuzzy
+msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--test kan enbart användas vid paket installation och avinstallation"
 
-#: ../rpm.c:516
-msgid "--root (-r) may only be specified during installation, uninstallation, and querying"
-msgstr "--root (-r) kan enbart användas vid paket installation, avinstallation, och undersökning"
+#: /home/devel/jbj/src/rpm3/rpm.c:1030
+#, fuzzy
+msgid ""
+"--noscripts may only be specified during package installation, erasure, and "
+"verification"
+msgstr "--test kan enbart användas vid paket installation och avinstallation"
 
-#: ../rpm.c:520
-msgid "--clean may only be used during package building"
+#: /home/devel/jbj/src/rpm3/rpm.c:1034
+#, fuzzy
+msgid ""
+"--notriggers may only be specified during package installation, erasure, and "
+"verification"
+msgstr "--test kan enbart användas vid paket installation och avinstallation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1039
+#, fuzzy
+msgid ""
+"--nodeps may only be specified during package installation, erasure, and "
+"verification"
+msgstr "--test kan enbart användas vid paket installation och avinstallation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1043
+#, fuzzy
+msgid "--nofiles may only be specified during package verification"
+msgstr "--replacefiles kan enbart användas vid paket installation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1048
+#, fuzzy
+msgid ""
+"--test may only be specified during package installation, erasure, and "
+"building"
+msgstr "--test kan enbart användas vid paket installation och avinstallation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1053
+#, fuzzy
+msgid ""
+"--root (-r) may only be specified during installation, erasure, querying, "
+"and database rebuilds"
+msgstr ""
+"--root (-r) kan enbart användas vid paket installation, avinstallation, och "
+"undersökning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1058
+msgid "arguments to --root (-r) must begin with a /"
+msgstr "argument till --root (-r) måste börja med /"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1061
+#, fuzzy
+msgid "--clean may only be used with -b and -t"
 msgstr "--clean kan enbart användas vid paket tillverkning"
 
-#: ../rpm.c:523
+#: /home/devel/jbj/src/rpm3/rpm.c:1064
+#, fuzzy
+msgid "--rmsource may only be used with -b and -t"
+msgstr "--oldpackage kan enbart användas vid paket uppgraderingar"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1067
+#, fuzzy
+msgid "--short-circuit may only be used during package building"
+msgstr "--sign kan enbart användas vid paket tillverkning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1071
+msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1076
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage kan enbart användas vid paket uppgraderingar"
 
-#: ../rpm.c:532
+#: /home/devel/jbj/src/rpm3/rpm.c:1079
+#, fuzzy
+msgid "--dump may only be used during queries"
+msgstr "--oldpackage kan enbart användas vid paket uppgraderingar"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1082
+msgid "--dump of queries must be used with -l, -c, or -d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1087
+#, fuzzy
+msgid ""
+"ftp options can only be used during package queries, installs, and upgrades"
+msgstr "--sign kan enbart användas vid paket tillverkning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1094
+#, fuzzy
+msgid "--nopgp may only be used during signature checking"
+msgstr "--sign kan enbart användas vid paket tillverkning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1097
+#, fuzzy
+msgid ""
+"--nopgp may only be used during signature checking and package verification"
+msgstr "--sign kan enbart användas vid paket tillverkning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1110
 msgid "Pass phrase check failed\n"
 msgstr "Kontrollen av Id-strängen misslyckades\n"
 
-#: ../rpm.c:535
+#: /home/devel/jbj/src/rpm3/rpm.c:1113
 msgid "Pass phrase is good.\n"
 msgstr "Id strängen är ok.\n"
 
-#: ../rpm.c:540
+#: /home/devel/jbj/src/rpm3/rpm.c:1125
 msgid "--sign may only be used during package building"
 msgstr "--sign kan enbart användas vid paket tillverkning"
 
-#: ../rpm.c:554
+#: /home/devel/jbj/src/rpm3/rpm.c:1159
+msgid "unexpected arguments to --querytags "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1170
 msgid "no packages given for signature check"
 msgstr "inga paket angivna för signatur kontroll"
 
-#: ../rpm.c:562
+#: /home/devel/jbj/src/rpm3/rpm.c:1177
+#, fuzzy
+msgid "no packages given for signing"
+msgstr "inga paket angivna för avinstallation"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1186
 msgid "no packages files given for rebuild"
 msgstr "inga paket filer angivna för omtillverkning"
 
-#: ../rpm.c:585
+#: /home/devel/jbj/src/rpm3/rpm.c:1249
 msgid "no spec files given for build"
 msgstr "ingen spec filer angivna för tillverkning"
 
-#: ../rpm.c:595
+#: /home/devel/jbj/src/rpm3/rpm.c:1251
+#, fuzzy
+msgid "no tar files given for build"
+msgstr "ingen spec filer angivna för tillverkning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1264
 msgid "no packages given for uninstall"
 msgstr "inga paket angivna för avinstallation"
 
-#: ../rpm.c:611
+#: /home/devel/jbj/src/rpm3/rpm.c:1304
 msgid "no packages given for install"
 msgstr "inga paket angivna för installation"
 
-#: ../rpm.c:634
+#: /home/devel/jbj/src/rpm3/rpm.c:1328
+#, fuzzy
+msgid "extra arguments given for query of all packages"
+msgstr "inga parametrar angivna för undersökning"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1333
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för undersökning"
 
-#: ../rpm.c:658
+#: /home/devel/jbj/src/rpm3/rpm.c:1350
 msgid "no arguments given for verify"
 msgstr "inga parametrar angivna för verifiering"
+
+#: /home/devel/jbj/src/rpm3/query.c:28
+#, c-format
+msgid "error in format: %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:65
+msgid "(contains no files)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:319 /home/devel/jbj/src/rpm3/verify.c:138
+msgid "error: could not read database record\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:355 /home/devel/jbj/src/rpm3/query.c:362
+#: /home/devel/jbj/src/rpm3/verify.c:194 /home/devel/jbj/src/rpm3/verify.c:201
+#, c-format
+msgid "open of %s failed: %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:378
+msgid "old format source packages cannot be queried\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:387
+#, c-format
+msgid "%s does not appear to be a RPM package\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:391
+#, c-format
+msgid "query of %s failed\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:404 /home/devel/jbj/src/rpm3/verify.c:178
+msgid "could not read database record!\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:415 /home/devel/jbj/src/rpm3/verify.c:224
+#, c-format
+msgid "group %s does not contain any packages\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:425
+#, c-format
+msgid "no package provides %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:435
+#, fuzzy, c-format
+msgid "no package triggers %s\n"
+msgstr "inga paket angivna för installation"
+
+#: /home/devel/jbj/src/rpm3/query.c:445
+#, c-format
+msgid "no package requires %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:463 /home/devel/jbj/src/rpm3/query.c:469
+msgid "maximum path length exceeded\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:481
+#, c-format
+msgid "file %s: %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:484 /home/devel/jbj/src/rpm3/verify.c:238
+#, c-format
+msgid "file %s is not owned by any package\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:497
+#, c-format
+msgid "invalid package number: %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:500
+#, c-format
+msgid "showing package: %d\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:504
+#, c-format
+msgid "record %d could not be read\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:321 /home/devel/jbj/src/rpm3/query.c:516
+#: /home/devel/jbj/src/rpm3/verify.c:249
+#, fuzzy, c-format
+msgid "package %s is not installed\n"
+msgstr "inga paket angivna för installation"
+
+#: /home/devel/jbj/src/rpm3/query.c:519 /home/devel/jbj/src/rpm3/verify.c:251
+#, c-format
+msgid "error looking for package %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:68
+#: /home/devel/jbj/src/rpm3/install.c:184
+#, c-format
+msgid "error: cannot open file %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:85
+#, c-format
+msgid "Installing %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:103
+#: /home/devel/jbj/src/rpm3/install.c:197
+#, c-format
+msgid "error: %s does not appear to be a RPM package\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:108
+#: /home/devel/jbj/src/rpm3/install.c:202
+#: /home/devel/jbj/src/rpm3/install.c:411
+#, c-format
+msgid "error: %s cannot be installed\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:155
+#, fuzzy, c-format
+msgid "Retrieving %s\n"
+msgstr "RPM version %s\n"
+
+#: /home/devel/jbj/src/rpm3/install.c:166
+#, c-format
+msgid "error: skipping %s - transfer failed - %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:222
+#: /home/devel/jbj/src/rpm3/install.c:311
+#, c-format
+msgid "error: cannot open %s%s/packages.rpm\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:243
+msgid "failed dependencies:\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:324
+#, c-format
+msgid "error searching for package %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:332
+#, c-format
+msgid "\"%s\" specifies multiple packages\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:369
+msgid "removing these packages would break dependencies:\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:402
+#, c-format
+msgid "error: cannot open %s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:450
+#, c-format
+msgid " is needed by %s-%s-%s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/install.c:453
+#, c-format
+msgid " conflicts with %s-%s-%s\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/verify.c:91
+#, c-format
+msgid "Unsatisfied dependencies for %s-%s-%s: "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:26
+#: /home/devel/jbj/src/rpm3/checksig.c:157
+#, c-format
+msgid "%s: Open failed\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:30
+#: /home/devel/jbj/src/rpm3/checksig.c:162
+#, c-format
+msgid "%s: readLead failed\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:34
+#, c-format
+msgid "%s: Can't sign v1.0 RPM\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:38
+#, c-format
+msgid "%s: Can't re-sign v2.0 RPM\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:42
+#: /home/devel/jbj/src/rpm3/checksig.c:172
+#, c-format
+msgid "%s: rpmReadSignature failed\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:55
+#: /home/devel/jbj/src/rpm3/checksig.c:186
+msgid "Couldn't read the header/archive"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:62
+msgid "Couldn't write header/archive to temp file"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:110
+msgid "Couldn't read sigtarget"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:119
+msgid "Couldn't write package"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:167
+#, c-format
+msgid "%s: No signature available (v1.0 RPM)\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:177
+#, c-format
+msgid "%s: No signature available\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/checksig.c:193
+#, fuzzy, c-format
+msgid "Unable to write %s"
+msgstr "kan inte öppna: %s\n"
+
+#: /home/devel/jbj/src/rpm3/checksig.c:285
+#: /home/devel/jbj/src/rpm3/checksig.c:292
+msgid " (MISSING KEYS)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/url.c:47
+#, c-format
+msgid "Password for %s@%s: "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/url.c:131
+msgid "error: ftpport must be a number\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/url.c:189
+#, fuzzy, c-format
+msgid "failed to create %s\n"
+msgstr "kan inte öppna: %s\n"
+
+#: /home/devel/jbj/src/rpm3/ftp.c:425
+msgid "Bad FTP server response"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:428
+msgid "FTP IO error"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:431
+msgid "FTP server timeout"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:434
+msgid "Unable to lookup FTP server host address"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:437
+msgid "Unable to lookup FTP server host name"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:440
+msgid "Failed to connect to FTP server"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:443
+msgid "Failed to establish data connection to FTP server"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:446
+msgid "IO error to local file"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:449
+msgid "Error setting remote server to passive mode"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:452
+msgid "File not found on server"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/ftp.c:456
+msgid "FTP Unknown or unexpected error"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:310
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:118
+#, fuzzy, c-format
+msgid "cannot read header at %d for uninstall"
+msgstr "inga paket angivna för avinstallation"
+
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:131
+#, c-format
+msgid "package %s-%s-%s contain shared files\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:506
+msgid "execution of script failed"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:590
+#, c-format
+msgid "rename of %s to %s failed: %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:604
+#, c-format
+msgid "cannot remove %s - directory not empty"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:607
+#, c-format
+msgid "rmdir of %s failed: %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:617
+#, c-format
+msgid "removal of %s failed: %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:122
+#, fuzzy, c-format
+msgid "failed to open %s\n"
+msgstr "kan inte öppna: %s\n"
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:135
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:142
+#, c-format
+msgid "cannot get %s lock on database"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:136
+msgid "exclusive"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:143
+msgid "shared"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:276
+#, c-format
+msgid "package %s not listed in %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:287
+#, fuzzy, c-format
+msgid "package %s not found in %s"
+msgstr "inga paket angivna för avinstallation"
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:318
+msgid "package has no name"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:463
+msgid "cannot allocate space for database"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:527
+#, c-format
+msgid "cannot read header at %d for update"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/signature.c:88
+msgid "Old (internal-only) signature!  How did you get that!?"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/signature.c:211
+#: /home/devel/jbj/src/rpm3/lib/signature.c:468
+msgid "Couldn't exec pgp"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/signature.c:222
+msgid "pgp failed"
+msgstr ""
+
+#. PGP failed to write signature
+#. Just in case
+#: /home/devel/jbj/src/rpm3/lib/signature.c:229
+msgid "pgp failed to write signature"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/signature.c:242
+msgid "unable to read the signature"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/signature.c:385
+msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/signature.c:419
+msgid "You must set \"pgp_name:\" in your rpmrc file"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/dbindex.c:16
+#, c-format
+msgid "cannot open file %s: "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/dbindex.c:43
+#, c-format
+msgid "error getting record %s from %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/dbindex.c:71
+#, c-format
+msgid "error storing record %s into %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/dbindex.c:78
+#, c-format
+msgid "error removing record %s into %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/depends.c:374
+#: /home/devel/jbj/src/rpm3/lib/depends.c:529
+#, c-format
+msgid "cannot read header at %d for dependency check"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/depends.c:816
+#, c-format
+msgid "loop in prerequisite chain: %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/formats.c:99
+#: /home/devel/jbj/src/rpm3/lib/formats.c:116
+#: /home/devel/jbj/src/rpm3/lib/formats.c:136
+#: /home/devel/jbj/src/rpm3/lib/formats.c:168
+#: /home/devel/jbj/src/rpm3/lib/header.c:1925
+#: /home/devel/jbj/src/rpm3/lib/header.c:1941
+#: /home/devel/jbj/src/rpm3/lib/header.c:1961
+msgid "(not a number)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/fs.c:42
+#, c-format
+msgid "mntctl() failed to return fugger size: %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/fs.c:117
+#, fuzzy, c-format
+msgid "failed to open %s: %s"
+msgstr "kan inte öppna: %s\n"
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1281
+msgid "? expected in expression"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1288
+msgid "{ expected after ? in expression"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1298
+#: /home/devel/jbj/src/rpm3/lib/header.c:1330
+msgid "} expected in expression"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1305
+msgid ": expected following ? subexpression"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1318
+msgid "{ expected after : in expression"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1337
+msgid "| expected at end of expression"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1431
+#, c-format
+msgid "missing { after %"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1459
+msgid "missing } after %{"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1471
+msgid "empty tag format"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1481
+msgid "empty tag name"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1496
+msgid "unknown tag"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1522
+msgid "] expected at end of array"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1538
+#, fuzzy
+msgid "unexpected ]"
+msgstr "oväntad undersöknings källa"
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1540
+#, fuzzy
+msgid "unexpected }"
+msgstr "oväntad undersöknings källa"
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1615
+#: /home/devel/jbj/src/rpm3/lib/header.c:1621
+#: /home/devel/jbj/src/rpm3/lib/header.c:1804
+msgid "(none)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/header.c:1715
+msgid "(unknown type)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/lookup.c:86
+#, c-format
+msgid "cannot read header at %d for lookup"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:19
+msgid "no dbpath has been set"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:27
+#, c-format
+msgid "temporary database %s already exists"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:33
+#, c-format
+msgid "error creating directory %s: %s"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:53
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:71
+#, c-format
+msgid "record number %d in database is bad -- skipping it"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:65
+#, c-format
+msgid "cannot add record originally at %d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/messages.c:53
+msgid "warning: "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/messages.c:59
+msgid "error: "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/messages.c:65
+msgid "fatal error: "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/messages.c:72
+msgid "internal error (rpm bug?): "
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/package.c:98
+msgid ""
+"only packages with major numbers <= 3 are supported by this version of RPM"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmlead.c:43
+#, c-format
+msgid "read failed: %s (%d)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:212
+#, c-format
+msgid "missing second ':' at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:215
+#, c-format
+msgid "missing architecture name at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:352
+#, c-format
+msgid "Incomplete data line at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:356
+#, c-format
+msgid "Too many args in data line at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:363
+#, c-format
+msgid "Bad arch/os number: %s (%s:%d)"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:396
+#, c-format
+msgid "Incomplete default line at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:401
+#, c-format
+msgid "Too many args in default line at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:531
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:547
+#, fuzzy, c-format
+msgid "Unable to open %s for reading: %s."
+msgstr "kan inte öppna: %s\n"
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:591
+#, c-format
+msgid "Failed to read %s: %s."
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:622
+#, c-format
+msgid "missing ':' at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:638
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:733
+#, c-format
+msgid "missing argument for %s at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:668
+#, c-format
+msgid "no macroname for setenv %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:699
+#, c-format
+msgid "expansion failed at %s:d \"%s\""
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:705
+#, c-format
+msgid "cannot open %s at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:723
+#, c-format
+msgid "missing architecture for %s at %s:%d"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:790
+#, c-format
+msgid "bad option '%s' at %s:%d"
+msgstr ""
+
+#~ msgid "       rpm {--where} package1 package2 ... packageN"
+#~ msgstr "       rpm {--where} paket1 paket2 ... paketN"
+
+#~ msgid "       rpm {--checksig} package1 package2 ... packageN"
+#~ msgstr "       rpm {--checksig} paket1 paket2 ... paketN"
+
+#~ msgid "    -q                  - query mode"
+#~ msgstr "    -q                  - undersök läge"
+
+#~ msgid "        -a                - query all packages"
+#~ msgstr "        -a                - undersök alla paket"
+
+#~ msgid "        -F                - like -f, but read file names from stdin"
+#~ msgstr "        -F                - liksom -f, men läser filnamn från stdin"
+
+#~ msgid ""
+#~ "        -P                - like -f, but read package names from stdin"
+#~ msgstr ""
+#~ "        -P                - liksom -f, men läser paket namn från stdin"
+
+#~ msgid "    -V"
+#~ msgstr "    -V"
+
+#~ msgid "    -y"
+#~ msgstr "    -y"
+
+#~ msgid "    --verify            - verify a package installation"
+#~ msgstr "    --verify            - verifiera en paket installation"
+
+#~ msgid "    -i <packagefile>\t- install package"
+#~ msgstr "    -i <paketfil>\t- installera paket"
+
+#~ msgid "       -v\t        - be a little verbose "
+#~ msgstr "       -v\t        - visa lite mer information "
+
+#~ msgid "       -h"
+#~ msgstr "       -h"
+
+#~ msgid ""
+#~ "      --search          - search the paths listed in /etc/rpmrc for rpms"
+#~ msgstr ""
+#~ "      --search          - leta i de sökvägar som finns i /etc/rpmrc efter "
+#~ "rpms"
+
+#~ msgid "    --upgrade <packagefile>"
+#~ msgstr "    --upgrade <paketfil>"
+
+#~ msgid "                          on upgrades does this automatically)"
+#~ msgstr ""
+#~ "                          vid uppgraderingar sker detta automatiskt)"
+
+#~ msgid "    --erase <package>"
+#~ msgstr "    --erase <paket>"
+
+#~ msgid "    -e <package>        - uninstall (erase) package"
+#~ msgstr "    -e <paket>        - avinstallera (radera) paket"
+
+#~ msgid ""
+#~ "      --keep-temps      - do not delete scripts (or any temp files) in /tmp"
+#~ msgstr ""
+#~ "      --keep-temps      - tag inte bort några skripts (eller några temporär "
+#~ "filer) i /tmp"
+
+#~ msgid ""
+#~ "      --test            - do not execute any stages, implies --keep-temps"
+#~ msgstr ""
+#~ "      --test            - utför inte några steg, implicerar --keep-temps"
+
+#~ msgid "\t\t\t  in /tmp - useful for testing"
+#~ msgstr "\t\t\t  i /tmp - bra för att testa"
+
+#~ msgid "    --where <pkg>+      - search paths listed in /etc/rpmrc for rpms"
+#~ msgstr ""
+#~ "    --where <pkg>+      - leta i sökvägarna som finns i /etc/rpmrc efter rpms"
+
+#~ msgid "    --rebuild <source_package>"
+#~ msgstr "    --rebuild <källkods_paket>"
+
+#~ msgid "    -K"
+#~ msgstr "    -K"
+
+#~ msgid "    --checksig <pkg>+  - verify PGP signature"
+#~ msgstr "    --checksig <pkg>+  - verifiera PGP signatur"
+
+#~ msgid "Build failed.\n"
+#~ msgstr "Tillverkningen misslyckades.\n"
+
+#~ msgid "%s doesn't build on this architecture\n"
+#~ msgstr "%s går inte att tillverka på den här platformen\n"
+
+#~ msgid "only one type of verify may be performed at a time"
+#~ msgstr "enbart en slags verifieringar kan utföras åt gången"
