@@ -3,8 +3,8 @@
 	- add version check for package with provides and obsoletes.
 	- hack out O_DIRECT support in db4 for now.
 	- build with external beecrypt-3.0.0.
-	- blueprint beecrypt-3.0.0 changes against rpm-4.3.
 	- x86_64 -> athlon, ppc64[ip]series -> ppc64 arch compatibility.
+	- treat missing epoch's exactly the same as Epoch: 0.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.
