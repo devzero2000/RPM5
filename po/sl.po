@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-16 21:13-0400\n"
+"POT-Creation-Date: 2001-07-17 15:28-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3564,17 +3564,17 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "v paketu manjka tako seznam skupin kot identitet (to se ne sme zgoditi)"
 
-#: lib/verify.c:409
+#: lib/verify.c:405
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "manjka     %s\n"
 
-#: lib/verify.c:502
+#: lib/verify.c:498
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: lib/verify.c:541
+#: lib/verify.c:537
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
