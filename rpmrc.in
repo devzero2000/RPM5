@@ -1,22 +1,5 @@
 # $Id$
 #############################################################
-# Default values, often overridden in /etc/rpmrc
-#
-# This file *should not be modified*. Local customizations
-# belong in /etc/rpmrc, not here. This file will be replaced
-# whenever a new version of RPM is installed.
-
-dbpath:		@varprefix@/lib/rpm
-topdir:		@prefix@/src/redhat
-tmppath:	@tmpdir@
-gzipbin:	@GZIPBIN@
-bzip2bin:	@BZIP2BIN@
-defaultdocdir:  @prefix@/doc
-fixperms:	@FIXPERMS@
-rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
-instchangelog:	5
-
-#############################################################
 
 # Please send new entries to rpm-list@redhat.com
 
