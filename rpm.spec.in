@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.19
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -305,7 +305,7 @@ exit 0
 %ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/alpha*
 %endif
-%ifarch sparc sparcv9 sparc64
+%ifarch sparc sparcv8 sparcv9 sparc64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/sparc*
 %endif
 %ifarch ia64
@@ -485,6 +485,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Mar 10 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.20
+- add sparcv8 and enable elf32/elf64 Zon sparc64 (#117302).
+
 * Tue Mar  9 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.19
 - fix: sq->reaped needs sighold(SIGCHLD)/sigrelease(SIGCHLD) (#117620).
 

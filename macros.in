@@ -328,7 +328,7 @@ package or when debugging this package.\
 %_filter_GLIBC_PRIVATE			0
 
 # Path to selinux source policy file context patterns.
-%__file_context_path /etc/security/selinux/src/policy/file_contexts/file_contexts
+%__file_context_path /etc/security/selinux/file_contexts
 
 #
 # Path to selinux src policy file context patterns used to add
