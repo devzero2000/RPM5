@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-02-03 18:33-0500\n"
+"POT-Creation-Date: 2002-02-04 16:22-0500\n"
 "PO-Revision-Date: 2002-01-31 22:29+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2667,146 +2667,166 @@ msgstr "패키지를 업그레이드 합니다"
 msgid "generate signature"
 msgstr "서명을 작성합니다"
 
-#: lib/poptQV.c:76
+#: lib/poptQV.c:88
 msgid "query/verify all packages"
 msgstr "모든 패키지에 대해 질의/검증합니다"
 
-#: lib/poptQV.c:78
+#: lib/poptQV.c:90
 msgid "query/verify package(s) owning file"
 msgstr "파일이 들어있는 패키지에 대해 질의/검증 합니다"
 
-#: lib/poptQV.c:80
+#: lib/poptQV.c:92
+#, fuzzy
+msgid "query/verify package(s) with file identifier"
+msgstr "파일이 들어있는 패키지에 대해 질의/검증 합니다"
+
+#: lib/poptQV.c:94
 msgid "query/verify package(s) in group"
 msgstr "그룹 안의 패키지를 질의/검증 합니다"
 
-#: lib/poptQV.c:82
+#: lib/poptQV.c:96
+#, fuzzy
+msgid "query/verify package(s) with header identifier"
+msgstr "파일이 들어있는 패키지에 대해 질의/검증 합니다"
+
+#: lib/poptQV.c:98
 msgid "query/verify a package file (i.e. a binary *.rpm file)"
 msgstr "패키지 파일을 질의/검증 합니다 (예: 바이너리 *.rpm 파일)"
 
-#: lib/poptQV.c:84
+#: lib/poptQV.c:100
+#, fuzzy
+msgid "query/verify package(s) with package identifier"
+msgstr "파일이 들어있는 패키지에 대해 질의/검증 합니다"
+
+#: lib/poptQV.c:102
 msgid "rpm query mode"
 msgstr "rpm 질의 모드"
 
-#: lib/poptQV.c:88
+#: lib/poptQV.c:106
 msgid "display known query tags"
 msgstr "질의 태그를 보여줍니다"
 
-#: lib/poptQV.c:90
+#: lib/poptQV.c:108
 msgid "query a spec file"
 msgstr "spec 파일에 대해 질의합니다"
 
-#: lib/poptQV.c:90
+#: lib/poptQV.c:108
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:92
+#: lib/poptQV.c:110
+#, fuzzy
+msgid "query/verify package(s) from install transaction"
+msgstr "그룹 안의 패키지를 질의/검증 합니다"
+
+#: lib/poptQV.c:112
 msgid "query the package(s) triggered by the package"
 msgstr "패키지로 인해 생성되는(triggered) 패키지에 대해 질의합니다"
 
-#: lib/poptQV.c:94
+#: lib/poptQV.c:114
 msgid "rpm verify mode"
 msgstr "rpm 검증 모드"
 
-#: lib/poptQV.c:96
+#: lib/poptQV.c:116
 msgid "rpm verify mode (legacy)"
 msgstr "rpm 검증 모드 (legacy)"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:118
 msgid "query/verify the package(s) which require a dependency"
 msgstr "의존성을 필요로 하는 패키지에 대해 질의/검증 합니다"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:120
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "의존성을 제공하는 패키지에 대해 질의/검증 합니다"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:171
 msgid "list all configuration files"
 msgstr "모든 설정 파일을 나열합니다"
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:173
 msgid "list all documentation files"
 msgstr "모든 문서 파일을 나열합니다"
 
-#: lib/poptQV.c:155
+#: lib/poptQV.c:175
 msgid "dump basic file information"
 msgstr "기본 파일 정보를 보여줍니다"
 
-#: lib/poptQV.c:157
+#: lib/poptQV.c:177
 msgid "list files in package"
 msgstr "패키지 안의 파일을 나열합니다"
 
-#: lib/poptQV.c:162
+#: lib/poptQV.c:182
 #, c-format
 msgid "skip %%ghost files"
 msgstr "%%ghost 파일을 생략합니다"
 
-#: lib/poptQV.c:166
+#: lib/poptQV.c:186
 #, c-format
 msgid "skip %%license files"
 msgstr "%%license 파일을 생략합니다"
 
-#: lib/poptQV.c:169
+#: lib/poptQV.c:189
 #, c-format
 msgid "skip %%readme files"
 msgstr "%%readme 파일을 생략합니다"
 
-#: lib/poptQV.c:175
+#: lib/poptQV.c:195
 msgid "use the following query format"
 msgstr "다음의 질의 형식을 사용하십시요"
 
-#: lib/poptQV.c:177
+#: lib/poptQV.c:197
 msgid "substitute i18n sections into spec file"
 msgstr "spec 파일 안의 i18n 항목(section)을 대체(substitute)합니다"
 
-#: lib/poptQV.c:179
+#: lib/poptQV.c:199
 msgid "display the states of the listed files"
 msgstr "나열된 파일의 상태(state)를 보여줍니다"
 
-#: lib/poptQV.c:181
+#: lib/poptQV.c:201
 msgid "display a verbose file listing"
 msgstr "파일 목록을 자세히 보여줍니다"
 
-#: lib/poptQV.c:199
+#: lib/poptQV.c:219
 msgid "don't verify MD5 digest of files"
 msgstr "파일의 MD5 축약(digest)을 검사하지 않습니다"
 
-#: lib/poptQV.c:202
+#: lib/poptQV.c:222
 msgid "don't verify size of files"
 msgstr "파일의 용량을 검사하지 않습니다"
 
-#: lib/poptQV.c:205
+#: lib/poptQV.c:225
 msgid "don't verify symlink path of files"
 msgstr "파일의 심볼릭 링크 경로를 검사하지 않습니다"
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:228
 msgid "don't verify owner of files"
 msgstr "파일의 소유자를 검사하지 않습니다"
 
-#: lib/poptQV.c:211
+#: lib/poptQV.c:231
 msgid "don't verify group of files"
 msgstr "파일의 그룹을 검사하지 않습니다"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:234
 msgid "don't verify modification time of files"
 msgstr "파일의 최종 변경 시간을 검사하지 않습니다"
 
-#: lib/poptQV.c:217 lib/poptQV.c:220
+#: lib/poptQV.c:237 lib/poptQV.c:240
 msgid "don't verify mode of files"
 msgstr "파일의 모드를 검사하지 않습니다"
 
-#: lib/poptQV.c:223
+#: lib/poptQV.c:243
 msgid "don't verify files in package"
 msgstr "패키지 안의 파일을 검사하지 않습니다"
 
-#: lib/poptQV.c:225
+#: lib/poptQV.c:245
 msgid "don't verify package dependencies"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: lib/poptQV.c:227 lib/poptQV.c:231
+#: lib/poptQV.c:247 lib/poptQV.c:251
 msgid "don't execute %verifyscript (if any)"
 msgstr "%verifyscript를 실행하지 않습니다 (있을 경우)"
 
-#: lib/poptQV.c:234
+#: lib/poptQV.c:254
 msgid "don't verify header SHA1 digest"
 msgstr "SHA1 축약(digest) 헤더를 검사하지 않습니다"
 
@@ -3011,82 +3031,92 @@ msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 msgid "can't query %s: %s\n"
 msgstr "%s(을)를 질의할 수 없음: %s\n"
 
-#: lib/query.c:595 lib/query.c:629 lib/rpminstall.c:324 lib/rpminstall.c:468
+#: lib/query.c:613 lib/query.c:647 lib/rpminstall.c:324 lib/rpminstall.c:468
 #: lib/rpminstall.c:855
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
 
-#: lib/query.c:608
+#: lib/query.c:626
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s(을)를 질의하는데 실패했습니다\n"
 
-#: lib/query.c:614
+#: lib/query.c:632
 msgid "old format source packages cannot be queried\n"
 msgstr "이전 형식의 소스 패키지는 질의할 수 없습니다\n"
 
-#: lib/query.c:639 lib/rpminstall.c:481
+#: lib/query.c:657 lib/rpminstall.c:481
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 읽는데 실패했습니다: %s\n"
 
-#: lib/query.c:681
+#: lib/query.c:699
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 "%s spec 파일을 질의하는데 실패했습니다, 파일을 처리(parse)할 수 없습니다\n"
 
-#: lib/query.c:703
+#: lib/query.c:721
 msgid "no packages\n"
 msgstr "패키지가 없습니다\n"
 
-#: lib/query.c:722
+#: lib/query.c:740
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s 그룹은 어떤 패키지에도 포함되어 있지 않습니다\n"
 
-#: lib/query.c:732
+#: lib/query.c:750
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s(을)를 생성하는(trigger) 패키지가 없습니다\n"
 
-#: lib/query.c:742
+#: lib/query.c:764 lib/query.c:785 lib/query.c:803 lib/query.c:833
+#, fuzzy, c-format
+msgid "malformed %s: %s\n"
+msgstr "%s(을)를 읽는데 실패함: %s.\n"
+
+#: lib/query.c:773 lib/query.c:791 lib/query.c:809 lib/query.c:838
+#, fuzzy, c-format
+msgid "no package matches %s: %s\n"
+msgstr "%s(을)를 생성하는(trigger) 패키지가 없습니다\n"
+
+#: lib/query.c:849
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s(을)를 필요로 하는 패키지가 없습니다\n"
 
-#: lib/query.c:753
+#: lib/query.c:860
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s(을)를 제공하는 패키지가 없습니다\n"
 
-#: lib/query.c:788
+#: lib/query.c:894
 #, c-format
 msgid "file %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: lib/query.c:792
+#: lib/query.c:898
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s 파일은 어떤 패키지에도 들어있지 않습니다\n"
 
-#: lib/query.c:818
+#: lib/query.c:924
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/query.c:821
+#: lib/query.c:927
 #, c-format
 msgid "package record number: %u\n"
 msgstr "패키지 기록(record) 번호: %u\n"
 
-#: lib/query.c:826
+#: lib/query.c:931
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:837 lib/rpminstall.c:632
+#: lib/query.c:942 lib/rpminstall.c:632
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -3749,7 +3779,7 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "패키지의 수를 세는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2064 rpmdb/rpmdb.c:3319
+#: rpmdb/rpmdb.c:2064 rpmdb/rpmdb.c:3338
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u(이)가 잘못되었습니다 -- 생략합니다.\n"
@@ -3764,95 +3794,95 @@ msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:2459
+#: rpmdb/rpmdb.c:2507
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%2$s 인덱스에서 \"%1$s\"(을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2468
+#: rpmdb/rpmdb.c:2511
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%2$s 인덱스에서 %1$d 항목들(entries)을 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2671
+#: rpmdb/rpmdb.c:2680
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2752
+#: rpmdb/rpmdb.c:2839
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%2$s 인덱스에 \"%1$s\"(을)를 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:2763
+#: rpmdb/rpmdb.c:2843
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3205
+#: rpmdb/rpmdb.c:3224
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3를 재구축한 후에 %s(을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:3238
+#: rpmdb/rpmdb.c:3257
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
 
-#: rpmdb/rpmdb.c:3265
+#: rpmdb/rpmdb.c:3284
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%2$s에 %1$s 데이터베이스를 재구축 합니다\n"
 
-#: rpmdb/rpmdb.c:3269
+#: rpmdb/rpmdb.c:3288
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "임시 데이터베이스 %s(이)가 이미 존재합니다\n"
 
-#: rpmdb/rpmdb.c:3275
+#: rpmdb/rpmdb.c:3294
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: rpmdb/rpmdb.c:3277
+#: rpmdb/rpmdb.c:3296
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s 디렉토리를 생성함: %s\n"
 
-#: rpmdb/rpmdb.c:3284
+#: rpmdb/rpmdb.c:3303
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "dbapi %d로 이전 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3295
+#: rpmdb/rpmdb.c:3314
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "dbapi %d로 새로운 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3359
+#: rpmdb/rpmdb.c:3378
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%u에 처음부터 레코드를 추가할 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:3377
+#: rpmdb/rpmdb.c:3396
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "데이터베이스를 재구축하는데 실패함: 원본 데이터베이스는 그대로 유지됩니다\n"
 
-#: rpmdb/rpmdb.c:3385
+#: rpmdb/rpmdb.c:3404
 msgid "failed to replace old database with new database!\n"
 msgstr "이전 데이터베이스를 새로운 데이터베이스로 교체하는데 실패했습니다!\n"
 
-#: rpmdb/rpmdb.c:3387
+#: rpmdb/rpmdb.c:3406
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "복구하기 위해 $2$s의 파일을 $1$s의 파일로 교체합니다"
 
-#: rpmdb/rpmdb.c:3397
+#: rpmdb/rpmdb.c:3416
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: rpmdb/rpmdb.c:3399
+#: rpmdb/rpmdb.c:3418
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"

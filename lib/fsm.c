@@ -649,12 +649,12 @@ int fsmMapAttrs(FSM_t fsm)
 	    st->st_gid = finalGid;
 
 	{   rpmTransactionSet ts = fsmGetTs(fsm);
-	
-	    if (fi->fmd5s != NULL && ts != NULL
-	    && !(ts->transFlags & RPMTRANS_FLAG_NOMD5))
-		fsm->fmd5sum = fi->fmd5s[i];
-	    else
+
+	    if (ts != NULL && !(ts->transFlags & RPMTRANS_FLAG_NOMD5)) {
+		fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
+	    } else {
 		fsm->fmd5sum = NULL;
+	    }
 	}
 
     }
