@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.32
+Release: 0.33
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Dec 28 2000 Jeff Johnson <jbj@redhat.com>
+- fix: avoid FAT and other brain-dead file systems that have not inodes.
+
 * Wed Dec 27 2000 Jeff Johnson <jbj@redhat.com>
 - use malloc'ed buffer for large queries.
 

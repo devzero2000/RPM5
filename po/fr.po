@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-12-26 14:34-0500\n"
+msgstr "POT-Creation-Date: 2000-12-28 16:42-0500\n"
 
 #: build.c:26
 #, fuzzy, c-format
