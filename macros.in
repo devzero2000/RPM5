@@ -179,7 +179,7 @@
 #	run configure with correct prefix, platform, and CFLAGS.
 #
 %GNUconfigure	\
-  %{__libtoolize} --copy --force} \
+  %{__libtoolize} --copy --force \
   %{__aclocal} \
   %{__autoheader} \
   %{__automake} \
