@@ -1,5 +1,8 @@
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
+	- make peace with libtool-1.5, autoconf-2.59, automake-1.8.
+	- build with db-4.2.52 internal.
+	- refresh bsddb.
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.

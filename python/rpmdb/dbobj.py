@@ -15,8 +15,19 @@
 #           implied.
 #
 
+#
+# TODO it would be *really nice* to have an automatic shadow class populator
+# so that new methods don't need to be added  here manually after being
+# added to _bsddb.c.
+#
+
 import db
 
+try:
+    from UserDict import DictMixin
+except ImportError:
+    # DictMixin is new in Python 2.3
+    class DictMixin: pass
 
 class DBEnv:
     def __init__(self, *args, **kwargs):
@@ -28,6 +39,8 @@ class DBEnv:
         return apply(self._cobj.open, args, kwargs)
     def remove(self, *args, **kwargs):
         return apply(self._cobj.remove, args, kwargs)
+    def set_shm_key(self, *args, **kwargs):
+        return apply(self._cobj.set_shm_key, args, kwargs)
     def set_cachesize(self, *args, **kwargs):
         return apply(self._cobj.set_cachesize, args, kwargs)
     def set_data_dir(self, *args, **kwargs):
@@ -52,6 +65,8 @@ class DBEnv:
         return apply(self._cobj.set_lk_max_objects, args, kwargs)
     def set_mp_mmapsize(self, *args, **kwargs):
         return apply(self._cobj.set_mp_mmapsize, args, kwargs)
+    def set_timeout(self, *args, **kwargs):
+        return apply(self._cobj.set_timeout, args, kwargs)
     def set_tmp_dir(self, *args, **kwargs):
         return apply(self._cobj.set_tmp_dir, args, kwargs)
     def txn_begin(self, *args, **kwargs):
@@ -77,8 +92,16 @@ class DBEnv:
     def set_get_returns_none(self, *args, **kwargs):
         return apply(self._cobj.set_get_returns_none, args, kwargs)
 
+    if db.version() >= (4,1):
+        def dbremove(self, *args, **kwargs):
+            return apply(self._cobj.dbremove, args, kwargs)
+        def dbrename(self, *args, **kwargs):
+            return apply(self._cobj.dbrename, args, kwargs)
+        def set_encrypt(self, *args, **kwargs):
+            return apply(self._cobj.set_encrypt, args, kwargs)
 
-class DB:
+
+class DB(DictMixin):
     def __init__(self, dbenv, *args, **kwargs):
         # give it the proper DBEnv C object that its expecting
         self._cobj = apply(db.DB, (dbenv._cobj,) + args, kwargs)
@@ -176,3 +199,6 @@ class DB:
     def set_get_returns_none(self, *args, **kwargs):
         return apply(self._cobj.set_get_returns_none, args, kwargs)
 
+    if db.version() >= (4,1):
+        def set_encrypt(self, *args, **kwargs):
+            return apply(self._cobj.set_encrypt, args, kwargs)
