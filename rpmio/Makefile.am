@@ -85,11 +85,11 @@ tget_LDFLAGS = @LDFLAGS_STATIC@
 tget_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 thkp_SOURCES = thkp.c
-thkp_LDFLAGS = @LDLFAGS_STATIC@
+thkp_LDFLAGS = @LDFLAGS_STATIC@
 thkp_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tput_SOURCES = tput.c
-tput_LDFLAGS = @LDLFAGS_STATIC@
+tput_LDFLAGS = @LDFLAGS_STATIC@
 tput_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 
@@ -106,7 +106,7 @@ tkey_LDFLAGS = @LDFLAGS_STATIC@
 tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tring_SOURCES = tring.c
-tring_LDFLAGS = @LDLFAGS_STATIC@
+tring_LDFLAGS = @LDFLAGS_STATIC@
 tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 trpmio_SOURCES = trpmio.c
