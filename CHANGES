@@ -1,5 +1,7 @@
 2.5.6 -> 2.5.7:
+	- added ARM patches
 	- use "original db-1.85" if available (Raw Hide glibc 2.1).
+	- make sure files to sign exist before asking for the pass phrase
 
 2.5.5 -> 2.5.6:
 	- ultrapenguin 1.1.9 sparc64 changes.
