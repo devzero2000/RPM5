@@ -33,6 +33,8 @@ int build(char *arg, int buildAmount, char *passPhrase,
     char buf[BUFSIZ];
     Spec spec = NULL;
 
+    rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
+
     if (fromTarball) {
 	specDir = rpmGetVar(RPMVAR_SPECDIR);
 	tmpSpecFile = alloca(BUFSIZ);
