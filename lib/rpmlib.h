@@ -171,16 +171,20 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMUNINSTALL_JUSTDB		(1 << 2)
 #define RPMUNINSTALL_NOTRIGGERS		(1 << 3)
 
-#define RPMVERIFY_NONE             0
-#define RPMVERIFY_MD5              (1 << 0)
-#define RPMVERIFY_FILESIZE         (1 << 1)
-#define RPMVERIFY_LINKTO           (1 << 2)
-#define RPMVERIFY_USER             (1 << 3)
-#define RPMVERIFY_GROUP            (1 << 4)
-#define RPMVERIFY_MTIME            (1 << 5)
-#define RPMVERIFY_MODE             (1 << 6)
-#define RPMVERIFY_RDEV             (1 << 7)
-#define RPMVERIFY_ALL              ~(RPMVERIFY_NONE)
+#define RPMVERIFY_NONE		0
+#define RPMVERIFY_MD5		(1 << 0)
+#define RPMVERIFY_FILESIZE	(1 << 1)
+#define RPMVERIFY_LINKTO	(1 << 2)
+#define RPMVERIFY_USER		(1 << 3)
+#define RPMVERIFY_GROUP		(1 << 4)
+#define RPMVERIFY_MTIME		(1 << 5)
+#define RPMVERIFY_MODE		(1 << 6)
+#define RPMVERIFY_RDEV		(1 << 7)
+#define RPMVERIFY_READLINKFAIL	(1 << 28)
+#define RPMVERIFY_READFAIL	(1 << 29)
+#define RPMVERIFY_LSTATFAIL	(1 << 30)
+
+#define RPMVERIFY_ALL		~(RPMVERIFY_NONE)
 
 #define RPMSENSE_ANY             0
 #define RPMSENSE_SERIAL          (1 << 0)

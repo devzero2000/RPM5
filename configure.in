@@ -376,7 +376,6 @@ if test "$PO" = po; then
     AC_CHECK_HEADERS(libintl.h)
 fi
 
-AC_C_BIGENDIAN
 AC_C_INLINE
 
 dnl look for libc features

@@ -1,4 +1,6 @@
 2.5.5 -> 2.5.6:
+	- display "..?....." rather than "..5....." for unreadable files.
+	- run time (rather than compile time) host endian check.
 	- caldera patches (ray@Caldera.DE)
 	- added ARM patches.
 	- fix incorrect directory permissions using %attr/%defattr.
