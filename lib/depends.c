@@ -1080,7 +1080,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 			keyType, keyDepend+2);
 	    goto exit;
 	}
-	goto unsatisfied.
+	goto unsatisfied;
     }
 
     if (alSatisfiesDepend(&rpmdep->addedPackages, keyType, keyDepend, keyName, keyEVR, keyFlags)) {
