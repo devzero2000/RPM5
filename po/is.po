@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-07-11 00:53-0400\n"
-"PO-Revision-Date: 2001-02-02 13:25+0000\n"
+"PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
 "MIME-Version: 1.0\n"
@@ -120,8 +120,8 @@ msgstr ""
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                        [--prefix <mappa>] [--ignoreos] [--nodeps] [--"
-"allfiles]"
+"                        [--prefix <mappa>] [--ignoreos] [--nodeps] "
+"[--allfiles]"
 
 #: rpm.c:259 rpm.c:268 rpm.c:278
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
@@ -228,8 +228,8 @@ msgstr "       rpm {--verify -V -y} [-afpg] [--root <mappa>] [--rcfile <skrá>]"
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
-"                        [--dbpath <mappa>] [--nodeps] [--nofiles] [--"
-"noscripts]"
+"                        [--dbpath <mappa>] [--nodeps] [--nofiles] "
+"[--noscripts]"
 
 #: rpm.c:284
 msgid "                        [--nomd5] [targets]"
@@ -283,9 +283,8 @@ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <skrá>] [--dbpath <mappa>]"
 
 #: rpm.c:296
-#, fuzzy
 msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "       rpm {--rebuilddb} [--rcfile <skrá>] [--dbpath <mappa>]"
+msgstr "       rpm {--verifydb} [--rcfile <skrá>] [--dbpath <mappa>]"
 
 #: rpm.c:297
 msgid "       rpm {--querytags}"
@@ -497,8 +496,8 @@ msgstr "birta einungis stillingaskrár (innifelur -l)"
 
 #: rpm.c:402
 msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or -"
-"d)"
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
 msgstr ""
 
 #: rpm.c:404
@@ -666,9 +665,8 @@ msgid "    --erase <package>"
 msgstr ""
 
 #: rpm.c:488
-#, fuzzy
 msgid "    -e <package>          "
-msgstr "    -i <pakkaskrá>        "
+msgstr "    -e <pakkaskrá>        "
 
 #: lib/poptI.c:109 rpm.c:489
 msgid "erase (uninstall) package"
@@ -1206,9 +1204,9 @@ msgid "Common options for all rpm modes:"
 msgstr ""
 
 #: lib/poptI.c:25 rpmqv.c:211
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s\n"
-msgstr "Skrá %s: %s\n"
+msgstr "%s: %s\n"
 
 #: rpmqv.c:236
 #, c-format
@@ -1519,9 +1517,9 @@ msgid "create archive failed on file %s: %s\n"
 msgstr "safnskráarsmíð brást á skrá %s: %s\n"
 
 #: build/pack.c:81 lib/psm.c:1779
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "safnskráarsmíð brást á skrá %s: %s\n"
+msgstr "safnskráarsmíð brást: %s\n"
 
 #: build/pack.c:103
 #, c-format
@@ -1574,9 +1572,9 @@ msgid "readRPM: read %s: %s\n"
 msgstr ""
 
 #: build/pack.c:292 build/pack.c:485
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Fseek failed: %s\n"
-msgstr "gat ekki endurnefnt %s sem %s: %s\n"
+msgstr "%s: Fseek brást: %s\n"
 
 #: build/pack.c:308
 #, c-format
@@ -1763,9 +1761,9 @@ msgid "Unknown icon type: %s\n"
 msgstr "Óþekkt tegund táknmyndar: %s\n"
 
 #: build/parsePreamble.c:423
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Tag takes single token only: %s\n"
-msgstr "lína %d: Óleyfilegur rofi %s: %s\n"
+msgstr "lína %d: Tag tekur einungis eitt tákn: %s\n"
 
 #: build/parsePreamble.c:459
 #, c-format
@@ -1863,9 +1861,9 @@ msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
 #: build/parsePrep.c:303
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
-msgstr "lína %d: Óleyfilegur rofi %s: %s\n"
+msgstr "lína %d: Ógilt viðfang við %%setup: %s\n"
 
 #: build/parsePrep.c:321
 #, c-format
@@ -2029,9 +2027,8 @@ msgid "Unknown file type"
 msgstr ""
 
 #: lib/cpio.c:214
-#, fuzzy
 msgid "Missing hard link(s)"
-msgstr "vantar ')' í %s %s\n"
+msgstr "Harðar tengingar vantar"
 
 #: lib/cpio.c:215
 msgid "MD5 sum mismatch"
@@ -2195,9 +2192,9 @@ msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
 #: lib/fsm.c:294
-#, fuzzy, c-format
+#, c-format
 msgid "%9d %s\n"
-msgstr "lína %d: %s\n"
+msgstr "%9d %s\n"
 
 #: lib/fsm.c:1116
 #, c-format
@@ -2215,14 +2212,14 @@ msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
 #: lib/fsm.c:1656
-#, fuzzy, c-format
+#, c-format
 msgid "%s rmdir of %s failed: %s\n"
-msgstr "gat ekki endurnefnt %s sem %s: %s\n"
+msgstr "%s rmdir %s brást: %s\n"
 
 #: lib/fsm.c:1666
-#, fuzzy, c-format
+#, c-format
 msgid "%s unlink of %s failed: %s\n"
-msgstr "gat ekki endurnefnt %s sem %s: %s\n"
+msgstr "%s gat ekki eytt %s: %s\n"
 
 #: lib/fsm.c:1685
 #, c-format
@@ -2469,7 +2466,6 @@ msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
 #: lib/poptI.c:109
-#, fuzzy
 msgid "<package>+"
 msgstr "<pakkaskrá>+"
 
@@ -2538,9 +2534,8 @@ msgid "relocate files from path <old> to <new>"
 msgstr ""
 
 #: lib/poptI.c:192
-#, fuzzy
 msgid "<old>=<new>"
-msgstr "<gömulslóð>=<nýslóð>"
+msgstr "<gömul>=<ný>"
 
 #: lib/poptI.c:195
 msgid "save erased package files by repackaging"
@@ -2555,14 +2550,12 @@ msgid "<date>"
 msgstr ""
 
 #: lib/poptI.c:209
-#, fuzzy
 msgid "upgrade package(s)"
 msgstr "uppfæra pakka"
 
 #: lib/poptK.c:56
-#, fuzzy
 msgid "generate signature"
-msgstr "get ekki lesið undirskriftina\n"
+msgstr "búa til undirskrift"
 
 #: lib/poptQV.c:72
 msgid "query/verify all packages"
@@ -2664,56 +2657,48 @@ msgid "display a verbose file listing"
 msgstr ""
 
 #: lib/poptQV.c:193
-#, fuzzy
 msgid "don't verify MD5 digest of files"
-msgstr "ekki yfirfara skrárnar í pakkanum"
+msgstr "ekki yfirfara MD5 undirritun skráa"
 
 #: lib/poptQV.c:196
-#, fuzzy
 msgid "don't verify size of files"
-msgstr "ekki yfirfara skrárnar í pakkanum"
+msgstr "ekki yfirfara stærð skráa"
 
 #: lib/poptQV.c:199
-#, fuzzy
 msgid "don't verify symlink path of files"
-msgstr "ekki yfirfara skrárnar í pakkanum"
+msgstr "ekki yfirfara symlink slóð skráa"
 
 #: lib/poptQV.c:202
-#, fuzzy
 msgid "don't verify owner of files"
-msgstr "ekki yfirfara skrárnar í pakkanum"
+msgstr "ekki yfirfara eiganda skráa"
 
 #: lib/poptQV.c:205
-#, fuzzy
 msgid "don't verify group of files"
-msgstr "ekki yfirfara skrárnar í pakkanum"
+msgstr "ekki yfirfara hop skráa"
 
 #: lib/poptQV.c:208
 msgid "don't verify modification time of files"
 msgstr ""
 
 #: lib/poptQV.c:211 lib/poptQV.c:214
-#, fuzzy
 msgid "don't verify mode of files"
-msgstr "ekki yfirfara skrárnar í pakkanum"
+msgstr "ekki yfirfara heimildir skráa"
 
 #: lib/poptQV.c:217
 msgid "don't verify files in package"
 msgstr "ekki yfirfara skrárnar í pakkanum"
 
 #: lib/poptQV.c:219
-#, fuzzy
 msgid "don't verify package dependencies"
-msgstr "skoða pakkaskilyrðin"
+msgstr "ekki skoða pakkaskilyrðin"
 
 #: lib/poptQV.c:221 lib/poptQV.c:225
 msgid "don't execute %verifyscript (if any)"
 msgstr ""
 
 #: lib/poptQV.c:228
-#, fuzzy
 msgid "don't verify header SHA1 digest"
-msgstr "ekki yfirfara skrárnar í pakkanum"
+msgstr "ekki yfirfara SHA1 undirritunina"
 
 #: lib/problems.c:83
 #, c-format
@@ -2781,14 +2766,14 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
 #: lib/psm.c:587
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create %%%s %s\n"
-msgstr "gat ekki búið til specmöppu %s\n"
+msgstr "gat ekki búið til %%%s %s\n"
 
 #: lib/psm.c:593
-#, fuzzy, c-format
+#, c-format
 msgid "cannot write to %%%s %s\n"
-msgstr "get ekki skrifað í %s\n"
+msgstr "get ekki ritað í %%%s %s\n"
 
 #: lib/psm.c:631
 msgid "source package expected, binary found\n"
@@ -2901,9 +2886,9 @@ msgid "old format source packages cannot be queried\n"
 msgstr ""
 
 #: lib/query.c:580 lib/rpminstall.c:466
-#, fuzzy, c-format
+#, c-format
 msgid "%s: read manifest failed: %s\n"
-msgstr "gat ekki endurnefnt %s sem %s: %s\n"
+msgstr "%s: gat ekki lesið manifest: %s\n"
 
 #: lib/query.c:622
 #, c-format
@@ -3483,24 +3468,24 @@ msgid "shared"
 msgstr "deildann"
 
 #: rpmdb/db3.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "closed   db environment %s/%s\n"
-msgstr "lokaði gagnagrunnsumhverfi %s/%s(%s)\n"
+msgstr "lokaði gagnagrunnsumhverfi %s/%s\n"
 
 #: rpmdb/db3.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "removed  db environment %s/%s\n"
-msgstr "fjarlægði gagnagrunnsumhverfi %s/%s(%s)\n"
+msgstr "fjarlægði gagnagrunnsumhverfi %s/%s\n"
 
 #: rpmdb/db3.c:166
-#, fuzzy, c-format
+#, c-format
 msgid "opening  db environment %s/%s %s\n"
-msgstr "lokaði gagnagrunnsumhverfi %s/%s(%s)\n"
+msgstr "opna gagnagrunnsumhverfi %s/%s %s\n"
 
 #: rpmdb/db3.c:629
-#, fuzzy, c-format
+#, c-format
 msgid "closed   db index       %s/%s\n"
-msgstr "lokaði gagnagrunnsumhverfi %s/%s(%s)\n"
+msgstr ""
 
 #: rpmdb/db3.c:665
 #, c-format
@@ -3508,9 +3493,9 @@ msgid "verified db index       %s/%s\n"
 msgstr ""
 
 #: rpmdb/db3.c:848
-#, fuzzy, c-format
+#, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
-msgstr "opna gagnagrunnsumhverfi %s/%s(%s) %s\n"
+msgstr ""
 
 #: rpmdb/db3.c:1055
 #, c-format
@@ -3518,9 +3503,9 @@ msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
 #: rpmdb/db3.c:1062
-#, fuzzy, c-format
+#, c-format
 msgid "locked   db index       %s/%s\n"
-msgstr "lokaði gagnagrunnsumhverfi %s/%s(%s)\n"
+msgstr ""
 
 #: rpmdb/dbconfig.c:389
 #, c-format
@@ -3547,8 +3532,8 @@ msgstr ""
 msgid ""
 "free list corrupt (%u)- please run\n"
 "\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the rpm-list@redhat."
-"com mailing list\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
@@ -3926,87 +3911,3 @@ msgstr "gátt slóðar verður að vera tala\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "gat ekki búið til %s: %s\n"
-
-#~ msgid "   --eval '<expr>+'       "
-#~ msgstr "    --eval '<expr>+'      "
-
-#~ msgid "print the expansion of macro <expr> to stdout"
-#~ msgstr "prenta útvíkkun fjölva <expr> á staðalfrálag"
-
-#~ msgid "   --rcfile <file:...>    "
-#~ msgstr "    --rcfile <skrá:...>    "
-
-#~ msgid "     -f <file>+           "
-#~ msgstr "     -f <skrá>+           "
-
-#~ msgid "     -p <packagefile>+    "
-#~ msgstr "    -p <pakkaskrá>+       "
-
-#, fuzzy
-#~ msgid "   -e <package>           "
-#~ msgstr "   -K <pakki>+           "
-
-#~ msgid "   -K <pkg>+             "
-#~ msgstr "   -K <pakki>+           "
-
-#~ msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-#~ msgstr "       %s {--rebuilddb} [--rcfile <skrá:...>] [--dbpath <mappa>]\n"
-
-#~ msgid ""
-#~ "                        [--rcfile <file:...>] [--ignorearch] [--dbpath "
-#~ "<dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <skrá:...>] [--ignorearch] [--dbpath "
-#~ "<mappa>]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<file:...>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<skrá:...>]"
-
-#~ msgid ""
-#~ "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:..."
-#~ ">]\n"
-#~ msgstr ""
-#~ "       %s {--erase -e} [--root <mappa>] [--noscripts] [--rcfile <skrá:..."
-#~ ">]\n"
-
-#~ msgid ""
-#~ "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <mappa>] [--rcfile <skrá:...>]"
-
-#~ msgid ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <mappa>] [--rcfile <skrá:..."
-#~ ">]\n"
-
-#~ msgid ""
-#~ "       %s {--resign} [--rcfile <file:...>] package1 package2 ... "
-#~ "packageN\n"
-#~ msgstr ""
-#~ "       %s {--resign} [--rcfile <skrá:...>] pakki1 pakki2 ... pakkiN\n"
-
-#~ msgid ""
-#~ "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-#~ msgstr ""
-#~ "       %s {--addsign} [--rcfile <skrá:...>] pakki1 pakki2 ... pakkiN"
-
-#~ msgid ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<skrá:...>]\n"
-
-#~ msgid "spec file in: %s\n"
-#~ msgstr "spec skrá í: %s\n"
-
-#~ msgid "renaming %s to %s\n"
-#~ msgstr "endurnefni %s í %s\n"
-
-#~ msgid "rename of %s to %s failed: %s\n"
-#~ msgstr "gat ekki endurnefnt %s sem %s: %s\n"
