@@ -516,6 +516,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jan  9 2002 Jeff Johnson <jbj@redhat.com>
+- permit gpg/pgp/pgp5 execs to be reconfigured.
+
 * Tue Jan  8 2002 Jeff Johnson <jbj@redhat.com>
 - use db-4.0.14 final internally.
 - make rpm-perl package self-hosting (#57748).

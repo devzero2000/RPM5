@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2002-01-08 15:01-0500\n"
+"POT-Creation-Date: 2002-01-09 16:22-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -3284,92 +3284,77 @@ msgstr ""
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:290
+#: lib/signature.c:300 lib/signature.c:392 lib/signature.c:638
+#: lib/signature.c:738 lib/signature.c:810 lib/signature.c:843
 #, c-format
-msgid "Couldn't exec pgp (%s)\n"
+msgid "Could not exec %s: %s\n"
 msgstr ""
 
-#: lib/signature.c:303
+#: lib/signature.c:316
 msgid "pgp failed\n"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:310
+#: lib/signature.c:323
 msgid "pgp failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:315
+#: lib/signature.c:328
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:328 lib/signature.c:410
+#: lib/signature.c:341 lib/signature.c:434
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: lib/signature.c:333
+#: lib/signature.c:346
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:372 lib/signature.c:760
-msgid "Couldn't exec gpg\n"
-msgstr ""
-
-#: lib/signature.c:385
+#: lib/signature.c:409
 msgid "gpg failed\n"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:392
+#: lib/signature.c:416
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:397
+#: lib/signature.c:421
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:415
+#: lib/signature.c:439
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:443
+#: lib/signature.c:467
 msgid "Generating signature using PGP.\n"
 msgstr ""
 
-#: lib/signature.c:449
+#: lib/signature.c:473
 msgid "Generating signature using GPG.\n"
-msgstr ""
-
-#: lib/signature.c:532 lib/signature.c:607
-msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-msgstr ""
-
-#: lib/signature.c:697
-msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-msgstr ""
-
-#: lib/signature.c:789
-msgid "Couldn't exec pgp\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:793 lib/signature.c:846
+#: lib/signature.c:848 lib/signature.c:901
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:826
+#: lib/signature.c:881
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:838
+#: lib/signature.c:893
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""

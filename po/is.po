@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-08 15:01-0500\n"
+"POT-Creation-Date: 2002-01-09 16:22-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -3309,92 +3309,77 @@ msgstr ""
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:290
-#, c-format
-msgid "Couldn't exec pgp (%s)\n"
-msgstr "Gat ekki keyrt pgp (%s)\n"
+#: lib/signature.c:300 lib/signature.c:392 lib/signature.c:638
+#: lib/signature.c:738 lib/signature.c:810 lib/signature.c:843
+#, fuzzy, c-format
+msgid "Could not exec %s: %s\n"
+msgstr "Gat ekki keyrt %s: %s\n"
 
-#: lib/signature.c:303
+#: lib/signature.c:316
 msgid "pgp failed\n"
 msgstr "pgp brást\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:310
+#: lib/signature.c:323
 msgid "pgp failed to write signature\n"
 msgstr "pgp gat ekki lesið undirskriftina\n"
 
-#: lib/signature.c:315
+#: lib/signature.c:328
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:328 lib/signature.c:410
+#: lib/signature.c:341 lib/signature.c:434
 msgid "unable to read the signature\n"
 msgstr "get ekki lesið undirskriftina\n"
 
-#: lib/signature.c:333
+#: lib/signature.c:346
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:372 lib/signature.c:760
-msgid "Couldn't exec gpg\n"
-msgstr "Gat ekki keyrt gpg\n"
-
-#: lib/signature.c:385
+#: lib/signature.c:409
 msgid "gpg failed\n"
 msgstr "ggp brást\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:392
+#: lib/signature.c:416
 msgid "gpg failed to write signature\n"
 msgstr "gpg get ekki lesið undirskriftina\n"
 
-#: lib/signature.c:397
+#: lib/signature.c:421
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:415
+#: lib/signature.c:439
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:443
+#: lib/signature.c:467
 msgid "Generating signature using PGP.\n"
 msgstr ""
 
-#: lib/signature.c:449
+#: lib/signature.c:473
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:532 lib/signature.c:607
-msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-msgstr ""
-
-#: lib/signature.c:697
-msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-msgstr ""
-
-#: lib/signature.c:789
-msgid "Couldn't exec pgp\n"
-msgstr "Gat ekki keyrt pgp\n"
-
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:793 lib/signature.c:846
+#: lib/signature.c:848 lib/signature.c:901
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:826
+#: lib/signature.c:881
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:838
+#: lib/signature.c:893
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
@@ -3964,3 +3949,12 @@ msgstr "gátt slóðar verður að vera tala\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "gat ekki búið til %s: %s\n"
+
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Gat ekki keyrt pgp (%s)\n"
+
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Gat ekki keyrt gpg\n"
+
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Gat ekki keyrt pgp\n"
