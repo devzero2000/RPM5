@@ -312,7 +312,9 @@ fi
 %lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/rpm.mo
 %lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
 
-%{__prefix}%{__share}/man/man[18]/*.[18]*
+%{__prefix}%{__share}/man/man1/gendiff.1*
+%{__prefix}%{__share}/man/man8/rpm.8*
+%{__prefix}%{__share}/man/man8/rpm2cpio.8*
 %lang(pl)	%{__prefix}%{__share}/man/pl/man[18]/*.[18]*
 %lang(ru)	%{__prefix}%{__share}/man/ru/man[18]/*.[18]*
 %lang(sk)	%{__prefix}%{__share}/man/sk/man[18]/*.[18]*
@@ -351,6 +353,8 @@ fi
 %attr(0755, rpm, rpm)	%{__prefix}/lib/rpm/u_pkg.sh
 %attr(0755, rpm, rpm)	%{__prefix}/lib/rpm/vpkg-provides.sh
 %attr(0755, rpm, rpm)	%{__prefix}/lib/rpm/vpkg-provides2.sh
+
+%{__prefix}%{__share}/man/man8/rpmbuild.8*
 
 %if %{with_python_subpackage}
 %files python
@@ -409,6 +413,7 @@ fi
 - fix typos in linux.{req,prov}.
 - always use db cursors.
 - permit duplicates for btree indices.
+- document build modes in rpmbuild.8, rpmbuild is born.
 
 * Fri Jun  1 2001 Jeff Johnson <jbj@redhat.com>
 - merge sparc64/ia64 fiddles back into linux.{req,prov}.
