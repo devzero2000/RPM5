@@ -7,14 +7,14 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	rpmerr.h rpmio.h rpmmacro.h rpmmessages.h rpmurl.h \
+	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h \
 	ugid.h
 noinst_HEADERS = base64.h rpmio_internal.h
 
 lib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c \
 	base64.c digest.c \
-	ugid.c rpmmalloc.c rpmerr.c messages.c
+	ugid.c rpmmalloc.c rpmlog.c
 
 # XXX Add internal libtool dependence
 install-data-local:

@@ -6,14 +6,30 @@
  * @todo Eliminate from API.
  */
 
-#define	RPMMESS_DEBUG      1
-#define	RPMMESS_VERBOSE    2
-#define	RPMMESS_NORMAL     3
-#define	RPMMESS_WARNING    4
-#define	RPMMESS_ERROR      5
-#define	RPMMESS_FATALERROR 6
+#include "rpmlog.h"
 
-#define	RPMMESS_QUIET (RPMMESS_NORMAL + 1)
+#define	RPMMESS_DEBUG		RPMLOG_DEBUG
+#define	RPMMESS_VERBOSE		RPMLOG_INFO
+#define	RPMMESS_NORMAL		RPMLOG_NOTICE
+#define	RPMMESS_WARNING		RPMLOG_WARNING
+#define	RPMMESS_ERROR		RPMLOG_ERR
+#define	RPMMESS_FATALERROR	RPMLOG_CRIT
+
+#define	RPMMESS_QUIET		RPMMESS_WARNING
+
+#define	rpmMessage		rpmlog
+#define	rpmSetVerbosity(_lvl)	\
+	((void)rpmlogSetMask( RPMLOG_UPTO( RPMLOG_PRI(_lvl))))
+#define	rpmIncreaseVerbosity()	\
+	((void)rpmlogSetMask((((rpmlogSetMask(0) & 0xff) << 1) | 1)))
+#define	rpmDecreaseVerbosity()	\
+	((void)rpmlogSetMask(((rpmlogSetMask(0) & 0xff) >> 1)))
+#define	rpmIsNormal()		\
+	(rpmlogSetMask(0) & RPMLOG_MASK( RPMMESS_NORMAL ))
+#define	rpmIsVerbose()		\
+	(rpmlogSetMask(0) & RPMLOG_MASK( RPMMESS_VERBOSE ))
+#define	rpmIsDebug()		\
+	(rpmlogSetMask(0) & RPMLOG_MASK( RPMMESS_DEBUG ))
 
 /**
  */
@@ -51,30 +67,6 @@ typedef void * (*rpmCallbackFunction)(const void * h,
  */
 void urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
 		int notifyCount);
-
-/**
- */
-void rpmIncreaseVerbosity(void);
-
-/**
- */
-void rpmSetVerbosity(int level);
-
-/**
- */
-int rpmGetVerbosity(void);
-
-/**
- */
-int rpmIsVerbose(void);
-
-/**
- */
-int rpmIsDebug(void);
-
-/**
- */
-void rpmMessage(int level, const char * format, ...);
 
 #ifdef __cplusplus
 }

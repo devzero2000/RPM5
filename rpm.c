@@ -124,6 +124,7 @@ static struct poptOption optionsTable[] = {
 /* info and install both using 'i' is dumb */
  { "install", '\0', 0, 0, GETOPT_INSTALL,	NULL, NULL},
  { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
+ { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,	NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,	NULL, NULL},
  { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},

@@ -300,6 +300,17 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Dec  3 2000 Jeff Johnson <jbj@redhat.com>
+- improved find-{requires,provides} for aix4/hpux/irix6/osf.
+		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
+- portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
+- python: bind package removal (#21274).
+- autoconfigure building python bindings.
+- autoconfigure generating rpm API doco rpm-devel package.
+- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
+- unify rpmError and rpmMessge interfaces through rpmlog.
+- collect and display rpm build error messages at end of build.
+
 * Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
 - add missing headerFree for legacy signature header.
 - fix: removed packages leaked DIRINDEXES tag data.

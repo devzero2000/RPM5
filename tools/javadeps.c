@@ -222,7 +222,7 @@ usage (void)
 	 "                  used.\n\n"
 	 "'RPM_Provides: '  This string lists additional capabilites\n"
 	 "                  provided by the java class.  The string should\n"
-	 "                  be  a white space ([\\t   \\v\\n\\r\\f\\ ])\n"
+	 "                  be  a white space ([\\t\\v\\n\\r\\f\\ ])\n"
 	 "                  separated list of dependency strings.  Each\n"
 	 "                  dependency string must be of the same format as\n"
 	 "                  would be valid in the Requires or Provides line\n"

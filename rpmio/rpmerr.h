@@ -6,7 +6,10 @@
  * @todo Eliminate from API.
  */
 
-#define	_em(_e)	(-(_e))
+#include "rpmlog.h"
+
+#define	_em(_e)	\
+    (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_ERR))
 
 /**
  * Tokens used by rpmError().
@@ -75,36 +78,13 @@ typedef enum rpmerrCode_e {
     RPMERR_SIGGEN	= _em(201)  /*!< Error generating signature */
 } rpmerrCode;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef void (*rpmErrorCallBackType) (void);
-
-#if defined(__GNUC__)
-void rpmError(int code, char * format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
-#else
-void rpmError(int code, char * format, ...);
-#endif
-
 /**
+ * Retrofit rpmError() onto rpmlog sub-system.
  */
-int rpmErrorCode(void);
+#define	rpmError			rpmlog
+#define	rpmErrorString()		rpmlogMessage()
+#define	rpmErrorSetCallback(_cb)	rpmlogSetCallback(_cb)
+typedef rpmlogCallback rpmErrorCallBackType;
 
-/**
- */
-char *rpmErrorCodeString(void);
-
-/**
- */
-char *rpmErrorString(void);
-
-/**
- */
-rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* H_RPMERR */

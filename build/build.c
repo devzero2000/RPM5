@@ -299,12 +299,10 @@ int buildSpec(Spec spec, int what, int test)
 	unlink(spec->specFile);
 
 exit:
-#ifdef	NOTYET
     if (rc && rpmlogGetNrecs() > 0) {
 	rpmMessage(RPMMESS_NORMAL, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);
     }
-#endif
 
     return rc;
 }

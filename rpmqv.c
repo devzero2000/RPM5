@@ -925,7 +925,7 @@ int main(int argc, const char ** argv)
 	    noUsageMsg = 1;
 	  } break;
 
-          case GETOPT_RCFILE:
+	  case GETOPT_RCFILE:
 	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
 	    fprintf(stderr, _("Use \"--macros <file:...>\" instead..\n"));
 	    exit(EXIT_FAILURE);
@@ -1253,7 +1253,7 @@ int main(int argc, const char ** argv)
       case MODE_REBUILD:
       case MODE_RECOMPILE:
       { const char * pkg;
-        if (rpmGetVerbosity() == RPMMESS_NORMAL)
+        if (rpmIsNormal())
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
 
 	if (!poptPeekArg(optCon))
@@ -1291,7 +1291,7 @@ int main(int argc, const char ** argv)
       case MODE_BUILD:
       case MODE_TARBUILD:
       { const char * pkg;
-        if (rpmGetVerbosity() == RPMMESS_NORMAL)
+        if (rpmIsNormal())
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
        
 	switch (ba->buildChar) {

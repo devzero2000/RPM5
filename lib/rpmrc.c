@@ -1429,7 +1429,7 @@ int rpmShowRC(FILE *fp)
     fprintf(fp, "\nRPMRC VALUES:\n");
     for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
 	const char *s = rpmGetVar(opt->var);
-	if (s != NULL || rpmGetVerbosity() < RPMMESS_NORMAL)
+	if (s != NULL || rpmIsVerbose())
 	    fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }
     fprintf(fp, "\n");

@@ -37,10 +37,8 @@ const char *getUname(uid_t uid)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024) {
-	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getUname()\n"));
-	exit(EXIT_FAILURE);
-    }
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getUname: too many uid's\n"));
     
     pw = getpwuid(uid);
     uids[x] = uid;
@@ -65,10 +63,8 @@ const char *getUnameS(const char *uname)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024) {
-	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getUname()\n"));
-	exit(EXIT_FAILURE);
-    }
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getUnameS: too many uid's\n"));
     
     pw = getpwnam(uname);
     uid_used++;
@@ -94,10 +90,8 @@ const char *getGname(gid_t gid)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024) {
-	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getGname()\n"));
-	exit(EXIT_FAILURE);
-    }
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getGname: too many gid's\n"));
     
     gr = getgrgid(gid);
     gids[x] = gid;
@@ -122,10 +116,8 @@ const char *getGnameS(const char *gname)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024) {
-	rpmMessage(RPMMESS_ERROR, _("getUname: too many uid's\n"));
-	exit(EXIT_FAILURE);
-    }
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getGnameS: too many gid's\n"));
     
     gr = getgrnam(gname);
     gid_used++;

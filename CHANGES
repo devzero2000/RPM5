@@ -25,6 +25,8 @@
 	- consistent return for all signature verification.
 	- use enums for almost all rpmlib #define's.
 	- API: change rpmProblem typedef to pass by reference, not value.
+	- unify rpmError and rpmMessge interfaces through rpmlog.
+	- collect and display rpm build error messages at end of build.
 	- don't trim leading ./ in rpmCleanPath() (#14961).
 	- detect (still need to test) rdonly linux file systems.
 	- check available inodes as well as blocks on mounted file systems.
@@ -52,6 +54,7 @@
 	- autoconfigure building python bindings.
 	- autoconfigure generating rpm API doco.
 	- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
+	- use package version 3 if --nodirtokens is specified.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
