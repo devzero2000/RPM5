@@ -1,12 +1,16 @@
+/** \ingroup rpmio
+ * \file rpmio/rpmmalloc.c
+ */
+
 #include "system.h"
 
 #if !defined(EXIT_FAILURE)
 #define	EXIT_FAILURE	1
 #endif
 
-void *vmefail(size_t size)
+/*@only@*/ void *vmefail(size_t size)
 {
-    fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"), size);
+    fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"), (unsigned)size);
     exit(EXIT_FAILURE);
     /*@notreached@*/
     return NULL;
@@ -14,17 +18,19 @@ void *vmefail(size_t size)
 
 #if !(HAVE_MCHECK_H && defined(__GNUC__))
 
-void * xmalloc (size_t size)
+/*@only@*/ void * xmalloc (size_t size)
 {
     register void *value;
     if (size == 0) size++;
     value = malloc (size);
     if (value == 0)
 	value = vmefail(size);
+    /*@-compdef@*/
     return value;
+    /*@=compdef@*/
 }
 
-void * xcalloc (size_t nmemb, size_t size)
+/*@only@*/ void * xcalloc (size_t nmemb, size_t size)
 {
     register void *value;
     if (size == 0) size++;
@@ -35,7 +41,7 @@ void * xcalloc (size_t nmemb, size_t size)
     return value;
 }
 
-void * xrealloc (void *ptr, size_t size)
+/*@only@*/ void * xrealloc (/*@only@*/ void *ptr, size_t size)
 {
     register void *value;
     if (size == 0) size++;
@@ -45,7 +51,7 @@ void * xrealloc (void *ptr, size_t size)
     return value;
 }
 
-char * xstrdup (const char *str)
+/*@only@*/ char * xstrdup (const char *str)
 {
     size_t size = strlen(str) + 1;
     char *newstr = (char *) malloc (size);

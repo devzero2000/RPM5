@@ -21,12 +21,14 @@ struct callbackInfo {
 struct fileMemory {
 /*@owned@*/ const char ** names;
 /*@owned@*/ const char ** cpioNames;
+/*@owned@*/ const char ** md5sums;
 /*@owned@*/ struct fileInfo * files;
 };
 
 struct fileInfo {
 /*@dependent@*/ const char * cpioPath;
 /*@dependent@*/ const char * relativePath;	/* relative to root */
+/*@dependent@*/ const char * md5sum;
     uid_t uid;
     gid_t gid;
     uint_32 flags;
@@ -85,6 +87,7 @@ static /*@only@*/ struct fileMemory *newFileMemory(void)
     fileMem->files = NULL;
     fileMem->names = NULL;
     fileMem->cpioNames = NULL;
+    fileMem->md5sums = NULL;
     return fileMem;
 }
 
@@ -94,6 +97,7 @@ static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
     if (fileMem->files) free(fileMem->files);
     if (fileMem->names) free(fileMem->names);
     if (fileMem->cpioNames) free(fileMem->cpioNames);
+    if (fileMem->md5sums) free(fileMem->md5sums);
     free(fileMem);
 }
 
@@ -128,6 +132,7 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 
     files = *filesPtr = mem->files = xcalloc(fileCount, sizeof(*mem->files));
 
+    headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &mem->md5sums, NULL);
     headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
     headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
@@ -142,6 +147,7 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 
 	file->relativePath = mem->names[i];
 	file->cpioPath = mem->cpioNames[i] + stripPrefixLength;
+	file->md5sum = mem->md5sums[i];
 	file->mode = fileModes[i];
 	file->size = fileSizes[i];
 	file->flags = fileFlags[i];
@@ -537,6 +543,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 #else
 	    urltype = urlPath(files[i].relativePath, &map[mappedFiles].fsPath);
 #endif
+	    map[mappedFiles].md5sum = files[i].md5sum;
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;

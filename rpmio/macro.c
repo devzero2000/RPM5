@@ -1500,7 +1500,7 @@ int isCompressed(const char *file, int *compressed)
 	rc = 1;
     } else if (nb < sizeof(magic)) {
 	rpmError(RPMERR_BADSPEC, _("File %s is smaller than %d bytes"),
-		file, sizeof(magic));
+		file, (int)sizeof(magic));
 	rc = 0;
     }
     Fclose(fd);
