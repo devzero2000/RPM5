@@ -269,6 +269,9 @@ cd %{u2p:%{_builddir}}\
 #%{___build_post}\
 #%{nil}
 
+%__arch_install_post    %{nil}
+%__os_install_post	%{___build_post}
+
 #==============================================================================
 # ---- Scriptlet templates.
 #	Macro(s) that expand to a command and script that is executed.
@@ -307,7 +310,10 @@ cd %{u2p:%{_builddir}}\
 %__spec_install_cmd	%{___build_cmd}
 %__spec_install_pre	%{___build_pre}
 %__spec_install_body	%{___build_body}
-%__spec_install_post	%{___build_post}
+%__spec_install_post\
+%{__arch_install_post}\
+%{__os_install_post}
+
 %__spec_install_template	#!%{__spec_install_shell}\
 %{__spec_install_pre}\
 %{nil}
@@ -387,7 +393,8 @@ cd %{u2p:%{_builddir}}\
 %_sysconfdir		%{_prefix}/etc
 %_sharedstatedir	%{_prefix}/com
 %_localstatedir		%{_prefix}/var
-%_libdir		%{_exec_prefix}/lib
+%_lib			lib
+%_libdir		%{_exec_prefix}/%{_lib}
 %_includedir		%{_prefix}/include
 %_oldincludedir		/usr/include
 %_infodir		%{_prefix}/info
