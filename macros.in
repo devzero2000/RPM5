@@ -116,6 +116,8 @@
 #%buildroot
 
 #	The sub-directory (relative to %{_builddir}) where sources are compiled.
+#	This macro is set after processing %setup, either explicitly from the
+#	value given to -n or the default name-version.
 #
 #%buildsubdir
 

@@ -360,21 +360,21 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     fingerPrint fp1, fp2;
     dbiIndexSet allMatches;
     int i, rc;
-    Header h;
     fingerPrintCache fpc;
 
-    {	char * t = strcpy(alloca(strlen(filespec)+1), filespec);
-	char * te = strrchr(t, '/');
-	if (te) {
-	    te++;
-	    *te = '\0';
-	}
+    if ((baseName = strrchr(filespec, '/')) != NULL) {
+    	char * t;
+	size_t len;
+
+    	len = baseName - filespec + 1;
+	t = strncpy(alloca(len + 1), filespec, len);
+	t[len] = '\0';
 	dirName = t;
-    }
-    if ((baseName = strrchr(filespec, '/')) != NULL)
 	baseName++;
-    else
+    } else {
+	dirName = "";
 	baseName = filespec;
+    }
 
     fpc = fpCacheCreate(20);
     fp1 = fpLookup(fpc, dirName, baseName, 1);
@@ -390,6 +390,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     while (i < allMatches.count) {
 	const char ** baseNames, ** dirNames;
 	int_32 * dirIndexes;
+	Header h;
 
 	if ((h = rpmdbGetRecord(db, allMatches.recs[i].recOffset)) == NULL) {
 	    i++;
