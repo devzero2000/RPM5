@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.46
+Release: 0.47
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -80,9 +80,7 @@ build packages using RPM.
 %package python
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
-BuildRequires: popt >= 1.5
 Requires: rpm = %{version}
-Requires: popt >= 1.5
 Requires: python >= 1.5.2
 
 %description python
@@ -146,7 +144,8 @@ E_O_F
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
 for dbi in \
 	Basenames Conflictname Dirnames Group Installtid Name Providename \
-	Provideversion Removetid Requirename Requireversion Triggername
+	Provideversion Removetid Requirename Requireversion Triggername \
+	Packages __db.001 __db.002 __db.003 __db.004
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
@@ -222,7 +221,6 @@ fi
 %endif
 
 %define	rpmattr		%attr(0755, rpm, rpm)
-%define	rpmdbattr	%rpmattr %verify(not md5 size mtime) %ghost
 
 %files
 %defattr(-,root,root)
@@ -235,26 +233,30 @@ fi
 %dir				/etc/rpm
 %config(noreplace,missingok)	/etc/rpm/macros.db1
 %attr(0755, rpm, rpm)	%dir /var/lib/rpm
+
+%define	rpmdbattr %attr(0644, rpm, rpm) %verify(not md5 size mtime) %ghost %config(missingok)
 %rpmdbattr	/var/lib/rpm/Basenames
 %rpmdbattr	/var/lib/rpm/Conflictname
-#%rpmdbattr	/var/lib/rpm/__db.001
+%rpmdbattr	/var/lib/rpm/__db.001
+%rpmdbattr	/var/lib/rpm/__db.002
 %rpmdbattr	/var/lib/rpm/Dirnames
 %rpmdbattr	/var/lib/rpm/Group
 %rpmdbattr	/var/lib/rpm/Installtid
 %rpmdbattr	/var/lib/rpm/Name
-#%rpmdbattr	/var/lib/rpm/Packages
+%rpmdbattr	/var/lib/rpm/Packages
 %rpmdbattr	/var/lib/rpm/Providename
 %rpmdbattr	/var/lib/rpm/Provideversion
 %rpmdbattr	/var/lib/rpm/Removetid
 %rpmdbattr	/var/lib/rpm/Requirename
 %rpmdbattr	/var/lib/rpm/Requireversion
 %rpmdbattr	/var/lib/rpm/Triggername
+
 %endif
 
 %rpmattr	%{__prefix}/bin/rpm2cpio
 %rpmattr	%{__prefix}/bin/gendiff
 %rpmattr	%{__prefix}/bin/rpmdb
-%rpmattr	%{__prefix}/bin/rpm[eiukqv]
+#%rpmattr	%{__prefix}/bin/rpm[eiu]
 %rpmattr	%{__prefix}/bin/rpmsign
 %rpmattr	%{__prefix}/bin/rpmquery
 %rpmattr	%{__prefix}/bin/rpmverify
@@ -295,6 +297,7 @@ fi
 %ifarch armv3l armv4l
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/armv[34][lb]*
 %endif
+%attr(-, rpm, rpm)		%{__prefix}/lib/rpm/noarch*
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
@@ -414,6 +417,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jun 20 2001 Jeff Johnson <jbj@redhat.com>
+- fix: partial sets of hardlinked files forbidden in payload.
+- fix: mark rpmdb files with %config to prevent erasure on downgrade.
+
 * Tue Jun 19 2001 Jeff Johnson <jbj@redhat.com>
 - finalize per-header methods, accessing headerFoo through vector.
 - make package ordering loop messages debug, not warning.

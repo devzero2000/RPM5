@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-06-19 15:54-0400\n"
+"POT-Creation-Date: 2001-06-20 01:59-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1328,7 +1328,7 @@ msgstr "作成のための spec ファイルがありません"
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
-#: build/build.c:119 build/pack.c:416
+#: build/build.c:119 build/pack.c:421
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません"
@@ -1537,7 +1537,7 @@ msgstr "ファイルが見つかりません(by glob): %s"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1601 build/pack.c:136
+#: build/files.c:1601 build/pack.c:141
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "行目: %s"
@@ -1604,132 +1604,137 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "ホスト名を正式なものにできません: %s\n"
 
-#: build/pack.c:76
+#: build/pack.c:78
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "ファイル %s でアーカイブの作成に失敗: %s"
 
-#: build/pack.c:98
+#: build/pack.c:81
+#, fuzzy, c-format
+msgid "create archive failed: %s\n"
+msgstr "ファイル %s でアーカイブの作成に失敗: %s"
+
+#: build/pack.c:103
 #, fuzzy, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy で書き込み失敗: %s"
 
-#: build/pack.c:105
+#: build/pack.c:110
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy で読み込み失敗: %s"
 
-#: build/pack.c:198
+#: build/pack.c:203
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:205
+#: build/pack.c:210
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:212
+#: build/pack.c:217
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:219
+#: build/pack.c:224
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:227
+#: build/pack.c:232
 #, fuzzy, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:242
+#: build/pack.c:247
 #, fuzzy, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "トリガースクリプトファイルをオープンできませんでした: %s"
 
-#: build/pack.c:270
+#: build/pack.c:275
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: %s のオープン: %s\n"
 
-#: build/pack.c:279
+#: build/pack.c:284
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:287 build/pack.c:457
+#: build/pack.c:292 build/pack.c:462
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: build/pack.c:303
+#: build/pack.c:308
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s は RPM パッケージではありません\n"
 
-#: build/pack.c:312
+#: build/pack.c:317
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からのヘッダの読み込み\n"
 
-#: build/pack.c:428
+#: build/pack.c:433
 #, fuzzy
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ"
 
-#: build/pack.c:480
+#: build/pack.c:485
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の生成中: %d\n"
 
-#: build/pack.c:499
+#: build/pack.c:504
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:536 lib/psm.c:1503
+#: build/pack.c:541 lib/psm.c:1503
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:551
+#: build/pack.c:556
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:561
+#: build/pack.c:566
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:575
+#: build/pack.c:580
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:585
+#: build/pack.c:590
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:591
+#: build/pack.c:596
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:617 lib/psm.c:1762
+#: build/pack.c:622 lib/psm.c:1762
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:683
+#: build/pack.c:688
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:700
+#: build/pack.c:705
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -2121,7 +2126,8 @@ msgid "Unknown file type"
 msgstr "不明なファイルタイプ"
 
 #: lib/cpio.c:214
-msgid "Missing hard link"
+#, fuzzy
+msgid "Missing hard link(s)"
 msgstr "ハードリンクが見つかりません"
 
 #: lib/cpio.c:215
@@ -2285,41 +2291,41 @@ msgstr "%s のオープンに失敗: %s"
 msgid "file %s is on an unknown device\n"
 msgstr "ファイル %s は不明なデバイスです"
 
-#: lib/fsm.c:292
+#: lib/fsm.c:294
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:294
+#: lib/fsm.c:296
 #, fuzzy, c-format
 msgid "%9d %s\n"
 msgstr "%d 行目: %s"
 
-#: lib/fsm.c:1112
+#: lib/fsm.c:1110
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1430 lib/fsm.c:1555
+#: lib/fsm.c:1440 lib/fsm.c:1565
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/fsm.c:1581
+#: lib/fsm.c:1591
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s を削除できません - ディレクトリが空でありません"
 
-#: lib/fsm.c:1587
+#: lib/fsm.c:1597
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s の rmdir に失敗: %s"
 
-#: lib/fsm.c:1597
+#: lib/fsm.c:1607
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/fsm.c:1616
+#: lib/fsm.c:1626
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"

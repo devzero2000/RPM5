@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-06-19 15:54-0400\n"
+"POT-Creation-Date: 2001-06-20 01:59-0400\n"
 "PO-Revision-Date: 2001-06-03 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -1267,7 +1267,7 @@ msgstr "패키지 제작을 위한 spec 파일이 없습니다"
 msgid "no tar files given for build"
 msgstr "패키지 제작을 위한 tar 파일이 없습니다"
 
-#: build/build.c:119 build/pack.c:416
+#: build/build.c:119 build/pack.c:421
 msgid "Unable to open temp file.\n"
 msgstr "임시 파일을 열 수 없습니다.\n"
 
@@ -1466,7 +1466,7 @@ msgstr "glob 명령으로 파일을 찾을 수 없음: %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%s 파일의 %%files 를 열 수 없음: %s\n"
 
-#: build/files.c:1601 build/pack.c:136
+#: build/files.c:1601 build/pack.c:141
 #, c-format
 msgid "line: %s\n"
 msgstr "줄(line): %s\n"
@@ -1533,131 +1533,136 @@ msgstr "그룹 명(getGnameS): 'gid' 가 너무 많습니다\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "호스트 명을 정규화(canonicalize) 할 수 없음: %s\n"
 
-#: build/pack.c:76
+#: build/pack.c:78
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "%s 파일의 아카이브 생성에 실패함: %s\n"
 
-#: build/pack.c:98
+#: build/pack.c:81
+#, fuzzy, c-format
+msgid "create archive failed: %s\n"
+msgstr "%s 파일의 아카이브 생성에 실패함: %s\n"
+
+#: build/pack.c:103
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy 작성에 실패함: %s\n"
 
-#: build/pack.c:105
+#: build/pack.c:110
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy 읽기에 실패함: %s\n"
 
-#: build/pack.c:198
+#: build/pack.c:203
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:205
+#: build/pack.c:210
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:212
+#: build/pack.c:217
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:219
+#: build/pack.c:224
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:227
+#: build/pack.c:232
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:242
+#: build/pack.c:247
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "트리거 스크립트 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:270
+#: build/pack.c:275
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "RPM 읽기: %s (을)를 열음: %s\n"
 
-#: build/pack.c:279
+#: build/pack.c:284
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "RPM 읽기: %s (을)를 읽음: %s\n"
 
-#: build/pack.c:287 build/pack.c:457
+#: build/pack.c:292 build/pack.c:462
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fread 에 실패함: %s\n"
 
-#: build/pack.c:303
+#: build/pack.c:308
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "RPM 읽기: %s (은)는 RPM 패키지가 아닙니다\n"
 
-#: build/pack.c:312
+#: build/pack.c:317
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "RPM 읽기: %s 에서 헤더를 읽고 있습니다\n"
 
-#: build/pack.c:428
+#: build/pack.c:433
 msgid "Bad CSA data\n"
 msgstr "잘못된 CSA 데이터\n"
 
-#: build/pack.c:480
+#: build/pack.c:485
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "서명 생성중: %d\n"
 
-#: build/pack.c:499
+#: build/pack.c:504
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s (을)를 열 수 없음: %s\n"
 
-#: build/pack.c:536 lib/psm.c:1503
+#: build/pack.c:541 lib/psm.c:1503
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
 
-#: build/pack.c:551
+#: build/pack.c:556
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "서명할 대상 %s (을)를 열 수 없음: %s\n"
 
-#: build/pack.c:561
+#: build/pack.c:566
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s 에서 헤더를 읽을 수 없음: %s\n"
 
-#: build/pack.c:575
+#: build/pack.c:580
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s 에 헤더를 작성할 수 없음: %s\n"
 
-#: build/pack.c:585
+#: build/pack.c:590
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s 에서 payload 를 읽을 수 없음: %s\n"
 
-#: build/pack.c:591
+#: build/pack.c:596
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s 에 payload 를 작성할 수 없음: %s\n"
 
-#: build/pack.c:617 lib/psm.c:1762
+#: build/pack.c:622 lib/psm.c:1762
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
 
-#: build/pack.c:683
+#: build/pack.c:688
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "%s 패키지의 출력 파일명을 생성할 수 없음: %s\n"
 
-#: build/pack.c:700
+#: build/pack.c:705
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s (을)를 생성할 수 없음: %s\n"
@@ -2046,7 +2051,8 @@ msgid "Unknown file type"
 msgstr "알 수 없는 파일 유형입니다"
 
 #: lib/cpio.c:214
-msgid "Missing hard link"
+#, fuzzy
+msgid "Missing hard link(s)"
 msgstr "하드 링크를 찾을 수 없습니다"
 
 #: lib/cpio.c:215
@@ -2206,41 +2212,41 @@ msgstr "%s (을)를 여는데 실패함: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "%s 파일이 알 수 없는 장치에 존재합니다\n"
 
-#: lib/fsm.c:292
+#: lib/fsm.c:294
 msgid "========= Directories not explictly included in package:\n"
 msgstr "========= 패키지 안에 디렉토리가 포함되어 있지 않음:\n"
 
-#: lib/fsm.c:294
+#: lib/fsm.c:296
 #, c-format
 msgid "%9d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1112
+#: lib/fsm.c:1110
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%04o 허가권(permission)의 %s 디렉토리를 생성했습니다.\n"
 
-#: lib/fsm.c:1430 lib/fsm.c:1555
+#: lib/fsm.c:1440 lib/fsm.c:1565
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s (이)가 %s (으)로 저장되었습니다\n"
 
-#: lib/fsm.c:1581
+#: lib/fsm.c:1591
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s 디렉토리 %s 삭제에 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:1587
+#: lib/fsm.c:1597
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s 디렉토리 %s 삭제에 실패함: %s\n"
 
-#: lib/fsm.c:1597
+#: lib/fsm.c:1607
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s 링크 %s 해제에 실패함: %s\n"
 
-#: lib/fsm.c:1616
+#: lib/fsm.c:1626
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s (이)가 %s (으)로 생성되었습니다\n"

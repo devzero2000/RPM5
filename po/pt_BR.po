@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-06-19 15:54-0400\n"
+msgstr "POT-Creation-Date: 2001-06-20 01:59-0400\n"
 
 # , c-format
 #: build.c:36
@@ -1381,7 +1381,7 @@ msgid "no tar files given for build"
 msgstr "no foram passados arquivos tar para construo"
 
 # , c-format
-#: build/build.c:119 build/pack.c:416
+#: build/build.c:119 build/pack.c:421
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "No consegui abrir: %s\n"
@@ -1596,7 +1596,7 @@ msgid "Could not open %%files file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/files.c:1601 build/pack.c:136
+#: build/files.c:1601 build/pack.c:141
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
@@ -1669,150 +1669,156 @@ msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
 # , c-format
-#: build/pack.c:76
+#: build/pack.c:78
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:98
+#: build/pack.c:81
+#, fuzzy, c-format
+msgid "create archive failed: %s\n"
+msgstr "No consegui abrir: %s\n"
+
+# , c-format
+#: build/pack.c:103
 #, fuzzy, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:105
+#: build/pack.c:110
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:198
+#: build/pack.c:203
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:205
+#: build/pack.c:210
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:212
+#: build/pack.c:217
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:219
+#: build/pack.c:224
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:227
+#: build/pack.c:232
 #, fuzzy, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:242
+#: build/pack.c:247
 #, fuzzy, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:270
+#: build/pack.c:275
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:279
+#: build/pack.c:284
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/pack.c:287 build/pack.c:457
+#: build/pack.c:292 build/pack.c:462
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/pack.c:303
+#: build/pack.c:308
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:312
+#: build/pack.c:317
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:428
+#: build/pack.c:433
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:480
+#: build/pack.c:485
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "gere assinatura PGP"
 
 # , c-format
-#: build/pack.c:499
+#: build/pack.c:504
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:536 lib/psm.c:1503
+#: build/pack.c:541 lib/psm.c:1503
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:551
+#: build/pack.c:556
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:561
+#: build/pack.c:566
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:575
+#: build/pack.c:580
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:585
+#: build/pack.c:590
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:591
+#: build/pack.c:596
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/pack.c:617 lib/psm.c:1762
+#: build/pack.c:622 lib/psm.c:1762
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:683
+#: build/pack.c:688
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
 # , c-format
-#: build/pack.c:700
+#: build/pack.c:705
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -2245,7 +2251,7 @@ msgid "Unknown file type"
 msgstr ""
 
 #: lib/cpio.c:214
-msgid "Missing hard link"
+msgid "Missing hard link(s)"
 msgstr ""
 
 #: lib/cpio.c:215
@@ -2409,45 +2415,45 @@ msgstr "No consegui abrir: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:292
+#: lib/fsm.c:294
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:294
+#: lib/fsm.c:296
 #, fuzzy, c-format
 msgid "%9d %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/fsm.c:1112
+#: lib/fsm.c:1110
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:1430 lib/fsm.c:1555
+#: lib/fsm.c:1440 lib/fsm.c:1565
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/fsm.c:1581
+#: lib/fsm.c:1591
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/fsm.c:1587
+#: lib/fsm.c:1597
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/fsm.c:1597
+#: lib/fsm.c:1607
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: lib/fsm.c:1616
+#: lib/fsm.c:1626
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "No consegui abrir: %s\n"
