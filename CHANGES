@@ -5,6 +5,7 @@
 	- add rpmGetRpmlibProvides() to retrieve rpmlib(...) provides
 		"Pawel A. Gajda" <mis@k2.net.pl>.
 	- fix: duplicate headerFree() on instalBinaryPackage error return.
+	- fix: segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" (#20595).
 
 3.0.5 -> 3.0.6
 	- python bindings to query and verify signatures.
