@@ -30,12 +30,12 @@ ETCDIR=$(ROOT)/etc
 
 # -----------------------------------------------------------------------
 
-SUBDIRS = misc lib build tools @PO@
+SUBDIRS = popt misc lib build tools @PO@ 
 INSTSUBDIRS = lib @PO@
 OTHERSUBDIRS = docs autodeps
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o @GETTEXTSTUB@
 PROGS = @RPM@ rpm2cpio
-LOADLIBES = -lbuild -lrpm -lmisc @LIBS@ @LIBINTL@ @LIBDL@
+LOADLIBES = popt/libpopt.a -lbuild -lrpm -lmisc @LIBS@ @LIBINTL@ @LIBDL@
 
 SOURCES = $(subst .o,.c,$(OBJS))
 
