@@ -1462,12 +1462,14 @@ top:
     mi->mi_modified = 0;
 
 exit:
+#ifdef	NOTNOW
     if (mi->mi_h) {
 	const char *n, *v, *r;
 	headerNVR(mi->mi_h, &n, &v, &r);
 	rpmMessage(RPMMESS_DEBUG, "%s-%s-%s at 0x%x, h %p\n", n, v, r,
 		mi->mi_offset, mi->mi_h);
     }
+#endif
     return mi->mi_h;
 }
 
@@ -2452,8 +2454,12 @@ int rpmdbRebuild(const char * rootdir)
 	    }
 
 	    /* Deleted entries are eliminated in legacy headers by copy. */
-	    rc = rpmdbAdd(newdb, (headerIsEntry(h, RPMTAG_HEADERIMAGE)
-				? headerCopy(h) : h));
+	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
+				? headerCopy(h) : NULL);
+		rc = rpmdbAdd(newdb, (nh ? nh : h));
+		if (nh)
+		    headerFree(nh);
+	    }
 
 	    if (rc) {
 		rpmError(RPMERR_INTERNAL,

@@ -116,11 +116,11 @@ static inline int checkSize(FD_t fd, int siglen, int pad, int datalen)
 	return 0;
     }
     rpmMessage(RPMMESS_DEBUG,
-	_("Expected size: %10db = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
+	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
 		sizeof(struct rpmlead)+siglen+pad+datalen,
 		sizeof(struct rpmlead), siglen, pad, datalen);
     rpmMessage(RPMMESS_DEBUG,
-	_("  Actual size: %10db\n"), st.st_size);
+	_("  Actual size: %12d\n"), st.st_size);
 
     return ((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size);
 }
@@ -166,8 +166,10 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 	/* XXX Legacy headers have a HEADER_IMAGE tag added. */
 	if (headerIsEntry(h, RPMTAG_HEADERIMAGE))
 	    sigSize -= (16 + 16);
+#if 0
 	if (headerIsEntry(h, RPMTAG_HEADERSIGNATURES))
 	    sigSize -= 16;
+#endif
 
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count))
