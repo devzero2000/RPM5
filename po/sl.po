@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-20 13:33-0500\n"
+"POT-Creation-Date: 2002-12-20 20:03-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2423,12 +2423,12 @@ msgstr "zapisa %d ni mo¾no prebrati\n"
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
 
-#: lib/rpmal.c:694
+#: lib/rpmal.c:695
 #, fuzzy
 msgid "(added files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:774
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
