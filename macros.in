@@ -1,4 +1,10 @@
 # $Id$
+#
+# This is a global RPM configuration file. All changes made here will
+# be lost when the rpm package is upgraded. Any per-system configuration
+# should be added to /etc/rpm/macros, while per-user configuration should
+# be added to ~/.rpmmacros.
+#
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
