@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-19 16:44-0400\n"
+"POT-Creation-Date: 2001-07-20 12:35-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2259,7 +2259,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2548 lib/header.c:2567 lib/header.c:2587
+#: lib/header.c:2573 lib/header.c:2592 lib/header.c:2612
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
@@ -2332,88 +2332,88 @@ msgid "%s created as %s\n"
 msgstr "varovanie: %s vytvorené ako %s"
 
 #. This should not be allowed
-#: lib/header.c:243
+#: lib/header.c:255
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
 
-#: lib/header.c:278 lib/header_internal.c:139 lib/psm.c:394
+#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:394
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ údajov %d nie je podorovaný\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1864
+#: lib/header.c:1889
 #, c-format
 msgid "missing { after %"
 msgstr "chýbajúce { po %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1894
+#: lib/header.c:1919
 msgid "missing } after %{"
 msgstr "chýbajúce } po %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1908
+#: lib/header.c:1933
 msgid "empty tag format"
 msgstr "prázdny tag formát"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1922
+#: lib/header.c:1947
 msgid "empty tag name"
 msgstr "prázdne meno tagu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1939
+#: lib/header.c:1964
 msgid "unknown tag"
 msgstr "neznámy tag"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1966
+#: lib/header.c:1991
 msgid "] expected at end of array"
 msgstr "] oèakávané na konci poµa"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1984
+#: lib/header.c:2009
 msgid "unexpected ]"
 msgstr "neoèakávané ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1988
+#: lib/header.c:2013
 msgid "unexpected }"
 msgstr "neoèakávané }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2054
+#: lib/header.c:2079
 msgid "? expected in expression"
 msgstr "? oèakávané vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2063
+#: lib/header.c:2088
 msgid "{ expected after ? in expression"
 msgstr "{ oèakávané po ? vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2076 lib/header.c:2118
+#: lib/header.c:2101 lib/header.c:2143
 msgid "} expected in expression"
 msgstr "} oèakávané vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2086
+#: lib/header.c:2111
 msgid ": expected following ? subexpression"
 msgstr ": oèakávané po ? podvýraze"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2103
+#: lib/header.c:2128
 msgid "{ expected after : in expression"
 msgstr "{ oèakávané po : vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2128
+#: lib/header.c:2153
 msgid "| expected at end of expression"
 msgstr "| oèakávené na konci výrazu"
 
-#: lib/header.c:2308
+#: lib/header.c:2333
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 

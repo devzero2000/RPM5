@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-19 16:44-0400\n"
+"POT-Creation-Date: 2001-07-20 12:35-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2252,7 +2252,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2548 lib/header.c:2567 lib/header.c:2587
+#: lib/header.c:2573 lib/header.c:2592 lib/header.c:2612
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -2325,88 +2325,88 @@ msgid "%s created as %s\n"
 msgstr "ostrze¿enie: %s utworzony jako %s"
 
 #. This should not be allowed
-#: lib/header.c:243
+#: lib/header.c:255
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
 
-#: lib/header.c:278 lib/header_internal.c:139 lib/psm.c:394
+#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:394
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ danych %d nie jest obs³ugiwany\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1864
+#: lib/header.c:1889
 #, c-format
 msgid "missing { after %"
 msgstr "brak { po %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1894
+#: lib/header.c:1919
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1908
+#: lib/header.c:1933
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1922
+#: lib/header.c:1947
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1939
+#: lib/header.c:1964
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1966
+#: lib/header.c:1991
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1984
+#: lib/header.c:2009
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1988
+#: lib/header.c:2013
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2054
+#: lib/header.c:2079
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2063
+#: lib/header.c:2088
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2076 lib/header.c:2118
+#: lib/header.c:2101 lib/header.c:2143
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2086
+#: lib/header.c:2111
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2103
+#: lib/header.c:2128
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2128
+#: lib/header.c:2153
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: lib/header.c:2308
+#: lib/header.c:2333
 msgid "(unknown type)"
 msgstr "(nieznany typ)"
 

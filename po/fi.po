@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-19 16:44-0400\n"
+"POT-Creation-Date: 2001-07-20 12:35-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2244,7 +2244,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2548 lib/header.c:2567 lib/header.c:2587
+#: lib/header.c:2573 lib/header.c:2592 lib/header.c:2612
 msgid "(not a number)"
 msgstr "(ei ole luku)"
 
@@ -2317,89 +2317,89 @@ msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
 #. This should not be allowed
-#: lib/header.c:243
+#: lib/header.c:255
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:278 lib/header_internal.c:139 lib/psm.c:394
+#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:394
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1864
+#: lib/header.c:1889
 #, c-format
 msgid "missing { after %"
 msgstr "puuttuva '{' '%':n jälkeen"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1894
+#: lib/header.c:1919
 msgid "missing } after %{"
 msgstr "puuttuva '{' '%{':n jälkeen"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1908
+#: lib/header.c:1933
 msgid "empty tag format"
 msgstr "tyhjä nimiön formaatti"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1922
+#: lib/header.c:1947
 msgid "empty tag name"
 msgstr "tyhjä nimiön nimi"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1939
+#: lib/header.c:1964
 msgid "unknown tag"
 msgstr "tuntematon nimiö"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1966
+#: lib/header.c:1991
 msgid "] expected at end of array"
 msgstr "']' puuttuu taulukkomäärittelyn lopusta"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1984
+#: lib/header.c:2009
 msgid "unexpected ]"
 msgstr "odottamaton ']'"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1988
+#: lib/header.c:2013
 msgid "unexpected }"
 msgstr "odottamaton '}'"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2054
+#: lib/header.c:2079
 msgid "? expected in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2063
+#: lib/header.c:2088
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "odotin '{' '?'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2076 lib/header.c:2118
+#: lib/header.c:2101 lib/header.c:2143
 msgid "} expected in expression"
 msgstr "odotin '}'-merkkiä ilmauksessa"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2086
+#: lib/header.c:2111
 msgid ": expected following ? subexpression"
 msgstr "odotin ':' '?'-merkin jälkeen ali-ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2103
+#: lib/header.c:2128
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "odotin '{' ':'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2128
+#: lib/header.c:2153
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 
-#: lib/header.c:2308
+#: lib/header.c:2333
 msgid "(unknown type)"
 msgstr "(tuntematon tyyppi)"
 
