@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 7x.15
+Release: 7x.17
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -521,6 +521,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Apr 18 2002 Jeff Johnson <jbj@redhat.com>
+- fix: queries that evaluated to "" incorrectly returned NULL.
+
 * Thu Apr 11 2002 Jeff Johnson <jbj@redhat.com>
 - fix: generate config file md5 as ascii, not binary (#62542).
 
