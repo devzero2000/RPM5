@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-09-03 16:07-0400\n"
+"POT-Creation-Date: 2002-09-03 21:39-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1446,7 +1446,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:386
-#: rpmdb/header.c:3138 rpmdb/header.c:3161 rpmdb/header.c:3185
+#: rpmdb/header.c:3169 rpmdb/header.c:3192 rpmdb/header.c:3216
 msgid "(not a number)"
 msgstr "(ikke et tal)"
 
@@ -1553,58 +1553,58 @@ msgstr "kunne ikke skrive til %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "fejl ved oprettelse af midlertidig fil %s\n"
 
-#: lib/package.c:330
+#: lib/package.c:356
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:338 lib/package.c:391 lib/package.c:449
+#: lib/package.c:364 lib/package.c:417 lib/package.c:475
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:370
+#: lib/package.c:396
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:383
+#: lib/package.c:409
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:480 lib/package.c:520 lib/package.c:771 lib/package.c:795
-#: lib/package.c:825 lib/rpmchecksig.c:796
+#: lib/package.c:506 lib/package.c:546 lib/package.c:798 lib/package.c:822
+#: lib/package.c:852 lib/rpmchecksig.c:796
 #, c-format
-msgid "only V3 signatures can be verified, skipping V%u signature"
+msgid "only V3 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:667
+#: lib/package.c:693
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "indpakningsversion 1 understøttes ikke af denne udgave af RPM\n"
 
-#: lib/package.c:675
+#: lib/package.c:701
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "kun indpakninger med hovedversion <= 4 understøttes af denne udgave af RPM\n"
 
-#: lib/package.c:685 lib/rpmchecksig.c:228 lib/rpmchecksig.c:714
+#: lib/package.c:711 lib/rpmchecksig.c:228 lib/rpmchecksig.c:714
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature mislykkedes\n"
 
-#: lib/package.c:690 lib/rpmchecksig.c:233 lib/rpmchecksig.c:720
+#: lib/package.c:716 lib/rpmchecksig.c:233 lib/rpmchecksig.c:720
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen tilgængelig signatur\n"
 
-#: lib/package.c:736
+#: lib/package.c:762
 #, fuzzy, c-format
-msgid "%s: headerRead failed: %s\n"
+msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/package.c:838 lib/rpmchecksig.c:118 lib/rpmchecksig.c:639
+#: lib/package.c:865 lib/rpmchecksig.c:118 lib/rpmchecksig.c:639
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
@@ -2148,9 +2148,7 @@ msgstr "underskriv en pakke (slet nuværende signatur)"
 msgid "generate signature"
 msgstr "generér PGP/GPG-signatur"
 
-#. @=boundsread@
-#. @-modfilesys@
-#: lib/psm.c:254 rpmdb/header.c:399 rpmdb/header_internal.c:164
+#: lib/psm.c:254 rpmdb/header_internal.c:164
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatype %d understøttes ikke\n"
@@ -3155,79 +3153,73 @@ msgstr "%s har for stor eller lille 'long'-værdi, overspringes\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har for stor eller lille heltalsværdi, overspringes\n"
 
-#. This should not be allowed
-#. @-modfilesys@
-#: rpmdb/header.c:358
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
-
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2310
+#: rpmdb/header.c:2341
 msgid "missing { after %"
 msgstr "manglende { efter %"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2340
+#: rpmdb/header.c:2371
 msgid "missing } after %{"
 msgstr "manglende } efter %{"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2354
+#: rpmdb/header.c:2385
 msgid "empty tag format"
 msgstr "tomt mærkeformat"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2368
+#: rpmdb/header.c:2399
 msgid "empty tag name"
 msgstr "tomt mærkenavn"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2385
+#: rpmdb/header.c:2416
 msgid "unknown tag"
 msgstr "ukendt mærke"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2412
+#: rpmdb/header.c:2443
 msgid "] expected at end of array"
 msgstr "] forventet ved slutningen af tabel"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2430
+#: rpmdb/header.c:2461
 msgid "unexpected ]"
 msgstr "uventet ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2434
+#: rpmdb/header.c:2465
 msgid "unexpected }"
 msgstr "uventet }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2503
+#: rpmdb/header.c:2534
 msgid "? expected in expression"
 msgstr "? forventet i udtryk"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2512
+#: rpmdb/header.c:2543
 msgid "{ expected after ? in expression"
 msgstr "{ forventet efter ? i udtryk"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2526 rpmdb/header.c:2573
+#: rpmdb/header.c:2557 rpmdb/header.c:2604
 msgid "} expected in expression"
 msgstr "} forventet i udtryk"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2536
+#: rpmdb/header.c:2567
 msgid ": expected following ? subexpression"
 msgstr ": forventet efter ?-underudtryk"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2556
+#: rpmdb/header.c:2587
 msgid "{ expected after : in expression"
 msgstr "{ forventet efter : i udtryk"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2583
+#: rpmdb/header.c:2614
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
@@ -3784,6 +3776,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+#~ msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
 
 #~ msgid "file is not regular -- skipping size check\n"
 #~ msgstr "filen er ikke regulær -- overspringer størrelsestjek\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-09-03 16:07-0400\n"
+"POT-Creation-Date: 2002-09-03 21:39-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1471,7 +1471,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:386
-#: rpmdb/header.c:3138 rpmdb/header.c:3161 rpmdb/header.c:3185
+#: rpmdb/header.c:3169 rpmdb/header.c:3192 rpmdb/header.c:3216
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
@@ -1578,59 +1578,59 @@ msgstr "nie je mo¾né zapísa» do %s: "
 msgid "error creating temporary file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: lib/package.c:330
+#: lib/package.c:356
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:338 lib/package.c:391 lib/package.c:449
+#: lib/package.c:364 lib/package.c:417 lib/package.c:475
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:370
+#: lib/package.c:396
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:383
+#: lib/package.c:409
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:480 lib/package.c:520 lib/package.c:771 lib/package.c:795
-#: lib/package.c:825 lib/rpmchecksig.c:796
+#: lib/package.c:506 lib/package.c:546 lib/package.c:798 lib/package.c:822
+#: lib/package.c:852 lib/rpmchecksig.c:796
 #, c-format
-msgid "only V3 signatures can be verified, skipping V%u signature"
+msgid "only V3 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:667
+#: lib/package.c:693
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
-#: lib/package.c:675
+#: lib/package.c:701
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
-#: lib/package.c:685 lib/rpmchecksig.c:228 lib/rpmchecksig.c:714
+#: lib/package.c:711 lib/rpmchecksig.c:228 lib/rpmchecksig.c:714
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature zlyhalo\n"
 
-#: lib/package.c:690 lib/rpmchecksig.c:233 lib/rpmchecksig.c:720
+#: lib/package.c:716 lib/rpmchecksig.c:233 lib/rpmchecksig.c:720
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis nie je k dispozícii\n"
 
-#: lib/package.c:736
+#: lib/package.c:762
 #, fuzzy, c-format
-msgid "%s: headerRead failed: %s\n"
+msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/package.c:838 lib/rpmchecksig.c:118 lib/rpmchecksig.c:639
+#: lib/package.c:865 lib/rpmchecksig.c:118 lib/rpmchecksig.c:639
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
@@ -2188,9 +2188,7 @@ msgstr "podpísa» balík (znièi» aktuálny podpis)"
 msgid "generate signature"
 msgstr "vytvori» PGP/GPG podpis"
 
-#. @=boundsread@
-#. @-modfilesys@
-#: lib/psm.c:254 rpmdb/header.c:399 rpmdb/header_internal.c:164
+#: lib/psm.c:254 rpmdb/header_internal.c:164
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ údajov %d nie je podorovaný\n"
@@ -3196,80 +3194,73 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#. This should not be allowed
-#. @-modfilesys@
-#: rpmdb/header.c:358
-#, fuzzy
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
-
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2310
+#: rpmdb/header.c:2341
 msgid "missing { after %"
 msgstr "chýbajúce { po %"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2340
+#: rpmdb/header.c:2371
 msgid "missing } after %{"
 msgstr "chýbajúce } po %{"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2354
+#: rpmdb/header.c:2385
 msgid "empty tag format"
 msgstr "prázdny tag formát"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2368
+#: rpmdb/header.c:2399
 msgid "empty tag name"
 msgstr "prázdne meno tagu"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2385
+#: rpmdb/header.c:2416
 msgid "unknown tag"
 msgstr "neznámy tag"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2412
+#: rpmdb/header.c:2443
 msgid "] expected at end of array"
 msgstr "] oèakávané na konci poµa"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2430
+#: rpmdb/header.c:2461
 msgid "unexpected ]"
 msgstr "neoèakávané ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2434
+#: rpmdb/header.c:2465
 msgid "unexpected }"
 msgstr "neoèakávané }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2503
+#: rpmdb/header.c:2534
 msgid "? expected in expression"
 msgstr "? oèakávané vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2512
+#: rpmdb/header.c:2543
 msgid "{ expected after ? in expression"
 msgstr "{ oèakávané po ? vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2526 rpmdb/header.c:2573
+#: rpmdb/header.c:2557 rpmdb/header.c:2604
 msgid "} expected in expression"
 msgstr "} oèakávané vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2536
+#: rpmdb/header.c:2567
 msgid ": expected following ? subexpression"
 msgstr ": oèakávané po ? podvýraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2556
+#: rpmdb/header.c:2587
 msgid "{ expected after : in expression"
 msgstr "{ oèakávané po : vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2583
+#: rpmdb/header.c:2614
 msgid "| expected at end of expression"
 msgstr "| oèakávené na konci výrazu"
 
@@ -3825,6 +3816,10 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+#~ msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
 
 #~ msgid "file is not regular -- skipping size check\n"
 #~ msgstr "nejde o be¾ný súbor - kontrola veµkosti vynechaná\n"
