@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-06 16:30-0400\n"
+"POT-Creation-Date: 2002-06-06 19:13-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -3400,97 +3400,97 @@ msgstr "neodstaje paket za deinstalaciju"
 msgid "read failed: %s (%d)\n"
 msgstr "neuspelo èitanje: %s (%d)"
 
-#: lib/rpmrc.c:192
+#: lib/rpmrc.c:200
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "nedostaje drugo ':' na %s:%d"
 
-#: lib/rpmrc.c:195
+#: lib/rpmrc.c:203
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "nedostaje ime arhitekture na %s:%d"
 
-#: lib/rpmrc.c:349
+#: lib/rpmrc.c:357
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Nepotpuna linija podataka na %s:%d"
 
-#: lib/rpmrc.c:354
+#: lib/rpmrc.c:362
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Premnogo argumenata u liniji podataka na %s:%d"
 
-#: lib/rpmrc.c:362
+#: lib/rpmrc.c:370
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Lo¹ broj arhitekture/oper.sist.: %s (%s:%d)"
 
-#: lib/rpmrc.c:399
+#: lib/rpmrc.c:407
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Nepotpuna podrazumevana linija na %s:%d"
 
-#: lib/rpmrc.c:404
+#: lib/rpmrc.c:412
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Premnogo argumenata u podrazumevanoj liniji na %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:574
+#: lib/rpmrc.c:582
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/rpmrc.c:612
+#: lib/rpmrc.c:620
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "nedostaje ':' na %s:%d"
 
-#: lib/rpmrc.c:629 lib/rpmrc.c:703
+#: lib/rpmrc.c:637 lib/rpmrc.c:711
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "nedostaje argument za %s na %s:%d"
 
-#: lib/rpmrc.c:646 lib/rpmrc.c:668
+#: lib/rpmrc.c:654 lib/rpmrc.c:676
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpmrc.c:655
+#: lib/rpmrc.c:663
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpmrc.c:695
+#: lib/rpmrc.c:703
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "nedostaje arhitektura za %s na %s:%d"
 
-#: lib/rpmrc.c:762
+#: lib/rpmrc.c:770
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "lo¹a opcija '%s' na %s:%d"
 
-#: lib/rpmrc.c:1387
+#: lib/rpmrc.c:1521
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1388
+#: lib/rpmrc.c:1522
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1613
+#: lib/rpmrc.c:1747
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpmrc.c:1618
+#: lib/rpmrc.c:1752
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1635
+#: lib/rpmrc.c:1769
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Ne mogu da otvorim %s za èitanje: %s"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-06 16:30-0400\n"
+"POT-Creation-Date: 2002-06-06 19:13-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3392,97 +3392,97 @@ msgstr ""
 msgid "read failed: %s (%d)\n"
 msgstr "branje je bilo neuspe¹no: %s (%d)"
 
-#: lib/rpmrc.c:192
+#: lib/rpmrc.c:200
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "manjka drugi ,:` v %s:%d"
 
-#: lib/rpmrc.c:195
+#: lib/rpmrc.c:203
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "manjkajoèe ime arhitekture v %s:%d"
 
-#: lib/rpmrc.c:349
+#: lib/rpmrc.c:357
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Nepopolna podatkovna vrstica v %s:%d"
 
-#: lib/rpmrc.c:354
+#: lib/rpmrc.c:362
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Preveè argumentov v podatkovni vrstici v %s:%d"
 
-#: lib/rpmrc.c:362
+#: lib/rpmrc.c:370
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Okvarjena ¹tevilka arh./op.sist.: %s (%s:%d)"
 
-#: lib/rpmrc.c:399
+#: lib/rpmrc.c:407
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Nepopolna privzeta vrstica v %s:%d"
 
-#: lib/rpmrc.c:404
+#: lib/rpmrc.c:412
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Preveè argumentov v privzeti vrstici v %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:574
+#: lib/rpmrc.c:582
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Neuspe¹no branje %s: %s."
 
-#: lib/rpmrc.c:612
+#: lib/rpmrc.c:620
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "manjkajoèi ,:` (najden 0x%02x) v %s:%d"
 
-#: lib/rpmrc.c:629 lib/rpmrc.c:703
+#: lib/rpmrc.c:637 lib/rpmrc.c:711
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "manjkajoèi argument za %s v %s:%d"
 
-#: lib/rpmrc.c:646 lib/rpmrc.c:668
+#: lib/rpmrc.c:654 lib/rpmrc.c:676
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "raz¹iritev %s je bila neuspe¹na v %s:%d \"%s\""
 
-#: lib/rpmrc.c:655
+#: lib/rpmrc.c:663
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "ni mo¾no odpreti %s v %s:%d: %s"
 
-#: lib/rpmrc.c:695
+#: lib/rpmrc.c:703
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "manjkajoèa arhitektura za %s v %s:%d"
 
-#: lib/rpmrc.c:762
+#: lib/rpmrc.c:770
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "nepravilna izbira ,%s` v %s:%d"
 
-#: lib/rpmrc.c:1387
+#: lib/rpmrc.c:1521
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznan sistem: %s\n"
 
-#: lib/rpmrc.c:1388
+#: lib/rpmrc.c:1522
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Prosimo, pi¹ite na rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1613
+#: lib/rpmrc.c:1747
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Ni mo¾no raz¹iriti %s"
 
-#: lib/rpmrc.c:1618
+#: lib/rpmrc.c:1752
 #, fuzzy, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Ni mo¾no prebrati %s, HOME je prevelik."
 
-#: lib/rpmrc.c:1635
+#: lib/rpmrc.c:1769
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s ni mo¾no odpreti za branje: %s."

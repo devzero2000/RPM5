@@ -90,11 +90,6 @@ typedef struct rpmtransObject_s rpmtransObject;
  */
 
 /** \ingroup python
- * \name Class: header
- */
-/*@{*/
-
-/** \ingroup python
  * \name Class: rpmtrans
  * \class rpmtrans
  * \brief A python rpmtrans object represents an RPM transaction set.

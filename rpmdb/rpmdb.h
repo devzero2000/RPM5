@@ -351,6 +351,7 @@ extern "C" {
 /** \ingroup db3
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
+ * @param rpmtag
  */
 /*@only@*/ /*@null@*/ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	/*@globals rpmGlobalMacroContext @*/
@@ -389,6 +390,7 @@ extern "C" {
 
 /** \ingroup dbi
  * @param dbi		index database handle
+ * @retval dbcp		database cursor
  * @param flags		DBI_WRITECURSOR, DBI_ITERATOR or 0
  */
 int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
@@ -400,6 +402,7 @@ int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
 
 /** \ingroup dbi
  * @param dbi		index database handle
+ * @param dbcursor	database cursor
  * @param flags		(unused)
  */
 int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
@@ -409,6 +412,7 @@ int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
 /** \ingroup dbi
  * Delete (key,data) pair(s) from index database.
  * @param dbi		index database handle
+ * @param dbcursor	database cursor
  * @param keyp		key data
  * @param keylen	key data length
  * @param flags		(unused)
@@ -422,6 +426,7 @@ int dbiDel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 /** \ingroup dbi
  * Retrieve (key,data) pair from index database.
  * @param dbi		index database handle
+ * @param dbcursor	database cursor
  * @param keypp		address of key data
  * @param keylenp	address of key data length
  * @param datapp	address of data pointer
@@ -441,6 +446,7 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp,
 /** \ingroup dbi
  * Store (key,data) pair in index database.
  * @param dbi		index database handle
+ * @param dbcursor	database cursor
  * @param keyp		key data
  * @param keylen	key data length
  * @param datap		data pointer
