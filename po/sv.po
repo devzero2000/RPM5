@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-17 09:19-0500\n"
+"POT-Creation-Date: 2000-12-19 16:06-0500\n"
 "PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2562,7 +2562,7 @@ msgstr "filen %s är på en okänd enhet"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
 
-#: lib/header.c:246 lib/header.c:717 lib/install.c:380
+#: lib/header.c:246 lib/header.c:717 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatyp %d stöds inte\n"
@@ -3288,7 +3288,7 @@ msgstr "fel(%d) när post %s sparades i %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "fel(%d) när post %s togs bort ur %s"
 
-#: lib/rpmdb.c:772 lib/rpmdb.c:2351
+#: lib/rpmdb.c:772 lib/rpmdb.c:2360
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
@@ -3346,65 +3346,65 @@ msgstr "lägger till \"%s\" till %s-indexet.\n"
 msgid "adding %d entries to %s index.\n"
 msgstr "lägger till %d poster till %s-indexet.\n"
 
-#: lib/rpmdb.c:2376
+#: lib/rpmdb.c:2385
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "bygger om databas %s till %s\n"
 
-#: lib/rpmdb.c:2380
+#: lib/rpmdb.c:2389
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "tillfällig databas %s existerar redan"
 
-#: lib/rpmdb.c:2386
+#: lib/rpmdb.c:2395
 #, c-format
 msgid "creating directory %s\n"
 msgstr "skapar katalog %s\n"
 
-#: lib/rpmdb.c:2388
+#: lib/rpmdb.c:2397
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "fel när katalog skapades %s: %s"
 
-#: lib/rpmdb.c:2395
+#: lib/rpmdb.c:2404
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "öppnar gammal databas med dbapi %d\n"
 
-#: lib/rpmdb.c:2406
+#: lib/rpmdb.c:2415
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas med dbapi %d\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2438
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "post nummer %d i databasen är felaktig -- hoppar över den."
 
-#: lib/rpmdb.c:2466
+#: lib/rpmdb.c:2475
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kan inte lägga till post ursprungligen vid %d"
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2493
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
 
-#: lib/rpmdb.c:2492
+#: lib/rpmdb.c:2501
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: lib/rpmdb.c:2494
+#: lib/rpmdb.c:2503
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: lib/rpmdb.c:2504
+#: lib/rpmdb.c:2513
 #, c-format
 msgid "removing directory %s\n"
 msgstr "tar bort katalog %s\n"
 
-#: lib/rpmdb.c:2506
+#: lib/rpmdb.c:2515
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"

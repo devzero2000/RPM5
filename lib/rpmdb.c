@@ -2324,6 +2324,15 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	return rc;
 
     rc = rpmdbRemoveDatabase(rootdir, newdbpath, _newdbapi);
+
+
+    /* Remove /etc/rpm/macros.db1 configuration file if db3 rebuilt. */
+    if (rc == 0 && _olddbapi != 3 && _newdbapi == 3) {
+	const char * mdb1 = "/etc/rpm/macros.db1";
+	struct stat st;
+	if (!stat(mdb1, &st) && S_ISREG(st.st_mode))
+	    (void) unlink(mdb1);
+    }
     return rc;
 }
 

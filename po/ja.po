@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-17 09:19-0500\n"
+"POT-Creation-Date: 2000-12-19 16:06-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2658,7 +2658,7 @@ msgstr "ファイル %s は不明なデバイスです"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
-#: lib/header.c:246 lib/header.c:717 lib/install.c:380
+#: lib/header.c:246 lib/header.c:717 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
@@ -3403,7 +3403,7 @@ msgstr "レコード %s を %s にストアでエラー "
 msgid "error(%d) removing record %s from %s"
 msgstr "レコード %s を %s に削除でエラー"
 
-#: lib/rpmdb.c:772 lib/rpmdb.c:2351
+#: lib/rpmdb.c:772 lib/rpmdb.c:2360
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
@@ -3459,67 +3459,67 @@ msgstr "%s を %s へ名前を変更します\n"
 msgid "adding %d entries to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/rpmdb.c:2376
+#: lib/rpmdb.c:2385
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: lib/rpmdb.c:2380
+#: lib/rpmdb.c:2389
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: lib/rpmdb.c:2386
+#: lib/rpmdb.c:2395
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2388
+#: lib/rpmdb.c:2397
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ディレクトリ %s の作成エラー: %s"
 
-#: lib/rpmdb.c:2395
+#: lib/rpmdb.c:2404
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: lib/rpmdb.c:2406
+#: lib/rpmdb.c:2415
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2438
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rpmdb.c:2466
+#: lib/rpmdb.c:2475
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2493
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rpmdb.c:2492
+#: lib/rpmdb.c:2501
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rpmdb.c:2494
+#: lib/rpmdb.c:2503
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rpmdb.c:2504
+#: lib/rpmdb.c:2513
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2506
+#: lib/rpmdb.c:2515
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"

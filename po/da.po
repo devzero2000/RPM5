@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-17 09:19-0500\n"
+"POT-Creation-Date: 2000-12-19 16:06-0500\n"
 "PO-Revision-Date: 2000-03-07 05:17+01:00\n"
 "Last-Translator: K. Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish/Dansk <dansk@klid.dk>\n"
@@ -2532,7 +2532,7 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:246 lib/header.c:717 lib/install.c:380
+#: lib/header.c:246 lib/header.c:717 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -3230,7 +3230,7 @@ msgstr ""
 msgid "error(%d) removing record %s from %s"
 msgstr ""
 
-#: lib/rpmdb.c:772 lib/rpmdb.c:2351
+#: lib/rpmdb.c:772 lib/rpmdb.c:2360
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -3286,65 +3286,65 @@ msgstr ""
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2376
+#: lib/rpmdb.c:2385
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2380
+#: lib/rpmdb.c:2389
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rpmdb.c:2386
+#: lib/rpmdb.c:2395
 #, c-format
 msgid "creating directory %s\n"
 msgstr "opretter kataloget %s\n"
 
-#: lib/rpmdb.c:2388
+#: lib/rpmdb.c:2397
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:2395
+#: lib/rpmdb.c:2404
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2406
+#: lib/rpmdb.c:2415
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2438
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:2466
+#: lib/rpmdb.c:2475
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2493
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2492
+#: lib/rpmdb.c:2501
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2494
+#: lib/rpmdb.c:2503
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2504
+#: lib/rpmdb.c:2513
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjener kataloget %s\n"
 
-#: lib/rpmdb.c:2506
+#: lib/rpmdb.c:2515
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

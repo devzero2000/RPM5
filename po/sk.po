@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-17 09:19-0500\n"
+"POT-Creation-Date: 2000-12-19 16:06-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2664,7 +2664,7 @@ msgstr "súbor %s sa nachádza na neznámom zariadení"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
 
-#: lib/header.c:246 lib/header.c:717 lib/install.c:380
+#: lib/header.c:246 lib/header.c:717 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ údajov %d nie je podorovaný\n"
@@ -3385,7 +3385,7 @@ msgstr "chyba pri zápise záznamu %s do %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: lib/rpmdb.c:772 lib/rpmdb.c:2351
+#: lib/rpmdb.c:772 lib/rpmdb.c:2360
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
@@ -3443,66 +3443,66 @@ msgstr "premenováva sa %s na %s\n"
 msgid "adding %d entries to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:2376
+#: lib/rpmdb.c:2385
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rpmdb.c:2380
+#: lib/rpmdb.c:2389
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rpmdb.c:2386
+#: lib/rpmdb.c:2395
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2388
+#: lib/rpmdb.c:2397
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rpmdb.c:2395
+#: lib/rpmdb.c:2404
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rpmdb.c:2406
+#: lib/rpmdb.c:2415
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2438
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rpmdb.c:2466
+#: lib/rpmdb.c:2475
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2493
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rpmdb.c:2492
+#: lib/rpmdb.c:2501
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rpmdb.c:2494
+#: lib/rpmdb.c:2503
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rpmdb.c:2504
+#: lib/rpmdb.c:2513
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2506
+#: lib/rpmdb.c:2515
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
