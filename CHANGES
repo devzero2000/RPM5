@@ -7,6 +7,7 @@
 	- ia64: auto-relocate glibc.ix86 interpreter path (#100563).
 	- restore file conflict detection traditional behavior.
 	- fix: PIE executables have basename-as-soname provides (#123697).
+	- shared libraries in separate rpm-libs package.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
