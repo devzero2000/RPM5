@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -228,6 +228,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
+- update brp-* scripts from rpm-4.0.
+
 * Thu Mar 15 2000 Jeff Johnson <jbj@redhat.com>
 - portability: skip bzip2 if not available.
 - portability: skip gzseek if not available (zlib-1.0.4).
