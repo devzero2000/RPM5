@@ -615,7 +615,6 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     int count, i, j;
     const char ** obsoletes;
     int alNum;
-    int * caps;
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
