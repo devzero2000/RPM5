@@ -18,7 +18,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+typedef rpmTransactionSet_s * Transaction;
+
+/*
+ * External functions
+ */
 extern double constant(char *name, int arg);
+
 
 MODULE = rpm		PACKAGE = rpm		
 
@@ -57,6 +63,10 @@ Header(package)
 	} else {
 	  sv_setref_pv(ST(0), "HeaderPtr", (void*)RETVAL);
 	}
+
+Transaction *
+Transaction(header)
+  Header * header
 
 
 MODULE = rpm	PACKAGE = HeaderPtr	PREFIX = Header
@@ -268,3 +278,38 @@ HeaderTagsRef(header)
 	headerFreeIterator(iterator);      
   OUTPUT:
 	RETVAL
+
+MODULE = rpm	PACKAGE = TransactionPtr	PREFIX = Trans
+
+int
+TransAdd(trans, header)
+  Transaction * trans
+  Header * header
+
+int
+TransDepCheck(trans)
+  Transaction * trans
+
+int
+TransRun(trans)
+  Transaction * trans
+
+Transaction *
+TransOrder(trans)
+  Transaction *trans
+
+int
+TransDealloc(trans)
+  Transaction * trans
+
+int
+TransGetAttr(trans, name)
+  Transaction * trans
+  const char * name
+
+int 
+TransSetAttr(trans, name, val)
+  Transaction * trans
+  const char * name
+  void * val
+

@@ -4,4 +4,5 @@ TYPEMAP
 
 Header * T_PTROBJ
 const char * T_PV
+Transaction * T_PTROBJ
 
