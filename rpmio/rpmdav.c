@@ -411,6 +411,7 @@ static void *fetch_destroy_item(/*@only@*/ struct fetch_resource_s *res)
     return NULL;
 }
 
+#ifdef	UNUSED
 /*@null@*/
 static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 	/*@modifies res @*/
@@ -424,6 +425,7 @@ static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 /*@=branchstate@*/
     return NULL;
 }
+#endif
 
 static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const char *uri)
         /*@*/
@@ -941,11 +943,15 @@ assert(ctrl->req != NULL);
 #endif
 
     if (!strcmp(httpCmd, "PUT")) {
+#if defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK)
 	ctrl->wr_chunked = 1;
 	ne_add_request_header(ctrl->req, "Transfer-Encoding", "chunked");
 	ne_set_request_chunked(ctrl->req, 1);
 	/* HACK: no retries if/when chunking. */
 	rc = davResp(u, ctrl, NULL);
+#else
+	rc = FTPERR_SERVER_IO_ERROR;
+#endif
     } else {
 	/* HACK: possible Last-Modified: Tue, 02 Nov 2004 14:29:36 GMT */
 	/* HACK: possible ETag: "inode-size-mtime" */
@@ -1080,8 +1086,13 @@ assert(sess != NULL);
     /* HACK: include ne_private.h to access sess->socket for now. */
     xx = ne_sock_fullwrite(sess->socket, buf, count);
 #else
+#if defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK)
 assert(fd->req != NULL);
     xx = ne_send_request_chunk(fd->req, buf, count);
+#else
+    errno = EIO;       /* HACK */
+    return -1;
+#endif
 #endif
 
     /* HACK: stupid error impedence matching. */
