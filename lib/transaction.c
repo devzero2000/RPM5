@@ -1738,9 +1738,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	    if (removeBinaryPackage(ts->rootDir, ts->rpmdb, offset, dbh,
 				transFlags,
-				((transFlags & RPMTRANS_FLAG_ERASECALLBACK)
-					? notify : NULL),
-				notifyData, dbh, fi->actions,
+				notify, notifyData, dbh, fi->actions,
 				ts->scriptFd))
 		ourrc++;
 
