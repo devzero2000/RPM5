@@ -530,7 +530,7 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 
     headerNVR(h, &name, NULL, NULL);
 
-    numPackage = rpmdbCountPackages(db, name);
+    numPackage = rpmdbCountPackages(db, name) + countCorrection;
     if (numPackage < 0)
 	return 1;
 
