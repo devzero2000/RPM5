@@ -398,12 +398,14 @@ run_rb_upgrade_install_test() {
 	# Now rollback the transaction
 	echo "**** RUNNING CMD ****"
 	echo $RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
 		--define \'${TMPPATH_OPT}\' \
 		--rollback \'${rb_goal}\'
 	echo "*********************"
 	$RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
@@ -458,12 +460,14 @@ run_rb_multitran_test() {
 	# Now rollback the transaction
 	echo "**** RUNNING CMD ****"
 	echo $RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
 		--define \'${TMPPATH_OPT}\' \
 		--rollback \'${rb_goal}\'
 	echo "*********************"
 	$RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
@@ -503,6 +507,7 @@ run_arb_test() {
 run_arb_upgrade_install_test() {
 	echo "**** RUNNING CMD ****"
 	echo $RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
 		--define \'_rollback_transaction_on_failure 1\' \
@@ -510,6 +515,7 @@ run_arb_upgrade_install_test() {
 		$RPMS
 	echo "*********************"
 	$RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "_rollback_transaction_on_failure 1" \
@@ -546,6 +552,7 @@ run_arb_multitran_test() {
 		# Install/Upgrade this transaction
 		echo "**** RUNNING CMD ****"
 		echo $RPM -Uv${VERBOSE}h \
+			--repackage \
 			--arbgoal \'${arbgoal}\' \
 			--define \'${DBPATH_OPT}\' \
 			--define \'_repackage_dir ${RPDIR}\' \
@@ -554,6 +561,7 @@ run_arb_multitran_test() {
 			$RPMS
 		echo "*********************"
 		$RPM -Uv${VERBOSE}h \
+			--repackage \
 			--arbgoal "${arbgoal}" \
 			--define "${DBPATH_OPT}" \
 			--define "_repackage_dir ${RPDIR}" \
@@ -572,6 +580,7 @@ run_arb_multitran_test() {
 run_arb_erase_test() {
 	echo "**** RUNNING CMD ****"
 	echo $RPM -ev${VERBOSE} \
+		--repackage \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
 		--define \'_rollback_transaction_on_failure 1\' \
@@ -579,6 +588,7 @@ run_arb_erase_test() {
 		${ERASE_TEST_RPMS}
 	echo "*********************"
 	$RPM -ev${VERBOSE} \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "_rollback_transaction_on_failure 1" \

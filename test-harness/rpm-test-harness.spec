@@ -25,7 +25,7 @@ echo "Extracting sources..."
 %install
 echo "Running make..."
 make DEBUG=1 rpmbuild BUILD_ROOT=${RPM_BUILD_ROOT} \
-	PREFIX=%{my_prefix}/%{name}-%{version}
+	PREFIX=%{my_prefix}
 
 %files
 %{my_prefix}/%{name}-%{version}

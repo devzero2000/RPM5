@@ -1,5 +1,5 @@
 APP_NAME      = rpm-test-harness
-VERSION       = 11
+VERSION       = 12
 NV            = $(APP_NAME)-$(VERSION)
 TMP_DIR       = /tmp
 PREFIX        = /
