@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.37
+Release: 0.38
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -187,16 +187,16 @@ exit 0
 %ifos linux
 /sbin/ldconfig
 if [ -f /var/lib/rpm/packages.rpm ]; then
-    : # do nothing
+    /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/*.rpm
 elif [ -f /var/lib/rpm/Packages ]; then
     # undo db1 configuration
     rm -f /etc/rpm/macros.db1
+    /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
 else
     # initialize db3 database
     rm -f /etc/rpm/macros.db1
     /bin/rpm --initdb
 fi
-/bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]* /var/lib/rpm/*.rpm
 %endif
 exit 0
 
@@ -412,6 +412,14 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jun 14 2001 Jeff Johnson <jbj@redhat.com>
+- fix: db1 end-of-file not detected in legacy compatible way.
+- fix: remove (harmless) chown error message from %post.
+- add --target/--host to %configure, add example cross-build/config.site
+  scripts to /usr/lib/rpm <arjanv@redhat.com> (#44581).
+- rpmdb iterator selectors permit default/strcmp/regex/glob matching.
+- rpmdb iterator selectors permit negative matches.
+
 * Wed Jun 13 2001 Jeff Johnson <jbj@redhat.com>
 - add rpmdbSetIteratorRE() for regex matching in database iterators.
 - permit rpm -qa to take RE args applied to name tag.

@@ -227,6 +227,17 @@
 #
 #%_langpatt
 
+#	(experimental)
+#	The type of pattern match used on rpmdb iterator selectors:
+#	"default"	simple glob-like regex, periods will be escaped,
+#			splats will have period prepended, full "^...$" match
+#			required. Also, file path tags will use glob(7).
+#	"strcmp"	compare strings
+#	"regex"		regex(7) patterns using regcomp(3)/regexec(3)
+#	"glob"		glob(7) patterns using fnmatch(3)
+#
+%_query_selector_match	default
+
 #	A colon separated list of paths where files should *not* be installed.
 #	Usually, these are network file system mount points.
 #
@@ -690,7 +701,8 @@ CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
 CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
 FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
 %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} ; \
-./configure %{_target_platform} \\\
+./configure \\\
+	--target=%{_target_platform} \\\
  	--prefix=%{_prefix} \\\
 	--exec-prefix=%{_exec_prefix} \\\
 	--bindir=%{_bindir} \\\
@@ -703,7 +715,9 @@ FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
 	--localstatedir=%{_localstatedir} \\\
 	--sharedstatedir=%{_sharedstatedir} \\\
 	--mandir=%{_mandir} \\\
+	--host=%{_host} \\\
 	--infodir=%{_infodir}
+
 #------------------------------------------------------------------------------
 # The make install analogue of %configure:
 %makeinstall \
