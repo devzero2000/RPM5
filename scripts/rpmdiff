@@ -619,7 +619,7 @@ sub parse_rpm_headers {
     $header_position += $HEADER_RECORD_SIZE;
     
     (    
-     ( ($tag < 100) || ($tag > 1200) ) ||
+     ( ($tag < 60) || ($tag > 1200) ) ||
      ( ($data_type < 0) || ($data_type > 10) ) ||
      ($offset < 0)
     ) && die("$0: Error parsing header in rpm file: $filename, ".
