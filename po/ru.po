@@ -672,9 +672,8 @@ msgid "    --erase <package>"
 msgstr "    --erase <пакет>  "
 
 #: rpm.c:445
-#, fuzzy
 msgid "    -e <package>          "
-msgstr "    -i <файл пакета>      "
+msgstr "    -е <пакет>            "
 
 #: rpm.c:446 rpmqv.c:255 rpmqv.c:671
 msgid "erase (uninstall) package"
@@ -1550,9 +1549,8 @@ msgid "   --erase <package>"
 msgstr "   --erase <пакет>  "
 
 #: rpmqv.c:670
-#, fuzzy
 msgid "   -e <package>           "
-msgstr "   -K <pkg>+             "
+msgstr "   -е <пакет>             "
 
 #: rpmqv.c:688
 msgid "   --resign <pkg>+        "
@@ -3176,9 +3174,9 @@ msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
 #: lib/query.c:555 lib/rpminstall.c:455
-#, fuzzy, c-format
+#, c-format
 msgid "%s: read manifest failed: %s\n"
-msgstr "%s: ошибка Fread: %s\n"
+msgstr "%s: ошибка чтения списка файлов: %s\n"
 
 #: lib/query.c:598
 #, c-format
@@ -4101,21 +4099,3 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
-
-#~ msgid "counting packages to install\n"
-#~ msgstr "подсчитываются пакеты для установки\n"
-
-#~ msgid "found %d packages\n"
-#~ msgstr "найдено %d пакетов\n"
-
-#~ msgid "looking for packages to download\n"
-#~ msgstr "ищутся пакеты для получения по сети\n"
-
-#~ msgid "skipping %s - rpmGlob failed(%d)\n"
-#~ msgstr "%s пропускается - ошибка rpmGlob(%d)\n"
-
-#~ msgid "retrieved %d packages\n"
-#~ msgstr "получено %d пакетов\n"
-
-#~ msgid "%s does not appear to be a RPM package\n"
-#~ msgstr "%s не похож на пакет RPM\n"
