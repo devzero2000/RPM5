@@ -67,6 +67,8 @@ struct cpioCrcPhysicalHeader {
     char checksum[8];			/* ignored !! */
 };
 
+#define PHYS_HDR_SIZE	110		/* don't depend on sizeof(struct) */
+
 struct cpioHeader {
     ino_t inode;
     mode_t mode;
@@ -153,7 +155,7 @@ static int getNextHeader(struct ourfd * fd, struct cpioHeader * chPtr) {
     char * end;
     int major, minor;
 
-    if (ourread(fd, &physHeader, sizeof(physHeader)) != sizeof(physHeader)) 
+    if (ourread(fd, &physHeader, PHYS_HDR_SIZE) != sizeof(PHYS_HDR_SIZE)) 
 	return CPIO_READ_FAILED;
 
     if (strncmp(CPIO_CRC_MAGIC, physHeader.magic, strlen(CPIO_CRC_MAGIC)) &&
@@ -694,11 +696,11 @@ static int writeFile(int fd, struct stat sb, struct cpioFileMapping * map,
     num = strlen(map->archivePath) + 1; SET_NUM_FIELD(hdr.namesize, num, buf);
     memcpy(hdr.checksum, "00000000", 8);
 
-    if ((rc = safewrite(fd, &hdr, sizeof(hdr))))
+    if ((rc = safewrite(fd, &hdr, PHYS_HDR_SIZE)))
 	return rc;
     if ((rc = safewrite(fd, map->archivePath, num)))
 	return rc;
-    size = sizeof(hdr) + num;
+    size = PHYS_HDR_SIZE + num;
     if ((rc = padoutfd(fd, &size, 4)))
 	return rc;
 	
@@ -881,11 +883,11 @@ int cpioBuildArchive(int fd, struct cpioFileMapping * mappings,
     memcpy(hdr.magic, CPIO_NEWC_MAGIC, sizeof(hdr.magic));
     memcpy(hdr.nlink, "00000001", 8);
     memcpy(hdr.namesize, "0000000b", 8);
-    if ((rc = safewrite(fd, &hdr, sizeof(hdr))))
+    if ((rc = safewrite(fd, &hdr, PHYS_HDR_SIZE)))
 	return rc;
     if ((rc = safewrite(fd, "TRAILER!!!", 11)))
 	return rc;
-    totalsize += sizeof(hdr) + 11;
+    totalsize += PHYS_HDR_SIZE + 11;
 
     /* GNU cpio pads to 512 bytes here, but we don't. I'm not sure if
        it matters or not */

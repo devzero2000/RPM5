@@ -325,6 +325,8 @@ EOF
 	  echo "${UNAME_MACHINE}-unknown-linuxaout" ; exit 0
 	elif echo $ld_help_string | grep >/dev/null 2>&1 "supported emulations: i[3456]86coff"; then
 	  echo "${UNAME_MACHINE}-unknown-linuxcoff" ; exit 0
+	elif echo $ld_help_string | grep >/dev/null 2>&1 "supported emulations: elf32arm"; then
+	  echo "arm-unknown-linux" ; exit 0
 	elif test "${UNAME_MACHINE}" = "alpha" ; then
 	  echo alpha-unknown-linux ; exit 0
 	else
