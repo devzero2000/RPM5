@@ -1,4 +1,6 @@
 2.5.2 -> 2.5.3:
+	- addFile: fix special case of "/" in %files.
+	- better query semantics with symlinks (Tim Mooney)
 	- build.c: fix incorrect check for successful open
 	- allow %define with leading whitespace
 	- use /usr/lib/rpm for rpmpopt, rpmrc, find-requires, find-provides

@@ -771,6 +771,11 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	strcpy(diskName, fileName);
 	if (fl->buildRoot) {
 	    strcpy(fileName, diskName + strlen(fl->buildRoot));
+	    /* Special case for "/" */
+	    if (*fileName == '\0') {
+		fileName[0] = '/';
+		fileName[1] = '\0';
+	    }
 	}
     } else {
 	if (fl->buildRoot) {
