@@ -66,6 +66,8 @@
 	- add FHS doc/man/info dirs, diddle autoconf goo.
 	- fix: headerUnload handles headers w/o regions correctly on rebuilddb.
 	- bail on header regions.
+	- resurrect rpmrc Provides: as well as implicit dependency on packge
+		info.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

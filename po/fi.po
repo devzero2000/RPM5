@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-12-12 13:07-0500\n"
+"POT-Creation-Date: 2000-12-12 15:19-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2482,47 +2482,52 @@ msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
 #: lib/depends.c:1143
+#, fuzzy, c-format
+msgid "%s: %-45s YES (db package)\n"
+msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+
+#: lib/depends.c:1159
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1164
+#: lib/depends.c:1180
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1222
+#: lib/depends.c:1238
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
 #. conflicts exist.
-#: lib/depends.c:1289
+#: lib/depends.c:1305
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/depends.c:1515
+#: lib/depends.c:1531
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
 #. Record all relations.
-#: lib/depends.c:1619
+#: lib/depends.c:1635
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1669
+#: lib/depends.c:1685
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1772
+#: lib/depends.c:1788
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1803
+#: lib/depends.c:1819
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -4244,10 +4249,6 @@ msgstr "%s:n luonti ep‰onnistui\n"
 
 #, fuzzy
 #~ msgid "%s: %-45s YES (added package)\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "%s: %-45s YES (db packages)\n"
 #~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
 #, fuzzy

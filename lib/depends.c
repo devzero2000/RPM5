@@ -1064,7 +1064,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	}
     }
 
-#ifdef	DYING
+#ifndef	DYING
   { const char * rcProvidesString;
     const char * start;
     int i;
@@ -1133,6 +1133,22 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    }
 	}
 	rpmdbFreeIterator(mi);
+
+#ifndef DYING
+	mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_NAME, keyName, 0);
+	rpmdbPruneIterator(mi,
+			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db package)\n"),
+			keyType, keyDepend+2);
+		rpmdbFreeIterator(mi);
+		goto exit;
+	    }
+	}
+	rpmdbFreeIterator(mi);
+#endif
+
     }
 
     if (suggestion)
