@@ -179,11 +179,13 @@ distclean:
 .PHONY:		depend
 depend:
 	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
+	/bin/rm -f .depend ; \
 	$(CPP) -MM $(CFLAGS) $(srcdir)/$(SOURCES) | \
 		sed s+$$topdir_path+$(top_srcdir)+g > .depend ; \
 	for d in $(ALLSUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
+	/bin/rm -f .depend-done
 	echo > .depend-done
 
 .PHONY: noconfig
