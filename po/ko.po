@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-04-24 22:49-0400\n"
+"POT-Creation-Date: 2001-04-26 16:40-0400\n"
 "PO-Revision-Date: 2001-01-01 01:00+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -3691,7 +3691,7 @@ msgstr ""
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/transaction.c:1359
+#: lib/transaction.c:1358
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

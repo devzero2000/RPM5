@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-04-24 22:49-0400\n"
+"POT-Creation-Date: 2001-04-26 16:40-0400\n"
 "PO-Revision-Date: 2001-04-10 20:04+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3775,7 +3775,7 @@ msgstr "flyttar katalogen %s till %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"
 
-#: lib/transaction.c:1359
+#: lib/transaction.c:1358
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
