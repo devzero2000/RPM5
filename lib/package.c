@@ -28,10 +28,8 @@
 /*@access indexEntry @*/	/* XXX headerCheck */
 /*@access FD_t @*/		/* XXX stealing digests */
 
-/*@-exportheadervar@*/
 /*@unchecked@*/
-int _print_pkts = 0;
-/*@=exportheadervar@*/
+static int _print_pkts = 0;
 
 /*@unchecked@*/
 static unsigned int nkeyids_max = 256;
@@ -544,6 +542,7 @@ verifyinfo_exit:
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
 
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
 
 	b = (unsigned char *) header_magic;
@@ -565,6 +564,7 @@ verifyinfo_exit:
 	nb = htonl(ildl[1]);
         (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
         dig->nbytes += nb;
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
 	break;
 #endif
@@ -587,6 +587,7 @@ verifyinfo_exit:
 	ildl[1] = htonl(ildl[1]);
 /*@=boundswrite@*/
 
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 
 	b = (unsigned char *) header_magic;
@@ -608,6 +609,7 @@ verifyinfo_exit:
 	nb = htonl(ildl[1]);
         (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
         dig->nbytes += nb;
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
 	break;
     default:
@@ -729,7 +731,7 @@ exit:
 }
 
 /*@-bounds@*/	/* LCL: segfault */
-int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
+rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     pgpDig dig;
     byte buf[8*BUFSIZ];
@@ -749,27 +751,31 @@ int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     int i;
 
     if (hdrp) *hdrp = NULL;
+
+#ifdef	DYING
     {	struct stat st;
 /*@-boundswrite@*/
 	memset(&st, 0, sizeof(st));
 /*@=boundswrite@*/
 	(void) fstat(Fileno(fd), &st);
 	/* if fd points to a socket, pipe, etc, st.st_size is *always* zero */
-	if (S_ISREG(st.st_mode) && st.st_size < sizeof(*l))
+	if (S_ISREG(st.st_mode) && st.st_size < sizeof(*l)) {
+	    rc = RPMRC_NOTFOUND;
 	    goto exit;
+	}
     }
+#endif
 
     memset(l, 0, sizeof(*l));
     rc = readLead(fd, l);
-    if (rc != RPMRC_OK) {
-	rc = RPMRC_NOTFOUND;
+    if (rc != RPMRC_OK)
 	goto exit;
-    }
 
     switch (l->major) {
     case 1:
 	rpmError(RPMERR_NEWPACKAGE,
 	    _("packaging version 1 is not supported by this version of RPM\n"));
+	rc = RPMRC_NOTFOUND;
 	goto exit;
 	/*@notreached@*/ break;
     case 2:
@@ -779,6 +785,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     default:
 	rpmError(RPMERR_NEWPACKAGE, _("only packaging with major numbers <= 4 "
 		"is supported by this version of RPM\n"));
+	rc = RPMRC_NOTFOUND;
 	goto exit;
 	/*@notreached@*/ break;
     }

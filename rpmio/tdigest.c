@@ -1,14 +1,15 @@
 #include "system.h"
+#include <gcrypt.h>
 #include "rpmio_internal.h"
 #include "popt.h"
 #include "debug.h"
-
 
 static pgpHashAlgo hashalgo = PGPHASHALGO_MD5;
 static rpmDigestFlags flags = RPMDIGEST_NONE;
 extern int _rpmio_debug;
 
 static int fips = 0;
+static int gcrypt = 0;
 
 const char * FIPSAdigest = "a9993e364706816aba3e25717850c26c9cd0d89d";
 const char * FIPSBdigest = "84983e441c3bd26ebaae4aa1f95129e5e54670f1";
@@ -23,6 +24,7 @@ static struct poptOption optionsTable[] = {
  { "fipsa",'\0', POPT_ARG_VAL, &fips, 1,	NULL, NULL },
  { "fipsb",'\0', POPT_ARG_VAL, &fips, 2,	NULL, NULL },
  { "fipsc",'\0', POPT_ARG_VAL, &fips, 3,	NULL, NULL },
+ { "gcrypt",'\0', POPT_ARG_VAL, &gcrypt, 1,	NULL, NULL },
  { "debug",'d', POPT_ARG_VAL, &_rpmio_debug, -1,	NULL, NULL },
   POPT_AUTOHELP
   POPT_TABLEEND
@@ -38,7 +40,8 @@ main(int argc, const char *argv[])
     const char ** args;
     const char * ifn;
     const char * ofn = "/dev/null";
-    DIGEST_CTX ctx;
+    DIGEST_CTX ctx = NULL;
+    GcryMDHd gcry = NULL;
     const char * idigest;
     const char * odigest;
     const char * sdigest;
@@ -54,38 +57,69 @@ main(int argc, const char *argv[])
     while ((rc = poptGetNextOpt(optCon)) > 0)
 	;
 
-#ifdef	DYING
-    reverse = (flags & RPMDIGEST_REVERSE);
-#endif
     if (fips) {
-	ctx = rpmDigestInit(PGPHASHALGO_SHA1, flags);
+	struct rpmsw_s begin, end;
+	if (gcrypt)
+	    gcry = gcry_md_open(GCRY_MD_SHA1, 0);
+
+	(void) rpmswNow(&begin);
+
+	if (gcrypt)
+	    gcry_md_reset(gcry);
+	else
+	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, flags);
 	ifn = NULL;
 	appendix = ' ';
 	sdigest = NULL;
 	switch (fips) {
 	case 1:
 	    ifn = "abc";
-	    rpmDigestUpdate(ctx, ifn, strlen(ifn));
+	    if (gcrypt)
+		gcry_md_write (gcry, ifn, strlen(ifn));
+	    else
+		rpmDigestUpdate(ctx, ifn, strlen(ifn));
 	    sdigest = FIPSAdigest;
 	    appendix = 'A';
 	    break;
 	case 2:
 	    ifn = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-	    rpmDigestUpdate(ctx, ifn, strlen(ifn));
+	    if (gcrypt)
+		gcry_md_write (gcry, ifn, strlen(ifn));
+	    else
+		rpmDigestUpdate(ctx, ifn, strlen(ifn));
 	    sdigest = FIPSBdigest;
 	    appendix = 'B';
 	    break;
 	case 3:
 	    ifn = "aaaaaaaaaaa ...";
-	    for (i = 0; i < 1000000; i++)
-		rpmDigestUpdate(ctx, ifn, 1);
+	    for (i = 0; i < 1000000; i++) {
+		if (gcrypt)
+		    gcry_md_write (gcry, ifn, 1);
+		else
+		    rpmDigestUpdate(ctx, ifn, 1);
+	    }
 	    sdigest = FIPSCdigest;
 	    appendix = 'C';
 	    break;
 	}
 	if (ifn == NULL)
 	    return 1;
-	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
+	if (gcrypt) {
+	    const unsigned char * s = gcry_md_read (gcry, 0);
+	    char * t;
+
+	    gcry_md_close(gcry);
+	    digestlen = 2*20;
+	    digest = t = xcalloc(1, digestlen+1);
+	    for (i = 0; i < digestlen; i += 2) {
+		static const char hex[] = "0123456789abcdef";
+		*t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
+		*t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
+	    }
+	    *t = '\0';
+	} else
+	    rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
+	(void) rpmswNow(&end);
 
 	if (digest) {
 	    fprintf(stdout, "%s     %s\n", digest, ifn);
@@ -97,6 +131,7 @@ main(int argc, const char *argv[])
 		appendix);
 	    fflush(stdout);
 	}
+fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
 	return 0;
     }
 

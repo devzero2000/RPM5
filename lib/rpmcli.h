@@ -46,7 +46,7 @@ extern const char * rpmcliRootDir;
 /*@null@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, stderr, 
+	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno, stderr, 
 		fileSystem, internalState @*/
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext, stderr, 
 		fileSystem, internalState @*/;
@@ -57,7 +57,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
  */
 /*@mayexit@*/
 void rpmcliConfigured(void)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext,
+	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -226,7 +226,7 @@ typedef struct rpmQVKArguments_s * QVA_t;
  * @return		0 on success
  */
 typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies qva, ts, fileSystem @*/;
 
 /** \ingroup rpmcli
@@ -238,7 +238,7 @@ typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h)
  * @return		0 on success
  */
 typedef	int (*QSpecF_t) (rpmts ts, QVA_t qva, const char * arg)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -316,7 +316,7 @@ extern struct poptOption rpmVerifyPoptTable[];
  * @return		result of last non-zero showPackage() return
  */
 int rpmcliShowMatches(QVA_t qva, rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies qva, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
@@ -324,7 +324,7 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
  * @param fp	file handle to use for display
  */
 void rpmDisplayQueryTags(FILE * fp)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /** \ingroup rpmcli
@@ -354,7 +354,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
  * @return		0 always
  */
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
@@ -383,7 +383,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 /*@-incondefs@*/
 int rpmVerifyFile(const rpmts ts, rpmfi fi,
 		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fi, *res, fileSystem, internalState @*/
 	/*@requires maxSet(res) >= 0 @*/;
 /*@=incondefs@*/
@@ -409,7 +409,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
  */
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies qva, ts, fd, rpmGlobalMacroContext,
+	/*@modifies qva, ts, fd, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
@@ -512,7 +512,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 		/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent,
 		rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem, internalState @*/
+		h_errno, fileSystem, internalState @*/
 	/*@modifies rpmcliHashesCurrent,
 		rpmcliProgressCurrent, rpmcliProgressTotal,
 		fileSystem, internalState @*/;
@@ -727,11 +727,11 @@ extern struct poptOption rpmDatabasePoptTable[];
  * @param ts		transaction set
  * @param pkt		pgp pubkey packet(s)
  * @param pktlen	pgp pubkey length
- * @return		0 on success
+ * @return		RPMRC_OK/RPMRC_FAIL
  */
-int rpmcliImportPubkey(const rpmts ts,
+rpmRC rpmcliImportPubkey(const rpmts ts,
 		const unsigned char * pkt, ssize_t pktlen)
-	/*@globals RPMVERSION, rpmGlobalMacroContext,
+	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;

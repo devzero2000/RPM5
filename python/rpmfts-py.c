@@ -48,7 +48,7 @@ static const char * ftsInfoStr(int fts_info)
 	/*@*/
 {
     if (!(fts_info >= 1 && fts_info <= 14))
-	fts_info = 0; 
+	fts_info = 0;
     return ftsInfoStrings[ fts_info ];
 }
 
@@ -72,10 +72,11 @@ rpmfts_initialize(rpmftsObject * s, const char * root, int options, int ignore)
 	/*@modifies s @*/
 {
     int ac = 1;
-    char * t;
     size_t nb;
 
+/*@-branchstate@*/
     if (root == NULL)	root = "/";
+/*@=branchstate@*/
     if (options == -1)	options = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
     if (ignore == -1)	ignore = infoBit(FTS_DP);
 
@@ -84,11 +85,13 @@ rpmfts_initialize(rpmftsObject * s, const char * root, int options, int ignore)
     nb = (ac + 1) * sizeof(*s->roots);
     nb += strlen(root) + 1;
     s->roots = malloc(nb);
-    t = (char *) &s->roots[ac + 1];
-    s->roots[0] = t;
-    s->roots[ac] = NULL;
-    (void) stpcpy(t, root);
-    
+    if (s->roots != NULL) {
+	char *t = (char *) &s->roots[ac + 1];
+	s->roots[0] = t;
+	s->roots[ac] = NULL;
+	(void) stpcpy(t, root);
+    }
+
     s->options = options;
     s->ignore = ignore;
     s->compare = NULL;
@@ -121,7 +124,7 @@ rpmfts_debug(__FUNCTION__, s);
     case RPMFTS_OPEN:
 	if (s->ftsp == NULL) {
 	    Py_BEGIN_ALLOW_THREADS
-	    s->ftsp = Fts_open((char *const *)s->roots, s->options, (int (*)())s->compare);
+	    s->ftsp = Fts_open((char *const *)s->roots, s->options, (int (*)(const FTSENT **, const FTSENT **))s->compare);
 	    Py_END_ALLOW_THREADS
 	}
 	break;
@@ -131,6 +134,7 @@ rpmfts_debug(__FUNCTION__, s);
     return rc;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_step(rpmftsObject * s)
 	/*@modifies s @*/
@@ -168,6 +172,7 @@ rpmfts_debug(__FUNCTION__, s);
  * \brief A python rpm.fts object represents an rpm fts(3) handle.
  */
 
+/*@null@*/
 static PyObject *
 rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -180,6 +185,7 @@ rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args)
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Open(rpmftsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -199,6 +205,7 @@ rpmfts_debug(__FUNCTION__, s);
     return (PyObject *)s;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Read(rpmftsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -219,6 +226,7 @@ rpmfts_debug(__FUNCTION__, s);
     return result;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Children(rpmftsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -240,6 +248,7 @@ rpmfts_debug(__FUNCTION__, s);
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Close(rpmftsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -251,6 +260,7 @@ rpmfts_debug(__FUNCTION__, s);
     return Py_BuildValue("i", rpmfts_state(s, RPMFTS_CLOSE));
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Set(rpmftsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -294,26 +304,26 @@ static PyMemberDef rpmfts_members[] = {
     {"__dict__",T_OBJECT,offsetof(rpmftsObject, md_dict),	READONLY,
 	NULL},
     {"callbacks",T_OBJECT,offsetof(rpmftsObject, callbacks),	0,
-"Callback dictionary per fts_info state: FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"}, 
+"Callback dictionary per fts_info state: FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"},
     {"options",	T_INT,	offsetof(rpmftsObject, options),	0,
 "Option bit(s): FTS_{COMFOLLOW|LOGICAL|NOCHDIR|NOSTAT|PHYSICAL|SEEDOT|XDEV}"},
     {"ignore",	T_INT,	offsetof(rpmftsObject, ignore),		0,
-"Ignore bit(s): (1 << info) with info one of FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"}, 
-    {NULL, 0, 0, 0}
-};              
+"Ignore bit(s): (1 << info) with info one of FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"},
+    {NULL, 0, 0, 0, NULL}
+};
 
-static PyObject * rpmfts_getattro(rpmftsObject * s, PyObject * n)
+static PyObject * rpmfts_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-rpmfts_debug(__FUNCTION__, s);
-    return PyObject_GenericGetAttr((PyObject *)s, n);
+rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
+    return PyObject_GenericGetAttr(o, n);
 }
 
-static int rpmfts_setattro(rpmftsObject * s, PyObject * n, PyObject * v)
+static int rpmfts_setattro(PyObject * o, PyObject * n, PyObject * v)
 	/*@*/
 {
-rpmfts_debug(__FUNCTION__, s);
-    return PyObject_GenericSetAttr((PyObject *)s, n, v);
+rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /* ---------- */
@@ -326,6 +336,7 @@ rpmfts_iter(rpmftsObject * s)
     return (PyObject *)s;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_iternext(rpmftsObject * s)
 	/*@modifies s @*/
@@ -341,7 +352,7 @@ rpmfts_iternext(rpmftsObject * s)
 /* ---------- */
 
 static void rpmfts_free(/*@only@*/ PyObject * s)
-	/*@modifies s @*/
+	/*@*/
 {
     _PyObject_GC_Del(s);
 }
@@ -375,7 +386,7 @@ rpmfts_debug(__FUNCTION__, s);
 }
 
 static int rpmfts_init(rpmftsObject * s, PyObject *args, PyObject *kwds)
-	/*@*/
+	/*@modifies s @*/
 {
     char * root = NULL;
     int options = -1;
@@ -388,6 +399,7 @@ rpmfts_debug(__FUNCTION__, s);
     return rpmfts_initialize(s, root, options, ignore);
 }
 
+/*@null@*/
 static PyObject * rpmfts_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	/*@*/
 {
@@ -454,7 +466,7 @@ rpmfts_debug(__FUNCTION__, s);
 
     CONSTANT(FTS_DONTCHDIR);
     CONSTANT(FTS_SYMFOLLOW);
-    
+
     CONSTANT(FTS_AGAIN);
     CONSTANT(FTS_FOLLOW);
     CONSTANT(FTS_NOINSTR);
@@ -491,7 +503,7 @@ static int rpmfts_print(rpmftsObject * s,  FILE * fp, /*@unused@*/ int flags)
 {
     static int indent = 2;
 
-    if (!(s && s->ftsp && s->fts))
+    if (!(s != NULL && s->ftsp != NULL && s->fts != NULL))
 	return -1;
     fprintf(fp, "FTS_%-7s %*s%s", ftsInfoStr(s->fts->fts_info),
 	indent * (s->fts->fts_level < 0 ? 0 : s->fts->fts_level), "",
@@ -530,8 +542,7 @@ PyTypeObject rpmfts_Type = {
 	(getattrofunc) rpmfts_getattro,	/* tp_getattro */
 	(setattrofunc) rpmfts_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT |		/* tp_flags */
-		Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE,
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, /* tp_flags */
 	rpmfts_doc,			/* tp_doc */
 	(traverseproc) rpmfts_traverse,	/* tp_traverse */
 	0,				/* tp_clear */

@@ -25,7 +25,7 @@ noinst_HEADERS = \
 mylibs = librpm.la
 LIBS =
 
-LDFLAGS = -L$(DESTDIR)$(usrlibdir)
+LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpm.la
@@ -37,7 +37,7 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c
-librpm_la_LDFLAGS = -release 4.2 \
+librpm_la_LDFLAGS = -release 4.2 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la
@@ -50,7 +50,6 @@ getdate.c: getdate.y
 	   echo "/*@-retvalint -usedef -varuse -nullderef -nullassign @*/";\
 	   echo "/*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/";\
 	   echo "/*@-globs -evalorderuncon -modobserveruncon -modnomods @*/";\
-	   echo "/*@-bounds @*/";\
 	   echo "/*@unused@*/";\
 	   sed	-e 's,y.tab.c,getdate.c,' y.tab.c \
 		-e 's,^YYSTYPE ,static &,' \
@@ -58,7 +57,6 @@ getdate.c: getdate.y
 		-e 's,^const short ,static &,' \
 		-e 's,^int yydebug,/*@unused@*/ static &,' \
 		-e 's,^int ,static &,' ;\
-	   echo "/*@=bounds @*/";\
 	   echo "/*@=globs =evalorderuncon =modobserveruncon =modnomods @*/";\
 	   echo "/*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/";\
 	   echo "/*@=retvalint =usedef =varuse =nullderef =nullassign @*/";\
@@ -98,6 +96,15 @@ th: th.c librpm.la
 #
 
 trb: trb.o librpm.la
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+
+tthread: tthread.o librpm.la
+	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs) @WITH_LIBELF_LIB@
+
+tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
+	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
+
+tcpu: tcpu.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
 tplatform: tplatform.o librpm.la

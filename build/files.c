@@ -207,43 +207,27 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 }
 #endif
 
-/* strtokWithQuotes() modified from glibc strtok() */
-/* Copyright (C) 1991, 1996 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If
-   not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
-
 /**
+ * @param s
+ * @param delim
  */
 /*@-boundswrite@*/
-static char *strtokWithQuotes(char *s, char *delim)
+/*@null@*/
+static char *strtokWithQuotes(/*@null@*/ char *s, char *delim)
 	/*@modifies *s @*/
 {
     static char *olds = NULL;
     char *token;
 
-    if (s == NULL) {
+    if (s == NULL)
 	s = olds;
-    }
+    if (s == NULL)
+	return NULL;
 
     /* Skip leading delimiters */
     s += strspn(s, delim);
-    if (*s == '\0') {
+    if (*s == '\0')
 	return NULL;
-    }
 
     /* Find the end of the token.  */
     token = s;
@@ -830,7 +814,7 @@ static int parseForLang(char * buf, FileList fl)
  */
 /*@-boundswrite@*/
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *lang, rpmGlobalMacroContext @*/
 {
     static int initialized = 0;
@@ -909,7 +893,7 @@ VFA_t virtualFileAttributes[] = {
 /*@-boundswrite@*/
 static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 			  FileList fl, /*@out@*/ const char ** fileName)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
 		fl->currentFlags,
 		fl->docDirs, fl->docDirCount, fl->isDir,
@@ -934,14 +918,19 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		fl->processingFailed = 1;
 		res = 1;
 	    }
-	    fl->docDirs[fl->docDirCount++] = xstrdup(s);
-	    if (strtokWithQuotes(NULL, " \t\n")) {
+	
+	    if (s != NULL)
+		fl->docDirs[fl->docDirCount++] = xstrdup(s);
+	    if (s == NULL || strtokWithQuotes(NULL, " \t\n")) {
 		rpmError(RPMERR_INTERNAL, _("Only one arg for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = 1;
 	    }
 	    break;
 	}
+#if defined(__LCLINT__)
+	assert(s != NULL);
+#endif
 
     /* Set flags for virtual file attributes */
     {	VFA_t *vfa;
@@ -1111,7 +1100,7 @@ static int checkHardLinks(FileList fl)
 /*@-bounds@*/
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmfi * fip, Header h, int isSrc)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1459,7 +1448,7 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 
 /* forward ref */
 static int recurseDir(FileList fl, const char * diskURL)
-	/*@globals check_fileList, rpmGlobalMacroContext,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
@@ -1477,7 +1466,7 @@ static int recurseDir(FileList fl, const char * diskURL)
 /*@-boundswrite@*/
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
-	/*@globals check_fileList, rpmGlobalMacroContext,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
@@ -1735,7 +1724,7 @@ static int recurseDir(FileList fl, const char * diskURL)
  * @return		0 on success
  */
 static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
-	/*@globals check_fileList, rpmGlobalMacroContext,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies pkg->header, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
@@ -1796,7 +1785,7 @@ exit:
  */
 static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount,
@@ -1877,7 +1866,7 @@ exit:
 /*@-boundswrite@*/
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies spec->macros,
 		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
@@ -2354,7 +2343,7 @@ int processSourceFiles(Spec spec)
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
 static int checkFiles(StringBuf fileList)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 /*@-readonlytrans@*/

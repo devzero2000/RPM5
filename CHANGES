@@ -1,4 +1,5 @@
 4.2.1 -> 4.2.2:
+	- unify signal handling in librpmio, use condvar to deliver signal.
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.

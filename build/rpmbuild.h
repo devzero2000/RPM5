@@ -94,7 +94,9 @@ void freeNames(void)
  * @param uid		user id
  * @return		cached user name
  */
-extern /*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
+extern /*@observer@*/ const char * getUname(uid_t uid)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached user name.
@@ -102,7 +104,9 @@ extern /*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
  * @param uname		user name
  * @return		cached user name
  */
-extern /*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
+extern /*@observer@*/ const char * getUnameS(const char * uname)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached user id.
@@ -110,7 +114,9 @@ extern /*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
  * @param uname		user name
  * @return		cached uid
  */
-uid_t getUidS(const char * uname)	/*@*/;
+uid_t getUidS(const char * uname)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached group name from group id.
@@ -118,7 +124,9 @@ uid_t getUidS(const char * uname)	/*@*/;
  * @param gid		group id
  * @return		cached group name
  */
-extern /*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
+extern /*@observer@*/ const char * getGname(gid_t gid)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached group name.
@@ -126,7 +134,9 @@ extern /*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
  * @param gname		group name
  * @return		cached group name
  */
-extern /*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
+extern /*@observer@*/ const char * getGnameS(const char * gname)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached group id.
@@ -134,7 +144,9 @@ extern /*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
  * @param gname		group name
  * @return		cached gid
  */
-gid_t getGidS(const char * gname)	/*@*/;
+gid_t getGidS(const char * gname)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return build hostname.
@@ -155,7 +167,7 @@ extern /*@observer@*/ int_32 * const getBuildTime(void)	/*@*/;
  * @return		0 on success, 1 on EOF, <0 on error
  */
 int readLine(Spec spec, int strip)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState  @*/;
@@ -209,7 +221,7 @@ void addChangelogEntry(Header h, time_t time, const char * name,
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->build, spec->install, spec->check, spec->clean,
 		spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
@@ -222,7 +234,7 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseChangelog(Spec spec)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		spec->packages->header,
@@ -234,7 +246,7 @@ int parseChangelog(Spec spec)
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseDescription(Spec spec)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
@@ -247,7 +259,7 @@ int parseDescription(Spec spec)
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseFiles(Spec spec)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
@@ -260,7 +272,7 @@ int parseFiles(Spec spec)
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parsePreamble(Spec spec, int initialPackage)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->packages,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
@@ -278,7 +290,7 @@ int parsePreamble(Spec spec, int initialPackage)
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parsePrep(Spec spec)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->prep, spec->buildSubdir, spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
@@ -296,7 +308,7 @@ int parsePrep(Spec spec)
  */
 int parseRCPOT(Spec spec, Package pkg, const char * field, int tag, int index,
 	       rpmsenseFlags tagflags)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
@@ -306,7 +318,7 @@ int parseRCPOT(Spec spec, Package pkg, const char * field, int tag, int index,
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseScript(Spec spec, int parsePart)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
@@ -319,7 +331,7 @@ int parseScript(Spec spec, int parsePart)
  * @return
  */
 int parseExpressionBoolean(Spec spec, const char * expr)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
@@ -328,9 +340,9 @@ int parseExpressionBoolean(Spec spec, const char * expr)
  * @param expr		expression to parse
  * @return
  */
-/*@unused@*/
+/*@unused@*/ /*@null@*/
 char * parseExpressionString(Spec spec, const char * expr)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
@@ -343,8 +355,9 @@ char * parseExpressionString(Spec spec, const char * expr)
  * @param test		don't execute scripts or package if testing
  * @return		0 on success, RPMERR_SCRIPT on failure
  */
-int doScript(Spec spec, int what, const char * name, StringBuf sb, int test)
-	/*@globals rpmGlobalMacroContext,
+int doScript(Spec spec, int what, /*@null@*/ const char * name,
+		/*@null@*/ StringBuf sb, int test)
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->macros,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -377,8 +390,8 @@ Package newPackage(Spec spec)
  */
 /*@null@*/
 Package freePackages(/*@only@*/ /*@null@*/ Package packages)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies packages, fileSystem, internalState @*/;
+	/*@globals fileSystem @*/
+	/*@modifies packages, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Destroy package control structure.
@@ -387,8 +400,8 @@ Package freePackages(/*@only@*/ /*@null@*/ Package packages)
  */
 /*@null@*/
 Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies pkg, fileSystem, internalState @*/;
+	/*@globals fileSystem @*/
+	/*@modifies pkg, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Add dependency to header, filtering duplicates.
@@ -423,8 +436,7 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
  * @return		0 on success
  */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->macros,
 		spec->packages->cpioList, spec->packages->fileList,
 		spec->packages->specialDoc, spec->packages->header,
@@ -445,7 +457,7 @@ void initSourceHeader(Spec spec)
  * @return		0 on success
  */
 int processSourceFiles(Spec spec)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList,
 		spec->buildRestrictions, spec->BANames,
 		spec->packages->header,
@@ -471,7 +483,7 @@ int parseSpec(rpmts ts, const char * specFile,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,
 		int anyarch, int force)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
@@ -483,7 +495,7 @@ int parseSpec(rpmts ts, const char * specFile,
  * @return		0 on success
  */
 int buildSpec(rpmts ts, Spec spec, int what, int test)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
 		spec->sourceRpmName, spec->sourcePkgId,
 		spec->macros, spec->BASpecs,
@@ -498,7 +510,7 @@ int buildSpec(rpmts ts, Spec spec, int what, int test)
  * @return		0 on success
  */
 int packageBinaries(Spec spec)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages->header, spec->packages->cpioList,
 		spec->sourceRpmName,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -509,7 +521,7 @@ int packageBinaries(Spec spec)
  * @return		0 on success
  */
 int packageSources(Spec spec)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->cookie, spec->sourceCpioList,
 		spec->sourceRpmName, spec->sourcePkgId,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

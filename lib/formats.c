@@ -604,7 +604,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -829,9 +829,9 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
 static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
+		rpmGlobalMacroContext, fileSystem @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -853,9 +853,9 @@ static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
 static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
+		rpmGlobalMacroContext, fileSystem @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -877,9 +877,9 @@ static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
 static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
+		rpmGlobalMacroContext, fileSystem @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -914,7 +914,7 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
 static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
@@ -1004,7 +1004,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
@@ -1024,7 +1024,7 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
 static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
@@ -1044,7 +1044,7 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 static int groupTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/

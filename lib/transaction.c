@@ -414,7 +414,7 @@ bingoFps->baseName);
 /* XXX only ts->{probs,di} modified */
 static void handleOverlappedFiles(const rpmts ts,
 		const rpmte p, rpmfi fi)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, fileSystem, internalState @*/
 {
     uint_32 fixupSize = 0;
@@ -685,7 +685,7 @@ static int ensureOlder(rpmts ts,
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
 /*@-bounds@*/
 static void skipFiles(const rpmts ts, rpmfi fi)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
 {
     uint_32 tscolor = rpmtsColor(ts);
@@ -801,7 +801,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*
 	 * Skip i18n language specific files.
 	 */
-	if (fi->flangs && languages && *fi->flangs[i]) {
+	if (languages != NULL && fi->flangs != NULL && *fi->flangs[i]) {
 	    const char **lang, *l, *le;
 	    for (lang = languages; *lang != NULL; lang++) {
 		if (!strcmp(*lang, "all"))
@@ -894,11 +894,13 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	}
     }
 
+/*@-dependenttrans@*/
     if (netsharedPaths) freeSplitString(netsharedPaths);
 #ifdef	DYING	/* XXX freeFi will deal with this later. */
     fi->flangs = _free(fi->flangs);
 #endif
     if (languages) freeSplitString((char **)languages);
+/*@=dependenttrans@*/
 }
 /*@=bounds@*/
 /*@=mustmod@*/
@@ -1088,6 +1090,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
      * worth the trouble though.
      */
 rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
+
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1157,6 +1160,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	}
 	/*@=branchstate@*/
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
+
     }
     pi = rpmtsiFree(pi);
 
@@ -1335,6 +1339,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
      */
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
 	int progress;
+
 	progress = 0;
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1462,7 +1467,9 @@ assert(psm != NULL);
 
 		    fi->fstates = NULL;
 		    fi->actions = NULL;
+/*@-nullstate@*/ /* FIX: fi->actions is NULL */
 		    fi = rpmfiFree(fi);
+/*@=nullstate@*/
 
 		    savep = rpmtsSetRelocateElement(ts, p);
 		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
@@ -1505,11 +1512,13 @@ assert(psm != NULL);
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
 
 	    /*@switchbreak@*/ break;
+
 	case TR_REMOVED:
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
 
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+
 	    /*
 	     * XXX This has always been a hack, now mostly broken.
 	     * If install failed, then we shouldn't erase.

@@ -1,4 +1,4 @@
--I. -I.. -I./beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I../beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 +forcehints
@@ -14,8 +14,6 @@
 # --- in progress
 +bounds
 -bufferoverflowhigh
--moduncon
--noeffectuncon
 
 # --- +partial artifacts
 -declundef
@@ -54,7 +52,7 @@
 -usedef			# 9
 
 # --- not-yet at standard level
--boolops		# 116
+-boolops		# 117
 +boolint		# 11
 +charint		# 146
 +ignorequals		# 112

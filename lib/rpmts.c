@@ -133,6 +133,9 @@ int rpmtsCloseDB(rpmts ts)
     int rc = 0;
 
     if (ts->rdb != NULL) {
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), &ts->rdb->db_getops);
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBPUT), &ts->rdb->db_putops);
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBDEL), &ts->rdb->db_delops);
 	rc = rpmdbClose(ts->rdb);
 	ts->rdb = NULL;
     }
@@ -187,6 +190,7 @@ static int isArch(const char * arch)
 	/*@*/
 {
     const char ** av;
+/*@-nullassign@*/
     /*@observer@*/
     static const char *arches[] = {
 	"i386", "i486", "i586", "i686", "athlon", "x86_64",
@@ -205,6 +209,7 @@ static int isArch(const char * arch)
 	"noarch",
 	NULL,
     };
+/*@=nullassign@*/
 
     for (av = arches; *av != NULL; av++) {
 	if (!strcmp(arch, *av))
@@ -214,6 +219,7 @@ static int isArch(const char * arch)
 }
 /*@=boundsread@*/
 
+/*@-compdef@*/ /* keyp might no be defined. */
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
@@ -294,6 +300,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
     return mi;
 }
+/*@=compdef@*/
 
 rpmRC rpmtsFindPubkey(rpmts ts)
 {
@@ -414,6 +421,9 @@ int rpmtsCloseSDB(rpmts ts)
     int rc = 0;
 
     if (ts->sdb != NULL) {
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), &ts->sdb->db_getops);
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBPUT), &ts->sdb->db_putops);
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBDEL), &ts->sdb->db_delops);
 	rc = rpmdbClose(ts->sdb);
 	ts->sdb = NULL;
     }

@@ -101,11 +101,14 @@ static void valueDump(const char *msg, Value v, FILE *fp)
  * Parser state.
  */
 typedef struct _parseState {
-  /*@owned@*/ char *str;	/*!< expression string */
-  /*@dependent@*/ char *p;	/*!< current position in expression string */
-  int nextToken;		/*!< current lookahead token */
-  Value tokenValue;		/*!< valid when TOK_INTEGER or TOK_STRING */
-  Spec spec;			/*!< spec file that we are parsing inside of */
+/*@owned@*/
+    char *str;		/*!< expression string */
+/*@dependent@*/
+    char *p;		/*!< current position in expression string */
+    int nextToken;	/*!< current lookahead token */
+/*@relnull@*/
+    Value tokenValue;	/*!< valid when TOK_INTEGER or TOK_STRING */
+    Spec spec;		/*!< spec file that we are parsing inside of */
 } *ParseState;
 
 
@@ -183,7 +186,7 @@ static const char *prToken(int val)
  */
 /*@-boundswrite@*/
 static int rdToken(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -320,16 +323,18 @@ static int rdToken(ParseState state)
 }
 /*@=boundswrite@*/
 
+/*@null@*/
 static Value doLogical(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/;
 
 /**
  * @param state		expression parser state
  */
+/*@null@*/
 static Value doPrimary(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -409,8 +414,9 @@ static Value doPrimary(ParseState state)
 /**
  * @param state		expression parser state
  */
+/*@null@*/
 static Value doMultiplyDivide(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -464,8 +470,9 @@ static Value doMultiplyDivide(ParseState state)
  * @param state		expression parser state
  */
 /*@-boundswrite@*/
+/*@null@*/
 static Value doAddSubtract(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -528,8 +535,9 @@ static Value doAddSubtract(ParseState state)
 /**
  * @param state		expression parser state
  */
+/*@null@*/
 static Value doRelational(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -625,7 +633,7 @@ static Value doRelational(ParseState state)
  * @param state		expression parser state
  */
 static Value doLogical(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {

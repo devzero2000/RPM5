@@ -28,7 +28,7 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: fileutils shadow-utils
 %endif
-Requires: popt = 1.8.1
+Requires: popt = 1.8.2
 Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
@@ -102,7 +102,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.8.1
+Version: 1.8.2
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -478,3 +478,4 @@ exit 0
 %changelog
 * Mon Dec  1 2003 Jeff Johnson <jbj@redhat.com> 4.2.2-0.1
 - start rpm-4.2.2.
+- unify signal handling in librpmio, use condvar to deliver signal.

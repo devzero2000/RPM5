@@ -22,23 +22,23 @@
 /*@access pgpDigParams @*/
 
 /*@unchecked@*/
-extern int _print_pkts;
+extern int _print_pkts = 0;
 
 /**
  */
 /*@-boundsread@*/
-static int manageFile(FD_t *fdp, const char **fnp, int flags,
-		/*@unused@*/ int rc)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+static int manageFile(/*@out@*/ FD_t *fdp,
+		/*@null@*/ /*@out@*/ const char **fnp,
+		int flags, /*@unused@*/ int rc)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fdp, *fnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     const char *fn;
     FD_t fd;
 
-    if (fdp == NULL) {	/* programmer error */
+    if (fdp == NULL)	/* programmer error */
 	return 1;
-    }
 
 /*@-boundswrite@*/
     /* close and reset *fdp to NULL */
@@ -49,7 +49,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
     }
 
     /* open a file and set *fdp */
-    if (*fdp == NULL && fnp && *fnp) {
+    if (*fdp == NULL && fnp != NULL && *fnp != NULL) {
 	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w.ufdio" : "r.ufdio"));
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), *fnp,
@@ -67,7 +67,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 	    rpmError(RPMERR_MAKETEMP, _("makeTempFile failed\n"));
 	    return 1;
 	}
-	if (fnp)
+	if (fnp != NULL)
 	    *fnp = fn;
 	*fdp = fdLink(fd, "manageFile return");
 	fd = fdFree(fd, "manageFile return");
@@ -76,9 +76,8 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 /*@=boundswrite@*/
 
     /* no operation */
-    if (*fdp && fnp && *fnp) {
+    if (*fdp != NULL && fnp != NULL && *fnp != NULL)
 	return 0;
-    }
 
     /* XXX never reached */
     return 1;
@@ -91,7 +90,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 /*@-boundsread@*/
 static int copyFile(FD_t *sfdp, const char **sfnp,
 		FD_t *tfdp, const char **tfnp)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -135,8 +134,8 @@ exit:
  * @return		0 on success
  */
 static int getSignid(Header sig, int sigtag, unsigned char * signid)
-	/*@globals fileSystem @*/
-	/*@modifies *signid, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *signid, fileSystem, internalState @*/
 {
     void * pkt = NULL;
     int_32 pkttyp = 0;
@@ -168,7 +167,7 @@ static int getSignid(Header sig, int sigtag, unsigned char * signid)
  */
 static int rpmReSign(/*@unused@*/ rpmts ts,
 		QVA_t qva, const char ** argv)
-        /*@globals rpmGlobalMacroContext,
+        /*@globals rpmGlobalMacroContext, h_errno,
                 fileSystem, internalState @*/
         /*@modifies rpmGlobalMacroContext,
                 fileSystem, internalState @*/
@@ -403,8 +402,10 @@ exit:
     return res;
 }
 
-int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
+rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
 {
+    static unsigned char zeros[] =
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     const char * afmt = "%{pubkeys:armor}";
     const char * group = "Public Keys";
     const char * license = "pubkey";
@@ -421,14 +422,14 @@ int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen
     const char * r = NULL;
     const char * evr = NULL;
     Header h = NULL;
-    int rc = 1;		/* assume failure */
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char * t;
     int xx;
 
     if (pkt == NULL || pktlen <= 0)
-	return -1;
+	return RPMRC_FAIL;
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
-	return -1;
+	return RPMRC_FAIL;
 
     if ((enc = b64encode(pkt, pktlen)) == NULL)
 	goto exit;
@@ -438,6 +439,11 @@ int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen
     /* Build header elements. */
     (void) pgpPrtPkts(pkt, pktlen, dig, 0);
     pubp = &dig->pubkey;
+
+    if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
+     || !memcmp(pubp->time, zeros, sizeof(pubp->time))
+     || pubp->userid == NULL)
+	goto exit;
 
 /*@-boundswrite@*/
     v = t = xmalloc(16+1);
@@ -511,9 +517,10 @@ int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen
 #endif
 
     /* Add header to database. */
-    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
+    xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
     if (xx != 0)
 	goto exit;
+    rc = RPMRC_OK;
 
 exit:
     /* Clean up. */
@@ -541,7 +548,7 @@ exit:
 static int rpmcliImportPubkeys(const rpmts ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, rpmGlobalMacroContext,
+	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -550,6 +557,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
     const unsigned char * pkt = NULL;
     ssize_t pktlen = 0;
     int res = 0;
+    rpmRC rpmrc;
     int rc;
 
     if (argv == NULL) return res;
@@ -575,7 +583,7 @@ rpmtsClean(ts);
 	}
 
 	/* Import pubkey packet(s). */
-	if ((rc = rpmcliImportPubkey(ts, pkt, pktlen)) != 0) {
+	if ((rpmrc = rpmcliImportPubkey(ts, pkt, pktlen)) != RPMRC_OK) {
 	    rpmError(RPMERR_IMPORT, _("%s: import failed.\n"), fn);
 	    res++;
 	    continue;

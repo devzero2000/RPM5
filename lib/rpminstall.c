@@ -601,7 +601,9 @@ maybe_manifest:
 	}
 
 	/* Read list of packages from manifest. */
+/*@-nullstate@*/ /* FIX: *eiu->argv can be NULL */
 	rc = rpmReadPackageManifest(eiu->fd, &eiu->argc, &eiu->argv);
+/*@=nullstate@*/
 	if (rc != RPMRC_OK)
 	    rpmError(RPMERR_MANIFEST, _("%s: not an rpm package (or package manifest): %s\n"),
 			*eiu->fnp, Fstrerror(eiu->fd));
@@ -812,6 +814,15 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	}
 	ps = rpmpsFree(ps);
     }
+
+#ifdef	NOTYET
+    if (!stopUninstall && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
+	if (rpmtsOrder(ts)) {
+	    numFailed += numPackages;
+	    stopUninstall = 1;
+	}
+    }
+#endif
 
     if (!stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
@@ -1027,7 +1038,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 
 	tidp = NULL;
 	/*@-branchstate@*/
-	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp) {
+	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp != NULL) {
 
 	    idtx = IDTXgrow(idtx, 1);
 	    if (idtx == NULL || idtx->idt == NULL)

@@ -6,12 +6,7 @@
 
 #define	_USE_COPY_LOAD	/* XXX don't use DB_DBT_MALLOC (yet) */
 
-/*@unchecked@*/
-int _rpmdb_debug = 0;
-
 #include <sys/file.h>
-#include <signal.h>
-#include <sys/signal.h>
 
 #ifndef	DYING	/* XXX already in "system.h" */
 /*@-noparams@*/
@@ -35,6 +30,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
+#include <rpmsq.h>
 
 #include "rpmdb.h"
 #include "fprint.h"
@@ -48,6 +44,9 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
 /*@access pgpDig@*/
+
+/*@unchecked@*/
+int _rpmdb_debug = 0;
 
 /*@unchecked@*/
 static int _rebuildinprogress = 0;
@@ -171,10 +170,11 @@ static int dbiTagToDbix(int rpmtag)
  * Initialize database (index, tag) tuple from configuration.
  */
 static void dbiTagsInit(void)
-	/*@globals rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
-	/*@modifies rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
+	/*@globals dbiTags, dbiTagsMax, rpmGlobalMacroContext, h_errno @*/
+	/*@modifies dbiTags, dbiTagsMax, rpmGlobalMacroContext @*/
 {
-/*@observer@*/ static const char * const _dbiTagStr_default =
+/*@observer@*/
+    static const char * const _dbiTagStr_default =
 	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys";
     char * dbiTagStr = NULL;
     char * o, * oe;
@@ -660,80 +660,6 @@ struct _rpmdbMatchIterator {
 
 };
 
-/**
- */
-/*@unchecked@*/
-static sigset_t caught;
-
-/* forward ref */
-static void handler(int signum);
-
-/**
- */
-/*@unchecked@*/
-/*@-fullinitblock@*/
-static struct sigtbl_s {
-    int signum;
-    int active;
-    void (*handler) (int signum);
-    struct sigaction oact;
-} satbl[] = {
-    { SIGHUP,	0, handler },
-    { SIGINT,	0, handler },
-    { SIGTERM,	0, handler },
-    { SIGQUIT,	0, handler },
-    { SIGPIPE,	0, handler },
-    { -1,	0, NULL },
-};
-/*@=fullinitblock@*/
-
-/**
- */
-/*@-incondefs@*/
-static void handler(int signum)
-	/*@globals caught, satbl @*/
-	/*@modifies caught @*/
-{
-    struct sigtbl_s * tbl;
-
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->signum != signum)
-	    continue;
-	if (!tbl->active)
-	    continue;
-	(void) sigaddset(&caught, signum);
-	break;
-    }
-}
-/*@=incondefs@*/
-
-/**
- * Enable all signal handlers.
- */
-static int enableSignals(void)
-	/*@globals caught, satbl, fileSystem @*/
-	/*@modifies caught, satbl, fileSystem @*/
-{
-    sigset_t newMask, oldMask;
-    struct sigtbl_s * tbl;
-    struct sigaction act;
-    int rc;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    rc = 0;
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->active++ > 0)
-	    continue;
-	(void) sigdelset(&caught, tbl->signum);
-	memset(&act, 0, sizeof(act));
-	act.sa_handler = tbl->handler;
-	rc = sigaction(tbl->signum, &act, &tbl->oact);
-	if (rc) break;
-    }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
 /*@unchecked@*/
 static rpmdb rpmdbRock;
 
@@ -741,10 +667,9 @@ static rpmdb rpmdbRock;
 static rpmdbMatchIterator rpmmiRock;
 
 int rpmdbCheckSignals(void)
-	/*@globals rpmdbRock, rpmmiRock, satbl @*/
+	/*@globals rpmdbRock, rpmmiRock @*/
 	/*@modifies rpmdbRock, rpmmiRock @*/
 {
-    struct sigtbl_s * tbl;
     sigset_t newMask, oldMask;
     static int terminate = 0;
 
@@ -752,12 +677,13 @@ int rpmdbCheckSignals(void)
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->active == 0)
-	    continue;
-	if (sigismember(&caught, tbl->signum))
-	    terminate = 1;
-    }
+
+    if (sigismember(&rpmsqCaught, SIGINT)
+     || sigismember(&rpmsqCaught, SIGQUIT)
+     || sigismember(&rpmsqCaught, SIGHUP)
+     || sigismember(&rpmsqCaught, SIGTERM)
+     || sigismember(&rpmsqCaught, SIGPIPE))
+	terminate = 1;
 
     if (terminate) {
 	rpmdb db;
@@ -786,45 +712,21 @@ int rpmdbCheckSignals(void)
 }
 
 /**
- * Disable all signal handlers.
- */
-static int disableSignals(void)
-	/*@globals satbl, fileSystem @*/
-	/*@modifies satbl, fileSystem @*/
-{
-    struct sigtbl_s * tbl;
-    sigset_t newMask, oldMask;
-    int rc;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    rc = 0;
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (--tbl->active > 0)
-	    continue;
-	rc = sigaction(tbl->signum, &tbl->oact, NULL);
-	if (rc) break;
-    }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
  * Block all signals, returning previous signal mask.
  */
 static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
-	/*@globals satbl, fileSystem @*/
-	/*@modifies *oldMask, satbl, fileSystem @*/
+	/*@globals fileSystem @*/
+	/*@modifies *oldMask, fileSystem @*/
 {
-    struct sigtbl_s * tbl;
     sigset_t newMask;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, oldMask);
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->active == 0)
-	    continue;
-	(void) sigdelset(&newMask, tbl->signum);
-    }
+    (void) sigdelset(&newMask, SIGINT);
+    (void) sigdelset(&newMask, SIGQUIT);
+    (void) sigdelset(&newMask, SIGHUP);
+    (void) sigdelset(&newMask, SIGTERM);
+    (void) sigdelset(&newMask, SIGPIPE);
     return sigprocmask(SIG_BLOCK, &newMask, NULL);
 }
 
@@ -949,7 +851,11 @@ int rpmdbClose(rpmdb db)
     /*@=usereleased@*/
 
 exit:
-    (void) disableSignals();
+    (void) rpmsqEnable(-SIGHUP,	NULL);
+    (void) rpmsqEnable(-SIGINT,	NULL);
+    (void) rpmsqEnable(-SIGTERM,NULL);
+    (void) rpmsqEnable(-SIGQUIT,NULL);
+    (void) rpmsqEnable(-SIGPIPE,NULL);
     return rc;
 }
 /*@=incondefs@*/
@@ -975,7 +881,7 @@ static /*@only@*/ /*@null@*/
 rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
-	/*@globals _db_filter_dups, rpmGlobalMacroContext @*/
+	/*@globals _db_filter_dups, rpmGlobalMacroContext, h_errno @*/
 	/*@modifies _db_filter_dups, rpmGlobalMacroContext @*/
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
@@ -1028,7 +934,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
 		int mode, int perms, int flags)
-	/*@globals rpmdbRock, rpmGlobalMacroContext,
+	/*@globals rpmdbRock, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmdbRock, *dbp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -1060,7 +966,11 @@ static int openDatabase(/*@null@*/ const char * prefix,
     if (db == NULL)
 	return 1;
 
-    (void) enableSignals();
+    (void) rpmsqEnable(SIGHUP,	NULL);
+    (void) rpmsqEnable(SIGINT,	NULL);
+    (void) rpmsqEnable(SIGTERM,NULL);
+    (void) rpmsqEnable(SIGQUIT,NULL);
+    (void) rpmsqEnable(SIGPIPE,NULL);
 
     db->db_api = _dbapi;
 
@@ -1219,7 +1129,7 @@ int rpmdbVerify(const char * prefix)
  */
 static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 		DBT * key, DBT * data, /*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, *key, *data, *matches, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
@@ -1435,7 +1345,7 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ const char * version,
 		/*@null@*/ const char * release,
 		/*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, *matches,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
@@ -1531,7 +1441,7 @@ exit:
  */
 static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, *matches,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
@@ -1627,7 +1537,7 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
  */
 static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies mi, fileSystem, internalState @*/
+	/*@modifies mi, dbi, fileSystem, internalState @*/
 {
     int rc = 0;
 
@@ -2370,8 +2280,8 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 
 /*@-bounds@*/ /* LCL: segfault */
 static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies mi, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     DBC * dbcursor;
     DBT * key;
@@ -3468,7 +3378,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
  * @return		1 if file exists, 0 if not
  */
 static int rpmioFileExists(const char * urlfn)
-        /*@globals fileSystem, internalState @*/
+        /*@globals h_errno, fileSystem, internalState @*/
         /*@modifies fileSystem, internalState @*/
 {
     const char *fn;
@@ -3502,7 +3412,7 @@ static int rpmioFileExists(const char * urlfn)
 
 static int rpmdbRemoveDatabase(const char * prefix,
 		const char * dbpath, int _dbapi)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 { 
     int i;
@@ -3559,7 +3469,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
 		const char * newdbpath, int _newdbapi)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     int i;

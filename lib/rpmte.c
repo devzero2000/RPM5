@@ -36,8 +36,8 @@ void rpmteCleanDS(rpmte te)
  * @param p		transaction element
  */
 static void delTE(rpmte p)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies p, fileSystem, internalState @*/
+	/*@globals fileSystem @*/
+	/*@modifies p, fileSystem @*/
 {
     rpmRelocation * r;
 
@@ -85,7 +85,7 @@ static void delTE(rpmte p)
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies ts, p, h, rpmGlobalMacroContext, fileSystem @*/
 {
     int scareMem = 0;
@@ -555,8 +555,10 @@ rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 		const char * fn, unsigned int ln)
 {
     /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
+/*@-internalglobs@*/
     if (tsi)
 	tsi->ts = rpmtsFree(tsi->ts);
+/*@=internalglobs@*/
 
 /*@-modfilesys@*/
 if (_rpmte_debug)
@@ -586,7 +588,7 @@ fprintf(stderr, "*** tsi %p ++ %s:%d\n", tsi, fn, ln);
  * @param tsi		transaction element iterator
  * @return		transaction element, NULL on termination
  */
-static /*@dependent@*/ /*@null@*/
+static /*@null@*/ /*@dependent@*/
 rpmte rpmtsiNextElement(rpmtsi tsi)
 	/*@modifies tsi @*/
 {

@@ -579,7 +579,7 @@ enum rpm_machtable_e {
  */
 int rpmReadConfigFiles(/*@null@*/ const char * file,
 		/*@null@*/ const char * target)
-	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
+	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem, internalState @*/;
@@ -626,7 +626,7 @@ int rpmMachineScore(int type, const char * name)
  * @return		0 always
  */
 int rpmShowRC(FILE * fp)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fp, rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
 /** \ingroup rpmrc
@@ -637,7 +637,7 @@ int rpmShowRC(FILE * fp)
  * @param osTable
  */
 void rpmSetTables(int archTable, int osTable)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
@@ -651,7 +651,7 @@ void rpmSetTables(int archTable, int osTable)
  * @param os		os name (or NULL)
  */
 void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
@@ -896,9 +896,9 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
  * @param fd		file handle
  * @param fn		file name
  * @retval hdrp		address of header (or NULL)
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int rpmReadPackageFile(rpmts ts, FD_t fd,
+rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fd, *hdrp, rpmGlobalMacroContext,
@@ -1104,7 +1104,7 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
 		int numFiles, /*@null@*/ /*@out@*/ uint_32 ** usagesPtr,
 		int flags)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *usagesPtr, rpmGlobalMacroContext,
 		fileSystem, internalState @*/

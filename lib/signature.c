@@ -376,7 +376,7 @@ Header rpmFreeSignature(Header h)
  */
 static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 		/*@out@*/ int_32 * pktlen, /*@null@*/ const char * passPhrase)
-	/*@globals errno, rpmGlobalMacroContext,
+	/*@globals errno, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies errno, *pkt, *pktlen, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -511,7 +511,7 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
  */
 static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 		/*@out@*/ int_32 * pktlen, /*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *pkt, *pktlen, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -626,7 +626,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
  */
 static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 		/*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sig, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     Header h = NULL;
@@ -782,7 +782,7 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
 }
 
 static int checkPassPhrase(const char * passPhrase, const int sigTag)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int passPhrasePipe[2];
@@ -1002,7 +1002,8 @@ exit:
 static rpmRC
 verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
-	/*@modifies *t @*/
+	/*@globals internalState @*/
+	/*@modifies *t, internalState @*/
 {
     const void * sig = rpmtsSig(ts);
     int_32 siglen = rpmtsSiglen(ts);
@@ -1020,8 +1021,10 @@ verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
 	goto exit;
     }
 
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     (void) rpmDigestFinal(rpmDigestDup(md5ctx),
 		(void **)&md5sum, &md5len, 0);
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 
     if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
 	res = RPMRC_FAIL;
@@ -1057,7 +1060,8 @@ exit:
 static rpmRC
 verifySHA1Signature(const rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
-	/*@modifies *t @*/
+	/*@globals internalState @*/
+	/*@modifies *t, internalState @*/
 {
     const void * sig = rpmtsSig(ts);
 #ifdef	NOTYET
@@ -1076,8 +1080,10 @@ verifySHA1Signature(const rpmts ts, /*@out@*/ char * t,
 	goto exit;
     }
 
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     (void) rpmDigestFinal(rpmDigestDup(sha1ctx),
 		(void **)&SHA1, NULL, 1);
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 
     if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
 	res = RPMRC_FAIL;
@@ -1159,6 +1165,7 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 	goto exit;
     }
 
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
 	byte signhash16[2];
 	const char * s;
@@ -1179,6 +1186,7 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 #endif
 
 	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
 
 	/* Compare leading 16 bits of digest for quick check. */
 	s = dig->md5;
@@ -1217,10 +1225,12 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
     if (res != RPMRC_OK)
 	goto exit;
 
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
     if (rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c))
 	res = RPMRC_OK;
     else
 	res = RPMRC_FAIL;
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
 
 exit:
     t = stpcpy(t, rpmSigString(res));
@@ -1277,6 +1287,7 @@ verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 	goto exit;
     }
 
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
 	byte signhash16[2];
 
@@ -1295,6 +1306,7 @@ verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 	}
 #endif
 	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
 
 	mpnzero(&dig->hm);	mpnsethex(&dig->hm, dig->sha1);
 
@@ -1312,11 +1324,13 @@ verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
     if (res != RPMRC_OK)
 	goto exit;
 
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
     if (dsavrfy(&dig->p, &dig->q, &dig->g,
 		&dig->hm, &dig->y, &dig->r, &dig->s))
 	res = RPMRC_OK;
     else
 	res = RPMRC_FAIL;
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
 
 exit:
     t = stpcpy(t, rpmSigString(res));

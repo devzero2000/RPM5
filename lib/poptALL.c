@@ -31,6 +31,9 @@ extern int _fps_debug;
 extern int _fsm_debug;
 
 /*@unchecked@*/
+extern int _fsm_threads;
+
+/*@unchecked@*/
 extern int _hdr_debug;
 
 /*@unchecked@*/
@@ -38,6 +41,9 @@ extern int _print_pkts;
 
 /*@unchecked@*/
 extern int _psm_debug;
+
+/*@unchecked@*/
+extern int _psm_threads;
 
 /*@unchecked@*/
 extern int _rpmal_debug;
@@ -57,6 +63,9 @@ extern int _rpmfi_debug;
 
 /*@unchecked@*/
 extern int _rpmps_debug;
+
+/*@unchecked@*/
+extern int _rpmsq_debug;
 
 /*@unchecked@*/
 extern int _rpmte_debug;
@@ -112,7 +121,7 @@ static void printVersion(FILE * fp)
 /*@mayexit@*/
 void rpmcliConfigured(void)
 	/*@globals rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+		h_errno, fileSystem, internalState @*/
 	/*@modifies rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -131,7 +140,7 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
 	/*@globals rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+		h_errno, fileSystem, internalState @*/
 	/*@modifies rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -272,6 +281,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
 	N_("debug payload file state machine"), NULL},
+ { "fsmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_threads, -1,
+	N_("use threads for file state machine"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
@@ -284,6 +295,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "psmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_debug, -1,
 	N_("debug package state machine"), NULL},
+ { "psmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_threads, -1,
+	N_("use threads for package state machine"), NULL},
  { "rpmaldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmal_debug, -1,
 	NULL, NULL},
  { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,
@@ -297,6 +310,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "rpmpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmps_debug, -1,
+	NULL, NULL},
+ { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	NULL, NULL},
  { "rpmtedebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmte_debug, -1,
 	NULL, NULL},

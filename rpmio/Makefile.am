@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
 
-EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
+EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio tsw dumpasn1
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
@@ -18,26 +18,26 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	argv.h fts.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
-	rpmsw.h ugid.h
+	rpmsq.h rpmsw.h ugid.h
 noinst_HEADERS = rpmio_internal.h
 
 BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
 
-LDFLAGS = -L$(DESTDIR)$(usrlibdir)
+LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c \
 	rpmio.c rpmlog.c rpmmalloc.c \
-	rpmpgp.c rpmrpc.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release 4.2 \
+	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
+librpmio_la_LDFLAGS = -release 4.2 $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
-	$(top_builddir)/file/libfmagic.la \
+	$(top_builddir)/file/src/libfmagic.la \
 	@WITH_ZLIB_LIB@ \
 	-lrt -lpthread
-librpmio_la_LIBADD = $(BEECRYPTLOBJS)
-librpmio_la_DEPENDENCIES = .created
+librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
+librpmio_la_DEPENDENCIES = # .created
 
 .created:
 	if test X"@WITH_BEECRYPT_SUBDIR@" != X; then \
@@ -65,7 +65,7 @@ lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
 tdigest_SOURCES = tdigest.c
-tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la -lgcrypt
 
 tdir_SOURCES = tdir.c
 tdir_LDFLAGS = -all-static
@@ -94,10 +94,13 @@ tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
+tsw_SOURCES = tsw.c
+tsw_LDFLAGS = librpmio.la
+
 dumpasn1_SOURCES = dumpasn1.c
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
 
 tficl: tficl.o
-	$(LINK) -o $@ tficl.o -lficl
+	$(LINK) -o $@ tficl.o -lficl -lm

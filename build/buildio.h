@@ -15,7 +15,7 @@
 typedef /*@abstract@*/ struct cpioSourceArchive_s {
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
-/*@refcounted@*/
+/*@refcounted@*/ /*@relnull@*/
     rpmfi	cpioList;
 /*@only@*/
     struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
@@ -65,7 +65,7 @@ int writeRPM(Header * hdrp, /*@null@*/ unsigned char ** pkgidp,
 		CSA_t csa,
 		/*@null@*/ char * passPhrase,
 		/*@out@*/ const char ** cookie)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *hdrp, *pkgidp, *cookie, csa, csa->cpioArchiveSize,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

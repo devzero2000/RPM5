@@ -1,4 +1,3 @@
-/*@-type@*/ /* LCL: function typedefs */
 /** \ingroup rpmio
  * \file rpmio/rpmio.c
  */
@@ -15,7 +14,6 @@
 
 #if HAVE_NETINET_IN_SYSTM_H
 # include <sys/types.h>
-
 # include <netinet/in_systm.h>
 #endif
 
@@ -278,7 +276,8 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 }
 /*@=mustmod@*/
 
-static inline /*@null@*/ FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
+static inline /*@null@*/
+FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 		const char *file, unsigned line)
 	/*@modifies fd @*/
 {
@@ -305,9 +304,10 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
     return NULL;
 }
 
-static inline /*@null@*/ FD_t XfdNew(const char * msg,
-		const char * file, unsigned line)
-	/*@*/
+static inline /*@null@*/
+FD_t XfdNew(const char * msg, const char * file, unsigned line)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
@@ -334,9 +334,6 @@ static inline /*@null@*/ FD_t XfdNew(const char * msg,
 
     fd->ndigests = 0;
     memset(fd->digests, 0, sizeof(fd->digests));
-
-    (void) gettimeofday(&fd->stats->create, NULL);
-    fd->stats->begin = fd->stats->create;	/* structure assignment */
 
     fd->ftpFileDoneNeeded = 0;
     fd->firstFree = 0;
@@ -475,15 +472,13 @@ DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (un
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
+/*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
+/*@=type@*/
 FDIO_t fdio = /*@-compmempass@*/ &fdio_s /*@=compmempass@*/ ;
-
-/*@-redef@*/	/* see lib/falloc.c */
-FDIO_t fadio;	/* XXX usually NULL, filled in when linked with rpm */
-/*@=redef@*/
 
 int fdWritable(FD_t fd, int secs)
 {
@@ -700,21 +695,18 @@ const char *urlStrerror(const char *url)
 #if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
 static int mygethostbyname(const char * host,
 		/*@out@*/ struct in_addr * address)
+	/*@globals h_errno @*/
 	/*@modifies *address @*/
 {
     struct hostent * hostinfo;
 
-    /*@-unrecog -multithreaded @*/
-    /*@-globs@*/ /* FIX: h_errno access */
+    /*@-multithreaded @*/
     hostinfo = gethostbyname(host);
-    /*@=globs@*/
-    /*@=unrecog =multithreaded @*/
+    /*@=multithreaded @*/
     if (!hostinfo) return 1;
 
 /*@-boundswrite@*/
-    /*@-nullderef@*/
     memcpy(address, hostinfo->h_addr_list[0], sizeof(*address));
-    /*@=nullderef@*/
 /*@=boundswrite@*/
     return 0;
 }
@@ -723,29 +715,27 @@ static int mygethostbyname(const char * host,
 /*@-boundsread@*/
 /*@-compdef@*/	/* FIX: address->s_addr undefined. */
 static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
-	/*@globals errno @*/
+	/*@globals errno, h_errno @*/
 	/*@modifies *address, errno @*/
 {
 #if 0	/* XXX workaround nss_foo module hand-off using valgrind. */
     if (!strcmp(host, "localhost")) {
-	/*@-unrecog -moduncon @*/
+	/*@-moduncon @*/
 	if (!inet_aton("127.0.0.1", address))
 	    return FTPERR_BAD_HOST_ADDR;
-	/*@=unrecog =moduncon @*/
+	/*@=moduncon @*/
     } else
 #endif
     if (xisdigit(host[0])) {
-	/*@-unrecog -moduncon @*/
+	/*@-moduncon @*/
 	if (!inet_aton(host, address))
 	    return FTPERR_BAD_HOST_ADDR;
-	/*@=unrecog =moduncon @*/
+	/*@=moduncon @*/
     } else {
-	/*@-globs@*/ /* FIX: h_errno access */
 	if (mygethostbyname(host, address)) {
-	    errno = /*@-unrecog@*/ h_errno /*@=unrecog@*/;
+	    errno = h_errno;
 	    return FTPERR_BAD_HOSTNAME;
 	}
-	/*@=globs@*/
     }
     
     return 0;
@@ -754,7 +744,7 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 /*@=boundsread@*/
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ctrl, fileSystem, internalState @*/
 {
     struct sockaddr_in sin;
@@ -1039,7 +1029,7 @@ fprintf(stderr, "-> %s", t);
 }
 
 static int ftpLogin(urlinfo u)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/
 {
     const char * host;
@@ -1345,7 +1335,7 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 }
 
 static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *uret, fileSystem, internalState @*/
 {
     urlinfo u;
@@ -1539,7 +1529,7 @@ fprintf(stderr, "*** httpResp: rc %d ec %d\n", rc, ec);
 }
 
 static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ctrl, fileSystem, internalState @*/
 {
     urlinfo u = ctrl->url;
@@ -1983,7 +1973,7 @@ exit:
 /*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
-	/*@globals internalState @*/
+	/*@globals h_errno, internalState @*/
 	/*@modifies *uret, internalState @*/
 {
     urlinfo u = NULL;
@@ -2029,7 +2019,7 @@ exit:
 /*@=nullstate@*/
 
 static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = NULL;
@@ -2116,10 +2106,12 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
     return fd;
 }
 
+/*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s ufdio_s = {
   ufdRead, ufdWrite, ufdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
+/*@=type@*/
 FDIO_t ufdio = /*@-compmempass@*/ &ufdio_s /*@=compmempass@*/ ;
 
 /* =============================================================== */
@@ -2152,9 +2144,10 @@ static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
     return rc;
 }
 
-static /*@null@*/ FD_t gzdOpen(const char * path, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+static /*@null@*/
+FD_t gzdOpen(const char * path, const char * fmode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd;
     gzFile gzfile;
@@ -2167,7 +2160,6 @@ DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ?
     return fdLink(fd, "gzdOpen");
 }
 
-/*@-globuse@*/
 static /*@null@*/ FD_t gzdFdopen(void * cookie, const char *fmode)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -2187,9 +2179,7 @@ static /*@null@*/ FD_t gzdFdopen(void * cookie, const char *fmode)
 
     return fdLink(fd, "gzdFdopen");
 }
-/*@=globuse@*/
 
-/*@-globuse@*/
 static int gzdFlush(FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -2199,10 +2189,8 @@ static int gzdFlush(FD_t fd)
     if (gzfile == NULL) return -2;
     return gzflush(gzfile, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
-/*@=globuse@*/
 
 /* =============================================================== */
-/*@-mustmod@*/		/* LCL: *buf is modified */
 static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
@@ -2217,10 +2205,8 @@ static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_READ);
-    /*@-compdef@*/ /* LCL: *buf is undefined */
     rc = gzread(gzfile, buf, count);
 DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
-    /*@=compdef@*/
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -2230,13 +2216,10 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	/*@-compdef@*/
 	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
-	/*@=compdef@*/
     }
     return rc;
 }
-/*@=mustmod@*/
 
 static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
@@ -2350,10 +2333,12 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
     return rc;
 }
 
+/*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s gzdio_s = {
   gzdRead, gzdWrite, gzdSeek, gzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   NULL, gzdOpen, gzdFileno, gzdFlush,	NULL, NULL, NULL, NULL, NULL
 };
+/*@=type@*/
 FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 
 /*@=moduncon@*/
@@ -2550,10 +2535,12 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
     return rc;
 }
 
+/*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s bzdio_s = {
   bzdRead, bzdWrite, bzdSeek, bzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   NULL, bzdOpen, bzdFileno, bzdFlush,	NULL, NULL, NULL, NULL, NULL
 };
+/*@=type@*/
 FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 
 /*@=moduncon@*/
@@ -2992,7 +2979,8 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 	}
 
 	/* XXX persistent HTTP/1.1 returns the previously opened fp */
-	if (isHTTP && ((fp = fdGetFp(fd)) != NULL) && ((fdno = fdGetFdno(fd)) >= 0)) {
+	if (isHTTP && ((fp = fdGetFp(fd)) != NULL) && ((fdno = fdGetFdno(fd)) >= 0))
+	{
 	    /*@+voidabstract@*/
 	    fdPush(fd, fpio, fp, fileno(fp));	/* Push fpio onto stack */
 	    /*@=voidabstract@*/
@@ -3190,9 +3178,10 @@ exit:
 }
 /*@=boundswrite@*/
 
+/*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s fpio_s = {
   ufdRead, ufdWrite, fdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
-FDIO_t fpio = /*@-compmempass@*/ &fpio_s /*@=compmempass@*/ ;
 /*@=type@*/
+FDIO_t fpio = /*@-compmempass@*/ &fpio_s /*@=compmempass@*/ ;

@@ -11,6 +11,7 @@
 
 #include <beecrypt.api.h>
 #include <rpmpgp.h>
+#include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
 #include <beecrypt.h>
@@ -103,31 +104,22 @@ typedef struct _FDSTACK_s {
 } FDSTACK_t;
 
 /** \ingroup rpmio
- * Cumulative statistics for an I/O operation.
- */
-typedef struct {
-    int			count;	/*!< Number of operations. */
-    off_t		bytes;	/*!< Number of bytes transferred. */
-    time_t		msecs;	/*!< Number of milli-seconds. */
-} OPSTAT_t;
-
-/** \ingroup rpmio
  * Identify per-desciptor I/O operation statistics.
  */
-enum FDSTAT_e {
+typedef enum fdOpX_e {
     FDSTAT_READ		= 0,	/*!< Read statistics index. */
     FDSTAT_WRITE	= 1,	/*!< Write statistics index. */
     FDSTAT_SEEK		= 2,	/*!< Seek statistics index. */
-    FDSTAT_CLOSE	= 3	/*!< Close statistics index */
-};
+    FDSTAT_CLOSE	= 3,	/*!< Close statistics index */
+    FDSTAT_DIGEST	= 4,	/*!< Digest statistics index. */
+    FDSTAT_MAX		= 5
+} fdOpX;
 
 /** \ingroup rpmio
  * Cumulative statistics for a descriptor.
  */
 typedef	/*@abstract@*/ struct {
-    struct timeval	create;	/*!< Structure creation time. */
-    struct timeval	begin;	/*!< Operation start time. */
-    OPSTAT_t		ops[4];	/*!< Cumulative statistics. */
+    struct rpmop_s	ops[FDSTAT_MAX];	/*!< Cumulative statistics. */
 } * FDSTAT_t;
 
 /** \ingroup rpmio
@@ -153,7 +145,7 @@ struct _FD_s {
     int		urlType;	/* ufdio: */
 
 /*@dependent@*/
-    void *	url;	/* ufdio: URL info */
+    void *	url;		/* ufdio: URL info */
     int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
     ssize_t	bytesRemain;	/* ufdio: */
     ssize_t	contentLength;	/* ufdio: */
@@ -216,7 +208,7 @@ int fdFgets(FD_t fd, char * buf, size_t len)
  */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
                 /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *uret, fileSystem, internalState @*/;
 
 /** \ingroup rpmio
@@ -228,7 +220,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 /** \ingroup rpmio
  */
 int ftpCmd(const char * cmd, const char * url, const char * arg2)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmio
@@ -358,7 +350,8 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdPop(FD_t fd)
+/*@unused@*/ static inline
+void fdPop(FD_t fd)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
@@ -371,57 +364,45 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdstat_enter(/*@null@*/ FD_t fd, int opx)
-	/*@modifies fd @*/
+/*@unused@*/ static inline /*@null@*/
+rpmop fdstat_op(/*@null@*/ FD_t fd, fdOpX opx)
+	/*@*/
 {
-    if (fd == NULL || fd->stats == NULL) return;
-/*@-boundswrite@*/
-    fd->stats->ops[opx].count++;
-/*@=boundswrite@*/
-    (void) gettimeofday(&fd->stats->begin, NULL);
+    rpmop op = NULL;
+
+/*@-boundsread@*/
+    if (fd != NULL && fd->stats != NULL && opx >= 0 && opx < FDSTAT_MAX)
+        op = fd->stats->ops + opx;
+/*@=boundsread@*/
+    return op;
 }
 
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-time_t tvsub(/*@null@*/ const struct timeval * etv,
-		/*@null@*/ const struct timeval * btv)
-	/*@*/
+void fdstat_enter(/*@null@*/ FD_t fd, int opx)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
-    time_t secs, usecs;
-    if (etv == NULL  || btv == NULL) return 0;
-    secs = etv->tv_sec - btv->tv_sec;
-    for (usecs = etv->tv_usec - btv->tv_usec; usecs < 0; usecs += 1000000)
-	secs++;
-    return ((secs * 1000) + (usecs/1000));
+    if (fd == NULL) return;
+    if (fd->stats != NULL)
+	(void) rpmswEnter(fdstat_op(fd, opx), 0);
 }
 
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
 void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
-	/*@modifies fd @*/
+	/*@globals internalState @*/
+	/*@modifies fd, internalState @*/
 {
-    struct timeval end;
     if (fd == NULL) return;
-    if (rc == -1) fd->syserrno = errno;
-    if (fd->stats == NULL) return;
-/*@-boundswrite@*/
-    (void) gettimeofday(&end, NULL);
-    if (rc >= 0) {
-	switch(opx) {
-	case FDSTAT_SEEK:
-	    fd->stats->ops[opx].bytes = rc;
-	    break;
-	default:
-	    fd->stats->ops[opx].bytes += rc;
-	    if (fd->bytesRemain > 0) fd->bytesRemain -= rc;
-	    break;
-	}
-    }
-    fd->stats->ops[opx].msecs += tvsub(&end, &fd->stats->begin);
-    fd->stats->begin = end;	/* structure assignment */
-/*@=boundswrite@*/
+    if (rc == -1)
+	fd->syserrno = errno;
+    else if (rc > 0 && fd->bytesRemain > 0)
+	fd->bytesRemain -= rc;
+    if (fd->stats != NULL)
+	(void) rpmswExit(fdstat_op(fd, opx), rc);
 }
 
 /** \ingroup rpmio
@@ -432,23 +413,25 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
+    static int usec_scale = (1000*1000);
     int opx;
+
     if (fd == NULL || fd->stats == NULL) return;
     for (opx = 0; opx < 4; opx++) {
-	OPSTAT_t *ops = &fd->stats->ops[opx];
-	if (ops->count <= 0) continue;
+	rpmop op = &fd->stats->ops[opx];
+	if (op->count <= 0) continue;
 	switch (opx) {
 	case FDSTAT_READ:
 	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%03d secs\n",
-		ops->count, (long)ops->bytes,
-		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
+	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%06d secs\n",
+		op->count, (long)op->bytes,
+		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
 	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%03d secs\n",
-		ops->count, (long)ops->bytes,
-		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
+	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%06d secs\n",
+		op->count, (long)op->bytes,
+		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_SEEK:
 	    /*@switchbreak@*/ break;
@@ -520,13 +503,16 @@ FD_t c2f(/*@null@*/ void * cookie)
  */
 /*@unused@*/ static inline
 void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
-	/*@modifies fd @*/
+	/*@globals internalState @*/
+	/*@modifies fd, internalState @*/
 {
     FDDIGEST_t fddig = fd->digests + fd->ndigests;
     if (fddig != (fd->digests + FDDIGEST_MAX)) {
 	fd->ndigests++;
 	fddig->hashalgo = hashalgo;
+	fdstat_enter(fd, FDSTAT_DIGEST);
 	fddig->hashctx = rpmDigestInit(hashalgo, flags);
+	fdstat_exit(fd, FDSTAT_DIGEST, 0);
     }
 }
 
@@ -535,7 +521,8 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
  */
 /*@unused@*/ static inline
 void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
-	/*@modifies fd @*/
+	/*@globals internalState @*/
+	/*@modifies fd, internalState @*/
 {
     int i;
 
@@ -544,7 +531,9 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
 	    continue;
+	fdstat_enter(fd, FDSTAT_DIGEST);
 	(void) rpmDigestUpdate(fddig->hashctx, buf, buflen);
+	fdstat_exit(fd, FDSTAT_DIGEST, buflen);
     }
 }
 
@@ -555,7 +544,8 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 		/*@null@*/ /*@out@*/ void ** datap,
 		/*@null@*/ /*@out@*/ size_t * lenp,
 		int asAscii)
-	/*@modifies fd, *datap, *lenp @*/
+	/*@globals internalState @*/
+	/*@modifies fd, *datap, *lenp, internalState @*/
 {
     int imax = -1;
     int i;
@@ -567,7 +557,9 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	if (i > imax) imax = i;
 	if (fddig->hashalgo != hashalgo)
 	    continue;
+	fdstat_enter(fd, FDSTAT_DIGEST);
 	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
+	fdstat_exit(fd, FDSTAT_DIGEST, 0);
 	fddig->hashctx = NULL;
 	break;
     }
@@ -608,7 +600,7 @@ int fdFileno(/*@null@*/ void * cookie)
  */
 int rpmioSlurp(const char * fn,
                 /*@out@*/ const unsigned char ** bp, /*@out@*/ ssize_t * blenp)
-        /*@globals fileSystem, internalState @*/
+        /*@globals h_errno, fileSystem, internalState @*/
         /*@modifies *bp, *blenp, fileSystem, internalState @*/;
 
 #ifdef __cplusplus

@@ -21,7 +21,6 @@
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar */
-#include "legacy.h"	/* XXX domd5 */
 #include "rpmmacro.h"	/* XXX rpmCleanPath */
 
 #include "debug.h"
@@ -983,10 +982,10 @@ dColors[dirIndexes[i]] |= fColors[i];
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
 
-	    /* XXX Don't autorelocate uncolored directories. */
-	    if (j == p->autorelocatex
-	     && (dColors[i] == 0 || !(dColors[i] & 0x1)))
-		/*@innercontinue@*/ continue;
+           /* XXX Don't autorelocate uncolored directories. */
+           if (j == p->autorelocatex
+            && (dColors[i] == 0 || !(dColors[i] & 0x1)))
+               /*@innercontinue@*/ continue;
 
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
 		/*@innercontinue@*/ continue;
@@ -1317,26 +1316,28 @@ if (fi->actions == NULL)
 
 #if __ia64__
 	/* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
-	if (newPath != NULL && *newPath != '\0'
+ 	if (newPath != NULL && *newPath != '\0'
 	 && strlen(newPath) >= (sizeof("/emul/i386")-1)
 	 && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
 	 && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
 	 && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
-	{
+ 	{
 	    newPath[7] = 'a';
 	    newPath[8] = '3';
 	    newPath[9] = '2';
 	}
 #endif
-
+ 
 	/* XXX Make sure autoreloc is not already specified. */
 	i = p->nrelocs;
 	if (newPath != NULL && *newPath != '\0' && p->relocs != NULL)
 	for (i = 0; i < p->nrelocs; i++) {
+/*@-nullpass@*/ /* XXX {old,new}Path might be NULL */
 	   if (strcmp(p->relocs[i].oldPath, "/"))
 		continue;
 	   if (strcmp(p->relocs[i].newPath, newPath))
 		continue;
+/*@=nullpass@*/
 	   break;
 	}
 
@@ -1344,6 +1345,7 @@ if (fi->actions == NULL)
 	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs
 	 && p->archScore == 0)
 	{
+
 	    p->relocs =
 		xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));
 	    p->relocs[p->nrelocs].oldPath = xstrdup("/");

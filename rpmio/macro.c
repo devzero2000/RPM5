@@ -114,7 +114,7 @@ int print_expand_trace = 0;
 /* forward ref */
 static int expandMacro(MacroBuf mb)
 	/*@globals rpmGlobalMacroContext,
-		print_macro_trace, print_expand_trace, fileSystem @*/
+		print_macro_trace, print_expand_trace, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext,
 		print_macro_trace, print_expand_trace, fileSystem @*/;
 
@@ -334,6 +334,7 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd, int escapes)
  * @param pr		right char, i.e. ']', ')', '}', etc.
  * @return		address of last char before pr (or NULL)
  */
+/*@null@*/
 static const char *
 matchchar(const char * p, char pl, char pr)
 	/*@*/
@@ -491,7 +492,7 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
  */
 static int
 expandT(MacroBuf mb, const char * f, size_t flen)
-	/*@globals rpmGlobalMacroContext, fileSystem@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem@*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
     char *sbuf;
@@ -545,7 +546,7 @@ expandS(MacroBuf mb, char * tbuf, size_t tbuflen)
 /*@-boundswrite@*/
 static int
 expandU(MacroBuf mb, char * u, size_t ulen)
-	/*@globals rpmGlobalMacroContext, fileSystem@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem@*/
 	/*@modifies mb, *u, rpmGlobalMacroContext, fileSystem @*/
 {
     const char *s = mb->s;
@@ -584,7 +585,7 @@ expandU(MacroBuf mb, char * u, size_t ulen)
 /*@-boundswrite@*/
 static int
 doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
     char pcmd[BUFSIZ];
@@ -623,7 +624,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
  */
 /*@dependent@*/ static const char *
 doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies mb, rpmGlobalMacroContext @*/
 {
     const char *s = se;
@@ -973,7 +974,10 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
     opts = me->opts;
 
     /* Define option macros. */
-    while((c = getopt(argc, (char **)argv, opts)) != -1) {
+/*@-nullstate@*/ /* FIX: argv[] can be NULL */
+    while((c = getopt(argc, (char **)argv, opts)) != -1)
+/*@=nullstate@*/
+    {
 	if (c == '?' || (o = strchr(opts, c)) == NULL) {
 	    rpmError(RPMERR_BADSPEC, _("Unknown option %c in %s(%s)\n"),
 			(char)c, me->name, opts);
@@ -1006,7 +1010,9 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
 	    sprintf(aname, "%d", (c - optind + 1));
 	    addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
 	    *be++ = ' ';
+/*@-nullpass@*/ /* FIX: argv[] can be NULL */
 	    be = stpcpy(be, argv[c]);
+/*@=nullpass@*/
 	}
     }
 
@@ -1026,7 +1032,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
  */
 static void
 doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
     char buf[BUFSIZ];
@@ -1051,15 +1057,15 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
  */
 static void
 doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
-		const char * g, size_t gn)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+		/*@null@*/ const char * g, size_t gn)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ], *b = NULL, *be;
     int c;
 
     buf[0] = '\0';
-    if (g) {
+    if (g != NULL) {
 	strncpy(buf, g, gn);
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, sizeof(buf));
@@ -1154,7 +1160,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 static int
 expandMacro(MacroBuf mb)
 	/*@globals rpmGlobalMacroContext,
-		print_macro_trace, print_expand_trace, fileSystem @*/
+		print_macro_trace, print_expand_trace, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext,
 		print_macro_trace, print_expand_trace, fileSystem @*/
 {
@@ -1330,7 +1336,7 @@ expandMacro(MacroBuf mb)
 		int waserror = 0;
 		if (STREQ("error", f, fn))
 			waserror = 1;
-		if (g < ge)
+		if (g != NULL && g < ge)
 			doOutput(mb, waserror, g, gn);
 		else
 			doOutput(mb, waserror, f, fn);

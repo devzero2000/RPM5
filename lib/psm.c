@@ -5,9 +5,6 @@
 
 #include "system.h"
 
-#include <signal.h>
-#include <sys/signal.h>
-
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 #include <rpmmacro.h>
@@ -39,6 +36,8 @@
 #define	_PSM_DEBUG	0
 /*@unchecked@*/
 int _psm_debug = _PSM_DEBUG;
+/*@unchecked@*/
+int _psm_threads = 0;
 
 /*@access FD_t @*/		/* XXX void ptr args */
 /*@access rpmpsm @*/
@@ -285,6 +284,11 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 /*@-onlytrans@*/	/* FIX: te reference */
     fi->te = rpmtsElement(ts, 0);
 /*@=onlytrans@*/
+    if (fi->te == NULL) {	/* XXX can't happen */
+	rpmrc = RPMRC_FAIL;
+	goto exit;
+    }
+
 /*@-nullpass@*/		/* FIX fi->h may be null */
     fi->te->h = headerLink(fi->h);
 /*@=nullpass@*/
@@ -457,259 +461,6 @@ static /*@observer@*/ const char * const tag2sln(int tag)
 }
 
 /**
- */
-/*@unchecked@*/
-static sigset_t caught;
-
-/**
- */
-/*@unchecked@*/
-static struct psmtbl_s {
-    int nalloced;
-    int npsms;
-/*@null@*/
-    rpmpsm * psms;
-} psmtbl = { 0, 0, NULL };
-
-/* forward ref */
-static void handler(int signum)
-	/*@globals caught, psmtbl, fileSystem @*/
-	/*@modifies caught, psmtbl, fileSystem @*/;
-
-/**
- */
-/*@unchecked@*/
-/*@-fullinitblock@*/
-static struct sigtbl_s {
-    int signum;
-    int active;
-    void (*handler) (int signum);
-    struct sigaction oact;
-} satbl[] = {
-    { SIGCHLD,	0, handler },
-    { -1,	0, NULL },
-};
-/*@=fullinitblock@*/
-
-/**
- */
-/*@-incondefs@*/
-static void handler(int signum)
-{
-    struct sigtbl_s * tbl;
-
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->signum != signum)
-	    continue;
-	if (!tbl->active)
-	    continue;
-	(void) sigaddset(&caught, signum);
-	switch (signum) {
-	case SIGCHLD:
-	    while (1) {
-		int status = 0;
-		pid_t reaped = waitpid(0, &status, WNOHANG);
-		int i;
-
-		if (reaped <= 0)
-		    /*@innerbreak@*/ break;
-
-		if (psmtbl.psms)
-		for (i = 0; i < psmtbl.npsms; i++) {
-		    rpmpsm psm = psmtbl.psms[i];
-		    if (psm->child != reaped)
-			/*@innercontinue@*/ continue;
-
-#if _PSM_DEBUG
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Reap: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
-/*@=modfilesys@*/
-#endif
-
-		    psm->reaped = reaped;
-		    psm->status = status;
-		    /*@innerbreak@*/ break;
-		}
-	    }
-	    /*@switchbreak@*/ break;
-	default:
-	    /*@switchbreak@*/ break;
-	}
-	break;
-    }
-}
-/*@=incondefs@*/
-
-/**
- * Enable a signal handler.
- */
-static int enableSignal(int signum)
-	/*@globals caught, satbl, fileSystem @*/
-	/*@modifies caught, satbl, fileSystem @*/
-{
-    sigset_t newMask, oldMask;
-    struct sigtbl_s * tbl;
-    struct sigaction act;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    for (tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (signum >= 0 && signum != tbl->signum)
-	    continue;
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "    Enable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms, psmtbl.nalloced, tbl->active);
-/*@=modfilesys@*/
-	if (tbl->active++ <= 0) {
-	    (void) sigdelset(&caught, tbl->signum);
-	    memset(&act, 0, sizeof(act));
-	    act.sa_handler = tbl->handler;
-	    (void) sigaction(tbl->signum, &act, &tbl->oact);
-	}
-	break;
-    }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
- * Disable a signal handler.
- */
-static int disableSignal(int signum)
-	/*@globals satbl, fileSystem @*/
-	/*@modifies satbl, fileSystem @*/
-{
-    sigset_t newMask, oldMask;
-    struct sigtbl_s * tbl;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    for (tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (signum >= 0 && signum != tbl->signum)
-	    continue;
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "   Disable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms, psmtbl.nalloced, tbl->active);
-/*@=modfilesys@*/
-	if (--tbl->active <= 0) {
-	    tbl->active = 0;		/* XXX just in case */
-	    (void) sigaction(tbl->signum, &tbl->oact, NULL);
-	}
-	break;
-    }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
- * Register a child reaper, then fork a child.
- * @param psm		package state machine data
- * @return		fork(2) pid
- */
-static pid_t psmRegisterFork(rpmpsm psm)
-	/*@globals psmtbl, fileSystem, internalState @*/
-	/*@modifies psm, psmtbl, fileSystem, internalState @*/
-{
-    sigset_t newMask, oldMask;
-    int empty = -1;
-    int i = psmtbl.npsms;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-
-    if (psmtbl.psms)
-    for (i = 0; i < psmtbl.npsms; i++) {
-	if (empty == -1 && psmtbl.psms[i] == NULL)
-	    empty = i;
-	if (psm != psmtbl.psms[i])
-	    continue;
-	break;
-    }
-    if (i == psmtbl.npsms) {
-	if (i >= psmtbl.nalloced) {
-	    if (psmtbl.nalloced == 0) psmtbl.nalloced = 5;
-	    while (psmtbl.nalloced < i)
-		psmtbl.nalloced += psmtbl.nalloced;
-	    psmtbl.psms = xrealloc(psmtbl.psms,
-			psmtbl.nalloced * sizeof(*psmtbl.psms));
-	}
-	empty = psmtbl.npsms++;
-    }
-    if (psmtbl.psms)	/* XXX can't happen */
-	psmtbl.psms[empty] = rpmpsmLink(psm, "psmRegister");
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "  Register: %p[%d:%d:%d] = %p\n", psmtbl.psms, empty, psmtbl.npsms, psmtbl.nalloced, psm);
-/*@=modfilesys@*/
-
-    (void) enableSignal(SIGCHLD);
-
-    psm->reaped = 0;
-    if ((psm->child = fork()) != 0) {
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
-/*@=modfilesys@*/
-    }
-
-    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
-
-    return psm->child;
-}
-
-/**
- * Unregister a child reaper.
- */
-static int psmWaitUnregister(rpmpsm psm, pid_t child)
-	/*@globals psmtbl, fileSystem, internalState @*/
-	/*@modifies psmtbl, fileSystem, internalState @*/
-{
-    sigset_t newMask, oldMask;
-    int i = 0;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    
-    /*@-infloops@*/
-    while (psm->reaped != psm->child)
-	(void) sigsuspend(&oldMask);
-    /*@=infloops@*/
-
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Wait: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
-/*@=modfilesys@*/
-
-    if (psmtbl.psms)
-    for (i = 0; i < psmtbl.npsms; i++) {
-	if (psmtbl.psms[i] == NULL)
-	    continue;
-	if (psm != psmtbl.psms[i])
-	    continue;
-	if (child != psm->child)
-	    continue;
-	break;
-    }
-
-    if (i < psmtbl.npsms) {
-	(void) disableSignal(SIGCHLD);
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "Unregister: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmtbl.npsms, psmtbl.nalloced, psm, child);
-/*@=modfilesys@*/
-	if (psmtbl.psms)	/* XXX can't happen */
-	    psmtbl.psms[i] = rpmpsmFree(psmtbl.psms[i]);
-	if (psmtbl.npsms == (i+1))
-	    psmtbl.npsms--;
-	if (psmtbl.npsms == 0) {
-	    psmtbl.psms = _free(psmtbl.psms);
-	    psmtbl.nalloced = 0;
-	}
-    }
-
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
  * Wait for child process to be reaped.
  * @param psm		package state machine data
  * @return		
@@ -718,19 +469,20 @@ static pid_t psmWait(rpmpsm psm)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
-    if (psm->reaper) {
-	(void) psmWaitUnregister(psm, psm->child);
-    } else {
-	do {
-	    psm->reaped = waitpid(psm->child, &psm->status, 0);
-	} while (psm->reaped >= 0 && psm->reaped != psm->child);
-    }
+    const rpmts ts = psm->ts;
+    rpmtime_t msecs;
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: waitpid(%d) rc %d status %x\n"),
-	psm->stepName, (unsigned)psm->child,
-	(unsigned)psm->reaped, psm->status);
+    (void) rpmsqWait(&psm->sq);
+    msecs = psm->sq.op.usecs/1000;
+    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), &psm->sq.op);
 
-    return psm->reaped;
+    rpmMessage(RPMMESS_DEBUG,
+	_("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
+	psm->stepName, (unsigned)psm->sq.child,
+	(unsigned)psm->sq.reaped, psm->sq.status,
+	(unsigned)msecs/1000, (unsigned)msecs%1000);
+
+    return psm->sq.reaped;
 }
 
 /**
@@ -762,7 +514,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
 static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
-	/*@globals ldconfig_done, rpmGlobalMacroContext,
+	/*@globals ldconfig_done, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies psm, ldconfig_done, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -781,7 +533,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     int len;
     char * prefixBuf = NULL;
     const char * fn = NULL;
-    int i, xx;
+    int xx;
+    int i;
     int freePrefixes = 0;
     FD_t scriptFd;
     FD_t out;
@@ -791,10 +544,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (progArgv == NULL && script == NULL)
 	return rc;
 
-    psm->child = 0;
-    psm->reaped = 0;
-    psm->status = 0;
-    psm->reaper = 1;
+    psm->sq.reaper = 1;
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
@@ -914,8 +664,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     
     /*@-branchstate@*/
-    (void) psmRegisterFork(psm);
-    if (psm->child == 0) {
+    xx = rpmsqFork(&psm->sq);
+    if (psm->sq.child == 0) {
 	const char * rootDir;
 	int pipes[2];
 
@@ -985,12 +735,10 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"),
 			psm->stepName, sln, n, v, r,
 			argv[0], (unsigned)getpid());
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Exec: %s \"%s\"\n", sln, argv[0]);
-/*@=modfilesys@*/
 	    unsetenv("MALLOC_CHECK_");
+/*@-nullstate@*/
 	    xx = execv(argv[0], (char *const *)argv);
+/*@=nullstate@*/
 	    break;
 	default:
 	    break;
@@ -1003,16 +751,16 @@ fprintf(stderr, "      Exec: %s \"%s\"\n", sln, argv[0]);
 
     (void) psmWait(psm);
 
-    if (psm->reaped < 0) {
+    if (psm->sq.reaped < 0) {
 	rpmError(RPMERR_SCRIPT,
 		_("%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sln, n, v, r, psm->child, psm->reaped, strerror(errno));
+		 sln, n, v, r, psm->sq.child, psm->sq.reaped, strerror(errno));
 	rc = RPMRC_FAIL;
     } else
-    if (!WIFEXITED(psm->status) || WEXITSTATUS(psm->status)) {
+    if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
 	rpmError(RPMERR_SCRIPT,
 		_("%s(%s-%s-%s) scriptlet failed, exit status %d\n"),
-		sln, n, v, r, WEXITSTATUS(psm->status));
+		sln, n, v, r, WEXITSTATUS(psm->sq.status));
 	rc = RPMRC_FAIL;
     }
 
@@ -1037,7 +785,7 @@ fprintf(stderr, "      Exec: %s \"%s\"\n", sln, argv[0]);
  * @return		rpmRC return code
  */
 static rpmRC runInstScript(rpmpsm psm)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmfi fi = psm->fi;
@@ -1092,7 +840,7 @@ exit:
 static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1190,8 +938,10 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
  * @return		0 on success
  */
 static rpmRC runTriggers(rpmpsm psm)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
@@ -1229,8 +979,10 @@ static rpmRC runTriggers(rpmpsm psm)
  * @return		0 on success
  */
 static rpmRC runImmedTriggers(rpmpsm psm)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
@@ -1360,7 +1112,9 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 #else
     psm->te = NULL;
 #endif
+/*@-internalglobs@*/
     psm->ts = rpmtsFree(psm->ts);
+/*@=internalglobs@*/
 
     (void) rpmpsmUnlink(psm, msg);
 
@@ -1392,6 +1146,28 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 
     return rpmpsmLink(psm, msg);
 }
+
+#if NOTYET
+static void * rpmpsmThread(void * arg)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies arg, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    rpmpsm psm = arg;
+/*@-unqualifiedtrans@*/
+    return ((void *) rpmpsmStage(psm, psm->nstage));
+/*@=unqualifiedtrans@*/
+}
+
+static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    psm->nstage = nstage;
+    if (_psm_threads)
+	return rpmsqJoin( rpmsqThread(rpmpsmThread, psm) );
+    return rpmpsmStage(psm, psm->nstage);
+}
+#endif
 
 /**
  * @todo Packages w/o files never get a callback, hence don't get displayed
@@ -1745,6 +1521,10 @@ psm->te->h = headerLink(fi->h);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
+			fdstat_op(psm->cfd, FDSTAT_READ));
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
+			fdstat_op(psm->cfd, FDSTAT_DIGEST));
 	    xx = fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1824,6 +1604,10 @@ psm->te->h = headerLink(fi->h);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd,
 			NULL, &psm->failedFile);
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_COMPRESS),
+			fdstat_op(psm->cfd, FDSTAT_WRITE));
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
+			fdstat_op(psm->cfd, FDSTAT_DIGEST));
 	    xx = fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */

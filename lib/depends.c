@@ -78,7 +78,7 @@ static int intcmp(const void * a, const void * b)
  */
 static int removePackage(rpmts ts, Header h, int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/
 {
     rpmte p;
@@ -818,7 +818,7 @@ static void freeBadDeps(void)
 /*@-boundsread@*/
 static int ignoreDep(const rpmte p, const rpmte q)
 	/*@globals badDeps, badDepsInitialized,
-		rpmGlobalMacroContext @*/
+		rpmGlobalMacroContext, h_errno @*/
 	/*@modifies badDeps, badDepsInitialized,
 		rpmGlobalMacroContext @*/
 {
@@ -1003,7 +1003,7 @@ static inline int addRelation(rpmts ts,
 		/*@dependent@*/ rpmte p,
 		unsigned char * selected,
 		rpmds requires)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, *selected, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -1620,7 +1620,7 @@ int rpmtsCheck(rpmts ts)
 	rpmds provides;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
-	rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s-%s 0x%x\n",
+	rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 	rc = checkPackageDeps(ts, rpmteNEVR(p),
@@ -1661,7 +1661,7 @@ int rpmtsCheck(rpmts ts)
 	rpmfi fi;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
-	rpmMessage(RPMMESS_DEBUG, "========== --- %s %s-%s 0x%x\n",
+	rpmMessage(RPMMESS_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 

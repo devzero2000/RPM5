@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include "rpmlib.h"
+#include "rpmsw.h"
 #include "db.h"
 
 /*@-exportlocal@*/
@@ -428,6 +429,10 @@ struct rpmdb_s {
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex * _dbi;		/*!< Tag indices. */
 
+    struct rpmop_s db_getops;
+    struct rpmop_s db_putops;
+    struct rpmop_s db_delops;
+
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
@@ -457,7 +462,7 @@ extern "C" {
  */
 /*@unused@*/ /*@only@*/ /*@null@*/
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup db3
@@ -490,7 +495,7 @@ extern const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
  */
 /*@only@*/ /*@null@*/ dbiIndex dbiOpen(/*@null@*/ rpmdb db, rpmTag rpmtag,
 		unsigned int flags)
-	/*@globals rpmGlobalMacroContext, errno @*/
+	/*@globals rpmGlobalMacroContext, errno, h_errno @*/
 	/*@modifies db, rpmGlobalMacroContext, errno @*/;
 
 /*@-globuse -mustmod @*/ /* FIX: vector annotations */
@@ -554,11 +559,15 @@ int dbiCdup(dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
 /*@unused@*/ static inline
 int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
+    int rc;
     assert(key->data != NULL && key->size > 0);
-    return (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
+    rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_delops, data->size);
+    return rc;
 }
 
 /** \ingroup dbi
@@ -573,11 +582,15 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 /*@unused@*/ static inline
 int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, *data, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, *key, *data, fileSystem, internalState @*/
 {
+    int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    return (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    return rc;
 }
 
 /** \ingroup dbi
@@ -593,11 +606,15 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 /*@unused@*/ static inline
 int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, *key, *pkey, *data, fileSystem, internalState @*/
 {
+    int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    return (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    rc = (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    return rc;
 }
 
 /** \ingroup dbi
@@ -612,11 +629,15 @@ int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 /*@unused@*/ static inline
 int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, *key, fileSystem, internalState @*/
 {
+    int rc;
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-    return (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, 0);
+    rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, data->size);
+    return rc;
 }
 
 /** \ingroup dbi
@@ -839,7 +860,7 @@ rpmdb XrpmdbLink (rpmdb db, const char * msg,
  */
 int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
 		int mode, int perms)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *dbp, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
@@ -849,7 +870,7 @@ int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
  * @return		0 on success
  */
 int rpmdbInit(/*@null@*/ const char * prefix, int perms)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
@@ -858,7 +879,7 @@ int rpmdbInit(/*@null@*/ const char * prefix, int perms)
  * @return		0 on success
  */
 int rpmdbVerify(/*@null@*/ const char * prefix)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
@@ -896,7 +917,7 @@ int rpmdbSync (/*@null@*/ rpmdb db)
  */
 /*@-exportlocal@*/
 int rpmdbOpenAll (/*@null@*/ rpmdb db)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies db, rpmGlobalMacroContext @*/;
 /*@=exportlocal@*/
 
@@ -907,8 +928,8 @@ int rpmdbOpenAll (/*@null@*/ rpmdb db)
  * @return		number of instances
  */
 int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Return header join key for current position of rpm database iterator.
@@ -960,7 +981,7 @@ int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
  */
 int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
 		rpmMireMode mode, /*@null@*/ const char * pattern)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies mi, mode, rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmdb
@@ -1004,7 +1025,7 @@ int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts,
 /*@only@*/ /*@null@*/
 rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
@@ -1014,7 +1035,7 @@ rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag rpmtag,
  */
 /*@null@*/
 Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
@@ -1032,7 +1053,7 @@ int rpmdbCheckSignals(void)
  */
 /*@null@*/
 rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
@@ -1046,7 +1067,7 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
  */
 int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
 		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
@@ -1061,7 +1082,7 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
 int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 		/*@null@*/ rpmts ts,
 		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
@@ -1073,7 +1094,7 @@ int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
  */
 int rpmdbRebuild(/*@null@*/ const char * prefix, /*@null@*/ rpmts ts,
 		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
