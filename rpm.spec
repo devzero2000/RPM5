@@ -11,9 +11,9 @@
 
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 4.0.1
+%define version 4.0.2
 Version: %{version}
-Release: 0.7x
+Release: 0.33
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -95,7 +95,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.6.1
+Version: 1.6.2
 
 %description -n popt
 Popt is a C library for parsing command line parameters.  Popt was
@@ -132,15 +132,15 @@ cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
 
+%if %{with_apidocs}
+gzip -9n apidocs/man/man*/* || :
+%endif
+
 %if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
   strip .%{__prefix}/bin/rpm2cpio
 }
-%endif
-
-%if %{with_apidocs}
-gzip -9n apidocs/man/man*/* || :
 %endif
 
 %clean
@@ -156,6 +156,7 @@ if [ -f /var/lib/rpm/Packages -a -f /var/lib/rpm/packages.rpm ]; then
 #"
     exit 1
 fi
+exit 0
 
 %post
 %ifos linux
@@ -233,11 +234,29 @@ fi
 %{__prefix}/lib/rpm/armv[34][lb]*
 %endif
 
-%{__prefix}/*/locale/*/LC_MESSAGES/rpm.mo
+%lang(cs)	%{__prefix}%{__share}/locale/cs/LC_MESSAGES/rpm.mo
+%lang(da)	%{__prefix}%{__share}/locale/da/LC_MESSAGES/rpm.mo
+%lang(de)	%{__prefix}%{__share}/locale/de/LC_MESSAGES/rpm.mo
+%lang(fi)	%{__prefix}%{__share}/locale/fi/LC_MESSAGES/rpm.mo
+%lang(fr)	%{__prefix}%{__share}/locale/fr/LC_MESSAGES/rpm.mo
+%lang(is)	%{__prefix}%{__share}/locale/is/LC_MESSAGES/rpm.mo
+%lang(ja)	%{__prefix}%{__share}/locale/ja/LC_MESSAGES/rpm.mo
+%lang(no)	%{__prefix}%{__share}/locale/no/LC_MESSAGES/rpm.mo
+%lang(pl)	%{__prefix}%{__share}/locale/pl/LC_MESSAGES/rpm.mo
+%lang(pt)	%{__prefix}%{__share}/locale/pt/LC_MESSAGES/rpm.mo
+%lang(pt_BR)	%{__prefix}%{__share}/locale/pt_BR/LC_MESSAGES/rpm.mo
+%lang(ro)	%{__prefix}%{__share}/locale/ro/LC_MESSAGES/rpm.mo
+%lang(ru)	%{__prefix}%{__share}/locale/ru/LC_MESSAGES/rpm.mo
+%lang(sk)	%{__prefix}%{__share}/locale/sk/LC_MESSAGES/rpm.mo
+%lang(sl)	%{__prefix}%{__share}/locale/sl/LC_MESSAGES/rpm.mo
+%lang(sr)	%{__prefix}%{__share}/locale/sr/LC_MESSAGES/rpm.mo
+%lang(sv)	%{__prefix}%{__share}/locale/sv/LC_MESSAGES/rpm.mo
+%lang(tr)	%{__prefix}%{__share}/locale/tr/LC_MESSAGES/rpm.mo
+
 %{__prefix}%{__share}/man/man[18]/*.[18]*
-%lang(pl) %{__prefix}%{__share}/man/pl/man[18]/*.[18]*
-%lang(ru) %{__prefix}%{__share}/man/ru/man[18]/*.[18]*
-%lang(sk) %{__prefix}%{__share}/man/sk/man[18]/*.[18]*
+%lang(pl)	%{__prefix}%{__share}/man/pl/man[18]/*.[18]*
+%lang(ru)	%{__prefix}%{__share}/man/ru/man[18]/*.[18]*
+%lang(sk)	%{__prefix}%{__share}/man/sk/man[18]/*.[18]*
 
 %files build
 %defattr(-,root,root)
@@ -299,8 +318,23 @@ fi
 %files -n popt
 %defattr(-,root,root)
 %{__prefix}/lib/libpopt.so.*
-%{__prefix}/*/locale/*/LC_MESSAGES/popt.mo
 %{__prefix}%{__share}/man/man3/popt.3*
+%lang(cs)	%{__prefix}%{__share}/locale/cs/LC_MESSAGES/popt.mo
+%lang(da)	%{__prefix}%{__share}/locale/da/LC_MESSAGES/popt.mo
+%lang(gl)	%{__prefix}%{__share}/locale/gl/LC_MESSAGES/popt.mo
+%lang(hu)	%{__prefix}%{__share}/locale/hu/LC_MESSAGES/popt.mo
+%lang(is)	%{__prefix}%{__share}/locale/is/LC_MESSAGES/popt.mo
+%lang(no)	%{__prefix}%{__share}/locale/no/LC_MESSAGES/popt.mo
+%lang(pt)	%{__prefix}%{__share}/locale/pt/LC_MESSAGES/popt.mo
+%lang(ro)	%{__prefix}%{__share}/locale/ro/LC_MESSAGES/popt.mo
+%lang(ru)	%{__prefix}%{__share}/locale/ru/LC_MESSAGES/popt.mo
+%lang(sk)	%{__prefix}%{__share}/locale/sk/LC_MESSAGES/popt.mo
+%lang(sl)	%{__prefix}%{__share}/locale/sl/LC_MESSAGES/popt.mo
+%lang(sv)	%{__prefix}%{__share}/locale/sv/LC_MESSAGES/popt.mo
+%lang(tr)	%{__prefix}%{__share}/locale/tr/LC_MESSAGES/popt.mo
+%lang(uk)	%{__prefix}%{__share}/locale/uk/LC_MESSAGES/popt.mo
+%lang(wa)	%{__prefix}%{__share}/locale/wa/LC_MESSAGES/popt.mo
+%lang(zh_CN)	%{__prefix}%{__share}/locale/zh_CN.GB2312/LC_MESSAGES/popt.mo
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort now.
 %{__prefix}/lib/libpopt.a
@@ -309,9 +343,24 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jan 19 2001 Jeff Johnson <jbj@redhat.com>
+- ewt's cpio.c hack.
+- ewt's cpio.c hack reverted.
+- rebuild with i18n from rpm-4_0 branch.
+- rpmlint conformance.
+
+* Thu Jan 18 2001 Matt Wilson <msw@redhat.com>
+- fix: exit 0 at the end of %pre
+
 * Thu Jan 18 2001 Jeff Johnson <jbj@redhat.com>
 - fix: insure that %lang scopes over hard links correctly.
 - fix: rpmCleanPath was nibbling at .. in macrofiles incorrectly.
+
+* Wed Jan 17 2001 Jeff Johnson <jbj@redhat.com>
+- 1st crack at Mandrake specific per-platform macros.
+
+* Tue Jan 16 2001 Jeff Johnson <jbj@redhat.com>
+- tsort prefers presentation order.
 
 * Mon Jan 15 2001 Jeff Johnson <jbj@redhat.com>
 - fix: extra newline in many error messages (#23947).
@@ -319,7 +368,7 @@ fi
 - add install/remove transaction id tags.
 
 * Sat Jan 13 2001 Jeff Johnson <jbj@redhat.com>
-- fix the hack
+- fix the hack.
 
 * Fri Jan 12 2001 Jeff Johnson <jbj@redhat.com>
 - hack: permit installer to determine package ordering using 1000003 tag.
@@ -329,10 +378,12 @@ fi
 - fix: remove "error: " prefix from signature verification message.
 
 * Wed Jan 10 2001 Jeff Johnson <jbj@redhat.com>
-- fix: digests on input FD_t dinna work.
-- fix: remove rebuilddb debugging leakage.
 - successors from tsort are processed in presentation order.
 - fix: find-requires.perl needed update (#23450).
+
+* Tue Jan  9 2001 Jeff Johnson <jbj@redhat.com>
+- fix: digests on input FD_t dinna work.
+- fix: remove rebuilddb debugging leakage.
 
 * Mon Jan  8 2001 Jeff Johnson <jbj@redhat.com>
 - tsorted packages processed in successor count order.
@@ -391,19 +442,18 @@ fi
 - add rpmlib(HeaderLoadSortsTags) for tracking header regions "just in case".
 - create _tmppath on the fly if not present.
 - remove /etc/rpm/macros.db1 configuration file if db3 rebuilt.
-- remove overly verbose dbiOpen() error messages, no longer needed.
-
-* Thu Dec 14 2000 Jeff Johnson <jbj@redhat.com>
-- fix: synthesized callbacks for removed packages have not a pkgkey.
 
 * Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
-- change dependency loop message to RPMMESS_WARNING to use stderr, not stdout.
+- bump popt version.
 - fix: (transaction.c) assume file state normal if tag is missing.
 - fix: failed signature read headerFree segfault.
 - fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.
+- fix: segfault on build path, ignore deleted drips.
+- fix: synthesized callbacks for removed packages have not a pkgkey.
 
 * Tue Dec 12 2000 Jeff Johnson <jbj@redhat.com>
-- resurrect rpmrc Provides: as well as implicit dependency on packge info.
+- bail on header regions.
+- change dependency loop message to RPMMESS_WARNING to use stderr, not stdout.
 
 * Sun Dec 10 2000 Jeff Johnson <jbj@redhat.com>
 - handle added dirtoken tags (mostly) correctly with header regions.
