@@ -135,7 +135,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     int fd, i;
     int mode, rc;
     const char ** packages;
-    const char ** tmpPackages;
+    const char ** tpkgs, ** spkgs, ** bpkgs;
     const char ** filename;
     int numPackages;
     int numTmpPackages = 0, numBinaryPackages = 0, numSourcePackages = 0;
@@ -165,8 +165,12 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     nb = (numPackages + 1) * sizeof(char *);
     packages = alloca(nb);
     memset(packages, 0, nb);
-    tmpPackages = alloca(nb);
-    memset(tmpPackages, 0, nb);
+    tpkgs = alloca(nb);
+    memset(tpkgs, 0, nb);
+    spkgs = alloca(nb);
+    memset(spkgs, 0, nb);
+    bpkgs = alloca(nb);
+    memset(bpkgs, 0, nb);
     nb = (numPackages + 1) * sizeof(Header);
     binaryHeaders = alloca(nb);
     memset(binaryHeaders, 0, nb);
@@ -199,7 +203,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 		packages[i] = NULL;
 		free(tfn);
 	    } else {
-		tmpPackages[numTmpPackages++] = packages[i++] = tfn;
+		tpkgs[numTmpPackages++] = packages[i++] = tfn;
 	    }
 	} else {
 	    packages[i++] = *filename;
@@ -239,9 +243,9 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	/* the header will be NULL if this is a v1 source package */
 		if (binaryHeaders[numBinaryPackages])
 		    headerFree(binaryHeaders[numBinaryPackages]);
-		numSourcePackages++;
+		spkgs[numSourcePackages++] = *filename;
 	    } else {
-		numBinaryPackages++;
+		bpkgs[numBinaryPackages++] = *filename;
 	    }
 	    break;
 	}
@@ -261,11 +265,9 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	rpmdep = rpmdepDependencies(db);
 	for (i = 0; i < numBinaryPackages; i++)
 	    if (installFlags & RPMINSTALL_UPGRADE)
-		rpmdepUpgradePackage(rpmdep, binaryHeaders[i],
-				     packages[i]);
+		rpmdepUpgradePackage(rpmdep, binaryHeaders[i], bpkgs[i]);
 	    else
-		rpmdepAddPackage(rpmdep, binaryHeaders[i], 
-				    packages[i]);
+		rpmdepAddPackage(rpmdep, binaryHeaders[i], bpkgs[i]);
 
 	if (!(interfaceFlags & INSTALL_NODEPS)) {
 	    if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
@@ -283,33 +285,40 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	}
 
 	if (!(interfaceFlags & INSTALL_NOORDER)) {
-	    if (rpmdepOrder(rpmdep, (void ***) &packages)) {
+	    if (rpmdepOrder(rpmdep, (void ***) &bpkgs)) {
 		numFailed = numPackages;
 		stopInstall = 1;
 	    }
 	}
 
 	rpmdepDone(rpmdep);
-    }
-    else
-	db = NULL;
 
-    if (!stopInstall) {
-	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	numFailed += installPackages(rootdir, packages, numPackages, 
+	if (!stopInstall) {
+	    rpmMessage(RPMMESS_DEBUG, _("installing binary rpms\n"));
+	    numFailed += installPackages(rootdir, bpkgs, numBinaryPackages, 
 				     installFlags, interfaceFlags, db,
 				     relocations);
+	}
+	if (db) rpmdbClose(db);
+    }
+
+    if (numSourcePackages) {
+	db = NULL;
+	if (!stopInstall) {
+	    rpmMessage(RPMMESS_DEBUG, _("installing source rpms\n"));
+	    numFailed += installPackages(rootdir, spkgs, numSourcePackages, 
+				     installFlags, interfaceFlags, db,
+				     relocations);
+	}
     }
 
     for (i = 0; i < numTmpPackages; i++) {
-	unlink(tmpPackages[i]);
-	free((void *)tmpPackages[i]);
+	unlink(tpkgs[i]);
+	free((void *)tpkgs[i]);
     }
 
     for (i = 0; i < numBinaryPackages; i++) 
 	headerFree(binaryHeaders[i]);
-
-    if (db) rpmdbClose(db);
 
     return numFailed;
 }
