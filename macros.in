@@ -210,6 +210,6 @@
   %{__autoheader} \
   %{__automake} \
   %{__autoconf} \
-  %{-C:_mydir="`pwd`"; %{-M; %{__mkdirp} %{-C*};} cd %{-C*}} \
+  %{-C:_mydir="`pwd`"; %{-M: %{__mkdirp} %{-C*};} cd %{-C*};} \
   CFLAGS="%{optflags}" %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} %* \
   %{-C:cd ${_mydir}; unset _mydir}
