@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-30 16:49-0500\n"
+"POT-Creation-Date: 2004-06-01 12:56-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -2372,7 +2372,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "o pacote nem tem um dono do ficheiro ou as listas de IDs\n"
 
 #: lib/query.c:430 lib/query.c:477 lib/rpminstall.c:123 lib/rpminstall.c:476
-#: lib/rpminstall.c:607 lib/rpminstall.c:1032 lib/rpmts.c:586
+#: lib/rpminstall.c:607 lib/rpminstall.c:1035 lib/rpmts.c:586
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2676,7 +2676,7 @@ msgstr " ... como %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "a ignorar o %s - a transferência falhou - %s\n"
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:886 tools/rpmgraph.c:140
+#: lib/rpminstall.c:495 lib/rpminstall.c:889 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "o %s não pode ser instalado\n"
@@ -2711,7 +2711,7 @@ msgstr "o %s precisa duma versão mais recente do RPM\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "encontrados %d pacotes com código-fonte e %d binários\n"
 
-#: lib/rpminstall.c:651 lib/rpminstall.c:824 lib/rpminstall.c:1253
+#: lib/rpminstall.c:651 lib/rpminstall.c:826 lib/rpminstall.c:1256
 #: tools/rpmgraph.c:195
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2735,17 +2735,17 @@ msgstr "não consigo aceder ao ficheiro %s: %s\n"
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "o \"%s\" especifica vários pacotes\n"
 
-#: lib/rpminstall.c:870
+#: lib/rpminstall.c:873
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "não consigo aceder ao %s: %s\n"
 
-#: lib/rpminstall.c:876
+#: lib/rpminstall.c:879
 #, c-format
 msgid "Installing %s\n"
 msgstr "A instalar o %s\n"
 
-#: lib/rpminstall.c:1247
+#: lib/rpminstall.c:1250
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -2965,27 +2965,27 @@ msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/rpmsx.c:358
+#: lib/rpmsx.c:359
 #, c-format
 msgid "%s:  no newline on line number %d (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:375
+#: lib/rpmsx.c:376
 #, c-format
 msgid "%s:  line number %d is missing fields (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:408
+#: lib/rpmsx.c:409
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
 
-#: lib/rpmsx.c:423 lib/rpmsx.c:438
+#: lib/rpmsx.c:424 lib/rpmsx.c:439
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmsx.c:451
+#: lib/rpmsx.c:452
 #, c-format
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
@@ -3223,7 +3223,7 @@ msgstr "a excluir a directoria %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1012
+#: lib/transaction.c:1016
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3236,7 +3236,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1100
+#: lib/transaction.c:1104
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3244,7 +3244,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1181
+#: lib/transaction.c:1185
 msgid "computing file dispositions\n"
 msgstr ""
 
@@ -3705,59 +3705,59 @@ msgstr "Ficheiro %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"
 
-#: rpmio/rpmio.c:632
+#: rpmio/rpmio.c:652
 msgid "Success"
 msgstr "Sucesso"
 
-#: rpmio/rpmio.c:635
+#: rpmio/rpmio.c:655
 msgid "Bad server response"
 msgstr "Resposta errada do servidor"
 
-#: rpmio/rpmio.c:638
+#: rpmio/rpmio.c:658
 msgid "Server I/O error"
 msgstr "Erro de E/S do servidor"
 
-#: rpmio/rpmio.c:641
+#: rpmio/rpmio.c:661
 msgid "Server timeout"
 msgstr "Tempo de espera pelo servidor expirado"
 
-#: rpmio/rpmio.c:644
+#: rpmio/rpmio.c:664
 msgid "Unable to lookup server host address"
 msgstr "Incapaz de descobrir o endereço da máquina do servidor"
 
-#: rpmio/rpmio.c:647
+#: rpmio/rpmio.c:667
 msgid "Unable to lookup server host name"
 msgstr "Incapaz de descobrir o nome da máquina do servidor"
 
-#: rpmio/rpmio.c:650
+#: rpmio/rpmio.c:670
 msgid "Failed to connect to server"
 msgstr "Não consegui ligar ao servidor"
 
-#: rpmio/rpmio.c:653
+#: rpmio/rpmio.c:673
 msgid "Failed to establish data connection to server"
 msgstr "Não consigo estabelecer uma ligação de dados ao servidor"
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:676
 msgid "I/O error to local file"
 msgstr "Erro de E/S no ficheiro local"
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:679
 msgid "Error setting remote server to passive mode"
 msgstr "Erro ao configurar o servidor remoto para o modo passivo"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:682
 msgid "File not found on server"
 msgstr "Ficheiro não encontrado no servidor"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:685
 msgid "Abort in progress"
 msgstr "Interrupção em progresso"
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:689
 msgid "Unknown or unexpected error"
 msgstr "Erro desconhecido ou inesperado"
 
-#: rpmio/rpmio.c:1362
+#: rpmio/rpmio.c:1382
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "a ligar ao %s como %s com senha %s\n"

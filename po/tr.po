@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-30 16:49-0500\n"
+"POT-Creation-Date: 2004-06-01 12:56-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2389,7 +2389,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "paket ne dosya sahibi ne de kimlik listesi içeriyor\n"
 
 #: lib/query.c:430 lib/query.c:477 lib/rpminstall.c:123 lib/rpminstall.c:476
-#: lib/rpminstall.c:607 lib/rpminstall.c:1032 lib/rpmts.c:586
+#: lib/rpminstall.c:607 lib/rpminstall.c:1035 lib/rpmts.c:586
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2692,7 +2692,7 @@ msgstr "... %s olarak\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s atlanýyor - aktarým baþarýsýz - %s\n"
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:886 tools/rpmgraph.c:140
+#: lib/rpminstall.c:495 lib/rpminstall.c:889 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s yüklenemedi\n"
@@ -2727,7 +2727,7 @@ msgstr "%s dosyasý RPM'nin daha yeni bir sürümünü gerektiriyor\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d kaynak ve %d icra edilebilir paketi bulundu\n"
 
-#: lib/rpminstall.c:651 lib/rpminstall.c:824 lib/rpminstall.c:1253
+#: lib/rpminstall.c:651 lib/rpminstall.c:826 lib/rpminstall.c:1256
 #: tools/rpmgraph.c:195
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2751,17 +2751,17 @@ msgstr "%s dosyasý açýlamadý: %s\n"
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
 
-#: lib/rpminstall.c:870
+#: lib/rpminstall.c:873
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/rpminstall.c:876
+#: lib/rpminstall.c:879
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s kuruluyor\n"
 
-#: lib/rpminstall.c:1247
+#: lib/rpminstall.c:1250
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -2977,27 +2977,27 @@ msgstr "%s okunamýyor, EV çok büyük\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s okuma eriþimi için açýlamadý: %s.\n"
 
-#: lib/rpmsx.c:358
+#: lib/rpmsx.c:359
 #, c-format
 msgid "%s:  no newline on line number %d (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:375
+#: lib/rpmsx.c:376
 #, c-format
 msgid "%s:  line number %d is missing fields (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:408
+#: lib/rpmsx.c:409
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
 
-#: lib/rpmsx.c:423 lib/rpmsx.c:438
+#: lib/rpmsx.c:424 lib/rpmsx.c:439
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmsx.c:451
+#: lib/rpmsx.c:452
 #, c-format
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
@@ -3235,7 +3235,7 @@ msgstr "%s dizini dýþlanýyor\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1012
+#: lib/transaction.c:1016
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3248,7 +3248,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1100
+#: lib/transaction.c:1104
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3256,7 +3256,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1181
+#: lib/transaction.c:1185
 msgid "computing file dispositions\n"
 msgstr ""
 
@@ -3716,59 +3716,59 @@ msgstr "%s dosyasý: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
 
-#: rpmio/rpmio.c:632
+#: rpmio/rpmio.c:652
 msgid "Success"
 msgstr "Baþarýlý"
 
-#: rpmio/rpmio.c:635
+#: rpmio/rpmio.c:655
 msgid "Bad server response"
 msgstr "Sunucudan kötü yanýt"
 
-#: rpmio/rpmio.c:638
+#: rpmio/rpmio.c:658
 msgid "Server I/O error"
 msgstr "Sunucu G/Ç hatasý"
 
-#: rpmio/rpmio.c:641
+#: rpmio/rpmio.c:661
 msgid "Server timeout"
 msgstr "Sunucu zaman aþýmý"
 
-#: rpmio/rpmio.c:644
+#: rpmio/rpmio.c:664
 msgid "Unable to lookup server host address"
 msgstr "Sunucu makina adresi bulunamadý"
 
-#: rpmio/rpmio.c:647
+#: rpmio/rpmio.c:667
 msgid "Unable to lookup server host name"
 msgstr "Sunucu makina ismi bulunamadý"
 
-#: rpmio/rpmio.c:650
+#: rpmio/rpmio.c:670
 msgid "Failed to connect to server"
 msgstr "Sunucuya baðlanýlamadý"
 
-#: rpmio/rpmio.c:653
+#: rpmio/rpmio.c:673
 msgid "Failed to establish data connection to server"
 msgstr "Sunucuya veri baðlantýsý kurulamadý"
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:676
 msgid "I/O error to local file"
 msgstr "Yerel dosyaya G/Ç hatasý"
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:679
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokma ayarlarýnda hata"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:682
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:685
 msgid "Abort in progress"
 msgstr "Kesme iþlemi sürüyor"
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:689
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1362
+#: rpmio/rpmio.c:1382
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.4
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -485,103 +485,11 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Mon Apr 19 2004 Jeff Johnson <jbj@jbj.org> 4.3.1-0.4
-- fix: exit fail when erasing multiple identical packages (#120519).
-
-* Thu Apr 15 2004 Jeff Johnson <jbj@jbj.org> 4.3.1-0.3
-- make peace with libtool-1.5.6.
-- fix: follow current is_selinux_enabled() return (#121004).
-
-* Wed Apr  7 2004 Jeff Johnson <jbj@jbj.org> 4.3.1-0.2
-- fix: segfault on --recontext if file_contexts unreadable (#117374).
-- fix: /etc/security/selinux/file_contexts is default path.
-- fix: no transaction lock if --test was specified (#119783).
-- perl: skip new-fangled head[34] while generating deps (#118243).
-- perl: use __perl for perl variable macros (#115156).
-
-* Tue Mar 30 2004 Jeff Johnson <jbj@jbj.org> 4.3.1-0.1
-- fix: don't add leading space to %* argv expansion (#119059).
-- scareMem = 0 everywhere, document deprecation phase out.
-- fix: add u+w to FIXPERMS.
-- add buildtime to rpmds, methods to retrieve.
-- python: hide labelCompare() underneath ds.cmp(a,b).
-
-* Tue Mar 16 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.22
-- fix: grrr, skip notes on non-i386 entirely.
-
-* Fri Mar 12 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.21
-- fix: increase file context regex parse buffer to BUFSIZ.
-- fix: handle elf64 note sections correctly.
-
-* Wed Mar 10 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.20
-- add sparcv8 and enable elf32/elf64 Zon sparc64 (#117302).
-- fix: --querybynumber looped.
-- fix: ENOTSUP filter from lsetfilecon borkage.
-
-* Tue Mar  9 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.19
-- fix: sq->reaped needs sighold(SIGCHLD)/sigrelease(SIGCHLD) (#117620).
-
-* Fri Mar  5 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.18
-- selinux: ignore ENOTSUP return from lsetfilecon.
-
-* Mon Mar  1 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.17
-- permit globs in macrofiles: directive (#117217).
-- fix: segfault generating transaction serialization lock path.
-- use /etc/security/selinux/file_contexts instead.
-
-* Wed Feb 25 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.15
-- serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
-
-* Sun Feb 22 2004 Jeff Johnson <jbj@jbj,org> 4.3-0.14
-- add ia32e arch.
-- stable sort for policy specifications, patterns before paths.
-- set "rpm_script_t" exec type for scriptlets iff /bin/sh, else default.
-- force FD_CLOEXEC on 1st 100 inherited fdno's.
-
-* Fri Feb 20 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.13
-- fix: only first "mkdir -p" directory had context set.
-
-* Wed Feb 18 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.12
-- python: add patch to rpm-4_3 to initialize RE contexts.
-
-* Sun Feb 15 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.11
-- fix: set fcontext from pkg when file_contexts doesn't exist (#114040).
-- fix: set fcontext for "mkdir -p" directories not in packages.
-- fix: setfiles (aka rpmsx.c) dinna handle patterns correctly.
-- establish rpm_script_t before scriptlet exec.
-
-* Wed Feb 11 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.10
-- re-add --enable-posixmutexes to build.
-
-* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.9
-- python: return None for NEVRAO, [] for everything else.
-
-* Mon Jan 12 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.7
-- fix: handle files w/o contexts correctly.
-
-* Mon Jan  5 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.6
-- selinux phases 1 and 2 delivered.
-
-* Tue Dec 23 2003 Jeff Johnson <jbj@redhat.com> 4.3-0.5
-- plug some rpmbuild memory leaks.
-- file security contexts added to package header.
-
-* Mon Dec 22 2003 Jeff Johnson <jbj@redhat.com> 4.3-0.4
-- test build with methods needed for selinux.
-
-* Wed Dec 17 2003 Jeff Johnson <jbj@jbj.org> 4.3-0.3
-- detect (and remove) dbenv files while upgrading to db-4.2.52.
-- fix: dangling pointer brain fart (#107835).
-- fix: ds.Single() method needs malloc'd elements (#109919).
-
-* Sun Dec  7 2003 Jeff Johnson <jbj@jbj.org> 4.3-0.2
-- only internal Berkeley db from now on.
-- revive "make dist".
-
-* Wed Mar 19 2003 Jeff Johnson <jbj@redhat.com> 4.3-0.1
-- upgrade to zlib-1.2.beta7.
-- pass structure pointer, not args, through headerSprintf call chain.
-- add ":xml" tag format modifier.
-- --queryformat '[%%{*:xml}\n]' to dump header content in XML.
-- fix: short option help missing string terminator.
-- unify signal handling in librpmio, use condvar to deliver signal.
+* Tue Jun  1 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-0.1
+- use /etc/selinux/targeted/contexts/files/file_contexts for now.
+- disable file contexts into package metadata during build.
+- fix: dev package build on s390x hack around.
+- fix: "/path/foo.../bar" was losing a dot (#123844).
+- fix: PIE executables have basename-as-soname provides (#123697).
+- add aurora/sparc patches (#124469).
+- use poll(2) if available, avoid borked aurora/sparc select (#124574).
