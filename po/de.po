@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-31 18:14-0400\n"
+"POT-Creation-Date: 2001-06-01 17:48-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2717,7 +2717,7 @@ msgid "getting list of mounted filesystems\n"
 msgstr ""
 
 # , c-format
-#: lib/fs.c:153 rpmio/url.c:475
+#: lib/fs.c:153 rpmio/url.c:469
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -4345,24 +4345,24 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:246
+#: rpmio/url.c:240
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Passworf für %s@%s: "
 
-#: rpmio/url.c:271 rpmio/url.c:297
+#: rpmio/url.c:265 rpmio/url.c:291
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
-#: rpmio/url.c:435
+#: rpmio/url.c:429
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
 # , c-format
 #. XXX Fstrerror
-#: rpmio/url.c:495
+#: rpmio/url.c:489
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"

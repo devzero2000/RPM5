@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-31 18:14-0400\n"
+"POT-Creation-Date: 2001-06-01 17:48-0400\n"
 "PO-Revision-Date: 2001-02-24 02:47+0200\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2495,7 +2495,7 @@ msgstr "%s durumlanamadý: %s\n"
 msgid "getting list of mounted filesystems\n"
 msgstr "baðlý dosya sistemlerinin listesini alýyor\n"
 
-#: lib/fs.c:153 rpmio/url.c:475
+#: lib/fs.c:153 rpmio/url.c:469
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -4050,22 +4050,22 @@ msgstr "uyarý: u %p veri %p nrefs != 0 (%s %s)\n"
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "uyarý: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:246
+#: rpmio/url.c:240
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "%s@%s için parola: "
 
-#: rpmio/url.c:271 rpmio/url.c:297
+#: rpmio/url.c:265 rpmio/url.c:291
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "hata: %sport bir sayý olmalý\n"
 
-#: rpmio/url.c:435
+#: rpmio/url.c:429
 msgid "url port must be a number\n"
 msgstr "url portu bir sayý olmalý\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:495
+#: rpmio/url.c:489
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"

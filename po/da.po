@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-31 18:14-0400\n"
+"POT-Creation-Date: 2001-06-01 17:48-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2482,7 +2482,7 @@ msgstr "kunne ikke finde %s: %s\n"
 msgid "getting list of mounted filesystems\n"
 msgstr "henter liste over monterede filsystemer\n"
 
-#: lib/fs.c:153 rpmio/url.c:475
+#: lib/fs.c:153 rpmio/url.c:469
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
@@ -4032,22 +4032,22 @@ msgstr "advarsel: u %p data %p nrefs != 0 (%s %s)\n"
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "advarsel: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:246
+#: rpmio/url.c:240
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Adgangskode for %s@%s: "
 
-#: rpmio/url.c:271 rpmio/url.c:297
+#: rpmio/url.c:265 rpmio/url.c:291
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "Fejl: %sport skal være et tal\n"
 
-#: rpmio/url.c:435
+#: rpmio/url.c:429
 msgid "url port must be a number\n"
 msgstr "url-port skal være et tal\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:495
+#: rpmio/url.c:489
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"

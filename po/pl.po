@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-31 18:14-0400\n"
+"POT-Creation-Date: 2001-06-01 17:48-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2610,7 +2610,7 @@ msgstr "stat nie powiod³o siê %s: %s"
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/fs.c:153 rpmio/url.c:475
+#: lib/fs.c:153 rpmio/url.c:469
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
@@ -4211,22 +4211,22 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:246
+#: rpmio/url.c:240
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Has³o dla %s@%s: "
 
-#: rpmio/url.c:271 rpmio/url.c:297
+#: rpmio/url.c:265 rpmio/url.c:291
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "b³±d: %sport musi byæ liczb±\n"
 
-#: rpmio/url.c:435
+#: rpmio/url.c:429
 msgid "url port must be a number\n"
 msgstr "port musi byæ liczb±\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:495
+#: rpmio/url.c:489
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"

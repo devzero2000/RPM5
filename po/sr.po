@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-05-31 18:14-0400\n"
+"POT-Creation-Date: 2001-06-01 17:48-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2586,7 +2586,7 @@ msgstr "neuspelo otvaranje %s: %s"
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/fs.c:153 rpmio/url.c:475
+#: lib/fs.c:153 rpmio/url.c:469
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -4184,23 +4184,23 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:246
+#: rpmio/url.c:240
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Lozinka za %s@%s: "
 
-#: rpmio/url.c:271 rpmio/url.c:297
+#: rpmio/url.c:265 rpmio/url.c:291
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "gre¹ka: FTP port mora biti broj\n"
 
-#: rpmio/url.c:435
+#: rpmio/url.c:429
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "gre¹ka: FTP port mora biti broj\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:495
+#: rpmio/url.c:489
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspelo kreiranje %s\n"

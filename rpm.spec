@@ -408,6 +408,7 @@ fi
 * Fri Jun  1 2001 Jeff Johnson <jbj@redhat.com>
 - merge sparc64/ia64 fiddles back into linux.{req,prov}.
 - automagically generate perl module dependencies always.
+- fix: lclint fiddles broke uCache initialization (#43139).
 
 * Thu May 31 2001 Jeff Johnson <jbj@redhat.com>
 - return multiple suggested packages (Pawel Kolodziej <pawelk@pld.org.pl>).
