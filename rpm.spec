@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.92
+Release: 0.93
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -510,6 +510,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Aug 16 2001 Jeff Johnson <jbj@redhat.com>
+- python: add exception to detect bad data in hdrUnload.
+- change dir creation message from warning to debug for now.
+
 * Wed Aug 15 2001 Jeff Johnson <jbj@redhat.com>
 - always use dl size in regionSwab() return.
 - ppc: revert ppcmac to ppc.
