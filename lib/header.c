@@ -1,6 +1,5 @@
 /** \ingroup header
  * \file lib/header.c
- *
  */
 
 #undef	REMALLOC_HEADER_REGION
@@ -84,7 +83,7 @@ struct headerToken {
     int indexAlloced;		/*!< Allocated size of tag array. */
     int region_allocated;	/*!< Is 1st header region allocated? */
     int sorted; 		/*!< Are header entries sorted? */
-    int reloaded;		/*!< Append region data? */
+    int legacy;			/*!< Header came from legacy source? */
 /*@refs@*/ int nrefs;	/*!< Reference count. */
 };
 
@@ -312,22 +311,25 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** p, /*@out@*/ int_32 * c, int minMem)
 		/*@modifies *type, *p, *c @*/
 {
-    if (type) 
-	*type = entry->info.type;
-    if (c) 
-	*c = entry->info.count;
-    if (p == NULL)
-	return;
+    int_32 count = entry->info.count;
 
-    /* Now look it up */
+    if (p)
     switch (entry->info.type) {
     case RPM_BIN_TYPE:
+	count = entry->length;
 	*p = (!minMem
-		? memcpy(xmalloc(entry->length), entry->data, entry->length)
+		? memcpy(xmalloc(count), entry->data, count)
 		: entry->data);
+	if (ENTRY_IS_REGION(entry)) {
+	    struct entryInfo * pe = (struct entryInfo *) *p;
+	    int_32 rdl = -entry->info.offset;	/* negative offset */
+	    int_32 ril = rdl/sizeof(*pe);
+	    char * dataStart = (char *) (pe + ril);
+	    (void) regionSwab(NULL, ril, 0, pe, dataStart, 0);
+	}
 	break;
     case RPM_STRING_TYPE:
-	if (entry->info.count == 1) {
+	if (count == 1) {
 	    *p = entry->data;
 	    break;
 	}
@@ -335,20 +337,20 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
     {	const char ** ptrEntry;
+	int tableSize = count * sizeof(char *);
 	char * t;
-	int i = entry->info.count;
-	int tableSize = i * sizeof(char *);
+	int i;
 
 	if (minMem) {
-	    ptrEntry = *p = xmalloc(tableSize);
+	    ptrEntry = (const char **) *p = xmalloc(tableSize);
 	    t = entry->data;
 	} else {
 	    t = xmalloc(tableSize + entry->length);
-	    ptrEntry = *p = (void *)t;
+	    ptrEntry = (const char **) *p = (void *)t;
 	    t += tableSize;
 	    memcpy(t, entry->data, entry->length);
 	}
-	while (i--) {
+	for (i = 0; i < count; i++) {
 	    *ptrEntry++ = t;
 	    t = strchr(t, 0);
 	    t++;
@@ -359,6 +361,8 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 	*p = entry->data;
 	break;
     }
+    if (type) *type = entry->info.type;
+    if (c) *c = count;
 }
 
 /**
@@ -391,12 +395,17 @@ int headerNextIterator(HeaderIterator hi,
 {
     Header h = hi->h;
     int slot = hi->next_index;
-    struct indexEntry * entry; 
+    struct indexEntry * entry = NULL;;
 
-    if (slot >= h->indexUsed)
+    for (slot = hi->next_index; slot < h->indexUsed; slot++) {
+	entry = h->index + slot;
+	if (!ENTRY_IS_REGION(entry))
+	    break;
+    }
+    hi->next_index = slot;
+    if (entry == NULL || slot >= h->indexUsed)
 	return 0;
     hi->next_index++;
-    entry = h->index + slot;
 
     if (tag)
 	*tag = entry->info.tag;
@@ -437,24 +446,20 @@ void headerUnsort(Header h)
 
 Header headerCopy(Header h)
 {
-    Header res = headerNew();
+    Header nh = headerNew();
     HeaderIterator hi;
     int_32 tag, type, count;
     const void *ptr;
-    int prevtag = 0;
    
     for (hi = headerInitIterator(h);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData((void *)ptr, type))
     {
-	if (prevtag && prevtag > tag)
-	    res->sorted = 0;
-	prevtag = tag;
-	headerAddEntry(res, tag, type, ptr, count);
+	headerAddEntry(nh, tag, type, ptr, count);
     }
     headerFreeIterator(hi);
 
-    return res;
+    return headerReload(nh, HEADER_IMAGE);
 }
 
 Header headerLoad(void *uh)
@@ -488,30 +493,28 @@ Header headerLoad(void *uh)
 #else
     h->region_allocated = 0;
 #endif
-    h->reloaded = 0;
     h->nrefs = 1;
 
     entry = h->index;
     i = 0;
     if (!(htonl(pe->tag) < HEADER_I18NTABLE)) {
+	h->legacy = 1;
 	entry->info.type = REGION_TAG_TYPE;
 	entry->info.tag = HEADER_IMAGE;
 	entry->info.count = REGION_TAG_COUNT;
-	entry->info.offset = ((char *)(pe-1) - dataStart); /* negative offset */
+	entry->info.offset = ((char *)pe - dataStart); /* negative offset */
 	entry->data = pe;
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
 	entry++;
-	i++;
-	il++;
 	h->indexUsed++;
     } else {
 	int_32 * stei = memcpy(alloca(REGION_TAG_COUNT), dataStart + ntohl(pe->offset), REGION_TAG_COUNT);
 	int_32 rdl = -ntohl(stei[2]);	/* negative offset */
 	int_32 ril = rdl/sizeof(*pe);
 	int dlen;
-	int j = 0;
 
+	h->legacy = 0;
 	entry->info.type = htonl(pe->type);
 	if (entry->info.type < RPM_MIN_TYPE || entry->info.type > RPM_MAX_TYPE)
 	    return NULL;
@@ -523,9 +526,7 @@ Header headerLoad(void *uh)
 	dlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, entry->info.offset);
 	entry->data = dataStart + entry->info.offset;
 
-	j += ril;
-
-	if (j < h->indexUsed) {
+	if (ril < h->indexUsed) {
 	    dlen = regionSwab(entry+ril, h->indexUsed-ril, dlen, pe+ril, dataStart, entry->info.offset+1);
 	}
     }
@@ -561,12 +562,13 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
 
+	    /* XXX Legacy regions do not include the region tag and data. */
+	    if (i == 0 && h->legacy) {
+		ril++;
+		rdl -= sizeof(*pe);
+	    }
 	    dl += entry->length - rdl;
 	    il += ril;
-	    if (entry->info.tag == HEADER_IMAGE)
-		dl += sizeof(*pe) + entry->info.count;
-	    else if (h->reloaded)
-		dl += entry->info.count;
 	    i += (ril-1);
 	    entry += (ril-1);
 	    continue;
@@ -609,32 +611,33 @@ t = te;
 	if (ENTRY_IS_REGION(entry)) {
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
+	    int_32 stei[4];
 
 src = (char *)entry->data;
-dlen = (entry->length - rdl + sizeof(*pe));
+dlen = entry->length - rdl;
+	    stei[0] = pe->tag;
+	    stei[1] = pe->type;
+	    stei[3] = pe->count;
 
-	    if (!(h->reloaded || entry->info.tag == HEADER_IMAGE)) {
-		src += sizeof(*pe);
-		dlen -= REGION_TAG_COUNT;
-		pe->offset = htonl(te + dlen - dataStart - REGION_TAG_COUNT);
+	    /* XXX Legacy regions do not include the region tag and data. */
+	    if (i == 0 && h->legacy) {
+		memcpy(pe+1, src, rdl);
+		memcpy(te, src + rdl, dlen);
+		count = regionSwab(NULL, ril, 0, pe+1, te, 0);
+		rdl += sizeof(*pe);
+		ril++;
 	    } else {
-		pe->offset = htonl(te + dlen - dataStart);
+		memcpy(pe+1, src + sizeof(*pe), rdl - sizeof(*pe));
+		memcpy(te, src + rdl, dlen);
+		count = regionSwab(NULL, ril-1, 0, pe+1, te, 0);
+		te -= REGION_TAG_COUNT;
 	    }
-
-	    memcpy(pe+1, src,  (rdl - sizeof(*pe)));
-	    memcpy(te, src + rdl - sizeof(*pe), dlen);
-	    count = regionSwab(NULL, ril-1, 0, pe+1, te, pe->offset);
 	    te += dlen;
-
-	    if (h->reloaded || entry->info.tag == HEADER_IMAGE) {
-		int_32 * stei = memcpy(alloca(REGION_TAG_COUNT), te, REGION_TAG_COUNT);
-		stei[0] = pe->tag;
-		stei[1] = pe->type;
-		stei[2] = htonl(-rdl);
-		stei[3] = pe->count;
-		memcpy(te, stei, REGION_TAG_COUNT);
-		te += REGION_TAG_COUNT;
-	    }
+	    stei[2] = htonl(-rdl);
+	    pe->offset = htonl(te - dataStart);
+	    memcpy(te, stei, REGION_TAG_COUNT);
+	    pe->offset = htonl(te - dataStart);
+	    te += REGION_TAG_COUNT;
 
 	    i += (ril-1);
 	    entry += (ril-1);
@@ -720,7 +723,6 @@ Header headerReload(Header h, int tag)
     if (nh->region_allocated)
 	free(uh);
     nh->region_allocated = 1;
-    nh->reloaded = 1;
     if (ENTRY_IS_REGION(nh->index)) {
 	if (tag == HEADER_SIGNATURES || tag == HEADER_IMMUTABLE)
 	    nh->index[0].info.tag = tag;
@@ -1189,7 +1191,7 @@ Header headerNew()
     h->indexUsed = 0;
     h->region_allocated = 0;
     h->sorted = 1;
-    h->reloaded = 0;
+    h->legacy = 0;
     h->nrefs = 1;
 
     h->index = (h->indexAlloced
@@ -1264,6 +1266,9 @@ unsigned int headerSizeof(Header h, enum hMagic magicp)
 	/* Regions go in as is ... */
         if (ENTRY_IS_REGION(entry)) {
 	    size += entry->length;
+	    /* XXX Legacy regions do not include the region tag and data. */
+	    if (i == 0 && h->legacy)
+		size += sizeof(struct entryInfo) + entry->info.count;
 	    continue;
         }
 

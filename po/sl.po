@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-12-06 17:38-0500\n"
+"POT-Creation-Date: 2000-12-06 23:39-0500\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2615,7 +2615,7 @@ msgstr ""
 "na strani http://www.rpm.org ali po dopisni listi rpm-list@redhat.com.\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2435 lib/header.c:2452 lib/header.c:2472
+#: lib/header.c:2440 lib/header.c:2457 lib/header.c:2477
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -2644,93 +2644,93 @@ msgid "file %s is on an unknown device"
 msgstr "datoteka %s se nahaja na neznani napravi"
 
 #. This should not be allowed
-#: lib/header.c:212
+#: lib/header.c:211
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "¹tevec grabData() RPM_STRING_TYPE mora biti 1.\n"
 
-#: lib/header.c:247 lib/header.c:923 lib/install.c:380
+#: lib/header.c:246 lib/header.c:925 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Tip podatkov %d ni podprt\n"
 
-#: lib/header.c:1346
+#: lib/header.c:1351
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Okvarjen ¹tevec za headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1788
+#: lib/header.c:1793
 #, c-format
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 
 #. @-observertrans@
-#: lib/header.c:1818
+#: lib/header.c:1823
 msgid "missing } after %{"
 msgstr "manjkajoèi } za %{"
 
 #. @-observertrans@
-#: lib/header.c:1832
+#: lib/header.c:1837
 msgid "empty tag format"
 msgstr "oblika znaèke manjka"
 
 #. @-observertrans@
-#: lib/header.c:1844
+#: lib/header.c:1849
 msgid "empty tag name"
 msgstr "ime znaèke manjka"
 
 #. @-observertrans@
-#: lib/header.c:1861
+#: lib/header.c:1866
 msgid "unknown tag"
 msgstr "neznana znaèka"
 
 #. @-observertrans@
-#: lib/header.c:1888
+#: lib/header.c:1893
 msgid "] expected at end of array"
 msgstr "] ni prièakovan na koncu polja"
 
 #. @-observertrans@
-#: lib/header.c:1906
+#: lib/header.c:1911
 msgid "unexpected ]"
 msgstr "neprièakovan ]"
 
 #. @-observertrans@
-#: lib/header.c:1910
+#: lib/header.c:1915
 msgid "unexpected }"
 msgstr "neprièakovan }"
 
 #. @-observertrans@
-#: lib/header.c:1970
+#: lib/header.c:1975
 msgid "? expected in expression"
 msgstr "? prièakovan v izrazu"
 
 #. @-observertrans@
-#: lib/header.c:1979
+#: lib/header.c:1984
 msgid "{ expected after ? in expression"
 msgstr "{ prièakovan za ? v izrazu"
 
 #. @-observertrans@
-#: lib/header.c:1992 lib/header.c:2033
+#: lib/header.c:1997 lib/header.c:2038
 msgid "} expected in expression"
 msgstr "} prièakovan v izrazu"
 
 #. @-observertrans@
-#: lib/header.c:2002
+#: lib/header.c:2007
 msgid ": expected following ? subexpression"
 msgstr ": prièakovan za podizrazom ?"
 
 #. @-observertrans@
-#: lib/header.c:2018
+#: lib/header.c:2023
 msgid "{ expected after : in expression"
 msgstr "{ prièakovan za : v izrazu"
 
 #. @-observertrans@
-#: lib/header.c:2043
+#: lib/header.c:2048
 msgid "| expected at end of expression"
 msgstr "| prièakovan na koncu izraza"
 
-#: lib/header.c:2214
+#: lib/header.c:2219
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
@@ -3752,128 +3752,128 @@ msgid "New Header signature\n"
 msgstr "Podpis v novi glavi\n"
 
 #. 8-byte pad
-#: lib/signature.c:174 lib/signature.c:211
+#: lib/signature.c:172 lib/signature.c:209
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:175 lib/signature.c:212
+#: lib/signature.c:173 lib/signature.c:210
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Dol¾. polnila : %d\n"
 
-#: lib/signature.c:274
+#: lib/signature.c:272
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Ni mo¾no pognati pgp (%s)"
 
-#: lib/signature.c:285
+#: lib/signature.c:283
 msgid "pgp failed"
 msgstr "pgp neuspe¹en"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:292
+#: lib/signature.c:290
 msgid "pgp failed to write signature"
 msgstr "pgp neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:297
+#: lib/signature.c:295
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Dol¾. podpisa PGP: %d\n"
 
-#: lib/signature.c:308 lib/signature.c:385
+#: lib/signature.c:306 lib/signature.c:383
 msgid "unable to read the signature"
 msgstr "branje podpisa neuspe¹no"
 
-#: lib/signature.c:313
+#: lib/signature.c:311
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Prebrano %d bajtov podpisa PGP\n"
 
-#: lib/signature.c:351 lib/signature.c:696
+#: lib/signature.c:349 lib/signature.c:694
 msgid "Couldn't exec gpg"
 msgstr "Ni mo¾no pognati gpg"
 
-#: lib/signature.c:362
+#: lib/signature.c:360
 msgid "gpg failed"
 msgstr "gpg neuspe¹en"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:369
+#: lib/signature.c:367
 msgid "gpg failed to write signature"
 msgstr "gpg neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:374
+#: lib/signature.c:372
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Dol¾. podpisa GnuPG: %d\n"
 
-#: lib/signature.c:390
+#: lib/signature.c:388
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Prebrano %d bajtov podpisa GnuPG\n"
 
-#: lib/signature.c:417
+#: lib/signature.c:415
 msgid "Generating signature using PGP.\n"
 msgstr "Ustvarjamo podpis s PGP.\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:421
 msgid "Generating signature using GPG.\n"
 msgstr "Ustvarjamo podpis z GnuPG.\n"
 
-#: lib/signature.c:502 lib/signature.c:564
+#: lib/signature.c:500 lib/signature.c:562
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Ni mo¾no pognati pgp. Preverjanja PGP lahko preskoèite z --nopgp"
 
-#: lib/signature.c:562 lib/signature.c:635
+#: lib/signature.c:560 lib/signature.c:633
 msgid "exec failed!\n"
 msgstr "zagon neuspe¹en!\n"
 
-#: lib/signature.c:637
+#: lib/signature.c:635
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Ni mo¾no pognati gpg. Preverjanja GnuPG lahko preskoèite z --nogpg"
 
-#: lib/signature.c:725
+#: lib/signature.c:723
 msgid "Couldn't exec pgp"
 msgstr "Ni mo¾no pognati pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:729 lib/signature.c:782
+#: lib/signature.c:727 lib/signature.c:780
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Neveljavno doloèilo %%_signature v makrodatoteki"
 
-#: lib/signature.c:762
+#: lib/signature.c:760
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:774
+#: lib/signature.c:772
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/transaction.c:466
+#: lib/transaction.c:470
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr "izkljuèujemo datoteko %s%s\n"
 
-#: lib/transaction.c:492 lib/transaction.c:575
+#: lib/transaction.c:496 lib/transaction.c:579
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "izkljuèujemo imenik %s\n"
 
-#: lib/transaction.c:497
+#: lib/transaction.c:501
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "prestavljamo %s v %s\n"
 
-#: lib/transaction.c:568
+#: lib/transaction.c:572
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "prestavljamo imenik %s v %s\n"
 
-#: lib/transaction.c:719
+#: lib/transaction.c:723
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"

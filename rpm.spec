@@ -18,7 +18,7 @@ Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
-Prereq: gawk fileutils textutils sh-utils mktemp
+Prereq: gawk fileutils textutils mktemp
 Requires: popt
 %endif
 
@@ -154,9 +154,6 @@ fi
 %post
 %ifos linux
 /sbin/ldconfig
-if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f %{__prefix}/lib/rpm/convertrpmrc.sh ]; then
-	sh %{__prefix}/lib/rpm/convertrpmrc.sh > /dev/null 2>&1
-fi
 %endif
 /bin/rpm --initdb
 if [ -f /var/lib/rpm/Packages ]; then
@@ -300,7 +297,7 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Mon Dec  4 2000 Jeff Johnson <jbj@redhat.com>
+* Wed Dec  6 2000 Jeff Johnson <jbj@redhat.com>
 - improved find-{requires,provides} for aix4/hpux/irix6/osf.
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 - portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
@@ -314,6 +311,7 @@ fi
 - add package names to problem sets early, don't save removed header.
 - make sure that replaced tags in region are counted in headerSizeof().
 - support for dmalloc debugging.
+- filter region tags in headerNextIterator, exit throut headerReload.
 
 * Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
 - add missing headerFree for legacy signature header.

@@ -58,6 +58,7 @@
 	- add package names to problem sets early, don't save removed header.
 	- make sure that replaced tags in region are counted in headerSizeof().
 	- support for dmalloc debugging.
+	- filter region tags in headerNextIterator, exit throut headerReload.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

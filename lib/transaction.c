@@ -338,7 +338,11 @@ static Header relocateFileList(struct availablePackage * alp,
 	return headerLink(origH);
     }
 
+#ifdef DYING
     h = headerCopy(origH);
+#else
+    h = headerLink(origH);
+#endif
 
     if (rawRelocations) {
 	for (i = 0; rawRelocations[i].newPath || rawRelocations[i].oldPath; i++)
