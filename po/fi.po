@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-31 17:49-0400\n"
+"POT-Creation-Date: 2002-08-31 18:32-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2331,8 +2331,8 @@ msgstr "paketilla ei ole nime‰"
 msgid "can't query %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/query.c:567 lib/query.c:610 lib/rpminstall.c:123 lib/rpminstall.c:452
-#: lib/rpminstall.c:583 lib/rpminstall.c:989 lib/rpmts.c:441
+#: lib/query.c:567 lib/query.c:610 lib/rpminstall.c:123 lib/rpminstall.c:455
+#: lib/rpminstall.c:586 lib/rpminstall.c:995 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2347,7 +2347,7 @@ msgstr "%s:n kysely ei onnistunut\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "vanhan formaatin l‰hdekoodipaketteja ei voi kysell‰\n"
 
-#: lib/query.c:620 lib/rpminstall.c:596
+#: lib/query.c:620 lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
@@ -2417,7 +2417,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:918 lib/rpminstall.c:765
+#: lib/query.c:918 lib/rpminstall.c:771
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -2617,89 +2617,89 @@ msgstr ""
 msgid "Upgrading packages..."
 msgstr "asenna paketti"
 
-#: lib/rpminstall.c:384
+#: lib/rpminstall.c:387
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/rpminstall.c:399
+#: lib/rpminstall.c:402
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Haen: %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:412
+#: lib/rpminstall.c:415
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:416
+#: lib/rpminstall.c:419
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
 
-#: lib/rpminstall.c:471 lib/rpminstall.c:846 tools/rpmgraph.c:147
+#: lib/rpminstall.c:474 lib/rpminstall.c:852 tools/rpmgraph.c:147
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "virhe: %s ei voida asentaa\n"
 
-#: lib/rpminstall.c:513
+#: lib/rpminstall.c:516
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/rpminstall.c:563
+#: lib/rpminstall.c:566
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:572
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:611
+#: lib/rpminstall.c:614
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:793 lib/rpminstall.c:1205
+#: lib/rpminstall.c:628 lib/rpminstall.c:799 lib/rpminstall.c:1215
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
 
-#: lib/rpminstall.c:632 tools/rpmgraph.c:208
+#: lib/rpminstall.c:635 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:665
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "asenna paketti"
 
-#: lib/rpminstall.c:686
+#: lib/rpminstall.c:689
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpminstall.c:768
+#: lib/rpminstall.c:774
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: lib/rpminstall.c:830
+#: lib/rpminstall.c:836
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpminstall.c:836
+#: lib/rpminstall.c:842
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
 
-#: lib/rpminstall.c:1199
+#: lib/rpminstall.c:1209
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-31 17:49-0400\n"
+"POT-Creation-Date: 2002-08-31 18:32-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2329,8 +2329,8 @@ msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 msgid "can't query %s: %s\n"
 msgstr "ni mo¾no poizvedeti o %s: %s\n"
 
-#: lib/query.c:567 lib/query.c:610 lib/rpminstall.c:123 lib/rpminstall.c:452
-#: lib/rpminstall.c:583 lib/rpminstall.c:989 lib/rpmts.c:441
+#: lib/query.c:567 lib/query.c:610 lib/rpminstall.c:123 lib/rpminstall.c:455
+#: lib/rpminstall.c:586 lib/rpminstall.c:995 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2345,7 +2345,7 @@ msgstr "poizvedba po %s je bila neuspe¹na\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:620 lib/rpminstall.c:596
+#: lib/query.c:620 lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "noben paket ne pro¾i %s\n"
@@ -2415,7 +2415,7 @@ msgstr "¹tevilka zapisa paketa: %d\n"
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:918 lib/rpminstall.c:765
+#: lib/query.c:918 lib/rpminstall.c:771
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2618,88 +2618,88 @@ msgstr ""
 msgid "Upgrading packages..."
 msgstr "    --upgrade <paket>      "
 
-#: lib/rpminstall.c:384
+#: lib/rpminstall.c:387
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: lib/rpminstall.c:399
+#: lib/rpminstall.c:402
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prena¹anje %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:412
+#: lib/rpminstall.c:415
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... kot %s\n"
 
-#: lib/rpminstall.c:416
+#: lib/rpminstall.c:419
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "preskoèeno - %s - prenos neuspe¹en - %s\n"
 
-#: lib/rpminstall.c:471 lib/rpminstall.c:846 tools/rpmgraph.c:147
+#: lib/rpminstall.c:474 lib/rpminstall.c:852 tools/rpmgraph.c:147
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
-#: lib/rpminstall.c:513
+#: lib/rpminstall.c:516
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:563
+#: lib/rpminstall.c:566
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "napaka pri branju iz datoteke %s\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:572
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:611
+#: lib/rpminstall.c:614
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "najdeno %d izvornih in %d binarnih paketov\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:793 lib/rpminstall.c:1205
+#: lib/rpminstall.c:628 lib/rpminstall.c:799 lib/rpminstall.c:1215
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpminstall.c:632 tools/rpmgraph.c:208
+#: lib/rpminstall.c:635 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:665
 msgid "installing binary packages\n"
 msgstr "name¹èanje binarnih paketov\n"
 
-#: lib/rpminstall.c:686
+#: lib/rpminstall.c:689
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:768
+#: lib/rpminstall.c:774
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:830
+#: lib/rpminstall.c:836
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:836
+#: lib/rpminstall.c:842
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpminstall.c:1199
+#: lib/rpminstall.c:1209
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

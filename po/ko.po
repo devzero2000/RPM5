@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-08-31 17:49-0400\n"
+"POT-Creation-Date: 2002-08-31 18:32-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2262,8 +2262,8 @@ msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 msgid "can't query %s: %s\n"
 msgstr "%s(을)를 질의할 수 없음: %s\n"
 
-#: lib/query.c:567 lib/query.c:610 lib/rpminstall.c:123 lib/rpminstall.c:452
-#: lib/rpminstall.c:583 lib/rpminstall.c:989 lib/rpmts.c:441
+#: lib/query.c:567 lib/query.c:610 lib/rpminstall.c:123 lib/rpminstall.c:455
+#: lib/rpminstall.c:586 lib/rpminstall.c:995 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2278,7 +2278,7 @@ msgstr "%s(을)를 질의하는데 실패했습니다\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "이전 형식의 소스 패키지는 질의할 수 없습니다\n"
 
-#: lib/query.c:620 lib/rpminstall.c:596
+#: lib/query.c:620 lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
@@ -2348,7 +2348,7 @@ msgstr "패키지 기록(record) 번호: %u\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:918 lib/rpminstall.c:765
+#: lib/query.c:918 lib/rpminstall.c:771
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -2550,88 +2550,88 @@ msgstr "준비 중..."
 msgid "Upgrading packages..."
 msgstr "패키지를 업그레이드 합니다"
 
-#: lib/rpminstall.c:384
+#: lib/rpminstall.c:387
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
 
-#: lib/rpminstall.c:399
+#: lib/rpminstall.c:402
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:412
+#: lib/rpminstall.c:415
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... %s(으)로\n"
 
-#: lib/rpminstall.c:416
+#: lib/rpminstall.c:419
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s(을)를 생략합니다 - 전송(transfer)에 실패함 - %s\n"
 
-#: lib/rpminstall.c:471 lib/rpminstall.c:846 tools/rpmgraph.c:147
+#: lib/rpminstall.c:474 lib/rpminstall.c:852 tools/rpmgraph.c:147
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
 
-#: lib/rpminstall.c:513
+#: lib/rpminstall.c:516
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
 
-#: lib/rpminstall.c:563
+#: lib/rpminstall.c:566
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:572
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s 파일은 최신 버전의 RPM을 필요로 합니다\n"
 
-#: lib/rpminstall.c:611
+#: lib/rpminstall.c:614
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d의 소스와 %d의 바이너리 패키지가 검색되었습니다\n"
 
-#: lib/rpminstall.c:625 lib/rpminstall.c:793 lib/rpminstall.c:1205
+#: lib/rpminstall.c:628 lib/rpminstall.c:799 lib/rpminstall.c:1215
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
 
-#: lib/rpminstall.c:632 tools/rpmgraph.c:208
+#: lib/rpminstall.c:635 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:665
 msgid "installing binary packages\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:686
+#: lib/rpminstall.c:689
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:768
+#: lib/rpminstall.c:774
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:830
+#: lib/rpminstall.c:836
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:836
+#: lib/rpminstall.c:842
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1199
+#: lib/rpminstall.c:1209
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
