@@ -429,6 +429,8 @@ void initrpm(void)
 
     PyDict_SetItemString(d, "RPMAL_NOMATCH", o=PyInt_FromLong( (long)RPMAL_NOMATCH ));
     Py_DECREF(o);
+
+    REGISTER_ENUM(RPMDBI_PACKAGES);
 }
 
 /*@}*/
