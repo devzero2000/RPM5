@@ -671,10 +671,8 @@ static int doReadRC(int fd, char * filename) {
 static void defaultMachine(char ** arch, char ** os) {
     static struct utsname un;
     static int gotDefaults = 0;
-    char * chptr,* prelid=NULL;
+    char * chptr;
     struct canonEntry * canon;
-    int fd;
-    int irelid;
     
     if (!gotDefaults) {
 	uname(&un);
@@ -692,6 +690,7 @@ static void defaultMachine(char ** arch, char ** os) {
 	}
         else if (!strcmp(un.sysname, "SunOS")) {
            if (!strncmp(un.release,"4", 1)) /* SunOS 4.x */ {
+	      int fd;
               for (fd=0;(un.release[fd] != 0 && (fd < sizeof(un.release)));fd++)
                  if (!isdigit(un.release[fd]) && (un.release[fd] != '.')) {
                     un.release[fd] = 0;
@@ -719,6 +718,7 @@ static void defaultMachine(char ** arch, char ** os) {
         else if ((!strncmp(un.machine, "34", 2) || \
                  !strncmp(un.machine, "33", 2)) && \
                  !strncmp(un.release, "4.0", 3)) {
+	   int fd, irelid;
            /* we are on ncr-sysv4 */
            fd = open("/etc/.relid", O_RDONLY, 0700);
            if (fd >0) {
@@ -727,11 +727,13 @@ static void defaultMachine(char ** arch, char ** os) {
                  irelid = read(fd, (void *)chptr, 256);
                  close(fd);
                  /* example: "112393 RELEASE 020200 Version 01 OS" */
-                 if (irelid > 0)
+                 if (irelid > 0) {
+		    char * prelid=NULL;
                     if ((prelid=strstr(chptr, "RELEASE "))){
                        prelid += strlen("RELEASE ")+1;
                        sprintf(un.sysname,"ncr-sysv4.%.*s",1,prelid);
                     }
+		 }
                  free (chptr);
               }
            }           
