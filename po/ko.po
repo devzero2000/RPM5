@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
 "POT-Creation-Date: 2001-04-30 18:13-0400\n"
-"PO-Revision-Date: 2001-05-01 03:30+0900\n"
+"PO-Revision-Date: 2001-05-01 23:30+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,58 +12,58 @@ msgstr ""
 #: build.c:31
 #, c-format
 msgid "cannot open rpm database in %s\n"
-msgstr ""
+msgstr "%s 안의 rpm 데이터베이스를 열 수 없습니다\n"
 
 #: build.c:41
 msgid "failed build dependencies:\n"
-msgstr ""
+msgstr "의존성 문제로 제작에 실패했습니다:\n"
 
 #: build.c:72
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr ""
+msgstr "%s spec 파일을 열 수 없습니다: %s\n"
 
 #: build.c:141 build.c:153
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
-msgstr ""
+msgstr "tar 파이프를 여는데 실패했습니다: %m\n"
 
 #. Give up
 #: build.c:160
 #, c-format
 msgid "Failed to read spec file from %s\n"
-msgstr ""
+msgstr "%s 에서 spec 파일을 읽는데 실패했습니다\n"
 
 #: build.c:188
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
-msgstr ""
+msgstr "%s 에서 %s (으)로 이름을 변경하는데 실패했습니다: %m\n"
 
 #: build.c:227
 #, c-format
 msgid "failed to stat %s: %m\n"
-msgstr ""
+msgstr "%s 의 상태를 표시하는데 실패했습니다: %m\n"
 
 #: build.c:232
 #, c-format
 msgid "File %s is not a regular file.\n"
-msgstr ""
+msgstr "%s 파일은 올바른 형식의 파일이 아닙니다.\n"
 
 #: build.c:241
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
-msgstr ""
+msgstr "%s 파일은 spec 파일이 아닌 것 같습니다.\n"
 
 #. parse up the build operators
 #: build.c:298
 #, c-format
 msgid "Building target platforms: %s\n"
-msgstr ""
+msgstr "해당 플랫폼으로 제작하고 있습니다: %s\n"
 
 #: build.c:313
 #, c-format
 msgid "Building for target %s\n"
-msgstr ""
+msgstr "%s (을)를 제작하고 있습니다\n"
 
 #: rpm.c:224 rpmqv.c:392
 #, c-format
@@ -1529,48 +1529,49 @@ msgstr "기존의 데이터베이스 헤더로부터 데이터베이스 인덱스를 재 작성합니다"
 
 #: rpmqv.c:964
 msgid "Use \"--macros <file:...>\" instead.\n"
-msgstr ""
+msgstr "대신 \"--macros <파일:..>\" 을 사용합니다.\n"
 
 #: rpmqv.c:1038
 msgid "--dbpath given for operation that does not use a database"
-msgstr ""
+msgstr "--dbpath 는 데이터베이스를 사용하지 않기 위한 옵션입니다"
 
 #: rpmqv.c:1122
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
+"스크립트 해제 옵션은 패키지를 설치 및 삭제하는 동안에만 지정될 수 있습니다"
 
 #: rpmqv.c:1289
 msgid "no packages files given for rebuild"
-msgstr ""
+msgstr "패키지를 다시 제작하기 위한 패키지 파일이 없습니다"
 
 #: rpmqv.c:1358
 msgid "no spec files given for build"
-msgstr ""
+msgstr "패키지 제작을 위한 spec 파일이 없습니다"
 
 #: rpmqv.c:1360
 msgid "no tar files given for build"
-msgstr ""
+msgstr "패키지 제작을 위한 tar 파일이 없습니다"
 
 #: build/build.c:118 build/pack.c:395
 msgid "Unable to open temp file.\n"
-msgstr ""
+msgstr "임시 파일을 열 수 없습니다.\n"
 
 #: build/build.c:197
 #, c-format
 msgid "Executing(%s): %s\n"
-msgstr ""
+msgstr "실행중(%s): %s\n"
 
 #: build/build.c:203
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
-msgstr ""
+msgstr "%s (을)를 실행하는데 실패함 (%s): %s\n"
 
 #: build/build.c:212
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
-msgstr ""
+msgstr "%s 의 잘못된 종료 상황 (%s)\n"
 
 #: build/build.c:311
 msgid ""
@@ -1578,26 +1579,29 @@ msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
+"\n"
+"\n"
+"RPM 제작 오류:\n"
 
 #: build/expression.c:216
 msgid "syntax error while parsing ==\n"
-msgstr ""
+msgstr "문장 분석중(parsing) 구문 오류 발생 ==\n"
 
 #: build/expression.c:246
 msgid "syntax error while parsing &&\n"
-msgstr ""
+msgstr "문장 분석중(parsing) 구문 오류 발생 &&\n"
 
 #: build/expression.c:255
 msgid "syntax error while parsing ||\n"
-msgstr ""
+msgstr "문장 분석중(parsing) 구문 오류 발생 ||\n"
 
 #: build/expression.c:295
 msgid "parse error in expression\n"
-msgstr ""
+msgstr "표현식을 분석하는 도중 오류 발생\n"
 
 #: build/expression.c:327
 msgid "unmatched (\n"
-msgstr ""
+msgstr "( 가 일치하지 않음\n"
 
 #: build/expression.c:357
 msgid "- only on numbers\n"
@@ -1610,23 +1614,23 @@ msgstr ""
 #: build/expression.c:415 build/expression.c:463 build/expression.c:521
 #: build/expression.c:613
 msgid "types must match\n"
-msgstr ""
+msgstr "유형이 반드시 일치해야 합니다\n"
 
 #: build/expression.c:428
 msgid "* / not suported for strings\n"
-msgstr ""
+msgstr "* / 는 문자열에서 사용하실 수 없습니다\n"
 
 #: build/expression.c:479
 msgid "- not suported for strings\n"
-msgstr ""
+msgstr "- 는 문자열에서 사용하실 수 없습니다\n"
 
 #: build/expression.c:626
 msgid "&& and || not suported for strings\n"
-msgstr ""
+msgstr "&& 와 || 는 문자열에서 사용하실 수 없습니다\n"
 
 #: build/expression.c:659 build/expression.c:706
 msgid "syntax error in expression\n"
-msgstr ""
+msgstr "표현식에서 구문 오류 발생\n"
 
 #: build/files.c:255
 #, c-format
@@ -3739,11 +3743,11 @@ msgstr ""
 
 #: lib/verify.c:63
 msgid "don't verify files in package"
-msgstr ""
+msgstr "패키지 안의 파일들을 검사하지 않습니다"
 
 #: lib/verify.c:69
 msgid "do not execute %verifyscript (if any)"
-msgstr ""
+msgstr "%verifyscript 를 실행하지 않습니다 (있을 경우)"
 
 #: lib/verify.c:265
 msgid "package lacks both user name and id lists (this should never happen)\n"
@@ -3756,28 +3760,28 @@ msgstr ""
 #: lib/verify.c:360
 #, c-format
 msgid "missing    %s"
-msgstr ""
+msgstr "%s (을)를 찾을 수 없음"
 
 #: lib/verify.c:441
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
-msgstr ""
+msgstr "%s-%s-%s 에 의존성 문제 발생: "
 
 #: rpmio/macro.c:187
 #, c-format
 msgid "======================== active %d empty %d\n"
-msgstr ""
+msgstr "======================== %d 활성중 %d 비어있음\n"
 
 #. XXX just in case
 #: rpmio/macro.c:303
 #, c-format
 msgid "%3d>%*s(empty)"
-msgstr ""
+msgstr "%3d>%*s(비어있음)"
 
 #: rpmio/macro.c:344
 #, c-format
 msgid "%3d<%*s(empty)\n"
-msgstr ""
+msgstr "%3d<%*s(비어있음)\n"
 
 #: rpmio/macro.c:560
 msgid "Macro %%%s has unterminated body\n"
@@ -3838,40 +3842,40 @@ msgstr ""
 #: rpmio/macro.c:1522 rpmio/macro.c:1528
 #, c-format
 msgid "File %s: %s\n"
-msgstr ""
+msgstr "%s 파일: %s\n"
 
 #: rpmio/macro.c:1531
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
-msgstr ""
+msgstr "%s 파일이 %u 바이트 용량보다 적습니다\n"
 
 #: rpmio/rpmio.c:549
 msgid "Success"
-msgstr ""
+msgstr "성공"
 
 #: rpmio/rpmio.c:552
 msgid "Bad server response"
-msgstr ""
+msgstr "서버로부터 응답이 없습니다"
 
 #: rpmio/rpmio.c:555
 msgid "Server I/O error"
-msgstr ""
+msgstr "서버 입/출력 오류"
 
 #: rpmio/rpmio.c:558
 msgid "Server timeout"
-msgstr ""
+msgstr "서버 대기시간 초과"
 
 #: rpmio/rpmio.c:561
 msgid "Unable to lookup server host address"
-msgstr ""
+msgstr "서버 호스트 주소를 찾을 수 없습니다"
 
 #: rpmio/rpmio.c:564
 msgid "Unable to lookup server host name"
-msgstr ""
+msgstr "서버 호스트 이름을 찾을 수 없습니다"
 
 #: rpmio/rpmio.c:567
 msgid "Failed to connect to server"
-msgstr ""
+msgstr "서버에 접속하는데 실패했습니다"
 
 #: rpmio/rpmio.c:570
 msgid "Failed to establish data connection to server"
@@ -3879,84 +3883,84 @@ msgstr ""
 
 #: rpmio/rpmio.c:573
 msgid "I/O error to local file"
-msgstr ""
+msgstr "로컬 파일에 입/출력 오류"
 
 #: rpmio/rpmio.c:576
 msgid "Error setting remote server to passive mode"
-msgstr ""
+msgstr "원격 서버를 수동 모드(passive mode)로 설정하는 도중 오류 발생"
 
 #: rpmio/rpmio.c:579
 msgid "File not found on server"
-msgstr ""
+msgstr "서버에서 파일을 찾을 수 없습니다"
 
 #: rpmio/rpmio.c:582
 msgid "Abort in progress"
-msgstr ""
+msgstr "진행 중단"
 
 #: rpmio/rpmio.c:586
 msgid "Unknown or unexpected error"
-msgstr ""
+msgstr "알 수 없는 혹은 예기치 않은 오류 발생"
 
 #: rpmio/rpmio.c:1194
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
-msgstr ""
+msgstr "%s 에 %s (으)로 로그인, pw %s\n"
 
 #: rpmio/rpmlog.c:32
 msgid "(no error)"
-msgstr ""
+msgstr "(오류 없음)"
 
 #. !< RPMLOG_EMERG
 #: rpmio/rpmlog.c:91 rpmio/rpmlog.c:92 rpmio/rpmlog.c:93
 msgid "fatal error: "
-msgstr ""
+msgstr "치명적 오류: "
 
 #. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:94
 msgid "error: "
-msgstr ""
+msgstr "오류: "
 
 #. !< RPMLOG_ERR
 #: rpmio/rpmlog.c:95
 msgid "warning: "
-msgstr ""
+msgstr "경고: "
 
 #: rpmio/rpmmalloc.c:14
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
-msgstr ""
+msgstr "(%u 바이트) 의 메모리 할당 값이 NULL 로 반환되었습니다.\n"
 
 #: rpmio/url.c:91
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr ""
+msgstr "경고: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
 #: rpmio/url.c:110
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr ""
+msgstr "경고: u %p data %p nrefs != 0 (%s %s)\n"
 
 #: rpmio/url.c:138
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr ""
+msgstr "경고: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
 #: rpmio/url.c:229
 #, c-format
 msgid "Password for %s@%s: "
-msgstr ""
+msgstr "%s@%s 의 패스워드: "
 
 #: rpmio/url.c:253 rpmio/url.c:279
 #, c-format
 msgid "error: %sport must be a number\n"
-msgstr ""
+msgstr "오류: %s 포트는 반드시 숫자이어야 합니다\n"
 
 #: rpmio/url.c:417
 msgid "url port must be a number\n"
-msgstr ""
+msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 
 #. XXX Fstrerror
 #: rpmio/url.c:474
 #, c-format
 msgid "failed to create %s: %s\n"
-msgstr ""
+msgstr "%s (을)를 생성하는데 실패했습니다: %s\n"
