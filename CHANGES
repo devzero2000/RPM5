@@ -18,6 +18,7 @@
 	- make peace with automake 1.9.1.
 	- fix: defattr for rpm-libs (#130461).
 	- print dependency loops as warning iff --anaconda is specified.
+	- fix: mark uninstalled elf32 files in rpmdb to disable -Va checks.
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).

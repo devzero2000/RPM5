@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
-"POT-Creation-Date: 2004-09-15 13:05-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-09-29 18:25-0400\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -62,10 +62,12 @@ msgid "Building for target %s\n"
 msgstr "Bygger för målet %s\n"
 
 #: rpm2cpio.c:55
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "argumentet är inte ett RPM-paket\n"
 
 #: rpm2cpio.c:60
+#, c-format
 msgid "error reading header from package\n"
 msgstr "fel vid läsning av pakethuvud\n"
 
@@ -114,10 +116,12 @@ msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: rpmqv.c:136
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright © 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:137
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Detta program kan distribueras fritt enligt villkoren i GNU GPL\n"
@@ -265,6 +269,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "argument till --root (-r) måste börja med /"
 
 #: rpmqv.c:536
+#, c-format
 msgid "no files to sign\n"
 msgstr "inga filer att signera\n"
 
@@ -274,6 +279,7 @@ msgid "cannot access file %s\n"
 msgstr "kan inte komma åt filen %s\n"
 
 #: rpmqv.c:560
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp hittades inte: "
 
@@ -282,10 +288,12 @@ msgid "Enter pass phrase: "
 msgstr "Ange lösenfras: "
 
 #: rpmqv.c:567
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Kontrollen av lösenfrasen misslyckades\n"
 
 #: rpmqv.c:571
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Lösenfrasen är ok.\n"
 
@@ -299,6 +307,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign kan enbart användas vid paketbyggnation"
 
 #: rpmqv.c:600
+#, c-format
 msgid "exec failed\n"
 msgstr "exec misslyckades\n"
 
@@ -1578,10 +1587,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "regionstorlek: FEL, ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hvd SHA1: FEL, ej hex\n"
 
 #: lib/package.c:473
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hvd DSA: FEL, ej binär\n"
 
@@ -1597,6 +1608,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hvdstorlek(%d): FEL, läsning returnerade %d\n"
 
 #: lib/package.c:672
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hvdmagi: FEL\n"
 
@@ -1616,6 +1628,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hvdklick(%d): FEL, läsning returnerade %d\n"
 
 #: lib/package.c:716
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr "hvdlast: FEL\n"
 
@@ -2995,6 +3008,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "sighstorlek(%d): FEL, läsning returnerade %d\n"
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "sighmagi: FEL\n"
 
@@ -3019,6 +3033,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sightagg[%d]: FEL, tagg %d typ %d position %d antal %d\n"
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr "sighlast: FEL\n"
 
@@ -3086,6 +3101,9 @@ msgstr "Fick %d byte GPG-signatur\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3126,10 +3144,12 @@ msgid "V3 DSA signature: "
 msgstr "V3 DSA-signatur: "
 
 #: lib/signature.c:1362
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
 #: lib/signature.c:1389
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Trasig MD5-summa: STÖDS EJ\n"
 
@@ -3693,6 +3713,7 @@ msgid "(no error)"
 msgstr "(inget fel)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "ödesdigert fel: "

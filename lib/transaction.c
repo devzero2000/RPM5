@@ -172,7 +172,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    if (tscolor != 0 && FColor != 0 && FColor != oFColor)
 	    {
 		if (oFColor & 0x2) {
-		    fi->actions[fileNum] = FA_SKIP;
+		    fi->actions[fileNum] = FA_SKIPCOLOR;
 		    rConflicts = 0;
 		} else
 		if (FColor & 0x2) {
@@ -557,7 +557,7 @@ assert(otherFi != NULL);
 			/* ... first Elf64 file is installed ... */
 			if (XFA_SKIPPING(fi->actions[i]))
 			    otherFi->actions[otherFileNum] = FA_CREATE;
-			fi->actions[i] = FA_SKIP;
+			fi->actions[i] = FA_SKIPCOLOR;
 			rConflicts = 0;
 		    } else
 		    if (FColor == 0 && oFColor == 0) {

@@ -9,14 +9,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
-"POT-Creation-Date: 2004-09-15 13:05-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-09-29 18:25-0400\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
-"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -70,10 +70,12 @@ msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
 
 #: rpm2cpio.c:55
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "argument nie jest pakietem RPM\n"
 
 #: rpm2cpio.c:60
+#, c-format
 msgid "error reading header from package\n"
 msgstr "b³±d odczytu nag³ówka z pakietu\n"
 
@@ -122,10 +124,12 @@ msgid "RPM version %s\n"
 msgstr "RPM wersja %s\n"
 
 #: rpmqv.c:136
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:137
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -276,6 +280,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty dla --root (-r) musz± siê rozpoczynaæ od /"
 
 #: rpmqv.c:536
+#, c-format
 msgid "no files to sign\n"
 msgstr "brak plików do podpisania\n"
 
@@ -285,6 +290,7 @@ msgid "cannot access file %s\n"
 msgstr "brak dostêpu do pliku %s\n"
 
 #: rpmqv.c:560
+#, c-format
 msgid "pgp not found: "
 msgstr "nie znaleziono pgp: "
 
@@ -293,10 +299,12 @@ msgid "Enter pass phrase: "
 msgstr "Podaj has³o: "
 
 #: rpmqv.c:567
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Weryfikacja has³a nieudana\n"
 
 #: rpmqv.c:571
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Has³o jest prawid³owe.\n"
 
@@ -310,6 +318,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign mo¿na u¿yæ tylko w trakcie budowania pakietu"
 
 #: rpmqv.c:600
+#, c-format
 msgid "exec failed\n"
 msgstr "wykonanie nie powiod³o siê\n"
 
@@ -1585,10 +1594,12 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "rozmiar obszaru: B£ÊDNY, ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: B£ÊDNY, nie szesnastkowy\n"
 
 #: lib/package.c:473
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA: B£ÊDNY, nie binarny\n"
 
@@ -1604,6 +1615,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr rozmiar(%d): B£ÊDNY, read zwróci³o %d\n"
 
 #: lib/package.c:672
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: B£ÊDNY\n"
 
@@ -1623,6 +1635,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr blob(%d): B£ÊDNY, read zwróci³o %d\n"
 
 #: lib/package.c:716
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr load: B£ÊDNY\n"
 
@@ -2999,6 +3012,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "sigh rozmiar(%d): B£ÊDNY, read zwróci³o %d\n"
 
 #: lib/signature.c:186
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "sigh magic: B£ÊDNY\n"
 
@@ -3023,6 +3037,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh etykieta[%d]: B£ÊDNA, etykieta %d typ %d offset %d licznik %d\n"
 
 #: lib/signature.c:300
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr "sigh load: B£ÊDNY\n"
 
@@ -3090,6 +3105,9 @@ msgstr "Otrzymano %d bajtów sygnatury GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:879 lib/signature.c:934
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3130,10 +3148,12 @@ msgid "V3 DSA signature: "
 msgstr "Sygnatura V3 DSA: "
 
 #: lib/signature.c:1362
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Weryfikacja sygnatury: B£ÊDNE PARAMETRY\n"
 
 #: lib/signature.c:1389
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Uszkodzony skrót MD5: NIE OBS£UGIWANY\n"
 
@@ -3699,6 +3719,7 @@ msgid "(no error)"
 msgstr "(brak b³êdu)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatalny b³±d: "
