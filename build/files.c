@@ -1348,7 +1348,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
 	/*@=dependenttrans@*/
-#define	HACK
 #ifdef IA64_SUCKS_ROCKS
 	(void) stpcpy(d, flp->diskURL);
 	d += strlen(d);
