@@ -735,6 +735,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
     size_t pos = fdGetCpioPos(fsm->cfd);
     char * symbuf = NULL;
     int left;
+    int xx;
     int rc;
 
     st->st_size = (writeData ? ost->st_size : 0);
@@ -789,6 +790,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	    rdbuf = fsm->rdbuf;
 	    fsm->rdbuf = (char *) mapped;
 	    fsm->rdlen = nmapped = st->st_size;
+	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
 	}
 #endif
 
@@ -815,6 +817,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 
 #if HAVE_MMAP
 	if (mapped != (void *)-1) {
+	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
 	    /*@-noeffect@*/ (void) munmap(mapped, nmapped) /*@=noeffect@*/;
 	    fsm->rdbuf = rdbuf;
 	}

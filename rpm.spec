@@ -1,9 +1,9 @@
-%define	with_python_subpackage	1 %{nil}
-%define	with_python_version	2.2 %{nil}
-%define with_perl_subpackage	0
-%define	with_bzip2		1 %{nil}
-%define	with_apidocs		1 %{nil}
-%define with_internal_db	1 %{nil}
+%define	with_python_subpackage	1%{nil}
+%define	with_python_version	2.2%{nil}
+%define with_perl_subpackage	1
+%define	with_bzip2		1%{nil}
+%define	with_apidocs		1%{nil}
+%define with_internal_db	1%{nil}
 %define strip_binaries		1
 
 # XXX enable at your own risk, CDB access to rpmdb isn't cooked yet.
@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.7
+Release: 0.8
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -512,6 +512,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jan  8 2002 Jeff Johnson <jbj@redhat.com>
+- use db-4.0.14 final internally.
+
 * Mon Jan  7 2002 Jeff Johnson <jbj@redhat.com>
 - Depends should use CDB if configured.
 - autodetect python 1.5/2.2.

@@ -115,7 +115,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 
 	xx = db_env_create(&dbenv, 0);
 	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = dbenv->remove(dbenv, dbhome, 0);
 #else
 	xx = dbenv->remove(dbenv, dbhome, NULL, 0);
@@ -189,13 +189,13 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /* dbenv->set_paniccall(???) */
-    (void) dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
+    xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
-    (void) dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
+    xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-    (void) dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
+    xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
 		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-    (void) dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
+    xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
  /* dbenv->set_lg_max(???) */
  /* dbenv->set_lk_conflicts(???) */
@@ -208,7 +208,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
  /* dbenv->set_tx_max(???) */
  /* dbenv->set_tx_recover(???) */
     if (dbi->dbi_no_fsync) {
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = db_env_set_func_fsync(db3_fsync_disable);
 #else
 	xx = dbenv->set_func_fsync(dbenv, db3_fsync_disable);
@@ -217,7 +217,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 
 /* XXX 3.3.4 change. */
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3) || (DB_VERSION_MAJOR == 4)
     if ((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host) {
 	xx = dbenv->set_rpc_server(dbenv, NULL, dbi->dbi_host,
 		dbi->dbi_cl_timeout, dbi->dbi_sv_timeout, 0);
@@ -248,7 +248,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
   }
 
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
     rc = dbenv->open(dbenv, dbhome, eflags, dbi->dbi_perms);
 #else
     rc = dbenv->open(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
@@ -566,7 +566,8 @@ static int db3byteswapped(dbiIndex dbi)	/*@*/
     int rc = 0;
 
     if (db != NULL) {
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
+ || (DB_VERSION_MAJOR == 4)
 	int isswapped = 0;
 	rc = db->get_byteswapped(db, &isswapped);
 	if (rc == 0)
@@ -594,7 +595,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 	flags = 0;
     dbi->dbi_stats = _free(dbi->dbi_stats);
 /* XXX 3.3.4 change. */
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3) || (DB_VERSION_MAJOR == 4)
     rc = db->stat(db, &dbi->dbi_stats, flags);
 #else
     rc = db->stat(db, &dbi->dbi_stats, NULL, flags);
@@ -679,13 +680,13 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /*	dbenv->set_paniccall(???) */
-	(void) dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
+	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
-	(void) dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
+	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-	(void) dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
+	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
 		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-	(void) dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
+	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	if (dbi->dbi_tmpdir) {
@@ -943,7 +944,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);
 	    }
 /* XXX 3.3.4 change. */
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3) || (DB_VERSION_MAJOR == 4)
 	    if (rc == 0 &&
 			rpmdb->db_malloc && rpmdb->db_realloc && rpmdb->db_free)
 	    {
@@ -977,7 +978,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 			if (rc) break;
 		    }
 /* XXX db-3.2.9 has added a DB arg to the call. */
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR > 2
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR > 2) || (DB_VERSION_MAJOR == 4)
 		    if (dbi->dbi_h_hash_fcn) {
 			rc = db->set_h_hash(db, dbi->dbi_h_hash_fcn);
 			rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
@@ -1002,7 +1003,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 			if (rc) break;
 		    }
 /* XXX db-3.2.9 has added a DB arg to the call. */
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR > 2
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR > 2) || (DB_VERSION_MAJOR == 4)
 		    if (dbi->dbi_bt_compare_fcn) {
 			rc = db->set_bt_compare(db, dbi->dbi_bt_compare_fcn);
 			rc = cvtdberr(dbi, "db->set_bt_compare", rc, _debug);
@@ -1077,7 +1078,8 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
+ || (DB_VERSION_MAJOR == 4)
 		    DBTYPE dbi_type = DB_UNKNOWN;
 		    xx = db->get_type(db, &dbi_type);
 		    if (xx == 0)

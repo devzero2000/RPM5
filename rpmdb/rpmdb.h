@@ -31,19 +31,6 @@ struct _dbiIndexItem {
     unsigned int dbNum;			/*!< database index */
 };
 
-#ifdef DYING
-/** \ingroup dbi
- * A single item in an index database (i.e. the "data saved").
- */
-struct _dbiIR {
-/*@unused@*/ unsigned int recOffset;	/*!< byte offset of header in db */
-/*@unused@*/ unsigned int fileNumber;	/*!< file array index */
-};
-/*@-typeuse@*/
-typedef	struct _dbiIR * DBIR_t;
-/*@=typeuse@*/
-#endif	/* DYING */
-
 /** \ingroup dbi
  * Items retrieved from the index database.
  */

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-06 19:37-0500\n"
+"POT-Creation-Date: 2002-01-08 09:41-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2211,37 +2211,37 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1130
+#: lib/fsm.c:1133
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1407
+#: lib/fsm.c:1410
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1526 lib/fsm.c:1651
+#: lib/fsm.c:1529 lib/fsm.c:1654
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1677
+#: lib/fsm.c:1680
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1683
+#: lib/fsm.c:1686
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1693
+#: lib/fsm.c:1696
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1712
+#: lib/fsm.c:1715
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -3493,11 +3493,11 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1147
+#: rpmdb/db1.c:562 rpmdb/db3.c:1149
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1147
+#: rpmdb/db1.c:562 rpmdb/db3.c:1149
 msgid "shared"
 msgstr ""
 
@@ -3516,27 +3516,27 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:656
+#: rpmdb/db3.c:657
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:713
+#: rpmdb/db3.c:714
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:923
+#: rpmdb/db3.c:924
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1145
+#: rpmdb/db3.c:1147
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1151
+#: rpmdb/db3.c:1153
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
