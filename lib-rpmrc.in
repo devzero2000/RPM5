@@ -5,7 +5,7 @@ dbpath:		@varprefix@/lib/rpm
 topdir:		@prefix@/src/redhat
 tmppath:	@tmpdir@
 cpiobin:	@CPIOBIN@
-gzipbin:	@GZIPBIN@
+gzipbin:	gzip
 defaultdocdir:  @prefix@/doc
 fixperms:	@FIXPERMS@
 rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
