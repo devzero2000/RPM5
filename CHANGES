@@ -5,6 +5,7 @@
 	- fix: PIE executables have basename-as-soname provides (#123697).
 	- lua embedded in rpmio.
 	- use lua to identify desired selinux file context regexes.
+	- add 'requires' and 'conflicts' tag aliases.
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).
