@@ -627,6 +627,10 @@ print (t)\
 # XXX	Note: escaped %% for use in headerSprintf()
 %_autorelocate_path	@autorelocate_path@
 
+#	A default directory color to choose when directories are
+#	auto-relocated.
+%_autorelocate_dcolor @autorelocate_dcolor@
+
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-redhat location. The macro is usually defined in
 #	/etc/rpm/macros.solve, installed with the rpmdb-redhat package.
