@@ -1058,7 +1058,7 @@ int main(int argc, const char ** argv)
     }
 
     if (qva->qva_sourceCount) {
-	if (qva->qva_sourceCount > 1)
+	if (qva->qva_sourceCount > 2)
 	    argerror(_("one type of query/verify may be performed at a "
 			"time"));
     }
