@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-22 12:11-0500\n"
+"POT-Creation-Date: 2002-01-26 10:49-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1501,99 +1501,98 @@ msgstr "siirtojen pitää alkaa /-merkillä"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#. Two entries for the same file found, merge the entries.
-#: build/files.c:1108
+#: build/files.c:1113
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:1255
+#: build/files.c:1257
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1481
+#: build/files.c:1488
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:1505
+#: build/files.c:1512
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: build/files.c:1548 build/files.c:2162 build/parsePrep.c:50
+#: build/files.c:1555 build/files.c:2171 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1560
+#: build/files.c:1568
 #, fuzzy, c-format
-msgid "File %4d: %07o %s.%s\t %s\n"
+msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:1664
+#: build/files.c:1673
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "siirtojen pitää alkaa /-merkillä"
 
-#: build/files.c:1687
+#: build/files.c:1696
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: build/files.c:1702
+#: build/files.c:1711
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: build/files.c:1764
+#: build/files.c:1773
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/files.c:1775 build/pack.c:149
+#: build/files.c:1784 build/pack.c:149
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:2150
+#: build/files.c:2159
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2224
+#: build/files.c:2233
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:2229
+#: build/files.c:2238
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:2313
+#: build/files.c:2322
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "pgp epäonnistui"
 
-#: build/files.c:2317
+#: build/files.c:2326
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:2453
+#: build/files.c:2462
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2479 build/files.c:2493
+#: build/files.c:2488 build/files.c:2502
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:2614
+#: build/files.c:2623
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"
@@ -3382,97 +3381,97 @@ msgstr "Asennan: %s\n"
 msgid "read failed: %s (%d)\n"
 msgstr "luku epäonnistui: %s (%d)"
 
-#: lib/rpmrc.c:188
+#: lib/rpmrc.c:192
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "toinen ':' puuttuu, %s:%d"
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:195
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "puuttuva arkkitehtuurin nimi, %s:%d"
 
-#: lib/rpmrc.c:345
+#: lib/rpmrc.c:349
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Epätäydellinen datarivi, %s:%d"
 
-#: lib/rpmrc.c:350
+#: lib/rpmrc.c:354
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "liian monta parametriä datarivillä %s:%d"
 
-#: lib/rpmrc.c:358
+#: lib/rpmrc.c:362
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Huono arkkitehtuuri/käyttöjärjestelmä numero: %s (%s:%d)"
 
-#: lib/rpmrc.c:395
+#: lib/rpmrc.c:399
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Epätäydellinen oletusrivi, %s:%d"
 
-#: lib/rpmrc.c:400
+#: lib/rpmrc.c:404
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "liian monta parametriä oletusrivillä %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:570
+#: lib/rpmrc.c:574
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "En voi lukea %s: %s."
 
-#: lib/rpmrc.c:608
+#: lib/rpmrc.c:612
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "puuttuva ':', %s:%d"
 
-#: lib/rpmrc.c:625 lib/rpmrc.c:699
+#: lib/rpmrc.c:629 lib/rpmrc.c:703
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s:n puuttuva parametri %s:%d"
 
-#: lib/rpmrc.c:642 lib/rpmrc.c:664
+#: lib/rpmrc.c:646 lib/rpmrc.c:668
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/rpmrc.c:651
+#: lib/rpmrc.c:655
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:695
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
 
-#: lib/rpmrc.c:758
+#: lib/rpmrc.c:762
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "huono parametri '%s', %s:%d"
 
-#: lib/rpmrc.c:1369
+#: lib/rpmrc.c:1387
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1370
+#: lib/rpmrc.c:1388
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1595
+#: lib/rpmrc.c:1613
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpmrc.c:1600
+#: lib/rpmrc.c:1618
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1617
+#: lib/rpmrc.c:1635
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "En voi avata %s luettavaksi: %s."

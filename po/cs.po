@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-22 12:11-0500\n"
+"POT-Creation-Date: 2002-01-26 10:49-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1427,99 +1427,98 @@ msgstr "Soubor musí zaèínat na \"/\": %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nelze míchat speciální %%doc s ostatnímí formami: %s\n"
 
-#. Two entries for the same file found, merge the entries.
-#: build/files.c:1108
+#: build/files.c:1113
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Soubor uveden dvakrát: %s\n"
 
-#: build/files.c:1255
+#: build/files.c:1257
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolická linka ukazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1481
+#: build/files.c:1488
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Soubor nesouhlasí s prefixem (%s): %s\n"
 
-#: build/files.c:1505
+#: build/files.c:1512
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Soubor nenalezen: %s\n"
 
-#: build/files.c:1548 build/files.c:2162 build/parsePrep.c:50
+#: build/files.c:1555 build/files.c:2171 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "©patný vlastník/skupina: %s\n"
 
-#: build/files.c:1560
-#, c-format
-msgid "File %4d: %07o %s.%s\t %s\n"
+#: build/files.c:1568
+#, fuzzy, c-format
+msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "Soubor %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1664
+#: build/files.c:1673
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 
-#: build/files.c:1687
+#: build/files.c:1696
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: build/files.c:1702
+#: build/files.c:1711
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
 
-#: build/files.c:1764
+#: build/files.c:1773
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nemohu otevøít %%files soubor %s: %s\n"
 
-#: build/files.c:1775 build/pack.c:149
+#: build/files.c:1784 build/pack.c:149
 #, c-format
 msgid "line: %s\n"
 msgstr "øádek: %s\n"
 
-#: build/files.c:2150
+#: build/files.c:2159
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "©patný soubor: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2224
+#: build/files.c:2233
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Nemohu spustit %s: %s\n"
 
-#: build/files.c:2229
+#: build/files.c:2238
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nemohu provést fork %s: %s\n"
 
-#: build/files.c:2313
+#: build/files.c:2322
 #, c-format
 msgid "%s failed\n"
 msgstr "%s selhalo\n"
 
-#: build/files.c:2317
+#: build/files.c:2326
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "Nemohu zapsat v¹echna data do %s\n"
 
-#: build/files.c:2453
+#: build/files.c:2462
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: build/files.c:2479 build/files.c:2493
+#: build/files.c:2488 build/files.c:2502
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Selhalo vyhledání %s:\n"
 
-#: build/files.c:2614
+#: build/files.c:2623
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Zpracovávám soubory: %s-%s-%s\n"
@@ -3253,97 +3252,97 @@ msgstr "øádek: %s\n"
 msgid "read failed: %s (%d)\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/rpmrc.c:188
+#: lib/rpmrc.c:192
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "Chybí '(' v %s %s\n"
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:195
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:345
+#: lib/rpmrc.c:349
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:350
+#: lib/rpmrc.c:354
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:358
+#: lib/rpmrc.c:362
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "©patná práva adresáøe: %s(%s)\n"
 
-#: lib/rpmrc.c:395
+#: lib/rpmrc.c:399
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:400
+#: lib/rpmrc.c:404
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:570
+#: lib/rpmrc.c:574
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "nemohu zjistit stav %s: %s\n"
 
-#: lib/rpmrc.c:608
+#: lib/rpmrc.c:612
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:625 lib/rpmrc.c:699
+#: lib/rpmrc.c:629 lib/rpmrc.c:703
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "Sestavuji cílové platformy: %s\n"
 
-#: lib/rpmrc.c:642 lib/rpmrc.c:664
+#: lib/rpmrc.c:646 lib/rpmrc.c:668
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "nemohu otevøít %s: %s\n"
 
-#: lib/rpmrc.c:651
+#: lib/rpmrc.c:655
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:695
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "øádek %d: ©patný formát BuildArchitecture: %s\n"
 
-#: lib/rpmrc.c:758
+#: lib/rpmrc.c:762
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "nemohu zjistit stav %s: %m\n"
 
-#: lib/rpmrc.c:1369
+#: lib/rpmrc.c:1387
 #, fuzzy, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámý typ ikony: %s\n"
 
-#: lib/rpmrc.c:1370
+#: lib/rpmrc.c:1388
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1595
+#: lib/rpmrc.c:1613
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "nemohu znovu otevøít payload: %s\n"
 
-#: lib/rpmrc.c:1600
+#: lib/rpmrc.c:1618
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1617
+#: lib/rpmrc.c:1635
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nemohu otevøít %s: %s\n"

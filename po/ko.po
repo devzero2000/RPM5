@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-01-22 12:11-0500\n"
+"POT-Creation-Date: 2002-01-26 10:49-0500\n"
 "PO-Revision-Date: 2002-01-23 15:24+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1430,99 +1430,98 @@ msgstr "파일은 반드시 \"/\" 로 시작해야함: %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "특정 %%doc을 다른 형식과 함께 사용할 수 없음: %s\n"
 
-#. Two entries for the same file found, merge the entries.
-#: build/files.c:1108
+#: build/files.c:1113
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "파일 목록이 중복됨: %s\n"
 
-#: build/files.c:1255
+#: build/files.c:1257
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "BuildRoot에 심볼릭링크함: %s -> %s\n"
 
-#: build/files.c:1481
+#: build/files.c:1488
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "파일이 prefix (%s)와 일치하지 않음: %s\n"
 
-#: build/files.c:1505
+#: build/files.c:1512
 #, c-format
 msgid "File not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1548 build/files.c:2162 build/parsePrep.c:50
+#: build/files.c:1555 build/files.c:2171 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
 
-#: build/files.c:1560
-#, c-format
-msgid "File %4d: %07o %s.%s\t %s\n"
+#: build/files.c:1568
+#, fuzzy, c-format
+msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "파일 %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1664
+#: build/files.c:1673
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "파일은 \"/\" 로 시작해야함: %s\n"
 
-#: build/files.c:1687
+#: build/files.c:1696
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob을 사용할 수 없음: %s\n"
 
-#: build/files.c:1702
+#: build/files.c:1711
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1764
+#: build/files.c:1773
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
 
-#: build/files.c:1775 build/pack.c:149
+#: build/files.c:1784 build/pack.c:149
 #, c-format
 msgid "line: %s\n"
 msgstr "행: %s\n"
 
-#: build/files.c:2150
+#: build/files.c:2159
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2224
+#: build/files.c:2233
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s(을)를 실행할 수 없음: %s\n"
 
-#: build/files.c:2229
+#: build/files.c:2238
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s(을)를 fork 할 수 없음: %s\n"
 
-#: build/files.c:2313
+#: build/files.c:2322
 #, c-format
 msgid "%s failed\n"
 msgstr "%s(이)가 실패했습니다\n"
 
-#: build/files.c:2317
+#: build/files.c:2326
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "%s에 모든 자료를 기록하는데 실패했습니다\n"
 
-#: build/files.c:2453
+#: build/files.c:2462
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
 
-#: build/files.c:2479 build/files.c:2493
+#: build/files.c:2488 build/files.c:2502
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s(을)를 찾는데 실패함:\n"
 
-#: build/files.c:2614
+#: build/files.c:2623
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "파일 처리 중: %s-%s-%s\n"
@@ -3255,97 +3254,97 @@ msgstr "%s(을)를 설치합니다\n"
 msgid "read failed: %s (%d)\n"
 msgstr "읽는데 실패함: %s (%d)\n"
 
-#: lib/rpmrc.c:188
+#: lib/rpmrc.c:192
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "%s에 두번째 ':' 이 없음:%d\n"
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:195
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "%s에 아키텍쳐명이 없음:%d\n"
 
-#: lib/rpmrc.c:345
+#: lib/rpmrc.c:349
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "%s의 데이터 항목(line)이 불충분함:%d\n"
 
-#: lib/rpmrc.c:350
+#: lib/rpmrc.c:354
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "%s의 데이터 항목(line)에 인수가 너무 많음:%d\n"
 
-#: lib/rpmrc.c:358
+#: lib/rpmrc.c:362
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "잘못된 아키텍쳐/운영체제 번호: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:395
+#: lib/rpmrc.c:399
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "%s의 기본 항목(line)이 불충분함:%d\n"
 
-#: lib/rpmrc.c:400
+#: lib/rpmrc.c:404
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "%s의 기본 항목(line)에 인수가 너무 많음:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:570
+#: lib/rpmrc.c:574
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "%s(을)를 읽는데 실패함: %s.\n"
 
-#: lib/rpmrc.c:608
+#: lib/rpmrc.c:612
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "%2$s에 ':' (0x%1$02x 찾음) 이 없음:%3$d\n"
 
-#: lib/rpmrc.c:625 lib/rpmrc.c:699
+#: lib/rpmrc.c:629 lib/rpmrc.c:703
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%2$s에 %1$s(을)를 위한 인수가 없음:%3$d\n"
 
-#: lib/rpmrc.c:642 lib/rpmrc.c:664
+#: lib/rpmrc.c:646 lib/rpmrc.c:668
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%2$s의 %1$s 확장(expansion)에 실패함:%3$d \"%4$s\"\n"
 
-#: lib/rpmrc.c:651
+#: lib/rpmrc.c:655
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "%2$s의 %1$s(을)를 열 수 없음:%3$d: %4$s\n"
 
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:695
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%2$s에 %1$s(을)를 위한 아키텍쳐가 없음:%3$d\n"
 
-#: lib/rpmrc.c:758
+#: lib/rpmrc.c:762
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "%2$s에 잘못된 '%1$s' 옵션:%3$d\n"
 
-#: lib/rpmrc.c:1369
+#: lib/rpmrc.c:1387
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "알 수 없는 시스템: %s\n"
 
-#: lib/rpmrc.c:1370
+#: lib/rpmrc.c:1388
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com으로 연락바랍니다\n"
 
-#: lib/rpmrc.c:1595
+#: lib/rpmrc.c:1613
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s(을)를 확장(expand)할 수 없습니다\n"
 
-#: lib/rpmrc.c:1600
+#: lib/rpmrc.c:1618
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s(을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 
-#: lib/rpmrc.c:1617
+#: lib/rpmrc.c:1635
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"

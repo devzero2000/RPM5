@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.0.4
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.19
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -521,6 +521,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Jan 26 2002 Jeff Johnson <jbj@redhat.com>
+- fix: %exclude functional (again).
+- trap SIGILL for ppc64 inline asm voodoo fix from cross-dressed ppc32.
+- rpm-perl: force numeric comparison on rpm version (#58882).
+
 * Tue Jan 22 2002 Jeff Johnson <jbj@redhat.com>
 - fix: query format qualifiers needed header.c merge.
 - ppc64 arch added (#58634,#58636).
