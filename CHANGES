@@ -4,6 +4,9 @@
 	- remove libtoolize from %%configure for now (#57039).
 	- teach find-requires to autogenerate GCC_3.0 dependencies.
 	- solaris: translate i86pc to i386 (#57182).
+	- fix: %GNUconfigure breaks with single quotes (#57264).
+	- look for PY_VERSION 2.2c1.
+	- fix: typo in find-requires.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
