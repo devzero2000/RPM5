@@ -1,0 +1,7 @@
+/* $Id$ */
+
+TYPEMAP
+
+Header * T_PTROBJ
+const char * T_PV
+
