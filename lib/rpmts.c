@@ -835,9 +835,6 @@ int rpmtsSetSig(rpmts ts,
 		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
 {
     if (ts != NULL) {
-#if 0
-fprintf(stderr, "*** sig tag %d type %d sig %p[%d]\n", sigtag, sigtype, sig, siglen);
-#endif
 	if (ts->sig && ts->sigtype)
 	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
 	ts->sigtag = sigtag;
