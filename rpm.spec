@@ -8,9 +8,9 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 3
+Release: 3.1
 Group: System Environment/Base
-Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
+Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
@@ -209,6 +209,7 @@ fi
 %{__prefix}%{__share}/man/man[18]/*.[18]*
 %lang(pl) %{__prefix}%{__share}/man/pl/man[18]/*.[18]*
 %lang(ru) %{__prefix}%{__share}/man/ru/man[18]/*.[18]*
+%lang(sk) %{__prefix}%{__share}/man/sk/man[18]/*.[18]*
 
 %files build
 %defattr(-,root,root)
@@ -271,6 +272,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Aug 29 2000 Jeff Johnson <jbj@redhat.com>
+- translate rpm.8 man page (Peter Ivanyi <ivanyi@internet.sk>).
+
 * Thu Aug 24 2000 Jeff Johnson <jbj@redhat.com>
 - Pass NULL as pkgKey on RPMCALLBACK_UNINST_*.
 
