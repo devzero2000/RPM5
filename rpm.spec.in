@@ -494,10 +494,14 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Fri Oct 29 2004 Jeff Johnson <jbj@redhat.com> rpm-4.2.3-16
-- python: fix RPMPROB_BADRELOCATE segfault return in ts.check (#137116).
+* Sat Oct 30 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-18
+- reprise file conflicts yet again, flip/flop/flip/flop ... flip?
 
-* Fri Oct 22 2004 Jeff Johnson <jbj@redhat.com> rpm-4.3.2-15
+* Fri Oct 29 2004 Jeff Johnson <jbj@redhat.com> 4.2.3-16
+- python: fix RPMPROB_BADRELOCATE segfault return in ts.check (#137116).
+- revert selinux patch until fc3 release.
+
+* Fri Oct 22 2004 Jeff Johnson <jbj@redhat.com> 4.3.2-15
 - selinux: set "ldconfig_t" for /sbin/ldconfig, else "rpm_script_t".
 
 * Sun Oct 17 2004 Jeff Johnson <jbj@jbj.org> 4.3.2-14
