@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "POT-Creation-Date: 2001-07-27 19:38-0400\n"
-"PO-Revision-Date: 2001-07-29 20:52+0900\n"
+"PO-Revision-Date: 2001-07-29 21:10+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -2702,7 +2702,7 @@ msgstr "%%license 파일을 생략합니다"
 #: lib/poptQV.c:164
 #, c-format
 msgid "skip %%readme files"
-msgstr "%%readme 파일을 생략합니다\n"
+msgstr "%%readme 파일을 생략합니다"
 
 #: lib/poptQV.c:170
 msgid "use the following query format"
