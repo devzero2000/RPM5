@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-08 23:16-0500\n"
+"POT-Creation-Date: 2001-01-10 17:29-0500\n"
 "PO-Revision-Date: 2000-12-29 22:14+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2418,15 +2418,19 @@ msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1707
 msgid "========== tsorting packages\n"
 msgstr "========== tsorterar paket\n"
 
-#: lib/depends.c:1807
+#: lib/depends.c:1754
+msgid "========== successors only (presentation order\n"
+msgstr ""
+
+#: lib/depends.c:1812
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1838
+#: lib/depends.c:1843
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 

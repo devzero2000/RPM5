@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-01-08 23:16-0500\n"
+"POT-Creation-Date: 2001-01-10 17:29-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2546,15 +2546,19 @@ msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1707
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1807
+#: lib/depends.c:1754
+msgid "========== successors only (presentation order\n"
+msgstr ""
+
+#: lib/depends.c:1812
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1838
+#: lib/depends.c:1843
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

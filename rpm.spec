@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.41
+Release: 0.42
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jan 10 2001 Jeff Johnson <jbj@redhat.com>
+- fix: digests on input FD_t dinna work.
+- fix: remove rebuilddb debugging leakage.
+- successors from tsort are processed in presentation order.
+- fix: find-requires.perl needed update (#23450).
+
 * Mon Jan  8 2001 Jeff Johnson <jbj@redhat.com>
 - tsorted packages processed in successor count order.
 - fix: resurrect --excludepath (#19666).

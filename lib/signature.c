@@ -138,7 +138,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 	*headerp = NULL;
 
     /* XXX Yuck, see ALPHA_LOSSAGE in lib/rpmchecksig.c */
-#ifdef __alpha
+#ifdef	__alpha
     if (sigType == RPMSIG_NONE) sigType = RPMSIG_HEADERSIG;
 #endif
     

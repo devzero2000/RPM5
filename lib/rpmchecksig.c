@@ -103,7 +103,7 @@ exit:
  * correctly to rpmReadSignature(FD_t *fd, Header *header, short sig_type)
  * (Note: the short in both struct rpmlead and in the prototype).
  */
-#ifdef __alpha
+#ifdef	__alpha
 #define	ALPHA_LOSSAGE
 #else
 #undef	ALPHA_LOSSAGE
