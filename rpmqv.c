@@ -281,7 +281,7 @@ static void printUsage(void)
 
 }
 
-int main(int argc, const char ** argv)
+int main(int argc, const char ** argv, char ** envp)
 {
     enum modes bigMode = MODE_UNKNOWN;
 
@@ -323,6 +323,10 @@ int main(int argc, const char ** argv)
     mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
 #endif
     setprogname(argv[0]);	/* Retrofit glibc __progname */
+
+#if !defined(__GLIBC__)
+    environ = envp;
+#endif
 
     /* XXX glibc churn sanity */
     if (__progname == NULL) {

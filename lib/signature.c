@@ -26,6 +26,10 @@
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
+#if !defined(__GLIBC__)
+char ** environ = NULL;
+#endif
+
 typedef int (*md5func)(const char * fn, /*@out@*/ byte * digest);
 
 int rpmLookupSignatureType(int action)
