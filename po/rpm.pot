@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-11 09:04-0400\n"
+"POT-Creation-Date: 2000-06-16 15:22-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1417,57 +1417,57 @@ msgstr ""
 msgid "File not found by glob: %s"
 msgstr ""
 
-#: build/files.c:1160
+#: build/files.c:1159
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1167 build/pack.c:99
+#: build/files.c:1169 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1493
+#: build/files.c:1495
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr ""
 
-#: build/files.c:1505 build/parsePrep.c:34
+#: build/files.c:1507 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1560
+#: build/files.c:1562
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1565
+#: build/files.c:1567
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1647
+#: build/files.c:1649
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1651
+#: build/files.c:1653
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1741
+#: build/files.c:1743
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1769 build/files.c:1778
+#: build/files.c:1771 build/files.c:1780
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1885
+#: build/files.c:1887
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2439,7 +2439,7 @@ msgstr ""
 msgid "old style binary package\n"
 msgstr ""
 
-#: lib/package.c:316
+#: lib/package.c:317
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
@@ -2892,66 +2892,66 @@ msgstr ""
 msgid "package %s not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:509 lib/uninstall.c:90
+#: lib/rpmdb.c:508 lib/uninstall.c:90
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: lib/rpmdb.c:517
+#: lib/rpmdb.c:516
 msgid "package has no name"
 msgstr ""
 
-#: lib/rpmdb.c:519
+#: lib/rpmdb.c:518
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:524
+#: lib/rpmdb.c:523
 msgid "package has no group\n"
 msgstr ""
 
-#: lib/rpmdb.c:526
+#: lib/rpmdb.c:525
 msgid "removing group index\n"
 msgstr ""
 
-#: lib/rpmdb.c:533
+#: lib/rpmdb.c:532
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:548
+#: lib/rpmdb.c:547
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:560
+#: lib/rpmdb.c:559
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:571
+#: lib/rpmdb.c:570
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:582
+#: lib/rpmdb.c:581
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:591
+#: lib/rpmdb.c:590
 msgid "package has no files\n"
 msgstr ""
 
-#: lib/rpmdb.c:698
+#: lib/rpmdb.c:696
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:760
+#: lib/rpmdb.c:755
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:773
+#: lib/rpmdb.c:768
 msgid "header changed size!"
 msgstr ""
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-03-15 07:36-0500\n"
+"POT-Creation-Date: 2000-06-16 15:22-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1475,57 +1475,57 @@ msgstr "Datoteki manjka uvodni \"/\": %s"
 msgid "File not found by glob: %s"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1160
+#: build/files.c:1159
 msgid "Could not open %%files file %s: %s"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1167 build/pack.c:99
+#: build/files.c:1169 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "vrstica: %s"
 
-#: build/files.c:1493
+#: build/files.c:1495
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "Okvarjena datoteka: %s: %s"
 
-#: build/files.c:1505 build/parsePrep.c:34
+#: build/files.c:1507 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Okvarjen lastnik/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1560
+#: build/files.c:1562
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Ni mo¾no izvesti %s: %s"
 
-#: build/files.c:1565
+#: build/files.c:1567
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Vejitev %s ni mo¾na: %s"
 
-#: build/files.c:1647
+#: build/files.c:1649
 #, c-format
 msgid "%s failed"
 msgstr "%s neuspe¹en"
 
-#: build/files.c:1651
+#: build/files.c:1653
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "pisanje podatkov na %s neuspe¹no"
 
-#: build/files.c:1741
+#: build/files.c:1743
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "I¹èemo  %s: (z uporabo %s)...\n"
 
-#: build/files.c:1769 build/files.c:1778
+#: build/files.c:1771 build/files.c:1780
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:1885
+#: build/files.c:1887
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdelujemo datoteke: %s-%s-%s\n"
@@ -2505,7 +2505,7 @@ msgstr "odmik arhiva je %d\n"
 msgid "old style binary package\n"
 msgstr "binarni paket v starem zapisu\n"
 
-#: lib/package.c:316
+#: lib/package.c:317
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <= 3"

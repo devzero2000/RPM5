@@ -265,6 +265,7 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 
     case 2:
     case 3:
+    case 4:
 	if (rpmReadSignature(fd, sigs, lead->signature_type)) {
 	   return 2;
 	}

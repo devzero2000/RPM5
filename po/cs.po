@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-03-15 07:36-0500\n"
+"POT-Creation-Date: 2000-06-16 15:22-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -1521,58 +1521,58 @@ msgstr ""
 msgid "File not found by glob: %s"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: build/files.c:1160
+#: build/files.c:1159
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "chyba: nelze otevøít soubor %s\n"
 
-#: build/files.c:1167 build/pack.c:99
+#: build/files.c:1169 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1493
+#: build/files.c:1495
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "soubor %s: %s\n"
 
-#: build/files.c:1505 build/parsePrep.c:34
+#: build/files.c:1507 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1560
+#: build/files.c:1562
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nelze spustit pgp"
 
-#: build/files.c:1565
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nelze naèíst cílpodpisu"
 
-#: build/files.c:1647
+#: build/files.c:1649
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "chyba pgp"
 
-#: build/files.c:1651
+#: build/files.c:1653
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1741
+#: build/files.c:1743
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1769 build/files.c:1778
+#: build/files.c:1771 build/files.c:1780
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1885
+#: build/files.c:1887
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "soubor %s: %s\n"
@@ -2555,7 +2555,7 @@ msgstr "offset archivu je %d\n"
 msgid "old style binary package\n"
 msgstr "binární balíèek starého typu\n"
 
-#: lib/package.c:316
+#: lib/package.c:317
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""

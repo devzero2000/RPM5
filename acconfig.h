@@ -83,6 +83,9 @@
 /* Define to the full path name of the bzip2 library (libbz2.a) */
 #undef BZIP2LIB
 
+/* Define as 1 if you bzip2 1.0 */
+#undef HAVE_BZ2_1_0
+
 /* A full path to a program, possibly with arguments, that will create a
    directory and all necessary parent directories, ala `mkdir -p'        */
 #undef MKDIR_P

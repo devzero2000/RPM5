@@ -2348,6 +2348,16 @@ FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 
 #include <bzlib.h>
 
+#ifdef HAVE_BZ2_1_0
+# define bzopen  BZ2_bzopen
+# define bzclose BZ2_bzclose
+# define bzdopen BZ2_bzdopen
+# define bzerror BZ2_bzerror
+# define bzflush BZ2_bzflush
+# define bzread  BZ2_bzread
+# define bzwrite BZ2_bzwrite
+#endif /* HAVE_BZ2_1_0 */
+
 static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd) {
     void * rc = NULL;
     int i;

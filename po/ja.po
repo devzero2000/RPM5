@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-03-15 07:36-0500\n"
+"POT-Creation-Date: 2000-06-16 15:22-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1526,58 +1526,58 @@ msgstr "ファイルは先頭に \"/\" が必要です: %s"
 msgid "File not found by glob: %s"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1160
+#: build/files.c:1159
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1167 build/pack.c:99
+#: build/files.c:1169 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1493
+#: build/files.c:1495
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1505 build/parsePrep.c:34
+#: build/files.c:1507 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1560
+#: build/files.c:1562
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1565
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1647
+#: build/files.c:1649
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1651
+#: build/files.c:1653
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1741
+#: build/files.c:1743
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1769 build/files.c:1778
+#: build/files.c:1771 build/files.c:1780
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:1885
+#: build/files.c:1887
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -2568,7 +2568,7 @@ msgstr "アーカイブオフセットは %d\n"
 msgid "old style binary package\n"
 msgstr "古いスタイルのバイナリパッケージ\n"
 
-#: lib/package.c:316
+#: lib/package.c:317
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
