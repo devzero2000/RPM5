@@ -53,7 +53,7 @@ AC_PROG_CXX
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_prog_gcc" = yes; then
-    CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-strict-aliasing"
 fi
 export CFLAGS
 
@@ -815,6 +815,8 @@ AC_CHECK_FUNCS(__secure_getenv)
 AC_CHECK_FUNCS(regcomp)
 
 AC_CHECK_FUNCS(ftok)
+
+AC_CHECK_FUNCS(mkstemp)
 
 dnl
 dnl XXX Regex replacement isn't known to be needed yet.

@@ -130,11 +130,7 @@ WITH_PYTHON="--without-python"
 %endif
 
 %ifos linux
-%ifarch x86_64 s390 s390x 
-CFLAGS="$RPM_OPT_FLAGS -fPIC"; export CFLAGS
-%else
 CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
-%endif
 ./configure --prefix=%{__prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
@@ -143,10 +139,6 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
 %endif
-
-# XXX hack out O_DIRECT support in db4 for now.
-# XXX this hack not necessary with db-4.2.52 (which does not use O_DIRECT).
-perl -pi -e 's/#define HAVE_O_DIRECT 1/#undef HAVE_O_DIRECT/' db3/db_config.h
 
 make %{_smp_mflags}
 
