@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-26 10:55-0400\n"
+"POT-Creation-Date: 2002-08-26 16:23-0400\n"
 "PO-Revision-Date: 2002-08-23 13:03GMT\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1569,38 +1569,38 @@ msgstr ""
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:481 lib/package.c:521 lib/package.c:714 lib/package.c:738
-#: lib/package.c:768 lib/rpmchecksig.c:797
+#: lib/package.c:481 lib/package.c:521 lib/package.c:715 lib/package.c:739
+#: lib/package.c:769 lib/rpmchecksig.c:797
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 "только подписи версии 3 могут быть проверены, пропускается подпись версии %u"
 
-#: lib/package.c:616
+#: lib/package.c:617
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "пакеты версии 1 не поддерживаются этой версией RPM\n"
 
-#: lib/package.c:624
+#: lib/package.c:625
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
 
-#: lib/package.c:634 lib/rpmchecksig.c:228 lib/rpmchecksig.c:715
+#: lib/package.c:635 lib/rpmchecksig.c:228 lib/rpmchecksig.c:715
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/package.c:639 lib/rpmchecksig.c:233 lib/rpmchecksig.c:721
+#: lib/package.c:640 lib/rpmchecksig.c:233 lib/rpmchecksig.c:721
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
 
-#: lib/package.c:680 lib/rpmchecksig.c:611
+#: lib/package.c:681 lib/rpmchecksig.c:611
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: ошибка headerRead\n"
 
-#: lib/package.c:780 lib/rpmchecksig.c:118 lib/rpmchecksig.c:640
+#: lib/package.c:781 lib/rpmchecksig.c:118 lib/rpmchecksig.c:640
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
@@ -2246,8 +2246,8 @@ msgstr "пакет не содержит списков ни хозяев файлов, ни их ID\n"
 msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
-#: lib/query.c:565 lib/query.c:606 lib/rpminstall.c:123 lib/rpminstall.c:452
-#: lib/rpminstall.c:581 lib/rpminstall.c:987 lib/rpmts.c:441
+#: lib/query.c:565 lib/query.c:608 lib/rpminstall.c:123 lib/rpminstall.c:452
+#: lib/rpminstall.c:583 lib/rpminstall.c:989 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2258,80 +2258,80 @@ msgstr "невозможно открыть %s: %s\n"
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:585
+#: lib/query.c:587
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
-#: lib/query.c:616 lib/rpminstall.c:594
+#: lib/query.c:618 lib/rpminstall.c:596
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не пакет (или манифест пакета) rpm : %s\n"
 
-#: lib/query.c:660
+#: lib/query.c:662
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос файла спецификации %s не удался, невозможно разобрать файл\n"
 
-#: lib/query.c:681
+#: lib/query.c:683
 msgid "no packages\n"
 msgstr "нет пакетов\n"
 
-#: lib/query.c:701
+#: lib/query.c:703
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:711
+#: lib/query.c:713
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:725 lib/query.c:747 lib/query.c:768 lib/query.c:803
+#: lib/query.c:727 lib/query.c:749 lib/query.c:770 lib/query.c:805
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "ошибка формата %s: %s.\n"
 
-#: lib/query.c:735 lib/query.c:753 lib/query.c:778 lib/query.c:808
+#: lib/query.c:737 lib/query.c:755 lib/query.c:780 lib/query.c:810
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ни один пакет не подходит к %s: %s\n"
 
-#: lib/query.c:819
+#: lib/query.c:821
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:830
+#: lib/query.c:832
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:864
+#: lib/query.c:866
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:868
+#: lib/query.c:870
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:895
+#: lib/query.c:897
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:898
+#: lib/query.c:900
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер записи пакета: %u\n"
 
-#: lib/query.c:903
+#: lib/query.c:905
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:914 lib/rpminstall.c:763
+#: lib/query.c:916 lib/rpminstall.c:765
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -2546,65 +2546,65 @@ msgstr " ... как %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s пропускается - ошибка передачи - %s\n"
 
-#: lib/rpminstall.c:471 lib/rpminstall.c:844 tools/rpmgraph.c:147
+#: lib/rpminstall.c:471 lib/rpminstall.c:846 tools/rpmgraph.c:147
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
 
-#: lib/rpminstall.c:511
+#: lib/rpminstall.c:513
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "пакет %s - не перемещаемый\n"
 
-#: lib/rpminstall.c:561
+#: lib/rpminstall.c:563
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ошибка чтения из файла %s\n"
 
-#: lib/rpminstall.c:567
+#: lib/rpminstall.c:569
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "для файла %s необходима более новая версия RPM\n"
 
-#: lib/rpminstall.c:609
+#: lib/rpminstall.c:611
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:623 lib/rpminstall.c:791 lib/rpminstall.c:1201
+#: lib/rpminstall.c:625 lib/rpminstall.c:793 lib/rpminstall.c:1205
 #: tools/rpmgraph.c:202
 msgid "Failed dependencies:\n"
 msgstr "Неудовлетворенные зависимости:\n"
 
-#: lib/rpminstall.c:630 tools/rpmgraph.c:208
+#: lib/rpminstall.c:632 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr "    Предлагаемое разрешение:\n"
 
-#: lib/rpminstall.c:660
+#: lib/rpminstall.c:662
 msgid "installing binary packages\n"
 msgstr "устанавливаю бинарные пакеты\n"
 
-#: lib/rpminstall.c:684
+#: lib/rpminstall.c:686
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "невозможно открыть файл %s: %s\n"
 
-#: lib/rpminstall.c:766
+#: lib/rpminstall.c:768
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:828
+#: lib/rpminstall.c:830
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:834
+#: lib/rpminstall.c:836
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
 
-#: lib/rpminstall.c:1195
+#: lib/rpminstall.c:1199
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Откат пакетов (+%d/-%d) на %-24.24s (0x%08x):\n"
@@ -2826,18 +2826,18 @@ msgstr "не могу открыть базу данных Packages в %s\n"
 msgid "cannot open Solve database in %s\n"
 msgstr "невозможно открыть базу данных разрешения зависимостей в %s\n"
 
-#: lib/rpmts.c:460
+#: lib/rpmts.c:462
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Добавляется: %s\n"
 
-#: lib/rpmts.c:472
+#: lib/rpmts.c:474
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Предлагается: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:903
+#: lib/rpmts.c:905
 msgid "getting list of mounted filesystems\n"
 msgstr "строится список смонтированных файловых систем\n"
 
