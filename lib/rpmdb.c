@@ -303,7 +303,7 @@ static Header doGetRecord(rpmdb db, unsigned int offset, int pristine)
 
     h = headerRead(db->pkgs, HEADER_MAGIC_NO);
 
-    if (pristine) return h;
+    if (pristine || h == NULL) return h;
 
     /* the RPM used to build much of RH 5.1 could produce packages whose
        file lists did not have leading /'s. Now is a good time to fix
