@@ -1,4 +1,6 @@
 2.5.4 -> 2.5.5:
+	- remove 2 character language name assumption.
+	- add /usr/lib/rpm/find-lang.sh (W. L. Estes <wlestes@uncg.edu>)
 	- miscellaneous portability cruft (Eugene Kanter).
 	- Makefile: don't use ln -sf.
 	- getOutputFrom(): fix race between last read on pipe and child death

@@ -1205,11 +1205,13 @@ static int parseForLang(char *buf, struct FileList *fl)
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
+#if 0
     if (strlen(p) != 2) {
 	rpmError(RPMERR_BADSPEC, _("%%lang() entries are 2 characters: %s"), buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
+#endif
     if (strtok(NULL, ", \n\t")) {
 	rpmError(RPMERR_BADSPEC, _("Only one entry in %%lang(): %s"), buf);
 	fl->processingFailed = 1;
