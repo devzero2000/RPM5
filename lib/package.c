@@ -81,7 +81,7 @@ static int typeAlign[16] =  {
 #define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
 
 /**
- * Sanity check on data size and/or offset.
+ * Sanity check on data size and/or offset and/or count.
  * This check imposes a limit of 16 MB, more than enough.
  */
 #define hdrchkData(_nbytes) ((_nbytes) & 0xff000000)
@@ -344,7 +344,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     int blen;
     size_t nb;
     int_32 ril = 0;
-    unsigned char * end = NULL;
+    unsigned char * regionEnd = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     int i;
@@ -378,12 +378,21 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     }
 /*@=sizeoftype@*/
 
+    /* Is the offset within the data area? */
+    if (entry->info.offset >= dl) {
+	sprintf(buf,
+		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
+		entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
+	goto exit;
+    }
+
     /* Is there an immutable header region tag trailer? */
-    end = dataStart + entry->info.offset;
+    regionEnd = dataStart + entry->info.offset;
 /*@-bounds@*/
-    (void) memcpy(info, end, entry->info.count);
+    (void) memcpy(info, regionEnd, REGION_TAG_COUNT);
 /*@=bounds@*/
-    end += entry->info.count;
+    regionEnd += REGION_TAG_COUNT;
 
 /*@-sizeoftype@*/
     xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
@@ -405,7 +414,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
     /* Is the no. of tags in the region less than the total no. of tags? */
     ril = entry->info.offset/sizeof(*pe);
-    if (ril > il) {
+    if ((entry->info.offset % sizeof(*pe)) || ril > il) {
 	sprintf(buf, _("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	goto exit;
     }
@@ -510,7 +519,7 @@ verifyinfo_exit:
 	}
 
 	ildl[0] = htonl(ril);
-	ildl[1] = (end - dataStart);
+	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
 
 	dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
@@ -552,7 +561,7 @@ verifyinfo_exit:
     case RPMTAG_SHA1HEADER:
 /*@-boundswrite@*/
 	ildl[0] = htonl(ril);
-	ildl[1] = (end - dataStart);
+	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
 /*@=boundswrite@*/
 
@@ -599,6 +608,7 @@ verifyinfo_exit:
 
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 {
+    unsigned char buf[BUFSIZ];
     int_32 block[4];
     int_32 il;
     int_32 dl;
@@ -607,28 +617,46 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     int_32 nb;
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    int xx;
+
+    buf[0] = '\0';
 
     if (hdrp)
 	*hdrp = NULL;
+    if (msg)
+	*msg = NULL;
 
-    if (timedRead(fd, (char *)block, sizeof(block)) != sizeof(block))
+    if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
+	snprintf(buf, sizeof(buf),
+	    _("hdr size(%d): BAD, read %d bytes\n"), sizeof(block), xx);
 	goto exit;
-    if (memcmp(block, header_magic, sizeof(header_magic)))
+    }
+    if (memcmp(block, header_magic, sizeof(header_magic))) {
+	snprintf(buf, sizeof(buf), _("hdr magic: BAD\n"));
+
 	goto exit;
+    }
     il = ntohl(block[2]);
-    if (hdrchkTags(il))
+    if (hdrchkTags(il)) {
+	snprintf(buf, sizeof(buf), _("hdr tags: BAD, found %d tags\n"), il);
 	goto exit;
+    }
     dl = ntohl(block[3]);
-    if (hdrchkData(dl))
+    if (hdrchkData(dl)) {
+	snprintf(buf, sizeof(buf), _("hdr data: BAD, found %d bytes\n"), dl);
 	goto exit;
+    }
 
     nb = (il * sizeof(struct entryInfo_s)) + dl;
     uc = sizeof(il) + sizeof(dl) + nb;
     ei = xmalloc(uc);
     ei[0] = block[2];
     ei[1] = block[3];
-    if (timedRead(fd, (char *)&ei[2], nb) != nb)
+    if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
+	snprintf(buf, sizeof(buf),
+		_("hdr blob(%d): BAD, read %d bytes\n"), nb, xx);
 	goto exit;
+    }
 
     /* Sanity check header tags */
     rc = headerCheck(ts, ei, uc, msg);
@@ -647,6 +675,14 @@ exit:
 	*hdrp = headerLink(h);
     ei = _free(ei);
     h = headerFree(h);
+
+/*@-boundswrite@*/
+    if (msg != NULL && *msg == NULL && buf[0] != '\0') {
+	buf[sizeof(buf)-1] = '\0';
+	*msg = xstrdup(buf);
+    }
+/*@=boundswrite@*/
+
     return rc;
 }
 
@@ -705,10 +741,13 @@ int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     }
 
     /* Read the signature header. */
-    rc = rpmReadSignature(fd, &sigh, l->signature_type);
+    msg = NULL;
+    rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
     switch (rc) {
     default:
-	rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), fn);
+	rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
+		(msg && *msg ? msg : "\n"));
+	msg = _free(msg);
 	goto exit;
 	/*@notreached@*/ break;
     case RPMRC_OK:
@@ -719,6 +758,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	}
 	break;
     }
+    msg = _free(msg);
 
 #define	_chk(_mask)	(sigtag == 0 && !(vsflags & (_mask)))
 

@@ -578,15 +578,19 @@ restart:
 	    res = 0;
 	    switch (rpmrc) {
 	    default:
+#ifdef	DYING
 		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
+#endif
 		res = 1;
 		/*@switchbreak@*/ break;
 	    case RPMRC_NOTTRUSTED:
 	    case RPMRC_NOKEY:
 	    case RPMRC_OK:
 		if (h == NULL) {
+#ifdef	DYING
 		    rpmError(RPMERR_QUERY,
 			_("old format source packages cannot be queried\n"));
+#endif
 		    res = 1;
 		    /*@switchbreak@*/ break;
 		}
