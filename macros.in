@@ -54,6 +54,7 @@
 #
 %_gzipbin		@GZIPBIN@
 %_instchangelog		5
+%_pgpbin		@PGPBIN@
 %_rpmdir		%{_topdir}/RPMS
 #
 # XXX Note escaped %% for use in headerSprintf
