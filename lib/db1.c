@@ -138,6 +138,16 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
 
     h = headerRead(pkgs, HEADER_MAGIC_NO);
 
+    /* let's sanity check this record a bit, otherwise just skip it */
+    if (!(headerIsEntry(h, RPMTAG_NAME) &&
+	headerIsEntry(h, RPMTAG_VERSION) &&
+	headerIsEntry(h, RPMTAG_RELEASE) &&
+	headerIsEntry(h, RPMTAG_BUILDTIME)))
+    {
+	headerFree(h);
+	h = NULL;
+    }
+
     if (h == NULL)
 	goto exit;
 
@@ -257,8 +267,11 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
 	} else {		/* XXX simulated retrieval */
 	    data.data = doGetRecord(pkgs, offset);
 	    data.size = 0;	/* XXX WRONG */
-	    if (data.data == NULL)
+	    if (data.data == NULL) {
+if (keyp)	*keyp = key.data;
+if (keylen)	*keylen = key.size;
 		rc = EFAULT;
+	    }
 	}
     } else {
 	DB * db;

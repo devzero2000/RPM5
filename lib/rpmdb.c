@@ -1344,6 +1344,13 @@ top:
 	    keylen = mi->mi_keylen;
 
 	    rc = dbiGet(dbi, mi->mi_dbc, &keyp, &keylen, &uh, &uhlen, 0);
+if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
+    rpmError(RPMERR_INTERNAL,
+	_("record number %d in database is bad -- skipping.\n"), dbi->dbi_lastoffset);
+    if (keyp && dbi->dbi_lastoffset)
+	memcpy(&mi->mi_offset, keyp, sizeof(mi->mi_offset));
+    continue;
+}
 
 	    /*
 	     * If we got the next key, save the header instance number.
