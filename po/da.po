@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "POT-Creation-Date: 2001-01-17 12:28-0500\n"
-"PO-Revision-Date: 2001-01-18 01:27+01:00\n"
+"PO-Revision-Date: 2001-01-18 22:46+01:00\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
@@ -1279,9 +1279,9 @@ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
 msgstr "       %s {--initdb}   [--dbpath <katalog>]\n"
 
 #: rpmqv.c:418
-#, fuzzy, c-format
+#, c-format
 msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-msgstr "       %s {--rebuilddb} [--rcfile <fil>] [--dbpath <katalog>]\n"
+msgstr "       %s {--rebuilddb} [--rcfile <fil:....>] [--dbpath <katalog>]\n"
 
 #: rpmqv.c:422
 #, c-format
@@ -1291,39 +1291,38 @@ msgstr ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 
 #: rpmqv.c:425
-#, fuzzy
 msgid ""
 "                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                        [--rcfile <fil>] [--ignorearch] [--dbpath <katalog>]"
+"                        [--rcfile <fil:....>] [--ignorearch] [--dbpath "
+"<katalog>]"
 
 #: rpmqv.c:434
-#, fuzzy
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file:...>]"
 msgstr ""
-"                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
+"                        [--excludedocs] [--includedocs] [--rcfile <fil:....>]"
 
 #: rpmqv.c:442
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:...>]\n"
 msgstr ""
-"       %s {--erase -e} [--root <katalog>] [--noscripts] [--rcfile <fil>]\n"
+"       %s {--erase -e} [--root <katalog>] [--noscripts] [--rcfile "
+"<fil:....>]\n"
 
 #: rpmqv.c:449
-#, fuzzy
 msgid ""
 "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
 msgstr ""
-"                        [--scripts] [--root <katalog>] [--rcfile <fil>]"
+"                        [--scripts] [--root <katalog>] [--rcfile <fil:....>]"
 
 #: rpmqv.c:456
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
 msgstr ""
-"       %s {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <fil>]\n"
+"       %s {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <fil:....>]\n"
 
 #: rpmqv.c:460
 #, c-format
@@ -1336,24 +1335,25 @@ msgid "       %s {--setugids} [-afpg] [target]\n"
 msgstr "       %s {--setugids} [-afpg] [mål]\n"
 
 #: rpmqv.c:465
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--resign} [--rcfile <file:...>] package1 package2 ... packageN\n"
-msgstr "       %s {--resign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN\n"
+msgstr "       %s {--resign} [--rcfile <fil:....>] pakke1 pakke2 ... pakkeN\n"
 
 #: rpmqv.c:466
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-msgstr "       %s {--addsign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN"
+msgstr "       %s {--addsign} [--rcfile <fil:....>] pakke1 pakke2 ... pakkeN"
 
 #: rpmqv.c:467
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
 "<file:...>]\n"
 msgstr ""
-"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]\n"
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
+"<fil:....>]\n"
 
 #: rpmqv.c:511
 msgid "  All modes support the following options:"
@@ -1364,28 +1364,24 @@ msgid "   --define '<name> <body>'"
 msgstr "   --define '<navn> <indhold>'"
 
 #: rpmqv.c:514
-#, fuzzy
 msgid "   --eval '<expr>+'       "
-msgstr "   --eval '<navn>+'       "
+msgstr "   --eval '<udtryk>+'     "
 
 #: rpmqv.c:515
-#, fuzzy
 msgid "print the expansion of macro <expr> to stdout"
-msgstr "send udvidelsen af makro <navn> til standard-ud"
+msgstr "send udvidelsen af makro <udtryk> til standard-ud"
 
 #: rpmqv.c:516
 msgid "   --pipe <cmd>           "
 msgstr "   --pipe <kmd>           "
 
 #: rpmqv.c:518
-#, fuzzy
 msgid "   --rcfile <file:...>    "
-msgstr "    --rcfile <fil>        "
+msgstr "    --rcfile <fil:....>   "
 
 #: rpmqv.c:519
-#, fuzzy
 msgid "use <file:...> instead of default list of macro files"
-msgstr "læs <fil:...> i stedet for standard makrofil(er)"
+msgstr "læs <fil:...> i stedet for standardlisten over makrofil(er)"
 
 #: rpmqv.c:523
 msgid "   --dbpath <dir>         "
@@ -1554,7 +1550,6 @@ msgid "rebuild database indices from existing database headers"
 msgstr "genopbyg databaseindekser ud fra eksisterende databasehoveder"
 
 #: rpmqv.c:996
-#, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Brug \"--macros <fil:...>\" i stedet..\n"
 
@@ -1596,7 +1591,7 @@ msgstr "Udførelse af %s mislykkedes (%s): %s\n"
 #: build/build.c:208
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
-msgstr "Dårlig afslutningsstatus fra %s (%s)\n"
+msgstr "Fejl-afslutningsstatus fra %s (%s)\n"
 
 #: build/build.c:307
 msgid ""
@@ -4115,9 +4110,3 @@ msgstr "url-port skal være et tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
-
-#~ msgid "Query/Verify options:"
-#~ msgstr "Tilvalg for Forespørgsel/Verifikation:"
-
-#~ msgid "   --rcfile <file>        "
-#~ msgstr "   --rcfile <fil>         "
