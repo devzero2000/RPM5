@@ -103,6 +103,7 @@
 #%_gpg_path
 #%_httpport
 #%_httpproxy
+#%_install_langs
 #%_langpatt
 #%_netsharedpath
 #%packager
