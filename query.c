@@ -15,6 +15,7 @@
 # include <alloca.h>
 #endif
 
+#include "intl.h"
 #include "lib/messages.h"
 #include "miscfn.h"
 #include "rpmlib.h"
@@ -23,12 +24,6 @@
 
 static char * permsString(int mode);
 static void printHeader(Header h, int queryFlags, char * queryFormat);
-static int queryPartial(Header h, char ** chptrptr, int * cntptr, 
-			int arrayNum);
-static int queryHeader(Header h, char * chptr);
-static int queryArray(Header h, char ** chptrptr);
-static void escapedChar(char ch);
-static char * handleFormat(Header h, char * chptr, int * count, int arrayNum);
 static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags, 
 			char * queryFormat);
 static int findMatches(rpmdb db, char * name, char * version, char * release,
@@ -39,292 +34,18 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  char * linkto);
 
 static int queryHeader(Header h, char * chptr) {
-    int count = 0;
+    char * str;
+    char * error;
 
-    return queryPartial(h, &chptr, &count, -1);
-}
-
-static int queryArray(Header h, char ** chptrptr) {
-    int count = 0;
-    int arrayNum;
-    char * start = NULL;
-
-    /* first one */
-    start = *chptrptr;
-    if (queryPartial(h, chptrptr, &count, 0)) return 1;
-
-    arrayNum = 1;
-    while (arrayNum < count) {
-	*chptrptr = start;
-	if (queryPartial(h, chptrptr, &count, arrayNum++)) return 1;
+    str = headerSprintf(h, chptr, rpmTagTable, rpmHeaderFormats, &error);
+    if (!str) {
+	fprintf(stderr, "error in format: %s\n", error);
+	return 1;
     }
+
+    fputs(str, stdout);
 
     return 0;
-}
-
-static int queryPartial(Header h, char ** chptrptr, int * cntptr, 
-			int arrayNum) {
-    char * chptr = *chptrptr;
-    int count;
-    int emptyItem = 0;
-
-    while (chptr && *chptr) {
-	switch (*chptr) {
-	  case '\\':
-	    chptr++;
-	    if (!*chptr) return 1;
-	    escapedChar(*chptr++);
-	    break;
-
-	  case '%':
-	    chptr++;
-	    if (!*chptr) return 1;
-	    if (*chptr == '%') {
-		putchar('%');
-		chptr++;
-	    }
-	    count = *cntptr;
-	    chptr = handleFormat(h, chptr, &count, arrayNum);
-	    if (!count) {
-		count = 0;	
-		emptyItem = 1;
-	    } else if (count != -1 && !*cntptr && !emptyItem){ 
-		*cntptr = count;
-	    } else if (count != -1 && *cntptr && count != *cntptr) {
-		fprintf(stderr, "(parallel array size mismatch)");
-		return 1;
-	    }
-	    break;
-
-	  case ']':
-	    if (arrayNum == -1) {
-		printf("(unexpected ']')");
-		return 1;
-	    }
-	    *chptrptr = chptr + 1;
-	    return 0;
-
-	  case '[':
-	    if (arrayNum != -1) {
-		printf("(unexpected ']')");
-		return 1;
-	    }
-	    *chptrptr = chptr + 1;
-	    if (queryArray(h, chptrptr)) {
-		return 1;
-	    }
-	    chptr = *chptrptr;
-	    break;
-
-	  default:
-	    putchar(*chptr++);
-	}
-    }
-
-    *chptrptr = chptr;
-
-    return 0;
-}
-
-static char * handleFormat(Header h, char * chptr, int * cntptr,
-				 int arrayNum) {
-    const char * f = chptr;
-    const char * tagptr;
-    char * end;
-    char how[20], format[20];
-    int i, tagLength;
-    char tag[100];
-    const struct headerTagTableEntry * t;
-    void * p;
-    int type;
-    int showCount = 0;
-    int notArray = 0;
-    time_t dateint;
-    struct tm * tstruct;
-    char buf[100];
-    int count;
-    int anint;
-
-    strcpy(format, "%");
-    while (*chptr && *chptr != '{') chptr++;
-    if (!*chptr || (chptr - f > (sizeof(format) - 3))) {
-	fprintf(stderr, "bad query format - %s\n", f);
-	return NULL;
-    }
-
-    strncat(format, f, chptr - f);
-
-    tagptr = ++chptr;
-    while (*chptr && *chptr != '}' && *chptr != ':' ) chptr++;
-    if (tagptr == chptr || !*chptr) {
-	fprintf(stderr, "bad query format - %s\n", f);
-	return NULL;
-    }
-
-    if (*chptr == ':') {
-	end = chptr + 1;
-	while (*end && *end != '}') end++;
-
-	if (*end != '}') {
-	    fprintf(stderr, "bad query format - %s\n", f);
-	    return NULL;
-	}
-	if ((end - chptr + 1) > sizeof(how)) {
-	    fprintf(stderr, "bad query format - %s\n", f);
-	    return NULL;
-	}
-	strncpy(how, chptr + 1, end - chptr - 1);
-	how[end - chptr - 1] = '\0';
-    } else {
-	strcpy(how, "");
-	end = chptr;
-    }
-
-    switch (*tagptr) {
-	case '=':	notArray = 1, tagptr++;	break;
-	case '#':	showCount = 1, tagptr++; break;
-    }
-
-    tagLength = chptr - tagptr;
-    chptr = end + 1;
-
-    if (tagLength > (sizeof(tag) - 20)) {
-	fprintf(stderr, "query tag too long\n");
-	return NULL;
-    }
-    memset(tag, 0, sizeof(tag));
-    if (strncmp(tagptr, "RPMTAG_", 7)) {
-	strcpy(tag, "RPMTAG_");
-    }
-    strncat(tag, tagptr, tagLength);
-
-    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	if (!strcasecmp(tag, t->name)) break;
-    }
-
-    if (i == rpmTagTableSize) {
-	fprintf(stderr, "unknown tag %s\n", tag);
-	return NULL;
-    }
- 
-    if (!headerGetEntry(h, t->val, &type, &p, &count) || !p) {
-	p = "(none)";
-	count = 1;
-	type = RPM_STRING_TYPE;
-    } else if (notArray) {
-	*cntptr = -1;
-    } else if (showCount) {
-	i = count;
-	p = &i;
-	type = RPM_INT32_TYPE;
-	count = 1;
-    } else if (count > 1 && (arrayNum == -1)) {
-	p = "(array)";
-	count = 1;
-	type = RPM_STRING_TYPE;
-    } else if ((count - 1) < arrayNum && arrayNum != -1) {
-	p = "(past array end)";
-	count = 1;
-	type = RPM_STRING_TYPE;
-    } else if (arrayNum != -1)
-	*cntptr = count;
-
-    if (arrayNum == -1) arrayNum = 0;
-
-    switch (type) {
-      case RPM_STRING_ARRAY_TYPE:
-	strcat(format, "s");
-	printf(format, ((char **) p)[arrayNum]);
-	free(p);
-	break;
-
-      case RPM_STRING_TYPE:
-	strcat(format, "s");
-	printf(format, p);
-	break;
-
-      case RPM_CHAR_TYPE:
-      case RPM_INT8_TYPE:
-	strcat(format, "d");
-	printf(format, *(((int_8 *) p) + arrayNum));
-	break;
-
-      case RPM_INT16_TYPE:
-	if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
-	    strcat(format, "s");
-	    printf(format, permsString(*(((int_16 *) p) + arrayNum)));
-	} else if (!strcmp(how, "octal")) {
-	    strcat(format, "#o");
-	    printf(format, *(((int_16 *) p) + arrayNum) & 0xFFFF);
-	} else {
-	    strcat(format, "d");
-	    printf(format, *(((int_16 *) p) + arrayNum));
-	}
-	break;
-
-      case RPM_INT32_TYPE:
-	if (!strcmp(how, "date")) {
-	    strcat(format, "s");
-	    /* this is important if sizeof(int_32) ! sizeof(time_t) */
-	    dateint = *(((int_32 *) p) + arrayNum);
-	    tstruct = localtime(&dateint);
-	    strftime(buf, sizeof(buf) - 1, "%c", tstruct);
-	    printf(format, buf);
-	} else if (!strcmp(how, "fflags")) {
-	    strcat(format, "s");
-	    buf[0] = '\0';
-	    anint = *(((int_32 *) p) + arrayNum);
-	    if (anint & RPMFILE_DOC)
-		strcat(buf, "d");
-	    if (anint & RPMFILE_CONFIG)
-		strcat(buf, "c");
-	    printf(format, buf);
-	} else if (!strcmp(how, "octal")) {
-	    strcat(format, "#o");
-	    printf(format, *(((int_32 *) p) + arrayNum));
-	} else if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
-	    strcat(format, "s");
-	    printf(format, permsString(*(((int_32 *) p) + arrayNum)));
-	} else if (!strcmp(how, "depflags")) {
-	    buf[0] = '\0';
-	    anint = *(((int_32 *) p) + arrayNum);
-	    if (anint & RPMSENSE_LESS) 
-		strcat(buf, "<");
-	    if (anint & RPMSENSE_GREATER)
-		strcat(buf, ">");
-	    if (anint & RPMSENSE_EQUAL)
-		strcat(buf, "=");
-	    if (anint & RPMSENSE_SERIAL)
-		strcat(buf, "S");
-	
-	    strcat(format, "s");
-	    printf(format, buf);
-	} else {
-	    strcat(format, "d");
-	    printf(format, *(((int_32 *) p) + arrayNum));
-	}
-	break;
-
-      default:
-	printf("(can't handle type %d)", type);
-	break;
-    }
-
-    return chptr;
-}
-
-static void escapedChar(const char ch) {
-    switch (ch) {
-      case 'a': 	putchar('\a'); break;
-      case 'b': 	putchar('\b'); break;
-      case 'f': 	putchar('\f'); break;
-      case 'n': 	putchar('\n'); break;
-      case 'r': 	putchar('\r'); break;
-      case 't': 	putchar('\t'); break;
-      case 'v': 	putchar('\v'); break;
-
-      default:		putchar(ch); break;
-    }
 }
 
 static void printHeader(Header h, int queryFlags, char * queryFormat) {
@@ -355,7 +76,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	if (queryFlags & QUERY_FOR_LIST) {
 	    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 		 &count)) {
-		puts("(contains no files)");
+		puts(_("(contains no files)"));
 	    } else {
 		if (!headerGetEntry(h, RPMTAG_FILESTATES, &type, 
 			 (void **) &fileStatesList, &count)) {
@@ -555,6 +276,8 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 	thisMonth = tstruct->tm_mon;
     }
 
+    ownerfield[8] = groupfield[8] = '\0';
+
     if (owner) 
 	strncpy(ownerfield, owner, 8);
     else
@@ -607,7 +330,7 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
 	    
 	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
 	    if (!h) {
-		fprintf(stderr, "error: could not read database record\n");
+		fprintf(stderr, _("error: could not read database record\n"));
 	    } else {
 		printHeader(h, queryFlags, queryFormat);
 		headerFree(h);
@@ -643,14 +366,14 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	if (urlIsURL(arg)) {
 	    isUrl = 1;
 	    if ((fd = urlGetFd(arg, &context)) < 0) {
-		fprintf(stderr, "open of %s failed: %s\n", arg, 
+		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 			ftpStrerror(fd));
 	    }
 	} else if (!strcmp(arg, "-")) {
 	    fd = 0;
 	} else {
 	    if ((fd = open(arg, O_RDONLY)) < 0) {
-		fprintf(stderr, "open of %s failed: %s\n", arg, 
+		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 			strerror(errno));
 	    }
 	}
@@ -666,19 +389,20 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    switch (rc) {
 		case 0:
 		    if (!h) {
-			fprintf(stderr, "old format source packages cannot be "
-						"queried\n");
+			fprintf(stderr, _("old format source packages cannot "
+				"be queried\n"));
 		    } else {
 			printHeader(h, queryFlags, queryFormat);
 			headerFree(h);
 		    }
 		    break;
 		case 1:
-		    fprintf(stderr, "%s does not appear to be a RPM package\n", 
-				arg);
+		    fprintf(stderr, 
+			    _("%s does not appear to be a RPM package\n"), 
+			    arg);
 		    /* fallthrough */
 		case 2:
-		    fprintf(stderr, "query of %s failed\n", arg);
+		    fprintf(stderr, _("query of %s failed\n"), arg);
 		    retcode = 1;
 	    }
 
@@ -691,7 +415,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	while (offset) {
 	    h = rpmdbGetRecord(db, offset);
 	    if (!h) {
-		fprintf(stderr, "could not read database record!\n");
+		fprintf(stderr, _("could not read database record!\n"));
 		return 1;
 	    }
 	    printHeader(h, queryFlags, queryFormat);
@@ -702,7 +426,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_GROUP:
 	if (rpmdbFindByGroup(db, arg, &matches)) {
-	    fprintf(stderr, "group %s does not contain any packages\n", arg);
+	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -712,7 +436,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_WHATPROVIDES:
 	if (rpmdbFindByProvides(db, arg, &matches)) {
-	    fprintf(stderr, "no package provides %s\n", arg);
+	    fprintf(stderr, _("no package provides %s\n"), arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -722,7 +446,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_WHATREQUIRES:
 	if (rpmdbFindByRequiredBy(db, arg, &matches)) {
-	    fprintf(stderr, "no package requires %s\n", arg);
+	    fprintf(stderr, _("no package requires %s\n"), arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -736,7 +460,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 		arg = path;
 	}
 	if (rpmdbFindByFile(db, arg, &matches)) {
-	    fprintf(stderr, "file %s is not owned by any package\n", arg);
+	    fprintf(stderr, _("file %s is not owned by any package\n"), arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -747,14 +471,14 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
       case QUERY_DBOFFSET:
 	recNumber = strtoul(arg, &end, 10);
 	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
-	    fprintf(stderr, "invalid package number: %s\n", arg);
+	    fprintf(stderr, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmMessage(RPMMESS_DEBUG, "showing package: %d\n", recNumber);
+	rpmMessage(RPMMESS_DEBUG, _("showing package: %d\n"), recNumber);
 	h = rpmdbGetRecord(db, recNumber);
 
 	if (!h)  {
-	    fprintf(stderr, "record %d could not be read\n", recNumber);
+	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
 	    retcode = 1;
 	} else {
 	    printHeader(h, queryFlags, queryFormat);
@@ -766,10 +490,10 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	rc = findPackageByLabel(db, arg, &matches);
 	if (rc == 1) {
 	    retcode = 1;
-	    fprintf(stderr, "package %s is not installed\n", arg);
+	    fprintf(stderr, _("package %s is not installed\n"), arg);
 	} else if (rc == 2) {
 	    retcode = 1;
-	    fprintf(stderr, "error looking for package %s\n", arg);
+	    fprintf(stderr, _("error looking for package %s\n"), arg);
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
 	    dbiFreeIndexRecord(matches);
@@ -846,13 +570,15 @@ int findMatches(rpmdb db, char * name, char * version, char * release,
 	if (matches->recs[i].recOffset) {
 	    h = rpmdbGetRecord(db, matches->recs[i].recOffset);
 	    if (!h) {
-		fprintf(stderr, "error: could not read database record\n");
+		fprintf(stderr, _("error: could not read database record\n"));
 		dbiFreeIndexRecord(*matches);
 		return 2;
 	    }
 
-	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &pkgVersion, &count);
-	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &pkgRelease, &count);
+	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &pkgVersion, 
+			   &count);
+	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &pkgRelease, 
+			   &count);
 	    
 	    goodRelease = goodVersion = 1;
 
@@ -879,6 +605,6 @@ void queryPrintTags(void) {
     int i;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	printf("%s\n", t->name);
+	printf("%s\n", t->name + 7);
     }
 }
