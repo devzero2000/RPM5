@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-11-15 18:13-0500\n"
+"POT-Creation-Date: 2000-11-16 12:46-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2613,86 +2613,86 @@ msgstr "значение %%instchangelog в макрофайле должно быть числом"
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:590
+#: lib/install.c:592
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "распаковка архива не удалась%s%s: %s"
 
-#: lib/install.c:591
+#: lib/install.c:593
 msgid " on file "
 msgstr " на файле "
 
-#: lib/install.c:635
+#: lib/install.c:637
 msgid "installing a source package\n"
 msgstr "устанавливается исходный пакет\n"
 
-#: lib/install.c:655
+#: lib/install.c:657
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "невозможно создать sourcedir %s"
 
-#: lib/install.c:661 lib/install.c:691
+#: lib/install.c:663 lib/install.c:693
 #, c-format
 msgid "cannot write to %s"
 msgstr "невозможно писать в %s"
 
-#: lib/install.c:665
+#: lib/install.c:667
 #, c-format
 msgid "sources in: %s\n"
 msgstr "исходники в: %s\n"
 
-#: lib/install.c:685
+#: lib/install.c:687
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "невозможно создать specdir %s"
 
-#: lib/install.c:695
+#: lib/install.c:697
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "файл spec в: %s\n"
 
-#: lib/install.c:729 lib/install.c:757
+#: lib/install.c:731 lib/install.c:759
 msgid "source package contains no .spec file"
 msgstr "исходный пакет не содержит файла .spec"
 
-#: lib/install.c:779
+#: lib/install.c:781
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/install.c:781 lib/install.c:1054 lib/uninstall.c:28
+#: lib/install.c:783 lib/install.c:1056 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "ошибка переименования %s в %s: %s"
 
-#: lib/install.c:873
+#: lib/install.c:875
 msgid "source package expected, binary found"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного"
 
-#: lib/install.c:923
+#: lib/install.c:925
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/install.c:983
+#: lib/install.c:985
 msgid "stopping install as we're running --test\n"
 msgstr "установка прекращается, т.к. мы исполняем --test\n"
 
-#: lib/install.c:988
+#: lib/install.c:990
 msgid "running preinstall script (if any)\n"
 msgstr "исполняется скрипт preinstall (если есть)\n"
 
-#: lib/install.c:1013
+#: lib/install.c:1015
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "внимание: %s создан как %s"
 
-#: lib/install.c:1050
+#: lib/install.c:1052
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "внимание: %s сохранен как %s"
 
-#: lib/install.c:1138
+#: lib/install.c:1140
 msgid "running postinstall scripts (if any)\n"
 msgstr "выполняется скрипт postinstall (если есть)\n"
 

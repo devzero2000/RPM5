@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.10
+Release: 0.11
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -272,6 +272,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Nov 16 2000 Jeff Johnson <jbj@redhat.com>
+- don't verify src rpm MD5 sums (yet).
+
 * Wed Nov 15 2000 Jeff Johnson <jbj@redhat.com>
 - fix: segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" (#20595).
 - hpux w/o -D_OPEN_SOURCE has not h_errno.

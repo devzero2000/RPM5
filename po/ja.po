@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-11-15 18:13-0500\n"
+"POT-Creation-Date: 2000-11-16 12:46-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2689,87 +2689,87 @@ msgstr ""
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:590
+#: lib/install.c:592
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/install.c:591
+#: lib/install.c:593
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/install.c:635
+#: lib/install.c:637
 msgid "installing a source package\n"
 msgstr "ソースパッケージをインストールしています\n"
 
-#: lib/install.c:655
+#: lib/install.c:657
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:661 lib/install.c:691
+#: lib/install.c:663 lib/install.c:693
 #, c-format
 msgid "cannot write to %s"
 msgstr "%s へ書き込めません"
 
-#: lib/install.c:665
+#: lib/install.c:667
 #, c-format
 msgid "sources in: %s\n"
 msgstr "ソースは: %s\n"
 
-#: lib/install.c:685
+#: lib/install.c:687
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:695
+#: lib/install.c:697
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec ファイルは: %s\n"
 
-#: lib/install.c:729 lib/install.c:757
+#: lib/install.c:731 lib/install.c:759
 msgid "source package contains no .spec file"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/install.c:779
+#: lib/install.c:781
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/install.c:781 lib/install.c:1054 lib/uninstall.c:28
+#: lib/install.c:783 lib/install.c:1056 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s を %s にする名前の変更に失敗: %s"
 
-#: lib/install.c:873
+#: lib/install.c:875
 msgid "source package expected, binary found"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/install.c:923
+#: lib/install.c:925
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/install.c:983
+#: lib/install.c:985
 msgid "stopping install as we're running --test\n"
 msgstr "--test を実行するようにインストールを中止しています\n"
 
-#: lib/install.c:988
+#: lib/install.c:990
 msgid "running preinstall script (if any)\n"
 msgstr "プリインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/install.c:1013
+#: lib/install.c:1015
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "警告: %s は %s として作成されます"
 
-#: lib/install.c:1050
+#: lib/install.c:1052
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/install.c:1138
+#: lib/install.c:1140
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"

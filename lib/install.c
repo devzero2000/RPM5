@@ -543,7 +543,9 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 #else
 	    urltype = urlPath(files[i].relativePath, &map[mappedFiles].fsPath);
 #endif
-	    map[mappedFiles].md5sum = files[i].md5sum;
+	    /* XXX Can't do src rpm MD5 sum verification yet. */
+	    map[mappedFiles].md5sum =
+		specFile == NULL ? files[i].md5sum : NULL;
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;
@@ -745,7 +747,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     Chdir(realSourceDir);
     if (installArchive(fd, fileCount > 0 ? files : NULL,
 			  fileCount, notify, notifyData, NULL, h,
-			  specFileIndex >=0 ? NULL : &specFile,
+			  specFileIndex >= 0 ? NULL : &specFile,
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
 	rc = 2;
 	goto exit;

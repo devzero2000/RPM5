@@ -19,6 +19,7 @@
 	- verify MD5 sums of payload files when unpacking archive.
 	- hide libio lossage in prototype, not API.
 	- add support for SHA1 as well as MD5 message digests.
+	- don't verify src rpm MD5 sums (yet).
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

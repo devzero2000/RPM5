@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-11-15 18:13-0500\n"
+"POT-Creation-Date: 2000-11-16 12:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2538,86 +2538,86 @@ msgstr ""
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:590
+#: lib/install.c:592
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:591
+#: lib/install.c:593
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:635
+#: lib/install.c:637
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:655
+#: lib/install.c:657
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr ""
 
-#: lib/install.c:661 lib/install.c:691
+#: lib/install.c:663 lib/install.c:693
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:665
+#: lib/install.c:667
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:685
+#: lib/install.c:687
 #, c-format
 msgid "cannot create specdir %s"
 msgstr ""
 
-#: lib/install.c:695
+#: lib/install.c:697
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:729 lib/install.c:757
+#: lib/install.c:731 lib/install.c:759
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:779
+#: lib/install.c:781
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:781 lib/install.c:1054 lib/uninstall.c:28
+#: lib/install.c:783 lib/install.c:1056 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:873
+#: lib/install.c:875
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:923
+#: lib/install.c:925
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:983
+#: lib/install.c:985
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:988
+#: lib/install.c:990
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1013
+#: lib/install.c:1015
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1050
+#: lib/install.c:1052
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1138
+#: lib/install.c:1140
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
