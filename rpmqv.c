@@ -616,6 +616,8 @@ int main(int argc, const char ** argv)
 	(void) close(p[1]);
     }
 	
+    _noDirTokens = rpmExpandNumeric("%{?_noDirTokens}");
+
     ts = rpmtsCreate();
     (void) rpmtsSetRootDir(ts, rpmcliRootDir);
     switch (bigMode) {

@@ -291,6 +291,8 @@
 	- fix: use size_t consistently, avoid segfault on ia64.
 	- use %%{_lib} for libraries.
 	- fix: permit build with --disable-nls (#76258).
+	- backport db-4.1.17 changes.
+	- add _noDirTokens macro for 6x builds.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

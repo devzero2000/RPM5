@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 11
+Release: 12
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -454,7 +454,11 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Thu Oct 10 2002 Jeff Johnson <jbj@redhat.com>
+* Wed Nov  6 2002 Jeff Johnson <jbj@redhat.com> 4.1-11
+- backport db-4.1.17 changes.
+- add _noDirTokens macro for 6x builds.
+
+* Thu Oct 10 2002 Jeff Johnson <jbj@redhat.com> 4.1-10
 - use %%{_lib} for libraries.
 
 * Mon Oct  7 2002 Jeff Johnson <jbj@redhat.com> 4.1-9
