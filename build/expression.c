@@ -1,17 +1,13 @@
-/** \file build/expression.c
+/** \ingroup rpmbuild
+ * \file build/expression.c
  *  Simple logical expression parser.
- */
-
-/*
- * Simple Expression Parser
- * Copyright (C) 1998 Tom Dyas <tdyas@eden.rutgers.edu>
- *
  * This module implements a basic expression parser with support for
  * integer and string datatypes. For ease of programming, we use the
  * top-down "recursive descent" method of parsing. While a
  * table-driven bottom-up parser might be faster, it does not really
  * matter for the expressions we will be parsing.
  *
+ * Copyright (C) 1998 Tom Dyas <tdyas@eden.rutgers.edu>
  * This work is provided under the GPL or LGPL at your choice.
  */
 
@@ -38,7 +34,7 @@ typedef struct _value
 {
   enum { VALUE_TYPE_INTEGER, VALUE_TYPE_STRING } type;
   union {
-    char *s;
+    const char *s;
     int i;
   } data;
 } *Value;
@@ -53,20 +49,20 @@ static Value valueMakeInteger(int i)
   return v;
 }
 
-static Value valueMakeString(const char *s)
+static Value valueMakeString(/*@only@*/ const char *s)
 {
   Value v;
 
   v = (Value) xmalloc(sizeof(struct _value));
   v->type = VALUE_TYPE_STRING;
-  v->data.s = xstrdup(s);
+  v->data.s = s;
   return v;
 }
 
 static void valueFree( /*@only@*/ Value v)
 {
   if (v) {
-    if (v->type == VALUE_TYPE_STRING) free(v->data.s);
+    if (v->type == VALUE_TYPE_STRING) xfree(v->data.s);
     free(v);
   }
 }
@@ -273,7 +269,7 @@ static int rdToken(ParseState state)
       p--;
 
       token = TOK_IDENTIFIER;
-      v = valueMakeString(temp);
+      v = valueMakeString( xstrdup(temp) );
 
     } else if (*p == '\"') {
       char temp[EXPRBUFSIZ], *t = temp;
@@ -283,10 +279,8 @@ static int rdToken(ParseState state)
 	*t++ = *p++;
       *t++ = '\0';
 
-      expandMacros(state->spec, state->spec->macros, temp, sizeof(temp));
-
       token = TOK_STRING;
-      v = valueMakeString(temp);
+      v = valueMakeString( rpmExpand(temp, NULL) );
 
     } else {
       rpmError(RPMERR_BADSPEC, _("parse error in expression"));
@@ -331,16 +325,9 @@ static Value doPrimary(ParseState state)
     break;
 
   case TOK_IDENTIFIER: {
-    char *name = state->tokenValue->data.s;
-    const char *body;
+    const char *name = state->tokenValue->data.s;
 
-    body = getMacroBody(state->spec->macros, name);
-    if (!body) {
-      rpmError(RPMERR_BADSPEC, _("undefined identifier"));
-      return NULL;
-    }
-
-    v = valueMakeString(body);
+    v = valueMakeString( rpmExpand(name, NULL) );
     if (rdToken(state))
       return NULL;
     break;
@@ -476,12 +463,10 @@ static Value doAddSubtract(ParseState state)
       }
 
       copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
-      strcpy(copy, v1->data.s);
-      strcat(copy, v2->data.s);
+      (void) stpcpy( stpcpy(copy, v1->data.s), v2->data.s);
 
       valueFree(v1);
       v1 = valueMakeString(copy);
-      free(copy);
     }
   }
 
@@ -543,7 +528,9 @@ static Value doRelational(ParseState state)
       valueFree(v1);
       v1 = valueMakeInteger(r);
     } else {
-      char *s1 = v1->data.s, *s2 = v2->data.s, r = 0;
+      const char * s1 = v1->data.s;
+      const char * s2 = v2->data.s;
+      int r = 0;
       switch (op) {
       case TOK_EQ:
 	r = (strcmp(s1,s2) == 0);

@@ -45,7 +45,7 @@ static int checkOwners(const char *urlfn)
     static char buf[BUFSIZ];
     char args[BUFSIZ];
     struct Source *sp;
-    int compressed = 0;
+    rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
@@ -127,7 +127,7 @@ static int checkOwners(const char *urlfn)
     static char buf[BUFSIZ];
     char *taropts;
     struct Source *sp;
-    int compressed = 0;
+    rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {

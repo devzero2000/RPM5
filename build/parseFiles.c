@@ -1,4 +1,5 @@
-/** \file build/parseFiles.c
+/** \ingroup rpmbuild
+ * \file build/parseFiles.c
  *  Parse %files section from spec file.
  */
 
@@ -15,7 +16,6 @@
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-/** */
 int parseFiles(Spec spec)
 {
     int nextPart;

@@ -1,3 +1,7 @@
+/** \ingroup rpmcli
+ * \file lib/rpminstall.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>
@@ -6,24 +10,63 @@
 
 #include "misc.h"
 
+/*@access Header@*/		/* XXX compared with NULL */
+/*@access FD_t@*/		/* XXX compared with NULL */
+
+/* Define if you want percentage progress in the hash bars when
+ * writing to a tty (ordinary hash bars otherwise) --claudio
+ */
+#define FANCY_HASH
+
 static int hashesPrinted = 0;
+
+#ifdef FANCY_HASH
+static int packagesTotal = 0;
+static int progressTotal = 0;
+static int progressCurrent = 0;
+#endif
 
 static void printHash(const unsigned long amount, const unsigned long total)
 {
     int hashesNeeded;
+    int hashesTotal = 50;
 
-    if (hashesPrinted != 50) {
-	hashesNeeded = 50 * (total ? (((float) amount) / total) : 1);
+#ifdef FANCY_HASH
+    if (isatty (STDOUT_FILENO))
+       hashesTotal = 44;
+#endif
+
+    if (hashesPrinted != hashesTotal) {
+        hashesNeeded = hashesTotal * (total ? (((float) amount) / total) : 1);
 	while (hashesNeeded > hashesPrinted) {
-	    printf("#");
+#ifdef FANCY_HASH
+           if (isatty (STDOUT_FILENO)) {
+               int i;
+               for (i = 0; i < hashesPrinted; i++) putchar ('#');
+               for (; i < hashesTotal; i++) putchar (' ');
+               printf ("(%3d%%)", (int)(100 * (total ? (((float) amount) / total) : 1)));
+               for (i = 0; i < (hashesTotal + 6); i++) putchar ('\b');
+           } else
+#endif
+               fprintf(stdout, "#");
+
 	    fflush(stdout);
 	    hashesPrinted++;
 	}
 	fflush(stdout);
 	hashesPrinted = hashesNeeded;
 
-	if (hashesPrinted == 50)
-	    fprintf(stdout, "\n");
+       if (hashesPrinted == hashesTotal) {
+#ifdef FANCY_HASH
+           int i;
+           progressCurrent++;
+           for (i = 1; i < hashesPrinted; i++) putchar ('#');
+           printf (" [%3d%%]\n", (int)(100 * (progressTotal ?
+               (((float) progressCurrent) / progressTotal) : 1)));
+#else
+           fprintf (stdout, "\n");
+#endif
+       }
     }
 }
 
@@ -59,17 +102,24 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	    if (flags & INSTALL_HASH) {
 		s = headerSprintf(h, "%{NAME}",
 				  rpmTagTable, rpmHeaderFormats, NULL);
-		printf("%-28s", s);
+#ifdef FANCY_HASH
+               if (isatty (STDOUT_FILENO))
+                   fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
+              else
+#else
+                   fprintf(stdout, "%-28s", s);
+#endif
 		fflush(stdout);
 	    } else {
 		s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
 				  rpmTagTable, rpmHeaderFormats, NULL);
-		printf("%s\n", s);
+		fprintf(stdout, "%s\n", s);
 	    }
 	    free(s);
 	}
 	break;
 
+      case RPMCALLBACK_TRANS_PROGRESS:
       case RPMCALLBACK_INST_PROGRESS:
 	if (flags & INSTALL_PERCENT) {
 	    fprintf(stdout, "%%%% %f\n", (total
@@ -80,9 +130,32 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	}
 	break;
 
-      case RPMCALLBACK_TRANS_PROGRESS:
       case RPMCALLBACK_TRANS_START:
+       hashesPrinted = 0;
+#ifdef FANCY_HASH
+       progressTotal = 1;
+       progressCurrent = 0;
+#endif
+       if (flags & INSTALL_LABEL) {
+           if (flags & INSTALL_HASH) {
+               fprintf(stdout, "%-28s", _("Preparing..."));
+               fflush(stdout);
+           } else {
+               printf("%s\n", _("Preparing packages for installation..."));
+           }
+       }
+       break;
+
       case RPMCALLBACK_TRANS_STOP:
+       if (flags & INSTALL_HASH) {
+           printHash(1, 1);            /* Fixes "preparing..." progress bar */
+       }
+#ifdef FANCY_HASH
+       progressTotal = packagesTotal;
+       progressCurrent = 0;
+#endif
+       break;
+
       case RPMCALLBACK_UNINST_PROGRESS:
       case RPMCALLBACK_UNINST_START:
       case RPMCALLBACK_UNINST_STOP:
@@ -93,9 +166,12 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
     return rc;
 }	
 
-int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags, 
-	      int interfaceFlags, int probFilter, 
-	      rpmRelocation * relocations)
+/** @todo Generalize --freshen policies. */
+int rpmInstall(const char * rootdir, const char ** fileArgv,
+		rpmtransFlags transFlags, 
+		rpmInstallInterfaceFlags interfaceFlags,
+		rpmprobFilterFlags probFilter, 
+		rpmRelocation * relocations)
 {
     rpmdb db = NULL;
     FD_t fd;
@@ -208,10 +284,11 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 
     rpmMessage(RPMMESS_DEBUG, _("retrieved %d packages\n"), numTmpPkgs);
 
-    /* Build up the transaction set. As a special case, v1 source packages
-       are installed right here, only because they don't have headers and
-       would create all sorts of confusion later. */
-
+    /**
+     * Build up the transaction set. As a special case, v1 source packages
+     * are installed right here, only because they don't have headers and
+     * would create all sorts of confusion later.
+     */
     for (fileURL = pkgURL; *fileURL; fileURL++) {
 	const char * fileName;
 	(void) urlPath(*fileURL, &fileName);
@@ -365,7 +442,10 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 
     if (numRPMS && !stopInstall) {
 	rpmProblemSet probs = NULL;
-;
+
+#ifdef FANCY_HASH
+       packagesTotal = numRPMS;
+#endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 	rc = rpmRunTransactions(rpmdep, showProgress, (void *) ((long)notifyFlags), 
 				    NULL, &probs, transFlags, probFilter);
@@ -425,8 +505,9 @@ errxit:
     return numPkgs;
 }
 
-int rpmErase(const char * rootdir, const char ** argv, int transFlags,
-		 int interfaceFlags)
+int rpmErase(const char * rootdir, const char ** argv,
+		rpmtransFlags transFlags, 
+		rpmEraseInterfaceFlags interfaceFlags)
 {
     rpmdb db;
     int mode;
@@ -507,8 +588,8 @@ int rpmErase(const char * rootdir, const char ** argv, int transFlags,
     return numFailed;
 }
 
-int rpmInstallSource(const char * rootdir, const char * arg, const char ** specFile,
-		    char ** cookie)
+int rpmInstallSource(const char * rootdir, const char * arg,
+		const char ** specFile, char ** cookie)
 {
     FD_t fd;
     int rc;

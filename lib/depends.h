@@ -17,7 +17,7 @@ struct tsortInfo {
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
-/*@owned@*/ struct tsortInfo *tsi_next;
+/*@owned@*/ struct tsortInfo * tsi_next;
 /*@dependent@*/ struct availablePackage * tsi_pkg;
     int		tsi_reqx;
 };
@@ -95,7 +95,7 @@ struct availableList {
     struct availableIndex index;	/*!< Set of available items. */
     int size;
     int alloced;
-    int numDirs;			/*! No. of directories. */
+    int numDirs;			/*!< No. of directories. */
 /*@owned@*/ struct dirInfo * dirs;	/*!< Set of directories. */
 };
 
@@ -120,6 +120,11 @@ struct transactionElement {
  * The set of packages to be installed/removed atomically.
  */
 struct rpmTransactionSet_s {
+    rpmtransFlags transFlags;		/*!< Bit(s) to control operation. */
+    rpmCallbackFunction notify;		/*!< Callback function. */
+/*@observer@*/ rpmCallbackData notifyData;/*!< Callback private data. */
+/*@dependent@*/ rpmProblemSet probs;	/*!< Current problems in transaction. */
+    rpmprobFilterFlags ignoreSet;	/*!< Bits to filter current problems. */
 /*@owned@*/ /*@null@*/ rpmdb rpmdb;	/*!< Database handle. */
 /*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;		/*!< No. removed rpmdb instances. */

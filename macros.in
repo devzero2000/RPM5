@@ -55,6 +55,7 @@
 %__sed			@__SED@
 %__ssh			@__SSH@
 %__tar			@__TAR@
+%__unzip		%{_unzipbin}
 
 #==============================================================================
 # ---- Build system path macros.
@@ -117,6 +118,7 @@
 %_srcrpmdir		%{_topdir}/SRPMS
 %_tmppath		%{_var}/tmp
 %_topdir		%{_usrsrc}/redhat
+%_unzipbin		@UNZIPBIN@
 
 #==============================================================================
 # ---- Optional rpmrc macros.
@@ -275,9 +277,11 @@
 %_os			@RPMCANONOS@
 %_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
 #
-# XXX use the rpmrc instantiated macro for now
-#%optflags		-O2
+# Define a generic value for optflags. Normally overridden by per-target macros.
+%optflags		-O2
 
+#
+# Define per-arch and per-os defaults. Normally overridden by per-target macros.
 %__arch_install_post	%{nil}
 %__os_install_post	%{___build_post}
 
@@ -500,7 +504,7 @@ cd %{u2p:%{_builddir}}\
 # gotcha is that arguments, if present, should be on the same line as the
 # %configure.
 #
-# This is the version of %configure used throuugh rpm-3.0.4.
+# This is the version of %configure used through rpm-3.0.4.
 #%configure	\
 #  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
 #  CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}

@@ -1,3 +1,7 @@
+/** \ingroup rpmdb dbi
+ * \file lib/rpmdb.c
+ */
+
 #include "system.h"
 
 static int _debug = 0;
@@ -12,8 +16,10 @@ static int _debug = 0;
 #include <rpmmacro.h>	/* XXX for rpmGetPath/rpmGenPath */
 
 #include "rpmdb.h"
+
 /*@access dbiIndexSet@*/
 /*@access dbiIndexItem@*/
+/*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
 
 #include "fprint.h"
@@ -29,7 +35,7 @@ int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 #define	_DBI_MAJOR	-1
 
 static int dbiTagsMax = 0;
-static int *dbiTags = NULL;
+/*@only@*/ static int *dbiTags = NULL;
 
 /**
  * Return dbi index used for rpm tag.
@@ -686,7 +692,7 @@ int rpmdbOpenAll (rpmdb rpmdb)
     for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	if (rpmdb->_dbi[dbix] != NULL)
 	    continue;
-    	dbiOpen(rpmdb, dbiTags[dbix], rpmdb->db_flags);
+	(void) dbiOpen(rpmdb, dbiTags[dbix], rpmdb->db_flags);
     }
     return 0;
 }
@@ -906,8 +912,7 @@ int rpmdbInit (const char * prefix, int perms)
     return rc;
 }
 
-#ifndef	DYING_NOTYET
-/* XXX install.c, query.c, transaction.c, uninstall.c */
+#ifdef	DYING
 static Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
 {
     dbiIndex dbi;
@@ -988,7 +993,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	unsigned int prevoff;
 	Header h;
 
-#ifndef	DYING_NOTYET
+#ifdef	DYING
 	h = rpmdbGetRecord(rpmdb, offset);
 #else
 	{   rpmdbMatchIterator mi;
@@ -1121,11 +1126,11 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 	if (recoff == 0)
 	    continue;
 
-#ifndef	DYING_NOTYET
+#ifdef	DYING
 	h = rpmdbGetRecord(dbi->dbi_rpmdb, recoff);
 #else
     {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &recoff, sizeof(recoff));
+	mi = rpmdbInitIterator(dbi->dbi_rpmdb, RPMDBI_PACKAGES, &recoff, sizeof(recoff));
 	h = rpmdbNextIterator(mi);
 	if (h)
 	    h = headerLink(h);
@@ -1655,7 +1660,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
     Header h;
     sigset_t signalMask;
 
-#ifndef	DYING_NOTYET
+#ifdef	DYING
     h = rpmdbGetRecord(rpmdb, hdrNum);
 #else
   { rpmdbMatchIterator mi;

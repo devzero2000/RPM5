@@ -1,3 +1,7 @@
+/** \ingroup rpmcli
+ * \file lib/query.c
+ */
+
 #include "system.h"
 
 #ifndef PATH_MAX
@@ -6,6 +10,9 @@
 
 #include "rpmbuild.h"
 #include <rpmurl.h>
+
+/*@access Header@*/			/* XXX compared with NULL */
+/*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 
 /* ======================================================================== */
 static char * permsString(int mode)
@@ -25,6 +32,7 @@ static char * permsString(int mode)
     else if (S_ISBLK(mode))
 	perms[0] = 'b';
 
+    /*@-unrecog@*/
     if (mode & S_IRUSR) perms[1] = 'r';
     if (mode & S_IWUSR) perms[2] = 'w';
     if (mode & S_IXUSR) perms[3] = 'x';
@@ -45,6 +53,7 @@ static char * permsString(int mode)
 
     if (mode & S_ISVTX)
 	perms[9] = ((mode & S_IXOTH) ? 't' : 'T');
+    /*@=unrecog@*/
 
     return perms;
 }
@@ -98,10 +107,12 @@ static void printFileInfo(FILE *fp, const char * name,
 	namefield = nf;
     } else if (S_ISCHR(mode)) {
 	perms[0] = 'c';
-	sprintf(sizefield, "%3u, %3u", (rdev >> 8) & 0xff, rdev & 0xFF);
+	sprintf(sizefield, "%3u, %3u", ((unsigned)(rdev >> 8) & 0xff),
+			((unsigned)rdev & 0xff));
     } else if (S_ISBLK(mode)) {
 	perms[0] = 'b';
-	sprintf(sizefield, "%3u, %3u", (rdev >> 8) & 0xff, rdev & 0xFF);
+	sprintf(sizefield, "%3u, %3u", ((unsigned)(rdev >> 8) & 0xff),
+			((unsigned)rdev & 0xff));
     }
 
     /* Convert file mtime to display format */
@@ -124,7 +135,7 @@ static void printFileInfo(FILE *fp, const char * name,
 	(void)strftime(timefield, sizeof(timefield) - 1, fmt, tm);
     }
 
-    fprintf(fp, "%s %4d %-8s%-8s %10s %s %s\n", perms, nlink,
+    fprintf(fp, "%s %4d %-8s%-8s %10s %s %s\n", perms, (int)nlink,
 		ownerfield, groupfield, sizefield, timefield, namefield);
     if (perms) free(perms);
 }
@@ -454,19 +465,18 @@ int showMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
     return ec;
 }
 
-/*
- * XXX Eliminate linkage loop into librpmbuild.a
- */
 /**
+ * @todo Eliminate linkage loop into librpmbuild.a
  */
 int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 		const char *buildRoot, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force) = NULL;
 /**
+ * @todo Eliminate linkage loop into librpmbuild.a
  */
 void	(*freeSpecVec) (Spec spec) = NULL;
 
-int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
+int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	rpmdb rpmdb, QVF_t showPackage)
 {
     rpmdbMatchIterator mi = NULL;
@@ -639,7 +649,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    fn = xstrdup( (fn ? fn : arg) );
 	} else
 	    fn = xstrdup(arg);
-	rpmCleanPath(fn);
+	(void) rpmCleanPath(fn);
 
 	mi = rpmdbInitIterator(rpmdb, RPMTAG_BASENAMES, fn, 0);
 	if (mi == NULL) {
@@ -706,7 +716,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
     return retcode;
 }
 
-int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg)
+int rpmQuery(QVA_t *qva, rpmQVSources source, const char * arg)
 {
     rpmdb rpmdb = NULL;
     int rc;

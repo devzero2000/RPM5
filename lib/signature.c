@@ -1,3 +1,7 @@
+/** \ingroup signature
+ * \file lib/signature.c
+ */
+
 /* signature.c - RPM signature functions */
 
 /* NOTES
@@ -21,7 +25,11 @@
 #include "rpmlead.h"
 #include "signature.h"
 
-typedef int (*md5func)(const char * fn, /*@out@*/unsigned char * digest);
+/*@access Header@*/		/* XXX compared with NULL */
+
+typedef	unsigned char byte;
+
+typedef int (*md5func)(const char * fn, /*@out@*/ byte * digest);
 
 int rpmLookupSignatureType(int action)
 {
@@ -74,12 +82,13 @@ const char * rpmDetectPGPVersion(pgpVersion *pgpVer)
 	char *pgpvbin;
 	struct stat statbuf;
 	
-	if (!(pgpbin && pgpbin[0] != '%') || ! (pgpvbin = (char *)alloca(strlen(pgpbin) + 2))) {
+	if (!(pgpbin && pgpbin[0] != '%')) {
 	  if (pgpbin) xfree(pgpbin);
 	  saved_pgp_version = -1;
 	  return NULL;
 	}
-	sprintf(pgpvbin, "%sv", pgpbin);
+	pgpvbin = (char *)alloca(strlen(pgpbin) + sizeof("v"));
+	(void)stpcpy(stpcpy(pgpvbin, pgpbin), "v");
 
 	if (stat(pgpvbin, &statbuf) == 0)
 	  saved_pgp_version = PGP_5;
@@ -115,17 +124,14 @@ static int checkSize(FD_t fd, int size, int sigsize)
     }
 }
 
-/* rpmReadSignature() emulates the new style signatures if it finds an */
-/* old-style one.  It also immediately verifies the header+archive  */
-/* size and returns an error if it doesn't match.                   */
-
 int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 {
-    unsigned char buf[2048];
+    byte buf[2048];
     int sigSize, pad;
     int_32 type, count;
     int_32 *archSize;
-    Header h;
+    Header h = NULL;
+    int rc = 1;		/* assume failure */
 
     if (headerp)
 	*headerp = NULL;
@@ -133,65 +139,58 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
     switch (sig_type) {
       case RPMSIG_NONE:
 	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
+	rc = 0;
 	break;
       case RPMSIG_PGP262_1024:
 	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
 	/* These are always 256 bytes */
 	if (timedRead(fd, buf, 256) != 256)
-	    return 1;
-	if (headerp) {
-	    *headerp = headerNew();
-	    headerAddEntry(*headerp, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
-	}
+	    break;
+	h = headerNew();
+	headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
+	rc = 0;
 	break;
       case RPMSIG_MD5:
       case RPMSIG_MD5_PGP:
 	rpmError(RPMERR_BADSIGTYPE,
 	      _("Old (internal-only) signature!  How did you get that!?"));
-	return 1;
-	/*@notreached@*/ break;
+	break;
       case RPMSIG_HEADERSIG:
 	rpmMessage(RPMMESS_DEBUG, _("New Header signature\n"));
 	/* This is a new style signature */
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	if (h == NULL)
-	    return 1;
+	    break;
 	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
-	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count)) {
-	    headerFree(h);
-	    return 1;
-	}
-	if (checkSize(fd, *archSize, sigSize + pad)) {
-	    headerFree(h);
-	    return 1;
-	}
+	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count))
+	    break;
+	if (checkSize(fd, *archSize, sigSize + pad))
+	    break;
 	if (pad) {
-	    if (timedRead(fd, buf, pad) != pad) {
-		headerFree(h);
-		return 1;
-	    }
+	    if (timedRead(fd, buf, pad) != pad)
+		break;
 	}
-	if (headerp) {
-	    *headerp = h;
-	} else {
-	    headerFree(h);
-	}
+	rc = 0;
 	break;
       default:
-	return 1;
-	/*@notreached@*/ break;
+	break;
     }
 
-    return 0;
+    if (rc == 0 && headerp)
+	*headerp = h;
+    else
+	headerFree(h);
+
+    return rc;
 }
 
 int rpmWriteSignature(FD_t fd, Header header)
 {
     int sigSize, pad;
-    static unsigned char buf[8] = "\000\000\000\000\000\000\000\000";
+    static byte buf[8] = "\000\000\000\000\000\000\000\000";
     int rc = 0;
     
     rc = headerWrite(fd, header, HEADER_MAGIC_YES);
@@ -389,7 +388,7 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
 {
     struct stat statbuf;
     int_32 size;
-    unsigned char buf[16];
+    byte buf[16];
     void *sig;
     int ret = -1;
     
@@ -423,7 +422,8 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
     return ret;
 }
 
-static int verifySizeSignature(const char *datafile, int_32 size, char *result)
+static rpmVerifySignatureReturn
+verifySizeSignature(const char *datafile, int_32 size, char *result)
 {
     struct stat statbuf;
 
@@ -432,19 +432,20 @@ static int verifySizeSignature(const char *datafile, int_32 size, char *result)
 	sprintf(result, "Header+Archive size mismatch.\n"
 		"Expected %d, saw %d.\n",
 		size, (int)statbuf.st_size);
-	return 1;
+	return RPMSIG_BAD;
     }
 
     sprintf(result, "Header+Archive size OK: %d bytes\n", size);
-    return 0;
+    return RPMSIG_OK;
 }
 
 #define	X(_x)	(unsigned)((_x) & 0xff)
 
-static int verifyMD5Signature(const char *datafile, unsigned char *sig, 
+static rpmVerifySignatureReturn
+verifyMD5Signature(const char *datafile, const byte *sig, 
 			      char *result, md5func fn)
 {
-    unsigned char md5sum[16];
+    byte md5sum[16];
 
     fn(datafile, md5sum);
     if (memcmp(md5sum, sig, 16)) {
@@ -461,7 +462,7 @@ static int verifyMD5Signature(const char *datafile, unsigned char *sig,
 		X(md5sum[4]),  X(md5sum[5]),  X(md5sum[6]),  X(md5sum[7]),
 		X(md5sum[8]),  X(md5sum[9]),  X(md5sum[10]), X(md5sum[11]),
 		X(md5sum[12]), X(md5sum[13]), X(md5sum[14]), X(md5sum[15]) );
-	return 1;
+	return RPMSIG_BAD;
     }
 
     sprintf(result, "MD5 sum OK: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
@@ -471,16 +472,16 @@ static int verifyMD5Signature(const char *datafile, unsigned char *sig,
 	    X(md5sum[8]),  X(md5sum[9]),  X(md5sum[10]), X(md5sum[11]),
 	    X(md5sum[12]), X(md5sum[13]), X(md5sum[14]), X(md5sum[15]) );
 
-    return 0;
+    return RPMSIG_OK;
 }
 
-static int verifyPGPSignature(const char *datafile, void *sig,
-			      int count, char *result)
+static rpmVerifySignatureReturn
+verifyPGPSignature(const char *datafile, const void * sig, int count, char *result)
 {
     int pid, status, outpipe[2];
     FD_t sfd;
     char *sigfile;
-    unsigned char buf[BUFSIZ];
+    byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
     const char *path;
@@ -586,13 +587,13 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     return res;
 }
 
-static int verifyGPGSignature(const char *datafile, void *sig,
-			      int count, char *result)
+static rpmVerifySignatureReturn
+verifyGPGSignature(const char *datafile, const void * sig, int count, char *result)
 {
     int pid, status, outpipe[2];
     FD_t sfd;
     char *sigfile;
-    unsigned char buf[8192];
+    byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
   
@@ -783,26 +784,21 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
     return pass;
 }
 
-int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
+rpmVerifySignatureReturn
+rpmVerifySignature(const char *file, int_32 sigTag, const void * sig, int count,
 		    char *result)
 {
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
-	if (verifySizeSignature(file, *(int_32 *)sig, result)) {
-	    return RPMSIG_BAD;
-	}
-	break;
+	return verifySizeSignature(file, *(int_32 *)sig, result);
+	/*@notreached@*/ break;
     case RPMSIGTAG_MD5:
-	if (verifyMD5Signature(file, sig, result, mdbinfile)) {
-	    return 1;
-	}
-	break;
+	return verifyMD5Signature(file, sig, result, mdbinfile);
+	/*@notreached@*/ break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:
-	if (verifyMD5Signature(file, sig, result, mdbinfileBroken)) {
-	    return 1;
-	}
-	break;
+	return verifyMD5Signature(file, sig, result, mdbinfileBroken);
+	/*@notreached@*/ break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	return verifyPGPSignature(file, sig, count, result);
@@ -814,6 +810,6 @@ int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
 	return RPMSIG_UNKNOWN;
     }
-
+    /*@notreached@*/
     return RPMSIG_OK;
 }

@@ -279,7 +279,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
 
 /** */
 int writeRPM(Header h, const char *fileName, int type,
-		    CSA_t *csa, char *passPhrase, char **cookie)
+		    CSA_t *csa, char *passPhrase, const char **cookie)
 {
     FD_t fd, ifd;
     int rc, count, sigtype;
@@ -462,24 +462,24 @@ int writeRPM(Header h, const char *fileName, int type,
     /* Append the header and archive */
     ifd = Fopen(sigtarget, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
-	rpmError(RPMERR_READERROR, _("Unable to open sigtarget %s: %s"),
+	rpmError(RPMERR_READ, _("Unable to open sigtarget %s: %s"),
 		sigtarget, Fstrerror(ifd));
 	Fclose(fd);
 	Unlink(sigtarget);
 	xfree(sigtarget);
 	Unlink(fileName);
-	return RPMERR_READERROR;
+	return RPMERR_READ;
     }
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
-	    rpmError(RPMERR_READERROR, _("Unable to read sigtarget %s: %s"),
+	    rpmError(RPMERR_READ, _("Unable to read sigtarget %s: %s"),
 		     sigtarget, Fstrerror(ifd));
 	    Fclose(ifd);
 	    Fclose(fd);
 	    unlink(sigtarget);
 	    xfree(sigtarget);
 	    unlink(fileName);
-	    return RPMERR_READERROR;
+	    return RPMERR_READ;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) < 0) {
 	    rpmError(RPMERR_NOSPACE, _("Unable to write package %s: %s"),

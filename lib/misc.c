@@ -1,3 +1,7 @@
+/**
+ * \file lib/misc.c
+ */
+
 #include "system.h"
 
 static int _debug = 0;
@@ -7,6 +11,9 @@ static int _debug = 0;
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
 #include "misc.h"
+
+/*@access Header@*/		/* XXX compared with NULL */
+/*@access FD_t@*/		/* XXX compared with NULL */
 
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
 
@@ -675,7 +682,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
 /*
  * XXX Yet Another dressed entry to unify signature/header tag retrieval.
  */
-int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
+int rpmPackageGetEntry( /*@unused@*/ void *leadp, Header sigs, Header h,
 	int_32 tag, int_32 *type, void **p, int_32 *c)
 {
     int_32 sigtag;

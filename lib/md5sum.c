@@ -17,11 +17,11 @@
 
 /**
  * Calculate MD5 sum for file.
- * @param fn            file name
- * @retval digest       address of md5sum
- * @param asAscii       return md5sum as ascii string?
- * @param brokenEndian  calculate broken MD5 sum?
- * @return              0 on success, 1 on error
+ * @param fn		file name
+ * @retval digest	address of md5sum
+ * @param asAscii	return md5sum as ascii string?
+ * @param brokenEndian	calculate broken MD5 sum?
+ * @return		0 on success, 1 on error
  */
 static int domd5(const char * fn, unsigned char * digest, int asAscii,
 		 int brokenEndian)
@@ -34,13 +34,14 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
     FILE * fp;
     MD5_CTX ctx;
 
+    memset(bindigest, 0, sizeof(bindigest));
     fp = fopen(fn, "r");
     if (!fp) {
 	return 1;
     }
 
     rpmMD5Init(&ctx, brokenEndian);
-    while ((rc = fread(buf, 1, sizeof(buf), fp)) > 0)
+    while ((rc = fread(buf, sizeof(buf[0]), sizeof(buf), fp)) > 0)
 	    rpmMD5Update(&ctx, buf, rc);
     rpmMD5Final(bindigest, &ctx);
     if (ferror(fp)) {
@@ -53,10 +54,22 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
     } else {
 	sprintf(digest, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
 			"%02x%02x%02x%02x%02x",
-		bindigest[0],  bindigest[1],  bindigest[2],  bindigest[3],
-		bindigest[4],  bindigest[5],  bindigest[6],  bindigest[7],
-		bindigest[8],  bindigest[9],  bindigest[10], bindigest[11],
-		bindigest[12], bindigest[13], bindigest[14], bindigest[15]);
+		(unsigned)bindigest[0],
+		(unsigned)bindigest[1],
+		(unsigned)bindigest[2],
+		(unsigned)bindigest[3],
+		(unsigned)bindigest[4],
+		(unsigned)bindigest[5],
+		(unsigned)bindigest[6],
+		(unsigned)bindigest[7],
+		(unsigned)bindigest[8],
+		(unsigned)bindigest[9],
+		(unsigned)bindigest[10],
+		(unsigned)bindigest[11],
+		(unsigned)bindigest[12],
+		(unsigned)bindigest[13],
+		(unsigned)bindigest[14],
+		(unsigned)bindigest[15]);
 
     }
     fclose(fp);

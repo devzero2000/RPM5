@@ -1,3 +1,7 @@
+/** \ingroup header
+ * \file lib/package.c
+ */
+
 #include "system.h"
 
 #ifdef	__LCLINT__
@@ -15,11 +19,19 @@
 #include "rpmlead.h"
 #include "signature.h"
 
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
-static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr, 
-			      /*@out@*/Header * sigs, /*@out@*/Header * hdrPtr)
+/*@access Header@*/		/* XXX compared with NULL */
+
+/**
+ * Retrieve package components from file handle.
+ * @param fd		file handle
+ * @param leadPtr	address of lead (or NULL)
+ * @param sigs		address of signatures (or NULL)
+ * @param hdrPtr	address of header (or NULL)
+ * @return		0 on success, 1 on bad magic, 2 on error
+ */
+static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr, 
+			      /*@out@*/ Header * sigs, /*@out@*/ Header *hdrPtr)
+	/*@modifies fd, *leadPtr, *sigs, *hdrPtr @*/
 {
     Header hdrBlock;
     struct rpmlead leadBlock;
@@ -36,9 +48,8 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
     /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
     if (S_ISREG(sb.st_mode) && sb.st_size < sizeof(*lead)) return 1;
 
-    if (readLead(fd, lead)) {
+    if (readLead(fd, lead))
 	return 2;
-    }
 
     if (lead->magic[0] != RPMLEAD_MAGIC0 || lead->magic[1] != RPMLEAD_MAGIC1 ||
 	lead->magic[2] != RPMLEAD_MAGIC2 || lead->magic[3] != RPMLEAD_MAGIC3) {
@@ -54,15 +65,13 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
     case 2:
     case 3:
     case 4:
-	if (rpmReadSignature(fd, sigs, lead->signature_type)) {
+	if (rpmReadSignature(fd, sigs, lead->signature_type))
 	   return 2;
-	}
 	*hdr = headerRead(fd, (lead->major >= 3) ?
 			  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
 	if (*hdr == NULL) {
-	    if (sigs != NULL) {
+	    if (sigs != NULL)
 		headerFree(*sigs);
-	    }
 	    return 2;
 	}
 
@@ -120,17 +129,11 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
     return 0;
 }
 
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
 int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr)
 {
     return readPackageHeaders(fd, NULL, signatures, hdr);
 }
 
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
 int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
 		  int * minor)
 {

@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.1
 Version: %{version}
-Release: 0.12
+Release: 0.13
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -272,6 +272,19 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Nov 20 2000 Jeff Johnson <jbj@redhat.com>
+- add doxygen and lclint annotations most everywhere.
+- consistent return for all signature verification.
+- use enums for almost all rpmlib #define's.
+- API: change rpmProblem typedef to pass by reference, not value.
+- don't trim leading ./ in rpmCleanPath() (#14961).
+- detect (still need to test) rdonly linux file systems.
+- check available inodes as well as blocks on mounted file systems.
+- pass rpmTransactionSet, not elements, to installBinaryPackage et al.
+- add cscope/ctags (Rodrigo Barbosa<rodrigob@conectiva.com.br>).
+- remove getMacroBody() from rpmio API.
+- add support for unzip <rodrigob@conectiva.com.br>
+
 * Thu Nov 16 2000 Jeff Johnson <jbj@redhat.com>
 - don't verify src rpm MD5 sums (yet).
 - md5 sums are little endian (no swap) so big endian needs the swap.

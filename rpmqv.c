@@ -147,8 +147,10 @@ static struct poptOption optionsTable[] = {
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
 
- { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,NULL, NULL},
- { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO, NULL, NULL},
+ { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,
+	N_("define macro <name> with value <body>"), N_("'<name> <body>'") },
+ { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO,
+	N_("print macro expansion to stdout"), N_("<expr>+") },
 
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,	NULL, NULL},
  { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
@@ -657,8 +659,8 @@ int main(int argc, const char ** argv)
 #endif
 
 #if defined(IAM_RPMK)
-    int addSign = NEW_SIGNATURE;
-    int checksigFlags = 0;
+    rpmResignFlags addSign = RESIGN_NEW_SIGNATURE;
+    rpmCheckSigFlags checksigFlags = CHECKSIG_NONE;
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
@@ -889,7 +891,7 @@ int main(int argc, const char ** argv)
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RESIGN;
-	    addSign = NEW_SIGNATURE;
+	    addSign = RESIGN_NEW_SIGNATURE;
 	    signIt = 1;
 	    break;
 
@@ -897,7 +899,7 @@ int main(int argc, const char ** argv)
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RESIGN;
-	    addSign = ADD_SIGNATURE;
+	    addSign = RESIGN_ADD_SIGNATURE;
 	    signIt = 1;
 	    break;
 #endif	/* IAM_RPMK */

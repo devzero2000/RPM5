@@ -42,6 +42,8 @@ typedef	FILE * FD_t;
 #define	Fread			fread
 #define	Fclose			fclose
 
+#define	fdGetFILE(_fd)		(_fd)
+
 #else
 
 #include <rpmio_internal.h>
@@ -52,6 +54,10 @@ typedef	FILE * FD_t;
 
 #include <rpmmacro.h>
 
+/*@access FD_t@*/		/* XXX compared with NULL */
+/*@access MacroContext@*/
+/*@access MacroEntry@*/
+
 struct MacroContext rpmGlobalMacroContext;
 struct MacroContext rpmCLIMacroContext;
 
@@ -59,14 +65,14 @@ struct MacroContext rpmCLIMacroContext;
  * Macro expansion state.
  */
 typedef struct MacroBuf {
-	const char *s;		/*!< Text to expand. */
-	char *t;		/*!< Expansion buffer. */
+/*@shared@*/ const char *s;		/*!< Text to expand. */
+/*@shared@*/ char *t;		/*!< Expansion buffer. */
 	size_t nb;		/*!< No. bytes remaining in expansion buffer. */
 	int depth;		/*!< Current expansion depth. */
 	int macro_trace;	/*!< Pre-print macro to expand? */
 	int expand_trace;	/*!< Post-print macro expansion? */
-	void *spec;		/*!< (future) %file expansion info. */
-	MacroContext *mc;
+/*@shared@*/ void *spec;	/*!< (future) %file expansion info. */
+/*@dependent@*/ MacroContext *mc;
 } MacroBuf;
 
 #define SAVECHAR(_mb, _c) { *(_mb)->t = (_c), (_mb)->t++, (_mb)->nb--; }
@@ -191,7 +197,7 @@ rpmDumpMacroTable(MacroContext * mc, FILE * fp)
  * @param namelen	no. of byes
  * @return		address of slot in macro table with name (or NULL)
  */
-static MacroEntry **
+/*@dependent@*/ static MacroEntry **
 findEntry(MacroContext *mc, const char *name, size_t namelen)
 {
 	MacroEntry keybuf, *key, **ret;
@@ -222,7 +228,7 @@ findEntry(MacroContext *mc, const char *name, size_t namelen)
 /**
  * fgets(3) analogue that reads \ continuations. Last newline always trimmed.
  */
-static char *
+/*@dependent@*/ static char *
 rdcl(char *buf, size_t size, FD_t fd, int escapes)
 {
 	char *q = buf;
@@ -232,7 +238,7 @@ rdcl(char *buf, size_t size, FD_t fd, int escapes)
 	*q = '\0';
 	do {
 		/* read next line */
-		if (fgets(q, size, (FILE *)fdGetFp(fd)) == NULL)
+		if (fgets(q, size, fdGetFILE(fd)) == NULL)
 			break;
 		nb = strlen(q);
 		nread += nb;
@@ -255,7 +261,7 @@ rdcl(char *buf, size_t size, FD_t fd, int escapes)
 }
 
 /**
- * Return text between pl and matching pr.
+ * Return text between pl and matching pr characters.
  * @param p		start of text
  * @param pl		left char, i.e. '[', '(', '{', etc.
  * @param pr		right char, i.e. ']', ')', '}', etc.
@@ -521,7 +527,7 @@ doShellEscape(MacroBuf *mb, const char *cmd, size_t clen)
  * @param expandbody	should body be expanded?
  * @return		address to continue parsing
  */
-static const char *
+/*@dependent@*/ static const char *
 doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
 {
 	const char *s = se;
@@ -605,7 +611,7 @@ doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
  * @param se		macro name to undefine
  * @return		address to continue parsing
  */
-static const char *
+/*@dependent@*/ static const char *
 doUndefine(MacroContext *mc, const char *se)
 {
 	const char *s = se;
@@ -736,7 +742,7 @@ freeArgs(MacroBuf *mb)
  * @param lastc		stop parsing at lastc
  * @return		address to continue parsing
  */
-static const char *
+/*@dependent@*/ static const char *
 grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
 {
     char buf[BUFSIZ], *b, *be;
@@ -792,6 +798,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
     /* Build argv array */
     argv = (const char **) alloca((argc + 1) * sizeof(char *));
     be[-1] = ' ';	/*  be - 1 == b + strlen(b) == buf + strlen(buf)  */
+    buf[0] = '\0';
     b = buf;
     for (c = 0; c < argc; c++) {
 	argv[c] = b;
@@ -911,7 +918,7 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 		(void)urlPath(buf, (const char **)&b);
 		if (*b == '\0') b = "/";
 	} else if (STREQ("uncompress", f, fn)) {
-		int compressed = 1;
+		rpmCompressedMagic compressed = COMPRESSED_OTHER;
 		for (b = buf; (c = *b) && isblank(c);)
 			b++;
 		for (be = b; (c = *be) && !isblank(c);)
@@ -930,6 +937,9 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 			break;
 		case 2:	/* COMPRESSED_BZIP2 */
 			sprintf(be, "%%_bzip2 %s", b);
+			break;
+		case 3:	/* COMPRESSED_ZIP */
+			sprintf(be, "%%_unzip %s", b);
 			break;
 		}
 		b = be;
@@ -997,7 +1007,7 @@ expandMacro(MacroBuf *mb)
 		if (*s != '%')
 			break;
 		s++;	/* skip first % in %% */
-		/* fall thru */
+		/*@fallthrough@*/
 	default:
 		SAVECHAR(mb, c);
 		continue;
@@ -1017,7 +1027,7 @@ expandMacro(MacroBuf *mb)
 		while (strchr("!?", *s) != NULL) {
 			switch(*s++) {
 			case '!':
-				negate = (++negate % 2);
+				negate = ((negate + 1) % 2);
 				break;
 			case '?':
 				chkexist++;
@@ -1073,7 +1083,7 @@ expandMacro(MacroBuf *mb)
 		while (strchr("!?", *f) != NULL) {
 			switch(*f++) {
 			case '!':
-				negate = (++negate % 2);
+				negate = ((negate + 1) % 2);
 				break;
 			case '?':
 				chkexist++;
@@ -1272,16 +1282,6 @@ expandMacro(MacroBuf *mb)
 }
 
 /* =============================================================== */
-/* XXX this is used only in build/expression.c and will go away. */
-const char *
-getMacroBody(MacroContext *mc, const char *name)
-{
-    MacroEntry **mep = findEntry(mc, name, 0);
-    MacroEntry *me = (mep ? *mep : NULL);
-    return ( me ? me->body : (const char *)NULL );
-}
-
-/* =============================================================== */
 
 int
 expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
@@ -1363,6 +1363,7 @@ rpmDefineMacro(MacroContext *mc, const char *macro, int level)
 {
 	MacroBuf macrobuf, *mb = &macrobuf;
 
+	memset(mb, 0, sizeof(*mb));
 	/* XXX just enough to get by */
 	mb->mc = (mc ? mc : &rpmGlobalMacroContext);
 	(void)doDefine(mb, macro, level, 0);
@@ -1478,7 +1479,7 @@ rpmFreeMacros(MacroContext *mc)
 }
 
 /* =============================================================== */
-int isCompressed(const char *file, int *compressed)
+int isCompressed(const char *file, rpmCompressedMagic *compressed)
 {
     FD_t fd;
     ssize_t nb;
@@ -1499,8 +1500,8 @@ int isCompressed(const char *file, int *compressed)
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, Fstrerror(fd));
 	rc = 1;
     } else if (nb < sizeof(magic)) {
-	rpmError(RPMERR_BADSPEC, _("File %s is smaller than %d bytes"),
-		file, (int)sizeof(magic));
+	rpmError(RPMERR_BADSPEC, _("File %s is smaller than %u bytes"),
+		file, (unsigned)sizeof(magic));
 	rc = 0;
     }
     Fclose(fd);
@@ -1509,17 +1510,18 @@ int isCompressed(const char *file, int *compressed)
 
     rc = 0;
 
-    if (((magic[0] == 0037) && (magic[1] == 0213)) ||  /* gzip */
-	((magic[0] == 0037) && (magic[1] == 0236)) ||  /* old gzip */
-	((magic[0] == 0037) && (magic[1] == 0036)) ||  /* pack */
-	((magic[0] == 0037) && (magic[1] == 0240)) ||  /* SCO lzh */
-	((magic[0] == 0037) && (magic[1] == 0235)) ||  /* compress */
-	((magic[0] == 0120) && (magic[1] == 0113) &&
-	 (magic[2] == 0003) && (magic[3] == 0004))     /* pkzip */
+    if ((magic[0] == 'B') && (magic[1] == 'Z')) {
+	*compressed = COMPRESSED_BZIP2;
+    } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
+	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
+	*compressed = COMPRESSED_ZIP;
+    } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
+	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
+	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */
+	((magic[0] == 0037) && (magic[1] == 0240)) ||	/* SCO lzh */
+	((magic[0] == 0037) && (magic[1] == 0235))	/* compress */
 	) {
 	*compressed = COMPRESSED_OTHER;
-    } else if ((magic[0] == 'B') && (magic[1] == 'Z')) {
-	*compressed = COMPRESSED_BZIP2;
     }
 
     return rc;
@@ -1537,6 +1539,7 @@ rpmExpand(const char *arg, ...)
     if (arg == NULL)
 	return xstrdup("");
 
+    buf[0] = '\0';
     p = buf;
     pe = stpcpy(p, arg);
 
@@ -1663,6 +1666,7 @@ rpmGetPath(const char *path, ...)
     if (path == NULL)
 	return xstrdup("");
 
+    buf[0] = '\0';
     t = buf;
     te = stpcpy(t, path);
     *te = '\0';
@@ -1684,9 +1688,12 @@ rpmGetPath(const char *path, ...)
 const char * rpmGenPath(const char * urlroot, const char * urlmdir,
 		const char *urlfile)
 {
-    const char * xroot = rpmGetPath(urlroot, NULL), * root = xroot;
-    const char * xmdir = rpmGetPath(urlmdir, NULL), * mdir = xmdir;
-    const char * xfile = rpmGetPath(urlfile, NULL), * file = xfile;
+/*@owned@*/ const char * xroot = rpmGetPath(urlroot, NULL);
+/*@dependent@*/ const char * root = xroot;
+/*@owned@*/ const char * xmdir = rpmGetPath(urlmdir, NULL);
+/*@dependent@*/ const char * mdir = xmdir;
+/*@owned@*/ const char * xfile = rpmGetPath(urlfile, NULL);
+/*@dependent@*/ const char * file = xfile;
     const char * result;
     const char * url = NULL;
     int nurl = 0;

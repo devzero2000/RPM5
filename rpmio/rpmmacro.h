@@ -47,16 +47,6 @@ extern "C" {
 void	rpmDumpMacroTable	(MacroContext * mc, FILE * fp);
 
 /**
- * Return value of macro.
- * @deprecated Used only in build/expression.c.
- * @todo Eliminate.
- * @param mc		macro context (NULL uses global context).
- * @param name		macro name
- * @return		macro body
- */
-const char *getMacroBody (MacroContext *mc, const char *name);
-
-/**
  * Expand macro into buffer.
  * @deprecated Use rpmExpand().
  * @todo Eliminate from API.
@@ -93,6 +83,7 @@ void	delMacro	(MacroContext * mc, const char * n);
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name, options, body
  * @param level		macro recursion level (0 is entry API)
+ * @return		@todo Document.
  */
 int	rpmDefineMacro	(MacroContext * mc, const char * macro, int level);
 
@@ -116,9 +107,12 @@ void	rpmInitMacros	(MacroContext * mc, const char * macrofiles);
  */
 void	rpmFreeMacros	(MacroContext * mc);
 
-#define COMPRESSED_NOT   0
-#define COMPRESSED_OTHER 1
-#define COMPRESSED_BZIP2 2
+typedef enum rpmCompressedMagic_e {
+    COMPRESSED_NOT		= 0,	/*!< not compressed */
+    COMPRESSED_OTHER		= 1,	/*!< gzip can handle */
+    COMPRESSED_BZIP2		= 2,	/*!< bzip2 can handle */
+    COMPRESSED_ZIP		= 3	/*!< unzip can handle */
+} rpmCompressedMagic;
 
 /**
  * Return type of compression used in file.
@@ -126,7 +120,7 @@ void	rpmFreeMacros	(MacroContext * mc);
  * @retval compressed	address of compression type
  * @return		0 on success, 1 on I/O error
  */
-int	isCompressed	(const char * file, int * compressed);
+int	isCompressed	(const char * file, rpmCompressedMagic * compressed);
 
 /**
  * Return (malloc'ed) concatenated macro expansion(s).

@@ -1,9 +1,14 @@
+/** \ingroup rpmcli
+ * \file lib/verify.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>
 
 #include "md5.h"
 #include "misc.h"
+#include "depends.h"
 #include "install.h"
 
 #include "build/rpmbuild.h"
@@ -41,8 +46,6 @@ struct poptOption rpmVerifyPoptTable[] = {
 };
 
 /* ======================================================================== */
-/* XXX static */
-/** */
 int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result, 
 		  int omitMask)
 {
@@ -239,12 +242,25 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
     return 0;
 }
 
-/* XXX static */
-/** */
-int rpmVerifyScript(const char * root, Header h, FD_t err)
+/**
+ * Return exit code from running verify script in header.
+ * @param rootDir	path to top of install tree
+ * @param rpmdb		rpm database
+ * @param h		header
+ * @param scriptFd	file handle to use for stderr
+ * @return		0 on success
+ */
+static int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd)
 {
-    return runInstScript(root, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
-		     0, 0, err);
+    rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
+    int rc;
+
+    ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
+    rc = runInstScript(ts, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
+		     0, 0);
+    ts->scriptFd = fdFree(ts->scriptFd, "rpmVerifyScript");
+    rpmtransFree(ts);
+    return rc;
 }
 
 /* ======================================================================== */
@@ -313,7 +329,7 @@ static int verifyHeader(QVA_t *qva, Header h)
     return ec;
 }
 
-static int verifyDependencies(/*@only@*/ rpmdb rpmdb, Header h) {
+static int verifyDependencies(rpmdb rpmdb, Header h) {
     rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
@@ -345,12 +361,12 @@ static int verifyDependencies(/*@only@*/ rpmdb rpmdb, Header h) {
     return 0;
 }
 
-/** */
 int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
 {
-    int ec, rc;
     FD_t fdo;
-    ec = 0;
+    int ec = 0;
+    int rc;
+
     if ((qva->qva_flags & VERIFY_DEPS) &&
 	(rc = verifyDependencies(rpmdb, h)) != 0)
 	    ec = rc;
@@ -359,14 +375,13 @@ int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
 	    ec = rc;;
     fdo = fdDup(STDOUT_FILENO);
     if ((qva->qva_flags & VERIFY_SCRIPT) &&
-	(rc = rpmVerifyScript(qva->qva_prefix, h, fdo)) != 0)
+	(rc = rpmVerifyScript(qva->qva_prefix, rpmdb, h, fdo)) != 0)
 	    ec = rc;
     Fclose(fdo);
     return ec;
 }
 
-/** */
-int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg)
+int rpmVerify(QVA_t *qva, rpmQVSources source, const char *arg)
 {
     rpmdb rpmdb = NULL;
     int rc;

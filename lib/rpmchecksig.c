@@ -1,4 +1,7 @@
-/* checksig.c: verify the signature of an RPM */
+/** \ingroup rpmcli
+ * \file lib/rpmchecksig.c
+ * Verify the signature of a package.
+ */
 
 #include "system.h"
 
@@ -7,6 +10,9 @@
 #include "rpmlead.h"
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */
+
+/*@access Header@*/		/* XXX compared with NULL */
+/*@access FD_t@*/		/* XXX compared with NULL */
 
 static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 {
@@ -19,7 +25,6 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 
     /* close and reset *fdp to NULL */
     if (*fdp && (fnp == NULL || *fnp == NULL)) {
-fprintf(stderr, "*** Fclose(%p)\n", *fdp);
 	Fclose(*fdp);
 	*fdp = NULL;
 	return 0;
@@ -34,7 +39,6 @@ fprintf(stderr, "*** Fclose(%p)\n", *fdp);
 	    return 1;
 	}
 	*fdp = fd;
-fprintf(stderr, "*** Fopen(%s) fd %p\n", *fnp, *fdp);
 	return 0;
     }
 
@@ -47,7 +51,6 @@ fprintf(stderr, "*** Fopen(%s) fd %p\n", *fnp, *fdp);
 	if (fnp)
 		*fnp = fn;
 	*fdp = fd;
-fprintf(stderr, "*** makeTempFile(%s) fd %p\n", fn, *fdp);
 	return 0;
     }
 
@@ -95,13 +98,12 @@ exit:
 /*
  * XXX gcc-2.96-60 on alpha (at least) needs ALPHA_LOSSAGE defined.
  *
- * Otherwise, the (mis-compilation?!) symptom is the inability to pass sig_type
- * correctly to rpmReadSignature(FD_t *fd, Header *header, short sig_type)
+ * Otherwise, the (mis-compilation?!) symptom is the inability to pass sig_type- * correctly to rpmReadSignature(FD_t *fd, Header *header, short sig_type)
  * (Note: the short in both struct rpmlead and in the prototype).
  */
 #define	ALPHA_LOSSAGE
 
-int rpmReSign(int add, char *passPhrase, const char **argv)
+int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -113,7 +115,7 @@ int rpmReSign(int add, char *passPhrase, const char **argv)
     Header sig = NULL;
     int rc = EXIT_FAILURE;
     
-#ifdef	ALPHA_LOSSAGE
+#ifdef ALPHA_LOSSAGE
 l = malloc(sizeof(*l));
 #endif
     tmprpm[0] = '\0';
@@ -158,7 +160,7 @@ l = malloc(sizeof(*l));
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Generate the new signatures */
-	if (add != ADD_SIGNATURE) {
+	if (add != RESIGN_ADD_SIGNATURE) {
 	    rpmFreeSignature(sig);
 	    sig = rpmNewSignature();
 	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
@@ -183,7 +185,6 @@ l = malloc(sizeof(*l));
 		Fstrerror(ofd));
 	    goto exit;
 	}
-if (l != &lead) free(l);
 
 	if (rpmWriteSignature(ofd, sig)) {
 	    fprintf(stderr, _("%s: rpmWriteSignature failed: %s\n"), trpm,
@@ -210,6 +211,7 @@ if (l != &lead) free(l);
     rc = 0;
 
 exit:
+if (l != &lead) free(l);
     if (fd)	manageFile(&fd, NULL, 0, rc);
     if (ofd)	manageFile(&ofd, NULL, 0, rc);
 
@@ -230,7 +232,7 @@ exit:
     return rc;
 }
 
-int rpmCheckSig(int flags, const char **argv)
+int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -245,10 +247,10 @@ int rpmCheckSig(int flags, const char **argv)
     Header sig;
     HeaderIterator sigIter;
     int_32 tag, type, count;
-    void *ptr;
+    const void * ptr;
     int res = 0;
 
-#ifdef	ALPHA_LOSSAGE
+#ifdef ALPHA_LOSSAGE
 l = malloc(sizeof(*l));
 #endif
     while ((rpm = *argv++) != NULL) {
@@ -258,7 +260,7 @@ l = malloc(sizeof(*l));
 	    goto bottom;
 	}
 
-	if (readLead(fd, l)) {
+	if (readLead(fd, &lead)) {
 	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
 	    res++;
 	    goto bottom;
@@ -272,13 +274,11 @@ l = malloc(sizeof(*l));
 	default:
 	    break;
 	}
-
 	if (rpmReadSignature(fd, &sig, l->signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
 	    goto bottom;
 	}
-if (l != &lead) free(l);
 	if (sig == NULL) {
 	    fprintf(stderr, _("%s: No signature available\n"), rpm);
 	    res++;
@@ -462,6 +462,7 @@ if (l != &lead) free(l);
 	    xfree(sigtarget);	sigtarget = NULL;
 	}
     }
+if (l != &lead) free(l);
 
     return res;
 }
