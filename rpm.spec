@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.95
+Release: 0.96
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Aug 24 2001 Jeff Johnson <jbj@redhat.com>
+- headers without RPMTAG_NAME are skipped when retrieved.
+
 * Thu Aug 23 2001 Jeff Johnson <jbj@redhat.com>
 - workaround alpha sha1 digest miscompilation.
 
