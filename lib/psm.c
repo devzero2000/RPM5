@@ -779,7 +779,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    /* XXX Don't mtrace into children. */
 	    unsetenv("MALLOC_CHECK_");
 
-	    /* Permit libselinux to do the scriptlet exec. *
+	    /* Permit libselinux to do the scriptlet exec. */
 	    if (rpmtsSELinuxEnabled(ts) == 1) {
 		xx = rpm_execcon(0, argv[0], argv, environ);
 		if (xx != 0)
