@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.49
+Release: 0.50
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -431,6 +431,9 @@ fi
 - fix: rpm -qlv link count for directories dinna include '..'.
 - fix: rpm -qlv size for directories should be zero.
 - add --noghost to filter non-payload files from rpm -qlv output.
+- add %%{_gnu} macro to append "-gnu" to %%{_target_platform} to
+  support --target/--host flavored %%configure. Legacy behavior
+  available by undefining %%{_gnu}.
 
 * Tue Jun 19 2001 Jeff Johnson <jbj@redhat.com>
 - finalize per-header methods, accessing headerFoo through vector.
