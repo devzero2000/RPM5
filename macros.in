@@ -569,6 +569,9 @@ package or when debugging this package. \
 #	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
 %_repackage_root	%{nil}
 
+#	If non-zero, all erasures will be automagically repackaged.
+%_repackage_all_erasures	0
+
 #	Verify digest/signature flags for various rpm modes:
 #	     1	--nohdrchk	if set, don't check rpmdb headers
 #

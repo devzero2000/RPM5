@@ -1019,6 +1019,14 @@ Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmdb
+ * Check rpmdb signal handler for trapped signal exit.
+ */
+/*@mayexit@*/
+int rpmdbCheckSignals(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
+/** \ingroup rpmdb
  * Destroy rpm database iterator.
  * @param mi		rpm database iterator
  * @return		NULL always
