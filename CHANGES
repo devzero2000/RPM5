@@ -13,6 +13,7 @@
 	- backport rpmsw stopwatch, insturment rpmts operations.
 	- toy method to enable --stats through bindings.
 	- fdCLose typo (#97257).
+	- brp-python-bytecompile to automagically bytecode compile python.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.
