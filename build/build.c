@@ -22,7 +22,7 @@
 #include "stringbuf.h"
 #include "misc.h"
 #include "pack.h"
-#include "popt.h"
+#include "popt/popt.h"
 
 #include "names.h"
 
