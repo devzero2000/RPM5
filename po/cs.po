@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-22 17:23-0500\n"
-"PO-Revision-Date: 2001-02-12 08:08+0100\n"
+"POT-Creation-Date: 2001-03-23 15:10-0500\n"
+"PO-Revision-Date: 2001-04-02 02:50+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -666,6 +666,11 @@ msgstr ""
 #: rpm.c:444
 msgid "    --erase <package>"
 msgstr "    --erase <balíèek>"
+
+#: rpm.c:445
+#, fuzzy
+msgid "    -e <package>          "
+msgstr "    -i <balíèek>     "
 
 #: rpm.c:446 rpmqv.c:255 rpmqv.c:671
 msgid "erase (uninstall) package"
@@ -1529,6 +1534,11 @@ msgstr "   -U <balíèek>           "
 #: rpmqv.c:669
 msgid "   --erase <package>"
 msgstr "   --erase <balíèek>"
+
+#: rpmqv.c:670
+#, fuzzy
+msgid "   -e <package>           "
+msgstr "   -K <balíèek>+         "
 
 #: rpmqv.c:688
 msgid "   --resign <pkg>+        "
@@ -2800,7 +2810,7 @@ msgstr "%s ulo¾eno jako %s\n"
 msgid "running postinstall scripts (if any)\n"
 msgstr "spou¹tím pøípadný postinstalaèní skript\n"
 
-#: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
+#: lib/misc.c:338 lib/misc.c:343 lib/misc.c:349
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
@@ -3200,7 +3210,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 msgid "record %d could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:743 lib/rpminstall.c:556
+#: lib/query.c:743 lib/rpminstall.c:566
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -3433,122 +3443,122 @@ msgstr "ma¾u adresáø %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "nemohu odstranit adresáø %s: %s\n"
 
-#: lib/rpminstall.c:143
+#: lib/rpminstall.c:161
 msgid "Preparing..."
 msgstr "Pøipravuji..."
 
-#: lib/rpminstall.c:146
+#: lib/rpminstall.c:163
 msgid "Preparing packages for installation..."
 msgstr "Pøipravuji balíèky pro instalaci..."
 
-#: lib/rpminstall.c:207
+#: lib/rpminstall.c:222
 msgid "counting packages to install\n"
 msgstr "poèítám balíèky pro instalaci\n"
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:226
 #, c-format
 msgid "found %d packages\n"
 msgstr "nalezeno %d balíèkù\n"
 
-#: lib/rpminstall.c:216
+#: lib/rpminstall.c:231
 msgid "looking for packages to download\n"
 msgstr "hledám balíèky pro sta¾ení\n"
 
-#: lib/rpminstall.c:231
+#: lib/rpminstall.c:246
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "pøeskakuji %s - rpmGlob selhal(%d)\n"
 
-#: lib/rpminstall.c:246
+#: lib/rpminstall.c:261
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Stahuji %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:256
+#: lib/rpminstall.c:271
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... jako %s\n"
 
-#: lib/rpminstall.c:260
+#: lib/rpminstall.c:275
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "pøeskakuji %s - pøenos selhal - %s\n"
 
-#: lib/rpminstall.c:287
+#: lib/rpminstall.c:301
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "pøijato %d balíèkù\n"
 
-#: lib/rpminstall.c:301 lib/rpminstall.c:479
+#: lib/rpminstall.c:315 lib/rpminstall.c:490
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu otevøít soubor %s: %s\n"
 
-#: lib/rpminstall.c:315
+#: lib/rpminstall.c:329
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
 
-#: lib/rpminstall.c:321 lib/rpminstall.c:621
+#: lib/rpminstall.c:335 lib/rpminstall.c:631
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nemù¾e být nainstalován\n"
 
-#: lib/rpminstall.c:336
+#: lib/rpminstall.c:350
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nemohu otevøít databázi balíèkù v %s\n"
 
-#: lib/rpminstall.c:358
+#: lib/rpminstall.c:372
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "balíèek %s není pøemístitelný\n"
 
-#: lib/rpminstall.c:403
+#: lib/rpminstall.c:417
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pøi ètení ze souboru %s\n"
 
-#: lib/rpminstall.c:408
+#: lib/rpminstall.c:422
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "soubor %s vy¾aduje novìj¹í verzi RPM\n"
 
-#: lib/rpminstall.c:427
+#: lib/rpminstall.c:436
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "nalezeno %d zdrojových a %d binárních balíèkù\n"
 
-#: lib/rpminstall.c:438
+#: lib/rpminstall.c:449
 msgid "failed dependencies:\n"
 msgstr "nevyøe¹ené závislosti:\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:470
 msgid "installing binary packages\n"
 msgstr "instaluji binární balíèky\n"
 
-#: lib/rpminstall.c:543
+#: lib/rpminstall.c:553
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "chyba: nemohu otevøít %s/packages.rpm\n"
 
-#: lib/rpminstall.c:559
+#: lib/rpminstall.c:569
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" urèuje více balíèkù\n"
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:592
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranìní tìchto balíèkù by poru¹ilo závislosti:\n"
 
-#: lib/rpminstall.c:610
+#: lib/rpminstall.c:620
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nemohu otevøít %s: %s\n"
 
-#: lib/rpminstall.c:616
+#: lib/rpminstall.c:626
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaluji %s\n"
@@ -4085,18 +4095,3 @@ msgstr "url port musí být èíslo\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
-
-#~ msgid "closed  db environment %s/%s(%s)\n"
-#~ msgstr "zavøeno db prostøedí %s/%s(%s)\n"
-
-#~ msgid "removed db environment %s/%s(%s)\n"
-#~ msgstr "smazáno db prostøedí %s/%s(%s)\n"
-
-#~ msgid "opening db environment %s/%s(%s) %s\n"
-#~ msgstr "otevøeno db prostøedí %s/%s(%s) %s\n"
-
-#~ msgid "closed  db index       %s/%s(%s)\n"
-#~ msgstr "zavøen db index        %s/%s(%s)\n"
-
-#~ msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-#~ msgstr "otevøen db index       %s/%s(%s) %s mode=0x%x\n"
