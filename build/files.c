@@ -1836,10 +1836,10 @@ void initSourceHeader(Spec spec)
     }
     headerFreeIterator(hi);
 
-    if (spec->buildArchitectures && spec->buildArchitectureCount > 0) {
+    if (spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
 		       RPM_STRING_ARRAY_TYPE,
-		       spec->buildArchitectures, spec->buildArchitectureCount);
+		       spec->BANames, spec->BACount);
     }
 }
 

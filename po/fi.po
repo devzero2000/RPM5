@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-05-05 15:23-0400\n"
+"POT-Creation-Date: 2001-05-06 15:07-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -56,12 +56,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s ei vaikuta RPM-paketilta\n"
 
 #. parse up the build operators
-#: build.c:304
+#: build.c:303
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:319
+#: build.c:318
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
@@ -2193,73 +2193,73 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Unknown icon type: %s\n"
 msgstr "(tuntematon tyyppi)"
 
-#: build/parsePreamble.c:436
+#: build/parsePreamble.c:435
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:443
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:466 build/parsePreamble.c:473
+#: build/parsePreamble.c:465 build/parsePreamble.c:472
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:530 build/parseSpec.c:389
+#: build/parsePreamble.c:529 build/parseSpec.c:389
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:543
+#: build/parsePreamble.c:542
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:554
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/parsePreamble.c:567
+#: build/parsePreamble.c:566
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:607 build/parsePreamble.c:618
+#: build/parsePreamble.c:606 build/parsePreamble.c:617
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:643
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
 
-#: build/parsePreamble.c:653
+#: build/parsePreamble.c:652
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "vakava virhe: "
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:802
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Paketin m‰‰rittelyparametrit:"
 
-#: build/parsePreamble.c:809
+#: build/parsePreamble.c:808
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "v‰liaikainen tietokanta %s on jo olemassa"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:835
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:858
+#: build/parsePreamble.c:857
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -2403,27 +2403,27 @@ msgstr ""
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:497
+#: build/parseSpec.c:505
 #, fuzzy
-msgid "No buildable architectures\n"
+msgid "No compatible architectures found for build\n"
 msgstr "‰l‰ tarkista paketin arkkitehtuuria"
 
-#: build/parseSpec.c:552
+#: build/parseSpec.c:559
 #, fuzzy
 msgid "Package has no %%description: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: build/spec.c:222
+#: build/spec.c:225
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/spec.c:228
+#: build/spec.c:231
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/spec.c:287
+#: build/spec.c:290
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
@@ -3303,57 +3303,57 @@ msgstr "%s: readLead  ep‰onnistui\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:621
+#: lib/query.c:620
 #, fuzzy
 msgid "no packages\n"
 msgstr "kysele kaikki paketit"
 
-#: lib/query.c:632
+#: lib/query.c:631
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/query.c:642
+#: lib/query.c:641
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:652
+#: lib/query.c:651
 #, c-format
 msgid "no package requires %s\n"
 msgstr "mik‰‰n pakettie ei tarvitse %s:a\n"
 
-#: lib/query.c:663
+#: lib/query.c:662
 #, c-format
 msgid "no package provides %s\n"
 msgstr "mik‰‰n paketti ei tarjoa %s:a\n"
 
-#: lib/query.c:697
+#: lib/query.c:696
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/query.c:701
+#: lib/query.c:700
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/query.c:727
+#: lib/query.c:726
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:730
+#: lib/query.c:729
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:735
+#: lib/query.c:734
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:746 lib/rpminstall.c:599
+#: lib/query.c:745 lib/rpminstall.c:599
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"

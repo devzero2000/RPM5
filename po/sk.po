@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-05 15:23-0400\n"
+"POT-Creation-Date: 2001-05-06 15:07-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -56,12 +56,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s zrejme nie je RPM balík\n"
 
 #. parse up the build operators
-#: build.c:304
+#: build.c:303
 #, fuzzy, c-format
 msgid "Building target platforms: %s\n"
 msgstr "predefinova» cieµovú platformu"
 
-#: build.c:319
+#: build.c:318
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "vyhµadáva sa balík %s\n"
@@ -2188,73 +2188,73 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Unknown icon type: %s\n"
 msgstr "Neznámy typ ikony: %s"
 
-#: build/parsePreamble.c:436
+#: build/parsePreamble.c:435
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "riadok %d: Znetvorený popis: %s"
 
 #. Empty field
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:443
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "riadok %d: Prázdny popis: %s"
 
-#: build/parsePreamble.c:466 build/parsePreamble.c:473
+#: build/parsePreamble.c:465 build/parsePreamble.c:472
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:530 build/parseSpec.c:389
+#: build/parsePreamble.c:529 build/parseSpec.c:389
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "riadok %d: BuildRoot nemô¾e by» \"/\": %s"
 
-#: build/parsePreamble.c:543
+#: build/parsePreamble.c:542
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "riadok %d: Prefixy nesmú konèi» \"/\": %s"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:554
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "riadok %d: Docdir musí zaèína» '/': %s"
 
-#: build/parsePreamble.c:567
+#: build/parsePreamble.c:566
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "riadok %d: Epoch/Serial pole musí by» èíslo: %s"
 
-#: build/parsePreamble.c:607 build/parsePreamble.c:618
+#: build/parsePreamble.c:606 build/parsePreamble.c:617
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:643
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "riadok %d: Chybný formát BuildArchitecture: %s"
 
-#: build/parsePreamble.c:653
+#: build/parsePreamble.c:652
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interná chyba: Èudný popis %d "
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:802
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Chybná ¹pecifikácia balíka: %s"
 
-#: build/parsePreamble.c:809
+#: build/parsePreamble.c:808
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "Balík u¾ existuje: %s"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:835
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "riadok %d: Neznámy popis: %s"
 
-#: build/parsePreamble.c:858
+#: build/parsePreamble.c:857
 #, fuzzy
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec súbor nemô¾e pou¾i» BuildRoot"
@@ -2406,27 +2406,27 @@ msgstr "%s:%d: %%endif bez if"
 msgid "malformed %%include statement\n"
 msgstr "znetvorený príkaz %%include"
 
-#: build/parseSpec.c:497
+#: build/parseSpec.c:505
 #, fuzzy
-msgid "No buildable architectures\n"
+msgid "No compatible architectures found for build\n"
 msgstr "®iadne zostaviteµné architektúry"
 
-#: build/parseSpec.c:552
+#: build/parseSpec.c:559
 #, fuzzy
 msgid "Package has no %%description: %s\n"
 msgstr "Balík neobsahuje %%description: %s"
 
-#: build/spec.c:222
+#: build/spec.c:225
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "riadok %d: Chybné èíslo: %s"
 
-#: build/spec.c:228
+#: build/spec.c:231
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "riadok %d: Chybné no%s èíslo: %d"
 
-#: build/spec.c:287
+#: build/spec.c:290
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
@@ -3295,57 +3295,57 @@ msgstr "%s: readLead zlyhalo\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "otázka na spec-súbor %s zlyhala, nie je mo¾né analyzova»\n"
 
-#: lib/query.c:621
+#: lib/query.c:620
 #, fuzzy
 msgid "no packages\n"
 msgstr "nájdených %d balíkov\n"
 
-#: lib/query.c:632
+#: lib/query.c:631
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾iadne balíky\n"
 
-#: lib/query.c:642
+#: lib/query.c:641
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/query.c:652
+#: lib/query.c:651
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾iadny z balíkov nevy¾aduje %s\n"
 
-#: lib/query.c:663
+#: lib/query.c:662
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾iadny z balíkov neposkytuje %s\n"
 
-#: lib/query.c:697
+#: lib/query.c:696
 #, c-format
 msgid "file %s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:700
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/query.c:727
+#: lib/query.c:726
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/query.c:730
+#: lib/query.c:729
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "po¾aduje sa záznam èíslo %d\n"
 
-#: lib/query.c:735
+#: lib/query.c:734
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:746 lib/rpminstall.c:599
+#: lib/query.c:745 lib/rpminstall.c:599
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"

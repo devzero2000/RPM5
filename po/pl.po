@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-05 15:23-0400\n"
+"POT-Creation-Date: 2001-05-06 15:07-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -62,12 +62,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s nie wygl±da na pakiet RPM\n"
 
 #. parse up the build operators
-#: build.c:304
+#: build.c:303
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Budowanie dla platform: %s\n"
 
-#: build.c:319
+#: build.c:318
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
@@ -2182,73 +2182,73 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Unknown icon type: %s\n"
 msgstr "Nieznany typ ikony: %s"
 
-#: build/parsePreamble.c:436
+#: build/parsePreamble.c:435
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "linia %d: Niepoprawna forma etykiety: %s"
 
 #. Empty field
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:443
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linia %d: Pusta etykieta: %s"
 
-#: build/parsePreamble.c:466 build/parsePreamble.c:473
+#: build/parsePreamble.c:465 build/parsePreamble.c:472
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linia %d: Nielegalny znak '-' w %s: %s"
 
-#: build/parsePreamble.c:530 build/parseSpec.c:389
+#: build/parsePreamble.c:529 build/parseSpec.c:389
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "linia %d: wpis BuildRoot nie mo¿e byæ \"/\": %s"
 
-#: build/parsePreamble.c:543
+#: build/parsePreamble.c:542
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linia %d: Prefiksy nie mog± siê koñczyæ na \"/\": %s"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:554
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linia %d: wpis Docdir musi siê zaczynaæ od '/': %s"
 
-#: build/parsePreamble.c:567
+#: build/parsePreamble.c:566
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "linia %d: pole Epoch/Serial musi byæ liczb±: %s"
 
-#: build/parsePreamble.c:607 build/parsePreamble.c:618
+#: build/parsePreamble.c:606 build/parsePreamble.c:617
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linia %d: B³êdny numer %s: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:643
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linia %d: B³êdny format wpisu BuildArchitecture: %s"
 
-#: build/parsePreamble.c:653
+#: build/parsePreamble.c:652
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "B³±d wewnêtrzny: Fa³szywa etykieta %d"
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:802
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "B³êdna specyfikacja pakietu: $s"
 
-#: build/parsePreamble.c:809
+#: build/parsePreamble.c:808
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "Pakiet ju¿ istnieje: %s"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:835
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linia %d: Nieznana etykieta: %s"
 
-#: build/parsePreamble.c:858
+#: build/parsePreamble.c:857
 #, fuzzy
 msgid "Spec file can't use BuildRoot\n"
 msgstr "W pliku spec nie mo¿na u¿ywaæ wpisów BuildRoot"
@@ -2401,27 +2401,27 @@ msgstr "%s:%d: Napotkano %%endif bez if"
 msgid "malformed %%include statement\n"
 msgstr "b³ednie sformatowany wpis %%include"
 
-#: build/parseSpec.c:497
+#: build/parseSpec.c:505
 #, fuzzy
-msgid "No buildable architectures\n"
+msgid "No compatible architectures found for build\n"
 msgstr "Nie mo¿na budowaæ na takie architektury"
 
-#: build/parseSpec.c:552
+#: build/parseSpec.c:559
 #, fuzzy
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie ma %%description: %s"
 
-#: build/spec.c:222
+#: build/spec.c:225
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "linia %d: B³êdny numer: %s"
 
-#: build/spec.c:228
+#: build/spec.c:231
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "linia %d: b³êdny numer no%s: %d"
 
-#: build/spec.c:287
+#: build/spec.c:290
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "linia %d: B³êdny numer %s: %s\n"
@@ -3292,57 +3292,57 @@ msgstr "%s: readLead nie powiod³o siê\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "odpytywanie pliku spec %s nie powiod³o siê, nie mo¿na interpretowaæ\n"
 
-#: lib/query.c:621
+#: lib/query.c:620
 #, fuzzy
 msgid "no packages\n"
 msgstr "znaleziono %d pakietów\n"
 
-#: lib/query.c:632
+#: lib/query.c:631
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:642
+#: lib/query.c:641
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:652
+#: lib/query.c:651
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:663
+#: lib/query.c:662
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:697
+#: lib/query.c:696
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:700
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:727
+#: lib/query.c:726
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:730
+#: lib/query.c:729
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "numer rekordu pakietu: %d\n"
 
-#: lib/query.c:735
+#: lib/query.c:734
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:746 lib/rpminstall.c:599
+#: lib/query.c:745 lib/rpminstall.c:599
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"

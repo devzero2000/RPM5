@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-05 15:23-0400\n"
+"POT-Creation-Date: 2001-05-06 15:07-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -61,12 +61,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は スペックファイルではないようです。\n"
 
 #. parse up the build operators
-#: build.c:304
+#: build.c:303
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "作成中ターゲットプラットフォーム: %s\n"
 
-#: build.c:319
+#: build.c:318
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
@@ -2190,73 +2190,73 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unknown icon type: %s\n"
 msgstr "不明なアイコンタイプ: %s"
 
-#: build/parsePreamble.c:436
+#: build/parsePreamble.c:435
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 行目: 不完全な形のタグ: %s"
 
 #. Empty field
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:443
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "%d 行目: 空のタグ: %s"
 
-#: build/parsePreamble.c:466 build/parsePreamble.c:473
+#: build/parsePreamble.c:465 build/parsePreamble.c:472
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:530 build/parseSpec.c:389
+#: build/parsePreamble.c:529 build/parseSpec.c:389
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
 
-#: build/parsePreamble.c:543
+#: build/parsePreamble.c:542
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "%d 行目: Prefixes は \"/\" で終わってはいけません: %s"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:554
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "%d 行目: Docdir は '/' で始まらなくてはいけません: %s"
 
-#: build/parsePreamble.c:567
+#: build/parsePreamble.c:566
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "%d 行目: Epoch/Serial フィールドは番号でなければいけません: %s"
 
-#: build/parsePreamble.c:607 build/parsePreamble.c:618
+#: build/parsePreamble.c:606 build/parsePreamble.c:617
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 行目: 不正な %s 番号: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:643
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 行目: 不正な BuildArchitecture フォーマット: %s"
 
-#: build/parsePreamble.c:653
+#: build/parsePreamble.c:652
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "内部エラー: にせのタグ %d"
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:802
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不正なパッケージの指定: %s"
 
-#: build/parsePreamble.c:809
+#: build/parsePreamble.c:808
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "パッケージはすでに存在しています: %s"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:835
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 行目: 不明なタグ: %s"
 
-#: build/parsePreamble.c:858
+#: build/parsePreamble.c:857
 #, fuzzy
 msgid "Spec file can't use BuildRoot\n"
 msgstr "スペックファイルは BuildRoot を使用できません"
@@ -2409,27 +2409,27 @@ msgstr "%s:%d: if がないのに %%endif があります"
 msgid "malformed %%include statement\n"
 msgstr "おかしな %%include ステートメントです"
 
-#: build/parseSpec.c:497
+#: build/parseSpec.c:505
 #, fuzzy
-msgid "No buildable architectures\n"
+msgid "No compatible architectures found for build\n"
 msgstr "作成(build)可能なアーキテクチャはありません"
 
-#: build/parseSpec.c:552
+#: build/parseSpec.c:559
 #, fuzzy
 msgid "Package has no %%description: %s\n"
 msgstr "パッケージには %%description がありません: %s"
 
-#: build/spec.c:222
+#: build/spec.c:225
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "%d 行目: 不正な番号: %s"
 
-#: build/spec.c:228
+#: build/spec.c:231
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "%d 行目: 不正な no%s 番号: %d"
 
-#: build/spec.c:287
+#: build/spec.c:290
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "%d 行目: 不正な %s 番号: %s\n"
@@ -3328,57 +3328,57 @@ msgstr "%s: Fread に失敗しました: %s\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:621
+#: lib/query.c:620
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:632
+#: lib/query.c:631
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:642
+#: lib/query.c:641
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:652
+#: lib/query.c:651
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:663
+#: lib/query.c:662
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:697
+#: lib/query.c:696
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:700
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:727
+#: lib/query.c:726
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:730
+#: lib/query.c:729
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:735
+#: lib/query.c:734
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:746 lib/rpminstall.c:599
+#: lib/query.c:745 lib/rpminstall.c:599
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"

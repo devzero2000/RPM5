@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.3
 Version: %{version}
-Release: 0.12
+Release: 0.15
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -345,6 +345,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun May  6 2001 Jeff Johnson <jbj@redhat.com>
+- fix: specfile queries with BuildArch: (#27589).
+
 * Sat May  5 2001 Jeff Johnson <jbj@redhat.com>
 - enough lclint annotations and fiddles already.
 

@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-05-05 15:23-0400\n"
+msgstr "POT-Creation-Date: 2001-05-06 15:07-0400\n"
 
 # , c-format
 #: build.c:35
@@ -57,12 +57,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: build.c:304
+#: build.c:303
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:319
+#: build.c:318
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "instale pacote"
@@ -2294,78 +2294,78 @@ msgid "Unknown icon type: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
-#: build/parsePreamble.c:436
+#: build/parsePreamble.c:435
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
 #. Empty field
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:443
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
-#: build/parsePreamble.c:466 build/parsePreamble.c:473
+#: build/parsePreamble.c:465 build/parsePreamble.c:472
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: build/parsePreamble.c:530 build/parseSpec.c:389
+#: build/parsePreamble.c:529 build/parseSpec.c:389
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:543
+#: build/parsePreamble.c:542
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "argumentos para o --dbpath devem começar com uma /"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:554
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "argumentos para o --dbpath devem começar com uma /"
 
-#: build/parsePreamble.c:567
+#: build/parsePreamble.c:566
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr ""
 
 # , c-format
-#: build/parsePreamble.c:607 build/parsePreamble.c:618
+#: build/parsePreamble.c:606 build/parsePreamble.c:617
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:643
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: build/parsePreamble.c:653
+#: build/parsePreamble.c:652
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:802
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Opcões para especificação de pacotes:"
 
-#: build/parsePreamble.c:809
+#: build/parsePreamble.c:808
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "não foi passado pacote para instalação"
 
 # , c-format
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:835
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: build/parsePreamble.c:858
+#: build/parsePreamble.c:857
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -2526,29 +2526,29 @@ msgid "malformed %%include statement\n"
 msgstr ""
 
 # , c-format
-#: build/parseSpec.c:497
+#: build/parseSpec.c:505
 #, fuzzy
-msgid "No buildable architectures\n"
+msgid "No compatible architectures found for build\n"
 msgstr "%s não pode ser construido nesta arquitetura\n"
 
-#: build/parseSpec.c:552
+#: build/parseSpec.c:559
 #, fuzzy
 msgid "Package has no %%description: %s\n"
 msgstr "não foi passado pacote para desinstalação"
 
 # , c-format
-#: build/spec.c:222
+#: build/spec.c:225
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
-#: build/spec.c:228
+#: build/spec.c:231
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: build/spec.c:287
+#: build/spec.c:290
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
@@ -3437,57 +3437,57 @@ msgstr "Não consegui abrir: %s\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:621
+#: lib/query.c:620
 #, fuzzy
 msgid "no packages\n"
 msgstr "pesquise todos os pacotes"
 
-#: lib/query.c:632
+#: lib/query.c:631
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:642
+#: lib/query.c:641
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "não foram passados pacotes para assinatura"
 
-#: lib/query.c:652
+#: lib/query.c:651
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:663
+#: lib/query.c:662
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:697
+#: lib/query.c:696
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:701
+#: lib/query.c:700
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:727
+#: lib/query.c:726
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:730
+#: lib/query.c:729
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:735
+#: lib/query.c:734
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:746 lib/rpminstall.c:599
+#: lib/query.c:745 lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "não foi passado pacote para instalação"

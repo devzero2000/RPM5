@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-05 15:23-0400\n"
+"POT-Creation-Date: 2001-05-06 15:07-0400\n"
 "PO-Revision-Date: 2001-04-02 02:59+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -55,12 +55,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "Nezdá se, ¾e by %s byl spec soubor.\n"
 
 #. parse up the build operators
-#: build.c:304
+#: build.c:303
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Sestavuji cílové platformy: %s\n"
 
-#: build.c:319
+#: build.c:318
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Sestavuji pro cíl %s\n"
@@ -2066,73 +2066,73 @@ msgstr "Nemohu pøeèíst ikonu %s: %s\n"
 msgid "Unknown icon type: %s\n"
 msgstr "Neznámý typ ikony: %s\n"
 
-#: build/parsePreamble.c:436
+#: build/parsePreamble.c:435
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "øádek %d: Poèkozená znaèka: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:443
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "øádek %d: Prázdná znaèka: %s\n"
 
-#: build/parsePreamble.c:466 build/parsePreamble.c:473
+#: build/parsePreamble.c:465 build/parsePreamble.c:472
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "øádek %d: Nepøípustný znak '-' v %s: %s\n"
 
-#: build/parsePreamble.c:530 build/parseSpec.c:389
+#: build/parsePreamble.c:529 build/parseSpec.c:389
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot nemù¾e být \"/\": %s\n"
 
-#: build/parsePreamble.c:543
+#: build/parsePreamble.c:542
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "øádek %d: Prefixy nesmí konèit znakem \"/\": %s\n"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:554
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "øádek %d: Docdir musí zaèínat na '/': %s\n"
 
-#: build/parsePreamble.c:567
+#: build/parsePreamble.c:566
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "øádek %d: Polo¾ka Epoch/Serial musí být èíslo: %s\n"
 
-#: build/parsePreamble.c:607 build/parsePreamble.c:618
+#: build/parsePreamble.c:606 build/parsePreamble.c:617
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "øádek %d: ©patné urèení %s: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:643
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "øádek %d: ©patný formát BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:653
+#: build/parsePreamble.c:652
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interní chyba: ©patná znaèka: %d\n"
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:802
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "©patná specifikace balíèku: %s\n"
 
-#: build/parsePreamble.c:809
+#: build/parsePreamble.c:808
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Balíèek ji¾ existuje: %s\n"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:835
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "øádek %d: Neznámá znaèka: %s\n"
 
-#: build/parsePreamble.c:858
+#: build/parsePreamble.c:857
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec soubor nemù¾e pou¾ít BuildRoot\n"
 
@@ -2272,25 +2272,26 @@ msgstr "%s:%d: %%endif bez poèáteèního %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "po¹kozený pøíkaz %%include\n"
 
-#: build/parseSpec.c:497
-msgid "No buildable architectures\n"
+#: build/parseSpec.c:505
+#, fuzzy
+msgid "No compatible architectures found for build\n"
 msgstr "®ádné dostupné architektury pro sestavení\n"
 
-#: build/parseSpec.c:552
+#: build/parseSpec.c:559
 msgid "Package has no %%description: %s\n"
 msgstr "Balíèek nemá ¾ádné %%description: %s\n"
 
-#: build/spec.c:222
+#: build/spec.c:225
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "øádek %d: ©patné èíslo: %s\n"
 
-#: build/spec.c:228
+#: build/spec.c:231
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "øádek %d: ©patné èíslo %s: %d\n"
 
-#: build/spec.c:287
+#: build/spec.c:290
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "øádek %d: ©patné èíslo %s: %s\n"
@@ -3139,56 +3140,56 @@ msgstr "%s: Fread selhalo: %s\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "dotaz na spec soubor %s selhal, nemohu parsovat\n"
 
-#: lib/query.c:621
+#: lib/query.c:620
 msgid "no packages\n"
 msgstr "¾ádné balíèky\n"
 
-#: lib/query.c:632
+#: lib/query.c:631
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
-#: lib/query.c:642
+#: lib/query.c:641
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:652
+#: lib/query.c:651
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: lib/query.c:663
+#: lib/query.c:662
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾ádný balíèek neposkytuje %s\n"
 
-#: lib/query.c:697
+#: lib/query.c:696
 #, c-format
 msgid "file %s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:700
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "soubor %s nevlastní ¾ádný balíèek\n"
 
-#: lib/query.c:727
+#: lib/query.c:726
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/query.c:730
+#: lib/query.c:729
 #, c-format
 msgid "package record number: %u\n"
 msgstr "záznam balíèku èíslo: %u\n"
 
-#: lib/query.c:735
+#: lib/query.c:734
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:746 lib/rpminstall.c:599
+#: lib/query.c:745 lib/rpminstall.c:599
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
