@@ -384,7 +384,7 @@
 #
 #--- Btree database configuration
 %__dbi_btconfig	\
-  btree bt_dup bt_dupsort\
+  btree		\
   %{__dbi_other}\
   %{__dbi_perms}\
 %{nil}
