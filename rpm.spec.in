@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 3
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -476,6 +476,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Sep 10 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-3
+- speed up convertdb1 (#103206).
+
 * Tue Sep  9 2003 Jeff Johnson <jbj@redhat.com> 4.2.1-2
 - fix: add -n to brp-compress to avoid needless file conflicts.
 - fix: ia32 on ia64 segfaults because of automagic file relocations.
