@@ -718,6 +718,7 @@ static void defaultMachine(char ** arch, char ** os) {
         else if ((!strncmp(un.machine, "34", 2) || \
                  !strncmp(un.machine, "33", 2)) && \
                  !strncmp(un.release, "4.0", 3)) {
+	   char * prelid=NULL;
 	   int fd, irelid;
            /* we are on ncr-sysv4 */
            fd = open("/etc/.relid", O_RDONLY, 0700);
@@ -728,7 +729,6 @@ static void defaultMachine(char ** arch, char ** os) {
                  close(fd);
                  /* example: "112393 RELEASE 020200 Version 01 OS" */
                  if (irelid > 0) {
-		    char * prelid=NULL;
                     if ((prelid=strstr(chptr, "RELEASE "))){
                        prelid += strlen("RELEASE ")+1;
                        sprintf(un.sysname,"ncr-sysv4.%.*s",1,prelid);
