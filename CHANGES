@@ -6,6 +6,9 @@
 	- renamed sweedish catalog from se to sv
 	- added german catalog
 	- treat RPM_CHAR_TYPE as RPM_INT8_TYPE for queries
+	- made rpmEnsureOlder() internal to lib/install.c
+	- added rpmVersionCompare() to compare version/release/serial numbers
+	  for packages -- returns like strcmp()
 
 2.2.11 -> 2.3:
 	- replaced putenv/setenv which calls which malloc() buffer -- these
