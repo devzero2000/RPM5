@@ -12,10 +12,10 @@
 #include <errno.h>
 #include <sys/types.h>
 
+#include "intl.h"
 #include "misc.h"
-#include "spec.h"
 #include "rpmlib.h"
-#include "header.h"
+#include "spec.h"
 #include "popt/popt.h"
 
 void addOrAppendListEntry(Header h, int_32 tag, char *line)
@@ -136,11 +136,11 @@ StringBuf getOutputFrom(char *dir, char *argv[],
 	}
 	
 	execvp(argv[0], argv);
-	rpmError(RPMERR_EXEC, "Couldn't exec %s", argv[0]);
+	rpmError(RPMERR_EXEC, _("Couldn't exec %s"), argv[0]);
 	_exit(RPMERR_EXEC);
     }
     if (progPID < 0) {
-	rpmError(RPMERR_FORK, "Couldn't fork %s", argv[0]);
+	rpmError(RPMERR_FORK, _("Couldn't fork %s"), argv[0]);
 	return NULL;
     }
 
@@ -187,12 +187,12 @@ StringBuf getOutputFrom(char *dir, char *argv[],
     signal(SIGPIPE, oldhandler);
 
     if (writeBytesLeft) {
-	rpmError(RPMERR_EXEC, "failed to write all data to %s", argv[0]);
+	rpmError(RPMERR_EXEC, _("failed to write all data to %s"), argv[0]);
 	return NULL;
     }
     waitpid(progPID, &status, 0);
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	rpmError(RPMERR_EXEC, "%s failed", argv[0]);
+	rpmError(RPMERR_EXEC, _("%s failed"), argv[0]);
 	return NULL;
     }
 

@@ -1,12 +1,14 @@
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 
-#include "header.h"
-#include "read.h"
-#include "part.h"
+#include "intl.h"
 #include "misc.h"
-#include "rpmlib.h"
 #include "package.h"
+#include "part.h"
+#include "read.h"
+#include "rpmlib.h"
 #include "stringbuf.h"
 #include "popt/popt.h"
 
@@ -32,7 +34,7 @@ int parseFiles(Spec spec)
     name = file = NULL;
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
-	rpmError(RPMERR_BADSPEC, "line %d: Error parsing %%files: %s",
+	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%files: %s"),
 		 spec->lineNum, poptStrerror(rc));
 	return RPMERR_BADSPEC;
     }
@@ -45,7 +47,7 @@ int parseFiles(Spec spec)
     }
 
     if (arg < -1) {
-	rpmError(RPMERR_BADSPEC, "line %d: Bad option %s: %s",
+	rpmError(RPMERR_BADSPEC, _("line %d: Bad option %s: %s"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
@@ -59,7 +61,7 @@ int parseFiles(Spec spec)
 	    name = poptGetArg(optCon);
 	}
 	if (poptPeekArg(optCon)) {
-	    rpmError(RPMERR_BADSPEC, "line %d: Too many names: %s",
+	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s"),
 		     spec->lineNum,
 		     spec->line);
 	    FREE(argv);
@@ -69,7 +71,7 @@ int parseFiles(Spec spec)
     }
 
     if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmError(RPMERR_BADSPEC, "line %d: Package does not exist: %s",
+	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s"),
 		 spec->lineNum, spec->line);
 	FREE(argv);
 	poptFreeContext(optCon);
@@ -77,7 +79,7 @@ int parseFiles(Spec spec)
     }
 
     if (pkg->fileList) {
-	rpmError(RPMERR_BADSPEC, "line %d: Second %%files list",
+	rpmError(RPMERR_BADSPEC, _("line %d: Second %%files list"),
 		 spec->lineNum);
 	FREE(argv);
 	poptFreeContext(optCon);

@@ -445,7 +445,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
     char * rcProvidesString;
     char * start;
     
-    rpmMessage(RPMMESS_DEBUG, "dependencies: looking for %s\n", reqName);
+    rpmMessage(RPMMESS_DEBUG, _("dependencies: looking for %s\n"), reqName);
 
     if (suggestion) *suggestion = NULL;
 
@@ -628,7 +628,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, 
 				&count);
 
-	    rpmMessage(RPMMESS_DEBUG, "package %s require not satisfied: %s\n",
+	    rpmMessage(RPMMESS_DEBUG, _("package %s require not satisfied: %s\n"),
 		    name, requires[i]);
 	    
 	    if (psp->num == psp->alloced) {
@@ -671,7 +671,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, 
 				&count);
 
-	    rpmMessage(RPMMESS_DEBUG, "package %s conflicts: %s\n",
+	    rpmMessage(RPMMESS_DEBUG, _("package %s conflicts: %s\n"),
 		    name, conflicts[i]);
 	    
 	    if (psp->num == psp->alloced) {
@@ -770,7 +770,7 @@ static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset,
 
     h = rpmdbGetRecord(rpmdep->db, recOffset);
     if (!h) {
-	rpmMessage(RPMMESS_DEBUG, "dbrecMatchesDepFlags() failed to read header");
+	rpmMessage(RPMMESS_DEBUG, _("dbrecMatchesDepFlags() failed to read header"));
 	return 0;
     }
 

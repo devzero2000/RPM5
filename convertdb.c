@@ -38,12 +38,12 @@ int convertDB(void) {
     int i, j;
     
     if (exists("/var/lib/rpm/packages.rpm")) {
-	rpmError(RPMERR_NOCREATEDB, "RPM database already exists");
+	rpmError(RPMERR_NOCREATEDB, _("RPM database already exists"));
 	return 0;
     }
 
     if (oldrpmdbOpen(&olddb)) {
-	rpmError(RPMERR_OLDDBMISSING, "");
+	rpmError(RPMERR_OLDDBMISSING, _("Old db is missing"));
 	return 0;
     }
 
@@ -54,13 +54,13 @@ int convertDB(void) {
     unlink("/var/lib/rpm/fileindex.rpm");
 
     if (rpmdbOpen("", &db, O_RDWR | O_CREAT, 0644)) {
-	rpmError(RPMERR_DBOPEN, "failed to create RPM database /var/lib/rpm");
+	rpmError(RPMERR_DBOPEN, _("failed to create RPM database /var/lib/rpm"));
 	return 0;
     }
 
     packageLabels = oldrpmdbGetAllLabels(&olddb);
     if (!packageLabels) {
-	rpmError(RPMERR_OLDDBCORRUPT, "");
+	rpmError(RPMERR_OLDDBCORRUPT, _("Old db is corrupt"));
 	rpmdbClose(db);
 	unlink("/var/lib/rpm/packages.rpm");
 	oldrpmdbClose(&olddb);
@@ -69,7 +69,7 @@ int convertDB(void) {
 
     for (label = packageLabels; label; label = label->next) {
 	if (oldrpmdbGetPackageInfo(&olddb, *label, &package)) {
-	    fprintf(stderr, "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n", &olddb, olddb.packages);
+	    fprintf(stderr, _("oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"), &olddb, olddb.packages);
 	    exit(1);
 	}
 
@@ -201,13 +201,13 @@ int convertDB(void) {
 
 int main(int argc, char ** argv) {
     if (argc != 1) {
-	fprintf(stderr, "rpmconvert: no arguments expected");
+	fprintf(stderr, _("rpmconvert: no arguments expected"));
 	exit(1);
     }
 
     rpmReadConfigFiles(NULL, NULL, NULL, 0);
 
-    printf("rpmconvert 1.0 - converting database in /var/lib/rpm\n");
+    printf(_("rpmconvert 1.0 - converting database in /var/lib/rpm\n"));
     convertDB();
 
     exit(0);

@@ -1,14 +1,17 @@
 /* reqprov.c -- require/provide handling */
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 
-#include "spec.h"
-#include "reqprov.h"
-#include "messages.h"
-#include "rpmlib.h"
-#include "misc.h"
 #include "lib/misc.h"
+#include "intl.h"
+#include "misc.h"
+#include "messages.h"
+#include "reqprov.h"
+#include "rpmlib.h"
+#include "spec.h"
 
 int addReqProv(Spec spec, Package pkg,
 	       int flag, char *name, char *version, int index)
@@ -126,14 +129,14 @@ int generateAutoReqProv(Spec spec, Package pkg,
     /*** Do Provides ***/
 
     if (spec->autoProv) {
-	rpmMessage(RPMMESS_NORMAL, "Finding provides...\n");
+	rpmMessage(RPMMESS_NORMAL, _("Finding provides...\n"));
     
 	argv[0] = FINDPROVIDES;
 	argv[1] = NULL;
 	readBuf = getOutputFrom(NULL, argv,
 				getStringBuf(writeBuf), writeBytes, 1);
 	if (!readBuf) {
-	    rpmError(RPMERR_EXEC, "Failed to find provides");
+	    rpmError(RPMERR_EXEC, _("Failed to find provides"));
 	    freeStringBuf(writeBuf);
 	    return RPMERR_EXEC;
 	}
@@ -153,14 +156,14 @@ int generateAutoReqProv(Spec spec, Package pkg,
     /*** Do Requires ***/
 
     if (spec->autoReq) {
-	rpmMessage(RPMMESS_NORMAL, "Finding requires...\n");
+	rpmMessage(RPMMESS_NORMAL, _("Finding requires...\n"));
 
 	argv[0] = FINDREQUIRES;
 	argv[1] = NULL;
 	readBuf = getOutputFrom(NULL, argv,
 				getStringBuf(writeBuf), writeBytes, 0);
 	if (!readBuf) {
-	    rpmError(RPMERR_EXEC, "Failed to find requires");
+	    rpmError(RPMERR_EXEC, _("Failed to find requires"));
 	    freeStringBuf(writeBuf);
 	    return RPMERR_EXEC;
 	}
@@ -195,7 +198,7 @@ void printReqs(Spec spec, Package pkg)
 
     if (headerGetEntry(pkg->header, RPMTAG_PROVIDES,
 		       NULL, (void **) &names, &count)) {
-	rpmMessage(RPMMESS_NORMAL, "Provides:");
+	rpmMessage(RPMMESS_NORMAL, _("Provides:"));
 	x = 0;
 	while (x < count) {
 	    rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
@@ -213,7 +216,7 @@ void printReqs(Spec spec, Package pkg)
 	while (x < count) {
 	    if (flags[x] & RPMSENSE_PREREQ) {
 		if (! startedPreReq) {
-		    rpmMessage(RPMMESS_NORMAL, "Prereqs:");
+		    rpmMessage(RPMMESS_NORMAL, _("Prereqs:"));
 		    startedPreReq = 1;
 		}
 		rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
@@ -227,7 +230,7 @@ void printReqs(Spec spec, Package pkg)
 	while (x < count) {
 	    if (! (flags[x] & RPMSENSE_PREREQ)) {
 		if (! startedReq) {
-		    rpmMessage(RPMMESS_NORMAL, "Requires:");
+		    rpmMessage(RPMMESS_NORMAL, _("Requires:"));
 		    startedReq = 1;
 		}
 		rpmMessage(RPMMESS_NORMAL, " %s", names[x]);

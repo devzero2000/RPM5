@@ -1,11 +1,14 @@
-/* macro.c - %macro handling */
+#include "config.h"
 #include "miscfn.h"
+
+/* macro.c - %macro handling */
 
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
 
+#include "intl.h"
 #include "macro.h"
 #include "misc.h"
 
@@ -104,7 +107,7 @@ static int parseMacro(char *p, char **macro, char **next)
 
     if (! p) {
 	/* empty macro name */
-	rpmError(RPMERR_BADSPEC, "Empty macro name");
+	rpmError(RPMERR_BADSPEC, _("Empty macro name"));
 	return 2;
     }
     
@@ -112,14 +115,14 @@ static int parseMacro(char *p, char **macro, char **next)
 	*next = strchr(p, '}');
 	if (! *next) {
 	    /* unterminated */
-	    rpmError(RPMERR_BADSPEC, "Unterminated {: %s", p);
+	    rpmError(RPMERR_BADSPEC, _("Unterminated {: %s"), p);
 	    return 1;
 	}
 	**next = '\0';
 	*macro = strtok(p+1, " \n\t");
 	if (! *macro) {
 	    /* empty macro name */
-	    rpmError(RPMERR_BADSPEC, "Empty macro name");
+	    rpmError(RPMERR_BADSPEC, _("Empty macro name"));
 	    return 2;
 	}
 	(*next)++;
@@ -134,7 +137,7 @@ static int parseMacro(char *p, char **macro, char **next)
 
     if (isspace(*p) || ! *p) {
 	/* illegal % syntax */
-	rpmError(RPMERR_BADSPEC, "Illegal %% syntax: %s", p);
+	rpmError(RPMERR_BADSPEC, _("Illegal %% syntax: %s"), p);
 	return 3;
     }
 
@@ -165,7 +168,7 @@ static int handleDefine(struct MacroContext *mc, char *buf)
     }
     if (! *name) {
 	/* missing macro name */
-	rpmError(RPMERR_BADSPEC, "Unfinished %%define");
+	rpmError(RPMERR_BADSPEC, _("Unfinished %%define"));
 	return 1;
     }
     expansion = name;
@@ -283,7 +286,7 @@ static void dumpTable(struct MacroContext *mc)
     int i;
     
     for (i = 0; i < mc->firstFree; i++) {
-	printf("%s->%s.\n", mc->macroTable[i].name,
+	fprintf(stdout, "%s->%s.\n", mc->macroTable[i].name,
 	       mc->macroTable[i].expansion);
     }
 }
@@ -296,7 +299,7 @@ void main(void)
 
     while(gets(buf)) {
 	x = expandMacros(buf);
-	printf("%d->%s<-\n", x, buf);
+	fprintf(stdout, "%d->%s<-\n", x, buf);
     }
 }
 #endif

@@ -9,14 +9,15 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 
-#include "misc.h"
-#include "spec.h"
-#include "build.h"
 #include "lib/misc.h"
 #include "lib/messages.h"
-#include "rpmlib.h"
-#include "pack.h"
 #include "files.h"
+#include "build.h"
+#include "intl.h"
+#include "misc.h"
+#include "pack.h"
+#include "rpmlib.h"
+#include "spec.h"
 
 static void doRmSource(Spec spec);
 static int writeVars(Spec spec, FILE *f);
@@ -136,7 +137,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     }
     
     if (makeTempFile(NULL, &scriptName, &fd)) {
-	rpmError(RPMERR_SCRIPT, "Unable to open temp file");
+	rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
 	return RPMERR_SCRIPT;
     }
     f = fdopen(fd, "w");
@@ -173,11 +174,11 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 	return 0;
     }
     
-    rpmMessage(RPMMESS_NORMAL, "Executing: %s\n", name);
+    rpmMessage(RPMMESS_NORMAL, _("Executing: %s\n"), name);
     if (!(pid = fork())) {
 	buildShell = rpmGetVar(RPMVAR_BUILDSHELL);
 	execl(buildShell, buildShell, "-e", scriptName, scriptName, NULL);
-	rpmError(RPMERR_SCRIPT, "Exec of %s failed (%s)",
+	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s)"),
 		 scriptName, name);
 	unlink(scriptName);
 	FREE(scriptName);
@@ -185,7 +186,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     }
     wait(&status);
     if (! WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SCRIPT, "Bad exit status from %s (%s)",
+	rpmError(RPMERR_SCRIPT, _("Bad exit status from %s (%s)"),
 		 scriptName, name);
 	unlink(scriptName);
 	FREE(scriptName);

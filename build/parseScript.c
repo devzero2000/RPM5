@@ -1,14 +1,16 @@
+#include "config.h"
+
 #include <malloc.h>
 #include <string.h>
 
-#include "header.h"
-#include "read.h"
-#include "part.h"
+#include "intl.h"
 #include "misc.h"
-#include "rpmlib.h"
-#include "popt/popt.h"
-#include "reqprov.h"
 #include "package.h"
+#include "part.h"
+#include "read.h"
+#include "rpmlib.h"
+#include "reqprov.h"
+#include "popt/popt.h"
 
 static int addTriggerIndex(Package pkg, char *file, char *script, char *prog);
 
@@ -110,7 +112,7 @@ int parseScript(Spec spec, int parsePart)
 	/* break line into two */
 	p = strstr(spec->line, "--");
 	if (!p) {
-	    rpmError(RPMERR_BADSPEC, "line %d: triggers must have --: %s",
+	    rpmError(RPMERR_BADSPEC, _("line %d: triggers must have --: %s"),
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
@@ -120,7 +122,7 @@ int parseScript(Spec spec, int parsePart)
     }
     
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
-	rpmError(RPMERR_BADSPEC, "line %d: Error parsing %s: %s",
+	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %s: %s"),
 		 spec->lineNum, partname, poptStrerror(rc));
 	return RPMERR_BADSPEC;
     }
@@ -130,8 +132,8 @@ int parseScript(Spec spec, int parsePart)
 	if (arg == 'p') {
 	    if (prog[0] != '/') {
 		rpmError(RPMERR_BADSPEC,
-			 "line %d: script program must begin "
-			 "with \'/\': %s", spec->lineNum, prog);
+			 _("line %d: script program must begin "
+			 "with \'/\': %s"), spec->lineNum, prog);
 		FREE(argv);
 		poptFreeContext(optCon);
 		return RPMERR_BADSPEC;
@@ -142,7 +144,7 @@ int parseScript(Spec spec, int parsePart)
     }
     
     if (arg < -1) {
-	rpmError(RPMERR_BADSPEC, "line %d: Bad option %s: %s",
+	rpmError(RPMERR_BADSPEC, _("line %d: Bad option %s: %s"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
@@ -156,7 +158,7 @@ int parseScript(Spec spec, int parsePart)
 	    name = poptGetArg(optCon);
 	}
 	if (poptPeekArg(optCon)) {
-	    rpmError(RPMERR_BADSPEC, "line %d: Too many names: %s",
+	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s"),
 		     spec->lineNum,
 		     spec->line);
 	    FREE(argv);
@@ -166,7 +168,7 @@ int parseScript(Spec spec, int parsePart)
     }
     
     if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmError(RPMERR_BADSPEC, "line %d: Package does not exist: %s",
+	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s"),
 		 spec->lineNum, spec->line);
 	FREE(argv);
 	poptFreeContext(optCon);
@@ -175,7 +177,7 @@ int parseScript(Spec spec, int parsePart)
 
     if (tag != RPMTAG_TRIGGERSCRIPTS) {
 	if (headerIsEntry(pkg->header, progtag)) {
-	    rpmError(RPMERR_BADSPEC, "line %d: Second %s",
+	    rpmError(RPMERR_BADSPEC, _("line %d: Second %s"),
 		     spec->lineNum, partname);
 	    FREE(argv);
 	    poptFreeContext(optCon);
@@ -184,7 +186,7 @@ int parseScript(Spec spec, int parsePart)
     }
 
     if ((rc = poptParseArgvString(prog, &progArgc, &progArgv))) {
-	rpmError(RPMERR_BADSPEC, "line %d: Error parsing %s: %s",
+	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %s: %s"),
 		 spec->lineNum, partname, poptStrerror(rc));
 	FREE(argv);
 	poptFreeContext(optCon);

@@ -1,14 +1,17 @@
+#include "config.h"
+
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
 
-#include "spec.h"
+#include "files.h"
+#include "intl.h"
+#include "macro.h"
 #include "misc.h"
-#include "rpmlib.h"
 #include "package.h"
 #include "read.h"
-#include "files.h"
-#include "macro.h"
+#include "rpmlib.h"
+#include "spec.h"
 
 static char *getSourceAux(Spec spec, int num, int flag, int full);
 static struct Source *findSource(Spec spec, int num, int flag);
@@ -165,7 +168,7 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
 	    num = 0;
 	} else {
 	    if (parseNum(buf, &num)) {
-		rpmError(RPMERR_BADSPEC, "line %d: Bad %s number: %s\n",
+		rpmError(RPMERR_BADSPEC, _("line %d: Bad %s number: %s\n"),
 			 spec->lineNum, name, spec->line);
 		return RPMERR_BADSPEC;
 	    }
@@ -272,13 +275,13 @@ int parseNoSource(Spec spec, char *field, int tag)
     field = buf;
     while ((s = strtok(field, ", \t"))) {
 	if (parseNum(s, &num)) {
-	    rpmError(RPMERR_BADSPEC, "line %d: Bad number: %s",
+	    rpmError(RPMERR_BADSPEC, _("line %d: Bad number: %s"),
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
 
 	if (! (p = findSource(spec, num, flag))) {
-	    rpmError(RPMERR_BADSPEC, "line %d: Bad no%s number: %d",
+	    rpmError(RPMERR_BADSPEC, _("line %d: Bad no%s number: %d"),
 		     spec->lineNum, name, num);
 	    return RPMERR_BADSPEC;
 	}

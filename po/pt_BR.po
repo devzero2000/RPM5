@@ -1,8 +1,14 @@
 # Brazilian Portuguese messages for RPM
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
+#: ../rpm.c:211 ../rpm.c:289
 msgid ""
-msgstr "POT-Creation-Date: 1998-09-24 17:59-0400\n"
+msgstr "POT-Creation-Date: 1998-09-27 16:11-0400\n"
+
+#: ../rpm.c:188
+#, c-format
+msgid "rpm: %s\n"
+msgstr ""
 
 # "Project-Id-Version: rpm-2.5.3\n"
 # "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
@@ -12,132 +18,132 @@ msgstr "POT-Creation-Date: 1998-09-24 17:59-0400\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: /home/devel/jbj/src/rpm2/rpm.c:199
+#: ../rpm.c:199
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM versão %s\n"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:203
+#: ../rpm.c:203
 msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:204
+#: ../rpm.c:204
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
 msgstr ""
 "Este Software pode ser livremente redistribuido sob os termos da Licensa "
 "Pública GNU (GPL)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:213
+#: ../rpm.c:213
 msgid "usage: rpm {--help}"
 msgstr "uso: rpm {--help}"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:214
+#: ../rpm.c:214
 msgid "       rpm {--version}"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:215
+#: ../rpm.c:215
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
 msgstr "       rpm {--initdb}   [--dbpath <diretório>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:216
+#: ../rpm.c:216
 msgid ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:217
+#: ../rpm.c:217
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
 "                        [--replacepkgs] [--replacefiles] [--root <diretório>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:218
+#: ../rpm.c:218
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:219
+#: ../rpm.c:219
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 "                        [--rcfile <arquivo>] [--ignorearch] [--dbpath "
 "<diretório>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:220
+#: ../rpm.c:220
 #, fuzzy
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr "                        [--prefix <diretório>] [--ignoreos] [--nodeps]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:221
+#: ../rpm.c:221
 #, fuzzy
 msgid ""
 "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
 msgstr "                        [--ftpproxy <host>] [--ftpport <porta>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:222 /home/devel/jbj/src/rpm2/rpm.c:230
+#: ../rpm.c:222 ../rpm.c:230
 #, fuzzy
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
 msgstr "                        [--nomd5] [alvos]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:223
+#: ../rpm.c:223
 #, fuzzy
 msgid ""
 "                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"
 msgstr ""
 "                        [--ignoreos] [--nodeps] arquivo.rpm ... arquivoN.rpm"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:224
+#: ../rpm.c:224
 msgid ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:225
+#: ../rpm.c:225
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr ""
 "                        [--oldpackage] [--root <diretório>] [--noscripts]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:226
+#: ../rpm.c:226
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
 "                        [--excludedocs] [--includedocs] [--rcfile <arquivo>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:227
+#: ../rpm.c:227
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix "
 "<diretório>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:228
+#: ../rpm.c:228
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <host>] [--ftpport <porta>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:229
+#: ../rpm.c:229
 #, fuzzy
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 msgstr ""
 "                        [--dbpath <diretório>] [--nodeps] [--nofiles] "
 "[--noscripts]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:231
+#: ../rpm.c:231
 #, fuzzy
 msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
 msgstr "                        arquivo.rpm ... arquivoN.rpm"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:232
+#: ../rpm.c:232
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:233
+#: ../rpm.c:233
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr ""
 "                        [--scripts] [--root <diretório>] [--rcfile <arquivo>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:234
+#: ../rpm.c:234
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:235
+#: ../rpm.c:235
 #, fuzzy
 msgid ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
@@ -145,7 +151,7 @@ msgstr ""
 "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport "
 "<porta>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:236
+#: ../rpm.c:236
 #, fuzzy
 msgid ""
 "                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
@@ -153,243 +159,288 @@ msgstr ""
 "                        [--dbpath <diretório>] [--nodeps] [--nofiles] "
 "[--noscripts]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:237
+#: ../rpm.c:237
 #, fuzzy
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
 msgstr ""
 "                        [--provides] [--dump] [--dbpath <diretório>] [alvos]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:238
+#: ../rpm.c:238
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr ""
 "       rpm {--verify -V -y} [-afpg] [--root <diretório>] [--rcfile <arquivo>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:239
+#: ../rpm.c:239
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
 "                        [--dbpath <diretório>] [--nodeps] [--nofiles] "
 "[--noscripts]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:240
+#: ../rpm.c:240
 msgid "                        [--nomd5] [targets]"
 msgstr "                        [--nomd5] [alvos]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:241
+#: ../rpm.c:241
 msgid "       rpm {--setperms} [-afpg] [target]"
 msgstr "       rpm {--setperms} [-afpg] [alvo]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:242
+#: ../rpm.c:242
 msgid "       rpm {--setugids} [-afpg] [target]"
 msgstr "       rpm {--setugids} [-afpg] [alvo]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:243
+#: ../rpm.c:243
 #, fuzzy
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
 "       rpm {--erase -e] [--root <diretório>] [--noscripts] [--rcfile "
 "<arquivo>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:244
+#: ../rpm.c:244
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr ""
 "                        [--dbpath <diretório>] [--nodeps] [--allmatches]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:245
+#: ../rpm.c:245
 #, fuzzy
 msgid ""
 "                        [--justdb] [--notriggers] rpackage1 ... packageN"
 msgstr "                           pacote1 ... pacoteN"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:246
+#: ../rpm.c:246
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<arquivo>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:247
+#: ../rpm.c:247
 #, fuzzy
 msgid ""
 "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 msgstr ""
 "                        [--sign] [--test] [--timecheck <S>] arquivo-spec"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:248
+#: ../rpm.c:248
 #, fuzzy
 msgid "                        [--buildarch <arch>] [--rmsource] specfile"
 msgstr ""
 "                        [--sign] [--test] [--timecheck <S>] arquivo-spec"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:249
+#: ../rpm.c:249
 #, fuzzy
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
 msgstr ""
 "       rpm {--recompile} [--rcfile <arquivo>] [-v] fonte1.rpm ... fonteN.rpm"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:250
+#: ../rpm.c:250
 msgid ""
 "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--rebuild} [--rcfile <arquivo>] [-v] fonte1.rpm ... fonteN.rpm"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:251
+#: ../rpm.c:251
 msgid ""
 "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--recompile} [--rcfile <arquivo>] [-v] fonte1.rpm ... fonteN.rpm"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:252
+#: ../rpm.c:252
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--resign} [--rcfile <arquivo>] pacote1 pacote2 ... pacoteN"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:253
+#: ../rpm.c:253
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr ""
 "       rpm {--addsign} [--rcfile <arquivo>] pacote1 pacote2 ... pacoteN"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:254
+#: ../rpm.c:254
 msgid "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"
 msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <arquivo>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:255
+#: ../rpm.c:255
 msgid "                           package1 ... packageN"
 msgstr "                           pacote1 ... pacoteN"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:256
+#: ../rpm.c:256
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <arquivo>] [--dbpath <diretório>]"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:257
+#: ../rpm.c:257
 msgid "       rpm {--querytags}"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:291
+#: ../rpm.c:291
 msgid "usage:"
 msgstr "uso:"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:293
+#: ../rpm.c:293
 msgid "print this message"
 msgstr "mostra esta mensagem"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:295
+#: ../rpm.c:295
 msgid "print the version of rpm being used"
 msgstr "mostra a versão do programa rpm sendo usado"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:296
+#: ../rpm.c:296
 msgid "   all modes support the following arguments:"
 msgstr "   todos os modos suportam os seguintes argumentos:"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:298
+#: ../rpm.c:297
+msgid "      --rcfile <file>     "
+msgstr ""
+
+#: ../rpm.c:298
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "use <arquivo> no lugar de /etc/rpmrc e $HOME/.rpmrc"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:300
+#: ../rpm.c:300
 msgid "be a little more verbose"
 msgstr "seja um pouco mais detalhado"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:302
+#: ../rpm.c:302
 msgid "be incredibly verbose (for debugging)"
 msgstr "seja _muito_ mais detalhado (para depuração)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:304
+#: ../rpm.c:304
 msgid "query mode"
 msgstr "modo pesquisa"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:306 /home/devel/jbj/src/rpm2/rpm.c:364
-#: /home/devel/jbj/src/rpm2/rpm.c:424 /home/devel/jbj/src/rpm2/rpm.c:452
-#: /home/devel/jbj/src/rpm2/rpm.c:514
+#: ../rpm.c:305 ../rpm.c:363 ../rpm.c:423 ../rpm.c:451
+msgid "      --root <dir>        "
+msgstr ""
+
+#: ../rpm.c:306 ../rpm.c:364 ../rpm.c:424 ../rpm.c:452 ../rpm.c:514
 msgid "use <dir> as the top level directory"
 msgstr "use <diretório> como diretório raiz"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:308 /home/devel/jbj/src/rpm2/rpm.c:362
-#: /home/devel/jbj/src/rpm2/rpm.c:390 /home/devel/jbj/src/rpm2/rpm.c:440
-#: /home/devel/jbj/src/rpm2/rpm.c:512
+#: ../rpm.c:307 ../rpm.c:361 ../rpm.c:389 ../rpm.c:439 ../rpm.c:511
+#, fuzzy
+msgid "      --dbpath <dir>      "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:308 ../rpm.c:362 ../rpm.c:390 ../rpm.c:440 ../rpm.c:512
 msgid "use <dir> as the directory for the database"
 msgstr "use <diretório> como diretório para o banco de dados"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:310
-msgid "use s as the header format (implies -i)"
+#: ../rpm.c:309
+msgid "      --queryformat <qfmt>   "
+msgstr ""
+
+#: ../rpm.c:310
+#, fuzzy
+msgid "use qfmt as the header format (implies -i)"
 msgstr "use s como formato do cabeçalho (implica -i)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:311
+#: ../rpm.c:311
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
 "  Instale, atualize e pesquise (com -p) permitem que sejam usadas URLs ftp "
 "no lugar"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:312
+#: ../rpm.c:312
 msgid "   of file names as well as the following options:\n"
 msgstr "   de nomes de arquivos bem como as seguintes opções:\n"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:314
+#: ../rpm.c:313
+msgid "      --ftpproxy <host>   "
+msgstr ""
+
+#: ../rpm.c:314
 msgid "hostname or IP of ftp proxy"
 msgstr "nome do host ou IP do proxy ftp"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:316
+#: ../rpm.c:315
+msgid "      --ftpport <port>    "
+msgstr ""
+
+#: ../rpm.c:316
 msgid "port number of ftp server (or proxy)"
 msgstr "número da porta do servidor ftp (ou proxy)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:317
+#: ../rpm.c:317
 msgid "      Package specification options:"
 msgstr "      Opcões para especificação de pacotes:"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:319
+#: ../rpm.c:319
 msgid "query all packages"
 msgstr "pesquise todos os pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:321
+#: ../rpm.c:320
+msgid "        -f <file>+        "
+msgstr ""
+
+#: ../rpm.c:321
 msgid "query package owning <file>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:323
+#: ../rpm.c:322
+msgid "        -p <packagefile>+ "
+msgstr ""
+
+#: ../rpm.c:323
 msgid "query (uninstalled) package <packagefile>"
 msgstr "pesquise pacote (não instalado) <arquivo-pacote>"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:325
+#: ../rpm.c:324
+#, fuzzy
+msgid "        --triggeredby <package>"
+msgstr "pesquise o pacote ao qual <arquivo> pertence"
+
+#: ../rpm.c:325
 #, fuzzy
 msgid "query packages triggered by <package>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:327
-msgid "query packages which provide <i> capability"
+#: ../rpm.c:326
+msgid "        --whatprovides <icap>"
+msgstr ""
+
+#: ../rpm.c:327
+#, fuzzy
+msgid "query packages which provide <icap> capability"
 msgstr "pesquise pacotes que fornecem a capacidade <i>"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:329
-msgid "query packages which require <i> capability"
+#: ../rpm.c:328
+msgid "        --whatrequires <icap>"
+msgstr ""
+
+#: ../rpm.c:329
+#, fuzzy
+msgid "query packages which require <icap> capability"
 msgstr "pesquise pacotes que requerem capacidade <i>"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:330
+#: ../rpm.c:330
 msgid "      Information selection options:"
 msgstr "      Opcões de selecão de informação"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:332
+#: ../rpm.c:332
 msgid "display package information"
 msgstr "mostre informação do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:334
+#: ../rpm.c:334
 #, fuzzy
 msgid "display the package's change log"
 msgstr "mostre a lista de arquivos do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:336
+#: ../rpm.c:336
 msgid "display package file list"
 msgstr "mostre a lista de arquivos do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:338
+#: ../rpm.c:338
 msgid "show file states (implies -l)"
 msgstr "mostre estados dos arquivos (implica -l)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:340
+#: ../rpm.c:340
 msgid "list only documentation files (implies -l)"
 msgstr "liste somente os arquivos de documentação (implica -l)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:342
+#: ../rpm.c:342
 msgid "list only configuration files (implies -l)"
 msgstr "liste somente os arquivos de configuração (implica -l)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:344
+#: ../rpm.c:344
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
@@ -397,32 +448,37 @@ msgstr ""
 "mostre todas as informações verificáveis para cada arquivo (deve ser usado "
 "com -l, -c ou -d)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:346
+#: ../rpm.c:346
 #, fuzzy
 msgid "list capabilities package provides"
 msgstr "lista as capacidades que o pacote fornece"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:347
+#: ../rpm.c:347
 msgid "        --requires"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:349
+#: ../rpm.c:349
 msgid "list package dependencies"
 msgstr "lista dependências do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:351
+#: ../rpm.c:351
 msgid "print the various [un]install scripts"
 msgstr "mostra as várias scripts de [des]instalação"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:353
+#: ../rpm.c:353
 msgid "show the trigger scripts contained in the package"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:358
+#: ../rpm.c:357
+#, fuzzy
+msgid "    --pipe <cmd>        "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:358
 msgid "send stdout to <cmd>"
 msgstr "envia a saida padrão para <cmd>"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:360
+#: ../rpm.c:360
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
@@ -430,20 +486,19 @@ msgstr ""
 "verifique uma instalação de pacote usando as mesmas opções de especificação "
 "de pacote do -q"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:366 /home/devel/jbj/src/rpm2/rpm.c:410
-#: /home/devel/jbj/src/rpm2/rpm.c:444
+#: ../rpm.c:366 ../rpm.c:410 ../rpm.c:444
 msgid "do not verify package dependencies"
 msgstr "não verifique as dependências do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:368
+#: ../rpm.c:368
 msgid "do not verify file md5 checksums"
 msgstr "não verifique os checksums md5 do arquivo"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:370
+#: ../rpm.c:370
 msgid "do not verify file attributes"
 msgstr "não verifique os atributos dos arquivos"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:373
+#: ../rpm.c:373
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
@@ -451,7 +506,7 @@ msgstr ""
 "atribua as permissões dos arquivos para aquelas no banco de dados de pacotes "
 "usando as mesmas opções de especificação de pacote do -q"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:376
+#: ../rpm.c:376
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
@@ -459,89 +514,117 @@ msgstr ""
 "atribua dono e grupo dos arquivos para aquelas no banco de dados de pacotes "
 "usando as mesmas opções de especificação de pacote do -q"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:382
+#: ../rpm.c:380
+#, fuzzy
+msgid "    --install <packagefile>"
+msgstr "instale pacote"
+
+#: ../rpm.c:381
+#, fuzzy
+msgid "    -i <packagefile>      "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:382
 msgid "install package"
 msgstr "instale pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:384
+#: ../rpm.c:383
+#, fuzzy
+msgid "      --relocate <oldpath>=<newpath>"
+msgstr "                        [--nomd5] [alvos]"
+
+#: ../rpm.c:384
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:386
+#: ../rpm.c:386
 msgid "relocate files even though the package doesn't allow it"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:388
+#: ../rpm.c:387
+msgid "      --prefix <dir>      "
+msgstr ""
+
+#: ../rpm.c:388
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "realoque o pacote para <diretório>, se realocável"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:392
+#: ../rpm.c:392
 msgid "do not install documentation"
 msgstr "não instale documentação"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:394
+#: ../rpm.c:394
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "aliás para --replacepkgs --replacefiles"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:397
+#: ../rpm.c:397
 msgid "print hash marks as package installs (good with -v)"
 msgstr "mostre caracteres # a medida que o pacote instala (bom com -v)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:399
+#: ../rpm.c:399
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:402
+#: ../rpm.c:402
 #, fuzzy
 msgid "don't verify package architecture"
 msgstr "não verifique a arquitetura do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:404
+#: ../rpm.c:404
 msgid "don't verify package operating system"
 msgstr "não verifique o sistema operacional do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:406
+#: ../rpm.c:406
 msgid "install documentation"
 msgstr "instale documentação"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:408 /home/devel/jbj/src/rpm2/rpm.c:442
+#: ../rpm.c:408 ../rpm.c:442
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:412 /home/devel/jbj/src/rpm2/rpm.c:446
+#: ../rpm.c:412 ../rpm.c:446
 #, fuzzy
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "não verifique as dependências do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:414
+#: ../rpm.c:414
 msgid "don't execute any installation scripts"
 msgstr "não execute nenhuma script de instalação"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:416 /home/devel/jbj/src/rpm2/rpm.c:450
+#: ../rpm.c:416 ../rpm.c:450
 msgid "don't execute any scripts triggered by this package"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:418
+#: ../rpm.c:418
 msgid "print percentages as package installs"
 msgstr "imprima porcentagens a medida que o pacote vai sendo instalado"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:420
+#: ../rpm.c:420
 msgid "install even if the package replaces installed files"
 msgstr "instale mesmo que o pacote substitua arquivos já instalados"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:422
+#: ../rpm.c:422
 msgid "reinstall if the package is already present"
 msgstr "reinstale se o pacote já estiver presente"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:426
+#: ../rpm.c:426
 msgid "don't install, but tell if it would work or not"
 msgstr "não instale, mas diga se a instalação funcionará ou não"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:430
+#: ../rpm.c:428
+msgid "    --upgrade <packagefile>"
+msgstr ""
+
+#: ../rpm.c:429
+#, fuzzy
+msgid "    -U <packagefile>      "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:430
 msgid "upgrade package (same options as --install, plus)"
 msgstr "atualize pacote (mesmas opcões em --install, mais"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:432
+#: ../rpm.c:432
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -549,11 +632,15 @@ msgstr ""
 "atualize para uma versão mais velha do pacote (--force em atualizações não "
 "faz isto automaticamente)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:436
+#: ../rpm.c:434
+msgid "    --erase <package>"
+msgstr ""
+
+#: ../rpm.c:436
 msgid "erase (uninstall) package"
 msgstr "apague (desinstale) pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:438
+#: ../rpm.c:438
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -561,84 +648,106 @@ msgstr ""
 "remova todos os pacotes iguais a <pacote> (normalmente um erro é gerado se "
 "<pacote> especificou múltiplos pacotes)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:448
+#: ../rpm.c:448
 msgid "do not execute any package specific scripts"
 msgstr "não execute nenhuma script específica do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:454
+#: ../rpm.c:454
 msgid "    -b<stage> <spec>      "
 msgstr "    -b<estágio> <spec>    "
 
-#: /home/devel/jbj/src/rpm2/rpm.c:456
+#: ../rpm.c:455
+#, fuzzy
+msgid "    -t<stage> <tarball>      "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:456
 msgid "build package, where <stage> is one of:"
 msgstr "Constroi pacote, onde <estágio> é um dos seguintes:"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:458
+#: ../rpm.c:458
 msgid "prep (unpack sources and apply patches)"
 msgstr "prep (descompacte fontes e aplique patches)"
 
 # , c-format
-#: /home/devel/jbj/src/rpm2/rpm.c:460
+#: ../rpm.c:460
 #, c-format
 msgid "list check (do some cursory checks on %files)"
 msgstr "cheque lista (faça algumas checagens em %files)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:462
+#: ../rpm.c:462
 msgid "compile (prep and compile)"
 msgstr "compile (prep e compile)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:464
+#: ../rpm.c:464
 msgid "install (prep, compile, install)"
 msgstr "instale (prep, compile, instale)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:466
+#: ../rpm.c:466
 msgid "binary package (prep, compile, install, package)"
 msgstr "pacote binário (prep, compile, instale, pacote)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:468
+#: ../rpm.c:468
 msgid "bin/src package (prep, compile, install, package)"
 msgstr "pacote bin/src (prep, compile, instale, pacote)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:470
+#: ../rpm.c:470
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "pule direto para o estágio especificado (somente para c,i)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:472
+#: ../rpm.c:472
 msgid "remove build tree when done"
 msgstr "remova a árvore de construção quando terminar"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:474
+#: ../rpm.c:474
 #, fuzzy
 msgid "remove sources and spec file when done"
 msgstr "remova a árvore de construção quando terminar"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:476
+#: ../rpm.c:476
 msgid "generate PGP signature"
 msgstr "gere assinatura PGP"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:478
+#: ../rpm.c:477
+msgid "      --buildroot <dir>     "
+msgstr ""
+
+#: ../rpm.c:478
 #, fuzzy
 msgid "use <dir> as the build root"
 msgstr "use s como o root da construção"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:480
+#: ../rpm.c:479
+msgid "      --buildarch <arch>  "
+msgstr ""
+
+#: ../rpm.c:480
 #, fuzzy
 msgid "build the packages for architecture <arch>"
 msgstr "não verifique a arquitetura do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:482
+#: ../rpm.c:481
+msgid "      --buildos <os>  "
+msgstr ""
+
+#: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:484
+#: ../rpm.c:484
 msgid "do not execute any stages"
 msgstr "não execute nenhum estágio"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:486
-msgid "set the time check to S seconds (0 disables it)"
+#: ../rpm.c:486
+#, fuzzy
+msgid "set the time check to <secs> seconds (0 disables it)"
 msgstr "atribua S segundos ao tempo de checagem (0 o desabilita)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:489
+#: ../rpm.c:488
+msgid "    --rebuild <src_pkg>   "
+msgstr ""
+
+#: ../rpm.c:489
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
@@ -646,207 +755,228 @@ msgstr ""
 "instale pacote fonte, construa pacote binário e remova o arquivo spec, "
 "fontes, patches e ícones."
 
-#: /home/devel/jbj/src/rpm2/rpm.c:491
+#: ../rpm.c:490
+#, fuzzy
+msgid "    --rmsource <spec>   "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:491
 msgid "remove sources and spec file"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:493
+#: ../rpm.c:492
+msgid "    --recompile <src_pkg> "
+msgstr ""
+
+#: ../rpm.c:493
 msgid "like --rebuild, but don't build any package"
 msgstr "como --rebuild, mas não construa nenhum pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:495
+#: ../rpm.c:494
+#, fuzzy
+msgid "    --resign <pkg>+       "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:495
 msgid "sign a package (discard current signature)"
 msgstr "assine um pacote (descarte a assinatura corrente)"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:497
+#: ../rpm.c:496
+#, fuzzy
+msgid "    --addsign <pkg>+      "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:497
 msgid "add a signature to a package"
 msgstr "adicione uma assinatura a um pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:500
+#: ../rpm.c:499
+#, fuzzy
+msgid "    --checksig <pkg>+     "
+msgstr "    -b<estágio> <spec>    "
+
+#: ../rpm.c:500
 msgid "verify package signature"
 msgstr "verifique a assinatura do pacote"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:502
+#: ../rpm.c:502
 msgid "skip any PGP signatures"
 msgstr "desconsidere quaisquer assinaturas PGP"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:504
+#: ../rpm.c:504
 msgid "skip any MD5 signatures"
 msgstr "desconsidere quaisquer assinaturas MD5"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:506
+#: ../rpm.c:506
 msgid "list the tags that can be used in a query format"
 msgstr "liste as etiquetas que podem ser usadas em um formato de pesquisa"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:508
+#: ../rpm.c:508
 msgid "make sure a valid database exists"
 msgstr "certifique que um banco de dados válido existe"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:510
+#: ../rpm.c:510
 msgid "rebuild database from existing database"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:637 /home/devel/jbj/src/rpm2/rpm.c:643
-#: /home/devel/jbj/src/rpm2/rpm.c:650 /home/devel/jbj/src/rpm2/rpm.c:656
-#: /home/devel/jbj/src/rpm2/rpm.c:665 /home/devel/jbj/src/rpm2/rpm.c:672
-#: /home/devel/jbj/src/rpm2/rpm.c:718 /home/devel/jbj/src/rpm2/rpm.c:724
-#: /home/devel/jbj/src/rpm2/rpm.c:813 /home/devel/jbj/src/rpm2/rpm.c:820
-#: /home/devel/jbj/src/rpm2/rpm.c:826 /home/devel/jbj/src/rpm2/rpm.c:834
-#: /home/devel/jbj/src/rpm2/rpm.c:840 /home/devel/jbj/src/rpm2/rpm.c:848
-#: /home/devel/jbj/src/rpm2/rpm.c:881 /home/devel/jbj/src/rpm2/rpm.c:923
-#: /home/devel/jbj/src/rpm2/rpm.c:929
+#: ../rpm.c:637 ../rpm.c:643 ../rpm.c:650 ../rpm.c:656 ../rpm.c:665
+#: ../rpm.c:672 ../rpm.c:718 ../rpm.c:724 ../rpm.c:813 ../rpm.c:820
+#: ../rpm.c:826 ../rpm.c:834 ../rpm.c:840 ../rpm.c:848 ../rpm.c:881
+#: ../rpm.c:923 ../rpm.c:929
 msgid "only one major mode may be specified"
 msgstr "somente um modo principal pode ser especificado"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:658
+#: ../rpm.c:658
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u e --uninstall foram descontinuados e não funcionam mais.\n"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:660
+#: ../rpm.c:660
 msgid "Use -e or --erase instead.\n"
 msgstr "Use -e ou --erase no lugar.\n"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:676
+#: ../rpm.c:676
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr "--build (-b) requer um único argumento do tipo a,b,i,c,p,l"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:680
+#: ../rpm.c:680
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr "--tarbuild (-t) requer um único argumento do tipo a,b,i,c,p,l"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:747 /home/devel/jbj/src/rpm2/rpm.c:754
-#: /home/devel/jbj/src/rpm2/rpm.c:762 /home/devel/jbj/src/rpm2/rpm.c:770
-#: /home/devel/jbj/src/rpm2/rpm.c:790 /home/devel/jbj/src/rpm2/rpm.c:798
-#: /home/devel/jbj/src/rpm2/rpm.c:806
+#: ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770 ../rpm.c:790
+#: ../rpm.c:798 ../rpm.c:806
 msgid "one type of query/verify may be performed at a time"
 msgstr "um tipo de pesquisa/verificação pode ser feita por vez"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:856
+#: ../rpm.c:856
 msgid "arguments to --dbpath must begin with a /"
 msgstr "argumentos para o --dbpath devem começar com uma /"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:863
+#: ../rpm.c:863
 msgid "one type of query may be performed at a time"
 msgstr "um tipo de pesquisa pode ser feita por vez"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:887
+#: ../rpm.c:887
 #, fuzzy
 msgid "relocations must begin with a /"
 msgstr "argumentos para o --dbpath devem começar com uma /"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:889
+#: ../rpm.c:889
 msgid "relocations must contain a ="
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:892
+#: ../rpm.c:892
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/rpm.c:941
+#: ../rpm.c:900
+msgid "Internal error in argument processing :-(\n"
+msgstr ""
+
+#: ../rpm.c:941
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath passado para uma operação que não usa um banco de dados"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:946
+#: ../rpm.c:946
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck somente pode ser usado durante a construção de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:949 /home/devel/jbj/src/rpm2/rpm.c:952
+#: ../rpm.c:949 ../rpm.c:952
 msgid "unexpected query specifiers"
 msgstr "especificadores de pesquisa não esperados"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:956
+#: ../rpm.c:956
 msgid "unexpected query source"
 msgstr "fonte de pesquisa não esperado"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:959
+#: ../rpm.c:959
 msgid "only installation and upgrading may be forced"
 msgstr "somente instalação e atualização podem ser forçadas"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:962
+#: ../rpm.c:962
 #, fuzzy
 msgid "files may only be relocated during package installation"
 msgstr "--percent somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:965
+#: ../rpm.c:965
 #, fuzzy
 msgid "only one of --prefix or --relocate may be used"
 msgstr "somente um entre --excludedocs e --includedocs pode ser especificado"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:968
+#: ../rpm.c:968
 #, fuzzy
 msgid "--relocate may only be used when installing new packages"
 msgstr ""
 "--prefix somente pode ser usada quando se está instalando novos pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:971
+#: ../rpm.c:971
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 "--prefix somente pode ser usada quando se está instalando novos pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:974
+#: ../rpm.c:974
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumentos para --prefix devem começar com uma /"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:977
+#: ../rpm.c:977
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 "--hash (-h) somente podem ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:981
+#: ../rpm.c:981
 msgid "--percent may only be specified during package installation"
 msgstr "--percent somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:985
+#: ../rpm.c:985
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--percent somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:989
+#: ../rpm.c:989
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 "--replacepkgs somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:993
+#: ../rpm.c:993
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 "--excludedocs somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:997
+#: ../rpm.c:997
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 "--includedocs somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1001
+#: ../rpm.c:1001
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "somente um entre --excludedocs e --includedocs pode ser especificado"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1005
+#: ../rpm.c:1005
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 "--ignorearch somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1009
+#: ../rpm.c:1009
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 "--ignoreos somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1013
+#: ../rpm.c:1013
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 "--allmatches somente pode ser especificado durante desinstalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1017
+#: ../rpm.c:1017
 #, fuzzy
 msgid "--allfiles may only be specified during package installation"
 msgstr "--percent somente pode ser especificado durante instalações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1021
+#: ../rpm.c:1021
 #, fuzzy
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--test somente pode ser especificado durante [des]instalações e construções "
 "de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1026
+#: ../rpm.c:1026
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -854,7 +984,7 @@ msgstr ""
 "--noscripts somente pode ser especificado durante [des]instalações e "
 "verificações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1030
+#: ../rpm.c:1030
 #, fuzzy
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
@@ -863,7 +993,7 @@ msgstr ""
 "--nodeps somente pode ser especificado durante [des]instalações e "
 "verificações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1035
+#: ../rpm.c:1035
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
@@ -871,12 +1001,12 @@ msgstr ""
 "--nodeps somente pode ser especificado durante [des]instalações e "
 "verificações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1039
+#: ../rpm.c:1039
 msgid "--nofiles may only be specified during package verification"
 msgstr ""
 "--nofiles somente pode ser especificado durante a verificação de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1044
+#: ../rpm.c:1044
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -884,7 +1014,7 @@ msgstr ""
 "--test somente pode ser especificado durante [des]instalações e construções "
 "de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1049
+#: ../rpm.c:1049
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -892,235 +1022,287 @@ msgstr ""
 "--root (-r) somente pode ser especificado durante [des]instalações, "
 "pesquisas e reconstrução de bancos de dados"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1054
+#: ../rpm.c:1054
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumentos para --root (-r) devem começar com uma /"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1057
+#: ../rpm.c:1057
 #, fuzzy
 msgid "--clean may only be used with -b and -t"
 msgstr "--clean somente pode ser usado durante a construção de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1060
+#: ../rpm.c:1060
 #, fuzzy
 msgid "--rmsource may only be used with -b and -t"
 msgstr "--short-circuit somente pode ser usado com -bc, -bi, -tc ou -ti"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1063
+#: ../rpm.c:1063
 msgid "--short-circuit may only be used during package building"
 msgstr "--short-circuit somente pode ser usado durante a construção de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1067
+#: ../rpm.c:1067
 #, fuzzy
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr "--short-circuit somente pode ser usado com -bc, -bi, -tc ou -ti"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1072
+#: ../rpm.c:1072
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage somente pode ser usado durante a atualização de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1075
+#: ../rpm.c:1075
 #, fuzzy
 msgid "--dump may only be used during queries"
 msgstr "--dump somente pode ser usado durante pesquisas"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1078
+#: ../rpm.c:1078
 msgid "--dump of queries must be used with -l, -c, or -d"
 msgstr "--dump de pesquisas devem ser usado com -l, -c ou -d"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1083
+#: ../rpm.c:1083
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "opções ftp somente podem ser usadas durante pesquisas, instalações e "
 "atualizações de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1090
+#: ../rpm.c:1090
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp somente pode ser usado durante checagem de assinaturas"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1093
+#: ../rpm.c:1093
 msgid ""
 "--nopgp may only be used during signature checking and package verification"
 msgstr ""
 "--nopgp somente pode ser usado durante checagem de assinaturas e verificação "
 "de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1106
+#: ../rpm.c:1106
 msgid "Pass phrase check failed\n"
 msgstr "Checagem de pass phrase falhou\n"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1109
+#: ../rpm.c:1109
 msgid "Pass phrase is good.\n"
 msgstr "Pass phrase ok.\n"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1121
+#: ../rpm.c:1121
 msgid "--sign may only be used during package building"
 msgstr "--sign somente pode ser usado durante a construção de pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1155
+#: ../rpm.c:1136
+#, fuzzy
+msgid "exec failed\n"
+msgstr "Construção falhou.\n"
+
+#: ../rpm.c:1155
 msgid "unexpected arguments to --querytags "
 msgstr "argumentos não esperados em --querytags"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1166
+#: ../rpm.c:1166
 msgid "no packages given for signature check"
 msgstr "nenhum pacote informado para checagem de assinatura"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1173
+#: ../rpm.c:1173
 msgid "no packages given for signing"
 msgstr "não foram passados pacotes para assinatura"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1182
+#: ../rpm.c:1182
 msgid "no packages files given for rebuild"
 msgstr "não foram passados pacotes para reconstrução"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1245
+#: ../rpm.c:1245
 msgid "no spec files given for build"
 msgstr "não foi passado arquivo spec para construção"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1247
+#: ../rpm.c:1247
 msgid "no tar files given for build"
 msgstr "não foram passados arquivos tar para construção"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1259
+#: ../rpm.c:1259
 msgid "no packages given for uninstall"
 msgstr "não foi passado pacote para desinstalação"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1299
+#: ../rpm.c:1299
 msgid "no packages given for install"
 msgstr "não foi passado pacote para instalação"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1323
+#: ../rpm.c:1323
 msgid "extra arguments given for query of all packages"
 msgstr "foram passados argumentos em excesso para pesquisa em todos os pacotes"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1328
+#: ../rpm.c:1328
 msgid "no arguments given for query"
 msgstr "não foi passado argumento para pesquisa"
 
-#: /home/devel/jbj/src/rpm2/rpm.c:1345
+#: ../rpm.c:1345
 msgid "no arguments given for verify"
 msgstr "não foi passado argumento para verificação"
 
-#: /home/devel/jbj/src/rpm2/query.c:48
+#: ../query.c:48
 #, c-format
 msgid "error in format: %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:85
+#: ../query.c:85
 msgid "(contains no files)"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:344 /home/devel/jbj/src/rpm2/verify.c:142
+#: ../query.c:137
+msgid "normal        "
+msgstr ""
+
+#: ../query.c:139
+msgid "replaced      "
+msgstr ""
+
+#: ../query.c:141
+msgid "net shared    "
+msgstr ""
+
+#: ../query.c:143
+#, fuzzy
+msgid "not installed "
+msgstr "não foi passado pacote para instalação"
+
+#: ../query.c:145
+#, c-format
+msgid "(unknown %3d) "
+msgstr ""
+
+#: ../query.c:149
+msgid "(no state)    "
+msgstr ""
+
+#: ../query.c:165 ../query.c:194
+msgid "package has neither file owner or id lists"
+msgstr ""
+
+#: ../query.c:339
+#, c-format
+msgid "querying record number %d\n"
+msgstr ""
+
+#: ../query.c:344 ../verify.c:142
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:380 /home/devel/jbj/src/rpm2/query.c:387
-#: /home/devel/jbj/src/rpm2/verify.c:198 /home/devel/jbj/src/rpm2/verify.c:205
+#: ../query.c:380 ../query.c:387 ../verify.c:198 ../verify.c:205
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:403
+#: ../query.c:403
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:412
+#: ../query.c:412
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:416
+#: ../query.c:416
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:429 /home/devel/jbj/src/rpm2/verify.c:182
+#: ../query.c:429 ../verify.c:182
 msgid "could not read database record!\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:440 /home/devel/jbj/src/rpm2/verify.c:228
+#: ../query.c:440 ../verify.c:228
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:450
+#: ../query.c:450
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:460
+#: ../query.c:460
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "não foram passados pacotes para assinatura"
 
-#: /home/devel/jbj/src/rpm2/query.c:470
+#: ../query.c:470
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:488 /home/devel/jbj/src/rpm2/query.c:494
+#: ../query.c:488 ../query.c:494
 msgid "maximum path length exceeded\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:506
+#: ../query.c:506
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:509 /home/devel/jbj/src/rpm2/verify.c:242
+#: ../query.c:509 ../verify.c:242
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:522
+#: ../query.c:522
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:525
+#: ../query.c:525
 #, c-format
 msgid "showing package: %d\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/query.c:529
+#: ../query.c:529
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:332 /home/devel/jbj/src/rpm2/query.c:541
-#: /home/devel/jbj/src/rpm2/verify.c:253
+#: ../install.c:332 ../query.c:541 ../verify.c:253
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "não foi passado pacote para instalação"
 
-#: /home/devel/jbj/src/rpm2/query.c:544 /home/devel/jbj/src/rpm2/verify.c:255
+#: ../query.c:544 ../verify.c:255
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:79
-#: /home/devel/jbj/src/rpm2/install.c:195
+#: ../install.c:79 ../install.c:195
 #, c-format
 msgid "error: cannot open file %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:96
+#: ../install.c:96 ../install.c:418
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:114
-#: /home/devel/jbj/src/rpm2/install.c:208
+#: ../install.c:103
+msgid "stopping source install as we're just testing\n"
+msgstr ""
+
+#: ../install.c:114 ../install.c:208
 #, c-format
 msgid "error: %s does not appear to be a RPM package\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:119
-#: /home/devel/jbj/src/rpm2/install.c:213
-#: /home/devel/jbj/src/rpm2/install.c:422
+#: ../install.c:119 ../install.c:213 ../install.c:422
 #, c-format
 msgid "error: %s cannot be installed\n"
+msgstr ""
+
+#: ../install.c:152
+#, fuzzy
+msgid "counting packages to install\n"
+msgstr "não foi passado pacote para instalação"
+
+#: ../install.c:156
+#, fuzzy, c-format
+msgid "found %d packages\n"
+msgstr "pesquise todos os pacotes"
+
+#: ../install.c:162
+msgid "looking for packages to download\n"
 msgstr ""
 
 # "Project-Id-Version: rpm-2.5.3\n"
@@ -1131,550 +1313,1596 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: /home/devel/jbj/src/rpm2/install.c:166
+#: ../install.c:166
 #, fuzzy, c-format
 msgid "Retrieving %s\n"
 msgstr "RPM versão %s\n"
 
-#: /home/devel/jbj/src/rpm2/install.c:177
+#: ../install.c:173
+#, c-format
+msgid "getting %s as %s\n"
+msgstr ""
+
+#: ../install.c:177
 #, c-format
 msgid "error: skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:233
-#: /home/devel/jbj/src/rpm2/install.c:322
+#: ../install.c:189
+#, c-format
+msgid "retrieved %d packages\n"
+msgstr ""
+
+#: ../install.c:191
+msgid "finding source and binary packages\n"
+msgstr ""
+
+#: ../install.c:227
+#, c-format
+msgid "found %d source and %d binary packages\n"
+msgstr ""
+
+#: ../install.c:231
+#, c-format
+msgid "opening database mode: 0%o\n"
+msgstr ""
+
+#: ../install.c:233 ../install.c:322
 #, c-format
 msgid "error: cannot open %s%s/packages.rpm\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:254
+#: ../install.c:254
 #, fuzzy
 msgid "failed dependencies:\n"
 msgstr "lista dependências do pacote"
 
-#: /home/devel/jbj/src/rpm2/install.c:335
+#: ../install.c:275
+#, fuzzy
+msgid "installing binary packages\n"
+msgstr "instale pacote"
+
+#: ../install.c:309
+#, fuzzy
+msgid "counting packages to uninstall\n"
+msgstr "não foi passado pacote para desinstalação"
+
+#: ../install.c:335
 #, c-format
 msgid "error searching for package %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:343
+#: ../install.c:343
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:380
+#: ../install.c:365
+#, fuzzy, c-format
+msgid "found %d packages to uninstall\n"
+msgstr "não foi passado pacote para desinstalação"
+
+#: ../install.c:380
 #, fuzzy
 msgid "removing these packages would break dependencies:\n"
 msgstr "lista dependências do pacote"
 
-#: /home/devel/jbj/src/rpm2/install.c:413
+#: ../install.c:391
+#, c-format
+msgid "uninstalling record number %d\n"
+msgstr ""
+
+#: ../install.c:413
 #, c-format
 msgid "error: cannot open %s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:461
+#: ../install.c:461
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/install.c:464
+#: ../install.c:464
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/verify.c:95
+#: ../verify.c:39
+#, c-format
+msgid "missing    %s\n"
+msgstr ""
+
+#: ../verify.c:95
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:31
-#: /home/devel/jbj/src/rpm2/checksig.c:162
+#: ../verify.c:137
+#, c-format
+msgid "verifying record number %d\n"
+msgstr ""
+
+#: ../verify.c:219
+#, c-format
+msgid "%s is not an RPM\n"
+msgstr ""
+
+#: ../checksig.c:31 ../checksig.c:162
 #, c-format
 msgid "%s: Open failed\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:35
-#: /home/devel/jbj/src/rpm2/checksig.c:167
+#: ../checksig.c:35 ../checksig.c:167
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:39
+#: ../checksig.c:39
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:43
+#: ../checksig.c:43
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:47
-#: /home/devel/jbj/src/rpm2/checksig.c:177
+#: ../checksig.c:47 ../checksig.c:177
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:60
-#: /home/devel/jbj/src/rpm2/checksig.c:191
+#: ../checksig.c:60 ../checksig.c:191
 msgid "Couldn't read the header/archive"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:67
+#: ../checksig.c:67
 msgid "Couldn't write header/archive to temp file"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:115
+#: ../build/pack.c:266 ../checksig.c:92
+#, fuzzy, c-format
+msgid "Generating signature: %d\n"
+msgstr "gere assinatura PGP"
+
+#: ../checksig.c:115
 msgid "Couldn't read sigtarget"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:124
+#: ../checksig.c:124
 msgid "Couldn't write package"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:172
+#: ../checksig.c:172
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/checksig.c:182
+#: ../checksig.c:182
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
 # , c-format
-#: /home/devel/jbj/src/rpm2/checksig.c:198
+#: ../checksig.c:198
 #, fuzzy, c-format
 msgid "Unable to write %s"
 msgstr "Não consegui abrir: %s\n"
 
-#: /home/devel/jbj/src/rpm2/checksig.c:290
-#: /home/devel/jbj/src/rpm2/checksig.c:297
+#: ../checksig.c:289
+msgid "NOT OK"
+msgstr ""
+
+#: ../checksig.c:290 ../checksig.c:297
 msgid " (MISSING KEYS)"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/url.c:59
+#: ../checksig.c:296
+msgid "OK"
+msgstr ""
+
+#: ../url.c:59
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/url.c:143
+#: ../url.c:125 ../url.c:168 ../url.c:194
+#, c-format
+msgid "getting %s via anonymous ftp\n"
+msgstr ""
+
+#: ../url.c:132
+#, c-format
+msgid "logging into %s as %s, pw %s\n"
+msgstr ""
+
+#: ../url.c:143
 msgid "error: ftpport must be a number\n"
 msgstr ""
 
 # , c-format
-#: /home/devel/jbj/src/rpm2/url.c:201
+#: ../url.c:201
 #, fuzzy, c-format
 msgid "failed to create %s\n"
 msgstr "Não consegui abrir o pipe tar: %s\n"
 
-#: /home/devel/jbj/src/rpm2/ftp.c:445
+#: ../ftp.c:445
 msgid "Bad FTP server response"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:448
+#: ../ftp.c:448
 msgid "FTP IO error"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:451
+#: ../ftp.c:451
 msgid "FTP server timeout"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:454
+#: ../ftp.c:454
 msgid "Unable to lookup FTP server host address"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:457
+#: ../ftp.c:457
 msgid "Unable to lookup FTP server host name"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:460
+#: ../ftp.c:460
 msgid "Failed to connect to FTP server"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:463
+#: ../ftp.c:463
 msgid "Failed to establish data connection to FTP server"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:466
+#: ../ftp.c:466
 msgid "IO error to local file"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:469
+#: ../ftp.c:469
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:472
+#: ../ftp.c:472
 msgid "File not found on server"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/ftp.c:476
+#: ../ftp.c:476
 msgid "FTP Unknown or unexpected error"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:320
-#: /home/devel/jbj/src/rpm2/lib/uninstall.c:135
+# , c-format
+#: ../build/build.c:140 ../build/pack.c:204
+#, fuzzy
+msgid "Unable to open temp file"
+msgstr "Não consegui abrir: %s\n"
+
+# "Project-Id-Version: rpm-2.5.3\n"
+# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
+# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
+# "Language-Team: Portuguese <pt@li.org>\n"
+# "MIME-Version: 1.0\n"
+# "Content-Type: text/plain; charset=ISO-8859-1\n"
+# "Content-Transfer-Encoding: 8-bit\n"
+# , c-format
+#: ../build/build.c:177
+#, fuzzy, c-format
+msgid "Executing: %s\n"
+msgstr "RPM versão %s\n"
+
+#: ../build/build.c:181
+#, c-format
+msgid "Exec of %s failed (%s)"
+msgstr ""
+
+#: ../build/build.c:189
+#, c-format
+msgid "Bad exit status from %s (%s)"
+msgstr ""
+
+#: ../build/files.c:255 ../build/parsePrep.c:474
+#, c-format
+msgid "Bad owner/group: %s"
+msgstr ""
+
+#: ../build/files.c:291
+#, c-format
+msgid "Processing files: %s\n"
+msgstr ""
+
+# , c-format
+#: ../build/files.c:337
+#, fuzzy
+msgid "Could not open %%files file: %s"
+msgstr "Não consegui abrir: %s\n"
+
+#: ../build/files.c:343 ../build/pack.c:381
+#, c-format
+msgid "line: %s"
+msgstr ""
+
+#: ../build/files.c:535
+#, c-format
+msgid "TIMECHECK failure: %s\n"
+msgstr ""
+
+# , c-format
+#: ../build/files.c:570
+#, fuzzy, c-format
+msgid "File listed twice: %s"
+msgstr "Não consegui ler o arquivo spec de %s\n"
+
+#: ../build/files.c:692
+#, c-format
+msgid "archive = %s, fs = %s\n"
+msgstr ""
+
+#: ../build/files.c:731
+#, c-format
+msgid "File needs leading \"/\": %s"
+msgstr ""
+
+#: ../build/files.c:747 ../build/files.c:818
+#, fuzzy, c-format
+msgid "File not found: %s"
+msgstr "não foi passado pacote para desinstalação"
+
+# , c-format
+#: ../build/files.c:808
+#, fuzzy, c-format
+msgid "File doesn't match prefix (%s): %s"
+msgstr "Não consegui ler o arquivo spec de %s\n"
+
+#: ../build/files.c:863
+#, c-format
+msgid "Bad owner/group: %s\n"
+msgstr ""
+
+#: ../build/files.c:868
+#, c-format
+msgid "File %d: %s\n"
+msgstr ""
+
+#: ../build/files.c:952
+msgid "Hit limit for %%docdir"
+msgstr ""
+
+#: ../build/files.c:958
+msgid "Only one arg for %%docdir"
+msgstr ""
+
+# , c-format
+#: ../build/files.c:984
+#, fuzzy, c-format
+msgid "Two files on one line: %s"
+msgstr "Não consegui abrir: %s\n"
+
+#: ../build/files.c:997
+#, fuzzy, c-format
+msgid "File must begin with \"/\": %s"
+msgstr "argumentos para o --dbpath devem começar com uma /"
+
+#: ../build/files.c:1009
+msgid "Can't mix special %%doc with other forms: %s"
+msgstr ""
+
+#: ../build/files.c:1066 ../build/files.c:1078 ../build/files.c:1248
+#: ../build/files.c:1260 ../build/files.c:1287
+#, c-format
+msgid "Bad %s() syntax: %s"
+msgstr ""
+
+#: ../build/files.c:1112
+#, c-format
+msgid "Invalid %s token: %s"
+msgstr ""
+
+#: ../build/files.c:1178 ../build/files.c:1190 ../build/files.c:1203
+msgid "Bad %%lang() syntax: %s"
+msgstr ""
+
+#: ../build/files.c:1208
+msgid "%%lang() entries are 2 characters: %s"
+msgstr ""
+
+#: ../build/files.c:1213
+msgid "Only one entry in %%lang(): %s"
+msgstr ""
+
+#: ../build/files.c:1271
+msgid "No files after %%defattr(): %s"
+msgstr ""
+
+#: ../build/files.c:1299
+#, c-format
+msgid "Bad %s() mode spec: %s"
+msgstr ""
+
+#: ../build/files.c:1317
+#, c-format
+msgid "Bad %s() dirmode spec: %s"
+msgstr ""
+
+#: ../build/files.c:1372
+msgid "Bad %%config() syntax: %s"
+msgstr ""
+
+#: ../build/files.c:1390
+msgid "Invalid %%config token: %s"
+msgstr ""
+
+#. empty macro name
+#: ../build/macro.c:110 ../build/macro.c:125
+msgid "Empty macro name"
+msgstr ""
+
+#. unterminated
+#: ../build/macro.c:118
+#, c-format
+msgid "Unterminated {: %s"
+msgstr ""
+
+#. illegal % syntax
+#: ../build/macro.c:140
+msgid "Illegal %% syntax: %s"
+msgstr ""
+
+#. missing macro name
+#: ../build/macro.c:171
+msgid "Unfinished %%define"
+msgstr ""
+
+#: ../build/misc.c:139
+#, c-format
+msgid "Couldn't exec %s"
+msgstr ""
+
+#: ../build/misc.c:143
+#, c-format
+msgid "Couldn't fork %s"
+msgstr ""
+
+# , c-format
+#: ../build/misc.c:190
+#, fuzzy, c-format
+msgid "failed to write all data to %s"
+msgstr "Não consegui abrir o pipe tar: %s\n"
+
+#: ../build/misc.c:195
+#, fuzzy, c-format
+msgid "%s failed"
+msgstr "Construção falhou.\n"
+
+#: ../build/names.c:47 ../build/names.c:81
+msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
+msgstr ""
+
+#: ../build/names.c:116 ../build/names.c:150
+msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
+msgstr ""
+
+#: ../build/names.c:188
+#, c-format
+msgid "Could not canonicalize hostname: %s\n"
+msgstr ""
+
+#: ../build/pack.c:162
+#, c-format
+msgid "Could not generate output filename for package %s: %s\n"
+msgstr ""
+
+# , c-format
+#: ../build/pack.c:228
+#, fuzzy, c-format
+msgid "Could not open %s\n"
+msgstr "Não consegui abrir: %s\n"
+
+# , c-format
+#: ../build/pack.c:250 ../build/pack.c:293
+#, fuzzy, c-format
+msgid "Unable to write package: %s"
+msgstr "Não consegui abrir: %s\n"
+
+# , c-format
+#: ../build/pack.c:283
+#, fuzzy, c-format
+msgid "Unable to read sigtarget: %s"
+msgstr "Não consegui abrir: %s\n"
+
+#: ../build/pack.c:308
+#, c-format
+msgid "Wrote: %s\n"
+msgstr ""
+
+#: ../build/pack.c:333
+msgid "Couldn't exec gzip"
+msgstr ""
+
+#: ../build/pack.c:339
+msgid "Couldn't fork gzip"
+msgstr ""
+
+#: ../build/pack.c:350
+msgid "Execution of gzip failed"
+msgstr ""
+
+# , c-format
+#: ../build/pack.c:356
+#, fuzzy, c-format
+msgid "cpio failed on file %s: %s"
+msgstr "Não consegui abrir: %s\n"
+
+# , c-format
+#: ../build/pack.c:359
+#, fuzzy, c-format
+msgid "cpio failed on file %s: %d"
+msgstr "Não consegui abrir: %s\n"
+
+#: ../build/pack.c:437
+#, c-format
+msgid "Could not open PreIn file: %s"
+msgstr ""
+
+#: ../build/pack.c:444
+#, c-format
+msgid "Could not open PreUn file: %s"
+msgstr ""
+
+#: ../build/pack.c:451
+#, c-format
+msgid "Could not open PostIn file: %s"
+msgstr ""
+
+#: ../build/pack.c:458
+#, c-format
+msgid "Could not open PostUn file: %s"
+msgstr ""
+
+#: ../build/pack.c:466
+#, c-format
+msgid "Could not open VerifyScript file: %s"
+msgstr ""
+
+#: ../build/pack.c:482
+#, c-format
+msgid "Could not open Trigger script file: %s"
+msgstr ""
+
+#: ../build/parseBuildInstallClean.c:30
+#, c-format
+msgid "line %d: second %s"
+msgstr ""
+
+#: ../build/parseChangelog.c:70
+msgid "%%changelog entries must start with *"
+msgstr ""
+
+#: ../build/parseChangelog.c:78
+msgid "incomplete %%changelog entry"
+msgstr ""
+
+#: ../build/parseChangelog.c:93
+msgid "bad date in %%changelog: %s"
+msgstr ""
+
+#: ../build/parseChangelog.c:98
+msgid "%%changelog not in decending chronological order"
+msgstr ""
+
+#: ../build/parseChangelog.c:106 ../build/parseChangelog.c:117
+msgid "missing name in %%changelog"
+msgstr ""
+
+#: ../build/parseChangelog.c:124
+msgid "no description in %%changelog"
+msgstr ""
+
+#: ../build/parseDescription.c:39
+msgid "line %d: Error parsing %%description: %s"
+msgstr ""
+
+# , c-format
+#: ../build/parseDescription.c:52 ../build/parseFiles.c:50
+#: ../build/parseScript.c:147
+#, fuzzy, c-format
+msgid "line %d: Bad option %s: %s"
+msgstr "Não consegui abrir: %s\n"
+
+#: ../build/parseDescription.c:66 ../build/parseFiles.c:64
+#: ../build/parseScript.c:161
+#, c-format
+msgid "line %d: Too many names: %s"
+msgstr ""
+
+#: ../build/parseDescription.c:76 ../build/parseFiles.c:74
+#: ../build/parseScript.c:171
+#, c-format
+msgid "line %d: Package does not exist: %s"
+msgstr ""
+
+#: ../build/parseDescription.c:88
+#, c-format
+msgid "line %d: Second description"
+msgstr ""
+
+#: ../build/parseFiles.c:37
+msgid "line %d: Error parsing %%files: %s"
+msgstr ""
+
+#: ../build/parseFiles.c:82
+msgid "line %d: Second %%files list"
+msgstr ""
+
+#: ../build/parsePreamble.c:79
+#, fuzzy, c-format
+msgid "Bad package specification: %s"
+msgstr "      Opcões para especificação de pacotes:"
+
+#: ../build/parsePreamble.c:85
+#, c-format
+msgid "Package already exists: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:112
+#, c-format
+msgid "line %d: Unknown tag: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:137
+msgid "Spec file can't use BuildRoot"
+msgstr ""
+
+#: ../build/parsePreamble.c:193
+#, c-format
+msgid "Architecture is excluded: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:198
+#, c-format
+msgid "Architecture is not included: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:203
+#, c-format
+msgid "OS is excluded: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:208
+#, c-format
+msgid "OS is not included: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:222
+#, c-format
+msgid "%s field must be present in package: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:264
+#, c-format
+msgid "Duplicate %s entries in package: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:318
+#, c-format
+msgid "line %d: Malformed tag: %s"
+msgstr ""
+
+#. Empty field
+#: ../build/parsePreamble.c:326
+#, c-format
+msgid "line %d: Empty tag: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:377
+#, c-format
+msgid "line %d: BuildRoot can not be \"/\": %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:390
+#, c-format
+msgid "line %d: Prefixes must not end with \"/\": %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:403
+#, fuzzy, c-format
+msgid "line %d: Docdir must begin with '/': %s"
+msgstr "argumentos para o --dbpath devem começar com uma /"
+
+#: ../build/parsePreamble.c:413
+#, c-format
+msgid "line %d: Serial field must be a number: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:477
+#, c-format
+msgid "line %d: Bad BuildArchitecture format: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:487
+#, c-format
+msgid "Internal error: Bogus tag %d"
+msgstr ""
+
+# , c-format
+#: ../build/parsePreamble.c:643 ../build/parsePreamble.c:650
+#, fuzzy, c-format
+msgid "Unable to read icon: %s"
+msgstr "Não consegui abrir: %s\n"
+
+#: ../build/parsePreamble.c:660
+#, c-format
+msgid "Unknown icon type: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:54
+msgid "line %d: second %%prep"
+msgstr ""
+
+#: ../build/parsePrep.c:128
+msgid "Error parsing %%setup: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:143
+msgid "line %d: Bad arg to %%setup %c: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:164
+msgid "line %d: Bad %%setup option %s: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:267
+#, c-format
+msgid "No source number %d"
+msgstr ""
+
+#: ../build/parsePrep.c:329
+msgid "line %d: Need arg to %%patch -b: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:337
+msgid "line %d: Need arg to %%patch -z: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:349
+msgid "line %d: Need arg to %%patch -p: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:355
+msgid "line %d: Bad arg to %%patch -p: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:362
+msgid "Too many patches!"
+msgstr ""
+
+#: ../build/parsePrep.c:366
+msgid "line %d: Bad arg to %%patch: %s"
+msgstr ""
+
+#: ../build/parsePrep.c:417
+#, c-format
+msgid "No patch number %d"
+msgstr ""
+
+# , c-format
+#: ../build/parsePrep.c:470
+#, fuzzy, c-format
+msgid "Bad source: %s: %s"
+msgstr "Não consegui ler o arquivo spec de %s\n"
+
+# , c-format
+#: ../build/parsePrep.c:489 ../build/parsePrep.c:497
+#, fuzzy, c-format
+msgid "File %s: %s"
+msgstr "Não consegui ler o arquivo spec de %s\n"
+
+#: ../build/parsePrep.c:500
+#, c-format
+msgid "File %s is smaller than %d bytes"
+msgstr ""
+
+#: ../build/parseReqs.c:50
+#, c-format
+msgid "line %d: No file names in Conflicts: %s"
+msgstr ""
+
+#: ../build/parseReqs.c:81
+#, c-format
+msgid "line %d: No versions on file names in %s: %s"
+msgstr ""
+
+#: ../build/parseReqs.c:87
+#, c-format
+msgid "line %d: No versions in PreReq: %s"
+msgstr ""
+
+#: ../build/parseReqs.c:99
+#, c-format
+msgid "line %d: Version required in %s: %s"
+msgstr ""
+
+#: ../build/parseReqs.c:127
+#, c-format
+msgid "line %d: No file names in %s: %s"
+msgstr ""
+
+#: ../build/parseReqs.c:135
+#, c-format
+msgid "line %d: %s: tokens must begin with alpha-numeric: %s"
+msgstr ""
+
+#: ../build/parseScript.c:115
+#, c-format
+msgid "line %d: triggers must have --: %s"
+msgstr ""
+
+#: ../build/parseScript.c:125 ../build/parseScript.c:189
+#, c-format
+msgid "line %d: Error parsing %s: %s"
+msgstr ""
+
+#: ../build/parseScript.c:135
+#, c-format
+msgid "line %d: script program must begin with '/': %s"
+msgstr ""
+
+#: ../build/parseScript.c:180
+#, c-format
+msgid "line %d: Second %s"
+msgstr ""
+
+#: ../build/parseSpec.c:50
+#, c-format
+msgid "Timecheck value must be an integer: %s"
+msgstr ""
+
+# , c-format
+#: ../build/parseSpec.c:138
+#, fuzzy
+msgid "No buildable architectures"
+msgstr "%s não pode ser construido nesta arquitetura\n"
+
+#: ../build/parseSpec.c:152
+#, fuzzy
+msgid "Package has no %%description: %s"
+msgstr "não foi passado pacote para desinstalação"
+
+# , c-format
+#: ../build/read.c:39
+#, fuzzy, c-format
+msgid "Unable to open: %s\n"
+msgstr "Não consegui abrir: %s\n"
+
+#: ../build/read.c:50
+msgid "Unclosed %%if"
+msgstr ""
+
+#: ../build/read.c:83
+#, c-format
+msgid "line %d: %s"
+msgstr ""
+
+#. Got an else with no %if !
+#: ../build/read.c:104
+msgid "line %d: Got a %%else with no if"
+msgstr ""
+
+#. Got an end with no %if !
+#: ../build/read.c:114
+msgid "line %d: Got a %%endif with no if"
+msgstr ""
+
+#: ../build/reqprov.c:132
+msgid "Finding provides...\n"
+msgstr ""
+
+#: ../build/reqprov.c:139
+msgid "Failed to find provides"
+msgstr ""
+
+#: ../build/reqprov.c:159
+msgid "Finding requires...\n"
+msgstr ""
+
+# , c-format
+#: ../build/reqprov.c:166
+#, fuzzy
+msgid "Failed to find requires"
+msgstr "Não consegui abrir o pipe tar: %s\n"
+
+#: ../build/reqprov.c:201
+msgid "Provides:"
+msgstr ""
+
+#: ../build/reqprov.c:219
+msgid "Prereqs:"
+msgstr ""
+
+#: ../build/reqprov.c:233
+msgid "Requires:"
+msgstr ""
+
+#: ../build/spec.c:171
+#, c-format
+msgid "line %d: Bad %s number: %s\n"
+msgstr ""
+
+#: ../build/spec.c:278
+#, c-format
+msgid "line %d: Bad number: %s"
+msgstr ""
+
+#: ../build/spec.c:284
+#, c-format
+msgid "line %d: Bad no%s number: %d"
+msgstr ""
+
+#: ../lib/rpmdb.c:320 ../lib/uninstall.c:135 ../lib/uninstall.c:235
 #, fuzzy, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "não foi passado pacote para desinstalação"
 
-#: /home/devel/jbj/src/rpm2/lib/uninstall.c:148
+#: ../lib/uninstall.c:148
 #, c-format
 msgid "package %s-%s-%s contain shared files\n"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/uninstall.c:523
+#: ../lib/uninstall.c:153
+#, fuzzy, c-format
+msgid "package %s contains no files"
+msgstr "não foi passado pacote para instalação"
+
+#. This shouldn't happen, but some versions of RPM didn't
+#. implement --justdb properly, and chose to leave this stuff
+#. out.
+#: ../lib/uninstall.c:166 ../lib/uninstall.c:296
+msgid "package is missing FILESTATES\n"
+msgstr ""
+
+#: ../lib/uninstall.c:176
+#, c-format
+msgid "file %s is shared\n"
+msgstr ""
+
+#: ../lib/uninstall.c:181
+msgid "     file has already been replaced\n"
+msgstr ""
+
+#: ../lib/uninstall.c:185
+msgid "     file was never installed\n"
+msgstr ""
+
+#: ../lib/uninstall.c:189
+msgid "     file is netshared (so don't touch it)\n"
+msgstr ""
+
+#: ../lib/uninstall.c:196
+msgid "    file is truely shared - saving\n"
+msgstr ""
+
+#: ../lib/uninstall.c:246
+#, fuzzy, c-format
+msgid "cannot read packages named %s for uninstall"
+msgstr "não foi passado pacote para desinstalação"
+
+#: ../lib/uninstall.c:274
+#, c-format
+msgid "will remove files test = %d\n"
+msgstr ""
+
+#: ../lib/uninstall.c:322
+#, c-format
+msgid "%s has a netshared override\n"
+msgstr ""
+
+#: ../lib/uninstall.c:360
+msgid "running postuninstall script (if any)\n"
+msgstr ""
+
+#: ../lib/uninstall.c:374
+msgid "removing database entry\n"
+msgstr ""
+
+#: ../lib/uninstall.c:523
 msgid "execution of script failed"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/uninstall.c:607
+#: ../lib/uninstall.c:568
+#, c-format
+msgid "%s has already been replaced\n"
+msgstr ""
+
+#. if it's a config file, we may not want to remove it
+#: ../lib/uninstall.c:574
+#, c-format
+msgid "finding md5sum of %s\n"
+msgstr ""
+
+#: ../lib/uninstall.c:582
+msgid "    failed - assuming file removed\n"
+msgstr ""
+
+#: ../lib/uninstall.c:585
+msgid "    file changed - will save\n"
+msgstr ""
+
+#: ../lib/uninstall.c:589
+msgid "    file unchanged - will remove\n"
+msgstr ""
+
+# "Project-Id-Version: rpm-2.5.3\n"
+# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
+# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
+# "Language-Team: Portuguese <pt@li.org>\n"
+# "MIME-Version: 1.0\n"
+# "Content-Type: text/plain; charset=ISO-8859-1\n"
+# "Content-Transfer-Encoding: 8-bit\n"
+# , c-format
+#: ../lib/uninstall.c:597
+#, fuzzy, c-format
+msgid "keeping %s\n"
+msgstr "RPM versão %s\n"
+
+#: ../lib/uninstall.c:601
+#, c-format
+msgid "saving %s as %s.rpmsave\n"
+msgstr ""
+
+#: ../lib/uninstall.c:607
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/uninstall.c:621
+#: ../lib/uninstall.c:615
+#, c-format
+msgid "%s - removing\n"
+msgstr ""
+
+#: ../lib/uninstall.c:621
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/uninstall.c:624
+#: ../lib/uninstall.c:624
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/uninstall.c:634
+#: ../lib/uninstall.c:634
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr ""
 
+#: ../lib/rebuilddb.c:30 ../lib/rpmdb.c:55 ../lib/rpmdb.c:68
+msgid "no dbpath has been set"
+msgstr ""
+
+#: ../lib/rpmdb.c:123
+#, c-format
+msgid "opening database in %s\n"
+msgstr ""
+
 # , c-format
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:132
+#: ../lib/rpmdb.c:132
 #, fuzzy, c-format
 msgid "failed to open %s\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:145
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:152
+#: ../lib/rpmdb.c:145 ../lib/rpmdb.c:152
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:146
+#: ../lib/rpmdb.c:146
 msgid "exclusive"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:153
+#: ../lib/rpmdb.c:153
 msgid "shared"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:286
+#: ../lib/rpmdb.c:286
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:297
+#: ../lib/rpmdb.c:297
 #, fuzzy, c-format
 msgid "package %s not found in %s"
 msgstr "não foi passado pacote para desinstalação"
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:328
+#: ../lib/rpmdb.c:328
 msgid "package has no name"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:473
+#: ../lib/rpmdb.c:330
+msgid "removing name index\n"
+msgstr ""
+
+#: ../lib/rpmdb.c:335
+#, fuzzy
+msgid "package has no group\n"
+msgstr "não foi passado pacote para desinstalação"
+
+#: ../lib/rpmdb.c:337
+msgid "removing group index\n"
+msgstr ""
+
+#: ../lib/rpmdb.c:344
+#, c-format
+msgid "removing provides index for %s\n"
+msgstr ""
+
+#: ../lib/rpmdb.c:359
+#, c-format
+msgid "removing requiredby index for %s\n"
+msgstr ""
+
+#: ../lib/rpmdb.c:371
+#, c-format
+msgid "removing trigger index for %s\n"
+msgstr ""
+
+#: ../lib/rpmdb.c:382
+#, c-format
+msgid "removing conflict index for %s\n"
+msgstr ""
+
+#: ../lib/rpmdb.c:393
+#, c-format
+msgid "removing file index for %s\n"
+msgstr ""
+
+#: ../lib/rpmdb.c:400
+#, fuzzy
+msgid "package has no files\n"
+msgstr "não foi passado pacote para instalação"
+
+#: ../lib/rpmdb.c:473
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmdb.c:537
+#: ../lib/rpmdb.c:537
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/signature.c:99
+#: ../lib/rpmdb.c:546
+msgid "header changed size!"
+msgstr ""
+
+#: ../lib/signature.c:83
+msgid "No signature\n"
+msgstr ""
+
+#: ../lib/signature.c:86
+#, fuzzy
+msgid "Old PGP signature\n"
+msgstr "gere assinatura PGP"
+
+#: ../lib/signature.c:99
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/signature.c:222
-#: /home/devel/jbj/src/rpm2/lib/signature.c:479
+#: ../lib/signature.c:103
+#, fuzzy
+msgid "New Header signature\n"
+msgstr "gere assinatura PGP"
+
+#. 8-byte pad
+#: ../lib/signature.c:111 ../lib/signature.c:149
+#, c-format
+msgid "Signature size: %d\n"
+msgstr ""
+
+#: ../lib/signature.c:112 ../lib/signature.c:150
+#, c-format
+msgid "Signature pad : %d\n"
+msgstr ""
+
+#: ../lib/signature.c:222 ../lib/signature.c:479
 msgid "Couldn't exec pgp"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/signature.c:233
+#: ../lib/signature.c:233
 msgid "pgp failed"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: /home/devel/jbj/src/rpm2/lib/signature.c:240
+#: ../lib/signature.c:240
 msgid "pgp failed to write signature"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/signature.c:253
+#: ../lib/signature.c:245
+#, c-format
+msgid "PGP sig size: %d\n"
+msgstr ""
+
+#: ../lib/signature.c:253
 #, fuzzy
 msgid "unable to read the signature"
 msgstr "gere assinatura PGP"
 
-#: /home/devel/jbj/src/rpm2/lib/signature.c:396
+#: ../lib/signature.c:259
+#, c-format
+msgid "Got %d bytes of PGP sig\n"
+msgstr ""
+
+#: ../lib/signature.c:274
+#, c-format
+msgid "sigsize         : %d\n"
+msgstr ""
+
+#: ../lib/signature.c:275
+#, c-format
+msgid "Header + Archive: %d\n"
+msgstr ""
+
+#: ../lib/signature.c:276
+#, c-format
+msgid "expected size   : %d\n"
+msgstr ""
+
+#: ../lib/signature.c:280
+msgid "file is not regular -- skipping size check\n"
+msgstr ""
+
+#: ../lib/signature.c:394
+msgid "exec failed!\n"
+msgstr ""
+
+#: ../lib/signature.c:396
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/signature.c:430
+#: ../lib/signature.c:430
 msgid "You must set \"pgp_name:\" in your rpmrc file"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/dbindex.c:26
+#: ../lib/dbindex.c:26
 #, c-format
 msgid "cannot open file %s: "
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/dbindex.c:53
+#: ../lib/dbindex.c:53
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/dbindex.c:81
+#: ../lib/dbindex.c:81
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/dbindex.c:88
+#: ../lib/dbindex.c:88
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/depends.c:383
-#: /home/devel/jbj/src/rpm2/lib/depends.c:538
+#: ../lib/depends.c:383 ../lib/depends.c:538
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/depends.c:825
+#: ../lib/depends.c:448
+#, c-format
+msgid "dependencies: looking for %s\n"
+msgstr ""
+
+#: ../lib/depends.c:631
+#, fuzzy, c-format
+msgid "package %s require not satisfied: %s\n"
+msgstr "não foi passado pacote para instalação"
+
+#: ../lib/depends.c:674
+#, fuzzy, c-format
+msgid "package %s conflicts: %s\n"
+msgstr "não foi passado pacote para desinstalação"
+
+#: ../lib/depends.c:773
+msgid "dbrecMatchesDepFlags() failed to read header"
+msgstr ""
+
+#: ../lib/depends.c:825
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/formats.c:104
-#: /home/devel/jbj/src/rpm2/lib/formats.c:121
-#: /home/devel/jbj/src/rpm2/lib/formats.c:141
-#: /home/devel/jbj/src/rpm2/lib/formats.c:173
-#: /home/devel/jbj/src/rpm2/lib/header.c:1922
-#: /home/devel/jbj/src/rpm2/lib/header.c:1938
-#: /home/devel/jbj/src/rpm2/lib/header.c:1958
+#: ../lib/formats.c:104 ../lib/formats.c:121 ../lib/formats.c:141
+#: ../lib/formats.c:173 ../lib/header.c:1922 ../lib/header.c:1938
+#: ../lib/header.c:1958
 msgid "(not a number)"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/fs.c:53
+#: ../lib/fs.c:53
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
 # , c-format
-#: /home/devel/jbj/src/rpm2/lib/fs.c:128
+#: ../lib/fs.c:87 ../lib/fs.c:249
+#, fuzzy, c-format
+msgid "failed to stat %s: %s"
+msgstr "Não consegui abrir: %s\n"
+
+# , c-format
+#: ../lib/fs.c:128
 #, fuzzy, c-format
 msgid "failed to open %s: %s"
 msgstr "Não consegui abrir: %s\n"
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1278
+#: ../lib/fs.c:270
+#, c-format
+msgid "file %s is on an unknown device"
+msgstr ""
+
+#: ../lib/header.c:678
+#, c-format
+msgid "Data type %d not supprted\n"
+msgstr ""
+
+#. This should not be allowed
+#: ../lib/header.c:890
+msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+msgstr ""
+
+#: ../lib/header.c:920
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr ""
+
+#: ../lib/header.c:979
+#, c-format
+msgid "Bad count for headerAddEntry(): %d\n"
+msgstr ""
+
+#: ../lib/header.c:1278
 msgid "? expected in expression"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1285
+#: ../lib/header.c:1285
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1295
-#: /home/devel/jbj/src/rpm2/lib/header.c:1327
+#: ../lib/header.c:1295 ../lib/header.c:1327
 msgid "} expected in expression"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1302
+#: ../lib/header.c:1302
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1315
+#: ../lib/header.c:1315
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1334
+#: ../lib/header.c:1334
 msgid "| expected at end of expression"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1428
+#: ../lib/header.c:1428
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1456
+#: ../lib/header.c:1456
 msgid "missing } after %{"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1468
+#: ../lib/header.c:1468
 msgid "empty tag format"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1478
+#: ../lib/header.c:1478
 msgid "empty tag name"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1493
+#: ../lib/header.c:1493
 msgid "unknown tag"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1519
+#: ../lib/header.c:1519
 msgid "] expected at end of array"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1535
+#: ../lib/header.c:1535
 #, fuzzy
 msgid "unexpected ]"
 msgstr "fonte de pesquisa não esperado"
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1537
+#: ../lib/header.c:1537
 #, fuzzy
 msgid "unexpected }"
 msgstr "fonte de pesquisa não esperado"
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1612
-#: /home/devel/jbj/src/rpm2/lib/header.c:1618
-#: /home/devel/jbj/src/rpm2/lib/header.c:1801
+#: ../lib/header.c:1612 ../lib/header.c:1618 ../lib/header.c:1801
 msgid "(none)"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/header.c:1712
+#: ../lib/header.c:1712
 msgid "(unknown type)"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/lookup.c:91
+#: ../lib/lookup.c:91
 #, c-format
 msgid "cannot read header at %d for lookup"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rebuilddb.c:30
-msgid "no dbpath has been set"
-msgstr ""
+#: ../lib/rebuilddb.c:26
+#, fuzzy, c-format
+msgid "rebuilding database in rootdir %s\n"
+msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: /home/devel/jbj/src/rpm2/lib/rebuilddb.c:38
+#: ../lib/rebuilddb.c:38
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rebuilddb.c:44
+#: ../lib/rebuilddb.c:42
+#, c-format
+msgid "creating directory: %s\n"
+msgstr ""
+
+#: ../lib/rebuilddb.c:44
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rebuilddb.c:64
-#: /home/devel/jbj/src/rpm2/lib/rebuilddb.c:82
+#: ../lib/rebuilddb.c:50
+msgid "opening old database\n"
+msgstr ""
+
+#: ../lib/rebuilddb.c:55
+msgid "opening new database\n"
+msgstr ""
+
+#: ../lib/rebuilddb.c:64 ../lib/rebuilddb.c:82
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rebuilddb.c:76
+#: ../lib/rebuilddb.c:76
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/messages.c:53
+#: ../lib/rebuilddb.c:93
+msgid "failed to rebuild database; original database remains in place\n"
+msgstr ""
+
+#: ../lib/rebuilddb.c:100
+msgid "failed to replace old database with new database!\n"
+msgstr ""
+
+#: ../lib/rebuilddb.c:102
+#, c-format
+msgid "replaces files in %s with files from %s to recover"
+msgstr ""
+
+# , c-format
+#: ../lib/rebuilddb.c:107
+#, fuzzy, c-format
+msgid "failed to remove %s: %s\n"
+msgstr "Não consegui abrir: %s\n"
+
+#: ../lib/messages.c:53
 msgid "warning: "
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/messages.c:59
+#: ../lib/messages.c:59
 msgid "error: "
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/messages.c:65
+#: ../lib/messages.c:65
 msgid "fatal error: "
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/messages.c:72
+#: ../lib/messages.c:72
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/package.c:110
+#: ../lib/package.c:63
+msgid "package is a version one package!\n"
+msgstr ""
+
+#: ../lib/package.c:66
+msgid "old style source package -- I'll do my best\n"
+msgstr ""
+
+#: ../lib/package.c:69
+#, c-format
+msgid "archive offset is %d\n"
+msgstr ""
+
+#: ../lib/package.c:79
+msgid "old style binary package\n"
+msgstr ""
+
+#: ../lib/package.c:110
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmlead.c:49
+#: ../lib/rpmlead.c:49
 #, c-format
 msgid "read failed: %s (%d)"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:213
+#: ../lib/rpmrc.c:213
 #, c-format
 msgid "missing second ':' at %s:%d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:216
+#: ../lib/rpmrc.c:216
 #, c-format
 msgid "missing architecture name at %s:%d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:353
+#: ../lib/rpmrc.c:353
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:357
+#: ../lib/rpmrc.c:357
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:364
+#: ../lib/rpmrc.c:364
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:397
+#: ../lib/rpmrc.c:397
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:402
+#: ../lib/rpmrc.c:402
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
 # , c-format
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:493
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:509
+#: ../lib/rpmrc.c:493 ../lib/rpmrc.c:509
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:552
+#: ../lib/rpmrc.c:552
 #, fuzzy, c-format
 msgid "Failed to read %s: %s."
 msgstr "Não consegui ler o arquivo spec de %s\n"
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:582
+#: ../lib/rpmrc.c:582
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:598
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:619
+#: ../lib/rpmrc.c:598 ../lib/rpmrc.c:619
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:609
+#: ../lib/rpmrc.c:609
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: /home/devel/jbj/src/rpm2/lib/rpmrc.c:662
+#: ../lib/rpmrc.c:662
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
+#: ../lib/rpmrc.c:949
+#, c-format
+msgid "Unknown system: %s\n"
+msgstr ""
+
+#: ../lib/rpmrc.c:950
+msgid "Please contact rpm-list@redhat.com\n"
+msgstr ""
+
 #~ msgid "                        package1 ... packageN"
 #~ msgstr "                        pacote1 ... pacoteN"
-
-#~ msgid "Build failed.\n"
-#~ msgstr "Construção falhou.\n"
-
-# , c-format
-#~ msgid "%s doesn't build on this architecture\n"
-#~ msgstr "%s não pode ser construido nesta arquitetura\n"

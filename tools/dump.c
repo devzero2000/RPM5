@@ -20,13 +20,13 @@ int main(int argc, char ** argv)
     }
 
     if (fd < 0) {
-	fprintf(stderr, "cannot open %s: %s\n", argv[1], strerror(errno));
+	fprintf(stderr, _("cannot open %s: %s\n"), argv[1], strerror(errno));
 	exit(1);
     }
 
     h = headerRead(fd, HEADER_MAGIC_YES);
     if (!h) {
-	fprintf(stderr, "headerRead error: %s\n", strerror(errno));
+	fprintf(stderr, _("headerRead error: %s\n"), strerror(errno));
 	exit(1);
     }
     close(fd);

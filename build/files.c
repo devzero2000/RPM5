@@ -1,4 +1,5 @@
 #include "config.h"
+
 #ifdef HAVE_GLOB_H
 #  include <glob.h>
 #else
@@ -11,19 +12,20 @@
 #include <sys/types.h>
 #include <regex.h>
 
-#include "spec.h"
+#include "lib/misc.h"
+#include "lib/cpio.h"
+
+#include "build.h"
+#include "intl.h"
+#include "macro.h"
+#include "md5.h"
+#include "messages.h"
+#include "misc.h"
+#include "myftw.h"
+#include "names.h"
 #include "package.h"
 #include "rpmlib.h"
-#include "misc.h"
-#include "lib/misc.h"
-#include "myftw.h"
-#include "lib/cpio.h"
-#include "header.h"
-#include "md5.h"
-#include "names.h"
-#include "messages.h"
-#include "macro.h"
-#include "build.h"
+#include "spec.h"
 
 #define MAXDOCDIR 1024
 
@@ -250,7 +252,7 @@ int processSourceFiles(Spec spec)
 	fl.totalFileSize += sb.st_size;
 	
 	if (! (fl.fileList[x].uname && fl.fileList[x].gname)) {
-	    rpmError(RPMERR_BADSPEC, "Bad owner/group: %s", s);
+	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s"), s);
 	    fl.processingFailed = 1;
 	}
 
@@ -286,7 +288,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	}
 
 	headerGetEntry(pkg->header, RPMTAG_NAME, NULL, (void **)&name, NULL);
-	rpmMessage(RPMMESS_NORMAL, "Processing files: %s\n", name);
+	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s\n"), name);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test))) {
 	    res = rc;
@@ -332,13 +334,13 @@ static int processPackageFiles(Spec spec, Package pkg,
 	}
 	if ((f = fopen(buf, "r")) == NULL) {
 	    rpmError(RPMERR_BADFILENAME,
-		     "Could not open %%files file: %s", pkg->fileFile);
+		     _("Could not open %%files file: %s"), pkg->fileFile);
 	    return RPMERR_BADFILENAME;
 	}
 	while (fgets(buf, sizeof(buf), f)) {
 	    handleComments(buf);
 	    if (expandMacros(&spec->macros, buf)) {
-		rpmError(RPMERR_BADSPEC, "line: %s", buf);
+		rpmError(RPMERR_BADSPEC, _("line: %s"), buf);
 		return RPMERR_BADSPEC;
 	    }
 	    appendStringBuf(pkg->fileList, buf);
@@ -530,7 +532,7 @@ static void timeCheck(int tc, Header h)
     x = 0;
     while (x < count) {
 	if (currentTime - mtime[x] > tc) {
-	    rpmMessage(RPMMESS_WARNING, "TIMECHECK failure: %s\n", file[x]);
+	    rpmMessage(RPMMESS_WARNING, _("TIMECHECK failure: %s\n"), file[x]);
 	}
 	x++;
     }
@@ -565,7 +567,7 @@ static void genCpioListAndHeader(struct FileList *fl,
     count = fl->fileListRecsUsed;
     while (count) {
 	if ((count > 1) && !strcmp(p->fileName, p[1].fileName)) {
-	    rpmError(RPMERR_BADSPEC, "File listed twice: %s", p->fileName);
+	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s"), p->fileName);
 	    fl->processingFailed = 1;
 	}
 	
@@ -687,7 +689,7 @@ void freeCpioList(struct cpioFileMapping *cpioList, int cpioCount)
     struct cpioFileMapping *p = cpioList;
 
     while (cpioCount--) {
-	rpmMessage(RPMMESS_DEBUG, "archive = %s, fs = %s\n",
+	rpmMessage(RPMMESS_DEBUG, _("archive = %s, fs = %s\n"),
 		   p->archivePath, p->fsPath);
 	FREE(p->archivePath);
 	FREE(p->fsPath);
@@ -726,7 +728,7 @@ static int processBinaryFile(Package pkg, struct FileList *fl, char *fileName)
     
     /* check that file starts with leading "/" */
     if (*fileName != '/') {
-	rpmError(RPMERR_BADSPEC, "File needs leading \"/\": %s", *fileName);
+	rpmError(RPMERR_BADSPEC, _("File needs leading \"/\": %s"), *fileName);
 	fl->processingFailed = 1;
 	return 1;
     }
@@ -742,7 +744,7 @@ static int processBinaryFile(Package pkg, struct FileList *fl, char *fileName)
 	
 	if (glob(fullname, 0, glob_error, &glob_result) ||
 	    (glob_result.gl_pathc < 1)) {
-	    rpmError(RPMERR_BADSPEC, "File not found: %s", fullname);
+	    rpmError(RPMERR_BADSPEC, _("File not found: %s"), fullname);
 	    fl->processingFailed = 1;
 	    globfree(&glob_result);
 	    return 1;
@@ -803,7 +805,7 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	    prefixTest++;
 	}
 	if (*prefixPtr || (*prefixTest && *prefixTest != '/')) {
-	    rpmError(RPMERR_BADSPEC, "File doesn't match prefix (%s): %s",
+	    rpmError(RPMERR_BADSPEC, _("File doesn't match prefix (%s): %s"),
 		     fl->prefix, fileName);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
@@ -813,7 +815,7 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
     if (! statp) {
 	statp = &statbuf;
 	if (lstat(diskName, statp)) {
-	    rpmError(RPMERR_BADSPEC, "File not found: %s", diskName);
+	    rpmError(RPMERR_BADSPEC, _("File not found: %s"), diskName);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -858,12 +860,12 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	}
 	
 	if (! (fileUname && fileGname)) {
-	    rpmError(RPMERR_BADSPEC, "Bad owner/group: %s\n", diskName);
+	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskName);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
     
-	rpmMessage(RPMMESS_DEBUG, "File %d: %s\n", fl->fileCount, fileName);
+	rpmMessage(RPMMESS_DEBUG, _("File %d: %s\n"), fl->fileCount, fileName);
 
 	/* Add to the file list */
 	if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
@@ -947,13 +949,13 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	if (!strcmp(s, "%docdir")) {
 	    s = strtokWithQuotes(NULL, " \t\n");
 	    if (fl->docDirCount == MAXDOCDIR) {
-		rpmError(RPMERR_INTERNAL, "Hit limit for %%docdir");
+		rpmError(RPMERR_INTERNAL, _("Hit limit for %%docdir"));
 		fl->processingFailed = 1;
 		res = 1;
 	    }
 	    fl->docDirs[fl->docDirCount++] = strdup(s);
 	    if (strtokWithQuotes(NULL, " \t\n")) {
-		rpmError(RPMERR_INTERNAL, "Only one arg for %%docdir");
+		rpmError(RPMERR_INTERNAL, _("Only one arg for %%docdir"));
 		fl->processingFailed = 1;
 		res = 1;
 	    }
@@ -979,7 +981,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	if (*fileName) {
 	    /* We already got a file -- error */
 	    rpmError(RPMERR_BADSPEC,
-		"Two files on one line: %s", *fileName);
+		_("Two files on one line: %s"), *fileName);
 	    fl->processingFailed = 1;
 	    res = 1;
 	}
@@ -992,7 +994,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	    } else {
 		/* not in %doc, does not begin with / -- error */
 		rpmError(RPMERR_BADSPEC,
-		    "File must begin with \"/\": %s", s);
+		    _("File must begin with \"/\": %s"), s);
 		fl->processingFailed = 1;
 		res = 1;
 	    }
@@ -1004,7 +1006,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
     if (specialDoc) {
 	if (*fileName || (fl->currentFlags & ~(RPMFILE_DOC))) {
 	    rpmError(RPMERR_BADSPEC,
-		     "Can't mix special %%doc with other forms: %s",
+		     _("Can't mix special %%doc with other forms: %s"),
 		     *fileName);
 	    fl->processingFailed = 1;
 	    res = 1;
@@ -1061,7 +1063,7 @@ static int parseForVerify(char *buf, struct FileList *fl)
     SKIPSPACE(p);
 
     if (*p != '(') {
-	rpmError(RPMERR_BADSPEC, "Bad %s() syntax: %s", name, buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -1073,7 +1075,7 @@ static int parseForVerify(char *buf, struct FileList *fl)
     }
 
     if (! *end) {
-	rpmError(RPMERR_BADSPEC, "Bad %s() syntax: %s", name, buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -1107,7 +1109,7 @@ static int parseForVerify(char *buf, struct FileList *fl)
 	} else if (!strcmp(p, "rdev")) {
 	    verifyFlags |= RPMVERIFY_RDEV;
 	} else {
-	    rpmError(RPMERR_BADSPEC, "Invalid %s token: %s", name, p);
+	    rpmError(RPMERR_BADSPEC, _("Invalid %s token: %s"), name, p);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -1173,7 +1175,7 @@ static int parseForLang(char *buf, struct FileList *fl)
     SKIPSPACE(p);
 
     if (*p != '(') {
-	rpmError(RPMERR_BADSPEC, "Bad %%lang() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -1185,7 +1187,7 @@ static int parseForLang(char *buf, struct FileList *fl)
     }
 
     if (! *end) {
-	rpmError(RPMERR_BADSPEC, "Bad %%lang() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -1198,17 +1200,17 @@ static int parseForLang(char *buf, struct FileList *fl)
 
     p = strtok(ourbuf, ", \n\t");
     if (!p) {
-	rpmError(RPMERR_BADSPEC, "Bad %%lang() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
     if (strlen(p) != 2) {
-	rpmError(RPMERR_BADSPEC, "%%lang() entries are 2 characters: %s", buf);
+	rpmError(RPMERR_BADSPEC, _("%%lang() entries are 2 characters: %s"), buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
     if (strtok(NULL, ", \n\t")) {
-	rpmError(RPMERR_BADSPEC, "Only one entry in %%lang(): %s", buf);
+	rpmError(RPMERR_BADSPEC, _("Only one entry in %%lang(): %s"), buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -1243,7 +1245,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     SKIPSPACE(p);
 
     if (*p != '(') {
-	rpmError(RPMERR_BADSPEC, "Bad %s() syntax: %s", name, buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -1255,7 +1257,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     }
 
     if (! *end) {
-	rpmError(RPMERR_BADSPEC, "Bad %s() syntax: %s", name, buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -1266,7 +1268,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
 	SKIPSPACE(s);
 	if (*s) {
 	    rpmError(RPMERR_BADSPEC,
-		     "No files after %%defattr(): %s", buf);
+		     _("No files after %%defattr(): %s"), buf);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -1282,7 +1284,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
 
     if (! (resultAttr->PmodeString &&
 	   resultAttr->Uname && resultAttr->Gname)) {
-	rpmError(RPMERR_BADSPEC, "Bad %s() syntax: %s", name, buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
 	resultAttr->PmodeString = resultAttr->Uname = resultAttr->Gname = NULL;
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
@@ -1294,7 +1296,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     } else {
 	x = sscanf(resultAttr->PmodeString, "%o", &(resultAttr->Pmode));
 	if ((x == 0) || (resultAttr->Pmode >> 12)) {
-	    rpmError(RPMERR_BADSPEC, "Bad %s() mode spec: %s", name, buf);
+	    rpmError(RPMERR_BADSPEC, _("Bad %s() mode spec: %s"), name, buf);
 	    resultAttr->PmodeString = resultAttr->Uname =
 		resultAttr->Gname = NULL;
 	    fl->processingFailed = 1;
@@ -1312,7 +1314,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
 		       &(resultAttr->Pdirmode));
 	    if ((x == 0) || (resultAttr->Pdirmode >> 12)) {
 		rpmError(RPMERR_BADSPEC,
-			 "Bad %s() dirmode spec: %s", name, buf);
+			 _("Bad %s() dirmode spec: %s"), name, buf);
 		resultAttr->PmodeString = resultAttr->Uname =
 		    resultAttr->Gname = resultAttr->PdirmodeString = NULL;
 		fl->processingFailed = 1;
@@ -1367,7 +1369,7 @@ static int parseForConfig(char *buf, struct FileList *fl)
     }
 
     if (! *end) {
-	rpmError(RPMERR_BADSPEC, "Bad %%config() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, _("Bad %%config() syntax: %s"), buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -1385,7 +1387,7 @@ static int parseForConfig(char *buf, struct FileList *fl)
 	} else if (!strcmp(p, "noreplace")) {
 	    fl->currentFlags |= RPMFILE_NOREPLACE;
 	} else {
-	    rpmError(RPMERR_BADSPEC, "Invalid %%config token: %s", p);
+	    rpmError(RPMERR_BADSPEC, _("Invalid %%config token: %s"), p);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}

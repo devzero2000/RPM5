@@ -10,6 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "intl.h"
 #include "misc.h"
 #include "oldheader.h"
 #include "rpmlib.h"
@@ -297,7 +298,7 @@ void oldrpmfileFromInfoLine(char * path, char * state, char * str,
     else if (!strcmp(state, "replaced"))
 	fi->state = RPMFILE_STATE_REPLACED;
     else 
-	rpmError(RPMERR_INTERNAL, "bad file state: ", state);
+	rpmError(RPMERR_INTERNAL, _("bad file state: "), state);
 
     infoFromFields(fields, fi);
 

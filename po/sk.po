@@ -1,25 +1,14 @@
 #: ../rpm.c:211 ../rpm.c:289
 msgid ""
 msgstr ""
+"Project-Id-Version: rpm 2.5.4\n"
 "POT-Creation-Date: 1998-09-27 16:11-0400\n"
-"Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
-"Language-Team: Finnish <linux@sot.com>\n"
-"Content-Type: text/plain; charset=\n"
-"Date: 1998-05-02 21:41:47-0400\n"
-"From: Erik Troan <ewt@lacrosse.redhat.com>\n"
-"Xgettext-Options: --default-domain=rpm --add-comments --keyword=_ "
-"--keyword=N_\n"
-"Files: /home/ewt/redhat/rpm/rpm.c /home/ewt/redhat/rpm/query.c "
-"/home/ewt/redhat/rpm/install.c /home/ewt/redhat/rpm/verify.c "
-"/home/ewt/redhat/rpm/checksig.c /home/ewt/redhat/rpm/url.c "
-"/home/ewt/redhat/rpm/ftp.c /home/ewt/redhat/rpm/lib/uninstall.c "
-"/home/ewt/redhat/rpm/lib/rpmdb.c /home/ewt/redhat/rpm/lib/signature.c "
-"/home/ewt/redhat/rpm/lib/dbindex.c /home/ewt/redhat/rpm/lib/depends.c "
-"/home/ewt/redhat/rpm/lib/formats.c /home/ewt/redhat/rpm/lib/fs.c "
-"/home/ewt/redhat/rpm/lib/header.c /home/ewt/redhat/rpm/lib/lookup.c "
-"/home/ewt/redhat/rpm/lib/rebuilddb.c /home/ewt/redhat/rpm/lib/messages.c "
-"/home/ewt/redhat/rpm/lib/package.c /home/ewt/redhat/rpm/lib/rpmlead.c "
-"/home/ewt/redhat/rpm/lib/rpmrc.c\n"
+"PO-Revision-Date: 1998-09-26 12:46+02:00\n"
+"Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
+"Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8-bit\n"
 
 #: ../rpm.c:188
 #, c-format
@@ -29,257 +18,264 @@ msgstr ""
 #: ../rpm.c:199
 #, c-format
 msgid "RPM version %s\n"
-msgstr "RPM versio %s\n"
+msgstr "RPM verzia %s\n"
 
 #: ../rpm.c:203
 msgid "Copyright (C) 1998 - Red Hat Software"
-msgstr ""
+msgstr "Copyright (C) 1998 - Red Hat Software"
 
 #: ../rpm.c:204
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
-msgstr "Tätä ohjelmaa voi vapaasti levittää GNU Public Licence:n puittessa"
+msgstr ""
+"Program mô¾e by» voµne redistribuovaný v súlade s podmienkami GPL (GNU "
+"Public License)"
 
 #: ../rpm.c:213
 msgid "usage: rpm {--help}"
-msgstr "käyttö: rpm {--help}"
+msgstr "pou¾itie: rpm {--help}"
 
 #: ../rpm.c:214
 msgid "       rpm {--version}"
-msgstr ""
+msgstr "          rpm {--version}"
 
 #: ../rpm.c:215
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
-msgstr "       rpm {--initdb}   [--dbpath <hakem>]"
+msgstr "          rpm {--initdb}   [--dbpath <adresár>]"
 
 #: ../rpm.c:216
 msgid ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
+"          rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
 #: ../rpm.c:217
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
-"                        [--replacepkgs] [--replacefiles] [--root <hakem>]"
+"                           [--replacepkgs] [--replacefiles] [--root "
+"<adresár>]"
 
 #: ../rpm.c:218
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr ""
+"                           [--excludedocs] [--includedocs] [--noscripts]"
 
 #: ../rpm.c:219
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                        [--rcfile <tiedosto>] [--ignorearch] [--dbpath "
-"<hakem>]"
+"                           [--rcfile <súbor>] [--ignorearch] [--dbpath "
+"<adresár>]"
 
 #: ../rpm.c:220
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                        [--prefix <hakem>] [--ignoreos] [--nodeps] "
+"                           [--prefix <adresár>] [--ignoreos] [--nodeps] "
 "[--allfiles]"
 
 #: ../rpm.c:221
 msgid ""
 "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
 msgstr ""
-"                        [--ftpproxy <kone>] [--ftpport <portti>] [--justdb]"
+"                           [--ftpproxy <poèítaè>] [--ftpport <port>] "
+"[--justdb]"
 
 #: ../rpm.c:222 ../rpm.c:230
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
-msgstr "                        [--noorder] [--relocate vanhapolku=uusipolku]"
+msgstr ""
+"                           [--noorder] [--relocate stará_cesta=nová_cesta]"
 
 #: ../rpm.c:223
-#, fuzzy
 msgid ""
 "                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"
-msgstr "                        [--badreloc] tiedosto1.rpm ... tiedostoN.rpm"
+msgstr ""
+"                           [--badreloc] [--notriggers] súbor1.rpm ... "
+"súborN.rpm"
 
 #: ../rpm.c:224
 msgid ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
+"          rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 
 #: ../rpm.c:225
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-msgstr "                        [--oldpackage] [--root <hakem>] [--noscripts]"
+msgstr ""
+"                           [--oldpackage] [--root <adresár>] [--noscripts]"
 
 #: ../rpm.c:226
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
-"                        [--excludedocs] [--includedocs] [--rcfile <tiedosto>]"
+"                           [--excludedocs] [--includedocs] [--rcfile <súbor>]"
 
 #: ../rpm.c:227
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
-"                        [--ignorearch]  [--dbpath <hakem>] [--prefix "
-"<hakem>] "
+"                           [--ignorearch]  [--dbpath <adresár>] [--prefix "
+"<adresár>] "
 
 #: ../rpm.c:228
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpproxy <kone>] [--ftpport <portti>]"
+msgstr "                           [--ftpproxy <poèítaè>] [--ftpport <port>]"
 
 #: ../rpm.c:229
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 msgstr ""
+"                           [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
 #: ../rpm.c:231
 msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
-msgstr "                        [--badreloc] tiedosto1.rpm ... tiedostoN.rpm"
+msgstr "                           [--badreloc] súbor1.rpm ... súborN.rpm"
 
 #: ../rpm.c:232
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-msgstr ""
+msgstr "          rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
 #: ../rpm.c:233
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr ""
-"                        [--scripts] [--root <hakem>] [--rcfile <tiedosto>]"
+"                           [--scripts] [--root <adresár>] [--rcfile <súbor>]"
 
 #: ../rpm.c:234
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
+"                           [--whatprovides] [--whatrequires] [--requires]"
 
 #: ../rpm.c:235
-#, fuzzy
 msgid ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
 msgstr ""
-"                        [--ftpuseport] [--ftpproxy <kone>] [--ftpport "
-"<portti>]"
+"                           [--triggeredby] [--ftpuseport] [--ftpproxy "
+"<poèítaè>]"
 
 #: ../rpm.c:236
-#, fuzzy
 msgid ""
 "                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
 msgstr ""
-"                        [--dbpath <hakem>] [--nodeps] [--nofiles] "
-"[--noscripts]"
+"                           [--ftpport <port>] [--provides] [--triggers] "
+"[--dump]"
 
 #: ../rpm.c:237
-#, fuzzy
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-msgstr "                        [--nomd5] [kohteet]"
+msgstr ""
+"                           [--changelog] [--dbpath <adresár>] [targets]"
 
 #: ../rpm.c:238
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr ""
-"       rpm {--verify -V -y} [-afpg] [--root <hakem>] [--rcfile <tiedosto>]"
+"          rpm {--verify -V -y} [-afpg] [--root <adresár>] [--rcfile <súbor>]"
 
 #: ../rpm.c:239
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
-"                        [--dbpath <hakem>] [--nodeps] [--nofiles] "
+"                           [--dbpath <adresár>] [--nodeps] [--nofiles] "
 "[--noscripts]"
 
 #: ../rpm.c:240
 msgid "                        [--nomd5] [targets]"
-msgstr "                        [--nomd5] [kohteet]"
+msgstr "                           [--nomd5] [ciele]"
 
 #: ../rpm.c:241
 msgid "       rpm {--setperms} [-afpg] [target]"
-msgstr "       rpm {--setperms} [-afpg] [kohde]"
+msgstr "          rpm {--setperms} [-afpg] [cieµ]"
 
 #: ../rpm.c:242
 msgid "       rpm {--setugids} [-afpg] [target]"
-msgstr "       rpm {--setugids} [-afpg] [kohde]"
+msgstr "          rpm {--setugids} [-afpg] [cieµ]"
 
 #: ../rpm.c:243
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
-"       rpm {--erase -e} [--root <hakem>] [--noscripts] [--rcfile <tiedosto>]"
+"          rpm {--erase -e} [--root <adresár>] [--noscripts] [--rcfile "
+"<súbor>]"
 
 #: ../rpm.c:244
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-msgstr "                        [--dbpath <hakem>] [--nodeps] [--allmatches]"
+msgstr ""
+"                           [--dbpath <adresár>] [--nodeps] [--allmatches]"
 
 #: ../rpm.c:245
-#, fuzzy
 msgid ""
 "                        [--justdb] [--notriggers] rpackage1 ... packageN"
-msgstr "                        [--justdb] paketti1 ... pakettiN"
+msgstr "                           [--justdb] [--notriggers] balík1 ... balíkN"
 
 #: ../rpm.c:246
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
-"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
-"<tiedosto>]"
+"          rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
+"<súbor>]"
 
 #: ../rpm.c:247
 msgid ""
 "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 msgstr ""
-"                        [--sign] [--test] [--timecheck <s>] [--buildos <kj>]"
+"                           [--sign] [--test] [--timecheck <s>] [--buildos "
+"<os>]"
 
 #: ../rpm.c:248
 msgid "                        [--buildarch <arch>] [--rmsource] specfile"
-msgstr ""
-"                        [--buildarch <arkk>] [--rmsource] määrittelytiedosto"
+msgstr "                           [--buildarch <arch>] [--rmsource] specsúbor"
 
 #: ../rpm.c:249
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-msgstr "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] määrittelytiedosto"
+msgstr "          rpm {--rmsource} [--rcfile <súbor>] [-v] specsúbor"
 
 #: ../rpm.c:250
 msgid ""
 "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
-"       rpm {--rebuild} [--rcfile <tiedosto>] [-v] lähdekoodi1.rpm ... "
-"lähdekoodiN.rpm"
+"          rpm {--rebuild}  [--rcfile <súbor>] [-v] zdroj1.rpm ... zdrojN.rpm"
 
 #: ../rpm.c:251
 msgid ""
 "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
-"       rpm {--recompile} [--rcfile <tiedosto>] [-v] lähdekoodi1.rpm ... "
-"lähdekoodiN.rpm"
+"          rpm {--recompile} [--rcfile <súbor>] [-v] zdroj1.rpm ... zdrojN.rpm"
 
 #: ../rpm.c:252
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr ""
-"       rpm {--resign} [--rcfile <tiedosto>] paketti1 paketti2 ... pakettiN"
+msgstr "          rpm {--resign}   [--rcfile <súbor>] balík1 balík2 ... balíkN"
 
 #: ../rpm.c:253
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr ""
-"       rpm {--addsign} [--rcfile <tiedosto>] paketti1 paketti2 ... pakettiN"
+msgstr "          rpm {--addsign}  [--rcfile <súbor>] balík1 balík2 ... balíkN"
 
 #: ../rpm.c:254
 msgid "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"
-msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <tiedosto>]"
+msgstr "          rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <súbor>]"
 
 #: ../rpm.c:255
 msgid "                           package1 ... packageN"
-msgstr "                           paketti1 ... pakettiN"
+msgstr "                              balík1 ... balíkN"
 
 #: ../rpm.c:256
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "       rpm {--rebuilddb} [--rcfile <tiedosto>] [--dbpath <hakem>]"
+msgstr "          rpm {--rebuilddb} [--rcfile <súbor>] [--dbpath <adresár>]"
 
 #: ../rpm.c:257
 msgid "       rpm {--querytags}"
-msgstr ""
+msgstr "          rpm {--querytags}"
 
 #: ../rpm.c:291
 msgid "usage:"
-msgstr "käyttö:"
+msgstr "pou¾itie:"
 
 #: ../rpm.c:293
 msgid "print this message"
-msgstr "tulosta tämä viesti"
+msgstr "vypísa» túto správu"
 
 #: ../rpm.c:295
 msgid "print the version of rpm being used"
-msgstr "tulosta käytetyn rpm:n versio"
+msgstr "vypísa» verziu pou¾ívaného rpm"
 
 #: ../rpm.c:296
 msgid "   all modes support the following arguments:"
-msgstr "   kaikki moodit tukevat seuraavia parametrejä"
+msgstr "   v¹etky re¾imy podporujú nasledovné argumenty:"
 
 #: ../rpm.c:297
 msgid "      --rcfile <file>     "
@@ -287,19 +283,19 @@ msgstr ""
 
 #: ../rpm.c:298
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-msgstr "käytä <tiedosto> eikä /etc/rpmrc tai $HOME/.rpmrc"
+msgstr "pou¾i» <súbor> namiesto /etc/rpmrc a $HOME/.rpmrc"
 
 #: ../rpm.c:300
 msgid "be a little more verbose"
-msgstr "tulosta enemmän viestejä"
+msgstr "o nieèo popisnej¹í re¾im"
 
 #: ../rpm.c:302
 msgid "be incredibly verbose (for debugging)"
-msgstr "tulosta mahdollisimman paljon viestejä (vianetsintään)"
+msgstr "veµmi popisný re¾im (pre odlaïovanie)"
 
 #: ../rpm.c:304
 msgid "query mode"
-msgstr "kyselymoodi"
+msgstr "re¾im otázok"
 
 #: ../rpm.c:305 ../rpm.c:363 ../rpm.c:423 ../rpm.c:451
 msgid "      --root <dir>        "
@@ -307,16 +303,16 @@ msgstr ""
 
 #: ../rpm.c:306 ../rpm.c:364 ../rpm.c:424 ../rpm.c:452 ../rpm.c:514
 msgid "use <dir> as the top level directory"
-msgstr "käytä <hakem> ylimpänä hakemistona"
+msgstr "pou¾i» <adresár> ako adresár najvy¹¹ej úrovne"
 
 #: ../rpm.c:307 ../rpm.c:361 ../rpm.c:389 ../rpm.c:439 ../rpm.c:511
 #, fuzzy
 msgid "      --dbpath <dir>      "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:308 ../rpm.c:362 ../rpm.c:390 ../rpm.c:440 ../rpm.c:512
 msgid "use <dir> as the directory for the database"
-msgstr "kaytä <hakem> tietokannan hakemistona"
+msgstr "pou¾i» <adresár> ako adresár pre databázu"
 
 #: ../rpm.c:309
 msgid "      --queryformat <qfmt>   "
@@ -325,19 +321,16 @@ msgstr ""
 #: ../rpm.c:310
 #, fuzzy
 msgid "use qfmt as the header format (implies -i)"
-msgstr "käytä s headerin formaatina (josta seuraa -i)"
+msgstr "pou¾i» s ako hlavièkový formát (implikuje -i)"
 
 #: ../rpm.c:311
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
-msgstr ""
-"   asennuksessa, päivityksessä ja kyselyssä (-p:n kanssa)  ftp URL:ja "
-"voidaan käyttää"
+msgstr "   in¹talácia, aktualizácia a otázky (s -p) umo¾òujú pou¾i» ftp URL"
 
 #: ../rpm.c:312
-#, fuzzy
 msgid "   of file names as well as the following options:\n"
-msgstr "   tiedostoniminä, kuten myös seuraavia parametrejä:\n"
+msgstr "   namiesto názvov súborov, ako aj nasledujúce voµby:\n"
 
 #: ../rpm.c:313
 msgid "      --ftpproxy <host>   "
@@ -345,7 +338,7 @@ msgstr ""
 
 #: ../rpm.c:314
 msgid "hostname or IP of ftp proxy"
-msgstr "koneen nimi tai IP tai ftp-proxy"
+msgstr "názov poèítaèa alebo IP adresa ftp proxy"
 
 #: ../rpm.c:315
 msgid "      --ftpport <port>    "
@@ -353,15 +346,15 @@ msgstr ""
 
 #: ../rpm.c:316
 msgid "port number of ftp server (or proxy)"
-msgstr "ftp-palvelijan (tai proxyn) porttinumero"
+msgstr "èíslo portu ftp servera (alebo proxy)"
 
 #: ../rpm.c:317
 msgid "      Package specification options:"
-msgstr "      Paketin määrittelyparametrit:"
+msgstr "      Voµby pre ¹pecifikáciu balíkov"
 
 #: ../rpm.c:319
 msgid "query all packages"
-msgstr "kysele kaikki paketit"
+msgstr "opýta» sa v¹etkých balíkov"
 
 #: ../rpm.c:320
 msgid "        -f <file>+        "
@@ -369,7 +362,7 @@ msgstr ""
 
 #: ../rpm.c:321
 msgid "query package owning <file>"
-msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
+msgstr "opýta» sa balíku vlastniaceho <súbor>"
 
 #: ../rpm.c:322
 msgid "        -p <packagefile>+ "
@@ -377,17 +370,16 @@ msgstr ""
 
 #: ../rpm.c:323
 msgid "query (uninstalled) package <packagefile>"
-msgstr "kysele(asentamatonta) pakettia <pakettitiedosto>"
+msgstr "opýta» sa (nenain¹talovaného) balíku <súbor_balíku>"
 
 #: ../rpm.c:324
 #, fuzzy
 msgid "        --triggeredby <package>"
-msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
+msgstr "opýta» sa balíkov spustených balíkom <balík>"
 
 #: ../rpm.c:325
-#, fuzzy
 msgid "query packages triggered by <package>"
-msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
+msgstr "opýta» sa balíkov spustených balíkom <balík>"
 
 #: ../rpm.c:326
 msgid "        --whatprovides <icap>"
@@ -396,144 +388,145 @@ msgstr ""
 #: ../rpm.c:327
 #, fuzzy
 msgid "query packages which provide <icap> capability"
-msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
+msgstr "opýta» sa balíkov poskytujúcich schopnos» <i>"
 
 #: ../rpm.c:328
+#, fuzzy
 msgid "        --whatrequires <icap>"
-msgstr ""
+msgstr "        --requires"
 
 #: ../rpm.c:329
 #, fuzzy
 msgid "query packages which require <icap> capability"
-msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
+msgstr "opýta» sa balíkov vy¾adujúcich schopnos» <i>"
 
 #: ../rpm.c:330
 msgid "      Information selection options:"
-msgstr "      Tietojen valintaparametrit:"
+msgstr "      Voµby pre výber po¾adovanej informácie:"
 
 #: ../rpm.c:332
 msgid "display package information"
-msgstr "näytä paketin tiedot"
+msgstr "zobrazi» informácie o balíku"
 
 #: ../rpm.c:334
 msgid "display the package's change log"
-msgstr "näytä paketin muutosloki"
+msgstr "zobrazi» históriu zmien balíka"
 
 #: ../rpm.c:336
 msgid "display package file list"
-msgstr "näytä paketin tiedostolistaus"
+msgstr "zobrazi» zoznam súborov balíka"
 
 #: ../rpm.c:338
 msgid "show file states (implies -l)"
-msgstr "näytä tiedostojen tilat (josta seuraa -l)"
+msgstr "zobrazi» stavy súborov (implikuje -l)"
 
 #: ../rpm.c:340
 msgid "list only documentation files (implies -l)"
-msgstr "listaa vain dokumettitiedostot (josta seuraa -l)"
+msgstr "zobrazi» len súbory obsahujúce dokumentáciu (implikuje -l)"
 
 #: ../rpm.c:342
 msgid "list only configuration files (implies -l)"
-msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
+msgstr "zobrazi» iba konfiguraèné súbory (implikuje -l)"
 
 #: ../rpm.c:344
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
 msgstr ""
-"näytä kaikki varmistettavissa oleva tieto kustakin tiedostosta (pitää "
-"käyttää -l, -c, tai -d kanssa)"
+"zobrazi» v¹etky overiteµné údaje pre ka¾dý súbor (musí by» pou¾ité s -l, -c "
+"alebo -d)"
 
 #: ../rpm.c:346
 msgid "list capabilities package provides"
-msgstr "luettele paketin tarjoamat ominaisuudet"
+msgstr "zobrazi» schopnosti poskytované balíkom"
 
 #: ../rpm.c:347
 msgid "        --requires"
-msgstr ""
+msgstr "        --requires"
 
 #: ../rpm.c:349
 msgid "list package dependencies"
-msgstr "listaa paketin riippuvuudet"
+msgstr "zobrazi» závislosti balíka"
 
 #: ../rpm.c:351
 msgid "print the various [un]install scripts"
-msgstr "tulosta erinäiset asennus/poisto-skriptit"
+msgstr "vypísa» rôzne [od]in¹talaèné skripty"
 
 #: ../rpm.c:353
 msgid "show the trigger scripts contained in the package"
-msgstr ""
+msgstr "zobrazi» spú¹»acie skripty obsiahnuté v balíku"
 
 #: ../rpm.c:357
 #, fuzzy
 msgid "    --pipe <cmd>        "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:358
 msgid "send stdout to <cmd>"
-msgstr "lähetä vakiotuloste <komento>:lle"
+msgstr "posla» ¹tandardný výstup do <príkazu>"
 
 #: ../rpm.c:360
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr ""
-"tarkista paketin asennus käyttäen samoja paketin määrittelyparametrejä kuin "
-"-q "
+"overi» in¹taláciu balíka s pou¾itím rovnakých volieb ¹pecifikácia balíka ako "
+"pre -q"
 
 #: ../rpm.c:366 ../rpm.c:410 ../rpm.c:444
 msgid "do not verify package dependencies"
-msgstr "älä tarkista paketin riippuvuuksia"
+msgstr "neoverova» závislosti balíka"
 
 #: ../rpm.c:368
 msgid "do not verify file md5 checksums"
-msgstr "älä tarkista tiedostojen md5-tarkistussummia"
+msgstr "neoverova» md5 kontrolné súèty súborov"
 
 #: ../rpm.c:370
 msgid "do not verify file attributes"
-msgstr "älä tarkista tiedostojen ominaisuuksia"
+msgstr "neoverova» atribúty súborov"
 
 #: ../rpm.c:373
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
-"aseta tiedostojen oikeudet niiksi, jotka ne ovat pakettien tietokannassa "
-"käyttäen samoja pakettien määrittelyparametrejä kuin -q"
+"nastavi» prístupové práva súborov podµa údajov v databáze balíkov s pou¾itím "
+"rovnakých volieb ¹pecifikácia balíka ako pre -q"
 
 #: ../rpm.c:376
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
-"aseta tiedostojen omistaja ja ryhmä niiksi, jotka ne ovat pakettien "
-"tietokannassa käyttäen samoja pakettien määrittelyparametrejä kuin -q"
+"nastavi» vlastníka a skupinu súborov podµa údajov v databáze balíkov s "
+"pou¾itím rovnakých volieb ¹pecifikácia balíka ako pre -q"
 
 #: ../rpm.c:380
 #, fuzzy
 msgid "    --install <packagefile>"
-msgstr "asenna paketti"
+msgstr "in¹talova» balík"
 
 #: ../rpm.c:381
 #, fuzzy
 msgid "    -i <packagefile>      "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:382
 msgid "install package"
-msgstr "asenna paketti"
+msgstr "in¹talova» balík"
 
 #: ../rpm.c:383
 #, fuzzy
 msgid "      --relocate <oldpath>=<newpath>"
-msgstr "siirrä tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
+msgstr "presunú» súbory zo <starej_cesty> do <novej_cesty>"
 
 #: ../rpm.c:384
 msgid "relocate files from <oldpath> to <newpath>"
-msgstr "siirrä tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
+msgstr "presunú» súbory zo <starej_cesty> do <novej_cesty>"
 
 #: ../rpm.c:386
 msgid "relocate files even though the package doesn't allow it"
-msgstr "siirrä tiedostot toiseen hakemistoon vaikka paketti ei sitä sallisi"
+msgstr "presunú» súbory napriek tomu, ¾e to balík nedovoµuje"
 
 #: ../rpm.c:387
 msgid "      --prefix <dir>      "
@@ -541,68 +534,69 @@ msgstr ""
 
 #: ../rpm.c:388
 msgid "relocate the package to <dir>, if relocatable"
-msgstr "siirrä paketti hakemistoon <hakem>, jos siirrettävissä"
+msgstr "presunú» balík do <adresára>, pokiaµ to balík povoµuje"
 
 #: ../rpm.c:392
 msgid "do not install documentation"
-msgstr "älä asenna dokumentointia"
+msgstr "nein¹talova» dokumentáciu"
 
 #: ../rpm.c:394
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr "lyhenne parametreille --replacepkgs --replacefiles"
+msgstr "skratka pre --replacepkgs --replacefiles"
 
 #: ../rpm.c:397
 msgid "print hash marks as package installs (good with -v)"
-msgstr "tulosta risuaitaa paketin asentuessa (-v:n kanssa hyvä)"
+msgstr "vypisova» znaèky poèas in¹talácie balíka (vhodné s -v)"
 
 #: ../rpm.c:399
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
-"asenna kaikki tiedostot, myös konfiguraatiot, jotka muuten ehkä ohitettaisiin"
+"in¹talova» v¹etky súbory vrátane konfiguraèných súborov, ktoré by inak mohli "
+"by» vynechané"
 
 #: ../rpm.c:402
 msgid "don't verify package architecture"
-msgstr "älä tarkista paketin arkkitehtuuria"
+msgstr "neoverova» architektúru balíka"
 
 #: ../rpm.c:404
 msgid "don't verify package operating system"
-msgstr "älä tarkista paketin käyttöjärjestelmää"
+msgstr "neoverova» operaèný systém balíka"
 
 #: ../rpm.c:406
 msgid "install documentation"
-msgstr "asenna dokumentaatio"
+msgstr "in¹talova» dokumentáciu"
 
 #: ../rpm.c:408 ../rpm.c:442
 msgid "update the database, but do not modify the filesystem"
-msgstr "päivitä tietokanta, mutta älä muuta tiedostojärjestelmää"
+msgstr "aktualizova» databázu bez zmeny súborového systému"
 
 #: ../rpm.c:412 ../rpm.c:446
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr "älä muuta asennusjärjestystä riippuvuuksien tyydyttämiseksi"
+msgstr "nemeni» poradie balíkov kvôli vyrie¹eniu závislostí"
 
 #: ../rpm.c:414
 msgid "don't execute any installation scripts"
-msgstr "älä suorita asennusskriptejä"
+msgstr "nevykona» ¾iadne in¹talaèné skripty"
 
 #: ../rpm.c:416 ../rpm.c:450
 msgid "don't execute any scripts triggered by this package"
-msgstr ""
+msgstr "nevykona» ¾iadne skripty spú¹»ané týmto balíkom"
 
 #: ../rpm.c:418
 msgid "print percentages as package installs"
-msgstr "tulosta asennuksen eteneminen prosentteina"
+msgstr "vypisova» percentá poèas in¹talácie balíka"
 
 #: ../rpm.c:420
 msgid "install even if the package replaces installed files"
-msgstr "asenna vaikka paketti korvaisi asennettuja tiedostoja"
+msgstr "in¹talova» aj pokiaµ balík prepí¹e in¹talované súbory"
 
 #: ../rpm.c:422
 msgid "reinstall if the package is already present"
-msgstr "asenna uudelleen, jos paketti on jo asennettu"
+msgstr "prein¹talova», pokiaµ u¾ balík existuje"
 
 #: ../rpm.c:426
 msgid "don't install, but tell if it would work or not"
-msgstr "älä asenna, mutta kerro onnistuisiko se"
+msgstr "nein¹talova», ale oznámi», èi by to bolo mo¾né"
 
 #: ../rpm.c:428
 msgid "    --upgrade <packagefile>"
@@ -611,19 +605,19 @@ msgstr ""
 #: ../rpm.c:429
 #, fuzzy
 msgid "    -U <packagefile>      "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:430
 msgid "upgrade package (same options as --install, plus)"
-msgstr "päivitä paketti (samat parametrit kuin --install, plus)"
+msgstr "aktualizova» balík (rovnaké voµby ako --install, a k tomu)"
 
 #: ../rpm.c:432
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
-"päivitä vanhempaan versioon (--force päivitettäessä tekee tämän "
-"automaattisesti)"
+"aktualizova» na star¹iu verziu balíka (--force to pri aktualizácii urobí "
+"automaticky)"
 
 #: ../rpm.c:434
 msgid "    --erase <package>"
@@ -631,73 +625,73 @@ msgstr ""
 
 #: ../rpm.c:436
 msgid "erase (uninstall) package"
-msgstr "poista paketti"
+msgstr "odin¹talova» balík"
 
 #: ../rpm.c:438
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"poista kaikki paketit, joiden nimeä vastaa  <paketti> (tavallisesti, jos  "
-"<paketti> määrittää useita paketteja, tulee virhe)"
+"odin¹talova» v¹etky balíky urèené <balíkom> (inak je chybou, pokiaµ <balík> "
+"¹pecifikuje viac ako jeden balík)"
 
 #: ../rpm.c:448
 msgid "do not execute any package specific scripts"
-msgstr "älä aja mitään pakettikohtaisia skriptejä"
+msgstr "nevykona» ¾iadne skripty ¹pecifikované balíkom"
 
 #: ../rpm.c:454
 msgid "    -b<stage> <spec>      "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:455
 #, fuzzy
 msgid "    -t<stage> <tarball>      "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:456
 msgid "build package, where <stage> is one of:"
-msgstr "tee paketti, jossa <vaihe> on jokin:"
+msgstr "zostavi» balík, kde <etapa> je jedna z:"
 
 #: ../rpm.c:458
 msgid "prep (unpack sources and apply patches)"
-msgstr "valmistele (pura lähdekoodi ja tee korjaukset)"
+msgstr "príprava (rozbali» zdrojové súbory a aplikova» záplaty)"
 
 #: ../rpm.c:460
 #, c-format
 msgid "list check (do some cursory checks on %files)"
-msgstr "listatarkistus (tee joitakin tarkistuksia %tiedostoihin)"
+msgstr "kontrola zoznamu (vykona» niektoré zbe¾né kontroly sekcie %files)"
 
 #: ../rpm.c:462
 msgid "compile (prep and compile)"
-msgstr "käännä (valmistele ja käännä)"
+msgstr "kompilácia (príprava a kompilácia)"
 
 #: ../rpm.c:464
 msgid "install (prep, compile, install)"
-msgstr "asenna (valmistele, käännä ja asenna)"
+msgstr "in¹talácia (príprava, kompilácia, in¹talácia)"
 
 #: ../rpm.c:466
 msgid "binary package (prep, compile, install, package)"
-msgstr "binääripaketti (valmistele, käännä, asenna, paketoi)"
+msgstr "binárny balík (príprava, kompilácia, in¹talácia, zabalenie)"
 
 #: ../rpm.c:468
 msgid "bin/src package (prep, compile, install, package)"
-msgstr "bin/src-paketti (valmistele, käännä, asenna, paketoi)"
+msgstr "binárny a zdrojový balík (príprava, kompilácia, in¹talácia, zabalenie)"
 
 #: ../rpm.c:470
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "siirry suoraan määriteltyyn vaiheeseen (vain c ja i yhteydessä)"
+msgstr "preskoèi» priamo k urèenej etape (iba pre c, i)"
 
 #: ../rpm.c:472
 msgid "remove build tree when done"
-msgstr "poista käännöspuu, kun valmis"
+msgstr "po ukonèení odstráni» adresár, v ktorom sa balík zostavoval"
 
 #: ../rpm.c:474
 msgid "remove sources and spec file when done"
-msgstr "poista lähdekoodit ja määrittelytiedosto, kun valmis"
+msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
 #: ../rpm.c:476
 msgid "generate PGP signature"
-msgstr "generoi PGP-allekirjoitus"
+msgstr "vytvori» PGP podpis"
 
 #: ../rpm.c:477
 msgid "      --buildroot <dir>     "
@@ -705,7 +699,7 @@ msgstr ""
 
 #: ../rpm.c:478
 msgid "use <dir> as the build root"
-msgstr "käytä <hakem> käännöspuun juurena"
+msgstr "pou¾i» <adresár> pre zostavenie balíka"
 
 #: ../rpm.c:479
 msgid "      --buildarch <arch>  "
@@ -713,7 +707,7 @@ msgstr ""
 
 #: ../rpm.c:480
 msgid "build the packages for architecture <arch>"
-msgstr "käännä paketit arkkitehtuurille <arkk>"
+msgstr "zostavi» balík pre architektúru <arch>"
 
 #: ../rpm.c:481
 msgid "      --buildos <os>  "
@@ -721,16 +715,16 @@ msgstr ""
 
 #: ../rpm.c:482
 msgid "build the packages for ositecture <os>"
-msgstr "käännä paketit käyttöjärjestelmälle <kj>"
+msgstr "zostavi» balík pre OS/architektúru <os>"
 
 #: ../rpm.c:484
 msgid "do not execute any stages"
-msgstr "älä suorita mitään vaiheita"
+msgstr "nevykona» ¾iadne etapy"
 
 #: ../rpm.c:486
 #, fuzzy
 msgid "set the time check to <secs> seconds (0 disables it)"
-msgstr "aseta aikatarkistus S sekunniksi (0 ohittaa)"
+msgstr "nastavi» kontrolu èasu na S sekúnd (0 pre deaktiváciu)"
 
 #: ../rpm.c:488
 msgid "    --rebuild <src_pkg>   "
@@ -741,17 +735,17 @@ msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
-"asenna lähdekoodipaketti, käännä binääripaketti ja poista "
-"määrittelytiedosto, lähdekoodi, korjaukset ja kuvakkeet"
+"in¹talova» zdrojový balík, vytvori» binárny balík a odstráni» spec-súbor, "
+"zdroje, záplaty a ikony"
 
 #: ../rpm.c:490
 #, fuzzy
 msgid "    --rmsource <spec>   "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:491
 msgid "remove sources and spec file"
-msgstr "poista lähdekoodi ja määrittelytiedosto"
+msgstr "odstráni» zdroje a spec-súbor"
 
 #: ../rpm.c:492
 msgid "    --recompile <src_pkg> "
@@ -759,103 +753,102 @@ msgstr ""
 
 #: ../rpm.c:493
 msgid "like --rebuild, but don't build any package"
-msgstr "kuten --rebuild, mutta ei käännä paketteja"
+msgstr "ako --rebuild, ale nezostavi» ¾iadny balík"
 
 #: ../rpm.c:494
 #, fuzzy
 msgid "    --resign <pkg>+       "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:495
 msgid "sign a package (discard current signature)"
-msgstr "allekirjoita paketti (hylkää nykyinen allekirjoitus)"
+msgstr "podpísa» balík (znièi» aktuálny podpis)"
 
 #: ../rpm.c:496
 #, fuzzy
 msgid "    --addsign <pkg>+      "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:497
 msgid "add a signature to a package"
-msgstr "lisää allekirjoitus pakettiin"
+msgstr "prida» podpis balíku"
 
 #: ../rpm.c:499
 #, fuzzy
 msgid "    --checksig <pkg>+     "
-msgstr "    -b<vaihe> <määrittely> "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:500
 msgid "verify package signature"
-msgstr "tarkista paketin allekirjoitus"
+msgstr "overi» podpis balíka"
 
 #: ../rpm.c:502
 msgid "skip any PGP signatures"
-msgstr "ohita PGP-allekirjoitukset"
+msgstr "vynecha» akékoµvek PGP podpisy"
 
 #: ../rpm.c:504
 msgid "skip any MD5 signatures"
-msgstr "ohita MD5-allekirjoitukset"
+msgstr "vynecha» akékoµvek MD5 podpisy"
 
 #: ../rpm.c:506
 msgid "list the tags that can be used in a query format"
-msgstr "luettele nimiöt, joita voidaan käyttää kyselyn formaatissa"
+msgstr "vypísa» príznaky, ktoré mô¾u by» pou¾ité vo formáte otázky"
 
 #: ../rpm.c:508
 msgid "make sure a valid database exists"
-msgstr "tarkista, että kunnollinen tietokanta löytyy"
+msgstr "uisti» sa, ¾e existuje platná databáza"
 
 #: ../rpm.c:510
 msgid "rebuild database from existing database"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+msgstr "znovu vytvori» databázu z existujúcej"
 
 #: ../rpm.c:637 ../rpm.c:643 ../rpm.c:650 ../rpm.c:656 ../rpm.c:665
 #: ../rpm.c:672 ../rpm.c:718 ../rpm.c:724 ../rpm.c:813 ../rpm.c:820
 #: ../rpm.c:826 ../rpm.c:834 ../rpm.c:840 ../rpm.c:848 ../rpm.c:881
 #: ../rpm.c:923 ../rpm.c:929
 msgid "only one major mode may be specified"
-msgstr "vain yksi päämoodi voidaan määritellä"
+msgstr "mô¾e by» pou¾itý iba jeden hlavný re¾im"
 
 #: ../rpm.c:658
 msgid "-u and --uninstall are deprecated and no longer work.\n"
-msgstr "-u ja --uninstall ovat vanhentuneet eivätkä enää toimi.\n"
+msgstr "-u a --uninstall sú zastaralé a u¾ nefungujú.\n"
 
 #: ../rpm.c:660
 msgid "Use -e or --erase instead.\n"
-msgstr "Käytä sen sijaan -e tai --erase .\n"
+msgstr "Namiesto nich pou¾ite -e alebo --erase.\n"
 
 #: ../rpm.c:676
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-msgstr "--build (-b) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrinään"
+msgstr "--build (-b) vy¾aduje jedno z a,b,i,c,p,l ako jediný argument"
 
 #: ../rpm.c:680
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-msgstr ""
-"--tarbuild (-t) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrinään"
+msgstr "--tarbuild (-t) vy¾aduje jedno z a,b,i,c,p,l ako jediný argument"
 
 #: ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770 ../rpm.c:790
 #: ../rpm.c:798 ../rpm.c:806
 msgid "one type of query/verify may be performed at a time"
-msgstr "yhden tyyppinen kysely/tarkistus voidaan suorittaa kerralla"
+msgstr "naraz mô¾e by» vykonaný jeden typ otázky alebo overenia"
 
 #: ../rpm.c:856
 msgid "arguments to --dbpath must begin with a /"
-msgstr "--dbpath:n parametrien pitää alkaa /-merkillä"
+msgstr "argumenty pre --dbpath musia zaèína» /"
 
 #: ../rpm.c:863
 msgid "one type of query may be performed at a time"
-msgstr "yhden tyyppinen kysely voidaan suorittaa kerralla"
+msgstr "naraz mô¾e by» vykonaný jeden typ otázky"
 
 #: ../rpm.c:887
 msgid "relocations must begin with a /"
-msgstr "siirtojen pitää alkaa /-merkillä"
+msgstr "presunutia musia zaèína» znakom /"
 
 #: ../rpm.c:889
 msgid "relocations must contain a ="
-msgstr "siirroissa pitää olla =-merkki"
+msgstr "presunutia musia obsahova» znak ="
 
 #: ../rpm.c:892
 msgid "relocations must have a / following the ="
-msgstr "siirroissa pitää olla / =-merkin jälkeen"
+msgstr "presunutia musia ma» za znakom = znak /"
 
 #: ../rpm.c:900
 msgid "Internal error in argument processing :-(\n"
@@ -863,258 +856,253 @@ msgstr ""
 
 #: ../rpm.c:941
 msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath parametri annettu toiminnolle, joka ei käytä tietokantaa"
+msgstr "--dbpath zadané pre operáciu nepou¾ívajúcu databázu"
 
 #: ../rpm.c:946
 msgid "--timecheck may only be used during package builds"
-msgstr "--timecheck parametriä voidaan käyttää vain paketteja koottaessa"
+msgstr "--timecheck mô¾e by» pou¾ité iba pri zostavovaní balíka"
 
 #: ../rpm.c:949 ../rpm.c:952
 msgid "unexpected query specifiers"
-msgstr "odottamattomia kyselyn parametrejä"
+msgstr "neoèakávané ¹pecifikátory otázky"
 
 #: ../rpm.c:956
 msgid "unexpected query source"
-msgstr "odottamaton kyselyn lähde"
+msgstr "neoèakávaný zdroj pre otázku"
 
 #: ../rpm.c:959
 msgid "only installation and upgrading may be forced"
-msgstr "vain asennus tai päivitys voidaan pakottaa"
+msgstr "iba in¹talácia a aktualizácia mô¾e by» vynútená"
 
 #: ../rpm.c:962
 msgid "files may only be relocated during package installation"
-msgstr "tiedostoja voidaan siirtää toiselle polulle vain asennettaessa"
+msgstr "súbory mô¾u by» presunuté iba poèas inètalácie balíka"
 
 #: ../rpm.c:965
 msgid "only one of --prefix or --relocate may be used"
-msgstr "vain toinen --prefix tai --relocate voidaan antaa"
+msgstr "mo¾e by» pou¾itá iba jedna z volieb --prefix a --relocate"
 
 #: ../rpm.c:968
 msgid "--relocate may only be used when installing new packages"
-msgstr "--relocate: voidaan käyttää vain uusia paketteja asennettaessa"
+msgstr "--relocate mô¾e by» pou¾ité iba poèas in¹talácie nových balíkov"
 
 #: ../rpm.c:971
 msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix: voidaan käyttää vain uusia paketteja asennettaessa"
+msgstr "--prefix mô¾e by» pou¾itý iba poèas in¹talácie nových balíkov"
 
 #: ../rpm.c:974
 msgid "arguments to --prefix must begin with a /"
-msgstr "--prefix parametrien pitää alkaa /-merkillä"
+msgstr "argumenty pre --prefix musia zaèína» znakom /"
 
 #: ../rpm.c:977
 msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h): voidaan käyttää vain paketteja asennettaessa"
+msgstr "--hash (-h) mô¾e by» pou¾itý iba poèas in¹talácie balíka"
 
 #: ../rpm.c:981
 msgid "--percent may only be specified during package installation"
-msgstr "--percent: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--percent mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
 #: ../rpm.c:985
 msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--replacefiles mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
 #: ../rpm.c:989
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--replacepkgs mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
 #: ../rpm.c:993
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--excludedocs mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
 #: ../rpm.c:997
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--includedocs mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
 #: ../rpm.c:1001
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "vain toinen --excludedocs tai --includedocs voidaan antaa"
+msgstr "mô¾e by» pou¾itá iba jedna voµba z --excludedocs a --includedocs"
 
 #: ../rpm.c:1005
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--ignorearch mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
 #: ../rpm.c:1009
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--ignoreos mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
 #: ../rpm.c:1013
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches: voidaan käyttää vain paketteja poistettaessa"
+msgstr "--allmatches mô¾e by» pou¾ité iba poèas odstránenia balíkov"
 
 #: ../rpm.c:1017
 msgid "--allfiles may only be specified during package installation"
-msgstr "--allfiles: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--allfiles mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
 #: ../rpm.c:1021
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr ""
-"--justdb: voidaan käyttää vain paketteja asennettaessa tai poistettaessa"
+msgstr "--justdb mô¾e by» pou¾ité iba poèas in¹talácie a odstránenia balíka"
 
 #: ../rpm.c:1026
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--noscripts: voidaan käyttää vain paketteja asennettaessa, poistettaessa tai "
-"tarkistettaessa"
+"--noscripts mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo "
+"overenia balíka"
 
 #: ../rpm.c:1030
-#, fuzzy
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--nodeps: voidaan käyttää vain paketteja asennettaessa, poistettaessa tai "
-"tarkistettaessa"
+"--notriggers mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo "
+"overenia balíka"
 
 #: ../rpm.c:1035
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--nodeps: voidaan käyttää vain paketteja asennettaessa, poistettaessa tai "
-"tarkistettaessa"
+"--nodeps mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo overenia "
+"balíka"
 
 #: ../rpm.c:1039
 msgid "--nofiles may only be specified during package verification"
-msgstr "--nofiles: voidaan käyttää vain paketteja tarkistettaessa"
+msgstr "--nofiles mô¾e by» pou¾ité iba poèas overenia balíka"
 
 #: ../rpm.c:1044
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
-"--test: voidaan käyttää vain paketteja asennettaessa, poistettaessa ja "
-"käännettäessä"
+"--test mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo zostavenia "
+"balíka"
 
 #: ../rpm.c:1049
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
-"--root (-r): voidaan käyttää vain paketteja asennettaessa, poistettaessa, "
-"kyseltäessä ja tietokannan uudelleenluonnissa"
+"--root (-r) mô¾e by» pou¾ité iba poèas in¹talácie a odstránenia balíka, "
+"otázky alebo znovuzostavenia databázy"
 
 #: ../rpm.c:1054
 msgid "arguments to --root (-r) must begin with a /"
-msgstr "parametrit --root (-r):lle alettava /-merkillä"
+msgstr "argumenty pre --root (-r) musia zaèína» znakom /"
 
 #: ../rpm.c:1057
 msgid "--clean may only be used with -b and -t"
-msgstr "--clean: voidaan käyttää vain -b ja -t kanssa"
+msgstr "--clean mô¾e by» pou¾ité iba s -b a -t"
 
 #: ../rpm.c:1060
 msgid "--rmsource may only be used with -b and -t"
-msgstr "--rmsource: voidaan käyttää vain -b ja -t kanssa"
+msgstr "--rmsource mô¾e by» pou¾ité iba s -b a -t"
 
 #: ../rpm.c:1063
 msgid "--short-circuit may only be used during package building"
-msgstr "--short-circuit: voidaan käyttää vain paketteja asennettaessa"
+msgstr "--short-circuit mô¾e by» pou¾ité iba poèas zostavenia balíka"
 
 #: ../rpm.c:1067
-#, fuzzy
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
-msgstr "--short-circuit: voidaan käyttää vain -bc, -bi, -tc tai -ti kanssa"
+msgstr ""
+"--short-circuit mô¾e by» pou¾ité iba s -bc, -bi, -bs, -tc -ti alebo -ts"
 
 #: ../rpm.c:1072
 msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage: voidaan käyttää vain paketteja päivitettäessä"
+msgstr "--oldpackage mô¾e by» pou¾íté iba poèas aktualizácie"
 
 #: ../rpm.c:1075
 msgid "--dump may only be used during queries"
-msgstr "--dump: voidaan käyttää vain paketteja kyseltäessä"
+msgstr "--dump mô¾e by» pou¾íté iba poèas otázok"
 
 #: ../rpm.c:1078
 msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "kyselyjen --dump on käytettävä -l, -c, tai -d kanssa"
+msgstr "--dump otázok musí by» pou¾ité s -l, -c alebo -d"
 
 #: ../rpm.c:1083
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
-"ftp-parametrejä voidaan käyttää vain paketteja kysellessä, asennettaessa ja "
-"päivitettäessä"
+"ftp voµby mô¾e by» pou¾íté iba poèas otázok, in¹talácie alebo aktualizácie"
 
 #: ../rpm.c:1090
 msgid "--nopgp may only be used during signature checking"
-msgstr "--nopgp: voidaan käyttää vain allekirjoitusta tarkistettaessa"
+msgstr "--nopgp mô¾e by» pou¾íté iba poèas overenia podpisu"
 
 #: ../rpm.c:1093
 msgid ""
 "--nopgp may only be used during signature checking and package verification"
-msgstr ""
-"--nopgp: voidaan käyttää vain allekirjoitusta tarkistettaessa ja paketteja "
-"todennettaessa"
+msgstr "--nopgp mô¾e by» pou¾íté iba poèas overenia podpisu alebo balíka"
 
 #: ../rpm.c:1106
 msgid "Pass phrase check failed\n"
-msgstr ""
+msgstr "Kontrola hesla zlyhala\n"
 
 #: ../rpm.c:1109
 msgid "Pass phrase is good.\n"
-msgstr ""
+msgstr "Heslo je v poriadku.\n"
 
 #: ../rpm.c:1121
 msgid "--sign may only be used during package building"
-msgstr "--sign: voidaan käyttää vain paketteja käännettäessä"
+msgstr "--sign mô¾e by» pou¾íté iba poèas zostavenia balíka"
 
 #: ../rpm.c:1136
 #, fuzzy
 msgid "exec failed\n"
-msgstr "%s: avaus ei onnistunut\n"
+msgstr "%s: otvorenie zlyhalo\n"
 
 #: ../rpm.c:1155
 msgid "unexpected arguments to --querytags "
-msgstr "--querytags: odottamattomia parametrejä"
+msgstr "neoèakávané argumenty pre --querytags"
 
 #: ../rpm.c:1166
 msgid "no packages given for signature check"
-msgstr "allekirjoituksen tarkistukselle ei määritelty paketteja"
+msgstr "neboli zadané ¾iadne balíky pre overenie podpisu"
 
 #: ../rpm.c:1173
 msgid "no packages given for signing"
-msgstr "allekirjoitukselle ei määritelty paketteja"
+msgstr "neboli zadané ¾iadne balíky na podpis"
 
 #: ../rpm.c:1182
 msgid "no packages files given for rebuild"
-msgstr "uudelleenkäännolle ei määritelty paketteja"
+msgstr "neboli zadané ¾iadne balíky pre znovuzostavenie"
 
 #: ../rpm.c:1245
 msgid "no spec files given for build"
-msgstr "käännökselle ei annettu määrittelytiedostoja"
+msgstr "neboli zadané ¾iadne spec-súbory pre zostavenie"
 
 #: ../rpm.c:1247
 msgid "no tar files given for build"
-msgstr "käännökselle ei määritelty tar-tiedostoja"
+msgstr "neboli zadané ¾iadne tar-súbory pre zostavenie"
 
 #: ../rpm.c:1259
 msgid "no packages given for uninstall"
-msgstr "poistolle ei määritelty paketteja"
+msgstr "neboli zadané ¾iadne balíky pre odin¹talovanie"
 
 #: ../rpm.c:1299
 msgid "no packages given for install"
-msgstr "asennukselle ei määritelty paketteja"
+msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
 
 #: ../rpm.c:1323
 msgid "extra arguments given for query of all packages"
-msgstr "pakettien kyselylle annettiin ylimääräisiä parametrejä"
+msgstr "boli zadané nadbytoèné argumenty otázky pre v¹etky balíky"
 
 #: ../rpm.c:1328
 msgid "no arguments given for query"
-msgstr "kyselylle ei annettu parametrejä"
+msgstr "neboli zadané ¾iadne argumenty pre otázku"
 
 #: ../rpm.c:1345
 msgid "no arguments given for verify"
-msgstr "tarkistukselle ei annettu parametrejä"
+msgstr "neboli zadané ¾iadne argumenty pre overenie"
 
 #: ../query.c:48
 #, c-format
 msgid "error in format: %s\n"
-msgstr "virhe formaatissa: %s\n"
+msgstr "chyba formátu: %s\n"
 
 #: ../query.c:85
 msgid "(contains no files)"
-msgstr "(ei tiedostoja)"
+msgstr "(neobsahuje ¾iadne súbory)"
 
 #: ../query.c:137
 msgid "normal        "
@@ -1131,12 +1119,12 @@ msgstr ""
 #: ../query.c:143
 #, fuzzy
 msgid "not installed "
-msgstr "paketti %s ei ole asennettu\n"
+msgstr "balík %s nie je nain¹talovaný\n"
 
 #: ../query.c:145
 #, fuzzy, c-format
 msgid "(unknown %3d) "
-msgstr "(tuntematon tyyppi)"
+msgstr "(neznámy typ)"
 
 #: ../query.c:149
 msgid "(no state)    "
@@ -1153,99 +1141,99 @@ msgstr ""
 
 #: ../query.c:344 ../verify.c:142
 msgid "error: could not read database record\n"
-msgstr "virhe: tietokannan tietuetta ei voinut lukea\n"
+msgstr "chyba: nie je mo¾né preèíta» záznam v databáze\n"
 
 #: ../query.c:380 ../query.c:387 ../verify.c:198 ../verify.c:205
 #, c-format
 msgid "open of %s failed: %s\n"
-msgstr "%s:n avaus ei onnistunut: %s\n"
+msgstr "otvorenie %s zlyhalo: %s\n"
 
 #: ../query.c:403
 msgid "old format source packages cannot be queried\n"
-msgstr "vanhan formaatin lähdekoodipaketteja ei voi kysellä\n"
+msgstr "nie je mo¾né pýta» sa zdrojových balíkov v starom formáte\n"
 
 #: ../query.c:412
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
-msgstr "%s ei vaikuta RPM-paketilta\n"
+msgstr "%s zrejme nie je RPM balík\n"
 
 #: ../query.c:416
 #, c-format
 msgid "query of %s failed\n"
-msgstr "%s:n kysely ei onnistunut\n"
+msgstr "otázka na %s zlyhala\n"
 
 #: ../query.c:429 ../verify.c:182
 msgid "could not read database record!\n"
-msgstr "en voinut lukea tietokannan tietuetta!\n"
+msgstr "nie je mo¾né preèíta» záznam v databáze!\n"
 
 #: ../query.c:440 ../verify.c:228
 #, c-format
 msgid "group %s does not contain any packages\n"
-msgstr "ryhmässä %s ei ole paketteja\n"
+msgstr "skupina %s neobsahuje ¾iadne balíky\n"
 
 #: ../query.c:450
 #, c-format
 msgid "no package provides %s\n"
-msgstr "mikään paketti ei tarjoa %s:a\n"
+msgstr "¾iadny z balíkov neposkytuje %s\n"
 
 #: ../query.c:460
 #, c-format
 msgid "no package triggers %s\n"
-msgstr "mikään paketti ei laukaise %s:a\n"
+msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
 #: ../query.c:470
 #, c-format
 msgid "no package requires %s\n"
-msgstr "mikään pakettie ei tarvitse %s:a\n"
+msgstr "¾iadny z balíkov nevy¾aduje %s\n"
 
 #: ../query.c:488 ../query.c:494
 msgid "maximum path length exceeded\n"
-msgstr ""
+msgstr "prekroèená maximálna då¾ka cesty\n"
 
 #: ../query.c:506
-#, fuzzy, c-format
+#, c-format
 msgid "file %s: %s\n"
-msgstr "en voinut avata %s: %s"
+msgstr "súbor %s: %s\n"
 
 #: ../query.c:509 ../verify.c:242
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "tiedostoa %s ei omista mikään paketti\n"
+msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
 #: ../query.c:522
 #, c-format
 msgid "invalid package number: %s\n"
-msgstr "virheellinen paketin numero: %s\n"
+msgstr "chybné èíslo balíku: %s\n"
 
 #: ../query.c:525
 #, c-format
 msgid "showing package: %d\n"
-msgstr "näytän paketin: %d\n"
+msgstr "zobrazujem balík: %d\n"
 
 #: ../query.c:529
 #, c-format
 msgid "record %d could not be read\n"
-msgstr "tietuetta %d ei voitu lukea\n"
+msgstr "záznam %d nie je mo¾né preèíta»\n"
 
 #: ../install.c:332 ../query.c:541 ../verify.c:253
 #, c-format
 msgid "package %s is not installed\n"
-msgstr "paketti %s ei ole asennettu\n"
+msgstr "balík %s nie je nain¹talovaný\n"
 
 #: ../query.c:544 ../verify.c:255
 #, c-format
 msgid "error looking for package %s\n"
-msgstr "virhe etsittäessä pakettia %s\n"
+msgstr "chyba pri hµadaní balíka %s\n"
 
 #: ../install.c:79 ../install.c:195
 #, c-format
 msgid "error: cannot open file %s\n"
-msgstr "virhe: tiedostoa %s ei voi avata\n"
+msgstr "chybe: nie je mo¾né otvori» súbor %s\n"
 
 #: ../install.c:96 ../install.c:418
 #, c-format
 msgid "Installing %s\n"
-msgstr "Asennan: %s\n"
+msgstr "In¹talácia %s\n"
 
 #: ../install.c:103
 msgid "stopping source install as we're just testing\n"
@@ -1254,32 +1242,32 @@ msgstr ""
 #: ../install.c:114 ../install.c:208
 #, c-format
 msgid "error: %s does not appear to be a RPM package\n"
-msgstr "virhe: %s ei vaikuta RPM paketilta\n"
+msgstr "chyba: %s zrejme nie je RPM balík\n"
 
 #: ../install.c:119 ../install.c:213 ../install.c:422
 #, c-format
 msgid "error: %s cannot be installed\n"
-msgstr "virhe: %s ei voida asentaa\n"
+msgstr "chyba: %s nie je mo¾né nain¹talova»\n"
 
 #: ../install.c:152
 #, fuzzy
 msgid "counting packages to install\n"
-msgstr "asennukselle ei määritelty paketteja"
+msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
 
 #: ../install.c:156
 #, fuzzy, c-format
 msgid "found %d packages\n"
-msgstr "kysele kaikki paketit"
+msgstr "opýta» sa v¹etkých balíkov"
 
 #: ../install.c:162
 #, fuzzy
 msgid "looking for packages to download\n"
-msgstr "virhe etsittäessä pakettia %s\n"
+msgstr "chyba pri hµadaní balíka %s\n"
 
 #: ../install.c:166
 #, c-format
 msgid "Retrieving %s\n"
-msgstr "Haen: %s\n"
+msgstr "Získanie %s\n"
 
 #: ../install.c:173
 #, c-format
@@ -1289,7 +1277,7 @@ msgstr ""
 #: ../install.c:177
 #, c-format
 msgid "error: skipping %s - transfer failed - %s\n"
-msgstr "virhe: ohitan %s:n, siirto epäonnistui - %s\n"
+msgstr "chyba: %s vynechané - prenos zlyhal - %s\n"
 
 #: ../install.c:189
 #, c-format
@@ -1303,7 +1291,7 @@ msgstr ""
 #: ../install.c:227
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
-msgstr "ryhmässä %s ei ole paketteja\n"
+msgstr "skupina %s neobsahuje ¾iadne balíky\n"
 
 #: ../install.c:231
 #, c-format
@@ -1313,40 +1301,40 @@ msgstr ""
 #: ../install.c:233 ../install.c:322
 #, c-format
 msgid "error: cannot open %s%s/packages.rpm\n"
-msgstr "virhe: en voi avata %s%s/packages.rpm\n"
+msgstr "chyba: nie je mo¾né otvori» %s%s/packages.rpm\n"
 
 #: ../install.c:254
 msgid "failed dependencies:\n"
-msgstr "puuttuvat riippuvuudet:\n"
+msgstr "nevyrie¹ené závislosti:\n"
 
 #: ../install.c:275
 #, fuzzy
 msgid "installing binary packages\n"
-msgstr "asenna paketti"
+msgstr "in¹talova» balík"
 
 #: ../install.c:309
 #, fuzzy
 msgid "counting packages to uninstall\n"
-msgstr "poistolle ei määritelty paketteja"
+msgstr "neboli zadané ¾iadne balíky pre odin¹talovanie"
 
 #: ../install.c:335
 #, c-format
 msgid "error searching for package %s\n"
-msgstr "virhe etsittäessä pakettia %s\n"
+msgstr "chyba pri vyhµadávaní balíka %s\n"
 
 #: ../install.c:343
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
-msgstr "\"%s\" määrittää useita paketteja\n"
+msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
 #: ../install.c:365
 #, fuzzy, c-format
 msgid "found %d packages to uninstall\n"
-msgstr "poistolle ei määritelty paketteja"
+msgstr "neboli zadané ¾iadne balíky pre odin¹talovanie"
 
 #: ../install.c:380
 msgid "removing these packages would break dependencies:\n"
-msgstr "näiden pakettien poisto rikkoisi riippuvuuksia:\n"
+msgstr "odstránenie týchto balíkov by poru¹ilo závislosti:\n"
 
 #: ../install.c:391
 #, c-format
@@ -1356,27 +1344,27 @@ msgstr ""
 #: ../install.c:413
 #, c-format
 msgid "error: cannot open %s\n"
-msgstr "virhe: en voi avata %s\n"
+msgstr "chyba: nie je mo¾né otvori» %s\n"
 
 #: ../install.c:461
 #, c-format
 msgid " is needed by %s-%s-%s\n"
-msgstr "vaatii %s-%s-%s\n"
+msgstr " je vy¾adované %s-%s-%s\n"
 
 #: ../install.c:464
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
-msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
+msgstr " koliduje s %s-%s-%s\n"
 
 #: ../verify.c:39
 #, fuzzy, c-format
 msgid "missing    %s\n"
-msgstr "puuttuva '{' '%':n jälkeen"
+msgstr "chýbajúce { po %"
 
 #: ../verify.c:95
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
-msgstr "%s-%s-%s:n tyydyttämättömät riippuvuudet:"
+msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
 #: ../verify.c:137
 #, c-format
@@ -1391,63 +1379,63 @@ msgstr ""
 #: ../checksig.c:31 ../checksig.c:162
 #, c-format
 msgid "%s: Open failed\n"
-msgstr "%s: avaus ei onnistunut\n"
+msgstr "%s: otvorenie zlyhalo\n"
 
 #: ../checksig.c:35 ../checksig.c:167
 #, c-format
 msgid "%s: readLead failed\n"
-msgstr "%s: readLead  epäonnistui\n"
+msgstr "%s: readLead zlyhalo\n"
 
 #: ../checksig.c:39
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
-msgstr "%s: En voi allekirjoittaa v1.0 RPM:ää\n"
+msgstr "%s: Nie je mo¾né podpísa» v1.0 RPM\n"
 
 #: ../checksig.c:43
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
-msgstr "%s: En voi uudelleen allekirjoittaa v2.0 RPM:ää\n"
+msgstr "%s: Nie je mo¾né znovu podpísa» v2.0 RPM\n"
 
 #: ../checksig.c:47 ../checksig.c:177
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
-msgstr "%s: rpmReadSignature epäonnistui\n"
+msgstr "%s: rpmReadSignature zlyhalo\n"
 
 #: ../checksig.c:60 ../checksig.c:191
 msgid "Couldn't read the header/archive"
-msgstr "En voinut lukea header/arkistotiedostoa"
+msgstr "Nie je mo¾né preèíta» hlavièku/archív"
 
 #: ../checksig.c:67
 msgid "Couldn't write header/archive to temp file"
-msgstr "En voinut kirjoittaa header/arkistotiedostoa väliaikaistiedostoon"
+msgstr "Nie je mo¾né zapísa» hlavièku/archív do doèasného súboru"
 
 #: ../build/pack.c:266 ../checksig.c:92
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
-msgstr "generoi PGP-allekirjoitus"
+msgstr "vytvori» PGP podpis"
 
 #: ../checksig.c:115
 msgid "Couldn't read sigtarget"
-msgstr ""
+msgstr "Nie je mo¾né preèíta» cieµ podpisu"
 
 #: ../checksig.c:124
 msgid "Couldn't write package"
-msgstr "Paketin kirjoitus ei onnistunut"
+msgstr "Nie je mo¾né zapísa» balík"
 
 #: ../checksig.c:172
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
-msgstr "%s: Ei allekirjoitusta saatavilla (v1.0 RPM)\n"
+msgstr "%s: Podpis nie je k dispozícii (v1.0 RPM)\n"
 
 #: ../checksig.c:182
 #, c-format
 msgid "%s: No signature available\n"
-msgstr "%s: Ei allekirjoitusta saatavilla\n"
+msgstr "%s: Podpis nie je k dispozícii\n"
 
 #: ../checksig.c:198
 #, c-format
 msgid "Unable to write %s"
-msgstr "%s:n kirjoitus ei onnistu"
+msgstr "Nie je mo¾né zapísa» %s"
 
 #: ../checksig.c:289
 msgid "NOT OK"
@@ -1455,7 +1443,7 @@ msgstr ""
 
 #: ../checksig.c:290 ../checksig.c:297
 msgid " (MISSING KEYS)"
-msgstr "(PUUTTUVAT AVAIMET)"
+msgstr " (CHÝBAJÚCE K¥ÚÈE)"
 
 #: ../checksig.c:296
 msgid "OK"
@@ -1464,7 +1452,7 @@ msgstr ""
 #: ../url.c:59
 #, c-format
 msgid "Password for %s@%s: "
-msgstr "%s@%s:n salasana: "
+msgstr "Heslo pre %s@%s: "
 
 #: ../url.c:125 ../url.c:168 ../url.c:194
 #, c-format
@@ -1478,71 +1466,71 @@ msgstr ""
 
 #: ../url.c:143
 msgid "error: ftpport must be a number\n"
-msgstr "virhe: ftpport pitää olla luku\n"
+msgstr "chyba: ftpport musí by» èíslo\n"
 
 #: ../url.c:201
 #, c-format
 msgid "failed to create %s\n"
-msgstr "%s:n luonti epäonnistui\n"
+msgstr "nepodarilo sa vytvori» %s\n"
 
 #: ../ftp.c:445
 msgid "Bad FTP server response"
-msgstr "Virheellinen FTP-palvelijan vastaus"
+msgstr "Chybná odpoveï FTP servera"
 
 #: ../ftp.c:448
 msgid "FTP IO error"
-msgstr "FTP:n IO-virhe"
+msgstr "FTP chyba vstupu/výstupu"
 
 #: ../ftp.c:451
 msgid "FTP server timeout"
-msgstr "FTP-palvelimen timeout"
+msgstr "Prekroèenie èasového limitu pre FTP"
 
 #: ../ftp.c:454
 msgid "Unable to lookup FTP server host address"
-msgstr "FTP-palvelimen osoitetta ei löytynyt"
+msgstr "Nie je mo¾né vyhµada» adresu FTP servera"
 
 #: ../ftp.c:457
 msgid "Unable to lookup FTP server host name"
-msgstr "FTP-palvelimen nimeä ei löytynyt"
+msgstr "Nie je mo¾né vyhµada» názov FTP servera"
 
 #: ../ftp.c:460
 msgid "Failed to connect to FTP server"
-msgstr "En saanut yhteyttä FTP-palvelijaan"
+msgstr "Pripojenie k FTP serveru zlyhalo"
 
 #: ../ftp.c:463
 msgid "Failed to establish data connection to FTP server"
-msgstr "En saanut data-yhteyttä FTP-palvelijaan"
+msgstr "Vytvorenie dátového spojenia k FTP serveru zlyhalo"
 
 #: ../ftp.c:466
 msgid "IO error to local file"
-msgstr "Paikallisen tiedoston IO-virhe"
+msgstr "Chyba vstupu/výstupu lokálneho súboru"
 
 #: ../ftp.c:469
 msgid "Error setting remote server to passive mode"
-msgstr "Virhe asetettaessa palvelinta passiiviin moodiin"
+msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
 
 #: ../ftp.c:472
 msgid "File not found on server"
-msgstr "Tiedostoa ei löytynyt palvelimelta"
+msgstr "Súbor sa na serveri nenachádza"
 
 #: ../ftp.c:476
 msgid "FTP Unknown or unexpected error"
-msgstr "FTP:n tuntematon tai odottamaton virhe"
+msgstr "Neznáma alebo neoèakávaná chyba FTP"
 
 #: ../build/build.c:140 ../build/pack.c:204
 #, fuzzy
 msgid "Unable to open temp file"
-msgstr "En voi avata %s luettavaksi: %s."
+msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
 
 #: ../build/build.c:177
 #, fuzzy, c-format
 msgid "Executing: %s\n"
-msgstr "Haen: %s\n"
+msgstr "Získanie %s\n"
 
 #: ../build/build.c:181
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s)"
-msgstr "%s:n avaus ei onnistunut: %s\n"
+msgstr "otvorenie %s zlyhalo: %s\n"
 
 #: ../build/build.c:189
 #, c-format
@@ -1557,12 +1545,12 @@ msgstr ""
 #: ../build/files.c:291
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
-msgstr "en voinut avata %s: %s"
+msgstr "súbor %s: %s\n"
 
 #: ../build/files.c:337
 #, fuzzy
 msgid "Could not open %%files file: %s"
-msgstr "virhe: tiedostoa %s ei voi avata\n"
+msgstr "chybe: nie je mo¾né otvori» súbor %s\n"
 
 #: ../build/files.c:343 ../build/pack.c:381
 #, c-format
@@ -1577,7 +1565,7 @@ msgstr ""
 #: ../build/files.c:570
 #, fuzzy, c-format
 msgid "File listed twice: %s"
-msgstr "En voi lukea %s: %s."
+msgstr "Nie je mo¾né preèíta» %s: %s."
 
 #: ../build/files.c:692
 #, c-format
@@ -1592,12 +1580,12 @@ msgstr ""
 #: ../build/files.c:747 ../build/files.c:818
 #, fuzzy, c-format
 msgid "File not found: %s"
-msgstr "Tiedostoa ei löytynyt palvelimelta"
+msgstr "Súbor sa na serveri nenachádza"
 
 #: ../build/files.c:808
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
-msgstr "En voi lukea %s: %s."
+msgstr "Nie je mo¾né preèíta» %s: %s."
 
 #: ../build/files.c:863
 #, c-format
@@ -1607,7 +1595,7 @@ msgstr ""
 #: ../build/files.c:868
 #, fuzzy, c-format
 msgid "File %d: %s\n"
-msgstr "en voinut avata %s: %s"
+msgstr "súbor %s: %s\n"
 
 #: ../build/files.c:952
 msgid "Hit limit for %%docdir"
@@ -1620,12 +1608,12 @@ msgstr ""
 #: ../build/files.c:984
 #, fuzzy, c-format
 msgid "Two files on one line: %s"
-msgstr "en voinut avata %s: %s"
+msgstr "nepodarilo sa otvori» %s: %s"
 
 #: ../build/files.c:997
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s"
-msgstr "siirtojen pitää alkaa /-merkillä"
+msgstr "presunutia musia zaèína» znakom /"
 
 #: ../build/files.c:1009
 msgid "Can't mix special %%doc with other forms: %s"
@@ -1680,7 +1668,7 @@ msgstr ""
 #: ../build/macro.c:110 ../build/macro.c:125
 #, fuzzy
 msgid "Empty macro name"
-msgstr "tyhjä nimiön nimi"
+msgstr "prázdne meno tagu"
 
 #. unterminated
 #: ../build/macro.c:118
@@ -1701,22 +1689,22 @@ msgstr ""
 #: ../build/misc.c:139
 #, fuzzy, c-format
 msgid "Couldn't exec %s"
-msgstr "En voinut ajaa pgp:tä"
+msgstr "Nie je mo¾né spusti» pgp"
 
 #: ../build/misc.c:143
 #, fuzzy, c-format
 msgid "Couldn't fork %s"
-msgstr "En voinut ajaa pgp:tä"
+msgstr "Nie je mo¾né preèíta» cieµ podpisu"
 
 #: ../build/misc.c:190
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
-msgstr "%s:n luonti epäonnistui\n"
+msgstr "nepodarilo sa vytvori» %s\n"
 
 #: ../build/misc.c:195
 #, fuzzy, c-format
 msgid "%s failed"
-msgstr "pgp epäonnistui"
+msgstr "pgp zlyhalo"
 
 #: ../build/names.c:47 ../build/names.c:81
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
@@ -1739,17 +1727,17 @@ msgstr ""
 #: ../build/pack.c:228
 #, fuzzy, c-format
 msgid "Could not open %s\n"
-msgstr "%s:n avaus epäonnistui\n"
+msgstr "otvorenie %s zlyhalo\n"
 
 #: ../build/pack.c:250 ../build/pack.c:293
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
-msgstr "%s:n kirjoitus ei onnistu"
+msgstr "Nie je mo¾né zapísa» %s"
 
 #: ../build/pack.c:283
 #, fuzzy, c-format
 msgid "Unable to read sigtarget: %s"
-msgstr "%s:n kirjoitus ei onnistu"
+msgstr "Nie je mo¾né zapísa» %s"
 
 #: ../build/pack.c:308
 #, c-format
@@ -1759,47 +1747,47 @@ msgstr ""
 #: ../build/pack.c:333
 #, fuzzy
 msgid "Couldn't exec gzip"
-msgstr "En voinut ajaa pgp:tä"
+msgstr "Nie je mo¾né spusti» pgp"
 
 #: ../build/pack.c:339
 #, fuzzy
 msgid "Couldn't fork gzip"
-msgstr "En voinut ajaa pgp:tä"
+msgstr "Nie je mo¾né spusti» pgp"
 
 #: ../build/pack.c:350
 #, fuzzy
 msgid "Execution of gzip failed"
-msgstr "skriptin ajo epäonnistui"
+msgstr "vykonanie skriptu zlyhalo"
 
 #: ../build/pack.c:356
 #, fuzzy, c-format
 msgid "cpio failed on file %s: %s"
-msgstr "en voinut avata %s: %s"
+msgstr "nepodarilo sa otvori» %s: %s"
 
 #: ../build/pack.c:359
 #, fuzzy, c-format
 msgid "cpio failed on file %s: %d"
-msgstr "en voinut avata %s: %s"
+msgstr "nepodarilo sa otvori» %s: %s"
 
 #: ../build/pack.c:437
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s"
-msgstr "virhe: tiedostoa %s ei voi avata\n"
+msgstr "chybe: nie je mo¾né otvori» súbor %s\n"
 
 #: ../build/pack.c:444
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s"
-msgstr "virhe: tiedostoa %s ei voi avata\n"
+msgstr "chybe: nie je mo¾né otvori» súbor %s\n"
 
 #: ../build/pack.c:451
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s"
-msgstr "virhe: tiedostoa %s ei voi avata\n"
+msgstr "chybe: nie je mo¾né otvori» súbor %s\n"
 
 #: ../build/pack.c:458
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s"
-msgstr "virhe: tiedostoa %s ei voi avata\n"
+msgstr "chybe: nie je mo¾né otvori» súbor %s\n"
 
 #: ../build/pack.c:466
 #, c-format
@@ -1848,7 +1836,7 @@ msgstr ""
 #: ../build/parseScript.c:147
 #, fuzzy, c-format
 msgid "line %d: Bad option %s: %s"
-msgstr "en voinut avata %s: %s"
+msgstr "nepodarilo sa otvori» %s: %s"
 
 #: ../build/parseDescription.c:66 ../build/parseFiles.c:64
 #: ../build/parseScript.c:161
@@ -1860,7 +1848,7 @@ msgstr ""
 #: ../build/parseScript.c:171
 #, fuzzy, c-format
 msgid "line %d: Package does not exist: %s"
-msgstr "paketti %s ei ole %s:ssä"
+msgstr "balík %s nie je uvedený v %s"
 
 #: ../build/parseDescription.c:88
 #, c-format
@@ -1878,7 +1866,7 @@ msgstr ""
 #: ../build/parsePreamble.c:79
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
-msgstr "      Paketin määrittelyparametrit:"
+msgstr "      Voµby pre ¹pecifikáciu balíkov"
 
 #: ../build/parsePreamble.c:85
 #, c-format
@@ -1948,7 +1936,7 @@ msgstr ""
 #: ../build/parsePreamble.c:403
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s"
-msgstr "siirtojen pitää alkaa /-merkillä"
+msgstr "presunutia musia zaèína» znakom /"
 
 #: ../build/parsePreamble.c:413
 #, c-format
@@ -1958,22 +1946,22 @@ msgstr ""
 #: ../build/parsePreamble.c:477
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
-msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
+msgstr "chýbajúca architekrúra pre %s na %s:%d"
 
 #: ../build/parsePreamble.c:487
-#, c-format
+#, fuzzy, c-format
 msgid "Internal error: Bogus tag %d"
-msgstr ""
+msgstr "interná chyba (chyba rpm?): "
 
 #: ../build/parsePreamble.c:643 ../build/parsePreamble.c:650
 #, fuzzy, c-format
 msgid "Unable to read icon: %s"
-msgstr "%s:n kirjoitus ei onnistu"
+msgstr "Nie je mo¾né zapísa» %s"
 
 #: ../build/parsePreamble.c:660
 #, fuzzy, c-format
 msgid "Unknown icon type: %s"
-msgstr "(tuntematon tyyppi)"
+msgstr "(neznámy typ)"
 
 #: ../build/parsePrep.c:54
 msgid "line %d: second %%prep"
@@ -2023,17 +2011,17 @@ msgstr ""
 #: ../build/parsePrep.c:417
 #, fuzzy, c-format
 msgid "No patch number %d"
-msgstr "(ei ole luku)"
+msgstr "(nie je èíslo)"
 
 #: ../build/parsePrep.c:470
 #, fuzzy, c-format
 msgid "Bad source: %s: %s"
-msgstr "En voi lukea %s: %s."
+msgstr "Nie je mo¾né preèíta» %s: %s."
 
 #: ../build/parsePrep.c:489 ../build/parsePrep.c:497
 #, fuzzy, c-format
 msgid "File %s: %s"
-msgstr "en voinut avata %s: %s"
+msgstr "súbor %s: %s\n"
 
 #: ../build/parsePrep.c:500
 #, c-format
@@ -2098,17 +2086,17 @@ msgstr ""
 #: ../build/parseSpec.c:138
 #, fuzzy
 msgid "No buildable architectures"
-msgstr "älä tarkista paketin arkkitehtuuria"
+msgstr "neoverova» architektúru balíka"
 
 #: ../build/parseSpec.c:152
 #, fuzzy
 msgid "Package has no %%description: %s"
-msgstr "paketti %s ei ole %s:ssä"
+msgstr "balík %s nie je uvedený v %s"
 
 #: ../build/read.c:39
 #, fuzzy, c-format
 msgid "Unable to open: %s\n"
-msgstr "%s:n avaus epäonnistui\n"
+msgstr "otvorenie %s zlyhalo\n"
 
 #: ../build/read.c:50
 msgid "Unclosed %%if"
@@ -2117,7 +2105,7 @@ msgstr ""
 #: ../build/read.c:83
 #, fuzzy, c-format
 msgid "line %d: %s"
-msgstr "en voinut avata %s: %s"
+msgstr "súbor %s: %s\n"
 
 #. Got an else with no %if !
 #: ../build/read.c:104
@@ -2144,7 +2132,7 @@ msgstr ""
 #: ../build/reqprov.c:166
 #, fuzzy
 msgid "Failed to find requires"
-msgstr "%s:n luonti epäonnistui\n"
+msgstr "nepodarilo sa vytvori» %s\n"
 
 #: ../build/reqprov.c:201
 msgid "Provides:"
@@ -2161,12 +2149,12 @@ msgstr ""
 #: ../build/spec.c:171
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
-msgstr "virheellinen paketin numero: %s\n"
+msgstr "chybné èíslo balíku: %s\n"
 
 #: ../build/spec.c:278
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s"
-msgstr "virheellinen paketin numero: %s\n"
+msgstr "chybné èíslo balíku: %s\n"
 
 #: ../build/spec.c:284
 #, c-format
@@ -2176,17 +2164,17 @@ msgstr ""
 #: ../lib/rpmdb.c:320 ../lib/uninstall.c:135 ../lib/uninstall.c:235
 #, c-format
 msgid "cannot read header at %d for uninstall"
-msgstr "en voi lukea headeria %d:stä poistamiseen"
+msgstr "nie je mo¾né preèíta» hlavièku na %d pre odin¹talovanie"
 
 #: ../lib/uninstall.c:148
 #, c-format
 msgid "package %s-%s-%s contain shared files\n"
-msgstr "paketti %s-%s-%s  sisältää jaettuja tiedostoja\n"
+msgstr "balík %s-%s-%s obsahuje zdieµané súbory\n"
 
 #: ../lib/uninstall.c:153
 #, fuzzy, c-format
 msgid "package %s contains no files"
-msgstr "paketti %s-%s-%s  sisältää jaettuja tiedostoja\n"
+msgstr "balík %s-%s-%s obsahuje zdieµané súbory\n"
 
 #. This shouldn't happen, but some versions of RPM didn't
 #. implement --justdb properly, and chose to leave this stuff
@@ -2198,7 +2186,7 @@ msgstr ""
 #: ../lib/uninstall.c:176
 #, fuzzy, c-format
 msgid "file %s is shared\n"
-msgstr "en voinut avata %s: %s"
+msgstr "súbor %s: %s\n"
 
 #: ../lib/uninstall.c:181
 msgid "     file has already been replaced\n"
@@ -2219,7 +2207,7 @@ msgstr ""
 #: ../lib/uninstall.c:246
 #, fuzzy, c-format
 msgid "cannot read packages named %s for uninstall"
-msgstr "en voi lukea headeria %d:stä poistamiseen"
+msgstr "nie je mo¾né preèíta» hlavièku na %d pre odin¹talovanie"
 
 #: ../lib/uninstall.c:274
 #, c-format
@@ -2241,7 +2229,7 @@ msgstr ""
 
 #: ../lib/uninstall.c:523
 msgid "execution of script failed"
-msgstr "skriptin ajo epäonnistui"
+msgstr "vykonanie skriptu zlyhalo"
 
 #: ../lib/uninstall.c:568
 #, c-format
@@ -2269,7 +2257,7 @@ msgstr ""
 #: ../lib/uninstall.c:597
 #, fuzzy, c-format
 msgid "keeping %s\n"
-msgstr "Haen: %s\n"
+msgstr "Získanie %s\n"
 
 #: ../lib/uninstall.c:601
 #, c-format
@@ -2279,7 +2267,7 @@ msgstr ""
 #: ../lib/uninstall.c:607
 #, c-format
 msgid "rename of %s to %s failed: %s"
-msgstr "%s:n nimeäminen %s:ksi epäonnistui: %s"
+msgstr "premenovanie %s na %s zlyhalo: %s"
 
 #: ../lib/uninstall.c:615
 #, c-format
@@ -2289,21 +2277,21 @@ msgstr ""
 #: ../lib/uninstall.c:621
 #, c-format
 msgid "cannot remove %s - directory not empty"
-msgstr "en voi poistaa %s -hakemisto ei ole tyhjä"
+msgstr "nie je mo¾né odstráni» %s - adresár nie je prázdny"
 
 #: ../lib/uninstall.c:624
 #, c-format
 msgid "rmdir of %s failed: %s"
-msgstr "%s:n rmdir epäonnistui: %s"
+msgstr "rmdir %s zlyhalo: %s"
 
 #: ../lib/uninstall.c:634
 #, c-format
 msgid "removal of %s failed: %s"
-msgstr "%s:n poisto epäonnistui: %s"
+msgstr "odstránenie %s zlyhalo: %s"
 
 #: ../lib/rebuilddb.c:30 ../lib/rpmdb.c:55 ../lib/rpmdb.c:68
 msgid "no dbpath has been set"
-msgstr "dbpath ei ole asetettu"
+msgstr "nebola nastavená ¾iadna dbpath"
 
 #: ../lib/rpmdb.c:123
 #, c-format
@@ -2313,34 +2301,34 @@ msgstr ""
 #: ../lib/rpmdb.c:132
 #, c-format
 msgid "failed to open %s\n"
-msgstr "%s:n avaus epäonnistui\n"
+msgstr "otvorenie %s zlyhalo\n"
 
 #: ../lib/rpmdb.c:145 ../lib/rpmdb.c:152
 #, c-format
 msgid "cannot get %s lock on database"
-msgstr "en voi saada %s lukitusta tietokantaan"
+msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
 #: ../lib/rpmdb.c:146
 msgid "exclusive"
-msgstr "poissulkevaa"
+msgstr "výhradný"
 
 #: ../lib/rpmdb.c:153
 msgid "shared"
-msgstr "jaettua"
+msgstr "zdieµaný"
 
 #: ../lib/rpmdb.c:286
 #, c-format
 msgid "package %s not listed in %s"
-msgstr "paketti %s ei ole %s:ssä"
+msgstr "balík %s nie je uvedený v %s"
 
 #: ../lib/rpmdb.c:297
 #, c-format
 msgid "package %s not found in %s"
-msgstr "paketti %s ei ole %s:ssä"
+msgstr "balík %s nebol nájdený v %s"
 
 #: ../lib/rpmdb.c:328
 msgid "package has no name"
-msgstr "paketilla ei ole nimeä"
+msgstr "balík nemá meno"
 
 #: ../lib/rpmdb.c:330
 msgid "removing name index\n"
@@ -2349,7 +2337,7 @@ msgstr ""
 #: ../lib/rpmdb.c:335
 #, fuzzy
 msgid "package has no group\n"
-msgstr "paketilla ei ole nimeä"
+msgstr "balík nemá meno"
 
 #: ../lib/rpmdb.c:337
 msgid "removing group index\n"
@@ -2358,17 +2346,17 @@ msgstr ""
 #: ../lib/rpmdb.c:344
 #, fuzzy, c-format
 msgid "removing provides index for %s\n"
-msgstr "virhe poistettaessa tietuetta %s %s:stä"
+msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
 #: ../lib/rpmdb.c:359
 #, fuzzy, c-format
 msgid "removing requiredby index for %s\n"
-msgstr "virhe poistettaessa tietuetta %s %s:stä"
+msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
 #: ../lib/rpmdb.c:371
 #, fuzzy, c-format
 msgid "removing trigger index for %s\n"
-msgstr "virhe poistettaessa tietuetta %s %s:stä"
+msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
 #: ../lib/rpmdb.c:382
 #, c-format
@@ -2383,16 +2371,16 @@ msgstr ""
 #: ../lib/rpmdb.c:400
 #, fuzzy
 msgid "package has no files\n"
-msgstr "paketilla ei ole nimeä"
+msgstr "balík nemá meno"
 
 #: ../lib/rpmdb.c:473
 msgid "cannot allocate space for database"
-msgstr "en voi varata tilaa tietokannalle"
+msgstr "nie je mo¾né prideli» miesto pre databázu"
 
 #: ../lib/rpmdb.c:537
 #, c-format
 msgid "cannot read header at %d for update"
-msgstr "en voi lukea headeria %d:stä päivittäessä"
+msgstr "nie je mo¾né preèíta» hlavièku na %d pre úpravu"
 
 #: ../lib/rpmdb.c:546
 msgid "header changed size!"
@@ -2401,21 +2389,21 @@ msgstr ""
 #: ../lib/signature.c:83
 #, fuzzy
 msgid "No signature\n"
-msgstr "%s: Ei allekirjoitusta saatavilla\n"
+msgstr "%s: Podpis nie je k dispozícii\n"
 
 #: ../lib/signature.c:86
 #, fuzzy
 msgid "Old PGP signature\n"
-msgstr "generoi PGP-allekirjoitus"
+msgstr "vytvori» PGP podpis"
 
 #: ../lib/signature.c:99
 msgid "Old (internal-only) signature!  How did you get that!?"
-msgstr "Vanha (sisäisen käytön) allekirjoitus! Mistä sait sen!?"
+msgstr "Starý (iba interný) podpis! Ako ste sa k tomu dostali?!"
 
 #: ../lib/signature.c:103
 #, fuzzy
 msgid "New Header signature\n"
-msgstr "en voinut lukea allekirjoitusta"
+msgstr "nie je mo¾né preèíta» podpis"
 
 #. 8-byte pad
 #: ../lib/signature.c:111 ../lib/signature.c:149
@@ -2430,17 +2418,17 @@ msgstr ""
 
 #: ../lib/signature.c:222 ../lib/signature.c:479
 msgid "Couldn't exec pgp"
-msgstr "En voinut ajaa pgp:tä"
+msgstr "Nie je mo¾né spusti» pgp"
 
 #: ../lib/signature.c:233
 msgid "pgp failed"
-msgstr "pgp epäonnistui"
+msgstr "pgp zlyhalo"
 
 #. PGP failed to write signature
 #. Just in case
 #: ../lib/signature.c:240
 msgid "pgp failed to write signature"
-msgstr "pgp ei voinut kirjoittaa allekirjoitusta"
+msgstr "pgp sa nepodarilo zapísa» podpis"
 
 #: ../lib/signature.c:245
 #, c-format
@@ -2449,7 +2437,7 @@ msgstr ""
 
 #: ../lib/signature.c:253
 msgid "unable to read the signature"
-msgstr "en voinut lukea allekirjoitusta"
+msgstr "nie je mo¾né preèíta» podpis"
 
 #: ../lib/signature.c:259
 #, c-format
@@ -2478,40 +2466,40 @@ msgstr ""
 #: ../lib/signature.c:394
 #, fuzzy
 msgid "exec failed!\n"
-msgstr "%s: avaus ei onnistunut\n"
+msgstr "%s: otvorenie zlyhalo\n"
 
 #: ../lib/signature.c:396
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
-msgstr "En voinut ajaa pgp:tä. Käytä --nopgpg ohittaaksesi PGP-tarkistus"
+msgstr "Nie je mo¾né spusti» pgp. Pou¾ite --nopgp pre vynechanie PGP kontrol."
 
 #: ../lib/signature.c:430
 msgid "You must set \"pgp_name:\" in your rpmrc file"
-msgstr "Sinun pitää asettaa \"pgp_name:\" rpmrc-tiedostossa"
+msgstr "Musíte nastavi» \"pgp_name:\" vo Va¹om rpmrc súbore"
 
 #: ../lib/dbindex.c:26
 #, c-format
 msgid "cannot open file %s: "
-msgstr "en voinut avata tiedostoa %s: "
+msgstr "nie je mo¾né otvori» súbor %s: "
 
 #: ../lib/dbindex.c:53
 #, c-format
 msgid "error getting record %s from %s"
-msgstr "virhe luettaessa tietuetta %s %s:stä"
+msgstr "chyba pri naèítaní záznamu %s z %s"
 
 #: ../lib/dbindex.c:81
 #, c-format
 msgid "error storing record %s into %s"
-msgstr "virhe talletettaessa tietuetta %s %s:ään"
+msgstr "chyba pri zápise záznamu %s do %s"
 
 #: ../lib/dbindex.c:88
 #, c-format
 msgid "error removing record %s into %s"
-msgstr "virhe poistettaessa tietuetta %s %s:stä"
+msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
 #: ../lib/depends.c:383 ../lib/depends.c:538
 #, c-format
 msgid "cannot read header at %d for dependency check"
-msgstr "en voi lukea headeria %d:ssä riippuvuutta tarkistaessa"
+msgstr "nie je mo¾né preèíta» hlavièku na %d pre kontrolu závislostí"
 
 #: ../lib/depends.c:448
 #, c-format
@@ -2521,12 +2509,12 @@ msgstr ""
 #: ../lib/depends.c:631
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
-msgstr "paketti %s ei ole %s:ssä"
+msgstr "balík %s nie je uvedený v %s"
 
 #: ../lib/depends.c:674
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
-msgstr "paketti %s ei ole %s:ssä"
+msgstr "balík %s nie je uvedený v %s"
 
 #: ../lib/depends.c:773
 msgid "dbrecMatchesDepFlags() failed to read header"
@@ -2535,28 +2523,28 @@ msgstr ""
 #: ../lib/depends.c:825
 #, c-format
 msgid "loop in prerequisite chain: %s"
-msgstr "silmukka edellytysten ketjussa: %s"
+msgstr "sluèka v re»azi po¾iadaviek: %s"
 
 #: ../lib/formats.c:104 ../lib/formats.c:121 ../lib/formats.c:141
 #: ../lib/formats.c:173 ../lib/header.c:1922 ../lib/header.c:1938
 #: ../lib/header.c:1958
 msgid "(not a number)"
-msgstr "(ei ole luku)"
+msgstr "(nie je èíslo)"
 
 #: ../lib/fs.c:53
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
-msgstr ""
+msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 
 #: ../lib/fs.c:87 ../lib/fs.c:249
 #, fuzzy, c-format
 msgid "failed to stat %s: %s"
-msgstr "en voinut avata %s: %s"
+msgstr "nepodarilo sa otvori» %s: %s"
 
 #: ../lib/fs.c:128
 #, c-format
 msgid "failed to open %s: %s"
-msgstr "en voinut avata %s: %s"
+msgstr "nepodarilo sa otvori» %s: %s"
 
 #: ../lib/fs.c:270
 #, c-format
@@ -2585,95 +2573,93 @@ msgstr ""
 
 #: ../lib/header.c:1278
 msgid "? expected in expression"
-msgstr "odotin '?'-merkkiä ilmauksessa"
+msgstr "? oèakávané vo výraze"
 
 #: ../lib/header.c:1285
-#, fuzzy
 msgid "{ expected after ? in expression"
-msgstr "odotin '{' '?'-merkin jälkeen ilmauksessa "
+msgstr "{ oèakávané po ? vo výraze"
 
 #: ../lib/header.c:1295 ../lib/header.c:1327
 msgid "} expected in expression"
-msgstr "odotin '}'-merkkiä ilmauksessa"
+msgstr "} oèakávané vo výraze"
 
 #: ../lib/header.c:1302
 msgid ": expected following ? subexpression"
-msgstr "odotin ':' '?'-merkin jälkeen ali-ilmauksessa "
+msgstr ": oèakávané po ? podvýraze"
 
 #: ../lib/header.c:1315
-#, fuzzy
 msgid "{ expected after : in expression"
-msgstr "odotin '{' ':'-merkin jälkeen ilmauksessa "
+msgstr "{ oèakávané po : vo výraze"
 
 #: ../lib/header.c:1334
 msgid "| expected at end of expression"
-msgstr "odotin '}'-merkkiä ilmauksen lopussa"
+msgstr "| oèakávené na konci výrazu"
 
 #: ../lib/header.c:1428
 #, c-format
 msgid "missing { after %"
-msgstr "puuttuva '{' '%':n jälkeen"
+msgstr "chýbajúce { po %"
 
 #: ../lib/header.c:1456
 msgid "missing } after %{"
-msgstr "puuttuva '{' '%{':n jälkeen"
+msgstr "chýbajúce } po %{"
 
 #: ../lib/header.c:1468
 msgid "empty tag format"
-msgstr "tyhjä nimiön formaatti"
+msgstr "prázdny tag formát"
 
 #: ../lib/header.c:1478
 msgid "empty tag name"
-msgstr "tyhjä nimiön nimi"
+msgstr "prázdne meno tagu"
 
 #: ../lib/header.c:1493
 msgid "unknown tag"
-msgstr "tuntematon nimiö"
+msgstr "neznámy tag"
 
 #: ../lib/header.c:1519
 msgid "] expected at end of array"
-msgstr "']' puuttuu taulukkomäärittelyn lopusta"
+msgstr "] oèakávané na konci poµa"
 
 #: ../lib/header.c:1535
 msgid "unexpected ]"
-msgstr "odottamaton ']'"
+msgstr "neoèakávané ]"
 
 #: ../lib/header.c:1537
 msgid "unexpected }"
-msgstr "odottamaton '}'"
+msgstr "neoèakávané }"
 
 #: ../lib/header.c:1612 ../lib/header.c:1618 ../lib/header.c:1801
 msgid "(none)"
-msgstr "(ei mitään)"
+msgstr "(¾iadne)"
 
 #: ../lib/header.c:1712
 msgid "(unknown type)"
-msgstr "(tuntematon tyyppi)"
+msgstr "(neznámy typ)"
 
 #: ../lib/lookup.c:91
 #, c-format
 msgid "cannot read header at %d for lookup"
-msgstr ""
+msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
 #: ../lib/rebuilddb.c:26
 #, fuzzy, c-format
 msgid "rebuilding database in rootdir %s\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+msgstr "znovu vytvori» databázu z existujúcej"
 
 #: ../lib/rebuilddb.c:38
 #, c-format
 msgid "temporary database %s already exists"
-msgstr "väliaikainen tietokanta %s on jo olemassa"
+msgstr "doèasná databáza %s u¾ existuje"
 
 #: ../lib/rebuilddb.c:42
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
-msgstr "virhe luotaessa hakemistoa %s: %s"
+msgstr "chyba pri vytváraní adresára %s: %s"
 
 #: ../lib/rebuilddb.c:44
 #, c-format
 msgid "error creating directory %s: %s"
-msgstr "virhe luotaessa hakemistoa %s: %s"
+msgstr "chyba pri vytváraní adresára %s: %s"
 
 #: ../lib/rebuilddb.c:50
 msgid "opening old database\n"
@@ -2686,12 +2672,12 @@ msgstr ""
 #: ../lib/rebuilddb.c:64 ../lib/rebuilddb.c:82
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
-msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
+msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
 #: ../lib/rebuilddb.c:76
 #, c-format
 msgid "cannot add record originally at %d"
-msgstr "en voi lisätä tietuetta %d:stä"
+msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
 #: ../lib/rebuilddb.c:93
 msgid "failed to rebuild database; original database remains in place\n"
@@ -2709,23 +2695,23 @@ msgstr ""
 #: ../lib/rebuilddb.c:107
 #, fuzzy, c-format
 msgid "failed to remove %s: %s\n"
-msgstr "en voinut avata %s: %s"
+msgstr "nepodarilo sa otvori» %s: %s"
 
 #: ../lib/messages.c:53
 msgid "warning: "
-msgstr "varoitus: "
+msgstr "varovanie: "
 
 #: ../lib/messages.c:59
 msgid "error: "
-msgstr "virhe: "
+msgstr "chyba: "
 
 #: ../lib/messages.c:65
 msgid "fatal error: "
-msgstr "vakava virhe: "
+msgstr "fatálna chyba: "
 
 #: ../lib/messages.c:72
 msgid "internal error (rpm bug?): "
-msgstr ""
+msgstr "interná chyba (chyba rpm?): "
 
 #: ../lib/package.c:63
 msgid "package is a version one package!\n"
@@ -2747,78 +2733,77 @@ msgstr ""
 #: ../lib/package.c:110
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
-msgstr ""
-"tämä versio RPM:stä tukee vain suuremmman kuin 3 versionumeron paketteja"
+msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
 #: ../lib/rpmlead.c:49
 #, c-format
 msgid "read failed: %s (%d)"
-msgstr "luku epäonnistui: %s (%d)"
+msgstr "èítanie zlyhalo: %s (%d)"
 
 #: ../lib/rpmrc.c:213
 #, c-format
 msgid "missing second ':' at %s:%d"
-msgstr "toinen ':' puuttuu, %s:%d"
+msgstr "chýbajúce druhé ':' na %s:%d"
 
 #: ../lib/rpmrc.c:216
 #, c-format
 msgid "missing architecture name at %s:%d"
-msgstr "puuttuva arkkitehtuurin nimi, %s:%d"
+msgstr "chýba názov architektúry na %s:%d"
 
 #: ../lib/rpmrc.c:353
 #, c-format
 msgid "Incomplete data line at %s:%d"
-msgstr "Epätäydellinen datarivi, %s:%d"
+msgstr "Neúplný riadok údajov na %s:%d"
 
 #: ../lib/rpmrc.c:357
 #, c-format
 msgid "Too many args in data line at %s:%d"
-msgstr "liian monta parametriä datarivillä %s:%d"
+msgstr "Priveµa argumentov v riadku údajov na %s:%d"
 
 #: ../lib/rpmrc.c:364
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
-msgstr "Huono arkkitehtuuri/käyttöjärjestelmä numero: %s (%s:%d)"
+msgstr "Chybné èíslo arch/os: %s (%s:%d)"
 
 #: ../lib/rpmrc.c:397
 #, c-format
 msgid "Incomplete default line at %s:%d"
-msgstr "Epätäydellinen oletusrivi, %s:%d"
+msgstr "Neúplný implicitný riadok na %s:%d"
 
 #: ../lib/rpmrc.c:402
 #, c-format
 msgid "Too many args in default line at %s:%d"
-msgstr "liian monta parametriä oletusrivillä %s:%d"
+msgstr "Priveµa argumentov v implicitnom riadku na %s:%d"
 
 #: ../lib/rpmrc.c:493 ../lib/rpmrc.c:509
 #, c-format
 msgid "Unable to open %s for reading: %s."
-msgstr "En voi avata %s luettavaksi: %s."
+msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
 
 #: ../lib/rpmrc.c:552
 #, c-format
 msgid "Failed to read %s: %s."
-msgstr "En voi lukea %s: %s."
+msgstr "Nie je mo¾né preèíta» %s: %s."
 
 #: ../lib/rpmrc.c:582
 #, c-format
 msgid "missing ':' at %s:%d"
-msgstr "puuttuva ':', %s:%d"
+msgstr "chýbajúca ':' na %s:%d"
 
 #: ../lib/rpmrc.c:598 ../lib/rpmrc.c:619
 #, c-format
 msgid "missing argument for %s at %s:%d"
-msgstr "%s:n puuttuva parametri %s:%d"
+msgstr "chýbajúci argument pre %s na %s:%d"
 
 #: ../lib/rpmrc.c:609
 #, c-format
 msgid "missing architecture for %s at %s:%d"
-msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
+msgstr "chýbajúca architekrúra pre %s na %s:%d"
 
 #: ../lib/rpmrc.c:662
 #, c-format
 msgid "bad option '%s' at %s:%d"
-msgstr "huono parametri '%s', %s:%d"
+msgstr "chybná voµba '%s' na %s:%d"
 
 #: ../lib/rpmrc.c:949
 #, c-format
@@ -2828,15 +2813,3 @@ msgstr ""
 #: ../lib/rpmrc.c:950
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
-
-#~ msgid ""
-#~ "                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"
-#~ msgstr ""
-#~ "                        [--provides] [--dump] [--dbpath <hakem>] "
-#~ "[--changelog]"
-
-#~ msgid "                        [targets]"
-#~ msgstr "                        [kohteet]"
-
-#~ msgid "cannot read database record at %d"
-#~ msgstr "en voi lukea tietokannan tietuetta %d"

@@ -1,16 +1,18 @@
+#include "config.h"
+
 #include <ctype.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include "header.h"
-#include "rpmlib.h"
-#include "part.h"
-#include "spec.h"
-#include "parse.h"
-#include "read.h"
+#include "intl.h"
 #include "misc.h"
+#include "parse.h"
+#include "part.h"
+#include "read.h"
+#include "rpmlib.h"
+#include "spec.h"
 
 static void setStandardMacros(Spec spec, char *arch, char *os);
 
@@ -45,7 +47,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 
     if (rpmGetVar(RPMVAR_TIMECHECK)) {
 	if (parseNum(rpmGetVar(RPMVAR_TIMECHECK), &(spec->timeCheck))) {
-	    rpmError(RPMERR_BADSPEC, "Timecheck value must be an integer: %s",
+	    rpmError(RPMERR_BADSPEC, _("Timecheck value must be an integer: %s"),
 		     rpmGetVar(RPMVAR_TIMECHECK));
 	    freeSpec(spec);
 	    return RPMERR_BADSPEC;
@@ -133,7 +135,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	    spec->buildArchitectureCount = index;
 	    if (! index) {
 		freeSpec(spec);
-		rpmError(RPMERR_BADSPEC, "No buildable architectures");
+		rpmError(RPMERR_BADSPEC, _("No buildable architectures"));
 		return RPMERR_BADSPEC;
 	    }
 	    closeSpec(spec);
@@ -147,7 +149,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     while (pkg) {
 	headerGetEntry(pkg->header, RPMTAG_NAME, NULL, (void **) &name, NULL);
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	    rpmError(RPMERR_BADSPEC, "Package has no %%description: %s", name);
+	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s"), name);
 	    freeSpec(spec);
 	    return RPMERR_BADSPEC;
 	}

@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <utime.h>
 
+#include "intl.h"
 #include "cpio.h"
 
 #if MAJOR_IN_SYSMACROS 
@@ -487,7 +488,7 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 
     do {
 	if ((rc = getNextHeader(&fd, &ch))) {
-	    printf("error %d reading header: %s\n", rc, strerror(errno));
+	    fprintf(stderr, _("error %d reading header: %s\n"), rc, strerror(errno));
 	    exit(1);
 	}
 

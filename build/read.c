@@ -1,13 +1,16 @@
+#include "config.h"
+
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 
-#include "spec.h"
-#include "rpmlib.h"
-#include "messages.h"
+#include "intl.h"
 #include "macro.h"
 #include "misc.h"
+#include "messages.h"
 #include "read.h"
+#include "rpmlib.h"
+#include "spec.h"
 
 static int matchTok(char *token, char *line);
 
@@ -33,7 +36,7 @@ int readLine(Spec spec, int strip)
     /* Make sure the spec file is open */
     if (!spec->file) {
 	if (!(spec->file = fopen(spec->specFile, "r"))) {
-	    rpmError(RPMERR_BADSPEC, "Unable to open: %s\n", spec->specFile);
+	    rpmError(RPMERR_BADSPEC, _("Unable to open: %s\n"), spec->specFile);
 	    return RPMERR_BADSPEC;
 	}
 	spec->lineNum = 0;
@@ -44,14 +47,14 @@ int readLine(Spec spec, int strip)
 	if (!fgets(spec->readBuf, BUFSIZ, spec->file)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
-		rpmError(RPMERR_UNMATCHEDIF, "Unclosed %%if");
+		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if"));
 	        return RPMERR_UNMATCHEDIF;
 	    }
 	    return 1;
 	}
 	spec->readPtr = spec->readBuf;
 	spec->lineNum++;
-	/*rpmMessage(RPMMESS_DEBUG, "LINE: %s", spec->readBuf);*/
+	/*rpmMessage(RPMMESS_DEBUG, _("LINE: %s"), spec->readBuf);*/
     }
     
     /* Copy a single line to the line buffer */
@@ -77,7 +80,7 @@ int readLine(Spec spec, int strip)
 
     if (spec->readStack->reading) {
 	if (expandMacros(&spec->macros, spec->line)) {
-	    rpmError(RPMERR_BADSPEC, "line %d: %s", spec->lineNum, spec->line);
+	    rpmError(RPMERR_BADSPEC, _("line %d: %s"), spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
     }
@@ -98,7 +101,7 @@ int readLine(Spec spec, int strip)
     } else if (! strncmp("%else", s, 5)) {
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF, "line %d: Got a %%else with no if",
+	    rpmError(RPMERR_UNMATCHEDIF, _("line %d: Got a %%else with no if"),
 		     spec->lineNum);
 	    return RPMERR_UNMATCHEDIF;
 	}
@@ -108,7 +111,7 @@ int readLine(Spec spec, int strip)
     } else if (! strncmp("%endif", s, 6)) {
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF, "line %d: Got a %%endif with no if",
+	    rpmError(RPMERR_UNMATCHEDIF, _("line %d: Got a %%endif with no if"),
 		     spec->lineNum);
 	    return RPMERR_UNMATCHEDIF;
 	}
