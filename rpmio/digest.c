@@ -2,6 +2,8 @@
  * \file rpmio/digest.c
  */
 
+static int _debug = 0;
+
 #include "system.h"
 #include "rpmio_internal.h"
 #include "debug.h"
@@ -142,6 +144,7 @@ SHA1Transform(DIGEST_CTX ctx)
 {
     uint32 * in = (uint32 *) ctx->in;
     uint32 A, B, C, D, E;     /* Local vars */
+int i;
 
     /* Set up first buffer and local data buffer */
     A = ctx->digest[0];
@@ -150,27 +153,75 @@ SHA1Transform(DIGEST_CTX ctx)
     D = ctx->digest[3];
     E = ctx->digest[4];
 
+if (_debug)
+for (i = 0; i < 16; i++)
+fprintf(stderr, "W[%2d] %08X\n", i, in[i]);
+
+i = -1;
+
     /* Heavy mangling, in 4 sub-rounds of 20 interations each. */
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, A, B, C, D, E);
     subRound( A, B, C, D, E, f1, K1, in[ 0] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, E, A, B, C, D);
     subRound( E, A, B, C, D, f1, K1, in[ 1] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, D, E, A, B, C);
     subRound( D, E, A, B, C, f1, K1, in[ 2] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, C, D, E, A, B);
     subRound( C, D, E, A, B, f1, K1, in[ 3] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, B, C, D, E, A);
     subRound( B, C, D, E, A, f1, K1, in[ 4] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, A, B, C, D, E);
     subRound( A, B, C, D, E, f1, K1, in[ 5] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, E, A, B, C, D);
     subRound( E, A, B, C, D, f1, K1, in[ 6] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, D, E, A, B, C);
     subRound( D, E, A, B, C, f1, K1, in[ 7] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, C, D, E, A, B);
     subRound( C, D, E, A, B, f1, K1, in[ 8] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, B, C, D, E, A);
     subRound( B, C, D, E, A, f1, K1, in[ 9] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, A, B, C, D, E);
     subRound( A, B, C, D, E, f1, K1, in[10] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, E, A, B, C, D);
     subRound( E, A, B, C, D, f1, K1, in[11] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, D, E, A, B, C);
     subRound( D, E, A, B, C, f1, K1, in[12] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, C, D, E, A, B);
     subRound( C, D, E, A, B, f1, K1, in[13] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, B, C, D, E, A);
     subRound( B, C, D, E, A, f1, K1, in[14] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, A, B, C, D, E);
     subRound( A, B, C, D, E, f1, K1, in[15] );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, E, A, B, C, D);
     subRound( E, A, B, C, D, f1, K1, expand( in, 16 ) );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, D, E, A, B, C);
     subRound( D, E, A, B, C, f1, K1, expand( in, 17 ) );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, C, D, E, A, B);
     subRound( C, D, E, A, B, f1, K1, expand( in, 18 ) );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, B, C, D, E, A);
     subRound( B, C, D, E, A, f1, K1, expand( in, 19 ) );
+if (_debug)
+fprintf(stderr, "%2d %08X %08X %08X %08X %08X\n", i++, A, B, C, D, E);
 
     subRound( A, B, C, D, E, f2, K2, expand( in, 20 ) );
     subRound( E, A, B, C, D, f2, K2, expand( in, 21 ) );
@@ -382,8 +433,10 @@ byteReverse(byte *buf, unsigned nbytes)
     unsigned nlongs = nbytes / sizeof(uint32);
     uint32 t;
     do {
-	t = (uint32) ((unsigned) buf[3] << 8 | buf[2]) << 16 |
-	    ((unsigned) buf[1] << 8 | buf[0]);
+	t = (uint32) ((unsigned) buf[0] << 8 | buf[1]) << 16 |
+	    ((unsigned) buf[2] << 8 | buf[3]);
+if (_debug)
+fprintf(stderr, "\t%08X -> %08X\n", *(uint32 *) buf, t);
 	*(uint32 *) buf = t;
 	buf += 4;
     } while (--nlongs);
@@ -394,6 +447,7 @@ DIGEST_CTX
 rpmDigestInit(rpmDigestFlags flags)
 {
     DIGEST_CTX ctx = xcalloc(1, sizeof(*ctx));
+int i;
 
     ctx->flags = flags;
 
@@ -405,6 +459,8 @@ rpmDigestInit(rpmDigestFlags flags)
 	ctx->digest[1] = 0xefcdab89;
 	ctx->digest[2] = 0x98badcfe;
 	ctx->digest[3] = 0x10325476;
+	/* md5 sums are little endian (no swap) so big endian needs the swap. */
+	ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 1 : 0;
     }
 
     if (flags & RPMDIGEST_SHA1) {
@@ -416,12 +472,17 @@ rpmDigestInit(rpmDigestFlags flags)
 	ctx->digest[ 2 ] = 0x98badcfe;
 	ctx->digest[ 3 ] = 0x10325476;
 	ctx->digest[ 4 ] = 0xc3d2e1f0;
+if (_debug)
+for (i = 0; i < 5; i++)
+fprintf(stderr, "H[%d] %08X\n", i, ctx->digest[i]);
+	/* md5 sums are little endian (no swap) so big endian needs the swap. */
+	ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 0 : 1;
     }
 
-    /* md5 sums are little endian (no swap) so big endian needs the swap. */
-    ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 1 : 0;
     if (flags & RPMDIGEST_NATIVE)
 	ctx->doByteReverse = 0;
+if (_debug)
+fprintf(stderr, "flags %x endian %s bytes %s\n", flags, (IS_BIG_ENDIAN() ? "BIG" : "LITTLE"), (ctx->doByteReverse ? "SWAP" : "NOSWAP"));
 
     ctx->bits[0] = 0;
     ctx->bits[1] = 0;
@@ -507,16 +568,21 @@ rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
     memset(p, 0, count - sizeof(ctx->bits));
     if (ctx->doByteReverse)
 	byteReverse(ctx->in, ctx->datalen - sizeof(ctx->bits));
-    ((uint32 *) ctx->in)[14] = ctx->bits[0];
-    ((uint32 *) ctx->in)[15] = ctx->bits[1];
+    if (ctx->transform == MD5Transform) {
+	((uint32 *) ctx->in)[14] = ctx->bits[0];
+	((uint32 *) ctx->in)[15] = ctx->bits[1];
+    } else {
+	((uint32 *) ctx->in)[14] = ctx->bits[1];
+	((uint32 *) ctx->in)[15] = ctx->bits[0];
+    }
     /*@-moduncon@*/
     ctx->transform(ctx);
     /*@=moduncon@*/
 
-    /* Return final digest. */
     if (ctx->doByteReverse)
 	byteReverse((byte *) ctx->digest, ctx->digestlen);
 
+    /* Return final digest. */
     if (!asAscii) {
 	if (lenp) *lenp = ctx->digestlen;
 	if (datap) {
