@@ -3466,11 +3466,11 @@ msgstr "ошибка удаления каталога %s: %s\n"
 
 #: lib/rpminstall.c:142
 msgid "Preparing..."
-msgstr "Приготовление..."
+msgstr "Подготовка..."
 
 #: lib/rpminstall.c:145
 msgid "Preparing packages for installation..."
-msgstr "Приготовление пакетов для установки..."
+msgstr "Подготовка пакетов для установки..."
 
 #: lib/rpminstall.c:206
 msgid "counting packages to install\n"
@@ -4115,18 +4115,3 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
-
-#~ msgid "closed  db environment %s/%s(%s)\n"
-#~ msgstr "закрыто окружение базы данных %s/%s(%s)\n"
-
-#~ msgid "removed db environment %s/%s(%s)\n"
-#~ msgstr "удалено окружение базы данных %s/%s(%s)\n"
-
-#~ msgid "opening db environment %s/%s(%s) %s\n"
-#~ msgstr "открывается окружение базы данных %s/%s(%s) %s\n"
-
-#~ msgid "closed  db index       %s/%s(%s)\n"
-#~ msgstr "закрыт индекс базы данных %s/%s(%s)\n"
-
-#~ msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-#~ msgstr "открывается индекс базы данных %s/%s(%s) %s mode=0x%x\n"
