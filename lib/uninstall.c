@@ -404,7 +404,6 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	argv[0] = "/bin/sh";
 	argc = 1;
     } else {
-	argv = progArgv;
 	argv = alloca((progArgc + 4) * sizeof(char *));
 	memcpy(argv, progArgv, progArgc * sizeof(char *));
 	argc = progArgc;
