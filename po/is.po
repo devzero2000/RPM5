@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-13 07:55-0500\n"
+"POT-Creation-Date: 2001-03-15 13:45-0500\n"
 "PO-Revision-Date: 2001-02-02 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -3596,12 +3596,12 @@ msgstr ""
 msgid "bad option '%s' at %s:%d\n"
 msgstr "ólöglegur rofi '%s' á %s:%d\n"
 
-#: lib/rpmrc.c:1321
+#: lib/rpmrc.c:1348
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1322
+#: lib/rpmrc.c:1349
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

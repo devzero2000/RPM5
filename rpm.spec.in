@@ -346,3 +346,4 @@ fi
 %changelog
 * Thu Mar 15 2001 Jeff Johnson <jbj@redhat.com>
 - start rpm-4.0.3.
+- add cpuid asm voodoo to detect athlon processors.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2001-03-13 07:55-0500\n"
+"POT-Creation-Date: 2001-03-15 13:45-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -3666,12 +3666,12 @@ msgstr "falta a arquitectura para o %s em %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "má opção '%s' em %s:%d\n"
 
-#: lib/rpmrc.c:1321
+#: lib/rpmrc.c:1348
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Sistema desconhecido: %s\n"
 
-#: lib/rpmrc.c:1322
+#: lib/rpmrc.c:1349
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Por favor contacte o rpm-list@redhat.com\n"
 

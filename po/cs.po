@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-13 07:55-0500\n"
+"POT-Creation-Date: 2001-03-15 13:45-0500\n"
 "PO-Revision-Date: 2001-02-12 08:08+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3645,12 +3645,12 @@ msgstr "chybí architektura pro %s u %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "chybná volba '%s' u %s:%d\n"
 
-#: lib/rpmrc.c:1321
+#: lib/rpmrc.c:1348
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámý systém: %s\n"
 
-#: lib/rpmrc.c:1322
+#: lib/rpmrc.c:1349
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Zkontaktujte prosím rpm-list@redhat.com\n"
 
