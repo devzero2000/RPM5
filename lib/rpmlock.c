@@ -106,7 +106,6 @@ static void rpmlock_release(rpmlock *lock)
 void *rpmtsAcquireLock(rpmts ts)
 {
 	rpmlock *lock = NULL;
-#if NOTYET
 	const char *rootDir = rpmtsRootDir(ts);
 
 	if (!rootDir)
@@ -125,15 +124,12 @@ void *rpmtsAcquireLock(rpmts ts)
 			lock = NULL;
 		}
 	}
-#endif
 	return lock;
 }
 
 void rpmtsFreeLock(void *lock)
 {
-#if NOTYET
 	rpmlock_release((rpmlock *)lock); /* Not really needed here. */
-#endif
 	rpmlock_free((rpmlock *)lock);
 }
 
