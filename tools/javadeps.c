@@ -555,7 +555,7 @@ print_table_add(char *str) {
 }
 
 
-void 
+static void 
 print_list(char *in_string) {
 
   /* This function is no longer needed due to fixes in RPM's
@@ -1031,9 +1031,11 @@ findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
 
 void
 dumpProvides(char *className) {
-  char *formattedClassName;
   char *out_string;
+#ifdef	UNUSED
+  char *formattedClassName;
   char *newline;
+#endif
 
   /* Provide the star version of this class for jhtml
      dependencies. This option is deprecated since jhtml is
