@@ -18,17 +18,56 @@ extern "C" {
 #endif
 
 /**
- * Return MD5 sum and size of a file.
+ * Retrofit a Provides: name = version-release dependency into legacy
+ * packages.
+ * @param h		header
+ */
+void providePackageNVR(Header h)
+	/*@modifies h @*/;
+
+/**
+ * Calculate MD5 sum for file.
+ * @todo Eliminate, use beecrypt instead.
  * @param fn		file name
  * @retval digest	address of md5sum
  * @param asAscii	return md5sum as ascii string?
- * @retval *fsizep	file size pointer (or NULL)
  * @return		0 on success, 1 on error
  */
-int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
-		/*@null@*/ /*@out@*/ size_t *fsizep)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies digest, *fsizep, fileSystem, internalState @*/;
+/*@-exportlocal@*/
+int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii)
+	/*@globals fileSystem@*/
+	/*@modifies digest, fileSystem @*/;
+/*@=exportlocal@*/
+
+/**
+ * Return MD5 sum of file as ASCII string.
+ * @todo Eliminate, use beecrypt instead.
+ * @param fn		file name
+ * @retval digest	MD5 digest
+ * @return		0 on success, 1 on error
+ */
+/*@unused@*/ static inline
+int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
+	/*@globals fileSystem@*/
+	/*@modifies digest, fileSystem @*/
+{
+    return domd5(fn, digest, 1);
+}
+
+/**
+ * Return MD5 sum of file as binary data.
+ * @todo Eliminate, use beecrypt instead.
+ * @param fn		file name
+ * @retval bindigest	MD5 digest
+ * @return		0 on success, 1 on error
+ */
+/*@unused@*/ static inline
+int mdbinfile(const char * fn, /*@out@*/ unsigned char * bindigest)
+	/*@globals fileSystem@*/
+	/*@modifies bindigest, fileSystem @*/
+{
+    return domd5(fn, bindigest, 0);
+}
 
 /**
  * Convert absolute path tag to (dirname,basename,dirindex) tags.
@@ -38,27 +77,6 @@ void compressFilelist(Header h)
 	/*@modifies h @*/;
 
 /**
- * Retrieve file names from header.
- *
- * The representation of file names in package headers changed in rpm-4.0.
- * Originally, file names were stored as an array of absolute paths.
- * In rpm-4.0, file names are stored as separate arrays of dirname's and
- * basename's, * with a dirname index to associate the correct dirname
- * with each basname.
- *
- * This function is used to retrieve file names independent of how the
- * file names are represented in the package header.
- * 
- * @param h		header
- * @param tagN		RPMTAG_BASENAMES | PMTAG_ORIGBASENAMES
- * @retval *fnp		array of file names
- * @retval *fcp		number of files
- */
-void rpmfiBuildFNames(Header h, rpmTag tagN,
-		/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
-	/*@modifies *fnp, *fcp @*/;
-
-/**
  * Convert (dirname,basename,dirindex) tags to absolute path tag.
  * @param h		header
  */
@@ -66,20 +84,14 @@ void expandFilelist(Header h)
 	/*@modifies h @*/;
 
 /**
- * Retrofit a Provides: name = version-release dependency into legacy
- * package headers.
  * @param h		header
+ * @retval fileListPtr
+ * @retval fileCountPtr
  */
-void providePackageNVR(Header h)
-	/*@modifies h @*/;
+void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
+			/*@out@*/ int * fileCountPtr)
+	/*@modifies *fileListPtr, *fileCountPtr @*/;
 
-/**
- * Do all necessary retorfits for a package header.
- * @param h		header
- * @param lead
- */
-void legacyRetrofit(Header h, const struct rpmlead * lead)
-	/*@modifies h@*/;
 
 #ifdef __cplusplus
 }

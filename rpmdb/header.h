@@ -2,7 +2,7 @@
 #define H_HEADER
 
 /** \ingroup header
- * \file rpmdb/header.h
+ * \file lib/header.h
  *
  * An rpm header carries all information about a package. A header is
  * a collection of data elements called tags. Each tag has a data type,
@@ -50,8 +50,6 @@
  *	  to permit header data to be manipulated opaquely through vectors.
  *	- (rpm-4.0.3) Sanity checks on header data to limit #tags to 65K,
  *	  #bytes to 16Mb, and total metadata size to 32Mb added.
- *	- with addition of tracking dependencies, the package version has been
- *	  reverted back to 3.
  * .
  *
  * \par Development Issues
@@ -60,7 +58,7 @@
  * will be added to headers.
  *
  * - Private header methods.
- *	- Private methods for the transaction element file info rpmfi may
+ *	- Private methods for the transaction element file info TFI_t may
  *	  be used as proof-of-concept, binary XML may be implemented
  *	  as a header format representation soon thereafter.
  * - DSA signature for header metadata.
@@ -80,11 +78,22 @@
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
 #include <stdio.h>
-#include "rpmio.h"
+#include <rpmio.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#if defined(__alpha__) || defined(__alpha)
+typedef long int int_64;
+typedef int int_32;
+typedef short int int_16;
+typedef char int_8;
+
+typedef unsigned int uint_32;
+typedef unsigned short uint_16;
+
+#else
 
 #if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
 typedef long long int int_64;
@@ -93,12 +102,9 @@ typedef int int_32;
 typedef short int int_16;
 typedef char int_8;
 
-#if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
-typedef unsigned long long int uint_64;
-#endif
 typedef unsigned int uint_32;
 typedef unsigned short uint_16;
-typedef unsigned char uint_8;
+#endif
 
 /*@-redef@*/	/* LCL: no clue */
 /** \ingroup header
@@ -114,25 +120,24 @@ typedef int_32 *	hCNT_t;
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
+typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken * Header;
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct headerIterator_s * HeaderIterator;
+typedef /*@abstract@*/ struct headerIteratorS * HeaderIterator;
 
 /** \ingroup header
  * Associate tag names with numeric values.
  */
 typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
-/*@observer@*/ /*@null@*/
-    const char * name;		/*!< Tag name. */
-    int val;			/*!< Tag numeric value. */
+/*@observer@*/ /*@null@*/ const char * name;	/*!< Tag name. */
+    int val;					/*!< Tag numeric value. */
 };
 
 /** \ingroup header
  */
-enum headerSprintfExtensionType {
+enum headerSprintfExtenstionType {
     HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
     HEADER_EXT_FORMAT,		/*!< headerTagFormatFunction() extension */
     HEADER_EXT_MORE,		/*!< Chain to next table. */
@@ -148,39 +153,35 @@ enum headerSprintfExtensionType {
  * @param data		tag value
  * @param formatPrefix
  * @param padding
- * @param element	RPM_BIN_TYPE: no. bytes of data
+ * @param element
  * @return		formatted string
  */
 typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
 				const void * data, char * formatPrefix,
-				int padding, int element)
-	/*@requires maxSet(data) >= 0 @*/;
-
+				int padding, int element);
 /** \ingroup header
  * HEADER_EXT_FORMAT format function prototype.
  * This is allowed to fail, which indicates the tag doesn't exist.
  *
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freedata	data-was-malloc'ed indicator
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
 typedef int (*headerTagTagFunction) (Header h,
 		/*@null@*/ /*@out@*/ hTYP_t type,
 		/*@null@*/ /*@out@*/ hPTR_t * data,
 		/*@null@*/ /*@out@*/ hCNT_t count,
-		/*@null@*/ /*@out@*/ int * freeData)
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/;
+		/*@null@*/ /*@out@*/ int * freeData);
 
 /** \ingroup header
  * Define header tag output formats.
  */
 typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
 struct headerSprintfExtension_s {
-    enum headerSprintfExtensionType type;	/*!< Type of extension. */
+    enum headerSprintfExtenstionType type;	/*!< Type of extension. */
 /*@observer@*/ /*@null@*/
     const char * name;				/*!< Name of extension. */
     union {
@@ -204,8 +205,8 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
  * Include calculation for 8 bytes of (magic, 0)?
  */
 enum hMagic {
-    HEADER_MAGIC_NO		= 0,
-    HEADER_MAGIC_YES		= 1
+	HEADER_MAGIC_NO		= 0,
+	HEADER_MAGIC_YES	= 1
 };
 
 /** \ingroup header
@@ -236,11 +237,11 @@ typedef enum rpmTagType_e {
  */
 /*@-enummemuse -typeuse @*/
 typedef enum rpmSubTagType_e {
-    RPM_REGION_TYPE		= -10,
-    RPM_BIN_ARRAY_TYPE		= -11,
+	RPM_REGION_TYPE		= -10,
+	RPM_BIN_ARRAY_TYPE	= -11,
   /*!<@todo Implement, kinda like RPM_STRING_ARRAY_TYPE for known (but variable)
 	length binary data. */
-    RPM_XREF_TYPE		= -12
+	RPM_XREF_TYPE		= -12
   /*!<@todo Implement, intent is to to carry a (???,tagNum,valNum) cross
 	reference to retrieve data from other tags. */
 } rpmSubTagType;
@@ -278,16 +279,12 @@ typedef union hRET_s {
 /*@-typeuse -fielduse@*/
 typedef struct HE_s {
     int_32 tag;
-/*@null@*/
-    hTYP_t typ;
+/*@null@*/ hTYP_t typ;
     union {
-/*@null@*/
-	hPTR_t * ptr;
-/*@null@*/
-	hRET_t * ret;
+/*@null@*/ hPTR_t * ptr;
+/*@null@*/ hRET_t * ret;
     } u;
-/*@null@*/
-    hCNT_t cnt;
+/*@null@*/ hCNT_t cnt;
 } * HE_t;
 /*@=typeuse =fielduse@*/
 
@@ -305,7 +302,7 @@ Header (*HDRnew) (void)
  * @return		NULL always
  */
 typedef
-/*@null@*/ Header (*HDRfree) (/*@killref@*/ /*@null@*/ Header h)
+/*@null@*/ Header (*HDRfree) (/*@null@*/ /*@killref@*/ Header h)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -324,7 +321,7 @@ Header (*HDRlink) (Header h)
  */
 typedef
 Header (*HDRunlink) (/*@killref@*/ /*@null@*/ Header h)
-        /*@modifies h @*/;
+         /*@modifies h @*/;
 
 /** \ingroup header
  * Sort tags in header.
@@ -408,7 +405,7 @@ typedef
  * @return		header (or NULL on error)
  */
 typedef
-/*@null@*/ Header (*HDRread) (FD_t fd, enum hMagic magicp)
+/*@null@*/ Header (*HDRhdrread) (FD_t fd, enum hMagic magicp)
 	/*@modifies fd @*/;
 
 /** \ingroup header
@@ -419,7 +416,7 @@ typedef
  * @return		0 on success, 1 on error
  */
 typedef
-int (*HDRwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+int (*HDRhdrwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
 	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/;
 
@@ -598,7 +595,7 @@ int (*HDRremove) (Header h, int_32 tag)
  * @return		formatted output string (malloc'ed)
  */
 typedef
-/*@only@*/ char * (*HDRsprintf) (Header h, const char * fmt,
+/*@only@*/ char * (*HDRhdrsprintf) (Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tags,
 		     const struct headerSprintfExtension_s * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
@@ -654,10 +651,9 @@ int (*HDRnextiter) (HeaderIterator hi,
  */
 typedef /*@abstract@*/ struct HV_s * HV_t;
 struct HV_s {
-    HDRlink	hdrlink;
-    HDRunlink	hdrunlink;
-    HDRfree	hdrfree;
     HDRnew	hdrnew;
+    HDRfree	hdrfree;
+    HDRlink	hdrlink;
     HDRsort	hdrsort;
     HDRunsort	hdrunsort;
     HDRsizeof	hdrsizeof;
@@ -666,8 +662,8 @@ struct HV_s {
     HDRcopy	hdrcopy;
     HDRload	hdrload;
     HDRcopyload	hdrcopyload;
-    HDRread	hdrread;
-    HDRwrite	hdrwrite;
+    HDRhdrread	hdrread;
+    HDRhdrwrite	hdrwrite;
     HDRisentry	hdrisentry;
     HDRfreetag	hdrfreetag;
     HDRget	hdrget;
@@ -678,11 +674,12 @@ struct HV_s {
     HDRaddi18n	hdraddi18n;
     HDRmodify	hdrmodify;
     HDRremove	hdrremove;
-    HDRsprintf	hdrsprintf;
+    HDRhdrsprintf hdrsprintf;
     HDRcopytags	hdrcopytags;
     HDRfreeiter	hdrfreeiter;
     HDRinititer	hdrinititer;
     HDRnextiter	hdrnextiter;
+    HDRunlink	hdrunlink;
 /*@null@*/
     void *	hdrvecs;
 /*@null@*/
@@ -716,7 +713,7 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 }
 
 #if !defined(__HEADER_PROTOTYPES__)
-#include "hdrinline.h"
+#include <hdrinline.h>
 #endif
 
 #ifdef __cplusplus

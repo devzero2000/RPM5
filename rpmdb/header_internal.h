@@ -2,7 +2,7 @@
 #define H_HEADER_INTERNAL
 
 /** \ingroup header
- * \file rpmdb/header_internal.h
+ * \file lib/header_internal.h
  */
 
 #include <header.h>
@@ -22,8 +22,8 @@
 /** \ingroup header
  * Description of tag data.
  */
-typedef /*@abstract@*/ struct entryInfo_s * entryInfo;
-struct entryInfo_s {
+typedef /*@abstract@*/ struct entryInfo * entryInfo;
+struct entryInfo {
     int_32 tag;			/*!< Tag identifier. */
     int_32 type;		/*!< Tag data type. */
     int_32 offset;		/*!< Offset into data segment (ondisk only). */
@@ -31,7 +31,7 @@ struct entryInfo_s {
 };
 
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
-#define	REGION_TAG_COUNT	sizeof(struct entryInfo_s)
+#define	REGION_TAG_COUNT	sizeof(struct entryInfo)
 
 #define	ENTRY_IS_REGION(_e) \
 	(((_e)->info.tag >= HEADER_IMAGE) && ((_e)->info.tag < HEADER_REGIONS))
@@ -40,11 +40,10 @@ struct entryInfo_s {
 /** \ingroup header
  * A single tag from a Header.
  */
-typedef /*@abstract@*/ struct indexEntry_s * indexEntry;
-struct indexEntry_s {
-    struct entryInfo_s info;	/*!< Description of tag data. */
-/*@owned@*/
-    void * data; 		/*!< Location of tag data. */
+typedef /*@abstract@*/ struct indexEntry * indexEntry;
+struct indexEntry {
+    struct entryInfo info;	/*!< Description of tag data. */
+/*@owned@*/ void * data; 	/*!< Location of tag data. */
     int length;			/*!< No. bytes of data. */
     int rdlen;			/*!< No. bytes of data in region. */
 };
@@ -52,61 +51,49 @@ struct indexEntry_s {
 /** \ingroup header
  * The Header data structure.
  */
-struct headerToken_s {
-/*@unused@*/
-    struct HV_s hv;		/*!< Header public methods. */
-/*@only@*/ /*@null@*/
+struct headerToken {
+/*@unused@*/ struct HV_s hv;	/*!< Header public methods. */
     void * blob;		/*!< Header region blob. */
-/*@owned@*/
-    indexEntry index;		/*!< Array of tags. */
+/*@owned@*/ indexEntry index;	/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
     int flags;
 #define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
 #define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
-#define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
+/*@refs@*/ int nrefs;	/*!< Reference count. */
 };
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
-struct sprintfTag_s {
-/*@null@*/
-    headerTagFormatFunction fmt;
-/*@null@*/
-    headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
+typedef /*@abstract@*/ struct sprintfTag * sprintfTag;
+struct sprintfTag {
+/*@null@*/ headerTagTagFunction ext;   /*!< if NULL tag element is invalid */
     int extNum;
     int_32 tag;
     int justOne;
     int arrayCount;
-/*@kept@*/
-    char * format;
-/*@kept@*/ /*@null@*/
-    char * type;
+/*@kept@*/ char * format;
+/*@kept@*/ /*@null@*/ char * type;
     int pad;
 };
 
 /** \ingroup header
- * Extension cache.
  */
-typedef /*@abstract@*/ struct rpmec_s * rpmec;
-struct rpmec_s {
+typedef /*@abstract@*/ struct extensionCache * extensionCache;
+struct extensionCache {
     int_32 type;
     int_32 count;
     int avail;
     int freeit;
-/*@owned@*/
-    const void * data;
+/*@owned@*/ const void * data;
 };
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
 /*@-fielduse@*/
-struct sprintfToken_s {
+typedef /*@abstract@*/ struct sprintfToken * sprintfToken;
+struct sprintfToken {
     enum {
 	PTOK_NONE = 0,
 	PTOK_TAG,
@@ -115,27 +102,22 @@ struct sprintfToken_s {
 	PTOK_COND
     } type;
     union {
-	struct sprintfTag_s tag;	/*!< PTOK_TAG */
 	struct {
-	/*@only@*/
-	    sprintfToken format;
-	    int i;
+	/*@only@*/ sprintfToken format;
 	    int numTokens;
-	} array;			/*!< PTOK_ARRAY */
+	} array;
+	struct sprintfTag tag;
 	struct {
-	/*@dependent@*/
-	    char * string;
+	/*@dependent@*/ char * string;
 	    int len;
-	} string;			/*!< PTOK_STRING */
+	} string;
 	struct {
-	/*@only@*/ /*@null@*/
-	    sprintfToken ifFormat;
+	/*@only@*/ /*@null@*/ sprintfToken ifFormat;
 	    int numIfTokens;
-	/*@only@*/ /*@null@*/
-	    sprintfToken elseFormat;
+	/*@only@*/ /*@null@*/ sprintfToken elseFormat;
 	    int numElseTokens;
-	    struct sprintfTag_s tag;
-	} cond;				/*!< PTOK_COND */
+	    struct sprintfTag tag;
+	} cond;
     } u;
 };
 /*@=fielduse@*/
@@ -167,14 +149,11 @@ extern "C" {
  * @return		1 on success, 0 on failure
  */
 /*@-exportlocal@*/
-/*@-incondefs@*/
 int headerGetRawEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hPTR_t * p, 
 			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/;
-/*@=incondefs@*/
+	/*@modifies *type, *p, *c @*/;
 /*@=exportlocal@*/
 
 /** \ingroup header
@@ -182,23 +161,20 @@ int headerGetRawEntry(Header h, int_32 tag,
  * @param h		header
  * @return		no. of references
  */
-/*@-type@*/ /* FIX: cast? */
 /*@unused@*/ static inline int headerUsageCount(Header h) /*@*/ {
     return h->nrefs;
 }
-/*@=type@*/
 
 /** \ingroup header
  * Dump a header in human readable format (for debugging).
  * @param h		header
- * @param f		file handle
+ * @param f
  * @param flags		0 or HEADER_DUMP_INLINE
  * @param tags		array of tag name/value pairs
  */
 /*@unused@*/
 void headerDump(Header h, FILE *f, int flags,
 		const struct headerTagTableEntry_s * tags)
-	/*@globals fileSystem @*/
 	/*@modifies f, fileSystem @*/;
 #define HEADER_DUMP_INLINE   1
 
