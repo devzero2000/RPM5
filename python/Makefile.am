@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 PYVER= @WITH_PYTHON_VERSION@
 
 INCLUDES = -I. \
@@ -43,6 +45,6 @@ rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
 	$(LINK) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
 
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpmmodule_la_SOURCES)
+.PHONY:	lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(librpmmodule_la_SOURCES)

@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 INCLUDES = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/rpmdb \
@@ -14,49 +16,30 @@ EXTRA_DIST = getdate.y
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	header.h hdrinline.h \
 	misc.h rpmcli.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h depends.h fsm.h header_internal.h \
+	cpio.h depends.h fsm.h \
 	manifest.h psm.h \
 	rpmlead.h signature.h
 
-mylibpaths = \
-	-L$(top_builddir)/lib/.libs \
-	-L$(top_builddir)/rpmdb/.libs \
-	-L$(top_builddir)/rpmio/.libs \
-	-L$(top_builddir)/popt/.libs
-
-mylibs = -lrpm -lrpmdb -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
+mylibs = librpm.la
 LIBS =
 
-lib_LTLIBRARIES = librpm.la
+LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
+
+usrlibdir = $(libdir)@MARK64@
+usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
-	header.c header_internal.c \
 	manifest.c misc.c package.c \
 	problems.c poptI.c poptK.c poptQV.c psm.c query.c \
 	rpmchecksig.c rpminstall.c rpmlead.c rpmlibprov.c rpmrc.c rpmvercmp.c \
-	signature.c stringbuf.c tagName.c tagtable.c transaction.c \
+	signature.c stringbuf.c transaction.c \
 	verify.c
-librpm_la_LDFLAGS = -release @VERSION@
-
-# XXX Add internal libtool dependence
-install-data-local:
-	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lrpmdb -lrpmio -lpopt|" < librpm.la > .librpm.la && \
-	mv .librpm.la librpm.la
-
-tagtable.c: rpmlib.h 
-	@echo '#include "system.h"' > tagtable.c
-	@echo '#include "rpmlib.h"' >> tagtable.c
-	@echo '' >> tagtable.c
-	@echo 'const struct headerTagTableEntry_s rpmTagTable[] = {' >> tagtable.c
-	$(AWK) '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ { if ($$2 == "=") { printf("\t{ \"%s\", %s },\n", $$1, $$3); } else { printf("\t{ \"%s\", %s },\n", $$2, $$3); } }' < $(srcdir)/rpmlib.h >> tagtable.c
-	@echo '	{ NULL, 0 }' >> tagtable.c
-	@echo '};' >> tagtable.c
-	@echo '' >> tagtable.c
-	@echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) - 1;' >> tagtable.c
+librpm_la_LDFLAGS = -release 4.0.4 $(LDFLAGS) \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
@@ -84,21 +67,21 @@ getdate.c: getdate.y
 	   fi ;\
 	fi
 
-BUILT_SOURCES = tagtable.c getdate.c
+BUILT_SOURCES = getdate.c
 
 .PHONY:	sources
 sources:
 	@echo $(librpm_la_SOURCES:%=lib/%)
 
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
+.PHONY:	lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
 
 th: th.c librpm.la
-	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
 trb: trb.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trb.o $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trb.o $(mylibs)
 
 trhn: trhn.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trhn.o $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trhn.o $(mylibs)

@@ -3142,7 +3142,7 @@ linux-gnu*)
   # Find out which ABI we are using (multilib Linux x86_64 hack).
   libsuff=
   case "$host_cpu" in
-  x86_64*)
+  x86_64*|s390x*)
     echo '[#]line __oline__ "configure"' > conftest.$ac_ext
     if AC_TRY_EVAL(ac_compile); then
       case `/usr/bin/file conftest.$ac_objext` in

@@ -1,4 +1,4 @@
--I. -I.. -I../beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 +forcehints
@@ -12,10 +12,6 @@
 
 +strict			# lclint level
 
-# --- in progress
-+bounds
--bufferoverflowhigh
-
 # --- +partial artifacts
 -declundef
 -exportheadervar
@@ -27,34 +23,43 @@
 -varuse
 
 # --- not-yet at strict level
--bitwisesigned		# 204
--elseifcomplete		# 31
--exportconst		# 265
--exportfcn		# 381
--exporttype		# 109
--exportvar		# 32
--fielduse		# 72
+-bitwisesigned		# pita
+-elseifcomplete		# 95 occurences
+-exportconst		# 839 occurences
+-exportfcn
+-exporttype
+-exportvar
+-fielduse		# 1 occurence <bits/sigset.h>
 -forblock		# tedious
 -ifblock		# tedious
--namechecks		# 929 tedious ANSI compliance checks
--ptrarith		# 104
+-incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
+-matchfields		# <bits/ipc.h> heartburn
+-namechecks		# tedious ANSI compliance checks
+-numenummembers 1024	# RPMTAG has 138 members
+-numstructfields 256	# Java jni.h has 229 fields
+-ptrarith		# tedious
 
--compdestroy		# 21
--mustdefine		# 34
--sys-dir-errors
+-compdestroy
+-mustdefine
+-shiftimplementation
+#-shiftnegative
 
--strictops		# 51
+-strictops
+-strictusereleased
+-stringliterallen 4096	# redhat*PubKey's are big
 -whileblock		# tedious
 
 # --- not-yet at checks level
-+enumint		# 117
--mustfree		# 136
--predboolptr		# 156
--usedef			# 9
+-ansi-reserved
++enumint
+-mustfree
+-predboolptr
+-usedef
 
 # --- not-yet at standard level
--boolops		# 116
-+boolint		# 11
-+charint		# 146
-+ignorequals		# 112
-+matchanyintegral	# 39
+-boolops
+-predboolint
++boolint
++charint
++ignorequals
++matchanyintegral

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 14:50-0500\n"
+"POT-Creation-Date: 2003-03-21 16:45-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2342,7 +2342,7 @@ msgid " failed - "
 msgstr "失敗 - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:569
+#: lib/depends.c:546
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2351,117 +2351,117 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします(\"A\"と同じであると仮定して)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:598
+#: lib/depends.c:575
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:576 lib/depends.c:1198 lib/depends.c:1331
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:576 lib/depends.c:1198 lib/depends.c:1331
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:1023
+#: lib/depends.c:1000
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
 
-#: lib/depends.c:1129
+#: lib/depends.c:1106
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s は provide に加えることによって満されます。\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1197
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:1249
+#: lib/depends.c:1226
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1266
+#: lib/depends.c:1243
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1267
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1303
+#: lib/depends.c:1280
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:1317
+#: lib/depends.c:1294
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:1333
+#: lib/depends.c:1310
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1354
+#: lib/depends.c:1331
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1426
+#: lib/depends.c:1403
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1505
+#: lib/depends.c:1482
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1688
+#: lib/depends.c:1665
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1792
+#: lib/depends.c:1769
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1948
+#: lib/depends.c:1925
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2008
+#: lib/depends.c:1985
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:2073
+#: lib/depends.c:2050
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2137
+#: lib/depends.c:2114
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2166
+#: lib/depends.c:2143
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2951 lib/header.c:2972 lib/header.c:2994
+#: rpmdb/header.c:2951 rpmdb/header.c:2972 rpmdb/header.c:2994
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -2547,89 +2547,6 @@ msgstr "%s のオープンに失敗: %s\n"
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:332
-#, fuzzy
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
-
-#. @-modfilesys@
-#: lib/header.c:369 lib/header_internal.c:139 lib/psm.c:403
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "データタイプ %d はサポートされていません\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2194
-msgid "missing { after %"
-msgstr "% の後に { がありません"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2224
-msgid "missing } after %{"
-msgstr "%{ の後に } がありません"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2238
-msgid "empty tag format"
-msgstr "空のタグフォーマット"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2252
-msgid "empty tag name"
-msgstr "空のタグ名"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2269
-msgid "unknown tag"
-msgstr "不明なタグ"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2296
-msgid "] expected at end of array"
-msgstr "配列の後に ] が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2314
-msgid "unexpected ]"
-msgstr "予期せぬ ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2318
-msgid "unexpected }"
-msgstr "予期せぬ }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2384
-msgid "? expected in expression"
-msgstr "式中で ? が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2393
-msgid "{ expected after ? in expression"
-msgstr "式中で ? の後に { が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2406 lib/header.c:2448
-msgid "} expected in expression"
-msgstr "式中に } が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2416
-msgid ": expected following ? subexpression"
-msgstr "以下の ? サブ式の に: が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2433
-msgid "{ expected after : in expression"
-msgstr "式中で : の後に { が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2458
-msgid "| expected at end of expression"
-msgstr "式の終りに | が期待されます"
 
 #: lib/misc.c:236 lib/misc.c:241 lib/misc.c:247
 #, fuzzy, c-format
@@ -3048,6 +2965,12 @@ msgstr "%s と競合するパッケージがあります: %s\n"
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
+
+#. @-modfilesys@
+#: lib/psm.c:403 rpmdb/header.c:369 rpmdb/header_internal.c:139
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "データタイプ %d はサポートされていません\n"
 
 #: lib/psm.c:600
 #, fuzzy, c-format
@@ -3733,12 +3656,12 @@ msgstr "%s-%s-%s のための依存性を満たしていません:"
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:100
+#: rpmdb/db1.c:101 rpmdb/db3.c:98
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:104 rpmdb/db3.c:103
+#: rpmdb/db1.c:104 rpmdb/db3.c:101
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
@@ -3781,50 +3704,50 @@ msgstr "データベースモード 0x%x のオープン (%s)\n"
 msgid "cannot get %s lock on database\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1232
+#: rpmdb/db1.c:576 rpmdb/db3.c:1285
 msgid "exclusive"
 msgstr "除外"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1232
+#: rpmdb/db1.c:576 rpmdb/db3.c:1285
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/db3.c:129
+#: rpmdb/db3.c:127
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:147
+#: rpmdb/db3.c:145
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:187
+#: rpmdb/db3.c:185
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:715
+#: rpmdb/db3.c:751
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:782
+#: rpmdb/db3.c:818
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:1007
+#: rpmdb/db3.c:1050
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: rpmdb/db3.c:1230
+#: rpmdb/db3.c:1283
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db3.c:1236
+#: rpmdb/db3.c:1289
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
@@ -3863,6 +3786,83 @@ msgstr ""
 "もし問題を解決するために実行した \"rpm --rebuilddb\" が失敗したら、\n"
 "http://www.rpm.org もしくは rpm-list@redhat.com メーリングリストから\n"
 "詳細な情報が取得できます。\n"
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:332
+#, fuzzy
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2194
+msgid "missing { after %"
+msgstr "% の後に { がありません"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2224
+msgid "missing } after %{"
+msgstr "%{ の後に } がありません"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2238
+msgid "empty tag format"
+msgstr "空のタグフォーマット"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2252
+msgid "empty tag name"
+msgstr "空のタグ名"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2269
+msgid "unknown tag"
+msgstr "不明なタグ"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2296
+msgid "] expected at end of array"
+msgstr "配列の後に ] が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2314
+msgid "unexpected ]"
+msgstr "予期せぬ ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2318
+msgid "unexpected }"
+msgstr "予期せぬ }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2384
+msgid "? expected in expression"
+msgstr "式中で ? が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2393
+msgid "{ expected after ? in expression"
+msgstr "式中で ? の後に { が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2406 rpmdb/header.c:2448
+msgid "} expected in expression"
+msgstr "式中に } が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2416
+msgid ": expected following ? subexpression"
+msgstr "以下の ? サブ式の に: が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2433
+msgid "{ expected after : in expression"
+msgstr "式中で : の後に { が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2458
+msgid "| expected at end of expression"
+msgstr "式の終りに | が期待されます"
 
 #: rpmdb/poptDB.c:22
 msgid "initialize database"

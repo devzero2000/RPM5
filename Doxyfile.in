@@ -360,11 +360,6 @@ INPUT                  = \
 	@top_srcdir@/lib/fs.c \
 	@top_srcdir@/lib/fsm.c \
 	@top_srcdir@/lib/fsm.h \
-	@top_srcdir@/lib/hdrinline.h \
-	@top_srcdir@/lib/header.c \
-	@top_srcdir@/lib/header.h \
-	@top_srcdir@/lib/header_internal.c \
-	@top_srcdir@/lib/header_internal.h \
 	@top_srcdir@/lib/manifest.c \
 	@top_srcdir@/lib/manifest.h \
 	@top_srcdir@/lib/misc.c \
@@ -390,8 +385,6 @@ INPUT                  = \
 	@top_srcdir@/lib/signature.h \
 	@top_srcdir@/lib/stringbuf.c \
 	@top_srcdir@/lib/stringbuf.h \
-	@top_srcdir@/lib/tagName.c \
-	@top_srcdir@/lib/tagtable.c \
 	@top_srcdir@/lib/transaction.c \
 	@top_srcdir@/lib/verify.c \
 	@top_srcdir@/rpmdb/db1.c \
@@ -401,11 +394,18 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/falloc.h \
 	@top_srcdir@/rpmdb/fprint.c \
 	@top_srcdir@/rpmdb/fprint.h \
+	@top_srcdir@/rpmdb/hdrinline.h \
+	@top_srcdir@/rpmdb/header.c \
+	@top_srcdir@/rpmdb/header.h \
+	@top_srcdir@/rpmdb/header_internal.c \
+	@top_srcdir@/rpmdb/header_internal.h \
 	@top_srcdir@/rpmdb/poptDB.c \
 	@top_srcdir@/rpmdb/rpmhash.c \
 	@top_srcdir@/rpmdb/rpmhash.h \
 	@top_srcdir@/rpmdb/rpmdb.c \
 	@top_srcdir@/rpmdb/rpmdb.h \
+	@top_srcdir@/rpmdb/tagname.c \
+	@top_srcdir@/rpmdb/tagtable.c \
 	@top_srcdir@/rpmio/digest.c \
 	@top_srcdir@/rpmio/macro.c \
 	@top_srcdir@/rpmio/rpmlog.c \

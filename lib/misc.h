@@ -93,29 +93,6 @@ int makeTempFile(/*@null@*/ const char * prefix,
 	/*@modifies fileSystem @*/;
 
 /**
- * Convert absolute path tag to (dirname,basename,dirindex) tags.
- * @param h		header
- */
-void compressFilelist(Header h)
-	/*@modifies h @*/;
-
-/**
- * Convert (dirname,basename,dirindex) tags to absolute path tag.
- * @param h		header
- */
-void expandFilelist(Header h)
-	/*@modifies h @*/;
-
-/**
- * @param h		header
- * @retval fileListPtr
- * @retval fileCountPtr
- */
-void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
-			/*@out@*/ int * fileCountPtr)
-	/*@modifies *fileListPtr, *fileCountPtr @*/;
-
-/**
  */
 /*@-exportlocal@*/
 int myGlobPatternP (const char *patternURL)
@@ -129,57 +106,7 @@ int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
 	/*@globals fileSystem @*/
 	/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
 
-/**
- * Retrofit a Provides: name = version-release dependency into legacy
- * packages.
- * @param h		header
- */
-void providePackageNVR(Header h)
-	/*@modifies h @*/;
-
-/**
- * Calculate MD5 sum for file.
- * @todo Eliminate, use beecrypt instead.
- * @param fn		file name
- * @retval digest	address of md5sum
- * @param asAscii	return md5sum as ascii string?
- * @return		0 on success, 1 on error
- */
-/*@-exportlocal@*/
-int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii)
-	/*@globals fileSystem@*/
-	/*@modifies digest, fileSystem @*/;
-/*@=exportlocal@*/
-
-/**
- * Return MD5 sum of file as ASCII string.
- * @todo Eliminate, use beecrypt instead.
- * @param fn		file name
- * @retval digest	MD5 digest
- * @return		0 on success, 1 on error
- */
-/*@unused@*/ static inline
-int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
-	/*@globals fileSystem@*/
-	/*@modifies digest, fileSystem @*/
-{
-    return domd5(fn, digest, 1);
-}
-
-/**
- * Return MD5 sum of file as binary data.
- * @todo Eliminate, use beecrypt instead.
- * @param fn		file name
- * @retval bindigest	MD5 digest
- * @return		0 on success, 1 on error
- */
-/*@unused@*/ static inline
-int mdbinfile(const char * fn, /*@out@*/ unsigned char * bindigest)
-	/*@globals fileSystem@*/
-	/*@modifies bindigest, fileSystem @*/
-{
-    return domd5(fn, bindigest, 0);
-}
+#include "legacy.h"
 
 #ifdef __cplusplus
 }

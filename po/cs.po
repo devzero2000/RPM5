@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 14:50-0500\n"
+"POT-Creation-Date: 2003-03-21 16:45-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2252,7 +2252,7 @@ msgid " failed - "
 msgstr "selhal - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:569
+#: lib/depends.c:546
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2261,98 +2261,98 @@ msgstr ""
 "Závislost \"B\" potøebuje období (pøedpokládáno stejné jako \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:598
+#: lib/depends.c:575
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:576 lib/depends.c:1198 lib/depends.c:1331
 msgid "YES"
 msgstr "ANO"
 
-#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:576 lib/depends.c:1198 lib/depends.c:1331
 msgid "NO "
 msgstr "NE "
 
-#: lib/depends.c:1023
+#: lib/depends.c:1000
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s ANO (pøidány soubory)\n"
 
-#: lib/depends.c:1129
+#: lib/depends.c:1106
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s ANO (pøidáno poskytuje)\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1197
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (ke¹ováno)\n"
 
-#: lib/depends.c:1249
+#: lib/depends.c:1226
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
-#: lib/depends.c:1266
+#: lib/depends.c:1243
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1267
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s ANO (db soubory)\n"
 
-#: lib/depends.c:1303
+#: lib/depends.c:1280
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:1317
+#: lib/depends.c:1294
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s ANO (db balíèek)\n"
 
-#: lib/depends.c:1333
+#: lib/depends.c:1310
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NE\n"
 
-#: lib/depends.c:1354
+#: lib/depends.c:1331
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) pøidáno do ke¹e závislostí.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1426
+#: lib/depends.c:1403
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1505
+#: lib/depends.c:1482
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balíèek %s koliduje: %s\n"
 
-#: lib/depends.c:1688
+#: lib/depends.c:1665
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1792
+#: lib/depends.c:1769
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1948
+#: lib/depends.c:1925
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2008
+#: lib/depends.c:1985
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -2360,20 +2360,20 @@ msgid ""
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:2073
+#: lib/depends.c:2050
 msgid "========== successors only (presentation order)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:2137
+#: lib/depends.c:2114
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:2166
+#: lib/depends.c:2143
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2951 lib/header.c:2972 lib/header.c:2994
+#: rpmdb/header.c:2951 rpmdb/header.c:2972 rpmdb/header.c:2994
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
@@ -2459,88 +2459,6 @@ msgstr "%s unlink %s selhal: %s\n"
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s vytvoøen jako %s\n"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:332
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "Poèet dataLength() RPM_STRING_TYPE musí být 1.\n"
-
-#. @-modfilesys@
-#: lib/header.c:369 lib/header_internal.c:139 lib/psm.c:403
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "Datový typ %d není podporován\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2194
-msgid "missing { after %"
-msgstr "chybí { po %"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2224
-msgid "missing } after %{"
-msgstr "po %{ chybí }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2238
-msgid "empty tag format"
-msgstr "prázdný formát znaèky"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2252
-msgid "empty tag name"
-msgstr "prázdné jméno znaèky"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2269
-msgid "unknown tag"
-msgstr "neznámá znaèka"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2296
-msgid "] expected at end of array"
-msgstr "na konci pole oèekáváno ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2314
-msgid "unexpected ]"
-msgstr "neoèekávaná ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2318
-msgid "unexpected }"
-msgstr "neoèekávaná }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2384
-msgid "? expected in expression"
-msgstr "ve výrazu oèekáván ?"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2393
-msgid "{ expected after ? in expression"
-msgstr "ve výrazu je po ? oèekávána {"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2406 lib/header.c:2448
-msgid "} expected in expression"
-msgstr "ve výrazu je oèekávána }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2416
-msgid ": expected following ? subexpression"
-msgstr "v podvýrazu je po ? oèekávána :"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2433
-msgid "{ expected after : in expression"
-msgstr "ve výrazu je po : oèekávána {"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2458
-msgid "| expected at end of expression"
-msgstr "na konci výrazu je oèekáváno |"
 
 #: lib/misc.c:236 lib/misc.c:241 lib/misc.c:247
 #, c-format
@@ -2907,6 +2825,12 @@ msgstr "balíèek %s koliduje: %s\n"
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s"
+
+#. @-modfilesys@
+#: lib/psm.c:403 rpmdb/header.c:369 rpmdb/header_internal.c:139
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "Datový typ %d není podporován\n"
 
 #: lib/psm.c:600
 #, c-format
@@ -3584,12 +3508,12 @@ msgstr ""
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:100
+#: rpmdb/db1.c:101 rpmdb/db3.c:98
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:104 rpmdb/db3.c:103
+#: rpmdb/db1.c:104 rpmdb/db3.c:101
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
@@ -3632,51 +3556,51 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1232
+#: rpmdb/db1.c:576 rpmdb/db3.c:1285
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1232
+#: rpmdb/db1.c:576 rpmdb/db3.c:1285
 #, fuzzy
 msgid "shared"
 msgstr "sdílen v síti "
 
-#: rpmdb/db3.c:129
+#: rpmdb/db3.c:127
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:147
+#: rpmdb/db3.c:145
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:187
+#: rpmdb/db3.c:185
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:715
+#: rpmdb/db3.c:751
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:782
+#: rpmdb/db3.c:818
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1007
+#: rpmdb/db3.c:1050
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1230
+#: rpmdb/db3.c:1283
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: rpmdb/db3.c:1236
+#: rpmdb/db3.c:1289
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
@@ -3710,6 +3634,82 @@ msgid ""
 "com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:332
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "Poèet dataLength() RPM_STRING_TYPE musí být 1.\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2194
+msgid "missing { after %"
+msgstr "chybí { po %"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2224
+msgid "missing } after %{"
+msgstr "po %{ chybí }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2238
+msgid "empty tag format"
+msgstr "prázdný formát znaèky"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2252
+msgid "empty tag name"
+msgstr "prázdné jméno znaèky"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2269
+msgid "unknown tag"
+msgstr "neznámá znaèka"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2296
+msgid "] expected at end of array"
+msgstr "na konci pole oèekáváno ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2314
+msgid "unexpected ]"
+msgstr "neoèekávaná ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2318
+msgid "unexpected }"
+msgstr "neoèekávaná }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2384
+msgid "? expected in expression"
+msgstr "ve výrazu oèekáván ?"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2393
+msgid "{ expected after ? in expression"
+msgstr "ve výrazu je po ? oèekávána {"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2406 rpmdb/header.c:2448
+msgid "} expected in expression"
+msgstr "ve výrazu je oèekávána }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2416
+msgid ": expected following ? subexpression"
+msgstr "v podvýrazu je po ? oèekávána :"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2433
+msgid "{ expected after : in expression"
+msgstr "ve výrazu je po : oèekávána {"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2458
+msgid "| expected at end of expression"
+msgstr "na konci výrazu je oèekáváno |"
 
 #: rpmdb/poptDB.c:22
 msgid "initialize database"

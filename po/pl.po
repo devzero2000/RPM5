@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 14:50-0500\n"
+"POT-Creation-Date: 2003-03-21 16:45-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2315,125 +2315,125 @@ msgid " failed - "
 msgstr " nie powiod³o siê -"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:569
+#: lib/depends.c:546
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:598
+#: lib/depends.c:575
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:576 lib/depends.c:1198 lib/depends.c:1331
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:576 lib/depends.c:1198 lib/depends.c:1331
 #, fuzzy
 msgid "NO "
 msgstr "NIE DOBRZE"
 
-#: lib/depends.c:1023
+#: lib/depends.c:1000
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1129
+#: lib/depends.c:1106
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1220
+#: lib/depends.c:1197
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:1249
+#: lib/depends.c:1226
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1266
+#: lib/depends.c:1243
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1267
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1303
+#: lib/depends.c:1280
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1317
+#: lib/depends.c:1294
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:1333
+#: lib/depends.c:1310
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1354
+#: lib/depends.c:1331
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1426
+#: lib/depends.c:1403
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1505
+#: lib/depends.c:1482
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "pakiet %s jest w konflikcie: %s\n"
 
-#: lib/depends.c:1688
+#: lib/depends.c:1665
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1792
+#: lib/depends.c:1769
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "usuwanie indeksu grupy\n"
 
 #. Record all relations.
-#: lib/depends.c:1948
+#: lib/depends.c:1925
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2008
+#: lib/depends.c:1985
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:2073
+#: lib/depends.c:2050
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2137
+#: lib/depends.c:2114
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2166
+#: lib/depends.c:2143
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2951 lib/header.c:2972 lib/header.c:2994
+#: rpmdb/header.c:2951 rpmdb/header.c:2972 rpmdb/header.c:2994
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -2519,89 +2519,6 @@ msgstr "otwarcie %s nie powiod³o siê\n"
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "ostrze¿enie: %s utworzony jako %s"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:332
-#, fuzzy
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
-
-#. @-modfilesys@
-#: lib/header.c:369 lib/header_internal.c:139 lib/psm.c:403
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "Typ danych %d nie jest obs³ugiwany\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2194
-msgid "missing { after %"
-msgstr "brak { po %"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2224
-msgid "missing } after %{"
-msgstr "brak } po %{"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2238
-msgid "empty tag format"
-msgstr "pusty format etykiety"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2252
-msgid "empty tag name"
-msgstr "pusta nazwa etykiety"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2269
-msgid "unknown tag"
-msgstr "nieznana etykieta"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2296
-msgid "] expected at end of array"
-msgstr "spodziewany ] na koñcu tablicy"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2314
-msgid "unexpected ]"
-msgstr "nie spodziewany ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2318
-msgid "unexpected }"
-msgstr "nie spodziewany }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2384
-msgid "? expected in expression"
-msgstr "spodziewany ? w wyra¿eniu"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2393
-msgid "{ expected after ? in expression"
-msgstr "spodziewany { po ? w wyra¿eniu"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2406 lib/header.c:2448
-msgid "} expected in expression"
-msgstr "spodziewany } w wyra¿eniu"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2416
-msgid ": expected following ? subexpression"
-msgstr "spodziewany : po podwyra¿eniu ?"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2433
-msgid "{ expected after : in expression"
-msgstr "spodziewany { po : w wyra¿eniu"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2458
-msgid "| expected at end of expression"
-msgstr "spodziewany | na koñcu wyra¿enia"
 
 #: lib/misc.c:236 lib/misc.c:241 lib/misc.c:247
 #, fuzzy, c-format
@@ -3002,6 +2919,12 @@ msgstr "pakiet %s jest w konflikcie: %s\n"
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s-%s-%s"
+
+#. @-modfilesys@
+#: lib/psm.c:403 rpmdb/header.c:369 rpmdb/header_internal.c:139
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "Typ danych %d nie jest obs³ugiwany\n"
 
 #: lib/psm.c:600
 #, fuzzy, c-format
@@ -3684,12 +3607,12 @@ msgstr "Niespe³nione zale¿no¶ci dla %s-%s-%s: "
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:100
+#: rpmdb/db1.c:101 rpmdb/db3.c:98
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:104 rpmdb/db3.c:103
+#: rpmdb/db1.c:104 rpmdb/db3.c:101
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
@@ -3732,50 +3655,50 @@ msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 msgid "cannot get %s lock on database\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1232
+#: rpmdb/db1.c:576 rpmdb/db3.c:1285
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1232
+#: rpmdb/db1.c:576 rpmdb/db3.c:1285
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:129
+#: rpmdb/db3.c:127
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:147
+#: rpmdb/db3.c:145
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:187
+#: rpmdb/db3.c:185
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:715
+#: rpmdb/db3.c:751
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:782
+#: rpmdb/db3.c:818
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:1007
+#: rpmdb/db3.c:1050
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: rpmdb/db3.c:1230
+#: rpmdb/db3.c:1283
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db3.c:1236
+#: rpmdb/db3.c:1289
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
@@ -3809,6 +3732,83 @@ msgid ""
 "com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:332
+#, fuzzy
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2194
+msgid "missing { after %"
+msgstr "brak { po %"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2224
+msgid "missing } after %{"
+msgstr "brak } po %{"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2238
+msgid "empty tag format"
+msgstr "pusty format etykiety"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2252
+msgid "empty tag name"
+msgstr "pusta nazwa etykiety"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2269
+msgid "unknown tag"
+msgstr "nieznana etykieta"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2296
+msgid "] expected at end of array"
+msgstr "spodziewany ] na koñcu tablicy"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2314
+msgid "unexpected ]"
+msgstr "nie spodziewany ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2318
+msgid "unexpected }"
+msgstr "nie spodziewany }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2384
+msgid "? expected in expression"
+msgstr "spodziewany ? w wyra¿eniu"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2393
+msgid "{ expected after ? in expression"
+msgstr "spodziewany { po ? w wyra¿eniu"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2406 rpmdb/header.c:2448
+msgid "} expected in expression"
+msgstr "spodziewany } w wyra¿eniu"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2416
+msgid ": expected following ? subexpression"
+msgstr "spodziewany : po podwyra¿eniu ?"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2433
+msgid "{ expected after : in expression"
+msgstr "spodziewany { po : w wyra¿eniu"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2458
+msgid "| expected at end of expression"
+msgstr "spodziewany | na koñcu wyra¿enia"
 
 #: rpmdb/poptDB.c:22
 msgid "initialize database"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-05 14:50-0500\n"
+"POT-Creation-Date: 2003-03-21 16:45-0500\n"
 "PO-Revision-Date: 2002-02-18 21:13+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2238,7 +2238,7 @@ msgid " failed - "
 msgstr " misslyckades - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:569
+#: lib/depends.c:546
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2247,98 +2247,98 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:598
+#: lib/depends.c:575
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:576 lib/depends.c:1198 lib/depends.c:1331
 msgid "YES"
 msgstr "JA"
 
-#: lib/depends.c:599 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:576 lib/depends.c:1198 lib/depends.c:1331
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/depends.c:1023
+#: lib/depends.c:1000
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s JA (lade till filer)\n"
 
-#: lib/depends.c:1129
+#: lib/depends.c:1106
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s JA (lade till tillhandahållande)\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1197
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cachad)\n"
 
-#: lib/depends.c:1249
+#: lib/depends.c:1226
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
-#: lib/depends.c:1266
+#: lib/depends.c:1243
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s JA (rpmlib tillhandahåller)\n"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1267
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:1303
+#: lib/depends.c:1280
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db-tillhandahållande)\n"
 
-#: lib/depends.c:1317
+#: lib/depends.c:1294
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s JA (db-paket)\n"
 
-#: lib/depends.c:1333
+#: lib/depends.c:1310
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1354
+#: lib/depends.c:1331
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1426
+#: lib/depends.c:1403
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1505
+#: lib/depends.c:1482
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1688
+#: lib/depends.c:1665
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1792
+#: lib/depends.c:1769
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1948
+#: lib/depends.c:1925
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2008
+#: lib/depends.c:1985
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
@@ -2346,20 +2346,20 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "djup)\n"
 
-#: lib/depends.c:2073
+#: lib/depends.c:2050
 msgid "========== successors only (presentation order)\n"
 msgstr "========== endast efterföljare (presentationsordning)\n"
 
-#: lib/depends.c:2137
+#: lib/depends.c:2114
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2166
+#: lib/depends.c:2143
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2951 lib/header.c:2972 lib/header.c:2994
+#: rpmdb/header.c:2951 rpmdb/header.c:2972 rpmdb/header.c:2994
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -2443,88 +2443,6 @@ msgstr "%s unlink av %s misslyckades: %s\n"
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:332
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "dataLength() RPM_STRING_TYPE antal måste vara 1.\n"
-
-#. @-modfilesys@
-#: lib/header.c:369 lib/header_internal.c:139 lib/psm.c:403
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "Datatyp %d stöds inte\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2194
-msgid "missing { after %"
-msgstr "{ fattas efter %"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2224
-msgid "missing } after %{"
-msgstr "} fattas efter %{"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2238
-msgid "empty tag format"
-msgstr "tomt taggformat"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2252
-msgid "empty tag name"
-msgstr "tomt taggnamn"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2269
-msgid "unknown tag"
-msgstr "okänd tagg"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2296
-msgid "] expected at end of array"
-msgstr "] förväntades vid slutet på vektor"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2314
-msgid "unexpected ]"
-msgstr "oväntad ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2318
-msgid "unexpected }"
-msgstr "oväntad }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2384
-msgid "? expected in expression"
-msgstr "? förväntades i uttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2393
-msgid "{ expected after ? in expression"
-msgstr "{ förväntades efter ? i uttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2406 lib/header.c:2448
-msgid "} expected in expression"
-msgstr "} förväntades i uttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2416
-msgid ": expected following ? subexpression"
-msgstr ": förväntades efter ? i deluttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2433
-msgid "{ expected after : in expression"
-msgstr "{ förväntades efter : i uttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2458
-msgid "| expected at end of expression"
-msgstr "| förväntades vid slutet på uttryck"
 
 #: lib/misc.c:236 lib/misc.c:241 lib/misc.c:247
 #, c-format
@@ -2885,6 +2803,12 @@ msgstr "paket %s har ouppfyllda Conflicts: %s\n"
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
+
+#. @-modfilesys@
+#: lib/psm.c:403 rpmdb/header.c:369 rpmdb/header_internal.c:139
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "Datatyp %d stöds inte\n"
 
 #: lib/psm.c:600
 #, c-format
@@ -3553,12 +3477,12 @@ msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrollsumma för oföränderlig huvudregion misslyckades\n"
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:100
+#: rpmdb/db1.c:101 rpmdb/db3.c:98
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d-fel(%d) från %s: %s\n"
 
-#: rpmdb/db1.c:104 rpmdb/db3.c:103
+#: rpmdb/db1.c:104 rpmdb/db3.c:101
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d-fel(%d): %s\n"
@@ -3601,50 +3525,50 @@ msgstr "öppnar db-fil          %s rättighet 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kan inte få %s lås på databas\n"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1232
+#: rpmdb/db1.c:576 rpmdb/db3.c:1285
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1232
+#: rpmdb/db1.c:576 rpmdb/db3.c:1285
 msgid "shared"
 msgstr "delat"
 
-#: rpmdb/db3.c:129
+#: rpmdb/db3.c:127
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "stängde     db-miljö %s/%s\n"
 
-#: rpmdb/db3.c:147
+#: rpmdb/db3.c:145
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "tog bort    db-miljö %s/%s\n"
 
-#: rpmdb/db3.c:187
+#: rpmdb/db3.c:185
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "öppnar      db-miljö %s/%s %s\n"
 
-#: rpmdb/db3.c:715
+#: rpmdb/db3.c:751
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "stängde     db-index %s/%s\n"
 
-#: rpmdb/db3.c:782
+#: rpmdb/db3.c:818
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "verifierade db-index %s/%s\n"
 
-#: rpmdb/db3.c:1007
+#: rpmdb/db3.c:1050
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"
 
-#: rpmdb/db3.c:1230
+#: rpmdb/db3.c:1283
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1236
+#: rpmdb/db3.c:1289
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste       db-index %s/%s\n"
@@ -3683,6 +3607,82 @@ msgstr ""
 "Mer information finns tillgänglig från http://www.rpm.org eller sändlistan\n"
 "rpm-list@redhat.com om \"rpm --rebuilddb\" inte lyckas rätta till "
 "problemet.\n"
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:332
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "dataLength() RPM_STRING_TYPE antal måste vara 1.\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2194
+msgid "missing { after %"
+msgstr "{ fattas efter %"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2224
+msgid "missing } after %{"
+msgstr "} fattas efter %{"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2238
+msgid "empty tag format"
+msgstr "tomt taggformat"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2252
+msgid "empty tag name"
+msgstr "tomt taggnamn"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2269
+msgid "unknown tag"
+msgstr "okänd tagg"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2296
+msgid "] expected at end of array"
+msgstr "] förväntades vid slutet på vektor"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2314
+msgid "unexpected ]"
+msgstr "oväntad ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2318
+msgid "unexpected }"
+msgstr "oväntad }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2384
+msgid "? expected in expression"
+msgstr "? förväntades i uttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2393
+msgid "{ expected after ? in expression"
+msgstr "{ förväntades efter ? i uttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2406 rpmdb/header.c:2448
+msgid "} expected in expression"
+msgstr "} förväntades i uttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2416
+msgid ": expected following ? subexpression"
+msgstr ": förväntades efter ? i deluttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2433
+msgid "{ expected after : in expression"
+msgstr "{ förväntades efter : i uttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2458
+msgid "| expected at end of expression"
+msgstr "| förväntades vid slutet på uttryck"
 
 #: rpmdb/poptDB.c:22
 msgid "initialize database"

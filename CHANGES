@@ -1,3 +1,11 @@
+4.0.4 -> 4.0.5:
+	- bump rpm/popt versions, hardwire 4.0.4 in libraries.
+	- link rpm libraries together, move symbols to achieve forward linkage.
+	- use db-4.1.25, not db-4.0.14, internally.
+	- add rpmdb_loadcvt script, rpmdb_foo utilities.
+	- use current autotools,
+	- use splint, not lclint.
+
 4.0.3 -> 4.0.4:
 	- turn off rpm-perl until it's self-hosting.
 	- jigger up rpm-python with python-2.2b2 for now.

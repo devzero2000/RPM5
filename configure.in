@@ -8,7 +8,7 @@ AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 AC_CONFIG_HEADERS
-AM_INIT_AUTOMAKE(rpm, 4.0.4)
+AM_INIT_AUTOMAKE(rpm, 4.0.5)
 AM_CONFIG_HEADER(config.h)
 
 dnl XXX AM_MAINTAINER_MODE
@@ -1039,6 +1039,13 @@ else
     echo "*** no default requires information is available for ${build_os_noversion}"
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
+
+dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
+MARK64=
+case "${target_cpu}" in
+x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
+esac
+AC_SUBST(MARK64)
 
 dnl Determine the canonical arch-vendor-os for the build machine
 case "${build_cpu}" in
