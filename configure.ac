@@ -6,8 +6,8 @@
 #*                                                                          *
 #* This is source code from the development branch of rpm-4.4.              *
 #*                                                                          *
-#* If you want the "production" rpm-4.3.1 code, then you should use a       *
-#* rpm-4.3.1 src.rpm. Alternatively, if using a CVS checkout, do            *
+#* If you want the "production" rpm-4.3.2 code, then you should use a       *
+#* rpm-4.3.2 src.rpm. Alternatively, if using a CVS checkout, do            *
 #* the following:                                                           *
 #*                                                                          *
 #*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
@@ -15,7 +15,7 @@
 #*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
 #*       cd rpm                                                             *
 #*                                                                          *
-#* Here's the rpm-4_3 branch, latest is rpm-4.3.1:                          *
+#* Here's the rpm-4_3 branch, latest is rpm-4.3.2:                          *
 #*       cvs up -r rpm-4_3                                                  *
 #*                                                                          *
 #* Here's the rpm-4_2 branch, latest is rpm-4.2.2:                          *
@@ -171,7 +171,7 @@ if test "$a" = "-rwxr-xr-x"; then
     FIXPERMS=a+rX,u+w,g-w,o-w 
 else
     AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
-    FIXPERMS=a+r,g-w,o-w 
+    FIXPERMS=a+r,u+w,g-w,o-w 
 fi
 AC_SUBST(FIXPERMS)
 
@@ -881,6 +881,21 @@ if test $withval != no ; then
 fi
 AC_SUBST(WITH_SELINUX_LIB)
 
+WITH_LUA_LIB=
+WITH_LUA_SUBDIR=
+WITH_LUA_INCLUDE=
+withval=yes
+AC_ARG_WITH(lua, [  --with-lua              build with lua support ])
+if test $withval != no -a -d lua ; then
+  AC_DEFINE(WITH_LUA, 1, [Build with lua support?])
+  WITH_LUA_SUBDIR="lua"
+  WITH_LUA_INCLUDE="-I\${top_srcdir}/${WITH_LUA_SUBDIR}/include -I\${top_srcdir}/${WITH_LUA_SUBDIR}/local"
+  WITH_LUA_LIB="\$(top_builddir)/${WITH_LUA_SUBDIR}/liblua.la"
+fi
+AC_SUBST(WITH_LUA_LIB)
+AC_SUBST(WITH_LUA_SUBDIR)
+AC_SUBST(WITH_LUA_INCLUDE)
+
 if test $withval = yes; then
   WITH_APIDOCS_TARGET=apidocs
   WITH_APIDOCS=1
@@ -1223,6 +1238,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	python/Makefile
 	python/rpmdb/Makefile
 	python/rpmdb/test/Makefile
+	lua/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in

@@ -76,8 +76,8 @@ void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
  */
 int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
 		/*@out@*/ const char *** argvPtr)
-	/*@globals fileSystem@*/
-	/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *argcPtr, *argvPtr, fileSystem, internalState @*/;
 
 /**
  * Expand macro into buffer.
@@ -143,12 +143,12 @@ void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
 /**
  * Load macro context from a macro file.
  * @param mc		(unused)
- * @param macrofiles	colon separated list of macro files (NULL does nothing)
+ * @param fn		macro file name
  */
-int	rpmLoadMacroFile(/*@null@*/ MacroContext mc, const char * macrofiles)
+int	rpmLoadMacroFile(/*@null@*/ MacroContext mc, const char * fn)
 	/*@globals rpmGlobalMacroContext,
 		h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies mc, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Initialize macro context from set of macrofile(s).
@@ -158,7 +158,7 @@ int	rpmLoadMacroFile(/*@null@*/ MacroContext mc, const char * macrofiles)
 void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)
 	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
 		h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies mc, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Destroy macro context.

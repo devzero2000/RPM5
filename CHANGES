@@ -3,6 +3,7 @@
 	- disable file contexts into package metadata during build.
 	- fix: "/path/foo.../bar" was losing a dot (#123844).
 	- fix: PIE executables have basename-as-soname provides (#123697).
+	- lua embedded in rpmio.
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).

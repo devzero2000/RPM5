@@ -11,6 +11,7 @@ EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio tsw dumpasn1
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	@WITH_BEECRYPT_INCLUDE@ \
+	@WITH_LUA_INCLUDE@ \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
@@ -19,7 +20,7 @@ pkginc_HEADERS = \
 	argv.h fts.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	rpmsq.h rpmsw.h ugid.h
-noinst_HEADERS = rpmio_internal.h
+noinst_HEADERS = rpmio_internal.h rpmlua.h rpmhook.h
 
 BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
 
@@ -29,10 +30,11 @@ usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c \
-	rpmio.c rpmlog.c rpmmalloc.c \
+	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
+	@WITH_LUA_LIB@ \
 	$(top_builddir)/file/src/libfmagic.la \
 	@WITH_ZLIB_LIB@ \
 	-lrt -lpthread

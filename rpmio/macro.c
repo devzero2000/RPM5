@@ -44,6 +44,10 @@ typedef	FILE * FD_t;
 #include <rpmmessages.h>
 #include <rpmerr.h>
 
+#ifdef	WITH_LUA
+#include <rpmlua.h>
+#endif
+
 #endif
 
 #include <rpmmacro.h>
@@ -59,6 +63,7 @@ extern const unsigned short int **__ctype_b_loc (void) /*@*/;
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access MacroContext@*/
 /*@access MacroEntry@*/
+/*@access rpmlua @*/
 
 static struct MacroContext_s rpmGlobalMacroContext_s;
 /*@-compmempass@*/
@@ -289,7 +294,7 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
 /*@-boundswrite@*/
 /*@null@*/
 static char *
-rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd, int escapes)
+rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies buf, fileSystem @*/
 {
@@ -297,6 +302,8 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd, int escapes)
     size_t nb = 0;
     size_t nread = 0;
     FILE * f = fdGetFILE(fd);
+    int pc = 0, bc = 0;
+    char *p = buf;
 
     if (f != NULL)
     do {
@@ -307,14 +314,32 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd, int escapes)
 	nread += nb;			/* trim trailing \r and \n */
 	for (q += nb - 1; nb > 0 && iseol(*q); q--)
 	    nb--;
-	if (!(nb > 0 && *q == '\\')) {	/* continue? */
+	for (; p <= q; p++) {
+	    switch (*p) {
+		case '\\':
+		    switch (*(p+1)) {
+			case '\0': /*@switchbreak@*/ break;
+			default: p++; /*@switchbreak@*/ break;
+		    }
+		    /*@switchbreak@*/ break;
+		case '%':
+		    switch (*(p+1)) {
+			case '{': p++, bc++; /*@switchbreak@*/ break;
+			case '(': p++, pc++; /*@switchbreak@*/ break;
+			case '%': p++; /*@switchbreak@*/ break;
+		    }
+		    /*@switchbreak@*/ break;
+		case '{': if (bc > 0) bc++; /*@switchbreak@*/ break;
+		case '}': if (bc > 0) bc--; /*@switchbreak@*/ break;
+		case '(': if (pc > 0) pc++; /*@switchbreak@*/ break;
+		case ')': if (pc > 0) pc--; /*@switchbreak@*/ break;
+	    }
+	}
+	if (nb == 0 || (*q != '\\' && !bc && !pc) || *(q+1) == '\0') {
 	    *(++q) = '\0';		/* trim trailing \r, \n */
 	    break;
 	}
-	if (escapes) {			/* copy escape too */
-	    q++;
-	    nb++;
-	}
+	q++; p++; nb++;			/* copy newline too */
 	size -= nb;
 	if (*q == '\r')			/* XXX avoid \r madness */
 	    *q = '\n';
@@ -465,17 +490,6 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 	while(((_c) = *(_s)) && (_c) != ')') \
 		*(_oe)++ = *(_s)++; \
 	*(_oe) = '\0';		\
-	/*@=boundswrite@*/	\
-    }
-
-#define	COPYBODY(_be, _s, _c)	\
-    {	/*@-boundswrite@*/	\
-	while(((_c) = *(_s)) && !iseol(_c)) { \
-		if ((_c) == '\\') \
-			(_s)++;	\
-		*(_be)++ = *(_s)++; \
-	}			\
-	*(_be) = '\0';		\
 	/*@=boundswrite@*/	\
     }
 
@@ -661,9 +675,39 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 	se++;	/* XXX skip } */
 	s = se;	/* move scan forward */
     } else {	/* otherwise free-field */
-	COPYBODY(be, s, c);
-
 /*@-boundswrite@*/
+	int bc = 0, pc = 0;
+	while (*s && (bc || pc || !iseol(*s))) {
+	    switch (*s) {
+		case '\\':
+		    switch (*(s+1)) {
+			case '\0': /*@switchbreak@*/ break;
+			default: s++; /*@switchbreak@*/ break;
+		    }
+		    /*@switchbreak@*/ break;
+		case '%':
+		    switch (*(s+1)) {
+			case '{': *be++ = *s++; bc++; /*@switchbreak@*/ break;
+			case '(': *be++ = *s++; pc++; /*@switchbreak@*/ break;
+			case '%': *be++ = *s++; /*@switchbreak@*/ break;
+		    }
+		    /*@switchbreak@*/ break;
+		case '{': if (bc > 0) bc++; /*@switchbreak@*/ break;
+		case '}': if (bc > 0) bc--; /*@switchbreak@*/ break;
+		case '(': if (pc > 0) pc++; /*@switchbreak@*/ break;
+		case ')': if (pc > 0) pc--; /*@switchbreak@*/ break;
+	    }
+	    *be++ = *s++;
+	}
+	*be = '\0';
+
+	if (bc || pc) {
+	    rpmError(RPMERR_BADSPEC,
+		_("Macro %%%s has unterminated body\n"), n);
+	    se = s;	/* XXX W2DO? */
+	    return se;
+	}
+
 	/* Trim trailing blanks/newlines */
 /*@-globs@*/
 	while (--be >= b && (c = *be) && (isblank(c) || iseol(c)))
@@ -1363,6 +1407,34 @@ expandMacro(MacroBuf mb)
 		continue;
 	}
 
+#ifdef	WITH_LUA
+	if (STREQ("lua", f, fn)) {
+		rpmlua lua = NULL; /* Global state. */
+		const char *ls = s+sizeof("{lua:")-1;
+		const char *lse = se-sizeof("}")+1;
+		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char *printbuf;
+		memcpy(scriptbuf, ls, lse-ls);
+		scriptbuf[lse-ls] = '\0';
+		rpmluaSetPrintBuffer(lua, 1);
+		if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
+		    rc = 1;
+		printbuf = rpmluaGetPrintBuffer(lua);
+		if (printbuf) {
+		    int len = strlen(printbuf);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, printbuf, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		}
+		rpmluaSetPrintBuffer(lua, 0);
+		free(scriptbuf);
+		s = se;
+		continue;
+	}
+#endif
+
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
 	    STREQ("suffix", f, fn) ||
@@ -1488,8 +1560,9 @@ expandMacro(MacroBuf mb)
 #define POPT_ARGV_ARRAY_GROW_DELTA 5
 
 /*@-boundswrite@*/
-static int poptDupArgv(int argc, const char **argv,
+static int XpoptDupArgv(int argc, const char **argv,
 		int * argcPtr, const char *** argvPtr)
+	/*@modifies *argcPtr, *argvPtr @*/
 {
     size_t nb = (argc + 1) * sizeof(*argv);
     const char ** argv2;
@@ -1531,7 +1604,8 @@ static int poptDupArgv(int argc, const char **argv,
 /*@=boundswrite@*/
 
 /*@-bounds@*/
-static int poptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
+static int XpoptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
+	/*@modifies *argcPtr, *argvPtr @*/
 {
     const char * src;
     char quote = '\0';
@@ -1590,7 +1664,7 @@ static int poptParseArgvString(const char * s, int * argcPtr, const char *** arg
 	argc++, buf++;
     }
 
-    rc = poptDupArgv(argc, argv, argcPtr, argvPtr);
+    rc = XpoptDupArgv(argc, argv, argcPtr, argvPtr);
 
 exit:
     if (argv) free(argv);
@@ -1598,6 +1672,7 @@ exit:
 }
 /*@=bounds@*/
 /* =============================================================== */
+/*@unchecked@*/
 static int _debug = 0;
 
 int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
@@ -1607,14 +1682,32 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     int argc = 0;
     const char ** argv = NULL;
     char * globRoot = NULL;
-    size_t maxb, nb;
+#ifdef ENABLE_NLS	
+    const char * old_collate = NULL;
+    const char * old_ctype = NULL;
+    const char * t;
+#endif
+	size_t maxb, nb;
     int i, j;
     int rc;
 
-    rc = poptParseArgvString(patterns, &ac, &av);
+    rc = XpoptParseArgvString(patterns, &ac, &av);
     if (rc)
 	return rc;
-
+#ifdef ENABLE_NLS
+/*@-branchstate@*/
+	t = setlocale(LC_COLLATE, NULL);
+	if (t)
+	    old_collate = xstrdup(t);
+	t = setlocale(LC_CTYPE, NULL);
+	if (t)
+	    old_ctype = xstrdup(t);
+/*@=branchstate@*/
+	(void) setlocale(LC_COLLATE, "C");
+	(void) setlocale(LC_CTYPE, "C");
+#endif
+	
+    if (av != NULL)
     for (j = 0; j < ac; j++) {
 	const char * globURL;
 	const char * path;
@@ -1693,6 +1786,18 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 
 
 exit:
+#ifdef ENABLE_NLS
+/*@-branchstate@*/
+    if (old_collate) {
+	(void) setlocale(LC_COLLATE, old_collate);
+	old_collate = _free(old_collate);
+    }
+    if (old_ctype) {
+	(void) setlocale(LC_CTYPE, old_ctype);
+	old_ctype = _free(old_ctype);
+    }
+/*@=branchstate@*/
+#endif
     av = _free(av);
 /*@-branchstate@*/
     if (rc || argvPtr == NULL) {
@@ -1824,30 +1929,31 @@ int
 rpmLoadMacroFile(MacroContext mc, const char * fn)
 {
     FD_t fd = Fopen(fn, "r.fpio");
-	char buf[BUFSIZ];
+    char buf[BUFSIZ];
     int rc = -1;
 
-	if (fd == NULL || Ferror(fd)) {
-	    if (fd) (void) Fclose(fd);
+    if (fd == NULL || Ferror(fd)) {
+	if (fd) (void) Fclose(fd);
 	return rc;
-	}
+    }
 
-	/* XXX Assume new fangled macro expansion */
-	/*@-mods@*/
-	max_macro_depth = 16;
-	/*@=mods@*/
+    /* XXX Assume new fangled macro expansion */
+    /*@-mods@*/
+    max_macro_depth = 16;
+    /*@=mods@*/
 
-	while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
-	    char c, *n;
+    buf[0] = '\0';
+    while(rdcl(buf, sizeof(buf), fd) != NULL) {
+	char c, *n;
 
-	    n = buf;
-	    SKIPBLANK(n, c);
+	n = buf;
+	SKIPBLANK(n, c);
 
-	    if (c != '%')
-		/*@innercontinue@*/ continue;
-	    n++;	/* skip % */
+	if (c != '%')
+		continue;
+	n++;	/* skip % */
 	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
-	}
+    }
     rc = Fclose(fd);
     return rc;
 }
@@ -2278,7 +2384,7 @@ main(int argc, char *argv[])
     rpmDumpMacroTable(NULL, NULL);
 
     if ((fp = fopen(testfile, "r")) != NULL) {
-	while(rdcl(buf, sizeof(buf), fp, 1)) {
+	while(rdcl(buf, sizeof(buf), fp)) {
 	    x = expandMacros(NULL, NULL, buf, sizeof(buf));
 	    fprintf(stderr, "%d->%s\n", x, buf);
 	    memset(buf, 0, sizeof(buf));
@@ -2286,7 +2392,7 @@ main(int argc, char *argv[])
 	fclose(fp);
     }
 
-    while(rdcl(buf, sizeof(buf), stdin, 1)) {
+    while(rdcl(buf, sizeof(buf), stdin)) {
 	x = expandMacros(NULL, NULL, buf, sizeof(buf));
 	fprintf(stderr, "%d->%s\n <-\n", x, buf);
 	memset(buf, 0, sizeof(buf));
