@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-01 11:41-0400\n"
+"POT-Creation-Date: 2003-07-02 16:32-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2549,31 +2549,31 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
-#: lib/rpmfi.c:659
+#: lib/rpmfi.c:669
 msgid "========== relocations\n"
 msgstr "========== yeniden konumlama\n"
 
-#: lib/rpmfi.c:663
+#: lib/rpmfi.c:673
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d %s'i dýþlýyor\n"
 
-#: lib/rpmfi.c:666
+#: lib/rpmfi.c:676
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d yeniden konumlandýrýlýyor: %s -> %s\n"
 
-#: lib/rpmfi.c:794
+#: lib/rpmfi.c:804
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s dýþlanýyor\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:814
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s %s'e konumlanýyor\n"
 
-#: lib/rpmfi.c:891
+#: lib/rpmfi.c:901
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizini %s de yeniden konumlanýyor\n"
@@ -3498,27 +3498,27 @@ msgstr "veritabanýndaki %u. kayýt hatalý -- atlanýyor\n"
 msgid "cannot add record originally at %u\n"
 msgstr "kayýt özgün olarak %u e eklenemedi\n"
 
-#: rpmdb/rpmdb.c:3860
+#: rpmdb/rpmdb.c:3856
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "veritabaný yeniden oluþturulamadý: mevcut veritabaný deðiþmeden\n"
 "yerinde býrakýldý\n"
 
-#: rpmdb/rpmdb.c:3868
+#: rpmdb/rpmdb.c:3864
 msgid "failed to replace old database with new database!\n"
 msgstr "eski veritabanýnýn yenisiyle deðiþtirilirmesi baþarýsýz!\n"
 
-#: rpmdb/rpmdb.c:3870
+#: rpmdb/rpmdb.c:3866
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "kurtarmak için %s içindeki dosyalar %s deki dosyalarla deðiþtiriliyor"
 
-#: rpmdb/rpmdb.c:3880
+#: rpmdb/rpmdb.c:3876
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s dizini siliniyor\n"
 
-#: rpmdb/rpmdb.c:3882
+#: rpmdb/rpmdb.c:3878
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s dizininin silinmesi baþarýsýz: %s\n"

@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
-"POT-Creation-Date: 2003-07-01 11:41-0400\n"
+"POT-Creation-Date: 2003-07-02 16:32-0400\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -2491,31 +2491,31 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
 
-#: lib/rpmfi.c:659
+#: lib/rpmfi.c:669
 msgid "========== relocations\n"
 msgstr "========== przesuniêcia\n"
 
-#: lib/rpmfi.c:663
+#: lib/rpmfi.c:673
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d wy³±czenie  %s\n"
 
-#: lib/rpmfi.c:666
+#: lib/rpmfi.c:676
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d przesuniêcie %s -> %s\n"
 
-#: lib/rpmfi.c:794
+#: lib/rpmfi.c:804
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "wy³±czanie %s %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:814
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/rpmfi.c:891
+#: lib/rpmfi.c:901
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie katalogu %s do %s\n"
@@ -3434,25 +3434,25 @@ msgstr "nag³ówek #%u w bazie danych jest b³êdny -- pominiêto.\n"
 msgid "cannot add record originally at %u\n"
 msgstr "nie mo¿na dodaæ rekordu bêd±cego oryginalnie przy %u\n"
 
-#: rpmdb/rpmdb.c:3860
+#: rpmdb/rpmdb.c:3856
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: rpmdb/rpmdb.c:3868
+#: rpmdb/rpmdb.c:3864
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: rpmdb/rpmdb.c:3870
+#: rpmdb/rpmdb.c:3866
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "aby odzyskaæ, nale¿y zast±piæ pliki w %s plikami z %s"
 
-#: rpmdb/rpmdb.c:3880
+#: rpmdb/rpmdb.c:3876
 #, c-format
 msgid "removing directory %s\n"
 msgstr "usuwanie katalogu %s\n"
 
-#: rpmdb/rpmdb.c:3882
+#: rpmdb/rpmdb.c:3878
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"

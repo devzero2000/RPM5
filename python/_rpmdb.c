@@ -4285,6 +4285,3 @@ DL_EXPORT(void) init_rpmdb(void)
         Py_FatalError("can't initialize module _rpmdb");
     }
 }
-
-
-

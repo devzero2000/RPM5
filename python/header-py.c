@@ -28,11 +28,11 @@
 /** \ingroup python
  * \class Rpmhdr
  * \brief A python header object represents an RPM package header.
- * 
+ *
  * All RPM packages have headers that provide metadata for the package.
  * Header objects can be returned by database queries or loaded from a
  * binary package on disk.
- * 
+ *
  * The ts.hdrFromFdno() function returns the package header from a
  * package on disk, verifying package signatures and digests of the
  * package while reading.
@@ -53,7 +53,7 @@
  *	else:
  *	   print "header is from a binary package"
  * \endcode
- * 
+ *
  * The Python interface to the header data is quite elegant.  It
  * presents the data in a dictionary form.  We'll take the header we
  * just loaded and access the data within it:
@@ -156,7 +156,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     static char *kwlist[] = { "legacyHeader", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
-	return NULL; 
+	return NULL;
 
     h = headerLink(s->h);
     /* XXX this legacy switch is a hack, needs to be removed. */
@@ -214,7 +214,7 @@ static void mungeFilelist(Header h)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
 	compressFilelist(h);
-    
+
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
 
     if (fileNames == NULL || count <= 0)
@@ -227,7 +227,7 @@ static void mungeFilelist(Header h)
     fileNames = _free(fileNames);
 }
 
-/** 
+/**
  */
 static PyObject * rhnUnload(hdrObject * s, PyObject * args)
 	/*@*/
@@ -447,7 +447,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }
-        
+
         if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
             Py_INCREF(Py_None);
             return Py_None;
@@ -656,7 +656,7 @@ PyObject * hdrLoad(PyObject * self, PyObject * args)
     int len;
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
-    
+
     /* malloc is needed to avoid surprises from data swab in headerLoad(). */
     copy = malloc(len);
     if (copy == NULL) {
@@ -689,7 +689,7 @@ PyObject * rhnLoad(PyObject * self, PyObject * args)
     int len;
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
-    
+
     /* malloc is needed to avoid surprises from data swab in headerLoad(). */
     copy = malloc(len);
     if (copy == NULL) {
@@ -861,6 +861,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	}
 
 	headerFreeIterator(hi);
+	h = headerFree(h);
 
 	Py_BEGIN_ALLOW_THREADS
 	h = headerRead(fd, HEADER_MAGIC_YES);

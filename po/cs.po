@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-01 11:41-0400\n"
+"POT-Creation-Date: 2003-07-02 16:32-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2532,32 +2532,32 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
 
-#: lib/rpmfi.c:659
+#: lib/rpmfi.c:669
 #, fuzzy
 msgid "========== relocations\n"
 msgstr "========== ukládání tsort relací\n"
 
-#: lib/rpmfi.c:663
+#: lib/rpmfi.c:673
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je vyøazen: %s\n"
 
-#: lib/rpmfi.c:666
+#: lib/rpmfi.c:676
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s vytvoøen jako %s\n"
 
-#: lib/rpmfi.c:794
+#: lib/rpmfi.c:804
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:814
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:891
+#: lib/rpmfi.c:901
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
@@ -3488,25 +3488,25 @@ msgstr ""
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3860
+#: rpmdb/rpmdb.c:3856
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3868
+#: rpmdb/rpmdb.c:3864
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3870
+#: rpmdb/rpmdb.c:3866
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3880
+#: rpmdb/rpmdb.c:3876
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3882
+#: rpmdb/rpmdb.c:3878
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Nelze pøejmenovat %s na %s: %m\n"

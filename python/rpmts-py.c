@@ -526,14 +526,17 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
 	result = Py_None;
     } else {
 	PyObject * tuple;
+	PyObject * ho;
 	IDT idt;
 	int i;
 
 	result = PyTuple_New(idtx->nidt);
 	for (i = 0; i < idtx->nidt; i++) {
 	    idt = idtx->idt + i;
-	    tuple = Py_BuildValue("(iOi)", idt->val.u32, hdr_Wrap(idt->h), idt->instance);
+	    ho = (PyObject *) hdr_Wrap(idt->h);
+	    tuple = Py_BuildValue("(iOi)", idt->val.u32, ho, idt->instance);
 	    PyTuple_SET_ITEM(result,  i, tuple);
+	    Py_DECREF(ho);
 	}
     }
 
@@ -570,14 +573,17 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
 	result = Py_None;
     } else {
 	PyObject * tuple;
+	PyObject * ho;
 	IDT idt;
 	int i;
 
 	result = PyTuple_New(idtx->nidt);
 	for (i = 0; i < idtx->nidt; i++) {
 	    idt = idtx->idt + i;
-	    tuple = Py_BuildValue("(iOs)", idt->val.u32, hdr_Wrap(idt->h), idt->key);
+	    ho = (PyObject *) hdr_Wrap(idt->h);
+	    tuple = Py_BuildValue("(iOs)", idt->val.u32, ho, idt->key);
 	    PyTuple_SET_ITEM(result,  i, tuple);
+	    Py_DECREF(ho);
 	}
     }
 
@@ -752,15 +758,11 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
 	h = headerFree(h);	/* XXX ref held by result */
 	break;
 
-    case RPMRC_NOTFOUND:
-	Py_INCREF(Py_None);
-	result = Py_None;
-	break;
-
     case RPMRC_NOKEY:
 	PyErr_SetString(pyrpmError, "public key not available");
 	break;
 
+    case RPMRC_NOTFOUND:
     case RPMRC_NOTTRUSTED:
 	PyErr_SetString(pyrpmError, "public key not trusted");
 	break;
@@ -1349,7 +1351,7 @@ static void rpmts_dealloc(/*@only@*/ rpmtsObject * s)
 
 if (_rpmts_debug)
 fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
-    rpmtsFree(s->ts);
+    s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd) Fclose(s->scriptFd);
     /* this will free the keyList, and decrement the ref count of all
@@ -1432,7 +1434,7 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
        the items on the list as well :-) */
     Py_DECREF(s->keyList);
 
-   PyObject_Del((PyObject *)s);
+    PyObject_Del((PyObject *)s);
 }
 
 /** \ingroup python

@@ -11,8 +11,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
-"POT-Creation-Date: 2003-07-01 11:41-0400\n"
-"PO-Revision-Date: 2003-06-24 15:24+0200\n"
+"POT-Creation-Date: 2003-07-02 16:32-0400\n"
+"PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
 "MIME-Version: 1.0\n"
@@ -364,7 +364,7 @@ msgstr "Incapable d'ouvrir un fichier temporaire.\n"
 #: build/build.c:218
 #, c-format
 msgid "Executing(%s): %s\n"
-msgstr "Execution_de(%s): %s\n"
+msgstr "Exécution_de(%s): %s\n"
 
 #. @=boundsread@
 #: build/build.c:228
@@ -854,7 +854,7 @@ msgstr "ligne %d: deuxième liste %%files\n"
 #: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
-msgstr "Architecture excluses: %s\n"
+msgstr "Architecture excluse: %s\n"
 
 #: build/parsePreamble.c:248
 #, c-format
@@ -874,7 +874,7 @@ msgstr "OS non inclus: %s\n"
 #: build/parsePreamble.c:281
 #, c-format
 msgid "%s field must be present in package: %s\n"
-msgstr "Le champ %s doit être présent dans le package: %s\n"
+msgstr "Le champ %s doit être présent dans le paquetage: %s\n"
 
 #: build/parsePreamble.c:310
 #, c-format
@@ -915,7 +915,7 @@ msgstr "ligne %d: tag vide: %s\n"
 #: build/parsePreamble.c:520 build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
-msgstr "ligne %d: caractère illégal '-' dans %s: %s\n"
+msgstr "ligne %d: caractère '-' illégal dans %s: %s\n"
 
 #: build/parsePreamble.c:588 build/parseSpec.c:429
 #, c-format
@@ -1408,7 +1408,7 @@ msgstr "(fourni par un paquetage)"
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
-"ignorer la(les) relation(s) entre les noms de paquetages [%d]\\t%s -> %s\n"
+"ignorer la(les) relation(s) entre les noms de paquetages [%d]\t%s -> %s\n"
 
 #: lib/depends.c:972
 #, c-format
@@ -2241,12 +2241,12 @@ msgstr "Impossible de recharger l'entête de signature\n"
 #: lib/psm.c:1715
 #, c-format
 msgid "user %s does not exist - using root\n"
-msgstr "l'utilisateur %s n'existe pas - utilisation de root\n"
+msgstr "utilisateur %s inexistant - utilisation de root\n"
 
 #: lib/psm.c:1724
 #, c-format
 msgid "group %s does not exist - using root\n"
-msgstr "le groupe %s n'existe pas - utilisation de root\n"
+msgstr "groupe %s inexistant - utilisation de root\n"
 
 #: lib/psm.c:1772
 #, c-format
@@ -2384,7 +2384,7 @@ msgstr "fichier %s: %s\n"
 #: lib/query.c:723
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "le fichier n'appartient à aucun paquetage\n"
+msgstr "le fichier %s n'appartient à aucun paquetage\n"
 
 #: lib/query.c:748
 #, c-format
@@ -2536,31 +2536,31 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "le paquetage %s a un(e) %s non-satisfaites: %s\n"
 
-#: lib/rpmfi.c:659
+#: lib/rpmfi.c:669
 msgid "========== relocations\n"
 msgstr "========== relogements\n"
 
-#: lib/rpmfi.c:663
+#: lib/rpmfi.c:673
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d exclus  %s\n"
 
-#: lib/rpmfi.c:666
+#: lib/rpmfi.c:676
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d reloge %s -> %s\n"
 
-#: lib/rpmfi.c:794
+#: lib/rpmfi.c:804
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "exclusion de %s %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:814
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "relogement de %s vers %s\n"
 
-#: lib/rpmfi.c:891
+#: lib/rpmfi.c:901
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "relogement du répertoire %s vers %s\n"
@@ -2793,7 +2793,7 @@ msgstr "%s est nécessaire pour %s%s"
 
 #: lib/rpmps.c:264 lib/rpmps.c:269
 msgid "(installed) "
-msgstr "(installé) "
+msgstr "(déjà installé) "
 
 #: lib/rpmps.c:267
 #, c-format
@@ -2903,7 +2903,7 @@ msgstr "Impossible d'ouvrir %s en lecture: %s.\n"
 #: lib/rpmts.c:159
 #, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "Impossible d'ouvrir la base de données Package dans %s\n"
+msgstr "impossible d'ouvrir la base de données Package dans %s\n"
 
 #: lib/rpmts.c:243
 #, c-format
@@ -3193,7 +3193,7 @@ msgstr "ouverture  db environnement %s/%s %s\n"
 #: rpmdb/db3.c:779
 #, c-format
 msgid "closed   db index       %s/%s\n"
-msgstr "fermeture  db index       %s/%s\n"
+msgstr "fermeture     index db    %s/%s\n"
 
 #: rpmdb/db3.c:846
 #, c-format
@@ -3210,7 +3210,7 @@ msgstr ""
 #: rpmdb/db3.c:1090
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
-msgstr "ouverture  index db       %s/%s %s mode=0x%x\n"
+msgstr "ouverture     index db    %s/%s %s mode=0x%x\n"
 
 #: rpmdb/db3.c:1328
 #, c-format
@@ -3228,7 +3228,7 @@ msgstr "partagé"
 #: rpmdb/db3.c:1334
 #, c-format
 msgid "locked   db index       %s/%s\n"
-msgstr "verrouillage db index       %s/%s\n"
+msgstr "verrouillage  index db    %s/%s\n"
 
 #: rpmdb/dbconfig.c:329
 #, c-format
@@ -3499,29 +3499,29 @@ msgstr "l'entête nº%u dans la base de données n'est pas bon -- ignoré.\n"
 msgid "cannot add record originally at %u\n"
 msgstr "impossible d'ajouter l'article qui était au départ à %u\n"
 
-#: rpmdb/rpmdb.c:3860
+#: rpmdb/rpmdb.c:3856
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Ne peut reconstruire la base de données: la base originale reste telle "
 "qu'elle est\n"
 
-#: rpmdb/rpmdb.c:3868
+#: rpmdb/rpmdb.c:3864
 msgid "failed to replace old database with new database!\n"
 msgstr "Ne peut remplacer la vieille base de données par la nouvelle!\n"
 
-#: rpmdb/rpmdb.c:3870
+#: rpmdb/rpmdb.c:3866
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 "remplacer les fichiers dans %s avec les fichiers de %s pour faire une "
 "récupération"
 
-#: rpmdb/rpmdb.c:3880
+#: rpmdb/rpmdb.c:3876
 #, c-format
 msgid "removing directory %s\n"
 msgstr "destruction du répertoire %s\n"
 
-#: rpmdb/rpmdb.c:3882
+#: rpmdb/rpmdb.c:3878
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Ne peut détruire le répertoire %s: %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-01 11:41-0400\n"
+"POT-Creation-Date: 2003-07-02 16:32-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2586,31 +2586,31 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
-#: lib/rpmfi.c:659
+#: lib/rpmfi.c:669
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:663
+#: lib/rpmfi.c:673
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je vynechaný: %s"
 
-#: lib/rpmfi.c:666
+#: lib/rpmfi.c:676
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/rpmfi.c:794
+#: lib/rpmfi.c:804
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "vynecháva sa %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:814
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/rpmfi.c:891
+#: lib/rpmfi.c:901
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "presúva sa %s do %s\n"
@@ -3541,26 +3541,26 @@ msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 msgid "cannot add record originally at %u\n"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: rpmdb/rpmdb.c:3860
+#: rpmdb/rpmdb.c:3856
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: rpmdb/rpmdb.c:3868
+#: rpmdb/rpmdb.c:3864
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: rpmdb/rpmdb.c:3870
+#: rpmdb/rpmdb.c:3866
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: rpmdb/rpmdb.c:3880
+#: rpmdb/rpmdb.c:3876
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3882
+#: rpmdb/rpmdb.c:3878
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"

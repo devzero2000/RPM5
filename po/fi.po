@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-07-01 11:41-0400\n"
+"POT-Creation-Date: 2003-07-02 16:32-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2588,31 +2588,31 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: lib/rpmfi.c:659
+#: lib/rpmfi.c:669
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:663
+#: lib/rpmfi.c:673
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Haen: %s\n"
 
-#: lib/rpmfi.c:666
+#: lib/rpmfi.c:676
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpmfi.c:794
+#: lib/rpmfi.c:804
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Haen: %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:814
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpmfi.c:891
+#: lib/rpmfi.c:901
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
@@ -3544,25 +3544,25 @@ msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 msgid "cannot add record originally at %u\n"
 msgstr "en voi lisätä tietuetta %d:stä"
 
-#: rpmdb/rpmdb.c:3860
+#: rpmdb/rpmdb.c:3856
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3868
+#: rpmdb/rpmdb.c:3864
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3870
+#: rpmdb/rpmdb.c:3866
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3880
+#: rpmdb/rpmdb.c:3876
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3882
+#: rpmdb/rpmdb.c:3878
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"
