@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.83
+Release: 0.85
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -229,8 +229,8 @@ gzip -9n apidocs/man/man*/* || :
 
 %if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
-  strip ./bin/rpm
-  strip .%{__prefix}/bin/rpm2cpio
+  %{__strip} ./bin/rpm
+  %{__strip} .%{__prefix}/bin/rpm2cpio
 }
 %endif
 
@@ -350,16 +350,16 @@ fi
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/i[3456]86*
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/athlon*
 %endif
-%ifarch alpha
+%ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/alpha*
 %endif
-%ifarch sparc sparc64
+%ifarch sparc sparcv9 sparc64
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/sparc*
 %endif
 %ifarch ia64
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/ia64*
 %endif
-%ifarch powerpc ppc
+%ifarch powerpc ppc ppciseries ppcpseries ppcmac
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/ppc*
 %endif
 %ifarch s390 s390x
@@ -367,6 +367,9 @@ fi
 %endif
 %ifarch armv3l armv4l
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/armv[34][lb]*
+%endif
+%ifarch mips mipsel mipseb
+%attr(-, rpm, rpm)		%{__prefix}/lib/rpm/mips*
 %endif
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/noarch*
 
@@ -451,6 +454,8 @@ fi
 %defattr(-,root,root)
 %rpmattr	%{__prefix}/bin/rpmprune
 %{perl_sitearch}/auto/*
+%{perl_sitearch}/RPM
+%{perl_sitearch}/RPM.pm
 %{__prefix}%{__share}/man/man1/rpmprune.1*
 %{__prefix}%{__share}/man/man3/RPM*
 %endif
@@ -502,6 +507,16 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jul 31 2001 Jeff Johnson <jbj@redhat.com>
+- detailed build package error messages.
+
+* Mon Jul 30 2001 Tim Powers <timp@redhat.com>
+- added all of the perl modules to the files list for the rpm-perl package.
+
+* Sat Jul 28 2001 Jeff Johnson <jbj@redhat.com>
+- add support for mips (#49283).
+- add __as, _build_arch, and __cxx macros (#36662, #36663, #49280).
+
 * Fri Jul 27 2001 Jeff Johnson <jbj@redhat.com>
 - fix: --noscripts is another multimode option.
 - add tmpdir to configure db3 tmpdir into chroot tree.

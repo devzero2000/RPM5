@@ -67,8 +67,10 @@
 # ---- Build system path macros.
 #
 %__ar			@AR@
+%__as			@AS@
 %__cc			@CC@
 %__cpp			@CPP@
+%__cxx			@CXX@
 %__ld			@__LD@
 %__nm			@__NM@
 %__objcopy		@__OBJCOPY@
@@ -479,6 +481,7 @@
 #	will be used if the per-platform macro file does not exist..
 #
 %_arch			@RPMCANONARCH@
+%_build_arch		@RPMCANONARCH@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_gnu			-gnu

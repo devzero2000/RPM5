@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-27 19:38-0400\n"
+"POT-Creation-Date: 2001-07-31 13:42-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -1247,7 +1247,7 @@ msgstr "não foram indicados ficheiros spec para a criação"
 msgid "no tar files given for build"
 msgstr "não foram indicados ficheiros tar para a criação"
 
-#: build/build.c:119 build/pack.c:444
+#: build/build.c:119 build/pack.c:447
 msgid "Unable to open temp file.\n"
 msgstr "Não consegui abrir um ficheiro temporário.\n"
 
@@ -1457,7 +1457,7 @@ msgstr "Ficheiro não encontrado pelo glob: %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Não consegui abrir o ficheiro do %%files %s: %s\n"
 
-#: build/files.c:1744 build/pack.c:141
+#: build/files.c:1744 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "linha: %s\n"
@@ -1534,136 +1534,151 @@ msgstr "getGnameS: demasiados gid's\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Não consegui canonizar o nome da máquina: %s\n"
 
-#: build/pack.c:78 lib/psm.c:1782
+#: build/pack.c:80 lib/psm.c:1782
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "a criação do pacote falhou no ficheiro %s: %s\n"
 
-#: build/pack.c:81 lib/psm.c:1785
+#: build/pack.c:83 lib/psm.c:1785
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "a criação do pacote falhou no ficheiro %s: %s\n"
 
-#: build/pack.c:103
+#: build/pack.c:104
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "a escrita do cpio_copy falhou: %s\n"
 
-#: build/pack.c:110
+#: build/pack.c:111
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "a leitura do cpio_copy falhou: %s\n"
 
-#: build/pack.c:203
+#: build/pack.c:204
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Não consegui abrir o ficheiro PreIn: %s\n"
 
-#: build/pack.c:210
+#: build/pack.c:211
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Não consegui abrir o ficheiro PreUn: %s\n"
 
-#: build/pack.c:217
+#: build/pack.c:218
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Não consegui abrir o ficheiro PostIn: %s\n"
 
-#: build/pack.c:224
+#: build/pack.c:225
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Não consegui abrir o ficheiro PostUn: %s\n"
 
-#: build/pack.c:232
+#: build/pack.c:233
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Não consegui abrir o ficheiro VerifyScript: %s\n"
 
-#: build/pack.c:247
+#: build/pack.c:248
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Não consegui aceder ao 'script' Trigger: %s\n"
 
-#: build/pack.c:275
+#: build/pack.c:276
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: aceder ao %s: %s\n"
 
-#: build/pack.c:284
+#: build/pack.c:285
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: ler o %s: %s\n"
 
-#: build/pack.c:292 build/pack.c:485
+#: build/pack.c:293 build/pack.c:489
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
 
-#: build/pack.c:308
+#: build/pack.c:309
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: o %s não é um pacote RPM\n"
 
-#: build/pack.c:317
+#: build/pack.c:318
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: a ler o cabeçalho do %s\n"
 
-#: build/pack.c:456
+#: build/pack.c:435
+#, fuzzy
+msgid "Unable to create immutable header region.\n"
+msgstr "Não consegui ler o cabeçalho de %s: %s\n"
+
+#: build/pack.c:453 build/pack.c:496
+#, fuzzy, c-format
+msgid "Unable to write %s header\n"
+msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
+
+#: build/pack.c:461
 msgid "Bad CSA data\n"
 msgstr "Dados de CSA inválidos\n"
 
-#: build/pack.c:508
+#: build/pack.c:514
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "A gerar a assinatura: %d\n"
 
 #: build/pack.c:527
+#, fuzzy, c-format
+msgid "Unable to reload %s header.\n"
+msgstr "Não consegui ler o cabeçalho de %s: %s\n"
+
+#: build/pack.c:535
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Não consigo aceder ao %s: %s\n"
 
-#: build/pack.c:563 lib/psm.c:1518
+#: build/pack.c:571 lib/psm.c:1518
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Não consegui gravar o pacote: %s\n"
 
-#: build/pack.c:578
+#: build/pack.c:586
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Não consegui abrir o sigtarget %s: %s\n"
 
-#: build/pack.c:588
+#: build/pack.c:596
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:602
+#: build/pack.c:610
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
-#: build/pack.c:612
+#: build/pack.c:620
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Não consegui ler o conteúdo de %s: %s\n"
 
-#: build/pack.c:618
+#: build/pack.c:626
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Não consegui escrever o conteúdo de %s: %s\n"
 
-#: build/pack.c:644 lib/psm.c:1777
+#: build/pack.c:651 lib/psm.c:1777
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravei: %s\n"
 
-#: build/pack.c:710
+#: build/pack.c:717
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Não consigo gerar o ficheiro de saída para o pacote %s: %s\n"
 
-#: build/pack.c:727
+#: build/pack.c:734
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "não consigo criar o %s: %s\n"
@@ -2186,7 +2201,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2573 lib/header.c:2592 lib/header.c:2612
+#: lib/header.c:2578 lib/header.c:2597 lib/header.c:2617
 msgid "(not a number)"
 msgstr "(não é um número)"
 
@@ -2274,77 +2289,77 @@ msgid "Data type %d not supported\n"
 msgstr "O tipo de dados %d não é suportado\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1889
+#: lib/header.c:1894
 #, c-format
 msgid "missing { after %"
 msgstr "falta um { depois do %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1919
+#: lib/header.c:1924
 msgid "missing } after %{"
 msgstr "falta um } depois do %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1933
+#: lib/header.c:1938
 msgid "empty tag format"
 msgstr "formato da opção em branco"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1947
+#: lib/header.c:1952
 msgid "empty tag name"
 msgstr "nome da opção em branco"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1964
+#: lib/header.c:1969
 msgid "unknown tag"
 msgstr "opção desconhecida"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1991
+#: lib/header.c:1996
 msgid "] expected at end of array"
 msgstr "] esperado no fim do vector"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2009
+#: lib/header.c:2014
 msgid "unexpected ]"
 msgstr "] inesperado"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2013
+#: lib/header.c:2018
 msgid "unexpected }"
 msgstr "} inesperado"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2079
+#: lib/header.c:2084
 msgid "? expected in expression"
 msgstr "esperado um ? na expressão"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2088
+#: lib/header.c:2093
 msgid "{ expected after ? in expression"
 msgstr "esperado um { a seguir ao ? na expressão"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2101 lib/header.c:2143
+#: lib/header.c:2106 lib/header.c:2148
 msgid "} expected in expression"
 msgstr "esperado um } na expressão"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2111
+#: lib/header.c:2116
 msgid ": expected following ? subexpression"
 msgstr "esperado um : a seguir à sub-expressão ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2128
+#: lib/header.c:2133
 msgid "{ expected after : in expression"
 msgstr "esperado um { a seguir ao : na expressão"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2153
+#: lib/header.c:2158
 msgid "| expected at end of expression"
 msgstr "esperado um | no fim da expressão"
 
-#: lib/header.c:2333
+#: lib/header.c:2338
 msgid "(unknown type)"
 msgstr "(tipo desconhecido)"
 
