@@ -20,6 +20,8 @@
 #include "rpmts.h"
 #include "rpmsq.h"
 
+#include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
+
 #include "debug.h"
 
 /*@access FD_t @*/	/* XXX void ptr args */
