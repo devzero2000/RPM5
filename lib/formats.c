@@ -14,15 +14,9 @@ static char * depflagsFormat(int_32 type, const void * data,
 		             char * formatPrefix, int padding, int element);
 static char * fflagsFormat(int_32 type, const void * data, 
 		           char * formatPrefix, int padding, int element);
-static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData);
-static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData);
 static char * permsString(int mode);
 
 const struct headerSprintfExtension rpmHeaderFormats[] = {
-    { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms", { permsFormat } },
@@ -121,8 +115,6 @@ static char * fflagsFormat(int_32 type, const void * data,
 	    strcat(buf, "m");
 	if (anint & RPMFILE_NOREPLACE)
 	    strcat(buf, "n");
-	if (anint & RPMFILE_GHOST)
-	    strcat(buf, "g");
 
 	val = malloc(5 + padding);
 	strcat(formatPrefix, "s");
@@ -161,42 +153,3 @@ static char * depflagsFormat(int_32 type, const void * data,
     return val;
 }
 
-static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData) {
-    char ** list;
-
-    if (rpmGetFilesystemList(&list, count)) {
-	return 1;
-    }
-
-    *type = RPM_STRING_ARRAY_TYPE;
-    *((char ***) data) = list;
-
-    *freeData = 0;
-
-    return 0; 
-}
-
-static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData) {
-    char ** filenames;
-    int_32 * filesizes;
-    uint_32 * usages;
-    int numFiles;
-
-    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL);
-    headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles);
-
-    if (rpmGetFilesystemList(NULL, count)) {
-	return 1;
-    }
-
-    if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
-	return 1;
-
-    *type = RPM_INT32_TYPE;
-    *freeData = 1;
-    *data = usages;
-
-    return 0;
-}
