@@ -27,7 +27,7 @@
 
 /*@unchecked@*/
 /*@-shadow@*/
-static int _rpmts_debug = 0;
+extern int _rpmts_debug;
 /*@=shadow@*/
 
 /*@access alKey @*/
