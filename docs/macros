@@ -37,5 +37,49 @@ Predefined Macros
 The following macros are defined as the values they reference are
 specified in the spec file:
 
-PACKAGE_VERSION
-PACKAGE_RELEASE
+	PACKAGE_VERSION
+	PACKAGE_RELEASE
+	sourcedir
+	builddir
+	optflags
+	buildarch
+	buildos
+	buildarch_lc
+	buildos_lc
+
+	name
+	version
+	release
+	serial
+	summary
+	copyright
+	license
+	distribution
+	vendor
+	group
+	packager
+	url
+	source
+	patch
+	nosource
+	nopatch
+	excludearch
+	exclusivearch
+	excludeos
+	exclusiveos
+	icon
+	provides
+	requires
+	prereq
+	conflicts
+	obsoletes
+	prefixes
+	buildroot
+	buildarchitectures
+	autoreqprov
+	autoreq
+	autoprov
+	docdir
+
+	SOURCEn		(n indicates which source)
+	PATCHn		(n indicates which patch)
