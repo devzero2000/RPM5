@@ -116,16 +116,18 @@
 
 #	Template for debug information sub-package.
 %debug_package \
+%ifnarch noarch\
 %global __debug_package 1\
-%package debug \
-Summary: Debug information for package %{name} \
-Group: Development/Debug \
-%description debug \
-This package provides debug information for package %{name}. \
-Debug information is useful when developing applications that use this \
-package or when debugging this package. \
-%files debug -f debugfiles.list \
-%defattr(-,root,root)  \
+%package debug\
+Summary: Debug information for package %{name}\
+Group: Development/Debug\
+%description debug\
+This package provides debug information for package %{name}.\
+Debug information is useful when developing applications that use this\
+package or when debugging this package.\
+%files debug -f debugfiles.list\
+%defattr(-,root,root)\
+%endif\
 %{nil}
 
 %_defaultdocdir		%{_usr}/doc
