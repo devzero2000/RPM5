@@ -50,6 +50,7 @@
 %__patch		@__PATCH@
 %__perl			@__PERL@
 %__pgp			%{_pgpbin}
+%__python		@__PYTHON@
 %__rm			@__RM@
 %__rsh			@__RSH@
 %__sed			@__SED@
