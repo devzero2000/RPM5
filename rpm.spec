@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -157,14 +157,18 @@ fi
 /usr/lib/rpm/rpmrc
 /usr/lib/rpm/vpkg-provides.sh
 /usr/lib/rpm/vpkg-provides2.sh
+
 %ifarch i386 i486 i586 i686
-/usr/lib/rpm/i386-*
+/usr/lib/rpm/i[3456]86*
 %endif
 %ifarch alpha
-/usr/lib/rpm/alpha-*
+/usr/lib/rpm/alpha*
 %endif
 %ifarch sparc sparc64
 /usr/lib/rpm/sparc*
+%endif
+%ifarch ia64
+/usr/lib/rpm/ia64*
 %endif
 
 %dir /usr/src/redhat
@@ -228,6 +232,10 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Wed Jun 21 2000 Jeff Johnson <jbj@redhat.com>
+- fix: don't expand macros in false branch of %if (kasal@suse.cz).
+- fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).
+
 * Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
 - handle version 4 packaging as input.
 - builds against bzip2 1.0
