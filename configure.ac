@@ -1201,6 +1201,7 @@ unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog)
 	test -f /etc/conectiva-release &&	RPMCANONVENDOR=conectiva
 	test -f /etc/lvr-release &&		RPMCANONVENDOR=lvr
 	test -f /etc/yellowdog-release &&	RPMCANONVENDOR=yellowdog
+	test -f /etc/caos-release &&		RPMCANONVENDOR=caos
 	;;
 esac
 RPMCANONOS="$build_os_noversion"
