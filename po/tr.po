@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-21 19:14-0500\n"
+"POT-Creation-Date: 2001-02-09 09:30-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2744,7 +2744,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2530 lib/header.c:2547 lib/header.c:2567
+#: lib/header.c:2549 lib/header.c:2566 lib/header.c:2586
 msgid "(not a number)"
 msgstr "(üye deðil)"
 
@@ -2782,90 +2782,90 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1015 lib/install.c:365
+#: lib/header.c:207 lib/header.c:1034 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1438
+#: lib/header.c:1457
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1883
+#: lib/header.c:1902
 #, c-format
 msgid "missing { after %"
 msgstr "% den sonra eksik {"
 
 #. @-observertrans@
-#: lib/header.c:1913
+#: lib/header.c:1932
 msgid "missing } after %{"
 msgstr "%{ den sonra eksik }"
 
 #. @-observertrans@
-#: lib/header.c:1927
+#: lib/header.c:1946
 msgid "empty tag format"
 msgstr "boþ tag tanýmlamasý"
 
 #. @-observertrans@
-#: lib/header.c:1939
+#: lib/header.c:1958
 msgid "empty tag name"
 msgstr "boþ tag ismi"
 
 #. @-observertrans@
-#: lib/header.c:1956
+#: lib/header.c:1975
 msgid "unknown tag"
 msgstr "bilinmeyen tag"
 
 #. @-observertrans@
-#: lib/header.c:1983
+#: lib/header.c:2002
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] bekleniyordu"
 
 #. @-observertrans@
-#: lib/header.c:2001
+#: lib/header.c:2020
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
 #. @-observertrans@
-#: lib/header.c:2005
+#: lib/header.c:2024
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
 #. @-observertrans@
-#: lib/header.c:2065
+#: lib/header.c:2084
 msgid "? expected in expression"
 msgstr "dizi içerisinde ? bekleniyordu"
 
 #. @-observertrans@
-#: lib/header.c:2074
+#: lib/header.c:2093
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "dizi içerisinde ? den sonra { bekleniyordu"
 
 #. @-observertrans@
-#: lib/header.c:2087 lib/header.c:2128
+#: lib/header.c:2106 lib/header.c:2147
 msgid "} expected in expression"
 msgstr "dizi içerisinde } bekleniyordu"
 
 #. @-observertrans@
-#: lib/header.c:2097
+#: lib/header.c:2116
 msgid ": expected following ? subexpression"
 msgstr "? altdizisinden sonra : bekleniyordu"
 
 #. @-observertrans@
-#: lib/header.c:2113
+#: lib/header.c:2132
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "dizide : den sonra { bekleniyordu"
 
 #. @-observertrans@
-#: lib/header.c:2138
+#: lib/header.c:2157
 msgid "| expected at end of expression"
 msgstr "dizinin sonunda | bekleniyordu"
 
-#: lib/header.c:2309
+#: lib/header.c:2328
 msgid "(unknown type)"
 msgstr "(bilinmeyen tip)"
 
@@ -4079,7 +4079,9 @@ msgstr ""
 
 #: lib/uninstall.c:436
 #, fuzzy, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgid ""
+"retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
+"returned %s\n"
 msgstr "betik (script) çalýþtýrýlamadý "
 
 #: lib/uninstall.c:443
