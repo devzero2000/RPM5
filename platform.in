@@ -39,7 +39,6 @@
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
   FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
-  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} ; \
   ./configure %{_target_platform} \\\
  	--prefix=%{_prefix} \\\
 	--exec-prefix=%{_exec_prefix} \\\

@@ -7,7 +7,7 @@ dnl it, why check it?
 AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(rpm, 4.0.3)
+AM_INIT_AUTOMAKE(rpm, 4.0.4)
 AM_CONFIG_HEADER(config.h)
 
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
@@ -798,11 +798,11 @@ withval=auto
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
 if test $withval = auto ; then
-  AC_MSG_CHECKING(for python 1.5.2)
+  AC_MSG_CHECKING(for python 2.2)
   AC_TRY_RUN([
-#include <python1.5/Python.h>
+#include <python2.2/Python.h>
 main() {
-  exit(strcmp("1.5.2", PY_VERSION));
+  exit(strcmp("2.2b2", PY_VERSION));
 } ],
   withval=yes, withval=no, withval=yes)
   AC_MSG_RESULT($withval)

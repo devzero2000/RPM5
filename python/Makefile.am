@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-PYVER=1.5
+PYVER=2.2
 
 INCLUDES = \
 	-I$(top_srcdir) \
