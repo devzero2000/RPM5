@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -494,7 +494,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Wed Nov 10 2004 Jeff Johnson <jbj@jbj.org>
+* Sun Dec  5 2004 Jeff Johnson <jbj@jbj.org> 4.3.3-2
+- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
+
+* Wed Nov 10 2004 Jeff Johnson <jbj@jbj.org> 4.3.3-1
 - bump micro version.
 - make peace with libtool-1.5.10 and automake-1.9.3.
 - python: add python 2.4 support.
