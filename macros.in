@@ -205,7 +205,7 @@
 #	1	db_185.h interface in db2/db3 libdb.a.
 #	2	native db2 interface.
 #	3	native db3 interface.
-%_preferdb		2
+%_preferdb		3
 
 # Filter duplicate entries in db (needed only to correct bug pre rpm-3.0.4)
 %_filterdbdups		no
