@@ -23,7 +23,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	versiontag = RPMTAG_PROVIDEVERSION;
 	flagtag = RPMTAG_PROVIDEFLAGS;
     } else if (flag & RPMSENSE_OBSOLETES) {
-	nametag = RPMTAG_OBSOLETES;
+	nametag = RPMTAG_OBSOLETENAME;
 	versiontag = RPMTAG_OBSOLETEVERSION;
 	flagtag = RPMTAG_OBSOLETEFLAGS;
     } else if (flag & RPMSENSE_CONFLICTS) {
@@ -101,3 +101,15 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
     return 0;
 }
+
+int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
+{
+    char * reqname = alloca(sizeof("rpmlib()") + strlen(feature));
+
+    (void) stpcpy( stpcpy( stpcpy(reqname, "rpmlib("), feature), ")");
+
+    /* XXX 1st arg is unused */
+   return addReqProv(NULL, h, RPMSENSE_PREREQ|(RPMSENSE_LESS|RPMSENSE_EQUAL),
+	reqname, featureEVR, 0);
+}
+

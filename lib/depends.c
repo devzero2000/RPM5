@@ -374,7 +374,7 @@ const char *rpmNAME = PACKAGE;
 const char *rpmEVR = VERSION;
 int rpmFLAGS = RPMSENSE_EQUAL;
 
-static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
+int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
 	const char *BName, const char *BEVR, int BFlags)
 {
     const char *aDepend = printDepend(AName, AEVR, AFlags);
@@ -486,7 +486,7 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
     result = 0;
     for (i = 0; i < providesCount; i++) {
 
-	result = rangesOverlap(provides[i], providesEVR[i], provideFlags[i],
+	result = rpmRangesOverlap(provides[i], providesEVR[i], provideFlags[i],
 		reqName, reqEVR, reqFlags);
 
 	/* If this provide matches the require, we're done. */
@@ -522,7 +522,7 @@ int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, in
     strcat(pkgEVR, "-");
     strcat(pkgEVR, release);
 
-    return rangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
+    return rpmRangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
 
 }
 
@@ -620,13 +620,6 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
 	return 1;
-
-    /* Make sure we've implemented all of the capabilities we need */
-    if (headerGetEntry(h, RPMTAG_CAPABILITY, NULL, (void **)&caps, &count)) {
-	if (count != 1 || *caps) {
-	    return 2;
-	}
-    }
 
     /* FIXME: handling upgrades like this is *almost* okay. It doesn't
        check to make sure we're upgrading to a newer version, and it
@@ -820,7 +813,7 @@ alFileSatisfiesDepend(struct availableList * al,
     {	char *pEVR;
 	int pFlags = RPMSENSE_EQUAL;
 	pEVR = buildEVR(p->epoch, p->version, p->release);
-	rc = rangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
+	rc = rpmRangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
 	free(pEVR);
 	if (keyType && keyDepend && rc)
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added package.\n"), keyType, keyDepend);
@@ -835,7 +828,7 @@ alFileSatisfiesDepend(struct availableList * al,
 
 	    proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
 	    proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
-	    rc = rangesOverlap(p->provides[i], proEVR, proFlags,
+	    rc = rpmRangesOverlap(p->provides[i], proEVR, proFlags,
 			keyName, keyEVR, keyFlags);
 	    if (rc) break;
 	}
@@ -879,10 +872,24 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     }
   }
 
+    /*
+     * New features in rpm packaging implicitly add versioned dependencies
+     * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
+     * Check those dependencies now.
+     */
+     if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
+	if (rpmCheckRpmlibProvides(keyName, keyEVR, keyFlags)) {
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib provides)\n"),
+			keyType, keyDepend+2);
+	    goto exit;
+	}
+    }
+
     if (alSatisfiesDepend(&rpmdep->addedPackages, keyType, keyDepend, keyName, keyEVR, keyFlags)) {
 	goto exit;
     }
 
+    /* XXX only the installer does not have the database open here. */
     if (rpmdep->db != NULL) {
 	if (*keyName == '/') {
 	    /* keyFlags better be 0! */
@@ -944,19 +951,6 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    dbiFreeIndexRecord(matches);
 	    if (i < dbiIndexSetCount(matches)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db packages.\n"), keyType, keyDepend);
-		goto exit;
-	    }
-	}
-
-	/*
-	 * New features in rpm spec files add implicit dependencies on rpm
-	 * version. Provide implicit rpm version in last ditch effort to
-	 * satisfy an rpm dependency.
-	 */
-	if (!strcmp(keyName, rpmNAME)) {
-	    i = rangesOverlap(keyName, keyEVR, keyFlags, rpmNAME, rpmEVR, rpmFLAGS);
-	    if (i) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by rpmlib version.\n"), keyType, keyDepend);
 		goto exit;
 	    }
 	}

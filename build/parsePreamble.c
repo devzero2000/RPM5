@@ -517,7 +517,7 @@ fprintf(stderr, "*** PPA BuildRoot %s already set, skipping field %s\n", buildRo
 	    return rc;
 	}
 	break;
-      case RPMTAG_OBSOLETES:
+      case RPMTAG_OBSOLETEFLAGS:
       case RPMTAG_PROVIDEFLAGS:
       case RPMTAG_BUILDREQUIRES:
       case RPMTAG_BUILDCONFLICTS:
@@ -597,7 +597,7 @@ static struct PreambleRec {
     {RPMTAG_REQUIREFLAGS,	0, 0, "requires"},
     {RPMTAG_PREREQ,		0, 0, "prereq"},
     {RPMTAG_CONFLICTFLAGS,	0, 0, "conflicts"},
-    {RPMTAG_OBSOLETES,		0, 0, "obsoletes"},
+    {RPMTAG_OBSOLETEFLAGS,	0, 0, "obsoletes"},
     {RPMTAG_PREFIXES,		0, 0, "prefixes"},
     {RPMTAG_PREFIXES,		0, 0, "prefix"},
     {RPMTAG_BUILDROOT,		0, 0, "buildroot"},

@@ -3,8 +3,6 @@
 # Package source files
 
 build.c
-convertdb.c
-oldrpmdb.c
 rpm.c
 rpm2cpio.c
 build/build.c
@@ -41,7 +39,6 @@ lib/md5.c
 lib/md5sum.c
 lib/messages.c
 lib/misc.c
-lib/oldheader.c
 lib/package.c
 lib/problems.c
 lib/query.c

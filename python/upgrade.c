@@ -159,7 +159,7 @@ static int findPackagesWithObsoletes(rpmdb db, struct pkgSet *psp)
 	    continue;
 	}
 
-	if (headerGetEntryMinMemory((*pip)->h, RPMTAG_OBSOLETES, NULL,
+	if (headerGetEntryMinMemory((*pip)->h, RPMTAG_OBSOLETENAME, NULL,
 		       (void **) &obsoletes, &obsoletesCount)) {
 	    while (obsoletesCount--) {
 		rc = rpmdbFindPackage(db, obsoletes[obsoletesCount], &matches);

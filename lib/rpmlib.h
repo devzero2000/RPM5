@@ -146,7 +146,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_TRIGGERPOSTUN		1102 /* internal */
 #define	RPMTAG_AUTOREQ			1103 /* internal */
 #define	RPMTAG_AUTOPROV			1104 /* internal */
-#define	RPMTAG_CAPABILITY		1105 /* unused */
+#define	RPMTAG_CAPABILITY		1105 /* unused internal */
 #define	RPMTAG_SOURCEPACKAGE		1106 /* internal */
 #define	RPMTAG_OLDORIGFILENAMES		1107 /* obsolete */
 #define	RPMTAG_BUILDPREREQ		1108 /* internal */
@@ -432,6 +432,20 @@ void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 #define	RPMTRANS_FLAG_NODOCS		(1 << 5)
 #define	RPMTRANS_FLAG_ALLFILES		(1 << 6)
 #define	RPMTRANS_FLAG_KEEPOBSOLETE	(1 << 7)
+
+/**
+ */
+int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
+	const char *BName, const char *BEVR, int BFlags);
+
+/**
+ */
+int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
+	int keyFlags);
+
+/**
+ */
+void rpmShowRpmlibProvides(FILE * fp);
 
 typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
 				RPMPROB_BADOS,

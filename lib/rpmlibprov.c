@@ -16,8 +16,6 @@ static struct rpmlibProvides {
 	"package payload compressed using bzip2." },
     { "rpmlib(PayloadFilesHavePrefix)",	"4.0-1",	RPMSENSE_EQUAL,
 	"package payload files have \"./\" prefix." },
-    { "rpmlib(ExplicitPackageProvide)",	"4.0-1",	RPMSENSE_EQUAL,
-	"package name-version-release not implicitly provided." },
     { NULL,				NULL,	0 }
 };
 

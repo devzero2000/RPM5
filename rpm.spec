@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.5
 Version: %{version}
-Release: 0.7
+Release: 0.8
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -234,6 +234,16 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Sun Jul 16 2000 Jeff Johnson <jbj@redhat.com>
+- remove (unused) RPMTAG_CAPABILITY.
+- remove (legacy) use of RPMTAG_{OBSOLETES,PROVIDES} internally.
+- remove (legacy) support for version 1 packaging.
+- remove (legacy) support for converting gdbm databases.
+- eliminate unused headerGz{Read,Write}.
+- support for rpmlib(...) internal feature dependencies.
+- display rpmlib provides when invoked with --showrc.
+- fix: compare versions if doing --freshen.
+
 * Tue Jul 11 2000 Jeff Johnson <jbj@redhat.com>
 - identify package when install scriptlet fails (#12448).
 

@@ -297,6 +297,7 @@ int writeRPM(Header h, const char *fileName, int type,
 		&csa->cpioArchiveSize, 1);
     }
 
+    /* Choose how filenames are represented. */
     if (_noDirTokens)
 	expandFilelist(h);
     else
@@ -325,10 +326,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	    headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"bzip2", 1);
 	    /* Add prereq on rpm version that understands bzip2 payloads */
-	    /* XXX 1st arg is unused */
-	    addReqProv(NULL, h,
-			RPMSENSE_PREREQ|(RPMSENSE_GREATER|RPMSENSE_EQUAL),
-			"rpm", "3.0.5", 0);
+	    rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
 	}
 	strcpy(buf, rpmio_flags);
 	buf[s - rpmio_flags] = '\0';
@@ -534,11 +532,6 @@ int packageBinaries(Spec spec)
 		       RPM_STRING_TYPE, buildHost(), 1);
 	headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
-
-    {	int capability = 0;
-	headerAddEntry(pkg->header, RPMTAG_CAPABILITY, RPM_INT32_TYPE,
-			&capability, 1);
-    }
 
     {	const char * optflags = rpmExpand("%{optflags}", NULL);
 	headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,

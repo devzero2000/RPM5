@@ -133,6 +133,8 @@ void freePackage(/*@only@*/ Package p);
 int addReqProv(/*@unused@*/Spec spec, Header h,
 		int flag, const char *name, const char *version, int index);
 
+int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR);
+
 /* from build/files.h */
 
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test);

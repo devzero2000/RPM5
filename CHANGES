@@ -19,6 +19,14 @@
 	- support for bzip payloads.
 	- fix: payload compression tag not nul terminated.
 	- identify package when install scriptlet fails (#12448).
+	- remove (unused) RPMTAG_CAPABILITY.
+	- remove (legacy) use of RPMTAG_{OBSOLETES,PROVIDES} internally.
+	- remove (legacy) support for version 1 packaging.
+	- remove (legacy) support for converting gdbm databases.
+	- eliminate unused headerGz{Read,Write}.
+	- support for rpmlib(...) internal feature dependencies.
+	- display rpmlib provides when invoked with --showrc.
+	- fix: compare versions if doing --freshen.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

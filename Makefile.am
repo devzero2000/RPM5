@@ -9,8 +9,6 @@ EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL \
 	python/*.am python/*.in python/*.c python/*.h python/testit \
 	rpm.magic rpmpopt rpm.spec installplatform
 
-EXTRA_PROGRAMS = rpmconvert
-
 # XXX TODO: python perl
 SUBDIRS = intl po popt build lib misc tools scripts tests doc .
 
@@ -36,8 +34,6 @@ rpmbin_PROGRAMS = rpm
 bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
 
-noinst_PROGRAMS =	@BUILD_RPMCONVERT@
-
 pkglibdir = @RPMCONFIGDIR@
 pkglib_DATA = rpmrc rpmpopt macros
 pkglib_SCRIPTS = find-provides find-requires mkinstalldirs \
@@ -57,10 +53,6 @@ lclint:
 CVSTAG = r$(subst .,-,$(VERSION))
 
 rpm2cpio_SOURCES =	rpm2cpio.c
-
-rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
-## Libmisc.a is required for rpmconvert.
-rpmconvert_LDADD =	$(myldadd) -lgdbm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm

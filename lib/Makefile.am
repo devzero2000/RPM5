@@ -9,7 +9,7 @@ pkginc_HEADERS = \
 	dbindex.h header.h misc.h rpmio.h rpmlib.h rpmmacro.h rpmurl.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
-	lookup.h md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
+	lookup.h md5.h rpm_malloc.h \
 	rpmdb.h rpmlead.h signature.h
 
 mylibpaths= -L$(top_builddir)/lib -L$(top_builddir)/popt
@@ -20,10 +20,10 @@ librpm_la_SOURCES = \
 	cpio.c dbindex.c depends.c falloc.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
 	lookup.c macro.c md5.c md5sum.c \
-	messages.c misc.c oldheader.c package.c problems.c query.c \
-	rebuilddb.c rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \
-	rpmio.c rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
-	tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
+	messages.c misc.c package.c problems.c query.c \
+	rebuilddb.c rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c rpmio.c \
+	rpmlead.c rpmlibprov.c rpmmalloc.c rpmrc.c signature.c stringbuf.c \
+	stubs.c tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
 #librpm_la_LIBADD = -lpopt
 
 tagtable.c: rpmlib.h 

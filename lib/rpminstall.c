@@ -277,15 +277,37 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 		if (interfaceFlags & INSTALL_FRESHEN) {
 		    dbiIndexSet matches;
 		    const char * name;
-		    int count;
+		    Header oldH;
+		    int count, freematches;
+		    int j;
 
 		    headerNVR(h, &name, NULL, NULL);
 		
-		    if (rpmdbFindPackage(db, name, &matches) != 0)
-			break;
+		    freematches = count = 0;
+		    if (rpmdbFindPackage(db, name, &matches) == 0) {
+			count = dbiIndexSetCount(matches);
+			freematches = 1;
+		    }
 
-		    /* Package exists, OK to freshen */
-		    dbiFreeIndexRecord(matches);
+		    for (j = 0; j < count; j++) {
+			unsigned int offset = dbiIndexRecordOffset(matches, j);
+			if ((oldH = rpmdbGetRecord(db, offset)) == NULL)
+			    continue;
+			if (rpmVersionCompare(oldH, h) < 0)
+			    continue;
+			/* same or newer package already installed */
+			count = 0;
+			break;
+		    }
+		    if (freematches)
+			dbiFreeIndexRecord(matches);
+
+		    if (count == 0) {
+			headerFree(h);
+			Fclose(fd);
+			break;  /* XXX out of switch */
+		    }
+		    /* Package is newer than those currently installed. */
 		}
 
 		rc = rpmtransAddPackage(rpmdep, h, NULL, fileName,
