@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-27 16:38-0400\n"
+"POT-Creation-Date: 2002-08-27 16:45-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2975,7 +2975,7 @@ msgid "Suggesting: %s\n"
 msgstr "ソースは: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:909
+#: lib/rpmts.c:906
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 

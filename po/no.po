@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-27 16:38-0400\n"
+"POT-Creation-Date: 2002-08-27 16:45-0400\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -2844,7 +2844,7 @@ msgid "Suggesting: %s\n"
 msgstr "Henter %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:909
+#: lib/rpmts.c:906
 msgid "getting list of mounted filesystems\n"
 msgstr "henter liste over monterte filsystemer\n"
 

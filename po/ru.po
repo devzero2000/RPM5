@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-27 16:38-0400\n"
+"POT-Creation-Date: 2002-08-27 16:45-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2837,7 +2837,7 @@ msgid "Suggesting: %s\n"
 msgstr "Предлагается: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:909
+#: lib/rpmts.c:906
 msgid "getting list of mounted filesystems\n"
 msgstr "строится список смонтированных файловых систем\n"
 
