@@ -184,6 +184,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     pkgNum = al->size++;
     p = al->list + pkgNum;
     p->h = headerLink(h);	/* XXX reference held by transaction set */
+    p->multiLib = 0;
 
     headerNVR(p->h, &p->name, &p->version, &p->release);
 

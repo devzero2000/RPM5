@@ -54,6 +54,8 @@ typedef struct {
     mode_t	ar_dmode;
 } AttrRec;
 
+static int multiLib;
+
 struct FileList {
     const char *buildRootURL;
     const char *prefix;
@@ -596,6 +598,35 @@ static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
     return 0;
 }
 
+static int parseForRegexMultiLib(const char *fileName)
+{
+    static int initialized = 0;
+    static int hasRegex = 0;
+    static regex_t compiledPatt;
+    int x;
+
+    if (! initialized) {
+	const char *patt;
+	int rc = 0;
+
+	initialized = 1;
+	patt = rpmExpand("%{_multilibpatt}", NULL);
+	if (!(patt && *patt != '%'))
+	    rc = 1;
+	else if (regcomp(&compiledPatt, patt, REG_EXTENDED | REG_NOSUB))
+	    rc = -1;
+	xfree(patt);
+	if (rc)
+	    return rc;
+	hasRegex = 1;
+    }
+
+    if (! hasRegex || regexec(&compiledPatt, fileName, 0, NULL, 0))
+	return 1;
+
+    return 0;
+}
+
 /** */
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
@@ -603,6 +634,7 @@ VFA_t virtualFileAttributes[] = {
 	{ "%ghost",	RPMFILE_GHOST },
 	{ "%readme",	RPMFILE_README },
 	{ "%license",	RPMFILE_LICENSE },
+	{ "%multilib",	0 },
 
 #if WHY_NOT
 	{ "%spec",	RPMFILE_SPEC },
@@ -650,9 +682,12 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
 	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
 	    if (strcmp(s, vfa->attribute))
 		continue;
-	    if (!strcmp(s, "%dir"))
-		fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
-	    else
+	    if (!vfa->flag) {
+		if (!strcmp(s, "%dir"))
+		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
+		else if (!strcmp(s, "%multilib"))
+		    fl->currentFlags |= multiLib;
+	    } else
 		fl->currentFlags |= vfa->flag;
 	    break;
 	}
@@ -756,6 +791,7 @@ static void genCpioListAndHeader(struct FileList *fl,
     struct cpioFileMapping *clp;
     char *s;
     char buf[BUFSIZ];
+    uint_32 multiLibMask = 0;
     
     /* Sort the big list */
     qsort(fl->fileList, fl->fileListRecsUsed,
@@ -777,7 +813,12 @@ static void genCpioListAndHeader(struct FileList *fl,
 	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s"), flp->fileURL);
 	    fl->processingFailed = 1;
 	}
-	
+
+	if (flp->flags & RPMFILE_MULTILIB_MASK)
+	    multiLibMask |=
+		1 << ((flp->flags & RPMFILE_MULTILIB_MASK)
+		      >> RPMFILE_MULTILIB_SHIFT);
+
 	/* Make the cpio list */
 	if (! (flp->flags & RPMFILE_GHOST)) {
 	    clp->fsPath = xstrdup(flp->diskURL);
@@ -894,6 +935,9 @@ static void genCpioListAndHeader(struct FileList *fl,
     }
     headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
+    if (multiLibMask)
+	headerAddEntry(h, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+		       &multiLibMask, 1);
 }
 
 static void freeFileList(FileListRec *fileList, int count)
@@ -1059,6 +1103,11 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
 	flp->flags = fl->currentFlags;
 	flp->verifyFlags = fl->currentVerifyFlags;
 
+	if (multiLib
+	    && !(flp->flags & RPMFILE_MULTILIB_MASK)
+	    && !parseForRegexMultiLib(fileURL))
+	    flp->flags |= multiLib;
+
 	fl->totalFileSize += flp->fl_size;
     }
 
@@ -1134,6 +1183,10 @@ static int processPackageFiles(Spec spec, Package pkg,
     char buf[BUFSIZ];
     AttrRec specialDocAttrRec;
     char *specialDoc = NULL;
+
+    multiLib = rpmExpandNumeric("%{_multilibno}");
+    if (multiLib)
+	multiLib = RPMFILE_MULTILIB(multiLib);
     
     nullAttrRec(&specialDocAttrRec);
     pkg->cpioList = NULL;
@@ -1173,7 +1226,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     }
     
     /* Init the file list structure */
-    
+
     /* XXX spec->buildRootURL == NULL, then xstrdup("") is returned */
     fl.buildRootURL = rpmGenPath(spec->rootURL, spec->buildRootURL, NULL);
 

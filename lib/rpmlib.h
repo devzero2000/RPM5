@@ -182,8 +182,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_ORIGDIRINDEXES		1119 /* internal */
 #define	RPMTAG_ORIGBASENAMES		1120 /* internal */
 #define	RPMTAG_ORIGDIRNAMES		1121 /* internal */
+#define RPMTAG_MULTILIBS		1122
 
-#define	RPMTAG_FIRSTFREE_TAG		1122 /* internal */
+#define	RPMTAG_FIRSTFREE_TAG		1123 /* internal */
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 #define	RPMFILE_STATE_NORMAL 		0
@@ -201,6 +202,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMFILE_GHOST			(1 << 6)
 #define	RPMFILE_LICENSE			(1 << 7)
 #define	RPMFILE_README			(1 << 8)
+#define RPMFILE_MULTILIB_SHIFT		27
+#define RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
+#define RPMFILE_MULTILIB_MASK		RPMFILE_MULTILIB(31)
 
 #define RPMVERIFY_NONE		0
 #define RPMVERIFY_MD5		(1 << 0)
@@ -602,6 +606,7 @@ void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 #define	RPMTRANS_FLAG_NODOCS		(1 << 5)
 #define	RPMTRANS_FLAG_ALLFILES		(1 << 6)
 #define	RPMTRANS_FLAG_KEEPOBSOLETE	(1 << 7)
+#define RPMTRANS_FLAG_MULTILIB		(1 << 8)
 
 typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
 				RPMPROB_BADOS,

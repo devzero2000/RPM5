@@ -14,6 +14,7 @@ struct availablePackage {
     /*@dependent@*/ const char * release;
     /*@dependent@*/ int_32 * epoch;
     int providesCount, filesCount;
+    uint_32 multiLib;
     /*@dependent@*/ const void * key;
     rpmRelocation * relocs;
     /*@null@*/ FD_t fd;
