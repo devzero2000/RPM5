@@ -761,6 +761,9 @@ alFileSatisfiesDepend(struct availableList * al,
     struct dirInfo dirNeedle;
     struct dirInfo * dirMatch;
 
+    if (al->numDirs == 0)       /* Solaris 2.6 bsearch sucks down on this. */
+	return NULL;
+
     {	char * chptr = xstrdup(fileName);
 	dirName = chptr;
 	chptr = strrchr(chptr, '/');
