@@ -1104,12 +1104,14 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    !strcmp(flp->fileURL, flp[1].fileURL)) {
 
 	    /* Two entries for the same file found, merge the entries. */
-
-	    rpmMessage(RPMMESS_WARNING, _("File listed twice: %s\n"),
-		flp->fileURL);
+	    /* Note that an %exclude is a duplication of a file reference */
 
 	    /* file flags */
 	    flp[1].flags |= flp->flags;	
+
+	    if (!(flp[1].flags & RPMFILE_EXCLUDE))
+		rpmMessage(RPMMESS_WARNING, _("File listed twice: %s\n"),
+			flp->fileURL);
    
 	    /* file mode */
 	    if (S_ISDIR(flp->fl_mode)) {
@@ -1343,6 +1345,11 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		!strcmp(flp->fileURL, flp[1].fileURL))
 	    flp++;
 
+	if (flp->flags & RPMFILE_EXCLUDE) {
+	    i--;
+	    continue;
+	}
+
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
 	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
@@ -1557,8 +1564,10 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
 	fileGname = getGname(getgid());
 #endif
     
-    rpmMessage(RPMMESS_DEBUG, _("File %4d: %07o %s.%s\t %s\n"), fl->fileCount,
+#ifdef	DYING	/* XXX duplicates with %exclude, use psm.c output instead. */
+    rpmMessage(RPMMESS_DEBUG, _("File%5d: %07o %s.%s\t %s\n"), fl->fileCount,
 	(unsigned)fileMode, fileUname, fileGname, fileURL);
+#endif
 
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
