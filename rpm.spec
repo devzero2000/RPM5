@@ -7,9 +7,9 @@
 
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 3.0.6
+%define version 3.0.7
 Version: %{version}
-Release: 6x
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -250,115 +250,5 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Wed Sep 13 2000 Jeff Johnson <jbj@redhat.com>
-- add conflict to avoid incompatible libio interface in glibc-2.2.
-- rpm 3.0.6 release.
-
-* Wed Sep 13 2000 Jeff Johnson <jbj@redhat.com>
-- popt: support for float/double args.
-- fix: honor --test when doing --freshen.
-- add alpha* architectures.
-
-* Tue Aug 29 2000 Jeff Johnson <jbj@redhat.com>
-- translate rpm.8 man page (Peter Ivanyi <ivanyi@internet.sk>).
-
-* Wed Aug 23 2000 Jeff Johnson <jbj@redhat.com>
-- macroize manpath to build on FHS systems.
-
-* Sun Aug 20 2000 Jeff Johnson <jbj@redhat.com>
-- python bindings to query and verify signatures.
-- add callbacks on package erasure.
-- fix: preserve cpio errno when using Fclose with libio.
-- fix: initialize sigs everywhere in python header object.
-
-* Thu Aug 10 2000 Jeff Johnson <jbj@redhat.com>
-- disable rpmlib(VersionedDependencies) by defining _noVersionedDependencies.
-
-* Sat Jul 22 2000 Jeff Johnson <jbj@redhat.com>
-- build rpm with necessary autoconf options to get linux config correct.
-
-* Thu Jul 20 2000 Jeff Johnson <jbj@redhat.com>
-- fix: Red Hat 6.0 (5.2?) glibc-2.1.1 fclose fails using libio.
-- add /usr/kerberos/man to brp-compress.
-
-* Sun Jul 16 2000 Jeff Johnson <jbj@redhat.com>
-- remove (unused) RPMTAG_CAPABILITY.
-- remove (legacy) use of RPMTAG_{OBSOLETES,PROVIDES} internally.
-- remove (legacy) support for version 1 packaging.
-- remove (legacy) support for converting gdbm databases.
-- eliminate unused headerGz{Read,Write}.
-- support for rpmlib(...) internal feature dependencies.
-- display rpmlib provides when invoked with --showrc.
-- fix: compare versions if doing --freshen.
-
-* Tue Jul 11 2000 Jeff Johnson <jbj@redhat.com>
-- identify package when install scriptlet fails (#12448).
-
-* Sun Jul  9 2000 Jeff Johnson <jbj@redhat.com>
-- fix: payload compression tag not nul terminated.
-
-* Thu Jun 22 2000 Jeff Johnson <jbj@redhat.com>
-- internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
-- support for separate source/binary compression policy.
-- support for bzip payloads.
-
-* Wed Jun 21 2000 Jeff Johnson <jbj@redhat.com>
-- fix: don't expand macros in false branch of %if (kasal@suse.cz).
-- fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).
-- uname on i370 has s390 as arch (#11456).
-- python: initdb binding (Dan Burcaw <dburcaw@terraplex.com>).
-
-* Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
-- handle version 4 packaging as input.
-- builds against bzip2 1.0
-- fix: resurrect symlink unique'ifying property of finger prints.
-- fix: broken glob test with empty build directory (Geoff Keating).
-- fix: create per-platform directories correctly.
-- update brp-* scripts from rpm-4.0, enable in per-platform config.
-- alpha: add -mieee to default optflags.
-- add RPMTAG_OPTFLAGS, configured optflags when package was built.
-- add RPMTAG_DISTURL for rpmfind-like tools (content unknown yet).
-- teach brp-compress about /usr/info and /usr/share/info as well.
-- update macros.in from rpm-4.0 (w/o dbi configuration).
-
-* Thu Mar 15 2000 Jeff Johnson <jbj@redhat.com>
-- portability: skip bzip2 if not available.
-- portability: skip gzseek if not available (zlib-1.0.4).
-- portability: skip personality if not available (linux).
-- portability: always include arpa/inet.h (HP-UX).
-- portability: don't use id -u (Brandon Allbery).
-- portability: don't chown/chgrp -h w/o lchown.
-- portability: splats in rpm.spec to find /usr/{share,local}/locale/*
-- fix: better filter in linux.req to avoid ARM specific objdump output.
-- fix: use glibc 2.1 glob/fnmatch everywhere.
-- fix: noLibio = 0 on Red Hat 4.x and 5.x.
-- fix: typo in autodeps/linux.req.
-
-* Thu Mar  2 2000 Jeff Johnson <jbj@redhat.com>
-- simpler hpux.prov script (Tim Mooney).
-
-* Wed Mar  1 2000 Jeff Johnson <jbj@redhat.com>
-- fix rpmmodule.so python bindings.
-
-* Sun Feb 27 2000 Jeff Johnson <jbj@redhat.com>
-- rpm-3.0.4 release candidate.
-
-* Fri Feb 25 2000 Jeff Johnson <jbj@redhat.com>
-- fix: filter excluded paths before adding install prefixes (#8709).
-- add i18n lookaside to PO catalogue(s) for i18n strings.
-- try for /etc/rpm/macros.specspo so that specspo autoconfigures rpm.
-- per-platform configuration factored into /usr/lib/rpm subdir.
-
-* Tue Feb 15 2000 Jeff Johnson <jbj@redhat.com>
-- new rpm-build package to isolate rpm dependencies on perl/bash2.
-- always remove duplicate identical package entries on --rebuilddb.
-- add scripts for autogenerating CPAN dependencies.
-
-* Wed Feb  9 2000 Jeff Johnson <jbj@redhat.com>
-- brp-compress deals with hard links correctly.
-
-* Mon Feb  7 2000 Jeff Johnson <jbj@redhat.com>
-- brp-compress deals with symlinks correctly.
-
-* Mon Jan 24 2000 Jeff Johnson <jbj@redhat.com>
-- explicitly expand file lists in writeRPM for rpmputtext.
+* Thu Sep 14 2000 Jeff Johnson <jbj@redhat.com>
+- start rpm-3.0.7.
