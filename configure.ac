@@ -234,7 +234,7 @@ dnl
 dnl use defaults if cross-compiling, otherwise use the default path.
 dnl
 if test "$cross_compiling" = "yes"; then
-    MYPATH=""
+    MYPATH=":"
 else
 #    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
     MYPATH=$PATH
@@ -520,10 +520,14 @@ dnl ------------------ with    internal db
 AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
 WITH_DB_SUBDIR=db3
 WITH_INTERNAL_DB=1
-DBLIBSRCS="db3.c"
+WITH_SQLITE3=1
+WITH_SQLITE3_LIB=-lsqlite3
+DBLIBSRCS="db3.c sqlite.c"
 
 AC_SUBST(WITH_DB_SUBDIR)
 AC_SUBST(WITH_INTERNAL_DB)
+AC_SUBST(WITH_SQLITE3)
+AC_SUBST(WITH_SQLITE3_LIB)
 
 DBLIBSRCS="$DBLIBSRCS"
 DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
