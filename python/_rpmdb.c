@@ -88,6 +88,10 @@
 
 /* --------------------------------------------------------------------- */
 
+#if defined(__APPLE__)
+#include <sys/types.h>
+#endif
+
 #include <Python.h>
 #include <stddef.h>   /* for offsetof() */
 #include <db.h>
