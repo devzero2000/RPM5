@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-07-24 16:28-0400\n"
+"POT-Creation-Date: 2001-07-27 19:38-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -113,17 +113,17 @@ msgid "rpm: %s\n"
 msgstr ""
 
 # , c-format
-#: rpm.c:238 rpmqv.c:222
+#: rpm.c:238 rpmqv.c:224
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Version %s\n"
 
-#: rpm.c:242 rpmqv.c:228
+#: rpm.c:242 rpmqv.c:230
 #, fuzzy
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr "Copyright © 1998 - Red Hat Software"
 
-#: rpm.c:243 rpmqv.c:229
+#: rpm.c:243 rpmqv.c:231
 #, fuzzy
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "Dies darf unter den Bedingungen der »GNU GPL« frei verteilt werden"
@@ -352,7 +352,7 @@ msgstr "Benutzung:"
 msgid "print this message"
 msgstr "Gibt diesen Text aus"
 
-#: rpm.c:335 rpmqv.c:106
+#: rpm.c:335 rpmqv.c:107
 msgid "print the version of rpm being used"
 msgstr "Die benutzte RPM-Version anzeigen"
 
@@ -365,7 +365,7 @@ msgstr "   alle Modi unterstützen folgende Argumente:"
 msgid "    --define '<name> <body>'"
 msgstr ""
 
-#: rpm.c:340 rpmqv.c:113
+#: rpm.c:340 rpmqv.c:114
 msgid "define macro <name> with value <body>"
 msgstr ""
 
@@ -384,7 +384,7 @@ msgstr "Die benutzte RPM-Version anzeigen"
 msgid "    --pipe <cmd>          "
 msgstr "    -b<STUFE> <SPEC>      "
 
-#: rpm.c:344 rpmqv.c:119
+#: rpm.c:344 rpmqv.c:120
 msgid "send stdout to <cmd>"
 msgstr "Standard-Ausgabe nach <BEFEHL> umleiten"
 
@@ -397,7 +397,7 @@ msgstr "    -b<STUFE> <SPEC>      "
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "<DATEI> anstelle von /etc/rpmrc und $HOME/.rpmrc benutzen"
 
-#: rpm.c:348 rpmqv.c:137
+#: rpm.c:348 rpmqv.c:138
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
@@ -483,7 +483,7 @@ msgstr "S als Kopfzeilen-Format benutzen (impliziert -i)"
 msgid "      --root <dir>        "
 msgstr ""
 
-#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:122
+#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:123
 msgid "use <dir> as the top level directory"
 msgstr "<VERZ> als Stammverzeichnis benutzen"
 
@@ -958,8 +958,8 @@ msgstr ""
 "wenn dieselben Paketspezifikationsoptionen wie bei -q benutzt würden"
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:598 rpmqv.c:604 rpmqv.c:610
-#: rpmqv.c:648
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:617 rpmqv.c:623 rpmqv.c:629
+#: rpmqv.c:667
 msgid "only one major mode may be specified"
 msgstr "Es darf nur ein Hauptmodus angegeben werden"
 
@@ -988,7 +988,7 @@ msgstr "bei Verschiebungen muss ein »/« dem »=« folgen"
 msgid "exclude paths must begin with a /"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: rpm.c:850 rpmqv.c:550
+#: rpm.c:850 rpmqv.c:569
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -996,109 +996,109 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:856 rpmqv.c:557
+#: rpm.c:856 rpmqv.c:576
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpm.c:891 rpmqv.c:627
+#: rpm.c:891 rpmqv.c:646
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 "Nur nur eine Art der Anfrage/Überprüfung kann pro Programmlauf durchgeführt "
 "werden"
 
-#: rpm.c:896 rpmqv.c:631
+#: rpm.c:896 rpmqv.c:650
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "Unerwartete Quelle der Anfrage"
 
-#: rpm.c:899 rpmqv.c:634
+#: rpm.c:899 rpmqv.c:653
 #, fuzzy
 msgid "unexpected query format"
 msgstr "Unerwartete Quelle der Anfrage"
 
-#: rpm.c:902 rpmqv.c:637
+#: rpm.c:902 rpmqv.c:656
 msgid "unexpected query source"
 msgstr "Unerwartete Quelle der Anfrage"
 
-#: rpm.c:905 rpmqv.c:681
+#: rpm.c:905 rpmqv.c:700
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "nur die Installation und Aktualisierung darf erzwungen werden"
 
-#: rpm.c:908 rpmqv.c:683
+#: rpm.c:908 rpmqv.c:702
 msgid "files may only be relocated during package installation"
 msgstr "Dateien können nur während der Paketinstallation verschoben werden"
 
-#: rpm.c:911 rpmqv.c:686
+#: rpm.c:911 rpmqv.c:705
 msgid "only one of --prefix or --relocate may be used"
 msgstr "nur eines der Argumente --prefix oder --relocate darf angegeben werden"
 
-#: rpm.c:914 rpmqv.c:689
+#: rpm.c:914 rpmqv.c:708
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate darf nur bei der Installation neuer Pakete benutzt werden"
 
-#: rpm.c:917 rpmqv.c:692
+#: rpm.c:917 rpmqv.c:711
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix darf nur bei der Installation neuer Pakete benutzt werden"
 
-#: rpm.c:920 rpmqv.c:695
+#: rpm.c:920 rpmqv.c:714
 msgid "arguments to --prefix must begin with a /"
 msgstr "Argumente zu --prefix müssen mit einem / beginnen"
 
-#: rpm.c:923 rpmqv.c:698
+#: rpm.c:923 rpmqv.c:717
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:927 rpmqv.c:702
+#: rpm.c:927 rpmqv.c:721
 msgid "--percent may only be specified during package installation"
 msgstr "--percent darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:931 rpmqv.c:707
+#: rpm.c:931 rpmqv.c:726
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:935 rpmqv.c:711
+#: rpm.c:935 rpmqv.c:730
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:939 rpmqv.c:715
+#: rpm.c:939 rpmqv.c:734
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:943 rpmqv.c:719
+#: rpm.c:943 rpmqv.c:738
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:947 rpmqv.c:723
+#: rpm.c:947 rpmqv.c:742
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "nur eines der Argumente --excludedocs und --includedocs darf angegeben werden"
 
-#: rpm.c:951 rpmqv.c:727
+#: rpm.c:951 rpmqv.c:746
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:955 rpmqv.c:731
+#: rpm.c:955 rpmqv.c:750
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:959 rpmqv.c:736
+#: rpm.c:959 rpmqv.c:755
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:963 rpmqv.c:740
+#: rpm.c:963 rpmqv.c:759
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches darf nur während der Paketdeinstallaiton angegeben werden"
 
-#: rpm.c:967 rpmqv.c:744
+#: rpm.c:967 rpmqv.c:763
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:971 rpmqv.c:749
+#: rpm.c:971 rpmqv.c:768
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb kann nur während der Paketinstallation und -deinstallation "
@@ -1118,7 +1118,7 @@ msgstr ""
 msgid "--apply may only be specified during package installation"
 msgstr "--allfiles darf nur während der Paketinstallation angegeben werden"
 
-#: rpm.c:987 rpmqv.c:759
+#: rpm.c:987 rpmqv.c:778
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
@@ -1127,7 +1127,7 @@ msgstr ""
 "--justdb kann nur während der Paketinstallation und -deinstallation "
 "angegeben werden"
 
-#: rpm.c:991 rpmqv.c:763
+#: rpm.c:991 rpmqv.c:782
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1136,7 +1136,7 @@ msgstr ""
 "--nodeps darf nur während der Paketinstallation, -deinstallation und -"
 "überprüfung angegeben werden"
 
-#: rpm.c:996 rpmqv.c:768
+#: rpm.c:996 rpmqv.c:787
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -1144,7 +1144,7 @@ msgstr ""
 "--test darf nur während der Paketinstallation, -deinstallation und -"
 "erstellung angegeben werden"
 
-#: rpm.c:1000 rpmqv.c:773
+#: rpm.c:1000 rpmqv.c:792
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1152,7 +1152,7 @@ msgstr ""
 "--root (-r) darf nur während der Paketinstallation, -deinstallation, -"
 "anfrage und Datenbankneuerstellungen angegeben werden"
 
-#: rpm.c:1012 rpmqv.c:785
+#: rpm.c:1012 rpmqv.c:804
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "Argumente zu --root (-r) müssen mit einem / beginnen"
 
@@ -1176,80 +1176,80 @@ msgid ""
 msgstr ""
 "--nopgp darf nur während der Signatur- und Paketüberprüfung angegeben werden"
 
-#: rpm.c:1038 rpmqv.c:806
+#: rpm.c:1038 rpmqv.c:825
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1043 rpmqv.c:811
+#: rpm.c:1043 rpmqv.c:830
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: rpm.c:1058 rpmqv.c:830
+#: rpm.c:1058 rpmqv.c:849
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpm.c:1062 rpmqv.c:835
+#: rpm.c:1062 rpmqv.c:854
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1064 rpmqv.c:837
+#: rpm.c:1064 rpmqv.c:856
 msgid "Pass phrase check failed\n"
 msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
 
-#: rpm.c:1067 rpmqv.c:841
+#: rpm.c:1067 rpmqv.c:860
 msgid "Pass phrase is good.\n"
 msgstr "Das Passwort ist richtig.\n"
 
-#: rpm.c:1072 rpmqv.c:846
+#: rpm.c:1072 rpmqv.c:865
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1078 rpmqv.c:853
+#: rpm.c:1078 rpmqv.c:872
 msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paketerstellung benutzt werden"
 
-#: rpm.c:1093 rpmqv.c:869
+#: rpm.c:1093 rpmqv.c:888
 #, fuzzy
 msgid "exec failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: rpm.c:1116 rpmqv.c:1082
+#: rpm.c:1116 rpmqv.c:1101
 msgid "unexpected arguments to --querytags "
 msgstr "Unerwartete Argumente zu --querytags "
 
-#: rpm.c:1127 rpmqv.c:1091
+#: rpm.c:1127 rpmqv.c:1110
 msgid "no packages given for signature check"
 msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
 
-#: rpm.c:1138 rpmqv.c:1100
+#: rpm.c:1138 rpmqv.c:1119
 msgid "no packages given for signing"
 msgstr "Es wurden keine Pakete für die Signatur angeben"
 
-#: rpm.c:1154 rpmqv.c:987
+#: rpm.c:1154 rpmqv.c:1006
 msgid "no packages given for uninstall"
 msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
 
-#: rpm.c:1243 rpmqv.c:998
+#: rpm.c:1243 rpmqv.c:1017
 msgid "no packages given for install"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: rpm.c:1267 rpmqv.c:1045
+#: rpm.c:1267 rpmqv.c:1064
 msgid "extra arguments given for query of all packages"
 msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
-#: rpm.c:1272 rpmqv.c:1054
+#: rpm.c:1272 rpmqv.c:1073
 msgid "no arguments given for query"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
-#: rpm.c:1289 rpmqv.c:1070
+#: rpm.c:1289 rpmqv.c:1089
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
-#: rpm.c:1293 rpmqv.c:1074
+#: rpm.c:1293 rpmqv.c:1093
 msgid "no arguments given for verify"
 msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 
@@ -1267,112 +1267,112 @@ msgstr "Fehler beim Suchen nach Paket %s\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: rpmqv.c:109
+#: rpmqv.c:110
 msgid "provide less detailed output"
 msgstr ""
 
-#: rpmqv.c:111
+#: rpmqv.c:112
 msgid "provide more detailed output"
 msgstr ""
 
-#: rpmqv.c:114
+#: rpmqv.c:115
 msgid "'<name> <body>'"
 msgstr ""
 
-#: rpmqv.c:116
+#: rpmqv.c:117
 #, fuzzy
 msgid "print macro expansion of <expr>+"
 msgstr "Die benutzte RPM-Version anzeigen"
 
-#: rpmqv.c:117
+#: rpmqv.c:118
 msgid "<expr>+"
 msgstr ""
 
-#: rpmqv.c:120
+#: rpmqv.c:121
 msgid "<cmd>"
 msgstr ""
 
-#: lib/poptI.c:189 rpmqv.c:123
+#: lib/poptI.c:189 rpmqv.c:124
 msgid "<dir>"
 msgstr ""
 
-#: rpmqv.c:125
+#: rpmqv.c:126
 msgid "read <file:...> instead of default macro file(s)"
 msgstr ""
 
-#: rpmqv.c:126 rpmqv.c:130 rpmqv.c:134
+#: rpmqv.c:127 rpmqv.c:131 rpmqv.c:135
 msgid "<file:...>"
 msgstr ""
 
-#: rpmqv.c:129 rpmqv.c:133
+#: rpmqv.c:130 rpmqv.c:134
 msgid "read <file:...> instead of default rpmrc file(s)"
 msgstr ""
 
-#: rpmqv.c:142
+#: rpmqv.c:143
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: rpmqv.c:145
+#: rpmqv.c:146
 msgid "debug protocol data stream"
 msgstr ""
 
-#: rpmqv.c:147
+#: rpmqv.c:148
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: rpmqv.c:149
+#: rpmqv.c:150
 msgid "debug URL cache handling"
 msgstr ""
 
-#: rpmqv.c:167
+#: rpmqv.c:169
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:170
+#: rpmqv.c:172
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:176
+#: rpmqv.c:178
 msgid "Signature options:"
 msgstr ""
 
-#: rpmqv.c:182
+#: rpmqv.c:184
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:188
+#: rpmqv.c:190
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmqv.c:194
+#: rpmqv.c:196
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:199
+#: rpmqv.c:201
 msgid "Common options for all rpm modes:"
 msgstr ""
 
 # , c-format
-#: lib/poptI.c:25 rpmqv.c:215
+#: lib/poptI.c:25 rpmqv.c:217
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: rpmqv.c:240
+#: rpmqv.c:242
 #, fuzzy, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "Benutzung: rpm {--help}"
 
-#: rpmqv.c:551
+#: rpmqv.c:570
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Benutzen Sie stattdessen -e oder --erase\n"
 
-#: rpmqv.c:675
+#: rpmqv.c:694
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath wurde für eine Operation angeben, die keine Datenbank benutzt"
 
-#: rpmqv.c:754
+#: rpmqv.c:773
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
@@ -1381,15 +1381,15 @@ msgstr ""
 "--justdb kann nur während der Paketinstallation und -deinstallation "
 "angegeben werden"
 
-#: rpmqv.c:899
+#: rpmqv.c:918
 msgid "no packages files given for rebuild"
 msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
 
-#: rpmqv.c:968
+#: rpmqv.c:987
 msgid "no spec files given for build"
 msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
 
-#: rpmqv.c:970
+#: rpmqv.c:989
 msgid "no tar files given for build"
 msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
 
@@ -1697,13 +1697,13 @@ msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
 # , c-format
-#: build/pack.c:78 lib/psm.c:1779
+#: build/pack.c:78 lib/psm.c:1782
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/pack.c:81 lib/psm.c:1782
+#: build/pack.c:81 lib/psm.c:1785
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -1791,7 +1791,7 @@ msgid "Could not open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/pack.c:563 lib/psm.c:1515
+#: build/pack.c:563 lib/psm.c:1518
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
@@ -1826,7 +1826,7 @@ msgstr "Nicht möglich %s zu schreiben"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:644 lib/psm.c:1774
+#: build/pack.c:644 lib/psm.c:1777
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2469,7 +2469,7 @@ msgstr "kann Datei %s nicht öffnen: "
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:394
+#: lib/header.c:290 lib/header_internal.c:139 lib/psm.c:397
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -3073,66 +3073,66 @@ msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:588
+#: lib/psm.c:591
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/psm.c:594
+#: lib/psm.c:597
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/psm.c:632
+#: lib/psm.c:635
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:739
+#: lib/psm.c:742
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/psm.c:995
+#: lib/psm.c:998
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
-#: lib/psm.c:1002
+#: lib/psm.c:1005
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/psm.c:1320
+#: lib/psm.c:1323
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/psm.c:1437
+#: lib/psm.c:1440
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1552
+#: lib/psm.c:1555
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1561
+#: lib/psm.c:1564
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/psm.c:1600
+#: lib/psm.c:1603
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/psm.c:1601
+#: lib/psm.c:1604
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1870
+#: lib/psm.c:1877
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "Keine Stufen ausführen"
@@ -3683,49 +3683,49 @@ msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 
-#: lib/transaction.c:439
+#: lib/transaction.c:441
 msgid "========== relocations\n"
 msgstr ""
 
 # , c-format
-#: lib/transaction.c:443
+#: lib/transaction.c:445
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Hole %s heraus\n"
 
-#: lib/transaction.c:446
+#: lib/transaction.c:448
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
 # , c-format
-#: lib/transaction.c:516
+#: lib/transaction.c:518
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "Hole %s heraus\n"
 
 # , c-format
-#: lib/transaction.c:579
+#: lib/transaction.c:581
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Hole %s heraus\n"
 
-#: lib/transaction.c:589
+#: lib/transaction.c:591
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:667
+#: lib/transaction.c:669
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/transaction.c:801
+#: lib/transaction.c:803
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/transaction.c:1399
+#: lib/transaction.c:1401
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
@@ -3801,11 +3801,11 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "cannot get %s lock on database\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1076
+#: rpmdb/db1.c:562 rpmdb/db3.c:1119
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1076
+#: rpmdb/db1.c:562 rpmdb/db3.c:1119
 msgid "shared"
 msgstr "geteilt"
 
@@ -3824,47 +3824,47 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:637
+#: rpmdb/db3.c:660
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:673
+#: rpmdb/db3.c:702
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:856
+#: rpmdb/db3.c:899
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1074
+#: rpmdb/db3.c:1117
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db3.c:1080
+#: rpmdb/db3.c:1123
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/dbconfig.c:389
+#: rpmdb/dbconfig.c:391
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:426
+#: rpmdb/dbconfig.c:428
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:435
+#: rpmdb/dbconfig.c:437
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:444
+#: rpmdb/dbconfig.c:446
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3923,131 +3923,131 @@ msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 msgid "error(%d) removing record %s from %s\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:844
+#: rpmdb/rpmdb.c:842
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: rpmdb/rpmdb.c:975
+#: rpmdb/rpmdb.c:973
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr ""
 
 #. error
-#: rpmdb/rpmdb.c:1205
+#: rpmdb/rpmdb.c:1203
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: rpmdb/rpmdb.c:1935 rpmdb/rpmdb.c:3099
+#: rpmdb/rpmdb.c:1933 rpmdb/rpmdb.c:3108
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: rpmdb/rpmdb.c:1986
+#: rpmdb/rpmdb.c:1984
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2246
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
 # FIXME
-#: rpmdb/rpmdb.c:2317
+#: rpmdb/rpmdb.c:2315
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: rpmdb/rpmdb.c:2326
+#: rpmdb/rpmdb.c:2324
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:2517
+#: rpmdb/rpmdb.c:2515
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: rpmdb/rpmdb.c:2595
+#: rpmdb/rpmdb.c:2593
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # FIXME
-#: rpmdb/rpmdb.c:2606
+#: rpmdb/rpmdb.c:2604
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:2988
+#: rpmdb/rpmdb.c:2997
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3018
+#: rpmdb/rpmdb.c:3027
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: rpmdb/rpmdb.c:3045
+#: rpmdb/rpmdb.c:3054
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3049
+#: rpmdb/rpmdb.c:3058
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: rpmdb/rpmdb.c:3055
+#: rpmdb/rpmdb.c:3064
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3057
+#: rpmdb/rpmdb.c:3066
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3064
+#: rpmdb/rpmdb.c:3073
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3075
+#: rpmdb/rpmdb.c:3084
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3139
+#: rpmdb/rpmdb.c:3148
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: rpmdb/rpmdb.c:3157
+#: rpmdb/rpmdb.c:3166
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3165
+#: rpmdb/rpmdb.c:3174
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3167
+#: rpmdb/rpmdb.c:3176
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3177
+#: rpmdb/rpmdb.c:3186
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
 # , c-format
-#: rpmdb/rpmdb.c:3179
+#: rpmdb/rpmdb.c:3188
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"

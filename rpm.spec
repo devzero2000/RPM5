@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.82
+Release: 0.83
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -502,6 +502,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jul 27 2001 Jeff Johnson <jbj@redhat.com>
+- fix: --noscripts is another multimode option.
+- add tmpdir to configure db3 tmpdir into chroot tree.
+- permit lazy db opens within chroot.
+- fix: diddle dbenv path to accomodate backing store reopen in chroot.
+
 * Tue Jul 24 2001 Jeff Johnson <jbj@redhat.com>
 - fix: don't segfault when presented with rpm-2.4.10 packaging (#49688).
 
