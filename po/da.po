@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-05-16 15:53-0400\n"
+"POT-Creation-Date: 2001-05-20 14:08-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2448,7 +2448,7 @@ msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2719 lib/header.c:2736 lib/header.c:2754
+#: lib/header.c:2720 lib/header.c:2737 lib/header.c:2755
 msgid "(not a number)"
 msgstr "(ikke et tal)"
 
@@ -2530,83 +2530,83 @@ msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
 msgid "Data type %d not supported\n"
 msgstr "Datatype %d understøttes ikke\n"
 
-#: lib/header.c:1607
+#: lib/header.c:1608
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Ugyldigt antal for headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:2066
+#: lib/header.c:2067
 #, c-format
 msgid "missing { after %"
 msgstr "manglende { efter %"
 
 #. @-observertrans@
-#: lib/header.c:2096
+#: lib/header.c:2097
 msgid "missing } after %{"
 msgstr "manglende } efter %{"
 
 #. @-observertrans@
-#: lib/header.c:2110
+#: lib/header.c:2111
 msgid "empty tag format"
 msgstr "tomt mærkeformat"
 
 #. @-observertrans@
-#: lib/header.c:2122
+#: lib/header.c:2123
 msgid "empty tag name"
 msgstr "tomt mærkenavn"
 
 #. @-observertrans@
-#: lib/header.c:2139
+#: lib/header.c:2140
 msgid "unknown tag"
 msgstr "ukendt mærke"
 
 #. @-observertrans@
-#: lib/header.c:2166
+#: lib/header.c:2167
 msgid "] expected at end of array"
 msgstr "] forventet ved slutningen af tabel"
 
 #. @-observertrans@
-#: lib/header.c:2184
+#: lib/header.c:2185
 msgid "unexpected ]"
 msgstr "uventet ]"
 
 #. @-observertrans@
-#: lib/header.c:2188
+#: lib/header.c:2189
 msgid "unexpected }"
 msgstr "uventet }"
 
 #. @-observertrans@
-#: lib/header.c:2251
+#: lib/header.c:2252
 msgid "? expected in expression"
 msgstr "? forventet i udtryk"
 
 #. @-observertrans@
-#: lib/header.c:2260
+#: lib/header.c:2261
 msgid "{ expected after ? in expression"
 msgstr "{ forventet efter ? i udtryk"
 
 #. @-observertrans@
-#: lib/header.c:2273 lib/header.c:2315
+#: lib/header.c:2274 lib/header.c:2316
 msgid "} expected in expression"
 msgstr "} forventet i udtryk"
 
 #. @-observertrans@
-#: lib/header.c:2283
+#: lib/header.c:2284
 msgid ": expected following ? subexpression"
 msgstr ": forventet efter ?-underudtryk"
 
 #. @-observertrans@
-#: lib/header.c:2300
+#: lib/header.c:2301
 msgid "{ expected after : in expression"
 msgstr "{ forventet efter : i udtryk"
 
 #. @-observertrans@
-#: lib/header.c:2325
+#: lib/header.c:2326
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
-#: lib/header.c:2496
+#: lib/header.c:2497
 msgid "(unknown type)"
 msgstr "(ukendt type)"
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.2\n"
-"POT-Creation-Date: 2001-05-16 15:53-0400\n"
+"POT-Creation-Date: 2001-05-20 14:08-0400\n"
 "PO-Revision-Date: 2001-05-15 02:36+0900\n"
 "Last-Translator: Jong-Hoon Ryu <queenrjh@chollian.net>\n"
 "Language-Team: Korean Linux Extension project <kle@kldp.org>\n"
@@ -2430,7 +2430,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2719 lib/header.c:2736 lib/header.c:2754
+#: lib/header.c:2720 lib/header.c:2737 lib/header.c:2755
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
@@ -2512,83 +2512,83 @@ msgstr "dataLength() 의 RPM_STRING_TYPE 카운트는 반드시 1 이어야 합니다.\n"
 msgid "Data type %d not supported\n"
 msgstr "자료 유형 %d (은)는 사용할 수 없습니다\n"
 
-#: lib/header.c:1607
+#: lib/header.c:1608
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "headerAddEntry() 의 잘못된 카운트: %d\n"
 
 #. @-observertrans@
-#: lib/header.c:2066
+#: lib/header.c:2067
 #, c-format
 msgid "missing { after %"
 msgstr "% 뒤에 { 를 찾을 수 없습니다"
 
 #. @-observertrans@
-#: lib/header.c:2096
+#: lib/header.c:2097
 msgid "missing } after %{"
 msgstr "%{ 뒤에 } 를 찾을 수 없습니다"
 
 #. @-observertrans@
-#: lib/header.c:2110
+#: lib/header.c:2111
 msgid "empty tag format"
 msgstr "빈(empty) 태그 형식입니다"
 
 #. @-observertrans@
-#: lib/header.c:2122
+#: lib/header.c:2123
 msgid "empty tag name"
 msgstr "빈(empty) 태그 이름입니다"
 
 #. @-observertrans@
-#: lib/header.c:2139
+#: lib/header.c:2140
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
 #. @-observertrans@
-#: lib/header.c:2166
+#: lib/header.c:2167
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 필요합니다"
 
 #. @-observertrans@
-#: lib/header.c:2184
+#: lib/header.c:2185
 msgid "unexpected ]"
 msgstr "']' 가 잘못 사용되고 있습니다"
 
 #. @-observertrans@
-#: lib/header.c:2188
+#: lib/header.c:2189
 msgid "unexpected }"
 msgstr "'}' 가 잘못 사용되고 있습니다"
 
 #. @-observertrans@
-#: lib/header.c:2251
+#: lib/header.c:2252
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 필요합니다"
 
 #. @-observertrans@
-#: lib/header.c:2260
+#: lib/header.c:2261
 msgid "{ expected after ? in expression"
 msgstr "표현식의 ? 뒤에 { 가 필요합니다"
 
 #. @-observertrans@
-#: lib/header.c:2273 lib/header.c:2315
+#: lib/header.c:2274 lib/header.c:2316
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 필요합니다"
 
 #. @-observertrans@
-#: lib/header.c:2283
+#: lib/header.c:2284
 msgid ": expected following ? subexpression"
 msgstr "하부 표현식(subexpression)의 ? 다음에 : 이 필요합니다"
 
 #. @-observertrans@
-#: lib/header.c:2300
+#: lib/header.c:2301
 msgid "{ expected after : in expression"
 msgstr "표현식의 : 뒤에 { 가 필요합니다"
 
 #. @-observertrans@
-#: lib/header.c:2325
+#: lib/header.c:2326
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 필요합니다"
 
-#: lib/header.c:2496
+#: lib/header.c:2497
 msgid "(unknown type)"
 msgstr "(알 수 없는 유형)"
 
