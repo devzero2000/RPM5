@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.31
+Release: 0.32
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -405,6 +405,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jun  5 2001 Jeff Johnson <jbj@redhat.com>
+- fix typos in linux.{req,prov}.
+
 * Fri Jun  1 2001 Jeff Johnson <jbj@redhat.com>
 - merge sparc64/ia64 fiddles back into linux.{req,prov}.
 - automagically generate perl module dependencies always.
