@@ -269,7 +269,6 @@ unsigned int fadAlloc(FD_t fd, unsigned int size)
 	fadSetFileSize(fd, fadGetFileSize(fd) + size);
     }
     
-fprintf(stderr, "*** fadAlloc(%p,%d) offset %d\n", fd, size, newBlockOffset + sizeof(header));
     return newBlockOffset + sizeof(header); 
 }
 
@@ -282,7 +281,6 @@ void fadFree(FD_t fd, unsigned int offset)
     struct faHeader prevFreeHeader, nextFreeHeader;
     struct faFileHeader faHeader;
 
-fprintf(stderr, "*** fadFree(%p,%d)\n", fd, offset);
     /* any errors cause this to die, and thus result in lost space in the
        database. which is at least better then corruption */
 
