@@ -42,6 +42,8 @@ struct availablePackage {
     int providesCount;			/*!< No. of Provide:'s in header. */
     int requiresCount;			/*!< No. of Require:'s in header. */
     int filesCount;			/*!< No. of files in header. */
+    int npreds;				/*!< No. of predecessors. */
+    int depth;				/*!< Max. depth in dependency tree. */
     struct tsortInfo tsi;		/*!< Dependency tsort data. */
     uint_32 multiLib;	/* MULTILIB */
 /*@dependent@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */

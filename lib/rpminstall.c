@@ -543,6 +543,7 @@ exit:
     }
     pkgState = _free(pkgState);
     pkgURL = _free(pkgURL);
+    argv = _free(argv);
     if (dbIsOpen) rpmdbClose(db);
     return numFailed;
 }

@@ -1,8 +1,8 @@
 #ifndef H_RPMLIB
 #define	H_RPMLIB
 
-/** \file lib/rpmlib.h
- * \ingroup rpmcli rpmrc rpmdep rpmtrans rpmdb lead signature header payload dbi
+/** \ingroup rpmcli rpmrc rpmdep rpmtrans rpmdb lead signature header payload dbi
+ * \file lib/rpmlib.h
  *
  */
 
@@ -16,6 +16,17 @@
 #include "header.h"
 #include "popt.h"
 
+/**
+ * Package read return codes.
+ */
+typedef	enum rpmRC_e {
+    RPMRC_OK		= 0,
+    RPMRC_BADMAGIC	= 1,
+    RPMRC_FAIL		= 2,
+    RPMRC_BADSIZE	= 3,
+    RPMRC_SHORTREAD	= 4,
+} rpmRC;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,7 +39,8 @@ extern "C" {
  * @return		0 on success, 1 on bad magic, 2 on error
  */
 int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
-	/*@out@*/ Header * hdr) /*@modifies fd, *signatures, *hdr @*/;
+	/*@out@*/ Header * hdr)
+		/*@modifies fd, *signatures, *hdr @*/;
 
 /**
  * Return package header and lead info from file handle.
@@ -604,21 +616,21 @@ void rpmdbFreeIterator( /*@only@*/ rpmdbMatchIterator mi);
  * @param mi		rpm database iterator
  * @return		rpm database handle
  */
-rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi);
+/*@kept@*/ rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi)	/*@*/;
 
 /** \ingroup rpmdb
  * Return join key for current position of rpm database iterator.
  * @param mi		rpm database iterator
  * @return		current join key
  */
-unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
+unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi)	/*@*/;
 
 /** \ingroup rpmdb
  * Return number of elements in rpm database iterator.
  * @param mi		rpm database iterator
  * @return		number of elements
  */
-int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
+int rpmdbGetIteratorCount(rpmdbMatchIterator mi)	/*@*/;
 
 /** \ingroup rpmdb
  * Append items to set of package instances to iterate.
@@ -627,7 +639,9 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
  * @param nHdrNums	number of elements in array
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbAppendIterator(rpmdbMatchIterator mi, int * hdrNums, int nHdrNums);
+int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums,
+	int nHdrNums)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Remove items from set of package instances to iterate.
@@ -638,7 +652,8 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, int * hdrNums, int nHdrNums);
  * @return		0 on success, 1 on failure (bad args)
  */
 int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
-	int nHdrNums, int sorted);
+	int nHdrNums, int sorted)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Modify iterator to filter out headers that do not match version.
@@ -646,7 +661,8 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
  * @param mi		rpm database iterator
  * @param version	version to check for
  */
-void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, /*@kept@*/ const char * version);
+void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, /*@kept@*/ const char * version)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Modify iterator to filter out headers that do not match release.
@@ -654,7 +670,8 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, /*@kept@*/ const char * vers
  * @param mi		rpm database iterator
  * @param release	release to check for
  */
-void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, /*@kept@*/ const char * release);
+void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, /*@kept@*/ const char * release)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Modify iterator to mark header for lazy write.
@@ -662,17 +679,20 @@ void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, /*@kept@*/ const char * rele
  * @param modified	new value of modified
  * @return		previous value
  */
-int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified);
+int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Return next package header from iteration.
  * @param mi		rpm database iterator
  * @return		NULL on end of iteration.
  */
-Header rpmdbNextIterator(rpmdbMatchIterator mi);
+Header rpmdbNextIterator(rpmdbMatchIterator mi)
+		/*@modifies mi @*/;
 #define	rpmdbNextIterator(_a) \
 	XrpmdbNextIterator(_a, __FILE__, __LINE__)
-Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l);
+Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Return database iterator.
@@ -683,7 +703,7 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
-			rpmdb rpmdb, int rpmtag,
+			/*@kept@*/ rpmdb rpmdb, int rpmtag,
 			const void * key, size_t keylen);
 
 /** \ingroup rpmdb
@@ -693,7 +713,8 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
  * @param h		header
  * @return		0 on success
  */
-int rpmdbAdd(rpmdb rpmdb, int iid, Header h);	/*@modifies h @*/
+int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
+	/*@modifies h @*/;
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
@@ -738,7 +759,7 @@ typedef enum rpmProblemType_e {
 typedef /*@abstract@*/ struct rpmProblem_s {
 /*@only@*/ /*@null@*/ const char * pkgNEVR;
 /*@only@*/ /*@null@*/ const char * altNEVR;
-/*@dependent@*/ const void * key;
+/*@kept@*/ const void * key;
     Header h;
     rpmProblemType type;
     int ignoreProblem;
@@ -817,6 +838,19 @@ void rpmProblemSetFree( /*@only@*/ rpmProblemSet probs);
 /* ==================================================================== */
 /** \name RPMTS */
 /*@{*/
+/**
+ * Prototype for headerFreeData() vector.
+ */
+typedef /*@null@*/
+    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type);
+
+/**
+ * Prototype for headerGetEntry() vector.
+ */
+typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
+			/*@out@*/ void ** p, /*@out@*/int_32 * c)
+				/*@modifies *type, *p, *c @*/;
+
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
     const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
@@ -836,7 +870,8 @@ typedef struct rpmRelocation_s {
 int rpmInstallSourcePackage(const char * root, FD_t fd,
 			/*@out@*/ const char ** specFile,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
-			/*@out@*/ char ** cookie);
+			/*@out@*/ char ** cookie)
+	/*@modifies *specFile, *cookie @*/;
 
 /**
  * Compare headers to determine which header is "newer".
@@ -845,6 +880,63 @@ int rpmInstallSourcePackage(const char * root, FD_t fd,
  * @return		result of comparison
  */
 int rpmVersionCompare(Header first, Header second);
+
+/**
+ * File disposition(s) during package install/erase transaction.
+ */
+typedef enum fileAction_e {
+    FA_UNKNOWN = 0,	/*!< initial action for file ... */
+    FA_CREATE,		/*!< ... copy in from payload. */
+    FA_COPYIN,		/*!< ... copy in from payload. */
+    FA_COPYOUT,		/*!< ... copy out to payload. */
+    FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
+    FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
+    FA_SKIP, 		/*!< ... already replaced, don't remove. */
+    FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
+    FA_ERASE,		/*!< ... to be removed. */
+    FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
+    FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
+    FA_SKIPMULTILIB,	/*!< ... untouched. @todo state "multilib" ???. */
+} fileAction;
+
+#define XFA_SKIPPING(_a)	\
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
+
+/**
+ * File types.
+ * These are the types of files used internally by rpm. The file
+ * type is determined by applying stat(2) macros like S_ISDIR to
+ * the file mode tag from a header. The values are arbitrary,
+ * but are identical to the linux stat(2) file types.
+ */
+typedef enum fileTypes_e {
+    PIPE	=  1,	/*!< pipe/fifo */
+    CDEV	=  2,	/*!< character device */
+    XDIR	=  4,	/*!< directory */
+    BDEV	=  6,	/*!< block device */
+    REG		=  8,	/*!< regular file */
+    LINK	= 10,	/*!< hard link */
+    SOCK	= 12,	/*!< socket */
+} fileTypes;
+
+/** \ingroup payload
+ * Iterator across package file info, forward on install, backward on erase.
+ */
+typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
+
+/** \ingroup payload
+ * File state machine data.
+ */
+typedef /*@abstract@*/ struct fsm_s * FSM_t;
+
+/** \ingroup rpmtrans
+ * Package state machine data.
+ */
+typedef /*@abstract@*/ struct psm_s * PSM_t;
+
+/** \ingroup rpmtrans
+ */
+typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
 
 /** \ingroup rpmtrans
  * The RPM Transaction Set.
@@ -969,16 +1061,52 @@ void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
  * Bit(s) to control rpmRunTransaction() operation.
  */
 typedef enum rpmtransFlags_e {
-    RPMTRANS_FLAG_TEST		= (1 << 0),	/*!< from --test */
-    RPMTRANS_FLAG_BUILD_PROBS	= (1 << 1),	/*!< @todo Document. */
-    RPMTRANS_FLAG_NOSCRIPTS	= (1 << 2),	/*!< from --noscripts */
-    RPMTRANS_FLAG_JUSTDB	= (1 << 3),	/*!< from --justdb */
-    RPMTRANS_FLAG_NOTRIGGERS	= (1 << 4),	/*!< from --notriggers */
-    RPMTRANS_FLAG_NODOCS	= (1 << 5),	/*!< from --nodocs */
-    RPMTRANS_FLAG_ALLFILES	= (1 << 6),	/*!< from --allfiles */
-    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 << 7),	/*!< @todo Document. */
-    RPMTRANS_FLAG_MULTILIB	= (1 << 8),	/*!< @todo Document. */
+    RPMTRANS_FLAG_NONE		= 0,
+    RPMTRANS_FLAG_TEST		= (1 <<  0),	/*!< from --test */
+    RPMTRANS_FLAG_BUILD_PROBS	= (1 <<  1),	/*!< @todo Document. */
+    RPMTRANS_FLAG_NOSCRIPTS	= (1 <<  2),	/*!< from --noscripts */
+    RPMTRANS_FLAG_JUSTDB	= (1 <<  3),	/*!< from --justdb */
+    RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
+    RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
+    RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
+    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
+    RPMTRANS_FLAG_MULTILIB	= (1 <<  8),	/*!< @todo Document. */
+    RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
+    RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
+
+    RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),
+    RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
+    RPMTRANS_FLAG_COMMIT	= (1 << 13),
+    RPMTRANS_FLAG_UNDO		= (1 << 14),
+    RPMTRANS_FLAG_REVERSE	= (1 << 15),
+
+    RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),
+    RPMTRANS_FLAG_NOPRE		= (1 << 17),
+    RPMTRANS_FLAG_NOPOST	= (1 << 18),
+    RPMTRANS_FLAG_NOTRIGGERIN	= (1 << 19),
+    RPMTRANS_FLAG_NOTRIGGERUN	= (1 << 20),
+    RPMTRANS_FLAG_NOPREUN	= (1 << 21),
+    RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),
+    RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),
+    RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
+    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
+
+    RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
 } rpmtransFlags;
+
+#define	_noTransScripts		\
+  ( RPMTRANS_FLAG_NOPRE |	\
+    RPMTRANS_FLAG_NOPOST |	\
+    RPMTRANS_FLAG_NOPREUN |	\
+    RPMTRANS_FLAG_NOPOSTUN	\
+  )
+
+#define	_noTransTriggers	\
+  ( RPMTRANS_FLAG_NOTRIGGERPREIN | \
+    RPMTRANS_FLAG_NOTRIGGERIN |	\
+    RPMTRANS_FLAG_NOTRIGGERUN |	\
+    RPMTRANS_FLAG_NOTRIGGERPOSTUN \
+  )
 
 /** \ingroup rpmtrans
  * Return copy of rpmlib internal provides.
@@ -1025,15 +1153,15 @@ void rpmShowRpmlibProvides(FILE * fp) /*@modifies *fp @*/;
  */
 typedef enum rpmprobFilterFlags_e {
     RPMPROB_FILTER_NONE		= 0,
-    RPMPROB_FILTER_IGNOREOS	= (1 << 0),
-    RPMPROB_FILTER_IGNOREARCH	= (1 << 1),
-    RPMPROB_FILTER_REPLACEPKG	= (1 << 2),
-    RPMPROB_FILTER_FORCERELOCATE= (1 << 3),
-    RPMPROB_FILTER_REPLACENEWFILES= (1 << 4),
-    RPMPROB_FILTER_REPLACEOLDFILES= (1 << 5),
-    RPMPROB_FILTER_OLDPACKAGE	= (1 << 6),
-    RPMPROB_FILTER_DISKSPACE	= (1 << 7),
-    RPMPROB_FILTER_DISKNODES	= (1 << 8)
+    RPMPROB_FILTER_IGNOREOS	= (1 << 0),	/*!< from --ignoreos */
+    RPMPROB_FILTER_IGNOREARCH	= (1 << 1),	/*!< from --ignorearch */
+    RPMPROB_FILTER_REPLACEPKG	= (1 << 2),	/*!< from --replacepkgs */
+    RPMPROB_FILTER_FORCERELOCATE= (1 << 3),	/*!< from --badreloc */
+    RPMPROB_FILTER_REPLACENEWFILES= (1 << 4),	/*!< from --replacefiles */
+    RPMPROB_FILTER_REPLACEOLDFILES= (1 << 5),	/*!< from --replacefiles */
+    RPMPROB_FILTER_OLDPACKAGE	= (1 << 6),	/*!< from --oldpackage */
+    RPMPROB_FILTER_DISKSPACE	= (1 << 7),	/*!< from --ignoresize */
+    RPMPROB_FILTER_DISKNODES	= (1 << 8)	/*!< from --ignoresize */
 } rpmprobFilterFlags;
 
 /** \ingroup rpmtrans
@@ -1359,6 +1487,7 @@ int rpmVerify(QVA_t *qva, rpmQVSources source, const char *arg);
  * Bit(s) to control rpmInstall() operation.
  */
 typedef enum rpmInstallInterfaceFlags_e {
+    INSTALL_NONE	= 0,
     INSTALL_PERCENT	= (1 << 0),	/*!< from --percent */
     INSTALL_HASH	= (1 << 1),	/*!< from --hash */
     INSTALL_NODEPS	= (1 << 2),	/*!< from --nodeps */
@@ -1399,6 +1528,7 @@ int rpmInstallSource(const char * prefix, const char * arg,
  * Bit(s) to control rpmErase() operation.
  */
 typedef enum rpmEraseInterfaceFlags_e {
+    UNINSTALL_NONE	= 0,
     UNINSTALL_NODEPS	= (1 << 0),	/*!< from --nodeps */
     UNINSTALL_ALLMATCHES= (1 << 1)	/*!< from --allmatches */
 } rpmEraseInterfaceFlags;
@@ -1463,7 +1593,7 @@ typedef enum rpmVerifySignatureReturn_e {
     RPMSIG_UNKNOWN	= 1,	/*!< Signature is unknown. */
     RPMSIG_BAD		= 2,	/*!< Signature does not verify. */
     RPMSIG_NOKEY	= 3,	/*!< Key is unavailable. */
-    RPMSIG_NOTTRUSTED = 4	/*!< Signature is OK, but key is not trusted. */
+    RPMSIG_NOTTRUSTED	= 4	/*!< Signature is OK, but key is not trusted. */
 } rpmVerifySignatureReturn;
 
 /** \ingroup signature

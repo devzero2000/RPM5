@@ -19,6 +19,16 @@ int _depends_debug = 0;
 /*@access rpmdb@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
+}
+
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
     int type, count;
@@ -120,9 +130,7 @@ static void alFreeIndex(struct availableList * al)
 	/*@modifies al->index @*/
 {
     if (al->index.size) {
-	if (al->index.index)
-		free(al->index.index);
-	al->index.index = NULL;
+	al->index.index = _free(al->index.index);
 	al->index.size = 0;
     }
 }
@@ -161,7 +169,7 @@ static void alFree(struct availableList * al)
 	    while ((tsi = p->tsi.tsi_next) != NULL) {
 		p->tsi.tsi_next = tsi->tsi_next;
 		tsi->tsi_next = NULL;
-		free(tsi);
+		tsi = _free(tsi);
 	    }
 	}
 
@@ -174,27 +182,25 @@ static void alFree(struct availableList * al)
 
 	if (p->relocs) {
 	    for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-		if (r->oldPath) free((void *)r->oldPath);
-		if (r->newPath) free((void *)r->newPath);
+		r->oldPath = _free(r->oldPath);
+		r->newPath = _free(r->newPath);
 	    }
-	    free(p->relocs);
+	    p->relocs = _free(p->relocs);
 	}
 	if (p->fd)
 	    p->fd = fdFree(p->fd, "alAddPackage (alFree)");
     }
 
     for (i = 0; i < al->numDirs; i++) {
-	free((void *)al->dirs[i].dirName);
-	free(al->dirs[i].files);
+	al->dirs[i].dirName = _free(al->dirs[i].dirName);
+	al->dirs[i].files = _free(al->dirs[i].files);
     }
 
-    if (al->numDirs)
-	free(al->dirs);
-    al->dirs = NULL;
+    if (al->numDirs && al->dirs)
+	al->dirs = _free(al->dirs);
 
     if (al->alloced && al->list)
-	free(al->list);
-    al->list = NULL;
+	al->list = _free(al->list);
     alFreeIndex(al);
 }
 
@@ -254,6 +260,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     pkgNum = al->size++;
     p = al->list + pkgNum;
     p->h = headerLink(h);	/* XXX reference held by transaction set */
+    p->depth = p->npreds = 0;
     memset(&p->tsi, 0, sizeof(p->tsi));
     p->multiLib = 0;	/* MULTILIB */
 
@@ -573,8 +580,8 @@ int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
 	    sense = rpmvercmp(aR, bR);
 	}
     }
-    free(aEVR);
-    free(bEVR);
+    aEVR = _free(aEVR);
+    bEVR = _free(bEVR);
 
     /* Detect overlap of {A,B} range. */
     result = 0;
@@ -592,8 +599,8 @@ int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
 exit:
     rpmMessage(RPMMESS_DEBUG, _("  %s    A %s\tB %s\n"),
 	(result ? "YES" : "NO "), aDepend, bDepend);
-    if (aDepend) free((void *)aDepend);
-    if (bDepend) free((void *)bDepend);
+    aDepend = _free(aDepend);
+    bDepend = _free(bDepend);
     return result;
 }
 
@@ -863,23 +870,16 @@ void rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
 
 void rpmtransFree(rpmTransactionSet ts)
 {
-    struct availableList * addedPackages = &ts->addedPackages;
-    struct availableList * availablePackages = &ts->availablePackages;
-
-    alFree(addedPackages);
-    alFree(availablePackages);
-    if (ts->removedPackages)
-	free(ts->removedPackages);
-    if (ts->order)
-	free(ts->order);
+    alFree(&ts->addedPackages);
+    alFree(&ts->availablePackages);
+    ts->removedPackages = _free(ts->removedPackages);
+    ts->order = _free(ts->order);
     if (ts->scriptFd)
 	ts->scriptFd = fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
-    if (ts->rootDir)
-	free((void *)ts->rootDir);
-    if (ts->currDir)
-	free((void *)ts->currDir);
+    ts->rootDir = _free(ts->rootDir);
+    ts->currDir = _free(ts->currDir);
 
-    free(ts);
+    ts = _free(ts);
 }
 
 void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
@@ -889,14 +889,14 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
 
     for (i = 0; i < numConflicts; i++) {
 	headerFree(conflicts[i].byHeader);
-	free((void *)conflicts[i].byName);
-	free((void *)conflicts[i].byVersion);
-	free((void *)conflicts[i].byRelease);
-	free((void *)conflicts[i].needsName);
-	free((void *)conflicts[i].needsVersion);
+	conflicts[i].byName = _free(conflicts[i].byName);
+	conflicts[i].byVersion = _free(conflicts[i].byVersion);
+	conflicts[i].byRelease = _free(conflicts[i].byRelease);
+	conflicts[i].needsName = _free(conflicts[i].needsName);
+	conflicts[i].needsVersion = _free(conflicts[i].needsVersion);
     }
 
-    free(conflicts);
+    conflicts = _free(conflicts);
 }
 
 /**
@@ -930,7 +930,7 @@ alFileSatisfiesDepend(struct availableList * al,
     dirNeedle.dirNameLen = strlen(dirName);
     dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
 		       sizeof(dirNeedle), dirInfoCompare);
-    free((void *)dirName);
+    dirName = _free(dirName);
     if (!dirMatch) return NULL;
 
     baseName = strrchr(fileName, '/') + 1;
@@ -1217,7 +1217,7 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
     }
 
     for (i = 0; i < requiresCount && !ourrc; i++) {
-	const char *keyDepend;
+	const char * keyDepend;
 
 	/* Filter out requires that came along for the ride. */
 	if (keyName && strcmp(keyName, requires[i]))
@@ -1266,7 +1266,7 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 	    ourrc = 1;
 	    break;
 	}
-	free((void *)keyDepend);
+	keyDepend = _free(keyDepend);
     }
 
     if (requiresCount) {
@@ -1285,7 +1285,7 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
     }
 
     for (i = 0; i < conflictsCount && !ourrc; i++) {
-	const char *keyDepend;
+	const char * keyDepend;
 
 	/* Filter out conflicts that came along for the ride. */
 	if (keyName && strcmp(keyName, conflicts[i]))
@@ -1524,7 +1524,7 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 	    tsi_prev->tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
 	    tsi->tsi_suc = NULL;
-	    free(tsi);
+	    tsi = _free(tsi);
 	    if (nzaps)
 		(*nzaps)++;
 	    if (zap)
@@ -1576,6 +1576,8 @@ static inline int addRelation( const rpmTransactionSet ts,
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
     p->tsi.tsi_count++;			/* bump p predecessor count */
+    if (p->depth <= q->depth)		/* Save max. depth in dependency tree */
+	p->depth = q->depth + 1;
     tsi = xmalloc(sizeof(*tsi));
     tsi->tsi_suc = p;
     tsi->tsi_reqx = j;
@@ -1633,6 +1635,7 @@ static void addQ(struct availablePackage * p,
 int rpmdepOrder(rpmTransactionSet ts)
 {
     int npkgs = ts->addedPackages.size;
+    int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
     struct availablePackage * p;
     struct availablePackage * q;
     struct availablePackage * r;
@@ -1703,6 +1706,11 @@ int rpmdepOrder(rpmTransactionSet ts)
 	}
     }
 
+    /* Save predecessor count. */
+    for (i = 0, p = ts->addedPackages.list; i < npkgs; i++, p++) {
+	p->npreds = p->tsi.tsi_count;
+    }
+
     /* T4. Scan for zeroes. */
     rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages\n"));
 
@@ -1712,7 +1720,8 @@ rescan:
     for (i = 0, p = ts->addedPackages.list; i < npkgs; i++, p++) {
 
 	/* Prefer packages in presentation order. */
-	p->tsi.tsi_qcnt = (npkgs - i);
+	if (!chainsaw)
+	    p->tsi.tsi_qcnt = (npkgs - i);
 
 	if (p->tsi.tsi_count != 0)
 	    continue;
@@ -1724,8 +1733,9 @@ rescan:
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = q->tsi.tsi_suc) {
 
-	rpmMessage(RPMMESS_DEBUG, "%5d (%d,%d) %s-%s-%s\n", orderingCount,
-			qlen, q->tsi.tsi_qcnt,
+	rpmMessage(RPMMESS_DEBUG, "%4d%4d%4d%4d %*s %s-%s-%s\n",
+			orderingCount, q->npreds, q->tsi.tsi_qcnt, q->depth,
+			2*q->depth, "",
 			q->name, q->version, q->release);
 	ordering[orderingCount++] = q - ts->addedPackages.list;
 	qlen--;
@@ -1744,7 +1754,7 @@ rescan:
 		addQ(p, &q->tsi.tsi_suc, &r);
 		qlen++;
 	    }
-	    free(tsi);
+	    tsi = _free(tsi);
 	}
 	if (!_printed && loopcheck == qlen) {
 	    _printed++;
@@ -1809,10 +1819,7 @@ rescan:
 		sprintf(buf, "%s-%s-%s", p->name, p->version, p->release);
 		rpmMessage(RPMMESS_WARNING, "    %-40s %s\n", buf, dp);
 
-		if (dp) {
-		    free((void *)dp);
-		    dp = NULL;
-		}
+		dp = _free((void *)dp);
 	    }
 
 	    /* Walk (and erase) linear part of predecessor chain as well. */
@@ -1880,10 +1887,10 @@ rescan:
     }
     assert(newOrderCount == ts->orderCount);
 
-    free(ts->order);
+    ts->order = _free(ts->order);
     ts->order = newOrder;
     ts->orderAlloced = ts->orderCount;
-    free(orderList);
+    orderList = _free(orderList);
 
     return 0;
 }
@@ -2005,7 +2012,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		    }
 		}
 
-		free(fileName);
+		fileName = _free(fileName);
 		free(baseNames);
 		free(dirNames);
 		if (rc)
@@ -2018,19 +2025,16 @@ int rpmdepCheck(rpmTransactionSet ts,
       mi = NULL;
     }
 
-    if (!ps.num) {
-	free(ps.problems);
-    } else {
+    if (ps.num) {
 	*conflicts = ps.problems;
+	ps.problems = NULL;
 	*numConflicts = ps.num;
     }
-    ps.problems = NULL;
     rc = 0;
 
 exit:
     if (mi)
 	rpmdbFreeIterator(mi);
-    if (ps.problems)
-	free(ps.problems);
+    ps.problems = _free(ps.problems);
     return rc;
 }

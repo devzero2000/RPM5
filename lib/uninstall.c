@@ -45,7 +45,7 @@ static const char * tag2sln(int tag)
  * @return
  */
 static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode, 
-		      enum fileActions action)
+		      enum fileAction_e action)
 {
     int rc = 0;
     char * newfile;
@@ -63,7 +63,7 @@ static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode,
 	}
 	break;
 
-      case FA_REMOVE:
+      case FA_ERASE:
 	if (S_ISDIR(mode)) {
 	    /* XXX should permit %missingok for directories as well */
 	    if (rmdir(file)) {
@@ -94,6 +94,8 @@ static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode,
 	break;
       case FA_UNKNOWN:
       case FA_CREATE:
+      case FA_COPYIN:
+      case FA_COPYOUT:
       case FA_SAVE:
       case FA_ALTNAME:
       case FA_SKIP:
@@ -107,7 +109,7 @@ static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode,
 }
 
 int removeBinaryPackage(const rpmTransactionSet ts, unsigned int offset,
-		Header h, const void * pkgKey, enum fileActions * actions)
+		Header h, const void * pkgKey, enum fileAction_e * actions)
 {
     rpmtransFlags transFlags = ts->transFlags;
     const char * name, * version, * release;

@@ -43,10 +43,10 @@
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
 
-typedef struct transactionFileInfo {
+struct transactionFileInfo_s {
   /* for all packages */
     enum rpmTransactionType type;
-    enum fileActions * actions;	/*!< file disposition */
+    enum fileAction_e * actions;	/*!< file disposition */
 /*@dependent@*/ fingerPrint * fps; /*!< file fingerprints */
     uint_32 * fflags;		/*!< file flags (from header) */
     uint_32 * fsizes;		/*!< file sizes (from header) */
@@ -66,7 +66,7 @@ typedef struct transactionFileInfo {
     uint_32 * replacedSizes;
   /* for TR_REMOVED packages */
     unsigned int record;
-} TFI_t;
+};
 
 struct diskspaceInfo {
     dev_t dev;			/*!< file system device number. */
@@ -89,7 +89,7 @@ struct diskspaceInfo {
 #define	XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
 
-static void freeFi(TFI_t *fi)
+static void freeFi(TFI_t fi)
 {
 	if (fi->h) {
 	    headerFree(fi->h); fi->h = NULL;
@@ -137,9 +137,9 @@ static void freeFi(TFI_t *fi)
 	}
 }
 
-static void freeFl(rpmTransactionSet ts, TFI_t *flList)
+static void freeFl(rpmTransactionSet ts, TFI_t flList)
 {
-    TFI_t *fi;
+    TFI_t fi;
     int oc;
 
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
@@ -317,7 +317,7 @@ void rpmProblemSetFree(rpmProblemSet probs)
     free(probs);
 }
 
-static /*@observer@*/ const char *const ftstring (enum fileTypes ft)
+static /*@observer@*/ const char *const ftstring (enum fileTypes_e ft)
 {
     switch (ft) {
     case XDIR:	return "directory";
@@ -331,7 +331,7 @@ static /*@observer@*/ const char *const ftstring (enum fileTypes ft)
     return "unknown file type";
 }
 
-static enum fileTypes whatis(uint_16 mode)
+static enum fileTypes_e whatis(uint_16 mode)
 {
     if (S_ISDIR(mode))	return XDIR;
     if (S_ISCHR(mode))	return CDEV;
@@ -355,7 +355,7 @@ static enum fileTypes whatis(uint_16 mode)
  */
 static Header relocateFileList(const rpmTransactionSet ts,
 		struct availablePackage * alp,
-		Header origH, enum fileActions * actions)
+		Header origH, enum fileAction_e * actions)
 {
     static int _printed = 0;
     rpmProblemSet probs = ts->probs;
@@ -543,7 +543,7 @@ static Header relocateFileList(const rpmTransactionSet ts,
     /* Relocate individual paths. */
 
     for (i = fileCount - 1; i >= 0; i--) {
-	enum fileTypes ft;
+	enum fileTypes_e ft;
 	int fnlen;
 
 	/*
@@ -799,7 +799,7 @@ static int sharedCmp(const void * one, const void * two)
     return 0;
 }
 
-static enum fileActions decideFileFate(const char * dirName,
+static enum fileAction_e decideFileFate(const char * dirName,
 			const char * baseName, short dbMode,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
@@ -807,7 +807,7 @@ static enum fileActions decideFileFate(const char * dirName,
 {
     char buffer[1024];
     const char * dbAttr, * newAttr;
-    enum fileTypes dbWhat, newWhat, diskWhat;
+    enum fileTypes_e dbWhat, newWhat, diskWhat;
     struct stat sb;
     int i, rc;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
@@ -898,8 +898,8 @@ static enum fileActions decideFileFate(const char * dirName,
 static int filecmp(short mode1, const char * md51, const char * link1,
 	           short mode2, const char * md52, const char * link2)
 {
-    enum fileTypes what1 = whatis(mode1);
-    enum fileTypes what2 = whatis(mode2);
+    enum fileTypes_e what1 = whatis(mode1);
+    enum fileTypes_e what2 = whatis(mode2);
 
     if (what1 != what2) return 1;
 
@@ -911,7 +911,7 @@ static int filecmp(short mode1, const char * md51, const char * link1,
     return 0;
 }
 
-static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
+static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount, int reportConflicts,
 				    rpmProblemSet probs,
@@ -1008,7 +1008,7 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     return 0;
 }
 
-static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
+static int handleRmvdInstalledFiles(TFI_t fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount)
 {
@@ -1047,7 +1047,7 @@ static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
 /**
  * Update disk space needs on each partition for this package.
  */
-static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
+static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 			   rpmProblemSet probs, struct diskspaceInfo * dsl)
 {
     int i, j;
@@ -1058,7 +1058,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
   
     for (i = 0; i < fi->fc; i++) {
 	int otherPkgNum, otherFileNum;
-	const TFI_t ** recs;
+	const TFI_t * recs;
 	int numRecs;
 
 	if (XFA_SKIPPING(fi->actions[i]))
@@ -1179,7 +1179,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
 		/* Here is an overlapped added file we don't want to nuke. */
-		if (recs[otherPkgNum]->actions[otherFileNum] != FA_REMOVE) {
+		if (recs[otherPkgNum]->actions[otherFileNum] != FA_ERASE) {
 		    /* On updates, don't remove files. */
 		    fi->actions[i] = FA_SKIP;
 		    break;
@@ -1192,7 +1192,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 	    if (fi->fstates[i] != RPMFILE_STATE_NORMAL)
 		break;
 	    if (!(S_ISREG(fi->fmodes[i]) && (fi->fflags[i] & RPMFILE_CONFIG))) {
-		fi->actions[i] = FA_REMOVE;
+		fi->actions[i] = FA_ERASE;
 		break;
 	    }
 		
@@ -1203,7 +1203,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 		    break;
 		}
 	    }
-	    fi->actions[i] = FA_REMOVE;
+	    fi->actions[i] = FA_ERASE;
 	    break;
 	}
 
@@ -1228,7 +1228,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 		ds->bneeded -= BLOCK_ROUND(fi->replacedSizes[i], ds->bsize);
 		break;
 
-	      case FA_REMOVE:
+	      case FA_ERASE:
 		ds->ineeded--;
 		ds->bneeded -= s;
 		break;
@@ -1261,7 +1261,7 @@ static int ensureOlder(/*@unused@*/ rpmdb rpmdb, Header new, Header old, rpmProb
     return rc;
 }
 
-static void skipFiles(TFI_t * fi, int noDocs)
+static void skipFiles(TFI_t fi, int noDocs)
 {
     char ** netsharedPaths = NULL;
     const char ** fileLangs;
@@ -1441,7 +1441,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     Header * hdrs;
     int totalFileCount = 0;
     hashTable ht;
-    TFI_t * flList, * fi;
+    TFI_t flList, fi;
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
     int flEntries;

@@ -48,7 +48,7 @@ struct fileInfo {
     uint_32 size;
     mode_t mode;
     char state;
-    enum fileActions action;
+    enum fileAction_e action;
     int install;
 } ;
 
@@ -140,7 +140,7 @@ static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
  */
 static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 	 /*@out@*/ int * fileCountPtr, /*@out@*/ struct fileInfo ** filesPtr,
-	 int stripPrefixLength, enum fileActions * actions)
+	 int stripPrefixLength, enum fileAction_e * actions)
 {
     uint_32 * fileFlags;
     uint_32 * fileSizes;
@@ -280,7 +280,7 @@ static void trimChangelog(Header h)
  * @param actions	array of file dispositions
  * @return		0 on success, 1 on failure
  */
-static int mergeFiles(Header h, Header newH, enum fileActions * actions)
+static int mergeFiles(Header h, Header newH, enum fileAction_e * actions)
 {
     int i, j, k, fileCount;
     int_32 type, count, dirNamesCount, dirCount;
@@ -901,22 +901,24 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-/*@obserever@*/ const char *const fileActionString(enum fileActions a)
+/*@obserever@*/ const char *const fileActionString(enum fileAction_e a)
 {
     switch (a) {
-      case FA_UNKNOWN: return "unknown";
-      case FA_CREATE: return "create";
-      case FA_BACKUP: return "backup";
-      case FA_SAVE: return "save";
-      case FA_SKIP: return "skip";
-      case FA_ALTNAME: return "altname";
-      case FA_REMOVE: return "remove";
-      case FA_SKIPNSTATE: return "skipnstate";
-      case FA_SKIPNETSHARED: return "skipnetshared";
-      case FA_SKIPMULTILIB: return "skipmultilib";
+    case FA_UNKNOWN:	return "unknown";
+    case FA_CREATE:	return "create";
+    case FA_COPYOUT:    return "copyout";
+    case FA_COPYIN:     return "copyin";
+    case FA_BACKUP:	return "backup";
+    case FA_SAVE:	return "save";
+    case FA_SKIP:	return "skip";
+    case FA_ALTNAME:	return "altname";
+    case FA_ERASE:	return "erase";
+    case FA_SKIPNSTATE:	return "skipnstate";
+    case FA_SKIPNETSHARED: return "skipnetshared";
+    case FA_SKIPMULTILIB: return "skipmultilib";
+    default:		return "???";
     }
     /*@notreached@*/
-    return "???";
 }
 
 int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
@@ -954,7 +956,7 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 }
 
 int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
-			const void * pkgKey, enum fileActions * actions,
+			const void * pkgKey, enum fileAction_e * actions,
 			struct sharedFileInfo * sharedList)
 {
     rpmtransFlags transFlags = ts->transFlags;
@@ -1094,7 +1096,10 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 		break;
 
 	      case FA_UNKNOWN:
-	      case FA_REMOVE:
+	      case FA_ERASE:
+	      case FA_COPYIN:
+	      case FA_COPYOUT:
+	      default:
 		files[i].install = 0;
 		break;
 	    }

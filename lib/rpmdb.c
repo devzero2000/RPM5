@@ -1485,7 +1485,7 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
     return 0;
 }
 
-int rpmdbAppendIterator(rpmdbMatchIterator mi, int * hdrNums, int nHdrNums)
+int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
 	return 1;
