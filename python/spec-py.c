@@ -80,6 +80,21 @@ spec_get_prep(specObject * s)
      }
 }
 
+static PyObject *
+spec_get_buildrestrictions(specObject * s)
+    /*@*/
+{
+    Header h;
+    Spec spec = specFromSpec(s);
+    if (spec != NULL && spec->install) {
+        h = spec->buildRestrictions;
+        return (PyObject *) hdr_Wrap(h);
+    }
+    else {
+        return NULL;
+    }
+}
+
 static PyObject * 
 spec_get_build(specObject * s) 
     /*@*/
@@ -165,6 +180,7 @@ static PyMethodDef spec_Spec_methods[] = {
     {"sources",   (PyCFunction) spec_get_sources, METH_VARARGS,  NULL },
     {"prep",   (PyCFunction) spec_get_prep, METH_VARARGS,  NULL },
     {"build",   (PyCFunction) spec_get_build, METH_VARARGS,  NULL },
+    {"buildrestrictions",   (PyCFunction) spec_get_buildrestrictions, METH_VARARGS,  "returns Header which can be queried for requires and conflicts\n"},
     {"install",   (PyCFunction) spec_get_install, METH_VARARGS,  NULL },
     {"clean",   (PyCFunction) spec_get_clean, METH_VARARGS,  NULL },
     {"buildRoot",   (PyCFunction) spec_get_buildroot, METH_VARARGS,  NULL },
