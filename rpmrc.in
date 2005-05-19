@@ -215,6 +215,8 @@ buildarchtranslate: ppc8560: ppc
 buildarchtranslate: ppc32dy4: ppc
 buildarchtranslate: ppciseries: ppc
 buildarchtranslate: ppcpseries: ppc
+buildarchtranslate: ppc64iseries: ppc64
+buildarchtranslate: ppc64pseries: ppc64
 
 buildarchtranslate: atarist: m68kmint
 buildarchtranslate: atariste: m68kmint
