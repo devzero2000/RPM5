@@ -1154,16 +1154,16 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	switch(compressed) {
 	default:
 	case 0:	/* COMPRESSED_NOT */
-	    sprintf(be, "%%_cat %s", b);
+	    sprintf(be, "%%__cat %s", b);
 	    break;
 	case 1:	/* COMPRESSED_OTHER */
-	    sprintf(be, "%%_gzip -dc %s", b);
+	    sprintf(be, "%%__gzip -dc %s", b);
 	    break;
 	case 2:	/* COMPRESSED_BZIP2 */
-	    sprintf(be, "%%_bzip2 %s", b);
+	    sprintf(be, "%%__bzip2 -dc %s", b);
 	    break;
 	case 3:	/* COMPRESSED_ZIP */
-	    sprintf(be, "%%_unzip %s", b);
+	    sprintf(be, "%%__unzip -p %s", b);
 	    break;
 	}
 	b = be;
