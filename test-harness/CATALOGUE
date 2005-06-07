@@ -2,6 +2,7 @@
 
 TYPES: ARB = AUTOROLLBACK 
        RB  = ROLLBACK
+       I   = SIMPLE INSTALL/UPGRADE (NO ROLLBACK)
 
 TEST #	TYPE	COMMENTS
 ==============================================================================
@@ -52,3 +53,10 @@ TEST #	TYPE	COMMENTS
 				test-1-1 and then erase test-1-2
 19		RB		Same as 18 except we add package test2 and test3 which both
 				get installed and upgraded as before.
+20		I       Simple install of one package p1-1-1 that has %pre, %post
+                %preun and %postun scriptlets that are vary short.  Good
+                for detecting a particular scriptlet lockup bug.
+21      ARB     Test 17 except now the broken package has broken dependencies.
+                Tests autorollback goal in the case that the error is a 
+                pre-transaction check (specifically missing dependencies).
+

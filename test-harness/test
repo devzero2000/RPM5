@@ -86,6 +86,55 @@ fi
 ulimit -c 8192
 
 #
+# Simple test for core files.  If we detect them, we move them to
+# the cores directory and say so:
+check_for_core_files() {
+	local cores
+	local tmp
+	local core
+
+	#
+	# Create the cores directory if necessary
+	mkdir -p cores
+
+	#
+	# Look for core, and then core.$some_pid
+	cores=$(ls core 2>/dev/null)
+	tmp=$(ls core.* 2>/dev/null)
+	if [ ! -z "${tmp}" ] 
+	then
+		if [ -z "${cores}" ] 
+		then 
+			cores="${tmp}"
+		else
+			cores="${cores} ${tmp}"
+		fi
+	fi
+
+	#
+	# Now lets see if we have any cores...if we don't return OK
+	[ -z "${cores}" ] && return 0
+
+	#
+	# We have cores print an error and then copy them into the proper directory.
+	# Really important that we do this otherwise the next test that runs will
+	# will fail, even though it may or may not have generated a core.
+	echo "FAILED: Core file(s) detected!"
+	echo "FAILED: " $cores
+	for core in $cores
+	do
+		mv $core cores
+		if [ $? != 0 ]
+		then
+			echo "ERROR: Failed to move core file to core directory!"
+			echo "ERROR: CORE: ${core}"
+		fi
+	done
+
+	return 1
+}
+
+#
 # The test spec files scriptlets will generate semaphore files
 # to communicate to the harness that a certain event passed.
 # Just in case these did not get cleaned up properly (or we added
@@ -248,6 +297,10 @@ check() {
 	local data
 	local f
 	local tval
+
+	#
+	# Check for core files
+	check_for_core_files || rc=1
 
 	#
 	# Make sure there are no active locks on the test rpmdb
