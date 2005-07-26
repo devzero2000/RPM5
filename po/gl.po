@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-17 11:08-0400\n"
+"POT-Creation-Date: 2005-07-25 22:25-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1609,8 +1609,8 @@ msgstr ""
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:920 lib/package.c:946
-#: lib/package.c:978
+#: lib/package.c:546 lib/package.c:586 lib/package.c:924 lib/package.c:950
+#: lib/package.c:982
 #, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
@@ -1645,31 +1645,31 @@ msgstr ""
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:790
+#: lib/package.c:794
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:799
+#: lib/package.c:803
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
+#: lib/package.c:815 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr ""
 
-#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:885
+#: lib/package.c:889
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr ""
 
-#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:997 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
@@ -3061,42 +3061,42 @@ msgstr ""
 msgid "Suggesting: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1221
+#: lib/rpmts.c:1222
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1223
+#: lib/rpmts.c:1224
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1279
+#: lib/rpmts.c:1280
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1616
+#: lib/rpmts.c:1617
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1621
+#: lib/rpmts.c:1622
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1631
+#: lib/rpmts.c:1632
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr ""
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1658
+#: lib/rpmts.c:1659
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1662
+#: lib/rpmts.c:1663
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr ""
@@ -3104,27 +3104,27 @@ msgstr ""
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1673
+#: lib/rpmts.c:1674
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1698
+#: lib/rpmts.c:1699
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1713
+#: lib/rpmts.c:1714
 msgid "\tRefcount is zero...will free\n"
 msgstr ""
 
 #. Assume we don't find it
-#: lib/rpmts.c:1763
+#: lib/rpmts.c:1764
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1769
+#: lib/rpmts.c:1770
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr ""

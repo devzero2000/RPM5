@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-17 11:08-0400\n"
+"POT-Creation-Date: 2005-07-25 22:25-0400\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1660,8 +1660,8 @@ msgstr "hdr RSA: UNGÜLTIG, nicht binär\n"
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA: UNGÜLTIG, nicht binär\n"
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:920 lib/package.c:946
-#: lib/package.c:978
+#: lib/package.c:546 lib/package.c:586 lib/package.c:924 lib/package.c:950
+#: lib/package.c:982
 #, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
@@ -1697,33 +1697,33 @@ msgstr "hdr Blob(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 msgid "hdr load: BAD\n"
 msgstr "hdr Load: UNGÜLTIG\n"
 
-#: lib/package.c:790
+#: lib/package.c:794
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "Paket-Version 1 wird von dieser RPM-Version nicht unterstützt\n"
 
-#: lib/package.c:799
+#: lib/package.c:803
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "Nur Pakete mit Versionsnummern <= 4 werden von dieser RPM-Version "
 "unterstützt\n"
 
-#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
+#: lib/package.c:815 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature fehlgeschlagen: %s"
 
-#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Keine Signatur verfügbar\n"
 
-#: lib/package.c:885
+#: lib/package.c:889
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead fehlgeschlagen: %s"
 
-#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:997 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread fehlgeschlagen: %s\n"
@@ -3139,42 +3139,42 @@ msgstr "Füge hinzu: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "Schlage vor: %s\n"
 
-#: lib/rpmts.c:1221
+#: lib/rpmts.c:1222
 msgid "mounted filesystems:\n"
 msgstr "Eingehängte Dateisysteme:\n"
 
-#: lib/rpmts.c:1223
+#: lib/rpmts.c:1224
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i       Gerät   B-Größe     B verfügbar  I verf.  Einhängepunkt\n"
 
-#: lib/rpmts.c:1279
+#: lib/rpmts.c:1280
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
 
-#: lib/rpmts.c:1616
+#: lib/rpmts.c:1617
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr "Erstelle Score-Board für Transaktionen(%p, %p)\n"
 
-#: lib/rpmts.c:1621
+#: lib/rpmts.c:1622
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr "\tScore-Board-Adresse:  %p\n"
 
-#: lib/rpmts.c:1631
+#: lib/rpmts.c:1632
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "\tReserviere Speicherplatz für %d Einträge\n"
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1658
+#: lib/rpmts.c:1659
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr "\tFüge Eintrag für %s zum Score-Board.\n"
 
-#: lib/rpmts.c:1662
+#: lib/rpmts.c:1663
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr "\t\tEinstiegsadresse:  %p\n"
@@ -3182,27 +3182,27 @@ msgstr "\t\tEinstiegsadresse:  %p\n"
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1673
+#: lib/rpmts.c:1674
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr "\tAktualisiere Eintrag für %s im Score-Board.\n"
 
-#: lib/rpmts.c:1698
+#: lib/rpmts.c:1699
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr "Möglicherweise freies Score-Board(%p)\n"
 
-#: lib/rpmts.c:1713
+#: lib/rpmts.c:1714
 msgid "\tRefcount is zero...will free\n"
 msgstr "\tRefcount ist null...ist frei\n"
 
 #. Assume we don't find it
-#: lib/rpmts.c:1763
+#: lib/rpmts.c:1764
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr "Schaue im Score-Board(%p) nach %s\n"
 
-#: lib/rpmts.c:1769
+#: lib/rpmts.c:1770
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr "\tEinstiegsadresse gefunden:  %p\n"

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -28,7 +28,7 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: fileutils shadow-utils
 %endif
-Requires: popt = 1.10.2
+Requires: popt = 1.10.3
 Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
@@ -116,7 +116,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.10.2
+Version: 1.10.3
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -501,52 +501,6 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Wed Jul 20 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-1
-- fix: magic_file() closes stdin when given directory path.
-- use perldeps.pl, phase out perl.{req,prov} (again).
-- document __vsflags (#147489).
-- release rpm-4.4.2.
-
-* Sun Jul 17 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.9
-- upgrade to zlib-1.2.2.4 internal.
-- macosx: avoid minigzip build failures.
-- upgrade to file-4.14 internal.
-
-* Wed Jul 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.8
-- updated de.po (#162756).
-- added CVSId: tag and SVNId: alias (#162807).
-- added brp-java-gcjcompile build helper.
-- fix: java compiled with -O0 confuses debugedit (#161722).
-- fix: % at end-of-line overflow (#161091).
-- *_terminate_build macros set per-pkg, not per-invocation (#161081).
-- use perldeps.pl, phase out perl.{req,prov} (#161921).
-- fix: make sqlite3 rpmdb endian-neutral (#159425).
-- fix: permit sqlite3 rpmdb with chroot (#159424).
-- fix: find-debuginfo.sh not handling set[ug]id ELF files (#100963).
-- fix: find-debuginfo.sh kernel voo-doo tweaks (#159346).
-- fix: initialize variables used in debug msg (#160458).
-- permit zlib in rpm to be built with make -j (#159404).
-- avoid '?' for zero length file mmap failure doing md5 (#159405).
-
-* Mon Jul  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.7
-- rebuild to start the rpm-4.4.2 release gears turning.
-
-* Wed Mar  9 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.6
-- permit gpg to be used for RSA signatures.
-- permit RSA key sizes larger than 1024 bits.
-- permit RSA/{sha1,sha256,sha384,sha512} signature verification.
-
-* Sun Feb 20 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.5
-- updated sv.po <goeran@uddrborg.se>.
-
-* Wed Feb 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.4
-- sqlite3: revert cClose scoping, data is freed in cClose unlike db4.
-- build against sqlite3-3.1.2.
-- sqlite3: update encode/decode from sqlite-2.8.16.
-- add --xml popt alias for query modes.
-- remove _rpmdb now that python2.[34] are commonly available.
-- remove remnant -I/opt/local hacks, --prefix=/usr is recommended.
-- rework configure.ac et al to lose internal library baggage flexibly.
-
-* Sun Feb 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.1
-- start 4.4.2 devel.
+* Mon Jul 25 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.1
+- start 4.4.3 devel.
+- put a --stats stopwatch on rpmReadPackageFile() I/O.

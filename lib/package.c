@@ -760,6 +760,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     const char * msg;
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    rpmop opsave = memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
     int xx;
     int i;
 
@@ -778,6 +779,9 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	}
     }
 #endif
+
+    /* Snapshot current I/O counters (cached persistent I/O reuses counters) */
+    rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
     memset(l, 0, sizeof(*l));
     rc = readLead(fd, l);
@@ -1060,6 +1064,13 @@ exit:
 /*@=boundswrite@*/
     }
     h = headerFree(h);
+
+    /* Accumulate time reading package header. */
+    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_READHDR),
+		fdstat_op(fd, FDSTAT_READ));
+    (void) rpmswSub(rpmtsOp(ts, RPMTS_OP_READHDR),
+		opsave);
+
     rpmtsCleanDig(ts);
     sigh = rpmFreeSignature(sigh);
     return rc;

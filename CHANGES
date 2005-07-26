@@ -1,3 +1,7 @@
+4.4.2 -> 4.4.3:
+	- start 4.4.3 devel.
+	- put a --stats stopwatch on rpmReadPackageFile() I/O.
+
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
 	- sqlite3: revert cClose scoping, data is freed in cClose unlike db4.

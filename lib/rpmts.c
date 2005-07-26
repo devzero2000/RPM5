@@ -816,7 +816,7 @@ static void rpmtsPrintStat(const char * name, /*@null@*/ struct rpmop_s * op)
 {
     static unsigned int scale = (1000 * 1000);
     if (op != NULL && op->count > 0)
-	fprintf(stderr, "   %s %6d %6lu.%06lu MB %6lu.%06lu secs\n",
+	fprintf(stderr, "   %s %8d %6lu.%06lu MB %6lu.%06lu secs\n",
 		name, op->count,
 		(unsigned long)op->bytes/scale, (unsigned long)op->bytes%scale,
 		op->usecs/scale, op->usecs%scale);
@@ -845,6 +845,7 @@ static void rpmtsPrintStats(rpmts ts)
     rpmtsPrintStat("dbget:       ", rpmtsOp(ts, RPMTS_OP_DBGET));
     rpmtsPrintStat("dbput:       ", rpmtsOp(ts, RPMTS_OP_DBPUT));
     rpmtsPrintStat("dbdel:       ", rpmtsOp(ts, RPMTS_OP_DBDEL));
+    rpmtsPrintStat("readhdr:     ", rpmtsOp(ts, RPMTS_OP_READHDR));
 }
 
 rpmts rpmtsFree(rpmts ts)
