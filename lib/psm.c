@@ -461,6 +461,8 @@ static /*@observer@*/ const char * const tag2sln(int tag)
     case RPMTAG_PREUN:		return "%preun";
     case RPMTAG_POSTUN:		return "%postun";
     case RPMTAG_VERIFYSCRIPT:	return "%verify";
+    case RPMTAG_PRETRANS:	return "%pretrans";
+    case RPMTAG_POSTTRANS:	return "%posttrans";
     }
     return "%unknownscript";
 }

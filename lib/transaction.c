@@ -1616,6 +1616,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 		psm = rpmpsmNew(ts, p, p->fi);
 /*@=compdef =usereleased@*/
 assert(psm != NULL);
+		psm->stepName = "pretrans";
 		psm->scriptTag = RPMTAG_PRETRANS;
 		psm->progTag = RPMTAG_PRETRANSPROG;
 		xx = rpmpsmStage(psm, PSM_SCRIPT);
@@ -2320,6 +2321,7 @@ assert(psm != NULL);
 	    psm = rpmpsmNew(ts, p, p->fi);
 /*@=compdef =usereleased@*/
 assert(psm != NULL);
+	    psm->stepName = "posttrans";
 	    psm->scriptTag = RPMTAG_POSTTRANS;
 	    psm->progTag = RPMTAG_POSTTRANSPROG;
 	    xx = rpmpsmStage(psm, PSM_SCRIPT);
