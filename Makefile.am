@@ -58,8 +58,10 @@ rpmpopt-$(VERSION): rpmpopt
 noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =
-rpm_LDFLAGS =		$(myLDFLAGS)
+rpm_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
+#rpm_LDFLAGS =		$(myLDFLAGS)
+#rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
 
@@ -76,10 +78,10 @@ rpmd.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c $(top_srcdir)/rpmqv.c
 
 rpmi_SOURCES =
-#rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-#rpmi_LDADD =		rpmi.o $(myLDADD) @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpmi_LDFLAGS =		$(myLDFLAGS)
+rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpmi_LDADD =		rpmi.o $(myLDADD)
+#rpmi_LDFLAGS =		$(myLDFLAGS)
+#rpmi_LDADD =		rpmi.o $(myLDADD)
 rpmi.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMEIU -o $@ -c $(top_srcdir)/rpmqv.c
 
