@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-25 22:25-0400\n"
+"POT-Creation-Date: 2005-08-25 13:57-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -754,7 +754,7 @@ msgstr "署名ヘッダの再読み込みができません。\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1638
+#: build/pack.c:645 lib/psm.c:1640
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
@@ -784,7 +784,7 @@ msgstr "%s から Payload 読み込みに失敗: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1907
+#: build/pack.c:738 lib/psm.c:1909
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
@@ -2329,88 +2329,88 @@ msgstr "ソースパッケージが期待されますが、これはバイナリパッケージです\n"
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージに .spec ファイルがありません\n"
 
-#: lib/psm.c:485
+#: lib/psm.c:487
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr "%s: waitpid(%d) rc %d 状態 %x 秒 %u.%03u\n"
 
-#: lib/psm.c:641
+#: lib/psm.c:643
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "%s: %s(%s-%s-%s.%s) <lua> スクリプトを実行しています。\n"
 
-#: lib/psm.c:659
+#: lib/psm.c:661
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s.%s) 余計な \"%s\" をスキップしました。\n"
 
-#: lib/psm.c:667
+#: lib/psm.c:669
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s.%s) %s 同期スクリプトを開始しました。\n"
 
-#: lib/psm.c:879
+#: lib/psm.c:881
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 
-#: lib/psm.c:919
+#: lib/psm.c:921
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。waitpid (%d)。rc %d: %s\n"
 
-#: lib/psm.c:926
+#: lib/psm.c:928
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
 
-#: lib/psm.c:930
+#: lib/psm.c:932
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
 
-#: lib/psm.c:1364
+#: lib/psm.c:1366
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s は  %d ファイルを含み、テスト = %d です。\n"
 
-#: lib/psm.c:1541
+#: lib/psm.c:1543
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: スクリプト %s の実行に失敗しました (%d)。%s をスキップします。\n"
 
-#: lib/psm.c:1650
+#: lib/psm.c:1652
 msgid "Unable to reload signature header\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: lib/psm.c:1728
+#: lib/psm.c:1730
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "アーカイブの伸長に失敗%s%s: %s\n"
 
-#: lib/psm.c:1729
+#: lib/psm.c:1731
 msgid " on file "
 msgstr ": ファイル "
 
-#: lib/psm.c:1915
+#: lib/psm.c:1917
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s: ファイル %s で失敗: %s\n"
 
-#: lib/psm.c:1918
+#: lib/psm.c:1920
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
 
-#: lib/psm.c:2106
+#: lib/psm.c:2108
 #, fuzzy, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 "削除されたものとしてマーク %s を付けようとしています(スコアボード (%p) "
 "内)。\n"
 
-#: lib/psm.c:2139
+#: lib/psm.c:2141
 #, fuzzy, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -3521,7 +3521,7 @@ msgstr "トランザクション前のスクリプトを実行中\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1645
+#: lib/transaction.c:1646
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "%d ファイルの指紋を計算しています。\n"
@@ -3529,31 +3529,31 @@ msgstr "%d ファイルの指紋を計算しています。\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1726
+#: lib/transaction.c:1727
 msgid "computing file dispositions\n"
 msgstr "ファイルの性質を計算しています。\n"
 
-#: lib/transaction.c:1905
+#: lib/transaction.c:1906
 msgid "Creating auto-rollback transaction\n"
 msgstr "自動ロールバックトランザクションを作成しています。\n"
 
-#: lib/transaction.c:2059
+#: lib/transaction.c:2060
 msgid "Add failed.  Could not read package header.\n"
 msgstr "追加に失敗しました。パッケージヘッダを読み込めませんでした。\n"
 
-#: lib/transaction.c:2123
+#: lib/transaction.c:2124
 msgid "Add failed in rpmpsmStage().\n"
 msgstr "rpmpsmStage() で追加に失敗しました。\n"
 
-#: lib/transaction.c:2167
+#: lib/transaction.c:2168
 msgid "Add failed.  Could not get file list.\n"
 msgstr "追加に失敗しました。ファイル一覧の取得ができません。\n"
 
-#: lib/transaction.c:2216
+#: lib/transaction.c:2217
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr "rpmpsmStage() で削除に失敗しました。\n"
 
-#: lib/transaction.c:2276
+#: lib/transaction.c:2277
 msgid "running post-transaction scripts\n"
 msgstr "トランザクション後のスクリプトを実行中\n"
 
