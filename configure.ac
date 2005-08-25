@@ -622,7 +622,7 @@ AC_CHECK_HEADER([sqlite3.h], [
   if test -d sqlite ; then
     AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
     WITH_SQLITE3_SUBDIR=sqlite
-    WITH_SQLITE3_INCLUDE="-I\${top_srcdir}/${WITH_SQLITE3_SUBDIR}/src"
+    WITH_SQLITE3_INCLUDE="-I\${top_srcdir}/${WITH_SQLITE3_SUBDIR} -I\${top_srcdir}/${WITH_SQLITE3_SUBDIR}/src"
     WITH_SQLITE3_LIB="\${top_builddir}/${WITH_SQLITE3_SUBDIR}/libsqlite3.la"
     DBLIBSRCS="$DBLIBSRCS sqlite.c"
   fi

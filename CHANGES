@@ -3,6 +3,7 @@
 	- put a --stats stopwatch on rpmReadPackageFile() I/O.
 	- ignore %excluded files for size
 	- add debugging labels for pre/post trans scriptlet execution.
+	- sqlite: path to find internal sqlite3.h
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
