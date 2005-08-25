@@ -6,6 +6,7 @@
 	- sqlite: path to find internal sqlite3.h
 	- debuginfo: canonicalize paths (#165434).
 	- debuginfo: pass --remove-comment switch (#165418).
+	- java: add automagic req/prov extractors and closure helper (#164953).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
