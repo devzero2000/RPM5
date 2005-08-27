@@ -365,6 +365,7 @@ exit 0
 %lang(sr)	%{__prefix}/*/locale/sr/LC_MESSAGES/rpm.mo
 %lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/rpm.mo
 %lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
+%lang(uk)	%{__prefix}/*/locale/uk/LC_MESSAGES/rpm.mo
 
 %{__mandir}/man1/gendiff.1*
 %{__mandir}/man8/rpm.8*

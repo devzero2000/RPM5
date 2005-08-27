@@ -8,6 +8,7 @@
 	- debuginfo: pass --remove-comment switch (#165418).
 	- java: add automagic req/prov extractors and closure helper (#164953).
 	- statically link rpmi and rpm again again again.
+	- update uk.po (#142740).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
