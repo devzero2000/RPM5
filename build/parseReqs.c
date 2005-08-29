@@ -58,11 +58,11 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	h = spec->buildRestrictions;
 	break;
     case RPMTAG_PREREQ:
-	tagflags |= RPMSENSE_PREREQ;
+	tagflags |= RPMSENSE_ANY;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDPREREQ:
-	tagflags |= RPMSENSE_PREREQ;
+	tagflags |= RPMSENSE_ANY;
 	h = spec->buildRestrictions;
 	break;
     case RPMTAG_TRIGGERIN:

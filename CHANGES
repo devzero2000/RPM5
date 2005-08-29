@@ -10,6 +10,7 @@
 	- statically link rpmi and rpm again again again.
 	- update uk.po (#142740).
 	- fix: check-prereqs typo (#147196).
+	- remove all uses of RPMSENSE_PREREQ.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

@@ -962,8 +962,6 @@ static void markLoop(/*@special@*/ tsortInfo tsi, rpmte q)
 static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
 	/*@*/
 {
-    if (isLegacyPreReq(f))
-	return "PreReq:";
     f = _notpre(f);
     if (f & RPMSENSE_SCRIPT_PRE)
 	return "Requires(pre):";
@@ -1031,7 +1029,7 @@ zapRelation(rpmte q, rpmte p,
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	/*@-branchstate@*/
-	if (zap && !(Flags & RPMSENSE_PREREQ)) {
+	if (zap) {
 	    rpmMessage(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(rpmteNEVRA(p) ?  rpmteNEVRA(p) : "???"), dp);
@@ -1293,15 +1291,13 @@ int rpmtsOrder(rpmts ts)
 
 	    switch (rpmteType(p)) {
 	    case TR_REMOVED:
-		/* Skip if not %preun/%postun requires or legacy prereq. */
-		if (isInstallPreReq(Flags)
-		 || !( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
+		/* Skip if not %preun/%postun requires. */
+		if (!isErasePreReq(Flags))
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
-		/* Skip if not %pre/%post requires or legacy prereq. */
-		if (isErasePreReq(Flags)
-		 || !( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
+		/* Skip if not %pre/%post requires. */
+		if (!isInstallPreReq(Flags))
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1320,15 +1316,13 @@ int rpmtsOrder(rpmts ts)
 
 	    switch (rpmteType(p)) {
 	    case TR_REMOVED:
-		/* Skip if %preun/%postun requires or legacy prereq. */
-		if (isInstallPreReq(Flags)
-		 ||  ( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
+		/* Skip if %preun/%postun requires. */
+		if (isErasePreReq(Flags))
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
-		/* Skip if %pre/%post requires or legacy prereq. */
-		if (isErasePreReq(Flags)
-		 ||  ( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
+		/* Skip if %pre/%post requires. */
+		if (isInstallPreReq(Flags))
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }

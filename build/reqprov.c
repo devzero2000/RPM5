@@ -37,11 +37,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	nametag = RPMTAG_CONFLICTNAME;
 	versiontag = RPMTAG_CONFLICTVERSION;
 	flagtag = RPMTAG_CONFLICTFLAGS;
-    } else if (Flags & RPMSENSE_PREREQ) {
-	nametag = RPMTAG_REQUIRENAME;
-	versiontag = RPMTAG_REQUIREVERSION;
-	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = Flags & _ALL_REQUIRES_MASK;
     } else if (Flags & RPMSENSE_TRIGGER) {
 	nametag = RPMTAG_TRIGGERNAME;
 	versiontag = RPMTAG_TRIGGERVERSION;

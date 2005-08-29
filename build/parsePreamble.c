@@ -122,7 +122,6 @@ typedef struct tokenBits_s {
 /*@observer@*/ /*@unchecked@*/
 static struct tokenBits_s installScriptBits[] = {
     { "interp",		RPMSENSE_INTERP },
-    { "prereq",		RPMSENSE_PREREQ },
     { "preun",		RPMSENSE_SCRIPT_PREUN },
     { "pre",		RPMSENSE_SCRIPT_PRE },
     { "postun",		RPMSENSE_SCRIPT_POSTUN },
