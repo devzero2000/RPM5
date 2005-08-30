@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-25 13:57-0400\n"
+"POT-Creation-Date: 2005-08-30 09:17-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -864,128 +864,128 @@ msgstr "строка %d: Ошибка разбора %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "строка %d: Второй список %%files\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:244
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Архитектура исключена: %s\n"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:249
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Архитектура не включена: %s\n"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:254
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "ОС исключена: %s\n"
 
-#: build/parsePreamble.c:260
+#: build/parsePreamble.c:259
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "ОС не включена: %s\n"
 
-#: build/parsePreamble.c:283
+#: build/parsePreamble.c:282
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Поле %s обязано присутствовать в пакете: %s\n"
 
-#: build/parsePreamble.c:312
+#: build/parsePreamble.c:311
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Повторяющиеся записи %s в пакете: %s\n"
 
-#: build/parsePreamble.c:375
+#: build/parsePreamble.c:374
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Невозможно открыть пиктограмму %s: %s\n"
 
-#: build/parsePreamble.c:393
+#: build/parsePreamble.c:392
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Невозможно прочитать пиктограмму %s: %s\n"
 
-#: build/parsePreamble.c:406
+#: build/parsePreamble.c:405
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Неизвестный тип пиктограммы: %s\n"
 
-#: build/parsePreamble.c:451
+#: build/parsePreamble.c:450
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "строка %d: Ярлык требует только один аргумент: %s\n"
 
-#: build/parsePreamble.c:491
+#: build/parsePreamble.c:490
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "строка %d: Неверный тэг: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:499
+#: build/parsePreamble.c:498
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "строка %d: Пустой тэг: %s\n"
 
-#: build/parsePreamble.c:524 build/parsePreamble.c:531
+#: build/parsePreamble.c:523 build/parsePreamble.c:530
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s\n"
 
-#: build/parsePreamble.c:592 build/parseSpec.c:472
+#: build/parsePreamble.c:591 build/parseSpec.c:472
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot не может быть \"/\": %s\n"
 
-#: build/parsePreamble.c:605
+#: build/parsePreamble.c:604
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "строка %d: Префикс не может заканчиваться на \"/\": %s\n"
 
-#: build/parsePreamble.c:617
+#: build/parsePreamble.c:616
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "строка %d: Docdir должен начинаться с '/': %s\n"
 
-#: build/parsePreamble.c:629
+#: build/parsePreamble.c:628
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "строка %d: Поле Epoch/Serial должно быть числом: %s\n"
 
-#: build/parsePreamble.c:669 build/parsePreamble.c:680
+#: build/parsePreamble.c:668 build/parsePreamble.c:679
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "строка %d: Неверное число %s: определяет: %s\n"
 
-#: build/parsePreamble.c:706
+#: build/parsePreamble.c:705
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "строка %d: Неверный формат BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:714
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Внутренняя ошибка: Неизвестный ярлык %d\n"
 
-#: build/parsePreamble.c:819
+#: build/parsePreamble.c:818
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:886
+#: build/parsePreamble.c:885
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Неверная спецификация пакета: %s\n"
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:891
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Пакет уже существует: %s\n"
 
-#: build/parsePreamble.c:921
+#: build/parsePreamble.c:920
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "строка %d: Неизвестный тэг: %s\n"
 
-#: build/parsePreamble.c:943
+#: build/parsePreamble.c:942
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Файл spec не может использовать BuildRoot\n"
 
@@ -1436,18 +1436,18 @@ msgstr "(db package)"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "игнорировать зависимост(и) имён пакета(ов) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1036
+#: lib/depends.c:1034
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s \"%s\" из сортированных связей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1273
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1367
+#: lib/depends.c:1361
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1456,21 +1456,21 @@ msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "дерево, глубина)\n"
 
-#: lib/depends.c:1456
+#: lib/depends.c:1450
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1529
+#: lib/depends.c:1523
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1564
+#: lib/depends.c:1558
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1569
+#: lib/depends.c:1563
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "ошибка rpmtsOrder, осталось %d элементов\n"

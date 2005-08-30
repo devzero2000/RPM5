@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-25 13:57-0400\n"
+"POT-Creation-Date: 2005-08-30 09:17-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -866,128 +866,128 @@ msgstr "neuspelo otvaranje %s: %s"
 msgid "line %d: Second %%files list\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:244
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:249
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:254
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Pribavljam %s\n"
 
-#: build/parsePreamble.c:260
+#: build/parsePreamble.c:259
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "%s: Neuspelo otvaranje\n"
 
-#: build/parsePreamble.c:283
+#: build/parsePreamble.c:282
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-#: build/parsePreamble.c:312
+#: build/parsePreamble.c:311
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: build/parsePreamble.c:375
+#: build/parsePreamble.c:374
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/parsePreamble.c:393
+#: build/parsePreamble.c:392
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/parsePreamble.c:406
+#: build/parsePreamble.c:405
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "(nepoznat tip)"
 
-#: build/parsePreamble.c:451
+#: build/parsePreamble.c:450
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePreamble.c:491
+#: build/parsePreamble.c:490
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:499
+#: build/parsePreamble.c:498
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePreamble.c:524 build/parsePreamble.c:531
+#: build/parsePreamble.c:523 build/parsePreamble.c:530
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePreamble.c:592 build/parseSpec.c:472
+#: build/parsePreamble.c:591 build/parseSpec.c:472
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:605
+#: build/parsePreamble.c:604
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/parsePreamble.c:617
+#: build/parsePreamble.c:616
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/parsePreamble.c:629
+#: build/parsePreamble.c:628
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:669 build/parsePreamble.c:680
+#: build/parsePreamble.c:668 build/parsePreamble.c:679
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:706
+#: build/parsePreamble.c:705
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "nedostaje arhitektura za %s na %s:%d"
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:714
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "fatalna gre¹ka: "
 
-#: build/parsePreamble.c:819
+#: build/parsePreamble.c:818
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:886
+#: build/parsePreamble.c:885
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Opcije odrednice paketa:"
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:891
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: build/parsePreamble.c:921
+#: build/parsePreamble.c:920
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:943
+#: build/parsePreamble.c:942
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -1453,38 +1453,38 @@ msgstr "upit nad svim paketima"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1036
+#: lib/depends.c:1034
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
 #. Record all relations.
-#: lib/depends.c:1273
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1367
+#: lib/depends.c:1361
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1456
+#: lib/depends.c:1450
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1529
+#: lib/depends.c:1523
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1564
+#: lib/depends.c:1558
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1569
+#: lib/depends.c:1563
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""

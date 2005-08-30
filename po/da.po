@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-25 13:57-0400\n"
+"POT-Creation-Date: 2005-08-30 09:17-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -861,128 +861,128 @@ msgstr "linie %d: Fejl ved tolkning af %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "linie %d: Anden '%%files'-liste\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:244
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Arkitekturen er ekskluderet: %s\n"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:249
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Arkitekturen er ikke inkluderet: %s\n"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:254
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS er ekskluderet: %s\n"
 
-#: build/parsePreamble.c:260
+#: build/parsePreamble.c:259
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS is ikke inkluderet: %s\n"
 
-#: build/parsePreamble.c:283
+#: build/parsePreamble.c:282
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "'%s'-felt skal være tilstede i pakke : %s\n"
 
-#: build/parsePreamble.c:312
+#: build/parsePreamble.c:311
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Flere '%s'-indgange i pakke: %s\n"
 
-#: build/parsePreamble.c:375
+#: build/parsePreamble.c:374
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kunne ikke åbne ikon %s: %s\n"
 
-#: build/parsePreamble.c:393
+#: build/parsePreamble.c:392
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kunne ikke læse ikon %s: %s\n"
 
-#: build/parsePreamble.c:406
+#: build/parsePreamble.c:405
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Ukendt ikontype: %s\n"
 
-#: build/parsePreamble.c:451
+#: build/parsePreamble.c:450
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "linie %d: Ugyldigt tilvalg %s: %s\n"
 
-#: build/parsePreamble.c:491
+#: build/parsePreamble.c:490
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "linie %d: Forkert udformet mærke: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:499
+#: build/parsePreamble.c:498
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linie %d: Tomt mærke: %s\n"
 
-#: build/parsePreamble.c:524 build/parsePreamble.c:531
+#: build/parsePreamble.c:523 build/parsePreamble.c:530
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linie %d: Ugyldigt tegn '-' i %s: %s\n"
 
-#: build/parsePreamble.c:592 build/parseSpec.c:472
+#: build/parsePreamble.c:591 build/parseSpec.c:472
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan ikke være \"/\": %s\n"
 
-#: build/parsePreamble.c:605
+#: build/parsePreamble.c:604
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linie %d: Præfikser kan ikke ende på \"/\": %s\n"
 
-#: build/parsePreamble.c:617
+#: build/parsePreamble.c:616
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linie %d: Docdir skal starte med '/': %s\n"
 
-#: build/parsePreamble.c:629
+#: build/parsePreamble.c:628
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "linie %d: Epoch/Serial-felter skal være et nummer: %s\n"
 
-#: build/parsePreamble.c:669 build/parsePreamble.c:680
+#: build/parsePreamble.c:668 build/parsePreamble.c:679
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linie %d: Ugyldig %s: angivere: %s\n"
 
-#: build/parsePreamble.c:706
+#: build/parsePreamble.c:705
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linie %d: Ugyldigt 'BuildArchitecture'-format: %s\n"
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:714
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Intern fejl: Falsk mærke %d\n"
 
-#: build/parsePreamble.c:819
+#: build/parsePreamble.c:818
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:886
+#: build/parsePreamble.c:885
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ugyldig pakkeangivelse: %s\n"
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:891
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Pakken eksisterer allerede: %s\n"
 
-#: build/parsePreamble.c:921
+#: build/parsePreamble.c:920
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linie %d: Ukendt mærke: %s\n"
 
-#: build/parsePreamble.c:943
+#: build/parsePreamble.c:942
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-fil kan ikke bruge BuildRoot\n"
 
@@ -1439,38 +1439,38 @@ msgstr "ingen pakker\n"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1036
+#: lib/depends.c:1034
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1273
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1367
+#: lib/depends.c:1361
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1456
+#: lib/depends.c:1450
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1529
+#: lib/depends.c:1523
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1564
+#: lib/depends.c:1558
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1569
+#: lib/depends.c:1563
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
