@@ -1,0 +1,4 @@
+LIBRPM_0
+{
+  global: *;
+};

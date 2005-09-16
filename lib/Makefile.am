@@ -14,7 +14,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
-EXTRA_DIST = getdate.y tgi.c rpmgi.c rpmgi.h
+EXTRA_DIST = getdate.y tgi.c librpm.vers
 
 EXTRA_PROGRAMS = tgi
 
@@ -41,12 +41,16 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c stringbuf.c transaction.c \
 	verify.c rpmlock.c
-librpm_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
+librpm_la_LDFLAGS = -no-undefined -release 4.4 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
 	@INTLLIBS@
+
+if HAVE_LD_VERSION_SCRIPT
+librpm_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpm.vers
+endif
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts

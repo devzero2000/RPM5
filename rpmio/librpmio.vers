@@ -1,0 +1,5 @@
+LIBRPMIO_0
+{
+  global: *;
+  local: rpmz_*;
+};

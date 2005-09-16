@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c
+EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c librpmio.vers
 
 EXTRA_PROGRAMS = tax tdigest tdir tfts tget thkp tput tglob tinv tkey tring trpmio tsw dumpasn1
 
@@ -34,7 +34,7 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c rpmdav.c \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
+librpmio_la_LDFLAGS = -no-undefined -release 4.4 $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \
 	@WITH_LUA_LIB@ \
@@ -43,6 +43,10 @@ librpmio_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	-lpthread
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
+
+if HAVE_LD_VERSION_SCRIPT
+librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
+endif
 
 .created:
 	if test X"@WITH_BEECRYPT_SUBDIR@" != X; then \

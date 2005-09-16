@@ -1,0 +1,4 @@
+LIBRPMDB_0
+{
+  global: *;
+};

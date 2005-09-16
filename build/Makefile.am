@@ -4,6 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
+EXTRA_DIST = librpmbuild.vers
+
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
@@ -31,11 +33,15 @@ librpmbuild_la_SOURCES = \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c
-librpmbuild_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
+librpmbuild_la_LDFLAGS = -no-undefined -release 4.4 $(LDFLAGS) \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_LIBELF_LIB@
+
+if HAVE_LD_VERSION_SCRIPT
+librpmbuild_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmbuild.vers
+endif
 
 rpmfile.h:
 	@ln -sf $(top_builddir)/file/src/file.h $@

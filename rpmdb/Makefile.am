@@ -16,7 +16,7 @@ INCLUDES = -I. \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
-EXTRA_DIST = db3.c sqlite.c db_emu.h
+EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers
 
 EXTRA_PROGRAMS = tjfn
 
@@ -51,13 +51,17 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
-librpmdb_la_LDFLAGS = -release 4.4 \
+librpmdb_la_LDFLAGS = -no-undefined -release 4.4 \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
 	@WITH_LIBELF_LIB@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
+
+if HAVE_LD_VERSION_SCRIPT
+librpmdb_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmdb.vers
+endif
 
 # XXX make sure that db.h symlink is generated
 dbconfig.c $(DBLIBSRCS): db.h

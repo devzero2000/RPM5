@@ -33,6 +33,14 @@ AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE([foreign])
 
+# Library code modified:                              REVISION++
+# Interfaces changed/added/removed:   CURRENT++       REVISION=0
+# Interfaces added:                             AGE++
+# Interfaces removed:                           AGE=0
+AC_SUBST(LT_CURRENT, 4)
+AC_SUBST(LT_REVISION, 4)
+AC_SUBST(LT_AGE, 0)
+
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
 
@@ -1257,6 +1265,25 @@ case "${target_cpu}" in
 x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
 esac
 AC_SUBST(MARK64)
+
+# For some systems we know that we have ld_version scripts.
+# Use it then as default.
+have_ld_version_script=no
+case "${host}" in
+    *-*-linux*)
+        have_ld_version_script=yes
+        ;;
+    *-*-gnu*)
+        have_ld_version_script=yes
+        ;;
+esac
+AC_ARG_ENABLE([ld-version-script],
+              AC_HELP_STRING([--enable-ld-version-script],
+                             [enable/disable use of linker version script.
+                              (default is system dependent)]),
+              [have_ld_version_script=$enableval],
+              [ : ] )
+AM_CONDITIONAL(HAVE_LD_VERSION_SCRIPT, test "$have_ld_version_script" = "yes")
 
 dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
