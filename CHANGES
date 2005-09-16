@@ -12,6 +12,7 @@
 	- fix: check-prereqs typo (#147196).
 	- remove all uses of RPMSENSE_PREREQ.
 	- fix: revert to older/slower perldeps avoid getOutputFrom() error.
+	- zlib: uniqify several more symbols.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
