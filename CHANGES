@@ -14,6 +14,7 @@
 	- fix: revert to older/slower perldeps avoid getOutputFrom() error.
 	- zlib: uniqify several more symbols.
 	- add symbol versions everywhere, proof-of-concept.
+	- don't re-export zlib-in-rpmio and bdb-in-rpmdb symbols.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

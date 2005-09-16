@@ -51,7 +51,7 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
-librpmdb_la_LDFLAGS = -no-undefined -release 4.4 \
+librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
