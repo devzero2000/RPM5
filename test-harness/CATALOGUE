@@ -59,4 +59,7 @@ TEST #	TYPE	COMMENTS
 21      ARB     Test 17 except now the broken package has broken dependencies.
                 Tests autorollback goal in the case that the error is a 
                 pre-transaction check (specifically missing dependencies).
-
+22      RB      Install a package test-1-1, now upgrade to test-1-2.  Next,
+                rollback to test-1-1, except that test-1-1 will fail in %pre
+                at this point.  Should snip the erasure of test-1-2.  If not 
+                you end up with zero "test" packages installed.
