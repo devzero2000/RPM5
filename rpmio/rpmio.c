@@ -104,11 +104,6 @@ static int ftpTimeoutSecs = TIMEOUT_SECS;
 /**
  */
 /*@unchecked@*/
-static int httpTimeoutSecs = TIMEOUT_SECS;
-
-/**
- */
-/*@unchecked@*/
 int _rpmio_debug = 0;
 
 /**
@@ -380,7 +375,7 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 /*@=boundswrite@*/
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
+    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -397,7 +392,7 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     if (count == 0) return 0;
 
@@ -671,7 +666,7 @@ fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno,
 /* =============================================================== */
 /* Support for FTP/HTTP I/O.
  */
-const char *const ftpStrerror(int errorNumber)
+const char * ftpStrerror(int errorNumber)
 {
     switch (errorNumber) {
     case 0:
@@ -1562,6 +1557,7 @@ static int ftpFileDone(urlinfo u, FD_t data)
     return rc;
 }
 
+#ifdef DEAD
 static int httpResp(urlinfo u, FD_t ctrl, /*@out@*/ char ** str)
 	/*@globals fileSystem @*/
 	/*@modifies ctrl, *str, fileSystem @*/
@@ -1707,6 +1703,7 @@ errxit2:
     return rc;
 /*@=usereleased@*/
 }
+#endif
 
 /* XXX DYING: unused */
 void * ufdGetUrlinfo(FD_t fd)
@@ -2229,7 +2226,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
     }
     return rc;
 }
@@ -2244,7 +2241,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -2466,7 +2463,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -2485,7 +2482,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -2963,7 +2960,7 @@ FD_t Fopen(const char *path, const char *fmode)
     char stdio[20], other[20];
     const char *end = NULL;
     mode_t perms = 0666;
-    int flags;
+    int flags = 0;
     FD_t fd;
 
     if (path == NULL || fmode == NULL)

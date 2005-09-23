@@ -28,7 +28,9 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@=declundef =exportheader @*/
 #endif
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
+#include <rpmpgp.h>
+#include <rpmurl.h>
 #include <rpmmacro.h>
 #include <rpmsq.h>
 
@@ -43,7 +45,6 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access rpmts@*/		/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
-/*@access pgpDig@*/
 
 /*@unchecked@*/
 int _rpmdb_debug = 0;
@@ -2782,18 +2783,11 @@ if (dbiByteSwapped(dbi) == 1)
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			pgpDig dig = pgpNewDig();
-			const byte * pkt;
-			ssize_t pktlen;
-
-			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
+			int nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
+			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
-			(void) pgpPrtPkts(pkt, pktlen, dig, 0);
-			memcpy(bin, dig->pubkey.signid, 8);
-			pkt = _free(pkt);
-			dig = _free(dig);
 			key->data = bin;
-			key->size = 8;
+			key->size = nbin;
 			/*@switchbreak@*/ break;
 		    }
 /*@=boundsread@*/
@@ -3246,18 +3240,11 @@ data->size = 0;
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			pgpDig dig = pgpNewDig();
-			const byte * pkt;
-			ssize_t pktlen;
-
-			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
+			int nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
+			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
-			(void) pgpPrtPkts(pkt, pktlen, dig, 0);
-			memcpy(bin, dig->pubkey.signid, 8);
-			pkt = _free(pkt);
-			dig = _free(dig);
 			key->data = bin;
-			key->size = 8;
+			key->size = nbin;
 			/*@switchbreak@*/ break;
 		    }
 /*@=boundsread@*/

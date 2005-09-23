@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-30 09:17-0400\n"
+"POT-Creation-Date: 2005-09-22 21:52-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -3754,176 +3754,176 @@ msgstr "перевірити файли бази даних"
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "створити заголовки сумісні з (застарілими) версіями rpm[23]"
 
-#: rpmdb/rpmdb.c:219
+#: rpmdb/rpmdb.c:220
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: не розпізнана назва тегу: \"%s\" проігноровано\n"
 
-#: rpmdb/rpmdb.c:305
+#: rpmdb/rpmdb.c:306
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "неможливо відкрити індекс %s використовуючи db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:325
+#: rpmdb/rpmdb.c:326
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "неможливо відкрити індекс %s\n"
 
-#: rpmdb/rpmdb.c:970
+#: rpmdb/rpmdb.c:971
 msgid "no dbpath has been set\n"
 msgstr "не встановлено значення dbpath\n"
 
-#: rpmdb/rpmdb.c:1248 rpmdb/rpmdb.c:1379 rpmdb/rpmdb.c:1435 rpmdb/rpmdb.c:2397
-#: rpmdb/rpmdb.c:2526 rpmdb/rpmdb.c:3301
+#: rpmdb/rpmdb.c:1249 rpmdb/rpmdb.c:1380 rpmdb/rpmdb.c:1436 rpmdb/rpmdb.c:2398
+#: rpmdb/rpmdb.c:2527 rpmdb/rpmdb.c:3288
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "помилка(%d) при отриманні \"%s\" елементів з індексу %s index\n"
 
-#: rpmdb/rpmdb.c:1629
+#: rpmdb/rpmdb.c:1630
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: пропускається"
 
-#: rpmdb/rpmdb.c:1639
+#: rpmdb/rpmdb.c:1640
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "помилка(%d) збереження елементу #%d у %s\n"
 
-#: rpmdb/rpmdb.c:2283
+#: rpmdb/rpmdb.c:2284
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: пропускається"
 
-#: rpmdb/rpmdb.c:2315
+#: rpmdb/rpmdb.c:2316
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: отримано пошкоджений заголовок #%u -- пропускається.\n"
 
-#: rpmdb/rpmdb.c:2630
+#: rpmdb/rpmdb.c:2631
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: rpmdb/rpmdb.c:2696
+#: rpmdb/rpmdb.c:2697
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "помилка(%d) позначення елементу заголовка #%d для %s видалення\n"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2805
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "видалення \"%s\" з індексу %s\n"
 
-#: rpmdb/rpmdb.c:2815
+#: rpmdb/rpmdb.c:2809
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "видалення %d елементів з індексу %s\n"
 
-#: rpmdb/rpmdb.c:2843
+#: rpmdb/rpmdb.c:2837
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "помилка(%d) встановлення \"%s\" елементів з індексу %s\n"
 
-#: rpmdb/rpmdb.c:2864
+#: rpmdb/rpmdb.c:2858
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "помилка(%d) збереження елементу \"%s\" у %s\n"
 
-#: rpmdb/rpmdb.c:2874
+#: rpmdb/rpmdb.c:2868
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "помилка(%d) видалення елементу \"%s\" з %s\n"
 
-#: rpmdb/rpmdb.c:3039
+#: rpmdb/rpmdb.c:3033
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "помилка(%d) розподілу пам'яті дял нового екземпляру пакета\n"
 
-#: rpmdb/rpmdb.c:3104
+#: rpmdb/rpmdb.c:3098
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: пропускається"
 
-#: rpmdb/rpmdb.c:3276
+#: rpmdb/rpmdb.c:3263
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "додається \"%s\" до індексу %s.\n"
 
-#: rpmdb/rpmdb.c:3280
+#: rpmdb/rpmdb.c:3267
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "додаються %d елементів до індексу %s.\n"
 
-#: rpmdb/rpmdb.c:3320
+#: rpmdb/rpmdb.c:3307
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "помилка(%d) збереження елементу %s у %s\n"
 
-#: rpmdb/rpmdb.c:3729
+#: rpmdb/rpmdb.c:3716
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "видаляється %s після успішного завершення переіндексації бази у db3.\n"
 
-#: rpmdb/rpmdb.c:3768
+#: rpmdb/rpmdb.c:3755
 msgid "no dbpath has been set"
 msgstr "параметр dbpath не встановлено"
 
-#: rpmdb/rpmdb.c:3800
+#: rpmdb/rpmdb.c:3787
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перебудовується база даних %s у %s\n"
 
-#: rpmdb/rpmdb.c:3804
+#: rpmdb/rpmdb.c:3791
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "тимчасова база даних %s вже існує\n"
 
-#: rpmdb/rpmdb.c:3810
+#: rpmdb/rpmdb.c:3797
 #, c-format
 msgid "creating directory %s\n"
 msgstr "створюється каталог %s\n"
 
-#: rpmdb/rpmdb.c:3812
+#: rpmdb/rpmdb.c:3799
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "створюється каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3808
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "відкривається стара база даних через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3832
+#: rpmdb/rpmdb.c:3819
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "відкривається база даних через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3863
+#: rpmdb/rpmdb.c:3850
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "заголовок з номером %u у базі даних неправильний -- пропущено.\n"
 
-#: rpmdb/rpmdb.c:3903
+#: rpmdb/rpmdb.c:3890
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "неможливо добавити елемент(спочатку у %u)\n"
 
-#: rpmdb/rpmdb.c:3917
+#: rpmdb/rpmdb.c:3904
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "помилка перебудови бази даних: залишається початкова база даних\n"
 
-#: rpmdb/rpmdb.c:3925
+#: rpmdb/rpmdb.c:3912
 msgid "failed to replace old database with new database!\n"
 msgstr "неможливо замінити стару базу даних з новою базою даних!\n"
 
-#: rpmdb/rpmdb.c:3927
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файли у %s замінюються файлами з %s для відновлення"
 
-#: rpmdb/rpmdb.c:3937
+#: rpmdb/rpmdb.c:3924
 #, c-format
 msgid "removing directory %s\n"
 msgstr "видаляється каталог %s\n"
 
-#: rpmdb/rpmdb.c:3939
+#: rpmdb/rpmdb.c:3926
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "помилка видалення каталогу %s: %s\n"
@@ -4019,59 +4019,59 @@ msgstr "Файл %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Довжина файла %s менше за %u байт\n"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:673
 msgid "Success"
 msgstr "Виконано"
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:696
 msgid "Bad server response"
 msgstr "Неправильна відповідь від сервера"
 
-#: rpmio/rpmio.c:703
+#: rpmio/rpmio.c:698
 msgid "Server I/O error"
 msgstr "Помилка вводу/виводу сервера"
 
-#: rpmio/rpmio.c:705
+#: rpmio/rpmio.c:700
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:707
+#: rpmio/rpmio.c:702
 msgid "Unable to lookup server host address"
 msgstr "Неможливо знайти адресу сервера"
 
-#: rpmio/rpmio.c:709
+#: rpmio/rpmio.c:704
 msgid "Unable to lookup server host name"
 msgstr "Неможливо знайти назву сервера"
 
-#: rpmio/rpmio.c:711
+#: rpmio/rpmio.c:706
 msgid "Failed to connect to server"
 msgstr "Неможливо з'єднатись з сервером"
 
-#: rpmio/rpmio.c:713
+#: rpmio/rpmio.c:708
 msgid "Failed to establish data connection to server"
 msgstr "Неможливо встановити з'єднання з сервером"
 
-#: rpmio/rpmio.c:715
+#: rpmio/rpmio.c:710
 msgid "I/O error to local file"
 msgstr "Файлова помилка вводу/виводу"
 
-#: rpmio/rpmio.c:717
+#: rpmio/rpmio.c:712
 msgid "Error setting remote server to passive mode"
 msgstr "Помилка при переході сервера у пасивний режим"
 
-#: rpmio/rpmio.c:719
+#: rpmio/rpmio.c:714
 msgid "File not found on server"
 msgstr "Файл не знайдено на сервері"
 
-#: rpmio/rpmio.c:721
+#: rpmio/rpmio.c:716
 msgid "Abort in progress"
 msgstr "Триває відміна"
 
-#: rpmio/rpmio.c:725
+#: rpmio/rpmio.c:720
 msgid "Unknown or unexpected error"
 msgstr "Невідома або неочікувана помилка"
 
-#: rpmio/rpmio.c:1420
+#: rpmio/rpmio.c:1415
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "триває реєстрація у %s як %s, пароль %s\n"

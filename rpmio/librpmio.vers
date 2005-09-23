@@ -107,6 +107,7 @@ LIBRPMIO_0
     pgpPrtUserID;
     pgpPrtVal;
     pgpPubkeyFingerprint;
+    pgpExtractPubkeyFingerprint;
     pgpPubkeyTbl;
     pgpReadPkts;
     pgpSigTypeTbl;
