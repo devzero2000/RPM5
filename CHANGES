@@ -17,6 +17,7 @@
 	- don't re-export zlib-in-rpmio and bdb-in-rpmdb symbols.
 	- remove gcc warning from popt and rpmio compilation.
 	- rpmdb.c: remove need to include rpmio_internal.h.
+	- add --dupes popt alias.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
