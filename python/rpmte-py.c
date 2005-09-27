@@ -35,6 +35,9 @@
  * - te.A()	Return package architecture.
  * - te.O()	Return package operating system.
  * - te.NEVR()	Return package name-version-release.
+ * - te.NEVRA()	Return package name-version-release.arch.
+ * - te.Pkgid()	Return package identifier (header+payload md5 digest).
+ * - te.Hdrid()	Return package header identifier (header sha1 digest).
  * - te.Color() Return package color bits.
  * - te.PkgFileSize() Return no. of bytes in package file (approx).
  * - te.Depth()	Return the level in the dependency tree (after ordering).
@@ -129,6 +132,30 @@ rpmte_NEVR(rpmteObject * s)
 	/*@*/
 {
     return Py_BuildValue("s", rpmteNEVR(s->te));
+}
+
+/*@null@*/
+static PyObject *
+rpmte_NEVRA(rpmteObject * s)
+	/*@*/
+{
+    return Py_BuildValue("s", rpmteNEVRA(s->te));
+}
+
+/*@null@*/
+static PyObject *
+rpmte_Pkgid(rpmteObject * s)
+	/*@*/
+{
+    return Py_BuildValue("s", rpmtePkgid(s->te));
+}
+
+/*@null@*/
+static PyObject *
+rpmte_Hdrid(rpmteObject * s)
+	/*@*/
+{
+    return Py_BuildValue("s", rpmteHdrid(s->te));
 }
 
 /*@null@*/

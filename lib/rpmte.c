@@ -62,6 +62,8 @@ static void delTE(rpmte p)
     p->name = _free(p->name);
     p->NEVR = _free(p->NEVR);
     p->NEVRA = _free(p->NEVRA);
+    p->pkgid = _free(p->pkgid);
+    p->hdrid = _free(p->hdrid);
 
     p->erasePKGID = argvFree(p->erasePKGID);
     p->eraseHDRID = argvFree(p->eraseHDRID);
@@ -115,7 +117,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     hdrid = NULL;
     xx = hge(h, RPMTAG_HDRID, NULL, (void **)&hdrid, NULL);
     if (hdrid != NULL)
-	p->hdrid = hdrid;
+	p->hdrid = xstrdup(hdrid);
     else
 	p->hdrid = NULL;
 
@@ -127,10 +129,11 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
 	p->pkgid = t = xmalloc((2*pkgidcnt) + 1);
 	for (i = 0 ; i < pkgidcnt; i++) {
-	    *t++ = hex[ (unsigned)((*pkgid >> 4) & 0x0f) ];
-	    *t++ = hex[ (unsigned)((*pkgid++   ) & 0x0f) ];
+	    *t++ = hex[ (unsigned)((pkgid[i] >> 4) & 0x0f) ];
+	    *t++ = hex[ (unsigned)((pkgid[i]   ) & 0x0f) ];
 	}
 	*t = '\0';
+	pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
     } else
 	p->pkgid = NULL;
 
@@ -509,6 +512,16 @@ const char * rpmteNEVR(rpmte te)
 const char * rpmteNEVRA(rpmte te)
 {
     return (te != NULL ? te->NEVRA : NULL);
+}
+
+const char * rpmtePkgid(rpmte te)
+{
+    return (te != NULL ? te->pkgid : NULL);
+}
+
+const char * rpmteHdrid(rpmte te)
+{
+    return (te != NULL ? te->hdrid : NULL);
 }
 
 FD_t rpmteFd(rpmte te)

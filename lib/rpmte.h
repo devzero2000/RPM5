@@ -511,6 +511,24 @@ extern const char * rpmteNEVRA(rpmte te)
 /*@=exportlocal@*/
 
 /**
+ * Retrieve pkgid string from transaction element.
+ * @param te		transaction element
+ * @return		pkgid string
+ */
+/*@observer@*/
+extern const char * rpmtePkgid(rpmte te)
+	/*@*/;
+
+/**
+ * Retrieve hdrid string from transaction element.
+ * @param te		transaction element
+ * @return		hdrid string
+ */
+/*@observer@*/
+extern const char * rpmteHdrid(rpmte te)
+	/*@*/;
+
+/**
  * Retrieve file handle from transaction element.
  * @param te		transaction element
  * @return		file handle
