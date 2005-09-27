@@ -5,6 +5,7 @@
  * \file lib/rpmte.h
  * Structures used for an "rpmte" transaction element.
  */
+#include <argv.h>
 
 /**
  */
@@ -65,6 +66,10 @@ struct rpmte_s {
     const char * NEVR;		/*!< Package name-version-release. */
 /*@only@*/
     const char * NEVRA;		/*!< Package name-version-release.arch. */
+/*@only@*/ /*@null@*/
+    const char * pkgid;		/*!< Package identifier (header+payload md5). */
+/*@only@*/ /*@null@*/
+    const char * hdrid;		/*!< Package header identifier (header sha1). */
 /*@owned@*/
     const char * name;		/*!< Name: */
 /*@only@*/ /*@null@*/
@@ -115,6 +120,13 @@ struct rpmte_s {
     int autorelocatex;		/*!< (TR_ADDED) Auto relocation entry index. */
 /*@refcounted@*/ /*@null@*/	
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
+
+/*@only@*/ /*@null@*/
+    ARGV_t erasePKGID;		/*!< (TR_ADDED) Erased pkgid's from element. */
+/*@only@*/ /*@null@*/
+    ARGV_t eraseHDRID;		/*!< (TR_ADDED) Erased hdrid's from element. */
+/*@only@*/ /*@null@*/
+    ARGV_t eraseNEVRA;		/*!< (TR_ADDED) Erased NEVRA's from element. */
 
 /*@-fielduse@*/	/* LCL: confused by union? */
     union {

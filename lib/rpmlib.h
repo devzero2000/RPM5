@@ -448,7 +448,8 @@ typedef enum rpmTag_e {
     RPMTAG_CVSID		= 1163, /* s */
 #define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
     RPMTAG_ERASEPKGID		= 1164, /* s[] */
-    RPMTAG_ERASENEVRA		= 1165, /* s[] */
+    RPMTAG_ERASEHDRID		= 1165, /* s[] */
+    RPMTAG_ERASENEVRA		= 1166, /* s[] */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -1074,7 +1075,7 @@ int tagType(int tag)
  * @return		tag name, "(unknown)" on not found
  */
 /*@-redecl@*/
-/*@observer@*/ extern const char *const tagName(int tag)
+/*@observer@*/ extern const char * tagName(int tag)
 	/*@*/;
 /*@=redecl@*/
 

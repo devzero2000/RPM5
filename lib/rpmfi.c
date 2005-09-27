@@ -630,7 +630,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 /*@=boundsread@*/
 
 /*@observer@*/
-const char *const rpmfiTypeString(rpmfi fi)
+const char * rpmfiTypeString(rpmfi fi)
 {
     switch(rpmteType(fi->te)) {
     case TR_ADDED:	return " install";

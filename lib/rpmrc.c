@@ -1007,7 +1007,7 @@ static int is_athlon(void)
 	return 1;
 }
 
-static int is_pentium3()
+static int is_pentium3(void)
 {
     unsigned int eax, ebx, ecx, edx, family, model;
     char vendor[16];

@@ -2444,7 +2444,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 /*@=compmempass@*/
 /*@=boundsread@*/
 
-/*@obserever@*/ const char *const fileActionString(fileAction a)
+/*@observer@*/ const char * fileActionString(fileAction a)
 {
     switch (a) {
     case FA_UNKNOWN:	return "unknown";
@@ -2464,7 +2464,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     /*@notreached@*/
 }
 
-/*@observer@*/ const char *const fileStageString(fileStage a) {
+/*@observer@*/ const char * fileStageString(fileStage a) {
     switch(a) {
     case FSM_UNKNOWN:	return "unknown";
 

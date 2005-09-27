@@ -63,6 +63,10 @@ static void delTE(rpmte p)
     p->NEVR = _free(p->NEVR);
     p->NEVRA = _free(p->NEVRA);
 
+    p->erasePKGID = argvFree(p->erasePKGID);
+    p->eraseHDRID = argvFree(p->eraseHDRID);
+    p->eraseNEVRA = argvFree(p->eraseNEVRA);
+
     p->h = headerFree(p->h);
 
 /*@-boundswrite@*/
@@ -92,8 +96,9 @@ static void addTE(rpmts ts, rpmte p, Header h,
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     rpmte savep;
-    int_32 * ep;
-    const char * arch, * os;
+    int_32 * ep, pkgidcnt;
+    const char * hdrid, * arch, * os;
+    const unsigned char * pkgid;
     char * t;
     size_t nb;
     int xx;
@@ -105,10 +110,29 @@ static void addTE(rpmts ts, rpmte p, Header h,
     if ((p->version = strrchr(p->name, '-')) != NULL)
 	*p->version++ = '\0';
 
-    /* Set db_instance to 0 as it has not been installed
-     * necessarily yet.
-     */
     p->db_instance = 0;
+
+    hdrid = NULL;
+    xx = hge(h, RPMTAG_HDRID, NULL, (void **)&hdrid, NULL);
+    if (hdrid != NULL)
+	p->hdrid = hdrid;
+    else
+	p->hdrid = NULL;
+
+    pkgid = NULL;
+    xx = hge(h, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
+    if (pkgid != NULL) {
+	static const char hex[] = "0123456789abcdef";
+	int i;
+
+	p->pkgid = t = xmalloc((2*pkgidcnt) + 1);
+	for (i = 0 ; i < pkgidcnt; i++) {
+	    *t++ = hex[ (unsigned)((*pkgid >> 4) & 0x0f) ];
+	    *t++ = hex[ (unsigned)((*pkgid++   ) & 0x0f) ];
+	}
+	*t = '\0';
+    } else
+	p->pkgid = NULL;
 
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
@@ -301,7 +325,7 @@ const char * rpmteO(rpmte te)
 
 int rpmteIsSource(rpmte te)
 {
-    return (te != NULL ? te->isSource : NULL);
+    return (te != NULL ? te->isSource : 0);
 }
 
 uint_32 rpmteColor(rpmte te)

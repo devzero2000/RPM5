@@ -1207,7 +1207,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     return rc;
 }
 
-/*@observer@*/ static const char *const pkgStageString(pkgStage a)
+/*@observer@*/ static const char * pkgStageString(pkgStage a)
 	/*@*/
 {
     switch(a) {
