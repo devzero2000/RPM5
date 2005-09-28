@@ -501,6 +501,56 @@ int headerNextIterator(HeaderIterator hi,
     return hdrVec->hdrnextiter(hi, tag, type, p, c);
 }
 
+/** \ingroup header
+ * Return header origin (e.g path or URL).
+ * @param h		header
+ * @return		header origin
+ */
+/*@unused@*/ static inline
+/*@observer@*/ const char * headerGetOrigin(Header h)
+	/*@*/
+{
+    return hdrVec->hdrgetorigin(h);
+}
+
+/** \ingroup header
+ * Store header origin (e.g path or URL).
+ * @param h		header
+ * @param origin	new header origin
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int headerSetOrigin(Header h, const char * origin)
+	/*@modifies h @*/
+{
+    return hdrVec->hdrsetorigin(h, origin);
+}
+
+/** \ingroup header
+ * Return header instance (if from rpmdb).
+ * @param h		header
+ * @return		header instance
+ */
+/*@unused@*/ static inline
+int headerGetInstance(Header h)
+	/*@*/
+{
+    return hdrVec->hdrgetinstance(h);
+}
+
+/** \ingroup header
+ * Store header instance (e.g path or URL).
+ * @param h		header
+ * @param origin	new header instance
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int headerSetInstance(Header h, int instance)
+	/*@modifies h @*/
+{
+    return hdrVec->hdrsetinstance(h, instance);
+}
+
 /*@=voidabstract =nullpass =mustmod =compdef =shadow =predboolothers @*/
 
 #ifdef __cplusplus

@@ -204,6 +204,7 @@ Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	    }
 	    entry->data = NULL;
 	}
+	h->origin = _free(h->origin);
 	h->index = _free(h->index);
     }
 
@@ -228,6 +229,8 @@ Header headerNew(void)
     /*@=assignexpose@*/
 /*@=boundsread@*/
     h->blob = NULL;
+    h->origin = NULL;
+    h->instance = 0;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
     h->flags |= HEADERFLAG_SORTED;
@@ -1170,6 +1173,59 @@ errxit:
 }
 
 /** \ingroup header
+ * Return header origin (e.g path or URL).
+ * @param h		header
+ * @return		header origin
+ */
+static /*@observer@*/
+const char * headerGetOrigin(Header h)
+	/*@*/
+{
+    return h->origin;
+}
+
+/** \ingroup header
+ * Store header origin (e.g path or URL).
+ * @param h		header
+ * @param origin	new header origin
+ * @return		0 always
+ */
+static /*@observer@*/
+int headerSetOrigin(Header h, const char * origin)
+	/*@*/
+{
+    h->origin = _free(h->origin);
+    h->origin = xstrdup(origin);
+    return 0;
+}
+
+/** \ingroup header
+ * Return header instance (if from rpmdb).
+ * @param h		header
+ * @return		header instance
+ */
+static
+int headerGetInstance(Header h)
+	/*@*/
+{
+    return h->instance;
+}
+
+/** \ingroup header
+ * Store header instance (e.g path or URL).
+ * @param h		header
+ * @param origin	new header instance
+ * @return		0 always
+ */
+static /*@observer@*/
+int headerSetInstance(Header h, int instance)
+	/*@*/
+{
+    h->instance = instance;
+    return 0;
+}
+
+/** \ingroup header
  * Convert header to on-disk representation, and then reload.
  * This is used to insure that all header data is in one chunk.
  * @param h		header (with pointers)
@@ -1185,8 +1241,11 @@ Header headerReload(/*@only@*/ Header h, int tag)
     /*@-onlytrans@*/
 /*@-boundswrite@*/
     void * uh = doHeaderUnload(h, &length);
+    const char * origin;
+    int_32 instance = h->instance;
 /*@=boundswrite@*/
 
+    origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
     h = headerFree(h);
     /*@=onlytrans@*/
     if (uh == NULL)
@@ -1205,6 +1264,11 @@ Header headerReload(/*@only@*/ Header h, int tag)
 	    nh->index[0].info.tag = tag;
 /*@=boundswrite@*/
     }
+    if (origin != NULL) {
+	headerSetOrigin(nh, origin);
+	origin = _free(origin);
+    }
+    headerSetInstance(nh, instance);
     return nh;
 }
 
@@ -3779,6 +3843,10 @@ static struct HV_s hdrVec1 = {
     headerFreeIterator,
     headerInitIterator,
     headerNextIterator,
+    headerGetOrigin,
+    headerSetOrigin,
+    headerGetInstance,
+    headerSetInstance,
     NULL, NULL,
     1
 };

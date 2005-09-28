@@ -507,6 +507,7 @@ exit 0
 %changelog
 * Tue Sep 27 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.12
 - add --dupes popt alias.
+- identify headers from whence they came.
 
 * Thu Sep 22 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.11
 - remove gcc warning from popt and rpmio compilation.

@@ -233,6 +233,7 @@ FD_t fdDup(int fdno)
     if ((nfdno = dup(fdno)) < 0)
 	return NULL;
     fd = fdNew("open (fdDup)");
+    fdSetOpen(fd, "fdDup", nfdno, 0);	/* XXX bogus */
     fdSetFdno(fd, nfdno);
 DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
@@ -298,6 +299,7 @@ DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, FDNREFS(fd), msg, file
 DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
 	if (--fd->nrefs > 0)
 	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
+	fd->opath = _free(fd->opath);
 	fd->stats = _free(fd->stats);
 	for (i = fd->ndigests - 1; i >= 0; i--) {
 	    FDDIGEST_t fddig = fd->digests + i;
@@ -332,6 +334,9 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
 
+    fd->opath = NULL;
+    fd->oflags = 0;
+    fd->omode = 0;
     fd->url = NULL;
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
     fd->contentLength = fd->bytesRemain = -1;
@@ -477,6 +482,7 @@ static /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
 	return NULL;
     }
     fd = fdNew("open (fdOpen)");
+    fdSetOpen(fd, path, flags, mode);
     fdSetFdno(fd, fdno);
     fd->flags = flags;
 DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
@@ -1402,6 +1408,7 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 
 	if ((fd = u->ctrl) == NULL) {
 	    fd = u->ctrl = fdNew("persist ctrl (urlConnect FTP)");
+	    fdSetOpen(u->ctrl, url, 0, 0);
 	    fdSetIo(u->ctrl, ufdio);
 	}
 	
@@ -2007,6 +2014,7 @@ int ufdClose( /*@only@*/ void * cookie)
 	fd = fdNew("grab data (ftpOpen)");
 
     if (fd) {
+	fdSetOpen(fd, url, flags, mode);
 	fdSetIo(fd, ufdio);
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = ftpTimeoutSecs;
@@ -2088,6 +2096,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	assert(!(flags & O_RDWR));
 	fd = fdDup( ((flags & O_WRONLY) ? STDOUT_FILENO : STDIN_FILENO) );
 	if (fd) {
+	    fdSetOpen(fd, url, flags, mode);
 	    fdSetIo(fd, ufdio);
 	    fd->rd_timeoutsecs = 600;	/* XXX W2DO? 10 mins? */
 	    fd->contentLength = fd->bytesRemain = -1;

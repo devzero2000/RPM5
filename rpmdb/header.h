@@ -651,6 +651,44 @@ int (*HDRnextiter) (HeaderIterator hi,
 	/*@modifies hi, *tag, *type, *p, *c @*/;
 
 /** \ingroup header
+ * Return header origin (e.g path or URL).
+ * @param h		header
+ * @return		header origin
+ */
+typedef
+const char * (*HDRgetorigin) (Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header origin (e.g path or URL).
+ * @param h		header
+ * @param origin	new header origin
+ * @return		0 always
+ */
+typedef
+int (*HDRsetorigin) (Header h, const char * origin)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header instance (if from rpmdb).
+ * @param h		header
+ * @return		header instance
+ */
+typedef
+int (*HDRgetinstance) (Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header instance (e.g path or URL).
+ * @param h		header
+ * @param origin	new header instance
+ * @return		0 always
+ */
+typedef
+int (*HDRsetinstance) (Header h, int instance)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Header method vectors.
  */
 typedef /*@abstract@*/ struct HV_s * HV_t;
@@ -684,6 +722,10 @@ struct HV_s {
     HDRfreeiter	hdrfreeiter;
     HDRinititer	hdrinititer;
     HDRnextiter	hdrnextiter;
+    HDRgetorigin hdrgetorigin;
+    HDRsetorigin hdrsetorigin;
+    HDRgetinstance hdrgetinstance;
+    HDRsetinstance hdrsetinstance;
 /*@null@*/
     void *	hdrvecs;
 /*@null@*/

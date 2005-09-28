@@ -1030,7 +1030,9 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
 	fd = fdNew("grab ctrl (davOpen)");
 
     if (fd) {
+	fdSetOpen(fd, url, flags, mode);
 	fdSetIo(fd, ufdio);
+
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = httpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;

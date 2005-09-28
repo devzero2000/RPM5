@@ -655,6 +655,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     size_t uc;
     int_32 nb;
     Header h = NULL;
+    const char * origin = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
@@ -723,6 +724,10 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     }
     h->flags |= HEADERFLAG_ALLOCATED;
     ei = NULL;	/* XXX will be freed with header */
+
+    origin = fdGetOPath(fd);
+    if (origin != NULL)
+	(void) headerSetOrigin(h, origin);
     
 exit:
 /*@-boundswrite@*/

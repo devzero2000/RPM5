@@ -57,6 +57,9 @@ struct headerToken_s {
     struct HV_s hv;		/*!< Header public methods. */
 /*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */
+/*@only@*/ /*@null@*/
+    const char * origin;	/*!< Header origin (e.g. path or URL). */
+    int_32 instance;		/*!< Header instance (if from rpmdb). */
 /*@owned@*/
     indexEntry index;		/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
