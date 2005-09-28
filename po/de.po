@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-28 09:22-0400\n"
+"POT-Creation-Date: 2005-09-28 15:21-0400\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1486,7 +1486,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder fehlgeschlagen, %d Elemente verbleiben\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3546 rpmdb/header.c:3575 rpmdb/header.c:3599
+#: rpmdb/header.c:3610 rpmdb/header.c:3639 rpmdb/header.c:3663
 msgid "(not a number)"
 msgstr "(keine Nummer)"
 
@@ -1660,70 +1660,70 @@ msgstr "hdr RSA: UNGÜLTIG, nicht binär\n"
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA: UNGÜLTIG, nicht binär\n"
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:924 lib/package.c:950
-#: lib/package.c:982
+#: lib/package.c:546 lib/package.c:586 lib/package.c:929 lib/package.c:955
+#: lib/package.c:987
 #, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 "Nur V3- und V4-Signaturen können überprüft werden, überspringe V%u-Signatur\n"
 
-#: lib/package.c:673
+#: lib/package.c:674
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr Größe(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
-#: lib/package.c:677
+#: lib/package.c:678
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: UNGÜLTIG\n"
 
-#: lib/package.c:685
+#: lib/package.c:686
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hdr Tags: UNGÜLTIG, Nummer der Tags (%d) außerhalb des Bereichs\n"
 
-#: lib/package.c:694
+#: lib/package.c:695
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hdr Tags: UNGÜLTIG, Nummer der Bytes (%d) außerhalb des Bereichs\n"
 
-#: lib/package.c:708
+#: lib/package.c:709
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr Blob(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
-#: lib/package.c:721
+#: lib/package.c:722
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr Load: UNGÜLTIG\n"
 
-#: lib/package.c:794
+#: lib/package.c:799
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "Paket-Version 1 wird von dieser RPM-Version nicht unterstützt\n"
 
-#: lib/package.c:803
+#: lib/package.c:808
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "Nur Pakete mit Versionsnummern <= 4 werden von dieser RPM-Version "
 "unterstützt\n"
 
-#: lib/package.c:815 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
+#: lib/package.c:820 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature fehlgeschlagen: %s"
 
-#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:827 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Keine Signatur verfügbar\n"
 
-#: lib/package.c:889
+#: lib/package.c:894
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead fehlgeschlagen: %s"
 
-#: lib/package.c:997 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread fehlgeschlagen: %s\n"
@@ -3664,77 +3664,77 @@ msgstr "%s hat einen zu großen oder zu kleinen Wert, übersprungen\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s hat einen zu großen oder zu kleinen Integer-Wert, übersprungen\n"
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2783
 msgid "missing { after %"
 msgstr "Fehlende { nach %"
 
-#: rpmdb/header.c:2749
+#: rpmdb/header.c:2813
 msgid "missing } after %{"
 msgstr "Fehlende } nach %{"
 
-#: rpmdb/header.c:2765
+#: rpmdb/header.c:2829
 msgid "empty tag format"
 msgstr "Leeres Tag-Format"
 
-#: rpmdb/header.c:2777
+#: rpmdb/header.c:2841
 msgid "empty tag name"
 msgstr "Unbekannter Tag"
 
-#: rpmdb/header.c:2786
+#: rpmdb/header.c:2850
 msgid "unknown tag"
 msgstr "Unbekannter Tag"
 
-#: rpmdb/header.c:2813
+#: rpmdb/header.c:2877
 msgid "] expected at end of array"
 msgstr "] erwartet am Ende des Arrays"
 
-#: rpmdb/header.c:2826
+#: rpmdb/header.c:2890
 msgid "unexpected ]"
 msgstr "Unerwartete ]"
 
-#: rpmdb/header.c:2839
+#: rpmdb/header.c:2903
 msgid "unexpected }"
 msgstr "Unerwartete }"
 
-#: rpmdb/header.c:2903
+#: rpmdb/header.c:2967
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: rpmdb/header.c:2910
+#: rpmdb/header.c:2974
 msgid "{ expected after ? in expression"
 msgstr "{ nach dem ? im Ausdruck erwartet"
 
-#: rpmdb/header.c:2922 rpmdb/header.c:2962
+#: rpmdb/header.c:2986 rpmdb/header.c:3026
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
-#: rpmdb/header.c:2930
+#: rpmdb/header.c:2994
 msgid ": expected following ? subexpression"
 msgstr ": erwartet ein ? im Unterausdruck"
 
-#: rpmdb/header.c:2948
+#: rpmdb/header.c:3012
 msgid "{ expected after : in expression"
 msgstr "{ nach dem : im Ausdruck erwartet"
 
-#: rpmdb/header.c:2970
+#: rpmdb/header.c:3034
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3071
+#: rpmdb/header.c:3135
 msgid "(index out of range)"
 msgstr "(Index außerhalb des Bereichs)"
 
-#: rpmdb/header.c:3318
+#: rpmdb/header.c:3382
 msgid "array iterator used with different sized arrays"
 msgstr "Zählvariable wird mit ungleich großem Array benutzt"
 
-#: rpmdb/header.c:3637
+#: rpmdb/header.c:3701
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3653
+#: rpmdb/header.c:3717
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
@@ -4027,59 +4027,59 @@ msgstr "Datei %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datei %s ist kleiner als %u Byte\n"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr "Erfolg"
 
-#: rpmio/rpmio.c:696
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr "Ungültige Server-Antwort"
 
-#: rpmio/rpmio.c:698
+#: rpmio/rpmio.c:704
 msgid "Server I/O error"
 msgstr "Ein-/Ausgabe-Fehler des Servers"
 
-#: rpmio/rpmio.c:700
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr "Server-Timeout"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr "Server-Adresse konnte nicht aufgelöst werden"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr "Server-Name konnte nicht aufgelöst werden"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr "Verbindung zum Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:716
 msgid "I/O error to local file"
 msgstr "Ein-/Ausgabe-Fehler in lokale Datei"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr "Server-Fehler beim Wechseln in den passiven Modus"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr "Abbruch wird durchgeführt"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr "Unbekannter oder unerwarteter Fehler"
 
-#: rpmio/rpmio.c:1415
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "Login auf %s als %s, Passwort %s\n"

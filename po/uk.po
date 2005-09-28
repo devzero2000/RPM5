@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-28 09:22-0400\n"
+"POT-Creation-Date: 2005-09-28 15:21-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1476,7 +1476,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3546 rpmdb/header.c:3575 rpmdb/header.c:3599
+#: rpmdb/header.c:3610 rpmdb/header.c:3639 rpmdb/header.c:3663
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -1650,67 +1650,67 @@ msgstr "неправильний заголовок DSA: не є двійков�
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "неправильний заголовок DSA: не є двійковим\n"
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:924 lib/package.c:950
-#: lib/package.c:982
+#: lib/package.c:546 lib/package.c:586 lib/package.c:929 lib/package.c:955
+#: lib/package.c:987
 #, fuzzy, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr "можна перевіряти лише підписи версії 3, підпис версії %u пропущений\n"
 
-#: lib/package.c:673
+#: lib/package.c:674
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "неправильний розмір заголовка(%d): зчитування повернуло %d\n"
 
-#: lib/package.c:677
+#: lib/package.c:678
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr "неправильна сигнатура заголовка: помилка\n"
 
-#: lib/package.c:685
+#: lib/package.c:686
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "неправильні теги заголовку: кількість тегів(%d) перевищує межу\n"
 
-#: lib/package.c:694
+#: lib/package.c:695
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "неправильні дані заголовку: кількість байтів(%d) перевищує межу\n"
 
-#: lib/package.c:708
+#: lib/package.c:709
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "неправильний двійковий об'єкт(%d): зчитування повернуло %d\n"
 
-#: lib/package.c:721
+#: lib/package.c:722
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "помилка завантаження об'єкта: помилка\n"
 
-#: lib/package.c:794
+#: lib/package.c:799
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "ця версія RPM не підтримує пакети версії 1\n"
 
-#: lib/package.c:803
+#: lib/package.c:808
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "ця версія RPM підтримує лише RPM пакети зі старшою версією <= 4\n"
 
-#: lib/package.c:815 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
+#: lib/package.c:820 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: помилка у rpmReadSignature: %s"
 
-#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:827 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Підпис не доступний\n"
 
-#: lib/package.c:889
+#: lib/package.c:894
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: помилка у headerRead: %s"
 
-#: lib/package.c:997 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: помилка у Fread: %s\n"
@@ -3658,77 +3658,77 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s містить надто велике чи занадто мале значення цілого, пропущено\n"
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2783
 msgid "missing { after %"
 msgstr "відсутня \"{\" після \"%\""
 
-#: rpmdb/header.c:2749
+#: rpmdb/header.c:2813
 msgid "missing } after %{"
 msgstr "відсутня \"}\" після \"%{\""
 
-#: rpmdb/header.c:2765
+#: rpmdb/header.c:2829
 msgid "empty tag format"
 msgstr "порожній формат тегу"
 
-#: rpmdb/header.c:2777
+#: rpmdb/header.c:2841
 msgid "empty tag name"
 msgstr "порожня назва тегу"
 
-#: rpmdb/header.c:2786
+#: rpmdb/header.c:2850
 msgid "unknown tag"
 msgstr "невідомий тег"
 
-#: rpmdb/header.c:2813
+#: rpmdb/header.c:2877
 msgid "] expected at end of array"
 msgstr "наприкінці масиву очікувалась \"]\""
 
-#: rpmdb/header.c:2826
+#: rpmdb/header.c:2890
 msgid "unexpected ]"
 msgstr "неочікувана \"]\""
 
-#: rpmdb/header.c:2839
+#: rpmdb/header.c:2903
 msgid "unexpected }"
 msgstr "неочікуваний символ \"}\""
 
-#: rpmdb/header.c:2903
+#: rpmdb/header.c:2967
 msgid "? expected in expression"
 msgstr "у виразі очікувався \"?\""
 
-#: rpmdb/header.c:2910
+#: rpmdb/header.c:2974
 msgid "{ expected after ? in expression"
 msgstr "у виразі після \"?\" очікувалась \"{\""
 
-#: rpmdb/header.c:2922 rpmdb/header.c:2962
+#: rpmdb/header.c:2986 rpmdb/header.c:3026
 msgid "} expected in expression"
 msgstr "у виразі очікувалась \"{\""
 
-#: rpmdb/header.c:2930
+#: rpmdb/header.c:2994
 msgid ": expected following ? subexpression"
 msgstr "у виразі після \"{\" очікувалась \":\""
 
-#: rpmdb/header.c:2948
+#: rpmdb/header.c:3012
 msgid "{ expected after : in expression"
 msgstr "у виразі після \":\" очікувалась \"{\""
 
-#: rpmdb/header.c:2970
+#: rpmdb/header.c:3034
 msgid "| expected at end of expression"
 msgstr "наприкінці виразу очікувався символ \"|\""
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3071
+#: rpmdb/header.c:3135
 msgid "(index out of range)"
 msgstr "(індекси поза межами)"
 
-#: rpmdb/header.c:3318
+#: rpmdb/header.c:3382
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використовується з масивом іншого розміру"
 
-#: rpmdb/header.c:3637
+#: rpmdb/header.c:3701
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3653
+#: rpmdb/header.c:3717
 msgid "%a %b %d %Y"
 msgstr "%a, %d %b %Y"
 
@@ -4019,59 +4019,59 @@ msgstr "Файл %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Довжина файла %s менше за %u байт\n"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr "Виконано"
 
-#: rpmio/rpmio.c:696
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr "Неправильна відповідь від сервера"
 
-#: rpmio/rpmio.c:698
+#: rpmio/rpmio.c:704
 msgid "Server I/O error"
 msgstr "Помилка вводу/виводу сервера"
 
-#: rpmio/rpmio.c:700
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr "Неможливо знайти адресу сервера"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr "Неможливо знайти назву сервера"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr "Неможливо з'єднатись з сервером"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr "Неможливо встановити з'єднання з сервером"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:716
 msgid "I/O error to local file"
 msgstr "Файлова помилка вводу/виводу"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr "Помилка при переході сервера у пасивний режим"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "Файл не знайдено на сервері"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr "Триває відміна"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr "Невідома або неочікувана помилка"
 
-#: rpmio/rpmio.c:1415
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "триває реєстрація у %s як %s, пароль %s\n"

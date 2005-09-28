@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-28 09:22-0400\n"
+"POT-Creation-Date: 2005-09-28 15:21-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1502,7 +1502,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3546 rpmdb/header.c:3575 rpmdb/header.c:3599
+#: rpmdb/header.c:3610 rpmdb/header.c:3639 rpmdb/header.c:3663
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -1678,69 +1678,69 @@ msgstr ""
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:924 lib/package.c:950
-#: lib/package.c:982
+#: lib/package.c:546 lib/package.c:586 lib/package.c:929 lib/package.c:955
+#: lib/package.c:987
 #, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:673
+#: lib/package.c:674
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:677
+#: lib/package.c:678
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:685
+#: lib/package.c:686
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:694
+#: lib/package.c:695
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:708
+#: lib/package.c:709
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:721
+#: lib/package.c:722
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:794
+#: lib/package.c:799
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <= 3"
 
-#: lib/package.c:803
+#: lib/package.c:808
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <=4"
 
-#: lib/package.c:815 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
+#: lib/package.c:820 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature je bil neuspe¹en\n"
 
-#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:827 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis ni na voljo\n"
 
-#: lib/package.c:889
+#: lib/package.c:894
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/package.c:997 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
@@ -3749,77 +3749,77 @@ msgstr ""
 "%s ima preveliko ali premajhno vrednost malega (small) celega\n"
 "¹tevila, prezrto\n"
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2783
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 
-#: rpmdb/header.c:2749
+#: rpmdb/header.c:2813
 msgid "missing } after %{"
 msgstr "manjkajoèi } za %{"
 
-#: rpmdb/header.c:2765
+#: rpmdb/header.c:2829
 msgid "empty tag format"
 msgstr "oblika znaèke manjka"
 
-#: rpmdb/header.c:2777
+#: rpmdb/header.c:2841
 msgid "empty tag name"
 msgstr "ime znaèke manjka"
 
-#: rpmdb/header.c:2786
+#: rpmdb/header.c:2850
 msgid "unknown tag"
 msgstr "neznana znaèka"
 
-#: rpmdb/header.c:2813
+#: rpmdb/header.c:2877
 msgid "] expected at end of array"
 msgstr "na koncu polja je prièakovan ]"
 
-#: rpmdb/header.c:2826
+#: rpmdb/header.c:2890
 msgid "unexpected ]"
 msgstr "neprièakovan ]"
 
-#: rpmdb/header.c:2839
+#: rpmdb/header.c:2903
 msgid "unexpected }"
 msgstr "neprièakovan }"
 
-#: rpmdb/header.c:2903
+#: rpmdb/header.c:2967
 msgid "? expected in expression"
 msgstr "v izrazu je prièakovan ?"
 
-#: rpmdb/header.c:2910
+#: rpmdb/header.c:2974
 msgid "{ expected after ? in expression"
 msgstr "v izrazu je za { prièakovan ?"
 
-#: rpmdb/header.c:2922 rpmdb/header.c:2962
+#: rpmdb/header.c:2986 rpmdb/header.c:3026
 msgid "} expected in expression"
 msgstr "v izrazu je prièakovan }"
 
-#: rpmdb/header.c:2930
+#: rpmdb/header.c:2994
 msgid ": expected following ? subexpression"
 msgstr "za podizrazom ? je prièakovano :"
 
-#: rpmdb/header.c:2948
+#: rpmdb/header.c:3012
 msgid "{ expected after : in expression"
 msgstr "v izrazu je za : prièakovan {"
 
-#: rpmdb/header.c:2970
+#: rpmdb/header.c:3034
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3071
+#: rpmdb/header.c:3135
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3318
+#: rpmdb/header.c:3382
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3637
+#: rpmdb/header.c:3701
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3653
+#: rpmdb/header.c:3717
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -4116,61 +4116,61 @@ msgstr "Datoteka %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr "Uspeh"
 
-#: rpmio/rpmio.c:696
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr "Nepravilen odziv stre¾nika"
 
-#: rpmio/rpmio.c:698
+#: rpmio/rpmio.c:704
 #, fuzzy
 msgid "Server I/O error"
 msgstr "V/I napaka na stre¾niku"
 
-#: rpmio/rpmio.c:700
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr "Èas odziva stre¾nika je potekel"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr "Naslov stre¾nika ni ugotovljiv"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr "Ime stre¾nika ni bilo ugotovljivo"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr "Neuspe¹en poskus prikljuèitve na stre¾nik"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr "Neuspe¹na vzpostavitev podatkovne povezave s stre¾nikom"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:716
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "V/I napaka na lokalni datoteki"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr "Napaka pri nastavitvi oddaljenega stre¾nika v pasivni naèin"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "Datoteke ni mo¾no najti na stre¾niku"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr "Prekinitev v teku"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: rpmio/rpmio.c:1415
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"

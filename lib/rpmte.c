@@ -133,7 +133,9 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	    *t++ = hex[ (unsigned)((pkgid[i]   ) & 0x0f) ];
 	}
 	*t = '\0';
+#if NOTYET	/* XXX something fubar here. */
 	pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
+#endif
     } else
 	p->pkgid = NULL;
 

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-28 09:22-0400\n"
+"POT-Creation-Date: 2005-09-28 15:21-0400\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1470,7 +1470,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3546 rpmdb/header.c:3575 rpmdb/header.c:3599
+#: rpmdb/header.c:3610 rpmdb/header.c:3639 rpmdb/header.c:3663
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -1643,68 +1643,68 @@ msgstr "hdr DSA: B£ÊDNY, nie binarny\n"
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA: B£ÊDNY, nie binarny\n"
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:924 lib/package.c:950
-#: lib/package.c:982
+#: lib/package.c:546 lib/package.c:586 lib/package.c:929 lib/package.c:955
+#: lib/package.c:987
 #, fuzzy, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr "tylko sygnatury V3 mog± byæ sprawdzone, sygnatura V%u jest pomijana\n"
 
-#: lib/package.c:673
+#: lib/package.c:674
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr rozmiar(%d): B£ÊDNY, read zwróci³o %d\n"
 
-#: lib/package.c:677
+#: lib/package.c:678
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: B£ÊDNY\n"
 
-#: lib/package.c:685
+#: lib/package.c:686
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hdr etykiety: B£ÊDNE, liczba etykiet(%d) spoza zakresu\n"
 
-#: lib/package.c:694
+#: lib/package.c:695
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hdr dane: B£ÊDNE, liczba bajtów(%d) spoza zakresu\n"
 
-#: lib/package.c:708
+#: lib/package.c:709
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr blob(%d): B£ÊDNY, read zwróci³o %d\n"
 
-#: lib/package.c:721
+#: lib/package.c:722
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr load: B£ÊDNY\n"
 
-#: lib/package.c:794
+#: lib/package.c:799
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "pakiety w wersji 1 nie s± obs³ugiwane przez tê wersjê RPM-a\n"
 
-#: lib/package.c:803
+#: lib/package.c:808
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "tylko pakiety z numerem g³ównym <= 4 s± obs³ugiwane przez tê wersjê RPM-a\n"
 
-#: lib/package.c:815 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
+#: lib/package.c:820 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature nie powiod³o siê: %s"
 
-#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:827 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Sygnatura nie jest dostêpna\n"
 
-#: lib/package.c:889
+#: lib/package.c:894
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead nie powiod³o siê: %s"
 
-#: lib/package.c:997 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread nie powiod³o siê: %s\n"
@@ -3646,77 +3646,77 @@ msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2783
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: rpmdb/header.c:2749
+#: rpmdb/header.c:2813
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: rpmdb/header.c:2765
+#: rpmdb/header.c:2829
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: rpmdb/header.c:2777
+#: rpmdb/header.c:2841
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: rpmdb/header.c:2786
+#: rpmdb/header.c:2850
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: rpmdb/header.c:2813
+#: rpmdb/header.c:2877
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: rpmdb/header.c:2826
+#: rpmdb/header.c:2890
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: rpmdb/header.c:2839
+#: rpmdb/header.c:2903
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: rpmdb/header.c:2903
+#: rpmdb/header.c:2967
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: rpmdb/header.c:2910
+#: rpmdb/header.c:2974
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: rpmdb/header.c:2922 rpmdb/header.c:2962
+#: rpmdb/header.c:2986 rpmdb/header.c:3026
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: rpmdb/header.c:2930
+#: rpmdb/header.c:2994
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: rpmdb/header.c:2948
+#: rpmdb/header.c:3012
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: rpmdb/header.c:2970
+#: rpmdb/header.c:3034
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3071
+#: rpmdb/header.c:3135
 msgid "(index out of range)"
 msgstr "(indeks spoza zakresu)"
 
-#: rpmdb/header.c:3318
+#: rpmdb/header.c:3382
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
-#: rpmdb/header.c:3637
+#: rpmdb/header.c:3701
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3653
+#: rpmdb/header.c:3717
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
@@ -4007,59 +4007,59 @@ msgstr "Plik %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr "Sukces"
 
-#: rpmio/rpmio.c:696
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr "B³êdna odpowied¼ serwera"
 
-#: rpmio/rpmio.c:698
+#: rpmio/rpmio.c:704
 msgid "Server I/O error"
 msgstr "B³±d we/wy serwera"
 
-#: rpmio/rpmio.c:700
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr "Przekroczony limit czasu serwera"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr "Nie mo¿na znale¼æ adresu serwera"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr "Nie mo¿na znale¼æ nazwy serwera"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr "Po³±czenie z serwerem nie powiod³o siê"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr "Otwarcie transmisji danych z serwera nie powiod³o siê"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:716
 msgid "I/O error to local file"
 msgstr "B³±d we/wy na lokalnym pliku"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr "B³±d: ustawienie zdalnego serwera w tryb pasywny nie powiod³o siê"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "Plik nie zosta³ znaleziony na serwerze"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr "Przerywanie ..."
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:1415
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logowanie do %s jako %s, has³o %s\n"

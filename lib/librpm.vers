@@ -261,6 +261,7 @@ LIBRPM_0
     rpmteFI;
     rpmteFree;
     rpmteFreeTSI;
+    rpmteHdrid;
     rpmteHeader;
     rpmteIsSource;
     rpmteKey;
@@ -272,6 +273,7 @@ LIBRPM_0
     rpmteNpreds;
     rpmteO;
     rpmteParent;
+    rpmtePkgid;
     rpmtePkgFileSize;
     rpmteR;
     rpmteSetAddedKey;
