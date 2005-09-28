@@ -352,6 +352,15 @@ static struct PyMethodDef rpmte_methods[] = {
     {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_NOARGS,
 "te.NEVR() -> NEVR\n\
 - Return element name-version-release.\n" },
+    {"NEVRA",	(PyCFunction)rpmte_NEVRA,	METH_NOARGS,
+"te.NEVRA() -> NEVRA\n\
+- Return element name-version-release.arch.\n" },
+    {"Pkgid",	(PyCFunction)rpmte_Pkgid,	METH_NOARGS,
+"te.Pkgid() -> Pkgid\n\
+- Return element pkgid (header+payload md5 digest).\n" },
+    {"Hdrid",	(PyCFunction)rpmte_Hdrid,	METH_NOARGS,
+"te.Hdrid() -> Hdrid\n\
+- Return element hdrid (header sha1 digest).\n" },
     {"Color",(PyCFunction)rpmte_Color,		METH_NOARGS,
 	NULL},
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,

@@ -959,7 +959,7 @@ static void markLoop(/*@special@*/ tsortInfo tsi, rpmte q)
     /*@=branchstate@*/
 }
 
-static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
+static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 	/*@*/
 {
     f = _notpre(f);

@@ -154,13 +154,17 @@ gid_t getGidS(const char * gname)
  * Return build hostname.
  * @return		build hostname
  */
-extern /*@observer@*/ const char * const buildHost(void)	/*@*/;
+/*@observer@*/
+extern const char * buildHost(void)
+	/*@*/;
 
 /** \ingroup rpmbuild
  * Return build time stamp.
  * @return		build time stamp
  */
-extern /*@observer@*/ int_32 * const getBuildTime(void)	/*@*/;
+/*@observer@*/
+extern int_32 * getBuildTime(void)
+	/*@*/;
 
 /** \ingroup rpmbuild
  * Read next line from spec file.
@@ -273,7 +277,7 @@ int parseFiles(Spec spec)
  * @param initialPackage
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parsePreamble(Spec spec, int initialPackage)
+rpmParseState parsePreamble(Spec spec, int initialPackage)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->packages,

@@ -468,7 +468,6 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 	const char * DN;
 	int origNumDirs;
 	int first;
-	int i;
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
@@ -480,6 +479,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 
 	/* Package dirnames are not currently unique. Create unique mapping. */
 	for (dx = 0; dx < dc; dx++) {
+	    int i = 0;
 	    (void) rpmfiSetDX(fi, dx);
 	    DN = rpmfiDN(fi);
 	    if (DN != NULL)

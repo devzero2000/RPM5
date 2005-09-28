@@ -69,7 +69,8 @@ static void addOrAppendListEntry(Header h, int_32 tag, char * line)
 /**
  */
 /*@-boundswrite@*/
-static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
+static int parseSimplePart(char *line, /*@out@*/char **name,
+		/*@out@*/rpmParseState *flag)
 	/*@globals internalState@*/
 	/*@modifies *name, *flag, internalState @*/
 {
@@ -865,12 +866,11 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
-int parsePreamble(Spec spec, int initialPackage)
+rpmParseState parsePreamble(Spec spec, int initialPackage)
 {
-    int nextPart;
+    rpmParseState nextPart;
     int rc, xx;
     char *name, *linep;
-    int flag;
     Package pkg;
     char NVR[BUFSIZ];
     char lang[BUFSIZ];
@@ -880,7 +880,9 @@ int parsePreamble(Spec spec, int initialPackage)
     pkg = newPackage(spec);
 	
     if (! initialPackage) {
+	rpmParseState flag;
 	/* There is one option to %package: <pkg> or -n <pkg> */
+	flag = PART_NONE;
 	if (parseSimplePart(spec->line, &name, &flag)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad package specification: %s\n"),
 			spec->line);

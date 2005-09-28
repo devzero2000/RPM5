@@ -887,7 +887,7 @@ exit:
 /*
  * Generic CPUID function
  */
-static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx)
+static inline void cpuid(unsigned int op, unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx)
 	/*@modifies *eax, *ebx, *ecx, *edx @*/
 {
 #ifdef	__LCLINT__
@@ -1046,7 +1046,7 @@ static int is_pentium3(void)
     return 0;
 }
 
-static int is_pentium4()
+static int is_pentium4(void)
 {
     unsigned int eax, ebx, ecx, edx, family, model;
     char vendor[16];

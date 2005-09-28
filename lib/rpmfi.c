@@ -484,7 +484,7 @@ rpmfi rpmfiInitD(rpmfi fi, int dx)
  * @return		string to identify a file type
  */
 static /*@observer@*/
-const char *const ftstring (fileTypes ft)
+const char * ftstring (fileTypes ft)
 	/*@*/
 {
     switch (ft) {

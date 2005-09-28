@@ -173,7 +173,7 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 #if HAVE_MMAP
       if (pid == 0) {
 	DIGEST_CTX ctx;
-	void * mapped;
+	void * mapped = NULL;
 
 	if (fsize) {
 	    mapped = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fdno, 0);
