@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-22 21:52-0400\n"
+"POT-Creation-Date: 2005-09-28 09:22-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -854,128 +854,128 @@ msgstr "%d 번째 행: %%files에서 오류가 발생했습니다: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "%d 번째 행: 두번째 %%files 목록\n"
 
-#: build/parsePreamble.c:244
+#: build/parsePreamble.c:245
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "아키텍쳐가 제외됨: %s\n"
 
-#: build/parsePreamble.c:249
+#: build/parsePreamble.c:250
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "아키텍쳐가 포함되어 있지 않음: %s\n"
 
-#: build/parsePreamble.c:254
+#: build/parsePreamble.c:255
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "운영체제가 제외됨: %s\n"
 
-#: build/parsePreamble.c:259
+#: build/parsePreamble.c:260
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "운영체제가 포함되어 있지 않음: %s\n"
 
-#: build/parsePreamble.c:282
+#: build/parsePreamble.c:283
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "패키지에 반드시 %s 항목(field)을 포함해야함: %s\n"
 
-#: build/parsePreamble.c:311
+#: build/parsePreamble.c:312
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "패키지에 %s 항목(entry)이 중복되어 있음: %s\n"
 
-#: build/parsePreamble.c:374
+#: build/parsePreamble.c:375
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "%s 아이콘을 열 수 없음: %s\n"
 
-#: build/parsePreamble.c:392
+#: build/parsePreamble.c:393
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "%s 아이콘을 읽을 수 없음: %s\n"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:406
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "알 수 없는 아이콘 유형: %s\n"
 
-#: build/parsePreamble.c:450
+#: build/parsePreamble.c:451
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "%d 번째 행: 태그에 하나의 토큰만 있습니다: %s\n"
 
-#: build/parsePreamble.c:490
+#: build/parsePreamble.c:491
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 번째 행: 올바르지 못한 태그입니다: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:498
+#: build/parsePreamble.c:499
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "%d 번째 행: 태그가 비어있습니다: %s\n"
 
-#: build/parsePreamble.c:523 build/parsePreamble.c:530
+#: build/parsePreamble.c:524 build/parsePreamble.c:531
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 번째 행: %s에 부적합한 문자 '-' 가 있음: %s\n"
 
-#: build/parsePreamble.c:591 build/parseSpec.c:472
+#: build/parsePreamble.c:592 build/parseSpec.c:472
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot를 \"/\" 로 지정할 수 없음: %s\n"
 
-#: build/parsePreamble.c:604
+#: build/parsePreamble.c:605
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "%d 번째 행: Prefixes는 절대 \"/\" 로 끝나서는 안됩니다: %s\n"
 
-#: build/parsePreamble.c:616
+#: build/parsePreamble.c:617
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "%d 번째 행: Docdir은 반드시 '/' 로 시작해야 합니다: %s\n"
 
-#: build/parsePreamble.c:628
+#: build/parsePreamble.c:629
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "%d 번째 행: Epoch/Serial 항목(field)은 반드시 숫자이어야 합니다: %s\n"
 
-#: build/parsePreamble.c:668 build/parsePreamble.c:679
+#: build/parsePreamble.c:669 build/parsePreamble.c:680
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 번째 행: 잘못된 %s: 수식자(qualifier): %s\n"
 
-#: build/parsePreamble.c:705
+#: build/parsePreamble.c:706
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 번째 행: 잘못된 BuildArchitecture 형식입니다: %s\n"
 
-#: build/parsePreamble.c:714
+#: build/parsePreamble.c:715
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "내부 오류: 보거스(Bogus) 태그 %d\n"
 
-#: build/parsePreamble.c:818
+#: build/parsePreamble.c:819
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:885
+#: build/parsePreamble.c:887
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "잘못된 패키지 지정: %s\n"
 
-#: build/parsePreamble.c:891
+#: build/parsePreamble.c:893
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "패키지가 이미 존재함: %s\n"
 
-#: build/parsePreamble.c:920
+#: build/parsePreamble.c:922
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 번째 행: 알 수 없는 태그입니다: %s\n"
 
-#: build/parsePreamble.c:942
+#: build/parsePreamble.c:944
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec 파일은 BuildRoot를 사용할 수 없습니다\n"
 
