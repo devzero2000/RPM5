@@ -2033,10 +2033,12 @@ psm->te->h = headerFree(psm->te->h);
 	break;
     case PSM_TRIGGERS:
 	/* Run triggers in other package(s) this package sets off. */
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	rc = runTriggers(psm);
 	break;
     case PSM_IMMED_TRIGGERS:
 	/* Run triggers in this package other package(s) set off. */
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	rc = runImmedTriggers(psm);
 	break;
 

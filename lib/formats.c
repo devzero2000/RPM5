@@ -523,6 +523,14 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	buf[0] = '\0';
 
 /*@-boundswrite@*/
+	if (anint & RPMSENSE_SCRIPT_PRE) 
+	    strcat(buf,"(pre)");
+	if (anint & RPMSENSE_SCRIPT_POST) 
+	    strcat(buf,"(post)");
+	if (anint & RPMSENSE_SCRIPT_PREUN) 
+	    strcat(buf,"(preun)");
+	if (anint & RPMSENSE_SCRIPT_POSTUN) 
+	    strcat(buf,"(postun)");
 	if (anint & RPMSENSE_LESS) 
 	    strcat(buf, "<");
 	if (anint & RPMSENSE_GREATER)
