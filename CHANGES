@@ -19,6 +19,7 @@
 	- rpmdb.c: remove need to include rpmio_internal.h.
 	- add --dupes popt alias.
 	- identify headers from whence they came.
+	- fix: don't fire triggers on test (#25756).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
