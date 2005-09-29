@@ -204,9 +204,9 @@ Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	    }
 	    entry->data = NULL;
 	}
-	h->origin = _free(h->origin);
 	h->index = _free(h->index);
     }
+    h->origin = _free(h->origin);
 
     /*@-refcounttrans@*/ h = _free(h); /*@=refcounttrans@*/
     return h;
