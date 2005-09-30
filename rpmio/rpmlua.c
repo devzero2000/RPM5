@@ -91,6 +91,10 @@ rpmlua rpmluaNew()
 
 void *rpmluaFree(rpmlua lua)
 {
+    if (lua == NULL) {
+	lua = globalLuaState;
+	globalLuaState = NULL;
+    }
     if (lua) {
 	if (lua->L) lua_close(lua->L);
 	free(lua->printbuf);

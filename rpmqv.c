@@ -875,6 +875,7 @@ exit:
     rpmFreeMacros(NULL);
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
+    rpmluaFree(NULL);
 
     if (pipeChild) {
 	(void) fclose(stdout);

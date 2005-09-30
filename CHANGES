@@ -20,6 +20,7 @@
 	- add --dupes popt alias.
 	- identify headers from whence they came.
 	- fix: don't fire triggers on test (#25756).
+	- rpmluaFree: substitute globalLuaState for NULL arg.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
