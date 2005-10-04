@@ -313,7 +313,6 @@ LIBRPM_0
     rpmtsFlags;
     rpmtsFree;
     rpmtsFreeLock;
-    rpmtsGetKeys;
     rpmtsGetRdb;
     rpmtsGetScore;
     rpmtsGetTid;

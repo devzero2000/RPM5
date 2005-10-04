@@ -978,42 +978,6 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
 /** \ingroup py_c
  */
 /*@null@*/
-static PyObject *
-rpmts_GetKeys(rpmtsObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
-{
-    const void **data = NULL;
-    int num, i;
-    PyObject *tuple;
-
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_GetKeys(%p) ts %p\n", s, s->ts);
-
-    rpmtsGetKeys(s->ts, &data, &num);
-    if (data == NULL || num <= 0) {
-	data = _free(data);
-	Py_INCREF(Py_None);
-	return Py_None;
-    }
-
-    tuple = PyTuple_New(num);
-
-    for (i = 0; i < num; i++) {
-	PyObject *obj;
-	obj = (data[i] ? (PyObject *) data[i] : Py_None);
-	Py_INCREF(obj);
-	PyTuple_SetItem(tuple, i, obj);
-    }
-
-    data = _free(data);
-
-    return tuple;
-}
-
-/** \ingroup py_c
- */
-/*@null@*/
 static void *
 rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 		         const unsigned long amount, const unsigned long total,
@@ -1475,8 +1439,6 @@ static struct PyMethodDef rpmts_methods[] = {
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
- {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_NOARGS,
 	NULL },
  {"parseSpec",	(PyCFunction) spec_Parse,	METH_VARARGS|METH_KEYWORDS,
 "ts.parseSpec(\"/path/to/foo.spec\") -> spec\n\

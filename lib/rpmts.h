@@ -1059,21 +1059,6 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/** \ingroup rpmts
- * Retrieve keys from ordered transaction set.
- * @todo Removed packages have no keys, returned as interleaved NULL pointers.
- * @param ts		transaction set
- * @retval ep		address of returned element array pointer (or NULL)
- * @retval nep		address of no. of returned elements (or NULL)
- * @return		0 always
- */
-/*@unused@*/
-int rpmtsGetKeys(rpmts ts,
-		/*@null@*/ /*@out@*/ fnpyKey ** ep,
-		/*@null@*/ /*@out@*/ int * nep)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, ep, nep, fileSystem, internalState @*/;
-
 /**
  * Return (malloc'd) header name-version-release string.
  * @param h		header
