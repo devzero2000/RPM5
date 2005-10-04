@@ -263,7 +263,7 @@ int ufdClose( /*@only@*/ void * cookie)
 {
     FDSANE(fd);
     if (fd->opath != NULL) {
-	free(fd->opath);
+	free((void *)fd->opath);
 	fd->opath = NULL;
     }
     fd->opath = xstrdup(path);

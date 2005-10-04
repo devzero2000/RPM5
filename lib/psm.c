@@ -1570,11 +1570,18 @@ psm->te->h = headerLink(fi->h);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    int noArchiveSize = 0;
+	    const char * origin;
 
 	    /* Regenerate original header. */
 	    {	void * uh = NULL;
 		int_32 uht, uhc;
 
+		/* Save original header's origin (i.e. URL) */
+		origin = NULL;
+		xx = headerGetEntry(fi->h, RPMTAG_PACKAGEORIGIN, NULL,
+			(void **)&origin, NULL);
+
+		/* Retrieve original header blob. */
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
 		    psm->oh = headerCopyLoad(uh);
 		    uh = hfd(uh, uht);
@@ -1667,18 +1674,23 @@ psm->te->h = headerLink(fi->h);
 		xx = hae(psm->oh, RPMTAG_REMOVETID, RPM_INT32_TYPE,
 				&tid, 1);
 
+		/* Add original header's origin (i.e. URL) */
+		if (origin != NULL)
+		    xx = hae(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
+				origin, ac);
+
 		ac = argvCount(psm->te->aNEVRA);
 		if (ac > 0)
 		    xx = hae(fi->h,RPMTAG_INSTALLEDNEVRA, RPM_STRING_ARRAY_TYPE,
-				(void **)argvData(psm->te->aNEVRA), ac);
+				argvData(psm->te->aNEVRA), ac);
 		ac = argvCount(psm->te->aPkgid);
 		if (ac > 0)
 		    xx = hae(fi->h,RPMTAG_INSTALLEDPKGID, RPM_STRING_ARRAY_TYPE,
-				(void **)argvData(psm->te->aPkgid), ac);
+				argvData(psm->te->aPkgid), ac);
 		ac = argvCount(psm->te->aHdrid);
 		if (ac > 0)
 		    xx = hae(fi->h,RPMTAG_INSTALLEDHDRID, RPM_STRING_ARRAY_TYPE,
-				(void **)argvData(psm->te->aHdrid), ac);
+				argvData(psm->te->aHdrid), ac);
 
 	    }
 
@@ -1832,6 +1844,7 @@ psm->te->h = headerLink(fi->h);
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = (int_32) time(NULL);
 	    int fc = rpmfiFC(fi);
+	    const char * origin;
 	    int ac;
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */
@@ -1844,19 +1857,25 @@ psm->te->h = headerLink(fi->h);
 
 	    xx = hae(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
 				&tscolor, 1);
+
+	    /* Add the header's origin (i.e. URL) */
+	    origin = headerGetOrigin(fi->h);
+	    if (origin != NULL)
+		xx = hae(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
+				origin, 1);
 	
 	    ac = argvCount(psm->te->eNEVRA);
 	    if (ac > 0)
 		xx = hae(fi->h, RPMTAG_ERASEDNEVRA, RPM_STRING_ARRAY_TYPE,
-				(void **)argvData(psm->te->eNEVRA), ac);
+				argvData(psm->te->eNEVRA), ac);
 	    ac = argvCount(psm->te->ePkgid);
 	    if (ac > 0)
 		xx = hae(fi->h, RPMTAG_ERASEDPKGID, RPM_STRING_ARRAY_TYPE,
-				(void **)argvData(psm->te->ePkgid), ac);
+				argvData(psm->te->ePkgid), ac);
 	    ac = argvCount(psm->te->eHdrid);
 	    if (ac > 0)
 		xx = hae(fi->h, RPMTAG_ERASEDHDRID, RPM_STRING_ARRAY_TYPE,
-				(void **)argvData(psm->te->eHdrid), ac);
+				argvData(psm->te->eHdrid), ac);
 
 	    /*
 	     * If this package has already been installed, remove it from

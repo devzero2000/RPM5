@@ -453,6 +453,7 @@ typedef enum rpmTag_e {
     RPMTAG_INSTALLEDPKGID	= 1167, /* s[] */
     RPMTAG_INSTALLEDHDRID	= 1168, /* s[] */
     RPMTAG_INSTALLEDNEVRA	= 1169, /* s[] */
+    RPMTAG_PACKAGEORIGIN	= 1170, /* s */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

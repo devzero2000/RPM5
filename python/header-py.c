@@ -331,6 +331,39 @@ static PyObject * rhnUnload(hdrObject * s)
 
 /** \ingroup py_c
  */
+static PyObject * hdrGetOrigin(hdrObject * s)
+	/*@*/
+{
+    const char * origin = NULL;
+    if (s->h != NULL)
+
+	origin = headerGetOrigin(s->h);
+    if (origin != NULL)
+	return Py_BuildValue("s", origin);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup py_c
+ */
+static PyObject * hdrSetOrigin(hdrObject * s, PyObject * args, PyObject * kwds)
+	/*@*/
+{
+    char * kwlist[] = {"origin", NULL};
+    const char * origin = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:SetOrigin", kwlist, &origin))
+        return NULL;
+
+    if (s->h != NULL && origin != NULL)
+	headerSetOrigin(s->h, origin);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup py_c
+ */
 static PyObject * hdrFullFilelist(hdrObject * s)
 	/*@*/
 {
@@ -394,6 +427,10 @@ static struct PyMethodDef hdr_methods[] = {
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
 	NULL },
     {"rhnUnload",	(PyCFunction) rhnUnload,	METH_NOARGS,
+	NULL },
+    {"getorigin",	(PyCFunction) hdrGetOrigin,	METH_NOARGS,
+	NULL },
+    {"setorigin",	(PyCFunction) hdrSetOrigin,	METH_NOARGS,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
 	NULL },

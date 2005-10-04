@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-28 20:39-0400\n"
+"POT-Creation-Date: 2005-10-04 08:31-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -739,7 +739,7 @@ msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1640
+#: build/pack.c:645 lib/psm.c:1648
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
@@ -769,7 +769,7 @@ msgstr "%s의 payload를 읽을 수 없음: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s에 payload를 작성할 수 없음: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1909
+#: build/pack.c:738 lib/psm.c:1959
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
@@ -1375,68 +1375,74 @@ msgstr "헤더에 아카이브 파일이 없습니다"
 msgid " failed - "
 msgstr " 실패함 - "
 
-#: lib/depends.c:205
+#: lib/depends.c:207
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:219
+#: lib/depends.c:221
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
 #. @-nullptrarith@
-#: lib/depends.c:364
+#: lib/depends.c:324
+#, fuzzy, c-format
+msgid "  upgrade erases %s\n"
+msgstr "%s(을)를 필요로 하는 패키지가 없습니다\n"
+
+#. @-nullptrarith@
+#: lib/depends.c:421
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:456
+#: lib/depends.c:545
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:483
+#: lib/depends.c:572
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:500
+#: lib/depends.c:589
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:529
+#: lib/depends.c:618
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/depends.c:542
+#: lib/depends.c:631
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:555
+#: lib/depends.c:644
 #, fuzzy
 msgid "(db package)"
 msgstr "패키지가 없습니다\n"
 
-#: lib/depends.c:914
+#: lib/depends.c:1003
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1034
+#: lib/depends.c:1123
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1271
+#: lib/depends.c:1360
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1361
+#: lib/depends.c:1450
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1445,21 +1451,21 @@ msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 트리, 깊이"
 "[depth])\n"
 
-#: lib/depends.c:1450
+#: lib/depends.c:1539
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 후임자만 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1523
+#: lib/depends.c:1612
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1558
+#: lib/depends.c:1647
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1563
+#: lib/depends.c:1652
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1641,8 +1647,8 @@ msgstr ""
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:929 lib/package.c:955
-#: lib/package.c:987
+#: lib/package.c:546 lib/package.c:586 lib/package.c:930 lib/package.c:956
+#: lib/package.c:988
 #, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
@@ -1677,31 +1683,31 @@ msgstr ""
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:799
+#: lib/package.c:800
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "이 RPM 버전은 패키징 버전 '1' 을 지원하지 않습니다\n"
 
-#: lib/package.c:808
+#: lib/package.c:809
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "이 RPM 버전은 주 번호(major number)가 <= 4 인 패키징 만을 지원합니다\n"
 
-#: lib/package.c:820 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
+#: lib/package.c:821 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature이 실패했습니다\n"
 
-#: lib/package.c:827 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:828 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 유효한 서명이 없습니다\n"
 
-#: lib/package.c:894
+#: lib/package.c:895
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead이 실패했습니다\n"
 
-#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:1003 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread이 실패했습니다: %s\n"
@@ -2404,47 +2410,47 @@ msgstr ""
 "%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상황 %5"
 "$d\n"
 
-#: lib/psm.c:1366
+#: lib/psm.c:1367
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s에 %d의 파일이 있습니다, 테스트 = %d\n"
 
-#: lib/psm.c:1543
+#: lib/psm.c:1544
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 "%s: %s 스크립틀릿(scriptlet)이 실패했습니다 (%d), %s-%s-%s(을)를 생략합니다\n"
 
-#: lib/psm.c:1652
+#: lib/psm.c:1660
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 
-#: lib/psm.c:1730
+#: lib/psm.c:1759
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: lib/psm.c:1731
+#: lib/psm.c:1760
 msgid " on file "
 msgstr " 다음 파일의 "
 
-#: lib/psm.c:1917
+#: lib/psm.c:1967
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 
-#: lib/psm.c:1920
+#: lib/psm.c:1970
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/psm.c:2108
+#: lib/psm.c:2160
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 
-#: lib/psm.c:2141
+#: lib/psm.c:2193
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""

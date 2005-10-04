@@ -725,6 +725,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     h->flags |= HEADERFLAG_ALLOCATED;
     ei = NULL;	/* XXX will be freed with header */
 
+    /* Save the opened path as the header origin. */
     origin = fdGetOPath(fd);
     if (origin != NULL)
 	(void) headerSetOrigin(h, origin);

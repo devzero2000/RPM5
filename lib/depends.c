@@ -334,18 +334,22 @@ fprintf(stderr, "U argvAdd(&p->eNEVRA, \"%s\")\n", ohNEVRA);
 	xx = argvAdd(&p->eNEVRA, ohNEVRA);
 if (__mydebug)
 fprintf(stderr, "U argvAdd(&q->ePkgid, \"%s\")\n", p->pkgid);
-	xx = argvAdd(&q->aPkgid, p->pkgid);
+	if (p->pkgid != NULL)
+	    xx = argvAdd(&q->aPkgid, p->pkgid);
 #ifdef	NOTYET	/* XXX convert to hex. */
 if (__mydebug)
 fprintf(stderr, "U argvAdd(&p->ePkgid, \"%s\")\n", ohPkgid);
-	xx = argvAdd(&p->ePkgid, ohPkgid);
+	if (ohPkgid != NULL)
+	    xx = argvAdd(&p->ePkgid, ohPkgid);
 #endif
 if (__mydebug)
 fprintf(stderr, "U argvAdd(&q->aHdrid, \"%s\")\n", p->hdrid);
-	xx = argvAdd(&q->aHdrid, p->hdrid);
+	if (p->hdrid != NULL)
+	    xx = argvAdd(&q->aHdrid, p->hdrid);
 if (__mydebug)
 fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
-	xx = argvAdd(&p->eHdrid, ohHdrid);
+	if (ohHdrid != NULL)
+	    xx = argvAdd(&p->eHdrid, ohHdrid);
 
 	ohNEVRA = _free(ohNEVRA);
 #ifdef	NOTYET	/* XXX MinMemory */
@@ -428,18 +432,22 @@ fprintf(stderr, "O argvAdd(&p->eNEVRA, \"%s\")\n", ohNEVRA);
 		xx = argvAdd(&p->eNEVRA, ohNEVRA);
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&q->ePkgid, \"%s\")\n", p->pkgid);
-		xx = argvAdd(&q->aPkgid, p->pkgid);
+		if (p->pkgid != NULL)
+		    xx = argvAdd(&q->aPkgid, p->pkgid);
 #ifdef	NOTYET	/* XXX convert to hex. */
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&p->ePkgid, \"%s\")\n", ohPkgid);
-		xx = argvAdd(&p->ePkgid, ohPkgid);
+		if (ohPkgid != NULL)
+		    xx = argvAdd(&p->ePkgid, ohPkgid);
 #endif
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&q->aHdrid, \"%s\")\n", p->hdrid);
-		xx = argvAdd(&q->aHdrid, p->hdrid);
+		if (p->hdrid != NULL)
+		    xx = argvAdd(&q->aHdrid, p->hdrid);
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
-		xx = argvAdd(&p->eHdrid, ohHdrid);
+		if (ohHdrid != NULL)
+		    xx = argvAdd(&p->eHdrid, ohHdrid);
 
 		ohNEVRA = _free(ohNEVRA);
 #ifdef	NOTYET	/* XXX MinMemory */
