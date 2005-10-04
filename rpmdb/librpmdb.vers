@@ -41,7 +41,6 @@ LIBRPMDB_0
     _init;
     legacyRetrofit;
     mergesort;
-    myinstall_instance;
     _noDirTokens;
     prDbiOpenFlags;
     providePackageNVR;

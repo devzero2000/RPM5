@@ -39,14 +39,6 @@ int _psm_debug = _PSM_DEBUG;
 /*@unchecked@*/
 int _psm_threads = 0;
 
-/* Give access to the rpmte global tracking the last instance added
- * to the database.
- */
-/*@-exportheadervar@*/
-/*@unchecked@*/
-extern unsigned int myinstall_instance;
-/*@=exportheadervar@*/
-
 /*@access FD_t @*/		/* XXX void ptr args */
 /*@access rpmpsm @*/
 
@@ -2115,13 +2107,16 @@ psm->te->h = headerFree(psm->te->h);
 assert(psm->mi == NULL);
 	psm->mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
-
 	fi->h = rpmdbNextIterator(psm->mi);
 	if (fi->h != NULL)
 	    fi->h = headerLink(fi->h);
-
 	psm->mi = rpmdbFreeIterator(psm->mi);
-	rc = (fi->h != NULL ? RPMRC_OK : RPMRC_FAIL);
+
+	if (fi->h != NULL) {
+	    (void) headerSetInstance(fi->h, fi->record);
+	    rc = RPMRC_OK;
+	} else
+	    rc = RPMRC_FAIL;
 	break;
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
@@ -2134,10 +2129,8 @@ assert(psm->mi == NULL);
 	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
 				NULL, NULL);
 
-	/* Set the database instance so consumers (i.e. rpmtsRun())
-	 * can add this to a rollback transaction.
-	 */
-	rpmteSetDBInstance(psm->te, myinstall_instance);
+	/* Set the database instance for (possible) rollbacks. */
+	rpmteSetDBInstance(psm->te, headerGetInstance(fi->h));
 
 	/*
 	 * If the score exists and this is not a rollback or autorollback
