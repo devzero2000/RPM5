@@ -75,10 +75,12 @@ static int intcmp(const void * a, const void * b)
  * @param ts		transaction set
  * @param h		header
  * @param dboffset	rpm database instance
+ * @retval *indexp	removed element index (if not NULL)
  * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
 static int removePackage(rpmts ts, Header h, int dboffset,
+		/*@null@*/ int * indexp,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -87,10 +89,16 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
+	int * needle = NULL;
 /*@-boundswrite@*/
-	if (bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
-			sizeof(*ts->removedPackages), intcmp) != NULL)
+	needle = bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
+			sizeof(*ts->removedPackages), intcmp);
+	if (needle != NULL) {
+	    /* XXX lastx should be per-call, not per-ts. */
+	    if (indexp != NULL)
+	        *indexp = needle - ts->removedPackages;
 	    return 0;
+	}
 /*@=boundswrite@*/
     }
 
@@ -120,6 +128,8 @@ static int removePackage(rpmts ts, Header h, int dboffset,
     p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, dboffset, depends);
 /*@-boundswrite@*/
     ts->order[ts->orderCount] = p;
+    if (indexp != NULL)
+	*indexp = ts->orderCount;
     ts->orderCount++;
 /*@=boundswrite@*/
 
@@ -151,7 +161,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
     /*
      * Check for previously added versions with the same name and arch/os.
-     * FIXME: only catches previously added, older packages.
      */
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
@@ -301,6 +310,9 @@ addheader:
 	const char * ohNEVRA = NULL;
 	const char * ohPkgid = NULL;
 	const char * ohHdrid = NULL;
+	const char * pkgid;
+	int_32 pkgidcnt;
+	int lastx;
 	rpmte q;
 
 	/* Ignore colored packages not in our rainbow. */
@@ -313,10 +325,27 @@ addheader:
 	    continue;
 
 	ohNEVRA = hGetNEVRA(oh, NULL);
-	ohPkgid = NULL;
-#ifdef	NOTYET	/* XXX convert to hex. */
-	xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&ohPkgid, NULL);
+
+	pkgid = NULL;
+	pkgidcnt = 0;
+	xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
+	if (pkgid != NULL) {
+	    static const char hex[] = "0123456789abcdef";
+	    char * t;
+	    int i;
+
+	    ohPkgid = t = xmalloc((2*pkgidcnt) + 1);
+	    for (i = 0 ; i < pkgidcnt; i++) {
+		*t++ = hex[ (unsigned)((pkgid[i] >> 4) & 0x0f) ];
+		*t++ = hex[ (unsigned)((pkgid[i]   ) & 0x0f) ];
+	    }
+	    *t = '\0';
+#if NOTYET	/* XXX MinMemory. */
+	    pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
 #endif
+	} else
+	    ohPkgid = NULL;
+
 	ohHdrid = NULL;
 	xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
 
@@ -324,8 +353,10 @@ addheader:
 	rpmMessage(RPMMESS_DEBUG, _("  upgrade erases %s\n"), ohNEVRA);
 /*@=nullptrarith@*/
 
-	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
-	q = ts->order[ts->orderCount - 1];
+	lastx = -1;
+	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+assert(lastx >= 0 && lastx < ts->orderCount);
+	q = ts->order[lastx];
 if (__mydebug)
 fprintf(stderr, "U argvAdd(&q->aNEVRA, \"%s\")\n", p->NEVRA);
 	xx = argvAdd(&q->aNEVRA, p->NEVRA);
@@ -336,12 +367,10 @@ if (__mydebug)
 fprintf(stderr, "U argvAdd(&q->ePkgid, \"%s\")\n", p->pkgid);
 	if (p->pkgid != NULL)
 	    xx = argvAdd(&q->aPkgid, p->pkgid);
-#ifdef	NOTYET	/* XXX convert to hex. */
 if (__mydebug)
 fprintf(stderr, "U argvAdd(&p->ePkgid, \"%s\")\n", ohPkgid);
 	if (ohPkgid != NULL)
 	    xx = argvAdd(&p->ePkgid, ohPkgid);
-#endif
 if (__mydebug)
 fprintf(stderr, "U argvAdd(&q->aHdrid, \"%s\")\n", p->hdrid);
 	if (p->hdrid != NULL)
@@ -352,8 +381,8 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 	    xx = argvAdd(&p->eHdrid, ohHdrid);
 
 	ohNEVRA = _free(ohNEVRA);
-#ifdef	NOTYET	/* XXX MinMemory */
 	ohPkgid = _free(ohPkgid);
+#ifdef	NOTYET	/* XXX MinMemory. */
 	ohHdrid = _free(ohHdrid);
 #endif
     }
@@ -391,6 +420,14 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 	    ts->removedPackages, ts->numRemovedPackages, 1);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	    const char * ohNEVRA;
+	    const char * ohPkgid;
+	    const char * ohHdrid;
+	    const char * pkgid;
+	    int_32 pkgidcnt;
+	    int lastx;
+	    rpmte q;
+
 	    /* Ignore colored packages not in our rainbow. */
 	    ohcolor = hGetColor(oh);
 	    /* XXX provides *are* colored, effectively limiting Obsoletes:
@@ -402,59 +439,72 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
 	     * If no obsoletes version info is available, match all names.
 	     */
-	    if (rpmdsEVR(obsoletes) == NULL
-	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
-		const char * ohNEVRA;
-		const char * ohPkgid;
-		const char * ohHdrid;
-		rpmte q;
+	    if (!(rpmdsEVR(obsoletes) == NULL
+	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)))
+		continue;
 
-		ohNEVRA = hGetNEVRA(oh, NULL);
-		ohPkgid = NULL;
-#ifdef	NOTYET	/* XXX convert to hex. */
-		xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&ohPkgid, NULL);
+	    ohNEVRA = hGetNEVRA(oh, NULL);
+
+	    pkgid = NULL;
+	    pkgidcnt = 0;
+	    xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
+	    if (pkgid != NULL) {
+		static const char hex[] = "0123456789abcdef";
+		char * t;
+		int i;
+
+		ohPkgid = t = xmalloc((2*pkgidcnt) + 1);
+		for (i = 0 ; i < pkgidcnt; i++) {
+		    *t++ = hex[ (unsigned)((pkgid[i] >> 4) & 0x0f) ];
+		    *t++ = hex[ (unsigned)((pkgid[i]   ) & 0x0f) ];
+		}
+		*t = '\0';
+#if NOTYET	/* XXX MinMemory. */
+		pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
 #endif
-		ohHdrid = NULL;
-		xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
+	    } else
+		ohPkgid = NULL;
+
+	    ohHdrid = NULL;
+	    xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
 
 /*@-nullptrarith@*/
-		rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
+	    rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 /*@=nullptrarith@*/
 
-		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
-		q = ts->order[ts->orderCount - 1];
+	    lastx = -1;
+	    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+assert(lastx >= 0 && lastx < ts->orderCount);
+	    q = ts->order[lastx];
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&q->aNEVRA, \"%s\")\n", p->NEVRA);
-		xx = argvAdd(&q->aNEVRA, p->NEVRA);
+	    xx = argvAdd(&q->aNEVRA, p->NEVRA);
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&p->eNEVRA, \"%s\")\n", ohNEVRA);
-		xx = argvAdd(&p->eNEVRA, ohNEVRA);
+	    xx = argvAdd(&p->eNEVRA, ohNEVRA);
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&q->ePkgid, \"%s\")\n", p->pkgid);
-		if (p->pkgid != NULL)
-		    xx = argvAdd(&q->aPkgid, p->pkgid);
-#ifdef	NOTYET	/* XXX convert to hex. */
+	    if (p->pkgid != NULL)
+		xx = argvAdd(&q->aPkgid, p->pkgid);
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&p->ePkgid, \"%s\")\n", ohPkgid);
-		if (ohPkgid != NULL)
-		    xx = argvAdd(&p->ePkgid, ohPkgid);
-#endif
+	    if (ohPkgid != NULL)
+		xx = argvAdd(&p->ePkgid, ohPkgid);
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&q->aHdrid, \"%s\")\n", p->hdrid);
-		if (p->hdrid != NULL)
-		    xx = argvAdd(&q->aHdrid, p->hdrid);
+	    if (p->hdrid != NULL)
+		xx = argvAdd(&q->aHdrid, p->hdrid);
 if (__mydebug)
 fprintf(stderr, "O argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
-		if (ohHdrid != NULL)
-		    xx = argvAdd(&p->eHdrid, ohHdrid);
+	    if (ohHdrid != NULL)
+		xx = argvAdd(&p->eHdrid, ohHdrid);
 
-		ohNEVRA = _free(ohNEVRA);
-#ifdef	NOTYET	/* XXX MinMemory */
-		ohPkgid = _free(ohPkgid);
-		ohHdrid = _free(ohHdrid);
+	    ohNEVRA = _free(ohNEVRA);
+	    ohPkgid = _free(ohPkgid);
+#ifdef	NOTYET	/* XXX MinMemory. */
+	    ohHdrid = _free(ohHdrid);
 #endif
-	    }
 	}
 	mi = rpmdbFreeIterator(mi);
     }
@@ -469,7 +519,7 @@ exit:
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
-    return removePackage(ts, h, dboffset, RPMAL_NOMATCH);
+    return removePackage(ts, h, dboffset, NULL, RPMAL_NOMATCH);
 }
 
 /**
