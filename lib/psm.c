@@ -1353,6 +1353,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     uint_32 tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
+    HAE_t hae = fi->hae;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     rpmRC rc = psm->rc;
     int saveerrno;
@@ -1598,7 +1599,7 @@ psm->te->h = headerLink(fi->h);
 		    {
 			if (tag == RPMTAG_ARCHIVESIZE)
 			    noArchiveSize = 1;
-		        if (ptr) (void) headerAddEntry(psm->oh, tag, type, ptr, count);
+		        if (ptr) (void) hae(psm->oh, tag, type, ptr, count);
 		    }
 		    hi = headerFreeIterator(hi);
 		    /*@=branchstate@*/
@@ -1661,8 +1662,24 @@ psm->te->h = headerLink(fi->h);
 	    /* Add remove transaction id to header. */
 	    if (psm->oh != NULL)
 	    {	int_32 tid = rpmtsGetTid(ts);
-		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
-			RPM_INT32_TYPE, &tid, 1);
+		int ac;
+
+		xx = hae(psm->oh, RPMTAG_REMOVETID, RPM_INT32_TYPE,
+				&tid, 1);
+
+		ac = argvCount(psm->te->aNEVRA);
+		if (ac > 0)
+		    xx = hae(fi->h,RPMTAG_INSTALLEDNEVRA, RPM_STRING_ARRAY_TYPE,
+				(void **)argvData(psm->te->aNEVRA), ac);
+		ac = argvCount(psm->te->aPkgid);
+		if (ac > 0)
+		    xx = hae(fi->h,RPMTAG_INSTALLEDPKGID, RPM_STRING_ARRAY_TYPE,
+				(void **)argvData(psm->te->aPkgid), ac);
+		ac = argvCount(psm->te->aHdrid);
+		if (ac > 0)
+		    xx = hae(fi->h,RPMTAG_INSTALLEDHDRID, RPM_STRING_ARRAY_TYPE,
+				(void **)argvData(psm->te->aHdrid), ac);
+
 	    }
 
 	    /* Write the metadata section into the package. */
@@ -1815,17 +1832,31 @@ psm->te->h = headerLink(fi->h);
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = (int_32) time(NULL);
 	    int fc = rpmfiFC(fi);
+	    int ac;
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */
 	    if (fi->fstates != NULL && fc > 0)
-		xx = headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
+		xx = hae(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
 				fi->fstates, fc);
 
-	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
+	    xx = hae(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
 
-	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
+	    xx = hae(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
 				&tscolor, 1);
+	
+	    ac = argvCount(psm->te->eNEVRA);
+	    if (ac > 0)
+		xx = hae(fi->h, RPMTAG_ERASEDNEVRA, RPM_STRING_ARRAY_TYPE,
+				(void **)argvData(psm->te->eNEVRA), ac);
+	    ac = argvCount(psm->te->ePkgid);
+	    if (ac > 0)
+		xx = hae(fi->h, RPMTAG_ERASEDPKGID, RPM_STRING_ARRAY_TYPE,
+				(void **)argvData(psm->te->ePkgid), ac);
+	    ac = argvCount(psm->te->eHdrid);
+	    if (ac > 0)
+		xx = hae(fi->h, RPMTAG_ERASEDHDRID, RPM_STRING_ARRAY_TYPE,
+				(void **)argvData(psm->te->eHdrid), ac);
 
 	    /*
 	     * If this package has already been installed, remove it from

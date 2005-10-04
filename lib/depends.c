@@ -44,6 +44,8 @@ struct orderListIndex_s {
 /*@unchecked@*/
 int _cacheDependsRC = 1;
 
+static int __mydebug = 0;
+
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
 
@@ -296,6 +298,10 @@ addheader:
 
     mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
+	const char * ohNEVRA = NULL;
+	const char * ohPkgid = NULL;
+	const char * ohHdrid = NULL;
+	rpmte q;
 
 	/* Ignore colored packages not in our rainbow. */
 	ohcolor = hGetColor(oh);
@@ -306,7 +312,46 @@ addheader:
 	if (rpmVersionCompare(h, oh) == 0)
 	    continue;
 
+	ohNEVRA = hGetNEVRA(oh, NULL);
+	ohPkgid = NULL;
+#ifdef	NOTYET	/* XXX convert to hex. */
+	xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&ohPkgid, NULL);
+#endif
+	ohHdrid = NULL;
+	xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
+
+/*@-nullptrarith@*/
+	rpmMessage(RPMMESS_DEBUG, _("  upgrade erases %s\n"), ohNEVRA);
+/*@=nullptrarith@*/
+
 	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+	q = ts->order[ts->orderCount - 1];
+if (__mydebug)
+fprintf(stderr, "U argvAdd(&q->aNEVRA, \"%s\")\n", p->NEVRA);
+	xx = argvAdd(&q->aNEVRA, p->NEVRA);
+if (__mydebug)
+fprintf(stderr, "U argvAdd(&p->eNEVRA, \"%s\")\n", ohNEVRA);
+	xx = argvAdd(&p->eNEVRA, ohNEVRA);
+if (__mydebug)
+fprintf(stderr, "U argvAdd(&q->ePkgid, \"%s\")\n", p->pkgid);
+	xx = argvAdd(&q->aPkgid, p->pkgid);
+#ifdef	NOTYET	/* XXX convert to hex. */
+if (__mydebug)
+fprintf(stderr, "U argvAdd(&p->ePkgid, \"%s\")\n", ohPkgid);
+	xx = argvAdd(&p->ePkgid, ohPkgid);
+#endif
+if (__mydebug)
+fprintf(stderr, "U argvAdd(&q->aHdrid, \"%s\")\n", p->hdrid);
+	xx = argvAdd(&q->aHdrid, p->hdrid);
+if (__mydebug)
+fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
+	xx = argvAdd(&p->eHdrid, ohHdrid);
+
+	ohNEVRA = _free(ohNEVRA);
+#ifdef	NOTYET	/* XXX MinMemory */
+	ohPkgid = _free(ohPkgid);
+	ohHdrid = _free(ohHdrid);
+#endif
     }
     mi = rpmdbFreeIterator(mi);
 
@@ -355,16 +400,52 @@ addheader:
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
-		const char * ohNEVRA = hGetNEVRA(oh, NULL);
-#ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
-		if (rpmVersionCompare(h, oh))
+		const char * ohNEVRA;
+		const char * ohPkgid;
+		const char * ohHdrid;
+		rpmte q;
+
+		ohNEVRA = hGetNEVRA(oh, NULL);
+		ohPkgid = NULL;
+#ifdef	NOTYET	/* XXX convert to hex. */
+		xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&ohPkgid, NULL);
 #endif
-		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+		ohHdrid = NULL;
+		xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
+
 /*@-nullptrarith@*/
 		rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 /*@=nullptrarith@*/
+
+		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+		q = ts->order[ts->orderCount - 1];
+if (__mydebug)
+fprintf(stderr, "O argvAdd(&q->aNEVRA, \"%s\")\n", p->NEVRA);
+		xx = argvAdd(&q->aNEVRA, p->NEVRA);
+if (__mydebug)
+fprintf(stderr, "O argvAdd(&p->eNEVRA, \"%s\")\n", ohNEVRA);
+		xx = argvAdd(&p->eNEVRA, ohNEVRA);
+if (__mydebug)
+fprintf(stderr, "O argvAdd(&q->ePkgid, \"%s\")\n", p->pkgid);
+		xx = argvAdd(&q->aPkgid, p->pkgid);
+#ifdef	NOTYET	/* XXX convert to hex. */
+if (__mydebug)
+fprintf(stderr, "O argvAdd(&p->ePkgid, \"%s\")\n", ohPkgid);
+		xx = argvAdd(&p->ePkgid, ohPkgid);
+#endif
+if (__mydebug)
+fprintf(stderr, "O argvAdd(&q->aHdrid, \"%s\")\n", p->hdrid);
+		xx = argvAdd(&q->aHdrid, p->hdrid);
+if (__mydebug)
+fprintf(stderr, "O argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
+		xx = argvAdd(&p->eHdrid, ohHdrid);
+
 		ohNEVRA = _free(ohNEVRA);
+#ifdef	NOTYET	/* XXX MinMemory */
+		ohPkgid = _free(ohPkgid);
+		ohHdrid = _free(ohHdrid);
+#endif
 	    }
 	}
 	mi = rpmdbFreeIterator(mi);

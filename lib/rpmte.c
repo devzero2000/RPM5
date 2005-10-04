@@ -65,9 +65,12 @@ static void delTE(rpmte p)
     p->pkgid = _free(p->pkgid);
     p->hdrid = _free(p->hdrid);
 
-    p->erasePKGID = argvFree(p->erasePKGID);
-    p->eraseHDRID = argvFree(p->eraseHDRID);
-    p->eraseNEVRA = argvFree(p->eraseNEVRA);
+    p->aNEVRA = argvFree(p->aNEVRA);
+    p->aPkgid = argvFree(p->aPkgid);
+    p->aHdrid = argvFree(p->aHdrid);
+    p->eNEVRA = argvFree(p->eNEVRA);
+    p->ePkgid = argvFree(p->ePkgid);
+    p->eHdrid = argvFree(p->eHdrid);
 
     p->h = headerFree(p->h);
 

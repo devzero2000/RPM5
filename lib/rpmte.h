@@ -122,11 +122,17 @@ struct rpmte_s {
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
 /*@only@*/ /*@null@*/
-    ARGV_t erasePKGID;		/*!< (TR_ADDED) Erased pkgid's from element. */
+    ARGV_t ePkgid;		/*!< (TR_ADDED) Erased element pkgid's. */
 /*@only@*/ /*@null@*/
-    ARGV_t eraseHDRID;		/*!< (TR_ADDED) Erased hdrid's from element. */
+    ARGV_t eHdrid;		/*!< (TR_ADDED) Erased element hdrid's. */
 /*@only@*/ /*@null@*/
-    ARGV_t eraseNEVRA;		/*!< (TR_ADDED) Erased NEVRA's from element. */
+    ARGV_t eNEVRA;		/*!< (TR_ADDED) Erased element NEVRA's. */
+/*@only@*/ /*@null@*/
+    ARGV_t aPkgid;		/*!< (TR_REMOVED) Added element pkgid's. */
+/*@only@*/ /*@null@*/
+    ARGV_t aHdrid;		/*!< (TR_REMOVED) Added element hdrid's. */
+/*@only@*/ /*@null@*/
+    ARGV_t aNEVRA;		/*!< (TR_REMOVED) Added element NEVRA's. */
 
 /*@-fielduse@*/	/* LCL: confused by union? */
     union {
