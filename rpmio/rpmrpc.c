@@ -380,7 +380,7 @@ is_week (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 	    tim->tm_wday = (pos - week)/3;
 	return 1;
     }
-    return 0;    
+    return 0;
 }
 
 static int
@@ -389,7 +389,7 @@ is_month (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 {
 /*@observer@*/ static const char * month = "JanFebMarAprMayJunJulAugSepOctNovDec";
     const char * pos;
-    
+
     /*@-observertrans -mayaliasunique@*/
     if (str != NULL && (pos = strstr(month, str)) != NULL) {
     /*@=observertrans -mayaliasunique@*/
@@ -414,9 +414,9 @@ is_time (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 	    if (sscanf (str, "%2d:%2d", &tim->tm_hour, &tim->tm_min) != 2)
 		return 0;
 	}
-    } else 
+    } else
         return 0;
-    
+
     return 1;
 }
 
@@ -456,7 +456,7 @@ vfs_parse_filetype (char c)
 	/*@*/
 {
     switch (c) {
-        case 'd': return S_IFDIR; 
+        case 'd': return S_IFDIR;
         case 'b': return S_IFBLK;
         case 'c': return S_IFCHR;
         case 'l': return S_IFLNK;
@@ -548,9 +548,9 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
     tim.tm_min  = 0;
     tim.tm_sec  = 0;
     tim.tm_isdst = -1; /* Let mktime() try to guess correct dst offset */
-    
+
     p = columns [idx++];
-    
+
     /* We eat weekday name in case of extfs */
     if(is_week(p, &tim))
 	p = columns [idx++];
@@ -580,7 +580,7 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
 	    /*@-mods@*/
             p[2] = p[5] = '-';
 	    /*@=mods@*/
-	    
+
 	    memset(d, 0, sizeof(d));
 	    if (sscanf(p, "%2d-%2d-%2d", &d[0], &d[1], &d[2]) == 3){
 	    /*  We expect to get:
@@ -608,18 +608,18 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
     }
 
     /* Here we expect to find time and/or year */
-    
+
     if (is_num (idx)) {
         if(is_time(columns[idx], &tim) || (got_year = is_year(columns[idx], &tim))) {
 	idx++;
 
 	/* This is a special case for ctime() or Mon DD YYYY hh:mm */
-	if(is_num (idx) && 
+	if(is_num (idx) &&
 	    ((got_year = is_year(columns[idx], &tim)) || is_time(columns[idx], &tim)))
 		idx++; /* time & year or reverse */
 	} /* only time or date */
     }
-    else 
+    else
         return 0; /* Nor time or date */
 
     /*
@@ -629,7 +629,7 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
      * to represent them at all
      */
     if (!got_year &&
-	current_mon < 6 && current_mon < tim.tm_mon && 
+	current_mon < 6 && current_mon < tim.tm_mon &&
 	tim.tm_mon - current_mon >= 6)
 
 	tim.tm_year--;
@@ -650,7 +650,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
     int idx, idx2, num_cols;
     int i;
     char *p_copy;
-    
+
     if (strncmp (p, "total", 5) == 0)
         return 0;
 
@@ -704,7 +704,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
         st->st_uid = (uid_t) atol (columns [1]);
 
     /* Mhm, the ls -lg did not produce a group field */
-    for (idx = 3; idx <= 5; idx++) 
+    for (idx = 3; idx <= 5; idx++)
         if (is_month(columns [idx], NULL) || is_week(columns [idx], NULL) || is_dos_date(columns[idx]))
             break;
 
@@ -714,7 +714,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
     /* We don't have gid */	
     if (idx == 3 || (idx == 4 && (S_ISCHR(st->st_mode) || S_ISBLK (st->st_mode))))
         idx2 = 2;
-    else { 
+    else {
 	/* We have gid field */
 	if (is_num (2))
 	    st->st_gid = (gid_t) atol (columns [2]);
@@ -767,18 +767,18 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
     st->st_blocks = (st->st_size + 511) / 512;
 #endif
 
-    for (i = idx + 1, idx2 = 0; i < num_cols; i++ ) 
+    for (i = idx + 1, idx2 = 0; i < num_cols; i++ )
 	if (strcmp (columns [i], "->") == 0){
 	    idx2 = i;
 	    break;
 	}
-    
-    if (((S_ISLNK (st->st_mode) || 
+
+    if (((S_ISLNK (st->st_mode) ||
         (num_cols == idx + 3 && st->st_nlink > 1))) /* Maybe a hardlink? (in extfs) */
         && idx2){
 	int tlen;
 	char *t;
-	    
+
 	if (filename){
 #ifdef HACK
 	    t = g_strndup (p_copy + column_ptr [idx], column_ptr [idx2] - column_ptr [idx] - 1);
@@ -804,12 +804,12 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	 * this way we have a chance of entering hidden directories like ". ."
 	 */
 	if (filename){
-	    /* 
+	    /*
 	    *filename = g_strdup (columns [idx++]);
 	    */
 	    int tlen;
 	    char *t;
-	    
+
 	    t = g_strdup (p_copy + column_ptr [idx]); idx++;
 	    tlen = strlen (t);
 	    /* g_strchomp(); */
@@ -817,7 +817,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	        t [tlen-1] = 0;
 	    if (t [tlen-2] == '\r' || t [tlen-2] == '\n')
 		t [tlen-2] = 0;
-	    
+
 	    *filename = t;
 	}
 	if (linkname)
@@ -971,7 +971,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 
 	    while (*se && *se != '\n') se++;
 	    if (se > s && se[-1] == '\r') se[-1] = '\0';
-	    if (*se == '\0') 
+	    if (*se == '\0')
 		/*@innerbreak@*/ break;
 	    *se++ = '\0';
 
@@ -1395,7 +1395,7 @@ int Glob_pattern_p (const char * pattern, int quote)
     const char *p;
     int open = 0;
     char c;
-  
+
     (void) urlPath(pattern, &p);
     while ((c = *p++) != '\0')
 	switch (c) {
