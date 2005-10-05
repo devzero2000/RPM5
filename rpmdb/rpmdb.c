@@ -2322,6 +2322,13 @@ if (dbiByteSwapped(dbi) == 1)
 	return NULL;
     }
 
+    /* Mark header with its instance number. */
+    {	char origin[32];
+	sprintf(origin, "rpmdb (h#%u)", mi->mi_offset);
+	(void) headerSetOrigin(mi->mi_h, origin);
+	(void) headerSetInstance(mi->mi_h, mi->mi_offset);
+    }
+
     mi->mi_prevoffset = mi->mi_offset;
     mi->mi_modified = 0;
 
