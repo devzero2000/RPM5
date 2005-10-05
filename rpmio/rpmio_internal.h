@@ -167,6 +167,11 @@ struct _FD_s {
 /*@observer@*/
     const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
+/*null@*/
+    const char *opath;		/* open(2) args. */
+    int		oflags;
+    mode_t	omode;
+
     FDSTAT_t	stats;		/* I/O statistics */
 
     int		ndigests;
@@ -249,6 +254,53 @@ int ftpCmd(const char * cmd, const char * url, const char * arg2)
 int ufdClose( /*@only@*/ void * cookie)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies cookie, fileSystem, internalState @*/;
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+/*@null@*/ int fdSetOpen(FD_t fd, const char * path, int flags, mode_t mode)
+	/*@*/
+{
+    FDSANE(fd);
+    if (fd->opath != NULL) {
+	free((void *)fd->opath);
+	fd->opath = NULL;
+    }
+    fd->opath = xstrdup(path);
+    fd->oflags = flags;
+    fd->omode = mode;
+    return 0;
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+/*@null@*/ /*@observer@*/ const char * fdGetOPath(FD_t fd)
+	/*@*/
+{
+    FDSANE(fd);
+    return fd->opath;
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+int fdGetOFlags(FD_t fd)
+	/*@*/
+{
+    FDSANE(fd);
+    return fd->oflags;
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+mode_t fdGetOMode(FD_t fd)
+	/*@*/
+{
+    FDSANE(fd);
+    return fd->omode;
+}
 
 /** \ingroup rpmio
  */

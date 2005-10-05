@@ -31,7 +31,7 @@
 
 #define _RPMDAV_INTERNAL
 #include <rpmdav.h>
-                                                                                
+
 #include "argv.h"
 #include "ugid.h"
 #include "debug.h"
@@ -352,7 +352,7 @@ static int davInit(const char * url, urlinfo * uret)
 	/* XXX check that neon is ssl enabled. */
 	if (!strcasecmp(u->scheme, "https"))
 	    ne_ssl_set_verify(u->sess, davVerifyCert, (char *)u->host);
-                                                                                
+
 	ne_set_session_private(u->sess, "urlinfo", u);
 
 	ne_hook_destroy_session(u->sess, davDestroySession, u);
@@ -386,7 +386,7 @@ enum fetch_rtype_e {
     resr_reference,
     resr_error
 };
-                                                                                
+
 struct fetch_resource_s {
     struct fetch_resource_s *next;
     char *uri;
@@ -510,7 +510,7 @@ static const struct ne_xml_idmap fetch_idmap[] = {
     { "DAV:", "collection", ELM_collection }
 };
 
-static int fetch_startelm(void *userdata, int parent, 
+static int fetch_startelm(void *userdata, int parent,
 		const char *nspace, const char *name,
 		/*@unused@*/ const char **atts)
 	/*@*/
@@ -520,7 +520,7 @@ static int fetch_startelm(void *userdata, int parent,
     int state = ne_xml_mapid(fetch_idmap, NE_XML_MAPLEN(fetch_idmap),
                              nspace, name);
 
-    if (r == NULL || 
+    if (r == NULL ||
         !((parent == NE_207_STATE_PROP && state == ELM_resourcetype) ||
           (parent == ELM_resourcetype && state == ELM_collection)))
         return NE_XML_DECLINE;
@@ -532,7 +532,7 @@ static int fetch_startelm(void *userdata, int parent,
     return state;
 }
 
-static int fetch_compare(const struct fetch_resource_s *r1, 
+static int fetch_compare(const struct fetch_resource_s *r1,
 			    const struct fetch_resource_s *r2)
 	/*@*/
 {
@@ -575,7 +575,7 @@ static void fetch_results(void *userdata, const char *uri,
 
 if (_dav_debug < 0)
 fprintf(stderr, "==> %s in uri %s\n", path, ctx->uri);
-    
+
     if (ne_path_compare(ctx->uri, path) == 0 && !ctx->include_target) {
 	/* This is the target URI */
 if (_dav_debug < 0)
@@ -588,13 +588,13 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
     newres->uri = ne_strdup(path);
 
 /*@-boundsread@*/
-    clength = ne_propset_value(set, &fetch_props[0]);    
+    clength = ne_propset_value(set, &fetch_props[0]);
     modtime = ne_propset_value(set, &fetch_props[1]);
     isexec = ne_propset_value(set, &fetch_props[2]);
     checkin = ne_propset_value(set, &fetch_props[4]);
     checkout = ne_propset_value(set, &fetch_props[5]);
 /*@=boundsread@*/
-    
+
 /*@-branchstate@*/
     if (clength == NULL)
 	status = ne_propset_status(set, &fetch_props[0]);
@@ -646,7 +646,7 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
 	newres->is_vcr = 0;
     }
 
-    for (current = *ctx->resrock, previous = NULL; current != NULL; 
+    for (current = *ctx->resrock, previous = NULL; current != NULL;
 	previous = current, current = current->next)
     {
 	if (fetch_compare(current, newres) >= 0) {
@@ -686,7 +686,7 @@ static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
     ctx->resrock = resrock;
     ctx->include_target = include_target;
 
-    ne_xml_push_handler(ne_propfind_get_parser(pfh), 
+    ne_xml_push_handler(ne_propfind_get_parser(pfh),
                         fetch_startelm, NULL, NULL, pfh);
 
     ne_propfind_set_private(pfh, fetch_create_item, NULL);
@@ -1030,7 +1030,9 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
 	fd = fdNew("grab ctrl (davOpen)");
 
     if (fd) {
+	fdSetOpen(fd, url, flags, mode);
 	fdSetIo(fd, ufdio);
+
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = httpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
@@ -1299,7 +1301,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
     if (S_ISREG(st->st_mode)) {
 	st->st_nlink = 1;
 	st->st_mode |= 0644;
-    } 
+    }
 
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
     if (st->st_ino == 0)
@@ -1344,7 +1346,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
     if (S_ISREG(st->st_mode)) {
 	st->st_nlink = 1;
 	st->st_mode |= 0644;
-    } 
+    }
 
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
     if (st->st_ino == 0)
@@ -1436,7 +1438,7 @@ struct dirent * avReaddir(DIR * dir)
     strncpy(dp->d_name, av[i], sizeof(dp->d_name));
 if (_av_debug)
 fprintf(stderr, "*** avReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
-    
+
     return dp;
 }
 
@@ -1560,7 +1562,7 @@ struct dirent * davReaddir(DIR * dir)
     strncpy(dp->d_name, av[i], sizeof(dp->d_name));
 if (_dav_debug < 0)
 fprintf(stderr, "*** davReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
-    
+
     return dp;
 }
 

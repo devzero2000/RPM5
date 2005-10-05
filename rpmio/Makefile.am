@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c
+EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c librpmio.vers
 
 EXTRA_PROGRAMS = tax tdigest tdir tfts tget thkp tput tglob tinv tkey tring trpmio tsw html-parse dumpasn1
 
@@ -34,7 +34,7 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c rpmdav.c \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
+librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \
 	@WITH_LUA_LIB@ \
@@ -43,6 +43,10 @@ librpmio_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	-lpthread
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
+
+if HAVE_LD_VERSION_SCRIPT
+librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
+endif
 
 .created:
 	if test X"@WITH_BEECRYPT_SUBDIR@" != X; then \
@@ -124,7 +128,6 @@ html_parse_SOURCES = html-parse.c
 html_parse_CPPFLAGS = -DSTANDALONE
 html_parse_LDFLAGS = @LDFLAGS_STATIC@
 html_parse_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
-
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 

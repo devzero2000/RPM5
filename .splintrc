@@ -3,7 +3,7 @@
 #+partial
 +forcehints
 
-#-warnunixlib
+-warnunixlib
 -warnposix
 
 +unixlib
@@ -13,7 +13,7 @@
 +strict			# lclint level
 
 # --- in progress
-+likelybounds
+#+likelybounds
 +slovak-fcns
 +access-slovak
 -redecl

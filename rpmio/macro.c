@@ -1154,16 +1154,16 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	switch(compressed) {
 	default:
 	case 0:	/* COMPRESSED_NOT */
-	    sprintf(be, "%%__cat %s", b);
+	    sprintf(be, "%%_cat %s", b);
 	    break;
 	case 1:	/* COMPRESSED_OTHER */
-	    sprintf(be, "%%__gzip -dc %s", b);
+	    sprintf(be, "%%_gzip -dc %s", b);
 	    break;
 	case 2:	/* COMPRESSED_BZIP2 */
-	    sprintf(be, "%%__bzip2 -dc %s", b);
+	    sprintf(be, "%%_bzip2 %s", b);
 	    break;
 	case 3:	/* COMPRESSED_ZIP */
-	    sprintf(be, "%%__unzip -p %s", b);
+	    sprintf(be, "%%_unzip %s", b);
 	    break;
 	}
 	b = be;
@@ -1234,9 +1234,11 @@ expandMacro(MacroBuf mb)
 	/* Copy text until next macro */
 	switch(c) {
 	case '%':
-		if (*s != '%')
+		if (*s) {	/* Ensure not end-of-string. */
+		    if (*s != '%')
 			/*@switchbreak@*/ break;
-		s++;	/* skip first % in %% */
+		    s++;	/* skip first % in %% */
+		}
 		/*@fallthrough@*/
 	default:
 		SAVECHAR(mb, c);

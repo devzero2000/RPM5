@@ -241,6 +241,7 @@ FD_t fdDup(int fdno)
     if ((nfdno = dup(fdno)) < 0)
 	return NULL;
     fd = fdNew("open (fdDup)");
+    fdSetOpen(fd, "fdDup", nfdno, 0);	/* XXX bogus */
     fdSetFdno(fd, nfdno);
 DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
@@ -306,6 +307,7 @@ DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, FDNREFS(fd), msg, file
 DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
 	if (--fd->nrefs > 0)
 	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
+	fd->opath = _free(fd->opath);
 	fd->stats = _free(fd->stats);
 	for (i = fd->ndigests - 1; i >= 0; i--) {
 	    FDDIGEST_t fddig = fd->digests + i;
@@ -340,6 +342,9 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
 
+    fd->opath = NULL;
+    fd->oflags = 0;
+    fd->omode = 0;
     fd->url = NULL;
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
     fd->contentLength = fd->bytesRemain = -1;
@@ -383,7 +388,7 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 /*@=boundswrite@*/
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
+    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -400,7 +405,7 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
 #define	NEONBLOWSCHUNKS
 #ifdef	NEONBLOWSCHUNKS
@@ -518,6 +523,7 @@ static /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
 	return NULL;
     }
     fd = fdNew("open (fdOpen)");
+    fdSetOpen(fd, path, flags, mode);
     fdSetFdno(fd, fdno);
     fd->flags = flags;
 DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
@@ -707,7 +713,7 @@ fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno,
 /* =============================================================== */
 /* Support for FTP/HTTP I/O.
  */
-const char *const ftpStrerror(int errorNumber)
+const char * ftpStrerror(int errorNumber)
 {
     switch (errorNumber) {
     case 0:
@@ -1443,6 +1449,7 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 
 	if ((fd = u->ctrl) == NULL) {
 	    fd = u->ctrl = fdNew("persist ctrl (urlConnect FTP)");
+	    fdSetOpen(u->ctrl, url, 0, 0);
 	    fdSetIo(u->ctrl, ufdio);
 	}
 	
@@ -2080,6 +2087,7 @@ fprintf(stderr, "*** ufdClose: httpResp rc %d errno(%d) %s\n", rc, fd->syserrno,
 	fd = fdNew("grab data (ftpOpen)");
 
     if (fd) {
+	fdSetOpen(fd, url, flags, mode);
 	fdSetIo(fd, ufdio);
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = ftpTimeoutSecs;
@@ -2127,6 +2135,7 @@ static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 	fd = fdNew("grab ctrl (httpOpen)");
 
     if (fd) {
+	fdSetOpen(fd, url, flags, mode);
 	fdSetIo(fd, ufdio);
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = httpTimeoutSecs;
@@ -2232,6 +2241,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	assert(!(flags & O_RDWR));
 	fd = fdDup( ((flags & O_WRONLY) ? STDOUT_FILENO : STDIN_FILENO) );
 	if (fd) {
+	    fdSetOpen(fd, url, flags, mode);
 	    fdSetIo(fd, ufdio);
 	    fd->rd_timeoutsecs = 600;	/* XXX W2DO? 10 mins? */
 	    fd->contentLength = fd->bytesRemain = -1;
@@ -2370,7 +2380,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
     }
     return rc;
 }
@@ -2385,7 +2395,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -2607,7 +2617,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -2626,7 +2636,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -3104,7 +3114,7 @@ FD_t Fopen(const char *path, const char *fmode)
     char stdio[20], other[20];
     const char *end = NULL;
     mode_t perms = 0666;
-    int flags;
+    int flags = 0;
     FD_t fd;
 
     if (path == NULL || fmode == NULL)

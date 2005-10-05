@@ -650,6 +650,7 @@ static const char * pgpPublicRSA[] = {
     NULL,
 };
 
+#ifdef NOTYET
 /*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretRSA[] = {
     "    d =",
@@ -658,6 +659,7 @@ static const char * pgpSecretRSA[] = {
     "    u =",
     NULL,
 };
+#endif
 
 /*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicDSA[] = {
@@ -668,11 +670,13 @@ static const char * pgpPublicDSA[] = {
     NULL,
 };
 
+#ifdef	NOTYET
 /*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretDSA[] = {
     "    x =",
     NULL,
 };
+#endif
 
 /*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicELGAMAL[] = {
@@ -682,11 +686,13 @@ static const char * pgpPublicELGAMAL[] = {
     NULL,
 };
 
+#ifdef	NOTYET
 /*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretELGAMAL[] = {
     "    x =",
     NULL,
 };
+#endif
 /*@=varuse =readonlytrans @*/
 
 static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
@@ -922,11 +928,13 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
     while (i > 0) {
 	int j;
 	if (*h >= ' ' && *h <= 'z') {
-	    if (_print)
-		fprintf(stderr, "%s", (const char *)h);
-	    j = strlen(h);
-	    while (h[j] == '\0')
+	    j = 0;
+	    while (j < i && h[j] != '\0')
 		j++;
+	    while (j < i && h[j] == '\0')
+		j++;
+	    if (_print && j)
+		fprintf(stderr, "%.*s", strlen((const char *)h), (const char *)h);
 	} else {
 	    pgpPrtHex("", h, i);
 	    j = i;
@@ -994,10 +1002,22 @@ int pgpPubkeyFingerprint(const byte * pkt, /*@unused@*/ unsigned int pktlen,
 /*@=boundswrite@*/
 	rc = 0;
 
-	if (SHA1) free(SHA1);
+	SHA1 = _free(SHA1);
       }	break;
     }
     return rc;
+}
+
+int pgpExtractPubkeyFingerprint(const char * b64pkt, byte * keyid)
+{
+    const byte * pkt;
+    ssize_t pktlen;
+
+    if (b64decode(b64pkt, (void **)&pkt, &pktlen))
+	return -1;	/* on error */
+    (void) pgpPubkeyFingerprint(pkt, pktlen, keyid);
+    pkt = _free(pkt);
+    return 8;	/* no. of bytes of pubkey signid */
 }
 
 int pgpPrtPkt(const byte *pkt, unsigned int pleft)

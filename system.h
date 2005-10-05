@@ -350,9 +350,11 @@ extern int security_getenforce(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
+#if 0
 extern int is_selinux_enabled(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+#endif
 /*@=incondefs@*/
 #endif
 

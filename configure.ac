@@ -4,7 +4,7 @@ echo "
 *                                                                          *
 *                   *** WARNING WARNING WARNING ***                        *
 *                                                                          *
-* This is source code from the development branch of rpm-4.4.2.            *
+* This is source code from the development branch of rpm-4.4.3.            *
 *                                                                          *
 * If you want the "production" rpm-4.3.3 code, then you should use a       *
 * rpm-4.3.3 src.rpm. Alternatively, if using a CVS checkout, do            *
@@ -25,16 +25,24 @@ echo "
 "
 sleep 10
 
-AC_PREREQ(2.59)
-AC_INIT(rpm, 4.4.2, rpm-devel@lists.dulug.duke.edu)
+AC_PREREQ(2.57)
+AC_INIT(rpm, 4.4.3, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE([foreign])
 
+# Library code modified:                              REVISION++
+# Interfaces changed/added/removed:   CURRENT++       REVISION=0
+# Interfaces added:                             AGE++
+# Interfaces removed:                           AGE=0
+AC_SUBST(LT_CURRENT, 4)
+AC_SUBST(LT_REVISION, 4)
+AC_SUBST(LT_AGE, 0)
+
 dnl Set of available languages.
-ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr"
+ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
 
 dnl Checks for programs.
 AC_PROG_CXX
@@ -622,7 +630,7 @@ AC_CHECK_HEADER([sqlite3.h], [
   if test -d sqlite ; then
     AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
     WITH_SQLITE3_SUBDIR=sqlite
-    WITH_SQLITE3_INCLUDE="-I\${top_srcdir}/${WITH_SQLITE3_SUBDIR}/src"
+    WITH_SQLITE3_INCLUDE="-I\${top_srcdir}/${WITH_SQLITE3_SUBDIR} -I\${top_srcdir}/${WITH_SQLITE3_SUBDIR}/src"
     WITH_SQLITE3_LIB="\${top_builddir}/${WITH_SQLITE3_SUBDIR}/libsqlite3.la"
     DBLIBSRCS="$DBLIBSRCS sqlite.c"
   fi
@@ -1257,6 +1265,25 @@ case "${target_cpu}" in
 x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
 esac
 AC_SUBST(MARK64)
+
+# For some systems we know that we have ld_version scripts.
+# Use it then as default.
+have_ld_version_script=no
+case "${host}" in
+    *-*-linux*)
+        have_ld_version_script=yes
+        ;;
+    *-*-gnu*)
+        have_ld_version_script=yes
+        ;;
+esac
+AC_ARG_ENABLE([ld-version-script],
+              AC_HELP_STRING([--enable-ld-version-script],
+                             [enable/disable use of linker version script.
+                              (default is system dependent)]),
+              [have_ld_version_script=$enableval],
+              [ : ] )
+AM_CONDITIONAL(HAVE_LD_VERSION_SCRIPT, test "$have_ld_version_script" = "yes")
 
 dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
