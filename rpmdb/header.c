@@ -1177,7 +1177,7 @@ errxit:
  * @param h		header
  * @return		header origin
  */
-static /*@observer@*/
+static /*@observer@*/ /*@null@*/
 const char * headerGetOrigin(Header h)
 	/*@*/
 {
@@ -1190,9 +1190,9 @@ const char * headerGetOrigin(Header h)
  * @param origin	new header origin
  * @return		0 always
  */
-static /*@observer@*/
+static
 int headerSetOrigin(Header h, const char * origin)
-	/*@*/
+	/*@modifies h @*/
 {
     h->origin = _free(h->origin);
     h->origin = xstrdup(origin);
@@ -1217,9 +1217,9 @@ int headerGetInstance(Header h)
  * @param origin	new header instance
  * @return		0 always
  */
-static /*@observer@*/
+static
 int headerSetInstance(Header h, int instance)
-	/*@*/
+	/*@modifies h @*/
 {
     h->instance = instance;
     return 0;
@@ -1241,9 +1241,10 @@ Header headerReload(/*@only@*/ Header h, int tag)
     /*@-onlytrans@*/
 /*@-boundswrite@*/
     void * uh = doHeaderUnload(h, &length);
+/*@=boundswrite@*/
     const char * origin;
     int_32 instance = h->instance;
-/*@=boundswrite@*/
+    int xx;
 
     origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
     h = headerFree(h);
@@ -1265,10 +1266,10 @@ Header headerReload(/*@only@*/ Header h, int tag)
 /*@=boundswrite@*/
     }
     if (origin != NULL) {
-	headerSetOrigin(nh, origin);
+	xx = headerSetOrigin(nh, origin);
 	origin = _free(origin);
     }
-    headerSetInstance(nh, instance);
+    xx = headerSetInstance(nh, instance);
     return nh;
 }
 

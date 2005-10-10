@@ -507,7 +507,7 @@ int headerNextIterator(HeaderIterator hi,
  * @return		header origin
  */
 /*@unused@*/ static inline
-/*@observer@*/ const char * headerGetOrigin(Header h)
+/*@observer@*/ /*@null@*/ const char * headerGetOrigin(Header h)
 	/*@*/
 {
     return hdrVec->hdrgetorigin(h);

@@ -655,7 +655,7 @@ int (*HDRnextiter) (HeaderIterator hi,
  * @param h		header
  * @return		header origin
  */
-typedef
+typedef /*@observer@*/ /*@null@*/
 const char * (*HDRgetorigin) (Header h)
 	/*@*/;
 

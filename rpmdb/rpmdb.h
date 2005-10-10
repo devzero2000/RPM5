@@ -269,7 +269,7 @@ struct _dbiVec {
  * Describes an index database (implemented on Berkeley db3 functionality).
  */
 struct _dbiIndex {
-/*@null@*/
+/*@relnull@*/
     const char * dbi_root;	/*!< chroot(2) component of path */
 /*@null@*/
     const char * dbi_home;	/*!< directory component of path */
@@ -377,7 +377,7 @@ struct _dbiIndex {
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
     int	dbi_jlen;		/*!< size of join key */
 
-/*@only@*//*@null@*/
+/*@only@*//*@relnull@*/
     DB * dbi_db;		/*!< Berkeley DB * handle */
 /*@only@*//*@null@*/
     DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
