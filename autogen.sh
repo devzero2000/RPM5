@@ -37,22 +37,22 @@ if [ X"$@" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
 fi
 
 if [ -d popt ]; then
-    (echo "--- popt"; cd popt; ./autogen.sh --noconfigure "$@")
+    (echo "--- popt"; cd popt; sh ./autogen.sh --noconfigure "$@")
 fi
 if [ -d zlib ]; then
-    (echo "--- zlib"; cd zlib; ./autogen.sh --noconfigure "$@")
+    (echo "--- zlib"; cd zlib; sh ./autogen.sh --noconfigure "$@")
 fi
 if [ -d beecrypt ]; then
-    (echo "--- beecrypt"; cd beecrypt; ./autogen.sh --noconfigure "$@")
+    (echo "--- beecrypt"; cd beecrypt; sh ./autogen.sh --noconfigure "$@")
 fi
 if [ -d elfutils ]; then
-    (echo "--- elfutils"; cd elfutils; ./autogen.sh --noconfigure "$@")
+    (echo "--- elfutils"; cd elfutils; sh ./autogen.sh --noconfigure "$@")
 fi
 if [ -d file ]; then
-    (echo "--- file"; cd file; ./autogen.sh --noconfigure "$@")
+    (echo "--- file"; cd file; sh ./autogen.sh --noconfigure "$@")
 fi
 if [ -d neon ]; then
-    (echo "--- neon"; cd neon; ./autogen.sh "$@")
+    (echo "--- neon"; cd neon; sh ./autogen.sh "$@")
 fi
 
 echo "--- rpm"
@@ -79,7 +79,12 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
     else
 	enable_posixmutexes=
     fi
-    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} "$@"
+    if [ -d /usr/include/selinux ]; then
+	disable_selinux=
+    else
+	disable_selinux="--without-selinux"
+    fi
+    sh ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} ${disable_selinux} "$@"
 else
     ./configure ${myopts} "$@"
 fi

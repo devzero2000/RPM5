@@ -313,7 +313,7 @@ typedef	char * security_context_t;
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif
 
-#if defined(__LCLINT__)
+#if defined(WITH_SELINUX) && defined(__LCLINT__)
 /*@-incondefs@*/
 extern void freecon(/*@only@*/ security_context_t con)
 	/*@modifies con @*/;
@@ -563,6 +563,7 @@ typedef /*@concrete@*/ struct
 /*@=constuse@*/
 #endif
 
+/*@-protoparammatch -redecl@*/
 /*@-type@*/	/* XXX glob64_t */
 extern int glob (const char *__pattern, int __flags,
                       int (*__errfunc) (const char *, int),
@@ -577,6 +578,7 @@ extern void globfree (/*@only@*/ glob_t *__pglob)
 extern int glob_pattern_p (const char *__pattern, int __quote)
 	/*@*/;
 #endif
+/*@=protoparammatch =redecl@*/
 
 #if 0
 /*@-constuse@*/
