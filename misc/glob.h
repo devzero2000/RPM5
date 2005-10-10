@@ -172,11 +172,13 @@ extern void globfree __P ((glob_t *__pglob)) __asm__ ("globfree64");
 #endif
 
 #ifdef _LARGEFILE64_SOURCE
+/*@-protoparammatch -type @*/
 extern int glob64 __P ((__const char *__pattern, int __flags,
 			int (*__errfunc) (__const char *, int),
 			glob64_t *__pglob));
 
 extern void globfree64 __P ((glob64_t *__pglob));
+/*@=protoparammatch =type @*/
 #endif
 
 

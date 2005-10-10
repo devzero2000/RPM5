@@ -388,6 +388,7 @@ enum fetch_rtype_e {
 };
 
 struct fetch_resource_s {
+/*@dependent@*/
     struct fetch_resource_s *next;
     char *uri;
 /*@unused@*/
@@ -436,7 +437,7 @@ static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const c
 
 /* =============================================================== */
 struct fetch_context_s {
-/*@relnull@*/
+/*@relnull@*/ /*@dependent@*/
     struct fetch_resource_s **resrock;
     const char *uri;
     unsigned int include_target; /* Include resource at href */
@@ -581,7 +582,9 @@ fprintf(stderr, "==> %s in uri %s\n", path, ctx->uri);
 if (_dav_debug < 0)
 fprintf(stderr, "==> %s skipping target resource.\n", path);
 	/* Free the private structure. */
+/*@-dependenttrans -exposetrans@*/
 	free(newres);
+/*@=dependenttrans =exposetrans@*/
 	return;
     }
 
@@ -656,9 +659,9 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
     if (previous) {
 	previous->next = newres;
     } else {
-/*@-boundswrite@*/
+/*@-boundswrite -dependenttrans @*/
 	*ctx->resrock = newres;
-/*@=boundswrite@*/
+/*@=boundswrite =dependenttrans @*/
     }
     newres->next = current;
 }
@@ -836,12 +839,13 @@ static void hexdump(const unsigned char * buf, ssize_t len)
 }
 #endif
 
+/*@-mustmod@*/
 static void davAcceptRanges(void * userdata, /*@null@*/ const char * value)
 	/*@modifies userdata @*/
 {
     urlinfo u = userdata;
 
-    if (!(u && value)) return;
+    if (!(u != NULL && value != NULL)) return;
 if (_dav_debug < 0)
 fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, value);
     if (!strcmp(value, "bytes"))
@@ -849,37 +853,41 @@ fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, value);
     if (!strcmp(value, "none"))
 	u->httpHasRange = 0;
 }
+/*@=mustmod@*/
 
 #if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
 static void davAllHeaders(void * userdata, const char * value)
 {
     FD_t ctrl = userdata;
 
-    if (!(ctrl && value)) return;
+    if (!(ctrl != NULL && value != NULL)) return;
 if (_dav_debug)
 fprintf(stderr, "<- %s\n", value);
 }
 #endif
 
+/*@-mustmod@*/
 static void davContentLength(void * userdata, /*@null@*/ const char * value)
 	/*@modifies userdata @*/
 {
     FD_t ctrl = userdata;
 
-    if (!(ctrl && value)) return;
+    if (!(ctrl != NULL && value != NULL)) return;
 if (_dav_debug < 0)
 fprintf(stderr, "*** fd %p Content-Length: %s\n", ctrl, value);
 /*@-unrecog@*/
    ctrl->contentLength = strtoll(value, NULL, 10);
 /*@=unrecog@*/
 }
+/*@=mustmod@*/
 
+/*@-mustmod@*/
 static void davConnection(void * userdata, /*@null@*/ const char * value)
 	/*@modifies userdata @*/
 {
     FD_t ctrl = userdata;
 
-    if (!(ctrl && value)) return;
+    if (!(ctrl != NULL && value != NULL)) return;
 if (_dav_debug < 0)
 fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, value);
     if (!strcasecmp(value, "close"))
@@ -887,6 +895,7 @@ fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, value);
     else if (!strcasecmp(value, "Keep-Alive"))
 	ctrl->persist = 1;
 }
+/*@=mustmod@*/
 
 /*@-mustmod@*/ /* HACK: stash error in *str. */
 int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
@@ -1078,7 +1087,7 @@ ssize_t davWrite(void * cookie, const char * buf, size_t count)
     ssize_t rc;
     int xx;
 
-#ifndef	NEONBLOWSCHUNKS
+#if !defined(NEONBLOWSCHUNKS)
     ne_session * sess;
 
 assert(fd->req != NULL);
@@ -1088,7 +1097,7 @@ assert(sess != NULL);
     /* HACK: include ne_private.h to access sess->socket for now. */
     xx = ne_sock_fullwrite(sess->socket, buf, count);
 #else
-#if defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK)
+#if defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK) || defined(__LCLINT__)
 assert(fd->req != NULL);
     xx = ne_send_request_chunk(fd->req, buf, count);
 #else
