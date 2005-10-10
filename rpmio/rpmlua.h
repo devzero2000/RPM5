@@ -49,7 +49,8 @@ rpmlua rpmluaNew(void)
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 void *rpmluaFree(/*@only@*/ rpmlua lua)
-	/*@modifies lua @*/;
+	/*@globals internalState @*/
+	/*@modifies lua, internalState @*/;
 
 int rpmluaCheckScript(/*@null@*/ rpmlua lua, const char *script,
 		      /*@null@*/ const char *name)

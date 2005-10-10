@@ -90,11 +90,15 @@ rpmlua rpmluaNew()
 }
 
 void *rpmluaFree(rpmlua lua)
+	/*@globals globalLuaState @*/
+	/*@modifies globalLuaState @*/
 {
+/*@-branchstate@*/
     if (lua == NULL) {
 	lua = globalLuaState;
 	globalLuaState = NULL;
     }
+/*@=branchstate@*/
     if (lua) {
 	if (lua->L) lua_close(lua->L);
 	free(lua->printbuf);

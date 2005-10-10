@@ -75,8 +75,11 @@ extern "C" {
 
 /* Match NAME against the filename pattern PATTERN,
    returning zero if it matches, FNM_NOMATCH if not.  */
+/*@-redecl@*/
 extern int fnmatch __P ((__const char *__pattern, __const char *__name,
-			 int __flags));
+			 int __flags))
+	/*@*/;
+/*@=redecl@*/
 
 #ifdef	__cplusplus
 }

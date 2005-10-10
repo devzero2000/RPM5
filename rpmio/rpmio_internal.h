@@ -258,8 +258,8 @@ int ufdClose( /*@only@*/ void * cookie)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-/*@null@*/ int fdSetOpen(FD_t fd, const char * path, int flags, mode_t mode)
-	/*@*/
+void fdSetOpen(FD_t fd, const char * path, int flags, mode_t mode)
+	/*@modifies fd @*/
 {
     FDSANE(fd);
     if (fd->opath != NULL) {
@@ -269,7 +269,6 @@ int ufdClose( /*@only@*/ void * cookie)
     fd->opath = xstrdup(path);
     fd->oflags = flags;
     fd->omode = mode;
-    return 0;
 }
 
 /** \ingroup rpmio
