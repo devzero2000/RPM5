@@ -798,6 +798,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	}
 
 	dig = rpmtsDig(ts);
+assert(dig != NULL);
 	sigp = rpmtsSignature(ts);
 
 	/* XXX RSA needs the hash_algo, so decode early. */

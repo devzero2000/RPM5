@@ -14,7 +14,7 @@
 #define RPMLOCK_PATH "/var/lock/rpm/transaction"
 /*@unchecked@*/ /*@observer@*/
 static const char * rpmlock_path_default = "%{?_rpmlock_path}";
-/*@unchecked@*/
+/*@unchecked@*/ /*@only@*/ /*relnull@*/
 static const char * rpmlock_path = NULL;
 
 enum {
@@ -30,18 +30,19 @@ typedef struct {
 
 /*@null@*/
 static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
 {
 	rpmlock lock = (rpmlock) malloc(sizeof(*lock));
 
 	/* XXX oneshot to determine path for fcntl lock. */
 	if (rpmlock_path == NULL) {
 	    char * t = rpmExpand(rpmlock_path_default, NULL);
-	    if (t == NULL || *t == '\0' || *t == '%')
-		t = RPMLOCK_PATH;
-	    rpmlock_path = xstrdup(t);
-	    t = _free(t);
+	    if (t == NULL || *t == '\0' || *t == '%') {
+		t = _free(t);
+		t = xstrdup(RPMLOCK_PATH);
+	    }
+	    rpmlock_path = t;
 	}
 	if (lock != NULL) {
 		mode_t oldmask = umask(022);

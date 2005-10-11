@@ -1242,8 +1242,8 @@ rpmRC rpmVerifySignature(const rpmts ts,
  * @param h		signature header
  * @return		NULL always
  */
-/*@null@*/ Header rpmFreeSignature(/*@null@*/ /*@killref@*/ Header h)
-	/*@modifies h @*/;
+/*@null@*/ Header rpmFreeSignature(/*@null@*/ /*@killref@*/ Header sigh)
+	/*@modifies sigh @*/;
 
 /*@}*/
 

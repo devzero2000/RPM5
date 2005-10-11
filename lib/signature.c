@@ -392,7 +392,7 @@ Header rpmFreeSignature(Header sigh)
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makePGPSignature(const char * file, int_32 * sigTagp,
+static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 		/*@out@*/ byte ** pktp, /*@out@*/ int_32 * pktlenp,
 		/*@null@*/ const char * passPhrase)
 	/*@globals errno, rpmGlobalMacroContext, h_errno,
@@ -546,7 +546,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies *pktp, *pktlenp, rpmGlobalMacroContext,
+	/*@modifies *pktp, *pktlenp, *sigTagp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     char * sigfile = alloca(strlen(file)+sizeof(".sig"));
@@ -696,7 +696,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies sigh, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     Header h = NULL;
     FD_t fd = NULL;
@@ -1218,6 +1218,8 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
     rpmRC res = RPMRC_OK;
     int xx;
 
+assert(dig != NULL);
+assert(sigp != NULL);
     *t = '\0';
     if (dig != NULL && dig->hdrmd5ctx == md5ctx)
 	t = stpcpy(t, _("Header "));
@@ -1244,6 +1246,7 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 
     /* Verify the desired hash match. */
     /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
+/*@-branchstate@*/
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	t = stpcpy(t, " RSA/MD5");
@@ -1286,6 +1289,7 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 	prefix = NULL;
 	break;
     }
+/*@=branchstate@*/
 
     t = stpcpy(t, _(" signature: "));
     if (res != RPMRC_OK) {
@@ -1401,6 +1405,8 @@ verifyDSASignature(rpmts ts, /*@out@*/ char * t,
     rpmRC res;
     int xx;
 
+assert(dig != NULL);
+assert(sigp != NULL);
     *t = '\0';
     if (dig != NULL && dig->hdrsha1ctx == sha1ctx)
 	t = stpcpy(t, _("Header "));

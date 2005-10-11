@@ -57,9 +57,9 @@ rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
  * @param h		(signature) header
  * @return		0 on success, 1 on error
  */
-int rpmWriteSignature(FD_t fd, Header h)
+int rpmWriteSignature(FD_t fd, Header sigh)
 	/*@globals fileSystem @*/
-	/*@modifies fd, h, fileSystem @*/;
+	/*@modifies fd, sigh, fileSystem @*/;
 
 /** \ingroup signature
  * Generate signature(s) from a header+payload file, save in signature header.
@@ -72,7 +72,7 @@ int rpmWriteSignature(FD_t fd, Header h)
 int rpmAddSignature(Header sigh, const char * file,
 		    int_32 sigTag, /*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies sigh, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /******************************************************************/
 

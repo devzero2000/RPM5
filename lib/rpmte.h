@@ -511,7 +511,7 @@ extern const char * rpmteNEVR(rpmte te)
  * @return		name-version-release.arch string
  */
 /*@-exportlocal@*/
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 extern const char * rpmteNEVRA(rpmte te)
 	/*@*/;
 /*@=exportlocal@*/
@@ -521,7 +521,7 @@ extern const char * rpmteNEVRA(rpmte te)
  * @param te		transaction element
  * @return		pkgid string
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 extern const char * rpmtePkgid(rpmte te)
 	/*@*/;
 
@@ -530,7 +530,7 @@ extern const char * rpmtePkgid(rpmte te)
  * @param te		transaction element
  * @return		hdrid string
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 extern const char * rpmteHdrid(rpmte te)
 	/*@*/;
 

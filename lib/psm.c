@@ -1598,7 +1598,7 @@ psm->te->h = headerLink(fi->h);
 		    {
 			if (tag == RPMTAG_ARCHIVESIZE)
 			    noArchiveSize = 1;
-		        if (ptr) (void) hae(psm->oh, tag, type, ptr, count);
+		        if (ptr) xx = hae(psm->oh, tag, type, ptr, count);
 		    }
 		    hi = headerFreeIterator(hi);
 		    /*@=branchstate@*/
@@ -1671,6 +1671,7 @@ psm->te->h = headerLink(fi->h);
 		    xx = hae(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
 				origin, ac);
 
+assert(psm->te != NULL);
 		ac = argvCount(psm->te->aNEVRA);
 		if (ac > 0)
 		    xx = hae(fi->h,RPMTAG_INSTALLEDNEVRA, RPM_STRING_ARRAY_TYPE,
@@ -1856,6 +1857,7 @@ psm->te->h = headerLink(fi->h);
 		xx = hae(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
 				origin, 1);
 	
+assert(psm->te != NULL);
 	    ac = argvCount(psm->te->eNEVRA);
 	    if (ac > 0)
 		xx = hae(fi->h, RPMTAG_ERASEDNEVRA, RPM_STRING_ARRAY_TYPE,

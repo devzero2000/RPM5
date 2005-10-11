@@ -22,6 +22,7 @@
 #include "debug.h"
 
 /*@access tsortInfo @*/
+/*@access rpmte @*/		/* XXX for install <-> erase associate. */
 /*@access rpmts @*/
 
 /*@access dbiIndex @*/		/* XXX for dbi->dbi_txnid */
@@ -44,6 +45,7 @@ struct orderListIndex_s {
 /*@unchecked@*/
 int _cacheDependsRC = 1;
 
+/*@unchecked@*/
 static int __mydebug = 0;
 
 /*@observer@*/ /*@unchecked@*/
@@ -83,7 +85,7 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 		/*@null@*/ int * indexp,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, h, *indexp, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmte p;
 
@@ -133,7 +135,9 @@ static int removePackage(rpmts ts, Header h, int dboffset,
     ts->orderCount++;
 /*@=boundswrite@*/
 
-    return 0;
+/*@-nullstate@*/	/* XXX FIX: ts->order[] can be NULL. */
+   return 0;
+/*@=nullstate@*/
 }
 
 int rpmtsAddInstallElement(rpmts ts, Header h,
@@ -252,6 +256,7 @@ addheader:
     }
 
     p = rpmteNew(ts, h, TR_ADDED, key, relocs, -1, pkgKey);
+assert(p != NULL);
 
     if (duplicate && oc < ts->orderCount) {
 /*@-type -unqualifiedtrans@*/
@@ -310,7 +315,7 @@ addheader:
 	const char * ohNEVRA = NULL;
 	const char * ohPkgid = NULL;
 	const char * ohHdrid = NULL;
-	const char * pkgid;
+	const unsigned char * pkgid;
 	int_32 pkgidcnt;
 	int lastx;
 	rpmte q;
@@ -336,8 +341,8 @@ addheader:
 
 	    ohPkgid = t = xmalloc((2*pkgidcnt) + 1);
 	    for (i = 0 ; i < pkgidcnt; i++) {
-		*t++ = hex[ (unsigned)((pkgid[i] >> 4) & 0x0f) ];
-		*t++ = hex[ (unsigned)((pkgid[i]   ) & 0x0f) ];
+		*t++ = hex[ ((pkgid[i] >> 4) & 0x0f) ];
+		*t++ = hex[ ((pkgid[i]     ) & 0x0f) ];
 	    }
 	    *t = '\0';
 #if NOTYET	/* XXX MinMemory. */
@@ -423,7 +428,7 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 	    const char * ohNEVRA;
 	    const char * ohPkgid;
 	    const char * ohHdrid;
-	    const char * pkgid;
+	    const unsigned char * pkgid;
 	    int_32 pkgidcnt;
 	    int lastx;
 	    rpmte q;
@@ -441,7 +446,7 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 	     */
 	    if (!(rpmdsEVR(obsoletes) == NULL
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    ohNEVRA = hGetNEVRA(oh, NULL);
 
@@ -455,8 +460,8 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 
 		ohPkgid = t = xmalloc((2*pkgidcnt) + 1);
 		for (i = 0 ; i < pkgidcnt; i++) {
-		    *t++ = hex[ (unsigned)((pkgid[i] >> 4) & 0x0f) ];
-		    *t++ = hex[ (unsigned)((pkgid[i]   ) & 0x0f) ];
+		    *t++ = hex[ ((pkgid[i] >> 4) & 0x0f) ];
+		    *t++ = hex[ ((pkgid[i]     ) & 0x0f) ];
 		}
 		*t = '\0';
 #if NOTYET	/* XXX MinMemory. */
@@ -1577,7 +1582,9 @@ rescan:
 
 		/* XXX TODO: add control bit. */
 		rpmteTSI(p)->tsi_suc = NULL;
+/*@-nullstate@*/	/* XXX FIX: rpmteTSI(q)->tsi_suc can be NULL. */
 		addQ(p, &rpmteTSI(q)->tsi_suc, &r);
+/*@=nullstate@*/
 		qlen++;
 	    }
 	    tsi = _free(tsi);

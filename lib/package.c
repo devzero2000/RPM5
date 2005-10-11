@@ -787,7 +787,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 #endif
 
     /* Snapshot current I/O counters (cached persistent I/O reuses counters) */
-    rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
+    (void) rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
     memset(l, 0, sizeof(*l));
     rc = readLead(fd, l);

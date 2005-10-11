@@ -3,8 +3,8 @@
 
 /*@only@*/ /*@null@*/
 void * rpmtsAcquireLock(rpmts ts)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/;
 void rpmtsFreeLock(/*@only@*/ /*@null@*/ void *lock)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies lock, fileSystem, internalState @*/;
