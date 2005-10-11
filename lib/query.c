@@ -751,7 +751,10 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
 		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
 	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
-	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));
+	    const char * path;
+	    path = rpmgiHdrPath(qva->qva_gi);
+assert(path != NULL);
+	    ec += rpmQueryVerify(qva, ts, path);
 	    rpmtsEmpty(ts);
 	}
 	break;

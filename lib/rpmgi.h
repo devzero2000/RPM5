@@ -109,10 +109,12 @@ rpmgi rpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg)
 	/*@modifies gi @*/;
 
 /** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
 /*@newref@*/ /*@null@*/
 rpmgi XrpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies gi @*/;
+/*@=exportlocal@*/
 #define	rpmgiLink(_gi, _msg)	XrpmgiLink(_gi, _msg, __FILE__, __LINE__)
 
 /** Destroy a generalized iterator.
@@ -153,7 +155,7 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
  * @returns		header path
  */
 /*@observer@*/ /*@null@*/
-const char * rpmgiHdrPath(rpmgi gi)
+const char * rpmgiHdrPath(/*@null@*/ rpmgi gi)
 	/*@*/;
 
 /**
@@ -182,7 +184,7 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
  * @param flags		iterator flags
  * @returns		RPMRC_OK on success
  */
-rpmRC rpmgiSetArgs(rpmgi gi, /*@null@*/ ARGV_t argv,
+rpmRC rpmgiSetArgs(/*@null@*/ rpmgi gi, /*@null@*/ ARGV_t argv,
 		int ftsOpts, rpmgiFlags flags)
 	/*@globals internalState @*/
 	/*@modifies gi, internalState @*/;

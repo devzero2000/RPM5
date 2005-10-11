@@ -1003,11 +1003,11 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
     }
 
     if (aok) {
-/*@-moduncon -nullpass -unrecog @*/
+/*@-moduncon -unrecog @*/
 	pass = getpass( (prompt ? prompt : "") );
-/*@=moduncon =nullpass =unrecog @*/
+/*@=moduncon =unrecog @*/
 
-	if (checkPassPhrase(pass, sigTag))
+	if (pass != NULL && checkPassPhrase(pass, sigTag))
 	    pass = NULL;
     }
 
@@ -1296,6 +1296,7 @@ assert(sigp != NULL);
 	goto exit;
     }
 
+assert(md5ctx != NULL);	/* XXX can't happen. */
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
 	byte signhash16[2];
@@ -1358,11 +1359,13 @@ assert(prefix != NULL);
 	goto exit;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
+/*@-type@*/	/* XXX FIX: avoid beecrypt API incompatibility. */
 #if HAVE_BEECRYPT_API_H
     xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
 #else
     xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
 #endif
+/*@=type@*/
     if (xx)
 	res = RPMRC_OK;
     else

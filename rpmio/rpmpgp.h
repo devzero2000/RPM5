@@ -1147,16 +1147,17 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
     return vs->val;
 }
 
-/*@-exportlocal@*/
 /**
  * Print an OpenPGP value.
  * @param pre		output prefix
  * @param vs		table of (string,value) pairs
  * @param val		byte value to print
  */
+/*@-exportlocal@*/
 void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP subtype packet.
@@ -1165,9 +1166,11 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
  * @param sigtype	signature type
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP signature packet.
@@ -1176,9 +1179,11 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
  * @param hlen		packet length (no. of bytes)
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+/*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP key packet.
@@ -1198,9 +1203,11 @@ int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
  * @param hlen		packet length (no. of bytes)
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+/*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP comment packet.
@@ -1209,9 +1216,11 @@ int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
  * @param hlen		packet length (no. of bytes)
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Calculate OpenPGP public key fingerprint.
@@ -1221,9 +1230,11 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
  * @retval keyid	publick key fingerprint
  * @return		0 on sucess, else -1
  */
+/*@-exportlocal@*/
 int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
 		/*@out@*/ byte * keyid)
 	/*@modifies *keyid @*/;
+/*@=exportlocal@*/
 
 /**
  * Extract OpenPGP public key fingerprint from base64 encoded packet.
@@ -1241,6 +1252,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, /*@out@*/ byte * keyid)
  * @param pleft		no. bytes remaining
  * @return		-1 on error, otherwise this packet length
  */
+/*@-exportlocal@*/
 int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;

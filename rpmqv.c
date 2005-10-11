@@ -1,5 +1,5 @@
 #include "system.h"
-const char *__progname;
+extern const char *__progname;
 
 #define	_AUTOHELP
 
@@ -17,6 +17,8 @@ const char *__progname;
 #include "rpmdb.h"
 #include "rpmps.h"
 #include "rpmts.h"
+
+#include "rpmlua.h"	/* XXX for rpmluaFree() */
 
 #ifdef	IAM_RPMBT
 #include "build.h"
@@ -875,7 +877,7 @@ exit:
     rpmFreeMacros(NULL);
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
-    rpmluaFree(NULL);
+    (void) rpmluaFree(NULL);
 
     if (pipeChild) {
 	(void) fclose(stdout);

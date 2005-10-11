@@ -836,9 +836,11 @@ pgpDigParams rpmtsSignature(const rpmts ts)
  * @param ts		transaction set
  * @return		pubkey constants.
  */
+/*@-exportlocal@*/
 /*@exposed@*/ /*@null@*/
 pgpDigParams rpmtsPubkey(const rpmts ts)
 	/*@*/;
+/*@=exportlocal@*/
 
 /** \ingroup rpmts
  * Get transaction set database handle.

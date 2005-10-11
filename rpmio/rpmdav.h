@@ -98,9 +98,11 @@ int davReq(FD_t ctrl, const char * httpCmd, /*@null@*/ const char * httpArg)
  * @retval *str		error msg		
  * @returns		0 on success
  */
+/*@-exportlocal@*/
 int davResp(urlinfo u, FD_t ctrl, /*@out@*/ /*@null@*/ char *const * str)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ctrl, *str, fileSystem, internalState @*/;
+/*@=exportlocal@*/
 
 /**
  */

@@ -66,9 +66,9 @@ struct rpmte_s {
     const char * NEVR;		/*!< Package name-version-release. */
 /*@only@*/
     const char * NEVRA;		/*!< Package name-version-release.arch. */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * pkgid;		/*!< Package identifier (header+payload md5). */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * hdrid;		/*!< Package header identifier (header sha1). */
 /*@owned@*/
     const char * name;		/*!< Name: */
@@ -511,7 +511,7 @@ extern const char * rpmteNEVR(rpmte te)
  * @return		name-version-release.arch string
  */
 /*@-exportlocal@*/
-/*@observer@*/ /*@null@*/
+/*@observer@*/
 extern const char * rpmteNEVRA(rpmte te)
 	/*@*/;
 /*@=exportlocal@*/
@@ -521,18 +521,22 @@ extern const char * rpmteNEVRA(rpmte te)
  * @param te		transaction element
  * @return		pkgid string
  */
+/*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmtePkgid(rpmte te)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Retrieve hdrid string from transaction element.
  * @param te		transaction element
  * @return		hdrid string
  */
+/*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmteHdrid(rpmte te)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Retrieve file handle from transaction element.

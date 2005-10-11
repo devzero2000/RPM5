@@ -683,6 +683,7 @@ rpmts rpmgiTs(rpmgi gi)
 
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
 {
+    if (gi == NULL) return RPMRC_FAIL;
     gi->ftsOpts = ftsOpts;
     gi->flags = flags;
     return rpmgiGlobArgv(gi, argv);

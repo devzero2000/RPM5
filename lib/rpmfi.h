@@ -128,13 +128,13 @@ struct rpmfi_s {
 /*@only@*/ /*@relnull@*/
     unsigned char * md5s;	/*!< File md5 sums in binary. */
 
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * pretrans;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * pretransprog;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * posttrans;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * posttransprog;
 
 /*@only@*/ /*@null@*/
