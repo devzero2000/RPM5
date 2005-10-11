@@ -866,7 +866,8 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
-rpmParseState parsePreamble(Spec spec, int initialPackage)
+/* XXX should return rpmParseState, but RPMERR_BADSPEC forces int return. */
+int parsePreamble(Spec spec, int initialPackage)
 {
     rpmParseState nextPart;
     int rc, xx;

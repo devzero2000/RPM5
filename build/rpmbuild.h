@@ -277,7 +277,7 @@ int parseFiles(Spec spec)
  * @param initialPackage
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-rpmParseState parsePreamble(Spec spec, int initialPackage)
+int parsePreamble(Spec spec, int initialPackage)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->packages,

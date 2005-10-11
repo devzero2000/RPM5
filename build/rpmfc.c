@@ -1214,17 +1214,23 @@ assert(xx != -1);	/* XXX figger a proper return path. */
 assert(s != NULL);
 	slen = strlen(s);
 
+/*@-branchstate@*/
 	switch (mode & S_IFMT) {
-	case S_IFCHR:	ftype = "character special";	break;
-	case S_IFBLK:	ftype = "block special";	break;
-	case S_IFIFO:	ftype = "fifo (named pipe)";	break;
-	case S_IFSOCK:	ftype = "socket";		break;
+	case S_IFCHR:	ftype = "character special";	/*@switchbreak@*/ break;
+	case S_IFBLK:	ftype = "block special";	/*@switchbreak@*/ break;
+#if defined(S_IFIFO)
+	case S_IFIFO:	ftype = "fifo (named pipe)";	/*@switchbreak@*/ break;
+#endif
+#if defined(S_IFSOCK)
+/*@-unrecog@*/
+	case S_IFSOCK:	ftype = "socket";		/*@switchbreak@*/ break;
+/*@=unrecog@*/
+#endif
 	case S_IFDIR:
 	case S_IFLNK:
 	case S_IFREG:
 	default:
 	    /* XXX all files with extension ".pm" are perl modules for now. */
-/*@-branchstate@*/
 	    if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
 		ftype = "Perl5 module source text";
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
@@ -1239,6 +1245,7 @@ assert(s != NULL);
 			s, mode, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
 	    }
+	    /*@switchbreak@*/ break;
 	}
 /*@=branchstate@*/
 
