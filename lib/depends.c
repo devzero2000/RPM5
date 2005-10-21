@@ -1761,7 +1761,7 @@ rescan:
 	    continue;
 
 	j = needle->orIndex;
-	if ((q = ts->order[j]) == NULL || needle->pkgKey == -1)
+	if ((q = ts->order[j]) == NULL || needle->pkgKey == RPMAL_NOMATCH)
 	    continue;
 
 	newOrder[newOrderCount++] = q;

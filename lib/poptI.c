@@ -22,6 +22,8 @@ struct rpmInstallArguments_s rpmIArgs = {
     0,			/* eraseInterfaceFlags */
     0,			/* qva_flags */
     0,			/* rbtid */
+    NULL,		/* rbtidExcludes */
+    0,			/* numrbtidExcludes */
     0,			/* numRelocations */
     0,			/* noDeps */
     0,			/* incldocs */

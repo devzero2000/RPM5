@@ -247,9 +247,9 @@ extern "C" {
  * @return		0 on success, else no. of failures
  */
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
-	/*@globals rpmGlobalMacroContext, h_errno,
+	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies ts, qva, rpmGlobalMacroContext,
+	/*@modifies ts, qva, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild

@@ -1201,7 +1201,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		    rpmMessage(RPMMESS_NORMAL,
 			_("Excluding TID %d from rollback\n"), thistid);
 		    excluded = 1;
-		    break;	
+		    /*@innerbreak@*/ break;	
 		}
 	    }	
 	}
