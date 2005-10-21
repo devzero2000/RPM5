@@ -21,6 +21,7 @@ struct rpmInstallArguments_s rpmIArgs = {
     0,			/* installInterfaceFlags */
     0,			/* eraseInterfaceFlags */
     0,			/* qva_flags */
+    0,			/* arbtid */
     0,			/* rbtid */
     NULL,		/* rbtidExcludes */
     0,			/* numrbtidExcludes */
@@ -36,6 +37,7 @@ struct rpmInstallArguments_s rpmIArgs = {
 #define	POPT_EXCLUDEPATH	-1022
 #define	POPT_ROLLBACK		-1023
 #define	POPT_ROLLBACK_EXCLUDE	-1024
+#define	POPT_AUTOROLLBACK_GOAL	-1032
 
 /**
  * Print a message and exit.
@@ -153,6 +155,20 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	if (tid == (time_t)-1 || tid == (time_t)0)
 	    argerror(_("malformed rollback time/date stamp argument"));
 	ia->rbtid = tid;
+      }	break;
+    
+    case POPT_AUTOROLLBACK_GOAL:
+      {	time_t tid;
+	if (arg == NULL)
+	    argerror(_("arbgoal takes a time/date stamp argument"));
+
+	/*@-moduncon@*/
+	tid = get_date(arg, NULL);
+	/*@=moduncon@*/
+
+	if (tid == (time_t)-1 || tid == (time_t)0)
+	    argerror(_("malformed arbgoal time/date stamp argument"));
+	ia->arbtid = tid;
       }	break;
 
     case RPMCLI_POPT_NODIGEST:
@@ -366,6 +382,9 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("reinstall if the package is already present"), NULL},
  { "rollback", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_ROLLBACK,
 	N_("deinstall new, reinstall old, package(s), back to <date>"),
+	N_("<date>") },
+ { "arbgoal", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_AUTOROLLBACK_GOAL,
+	N_("If transaction fails rollback to <date>"),
 	N_("<date>") },
  { "rbexclude", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_ROLLBACK_EXCLUDE,
 	N_("Exclude Transaction I.D. from rollback"),

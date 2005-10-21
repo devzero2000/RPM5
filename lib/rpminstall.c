@@ -777,6 +777,15 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
+    /* Display and set autorollback goal. */
+    if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
+	if (ia->arbtid) {
+	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s\n"), 
+		ctime(&(ia->arbtid)));
+	    rpmtsSetARBGoal(ts, ia->arbtid);
+	}	
+    }
+
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
     {	int notifyFlags;
 	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -1197,7 +1206,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    for(excludedTID = ia->rbtidExcludes; 
 		excludedTID < ia->rbtidExcludes + ia->numrbtidExcludes;
 		excludedTID++) {
-		if(thistid == *excludedTID) {
+		if (thistid == *excludedTID) {
 		    rpmMessage(RPMMESS_NORMAL,
 			_("Excluding TID %d from rollback\n"), thistid);
 		    excluded = 1;
@@ -1213,7 +1222,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	 * Provided this transaction is not excluded from the rollback.
 	 */
 	while (rp != NULL && rp->val.u32 == thistid) {
-	    if(!excluded) {
+	    if (!excluded) {
 		rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
 			(rp->key ? rp->key : "???"));
 
@@ -1246,7 +1255,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	 * Provided this transaction is not excluded from the rollback.
 	 */
 	while (ip != NULL && ip->val.u32 == thistid) {
-	    if(!excluded) {
+	    if (!excluded) {
 		rpmMessage(RPMMESS_DEBUG,
 		    "\t--- erase h#%u\n", ip->instance);
 
@@ -1278,7 +1287,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	}
 
 	/* If this transaction is excluded then continue */
-	if(excluded) continue;
+	if (excluded) continue;
 
 	/* Anything to do? */
 	if (rpmcliPackagesTotal <= 0)

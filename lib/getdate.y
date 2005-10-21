@@ -370,7 +370,7 @@ number	: tUNUMBER {
 	    if (yyHaveTime && yyHaveDate && !yyHaveRel)
 		yyYear = $1;
 	    else {
-		if($1>10000) {
+		if ($1>10000) {
 		    yyHaveDate++;
 		    yyDay= ($1)%100;
 		    yyMonth= ($1/100)%100;
@@ -946,7 +946,7 @@ get_date(char * p, struct timeb * now)
 	       is zero.  */
 	    ftz.timezone = 0;
 
-	if(tm->tm_isdst)
+	if (tm->tm_isdst)
 	    ftz.timezone += 60;
     }
     else

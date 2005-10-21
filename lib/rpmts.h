@@ -42,11 +42,11 @@ typedef enum rpmVSFlags_e {
 /**
  * Transaction Types
  */
-typedef enum rpmtsType_e {
+typedef enum rpmTSType_e {
 	RPMTRANS_TYPE_NORMAL       = 0,
 	RPMTRANS_TYPE_ROLLBACK     = (1 << 0),
 	RPMTRANS_TYPE_AUTOROLLBACK = (1 << 1)
-} rpmtsType;
+} rpmTSType;
 
 #define	_RPMVSF_NODIGESTS	\
   ( RPMVSF_NOSHA1HEADER |	\
@@ -126,8 +126,9 @@ typedef	enum rpmtsOpX_e {
 struct rpmtsScoreEntry_s {
     char *         N;			/*!<Name of package                */
     rpmElementType te_types;		/*!<te types this entry represents */
-    int            installed;		/*!<Was the new header installed   */
-    int            erased;		/*!<Was the old header removed     */
+    int            installed;		/*!<Was the new header installed?  */
+    int            erased;		/*!<Was the old header removed?    */
+    int_32	   tid;			/*!<Install tod of removed header. */
 };
 
 typedef /*@abstract@*/ struct rpmtsScoreEntry_s * rpmtsScoreEntry;
@@ -149,8 +150,8 @@ typedef /*@abstract@*/ struct rpmtsScore_s * rpmtsScore;
  * @return		RPMRC_OK
  */
 rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
-	/*@globals fileSystem @*/
-	/*@modifies runningTS, rollbackTS, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies runningTS, rollbackTS, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Free rpmtsScore provided no more references exist against it.
@@ -180,11 +181,6 @@ rpmtsScore rpmtsGetScore(rpmts ts)
 /*@null@*/
 rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N)
 	/*@*/;
-
-/** \ingroup rpmts
- * \file lib/rpmts.h
- * Structures and prototypes used for an "rpmts" transaction set.
- */
 
 /**************************
  * END Transaction Scores *
@@ -233,7 +229,7 @@ typedef enum tsStage_e {
 struct rpmts_s {
     rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
-    rpmtsType type;             /*!< default, rollback, autorollback */
+    rpmTSType type;		/*!< default, rollback, autorollback */
 
 /*@refcounted@*/ /*@null@*/
     rpmdb sdb;			/*!< Solve database handle. */
@@ -335,7 +331,9 @@ struct rpmts_s {
     Spec spec;			/*!< Spec file control structure. */
 
 /*@kept@*/ /*@null@*/
-    rpmtsScore score;		/*!< Transaction Score (autorollback). */
+    rpmtsScore score;		/*!< Transaction score (autorollback). */
+
+    uint_32 arbgoal;		/*!< Autorollback goal */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -395,6 +393,21 @@ int rpmtsOrder(rpmts ts)
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/**
+ * Function to perform autorollback goal.  Today is called automatically
+ * from rpmtsCheck(), rpmtsOrder() and rpmtsRun().  May change to be a 
+ * programmer decision.
+ *
+ * @param failedTransaction	Failed transaction.
+ * @param rollbackTransaction	rollback transaction (can be NULL).
+ * @param ignoreSet		Problems to ignore.
+ * @return			RPMRC_OK, or RPMRC_FAIL
+ */
+rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rollbackTransaction,
+    rpmprobFilterFlags ignoreSet)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Unreference a transaction instance.
@@ -568,23 +581,38 @@ int rpmtsSetSolveCallback(rpmts ts,
 /**
  * Return the type of a transaction.
  * @param ts		transaction set
- * @return		0 it is not, 1 it is.
+ * @return		transaction type, 0 on unknown
  */
-rpmtsType rpmtsGetType(rpmts ts)
+rpmTSType rpmtsType(rpmts ts)
 	/*@*/;
 
 /**
- * Set transaction type.   Allowed types are:
- *
+ * Set transaction type.
+ *   Allowed types are:
  * 	RPMTRANS_TYPE_NORMAL
  *	RPMTRANS_TYPE_ROLLBACK
  * 	RPMTRANS_TYPE_AUTOROLLBACK
  *
  * @param ts		transaction set
  * @param type		transaction type
- * @return		void
  */
-void rpmtsSetType(rpmts ts, rpmtsType type)
+void rpmtsSetType(rpmts ts, rpmTSType type)
+	/*@modifies ts @*/;
+
+/**
+ * Return the autorollback goal. 
+ * @param ts		transaction set
+ * @return		autorollback goal
+ */
+uint_32 rpmtsARBGoal(rpmts ts)
+	/*@*/;
+
+/**
+ * Set autorollback goal.   
+ * @param ts		transaction set
+ * @param goal		autorollback goal
+ */
+void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
 	/*@modifies ts @*/;
 
 /**
