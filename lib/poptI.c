@@ -37,7 +37,9 @@ struct rpmInstallArguments_s rpmIArgs = {
 #define	POPT_EXCLUDEPATH	-1022
 #define	POPT_ROLLBACK		-1023
 #define	POPT_ROLLBACK_EXCLUDE	-1024
-#define	POPT_AUTOROLLBACK_GOAL	-1032
+#define	POPT_AUTOROLLBACK_GOAL	-1033
+
+#define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 /**
  * Print a message and exit.
@@ -113,22 +115,26 @@ static void installArgCallback( /*@unused@*/ poptContext con,
       }	break;
 
     case POPT_ROLLBACK_EXCLUDE:
-    {	time_t tid;
-	char ** excludes = NULL;
-	char ** tid_str;
+    {	int_32 tid;
+	char *t, *te;
 
 	/* Make sure we were given the proper number of args */
 	if (arg == NULL)
-	    argerror(_("Option --rbexclude needs a transaction id argument"));
+	    argerror(_("Option --rbexclude needs transaction id argument(s)"));
 
-	/* First lets split the space delimited args */
-	excludes = splitString(arg, strlen(arg), ' ');
+	te = alloca_strdup(arg);
+	while (*te != '\0' && index(" \t\n,", *te) != NULL)
+	    *te++ = '\0';
+	while ((t = te++) != NULL && *t != '\0') {
+	    /* Find next tid. */
+	    while (*te != '\0' && index(" \t\n,", *te) == NULL)
+		te++;
+	    while (*te != '\0' && index(" \t\n,", *te) != NULL)
+		*te++ = '\0';
 
-	/* Iterate across the excludes */
-	for(tid_str == excludes; tid_str && *tid_str; tid_str++) {	
 	    /* Convert arg to TID which happens to be time_t */
 	    /* XXX: Need check for arg to be an integer      */
-	    tid = (time_t) strtol(*tid_str, NULL, 10);
+	    tid = (int_32) strtol(t, NULL, 0);
 
 	    /* Allocate space for new exclude tid */
 	    ia->rbtidExcludes = xrealloc(ia->rbtidExcludes, 

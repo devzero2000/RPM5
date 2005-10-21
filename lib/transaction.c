@@ -2453,23 +2453,6 @@ assert(psm != NULL);
 			/*@=noeffectuncon@*/
 			p->fd = NULL;
 			ourrc++;
-
-			/* If we should rollback this transaction
-			   on failure, lets do it.                 */
-			if (rollbackOnFailure) {
-			    rpmMessage(RPMMESS_ERROR,
-				_("Add failed.  Could not read package header.\n"));
-			    /* Clean up the current transaction */
-			    p->h = headerFree(p->h);
-			    xx = rpmdbSync(rpmtsGetRdb(ts));
-			    psm = rpmpsmFree(psm);
-			    p->fi = rpmfiFree(p->fi);
-			    pi = rpmtsiFree(pi);
-
-			    /* Run the rollback transaction */
-			    xx = _rpmtsRollback(rollbackTransaction);
-			    return -1;
-			}
 			/*@innerbreak@*/ break;
 		    case RPMRC_NOTTRUSTED:
 		    case RPMRC_NOKEY:

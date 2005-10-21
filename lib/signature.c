@@ -406,8 +406,10 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
     struct stat st;
     const char * cmd;
     char *const *av;
+#ifdef	NOTYET
     pgpDig dig = NULL;
     pgpDigParams sigp = NULL;
+#endif
     int rc;
 
 /*@-boundswrite@*/

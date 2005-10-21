@@ -1669,7 +1669,7 @@ psm->te->h = headerLink(fi->h);
 		/* Add original header's origin (i.e. URL) */
 		if (origin != NULL)
 		    xx = hae(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
-				origin, ac);
+				origin, 1);
 
 assert(psm->te != NULL);
 		ac = argvCount(psm->te->aNEVRA);
@@ -2122,7 +2122,7 @@ assert(psm->mi == NULL);
 	break;
     case PSM_RPMDB_ADD:
     {   rpmtsScore score;
-	rpmtsScoreEntry se;
+	rpmtsScoreEntry se = NULL;
 	int_32 tid;
 
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
