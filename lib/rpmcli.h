@@ -284,7 +284,7 @@ struct rpmQVKArguments_s {
     const char * passPhrase;	/*!< Pass phrase. */
 /*@observer@*/ /*@null@*/
     const char * qva_prefix;	/*!< Path to top of install tree. */
-    char	qva_mode;
+    char qva_mode;
 		/*!<
 		- 'q'	from --query, -q
 		- 'Q'	from --querytags
@@ -294,7 +294,8 @@ struct rpmQVKArguments_s {
 		- 'K'	from --checksig, -K
 		- 'R'	from --resign
 		*/
-    char	qva_char;	/*!< (unused) always ' ' */
+    char qva_char;		/*!< (unused) always ' ' */
+    char * targets;		/*!< Target platform(s), comma separated. */
 };
 
 /** \ingroup rpmcli
@@ -574,6 +575,8 @@ struct rpmInstallArguments_s {
     rpmEraseInterfaceFlags eraseInterfaceFlags;
     rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
     uint_32 rbtid;		/*!< from --rollback */
+    uint_32 *rbtidExcludes;	/*!< from --rollback */
+    int numrbtidExcludes;	/*!< from --rollback */
     int numRelocations;
     int noDeps;
     int incldocs;

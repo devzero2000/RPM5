@@ -1666,8 +1666,6 @@ rpmtsScore rpmtsScoreFree(rpmtsScore score)
     rpmtsScoreEntry se = NULL;
     int i;
 
-    rpmMessage(RPMMESS_DEBUG, _("May free Score board(%p)\n"), score);
-
     /* If score is not initialized, then just return.
      * This is likely the case if autorollbacks are not enabled.
      */
@@ -1681,7 +1679,6 @@ rpmtsScore rpmtsScoreFree(rpmtsScore score)
      */
     if (score->nrefs > 0) return NULL;
 
-    rpmMessage(RPMMESS_DEBUG, _("\tRefcount is zero...will free\n"));
     /* No more references, lets clean up  */
     /* First deallocate the score entries */
 /*@-branchstate@*/

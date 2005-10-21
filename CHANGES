@@ -24,6 +24,9 @@
 	- add path to *.rpm package into rpmdb/repackaged headers.
 	- track many-to-many relation between installed and erased packages.
 	- eliminate rpmtsGetKeys() and ancient ts.getKeys() python method.
+	- upgrade to db-4.3.29.
+	- add --target to rpm queries.
+	- rollback: add --rbexclude tid option.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

@@ -692,30 +692,45 @@ printNewSpecfile(Spec spec)
 /*@=boundsread@*/
 }
 
-int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
+/**
+ * Parse a spec file, and query the resultant header.
+ * @param ts		rpm transaction
+ * @param qva		query args
+ * @param spec		specfile to parse
+ * @param target	cpu-vender-os platform for query (NULL is current)
+ * @return              0 on success
+ */
+static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
+		/*@null@*/ const char *target) 
+	/*@*/
 {
     Spec spec = NULL;
     Package pkg;
+    int res = 1;	/* assume error */
+    int anyarch = (target == NULL) ? 1 : 0;
     char * buildRoot = NULL;
-    int recursing = 0;
     char * passPhrase = "";
+    int recursing = 0;
     char *cookie = NULL;
-    int anyarch = 1;
     int force = 1;
-    int res = 1;
+    char *rcfile = NULL;
     int xx;
 
-    if (qva->qva_showPackage == NULL)
-	goto exit;
+    /* Setup macro environment for target if specified */
+    if (target != NULL) {
+	rpmFreeMacros(NULL);
+	(void) rpmReadConfigFiles(rcfile, target);
+    }
 
 /*@-branchstate@*/
     /*@-mods@*/ /* FIX: make spec abstract */
-    if (parseSpec(ts, arg, "/", buildRoot, recursing, passPhrase,
+    if (parseSpec(ts, specName, "/", buildRoot, recursing, passPhrase,
 		cookie, anyarch, force)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {
 	rpmError(RPMERR_QUERY,
-	    		_("query of specfile %s failed, can't parse\n"), arg);
+	    _("query of specfile %s failed, can't parse\n"), 
+	    specName);
 	goto exit;
     }
     /*@=mods@*/
@@ -728,9 +743,54 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-	xx = qva->qva_showPackage(qva, ts, pkg->header);
+    {
+	/* If no target was specified, display all packages.
+	 * Packages with empty file lists are not produced.
+	 */
+	if (target == NULL || pkg->fileList != NULL) 
+	    xx = qva->qva_showPackage(qva, ts, pkg->header);
+    }
 
 exit:
     spec = freeSpec(spec);
+    return res;
+}
+
+int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
+{
+    int res = 1;
+    char * targets = qva->targets;
+    char * t;
+    char * te;
+
+    if (qva->qva_showPackage == NULL)
+	goto exit;
+
+    if (targets == NULL) {
+	res = _specQuery(ts, qva, arg, NULL); 
+	goto exit;
+    }
+
+    rpmMessage(RPMMESS_DEBUG, 
+	_("Query specfile for platform(s): %s\n"), targets);
+    for (t = targets; *t != '\0'; t = te) {
+        char *target;
+       
+	/* Parse out next target platform. */ 
+	if ((te = strchr(t, ',')) == NULL)
+            te = t + strlen(t);
+        target = alloca(te-t+1);
+        strncpy(target, t, (te-t));
+        target[te-t] = '\0';
+        if (*te != '\0')
+            te++;
+
+	/* Query spec for this target platform. */
+	rpmMessage(RPMMESS_DEBUG, _("    target platform: %s\n"), target);
+	res = _specQuery(ts, qva, arg, target); 
+	if (res == 1) break;	
+    }
+    
+exit:
     return res;
 }

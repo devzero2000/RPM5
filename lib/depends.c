@@ -1708,6 +1708,7 @@ rescan:
 	/* Return no. of packages that could not be ordered. */
 	rpmMessage(RPMMESS_ERROR, _("rpmtsOrder failed, %d elements remain\n"),
 			loopcheck);
+
 	return loopcheck;
     }
 
@@ -1760,7 +1761,7 @@ rescan:
 	    continue;
 
 	j = needle->orIndex;
-	if ((q = ts->order[j]) == NULL)
+	if ((q = ts->order[j]) == NULL || needle->pkgKey == -1)
 	    continue;
 
 	newOrder[newOrderCount++] = q;
@@ -1805,7 +1806,6 @@ assert(newOrderCount == ts->orderCount);
     return 0;
 }
 /*@=bounds@*/
-
 int rpmtsCheck(rpmts ts)
 {
     uint_32 tscolor = rpmtsColor(ts);
@@ -1941,5 +1941,6 @@ exit:
     else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
     /*@=branchstate@*/
+
     return rc;
 }

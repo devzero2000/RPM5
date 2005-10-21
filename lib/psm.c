@@ -1351,7 +1351,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     int saveerrno;
     int xx;
 
-    /*@-branchstate@*/
+/*@-branchstate@*/
     switch (stage) {
     case PSM_UNKNOWN:
 	break;
@@ -2198,10 +2198,10 @@ assert(psm->mi == NULL);
     default:
 	break;
 /*@i@*/    }
-    /*@=branchstate@*/
+/*@=branchstate@*/
 
-    /*@-nullstate@*/	/* FIX: psm->oh and psm->fi->h may be NULL. */
+/*@-nullstate@*/	/* FIX: psm->oh and psm->fi->h may be NULL. */
     return rc;
-    /*@=nullstate@*/
+/*@=nullstate@*/
 }
 /*@=bounds =nullpass@*/

@@ -31,6 +31,8 @@ int specedit = 0;
 #define POPT_HDLIST		-1011
 #define POPT_FTSWALK		-1012
 
+#define	POPT_TARGETPLATFORM	-1036
+
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
@@ -240,6 +242,17 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_SCRIPT;
 	break;
 
+    case POPT_TARGETPLATFORM:
+	if (qva->targets) {
+	    int len = strlen(qva->targets) + 1 + strlen(arg) + 1;
+	    qva->targets = xrealloc(qva->targets, len);
+	    strcat(qva->targets, ",");
+	} else {
+	    qva->targets = xmalloc(strlen(arg) + 1);
+	    qva->targets[0] = '\0';
+	}
+	strcat(qva->targets, arg);
+	break;
     }
 }
 
@@ -286,6 +299,8 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("substitute i18n sections into spec file"), NULL },
  { "state", 's', 0, 0, 's',
 	N_("display the states of the listed files"), NULL },
+ { "target", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  POPT_TARGETPLATFORM,
+        N_("specify target platform"), "CPU-VENDOR-OS" },
    POPT_TABLEEND
 };
 
