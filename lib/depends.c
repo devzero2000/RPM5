@@ -140,6 +140,32 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 /*@=nullstate@*/
 }
 
+/**
+ * Are two headers identical?
+ * @param first		first header
+ * @param second	second header
+ * @return		1 if headers are identical, 0 otherwise
+ */
+static int rpmHeadersIdentical(Header first, Header second)
+	/*@*/
+{
+    const char * one, * two;
+
+    if (!headerGetEntry(first, RPMTAG_HDRID, NULL, (void **) &one, NULL))
+	one = NULL;
+    if (!headerGetEntry(second, RPMTAG_HDRID, NULL, (void **) &two, NULL))
+	two = NULL;
+
+    if (one && two)
+	return ((strcmp(one, two) == 0) ? 1 : 0);
+    if (one && !two)
+	return 0;
+    if (!one && two)
+	return 0;
+    /* XXX Headers w/o digests case devolves to NEVR comparison. */
+    return ((rpmVersionCompare(first, second) == 0) ? 1 : 0);
+}
+
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
@@ -325,8 +351,8 @@ assert(p != NULL);
 	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
 	    continue;
 
-	/* Skip packages that contain identical NEVR. */
-	if (rpmVersionCompare(h, oh) == 0)
+	/* Skip identical packages. */
+	if (rpmHeadersIdentical(h, oh))
 	    continue;
 
 	ohNEVRA = hGetNEVRA(oh, NULL);

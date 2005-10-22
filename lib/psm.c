@@ -1415,22 +1415,29 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int fc = rpmfiFC(fi);
+	    const char * hdrid;
 
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
 assert(psm->mi == NULL);
-	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te), 0);
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
+	    hdrid = rpmteHdrid(psm->te);
+	    if (hdrid != NULL) {
+		/* XXX should use RPMTAG_HDRID not RPMTAG_SHA1HEADER */
+		psm->mi = rpmtsInitIterator(ts, RPMTAG_SHA1HEADER, hdrid, 0);
+	    } else {
+		psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te),0);
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 			rpmteE(psm->te));
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
 			rpmteV(psm->te));
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 			rpmteR(psm->te));
-	    if (tscolor) {
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
+		if (tscolor) {
+		    xx = rpmdbSetIteratorRE(psm->mi,RPMTAG_ARCH, RPMMIRE_STRCMP,
 			rpmteA(psm->te));
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_OS, RPMMIRE_STRCMP,
+		    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_OS, RPMMIRE_STRCMP,
 			rpmteO(psm->te));
+		}
 	    }
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi)) != NULL) {
@@ -1439,6 +1446,7 @@ assert(psm->mi == NULL);
 		/*@loopbreak@*/ break;
 	    }
 	    psm->mi = rpmdbFreeIterator(psm->mi);
+
 	    rc = RPMRC_OK;
 
 	    /* XXX lazy alloc here may need to be done elsewhere. */
