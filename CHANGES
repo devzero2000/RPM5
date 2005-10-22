@@ -27,7 +27,7 @@
 	- upgrade to db-4.3.29.
 	- add --target to rpm queries.
 	- rollback: add --rbexclude tid option.
-	- rollback: merge latest hackery for composting (pee-you!).
+	- rollback: merge latest hackery for composting.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

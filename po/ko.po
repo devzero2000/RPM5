@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-21 09:00-0400\n"
+"POT-Creation-Date: 2005-10-21 18:49-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -117,7 +117,7 @@ msgid "Common options for all rpm modes and executables:"
 msgstr "모든 rpm 모드에서의 일반적인 옵션:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:132 lib/poptI.c:49
+#: rpmqv.c:132 lib/poptI.c:55
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
@@ -1262,19 +1262,19 @@ msgstr "패키지 제작 의존성을 검사하지 않습니다"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "(기존의) rpm[23] 패키징과 호환하는 패키지 헤더를 생성합니다"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:322 lib/poptQV.c:378
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:378
 #: lib/poptQV.c:387 lib/poptQV.c:428
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:324 lib/poptQV.c:381
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:381
 #: lib/poptQV.c:389 lib/poptQV.c:431
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "패키지의 아키텍쳐를 검사하지 않습니다"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:326 lib/poptQV.c:384
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:384
 #: lib/poptQV.c:391 lib/poptQV.c:433
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1328,19 +1328,19 @@ msgstr "%d 번째 행: %s(은)는 잘못된 숫자입니다: %s\n"
 msgid "can't query %s: %s\n"
 msgstr "%s(을)를 질의할 수 없음: %s\n"
 
-#: build/spec.c:732
+#: build/spec.c:733
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 "%s spec 파일을 질의하는데 실패했습니다, 파일을 처리(parse)할 수 없습니다\n"
 
-#: build/spec.c:775
+#: build/spec.c:776
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 
 #. Query spec for this target platform.
-#: build/spec.c:789
+#: build/spec.c:790
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
@@ -1881,52 +1881,63 @@ msgstr "URL 캐시 핸들링을 디버그 합니다"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
 
-#: lib/poptI.c:77
+#: lib/poptI.c:83
 msgid "exclude paths must begin with a /"
 msgstr "제외시킬 경로는 반드시 '/' 로 시작해야 합니다"
 
-#: lib/poptI.c:91
+#: lib/poptI.c:97
 #, fuzzy
 msgid "Option --relocate needs /old/path=/new/path argument"
 msgstr "      --relocate <이전경로>=<새로운경로>"
 
-#: lib/poptI.c:93
+#: lib/poptI.c:99
 msgid "relocations must begin with a /"
 msgstr "재배치시에는 반드시 '/' 로 시작해야 합니다"
 
-#: lib/poptI.c:96
+#: lib/poptI.c:102
 msgid "relocations must contain a ="
 msgstr "재배치시에는 반드시 '=' 을 포함해야 합니다"
 
-#: lib/poptI.c:99
+#: lib/poptI.c:105
 msgid "relocations must have a / following the ="
 msgstr "재배치시에는 반드시 '=' 뒤에 '/' 가 와야 합니다"
 
-#: lib/poptI.c:118
-msgid "Option --rbexclude needs a transaction id argument"
-msgstr ""
+#: lib/poptI.c:123
+#, fuzzy
+msgid "Option --rbexclude needs transaction id argument(s)"
+msgstr "      --relocate <이전경로>=<새로운경로>"
 
-#: lib/poptI.c:144
+#: lib/poptI.c:154
 #, fuzzy
 msgid "Option --rollback needs a time/date stamp argument"
 msgstr "롤백(rollback)의 인수는 시간/날짜 스탬프 입니다"
 
-#: lib/poptI.c:152
+#: lib/poptI.c:162
 msgid "malformed rollback time/date stamp argument"
 msgstr "롤백(rollback)의 인수인 시간/날짜 스탬프가 올바르지 않습니다"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:169
+#, fuzzy
+msgid "arbgoal takes a time/date stamp argument"
+msgstr "롤백(rollback)의 인수는 시간/날짜 스탬프 입니다"
+
+#: lib/poptI.c:176
+#, fuzzy
+msgid "malformed arbgoal time/date stamp argument"
+msgstr "롤백(rollback)의 인수인 시간/날짜 스탬프가 올바르지 않습니다"
+
+#: lib/poptI.c:232
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "설치 내용을 통해 패키지를 질의/검증 합니다"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:236
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "특정 파일을 생략하기 위한 설정이 적용된 경우에도, 패키지 안의 모든 파일을 설"
 "치합니다"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:240
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1934,168 +1945,168 @@ msgstr ""
 "<패키지> 이름과 일치하는 패키지는 모두 제거합니다 (<패키지>에 여러개의 패키지"
 "를 동시에 지정할 경우에는 오류가 발생합니다)"
 
-#: lib/poptI.c:221 tools/rpmgraph.c:272
+#: lib/poptI.c:245 tools/rpmgraph.c:272
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptI.c:226 lib/poptI.c:306
+#: lib/poptI.c:250 lib/poptI.c:330
 msgid "do not execute package scriptlet(s)"
 msgstr "패키지 스크립틀릿(scriptlet)을 실행하지 않습니다"
 
-#: lib/poptI.c:230
+#: lib/poptI.c:254
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "재배치 기능이 없는 패키지의 파일을 재배치하여 설치합니다"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:258
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptI.c:238
+#: lib/poptI.c:262
 msgid "save erased package files by renaming into sub-directory"
 msgstr "하부-디렉토리로 이름 변경시 삭제된 패키지 파일을 저장합니다"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:265
 msgid "erase (uninstall) package"
 msgstr "패키지를 (제거) 삭제합니다"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:265
 msgid "<package>+"
 msgstr "<패키지>+"
 
-#: lib/poptI.c:244 lib/poptI.c:284
+#: lib/poptI.c:268 lib/poptI.c:308
 #, fuzzy
 msgid "do not install configuration files"
 msgstr "모든 설정 파일을 나열합니다"
 
-#: lib/poptI.c:247 lib/poptI.c:289
+#: lib/poptI.c:271 lib/poptI.c:313
 msgid "do not install documentation"
 msgstr "패키지에 포함된 문서 파일을 설치하지 않습니다"
 
-#: lib/poptI.c:249
+#: lib/poptI.c:273
 msgid "skip files with leading component <path> "
 msgstr "<경로>로 시작되는 파일은 설치하지 않습니다 "
 
-#: lib/poptI.c:250
+#: lib/poptI.c:274
 msgid "<path>"
 msgstr "<경로>"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:278
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "재배치 기능이 없는 패키지의 파일을 재배치하여 설치합니다"
 
-#: lib/poptI.c:256
+#: lib/poptI.c:280
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs 와 --replacefiles 옵션을 동시에 사용합니다"
 
-#: lib/poptI.c:260
+#: lib/poptI.c:284
 msgid "upgrade package(s) if already installed"
 msgstr "기존에 설치된 패키지를 업그레이드 합니다"
 
-#: lib/poptI.c:261 lib/poptI.c:277 lib/poptI.c:376
+#: lib/poptI.c:285 lib/poptI.c:301 lib/poptI.c:403
 msgid "<packagefile>+"
 msgstr "<패키지파일>+"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:287
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "패키지 설치를 해시마크(#)로 표시합니다 (-v 옵션과 함께 사용하는 것이 좋습니"
 "다)"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:290
 msgid "don't verify package architecture"
 msgstr "패키지의 아키텍쳐를 검사하지 않습니다"
 
-#: lib/poptI.c:269
+#: lib/poptI.c:293
 msgid "don't verify package operating system"
 msgstr "패키지의 운영체제를 검사하지 않습니다"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:296
 msgid "don't check disk space before installing"
 msgstr "패키지를 설치하기 전에 디스크 공간을 검사하지 않습니다"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:298
 msgid "install documentation"
 msgstr "패키지에 포함된 문서 파일을 설치합니다"
 
-#: lib/poptI.c:277
+#: lib/poptI.c:301
 #, fuzzy
 msgid "install package(s)"
 msgstr "패키지를 설치합니다"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:304
 msgid "update the database, but do not modify the filesystem"
 msgstr "파일시스템을 변경하지 않고, 데이터베이스를 갱신합니다"
 
-#: lib/poptI.c:286
+#: lib/poptI.c:310
 msgid "do not verify package dependencies"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: lib/poptI.c:292 lib/poptQV.c:322 lib/poptQV.c:325
+#: lib/poptI.c:316 lib/poptQV.c:322 lib/poptQV.c:325
 msgid "don't verify MD5 digest of files"
 msgstr "파일의 MD5 축약(digest)을 검사하지 않습니다"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:318
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "모든 설정 파일을 나열합니다"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:322
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "의존성이 있는 패키지를 설치하도록 재요구하지 않습니다"
 
-#: lib/poptI.c:303
+#: lib/poptI.c:327
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:310
+#: lib/poptI.c:334
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "%%pre 스크립틀릿(scriptlet)을 실행하지 않습니다 (있을 경우)"
 
-#: lib/poptI.c:313
+#: lib/poptI.c:337
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "%%post 스크립틀릿(scriptlet)을 실행하지 않습니다 (있을 경우)"
 
-#: lib/poptI.c:316
+#: lib/poptI.c:340
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "%%preun 스크립틀릿(scriptlet)을 실행하지 않습니다 (있을 경우)"
 
-#: lib/poptI.c:319
+#: lib/poptI.c:343
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "%%postun 스크립틀릿(scriptlet)을 실행하지 않습니다 (있을 경우)"
 
-#: lib/poptI.c:329
+#: lib/poptI.c:353
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr ""
 "이 패키지에 의해 생성되는(triggered) 어떠한 스크립틀릿(scriptlet)도 실행하지 "
 "않습니다"
 
-#: lib/poptI.c:332
+#: lib/poptI.c:356
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "어떠한 %%triggerprein 스크립틀릿(scriptlet)도 실행하지 않습니다"
 
-#: lib/poptI.c:335
+#: lib/poptI.c:359
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "어떠한 %%triggerin 스크립틀릿(scriptlet)도 실행하지 않습니다"
 
-#: lib/poptI.c:338
+#: lib/poptI.c:362
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "어떠한 %%triggerun 스크립틀릿(scriptlet)도 실행하지 않습니다"
 
-#: lib/poptI.c:341
+#: lib/poptI.c:365
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "어떠한 %%triggerpostun 스크립틀릿(scriptlet)도 실행하지 않습니다"
 
-#: lib/poptI.c:345
+#: lib/poptI.c:369
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2103,61 +2114,65 @@ msgstr ""
 "이전 버전의 패키지로 다운그레이드 합니다 (--force 옵션을 사용시에는 이 옵션"
 "이 자동으로 적용됩니다)"
 
-#: lib/poptI.c:349
+#: lib/poptI.c:373
 msgid "print percentages as package installs"
 msgstr "패키지 설치를 퍼센트(%)로 표시합니다"
 
-#: lib/poptI.c:351
+#: lib/poptI.c:375
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 "재배치 기능이 있는 패키지의 경우, 지정한 <디렉토리>로 재배치하여 설치합니다"
 
-#: lib/poptI.c:352
+#: lib/poptI.c:376
 msgid "<dir>"
 msgstr "<디렉토리>"
 
-#: lib/poptI.c:354
+#: lib/poptI.c:378
 msgid "relocate files from path <old> to <new>"
 msgstr "<이전경로>에서 <새로운경로>로 파일을 재배치 합니다"
 
-#: lib/poptI.c:355
+#: lib/poptI.c:379
 msgid "<old>=<new>"
 msgstr "<이전경로>=<새로운경로>"
 
-#: lib/poptI.c:358
+#: lib/poptI.c:382
 msgid "save erased package files by repackaging"
 msgstr "재패키징(repackaging)으로 인해 삭제되는 패키지 파일을 저장합니다"
 
-#: lib/poptI.c:361
+#: lib/poptI.c:385
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:364
+#: lib/poptI.c:388
 msgid "reinstall if the package is already present"
 msgstr "패키지가 이미 설치되어 있는 경우에도 설치합니다"
 
-#: lib/poptI.c:366
+#: lib/poptI.c:390
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "새로 설치 삭제, 이전 설치 재설치, 패키지, <날짜> 복구(back to date)"
 
-#: lib/poptI.c:367
+#: lib/poptI.c:391 lib/poptI.c:394
 msgid "<date>"
 msgstr "<날짜>"
 
-#: lib/poptI.c:369
+#: lib/poptI.c:393
+msgid "If transaction fails rollback to <date>"
+msgstr ""
+
+#: lib/poptI.c:396
 msgid "Exclude Transaction I.D. from rollback"
 msgstr ""
 
-#: lib/poptI.c:370
+#: lib/poptI.c:397
 #, fuzzy
 msgid "<tid>"
 msgstr "<명령>"
 
-#: lib/poptI.c:372
+#: lib/poptI.c:399
 msgid "don't install, but tell if it would work or not"
 msgstr "패키지를 설치하지 않고, 제대로 설치되는지만 확인합니다"
 
-#: lib/poptI.c:375
+#: lib/poptI.c:402
 msgid "upgrade package(s)"
 msgstr "패키지를 업그레이드 합니다"
 
@@ -2480,12 +2495,22 @@ msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/psm.c:2155
+#: lib/psm.c:2139
 #, c-format
-msgid "Attempting to mark %s as installed in score board(%u).\n"
+msgid "Could not aquire transaction score entry for %s\n"
 msgstr ""
 
-#: lib/psm.c:2188
+#: lib/psm.c:2151
+#, c-format
+msgid "Setting %s to TID of 0x%08x\n"
+msgstr ""
+
+#: lib/psm.c:2175
+#, c-format
+msgid "Attempting to mark %s as installed in trasaction score\n"
+msgstr ""
+
+#: lib/psm.c:2207
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -2593,7 +2618,7 @@ msgstr "패키지 기록(record) 번호: %u\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:669 lib/rpminstall.c:796
+#: lib/query.c:669 lib/rpminstall.c:805
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -2769,7 +2794,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1039 lib/rpmts.c:643
+#: lib/rpminstall.c:611 lib/rpminstall.c:1048 lib/rpmts.c:643
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2781,8 +2806,8 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "알 수 없는 태그 입니다"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:655 lib/rpminstall.c:830
-#: lib/rpminstall.c:1295 lib/transaction.c:1021 tools/rpmgraph.c:196
+#: lib/rpmgi.c:625 lib/rpminstall.c:655 lib/rpminstall.c:839
+#: lib/rpminstall.c:1304 lib/transaction.c:1211 tools/rpmgraph.c:196
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
@@ -2840,7 +2865,7 @@ msgstr " ... %s(으)로\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s(을)를 생략합니다 - 전송(transfer)에 실패함 - %s\n"
 
-#: lib/rpminstall.c:499 lib/rpminstall.c:893 tools/rpmgraph.c:141
+#: lib/rpminstall.c:499 lib/rpminstall.c:902 tools/rpmgraph.c:141
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
@@ -2889,38 +2914,43 @@ msgstr "바이너리 패키지를 설치합니다\n"
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:805
+#: lib/rpminstall.c:783 lib/transaction.c:1187
+#, c-format
+msgid "Autorollback Goal: %-24.24s\n"
+msgstr ""
+
+#: lib/rpminstall.c:814
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:877
+#: lib/rpminstall.c:886
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:883
+#: lib/rpminstall.c:892
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1202
+#: lib/rpminstall.c:1211
 #, c-format
 msgid "Excluding TID %d from rollback\n"
 msgstr ""
 
-#: lib/rpminstall.c:1289 lib/transaction.c:1014
+#: lib/rpminstall.c:1298 lib/transaction.c:1191
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1320 lib/transaction.c:1065
+#: lib/rpminstall.c:1329 lib/transaction.c:1264
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1327 lib/transaction.c:1071
+#: lib/rpminstall.c:1336
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "%s(을)를 복구합니다\n"
@@ -3207,42 +3237,42 @@ msgstr "행: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
-#: lib/rpmts.c:1222
+#: lib/rpmts.c:1229
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1224
+#: lib/rpmts.c:1231
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1280
+#: lib/rpmts.c:1287
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "파일%5d: %07o %s.%s\t %s\n"
 
-#: lib/rpmts.c:1587
+#: lib/rpmts.c:1593
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1592
+#: lib/rpmts.c:1598
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1602
+#: lib/rpmts.c:1608
 #, fuzzy, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "%s(을)를 %s(으)로 재배치 합니다\n"
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1629
+#: lib/rpmts.c:1635
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1633
+#: lib/rpmts.c:1639
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr ""
@@ -3250,18 +3280,37 @@ msgstr ""
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1644
+#: lib/rpmts.c:1651
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr ""
 
+#: lib/rpmts.c:1676
+msgid "Could not get header for transaction score!\n"
+msgstr ""
+
+#: lib/rpmts.c:1677
+#, c-format
+msgid "NEVRA: %s"
+msgstr ""
+
+#: lib/rpmts.c:1686
+#, c-format
+msgid "\tCould not get INSTALLTID for %s.\n"
+msgstr ""
+
+#: lib/rpmts.c:1691
+#, c-format
+msgid "\tINSTALLTID for %s is 0x%08x.\n"
+msgstr ""
+
 #. Assume we don't find it
-#: lib/rpmts.c:1731
+#: lib/rpmts.c:1777
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1737
+#: lib/rpmts.c:1783
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr ""
@@ -3327,54 +3376,54 @@ msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:467 lib/signature.c:595 lib/signature.c:904
-#: lib/signature.c:943
+#: lib/signature.c:469 lib/signature.c:597 lib/signature.c:906
+#: lib/signature.c:945
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s(을)를 실행할 수 없음: %s\n"
 
-#: lib/signature.c:483
+#: lib/signature.c:485
 msgid "pgp failed\n"
 msgstr "pgp가 실패함\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:490
+#: lib/signature.c:492
 msgid "pgp failed to write signature\n"
 msgstr "pgp 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:496
+#: lib/signature.c:498
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 서명 용량: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:514 lib/signature.c:643
+#: lib/signature.c:516 lib/signature.c:645
 msgid "unable to read the signature\n"
 msgstr "서명을 읽을 수 없습니다\n"
 
-#: lib/signature.c:519
+#: lib/signature.c:521
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "%d 바이트의 PGP 서명을 얻었습니다\n"
 
-#: lib/signature.c:612
+#: lib/signature.c:614
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "실행에 실패했습니다\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:619
+#: lib/signature.c:621
 msgid "gpg failed to write signature\n"
 msgstr "gpg 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:625
+#: lib/signature.c:627
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 서명 용량: %d\n"
 
-#: lib/signature.c:648
+#: lib/signature.c:650
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
@@ -3384,98 +3433,126 @@ msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: lib/signature.c:948 lib/signature.c:1001
+#: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일 안에 부적합한 %%_signature 내용(spec)이 있습니다\n"
 
-#: lib/signature.c:981
+#: lib/signature.c:983
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일 안에 반드시 \"%%_gpg_name\"을 설정해야 합니다\n"
 
-#: lib/signature.c:995
+#: lib/signature.c:997
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일 안에 반드시 \"%%_pgp_name\"을 설정해야 합니다\n"
 
-#: lib/signature.c:1043
+#: lib/signature.c:1045
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "헤더의 크기가 너무 큽니다"
 
-#: lib/signature.c:1084
+#: lib/signature.c:1086
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1144
+#: lib/signature.c:1146
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "SHA1 축약(digest) 헤더를 검사하지 않습니다"
 
-#: lib/signature.c:1225 lib/signature.c:1415
+#: lib/signature.c:1227 lib/signature.c:1417
 msgid "Header "
 msgstr ""
 
 #. @=branchstate@
-#: lib/signature.c:1294
+#: lib/signature.c:1296
 #, fuzzy
 msgid " signature: "
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:1421
+#: lib/signature.c:1423
 #, fuzzy
 msgid " DSA signature: "
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:1503
+#: lib/signature.c:1505
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1534
+#: lib/signature.c:1536
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 
-#: lib/signature.c:1538
+#: lib/signature.c:1540
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:925
+#: lib/transaction.c:926
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"
 
-#: lib/transaction.c:1012
+#: lib/transaction.c:1048 lib/transaction.c:1294
+#, c-format
+msgid "Rolling back successful transactions to %s.\n"
+msgstr ""
+
+#: lib/transaction.c:1053 lib/transaction.c:1299
+msgid "Creating rollback transaction to achieve goal\n"
+msgstr ""
+
+#: lib/transaction.c:1185
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1032
+#: lib/transaction.c:1193
+#, c-format
+msgid "Failed Tran:  0x%08x\n"
+msgstr ""
+
+#: lib/transaction.c:1199
+msgid "Could not resolve semaphore_backout macro!\n"
+msgstr ""
+
+#: lib/transaction.c:1203
+#, fuzzy, c-format
+msgid "Creating semaphore %s...\n"
+msgstr "%s 디렉토리를 생성합니다\n"
+
+#: lib/transaction.c:1223
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1122
+#: lib/transaction.c:1364
+#, fuzzy, c-format
+msgid "Removing semaphore %s...\n"
+msgstr "%s 디렉토리를 삭제합니다\n"
+
+#: lib/transaction.c:1405
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1147
+#: lib/transaction.c:1431
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1151
+#: lib/transaction.c:1435
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1155
+#: lib/transaction.c:1439
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1168
+#: lib/transaction.c:1452
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "소스 패키지가 필요하며, 바이너리가 검색되었습니다\n"
@@ -3487,88 +3564,131 @@ msgstr "소스 패키지가 필요하며, 바이너리가 검색되었습니다\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1189
+#: lib/transaction.c:1473
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1191
+#: lib/transaction.c:1475
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1214
+#: lib/transaction.c:1498
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
 
-#: lib/transaction.c:1258
-msgid "Adding install element to auto-rollback transaction.\n"
+#. XXX: Can't happen
+#: lib/transaction.c:1548
+msgid "Could not aquire transaction score!.\n"
 msgstr ""
 
-#: lib/transaction.c:1267
+#. XXX: Can't happen
+#: lib/transaction.c:1553
+#, fuzzy, c-format
+msgid "Could not acquire score entry %s!.\n"
+msgstr "PreIn 파일을 열 수 없음: %s\n"
+
+#: lib/transaction.c:1571
+#, c-format
+msgid "Processing failed install element %s for autorollback.\n"
+msgstr ""
+
+#: lib/transaction.c:1574
+#, fuzzy
+msgid "\tForce adding header to rpmdb.\n"
+msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
+
+#: lib/transaction.c:1585
+#, fuzzy
+msgid "\tCould not add failed package header to db!\n"
+msgstr "<소스 패키지>"
+
+#: lib/transaction.c:1598
+#, c-format
+msgid "Processing failed erase element %s for autorollback.\n"
+msgstr ""
+
+#: lib/transaction.c:1602
+#, fuzzy
+msgid "\tForce removing header from rpmdb.\n"
+msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
+
+#: lib/transaction.c:1613
+msgid "\tCould not remove failed package header from db!\n"
+msgstr ""
+
+#: lib/transaction.c:1622 lib/transaction.c:1737
+msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
+msgstr ""
+
+#: lib/transaction.c:1623 lib/transaction.c:1738
+#, c-format
+msgid "TYPE:  %d\n"
+msgstr ""
+
+#: lib/transaction.c:1636
+msgid "Processing install element for autorollback...\n"
+msgstr ""
+
+#: lib/transaction.c:1637 lib/transaction.c:1692
+#, c-format
+msgid "\tNEVRA: %s\n"
+msgstr ""
+
+#: lib/transaction.c:1645
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1280
+#: lib/transaction.c:1658
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1290
+#: lib/transaction.c:1668
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "<소스 패키지>"
 
-#: lib/transaction.c:1292 lib/transaction.c:1303
-#, c-format
-msgid "\tAdded from install element %s.\n"
-msgstr ""
-
 #. Add the header as an erase element, we did not
-#. * have a repackaged package
+#. * have a repackaged package.
 #.
-#: lib/transaction.c:1301
+#: lib/transaction.c:1677
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1310
+#: lib/transaction.c:1684
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1317
-msgid "Add erase element to auto-rollback transaction.\n"
+#: lib/transaction.c:1691
+msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1325
-msgid "\tFound existing upgrade element.\n"
+#: lib/transaction.c:1699
+msgid "\tErase element already added for complimentary install.\n"
 msgstr ""
 
-#: lib/transaction.c:1326
-#, c-format
-msgid "\tNot adding erase element for %s.\n"
-msgstr ""
-
-#: lib/transaction.c:1343
+#: lib/transaction.c:1712
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "<소스 패키지>"
 
-#: lib/transaction.c:1345
-#, c-format
-msgid "\tAdded from erase element %s.\n"
-msgstr ""
-
-#: lib/transaction.c:1350
+#: lib/transaction.c:1717
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1356
+#: lib/transaction.c:1723
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1362
+#: lib/transaction.c:1729
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
+
+#: lib/transaction.c:1809
+msgid "Invalid number of transaction elements.\n"
+msgstr ""
 
 #. ===============================================
 #. * For packages being installed:
@@ -3578,12 +3698,12 @@ msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1485
+#: lib/transaction.c:1863
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1571
+#: lib/transaction.c:1949
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3595,7 +3715,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1646
+#: lib/transaction.c:2024
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3603,31 +3723,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1727
+#: lib/transaction.c:2105
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:1906
+#: lib/transaction.c:2283
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2060
-msgid "Add failed.  Could not read package header.\n"
+#: lib/transaction.c:2553
+#, c-format
+msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2124
-msgid "Add failed in rpmpsmStage().\n"
+#: lib/transaction.c:2560
+msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2168
-msgid "Add failed.  Could not get file list.\n"
-msgstr ""
-
-#: lib/transaction.c:2217
-msgid "Erase failed failed in rpmpsmStage().\n"
-msgstr ""
-
-#: lib/transaction.c:2277
+#: lib/transaction.c:2603
 msgid "running post-transaction scripts\n"
 msgstr ""
 
