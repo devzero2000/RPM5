@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-22 16:54-0400\n"
+"POT-Creation-Date: 2005-10-23 09:07-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2785,28 +2785,28 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:738 lib/rpmds.c:1102
+#: lib/rpmds.c:739 lib/rpmds.c:1285
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:738 lib/rpmds.c:1102
+#: lib/rpmds.c:739 lib/rpmds.c:1285
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1068
+#: lib/rpmds.c:1251
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:1101
+#: lib/rpmds.c:1284
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:1125
+#: lib/rpmds.c:1308
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ssä"

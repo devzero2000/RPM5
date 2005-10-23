@@ -3,6 +3,7 @@
  */
 #include "system.h"
 
+#include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <rpmlib.h>
 
 #define	_RPMDS_INTERNAL
@@ -964,6 +965,188 @@ assert(ods->Flags != NULL);
 ods->i = save;
 /*@=nullderef@*/
     return 0;
+}
+
+struct cpuinfo_s {
+    const char *name;
+    int done;
+    int flags;
+};
+
+static struct cpuinfo_s ctags[] = {
+    { "processor",	0,  0 },
+    { "vendor_id",	0,  0 },
+    { "cpu_family",	0,  1 },
+    { "model",		0,  1 },
+    { "model_name",	0,  0 },
+    { "stepping",	0,  1 },
+    { "cpu_MHz",	0,  1 },
+    { "cache_size",	0,  1 },
+    { "physical_id",	0,  0 },
+    { "siblings",	0,  0 },
+    { "core_id",	0,  0 },
+    { "cpu_cores",	0,  0 },
+    { "fdiv_bug",	0,  3 },
+    { "hlt_bug",	0,  3 },
+    { "f00f_bug",	0,  3 },
+    { "coma_bug",	0,  3 },
+    { "fpu",		0,  0 },	/* XXX use flags attribute instead. */
+    { "fpu_exception",	0,  3 },
+    { "cpuid_level",	0,  0 },
+    { "wp",		0,  3 },
+    { "flags",		0,  4 },
+    { "bogomips",	0,  1 },
+    { NULL,		0, -1 }
+};
+
+/**
+ * Return dependency format to use for a cpuinfo line.
+ * @param name		field name
+ * @return		type of format (0 == ignore, -1 == not found)
+ */
+static int rpmdsCpuinfoCtagFlags(const char * name)
+{
+    struct cpuinfo_s * ct;
+    int flags = -1;
+
+    for (ct = ctags; ct->name != NULL; ct++) {
+	if (strcmp(ct->name, name))
+	    continue;
+	if (ct->done)
+	    continue;
+	ct->done = 1;		/* XXX insure single occurrence */
+	flags = ct->flags;
+	break;
+    }
+    return flags;
+}
+
+/**
+ * Merge a single cpuinfo provides.
+ * @retval *dsp		(loaded) dependency set
+ * @param NS		dependency name space
+ * @param N		name
+ * @param EVR		epoch:version-release
+ * @param Flags		comparison/context flags
+ */
+static void rpmdsCpuinfoAdd(rpmds *dsp, const char * NS,
+		const char *N, const char *EVR, int_32 Flags)
+{
+    char *t;
+    rpmds ds;
+    int xx;
+
+    t = alloca(strlen(NS)+sizeof("()")+strlen(N));
+    *t = '\0';
+    (void) stpcpy( stpcpy( stpcpy( stpcpy(t, NS), "("), N), ")");
+
+    ds = rpmdsSingle(RPMTAG_PROVIDENAME, t, EVR, Flags);
+    xx = rpmdsMerge(dsp, ds);
+    ds = rpmdsFree(ds);
+}
+
+#define	_PROC_CPUINFO	"/proc/cpuinfo"
+static const char * cpuinfo = _PROC_CPUINFO;
+
+#define	_isspace(_c)	\
+	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
+
+int rpmdsCpuinfo(rpmds *dsp, const char * fn)
+{
+    const char * NS = "cpuinfo";
+    char buf[BUFSIZ];
+    char * f, * fe;
+    char * g, * ge;
+    char * t;
+    FD_t fd = NULL;
+    FILE * fp;
+    int rc = -1;
+
+    if (fn == NULL)
+	fn = cpuinfo;
+
+    fd = Fopen(fn, "r.fpio");
+    if (fd == NULL || Ferror(fd))
+	goto exit;
+    fp = fdGetFILE(fd);
+
+    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+	/* rtrim on line. */
+	ge = f + strlen(f);
+	while (--ge > f && _isspace(*ge))
+	    *ge = '\0';
+
+	/* ltrim on line. */
+	while (*f && _isspace(*f))
+	    f++;
+
+	/* split on ':' */
+	fe = f;
+	while (*fe && *fe != ':')
+            fe++;
+	if (*fe == '\0')
+	    continue;
+	g = fe + 1;
+
+	/* rtrim on field 1. */
+	*fe = '\0';
+	while (--fe > f && _isspace(*fe))
+	    *fe = '\0';
+	if (*f == '\0')
+	    continue;
+
+	/* ltrim on field 2. */
+	while (*g && _isspace(*g))
+            g++;
+	if (*g == '\0')
+	    continue;
+
+	for (t = f; *t != '\0'; t++) {
+	    if (_isspace(*t))
+		*t = '_';
+	}
+
+	switch (rpmdsCpuinfoCtagFlags(f)) {
+	case -1:	/* not found */
+	case 0:		/* ignore */
+	default:
+	    continue;
+	    break;
+	case 1:		/* Provides: cpuinfo(f) = g */
+	    for (t = g; *t != '\0'; t++) {
+		if (_isspace(*t) || *t == '(' || *t == ')')
+		    *t = '_';
+	    }
+	    rpmdsCpuinfoAdd(dsp, NS, f, g, RPMSENSE_PROBE|RPMSENSE_EQUAL);
+	    break;
+	case 2:		/* Provides: cpuinfo(g) */
+	    for (t = g; *t != '\0'; t++) {
+		if (_isspace(*t) || *t == '(' || *t == ')')
+		    *t = '_';
+	    }
+	    rpmdsCpuinfoAdd(dsp, NS, g, "", RPMSENSE_PROBE);
+	    break;
+	case 3:		/* if ("yes") Provides: cpuinfo(f) */
+	   if (!strcmp(g, "yes"))
+		rpmdsCpuinfoAdd(dsp, NS, f, "", RPMSENSE_PROBE);
+	    break;
+	case 4:		/* Provides: cpuinfo(g[i]) */
+	{   char ** av = NULL;
+	    int i;
+	    i = 0;
+	    rc = poptParseArgvString(g, NULL, (const char ***)&av);
+	    if (!rc && av != NULL)
+	    while ((f = av[i++]) != NULL)
+		rpmdsCpuinfoAdd(dsp, NS, f, "", RPMSENSE_PROBE);
+	    if (av != NULL)
+		free(av);
+	}   break;
+	}
+    }
+
+exit:
+    if (fd) (void) Fclose(fd);
+    return rc;
 }
 
 /**

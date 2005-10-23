@@ -144,7 +144,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
  * @param tagN		type of dependency
  * @param N		name
  * @param EVR		epoch:version-release
- * @param Flags		comparison flags
+ * @param Flags		comparison/context flags
  * @return		new dependency set
  */
 /*@null@*/
@@ -343,6 +343,15 @@ int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
 /*@null@*/
 int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
 	/*@modifies *dsp, ods @*/;
+
+/**
+ * Load /proc/cpuinfo provides into a dependency set.
+ * @retval *dsp		(loaded) depedency set
+ * @param fn		path to file (NULL uses /proc/cpuinfo)
+ * @return		0 on success
+ */
+int rpmdsCpuinfo(/*@out@*/ rpmds * dsp, /*@null@*/ const char * fn)
+	/*@modifies *dsp @*/;
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.

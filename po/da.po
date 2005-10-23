@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-22 16:54-0400\n"
+"POT-Creation-Date: 2005-10-23 09:07-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2749,16 +2749,16 @@ msgstr ")"
 msgid "OK"
 msgstr "O.K."
 
-#: lib/rpmds.c:738 lib/rpmds.c:1102
+#: lib/rpmds.c:739 lib/rpmds.c:1285
 #, fuzzy
 msgid "NO "
 msgstr "IKKE O.K."
 
-#: lib/rpmds.c:738 lib/rpmds.c:1102
+#: lib/rpmds.c:739 lib/rpmds.c:1285
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1068
+#: lib/rpmds.c:1251
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2767,13 +2767,13 @@ msgstr ""
 "\"B\"-afhængighed kræver en epoke (antager samme som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:1101
+#: lib/rpmds.c:1284
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1125
+#: lib/rpmds.c:1308
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"

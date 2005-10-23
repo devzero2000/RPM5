@@ -94,6 +94,7 @@ LIBRPM_0
     rpmdsColor;
     rpmdsCompare;
     rpmdsCount;
+    rpmdsCpuinfo;
     _rpmds_debug;
     rpmdsDNEVR;
     rpmdsEVR;

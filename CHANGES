@@ -29,6 +29,7 @@
 	- rollback: add --rbexclude tid option.
 	- rollback: merge latest hackery for composting.
 	- upgrade same NEVR with --force if not literally identical (#134388).
+	- add cpuinfo(foo) dependency name space to map /proc/cpuinfo provides.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

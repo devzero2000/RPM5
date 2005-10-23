@@ -275,6 +275,8 @@ static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
     return rc;
 }
 
+/**
+ */
 static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
 		/*@null@*/ rpmds ds)
 	/*@modifies buf @*/
@@ -1354,6 +1356,8 @@ static struct DepMsg_s depMsgs[] = {
 static DepMsg_t DepMsgs = depMsgs;
 
 /**
+ * Print dependencies in a header.
+ * @param h		header
  */
 static void printDeps(Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
