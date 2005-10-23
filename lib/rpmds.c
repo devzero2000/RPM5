@@ -967,6 +967,63 @@ ods->i = save;
     return 0;
 }
 
+int rpmdsSearch(rpmds ds, const rpmds ods)
+{
+    int comparison;
+    int i, l, u;
+
+    if (ds == NULL || ods == NULL)
+	return 0;
+
+    /* Binary search to find the [l,u) subset that contains N */
+    i = -1;
+    l = 0;
+    u = ds->Count;
+    while (l < u) {
+	i = (l + u) / 2;
+
+	comparison = strcmp(ods->N[ods->i], ds->N[i]);
+
+	if (comparison < 0)
+	    u = i;
+	else if (comparison > 0)
+	    l = i + 1;
+	else {
+	    /* Set l to 1st member of set that contains N. */
+	    if (strcmp(ods->N[ods->i], ds->N[l]))
+		l = i;
+	    while (l > 0 && !strcmp(ods->N[ods->i], ds->N[l-1]))
+		l--;
+	    /* Set u to 1st member of set that does not contain N. */
+	    if (strcmp(ods->N[ods->i], ds->N[u]))
+		u = i;
+	    while (++u < ods->Count) {
+		if (strcmp(ods->N[ods->i], ds->N[u]))
+		    break;
+	    }
+	    break;
+	}
+    }
+
+    /* Check each member of [l,u) subset for ranges overlap. */
+    i = -1;
+    if (l < u) {
+	int save = rpmdsSetIx(ds, l-1);
+	while (rpmdsNext(ds) < u) {
+	    if ((i = rpmdsCompare(ods, ds)) != 0)
+		break;
+	}
+	/* Return element index that overlaps, or -1. */
+	if (i)
+	    i = rpmdsIx(ds);
+	else {
+	    (void) rpmdsSetIx(ds, save);
+	    i = -1;
+	}
+    }
+    return i;
+}
+
 struct cpuinfo_s {
 /*@observer@*/ /*@null@*/
     const char *name;
@@ -1197,95 +1254,6 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     N_("internal support for lua scripts.") },
     { NULL,				NULL, 0,	NULL }
 };
-
-void rpmShowRpmlibProvides(FILE * fp)
-{
-    const struct rpmlibProvides_s * rlp;
-
-    for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
-/*@-nullpass@*/ /* FIX: rlp->featureEVR not NULL */
-	rpmds pro = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
-			rlp->featureEVR, rlp->featureFlags);
-/*@=nullpass@*/
-	const char * DNEVR = rpmdsDNEVR(pro);
-
-	if (pro != NULL && DNEVR != NULL) {
-	    fprintf(fp, "    %s\n", DNEVR+2);
-	    if (rlp->featureDescription)
-		fprintf(fp, "\t%s\n", rlp->featureDescription);
-	}
-	pro = rpmdsFree(pro);
-    }
-}
-
-int rpmCheckRpmlibProvides(const rpmds key)
-{
-    const struct rpmlibProvides_s * rlp;
-    int rc = 0;
-
-    for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
-	if (rlp->featureEVR && rlp->featureFlags) {
-	    rpmds pro;
-	    pro = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
-			rlp->featureEVR, rlp->featureFlags);
-	    rc = rpmdsCompare(pro, key);
-	    pro = rpmdsFree(pro);
-	}
-	if (rc)
-	    break;
-    }
-    return rc;
-}
-
-int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
-                         const char *** provVersions)
-{
-    const char ** names, ** versions;
-    int * flags;
-    int n = 0;
-    
-/*@-boundswrite@*/
-    while (rpmlibProvides[n].featureName != NULL)
-        n++;
-/*@=boundswrite@*/
-
-    names = xcalloc((n+1), sizeof(*names));
-    versions = xcalloc((n+1), sizeof(*versions));
-    flags = xcalloc((n+1), sizeof(*flags));
-    
-/*@-boundswrite@*/
-    for (n = 0; rpmlibProvides[n].featureName != NULL; n++) {
-        names[n] = rpmlibProvides[n].featureName;
-        flags[n] = rpmlibProvides[n].featureFlags;
-        versions[n] = rpmlibProvides[n].featureEVR;
-    }
-    
-    /*@-branchstate@*/
-    if (provNames)
-	*provNames = names;
-    else
-	names = _free(names);
-    /*@=branchstate@*/
-
-    /*@-branchstate@*/
-    if (provFlags)
-	*provFlags = flags;
-    else
-	flags = _free(flags);
-    /*@=branchstate@*/
-
-    /*@-branchstate@*/
-    if (provVersions)
-	*provVersions = versions;
-    else
-	versions = _free(versions);
-    /*@=branchstate@*/
-/*@=boundswrite@*/
-
-    /*@-compmempass@*/ /* FIX: rpmlibProvides[] reachable */
-    return n;
-    /*@=compmempass@*/
-}
 
 /**
  * Load rpmlib provides into a dependency set.

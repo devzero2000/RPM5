@@ -31,6 +31,9 @@
 	- upgrade same NEVR with --force if not literally identical (#134388).
 	- add cpuinfo(foo) dependency name space to map /proc/cpuinfo provides.
 	- add rpmlib(foo) dependency name space to map rpmlib provides.
+	- eliminate rpmCheckRpmlibProvides(), use rpmdsSearch() instead.
+	- eliminate rpmGetRpmlibProvides(), use rpmdsRpmlib() instead.
+	- eliminate rpmShowRpmlibProvides(), print rpmdsRpmlib() instead.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

@@ -66,7 +66,6 @@ LIBRPM_0
     rpmalFree;
     rpmalMakeIndex;
     rpmalSatisfiesDepend;
-    rpmCheckRpmlibProvides;
     rpmcliAllPoptTable;
     rpmcliArgIter;
     rpmcliConfigured;
@@ -115,6 +114,7 @@ LIBRPM_0
     rpmdsProblem;
     rpmdsRefs;
     rpmdsRpmlib;
+    rpmdsSearch;
     rpmdsSetBT;
     rpmdsSetColor;
     rpmdsSetIx;
@@ -178,7 +178,6 @@ LIBRPM_0
     rpmGetMachine;
     rpmGetOsInfo;
     rpmGetPassPhrase;
-    rpmGetRpmlibProvides;
     rpmGetVar;
     _rpmgi_debug;
     rpmgiFree;
@@ -227,7 +226,6 @@ LIBRPM_0
     rpmSetVar;
     rpmShowProgress;
     rpmShowRC;
-    rpmShowRpmlibProvides;
     rpmSignPoptTable;
     rpmsxContext;
     rpmsxCount;

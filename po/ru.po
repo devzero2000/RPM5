@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 10:15-0400\n"
+"POT-Creation-Date: 2005-10-23 13:55-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1432,39 +1432,44 @@ msgstr "(кэширован)"
 msgid "(rpmrc provides)"
 msgstr "(rpmrc provides)"
 
-#: lib/depends.c:670
+#: lib/depends.c:678
 msgid "(rpmlib provides)"
 msgstr "(rpmlib provides)"
 
-#: lib/depends.c:699
+#: lib/depends.c:694
+#, fuzzy
+msgid "(cpuinfo provides)"
+msgstr "(rpmlib provides)"
+
+#: lib/depends.c:723
 msgid "(db files)"
 msgstr "(db files)"
 
-#: lib/depends.c:712
+#: lib/depends.c:736
 msgid "(db provides)"
 msgstr "(db provides)"
 
-#: lib/depends.c:725
+#: lib/depends.c:749
 msgid "(db package)"
 msgstr "(db package)"
 
-#: lib/depends.c:1084
+#: lib/depends.c:1108
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "игнорировать зависимост(и) имён пакета(ов) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1204
+#: lib/depends.c:1228
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s \"%s\" из сортированных связей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1441
+#: lib/depends.c:1465
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1531
+#: lib/depends.c:1555
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1473,21 +1478,21 @@ msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "дерево, глубина)\n"
 
-#: lib/depends.c:1622
+#: lib/depends.c:1646
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1695
+#: lib/depends.c:1719
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1730
+#: lib/depends.c:1754
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1735
+#: lib/depends.c:1759
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "ошибка rpmtsOrder, осталось %d элементов\n"
@@ -2714,57 +2719,57 @@ msgstr ")"
 msgid "OK"
 msgstr "ОК"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1447
+#: lib/rpmds.c:739 lib/rpmds.c:1415
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1447
+#: lib/rpmds.c:739 lib/rpmds.c:1415
 msgid "YES"
 msgstr "ДА"
 
-#: lib/rpmds.c:1170
+#: lib/rpmds.c:1227
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, и Obsoletes: зависимости поддерживают версии."
 
-#: lib/rpmds.c:1173
+#: lib/rpmds.c:1230
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "имена файла(ов) хранятся в формате (dirName,baseName,dirIndex)."
 
-#: lib/rpmds.c:1176
+#: lib/rpmds.c:1233
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "для упаковки содержимого пакета используется bzip2"
 
-#: lib/rpmds.c:1179
+#: lib/rpmds.c:1236
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "префикс \"./\" используется для фала(ов) содержимого пакета."
 
-#: lib/rpmds.c:1182
+#: lib/rpmds.c:1239
 msgid "package name-version-release is not implicitly provided."
 msgstr "имя-версия-выпуск пакета не предоставляется автоматически."
 
-#: lib/rpmds.c:1185
+#: lib/rpmds.c:1242
 msgid "header tags are always sorted after being loaded."
 msgstr "ярлыки заголовков всегда сортируются после загрузки."
 
-#: lib/rpmds.c:1188
+#: lib/rpmds.c:1245
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "интерпретатор сценариев может использовать аргументы из заголовка."
 
-#: lib/rpmds.c:1191
+#: lib/rpmds.c:1248
 msgid "a hardlink file set may be installed without being complete."
 msgstr "поддерживается частичная установка набора жестких ссылок пакета."
 
-#: lib/rpmds.c:1194
+#: lib/rpmds.c:1251
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1197
+#: lib/rpmds.c:1254
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- не поддерживается для строк\n"
 
-#: lib/rpmds.c:1413
+#: lib/rpmds.c:1381
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2774,13 +2779,13 @@ msgstr ""
 "\"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1446
+#: lib/rpmds.c:1414
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1470
+#: lib/rpmds.c:1438
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s содержит неудовлетворенные %s: %s\n"
@@ -3057,100 +3062,110 @@ msgstr "%s конфликтует с%s%s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:199
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "отсутствует второе ':' в %s:%d\n"
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:202
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "отсутствует название архитектуры в %s:%d\n"
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:356
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Неполная строка данных в %s:%d\n"
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:361
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Слишком много аргументов в строке данных в %s:%d\n"
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:369
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Неверный номер arch/os: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:406
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Неполная строка по умолчанию в %s:%d\n"
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:411
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Слишком много аргументов в строке по умолчанию в %s:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:576
+#: lib/rpmrc.c:577
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Невозможно прочесть %s: %s.\n"
 
-#: lib/rpmrc.c:614
+#: lib/rpmrc.c:615
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "отсутствует ':' (найден 0x%02x) в %s:%d\n"
 
-#: lib/rpmrc.c:631 lib/rpmrc.c:705
+#: lib/rpmrc.c:632 lib/rpmrc.c:706
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "отсутствует аргумент для %s в %s:%d\n"
 
-#: lib/rpmrc.c:648 lib/rpmrc.c:670
+#: lib/rpmrc.c:649 lib/rpmrc.c:671
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "ошибка раскрытия %s на %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:657
+#: lib/rpmrc.c:658
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "невозможно открыть %s в %s:%d %s\n"
 
-#: lib/rpmrc.c:697
+#: lib/rpmrc.c:698
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "отсутствует архитектура для %s в %s:%d\n"
 
-#: lib/rpmrc.c:764
+#: lib/rpmrc.c:765
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "неверный параметр '%s' в %s:%d\n"
 
-#: lib/rpmrc.c:1575
+#: lib/rpmrc.c:1576
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1576
+#: lib/rpmrc.c:1577
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1813
+#: lib/rpmrc.c:1814
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Невозможно раскрыть %s\n"
 
-#: lib/rpmrc.c:1818
+#: lib/rpmrc.c:1819
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Невозможно прочитать %s, значение HOME слишком велико.\n"
 
-#: lib/rpmrc.c:1835
+#: lib/rpmrc.c:1836
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
+
+#: lib/rpmrc.c:1944
+#, c-format
+msgid "Features supported by rpmlib installer:\n"
+msgstr ""
+
+#: lib/rpmrc.c:1953
+#, c-format
+msgid "Features supported by current cpuinfo (from /proc/cpuinfo):\n"
+msgstr ""
 
 #: lib/rpmsx.c:374
 #, c-format

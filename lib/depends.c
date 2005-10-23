@@ -666,8 +666,32 @@ retry:
      * Check those dependencies now.
      */
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
-	if (rpmCheckRpmlibProvides(dep)) {
+	static rpmds rpmlibds = NULL;
+	static int oneshot = -1;
+
+	if (oneshot)
+	    oneshot = rpmdsRpmlib(&rpmlibds, NULL);
+	if (rpmlibds == NULL)
+	    goto unsatisfied;
+
+	if (rpmdsSearch(rpmlibds, dep) >= 0) {
 	    rpmdsNotify(dep, _("(rpmlib provides)"), rc);
+	    goto exit;
+	}
+	goto unsatisfied;
+    }
+
+    if (!strncmp(Name, "cpuinfo(", sizeof("cpuinfo(")-1)) {
+	static rpmds cpuinfods = NULL;
+	static int oneshot = -1;
+
+	if (oneshot)
+	    oneshot = rpmdsCpuinfo(&cpuinfods, NULL);
+	if (cpuinfods == NULL)
+	    goto unsatisfied;
+
+	if (rpmdsSearch(cpuinfods, dep) >= 0) {
+	    rpmdsNotify(dep, _("(cpuinfo provides)"), rc);
 	    goto exit;
 	}
 	goto unsatisfied;

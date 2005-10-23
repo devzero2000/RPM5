@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 10:15-0400\n"
+"POT-Creation-Date: 2005-10-23 13:55-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1401,59 +1401,63 @@ msgstr ""
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:670
+#: lib/depends.c:678
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:699
+#: lib/depends.c:694
+msgid "(cpuinfo provides)"
+msgstr ""
+
+#: lib/depends.c:723
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:712
+#: lib/depends.c:736
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:725
+#: lib/depends.c:749
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:1084
+#: lib/depends.c:1108
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1204
+#: lib/depends.c:1228
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1441
+#: lib/depends.c:1465
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1531
+#: lib/depends.c:1555
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1622
+#: lib/depends.c:1646
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1695
+#: lib/depends.c:1719
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1730
+#: lib/depends.c:1754
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1735
+#: lib/depends.c:1759
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2644,68 +2648,68 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:1447
+#: lib/rpmds.c:739 lib/rpmds.c:1415
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:1447
+#: lib/rpmds.c:739 lib/rpmds.c:1415
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1170
+#: lib/rpmds.c:1227
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1173
+#: lib/rpmds.c:1230
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1176
+#: lib/rpmds.c:1233
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1179
+#: lib/rpmds.c:1236
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1182
+#: lib/rpmds.c:1239
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1185
+#: lib/rpmds.c:1242
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1188
+#: lib/rpmds.c:1245
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1191
+#: lib/rpmds.c:1248
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1194
+#: lib/rpmds.c:1251
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1197
+#: lib/rpmds.c:1254
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1413
+#: lib/rpmds.c:1381
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:1446
+#: lib/rpmds.c:1414
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:1470
+#: lib/rpmds.c:1438
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -2981,99 +2985,109 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:199
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:202
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:356
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:361
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:369
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:406
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:411
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:576
+#: lib/rpmrc.c:577
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr ""
 
-#: lib/rpmrc.c:614
+#: lib/rpmrc.c:615
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:631 lib/rpmrc.c:705
+#: lib/rpmrc.c:632 lib/rpmrc.c:706
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:648 lib/rpmrc.c:670
+#: lib/rpmrc.c:649 lib/rpmrc.c:671
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr ""
 
-#: lib/rpmrc.c:657
+#: lib/rpmrc.c:658
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:697
+#: lib/rpmrc.c:698
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:764
+#: lib/rpmrc.c:765
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1575
+#: lib/rpmrc.c:1576
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1576
+#: lib/rpmrc.c:1577
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1813
+#: lib/rpmrc.c:1814
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1818
+#: lib/rpmrc.c:1819
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1835
+#: lib/rpmrc.c:1836
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
+msgstr ""
+
+#: lib/rpmrc.c:1944
+#, c-format
+msgid "Features supported by rpmlib installer:\n"
+msgstr ""
+
+#: lib/rpmrc.c:1953
+#, c-format
+msgid "Features supported by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmsx.c:374

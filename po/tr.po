@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 10:15-0400\n"
+"POT-Creation-Date: 2005-10-23 13:55-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1444,43 +1444,48 @@ msgstr ""
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:670
+#: lib/depends.c:678
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:699
+#: lib/depends.c:694
+#, fuzzy
+msgid "(cpuinfo provides)"
+msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
+
+#: lib/depends.c:723
 #, fuzzy
 msgid "(db files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/depends.c:712
+#: lib/depends.c:736
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:725
+#: lib/depends.c:749
 #, fuzzy
 msgid "(db package)"
 msgstr "paket yok\n"
 
-#: lib/depends.c:1084
+#: lib/depends.c:1108
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1204
+#: lib/depends.c:1228
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1441
+#: lib/depends.c:1465
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1531
+#: lib/depends.c:1555
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1488,21 +1493,21 @@ msgid ""
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1622
+#: lib/depends.c:1646
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1695
+#: lib/depends.c:1719
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1730
+#: lib/depends.c:1754
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1735
+#: lib/depends.c:1759
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2756,56 +2761,56 @@ msgstr ")"
 msgid "OK"
 msgstr "Tamam"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1447
+#: lib/rpmds.c:739 lib/rpmds.c:1415
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/rpmds.c:739 lib/rpmds.c:1447
+#: lib/rpmds.c:739 lib/rpmds.c:1415
 msgid "YES"
 msgstr "EVET"
 
-#: lib/rpmds.c:1170
+#: lib/rpmds.c:1227
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1173
+#: lib/rpmds.c:1230
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1176
+#: lib/rpmds.c:1233
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1179
+#: lib/rpmds.c:1236
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1182
+#: lib/rpmds.c:1239
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1185
+#: lib/rpmds.c:1242
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1188
+#: lib/rpmds.c:1245
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1191
+#: lib/rpmds.c:1248
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1194
+#: lib/rpmds.c:1251
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1197
+#: lib/rpmds.c:1254
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- dizgelerde desteklenmez\n"
 
-#: lib/rpmds.c:1413
+#: lib/rpmds.c:1381
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2814,13 +2819,13 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:1446
+#: lib/rpmds.c:1414
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1470
+#: lib/rpmds.c:1438
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
@@ -3101,100 +3106,110 @@ msgstr " %s-%s-%s ile çeliþiyor\n"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "anlaþýlamayan %d hatasý, %s paketi iþlenirken saptandý"
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:199
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "%s:%d - ikinci ':' eksik\n"
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:202
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "%s:%d - mimari ismi eksik\n"
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:356
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "%s:%d - veri satýrý tamamlanmamýþ\n"
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:361
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "%s:%d - veri satýrýnda çok fazla argüman\n"
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:369
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "arch/os numarasý hatalý: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:406
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "%s:%d - öntanýmlý satýr tamamlanmamýþ\n"
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:411
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "%s:%d - öntanýmlý satýrda çok fazla argüman\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:576
+#: lib/rpmrc.c:577
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "%s okunamadý: %s.\n"
 
-#: lib/rpmrc.c:614
+#: lib/rpmrc.c:615
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "(0x%02x bulundu) %s:%d de ':' yok\n"
 
-#: lib/rpmrc.c:631 lib/rpmrc.c:705
+#: lib/rpmrc.c:632 lib/rpmrc.c:706
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s için %s:%d de argüman eksik\n"
 
-#: lib/rpmrc.c:648 lib/rpmrc.c:670
+#: lib/rpmrc.c:649 lib/rpmrc.c:671
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s geniþletmesi %s:%d \"%s\" de baþarýsýz \n"
 
-#: lib/rpmrc.c:657
+#: lib/rpmrc.c:658
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "%s dosyasý açýlamýyor (%s:%d): %s\n"
 
-#: lib/rpmrc.c:697
+#: lib/rpmrc.c:698
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s için %s:%d'de eksik mimari\n"
 
-#: lib/rpmrc.c:764
+#: lib/rpmrc.c:765
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "seçenek '%s' (%s:%d) de hatalý\n"
 
-#: lib/rpmrc.c:1575
+#: lib/rpmrc.c:1576
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Bilinmeyen sistem: %s\n"
 
-#: lib/rpmrc.c:1576
+#: lib/rpmrc.c:1577
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Lütfen rpm-list@redhat.com listesine üye olun\n"
 
-#: lib/rpmrc.c:1813
+#: lib/rpmrc.c:1814
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s geniþletilemiyor\n"
 
-#: lib/rpmrc.c:1818
+#: lib/rpmrc.c:1819
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s okunamýyor, EV çok büyük\n"
 
-#: lib/rpmrc.c:1835
+#: lib/rpmrc.c:1836
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s okuma eriþimi için açýlamadý: %s.\n"
+
+#: lib/rpmrc.c:1944
+#, c-format
+msgid "Features supported by rpmlib installer:\n"
+msgstr ""
+
+#: lib/rpmrc.c:1953
+#, c-format
+msgid "Features supported by current cpuinfo (from /proc/cpuinfo):\n"
+msgstr ""
 
 #: lib/rpmsx.c:374
 #, c-format

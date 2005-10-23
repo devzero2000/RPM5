@@ -1026,19 +1026,6 @@ typedef enum rpmtransFlags_e {
   )
 
 /** \ingroup rpmtrans
- * Return copy of rpmlib internal provides.
- * @retval provNames	address of array of rpmlib internal provide names
- * @retval provFlags	address of array of rpmlib internal provide flags
- * @retval provVersions	address of array of rpmlib internal provide versions
- * @return		no. of entries
- */
-/*@unused@*/
-int rpmGetRpmlibProvides(/*@null@*/ /*@out@*/ const char *** provNames,
-			/*@null@*/ /*@out@*/ int ** provFlags,
-			/*@null@*/ /*@out@*/ const char *** provVersions)
-	/*@modifies *provNames, *provFlags, *provVersions @*/;
-
-/** \ingroup rpmtrans
  * Segmented string compare for version and/or release.
  *
  * @param a		1st string
@@ -1047,22 +1034,6 @@ int rpmGetRpmlibProvides(/*@null@*/ /*@out@*/ const char *** provNames,
  */
 int rpmvercmp(const char * a, const char * b)
 	/*@*/;
-
-/** \ingroup rpmtrans
- * Check dependency against internal rpmlib feature provides.
- * @param key		dependency
- * @return		1 if dependency overlaps, 0 otherwise
- */
-int rpmCheckRpmlibProvides(const rpmds key)
-	/*@*/;
-
-/** \ingroup rpmcli
- * Display current rpmlib feature provides.
- * @param fp		output file handle
- */
-void rpmShowRpmlibProvides(FILE * fp)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
 
 /*@}*/
 

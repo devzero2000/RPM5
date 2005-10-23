@@ -330,7 +330,6 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
  * @param ods		dependency set element to find.
  * @return		dependency index (or -1 if not found)
  */
-/*@null@*/
 int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
 	/*@modifies ds @*/;
 
@@ -340,9 +339,17 @@ int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
  * @param ods		dependency set to merge
  * @return		(merged) dependency index
  */
-/*@null@*/
 int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
 	/*@modifies *dsp, ods @*/;
+
+/**
+ * Search a sorted dependency set for an element that overlaps.
+ * @param ds		dependency set to search
+ * @param ods		dependency set element to find.
+ * @return		dependency index (or -1 if not found)
+ */
+int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ const rpmds ods)
+	/*@modifies ds @*/;
 
 /**
  * Load /proc/cpuinfo provides into a dependency set.

@@ -17,6 +17,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmlua.h>
+#include <rpmds.h>
 
 #include "misc.h"
 #include "debug.h"
@@ -1890,9 +1891,11 @@ int rpmReadConfigFiles(const char * file, const char * target)
 
 int rpmShowRC(FILE * fp)
 {
+    rpmds ds = NULL;
     struct rpmOption *opt;
     int i;
     machEquivTable equivTable;
+    int xx;
 
     /* the caller may set the build arch which should be printed here */
     fprintf(fp, "ARCHITECTURE AND OS:\n");
@@ -1938,8 +1941,21 @@ int rpmShowRC(FILE * fp)
     }
     fprintf(fp, "\n");
 
-    fprintf(fp, "Features supported by rpmlib:\n");
-    rpmShowRpmlibProvides(fp);
+    fprintf(fp, _("Features supported by rpmlib installer:\n"));
+    xx = rpmdsRpmlib(&ds, NULL);
+    ds = rpmdsInit(ds);
+    while (rpmdsNext(ds) >= 0)
+	fprintf(fp, "    %s\n", rpmdsDNEVR(ds)+2);
+    ds = rpmdsFree(ds);
+    fprintf(fp, "\n");
+
+    fprintf(fp,
+	_("Features supported by current cpuinfo (from /proc/cpuinfo):\n"));
+    xx = rpmdsCpuinfo(&ds, NULL);
+    ds = rpmdsInit(ds);
+    while (rpmdsNext(ds) >= 0)
+	fprintf(fp, "    %s\n", rpmdsDNEVR(ds)+2);
+    ds = rpmdsFree(ds);
     fprintf(fp, "\n");
 
     rpmDumpMacroTable(NULL, fp);
