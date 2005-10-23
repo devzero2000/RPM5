@@ -968,6 +968,7 @@ ods->i = save;
 }
 
 struct cpuinfo_s {
+/*@observer@*/ /*@null@*/
     const char *name;
     int done;
     int flags;
@@ -1005,6 +1006,8 @@ static struct cpuinfo_s ctags[] = {
  * @return		type of format (0 == ignore, -1 == not found)
  */
 static int rpmdsCpuinfoCtagFlags(const char * name)
+	/*@globals ctags @*/
+	/*@modifies ctags @*/
 {
     struct cpuinfo_s * ct;
     int flags = -1;
@@ -1031,6 +1034,7 @@ static int rpmdsCpuinfoCtagFlags(const char * name)
  */
 static void rpmdsCpuinfoAdd(rpmds *dsp, const char * NS,
 		const char *N, const char *EVR, int_32 Flags)
+	/*@modifies *dsp @*/
 {
     char *t;
     rpmds ds;
