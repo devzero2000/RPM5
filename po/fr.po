@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 13:55-0400\n"
+"POT-Creation-Date: 2005-10-23 19:15-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1069,7 +1069,7 @@ msgstr "ligne %d: mauvais argument a %%patch: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "ligne %d: deuxième %%prep\n"
 
-#: build/parseReqs.c:102
+#: build/parseReqs.c:103
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1077,12 +1077,12 @@ msgstr ""
 "ligne %d: le lexème de dépendance doit commencer par un alphanumérique, '_' "
 "ou '/': %s\n"
 
-#: build/parseReqs.c:130
+#: build/parseReqs.c:131
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "ligne %d: version interdite dans le nom de fichier: %s\n"
 
-#: build/parseReqs.c:161
+#: build/parseReqs.c:162
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "ligne %d: Version requise: %s\n"
@@ -1446,49 +1446,50 @@ msgstr ""
 msgid "(cached)"
 msgstr "(caché)"
 
-#: lib/depends.c:653
-msgid "(rpmrc provides)"
-msgstr "(fourni par rpmrc)"
+#: lib/depends.c:644
+#, fuzzy
+msgid "(sysinfo provides)"
+msgstr "(fourni par rpmlib)"
 
-#: lib/depends.c:678
+#: lib/depends.c:665
 msgid "(rpmlib provides)"
 msgstr "(fourni par rpmlib)"
 
-#: lib/depends.c:694
+#: lib/depends.c:681
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(fourni par rpmlib)"
 
-#: lib/depends.c:723
+#: lib/depends.c:710
 msgid "(db files)"
 msgstr "(fourni par fichiers db)"
 
-#: lib/depends.c:736
+#: lib/depends.c:723
 msgid "(db provides)"
 msgstr "(fourni par la db)"
 
-#: lib/depends.c:749
+#: lib/depends.c:736
 msgid "(db package)"
 msgstr "(fourni par un paquetage)"
 
-#: lib/depends.c:1108
+#: lib/depends.c:1095
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 "ignorer la(les) relation(s) entre les noms de paquetages [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1228
+#: lib/depends.c:1215
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "on enlève %s \"%s\" des relations de Ttri.\n"
 
 #. Record all relations.
-#: lib/depends.c:1465
+#: lib/depends.c:1452
 msgid "========== recording tsort relations\n"
 msgstr "========== enregistrement des relations de Ttri\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1555
+#: lib/depends.c:1542
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1497,21 +1498,21 @@ msgstr ""
 "========== Ttri des paquetages (ordre, #prédécesseurs, #succeseurs, arbre, "
 "profondeur)\n"
 
-#: lib/depends.c:1646
+#: lib/depends.c:1633
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== successeurs seulement (%d octets)\n"
 
-#: lib/depends.c:1719
+#: lib/depends.c:1706
 msgid "LOOP:\n"
 msgstr "BOUCLE:\n"
 
-#: lib/depends.c:1754
+#: lib/depends.c:1741
 msgid "========== continuing tsort ...\n"
 msgstr "========== continuation du Ttri ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1759
+#: lib/depends.c:1746
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "échec de rpmtsOrder, %d éléments toujours présents\n"
@@ -2758,11 +2759,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1415
+#: lib/rpmds.c:739 lib/rpmds.c:1559
 msgid "NO "
 msgstr "NON"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1415
+#: lib/rpmds.c:739 lib/rpmds.c:1559
 msgid "YES"
 msgstr "OUI"
 
@@ -2816,7 +2817,26 @@ msgstr ""
 msgid "internal support for lua scripts."
 msgstr "- non supporté sur des chaînes de caractères\n"
 
-#: lib/rpmds.c:1381
+#: lib/rpmds.c:1356
+#, fuzzy, c-format
+msgid "%s:%d N must begin with alphanumeric, _, or /.\n"
+msgstr ""
+"ligne %d: le lexème de dépendance doit commencer par un alphanumérique, '_' "
+"ou '/': %s\n"
+
+#. XXX No comparison operator found.
+#: lib/rpmds.c:1389
+#, c-format
+msgid "%s:%d No comparison operator found.\n"
+msgstr ""
+
+#. XXX No EVR comparison value found.
+#: lib/rpmds.c:1399
+#, c-format
+msgid "%s:%d No EVR comparison value found.\n"
+msgstr ""
+
+#: lib/rpmds.c:1525
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2826,13 +2846,13 @@ msgstr ""
 "pour \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1414
+#: lib/rpmds.c:1558
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:1438
+#: lib/rpmds.c:1582
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "le paquetage %s a un(e) %s non-satisfaites: %s\n"
@@ -3212,14 +3232,19 @@ msgstr "Impossible de lire %s, HOME trop gros.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Impossible d'ouvrir %s en lecture: %s.\n"
 
-#: lib/rpmrc.c:1944
+#: lib/rpmrc.c:1947
 #, c-format
-msgid "Features supported by rpmlib installer:\n"
+msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1953
+#: lib/rpmrc.c:1956
 #, c-format
-msgid "Features supported by current cpuinfo (from /proc/cpuinfo):\n"
+msgid "Features provided by rpmlib installer:\n"
+msgstr ""
+
+#: lib/rpmrc.c:1968
+#, c-format
+msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmsx.c:374
@@ -4491,6 +4516,9 @@ msgstr "utiliser la base de données dans REPERTOIRE"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "REPERTOIRE"
+
+#~ msgid "(rpmrc provides)"
+#~ msgstr "(fourni par rpmrc)"
 
 #~ msgid "gpg failed\n"
 #~ msgstr "échec de gpg\n"

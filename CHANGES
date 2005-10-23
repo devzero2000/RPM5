@@ -34,6 +34,8 @@
 	- eliminate rpmCheckRpmlibProvides(), use rpmdsSearch() instead.
 	- eliminate rpmGetRpmlibProvides(), use rpmdsRpmlib() instead.
 	- eliminate rpmShowRpmlibProvides(), print rpmdsRpmlib() instead.
+	- add system configurable provides read from /etc/rpm/sysinfo.
+	- display sysinfo/cpuinfo provides with --showrc iff --verboose.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

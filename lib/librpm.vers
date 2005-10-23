@@ -121,6 +121,7 @@ LIBRPM_0
     rpmdsSetNoPromote;
     rpmdsSetRefs;
     rpmdsSingle;
+    rpmdsSysinfo;
     rpmdsTagN;
     rpmdsThis;
     _rpmds_unspecified_epoch_noise;

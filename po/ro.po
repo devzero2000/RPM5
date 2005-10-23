@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 13:55-0400\n"
+"POT-Creation-Date: 2005-10-23 19:15-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -1034,18 +1034,18 @@ msgstr ""
 msgid "line %d: second %%prep\n"
 msgstr ""
 
-#: build/parseReqs.c:102
+#: build/parseReqs.c:103
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 
-#: build/parseReqs.c:130
+#: build/parseReqs.c:131
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr ""
 
-#: build/parseReqs.c:161
+#: build/parseReqs.c:162
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr ""
@@ -1391,67 +1391,67 @@ msgstr ""
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:653
-msgid "(rpmrc provides)"
+#: lib/depends.c:644
+msgid "(sysinfo provides)"
 msgstr ""
 
-#: lib/depends.c:678
+#: lib/depends.c:665
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:694
+#: lib/depends.c:681
 msgid "(cpuinfo provides)"
 msgstr ""
 
-#: lib/depends.c:723
+#: lib/depends.c:710
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:736
+#: lib/depends.c:723
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:749
+#: lib/depends.c:736
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:1108
+#: lib/depends.c:1095
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1228
+#: lib/depends.c:1215
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1465
+#: lib/depends.c:1452
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1555
+#: lib/depends.c:1542
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1646
+#: lib/depends.c:1633
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1719
+#: lib/depends.c:1706
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1754
+#: lib/depends.c:1741
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1759
+#: lib/depends.c:1746
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2642,11 +2642,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:1415
+#: lib/rpmds.c:739 lib/rpmds.c:1559
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:1415
+#: lib/rpmds.c:739 lib/rpmds.c:1559
 msgid "YES"
 msgstr ""
 
@@ -2690,20 +2690,37 @@ msgstr ""
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1381
+#: lib/rpmds.c:1356
+#, c-format
+msgid "%s:%d N must begin with alphanumeric, _, or /.\n"
+msgstr ""
+
+#. XXX No comparison operator found.
+#: lib/rpmds.c:1389
+#, c-format
+msgid "%s:%d No comparison operator found.\n"
+msgstr ""
+
+#. XXX No EVR comparison value found.
+#: lib/rpmds.c:1399
+#, c-format
+msgid "%s:%d No EVR comparison value found.\n"
+msgstr ""
+
+#: lib/rpmds.c:1525
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:1414
+#: lib/rpmds.c:1558
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:1438
+#: lib/rpmds.c:1582
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -3074,14 +3091,19 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1944
+#: lib/rpmrc.c:1947
 #, c-format
-msgid "Features supported by rpmlib installer:\n"
+msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1953
+#: lib/rpmrc.c:1956
 #, c-format
-msgid "Features supported by current cpuinfo (from /proc/cpuinfo):\n"
+msgid "Features provided by rpmlib installer:\n"
+msgstr ""
+
+#: lib/rpmrc.c:1968
+#, c-format
+msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmsx.c:374

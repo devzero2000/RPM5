@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 13:55-0400\n"
+"POT-Creation-Date: 2005-10-23 19:15-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1061,7 +1061,7 @@ msgstr "рядок %d: неправильний аргумент для %%patch:
 msgid "line %d: second %%prep\n"
 msgstr "рядок %d: другий %%prep\n"
 
-#: build/parseReqs.c:102
+#: build/parseReqs.c:103
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1069,12 +1069,12 @@ msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#: build/parseReqs.c:130
+#: build/parseReqs.c:131
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "рядок %d: Версії в іменах файлів не допускаються: %s\n"
 
-#: build/parseReqs.c:161
+#: build/parseReqs.c:162
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "рядок %d: Потрібна версія: %s\n"
@@ -1428,48 +1428,49 @@ msgstr ""
 msgid "(cached)"
 msgstr "(кешований)"
 
-#: lib/depends.c:653
-msgid "(rpmrc provides)"
-msgstr "(rpmrc постачає)"
+#: lib/depends.c:644
+#, fuzzy
+msgid "(sysinfo provides)"
+msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:678
+#: lib/depends.c:665
 msgid "(rpmlib provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:694
+#: lib/depends.c:681
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:723
+#: lib/depends.c:710
 msgid "(db files)"
 msgstr "(db файли)"
 
-#: lib/depends.c:736
+#: lib/depends.c:723
 msgid "(db provides)"
 msgstr "(db постачає)"
 
-#: lib/depends.c:749
+#: lib/depends.c:736
 msgid "(db package)"
 msgstr "(db пакет)"
 
-#: lib/depends.c:1108
+#: lib/depends.c:1095
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ігноруються зв'язки між іменами пакетів [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1228
+#: lib/depends.c:1215
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
 #. Record all relations.
-#: lib/depends.c:1465
+#: lib/depends.c:1452
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1555
+#: lib/depends.c:1542
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1478,21 +1479,21 @@ msgstr ""
 "========== сортування пакетів (порядок, #predecessors, #succesors, дерево, "
 "глибина)\n"
 
-#: lib/depends.c:1646
+#: lib/depends.c:1633
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== лише спадкоємці (%d байт)\n"
 
-#: lib/depends.c:1719
+#: lib/depends.c:1706
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1754
+#: lib/depends.c:1741
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1759
+#: lib/depends.c:1746
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
@@ -2712,11 +2713,11 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1415
+#: lib/rpmds.c:739 lib/rpmds.c:1559
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:739 lib/rpmds.c:1415
+#: lib/rpmds.c:739 lib/rpmds.c:1559
 msgid "YES"
 msgstr "ТАК"
 
@@ -2761,7 +2762,26 @@ msgstr "сценарії пакета при встановленні можут
 msgid "internal support for lua scripts."
 msgstr "- не підтримується для рядків\n"
 
-#: lib/rpmds.c:1381
+#: lib/rpmds.c:1356
+#, fuzzy, c-format
+msgid "%s:%d N must begin with alphanumeric, _, or /.\n"
+msgstr ""
+"рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
+"'/': %s\n"
+
+#. XXX No comparison operator found.
+#: lib/rpmds.c:1389
+#, c-format
+msgid "%s:%d No comparison operator found.\n"
+msgstr ""
+
+#. XXX No EVR comparison value found.
+#: lib/rpmds.c:1399
+#, c-format
+msgid "%s:%d No EVR comparison value found.\n"
+msgstr ""
+
+#: lib/rpmds.c:1525
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2771,13 +2791,13 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1414
+#: lib/rpmds.c:1558
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1438
+#: lib/rpmds.c:1582
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
@@ -3149,14 +3169,19 @@ msgstr "Неможливо прочитати %s, значення HOME надт
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Неможливо відкрити %s для читання: %s.\n"
 
-#: lib/rpmrc.c:1944
+#: lib/rpmrc.c:1947
 #, c-format
-msgid "Features supported by rpmlib installer:\n"
+msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1953
+#: lib/rpmrc.c:1956
 #, c-format
-msgid "Features supported by current cpuinfo (from /proc/cpuinfo):\n"
+msgid "Features provided by rpmlib installer:\n"
+msgstr ""
+
+#: lib/rpmrc.c:1968
+#, c-format
+msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmsx.c:374
@@ -4418,6 +4443,9 @@ msgstr "використовувати базу даних з КАТАЛОГУ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "(rpmrc provides)"
+#~ msgstr "(rpmrc постачає)"
 
 #~ msgid "Common options for all rpm modes:"
 #~ msgstr "Загальні параметри для всіх режимів rpm:"

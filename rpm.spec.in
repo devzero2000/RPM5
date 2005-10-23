@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.19
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -507,12 +507,14 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sun Oct 23 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.19
+* Sun Oct 23 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.20
 - add cpuinfo(foo) dependency name space to map /proc/cpuinfo provides.
 - add rpmlib(foo) dependency name space to map rpmlib provides.
 - eliminate rpmCheckRpmlibProvides(), use rpmdsSearch() instead.
 - eliminate rpmGetRpmlibProvides(), use rpmdsRpmlib() instead.
 - eliminate rpmShowRpmlibProvides(), print rpmdsRpmlib() instead.
+- add system configurable provides read from /etc/rpm/sysinfo.
+- display sysinfo/cpuinfo provides with --showrc iff --verboose.
 
 * Sat Oct 22 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.18
 - rollback: merge latest hackery for composting.

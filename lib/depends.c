@@ -632,33 +632,20 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 retry:
     rc = 0;	/* assume dependency is satisfied */
 
-#if defined(DYING) || defined(__LCLINT__)
-  { static /*@observer@*/ const char noProvidesString[] = "nada";
-    static /*@observer@*/ const char * rcProvidesString = noProvidesString;
-    int_32 Flags = rpmdsFlags(dep);
-    const char * start;
-    int i;
+    /* Search system configured provides first. */
+    if (!access("/etc/rpm/sysinfo", R_OK)) {
+	static rpmds sysinfods = NULL;
+	static int oneshot = -1;
 
-    if (rcProvidesString == noProvidesString)
-	rcProvidesString = rpmGetVar(RPMVAR_PROVIDES);
-
-    if (rcProvidesString != NULL && !(Flags & RPMSENSE_SENSEMASK)) {
-
-	i = strlen(Name);
-	/*@-observertrans -mayaliasunique@*/
-	while ((start = strstr(rcProvidesString, Name))) {
-	/*@=observertrans =mayaliasunique@*/
-/*@-boundsread@*/
-	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
-		rpmdsNotify(dep, _("(rpmrc provides)"), rc);
+	if (oneshot)
+	    oneshot = rpmdsSysinfo(&sysinfods, NULL);
+	if (sysinfods != NULL) {
+	    if (rpmdsSearch(sysinfods, dep) >= 0) {
+		rpmdsNotify(dep, _("(sysinfo provides)"), rc);
 		goto exit;
 	    }
-/*@=boundsread@*/
-	    rcProvidesString = start + 1;
 	}
     }
-  }
-#endif
 
     /*
      * New features in rpm packaging implicitly add versioned dependencies

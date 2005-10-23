@@ -1941,7 +1941,19 @@ int rpmShowRC(FILE * fp)
     }
     fprintf(fp, "\n");
 
-    fprintf(fp, _("Features supported by rpmlib installer:\n"));
+    if (rpmIsVerbose()) {
+	xx = rpmdsSysinfo(&ds, NULL);
+	if (ds != NULL) {
+	    fprintf(fp, _("Configured system provides (from /etc/rpm/sysinfo):\n"));
+	    ds = rpmdsInit(ds);
+	    while (rpmdsNext(ds) >= 0)
+		fprintf(fp, "    %s\n", rpmdsDNEVR(ds)+2);
+	    ds = rpmdsFree(ds);
+	    fprintf(fp, "\n");
+	}
+    }
+
+    fprintf(fp, _("Features provided by rpmlib installer:\n"));
     xx = rpmdsRpmlib(&ds, NULL);
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0)
@@ -1949,14 +1961,18 @@ int rpmShowRC(FILE * fp)
     ds = rpmdsFree(ds);
     fprintf(fp, "\n");
 
-    fprintf(fp,
-	_("Features supported by current cpuinfo (from /proc/cpuinfo):\n"));
-    xx = rpmdsCpuinfo(&ds, NULL);
-    ds = rpmdsInit(ds);
-    while (rpmdsNext(ds) >= 0)
-	fprintf(fp, "    %s\n", rpmdsDNEVR(ds)+2);
-    ds = rpmdsFree(ds);
-    fprintf(fp, "\n");
+    if (rpmIsVerbose()) {
+	xx = rpmdsCpuinfo(&ds, NULL);
+	if (ds != NULL) {
+	    fprintf(fp,
+		_("Features provided by current cpuinfo (from /proc/cpuinfo):\n"));
+	    ds = rpmdsInit(ds);
+	    while (rpmdsNext(ds) >= 0)
+		fprintf(fp, "    %s\n", rpmdsDNEVR(ds)+2);
+	    ds = rpmdsFree(ds);
+	    fprintf(fp, "\n");
+	}
+    }
 
     rpmDumpMacroTable(NULL, fp);
 

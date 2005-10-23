@@ -1279,6 +1279,150 @@ int rpmdsRpmlib(rpmds * dsp, void * tblp)
     return 0;
 }
 
+#define	_ETC_RPM_SYSINFO	"/etc/rpm/sysinfo"
+static const char * etcrpmsysinfo = _ETC_RPM_SYSINFO;
+
+#define	_isspace(_c)	\
+	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static struct cmpop {
+/*@observer@*/ /*@null@*/
+    const char * operator;
+    rpmsenseFlags sense;
+} cops[] = {
+    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
+    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
+
+    { "==", RPMSENSE_EQUAL},
+    
+    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+
+    { "<", RPMSENSE_LESS},
+    { "=", RPMSENSE_EQUAL},
+    { ">", RPMSENSE_GREATER},
+
+    { NULL, 0 },
+};
+
+int rpmdsSysinfo(rpmds *dsp, const char * fn)
+{
+    char buf[BUFSIZ];
+    const char *N, *EVR;
+    int_32 Flags;
+    rpmds ds;
+    char * f, * fe;
+    char * g, * ge;
+    FD_t fd = NULL;
+    FILE * fp;
+    int rc = -1;
+    int ln;
+    int xx;
+
+    if (fn == NULL)
+	fn = etcrpmsysinfo;
+
+    fd = Fopen(fn, "r.fpio");
+    if (fd == NULL || Ferror(fd))
+	goto exit;
+    fp = fdGetFILE(fd);
+
+    ln = 0;
+    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+	ln++;
+
+	/* insure a terminator. */
+	buf[sizeof(buf)-1] = '\0';
+
+	/* ltrim on line. */
+	while (*f && _isspace(*f))
+	    f++;
+
+	/* skip empty lines and comments */
+	if (*f == '\0' || *f == '#')
+	    continue;
+
+	/* rtrim on line. */
+	fe = f + strlen(f);
+	while (--fe > f && _isspace(*fe))
+	    *fe = '\0';
+
+	if (!(xisalnum(f[0]) || f[0] == '_' || f[0] == '/')) {
+	    /* XXX N must begin with alphanumeric, _, or /. */
+	    fprintf(stderr,
+		_("%s:%d N must begin with alphanumeric, _, or /.\n"),
+		    fn, ln);
+	    continue;
+        }
+
+	/* split on ' '  or comparison operator. */
+	fe = f;
+	while (*fe && !_isspace(*fe) && strchr("<=>", *fe) == NULL)
+            fe++;
+	while (*fe && _isspace(*fe))
+	    *fe++ = '\0';
+
+	N = f;
+	EVR = NULL;
+	Flags = 0;
+
+	/* parse for non-path, versioned dependency. */
+	if (*f != '/' && *fe != '\0') {
+	    struct cmpop *cop;
+
+	    /* parse comparison operator */
+	    g = fe;
+	    for (cop = cops; cop->operator != NULL; cop++) {
+		if (strncmp(g, cop->operator, strlen(cop->operator)))
+		    continue;
+		*g = '\0';
+		g += strlen(cop->operator);
+		Flags = cop->sense;
+		break;
+	    }
+
+	    if (Flags == 0) {
+		/* XXX No comparison operator found. */
+		fprintf(stderr, _("%s:%d No comparison operator found.\n"),
+			fn, ln);
+		continue;
+	    }
+
+	    /* ltrim on field 2. */
+	    while (*g && _isspace(*g))
+		g++;
+	    if (*g == '\0') {
+		/* XXX No EVR comparison value found. */
+		fprintf(stderr, _("%s:%d No EVR comparison value found.\n"),
+			fn, ln);
+		continue;
+	    }
+
+	    ge = g + 1;
+	    while (*ge && !_isspace(*ge))
+		ge++;
+
+	    if (*ge != '\0')
+		*ge = '\0';	/* XXX can't happen, line rtrim'ed already. */
+
+	    EVR = g;
+	}
+
+	if (EVR == NULL)
+	    EVR = "";
+	ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR , Flags);
+	xx = rpmdsMerge(dsp, ds);
+	ds = rpmdsFree(ds);
+    }
+
+exit:
+    if (fd) (void) Fclose(fd);
+    return rc;
+}
+
 /**
  * Split EVR into epoch, version, and release components.
  * @param evr		[epoch:]version[-release] string

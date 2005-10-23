@@ -366,7 +366,16 @@ int rpmdsCpuinfo(/*@out@*/ rpmds * dsp, /*@null@*/ const char * fn)
  * @param tblp		rpmlib provides table (NULL uses internal table)
  * @return		0 on success
  */
-int rpmdsRpmlib(rpmds * dsp, void * tblp)
+int rpmdsRpmlib(rpmds * dsp, /*@null@*/ void * tblp)
+	/*@modifies *dsp @*/;
+
+/**
+ * Load sysinfo provides into a dependency set.
+ * @retval *dsp		(loaded) depedency set
+ * @param fn		path to file (NULL uses /etc/rpm/sysinfo)
+ * @return		0 on success
+ */
+int rpmdsSysinfo(rpmds * dsp, /*@null@*/ const char * fn)
 	/*@modifies *dsp @*/;
 
 /**

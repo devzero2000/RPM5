@@ -12,7 +12,8 @@
  */
 /*@observer@*/ /*@unchecked@*/
 static struct ReqComp {
-/*@observer@*/ /*@null@*/ const char * token;
+/*@observer@*/ /*@null@*/
+    const char * token;
     rpmsenseFlags sense;
 } ReqComparisons[] = {
     { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},

@@ -123,13 +123,13 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	    argerror(_("Option --rbexclude needs transaction id argument(s)"));
 
 	te = alloca_strdup(arg);
-	while (*te != '\0' && index(" \t\n,", *te) != NULL)
+	while (*te != '\0' && strchr(" \t\n,", *te) != NULL)
 	    *te++ = '\0';
 	while ((t = te++) != NULL && *t != '\0') {
 	    /* Find next tid. */
-	    while (*te != '\0' && index(" \t\n,", *te) == NULL)
+	    while (*te != '\0' && strchr(" \t\n,", *te) == NULL)
 		te++;
-	    while (*te != '\0' && index(" \t\n,", *te) != NULL)
+	    while (*te != '\0' && strchr(" \t\n,", *te) != NULL)
 		*te++ = '\0';
 
 	    /* Convert arg to TID which happens to be time_t */
