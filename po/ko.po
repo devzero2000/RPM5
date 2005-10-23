@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 09:07-0400\n"
+"POT-Creation-Date: 2005-10-23 10:15-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2731,15 +2731,56 @@ msgstr ")"
 msgid "OK"
 msgstr "확인"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "NO "
 msgstr "아니오"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "YES"
 msgstr "예"
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1170
+msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+msgstr ""
+
+#: lib/rpmds.c:1173
+msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
+msgstr ""
+
+#: lib/rpmds.c:1176
+msgid "package payload can be compressed using bzip2."
+msgstr ""
+
+#: lib/rpmds.c:1179
+msgid "package payload file(s) have \"./\" prefix."
+msgstr ""
+
+#: lib/rpmds.c:1182
+msgid "package name-version-release is not implicitly provided."
+msgstr ""
+
+#: lib/rpmds.c:1185
+msgid "header tags are always sorted after being loaded."
+msgstr ""
+
+#: lib/rpmds.c:1188
+msgid "the scriptlet interpreter can use arguments from header."
+msgstr ""
+
+#: lib/rpmds.c:1191
+msgid "a hardlink file set may be installed without being complete."
+msgstr ""
+
+#: lib/rpmds.c:1194
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+
+#: lib/rpmds.c:1197
+#, fuzzy
+msgid "internal support for lua scripts."
+msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
+
+#: lib/rpmds.c:1413
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2748,13 +2789,13 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:1284
+#: lib/rpmds.c:1446
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1470
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"
@@ -2959,47 +3000,6 @@ msgstr "%s(을)를 복구합니다\n"
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "읽는데 실패함: %s (%d)\n"
-
-#: lib/rpmlibprov.c:29
-msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr ""
-
-#: lib/rpmlibprov.c:32
-msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-
-#: lib/rpmlibprov.c:35
-msgid "package payload can be compressed using bzip2."
-msgstr ""
-
-#: lib/rpmlibprov.c:38
-msgid "package payload file(s) have \"./\" prefix."
-msgstr ""
-
-#: lib/rpmlibprov.c:41
-msgid "package name-version-release is not implicitly provided."
-msgstr ""
-
-#: lib/rpmlibprov.c:44
-msgid "header tags are always sorted after being loaded."
-msgstr ""
-
-#: lib/rpmlibprov.c:47
-msgid "the scriptlet interpreter can use arguments from header."
-msgstr ""
-
-#: lib/rpmlibprov.c:50
-msgid "a hardlink file set may be installed without being complete."
-msgstr ""
-
-#: lib/rpmlibprov.c:53
-msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-
-#: lib/rpmlibprov.c:56
-#, fuzzy
-msgid "internal support for lua scripts."
-msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
 
 #. @observer@
 #: lib/rpmps.c:200

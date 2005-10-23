@@ -43,7 +43,6 @@ lib/rpmfi.c
 lib/rpmgi.c
 lib/rpminstall.c
 lib/rpmlead.c
-lib/rpmlibprov.c
 lib/rpmps.c
 lib/rpmrc.c
 lib/rpmsx.c

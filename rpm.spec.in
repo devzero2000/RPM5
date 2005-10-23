@@ -509,6 +509,7 @@ exit 0
 %changelog
 * Sun Oct 23 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.19
 - add cpuinfo(foo) dependency name space to map /proc/cpuinfo provides.
+- add rpmlib(foo) dependency name space to map rpmlib provides.
 
 * Sat Oct 22 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.18
 - rollback: merge latest hackery for composting.

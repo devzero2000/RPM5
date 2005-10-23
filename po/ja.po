@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 09:07-0400\n"
+"POT-Creation-Date: 2005-10-23 10:15-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -2692,15 +2692,58 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "YES"
 msgstr "YES"
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1170
+msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+msgstr ""
+"「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
+
+#: lib/rpmds.c:1173
+msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
+msgstr ""
+"ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
+
+#: lib/rpmds.c:1176
+msgid "package payload can be compressed using bzip2."
+msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
+
+#: lib/rpmds.c:1179
+msgid "package payload file(s) have \"./\" prefix."
+msgstr "パッケージペイロードファイルが「./」接頭語を持っています。"
+
+#: lib/rpmds.c:1182
+msgid "package name-version-release is not implicitly provided."
+msgstr "「パッケージ名-バージョン-リリース」が暗黙で提供されません。"
+
+#: lib/rpmds.c:1185
+msgid "header tags are always sorted after being loaded."
+msgstr "ヘッダータグが読み込まれた後、常にソートされます。"
+
+#: lib/rpmds.c:1188
+msgid "the scriptlet interpreter can use arguments from header."
+msgstr "スクリプトインタプリターがヘッダから引数を使用できます。"
+
+#: lib/rpmds.c:1191
+msgid "a hardlink file set may be installed without being complete."
+msgstr "ハードリンクファイル群が完全でなくてもインストールできます。"
+
+#: lib/rpmds.c:1194
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+"インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
+
+#: lib/rpmds.c:1197
+msgid "internal support for lua scripts."
+msgstr "lua スクリプトの内部サポート。"
+
+#: lib/rpmds.c:1413
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2709,13 +2752,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします (\"A\" と同じであると仮定して)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1284
+#: lib/rpmds.c:1446
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1470
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"
@@ -2917,49 +2960,6 @@ msgstr "\t%s を削除中:\n"
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "読み込みの失敗: %s (%d)\n"
-
-#: lib/rpmlibprov.c:29
-msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr ""
-"「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
-
-#: lib/rpmlibprov.c:32
-msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
-
-#: lib/rpmlibprov.c:35
-msgid "package payload can be compressed using bzip2."
-msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
-
-#: lib/rpmlibprov.c:38
-msgid "package payload file(s) have \"./\" prefix."
-msgstr "パッケージペイロードファイルが「./」接頭語を持っています。"
-
-#: lib/rpmlibprov.c:41
-msgid "package name-version-release is not implicitly provided."
-msgstr "「パッケージ名-バージョン-リリース」が暗黙で提供されません。"
-
-#: lib/rpmlibprov.c:44
-msgid "header tags are always sorted after being loaded."
-msgstr "ヘッダータグが読み込まれた後、常にソートされます。"
-
-#: lib/rpmlibprov.c:47
-msgid "the scriptlet interpreter can use arguments from header."
-msgstr "スクリプトインタプリターがヘッダから引数を使用できます。"
-
-#: lib/rpmlibprov.c:50
-msgid "a hardlink file set may be installed without being complete."
-msgstr "ハードリンクファイル群が完全でなくてもインストールできます。"
-
-#: lib/rpmlibprov.c:53
-msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-"インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
-
-#: lib/rpmlibprov.c:56
-msgid "internal support for lua scripts."
-msgstr "lua スクリプトの内部サポート。"
 
 #. @observer@
 #: lib/rpmps.c:200

@@ -354,6 +354,15 @@ int rpmdsCpuinfo(/*@out@*/ rpmds * dsp, /*@null@*/ const char * fn)
 	/*@modifies *dsp @*/;
 
 /**
+ * Load rpmlib provides into a dependency set.
+ * @retval *dsp		(loaded) depedency set
+ * @param tblp		rpmlib provides table (NULL uses internal table)
+ * @return		0 on success
+ */
+int rpmdsRpmlib(rpmds * dsp, void * tblp)
+	/*@modifies *dsp @*/;
+
+/**
  * Compare two versioned dependency ranges, looking for overlap.
  * @param A		1st dependency
  * @param B		2nd dependency

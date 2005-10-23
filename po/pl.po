@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 09:07-0400\n"
+"POT-Creation-Date: 2005-10-23 10:15-0400\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -2703,15 +2703,56 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "NO "
 msgstr "NIE "
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "YES"
 msgstr "TAK"
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1170
+msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+msgstr "Zale¿no¶ci PreReq:, Provides: oraz Obsoletes: obs³uguj± wersje."
+
+#: lib/rpmds.c:1173
+msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
+msgstr ""
+"nazwy plików zapisano jako (dirName,baseName,dirIndex) a nie jako ¶cie¿ki."
+
+#: lib/rpmds.c:1176
+msgid "package payload can be compressed using bzip2."
+msgstr "dane pakietu mog± byæ skompresowane bzipem2."
+
+#: lib/rpmds.c:1179
+msgid "package payload file(s) have \"./\" prefix."
+msgstr "pliki danych pakietu maj± prefix \"./\"."
+
+#: lib/rpmds.c:1182
+msgid "package name-version-release is not implicitly provided."
+msgstr "pakiet name-version-release nie jest udostêpniany domy¶lnie."
+
+#: lib/rpmds.c:1185
+msgid "header tags are always sorted after being loaded."
+msgstr "etykiety nag³ówka s± zawsze sortowane po wczytaniu."
+
+#: lib/rpmds.c:1188
+msgid "the scriptlet interpreter can use arguments from header."
+msgstr "interpreter skryptów mo¿e u¿ywaæ argumentów z nag³ówka."
+
+#: lib/rpmds.c:1191
+msgid "a hardlink file set may be installed without being complete."
+msgstr "plik z dowi±zaniem sta³ym mo¿e byæ zainstalowany bez kompletu."
+
+#: lib/rpmds.c:1194
+msgid "package scriptlets may access the rpm database while installing."
+msgstr "skrypty pakietu mog± odwo³ywaæ siê do bazy rpm-a przy instalacji."
+
+#: lib/rpmds.c:1197
+msgid "internal support for lua scripts."
+msgstr "wewnêtrzna obs³uga dla skryptów lua."
+
+#: lib/rpmds.c:1413
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2720,13 +2761,13 @@ msgstr ""
 "Zale¿no¶æ \"B\" wymaga epoch (przyjêto epoch takie samo jak \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1284
+#: lib/rpmds.c:1446
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1470
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
@@ -2927,47 +2968,6 @@ msgstr "\tUsuwanie %s\n"
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "odczyt nie powiód³ siê: %s (%d)\n"
-
-#: lib/rpmlibprov.c:29
-msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr "Zale¿no¶ci PreReq:, Provides: oraz Obsoletes: obs³uguj± wersje."
-
-#: lib/rpmlibprov.c:32
-msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"nazwy plików zapisano jako (dirName,baseName,dirIndex) a nie jako ¶cie¿ki."
-
-#: lib/rpmlibprov.c:35
-msgid "package payload can be compressed using bzip2."
-msgstr "dane pakietu mog± byæ skompresowane bzipem2."
-
-#: lib/rpmlibprov.c:38
-msgid "package payload file(s) have \"./\" prefix."
-msgstr "pliki danych pakietu maj± prefix \"./\"."
-
-#: lib/rpmlibprov.c:41
-msgid "package name-version-release is not implicitly provided."
-msgstr "pakiet name-version-release nie jest udostêpniany domy¶lnie."
-
-#: lib/rpmlibprov.c:44
-msgid "header tags are always sorted after being loaded."
-msgstr "etykiety nag³ówka s± zawsze sortowane po wczytaniu."
-
-#: lib/rpmlibprov.c:47
-msgid "the scriptlet interpreter can use arguments from header."
-msgstr "interpreter skryptów mo¿e u¿ywaæ argumentów z nag³ówka."
-
-#: lib/rpmlibprov.c:50
-msgid "a hardlink file set may be installed without being complete."
-msgstr "plik z dowi±zaniem sta³ym mo¿e byæ zainstalowany bez kompletu."
-
-#: lib/rpmlibprov.c:53
-msgid "package scriptlets may access the rpm database while installing."
-msgstr "skrypty pakietu mog± odwo³ywaæ siê do bazy rpm-a przy instalacji."
-
-#: lib/rpmlibprov.c:56
-msgid "internal support for lua scripts."
-msgstr "wewnêtrzna obs³uga dla skryptów lua."
 
 #. @observer@
 #: lib/rpmps.c:200

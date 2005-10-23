@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 09:07-0400\n"
+"POT-Creation-Date: 2005-10-23 10:15-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -2707,15 +2707,56 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "YES"
 msgstr "ТАК"
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1170
+msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+msgstr "PreReq:, Provides:, та Obsoletes: залежності підтримують версії."
+
+#: lib/rpmds.c:1173
+msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
+msgstr "імена файлу(ів) зберігаються у форматі (dirName,baseName,dirIndex)"
+
+#: lib/rpmds.c:1176
+msgid "package payload can be compressed using bzip2."
+msgstr "вміст пакету може бути стиснений програмою bzip2."
+
+#: lib/rpmds.c:1179
+msgid "package payload file(s) have \"./\" prefix."
+msgstr "для файлу(ів) вмісту пакета використовується префікс \"./\""
+
+#: lib/rpmds.c:1182
+msgid "package name-version-release is not implicitly provided."
+msgstr "назва-версія-випуск не надається автоматично."
+
+#: lib/rpmds.c:1185
+msgid "header tags are always sorted after being loaded."
+msgstr "ярлики тегів завжди сортуються після завантаження."
+
+#: lib/rpmds.c:1188
+msgid "the scriptlet interpreter can use arguments from header."
+msgstr "інтерпретатор сценаріїв може користуватись аргументами з заголовка."
+
+#: lib/rpmds.c:1191
+msgid "a hardlink file set may be installed without being complete."
+msgstr "набір жорстких посилань може встановитись частково."
+
+#: lib/rpmds.c:1194
+msgid "package scriptlets may access the rpm database while installing."
+msgstr "сценарії пакета при встановленні можуть мати доступ до бази даних rpm."
+
+#: lib/rpmds.c:1197
+#, fuzzy
+msgid "internal support for lua scripts."
+msgstr "- не підтримується для рядків\n"
+
+#: lib/rpmds.c:1413
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2725,13 +2766,13 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1284
+#: lib/rpmds.c:1446
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1470
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
@@ -2932,47 +2973,6 @@ msgstr "Завантажується %s\n"
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "помилка читання: %s (%d)\n"
-
-#: lib/rpmlibprov.c:29
-msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr "PreReq:, Provides:, та Obsoletes: залежності підтримують версії."
-
-#: lib/rpmlibprov.c:32
-msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr "імена файлу(ів) зберігаються у форматі (dirName,baseName,dirIndex)"
-
-#: lib/rpmlibprov.c:35
-msgid "package payload can be compressed using bzip2."
-msgstr "вміст пакету може бути стиснений програмою bzip2."
-
-#: lib/rpmlibprov.c:38
-msgid "package payload file(s) have \"./\" prefix."
-msgstr "для файлу(ів) вмісту пакета використовується префікс \"./\""
-
-#: lib/rpmlibprov.c:41
-msgid "package name-version-release is not implicitly provided."
-msgstr "назва-версія-випуск не надається автоматично."
-
-#: lib/rpmlibprov.c:44
-msgid "header tags are always sorted after being loaded."
-msgstr "ярлики тегів завжди сортуються після завантаження."
-
-#: lib/rpmlibprov.c:47
-msgid "the scriptlet interpreter can use arguments from header."
-msgstr "інтерпретатор сценаріїв може користуватись аргументами з заголовка."
-
-#: lib/rpmlibprov.c:50
-msgid "a hardlink file set may be installed without being complete."
-msgstr "набір жорстких посилань може встановитись частково."
-
-#: lib/rpmlibprov.c:53
-msgid "package scriptlets may access the rpm database while installing."
-msgstr "сценарії пакета при встановленні можуть мати доступ до бази даних rpm."
-
-#: lib/rpmlibprov.c:56
-#, fuzzy
-msgid "internal support for lua scripts."
-msgstr "- не підтримується для рядків\n"
 
 #. @observer@
 #: lib/rpmps.c:200

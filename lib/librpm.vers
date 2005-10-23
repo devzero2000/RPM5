@@ -114,6 +114,7 @@ LIBRPM_0
     rpmdsNVRMatchesDep;
     rpmdsProblem;
     rpmdsRefs;
+    rpmdsRpmlib;
     rpmdsSetBT;
     rpmdsSetColor;
     rpmdsSetIx;

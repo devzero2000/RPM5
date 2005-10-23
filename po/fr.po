@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 09:07-0400\n"
+"POT-Creation-Date: 2005-10-23 10:15-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -2753,15 +2753,65 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "NO "
 msgstr "NON"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1285
+#: lib/rpmds.c:739 lib/rpmds.c:1447
 msgid "YES"
 msgstr "OUI"
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1170
+msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+msgstr ""
+"Les dépendances de type PreReq:, Provides: et Obsoletes: supportent les "
+"versions."
+
+#: lib/rpmds.c:1173
+msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
+msgstr ""
+"Le(s) nom(s) de fichier sont stockés en tant que triplets (NomRep,NomFich,"
+"IndexRep), pas en tant que chemin."
+
+#: lib/rpmds.c:1176
+#, fuzzy
+msgid "package payload can be compressed using bzip2."
+msgstr "La charge utile du paquetage est compressée avec bzip2."
+
+#: lib/rpmds.c:1179
+msgid "package payload file(s) have \"./\" prefix."
+msgstr ""
+"le(s) fichier(s) de la charge utile du paquetage ont \"./\" comme préfixe."
+
+#: lib/rpmds.c:1182
+msgid "package name-version-release is not implicitly provided."
+msgstr "le nom-version-révision du paquetage n'est pas implicitement fourni."
+
+#: lib/rpmds.c:1185
+msgid "header tags are always sorted after being loaded."
+msgstr "les tags d'entête sont toujours triés après avoir été chargés."
+
+#: lib/rpmds.c:1188
+msgid "the scriptlet interpreter can use arguments from header."
+msgstr ""
+"l'interprète du scriptlet peut utiliser des arguments à partir des entêtes."
+
+#: lib/rpmds.c:1191
+msgid "a hardlink file set may be installed without being complete."
+msgstr "un lien en dur pourrait être installé sans être complet."
+
+#: lib/rpmds.c:1194
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+"les scriptlets du paquetage pourrait accéder à la base de données rpm "
+"pendant l'installation."
+
+#: lib/rpmds.c:1197
+#, fuzzy
+msgid "internal support for lua scripts."
+msgstr "- non supporté sur des chaînes de caractères\n"
+
+#: lib/rpmds.c:1413
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2771,13 +2821,13 @@ msgstr ""
 "pour \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1284
+#: lib/rpmds.c:1446
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1470
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "le paquetage %s a un(e) %s non-satisfaites: %s\n"
@@ -2979,56 +3029,6 @@ msgstr "Récupération de %s\n"
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "échec de lecture: %s (%d)\n"
-
-#: lib/rpmlibprov.c:29
-msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr ""
-"Les dépendances de type PreReq:, Provides: et Obsoletes: supportent les "
-"versions."
-
-#: lib/rpmlibprov.c:32
-msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"Le(s) nom(s) de fichier sont stockés en tant que triplets (NomRep,NomFich,"
-"IndexRep), pas en tant que chemin."
-
-#: lib/rpmlibprov.c:35
-#, fuzzy
-msgid "package payload can be compressed using bzip2."
-msgstr "La charge utile du paquetage est compressée avec bzip2."
-
-#: lib/rpmlibprov.c:38
-msgid "package payload file(s) have \"./\" prefix."
-msgstr ""
-"le(s) fichier(s) de la charge utile du paquetage ont \"./\" comme préfixe."
-
-#: lib/rpmlibprov.c:41
-msgid "package name-version-release is not implicitly provided."
-msgstr "le nom-version-révision du paquetage n'est pas implicitement fourni."
-
-#: lib/rpmlibprov.c:44
-msgid "header tags are always sorted after being loaded."
-msgstr "les tags d'entête sont toujours triés après avoir été chargés."
-
-#: lib/rpmlibprov.c:47
-msgid "the scriptlet interpreter can use arguments from header."
-msgstr ""
-"l'interprète du scriptlet peut utiliser des arguments à partir des entêtes."
-
-#: lib/rpmlibprov.c:50
-msgid "a hardlink file set may be installed without being complete."
-msgstr "un lien en dur pourrait être installé sans être complet."
-
-#: lib/rpmlibprov.c:53
-msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-"les scriptlets du paquetage pourrait accéder à la base de données rpm "
-"pendant l'installation."
-
-#: lib/rpmlibprov.c:56
-#, fuzzy
-msgid "internal support for lua scripts."
-msgstr "- non supporté sur des chaînes de caractères\n"
 
 #. @observer@
 #: lib/rpmps.c:200
