@@ -536,7 +536,8 @@ typedef	enum rpmsenseFlags_e {
 /*@=enummemuse@*/
     RPMSENSE_KEYRING	= (1 << 26),
     RPMSENSE_PATCHES	= (1 << 27),
-    RPMSENSE_CONFIG	= (1 << 28)
+    RPMSENSE_CONFIG	= (1 << 28),
+    RPMSENSE_PROBE	= (1 << 29)
 } rpmsenseFlags;
 
 #define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */
