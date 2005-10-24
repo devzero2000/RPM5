@@ -36,6 +36,7 @@
 	- eliminate rpmShowRpmlibProvides(), print rpmdsRpmlib() instead.
 	- add system configurable provides read from /etc/rpm/sysinfo.
 	- display sysinfo/cpuinfo provides with --showrc iff --verboose.
+	- fix: boundary case segfault in rpmdsSearch.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

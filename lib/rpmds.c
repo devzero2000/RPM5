@@ -995,9 +995,9 @@ int rpmdsSearch(rpmds ds, const rpmds ods)
 	    while (l > 0 && !strcmp(ods->N[ods->i], ds->N[l-1]))
 		l--;
 	    /* Set u to 1st member of set that does not contain N. */
-	    if (strcmp(ods->N[ods->i], ds->N[u]))
+	    if (u >= ds->Count || strcmp(ods->N[ods->i], ds->N[u]))
 		u = i;
-	    while (++u < ods->Count) {
+	    while (++u < ds->Count) {
 		if (strcmp(ods->N[ods->i], ds->N[u]))
 		    break;
 	    }
