@@ -337,7 +337,7 @@ int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
  * Merge a dependency set maintaining (N,EVR,Flags) sorted order.
  * @retval *dsp		(merged) dependency set
  * @param ods		dependency set to merge
- * @return		(merged) dependency index
+ * @return		0 on success
  */
 int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
 	/*@modifies *dsp, ods @*/;

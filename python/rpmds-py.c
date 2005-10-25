@@ -254,7 +254,7 @@ rpmds_iternext(rpmdsObject * s)
 	if (N != NULL) N = xstrdup(N);
 	if (EVR != NULL) EVR = xstrdup(EVR);
 /*@=branchstate@*/
-	result = rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
+	result = (PyObject *)rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
 
@@ -319,7 +319,12 @@ rpmds_Sort(rpmdsObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    /* XXX sort on (N,EVR,F) here. */
+    rpmds nds = NULL;
+
+    if (rpmdsMerge(&nds, s->ds) >= 0) {
+	s->ds = rpmdsFree(s->ds);
+	s->ds = nds;
+    }
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -331,7 +336,6 @@ rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * to = NULL;
     rpmdsObject * o;
-    int rc;
     char * kwlist[] = {"element", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Find", kwlist, &to))
@@ -343,8 +347,7 @@ rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
     /* XXX make sure ods index is valid, real fix in lib/rpmds.c. */
     if (rpmdsIx(o->ds) == -1)	rpmdsSetIx(o->ds, 0);
 
-    rc = rpmdsFind(s->ds, o->ds);
-    return Py_BuildValue("i", rc);
+    return Py_BuildValue("i", rpmdsFind(s->ds, o->ds));
 }
 
 /*@null@*/
@@ -362,6 +365,62 @@ rpmds_Merge(rpmdsObject * s, PyObject * args, PyObject * kwds)
     /* XXX ds type check needed. */
     o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
+}
+
+/*@null@*/
+static PyObject *
+rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
+	/*@modifies s @*/
+{
+    PyObject * to = NULL;
+    rpmdsObject * o;
+    char * kwlist[] = {"element", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Merge", kwlist, &to))
+	return NULL;
+
+    /* XXX ds type check needed. */
+    o = (rpmdsObject *)to;
+    return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
+}
+
+static PyObject *
+rpmds_Cpuinfo(rpmdsObject * s)
+	/*@*/
+{
+    rpmds ds = NULL;
+    int xx;
+
+    /* XXX check return code, permit arg (NULL uses system default). */
+    xx = rpmdsCpuinfo(&ds, NULL);
+
+    return (PyObject *) rpmds_Wrap( ds );
+}
+
+static PyObject *
+rpmds_Rpmlib(rpmdsObject * s)
+	/*@*/
+{
+    rpmds ds = NULL;
+    int xx;
+
+    /* XXX check return code, permit arg (NULL uses system default). */
+    xx = rpmdsRpmlib(&ds, NULL);
+
+    return (PyObject *) rpmds_Wrap( ds );
+}
+
+static PyObject *
+rpmds_Sysinfo(rpmdsObject * s)
+	/*@*/
+{
+    rpmds ds = NULL;
+    int xx;
+
+    /* XXX check return code, permit arg (NULL uses system default). */
+    xx = rpmdsSysinfo(&ds, NULL);
+
+    return (PyObject *) rpmds_Wrap( ds );
 }
 
 #ifdef	NOTYET
@@ -426,11 +485,25 @@ static struct PyMethodDef rpmds_methods[] = {
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {"Sort",	(PyCFunction)rpmds_Sort,	METH_NOARGS,
-	NULL},
+"ds.Sort() -> None\n\
+- Sort the (N,EVR,Flags) elements in ds\n" },
  {"Find",	(PyCFunction)rpmds_Find,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
+"ds.Find(element) -> matching ds index (-1 on failure)\n\
+- Check for an exactly matching element in ds.\n\
+The current index in ds is positioned at matching member upon success.\n" },
  {"Merge",	(PyCFunction)rpmds_Merge,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
+"ds.Merge(elements) -> 0 on success\n\
+- Merge elements into ds, maintaining (N,EVR,Flags) sort order.\n" },
+ {"Search",	(PyCFunction)rpmds_Search,	METH_VARARGS|METH_KEYWORDS,
+"ds.Search(element) -> matching ds index (-1 on failure)\n\
+- Check that element dependency range overlaps some member of ds.\n\
+The current index in ds is positioned at overlapping member upon success.\n" },
+ {"Cpuinfo",	(PyCFunction)rpmds_Cpuinfo,	METH_NOARGS,
+	"ds.Cpuinfo -> nds	- Return /proc/cpuinfo dependency set.\n"},
+ {"Rpmlib",	(PyCFunction)rpmds_Rpmlib,	METH_NOARGS,
+	"ds.Rpmlib -> nds	- Return internal rpmlib dependency set.\n"},
+ {"Sysinfo",	(PyCFunction)rpmds_Sysinfo,	METH_NOARGS,
+	"ds.Sysinfo -> nds	- Return /etc/rpm/sysinfo dependency set.\n"},
 #ifdef	NOTYET
  {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
