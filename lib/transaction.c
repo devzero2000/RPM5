@@ -1374,9 +1374,9 @@ cleanup:
  * @todo This function creates an IDTX everytime it is called.  Needs to
  *       be made more efficient (only create on per running transaction).
  * @param te		transaction element
- * @param rpmts		rpm transaction
- * @return hdrp		Repackaged header
- * @return fn		Repackaged package's path (transaction key)
+ * @param ts		transaction set
+ * @retval *hdrp		Repackaged header
+ * @retval *fn		Repackaged package's path (transaction key)
  * @return 		RPMRC_NOTFOUND or RPMRC_OK
  */
 static rpmRC getRepackageHeaderFromTE(rpmte te, rpmts ts,

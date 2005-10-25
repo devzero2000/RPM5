@@ -54,7 +54,7 @@ rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
 /** \ingroup signature
  * Write signature header.
  * @param fd		file handle
- * @param h		(signature) header
+ * @param sigh		(signature) header
  * @return		0 on success, 1 on error
  */
 int rpmWriteSignature(FD_t fd, Header sigh)

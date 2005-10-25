@@ -541,7 +541,7 @@ int headerGetInstance(Header h)
 /** \ingroup header
  * Store header instance (e.g path or URL).
  * @param h		header
- * @param origin	new header instance
+ * @param instance	new header instance
  * @return		0 always
  */
 /*@unused@*/ static inline

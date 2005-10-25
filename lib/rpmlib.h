@@ -1211,7 +1211,7 @@ rpmRC rpmVerifySignature(const rpmts ts,
 
 /** \ingroup signature
  * Destroy signature header from package.
- * @param h		signature header
+ * @param sigh		signature header
  * @return		NULL always
  */
 /*@null@*/ Header rpmFreeSignature(/*@null@*/ /*@killref@*/ Header sigh)

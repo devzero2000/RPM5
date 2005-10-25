@@ -696,7 +696,7 @@ printNewSpecfile(Spec spec)
  * Parse a spec file, and query the resultant header.
  * @param ts		rpm transaction
  * @param qva		query args
- * @param spec		specfile to parse
+ * @param specName	specfile to parse
  * @param target	cpu-vender-os platform for query (NULL is current)
  * @return              0 on success
  */
