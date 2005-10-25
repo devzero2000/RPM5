@@ -6,7 +6,7 @@
 # Borrowed heavily from H10 version created by Tim Mooney.
 # This file is distributed under the terms of the GNU Public License
 #
-# find-provides is part of RPM, the RedHat Package Manager.  find-provides
+# find-provides is part of RPM, the RPM Package Manager.  find-provides
 # reads a list of full pathnames (in a package) on stdin, and outputs all
 # shared libraries provided by (contained in) the package.
 #

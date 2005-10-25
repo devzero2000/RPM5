@@ -116,11 +116,11 @@ rpm	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
 rpm	alias --filerequire --qf '[%{FILENAMES}\t%{FILEREQUIRE}\n]' \
 	--POPTdesc=$"list file names with requires"
 
-rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides \
-	--POPTdesc=$"find package name that contains a provided capability (needs rpmdb-redhat package installed)"
+rpm alias --vendorprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/%{_vendor}' --whatprovides \
+	--POPTdesc=$"find package name that contains a provided capability (needs rpmdb-vendor package installed)"
 
-rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatrequires \
-	--POPTdesc=$"find package name that contains a required capability (needs rpmdb-redhat package installed)"
+rpm alias --vendorrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/%{_vendor}' --whatrequires \
+	--POPTdesc=$"find package name that contains a required capability (needs rpmdb-vendor package installed)"
 
 #
 # Autorollback aliases
@@ -130,7 +130,7 @@ rpm alias --autorollback --define '_rollback_transaction_on_failure 1' \
 # colon separated i18n domains to use as PO catalogue lookaside for
 * retrieving header group/description/summary.
 #
-# For Red Hat, value should be "redhat-dist:redhat-powertools".
+# For vendors, value should be "vendor-dist".
 rpm alias --i18ndomains --define '_i18ndomains !#:+'
 
 # Build policies enabled from command line. Last policy applies.

@@ -526,13 +526,13 @@ static void setDefaults(void)
     addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
 
     setVarDefault(-1,			"_topdir",
-		"/usr/src/redhat",	"%{_usr}/src/redhat");
+		"/usr/src/rpm",		"%{_usr}/src/rpm");
     setVarDefault(-1,			"_tmppath",
 		"/var/tmp",		"%{_var}/tmp");
     setVarDefault(-1,			"_dbpath",
 		"/var/lib/rpm",		"%{_var}/lib/rpm");
     setVarDefault(-1,			"_defaultdocdir",
-		"/usr/doc",		"%{_usr}/doc");
+		"/usr/share/doc",	"%{_usr}/share/doc");
 
     setVarDefault(-1,			"_rpmfilename",
 	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
@@ -1571,11 +1571,6 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
     } else {
 	if (num) *num = 255;
 	if (name) *name = current[type];
-
-	if (tables[currTables[type]].hasCanon) {
-	    rpmMessage(RPMMESS_WARNING, _("Unknown system: %s\n"), current[type]);
-	    rpmMessage(RPMMESS_WARNING, _("Please contact rpm-list@redhat.com\n"));
-	}
     }
 }
 

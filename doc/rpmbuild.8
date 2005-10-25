@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "RPMBUILD" "8" "09 June 2002" "Red Hat, Inc." "Red Hat Linux"
+.TH "RPMBUILD" "8" "09 June 2002" "Wraptastic" "RPM Package Manager"
 .SH NAME
 rpmbuild \- Build RPM Package(s)
 .SH SYNOPSIS
@@ -82,7 +82,7 @@ information.
 Only the first file in the list must exist, and tildes will be
 expanded to the value of \fB$HOME\fR.
 The default \fIFILELIST\fR is
-\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
+\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/vendor/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
 .TP
 \fB--pipe \fICMD\fB\fR
 Pipes the output of \fBrpm\fR to the command \fICMD\fR.
@@ -216,7 +216,7 @@ configuration file(s).
 .PP
 .nf
 \fI/usr/lib/rpm/rpmrc\fR
-\fI/usr/lib/rpm/redhat/rpmrc\fR
+\fI/usr/lib/rpm/vendor/rpmrc\fR
 \fI/etc/rpmrc\fR
 \fI~/.rpmrc\fR
 .fi
@@ -224,7 +224,7 @@ configuration file(s).
 .PP
 .nf
 \fI/usr/lib/rpm/macros\fR
-\fI/usr/lib/rpm/redhat/macros\fR
+\fI/usr/lib/rpm/vendor/macros\fR
 \fI/etc/rpm/macros\fR
 \fI~/.rpmmacros\fR
 .fi
@@ -261,12 +261,12 @@ configuration file(s).
 \fBrpm\fR(8),
 .fi
 
-\fBhttp://www.rpm.org/ <URL:http://www.rpm.org/>
+\fBhttp://wraptastic.org/ <URL:http://wraptastic.org/>
 \fR
 .SH "AUTHORS"
 
 .nf
+Jeff Johnson <jbj@jbj.org>
 Marc Ewing <marc@redhat.com>
-Jeff Johnson <jbj@redhat.com>
 Erik Troan <ewt@redhat.com>
 .fi

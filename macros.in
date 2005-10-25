@@ -218,7 +218,7 @@ package or when debugging this package.\
 %_tmppath		%{_var}/tmp
 
 #	Path to top of build area.
-%_topdir		%{_usrsrc}/redhat
+%_topdir		%{_usrsrc}/rpm
 
 #	The path to the unzip executable (legacy, use %{__unzip} instead).
 %_unzipbin		%{__unzip}
@@ -690,17 +690,17 @@ print (t)\
 %_autorelocate_dcolor @autorelocate_dcolor@
 
 #	The path to the dependency universe database. The default value
-#	is the rpmdb-redhat location. The macro is usually defined in
-#	/etc/rpm/macros.solve, installed with the rpmdb-redhat package.
-#%_solve_dbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat
+#	is the rpmdb-vendor location. The macro is usually defined in
+#	/etc/rpm/macros.solve, installed with the rpmdb-vendor package.
+#%_solve_dbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/rpm
 
 #	The path to the dependency universe packages. This should
 #	be a path to the packages contained in the solve database.
-#%_solve_pkgsdir	/mnt/redhat/test/latest-i386/RedHat/RPMS/
+#%_solve_pkgsdir	/mnt/rpm/test/latest-i386/RedHat/RPMS/
 
 #	The output binary package file name template used when suggesting
 #	binary packages that solve a dependency. The macro is usually defined
-#	in /etc/rpm/macros.solve, installed with the rpmdb-redhat package.
+#	in /etc/rpm/macros.solve, installed with the rpmdb-vendor package.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
 #%_solve_name_fmt	%{?_solve_pkgsdir}%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
@@ -865,8 +865,8 @@ print (t)\
 #	Macro(s) used to configure the universe of headers used to
 #	solve dependencies using rpmcache(8).
 #
-#	Note: These values are specific to my machine, and most certainly
-#	are incorrect for any non-redhat.com machine. The macros are
+#	Note: These values were specific to my machine, and most certainly
+#	are incorrect for any other machine. The macros are
 #	included here only to document the macro names and usage.
 %_bhpath        file://localhost/mnt/dist
 %_bhcoll        @(7.3|7.2|7.1|7.1sbe|7.1k|7.0|7.01j|7.0j|7.0sbe|7.0tc|6.2|6.2ha|6.2ee|6.1|6.0|5.2|5.1|5.0)

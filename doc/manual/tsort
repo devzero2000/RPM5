@@ -9,14 +9,14 @@ bugzilla #12327):
 
 Assume the minimal 7.0 package manifest in /tmp/list
 \verbatim
-	/mnt/redhat/comps/dist/7.0/sparc/bash-2.04-11.sparc.rpm
-	/mnt/redhat/comps/dist/7.0.2/sparc/glibc-2.1.94-1.sparc.rpm
-	/mnt/redhat/comps/dist/7.0/sparc/mktemp-1.5-5.sparc.rpm
-	/mnt/redhat/comps/dist/7.0/noarch/basesystem-7.0-2.noarch.rpm
-	/mnt/redhat/comps/dist/7.0/noarch/setup-2.3.4-1.noarch.rpm
-	/mnt/redhat/comps/dist/7.0/noarch/filesystem-2.0.7-1.noarch.rpm
-	/mnt/redhat/comps/dist/7.0/sparc/libtermcap-2.0.8-25.sparc.rpm
-	/mnt/redhat/comps/dist/7.0/noarch/termcap-11.0.1-3.noarch.rpm
+	/mnt/rpm/comps/dist/7.0/sparc/bash-2.04-11.sparc.rpm
+	/mnt/rpm/comps/dist/7.0.2/sparc/glibc-2.1.94-1.sparc.rpm
+	/mnt/rpm/comps/dist/7.0/sparc/mktemp-1.5-5.sparc.rpm
+	/mnt/rpm/comps/dist/7.0/noarch/basesystem-7.0-2.noarch.rpm
+	/mnt/rpm/comps/dist/7.0/noarch/setup-2.3.4-1.noarch.rpm
+	/mnt/rpm/comps/dist/7.0/noarch/filesystem-2.0.7-1.noarch.rpm
+	/mnt/rpm/comps/dist/7.0/sparc/libtermcap-2.0.8-25.sparc.rpm
+	/mnt/rpm/comps/dist/7.0/noarch/termcap-11.0.1-3.noarch.rpm
 \endverbatim
 
 with database initialization as

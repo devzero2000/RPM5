@@ -27,9 +27,9 @@ Here's a short example of how to generate the package/file names that were used
 while building gnorpm using InDependence:
 
 \verbatim
-	rpm -U /mnt/redhat/comps/powertools/6.2/i386/InDependence-1.0-3.i386.rpm
-	rpm -i /mnt/redhat/comps/dist/6.2/SRPMS/gnorpm-0.9-11.src.rpm
-	cd /usr/src/redhat/SPECS
+	rpm -U /mnt/rpm/comps/powertools/6.2/i386/InDependence-1.0-3.i386.rpm
+	rpm -i /mnt/rpm/comps/dist/6.2/SRPMS/gnorpm-0.9-11.src.rpm
+	cd /usr/src/rpm/SPECS
 	dep -detail rpmbuild -ba gnorpm.spec >& xxx
 	...
 	(the build will take longer since both dep and strace are pigs)
