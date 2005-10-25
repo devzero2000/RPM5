@@ -999,7 +999,7 @@ int rpmdsSearch(rpmds ds, const rpmds ods)
 		u = i;
 	    while (++u < ds->Count) {
 		if (strcmp(ods->N[ods->i], ds->N[u]))
-		    break;
+		    /*@innerbreak@*/ break;
 	    }
 	    break;
 	}
@@ -1031,6 +1031,7 @@ struct cpuinfo_s {
     int flags;
 };
 
+/*@unchecked@*/
 static struct cpuinfo_s ctags[] = {
     { "processor",	0,  0 },
     { "vendor_id",	0,  0 },
@@ -1089,7 +1090,7 @@ static int rpmdsCpuinfoCtagFlags(const char * name)
  * @param EVR		epoch:version-release
  * @param Flags		comparison/context flags
  */
-static void rpmdsCpuinfoAdd(rpmds *dsp, const char * NS,
+static void rpmdsCpuinfoAdd(/*@out@*/ rpmds *dsp, const char * NS,
 		const char *N, const char *EVR, int_32 Flags)
 	/*@modifies *dsp @*/
 {
@@ -1107,13 +1108,17 @@ static void rpmdsCpuinfoAdd(rpmds *dsp, const char * NS,
 }
 
 #define	_PROC_CPUINFO	"/proc/cpuinfo"
+/*@unchecked@*/ /*@observer@*/
 static const char * cpuinfo = _PROC_CPUINFO;
 
 #define	_isspace(_c)	\
 	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
 
 int rpmdsCpuinfo(rpmds *dsp, const char * fn)
+	/*@globals ctags @*/
+	/*@modifies ctags @*/
 {
+    struct cpuinfo_s * ct;
     const char * NS = "cpuinfo";
     char buf[BUFSIZ];
     char * f, * fe;
@@ -1126,11 +1131,16 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     if (fn == NULL)
 	fn = cpuinfo;
 
+    /* Reset done variables. */
+    for (ct = ctags; ct->name != NULL; ct++)
+	ct->done = 0;
+
     fd = Fopen(fn, "r.fpio");
     if (fd == NULL || Ferror(fd))
 	goto exit;
     fp = fdGetFILE(fd);
 
+    if (fp != NULL)
     while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
 	/* rtrim on line. */
 	ge = f + strlen(f);
@@ -1172,55 +1182,57 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 	case 0:		/* ignore */
 	default:
 	    continue;
-	    break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 1:		/* Provides: cpuinfo(f) = g */
 	    for (t = g; *t != '\0'; t++) {
 		if (_isspace(*t) || *t == '(' || *t == ')')
 		    *t = '_';
 	    }
 	    rpmdsCpuinfoAdd(dsp, NS, f, g, RPMSENSE_PROBE|RPMSENSE_EQUAL);
-	    break;
+	    /*@switchbreak@*/ break;
 	case 2:		/* Provides: cpuinfo(g) */
 	    for (t = g; *t != '\0'; t++) {
 		if (_isspace(*t) || *t == '(' || *t == ')')
 		    *t = '_';
 	    }
 	    rpmdsCpuinfoAdd(dsp, NS, g, "", RPMSENSE_PROBE);
-	    break;
+	    /*@switchbreak@*/ break;
 	case 3:		/* if ("yes") Provides: cpuinfo(f) */
 	   if (!strcmp(g, "yes"))
 		rpmdsCpuinfoAdd(dsp, NS, f, "", RPMSENSE_PROBE);
-	    break;
+	    /*@switchbreak@*/ break;
 	case 4:		/* Provides: cpuinfo(g[i]) */
 	{   char ** av = NULL;
-	    int i;
-	    i = 0;
+	    int i = 0;
 	    rc = poptParseArgvString(g, NULL, (const char ***)&av);
 	    if (!rc && av != NULL)
-	    while ((f = av[i++]) != NULL)
-		rpmdsCpuinfoAdd(dsp, NS, f, "", RPMSENSE_PROBE);
+	    while ((t = av[i++]) != NULL)
+		rpmdsCpuinfoAdd(dsp, NS, t, "", RPMSENSE_PROBE);
+	    t = NULL;
 	    if (av != NULL)
 		free(av);
-	}   break;
+	}   /*@switchbreak@*/ break;
 	}
     }
 
 exit:
-    if (fd) (void) Fclose(fd);
+/*@-branchstate@*/
+    if (fd != NULL) (void) Fclose(fd);
+/*@=branchstate@*/
     return rc;
 }
 
 struct rpmlibProvides_s {
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
     const char * featureName;
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
     const char * featureEVR;
     int featureFlags;
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
     const char * featureDescription;
 };
 
-/*@observer@*/ /*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(VersionedDependencies)",	"3.0.3-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
@@ -1280,6 +1292,7 @@ int rpmdsRpmlib(rpmds * dsp, void * tblp)
 }
 
 #define	_ETC_RPM_SYSINFO	"/etc/rpm/sysinfo"
+/*@unchecked@*/ /*@observer@*/
 static const char * etcrpmsysinfo = _ETC_RPM_SYSINFO;
 
 #define	_isspace(_c)	\
@@ -1287,7 +1300,7 @@ static const char * etcrpmsysinfo = _ETC_RPM_SYSINFO;
 
 /**
  */
-/*@observer@*/ /*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 static struct cmpop {
 /*@observer@*/ /*@null@*/
     const char * operator;
@@ -1331,6 +1344,7 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
     fp = fdGetFILE(fd);
 
     ln = 0;
+    if (fp != NULL)
     while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
 	ln++;
 
@@ -1370,6 +1384,7 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
 	Flags = 0;
 
 	/* parse for non-path, versioned dependency. */
+/*@-branchstate@*/
 	if (*f != '/' && *fe != '\0') {
 	    struct cmpop *cop;
 
@@ -1377,11 +1392,11 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
 	    g = fe;
 	    for (cop = cops; cop->operator != NULL; cop++) {
 		if (strncmp(g, cop->operator, strlen(cop->operator)))
-		    continue;
+		    /*@innercontinue@*/ continue;
 		*g = '\0';
 		g += strlen(cop->operator);
 		Flags = cop->sense;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 
 	    if (Flags == 0) {
@@ -1413,13 +1428,16 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
 
 	if (EVR == NULL)
 	    EVR = "";
+/*@=branchstate@*/
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR , Flags);
 	xx = rpmdsMerge(dsp, ds);
 	ds = rpmdsFree(ds);
     }
 
 exit:
-    if (fd) (void) Fclose(fd);
+/*@-branchstate@*/
+    if (fd != NULL) (void) Fclose(fd);
+/*@=branchstate@*/
     return rc;
 }
 

@@ -358,7 +358,8 @@ int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ const rpmds ods)
  * @return		0 on success
  */
 int rpmdsCpuinfo(/*@out@*/ rpmds * dsp, /*@null@*/ const char * fn)
-	/*@modifies *dsp @*/;
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies *dsp, h_errno, fileSystem, internalState @*/;
 
 /**
  * Load rpmlib provides into a dependency set.
@@ -376,7 +377,8 @@ int rpmdsRpmlib(rpmds * dsp, /*@null@*/ void * tblp)
  * @return		0 on success
  */
 int rpmdsSysinfo(rpmds * dsp, /*@null@*/ const char * fn)
-	/*@modifies *dsp @*/;
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies *dsp, h_errno, fileSystem, internalState @*/;
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.

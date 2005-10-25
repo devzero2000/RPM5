@@ -2140,6 +2140,7 @@ assert(psm->mi == NULL);
 	 * the appropriate score entry.
 	 */
 	score = rpmtsGetScore(ts);
+/*@-branchstate @*/
 	if (score != NULL) {
 	    se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
 	    if (se == NULL) {
@@ -2149,6 +2150,7 @@ assert(psm->mi == NULL);
 		rc = RPMRC_FAIL;
 	    }
 	}
+/*@=branchstate @*/
 
 	/* If this is an autorolback transaction, then we need to set
 	 * the TID of the header to that of its remove tid

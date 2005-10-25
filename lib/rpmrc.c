@@ -1946,8 +1946,11 @@ int rpmShowRC(FILE * fp)
 	if (ds != NULL) {
 	    fprintf(fp, _("Configured system provides (from /etc/rpm/sysinfo):\n"));
 	    ds = rpmdsInit(ds);
-	    while (rpmdsNext(ds) >= 0)
-		fprintf(fp, "    %s\n", rpmdsDNEVR(ds)+2);
+	    while (rpmdsNext(ds) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(ds);
+		if (DNEVR != NULL)
+		    fprintf(fp, "    %s\n", DNEVR+2);
+	    }
 	    ds = rpmdsFree(ds);
 	    fprintf(fp, "\n");
 	}
@@ -1956,8 +1959,11 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, _("Features provided by rpmlib installer:\n"));
     xx = rpmdsRpmlib(&ds, NULL);
     ds = rpmdsInit(ds);
-    while (rpmdsNext(ds) >= 0)
-	fprintf(fp, "    %s\n", rpmdsDNEVR(ds)+2);
+    while (rpmdsNext(ds) >= 0) {
+	const char * DNEVR = rpmdsDNEVR(ds);
+	if (DNEVR != NULL)
+	    fprintf(fp, "    %s\n", DNEVR+2);
+    }
     ds = rpmdsFree(ds);
     fprintf(fp, "\n");
 
@@ -1967,8 +1973,11 @@ int rpmShowRC(FILE * fp)
 	    fprintf(fp,
 		_("Features provided by current cpuinfo (from /proc/cpuinfo):\n"));
 	    ds = rpmdsInit(ds);
-	    while (rpmdsNext(ds) >= 0)
-		fprintf(fp, "    %s\n", rpmdsDNEVR(ds)+2);
+	    while (rpmdsNext(ds) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(ds);
+		if (DNEVR != NULL)
+		    fprintf(fp, "    %s\n", DNEVR+2);
+	    }
 	    ds = rpmdsFree(ds);
 	    fprintf(fp, "\n");
 	}
