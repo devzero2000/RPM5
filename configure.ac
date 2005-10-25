@@ -359,7 +359,7 @@ localdone=
 
 dirs=$prefix
 if test "$cross_compiling" != "yes"; then
-  dirs="$dirs /usr/local"
+  dirs="$dirs"
 fi
 for dir in $dirs
 do

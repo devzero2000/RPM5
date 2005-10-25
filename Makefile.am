@@ -126,7 +126,7 @@ lint:
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
-pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
+pkgsrcdir = $(prefix)/src/rpm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm

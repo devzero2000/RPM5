@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 20:05-0400\n"
+"POT-Creation-Date: 2005-10-25 18:43-0400\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2452,22 +2452,22 @@ msgstr "%s misslyckades på fil %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
 
-#: lib/psm.c:2147
+#: lib/psm.c:2148
 #, fuzzy, c-format
 msgid "Could not aquire transaction score entry for %s\n"
 msgstr "ordna inte transaktionsmängd"
 
-#: lib/psm.c:2159
+#: lib/psm.c:2161
 #, c-format
 msgid "Setting %s to TID of 0x%08x\n"
 msgstr ""
 
-#: lib/psm.c:2183
+#: lib/psm.c:2185
 #, fuzzy, c-format
 msgid "Attempting to mark %s as installed in trasaction score\n"
 msgstr "Försöker markera %s som installerad på resultattavla(%u).\n"
 
-#: lib/psm.c:2215
+#: lib/psm.c:2217
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr "Försöker markera %s som raderat på resultattavla(0x%x).\n"
@@ -2685,73 +2685,73 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1559
+#: lib/rpmds.c:739 lib/rpmds.c:1577
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:739 lib/rpmds.c:1559
+#: lib/rpmds.c:739 lib/rpmds.c:1577
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1227
+#: lib/rpmds.c:1239
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, and Obsoletes:-beroenden stödjer versioner."
 
-#: lib/rpmds.c:1230
+#: lib/rpmds.c:1242
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "filnamn lagrade som (katNamn,basNam,katIndex)-tupel, inte som sökväg."
 
-#: lib/rpmds.c:1233
+#: lib/rpmds.c:1245
 msgid "package payload can be compressed using bzip2."
 msgstr "paketlasten kan komprimeras med bzip2."
 
-#: lib/rpmds.c:1236
+#: lib/rpmds.c:1248
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "paketlastfiler har \"./\"-prefix."
 
-#: lib/rpmds.c:1239
+#: lib/rpmds.c:1251
 msgid "package name-version-release is not implicitly provided."
 msgstr "paketets namn-version-utgåva tillhandahålls inte implicit."
 
-#: lib/rpmds.c:1242
+#: lib/rpmds.c:1254
 msgid "header tags are always sorted after being loaded."
 msgstr "huvudtaggar sorteras alltid efter att ha lästs in."
 
-#: lib/rpmds.c:1245
+#: lib/rpmds.c:1257
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "skriptinterpretatorn kan använda argument från huvudet."
 
-#: lib/rpmds.c:1248
+#: lib/rpmds.c:1260
 msgid "a hardlink file set may be installed without being complete."
 msgstr "en hårdlänkad filuppsättning får installeras utan att vara komplett."
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1263
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "paketskript kan komma åt rpm-databasen under installation."
 
-#: lib/rpmds.c:1254
+#: lib/rpmds.c:1266
 msgid "internal support for lua scripts."
 msgstr "internt stöd för lua-skript."
 
-#: lib/rpmds.c:1356
+#: lib/rpmds.c:1370
 #, fuzzy, c-format
 msgid "%s:%d N must begin with alphanumeric, _, or /.\n"
 msgstr ""
 "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1389
+#: lib/rpmds.c:1404
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1399
+#: lib/rpmds.c:1414
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1525
+#: lib/rpmds.c:1543
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2760,13 +2760,13 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1558
+#: lib/rpmds.c:1576
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1582
+#: lib/rpmds.c:1600
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"
@@ -3113,41 +3113,32 @@ msgstr "arkitektur saknas för %s vid %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "okänd flagga \"%s\" vid %s:%d\n"
 
-#: lib/rpmrc.c:1576
-#, c-format
-msgid "Unknown system: %s\n"
-msgstr "Okänt system: %s\n"
-
-#: lib/rpmrc.c:1577
-msgid "Please contact rpm-list@redhat.com\n"
-msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
-
-#: lib/rpmrc.c:1814
+#: lib/rpmrc.c:1809
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Kan inte expandera %s\n"
 
-#: lib/rpmrc.c:1819
+#: lib/rpmrc.c:1814
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Kan inte läsa %s, HOME är för stor.\n"
 
-#: lib/rpmrc.c:1836
+#: lib/rpmrc.c:1831
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kan inte öppna %s för läsning: %s.\n"
 
-#: lib/rpmrc.c:1947
+#: lib/rpmrc.c:1942
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1956
+#: lib/rpmrc.c:1954
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1968
+#: lib/rpmrc.c:1969
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
@@ -4425,6 +4416,12 @@ msgstr "använd databas i KATALOG"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
+
+#~ msgid "Unknown system: %s\n"
+#~ msgstr "Okänt system: %s\n"
+
+#~ msgid "Please contact rpm-list@redhat.com\n"
+#~ msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
 
 #~ msgid "(rpmrc provides)"
 #~ msgstr "(rpmrc tillhandahåller)"

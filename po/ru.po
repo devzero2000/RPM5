@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-23 20:05-0400\n"
+"POT-Creation-Date: 2005-10-25 18:43-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2486,22 +2486,22 @@ msgstr "%s ошибка на файле %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: lib/psm.c:2147
+#: lib/psm.c:2148
 #, c-format
 msgid "Could not aquire transaction score entry for %s\n"
 msgstr ""
 
-#: lib/psm.c:2159
+#: lib/psm.c:2161
 #, c-format
 msgid "Setting %s to TID of 0x%08x\n"
 msgstr ""
 
-#: lib/psm.c:2183
+#: lib/psm.c:2185
 #, c-format
 msgid "Attempting to mark %s as installed in trasaction score\n"
 msgstr ""
 
-#: lib/psm.c:2215
+#: lib/psm.c:2217
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -2720,57 +2720,57 @@ msgstr ")"
 msgid "OK"
 msgstr "ОК"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1559
+#: lib/rpmds.c:739 lib/rpmds.c:1577
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1559
+#: lib/rpmds.c:739 lib/rpmds.c:1577
 msgid "YES"
 msgstr "ДА"
 
-#: lib/rpmds.c:1227
+#: lib/rpmds.c:1239
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, и Obsoletes: зависимости поддерживают версии."
 
-#: lib/rpmds.c:1230
+#: lib/rpmds.c:1242
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "имена файла(ов) хранятся в формате (dirName,baseName,dirIndex)."
 
-#: lib/rpmds.c:1233
+#: lib/rpmds.c:1245
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "для упаковки содержимого пакета используется bzip2"
 
-#: lib/rpmds.c:1236
+#: lib/rpmds.c:1248
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "префикс \"./\" используется для фала(ов) содержимого пакета."
 
-#: lib/rpmds.c:1239
+#: lib/rpmds.c:1251
 msgid "package name-version-release is not implicitly provided."
 msgstr "имя-версия-выпуск пакета не предоставляется автоматически."
 
-#: lib/rpmds.c:1242
+#: lib/rpmds.c:1254
 msgid "header tags are always sorted after being loaded."
 msgstr "ярлыки заголовков всегда сортируются после загрузки."
 
-#: lib/rpmds.c:1245
+#: lib/rpmds.c:1257
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "интерпретатор сценариев может использовать аргументы из заголовка."
 
-#: lib/rpmds.c:1248
+#: lib/rpmds.c:1260
 msgid "a hardlink file set may be installed without being complete."
 msgstr "поддерживается частичная установка набора жестких ссылок пакета."
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1263
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1254
+#: lib/rpmds.c:1266
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- не поддерживается для строк\n"
 
-#: lib/rpmds.c:1356
+#: lib/rpmds.c:1370
 #, fuzzy, c-format
 msgid "%s:%d N must begin with alphanumeric, _, or /.\n"
 msgstr ""
@@ -2778,18 +2778,18 @@ msgstr ""
 "'/': %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1389
+#: lib/rpmds.c:1404
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1399
+#: lib/rpmds.c:1414
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1525
+#: lib/rpmds.c:1543
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2799,13 +2799,13 @@ msgstr ""
 "\"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1558
+#: lib/rpmds.c:1576
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1582
+#: lib/rpmds.c:1600
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s содержит неудовлетворенные %s: %s\n"
@@ -3153,41 +3153,32 @@ msgstr "отсутствует архитектура для %s в %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "неверный параметр '%s' в %s:%d\n"
 
-#: lib/rpmrc.c:1576
-#, c-format
-msgid "Unknown system: %s\n"
-msgstr "Неизвестная система: %s\n"
-
-#: lib/rpmrc.c:1577
-msgid "Please contact rpm-list@redhat.com\n"
-msgstr "Свяжитесь с rpm-list@redhat.com\n"
-
-#: lib/rpmrc.c:1814
+#: lib/rpmrc.c:1809
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Невозможно раскрыть %s\n"
 
-#: lib/rpmrc.c:1819
+#: lib/rpmrc.c:1814
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Невозможно прочитать %s, значение HOME слишком велико.\n"
 
-#: lib/rpmrc.c:1836
+#: lib/rpmrc.c:1831
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
 
-#: lib/rpmrc.c:1947
+#: lib/rpmrc.c:1942
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1956
+#: lib/rpmrc.c:1954
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1968
+#: lib/rpmrc.c:1969
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
@@ -4456,6 +4447,12 @@ msgstr "использовать базу данных в КАТАЛОГЕ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "Unknown system: %s\n"
+#~ msgstr "Неизвестная система: %s\n"
+
+#~ msgid "Please contact rpm-list@redhat.com\n"
+#~ msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
 #~ msgid "(rpmrc provides)"
 #~ msgstr "(rpmrc provides)"

@@ -38,6 +38,8 @@
 	- display sysinfo/cpuinfo provides with --showrc iff --verboose.
 	- fix: boundary case segfault in rpmdsSearch.
 	- python: bindings for rpmds{Search,Cpuinfo,Rpmlib,Sysinfo}.
+	- use generic /usr/src/rpm path for building instead.
+	- don't check /usr/local routinely when configuring (#116709).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
