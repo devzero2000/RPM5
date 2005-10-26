@@ -237,6 +237,7 @@ static int isArch(const char * arch)
 	"rs6000",
 	"ia64",
 	"armv3l", "armv4b", "armv4l",
+	"armv5teb", "armv5tel",
 	"s390", "i370", "s390x",
 	"sh", "xtensa",
 	"noarch",

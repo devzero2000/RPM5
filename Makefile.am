@@ -165,6 +165,15 @@ install-data-local:
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;;\
+	armv3l)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;;\
+	armv4b)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4b ;;\
+	armv4l)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;;\
+	armv5teb) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4b ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5teb ;;\
+	armv5tel) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tel ;;\
 	alpha*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
 	sparc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\

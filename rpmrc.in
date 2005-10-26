@@ -61,6 +61,8 @@ optflags: mipsel -O2 -g
 optflags: armv3l -O2 -g -fsigned-char -fomit-frame-pointer -march=armv3
 optflags: armv4b -O2 -g -fsigned-char -fomit-frame-pointer -march=armv4
 optflags: armv4l -O2 -g -fsigned-char -fomit-frame-pointer -march=armv4
+optflags: armv5teb -O2 -g -fsigned-char -fomit-frame-pointer -march=armv5te
+optflags: armv5tel -O2 -g -fsigned-char -fomit-frame-pointer -march=armv5te
 
 optflags: atarist -O2 -g -fomit-frame-pointer
 optflags: atariste -O2 -g -fomit-frame-pointer
@@ -124,6 +126,8 @@ arch_canon:	mipsel:	mipsel	11
 arch_canon:	armv3l: armv3l	12
 arch_canon:     armv4b:	armv4b 	12
 arch_canon:     armv4l:	armv4l 	12
+arch_canon:     armv5teb: armv5teb 	12
+arch_canon:     armv5tel: armv5tel 	12
 
 arch_canon:	m68kmint: m68kmint	13
 arch_canon:	atarist: m68kmint	13
@@ -290,6 +294,8 @@ arch_compat: hppa1.1: hppa1.0
 arch_compat: hppa1.0: parisc
 arch_compat: parisc: noarch
 
+arch_compat: armv5teb: armv4b
+arch_compat: armv5tel: armv4l
 arch_compat: armv4b: noarch
 arch_compat: armv4l: armv3l
 arch_compat: armv3l: noarch
@@ -384,6 +390,8 @@ buildarch_compat: mipsel: noarch
 buildarch_compat: armv3l: noarch
 buildarch_compat: armv4b: noarch
 buildarch_compat: armv4l: noarch
+buildarch_compat: armv5teb: noarch
+buildarch_compat: armv5tel: noarch
 
 buildarch_compat: hppa2.0: hppa1.2
 buildarch_compat: hppa1.2: hppa1.1

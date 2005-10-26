@@ -333,8 +333,11 @@ exit 0
 %ifarch s390 s390x
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/s390*
 %endif
-%ifarch armv3l armv4l
+%ifarch armv3l armv4b armv4l
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/armv[34][lb]*
+%endif
+%ifarch armv5teb armv5tel
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/armv[345]*
 %endif
 %ifarch mips mipsel
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/mips*
