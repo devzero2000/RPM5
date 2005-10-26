@@ -236,6 +236,7 @@ LIBRPMIO_0
     vmefail;
     xstrcasecmp;
     xstrncasecmp;
+    xstrtolocale;
     XurlFree;
     XurlLink;
     XurlNew;

@@ -3,6 +3,7 @@
  */
 
 #include "system.h"
+
 #include "rpmio_internal.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
@@ -1085,6 +1086,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 
     if (rc && (*data) != NULL) {
 	*data = xstrdup(*data);
+	*data = xstrtolocale(*data);
 	*freeData = 1;
 	return 0;
     }
@@ -1094,6 +1096,56 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
     *count = 0;
     return 1;
 }
+
+/**
+ * Retrieve text and convert to locale.
+ */
+static int localeTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    rpmTagType t;
+    char **d, **d2, *dp;
+    int rc, i, l;
+
+    rc = hge(h, tag, &t, (void **)&d, count);
+    if (!rc || d == NULL || *count == 0) {
+	*freeData = 0;
+	*data = NULL;
+	*count = 0;
+	return 1;
+    }
+    if (type)
+	*type = t;
+    if (t == RPM_STRING_TYPE) {
+	d = (char **)xstrdup((char *)d);
+	d = (char **)xstrtolocale((char *)d);
+	*freeData = 1;
+    } else if (t == RPM_STRING_ARRAY_TYPE) {
+	l = 0;
+        for (i = 0; i < *count; i++) {
+	    d[i] = xstrdup(d[i]);
+	    d[i] = (char *)xstrtolocale(d[i]);
+	    l += strlen(d[i]) + 1;
+	}
+	d2 = xmalloc(*count * sizeof(char *) + l);
+	dp = (char *)(d2 + *count);
+        for (i = 0; i < *count; i++) {
+	    d2[i] = dp;
+	    strcpy(dp, d[i]);
+	    dp += strlen(dp) + 1;
+	    d[i] = _free(d[i]);
+	}
+	d = _free(d);
+	d = d2;
+	*freeData = 1;
+    } else
+	*freeData = 0;
+    *data = (void **)d;
+    return 0;
+}
+
 
 /**
  * Retrieve summary text.
@@ -1135,6 +1187,20 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
 
+static int changelognameTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+{
+    return localeTag(h, RPMTAG_CHANGELOGNAME, type, data, count, freeData);
+}
+
+static int changelogtextTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+{
+    return localeTag(h, RPMTAG_CHANGELOGTEXT, type, data, count, freeData);
+}
+
 /**
  * Retrieve group text.
  * @param h		header
@@ -1160,6 +1226,8 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
     { HEADER_EXT_TAG, "RPMTAG_SUMMARY",		{ summaryTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",	{ changelognameTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CHANGELOGTEXT",	{ changelogtextTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILECLASS",	{ fileclassTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILECONTEXTS",	{ filecontextsTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filenamesTag } },

@@ -8,6 +8,9 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
+#define mySKIPSPACE(s) { while (*(s) && isspace(*(s))) (s)++; }
+#define mySKIPNONSPACE(s) { while (*(s) && !isspace(*(s))) (s)++; }
+
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     int_32 mytime = time;	/* XXX convert to header representation */
@@ -54,26 +57,26 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     pe = date;
 
     /* day of week */
-    p = pe; SKIPSPACE(p);
+    p = pe; mySKIPSPACE(p);
     if (*p == '\0') return -1;
-    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
+    pe = p; mySKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     for (idx = days; *idx && strcmp(*idx, p); idx++)
 	{};
     if (*idx == NULL) return -1;
 
     /* month */
-    p = pe; SKIPSPACE(p);
+    p = pe; mySKIPSPACE(p);
     if (*p == '\0') return -1;
-    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
+    pe = p; mySKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     for (idx = months; *idx && strcmp(*idx, p); idx++)
 	{};
     if (*idx == NULL) return -1;
     time.tm_mon = idx - months;
 
     /* day */
-    p = pe; SKIPSPACE(p);
+    p = pe; mySKIPSPACE(p);
     if (*p == '\0') return -1;
-    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
+    pe = p; mySKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
 
     /* make this noon so the day is always right (as we make this UTC) */
     time.tm_hour = 12;
@@ -83,9 +86,9 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) return -1;
 
     /* year */
-    p = pe; SKIPSPACE(p);
+    p = pe; mySKIPSPACE(p);
     if (*p == '\0') return -1;
-    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
+    pe = p; mySKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     time.tm_year = strtol(p, &q, 10);
     if (!(q && *q == '\0')) return -1;
     if (time.tm_year < 1990 || time.tm_year >= 3000) return -1;
@@ -120,7 +123,7 @@ static int addChangelog(Header h, StringBuf sb)
     s = getStringBuf(sb);
 
     /* skip space */
-    SKIPSPACE(s);
+    mySKIPSPACE(s);
 
     while (*s != '\0') {
 	if (*s != '*') {
@@ -145,10 +148,10 @@ static int addChangelog(Header h, StringBuf sb)
 	date++;
 	s = date;
 	for (i = 0; i < 4; i++) {
-	    SKIPSPACE(s);
-	    SKIPNONSPACE(s);
+	    mySKIPSPACE(s);
+	    mySKIPNONSPACE(s);
 	}
-	SKIPSPACE(date);
+	mySKIPSPACE(date);
 	if (dateToTimet(date, &time)) {
 	    rpmError(RPMERR_BADSPEC, _("bad date in %%changelog: %s\n"), date);
 	    return RPMERR_BADSPEC;
@@ -161,7 +164,7 @@ static int addChangelog(Header h, StringBuf sb)
 	lastTime = time;
 
 	/* skip space to the name */
-	SKIPSPACE(s);
+	mySKIPSPACE(s);
 	if (! *s) {
 	    rpmError(RPMERR_BADSPEC, _("missing name in %%changelog\n"));
 	    return RPMERR_BADSPEC;
@@ -179,7 +182,7 @@ static int addChangelog(Header h, StringBuf sb)
 	}
 
 	/* text */
-	SKIPSPACE(text);
+	mySKIPSPACE(text);
 	if (! *text) {
 	    rpmError(RPMERR_BADSPEC, _("no description in %%changelog\n"));
 	    return RPMERR_BADSPEC;
@@ -220,7 +223,11 @@ int parseChangelog(Spec spec)
 	return rc;
     
     while (! (nextPart = isPart(spec->line))) {
+	const char * line;
+	line = xstrdup(spec->line);
+	line = xstrtolocale(line);
 	appendStringBuf(sb, spec->line);
+	line = _free(line);
 	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	    nextPart = PART_NONE;
 	    break;

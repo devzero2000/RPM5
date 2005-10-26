@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-26 14:57-0400\n"
+"POT-Creation-Date: 2005-10-26 19:53-0400\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -790,32 +790,32 @@ msgstr "kan inte skapa %s: %s\n"
 msgid "line %d: second %s\n"
 msgstr "rad %d: andra %s\n"
 
-#: build/parseChangelog.c:128
+#: build/parseChangelog.c:131
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "%%changelog-poster måste starta med *\n"
 
-#: build/parseChangelog.c:136
+#: build/parseChangelog.c:139
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "ofullständig %%changelog-post\n"
 
-#: build/parseChangelog.c:153
+#: build/parseChangelog.c:156
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "felaktigt datum i %%changelog: %s\n"
 
-#: build/parseChangelog.c:158
+#: build/parseChangelog.c:161
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog är inte i fallande kronologisk ordning\n"
 
-#: build/parseChangelog.c:166 build/parseChangelog.c:177
+#: build/parseChangelog.c:169 build/parseChangelog.c:180
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "saknat namn i %%changelog\n"
 
-#: build/parseChangelog.c:184
+#: build/parseChangelog.c:187
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "ingen beskrivning i %%changelog\n"
@@ -1487,28 +1487,28 @@ msgstr "========== fortsätter med tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
+#: lib/formats.c:40 lib/formats.c:72 lib/formats.c:107 lib/formats.c:521
 #: rpmdb/header.c:3611 rpmdb/header.c:3640 rpmdb/header.c:3664
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
-#: lib/formats.c:171
+#: lib/formats.c:172
 msgid "(not base64)"
 msgstr "(inte base64)"
 
-#: lib/formats.c:181
+#: lib/formats.c:182
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: lib/formats.c:206 lib/formats.c:406
+#: lib/formats.c:207 lib/formats.c:407
 msgid "(not a blob)"
 msgstr "(inte en klick)"
 
-#: lib/formats.c:338
+#: lib/formats.c:339
 msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
-#: lib/formats.c:431
+#: lib/formats.c:432
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 

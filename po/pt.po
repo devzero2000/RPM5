@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-26 14:57-0400\n"
+"POT-Creation-Date: 2005-10-26 19:53-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -799,32 +799,32 @@ msgstr "não consigo criar o %s: %s\n"
 msgid "line %d: second %s\n"
 msgstr "linha %d: segundo %s\n"
 
-#: build/parseChangelog.c:128
+#: build/parseChangelog.c:131
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "As entradas de %%changelog têm de começar por *\n"
 
-#: build/parseChangelog.c:136
+#: build/parseChangelog.c:139
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "entrada de %%changelog incompleta\n"
 
-#: build/parseChangelog.c:153
+#: build/parseChangelog.c:156
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "data inválida no %%changelog: %s\n"
 
-#: build/parseChangelog.c:158
+#: build/parseChangelog.c:161
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "O %%changelog não está na ordem cronológica descendente\n"
 
-#: build/parseChangelog.c:166 build/parseChangelog.c:177
+#: build/parseChangelog.c:169 build/parseChangelog.c:180
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "falta o nome no %%changelog\n"
 
-#: build/parseChangelog.c:184
+#: build/parseChangelog.c:187
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "falta a descrição no %%changelog\n"
@@ -1505,29 +1505,29 @@ msgstr "========== a prosseguir o tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
+#: lib/formats.c:40 lib/formats.c:72 lib/formats.c:107 lib/formats.c:521
 #: rpmdb/header.c:3611 rpmdb/header.c:3640 rpmdb/header.c:3664
 msgid "(not a number)"
 msgstr "(não é um número)"
 
-#: lib/formats.c:171
+#: lib/formats.c:172
 msgid "(not base64)"
 msgstr "(não é um base64)"
 
-#: lib/formats.c:181
+#: lib/formats.c:182
 msgid "(invalid type)"
 msgstr "(tipo inválido)"
 
-#: lib/formats.c:206 lib/formats.c:406
+#: lib/formats.c:207 lib/formats.c:407
 msgid "(not a blob)"
 msgstr "(não é um blob)"
 
-#: lib/formats.c:338
+#: lib/formats.c:339
 #, fuzzy
 msgid "(invalid xml type)"
 msgstr "(tipo inválido)"
 
-#: lib/formats.c:431
+#: lib/formats.c:432
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "ignorar as assinaturas de PGP"

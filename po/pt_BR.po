@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-26 14:57-0400\n"
+"POT-Creation-Date: 2005-10-26 19:53-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -881,32 +881,32 @@ msgstr "No consegui abrir: %s\n"
 msgid "line %d: second %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/parseChangelog.c:128
+#: build/parseChangelog.c:131
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr ""
 
-#: build/parseChangelog.c:136
+#: build/parseChangelog.c:139
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr ""
 
-#: build/parseChangelog.c:153
+#: build/parseChangelog.c:156
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr ""
 
-#: build/parseChangelog.c:158
+#: build/parseChangelog.c:161
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr ""
 
-#: build/parseChangelog.c:166 build/parseChangelog.c:177
+#: build/parseChangelog.c:169 build/parseChangelog.c:180
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr ""
 
-#: build/parseChangelog.c:184
+#: build/parseChangelog.c:187
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr ""
@@ -1639,28 +1639,28 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
+#: lib/formats.c:40 lib/formats.c:72 lib/formats.c:107 lib/formats.c:521
 #: rpmdb/header.c:3611 rpmdb/header.c:3640 rpmdb/header.c:3664
 msgid "(not a number)"
 msgstr ""
 
-#: lib/formats.c:171
+#: lib/formats.c:172
 msgid "(not base64)"
 msgstr ""
 
-#: lib/formats.c:181
+#: lib/formats.c:182
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:206 lib/formats.c:406
+#: lib/formats.c:207 lib/formats.c:407
 msgid "(not a blob)"
 msgstr ""
 
-#: lib/formats.c:338
+#: lib/formats.c:339
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:431
+#: lib/formats.c:432
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "desconsidere quaisquer assinaturas PGP"

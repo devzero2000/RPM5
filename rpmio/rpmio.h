@@ -705,6 +705,10 @@ int xstrcasecmp(const char * s1, const char * s2)		/*@*/;
  */
 int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
 
+/** \ingroup rpmio
+ * Force encoding of string.
+ */
+const char * xstrtolocale(const char *str)	/*@*/;
 #ifdef __cplusplus
 }
 #endif
