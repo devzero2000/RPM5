@@ -360,7 +360,6 @@ localdone=
 dirs=$prefix
 if test "$cross_compiling" != "yes"; then
   dirs="$dirs"
-fi
 for dir in $dirs
 do
 	case $dir in
@@ -389,6 +388,7 @@ do
 		AC_MSG_RESULT(no)
 	fi
 done
+fi
 
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then
