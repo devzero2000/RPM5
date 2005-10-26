@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-25 18:43-0400\n"
+"POT-Creation-Date: 2005-10-26 14:57-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -875,128 +875,128 @@ msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%Files: %s"
 msgid "line %d: Second %%files list\n"
 msgstr "vrstica %d: Drugi seznam %%Files"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:246
 #, fuzzy, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Arhitektura je izkljuèena: %s"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:251
 #, fuzzy, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Arhitektura ni vkljuèena: %s"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:256
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS je izkljuèen: %s"
 
-#: build/parsePreamble.c:260
+#: build/parsePreamble.c:261
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS ni vkljuèen: %s"
 
-#: build/parsePreamble.c:283
+#: build/parsePreamble.c:284
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "polje %s mora v paketu obstajati: %s"
 
-#: build/parsePreamble.c:312
+#: build/parsePreamble.c:313
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Podvojeni vnosi %s v paketu: %s"
 
-#: build/parsePreamble.c:375
+#: build/parsePreamble.c:376
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Ikone %s ni mo¾no odpreti: %s"
 
-#: build/parsePreamble.c:393
+#: build/parsePreamble.c:394
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/parsePreamble.c:406
+#: build/parsePreamble.c:407
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Neznan tip ikone: %s"
 
-#: build/parsePreamble.c:451
+#: build/parsePreamble.c:452
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "vrstica %d: Napaèna izbira %s: %s"
 
-#: build/parsePreamble.c:491
+#: build/parsePreamble.c:492
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "vrstica %d: Deformirana znaèka: %s"
 
 #. Empty field
-#: build/parsePreamble.c:499
+#: build/parsePreamble.c:500
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "vrstica %d: Prazna znaèka: %s"
 
-#: build/parsePreamble.c:524 build/parsePreamble.c:531
+#: build/parsePreamble.c:525 build/parsePreamble.c:532
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:592 build/parseSpec.c:472
+#: build/parsePreamble.c:593 build/parseSpec.c:472
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot ne more biti \"/\": %s"
 
-#: build/parsePreamble.c:605
+#: build/parsePreamble.c:606
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "vrstica %d: Predpone se ne smejo konèati z /: %s"
 
-#: build/parsePreamble.c:617
+#: build/parsePreamble.c:618
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "vrstica %d: Docdir se mora zaèeti z \"/\": %s"
 
-#: build/parsePreamble.c:629
+#: build/parsePreamble.c:630
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "vrstica %d: polje Epoch/Serial mora biti ¹tevilo: %s"
 
-#: build/parsePreamble.c:669 build/parsePreamble.c:680
+#: build/parsePreamble.c:670 build/parsePreamble.c:681
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "vrstica %d: Okvarjeno ¹tevilo %s: %s\n"
 
-#: build/parsePreamble.c:706
+#: build/parsePreamble.c:707
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "vrstica %d: Napaèna oblika BuildArchitecture: %s"
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:716
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Notranja napaka: Neprava znaèka %d"
 
-#: build/parsePreamble.c:819
+#: build/parsePreamble.c:820
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:888
+#: build/parsePreamble.c:889
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Nepravilno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:894
+#: build/parsePreamble.c:895
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket ¾e obstaja: %s"
 
-#: build/parsePreamble.c:923
+#: build/parsePreamble.c:924
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "vrstica %d: Neznana znaèka: %s"
 
-#: build/parsePreamble.c:945
+#: build/parsePreamble.c:946
 #, fuzzy
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Datoteka spec ne more uporabiti BuildRoot"
@@ -1482,43 +1482,48 @@ msgstr "%s: %-45s DA (db ponudbe)\n"
 msgid "(db package)"
 msgstr "ni paketov\n"
 
-#: lib/depends.c:1095
+#. dependency is unsatisfied, but just a hint.
+#: lib/depends.c:767
+msgid "(hint skipped)"
+msgstr ""
+
+#: lib/depends.c:1100
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1215
+#: lib/depends.c:1222
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1452
+#: lib/depends.c:1459
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1542
+#: lib/depends.c:1549
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1633
+#: lib/depends.c:1640
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1706
+#: lib/depends.c:1713
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1741
+#: lib/depends.c:1748
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1746
+#: lib/depends.c:1753
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2573,7 +2578,7 @@ msgstr ""
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
 
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123 lib/rpmts.c:633
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "napaka v obliki: %s\n"
@@ -2914,7 +2919,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "premiokanje imenika %s v %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1048 lib/rpmts.c:643
+#: lib/rpminstall.c:611 lib/rpminstall.c:1048 lib/rpmts.c:644
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3287,73 +3292,73 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
-#: lib/rpmts.c:285
+#: lib/rpmts.c:286
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/rpmts.c:303
+#: lib/rpmts.c:304
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: lib/rpmts.c:311
+#: lib/rpmts.c:312
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/rpmts.c:522
+#: lib/rpmts.c:523
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "datoteke %s/packages.rpm ni mogo¾no odpreti\n"
 
-#: lib/rpmts.c:664
+#: lib/rpmts.c:665
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "vrstica: %s"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:677
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "izvori v: %s\n"
 
-#: lib/rpmts.c:1229
+#: lib/rpmts.c:1230
 #, fuzzy
 msgid "mounted filesystems:\n"
 msgstr "zbiranje seznama priklopljenih datoteènih sistemov.\n"
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1232
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1287
+#: lib/rpmts.c:1288
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "Datoteka: %4d: %07o %s.%s\t %s\n"
 
-#: lib/rpmts.c:1593
+#: lib/rpmts.c:1594
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1598
+#: lib/rpmts.c:1599
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1608
+#: lib/rpmts.c:1609
 #, fuzzy, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "premikanje %s v %s\n"
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1635
+#: lib/rpmts.c:1636
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1639
+#: lib/rpmts.c:1640
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr ""
@@ -3361,37 +3366,37 @@ msgstr ""
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1651
+#: lib/rpmts.c:1652
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1676
+#: lib/rpmts.c:1677
 msgid "Could not get header for transaction score!\n"
 msgstr ""
 
-#: lib/rpmts.c:1677
+#: lib/rpmts.c:1678
 #, c-format
 msgid "NEVRA: %s"
 msgstr ""
 
-#: lib/rpmts.c:1686
+#: lib/rpmts.c:1687
 #, c-format
 msgid "\tCould not get INSTALLTID for %s.\n"
 msgstr ""
 
-#: lib/rpmts.c:1691
+#: lib/rpmts.c:1692
 #, c-format
 msgid "\tINSTALLTID for %s is 0x%08x.\n"
 msgstr ""
 
 #. Assume we don't find it
-#: lib/rpmts.c:1777
+#: lib/rpmts.c:1778
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1783
+#: lib/rpmts.c:1784
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr ""

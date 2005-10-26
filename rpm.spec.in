@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.23
+Release: 0.24
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -510,6 +510,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Oct 26 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.24
+- permit Requires: hints.
+
 * Tue Oct 25 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.23
 - use generic /usr/src/rpm path for building instead.
 - don't check /usr/local routinely when configuring (#116709).

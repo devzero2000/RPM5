@@ -129,6 +129,7 @@ static struct tokenBits_s installScriptBits[] = {
     { "post",		RPMSENSE_SCRIPT_POST },
     { "rpmlib",		RPMSENSE_RPMLIB },
     { "verify",		RPMSENSE_SCRIPT_VERIFY },
+    { "hint",		RPMSENSE_MISSINGOK },
     { NULL, 0 }
 };
 

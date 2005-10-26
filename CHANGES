@@ -40,6 +40,7 @@
 	- python: bindings for rpmds{Search,Cpuinfo,Rpmlib,Sysinfo}.
 	- use generic /usr/src/rpm path for building instead.
 	- don't check /usr/local routinely when configuring (#116709).
+	- permit Requires: hints.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

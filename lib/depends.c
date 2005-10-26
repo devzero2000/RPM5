@@ -762,8 +762,13 @@ retry:
 /*@=boundsread@*/
 
 unsatisfied:
-    rc = 1;	/* dependency is unsatisfied */
-    rpmdsNotify(dep, NULL, rc);
+    if (rpmdsFlags(dep) & RPMSENSE_MISSINGOK) {
+	rc = 0;	/* dependency is unsatisfied, but just a hint. */
+	rpmdsNotify(dep, _("(hint skipped)"), rc);
+    } else {
+	rc = 1;	/* dependency is unsatisfied */
+	rpmdsNotify(dep, NULL, rc);
+    }
 
 exit:
     /*
@@ -1154,6 +1159,8 @@ static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 	return "Requires(postun):";
     if (f & RPMSENSE_SCRIPT_VERIFY)
 	return "Requires(verify):";
+    if (f & RPMSENSE_MISSINGOK)
+	return "Requires(hint):";
     if (f & RPMSENSE_FIND_REQUIRES)
 	return "Requires(auto):";
     return "Requires:";
