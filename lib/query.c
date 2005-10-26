@@ -103,7 +103,7 @@ static void printFileInfo(char * te, const char * name,
 	(void)strftime(timefield, sizeof(timefield) - 1, fmt, tm);
     }
 
-    sprintf(te, "%s %4d %-8s %-8s %10s %s %s", perms,
+    sprintf(te, "%s %4d %-7s %-8s %10s %s %s", perms,
 	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
     perms = _free(perms);
 }
