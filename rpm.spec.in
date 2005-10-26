@@ -234,7 +234,7 @@ exit 0
 /sbin/ldconfig
 
 # Establish correct rpmdb ownership.
-/bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
+/bin/chown @RPMUSER@:@RPMGROUP@ /var/lib/rpm/[A-Z]*
 
 # XXX Detect (and remove) incompatible dbenv files during db-4.3.14 upgrade.
 # XXX Removing dbenv files in %%post opens a lock race window, a tolerable
