@@ -383,12 +383,12 @@ int rpmdsSysinfo(rpmds * dsp, /*@null@*/ const char * fn)
 /**
  * Load getconf provides into a dependency set.
  * @retval *dsp		(loaded) depedency set
- * @param fn		path (NULL uses /)
+ * @param path		getconf path (NULL uses /)
  * @return		0 on success
  */
-int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * fn)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *dsp, h_errno, fileSystem, internalState @*/;
+int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * path)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *dsp, fileSystem, internalState @*/;
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.

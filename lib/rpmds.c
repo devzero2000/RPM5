@@ -1442,11 +1442,13 @@ exit:
 }
 
 struct conf {
+/*@observer@*/ /*@relnull@*/
     const char *name;
     const int call_name;
     const enum { SYSCONF, CONFSTR, PATHCONF } call;
 };
 
+/*@unchecked@*/ /*@observer@*/
 static const struct conf vars[] = {
 #ifdef _PC_LINK_MAX
     { "LINK_MAX", _PC_LINK_MAX, PATHCONF },
@@ -1837,7 +1839,9 @@ static const struct conf vars[] = {
 #ifdef _SC_BC_STRING_MAX
     { "BC_STRING_MAX", _SC_BC_STRING_MAX, SYSCONF },
 #endif
+#ifdef _SC_CHARCLASS_NAME_MAX
     { "CHARCLASS_NAME_MAX", _SC_CHARCLASS_NAME_MAX, SYSCONF },
+#endif
 #ifdef _SC_COLL_WEIGHTS_MAX
     { "COLL_WEIGHTS_MAX", _SC_COLL_WEIGHTS_MAX, SYSCONF },
 #endif
@@ -2345,6 +2349,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
     char * t;
     int_32 Flags;
 
+/*@-branchstate@*/
     if (path == NULL)
 	path = "/";
 
@@ -2358,27 +2363,30 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 		EVR = xmalloc(32);
 		sprintf(EVR, "%ld", value);
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case SYSCONF:
 	    value = sysconf(c->call_name);
 	    if (value == -1l) {
+/*@-unrecog@*/
 		if (c->call_name == _SC_UINT_MAX
 		|| c->call_name == _SC_ULONG_MAX) {
 		    EVR = xmalloc(32);
 		    sprintf(EVR, "%lu", value);
 		}
+/*@=unrecog@*/
 	    } else {
 		EVR = xmalloc(32);
 		sprintf(EVR, "%ld", value);
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case CONFSTR:
 	    clen = confstr(c->call_name, (char *) NULL, 0);
 	    EVR = xmalloc(clen+1);
+	    *EVR = '\0';
 	    if (confstr (c->call_name, EVR, clen) != clen)
 		error (3, errno, "confstr");
 	    EVR[clen] = '\0';
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	if (EVR == NULL)
 	    continue;
@@ -2405,6 +2413,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	rpmdsNSAdd(dsp, NS, N, EVR, Flags);
 	EVR = _free(EVR);
     }
+/*@=branchstate@*/
     return 0;
 }
 
