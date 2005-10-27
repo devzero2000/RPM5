@@ -708,7 +708,9 @@ int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
 /** \ingroup rpmio
  * Force encoding of string.
  */
-const char * xstrtolocale(const char *str)	/*@*/;
+/*@only@*/ /*@null@*/
+const char * xstrtolocale(/*@only@*/ const char *str)
+	/*@modifies *str @*/;
 #ifdef __cplusplus
 }
 #endif

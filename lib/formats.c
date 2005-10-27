@@ -28,7 +28,7 @@
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data, 
+static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
 	/*@requires maxRead(data) >= 0 @*/
@@ -94,7 +94,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(int_32 type, const void * data, 
+static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -148,7 +148,7 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
  * @param element	no. bytes of binary data
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(int_32 type, const void * data, 
+static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		int element)
 	/*@*/
@@ -197,7 +197,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
  * @param element
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(int_32 type, const void * data, 
+static /*@only@*/ char * base64Format(int_32 type, const void * data,
 		/*@unused@*/ char * formatPrefix, int padding, int element)
 	/*@*/
 {
@@ -218,8 +218,8 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	/* Add additional bytes necessary for eol string(s). */
 	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
 	    lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
-        if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
-            ++lc;
+	if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
+	    ++lc;
 	    nt += lc * strlen(b64encode_eolstr);
 	}
 	/*@=globs@*/
@@ -290,7 +290,7 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
  * @return		formatted string
  */
 /*@-bounds@*/
-static /*@only@*/ char * xmlFormat(int_32 type, const void * data, 
+static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 		char * formatPrefix, int padding,
 		/*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
@@ -395,7 +395,7 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data, 
+static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
 	/*@globals fileSystem, internalState @*/
@@ -508,7 +508,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(int_32 type, const void * data, 
+static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -524,15 +524,15 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	buf[0] = '\0';
 
 /*@-boundswrite@*/
-	if (anint & RPMSENSE_SCRIPT_PRE) 
+	if (anint & RPMSENSE_SCRIPT_PRE)
 	    strcat(buf,"(pre)");
-	if (anint & RPMSENSE_SCRIPT_POST) 
+	if (anint & RPMSENSE_SCRIPT_POST)
 	    strcat(buf,"(post)");
-	if (anint & RPMSENSE_SCRIPT_PREUN) 
+	if (anint & RPMSENSE_SCRIPT_PREUN)
 	    strcat(buf,"(preun)");
-	if (anint & RPMSENSE_SCRIPT_POSTUN) 
+	if (anint & RPMSENSE_SCRIPT_POSTUN)
 	    strcat(buf,"(postun)");
-	if (anint & RPMSENSE_LESS) 
+	if (anint & RPMSENSE_LESS)
 	    strcat(buf, "<");
 	if (anint & RPMSENSE_GREATER)
 	    strcat(buf, ">");
@@ -581,7 +581,7 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
     if (data) *((const char ***) data) = list;
     if (freeData) *freeData = 0;
 
-    return 0; 
+    return 0;
 }
 
 /**
@@ -840,7 +840,7 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, (const char ***) data, count);
     *freeData = 1;
-    return 0; 
+    return 0;
 }
 
 /**
@@ -864,7 +864,7 @@ static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFClasses(h, (const char ***) data, count);
     *freeData = 1;
-    return 0; 
+    return 0;
 }
 
 /**
@@ -888,7 +888,7 @@ static int filecontextsTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFContexts(h, (const char ***) data, count);
     *freeData = 1;
-    return 0; 
+    return 0;
 }
 
 /**
@@ -912,7 +912,7 @@ static int fscontextsTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFSContexts(h, (const char ***) data, count);
     *freeData = 1;
-    return 0; 
+    return 0;
 }
 
 /**
@@ -936,7 +936,7 @@ static int recontextsTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildREContexts(h, (const char ***) data, count);
     *freeData = 1;
-    return 0; 
+    return 0;
 }
 
 /**
@@ -960,7 +960,7 @@ static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, (const char ***) data, count);
     *freeData = 1;
-    return 0; 
+    return 0;
 }
 
 /**
@@ -984,7 +984,7 @@ static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, (const char ***) data, count);
     *freeData = 1;
-    return 0; 
+    return 0;
 }
 
 /* I18N look aside diversions */
@@ -1103,6 +1103,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 static int localeTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     rpmTagType t;
@@ -1124,14 +1125,15 @@ static int localeTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	*freeData = 1;
     } else if (t == RPM_STRING_ARRAY_TYPE) {
 	l = 0;
-        for (i = 0; i < *count; i++) {
+	for (i = 0; i < *count; i++) {
 	    d[i] = xstrdup(d[i]);
 	    d[i] = (char *)xstrtolocale(d[i]);
+assert(d[i] != NULL);
 	    l += strlen(d[i]) + 1;
 	}
-	d2 = xmalloc(*count * sizeof(char *) + l);
+	d2 = xmalloc(*count * sizeof(*d2) + l);
 	dp = (char *)(d2 + *count);
-        for (i = 0; i < *count; i++) {
+	for (i = 0; i < *count; i++) {
 	    d2[i] = dp;
 	    strcpy(dp, d[i]);
 	    dp += strlen(dp) + 1;
@@ -1145,7 +1147,6 @@ static int localeTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
     *data = (void **)d;
     return 0;
 }
-
 
 /**
  * Retrieve summary text.
@@ -1190,6 +1191,9 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 static int changelognameTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     return localeTag(h, RPMTAG_CHANGELOGNAME, type, data, count, freeData);
 }
@@ -1197,6 +1201,9 @@ static int changelognameTag(Header h, /*@out@*/ rpmTagType * type,
 static int changelogtextTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     return localeTag(h, RPMTAG_CHANGELOGTEXT, type, data, count, freeData);
 }

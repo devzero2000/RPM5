@@ -6,6 +6,8 @@
 #include <wchar.h>
 #include "debug.h"
 
+/*@access mbstate_t @*/
+
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
@@ -23,7 +25,7 @@ const char * xstrtolocale(const char *str)
     wchar_t *wstr, *wp;
     const unsigned char *cp;
     char *cc;
-    int state = 0;
+    unsigned state = 0;
     int c;
     int ccl, cca, mb_cur_max;
     size_t l;
@@ -80,6 +82,7 @@ const char * xstrtolocale(const char *str)
 	    continue;
 	*wp++ = (wchar_t)c;
     }
+/*@-branchstate@*/
     if (state) {
 	/* encoding error, assume latin1 */
         strisutf8 = 0;
@@ -89,6 +92,7 @@ const char * xstrtolocale(const char *str)
 	    *wp++ = (wchar_t)c;
 	}
     }
+/*@=branchstate@*/
     *wp = 0;
     mb_cur_max = MB_CUR_MAX;
     memset(&ps, 0, sizeof(ps));
