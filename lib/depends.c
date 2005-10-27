@@ -684,6 +684,22 @@ retry:
 	goto unsatisfied;
     }
 
+    if (!strncmp(Name, "getconf(", sizeof("getconf(")-1)) {
+	static rpmds getconfds = NULL;
+	static int oneshot = -1;
+
+	if (oneshot)
+	    oneshot = rpmdsGetconf(&getconfds, NULL);
+	if (getconfds == NULL)
+	    goto unsatisfied;
+
+	if (rpmdsSearch(getconfds, dep) >= 0) {
+	    rpmdsNotify(dep, _("(getconf provides)"), rc);
+	    goto exit;
+	}
+	goto unsatisfied;
+    }
+
     /* Search added packages for the dependency. */
     if (rpmalSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL) {
 	/*

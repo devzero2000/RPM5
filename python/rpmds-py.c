@@ -423,6 +423,19 @@ rpmds_Sysinfo(rpmdsObject * s)
     return (PyObject *) rpmds_Wrap( ds );
 }
 
+static PyObject *
+rpmds_Getconf(rpmdsObject * s)
+	/*@*/
+{
+    rpmds ds = NULL;
+    int xx;
+
+    /* XXX check return code, permit arg (NULL uses system default). */
+    xx = rpmdsGetconf(&ds, NULL);
+
+    return (PyObject *) rpmds_Wrap( ds );
+}
+
 #ifdef	NOTYET
 static PyObject *
 rpmds_Compare(rpmdsObject * s, PyObject * args, PyObject * kwds)
@@ -504,6 +517,8 @@ The current index in ds is positioned at overlapping member upon success.\n" },
 	"ds.Rpmlib -> nds	- Return internal rpmlib dependency set.\n"},
  {"Sysinfo",	(PyCFunction)rpmds_Sysinfo,	METH_NOARGS,
 	"ds.Sysinfo -> nds	- Return /etc/rpm/sysinfo dependency set.\n"},
+ {"Getconf",	(PyCFunction)rpmds_Getconf,	METH_NOARGS,
+	"ds.Getconf -> nds	- Return getconf(1) dependency set.\n"},
 #ifdef	NOTYET
  {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS|METH_KEYWORDS,
 	NULL},

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-26 19:53-0400\n"
+"POT-Creation-Date: 2005-10-27 16:33-0400\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1453,40 +1453,45 @@ msgstr "(rpmlib bietet an)"
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib bietet an)"
 
-#: lib/depends.c:710
+#: lib/depends.c:697
+#, fuzzy
+msgid "(getconf provides)"
+msgstr "(rpmlib bietet an)"
+
+#: lib/depends.c:726
 msgid "(db files)"
 msgstr "(Datenbank-Dateien)"
 
-#: lib/depends.c:723
+#: lib/depends.c:739
 msgid "(db provides)"
 msgstr "(Datenbank bietet an)"
 
-#: lib/depends.c:736
+#: lib/depends.c:752
 msgid "(db package)"
 msgstr "(Datenbank-Paket)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:767
+#: lib/depends.c:783
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1100
+#: lib/depends.c:1116
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "Ignoriere Paketnamensrelation(en) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1222
+#: lib/depends.c:1238
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "Entferne %s \"%s\" von tsort-Relationen.\n"
 
 #. Record all relations.
-#: lib/depends.c:1459
+#: lib/depends.c:1475
 msgid "========== recording tsort relations\n"
 msgstr "========== zeichne tsort-Relationen auf\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1549
+#: lib/depends.c:1565
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
@@ -1494,21 +1499,21 @@ msgstr ""
 "========== tsorting Pakete (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 
-#: lib/depends.c:1640
+#: lib/depends.c:1656
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== Nur Nachfolger (%d Bytes)\n"
 
-#: lib/depends.c:1713
+#: lib/depends.c:1729
 msgid "LOOP:\n"
 msgstr "SCHLEIFE:\n"
 
-#: lib/depends.c:1748
+#: lib/depends.c:1764
 msgid "========== continuing tsort ...\n"
 msgstr "========== setze tsort fort...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1753
+#: lib/depends.c:1769
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder fehlgeschlagen, %d Elemente verbleiben\n"
@@ -2722,11 +2727,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:739 lib/rpmds.c:1577
+#: lib/rpmds.c:739 lib/rpmds.c:2544
 msgid "NO "
 msgstr "NEIN "
 
-#: lib/rpmds.c:739 lib/rpmds.c:1577
+#: lib/rpmds.c:739 lib/rpmds.c:2544
 msgid "YES"
 msgstr "JA"
 
@@ -2795,7 +2800,7 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1543
+#: lib/rpmds.c:2510
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2805,13 +2810,13 @@ msgstr ""
 "als \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1576
+#: lib/rpmds.c:2543
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:1600
+#: lib/rpmds.c:2567
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Paket %s hat unerfüllte %s: %s\n"
@@ -3189,6 +3194,11 @@ msgstr ""
 #: lib/rpmrc.c:1969
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
+msgstr ""
+
+#: lib/rpmrc.c:1985
+#, c-format
+msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmsx.c:374

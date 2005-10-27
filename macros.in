@@ -829,6 +829,8 @@ print (t)\
 	modutils>vixie-cron		\
 	ypbind>yp-tools			\
 	ghostscript-fonts>ghostscript	\
+	%{?_dependency_whiteout_fc5}	\
+	%{?_dependency_whiteout_fc4}	\
 	%{?_dependency_whiteout_fc3}	\
 	%{?_dependency_whiteout_fc2}	\
 	%{?_dependency_whiteout_fc1}	\
@@ -846,7 +848,7 @@ print (t)\
 # Default headerSprintf() output format string for rpm -qa
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_query_all_fmt		%%{name}-%%{version}-%%{release}
+%_query_all_fmt		%%{name}-%%{version}-%%{release}.%%{arch}
 
 #
 # Default path to the file used for transaction fcmtl lock.
@@ -856,7 +858,7 @@ print (t)\
 # some rpmdb operations.
 #
 # XXX Note: the file name is chosesn as __db.000 to expedite
-# support issues, many users are doing "rm -f /var/lib/rpm/__db*"
+# support issues, as many users are doing "rm -f /var/lib/rpm/__db*"
 # these days.
 %_rpmlock_path	%{_dbpath}/__db.000
 
@@ -923,6 +925,10 @@ print (t)\
   export RPM_BUILD_ROOT}\
   %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
   export CLASSPATH}\
+  unset PERL_MM_OPT\
+  LANG=C\
+  export LANG\
+  unset DISPLAY\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
