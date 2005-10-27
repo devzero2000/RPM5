@@ -25,7 +25,7 @@ LDADD = \
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
-noinst_PROGRAMS = dumpdb
+noinst_PROGRAMS = dumpdb rpmgetconf
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps rpmfile
