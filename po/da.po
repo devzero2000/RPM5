@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-27 16:33-0400\n"
+"POT-Creation-Date: 2005-10-27 22:57-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2764,12 +2764,12 @@ msgstr ")"
 msgid "OK"
 msgstr "O.K."
 
-#: lib/rpmds.c:739 lib/rpmds.c:2544
+#: lib/rpmds.c:739 lib/rpmds.c:2553
 #, fuzzy
 msgid "NO "
 msgstr "IKKE O.K."
 
-#: lib/rpmds.c:739 lib/rpmds.c:2544
+#: lib/rpmds.c:739 lib/rpmds.c:2553
 msgid "YES"
 msgstr ""
 
@@ -2833,7 +2833,7 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2510
+#: lib/rpmds.c:2519
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2842,13 +2842,13 @@ msgstr ""
 "\"B\"-afhængighed kræver en epoke (antager samme som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:2543
+#: lib/rpmds.c:2552
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2567
+#: lib/rpmds.c:2576
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"

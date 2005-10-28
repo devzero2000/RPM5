@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-27 16:33-0400\n"
+"POT-Creation-Date: 2005-10-27 22:57-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -2723,11 +2723,11 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:739 lib/rpmds.c:2544
+#: lib/rpmds.c:739 lib/rpmds.c:2553
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:739 lib/rpmds.c:2544
+#: lib/rpmds.c:739 lib/rpmds.c:2553
 msgid "YES"
 msgstr "ТАК"
 
@@ -2791,7 +2791,7 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2510
+#: lib/rpmds.c:2519
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2801,13 +2801,13 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2543
+#: lib/rpmds.c:2552
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2567
+#: lib/rpmds.c:2576
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"

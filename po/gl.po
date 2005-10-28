@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-27 16:33-0400\n"
+"POT-Creation-Date: 2005-10-27 22:57-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -2651,11 +2651,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2544
+#: lib/rpmds.c:739 lib/rpmds.c:2553
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2544
+#: lib/rpmds.c:739 lib/rpmds.c:2553
 msgid "YES"
 msgstr ""
 
@@ -2716,20 +2716,20 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2510
+#: lib/rpmds.c:2519
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:2543
+#: lib/rpmds.c:2552
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:2567
+#: lib/rpmds.c:2576
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
