@@ -44,6 +44,7 @@
 	- convert changelogs to utf8 on input and output (#140050).
 	- clean up build environment, better than macro overloading (#132907).
 	- add getconf(1) provides as a dependency name space set.
+	- upgrade to db-4.4.11 internal.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
