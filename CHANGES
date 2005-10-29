@@ -45,6 +45,7 @@
 	- clean up build environment, better than macro overloading (#132907).
 	- add getconf(1) provides as a dependency name space set.
 	- upgrade to db-4.4.11 internal.
+	- add /etc/ld.so.cache provides as a dependency name space set.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

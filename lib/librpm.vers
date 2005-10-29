@@ -103,6 +103,7 @@ LIBRPM_0
     rpmdsGetconf;
     rpmdsInit;
     rpmdsIx;
+    rpmdsLdconfig;
     rpmdsMerge;
     rpmdsN;
     rpmdsNew;

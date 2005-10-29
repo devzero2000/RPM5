@@ -391,6 +391,17 @@ int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * path)
 	/*@modifies *dsp, fileSystem, internalState @*/;
 
 /**
+ * Load /etc/ld.so.cache provides into a dependency set.
+ * @todo Add dependency colors, and attach to file.
+ * @retval *dsp		(loaded) depedency set
+ * @param path		cache path (NULL uses /etc/ld.so.cache)
+ * @return		0 on success
+ */
+int rpmdsLdconfig(rpmds * dsp, /*@null@*/ const char * path)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *dsp, fileSystem, internalState @*/;
+
+/**
  * Compare two versioned dependency ranges, looking for overlap.
  * @param A		1st dependency
  * @param B		2nd dependency

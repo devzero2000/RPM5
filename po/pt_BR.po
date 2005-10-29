@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-27 22:57-0400\n"
+"POT-Creation-Date: 2005-10-29 16:35-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -2944,11 +2944,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2553
+#: lib/rpmds.c:739 lib/rpmds.c:2643
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2553
+#: lib/rpmds.c:739 lib/rpmds.c:2643
 msgid "YES"
 msgstr ""
 
@@ -3009,20 +3009,20 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2519
+#: lib/rpmds.c:2609
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:2552
+#: lib/rpmds.c:2642
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:2576
+#: lib/rpmds.c:2666
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "no foi passado pacote para instalao"
