@@ -91,6 +91,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 
 /*@-boundsread@*/
     for (r = field; *r != '\0'; r = re) {
+	size_t nr;
 	SKIPWHITE(r);
 	if (*r == '\0')
 	    break;
@@ -98,7 +99,10 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	Flags = (tagflags & ~RPMSENSE_SENSEMASK);
 
 	/* Tokens must begin with alphanumeric, _, or / */
-	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
+	nr = strlen(r);
+	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/'
+	 || (nr > 3 && r[0] == '%' && r[1] == '{' && r[nr-1] == '}')))
+	{
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
 		     spec->lineNum, spec->line);

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-29 16:35-0400\n"
+"POT-Creation-Date: 2005-10-29 18:11-0400\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -867,128 +867,128 @@ msgstr "linia %d: B³±d w interpretacji %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "linia %d: Druga lista %%files\n"
 
-#: build/parsePreamble.c:246
+#: build/parsePreamble.c:240
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektura jest wykluczona: %s\n"
 
-#: build/parsePreamble.c:251
+#: build/parsePreamble.c:245
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektura nie jest wspierana: %s\n"
 
-#: build/parsePreamble.c:256
+#: build/parsePreamble.c:250
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS jest wykluczony: %s\n"
 
-#: build/parsePreamble.c:261
+#: build/parsePreamble.c:255
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS nie jest wspierany: %s\n"
 
-#: build/parsePreamble.c:284
+#: build/parsePreamble.c:278
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "pole %s musi byæ obecne w pakiecie: %s\n"
 
-#: build/parsePreamble.c:313
+#: build/parsePreamble.c:307
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Podwójne wpisy %s w pakiecie: %s\n"
 
-#: build/parsePreamble.c:376
+#: build/parsePreamble.c:370
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Nie mo¿na otworzyæ ikony %s: %s\n"
 
-#: build/parsePreamble.c:394
+#: build/parsePreamble.c:388
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Nie mo¿na odczytaæ ikony %s: %s\n"
 
-#: build/parsePreamble.c:407
+#: build/parsePreamble.c:401
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Nieznany typ ikony: %s\n"
 
-#: build/parsePreamble.c:452
+#: build/parsePreamble.c:446
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "linia %d: Etykieta przyjmuje tylko jeden znacznik: %s\n"
 
-#: build/parsePreamble.c:492
+#: build/parsePreamble.c:486
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "linia %d: Niepoprawna forma etykiety: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:500
+#: build/parsePreamble.c:494
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linia %d: Pusta etykieta: %s\n"
 
-#: build/parsePreamble.c:525 build/parsePreamble.c:532
+#: build/parsePreamble.c:518 build/parsePreamble.c:525
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linia %d: Nielegalny znak '-' w %s: %s\n"
 
-#: build/parsePreamble.c:593 build/parseSpec.c:472
+#: build/parsePreamble.c:586 build/parseSpec.c:472
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot nie mo¿e byæ \"/\": %s\n"
 
-#: build/parsePreamble.c:606
+#: build/parsePreamble.c:599
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linia %d: Prefiksy nie mog± siê koñczyæ na \"/\": %s\n"
 
-#: build/parsePreamble.c:618
+#: build/parsePreamble.c:611
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linia %d: Docdir musi siê zaczynaæ od '/': %s\n"
 
-#: build/parsePreamble.c:630
+#: build/parsePreamble.c:623
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "linia %d: pole Epoch/Serial musi byæ liczb±: %s\n"
 
-#: build/parsePreamble.c:670 build/parsePreamble.c:681
+#: build/parsePreamble.c:663 build/parsePreamble.c:674
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linia %d: B³êdne okre¶lenie %s: %s\n"
 
-#: build/parsePreamble.c:707
+#: build/parsePreamble.c:700
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linia %d: B³êdny format BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:716
+#: build/parsePreamble.c:709
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "B³±d wewnêtrzny: Fa³szywa etykieta %d\n"
 
-#: build/parsePreamble.c:820
+#: build/parsePreamble.c:813
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:889
+#: build/parsePreamble.c:882
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "B³êdna specyfikacja pakietu: %s\n"
 
-#: build/parsePreamble.c:895
+#: build/parsePreamble.c:888
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Pakiet ju¿ istnieje: %s\n"
 
-#: build/parsePreamble.c:924
+#: build/parsePreamble.c:917
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linia %d: Nieznana etykieta: %s\n"
 
-#: build/parsePreamble.c:946
+#: build/parsePreamble.c:939
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Plik spec nie mo¿e u¿ywaæ BuildRoot\n"
 
@@ -1061,7 +1061,7 @@ msgstr "linia %d: B³êdny argument dla %%patch: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
 
-#: build/parseReqs.c:103
+#: build/parseReqs.c:107
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1069,12 +1069,12 @@ msgstr ""
 "linia %d: Oznaczenia zale¿no¶ci musz± siê zaczynaæ od alfanumerycznych, '_' "
 "lub '/': %s\n"
 
-#: build/parseReqs.c:131
+#: build/parseReqs.c:135
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "linia %d: Wersja w nazwie pliku niedozwolona: %s\n"
 
-#: build/parseReqs.c:162
+#: build/parseReqs.c:166
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "linia %d: Wymagana wersja: %s\n"
@@ -1422,59 +1422,64 @@ msgstr ""
 msgid "(cached)"
 msgstr "(zbuforowane)"
 
-#: lib/depends.c:644
+#: lib/depends.c:641
+#, fuzzy
+msgid "(macro probe)"
+msgstr "(zasób rpmrc)"
+
+#: lib/depends.c:654
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(zasób rpmliba)"
 
-#: lib/depends.c:665
+#: lib/depends.c:675
 msgid "(rpmlib provides)"
 msgstr "(zasób rpmliba)"
 
-#: lib/depends.c:681
+#: lib/depends.c:691
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(zasób rpmliba)"
 
-#: lib/depends.c:697
+#: lib/depends.c:707
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(zasób rpmliba)"
 
-#: lib/depends.c:726
+#: lib/depends.c:736
 msgid "(db files)"
 msgstr "(pliki w bazie)"
 
-#: lib/depends.c:739
+#: lib/depends.c:749
 msgid "(db provides)"
 msgstr "(zasób w bazie)"
 
-#: lib/depends.c:752
+#: lib/depends.c:762
 msgid "(db package)"
 msgstr "(pakiet w bazie)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:783
+#: lib/depends.c:793
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1116
+#: lib/depends.c:1126
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignoruj relacje nazw pakietów [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1238
+#: lib/depends.c:1248
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie %s \"%s\" z relacji tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1475
+#: lib/depends.c:1485
 msgid "========== recording tsort relations\n"
 msgstr "========== zapisywanie relacji tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1565
+#: lib/depends.c:1575
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1483,21 +1488,21 @@ msgstr ""
 "========== tsortowanie pakietów (kolejno¶æ, #poprzedniki, #nastêpniki, "
 "drzewo, g³êboko¶æ)\n"
 
-#: lib/depends.c:1656
+#: lib/depends.c:1666
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== tylko nastêpniki (%d bajtów)\n"
 
-#: lib/depends.c:1729
+#: lib/depends.c:1739
 msgid "LOOP:\n"
 msgstr "PÊTLA:\n"
 
-#: lib/depends.c:1764
+#: lib/depends.c:1774
 msgid "========== continuing tsort ...\n"
 msgstr "========== kontynuowanie tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1769
+#: lib/depends.c:1779
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
@@ -4446,9 +4451,6 @@ msgstr "KATALOG"
 
 #~ msgid "Please contact rpm-list@redhat.com\n"
 #~ msgstr "Proszê skontaktowaæ siê z rpm-list@redhat.com\n"
-
-#~ msgid "(rpmrc provides)"
-#~ msgstr "(zasób rpmrc)"
 
 #~ msgid "\tAdded from erase element %s.\n"
 #~ msgstr "\tDodano usuniêty element %s.\n"

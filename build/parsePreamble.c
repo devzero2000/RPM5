@@ -185,21 +185,15 @@ static int parseBits(const char * s, const tokenBits tokbits,
 /**
  */
 static inline char * findLastChar(char * s)
-	/*@*/
+	/*@modifies *s @*/
 {
-    char *res = s;
+    char *se = s + strlen(s);
 
-/*@-boundsread@*/
-    while (*s != '\0') {
-	if (! xisspace(*s))
-	    res = s;
-	s++;
-    }
-/*@=boundsread@*/
-
-    /*@-temptrans -retalias@*/
-    return res;
-    /*@=temptrans =retalias@*/
+/*@-bounds@*/
+    while (--se > s && strchr(" \t\n\r", *se) != NULL)
+	*se = '\0';
+/*@=bounds@*/
+    return se;
 }
 
 /**
@@ -502,7 +496,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	return RPMERR_BADSPEC;
     }
     end = findLastChar(field);
-    *(end+1) = '\0';
 
     /* See if this is multi-token */
     end = field;

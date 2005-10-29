@@ -524,6 +524,7 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	buf[0] = '\0';
 
 /*@-boundswrite@*/
+#ifdef	NOTYET	/* XXX appending markers breaks :depflags format. */
 	if (anint & RPMSENSE_SCRIPT_PRE)
 	    strcat(buf,"(pre)");
 	if (anint & RPMSENSE_SCRIPT_POST)
@@ -532,6 +533,7 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	    strcat(buf,"(preun)");
 	if (anint & RPMSENSE_SCRIPT_POSTUN)
 	    strcat(buf,"(postun)");
+#endif
 	if (anint & RPMSENSE_LESS)
 	    strcat(buf, "<");
 	if (anint & RPMSENSE_GREATER)

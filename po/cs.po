@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-29 16:35-0400\n"
+"POT-Creation-Date: 2005-10-29 18:11-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -864,128 +864,128 @@ msgstr "øádek %d: Chyba pøi parsování %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "øádek %d: Druhý seznam %%files\n"
 
-#: build/parsePreamble.c:246
+#: build/parsePreamble.c:240
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektura je vyøazena: %s\n"
 
-#: build/parsePreamble.c:251
+#: build/parsePreamble.c:245
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektura není zahrnuta: %s\n"
 
-#: build/parsePreamble.c:256
+#: build/parsePreamble.c:250
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS je vyøazen: %s\n"
 
-#: build/parsePreamble.c:261
+#: build/parsePreamble.c:255
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS není zahrnut: %s\n"
 
-#: build/parsePreamble.c:284
+#: build/parsePreamble.c:278
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s\n"
 
-#: build/parsePreamble.c:313
+#: build/parsePreamble.c:307
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Duplikovaná polo¾ka %s v balíèku: %s\n"
 
-#: build/parsePreamble.c:376
+#: build/parsePreamble.c:370
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Nemohu otevøít ikonu %s: %s\n"
 
-#: build/parsePreamble.c:394
+#: build/parsePreamble.c:388
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Nemohu pøeèíst ikonu %s: %s\n"
 
-#: build/parsePreamble.c:407
+#: build/parsePreamble.c:401
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Neznámý typ ikony: %s\n"
 
-#: build/parsePreamble.c:452
+#: build/parsePreamble.c:446
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "øádek %d: Znaèka má jen jeden token: %s\n"
 
-#: build/parsePreamble.c:492
+#: build/parsePreamble.c:486
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "øádek %d: Poèkozená znaèka: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:500
+#: build/parsePreamble.c:494
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "øádek %d: Prázdná znaèka: %s\n"
 
-#: build/parsePreamble.c:525 build/parsePreamble.c:532
+#: build/parsePreamble.c:518 build/parsePreamble.c:525
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "øádek %d: Nepøípustný znak '-' v %s: %s\n"
 
-#: build/parsePreamble.c:593 build/parseSpec.c:472
+#: build/parsePreamble.c:586 build/parseSpec.c:472
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot nemù¾e být \"/\": %s\n"
 
-#: build/parsePreamble.c:606
+#: build/parsePreamble.c:599
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "øádek %d: Prefixy nesmí konèit znakem \"/\": %s\n"
 
-#: build/parsePreamble.c:618
+#: build/parsePreamble.c:611
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "øádek %d: Docdir musí zaèínat na '/': %s\n"
 
-#: build/parsePreamble.c:630
+#: build/parsePreamble.c:623
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "øádek %d: Polo¾ka Epoch/Serial musí být èíslo: %s\n"
 
-#: build/parsePreamble.c:670 build/parsePreamble.c:681
+#: build/parsePreamble.c:663 build/parsePreamble.c:674
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "øádek %d: ©patné urèení %s: %s\n"
 
-#: build/parsePreamble.c:707
+#: build/parsePreamble.c:700
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "øádek %d: ©patný formát BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:716
+#: build/parsePreamble.c:709
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interní chyba: ©patná znaèka: %d\n"
 
-#: build/parsePreamble.c:820
+#: build/parsePreamble.c:813
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:889
+#: build/parsePreamble.c:882
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "©patná specifikace balíèku: %s\n"
 
-#: build/parsePreamble.c:895
+#: build/parsePreamble.c:888
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Balíèek ji¾ existuje: %s\n"
 
-#: build/parsePreamble.c:924
+#: build/parsePreamble.c:917
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "øádek %d: Neznámá znaèka: %s\n"
 
-#: build/parsePreamble.c:946
+#: build/parsePreamble.c:939
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec soubor nemù¾e pou¾ít BuildRoot\n"
 
@@ -1058,7 +1058,7 @@ msgstr "øádek %d: ©patný parametr pro %%patch: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "øádek %d: druhý %%prep\n"
 
-#: build/parseReqs.c:103
+#: build/parseReqs.c:107
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1066,12 +1066,12 @@ msgstr ""
 "øádek %d: Polo¾ky v závislostech musí zaèínat alfanumerickým znakem, '_' "
 "nebo '/': %s\n"
 
-#: build/parseReqs.c:131
+#: build/parseReqs.c:135
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "øádek %d: Jméno s verzí není dovoleno: %s\n"
 
-#: build/parseReqs.c:162
+#: build/parseReqs.c:166
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "øádek %d: Vy¾adována verze: %s\n"
@@ -1425,63 +1425,68 @@ msgstr ""
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:644
+#: lib/depends.c:641
+#, fuzzy
+msgid "(macro probe)"
+msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
+
+#: lib/depends.c:654
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:665
+#: lib/depends.c:675
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:681
+#: lib/depends.c:691
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:697
+#: lib/depends.c:707
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:726
+#: lib/depends.c:736
 #, fuzzy
 msgid "(db files)"
 msgstr "©patný soubor: %s: %s\n"
 
-#: lib/depends.c:739
+#: lib/depends.c:749
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:752
+#: lib/depends.c:762
 #, fuzzy
 msgid "(db package)"
 msgstr "¾ádné balíèky\n"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:783
+#: lib/depends.c:793
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1116
+#: lib/depends.c:1126
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1238
+#: lib/depends.c:1248
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1475
+#: lib/depends.c:1485
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1565
+#: lib/depends.c:1575
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1489,21 +1494,21 @@ msgid ""
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:1656
+#: lib/depends.c:1666
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1729
+#: lib/depends.c:1739
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1764
+#: lib/depends.c:1774
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1769
+#: lib/depends.c:1779
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -4495,10 +4500,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Unknown system: %s\n"
 #~ msgstr "Neznámý typ ikony: %s\n"
-
-#, fuzzy
-#~ msgid "(rpmrc provides)"
-#~ msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
 #, fuzzy
 #~ msgid "gpg failed\n"

@@ -632,6 +632,16 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 retry:
     rc = 0;	/* assume dependency is satisfied */
 
+    /* Expand macro probe dependencies. */
+    if (Name[0] == '%' && Name[1] == '{' && Name[strlen(Name)-1] == '}') {
+	xx = rpmExpandNumeric(Name);
+	rc = (xx ? 0 : 1);
+	if (rpmdsFlags(dep) & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(macro probe)"), rc);
+	goto exit;
+    }
+
     /* Search system configured provides first. */
     if (!access("/etc/rpm/sysinfo", R_OK)) {
 	static rpmds sysinfods = NULL;

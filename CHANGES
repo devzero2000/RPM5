@@ -46,6 +46,8 @@
 	- add getconf(1) provides as a dependency name space set.
 	- upgrade to db-4.4.11 internal.
 	- add /etc/ld.so.cache provides as a dependency name space set.
+	- fix: remove context markers from :depflags format modifier.
+	- permit Requires:/Conflicts: macro expand probes during rpmtsCheck().
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
