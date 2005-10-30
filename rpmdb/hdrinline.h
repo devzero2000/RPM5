@@ -507,7 +507,7 @@ int headerNextIterator(HeaderIterator hi,
  * @return		header origin
  */
 /*@unused@*/ static inline
-/*@observer@*/ /*@null@*/ const char * headerGetOrigin(Header h)
+/*@observer@*/ /*@null@*/ const char * headerGetOrigin(/*@null@*/ Header h)
 	/*@*/
 {
     return hdrVec->hdrgetorigin(h);
@@ -520,7 +520,7 @@ int headerNextIterator(HeaderIterator hi,
  * @return		0 always
  */
 /*@unused@*/ static inline
-int headerSetOrigin(Header h, const char * origin)
+int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 	/*@modifies h @*/
 {
     return hdrVec->hdrsetorigin(h, origin);
@@ -532,7 +532,7 @@ int headerSetOrigin(Header h, const char * origin)
  * @return		header instance
  */
 /*@unused@*/ static inline
-int headerGetInstance(Header h)
+int headerGetInstance(/*@null@*/ Header h)
 	/*@*/
 {
     return hdrVec->hdrgetinstance(h);
@@ -545,7 +545,7 @@ int headerGetInstance(Header h)
  * @return		0 always
  */
 /*@unused@*/ static inline
-int headerSetInstance(Header h, int instance)
+int headerSetInstance(/*@null@*/ Header h, int instance)
 	/*@modifies h @*/
 {
     return hdrVec->hdrsetinstance(h, instance);

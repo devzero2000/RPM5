@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpmio_internal.h>	/* XXX for fdSetOpen */
 #include <rpmcli.h>
 #include <rpmpgp.h>
 #include <rpmdb.h>
@@ -160,6 +161,7 @@ struct rpmtsCallbackType_s {
     PyObject * cb;
     PyObject * data;
     rpmtsObject * tso;
+    rpmdsObject * dso;
     int pythonError;
     PyThreadState *_save;
 };
@@ -340,9 +342,11 @@ fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmd
 
     PyEval_RestoreThread(cbInfo->_save);
 
-    args = Py_BuildValue("(Oissi)", cbInfo->tso,
-		rpmdsTagN(ds), rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
+    cbInfo->dso = rpmds_Wrap(ds);	/* XXX perhaps persistent? */
+    args = Py_BuildValue("(OO)", cbInfo->tso, cbInfo->dso);
     result = PyEval_CallObject(cbInfo->cb, args);
+    Py_DECREF(cbInfo->dso);
+    cbInfo->dso = NULL;
     Py_DECREF(args);
 
     if (!result) {
@@ -391,6 +395,7 @@ if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
     cbInfo.tso = s;
+    cbInfo.dso = NULL;		/* XXX perhaps persistent? */
     cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
 
@@ -990,6 +995,8 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 /*@=castexpose@*/
     struct rpmtsCallbackType_s * cbInfo = data;
     PyObject * pkgObj = (PyObject *) pkgKey;
+    PyObject * oh = NULL;
+    const char * origin = NULL;
     PyObject * args, * result;
     static FD_t fd;
 
@@ -1006,8 +1013,15 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 	    pkgObj = Py_None;
 	    Py_INCREF(pkgObj);
 	}
-    } else
+    } else {
 	Py_INCREF(pkgObj);
+	/* XXX yum has (h, rpmloc) tuple as pkgKey. Extract the path. */
+	if (!(PyTuple_Check(pkgObj) && PyArg_ParseTuple(pkgObj, "|Os", &oh, &origin)))
+	    origin = NULL;
+	/* XXX clean up the path, yum paths start "//..." */
+	if (origin && origin[0] == '/' && origin[1] == '/')
+	    origin++;
+    }
 
     PyEval_RestoreThread(cbInfo->_save);
 
@@ -1038,6 +1052,9 @@ if (_rpmts_debug)
 fprintf(stderr, "\t%p = fdDup(%d)\n", fd, fdno);
 
 	fcntl(Fileno(fd), F_SETFD, FD_CLOEXEC);
+
+	if (origin != NULL)
+	    (void) fdSetOpen(fd, origin, 0, 0);
 
 	return fd;
     } else
@@ -1133,6 +1150,7 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     cbInfo.tso = s;
+    cbInfo.dso = NULL;
     cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
 

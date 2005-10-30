@@ -514,6 +514,8 @@ exit 0
 - implement %triggerprein scriptlets.
 - fix: unlink __db* files if dbenv->open returns EINVAL.
 - fix: attempt solve db open only once.
+- python: change ts.check callback, pass rpmds, not TagN, N, EVR, Flags.
+- python: set pkgorigin in hdr by extracting from yum (h,path) pkgkey.
 
 * Sat Oct 29 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.28
 - add /etc/ld.so.cache provides as a dependency name space set.

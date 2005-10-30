@@ -12,6 +12,7 @@
 
 #define	__HEADER_PROTOTYPES__
 
+#include <rpmio_internal.h>	/* XXX for fdGetOPath() */
 #include <header_internal.h>
 
 #include "debug.h"
@@ -1178,10 +1179,10 @@ errxit:
  * @return		header origin
  */
 static /*@observer@*/ /*@null@*/
-const char * headerGetOrigin(Header h)
+const char * headerGetOrigin(/*@null@*/ Header h)
 	/*@*/
 {
-    return h->origin;
+    return (h != NULL ? h->origin : NULL);
 }
 
 /** \ingroup header
@@ -1191,11 +1192,13 @@ const char * headerGetOrigin(Header h)
  * @return		0 always
  */
 static
-int headerSetOrigin(Header h, const char * origin)
+int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 	/*@modifies h @*/
 {
-    h->origin = _free(h->origin);
-    h->origin = xstrdup(origin);
+    if (h != NULL) {
+	h->origin = _free(h->origin);
+	h->origin = xstrdup(origin);
+    }
     return 0;
 }
 
@@ -1205,10 +1208,10 @@ int headerSetOrigin(Header h, const char * origin)
  * @return		header instance
  */
 static
-int headerGetInstance(Header h)
+int headerGetInstance(/*@null@*/ Header h)
 	/*@*/
 {
-    return h->instance;
+    return (h != NULL ? h->instance : 0);
 }
 
 /** \ingroup header
@@ -1218,10 +1221,11 @@ int headerGetInstance(Header h)
  * @return		0 always
  */
 static
-int headerSetInstance(Header h, int instance)
+int headerSetInstance(/*@null@*/ Header h, int instance)
 	/*@modifies h @*/
 {
-    h->instance = instance;
+    if (h != NULL)
+	h->instance = instance;
     return 0;
 }
 
@@ -1378,6 +1382,11 @@ Header headerRead(FD_t fd, enum hMagic magicp)
 /*@=boundsread@*/
     
     h = headerLoad(ei);
+
+    {   const char * origin = fdGetOPath(fd);
+	if (origin != NULL)
+            (void) headerSetOrigin(h, origin);
+    }
 
 exit:
     if (h) {

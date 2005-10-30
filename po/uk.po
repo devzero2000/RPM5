@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-30 10:07-0500\n"
+"POT-Creation-Date: 2005-10-30 13:48-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1514,7 +1514,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
 
 #: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
-#: rpmdb/header.c:3611 rpmdb/header.c:3640 rpmdb/header.c:3664
+#: rpmdb/header.c:3620 rpmdb/header.c:3649 rpmdb/header.c:3673
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -2514,7 +2514,7 @@ msgstr ""
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
 
-#: lib/query.c:123 lib/rpmts.c:633
+#: lib/query.c:123 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "неправильний формат: %s\n"
@@ -2852,7 +2852,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1048 lib/rpmts.c:644
+#: lib/rpminstall.c:611 lib/rpminstall.c:1048 lib/rpmts.c:646
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3246,53 +3246,53 @@ msgstr "відсутня дужка ')' у позначці пакету: %s\n"
 msgid "cannot open Solve database in %s\n"
 msgstr "неможливо відкрити базу даних розв'язання залежностей у %s\n"
 
-#: lib/rpmts.c:665
+#: lib/rpmts.c:667
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Додається: %s\n"
 
-#: lib/rpmts.c:677
+#: lib/rpmts.c:679
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Пропонується: %s\n"
 
-#: lib/rpmts.c:1230
+#: lib/rpmts.c:1232
 msgid "mounted filesystems:\n"
 msgstr "змонтовані файлові системи:\n"
 
-#: lib/rpmts.c:1232
+#: lib/rpmts.c:1234
 #, fuzzy
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "   i   пристр розм.бл.   вільн.бл   вільн.inod місце монтув.\n"
 
-#: lib/rpmts.c:1288
+#: lib/rpmts.c:1290
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
-#: lib/rpmts.c:1594
+#: lib/rpmts.c:1596
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1599
+#: lib/rpmts.c:1601
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1609
+#: lib/rpmts.c:1611
 #, fuzzy, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "переміщується %s у %s\n"
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1636
+#: lib/rpmts.c:1638
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1640
+#: lib/rpmts.c:1642
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr ""
@@ -3300,37 +3300,37 @@ msgstr ""
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1652
+#: lib/rpmts.c:1654
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1677
+#: lib/rpmts.c:1679
 msgid "Could not get header for transaction score!\n"
 msgstr ""
 
-#: lib/rpmts.c:1678
+#: lib/rpmts.c:1680
 #, c-format
 msgid "NEVRA: %s"
 msgstr ""
 
-#: lib/rpmts.c:1687
+#: lib/rpmts.c:1689
 #, c-format
 msgid "\tCould not get INSTALLTID for %s.\n"
 msgstr ""
 
-#: lib/rpmts.c:1692
+#: lib/rpmts.c:1694
 #, c-format
 msgid "\tINSTALLTID for %s is 0x%08x.\n"
 msgstr ""
 
 #. Assume we don't find it
-#: lib/rpmts.c:1778
+#: lib/rpmts.c:1780
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1784
+#: lib/rpmts.c:1786
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr ""
@@ -3815,25 +3815,25 @@ msgstr ""
 "знайдено не спільні posix блокування(%d), додається DB_PRIVATE, "
 "використовується блокування fcntl\n"
 
-#: rpmdb/db3.c:1136
+#: rpmdb/db3.c:1162
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "відкрито    індекс бази даних  %s/%s %s режим=0x%x\n"
 
-#: rpmdb/db3.c:1378
+#: rpmdb/db3.c:1404
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "неможливо отримати %s блокування на %s/%s\n"
 
-#: rpmdb/db3.c:1380
+#: rpmdb/db3.c:1406
 msgid "exclusive"
 msgstr "ексклюзивне"
 
-#: rpmdb/db3.c:1380
+#: rpmdb/db3.c:1406
 msgid "shared"
 msgstr "спільне"
 
-#: rpmdb/db3.c:1384
+#: rpmdb/db3.c:1410
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблоковано індекс бази даних  %s/%s\n"
@@ -3859,77 +3859,77 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s містить надто велике чи занадто мале значення цілого, пропущено\n"
 
-#: rpmdb/header.c:2784
+#: rpmdb/header.c:2793
 msgid "missing { after %"
 msgstr "відсутня \"{\" після \"%\""
 
-#: rpmdb/header.c:2814
+#: rpmdb/header.c:2823
 msgid "missing } after %{"
 msgstr "відсутня \"}\" після \"%{\""
 
-#: rpmdb/header.c:2830
+#: rpmdb/header.c:2839
 msgid "empty tag format"
 msgstr "порожній формат тегу"
 
-#: rpmdb/header.c:2842
+#: rpmdb/header.c:2851
 msgid "empty tag name"
 msgstr "порожня назва тегу"
 
-#: rpmdb/header.c:2851
+#: rpmdb/header.c:2860
 msgid "unknown tag"
 msgstr "невідомий тег"
 
-#: rpmdb/header.c:2878
+#: rpmdb/header.c:2887
 msgid "] expected at end of array"
 msgstr "наприкінці масиву очікувалась \"]\""
 
-#: rpmdb/header.c:2891
+#: rpmdb/header.c:2900
 msgid "unexpected ]"
 msgstr "неочікувана \"]\""
 
-#: rpmdb/header.c:2904
+#: rpmdb/header.c:2913
 msgid "unexpected }"
 msgstr "неочікуваний символ \"}\""
 
-#: rpmdb/header.c:2968
+#: rpmdb/header.c:2977
 msgid "? expected in expression"
 msgstr "у виразі очікувався \"?\""
 
-#: rpmdb/header.c:2975
+#: rpmdb/header.c:2984
 msgid "{ expected after ? in expression"
 msgstr "у виразі після \"?\" очікувалась \"{\""
 
-#: rpmdb/header.c:2987 rpmdb/header.c:3027
+#: rpmdb/header.c:2996 rpmdb/header.c:3036
 msgid "} expected in expression"
 msgstr "у виразі очікувалась \"{\""
 
-#: rpmdb/header.c:2995
+#: rpmdb/header.c:3004
 msgid ": expected following ? subexpression"
 msgstr "у виразі після \"{\" очікувалась \":\""
 
-#: rpmdb/header.c:3013
+#: rpmdb/header.c:3022
 msgid "{ expected after : in expression"
 msgstr "у виразі після \":\" очікувалась \"{\""
 
-#: rpmdb/header.c:3035
+#: rpmdb/header.c:3044
 msgid "| expected at end of expression"
 msgstr "наприкінці виразу очікувався символ \"|\""
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3136
+#: rpmdb/header.c:3145
 msgid "(index out of range)"
 msgstr "(індекси поза межами)"
 
-#: rpmdb/header.c:3383
+#: rpmdb/header.c:3392
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використовується з масивом іншого розміру"
 
-#: rpmdb/header.c:3702
+#: rpmdb/header.c:3711
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3718
+#: rpmdb/header.c:3727
 msgid "%a %b %d %Y"
 msgstr "%a, %d %b %Y"
 

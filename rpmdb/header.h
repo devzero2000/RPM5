@@ -656,7 +656,7 @@ int (*HDRnextiter) (HeaderIterator hi,
  * @return		header origin
  */
 typedef /*@observer@*/ /*@null@*/
-const char * (*HDRgetorigin) (Header h)
+const char * (*HDRgetorigin) (/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
@@ -666,7 +666,7 @@ const char * (*HDRgetorigin) (Header h)
  * @return		0 always
  */
 typedef
-int (*HDRsetorigin) (Header h, const char * origin)
+int (*HDRsetorigin) (/*@null@*/ Header h, const char * origin)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -675,7 +675,7 @@ int (*HDRsetorigin) (Header h, const char * origin)
  * @return		header instance
  */
 typedef
-int (*HDRgetinstance) (Header h)
+int (*HDRgetinstance) (/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
@@ -685,7 +685,7 @@ int (*HDRgetinstance) (Header h)
  * @return		0 always
  */
 typedef
-int (*HDRsetinstance) (Header h, int instance)
+int (*HDRsetinstance) (/*@null@*/ Header h, int instance)
 	/*@modifies h @*/;
 
 /** \ingroup header
