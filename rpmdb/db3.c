@@ -434,7 +434,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 #else
     rc = dbenv->open(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
 #endif
-    rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
+    rc = cvtdberr(dbi, "dbenv->open", rc, (rc == EINVAL ? 0 : _debug));
     if (rc)
 	goto errxit;
 
@@ -1122,9 +1122,35 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	/*@-mods@*/
 	if (rpmdb->db_dbenv == NULL) {
 	    rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
-	    if (rc == 0) {
+	    switch (rc) {
+	    default:
+		break;
+	    case 0:
 		rpmdb->db_dbenv = dbenv;
 		rpmdb->db_opens = 1;
+		break;
+	    case EINVAL:	/* Nuke __db* files and retry open once. */
+		if (getuid() != 0)
+		    break;
+		{   char * filename = alloca(BUFSIZ);
+		    struct stat st;
+		    int i;
+
+		    for (i = 0; i < 16; i++) {
+			sprintf(filename, "%s/__db.%03d", dbhome, i);
+			(void)rpmCleanPath(filename);
+			if (Stat(filename, &st)
+			  && (errno == ENOENT || errno == EINVAL))
+			    continue;
+			xx = unlink(filename);
+		    }
+		}
+		dbi->dbi_oeflags |= DB_CREATE;
+		dbi->dbi_eflags &= ~DB_JOINENV;
+		rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
+		/* XXX db_init EINVAL was masked. */
+		rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
+		break;
 	    }
 	} else {
 	    dbenv = rpmdb->db_dbenv;

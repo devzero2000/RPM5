@@ -512,6 +512,8 @@ exit 0
 %changelog
 * Sun Oct 30 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.29
 - implement %triggerprein scriptlets.
+- fix: unlink __db* files if dbenv->open returns EINVAL.
+- fix: attempt solve db open only once.
 
 * Sat Oct 29 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.28
 - add /etc/ld.so.cache provides as a dependency name space set.

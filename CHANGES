@@ -52,6 +52,8 @@
 	- add suggests/enhances header extensions with --query.
 	- add --suggests and --enhances popt aliases for header extensions.
 	- implement %triggerprein scriptlets.
+	- fix: unlink __db* files if dbenv->open returns EINVAL.
+	- fix: attempt solve db open only once.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

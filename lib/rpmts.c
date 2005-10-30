@@ -522,6 +522,8 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 	rpmMessage(RPMMESS_WARNING,
 			_("cannot open Solve database in %s\n"), dn);
 	dn = _free(dn);
+	/* XXX only try to open the solvedb once. */
+	has_sdbpath = 0;
     }
     delMacro(NULL, "_dbpath");
 
