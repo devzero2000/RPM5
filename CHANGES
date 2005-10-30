@@ -56,6 +56,7 @@
 	- fix: attempt solve db open only once.
 	- python: change ts.check callback, pass rpmds, not TagN, N, EVR, Flags.
 	- python: set pkgorigin in hdr by extracting from yum (h,path) pkgkey.
+	- fix: handle file:///var/lib/rpm in %_dbpath correctly.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

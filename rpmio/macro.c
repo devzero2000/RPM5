@@ -2159,6 +2159,9 @@ char *rpmCleanPath(char * path)
 	    if (s[1] == '/' && s[2] == '/') {
 		*t++ = *s++;
 		*t++ = *s++;
+		/* XXX handle "file:///" */
+		if (s[0] == '/') *t++ = *s++;
+		te = t;
 		/*@switchbreak@*/ break;
 	    }
 	    begin=1;
@@ -2173,7 +2176,7 @@ char *rpmCleanPath(char * path)
 	    }
 	    while (s[1] == '/')
 		s++;
-	    while (t > path && t[-1] == '/')
+	    while (t > te && t[-1] == '/')
 		t--;
 	    /*@switchbreak@*/ break;
 	case '.':
