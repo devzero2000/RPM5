@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-29 20:09-0400\n"
+"POT-Creation-Date: 2005-10-30 10:07-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -725,7 +725,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:645 lib/psm.c:1648
+#: build/pack.c:645 lib/psm.c:1657
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -755,7 +755,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:738 lib/psm.c:1961
+#: build/pack.c:738 lib/psm.c:1970
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -810,17 +810,17 @@ msgstr ""
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr ""
 
-#: build/parseDescription.c:60 build/parseFiles.c:56 build/parseScript.c:222
+#: build/parseDescription.c:60 build/parseFiles.c:56 build/parseScript.c:229
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr ""
 
-#: build/parseDescription.c:71 build/parseFiles.c:70 build/parseScript.c:236
+#: build/parseDescription.c:71 build/parseFiles.c:70 build/parseScript.c:243
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr ""
 
-#: build/parseDescription.c:79 build/parseFiles.c:79 build/parseScript.c:245
+#: build/parseDescription.c:79 build/parseFiles.c:79 build/parseScript.c:252
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr ""
@@ -906,7 +906,7 @@ msgstr ""
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:586 build/parseSpec.c:472
+#: build/parsePreamble.c:586 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
@@ -1034,93 +1034,93 @@ msgstr ""
 msgid "line %d: second %%prep\n"
 msgstr ""
 
-#: build/parseReqs.c:107
+#: build/parseReqs.c:111
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 
-#: build/parseReqs.c:135
+#: build/parseReqs.c:139
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr ""
 
-#: build/parseReqs.c:166
+#: build/parseReqs.c:170
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr ""
 
-#: build/parseScript.c:180
+#: build/parseScript.c:187
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
 msgstr ""
 
-#: build/parseScript.c:190 build/parseScript.c:261
+#: build/parseScript.c:197 build/parseScript.c:268
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr ""
 
-#: build/parseScript.c:202
+#: build/parseScript.c:209
 #, c-format
 msgid "line %d: internal script must end with '>': %s\n"
 msgstr ""
 
-#: build/parseScript.c:209
+#: build/parseScript.c:216
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr ""
 
-#: build/parseScript.c:253
+#: build/parseScript.c:260
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr ""
 
-#: build/parseScript.c:296
+#: build/parseScript.c:303
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:201
+#: build/parseSpec.c:202
 #, c-format
 msgid "line %d: %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: build/parseSpec.c:253
+#: build/parseSpec.c:254
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:269
+#: build/parseSpec.c:270
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:346
+#: build/parseSpec.c:347
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#: build/parseSpec.c:355
+#: build/parseSpec.c:356
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:367
+#: build/parseSpec.c:368
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:381 build/parseSpec.c:390
+#: build/parseSpec.c:382 build/parseSpec.c:391
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:593
+#: build/parseSpec.c:595
 msgid "No compatible architectures found for build\n"
 msgstr ""
 
-#: build/parseSpec.c:654
+#: build/parseSpec.c:656
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr ""
@@ -2394,50 +2394,50 @@ msgstr ""
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1544
+#: lib/psm.c:1553
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1660
+#: lib/psm.c:1669
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:1760
+#: lib/psm.c:1769
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1761
+#: lib/psm.c:1770
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1969
+#: lib/psm.c:1978
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1972
+#: lib/psm.c:1981
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/psm.c:2148
+#: lib/psm.c:2157
 #, c-format
 msgid "Could not aquire transaction score entry for %s\n"
 msgstr ""
 
-#: lib/psm.c:2161
+#: lib/psm.c:2170
 #, c-format
 msgid "Setting %s to TID of 0x%08x\n"
 msgstr ""
 
-#: lib/psm.c:2185
+#: lib/psm.c:2194
 #, c-format
 msgid "Attempting to mark %s as installed in trasaction score\n"
 msgstr ""
 
-#: lib/psm.c:2217
+#: lib/psm.c:2226
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""

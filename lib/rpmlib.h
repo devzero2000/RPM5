@@ -456,6 +456,7 @@ typedef enum rpmTag_e {
     RPMTAG_INSTALLEDHDRID	= 1168, /* s[] */
     RPMTAG_INSTALLEDNEVRA	= 1169, /* s[] */
     RPMTAG_PACKAGEORIGIN	= 1170, /* s */
+    RPMTAG_TRIGGERPREIN		= 1171, /*!< internal */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -546,7 +547,7 @@ typedef	enum rpmsenseFlags_e {
                                          /* less, greater, equal.          */
 
 #define	RPMSENSE_TRIGGER	\
-	(RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | RPMSENSE_TRIGGERPOSTUN)
+	(RPMSENSE_TRIGGERPREIN | RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | RPMSENSE_TRIGGERPOSTUN)
 
 #define	_ALL_REQUIRES_MASK	(\
     RPMSENSE_INTERP | \

@@ -1532,9 +1532,18 @@ psm->te->h = headerLink(fi->h);
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->progTag = RPMTAG_PREINPROG;
+	    psm->sense = RPMSENSE_TRIGGERPREIN;
+	    psm->countCorrection = 0;	/* XXX is this correct?!? */
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
-		/* XXX FIXME: implement %triggerprein. */
+
+		/* Run triggers in other package(s) this package sets off. */
+		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		if (rc) break;
+
+		/* Run triggers in this package other package(s) set off. */
+		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
