@@ -514,6 +514,9 @@ exit 0
 - add /etc/ld.so.cache provides as a dependency name space set.
 - fix: remove context markers from :depflags format modifier.
 - permit Requires:/Conflicts: macro expand probes during rpmtsCheck().
+- Suggests: and Enhances: spec syntax, synonym(s) for Requires(hint):.
+- add suggests/enhances header extensions with --query.
+- add --suggests and --enhances popt aliases for header extensions.
 
 * Fri Oct 28 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.27
 - upgrade to db-4.4.11 internal.

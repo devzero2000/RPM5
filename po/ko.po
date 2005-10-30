@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-29 18:11-0400\n"
+"POT-Creation-Date: 2005-10-29 20:09-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -945,37 +945,37 @@ msgstr "%d 번째 행: Epoch/Serial 항목(field)은 반드시 숫자이어야 합니다: %s\n"
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 번째 행: 잘못된 %s: 수식자(qualifier): %s\n"
 
-#: build/parsePreamble.c:700
+#: build/parsePreamble.c:708
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 번째 행: 잘못된 BuildArchitecture 형식입니다: %s\n"
 
-#: build/parsePreamble.c:709
+#: build/parsePreamble.c:717
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "내부 오류: 보거스(Bogus) 태그 %d\n"
 
-#: build/parsePreamble.c:813
+#: build/parsePreamble.c:823
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:892
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "잘못된 패키지 지정: %s\n"
 
-#: build/parsePreamble.c:888
+#: build/parsePreamble.c:898
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "패키지가 이미 존재함: %s\n"
 
-#: build/parsePreamble.c:917
+#: build/parsePreamble.c:927
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 번째 행: 알 수 없는 태그입니다: %s\n"
 
-#: build/parsePreamble.c:939
+#: build/parsePreamble.c:949
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec 파일은 BuildRoot를 사용할 수 없습니다\n"
 
@@ -1501,29 +1501,29 @@ msgstr "========== tsort를 진행합니다...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:40 lib/formats.c:72 lib/formats.c:107 lib/formats.c:521
+#: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
 #: rpmdb/header.c:3611 rpmdb/header.c:3640 rpmdb/header.c:3664
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
-#: lib/formats.c:172
+#: lib/formats.c:174
 msgid "(not base64)"
 msgstr "(base64가 아닙니다)"
 
-#: lib/formats.c:182
+#: lib/formats.c:184
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
 
-#: lib/formats.c:207 lib/formats.c:407
+#: lib/formats.c:209 lib/formats.c:409
 msgid "(not a blob)"
 msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
 
-#: lib/formats.c:339
+#: lib/formats.c:341
 #, fuzzy
 msgid "(invalid xml type)"
 msgstr "(부적합한 타입)"
 
-#: lib/formats.c:432
+#: lib/formats.c:434
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "어떠한 PGP 서명도 검사하지 않습니다"

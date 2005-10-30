@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-29 18:11-0400\n"
+"POT-Creation-Date: 2005-10-29 20:09-0400\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -966,37 +966,37 @@ msgstr "Zeile %d: Das Epochen-Feld muss eine Zahl sein: %s\n"
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "Zeile %d: Ungültig %s: Kennzeichner: %s\n"
 
-#: build/parsePreamble.c:700
+#: build/parsePreamble.c:708
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "Zeile %d: Ungültiges BuildArchitecture-Format: %s\n"
 
-#: build/parsePreamble.c:709
+#: build/parsePreamble.c:717
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interner Fehler: Falscher Tag %d\n"
 
-#: build/parsePreamble.c:813
+#: build/parsePreamble.c:823
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "Alter Syntax wird nicht mehr unterstützt: %s\n"
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:892
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ungültige Paket-Spezifikation: %s\n"
 
-#: build/parsePreamble.c:888
+#: build/parsePreamble.c:898
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket ist bereits vorhanden: %s\n"
 
-#: build/parsePreamble.c:917
+#: build/parsePreamble.c:927
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "Zeile %d: Unbekannter Tag: %s\n"
 
-#: build/parsePreamble.c:939
+#: build/parsePreamble.c:949
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-Datei kann den BuildRoot nicht benutzen\n"
 
@@ -1523,28 +1523,28 @@ msgstr "========== setze tsort fort...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder fehlgeschlagen, %d Elemente verbleiben\n"
 
-#: lib/formats.c:40 lib/formats.c:72 lib/formats.c:107 lib/formats.c:521
+#: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
 #: rpmdb/header.c:3611 rpmdb/header.c:3640 rpmdb/header.c:3664
 msgid "(not a number)"
 msgstr "(keine Nummer)"
 
-#: lib/formats.c:172
+#: lib/formats.c:174
 msgid "(not base64)"
 msgstr "(nicht Base64)"
 
-#: lib/formats.c:182
+#: lib/formats.c:184
 msgid "(invalid type)"
 msgstr "(ungültiger Typ)"
 
-#: lib/formats.c:207 lib/formats.c:407
+#: lib/formats.c:209 lib/formats.c:409
 msgid "(not a blob)"
 msgstr "(kein Blob)"
 
-#: lib/formats.c:339
+#: lib/formats.c:341
 msgid "(invalid xml type)"
 msgstr "(ungültiger XML-Typ)"
 
-#: lib/formats.c:432
+#: lib/formats.c:434
 msgid "(not an OpenPGP signature)"
 msgstr "(keine OpenPGP-Signatur)"
 

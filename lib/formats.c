@@ -8,10 +8,12 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
+#include <rpmds.h>
 #include <rpmfi.h>
 
 #include "legacy.h"
 #include "manifest.h"
+#include "argv.h"
 #include "misc.h"
 
 #include "debug.h"
@@ -989,6 +991,70 @@ static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
     return 0;
 }
 
+/**
+ * Retrieve Requires(missingok): array for Suggests: or Enhances:.
+ * @param h		header
+ * @retval *type	tag type
+ * @retval *data	tag value
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
+ * @return		0 on success
+ */
+static int missingokTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, *type, *data, *count, *freeData,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+{
+    rpmds ds = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
+    ARGV_t av = NULL;
+    ARGV_t argv;
+    int argc = 0;
+    char * t;
+    size_t nb = 0;
+    int i;
+
+assert(ds != NULL);
+    /* Collect dependencies marked as hints. */
+    ds = rpmdsInit(ds);
+    if (ds != NULL)
+    while (rpmdsNext(ds) >= 0) {
+	int Flags = rpmdsFlags(ds);
+	const char * DNEVR;
+	if (!(Flags & RPMSENSE_MISSINGOK))
+	    continue;
+	DNEVR = rpmdsDNEVR(ds);
+	if (DNEVR == NULL)
+	    continue;
+	nb += sizeof(*argv) + strlen(DNEVR+2) + 1;
+	argvAdd(&av, DNEVR+2);
+	argc++;
+    }
+    nb += sizeof(*argv);	/* final argv NULL */
+
+    /* Create contiguous header string array. */
+    argv = (ARGV_t) xcalloc(nb, 1);
+    t = (char *)(argv + argc);
+    for (i = 0; i < argc; i++) {
+	argv[i] = t;
+	t = stpcpy(t, av[i]);
+	*t++ = '\0';
+    }
+    av = argvFree(av);
+    ds = rpmdsFree(ds);
+
+    /* XXX perhaps return "(none)" inband if no suggests/enhances <shrug>. */
+
+    *type = RPM_STRING_ARRAY_TYPE;
+    *data = argv;
+    *count = argc;
+    *freeData = 1;
+    return 0;
+}
+
 /* I18N look aside diversions */
 
 #if defined(ENABLE_NLS)
@@ -1232,11 +1298,10 @@ static int groupTag(Header h, /*@out@*/ rpmTagType * type,
 
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
-    { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
-    { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
-    { HEADER_EXT_TAG, "RPMTAG_SUMMARY",		{ summaryTag } },
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",	{ changelognameTag } },
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGTEXT",	{ changelogtextTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
+    { HEADER_EXT_TAG, "RPMTAG_ENHANCES",	{ missingokTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILECLASS",	{ fileclassTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILECONTEXTS",	{ filecontextsTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filenamesTag } },
@@ -1245,17 +1310,20 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_FSCONTEXTS",	{ fscontextsTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES",		{ fsnamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSSIZES",		{ fssizesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX",	{ instprefixTag } },
     { HEADER_EXT_TAG, "RPMTAG_RECONTEXTS",	{ recontextsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_SUGGESTS",	{ missingokTag } },
+    { HEADER_EXT_TAG, "RPMTAG_SUMMARY",		{ summaryTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
     { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
     { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
-    { HEADER_EXT_FORMAT, "pgpsig",		{ pgpsigFormat } },
     { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags",		{ fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms",		{ permsFormat } },
     { HEADER_EXT_FORMAT, "permissions",		{ permsFormat } },
+    { HEADER_EXT_FORMAT, "pgpsig",		{ pgpsigFormat } },
     { HEADER_EXT_FORMAT, "triggertype",		{ triggertypeFormat } },
     { HEADER_EXT_FORMAT, "xml",			{ xmlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }

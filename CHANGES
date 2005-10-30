@@ -48,6 +48,9 @@
 	- add /etc/ld.so.cache provides as a dependency name space set.
 	- fix: remove context markers from :depflags format modifier.
 	- permit Requires:/Conflicts: macro expand probes during rpmtsCheck().
+	- Suggests: and Enhances: spec syntax, synonym(s) for Requires(hint):.
+	- add suggests/enhances header extensions with --query.
+	- add --suggests and --enhances popt aliases for header extensions.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

@@ -678,6 +678,14 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
+    /* Aliases for Requires(hint): */
+    case RPMTAG_SUGGESTSFLAGS:
+    case RPMTAG_ENHANCESFLAGS:
+	tag = RPMTAG_REQUIREFLAGS;
+	tagflags = RPMSENSE_MISSINGOK;
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
+	    return rc;
+	break;
     case RPMTAG_BUILDCONFLICTS:
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_OBSOLETEFLAGS:
@@ -777,6 +785,8 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_DISTTAG,		0, 0, 0, "disttag"},
     {RPMTAG_CVSID,		0, 0, 0, "cvsid"},
     {RPMTAG_SVNID,		0, 0, 0, "svnid"},
+    {RPMTAG_SUGGESTSFLAGS,	0, 0, 0, "suggests"},
+    {RPMTAG_ENHANCESFLAGS,	0, 0, 0, "enhances"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0, 0}
     /*@=nullassign@*/

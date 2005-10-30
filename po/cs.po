@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-29 18:11-0400\n"
+"POT-Creation-Date: 2005-10-29 20:09-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -955,37 +955,37 @@ msgstr "øádek %d: Polo¾ka Epoch/Serial musí být èíslo: %s\n"
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "øádek %d: ©patné urèení %s: %s\n"
 
-#: build/parsePreamble.c:700
+#: build/parsePreamble.c:708
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "øádek %d: ©patný formát BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:709
+#: build/parsePreamble.c:717
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interní chyba: ©patná znaèka: %d\n"
 
-#: build/parsePreamble.c:813
+#: build/parsePreamble.c:823
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:892
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "©patná specifikace balíèku: %s\n"
 
-#: build/parsePreamble.c:888
+#: build/parsePreamble.c:898
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Balíèek ji¾ existuje: %s\n"
 
-#: build/parsePreamble.c:917
+#: build/parsePreamble.c:927
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "øádek %d: Neznámá znaèka: %s\n"
 
-#: build/parsePreamble.c:939
+#: build/parsePreamble.c:949
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec soubor nemù¾e pou¾ít BuildRoot\n"
 
@@ -1513,30 +1513,30 @@ msgstr "========== pokraèuje tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:40 lib/formats.c:72 lib/formats.c:107 lib/formats.c:521
+#: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
 #: rpmdb/header.c:3611 rpmdb/header.c:3640 rpmdb/header.c:3664
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
-#: lib/formats.c:172
+#: lib/formats.c:174
 #, fuzzy
 msgid "(not base64)"
 msgstr "(není èíslo)"
 
-#: lib/formats.c:182
+#: lib/formats.c:184
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:207 lib/formats.c:407
+#: lib/formats.c:209 lib/formats.c:409
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(není èíslo)"
 
-#: lib/formats.c:339
+#: lib/formats.c:341
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:432
+#: lib/formats.c:434
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "vynechat pøípadné PGP podpisy"
