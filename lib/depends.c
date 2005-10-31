@@ -1557,11 +1557,13 @@ int rpmtsOrder(rpmts ts)
 	npreds = rpmteTSI(p)->tsi_count;
 
 	(void) rpmteSetNpreds(p, npreds);
-	(void) rpmteSetDepth(p, 1);
+	(void) rpmteSetDepth(p, 0);
 
-	if (npreds == 0)
-	    (void) rpmteSetTree(p, treex++);
-	else
+	if (npreds == 0) {
+	    treex++;
+	    (void) rpmteSetTree(p, treex);
+	    (void) rpmteSetBreadth(p, treex);
+	} else
 	    (void) rpmteSetTree(p, -1);
 #ifdef	UNNECESSARY
 	(void) rpmteSetParent(p, NULL);
@@ -1572,7 +1574,7 @@ int rpmtsOrder(rpmts ts)
     ts->ntrees = treex;
 
     /* T4. Scan for zeroes. */
-    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n"));
+    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"));
 
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
