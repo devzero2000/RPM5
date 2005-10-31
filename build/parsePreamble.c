@@ -193,7 +193,9 @@ static inline char * findLastChar(char * s)
     while (--se > s && strchr(" \t\n\r", *se) != NULL)
 	*se = '\0';
 /*@=bounds@*/
+/*@-temptrans -retalias @*/
     return se;
+/*@=temptrans =retalias @*/
 }
 
 /**

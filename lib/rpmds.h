@@ -394,10 +394,10 @@ int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * path)
  * Load /etc/ld.so.cache provides into a dependency set.
  * @todo Add dependency colors, and attach to file.
  * @retval *dsp		(loaded) depedency set
- * @param path		cache path (NULL uses /etc/ld.so.cache)
+ * @param fn		cache file name (NULL uses /etc/ld.so.cache)
  * @return		0 on success
  */
-int rpmdsLdconfig(rpmds * dsp, /*@null@*/ const char * path)
+int rpmdsLdconfig(rpmds * dsp, /*@null@*/ const char * fn)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *dsp, fileSystem, internalState @*/;
 

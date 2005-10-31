@@ -2480,9 +2480,9 @@ int rpmdsLdconfig(rpmds * dsp, const char * fn)
 	/* split out flags */
 	for (t = f; *t != '\0'; t++) {
 	    if (!_isspace(*t))
-		continue;
+		/*@innercontinue@*/ continue;
 	    *t++ = '\0';
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	/* XXX "libc4" "ELF" "libc5" "libc6" _("unknown") */
 	/* XXX use flags to generate soname color */
@@ -2494,8 +2494,10 @@ int rpmdsLdconfig(rpmds * dsp, const char * fn)
 	/* ", OS ABI: %s %d.%d.%d" */
 
 	N = f;
+/*@-branchstate@*/
 	if (EVR == NULL)
 	    EVR = "";
+/*@=branchstate@*/
 	Flags |= RPMSENSE_PROBE;
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR , Flags);
 	xx = rpmdsMerge(dsp, ds);

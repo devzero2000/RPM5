@@ -1030,7 +1030,7 @@ assert(ds != NULL);
 	if (DNEVR == NULL)
 	    continue;
 	nb += sizeof(*argv) + strlen(DNEVR+2) + 1;
-	argvAdd(&av, DNEVR+2);
+	(void) argvAdd(&av, DNEVR+2);
 	argc++;
     }
     nb += sizeof(*argv);	/* final argv NULL */
