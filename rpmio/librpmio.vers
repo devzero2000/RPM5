@@ -150,6 +150,7 @@ LIBRPMIO_0
     rpmhookUnregisterAny;
     rpmInitMacros;
     _rpmio_debug;
+    rpmioAccess;
     rpmioMkpath;
     rpmioSlurp;
     rpmLoadMacroFile;

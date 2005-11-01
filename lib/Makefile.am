@@ -131,6 +131,9 @@ tgetconf: tgetconf.o librpm.la
 tld: tld.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
+tpath: tpath.o librpm.la
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+
 trl: trl.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 

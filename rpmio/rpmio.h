@@ -556,13 +556,24 @@ int fdReadable(FD_t fd, int secs)
 
 /**
  * Insure that directories in path exist, creating as needed.
- * @param path		diretory path
+ * @param path		directory path
  * @param mode		directory mode (if created)
  * @param uid		directory uid (if created), or -1 to skip
  * @param gid		directory uid (if created), or -1 to skip
  * @return		0 on success, errno (or -1) on error
  */
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * Check FN access, expanding relative paths and twiddles.
+ * @param FN		file path to check
+ * @param path		colon separated search path (NULL uses $PATH)
+ * @param mode		type of access(2) to check (0 uses X_OK)
+ * @return		0 if accessible
+ */
+int rpmioAccess(const char *FN, /*@null@*/ const char * path, int mode)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
