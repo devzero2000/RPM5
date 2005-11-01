@@ -574,7 +574,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
  * @return		0 if accessible
  */
 int rpmioAccess(const char *FN, /*@null@*/ const char * path, int mode)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**

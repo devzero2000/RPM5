@@ -3265,6 +3265,7 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", bn, mode, rc);
     }
 
     /* Look for relative basename on PATH. */
+/*@-branchstate@*/
     for (r = alloca_strdup(path); r != NULL && *r != '\0'; r = re) {
 
 	/* Find next element, terminate current element. */
@@ -3278,8 +3279,9 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", bn, mode, rc);
 	    re = r + strlen(r);
 
 	/* Expand ~/ to $HOME/ */
+	fn[0] = '\0';
 	t = fn;
-	*t = '\0';
+	*t = '\0';	/* XXX redundant. */
 	if (r[0] == '~' && r[1] == '/') {
 	    const char * home = getenv("HOME");
 	    if (home == NULL)	/* XXX No HOME? */
@@ -3294,6 +3296,8 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", bn, mode, rc);
 	    *t++ = '/';
 	t = stpcpy(t, bn);
 	t = rpmCleanPath(fn);
+	if (t == NULL)	/* XXX can't happen */
+	    continue;
 
 	/* Check absolute path for access. */
 	rc = (Access(t, mode) != 0 ? 1 : 0);
@@ -3302,6 +3306,7 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", t, mode, rc);
 	if (rc == 0)
 	    goto exit;
     }
+/*@=branchstate@*/
 
     rc = 1;
 
