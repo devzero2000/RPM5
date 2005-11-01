@@ -39,7 +39,7 @@ main (int argc, char *argv[])
 
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0)
-	fprintf(stderr, "%d %s\n", rpmdsIx(ds), rpmdsDNEVR(ds)+2);
+	fprintf(stderr, "%d\tProvides: %s\n", rpmdsIx(ds), rpmdsDNEVR(ds)+2);
 
     ds = rpmdsFree(ds);
 

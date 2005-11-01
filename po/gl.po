@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-30 13:48-0500\n"
+"POT-Creation-Date: 2005-10-31 19:55-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1444,27 +1444,27 @@ msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1575
+#: lib/depends.c:1577
 msgid ""
-"========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
-"breadth)\n"
+"========== tsorting packages (order, #predecessors, #succesors, tree, "
+"Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:1666
+#: lib/depends.c:1668
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1739
+#: lib/depends.c:1741
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1774
+#: lib/depends.c:1776
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1779
+#: lib/depends.c:1781
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""

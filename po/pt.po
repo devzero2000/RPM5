@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-30 13:48-0500\n"
+"POT-Creation-Date: 2005-10-31 19:55-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1488,29 +1488,29 @@ msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1575
+#: lib/depends.c:1577
 #, fuzzy
 msgid ""
-"========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
-"breadth)\n"
+"========== tsorting packages (order, #predecessors, #succesors, tree, "
+"Ldepth, Rbreadth)\n"
 msgstr ""
 "========== ordenar pacotes (order, #predecessors, #succesors, tree, depth)\n"
 
-#: lib/depends.c:1666
+#: lib/depends.c:1668
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1739
+#: lib/depends.c:1741
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1774
+#: lib/depends.c:1776
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1779
+#: lib/depends.c:1781
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""

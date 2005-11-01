@@ -426,19 +426,6 @@ print (t)\
 #%__find_obsoletes	???
 
 #
-# Path to scripts to autogenerate per-interpreter package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-#%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
-#%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
-%__perl_provides	@RPMCONFIGDIR@/perl.prov
-%__perl_requires	@RPMCONFIGDIR@/perl.req
-
-%__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
-%__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
-
-#
 # fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
 # These macros are necessary only for legacy compatibility, and have moved
 # to per-platform macro configuration (i.e. @RPMCONFIGDIR@/<arch>-<os>/macros)
@@ -824,11 +811,16 @@ print (t)\
 	php>php-pear			\
 	openoffice.org-libs>openoffice.org
 
+%_dependency_whiteout_caos_core		\
+	glibc-common>glibc		\
+	glibc>nscd
+
 %_dependency_whiteout			\
 	libtermcap>bash			\
 	modutils>vixie-cron		\
 	ypbind>yp-tools			\
 	ghostscript-fonts>ghostscript	\
+	%{?_dependency_whiteout_caos_core}\
 	%{?_dependency_whiteout_fc5}	\
 	%{?_dependency_whiteout_fc4}	\
 	%{?_dependency_whiteout_fc3}	\
@@ -1226,7 +1218,39 @@ done \
   %{-C:cd ${_mydir}; unset _mydir}
 
 #------------------------------------------------------------------------------
-# Useful perl macros (from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
+# arch macro for all Intel i?86 compatibile processors
+#  (Note: This macro (and it's analogues) will probably be obsoleted when
+#   rpm can use regular expressions against target platforms in macro
+#   conditionals.
+#
+%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon
+
+#------------------------------------------------------------------------
+# Use in %install to generate locale specific file lists. For example,
+#
+# %install
+# ...
+# %find_lang %{name}
+# ...
+# %files -f %{name}.lang
+#
+%find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
+
+#------------------------------------------------------------------------
+# Perl configuration
+#
+
+# Path to scripts to autogenerate per-interpreter package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
+#%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
+#%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
+%__perl_provides	@RPMCONFIGDIR@/perl.prov
+%__perl_requires	@RPMCONFIGDIR@/perl.req
+
+# Useful macros for building *.rpm perl packages.
+#	(from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
 #
 # For example, these can be used as (from ImageMagick.spec from PLD site)
 #	[...]
@@ -1247,7 +1271,9 @@ done \
 #	%{perl_sitearch}/Image
 #	%dir %{perl_sitearch}/auto/Image
 #
+
 %requires_eq()	%(LC_ALL="C" echo '%*' | xargs -r rpm -q --qf 'Requires: %%{name} = %%{epoch}:%%{version}\\n' | sed -e 's/ (none):/ /' -e 's/ 0:/ /' | grep -v "is not")
+
 %perl_sitearch	%(eval "`%{__perl} -V:installsitearch`"; echo $installsitearch)
 %perl_sitelib	%(eval "`%{__perl} -V:installsitelib`"; echo $installsitelib)
 %perl_vendorarch %(eval "`%{__perl} -V:installvendorarch`"; echo $installvendorarch)
@@ -1255,24 +1281,36 @@ done \
 %perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
 %perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
 
-#------------------------------------------------------------------------------
-# arch macro for all Intel i?86 compatibile processors
-#  (Note: This macro (and it's analogues) will probably be obsoleted when
-#   rpm can use regular expressions against target platforms in macro
-#   conditionals.
-#
-%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon
-
 #------------------------------------------------------------------------
-# Use in %install to generate locale specific file lists. For example,
+# Python configuration.
 #
-# %install
-# ...
-# %find_lang %{name}
-# ...
-# %files -f %{name}.lang
+# Path to scripts to autogenerate per-interpreter package dependencies,
 #
-%find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
+%__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
+%__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
+
+# Useful macros for building *.rpm python packages.
+#
+%py_ver                 %(python -c "import sys; v=sys.version_info[:2]; print '%%d.%%d'%%v" 2>/dev/null || echo PYTHON-NOT-FOUND)
+%py_prefix              %(python -c "import sys; print sys.prefix" 2>/dev/null || echo PYTHON-NOT-FOUND)
+%py_libdir              %{py_prefix}/lib/python%{py_ver}
+%py_incdir              %{py_prefix}/include/python%{py_ver}
+%py_sitedir             %{py_libdir}/site-packages
+
+%py_compile(O)  \
+find %1 -name '*.pyc' -name '*.pyo' -exec rm -f {} \\; \
+python -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1 \
+%{-O: \
+python -O -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1 \
+}
+
+%py_requires(d) \
+%define minver %py_ver \
+%define maxver %(python -c "import sys; a,b=sys.version_info[:2]; print '%%d.%%d'%%(a,b+1)" 2>/dev/null || echo PYTHON-NOT-FOUND) \
+BuildRequires: python %{-d:python-devel} \
+PreReq: python >= %minver, python < %maxver
 
 # \endverbatim
 #*/
