@@ -17,6 +17,8 @@
 # include <netinet/in_systm.h>
 #endif
 
+#include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
+
 #if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
@@ -3174,7 +3176,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 /*@=bounds@*/
 
 
-#define	_PATH	"~/bin:/bin:/usr/bin:/usr/X11R6/bin"
+#define	_PATH	"/usr/kerberos/sbin:/usr/kerberos/bin:/usr/lib/ccache/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin:~//bin"
 /*@unchecked@*/ /*@observer@*/
 static const char * _path = _PATH;
 

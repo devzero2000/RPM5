@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-31 19:55-0500\n"
+"POT-Creation-Date: 2005-11-01 10:46-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -869,128 +869,128 @@ msgstr "satýr %d: %%files ayrýþtýrýlýrken hata: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "satýr %d: Ýkinci %%files listesi\n"
 
-#: build/parsePreamble.c:240
+#: build/parsePreamble.c:242
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Mimari dýþlandý: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Mimari içerilmedi: %s\n"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:252
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS dýþlandý: %s\n"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:257
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS içerilmedi: %s\n"
 
-#: build/parsePreamble.c:278
+#: build/parsePreamble.c:280
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Pakette %s alan mevcut olmalý: %s\n"
 
-#: build/parsePreamble.c:307
+#: build/parsePreamble.c:309
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Pakette %s girdi tekrarlanmýþ: %s\n"
 
-#: build/parsePreamble.c:370
+#: build/parsePreamble.c:372
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "%s kýsayol simgesi açýlamadý: %s\n"
 
-#: build/parsePreamble.c:388
+#: build/parsePreamble.c:390
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "%s kýsayol simgesi okunamadý: %s\n"
 
-#: build/parsePreamble.c:401
+#: build/parsePreamble.c:403
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "bilinmeyen kýsayol simgesi türü: %s\n"
 
-#: build/parsePreamble.c:446
+#: build/parsePreamble.c:448
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "satýr %d: Etiket sadece tek dizgecik alýr: %s\n"
 
-#: build/parsePreamble.c:486
+#: build/parsePreamble.c:488
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "satýr %d: Etiket bozuk: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "satýr %d: Etiket boþ: %s\n"
 
-#: build/parsePreamble.c:518 build/parsePreamble.c:525
+#: build/parsePreamble.c:520 build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:586 build/parseSpec.c:473
+#: build/parsePreamble.c:588 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
 
-#: build/parsePreamble.c:599
+#: build/parsePreamble.c:601
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "satýr %d: Önekler \"/\" ile bitemez: %s\n"
 
-#: build/parsePreamble.c:611
+#: build/parsePreamble.c:613
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "satýr %d: Docdir '/' ile baþlamalý: %s\n"
 
-#: build/parsePreamble.c:623
+#: build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "satýr %d: Epoch/Serial alaný bir sayý olmalý: %s\n"
 
-#: build/parsePreamble.c:663 build/parsePreamble.c:674
+#: build/parsePreamble.c:665 build/parsePreamble.c:676
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "satýr %d: %s hatalý: niteleyiciler: %s\n"
 
-#: build/parsePreamble.c:708
+#: build/parsePreamble.c:710
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "satýr %d: BuildArchitecture biçimi hatalý: %s\n"
 
-#: build/parsePreamble.c:717
+#: build/parsePreamble.c:719
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Ýçsel hata: %d etiketi sahte\n"
 
-#: build/parsePreamble.c:823
+#: build/parsePreamble.c:825
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:894
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Paket özellikleri hatalý: %s\n"
 
-#: build/parsePreamble.c:898
+#: build/parsePreamble.c:900
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket zaten var: %s\n"
 
-#: build/parsePreamble.c:927
+#: build/parsePreamble.c:929
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "satýr %d: Bilinmeyen etiket: %s\n"
 
-#: build/parsePreamble.c:949
+#: build/parsePreamble.c:951
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec dosyasý BuildRoot kullanamaz\n"
 
@@ -1444,63 +1444,68 @@ msgstr ""
 msgid "(macro probe)"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:654
+#: lib/depends.c:660
+#, fuzzy
+msgid "(access probe)"
+msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
+
+#: lib/depends.c:673
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:675
+#: lib/depends.c:694
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:691
+#: lib/depends.c:710
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:707
+#: lib/depends.c:726
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:736
+#: lib/depends.c:755
 #, fuzzy
 msgid "(db files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/depends.c:749
+#: lib/depends.c:768
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:762
+#: lib/depends.c:781
 #, fuzzy
 msgid "(db package)"
 msgstr "paket yok\n"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:793
+#: lib/depends.c:812
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1126
+#: lib/depends.c:1145
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1248
+#: lib/depends.c:1267
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1485
+#: lib/depends.c:1504
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1577
+#: lib/depends.c:1596
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1508,21 +1513,21 @@ msgid ""
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1668
+#: lib/depends.c:1687
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1741
+#: lib/depends.c:1760
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1776
+#: lib/depends.c:1795
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1781
+#: lib/depends.c:1800
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2776,11 +2781,11 @@ msgstr ")"
 msgid "OK"
 msgstr "Tamam"
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "YES"
 msgstr "EVET"
 
@@ -2844,7 +2849,7 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2609
+#: lib/rpmds.c:2611
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2853,13 +2858,13 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:2642
+#: lib/rpmds.c:2644
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2666
+#: lib/rpmds.c:2668
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
@@ -4270,59 +4275,59 @@ msgstr "%s dosyasý: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:681
 msgid "Success"
 msgstr "Baþarýlý"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:704
 msgid "Bad server response"
 msgstr "Sunucudan kötü yanýt"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:706
 msgid "Server I/O error"
 msgstr "Sunucu G/Ç hatasý"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:708
 msgid "Server timeout"
 msgstr "Sunucu zaman aþýmý"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host address"
 msgstr "Sunucu makina adresi bulunamadý"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:712
 msgid "Unable to lookup server host name"
 msgstr "Sunucu makina ismi bulunamadý"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:714
 msgid "Failed to connect to server"
 msgstr "Sunucuya baðlanýlamadý"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:716
 msgid "Failed to establish data connection to server"
 msgstr "Sunucuya veri baðlantýsý kurulamadý"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:718
 msgid "I/O error to local file"
 msgstr "Yerel dosyaya G/Ç hatasý"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:720
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokma ayarlarýnda hata"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:722
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:724
 msgid "Abort in progress"
 msgstr "Kesme iþlemi sürüyor"
 
-#: rpmio/rpmio.c:726
+#: rpmio/rpmio.c:728
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1422
+#: rpmio/rpmio.c:1424
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"

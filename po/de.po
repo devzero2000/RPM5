@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-31 19:55-0500\n"
+"POT-Creation-Date: 2005-11-01 10:46-0500\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -874,129 +874,129 @@ msgstr "Zeile %d: Fehler beim Parsen von %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "Zeile %d: Zweite %%files-Liste\n"
 
-#: build/parsePreamble.c:240
+#: build/parsePreamble.c:242
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektur ist ausgeschlossen: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektur ist nicht einbezogen: %s\n"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:252
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Betriebssystem ist ausgeschlossen: %s\n"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:257
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "Betriebssystem ist nicht einbezogen: %s\n"
 
-#: build/parsePreamble.c:278
+#: build/parsePreamble.c:280
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "%s-Feld muss im Paket vorhanden sein: %s\n"
 
-#: build/parsePreamble.c:307
+#: build/parsePreamble.c:309
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Doppelte %s-Einträge im Paket: %s\n"
 
-#: build/parsePreamble.c:370
+#: build/parsePreamble.c:372
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kann Icon %s nicht öffnen: %s\n"
 
-#: build/parsePreamble.c:388
+#: build/parsePreamble.c:390
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kann Icon %s nicht lesen: %s\n"
 
-#: build/parsePreamble.c:401
+#: build/parsePreamble.c:403
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Unbekannter Icon-Typ: %s\n"
 
-#: build/parsePreamble.c:446
+#: build/parsePreamble.c:448
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "Zeile %d: Tag benötigt nur ein Zeichen: %s\n"
 
-#: build/parsePreamble.c:486
+#: build/parsePreamble.c:488
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "Zeile %d: Missgebildeter Tag: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "Zeile %d: Leerer Tag: %s\n"
 
-#: build/parsePreamble.c:518 build/parsePreamble.c:525
+#: build/parsePreamble.c:520 build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "Zeile %d: Ungültiges Zeichen '-' in %s: %s\n"
 
-#: build/parsePreamble.c:586 build/parseSpec.c:473
+#: build/parsePreamble.c:588 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "Der BuildRoot kann nicht \"/\" sein: %s\n"
 
-#: build/parsePreamble.c:599
+#: build/parsePreamble.c:601
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "Zeile %d: Präfixe dürfen nicht mit einem \"/\" enden: %s\n"
 
-#: build/parsePreamble.c:611
+#: build/parsePreamble.c:613
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 "Zeile %d: Das Dokumentationsverzeichnis muss mit einem \"/\" beginnen: %s\n"
 
-#: build/parsePreamble.c:623
+#: build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "Zeile %d: Das Epochen-Feld muss eine Zahl sein: %s\n"
 
-#: build/parsePreamble.c:663 build/parsePreamble.c:674
+#: build/parsePreamble.c:665 build/parsePreamble.c:676
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "Zeile %d: Ungültig %s: Kennzeichner: %s\n"
 
-#: build/parsePreamble.c:708
+#: build/parsePreamble.c:710
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "Zeile %d: Ungültiges BuildArchitecture-Format: %s\n"
 
-#: build/parsePreamble.c:717
+#: build/parsePreamble.c:719
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interner Fehler: Falscher Tag %d\n"
 
-#: build/parsePreamble.c:823
+#: build/parsePreamble.c:825
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "Alter Syntax wird nicht mehr unterstützt: %s\n"
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:894
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ungültige Paket-Spezifikation: %s\n"
 
-#: build/parsePreamble.c:898
+#: build/parsePreamble.c:900
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket ist bereits vorhanden: %s\n"
 
-#: build/parsePreamble.c:927
+#: build/parsePreamble.c:929
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "Zeile %d: Unbekannter Tag: %s\n"
 
-#: build/parsePreamble.c:949
+#: build/parsePreamble.c:951
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-Datei kann den BuildRoot nicht benutzen\n"
 
@@ -1444,59 +1444,64 @@ msgstr "(zwischengespeichert)"
 msgid "(macro probe)"
 msgstr "(rpmrc bietet an)"
 
-#: lib/depends.c:654
+#: lib/depends.c:660
+#, fuzzy
+msgid "(access probe)"
+msgstr "(rpmrc bietet an)"
+
+#: lib/depends.c:673
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib bietet an)"
 
-#: lib/depends.c:675
+#: lib/depends.c:694
 msgid "(rpmlib provides)"
 msgstr "(rpmlib bietet an)"
 
-#: lib/depends.c:691
+#: lib/depends.c:710
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib bietet an)"
 
-#: lib/depends.c:707
+#: lib/depends.c:726
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib bietet an)"
 
-#: lib/depends.c:736
+#: lib/depends.c:755
 msgid "(db files)"
 msgstr "(Datenbank-Dateien)"
 
-#: lib/depends.c:749
+#: lib/depends.c:768
 msgid "(db provides)"
 msgstr "(Datenbank bietet an)"
 
-#: lib/depends.c:762
+#: lib/depends.c:781
 msgid "(db package)"
 msgstr "(Datenbank-Paket)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:793
+#: lib/depends.c:812
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1126
+#: lib/depends.c:1145
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "Ignoriere Paketnamensrelation(en) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1248
+#: lib/depends.c:1267
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "Entferne %s \"%s\" von tsort-Relationen.\n"
 
 #. Record all relations.
-#: lib/depends.c:1485
+#: lib/depends.c:1504
 msgid "========== recording tsort relations\n"
 msgstr "========== zeichne tsort-Relationen auf\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1577
+#: lib/depends.c:1596
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1505,21 +1510,21 @@ msgstr ""
 "========== tsorting Pakete (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 
-#: lib/depends.c:1668
+#: lib/depends.c:1687
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== Nur Nachfolger (%d Bytes)\n"
 
-#: lib/depends.c:1741
+#: lib/depends.c:1760
 msgid "LOOP:\n"
 msgstr "SCHLEIFE:\n"
 
-#: lib/depends.c:1776
+#: lib/depends.c:1795
 msgid "========== continuing tsort ...\n"
 msgstr "========== setze tsort fort...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1781
+#: lib/depends.c:1800
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder fehlgeschlagen, %d Elemente verbleiben\n"
@@ -2733,11 +2738,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "NO "
 msgstr "NEIN "
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "YES"
 msgstr "JA"
 
@@ -2806,7 +2811,7 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2609
+#: lib/rpmds.c:2611
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2816,13 +2821,13 @@ msgstr ""
 "als \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2642
+#: lib/rpmds.c:2644
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2666
+#: lib/rpmds.c:2668
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Paket %s hat unerfüllte %s: %s\n"
@@ -4246,59 +4251,59 @@ msgstr "Datei %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datei %s ist kleiner als %u Byte\n"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:681
 msgid "Success"
 msgstr "Erfolg"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:704
 msgid "Bad server response"
 msgstr "Ungültige Server-Antwort"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:706
 msgid "Server I/O error"
 msgstr "Ein-/Ausgabe-Fehler des Servers"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:708
 msgid "Server timeout"
 msgstr "Server-Timeout"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host address"
 msgstr "Server-Adresse konnte nicht aufgelöst werden"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:712
 msgid "Unable to lookup server host name"
 msgstr "Server-Name konnte nicht aufgelöst werden"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:714
 msgid "Failed to connect to server"
 msgstr "Verbindung zum Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:716
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:718
 msgid "I/O error to local file"
 msgstr "Ein-/Ausgabe-Fehler in lokale Datei"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:720
 msgid "Error setting remote server to passive mode"
 msgstr "Server-Fehler beim Wechseln in den passiven Modus"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:722
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:724
 msgid "Abort in progress"
 msgstr "Abbruch wird durchgeführt"
 
-#: rpmio/rpmio.c:726
+#: rpmio/rpmio.c:728
 msgid "Unknown or unexpected error"
 msgstr "Unbekannter oder unerwarteter Fehler"
 
-#: rpmio/rpmio.c:1422
+#: rpmio/rpmio.c:1424
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "Login auf %s als %s, Passwort %s\n"

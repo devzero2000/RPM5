@@ -58,6 +58,7 @@
 	- python: set pkgorigin in hdr by extracting from yum (h,path) pkgkey.
 	- fix: handle file:///var/lib/rpm in %_dbpath correctly.
 	- update to file-4.16 internal.
+	- add access(2) run-time probe dependencies.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

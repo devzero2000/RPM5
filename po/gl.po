@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-31 19:55-0500\n"
+"POT-Creation-Date: 2005-11-01 10:46-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -840,128 +840,128 @@ msgstr ""
 msgid "line %d: Second %%files list\n"
 msgstr ""
 
-#: build/parsePreamble.c:240
+#: build/parsePreamble.c:242
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:252
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:257
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:278
+#: build/parsePreamble.c:280
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:307
+#: build/parsePreamble.c:309
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:370
+#: build/parsePreamble.c:372
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:388
+#: build/parsePreamble.c:390
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:401
+#: build/parsePreamble.c:403
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:446
+#: build/parsePreamble.c:448
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:486
+#: build/parsePreamble.c:488
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:518 build/parsePreamble.c:525
+#: build/parsePreamble.c:520 build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:586 build/parseSpec.c:473
+#: build/parsePreamble.c:588 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:599
+#: build/parsePreamble.c:601
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:611
+#: build/parsePreamble.c:613
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:623
+#: build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:663 build/parsePreamble.c:674
+#: build/parsePreamble.c:665 build/parsePreamble.c:676
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:708
+#: build/parsePreamble.c:710
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:717
+#: build/parsePreamble.c:719
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
-#: build/parsePreamble.c:823
+#: build/parsePreamble.c:825
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:894
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:898
+#: build/parsePreamble.c:900
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:927
+#: build/parsePreamble.c:929
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:949
+#: build/parsePreamble.c:951
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -1395,76 +1395,80 @@ msgstr ""
 msgid "(macro probe)"
 msgstr ""
 
-#: lib/depends.c:654
+#: lib/depends.c:660
+msgid "(access probe)"
+msgstr ""
+
+#: lib/depends.c:673
 msgid "(sysinfo provides)"
 msgstr ""
 
-#: lib/depends.c:675
+#: lib/depends.c:694
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:691
+#: lib/depends.c:710
 msgid "(cpuinfo provides)"
 msgstr ""
 
-#: lib/depends.c:707
+#: lib/depends.c:726
 msgid "(getconf provides)"
 msgstr ""
 
-#: lib/depends.c:736
+#: lib/depends.c:755
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:749
+#: lib/depends.c:768
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:762
+#: lib/depends.c:781
 msgid "(db package)"
 msgstr ""
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:793
+#: lib/depends.c:812
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1126
+#: lib/depends.c:1145
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1248
+#: lib/depends.c:1267
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1485
+#: lib/depends.c:1504
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1577
+#: lib/depends.c:1596
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:1668
+#: lib/depends.c:1687
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1741
+#: lib/depends.c:1760
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1776
+#: lib/depends.c:1795
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1781
+#: lib/depends.c:1800
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2655,11 +2659,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "YES"
 msgstr ""
 
@@ -2720,20 +2724,20 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2609
+#: lib/rpmds.c:2611
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:2642
+#: lib/rpmds.c:2644
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:2666
+#: lib/rpmds.c:2668
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -4126,59 +4130,59 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:681
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:704
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:706
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:708
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:712
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:714
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:716
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:718
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:720
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:722
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:724
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:726
+#: rpmio/rpmio.c:728
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1422
+#: rpmio/rpmio.c:1424
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

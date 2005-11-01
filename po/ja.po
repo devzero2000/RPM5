@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-31 19:55-0500\n"
+"POT-Creation-Date: 2005-11-01 10:46-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -869,128 +869,128 @@ msgstr "%d 行目: %%files の解析エラー: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "%d 行目: 2番目の %%files リスト\n"
 
-#: build/parsePreamble.c:240
+#: build/parsePreamble.c:242
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "アーキテクチャは除外されています: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "アーキテクチャは含まれていません: %s\n"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:252
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS は除外されています: %s\n"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:257
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS は含まれていません: %s\n"
 
-#: build/parsePreamble.c:278
+#: build/parsePreamble.c:280
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "%s フィールドがパッケージ中に必要です: %s\n"
 
-#: build/parsePreamble.c:307
+#: build/parsePreamble.c:309
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "パッケージ中に %s エントリが重複しています: %s\n"
 
-#: build/parsePreamble.c:370
+#: build/parsePreamble.c:372
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "アイコン %s をオープンできません: %s\n"
 
-#: build/parsePreamble.c:388
+#: build/parsePreamble.c:390
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "アイコン %s を読むことができません: %s\n"
 
-#: build/parsePreamble.c:401
+#: build/parsePreamble.c:403
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "不明なアイコンタイプ: %s\n"
 
-#: build/parsePreamble.c:446
+#: build/parsePreamble.c:448
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "%d 行目: タグはトークンを 1つしかとりません: %s\n"
 
-#: build/parsePreamble.c:486
+#: build/parsePreamble.c:488
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 行目: 不完全な形のタグ: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "%d 行目: 空のタグ: %s\n"
 
-#: build/parsePreamble.c:518 build/parsePreamble.c:525
+#: build/parsePreamble.c:520 build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s\n"
 
-#: build/parsePreamble.c:586 build/parseSpec.c:473
+#: build/parsePreamble.c:588 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot は \"/\" にすることはできません: %s\n"
 
-#: build/parsePreamble.c:599
+#: build/parsePreamble.c:601
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "%d 行目: Prefix は \"/\" で終わってはいけません: %s\n"
 
-#: build/parsePreamble.c:611
+#: build/parsePreamble.c:613
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "%d 行目: Docdir は '/' で始まらなければなりません: %s\n"
 
-#: build/parsePreamble.c:623
+#: build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "%d 行目: Epoch/Serial フィールドは数字でなければなりません: %s\n"
 
-#: build/parsePreamble.c:663 build/parsePreamble.c:674
+#: build/parsePreamble.c:665 build/parsePreamble.c:676
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 行目: 不正な修飾子 %s : %s\n"
 
-#: build/parsePreamble.c:708
+#: build/parsePreamble.c:710
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 行目: 不正な BuildArchtecture フォーマット: %s\n"
 
-#: build/parsePreamble.c:717
+#: build/parsePreamble.c:719
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "内部エラー: にせのタグ %d\n"
 
-#: build/parsePreamble.c:823
+#: build/parsePreamble.c:825
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "旧来の構文はサポートされません: %s\n"
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:894
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不正なパッケージの指定: %s\n"
 
-#: build/parsePreamble.c:898
+#: build/parsePreamble.c:900
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "パッケージは既に存在しています: %s\n"
 
-#: build/parsePreamble.c:927
+#: build/parsePreamble.c:929
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 行目: 不明なタグ: %s\n"
 
-#: build/parsePreamble.c:949
+#: build/parsePreamble.c:951
 msgid "Spec file can't use BuildRoot\n"
 msgstr "spec ファイルは BuildRoot を使用できません。\n"
 
@@ -1426,59 +1426,64 @@ msgstr "(キャッシュ済み)"
 msgid "(macro probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:654
+#: lib/depends.c:660
+#, fuzzy
+msgid "(access probe)"
+msgstr "(rpmrc 提供)"
+
+#: lib/depends.c:673
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:675
+#: lib/depends.c:694
 msgid "(rpmlib provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:691
+#: lib/depends.c:710
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:707
+#: lib/depends.c:726
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:736
+#: lib/depends.c:755
 msgid "(db files)"
 msgstr "(files データベース)"
 
-#: lib/depends.c:749
+#: lib/depends.c:768
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#: lib/depends.c:762
+#: lib/depends.c:781
 msgid "(db package)"
 msgstr "(package データベース)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:793
+#: lib/depends.c:812
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1126
+#: lib/depends.c:1145
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1248
+#: lib/depends.c:1267
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
 #. Record all relations.
-#: lib/depends.c:1485
+#: lib/depends.c:1504
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1577
+#: lib/depends.c:1596
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1487,21 +1492,21 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:1668
+#: lib/depends.c:1687
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:1741
+#: lib/depends.c:1760
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:1776
+#: lib/depends.c:1795
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1781
+#: lib/depends.c:1800
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -2714,11 +2719,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "YES"
 msgstr "YES"
 
@@ -2783,7 +2788,7 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2609
+#: lib/rpmds.c:2611
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2792,13 +2797,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします (\"A\" と同じであると仮定して)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2642
+#: lib/rpmds.c:2644
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2666
+#: lib/rpmds.c:2668
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"
@@ -4210,59 +4215,59 @@ msgstr "ファイル %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:681
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:704
 msgid "Bad server response"
 msgstr "サーバからの不正な応答。"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:706
 msgid "Server I/O error"
 msgstr "サーバ I/O エラーです。"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:708
 msgid "Server timeout"
 msgstr "サーバがタイムアウトしました。"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません。"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:712
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません。"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:714
 msgid "Failed to connect to server"
 msgstr "サーバとの接続に失敗しました。"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:716
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータ接続確立に失敗しました。"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:718
 msgid "I/O error to local file"
 msgstr "ローカルファイルの I/O エラーです。"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:720
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバを passive モードに設定できませんでした。"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:722
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません。"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:724
 msgid "Abort in progress"
 msgstr "処理中の中断"
 
-#: rpmio/rpmio.c:726
+#: rpmio/rpmio.c:728
 msgid "Unknown or unexpected error"
 msgstr "不明または予期せぬエラー"
 
-#: rpmio/rpmio.c:1422
+#: rpmio/rpmio.c:1424
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s に %s (パスワード %s) でログイン中\n"

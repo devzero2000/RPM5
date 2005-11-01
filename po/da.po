@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-31 19:55-0500\n"
+"POT-Creation-Date: 2005-11-01 10:46-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -861,128 +861,128 @@ msgstr "linie %d: Fejl ved tolkning af %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "linie %d: Anden '%%files'-liste\n"
 
-#: build/parsePreamble.c:240
+#: build/parsePreamble.c:242
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Arkitekturen er ekskluderet: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Arkitekturen er ikke inkluderet: %s\n"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:252
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS er ekskluderet: %s\n"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:257
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS is ikke inkluderet: %s\n"
 
-#: build/parsePreamble.c:278
+#: build/parsePreamble.c:280
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "'%s'-felt skal være tilstede i pakke : %s\n"
 
-#: build/parsePreamble.c:307
+#: build/parsePreamble.c:309
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Flere '%s'-indgange i pakke: %s\n"
 
-#: build/parsePreamble.c:370
+#: build/parsePreamble.c:372
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kunne ikke åbne ikon %s: %s\n"
 
-#: build/parsePreamble.c:388
+#: build/parsePreamble.c:390
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kunne ikke læse ikon %s: %s\n"
 
-#: build/parsePreamble.c:401
+#: build/parsePreamble.c:403
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Ukendt ikontype: %s\n"
 
-#: build/parsePreamble.c:446
+#: build/parsePreamble.c:448
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "linie %d: Ugyldigt tilvalg %s: %s\n"
 
-#: build/parsePreamble.c:486
+#: build/parsePreamble.c:488
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "linie %d: Forkert udformet mærke: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:494
+#: build/parsePreamble.c:496
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linie %d: Tomt mærke: %s\n"
 
-#: build/parsePreamble.c:518 build/parsePreamble.c:525
+#: build/parsePreamble.c:520 build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linie %d: Ugyldigt tegn '-' i %s: %s\n"
 
-#: build/parsePreamble.c:586 build/parseSpec.c:473
+#: build/parsePreamble.c:588 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan ikke være \"/\": %s\n"
 
-#: build/parsePreamble.c:599
+#: build/parsePreamble.c:601
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linie %d: Præfikser kan ikke ende på \"/\": %s\n"
 
-#: build/parsePreamble.c:611
+#: build/parsePreamble.c:613
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linie %d: Docdir skal starte med '/': %s\n"
 
-#: build/parsePreamble.c:623
+#: build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "linie %d: Epoch/Serial-felter skal være et nummer: %s\n"
 
-#: build/parsePreamble.c:663 build/parsePreamble.c:674
+#: build/parsePreamble.c:665 build/parsePreamble.c:676
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linie %d: Ugyldig %s: angivere: %s\n"
 
-#: build/parsePreamble.c:708
+#: build/parsePreamble.c:710
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linie %d: Ugyldigt 'BuildArchitecture'-format: %s\n"
 
-#: build/parsePreamble.c:717
+#: build/parsePreamble.c:719
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Intern fejl: Falsk mærke %d\n"
 
-#: build/parsePreamble.c:823
+#: build/parsePreamble.c:825
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:894
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ugyldig pakkeangivelse: %s\n"
 
-#: build/parsePreamble.c:898
+#: build/parsePreamble.c:900
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Pakken eksisterer allerede: %s\n"
 
-#: build/parsePreamble.c:927
+#: build/parsePreamble.c:929
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linie %d: Ukendt mærke: %s\n"
 
-#: build/parsePreamble.c:949
+#: build/parsePreamble.c:951
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-fil kan ikke bruge BuildRoot\n"
 
@@ -1431,83 +1431,88 @@ msgstr ""
 msgid "(macro probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:654
+#: lib/depends.c:660
+#, fuzzy
+msgid "(access probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:673
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:675
+#: lib/depends.c:694
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:691
+#: lib/depends.c:710
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:707
+#: lib/depends.c:726
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:736
+#: lib/depends.c:755
 #, fuzzy
 msgid "(db files)"
 msgstr "ugyldig db-fil %s\n"
 
-#: lib/depends.c:749
+#: lib/depends.c:768
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db tilfører)\n"
 
-#: lib/depends.c:762
+#: lib/depends.c:781
 #, fuzzy
 msgid "(db package)"
 msgstr "ingen pakker\n"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:793
+#: lib/depends.c:812
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1126
+#: lib/depends.c:1145
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1248
+#: lib/depends.c:1267
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1485
+#: lib/depends.c:1504
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1577
+#: lib/depends.c:1596
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:1668
+#: lib/depends.c:1687
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1741
+#: lib/depends.c:1760
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1776
+#: lib/depends.c:1795
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1781
+#: lib/depends.c:1800
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2769,12 +2774,12 @@ msgstr ")"
 msgid "OK"
 msgstr "O.K."
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 #, fuzzy
 msgid "NO "
 msgstr "IKKE O.K."
 
-#: lib/rpmds.c:739 lib/rpmds.c:2643
+#: lib/rpmds.c:739 lib/rpmds.c:2645
 msgid "YES"
 msgstr ""
 
@@ -2838,7 +2843,7 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2609
+#: lib/rpmds.c:2611
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2847,13 +2852,13 @@ msgstr ""
 "\"B\"-afhængighed kræver en epoke (antager samme som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:2642
+#: lib/rpmds.c:2644
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2666
+#: lib/rpmds.c:2668
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
@@ -4275,59 +4280,59 @@ msgstr "Fil %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:681
 msgid "Success"
 msgstr "Succes"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:704
 msgid "Bad server response"
 msgstr "Ugyldigt svar fra server"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:706
 msgid "Server I/O error"
 msgstr "I/O-fejl for server"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:708
 msgid "Server timeout"
 msgstr "Tidsudløb for server"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host address"
 msgstr "Kunne ikke skaffe serverens IP-addresse"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:712
 msgid "Unable to lookup server host name"
 msgstr "Kunne ikke slå serverens navn op"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:714
 msgid "Failed to connect to server"
 msgstr "Kunne ikke etablere en forbindelse til serveren"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:716
 msgid "Failed to establish data connection to server"
 msgstr "Kunne ikke etablere en data-forbindelse til serveren"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:718
 msgid "I/O error to local file"
 msgstr "I/O-fejl i lokal fil"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:720
 msgid "Error setting remote server to passive mode"
 msgstr "Kunne ikke sætte fjernserveren i passiv tilstand"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:722
 msgid "File not found on server"
 msgstr "Fil ikke fundet på server"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:724
 msgid "Abort in progress"
 msgstr "Afbryder programmet"
 
-#: rpmio/rpmio.c:726
+#: rpmio/rpmio.c:728
 msgid "Unknown or unexpected error"
 msgstr "Ukendt eller uventet fejl"
 
-#: rpmio/rpmio.c:1422
+#: rpmio/rpmio.c:1424
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logger på %s som %s, adgangskode %s\n"

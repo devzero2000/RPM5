@@ -642,8 +642,27 @@ retry:
 	goto exit;
     }
 
-    /* Search system configured provides first. */
-    if (!access("/etc/rpm/sysinfo", R_OK)) {
+    /* Evaluate access(2) probe dependencies. */
+    if (strlen(Name) > 5 && Name[strlen(Name)-1] == ')'
+     && (	(  strchr("Rr_", Name[0]) != NULL
+		&& strchr("Ww_", Name[1]) != NULL
+		&& strchr("Xx_", Name[2]) != NULL
+		&& Name[3] == '(')
+	  ||	!strncmp(Name, "exists(", sizeof("exists(")-1)
+	  ||	!strncmp(Name, "executable(", sizeof("executable(")-1)
+	  ||	!strncmp(Name, "readable(", sizeof("readable(")-1)
+	  ||	!strncmp(Name, "writable(", sizeof("writable(")-1)
+	))
+    {
+	rc = rpmioAccess(Name, NULL, X_OK);
+	if (rpmdsFlags(dep) & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(access probe)"), rc);
+	goto exit;
+    }
+
+    /* Search system configured provides. */
+    if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
 	static rpmds sysinfods = NULL;
 	static int oneshot = -1;
 
