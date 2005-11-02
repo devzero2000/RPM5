@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 11:11-0500\n"
+"POT-Creation-Date: 2005-11-02 12:11-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -870,128 +870,128 @@ msgstr "en voinut avata %s: %s"
 msgid "line %d: Second %%files list\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:247
+#: build/parsePreamble.c:248
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:252
+#: build/parsePreamble.c:253
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Haen: %s\n"
 
-#: build/parsePreamble.c:257
+#: build/parsePreamble.c:258
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "%s: avaus ei onnistunut\n"
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:281
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: build/parsePreamble.c:309
+#: build/parsePreamble.c:310
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: build/parsePreamble.c:372
+#: build/parsePreamble.c:373
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/parsePreamble.c:390
+#: build/parsePreamble.c:391
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:404
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "(tuntematon tyyppi)"
 
-#: build/parsePreamble.c:448
+#: build/parsePreamble.c:449
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:488
+#: build/parsePreamble.c:489
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:496
+#: build/parsePreamble.c:497
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:520 build/parsePreamble.c:527
+#: build/parsePreamble.c:521 build/parsePreamble.c:528
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:473
+#: build/parsePreamble.c:589 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:602
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/parsePreamble.c:625
+#: build/parsePreamble.c:626
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:665 build/parsePreamble.c:676
+#: build/parsePreamble.c:666 build/parsePreamble.c:677
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:710
+#: build/parsePreamble.c:718
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
 
-#: build/parsePreamble.c:719
+#: build/parsePreamble.c:727
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "vakava virhe: "
 
-#: build/parsePreamble.c:825
+#: build/parsePreamble.c:835
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:894
+#: build/parsePreamble.c:904
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Paketin m‰‰rittelyparametrit:"
 
-#: build/parsePreamble.c:900
+#: build/parsePreamble.c:910
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "v‰liaikainen tietokanta %s on jo olemassa"
 
-#: build/parsePreamble.c:929
+#: build/parsePreamble.c:939
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:951
+#: build/parsePreamble.c:961
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -1064,18 +1064,18 @@ msgstr "en voinut avata %s: %s"
 msgid "line %d: second %%prep\n"
 msgstr ""
 
-#: build/parseReqs.c:111
+#: build/parseReqs.c:113
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/parseReqs.c:139
+#: build/parseReqs.c:141
 #, fuzzy, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: build/parseReqs.c:170
+#: build/parseReqs.c:172
 #, fuzzy, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "en voinut avata %s: %s"

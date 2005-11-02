@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 11:11-0500\n"
+"POT-Creation-Date: 2005-11-02 12:11-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -876,128 +876,128 @@ msgstr "riadok %d: Chyba pri analýze %%files: %s"
 msgid "line %d: Second %%files list\n"
 msgstr "riadok %d: Druhý %%files zoznam"
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:243
 #, fuzzy, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektúra je vynechaná: %s"
 
-#: build/parsePreamble.c:247
+#: build/parsePreamble.c:248
 #, fuzzy, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektúra nie je obsiahnutá: %s"
 
-#: build/parsePreamble.c:252
+#: build/parsePreamble.c:253
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS je vynechaný: %s"
 
-#: build/parsePreamble.c:257
+#: build/parsePreamble.c:258
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS nie je obsiahnutý: %s"
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:281
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "V balíku musí existova» pole %s: %s"
 
-#: build/parsePreamble.c:309
+#: build/parsePreamble.c:310
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Duplicitné záznamy %s v balíku: %s"
 
-#: build/parsePreamble.c:372
+#: build/parsePreamble.c:373
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/parsePreamble.c:390
+#: build/parsePreamble.c:391
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:404
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Neznámy typ ikony: %s"
 
-#: build/parsePreamble.c:448
+#: build/parsePreamble.c:449
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "riadok %d: Chybná voµba %s: %s"
 
-#: build/parsePreamble.c:488
+#: build/parsePreamble.c:489
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "riadok %d: Znetvorený popis: %s"
 
 #. Empty field
-#: build/parsePreamble.c:496
+#: build/parsePreamble.c:497
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "riadok %d: Prázdny popis: %s"
 
-#: build/parsePreamble.c:520 build/parsePreamble.c:527
+#: build/parsePreamble.c:521 build/parsePreamble.c:528
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:473
+#: build/parsePreamble.c:589 build/parseSpec.c:473
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "riadok %d: BuildRoot nemô¾e by» \"/\": %s"
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:602
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "riadok %d: Prefixy nesmú konèi» \"/\": %s"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "riadok %d: Docdir musí zaèína» '/': %s"
 
-#: build/parsePreamble.c:625
+#: build/parsePreamble.c:626
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "riadok %d: Epoch/Serial pole musí by» èíslo: %s"
 
-#: build/parsePreamble.c:665 build/parsePreamble.c:676
+#: build/parsePreamble.c:666 build/parsePreamble.c:677
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
 
-#: build/parsePreamble.c:710
+#: build/parsePreamble.c:718
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "riadok %d: Chybný formát BuildArchitecture: %s"
 
-#: build/parsePreamble.c:719
+#: build/parsePreamble.c:727
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interná chyba: Èudný popis %d "
 
-#: build/parsePreamble.c:825
+#: build/parsePreamble.c:835
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:894
+#: build/parsePreamble.c:904
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Chybná ¹pecifikácia balíka: %s"
 
-#: build/parsePreamble.c:900
+#: build/parsePreamble.c:910
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "Balík u¾ existuje: %s"
 
-#: build/parsePreamble.c:929
+#: build/parsePreamble.c:939
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "riadok %d: Neznámy popis: %s"
 
-#: build/parsePreamble.c:951
+#: build/parsePreamble.c:961
 #, fuzzy
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec súbor nemô¾e pou¾i» BuildRoot"
@@ -1072,18 +1072,18 @@ msgstr "riadok %d: Chybný argument pre %%patch: %s"
 msgid "line %d: second %%prep\n"
 msgstr "riadok %d: druhý %%prep"
 
-#: build/parseReqs.c:111
+#: build/parseReqs.c:113
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr "riadok %d: %s: prvky musia zaèína» alfanumerickým znakom: %s"
 
-#: build/parseReqs.c:139
+#: build/parseReqs.c:141
 #, fuzzy, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "riadok %d: Názvy súborov v %s neobsahujú verzie: %s"
 
-#: build/parseReqs.c:170
+#: build/parseReqs.c:172
 #, fuzzy, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "riadok %d: V %s sú vy¾adované verzie: %s"

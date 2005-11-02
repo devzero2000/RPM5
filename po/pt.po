@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 11:11-0500\n"
+"POT-Creation-Date: 2005-11-02 12:11-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -864,128 +864,128 @@ msgstr "linha %d: Erro ao analisar o %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "linha %d: Segunda lista de %%files\n"
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "A arquitectura está excluída: %s\n"
 
-#: build/parsePreamble.c:247
+#: build/parsePreamble.c:248
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "A arquitectura não está incluída: %s\n"
 
-#: build/parsePreamble.c:252
+#: build/parsePreamble.c:253
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "O SO está excluído: %s\n"
 
-#: build/parsePreamble.c:257
+#: build/parsePreamble.c:258
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "O SO não está incluído: %s\n"
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:281
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "O campo %s tem de estar presente no pacote: %s\n"
 
-#: build/parsePreamble.c:309
+#: build/parsePreamble.c:310
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Entradas %s duplicadas no pacote: %s\n"
 
-#: build/parsePreamble.c:372
+#: build/parsePreamble.c:373
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Não consegui abrir o ícone %s: %s\n"
 
-#: build/parsePreamble.c:390
+#: build/parsePreamble.c:391
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Não consegui ler o ícone %s: %s\n"
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:404
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Tipo de ícone desconhecido: %s\n"
 
-#: build/parsePreamble.c:448
+#: build/parsePreamble.c:449
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "linha %d: Opção só recebe um parâmetro: %s\n"
 
-#: build/parsePreamble.c:488
+#: build/parsePreamble.c:489
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "Linha %d: Opção inválida: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:496
+#: build/parsePreamble.c:497
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linha %d: Opção em branco: %s\n"
 
-#: build/parsePreamble.c:520 build/parsePreamble.c:527
+#: build/parsePreamble.c:521 build/parsePreamble.c:528
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linha %d: Carácter '-' ilegal no %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:473
+#: build/parsePreamble.c:589 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "O BuildRoot não pode ser o \"/\": %s\n"
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:602
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linha %d: Os prefixos não podem acabar em \"/\": %s\n"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linha %d: A docdir tem de começar por '/': %s\n"
 
-#: build/parsePreamble.c:625
+#: build/parsePreamble.c:626
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "linha %d: O campo Epoch/Serial tem de ser um número: %s\n"
 
-#: build/parsePreamble.c:665 build/parsePreamble.c:676
+#: build/parsePreamble.c:666 build/parsePreamble.c:677
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linha %d: Qualificadores %s: inválidos: %s\n"
 
-#: build/parsePreamble.c:710
+#: build/parsePreamble.c:718
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linha %d: Formato da BuildArchitecture inválido: %s\n"
 
-#: build/parsePreamble.c:719
+#: build/parsePreamble.c:727
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Erro interno: Opção esquisita %d\n"
 
-#: build/parsePreamble.c:825
+#: build/parsePreamble.c:835
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:894
+#: build/parsePreamble.c:904
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Descrição do pacote inválida: %s\n"
 
-#: build/parsePreamble.c:900
+#: build/parsePreamble.c:910
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "O pacote já existe: %s\n"
 
-#: build/parsePreamble.c:929
+#: build/parsePreamble.c:939
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linha %d: Opção desconhecida: %s\n"
 
-#: build/parsePreamble.c:951
+#: build/parsePreamble.c:961
 msgid "Spec file can't use BuildRoot\n"
 msgstr "O ficheiro spec não pode usar a BuildRoot\n"
 
@@ -1058,7 +1058,7 @@ msgstr "linha %d: Argumento inválido para o %%patch: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "linha %d: segundo %%prep\n"
 
-#: build/parseReqs.c:111
+#: build/parseReqs.c:113
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1066,12 +1066,12 @@ msgstr ""
 "linha %d: Os elementos de dependências têm de começar por alfanuméricos, '_' "
 "ou '/': %s\n"
 
-#: build/parseReqs.c:139
+#: build/parseReqs.c:141
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "linha %d: Nome do ficheiro com versão não permitido: %s\n"
 
-#: build/parseReqs.c:170
+#: build/parseReqs.c:172
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "linha %d: Necessária a versão: %s\n"

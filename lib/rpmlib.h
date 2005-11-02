@@ -457,6 +457,8 @@ typedef enum rpmTag_e {
     RPMTAG_INSTALLEDNEVRA	= 1169, /* s[] */
     RPMTAG_PACKAGEORIGIN	= 1170, /* s */
     RPMTAG_TRIGGERPREIN		= 1171, /*!< internal */
+    RPMTAG_BUILDSUGGESTS	= 1172, /*!< internal */
+    RPMTAG_BUILDENHANCES	= 1173, /*!< internal */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

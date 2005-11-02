@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 11:11-0500\n"
+"POT-Creation-Date: 2005-11-02 12:11-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -869,128 +869,128 @@ msgstr "%d 行目: %%files の解析エラー: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "%d 行目: 2番目の %%files リスト\n"
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "アーキテクチャは除外されています: %s\n"
 
-#: build/parsePreamble.c:247
+#: build/parsePreamble.c:248
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "アーキテクチャは含まれていません: %s\n"
 
-#: build/parsePreamble.c:252
+#: build/parsePreamble.c:253
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS は除外されています: %s\n"
 
-#: build/parsePreamble.c:257
+#: build/parsePreamble.c:258
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS は含まれていません: %s\n"
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:281
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "%s フィールドがパッケージ中に必要です: %s\n"
 
-#: build/parsePreamble.c:309
+#: build/parsePreamble.c:310
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "パッケージ中に %s エントリが重複しています: %s\n"
 
-#: build/parsePreamble.c:372
+#: build/parsePreamble.c:373
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "アイコン %s をオープンできません: %s\n"
 
-#: build/parsePreamble.c:390
+#: build/parsePreamble.c:391
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "アイコン %s を読むことができません: %s\n"
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:404
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "不明なアイコンタイプ: %s\n"
 
-#: build/parsePreamble.c:448
+#: build/parsePreamble.c:449
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "%d 行目: タグはトークンを 1つしかとりません: %s\n"
 
-#: build/parsePreamble.c:488
+#: build/parsePreamble.c:489
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 行目: 不完全な形のタグ: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:496
+#: build/parsePreamble.c:497
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "%d 行目: 空のタグ: %s\n"
 
-#: build/parsePreamble.c:520 build/parsePreamble.c:527
+#: build/parsePreamble.c:521 build/parsePreamble.c:528
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:473
+#: build/parsePreamble.c:589 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot は \"/\" にすることはできません: %s\n"
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:602
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "%d 行目: Prefix は \"/\" で終わってはいけません: %s\n"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "%d 行目: Docdir は '/' で始まらなければなりません: %s\n"
 
-#: build/parsePreamble.c:625
+#: build/parsePreamble.c:626
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "%d 行目: Epoch/Serial フィールドは数字でなければなりません: %s\n"
 
-#: build/parsePreamble.c:665 build/parsePreamble.c:676
+#: build/parsePreamble.c:666 build/parsePreamble.c:677
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 行目: 不正な修飾子 %s : %s\n"
 
-#: build/parsePreamble.c:710
+#: build/parsePreamble.c:718
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 行目: 不正な BuildArchtecture フォーマット: %s\n"
 
-#: build/parsePreamble.c:719
+#: build/parsePreamble.c:727
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "内部エラー: にせのタグ %d\n"
 
-#: build/parsePreamble.c:825
+#: build/parsePreamble.c:835
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "旧来の構文はサポートされません: %s\n"
 
-#: build/parsePreamble.c:894
+#: build/parsePreamble.c:904
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不正なパッケージの指定: %s\n"
 
-#: build/parsePreamble.c:900
+#: build/parsePreamble.c:910
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "パッケージは既に存在しています: %s\n"
 
-#: build/parsePreamble.c:929
+#: build/parsePreamble.c:939
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 行目: 不明なタグ: %s\n"
 
-#: build/parsePreamble.c:951
+#: build/parsePreamble.c:961
 msgid "Spec file can't use BuildRoot\n"
 msgstr "spec ファイルは BuildRoot を使用できません。\n"
 
@@ -1063,19 +1063,19 @@ msgstr "%d 行目: %%patch への不正な引数: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "%d 行目: 2番目の %%prep\n"
 
-#: build/parseReqs.c:111
+#: build/parseReqs.c:113
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
-#: build/parseReqs.c:139
+#: build/parseReqs.c:141
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "%d 行目: バージョン付けされたファイル名は許可されていません: %s\n"
 
-#: build/parseReqs.c:170
+#: build/parseReqs.c:172
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "%d 行目: バージョンが必要です: %s\n"

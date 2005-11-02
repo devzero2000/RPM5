@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 11:11-0500\n"
+"POT-Creation-Date: 2005-11-02 12:11-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -869,128 +869,128 @@ msgstr "satýr %d: %%files ayrýþtýrýlýrken hata: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "satýr %d: Ýkinci %%files listesi\n"
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Mimari dýþlandý: %s\n"
 
-#: build/parsePreamble.c:247
+#: build/parsePreamble.c:248
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Mimari içerilmedi: %s\n"
 
-#: build/parsePreamble.c:252
+#: build/parsePreamble.c:253
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS dýþlandý: %s\n"
 
-#: build/parsePreamble.c:257
+#: build/parsePreamble.c:258
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS içerilmedi: %s\n"
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:281
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Pakette %s alan mevcut olmalý: %s\n"
 
-#: build/parsePreamble.c:309
+#: build/parsePreamble.c:310
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Pakette %s girdi tekrarlanmýþ: %s\n"
 
-#: build/parsePreamble.c:372
+#: build/parsePreamble.c:373
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "%s kýsayol simgesi açýlamadý: %s\n"
 
-#: build/parsePreamble.c:390
+#: build/parsePreamble.c:391
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "%s kýsayol simgesi okunamadý: %s\n"
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:404
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "bilinmeyen kýsayol simgesi türü: %s\n"
 
-#: build/parsePreamble.c:448
+#: build/parsePreamble.c:449
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "satýr %d: Etiket sadece tek dizgecik alýr: %s\n"
 
-#: build/parsePreamble.c:488
+#: build/parsePreamble.c:489
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "satýr %d: Etiket bozuk: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:496
+#: build/parsePreamble.c:497
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "satýr %d: Etiket boþ: %s\n"
 
-#: build/parsePreamble.c:520 build/parsePreamble.c:527
+#: build/parsePreamble.c:521 build/parsePreamble.c:528
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:473
+#: build/parsePreamble.c:589 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:602
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "satýr %d: Önekler \"/\" ile bitemez: %s\n"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "satýr %d: Docdir '/' ile baþlamalý: %s\n"
 
-#: build/parsePreamble.c:625
+#: build/parsePreamble.c:626
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "satýr %d: Epoch/Serial alaný bir sayý olmalý: %s\n"
 
-#: build/parsePreamble.c:665 build/parsePreamble.c:676
+#: build/parsePreamble.c:666 build/parsePreamble.c:677
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "satýr %d: %s hatalý: niteleyiciler: %s\n"
 
-#: build/parsePreamble.c:710
+#: build/parsePreamble.c:718
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "satýr %d: BuildArchitecture biçimi hatalý: %s\n"
 
-#: build/parsePreamble.c:719
+#: build/parsePreamble.c:727
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Ýçsel hata: %d etiketi sahte\n"
 
-#: build/parsePreamble.c:825
+#: build/parsePreamble.c:835
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:894
+#: build/parsePreamble.c:904
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Paket özellikleri hatalý: %s\n"
 
-#: build/parsePreamble.c:900
+#: build/parsePreamble.c:910
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket zaten var: %s\n"
 
-#: build/parsePreamble.c:929
+#: build/parsePreamble.c:939
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "satýr %d: Bilinmeyen etiket: %s\n"
 
-#: build/parsePreamble.c:951
+#: build/parsePreamble.c:961
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec dosyasý BuildRoot kullanamaz\n"
 
@@ -1063,7 +1063,7 @@ msgstr "satýr %d: %%patch argüman hatasý: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "satýr %d: %%prep saniye\n"
 
-#: build/parseReqs.c:111
+#: build/parseReqs.c:113
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1071,12 +1071,12 @@ msgstr ""
 "satýr %d: Baðýmlýlýk kýsaltmalarý bir alfanümerik, '_' veya '/' ile "
 "baþlamalý: %s\n"
 
-#: build/parseReqs.c:139
+#: build/parseReqs.c:141
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "satýr %d: Sürüm içeren dosya adý uygun deðil: %s\n"
 
-#: build/parseReqs.c:170
+#: build/parseReqs.c:172
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "satýr %d: Sürüm gerekli: %s\n"

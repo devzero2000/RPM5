@@ -141,6 +141,7 @@ static struct tokenBits_s buildScriptBits[] = {
     { "build",		RPMSENSE_SCRIPT_BUILD },
     { "install",	RPMSENSE_SCRIPT_INSTALL },
     { "clean",		RPMSENSE_SCRIPT_CLEAN },
+    { "hint",		RPMSENSE_MISSINGOK },
     { NULL, 0 }
 };
 
@@ -669,14 +670,21 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
-    case RPMTAG_REQUIREFLAGS:
     case RPMTAG_PREREQ:
+    case RPMTAG_REQUIREFLAGS:
 	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
 		     spec->lineNum, tagName(tag), spec->line);
 	    return rc;
 	}
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
+	    return rc;
+	break;
+    /* Aliases for BuildRequires(hint): */
+    case RPMTAG_BUILDSUGGESTS:
+    case RPMTAG_BUILDENHANCES:
+	tagflags = RPMSENSE_MISSINGOK;
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
@@ -789,6 +797,8 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_SVNID,		0, 0, 0, "svnid"},
     {RPMTAG_SUGGESTSFLAGS,	0, 0, 0, "suggests"},
     {RPMTAG_ENHANCESFLAGS,	0, 0, 0, "enhances"},
+    {RPMTAG_BUILDSUGGESTS,	0, 0, 0, "buildsuggests"},
+    {RPMTAG_BUILDENHANCES,	0, 0, 0, "buildenhances"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0, 0}
     /*@=nullassign@*/
