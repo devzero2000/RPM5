@@ -372,13 +372,17 @@ exit 0
 %lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
 %lang(uk)	%{__prefix}/*/locale/uk/LC_MESSAGES/rpm.mo
 
-%{__mandir}/man1/gendiff.1*
 %{__mandir}/man8/rpm.8*
 %{__mandir}/man8/rpm2cpio.8*
-%lang(ja)	%{__mandir}/ja/man[18]/*.[18]*
-%lang(pl)	%{__mandir}/pl/man[18]/*.[18]*
-%lang(ru)	%{__mandir}/ru/man[18]/*.[18]*
-%lang(sk)	%{__mandir}/sk/man[18]/*.[18]*
+%lang(ja)	%{__mandir}/ja/man8/rpm.8*
+%lang(ja)	%{__mandir}/ja/man8/rpm2cpio.8*
+%lang(ko)	%{__mandir}/ko/man8/rpm.8*
+%lang(ko)	%{__mandir}/ko/man8/rpm2cpio.8*
+%lang(pl)	%{__mandir}/pl/man8/rpm.8*
+%lang(pl)	%{__mandir}/pl/man8/rpm2cpio.8*
+%lang(ru)	%{__mandir}/ru/man8/rpm.8*
+%lang(ru)	%{__mandir}/ru/man8/rpm2cpio.8*
+%lang(sk)	%{__mandir}/sk/man8/rpm.8*
 
 %files libs
 %defattr(-,root,root)
@@ -436,8 +440,24 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
+%{__mandir}/man1/gendiff.1*
 %{__mandir}/man8/rpmbuild.8*
 %{__mandir}/man8/rpmdeps.8*
+#%lang(ja)	%{__mandir}/ja/man1/gendiff.1*
+%lang(ja)	%{__mandir}/ja/man8/rpmbuild.8*
+#%lang(ja)	%{__mandir}/ja/man8/rpmdeps.8*
+#%lang(ko)	%{__mandir}/ko/man1/gendiff.1*
+#%lang(ko)	%{__mandir}/ko/man8/rpmbuild.8*
+#%lang(ko)	%{__mandir}/ko/man8/rpmdeps.8*
+%lang(pl)	%{__mandir}/pl/man1/gendiff.1*
+%lang(pl)	%{__mandir}/pl/man8/rpmbuild.8*
+%lang(pl)	%{__mandir}/pl/man8/rpmdeps.8*
+#%lang(ru)	%{__mandir}/ru/man1/gendiff.1*
+#%lang(ru)	%{__mandir}/ru/man8/rpmbuild.8*
+#%lang(ru)	%{__mandir}/ru/man8/rpmdeps.8*
+#%lang(sk)	%{__mandir}/sk/man1/gendiff.1*
+#%lang(sk)	%{__mandir}/sk/man8/rpmbuild.8*
+#%lang(sk)	%{__mandir}/sk/man8/rpmdeps.8*
 
 %if %{with_python_subpackage}
 %files python
@@ -463,10 +483,21 @@ exit 0
 %{__libdir}/librpmbuild.a
 %{__libdir}/librpmbuild.la
 %{__libdir}/librpmbuild.so
-%{__mandir}/man8/rpmcache.8*
-%{__mandir}/man8/rpmgraph.8*
 %rpmattr	%{__prefix}/lib/rpm/rpmcache
 %rpmattr	%{__bindir}/rpmgraph
+
+%{__mandir}/man8/rpmcache.8*
+%{__mandir}/man8/rpmgraph.8*
+%lang(ja)	%{__mandir}/ja/man8/rpmcache.8*
+%lang(ja)	%{__mandir}/ja/man8/rpmgraph.8*
+#%lang(ko)	%{__mandir}/ko/man8/rpmcache.8*
+#%lang(ko)	%{__mandir}/ko/man8/rpmgraph.8*
+%lang(pl)	%{__mandir}/pl/man8/rpmcache.8*
+%lang(pl)	%{__mandir}/pl/man8/rpmgraph.8*
+#%lang(ru)	%{__mandir}/ru/man8/rpmcache.8*
+#%lang(ru)	%{__mandir}/ru/man8/rpmgraph.8*
+#%lang(sk)	%{__mandir}/sk/man8/rpmcache.8*
+#%lang(sk)	%{__mandir}/sk/man8/rpmgraph.8*
 
 %files -n popt
 %defattr(-,root,root)
@@ -514,6 +545,7 @@ exit 0
 - python: add python peculier build macros (#120635).
 - popt: support for lone dashes (#129944).
 - permit Build{Suggests,Enhances}: and BuildRequires(hint): (#114338).
+- divvy up locale specific man pages between sub-pkgs (#146842).
 
 * Tue Nov  1 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.31
 - add access(2) run-time probe dependencies.

@@ -63,6 +63,7 @@
 	- python: add python peculier build macros (#120635).
 	- popt: support for lone dashes (#129944).
 	- permit Build{Suggests,Enhances}: and BuildRequires(hint): (#114338).
+	- divvy up locale specific man pages between sub-pkgs (#146842).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
