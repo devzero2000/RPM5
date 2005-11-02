@@ -32,6 +32,7 @@ int specedit = 0;
 #define POPT_FTSWALK		-1012
 
 #define	POPT_TARGETPLATFORM	-1036
+#define	POPT_TRUST		-1037
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
@@ -253,6 +254,15 @@ static void queryArgCallback(poptContext con,
 	}
 	strcat(qva->targets, arg);
 	break;
+
+    /* XXX perhaps POPT_ARG_INT instead of callback. */
+    case POPT_TRUST:
+    {	char * end = NULL;
+	long trust = (int) strtol(arg, &end, 0);
+	/* XXX range checks on trust. */
+	/* XXX if (end && *end) argerror(_("non-numeric trust metric.")); */
+	qva->trust = trust;
+    }	break;
     }
 }
 
@@ -391,14 +401,6 @@ struct poptOption rpmVerifyPoptTable[] = {
         N_("don't verify package signature(s)"), NULL },
 #endif
 
-/** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
- { "nogpg", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify GPG V3 DSA signature(s)"), NULL },
- { "nopgp", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify PGP V3 RSA/MD5 signature(s)"), NULL },
-
     POPT_TABLEEND
 };
 
@@ -423,6 +425,15 @@ struct poptOption rpmSignPoptTable[] = {
 	N_("sign package(s) (identical to --addsign)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
 	N_("generate signature"), NULL },
+ /* XXX perhaps POPT_ARG_INT instead of callback. */
+ { "trust", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  POPT_TRUST,
+        N_("specify trust metric"), "TRUST" },
+ { "trusted", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.trust, 1,
+        N_("set ultimate trust when importing pubkey(s)"), NULL },
+ { "untrusted", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.trust, -1,
+        N_("unset ultimate trust when importing pubkey(s)"), NULL },
 
  { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify package digest(s)"), NULL },

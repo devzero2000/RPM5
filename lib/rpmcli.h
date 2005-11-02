@@ -280,6 +280,7 @@ struct rpmQVKArguments_s {
 /*@only@*/ /*@null@*/
     const char * qva_queryFormat;/*!< Format for headerSprintf(). */
     int sign;			/*!< Is a passphrase needed? */
+    int trust;			/*!< Trust metric when importing pubkeys. */
 /*@observer@*/
     const char * passPhrase;	/*!< Pass phrase. */
 /*@observer@*/ /*@null@*/
