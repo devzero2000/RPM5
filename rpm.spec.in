@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.31
+Release: 0.32
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -510,6 +510,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Nov  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.32
+- python: add python peculier build macros (#120635).
+
 * Tue Nov  1 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.31
 - add access(2) run-time probe dependencies.
 

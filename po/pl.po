@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-01 10:46-0500\n"
+"POT-Creation-Date: 2005-11-02 11:11-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1276,18 +1276,18 @@ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 "generuj nag³ówki pakietu kompatybilne z (wymieraj±cymi) pakietami rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:378
-#: lib/poptQV.c:387 lib/poptQV.c:428
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:388
+#: lib/poptQV.c:397 lib/poptQV.c:439
 msgid "don't verify package digest(s)"
 msgstr "nie sprawdzaj skrótów pakietu"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:381
-#: lib/poptQV.c:389 lib/poptQV.c:431
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:391
+#: lib/poptQV.c:399 lib/poptQV.c:442
 msgid "don't verify database header(s) when retrieved"
 msgstr "nie sprawdzaj nag³ówków bazy danych przy odczycie"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:384
-#: lib/poptQV.c:391 lib/poptQV.c:433
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:394
+#: lib/poptQV.c:401 lib/poptQV.c:444
 msgid "don't verify package signature(s)"
 msgstr "nie sprawdzaj sygnatur pakietu"
 
@@ -2063,7 +2063,7 @@ msgstr "uaktualnij bazê, ale nie modyfikuj systemu plików"
 msgid "do not verify package dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
-#: lib/poptI.c:316 lib/poptQV.c:322 lib/poptQV.c:325
+#: lib/poptI.c:316 lib/poptQV.c:332 lib/poptQV.c:335
 msgid "don't verify MD5 digest of files"
 msgstr "nie sprawdzaj skrótów MD5 plików"
 
@@ -2194,226 +2194,231 @@ msgstr "nie instaluj, podaj tylko czy instalacja zadzia³a czy nie"
 msgid "upgrade package(s)"
 msgstr "uaktualnij pakiet(y)"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:106
 msgid "query/verify all packages"
 msgstr "odpytaj/sprawd¼ wszystkie pakiety"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:108
 msgid "rpm checksig mode"
 msgstr "tryb sprawdzania sygnatur"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:110
 msgid "query/verify package(s) owning file"
 msgstr "odpytaj/sprawd¼ pakiet(y) zawieraj±ce plik"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:112
 msgid "query/verify package(s) in group"
 msgstr "odpytaj/sprawd¼ pakiet(y) w grupie"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:114
 msgid "query/verify a package file"
 msgstr "odpytaj/sprawd¼ plik pakietu"
 
-#: lib/poptQV.c:116
+#: lib/poptQV.c:117
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "odpytaj/sprawd¼ pakiety z transakcji instalacji"
 
-#: lib/poptQV.c:118
+#: lib/poptQV.c:119
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
 msgstr "odpytaj/sprawd¼ pakiety z transakcji instalacji"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:122
 msgid "query/verify package(s) with package identifier"
 msgstr "odpytaj/sprawd¼ pakiet(y) z identyfikatorem pakietu"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:124
 msgid "query/verify package(s) with header identifier"
 msgstr "odpytaj/sprawd¼ pakiet(y) z identyfikatorem nag³ówka"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:126
 msgid "query/verify package(s) with file identifier"
 msgstr "odpytaj/sprawd¼ pakiet(y) z identyfikatorem pliku"
 
-#: lib/poptQV.c:128
+#: lib/poptQV.c:129
 msgid "rpm query mode"
 msgstr "tryb odpytywania"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:131
 msgid "query/verify a header instance"
 msgstr "odpytaj/sprawd¼ instancjê nag³ówka"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:133
 msgid "query a spec file"
 msgstr "odpytywanie pliku spec"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:133
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:135
 msgid "query/verify package(s) from install transaction"
 msgstr "odpytaj/sprawd¼ pakiety z transakcji instalacji"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:137
 msgid "query the package(s) triggered by the package"
 msgstr "odpytaj pakiety z triggerami uaktywnianymi przez pakiet"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:139
 msgid "rpm verify mode"
 msgstr "tryb sprawdzania"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:141
 msgid "query/verify the package(s) which require a dependency"
 msgstr "odpytaj/sprawd¼ pakiet(y) wymagaj±ce zasobu"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:143
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "odpytaj/sprawd¼ pakiet(y) udostêpniaj±ce zasób"
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:146
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:148
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:150
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "nie podano argumentów"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:152
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:154
 #, fuzzy
 msgid "do not read headers"
 msgstr "%s: nie mo¿na odczytaæ nag³ówka pod 0x%x\n"
 
-#: lib/poptQV.c:271
+#: lib/poptQV.c:281
 msgid "list all configuration files"
 msgstr "wy¶wietl wszystkie pliki konfiguracyjne"
 
-#: lib/poptQV.c:273
+#: lib/poptQV.c:283
 msgid "list all documentation files"
 msgstr "wy¶wietl wszystkie pliki dokumentacji"
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:285
 msgid "dump basic file information"
 msgstr "podaj podstawowe informacje o pliku"
 
-#: lib/poptQV.c:279
+#: lib/poptQV.c:289
 msgid "list files in package"
 msgstr "wy¶wietl pliki zawarte w pakiecie"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:294
 #, c-format
 msgid "skip %%ghost files"
 msgstr "pomiñ pliki %%ghost"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:298
 #, c-format
 msgid "skip %%license files"
 msgstr "pomiñ pliki %%license"
 
-#: lib/poptQV.c:291
+#: lib/poptQV.c:301
 #, c-format
 msgid "skip %%readme files"
 msgstr "pomiñ pliki %%readme"
 
-#: lib/poptQV.c:297
+#: lib/poptQV.c:307
 msgid "use the following query format"
 msgstr "u¿yj nastêpuj±cego formatu zapytania"
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:309
 msgid "substitute i18n sections into spec file"
 msgstr "zamieñ sekcje i18n w plik spec"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:311
 msgid "display the states of the listed files"
 msgstr "wy¶wietl status pokazywanych plików"
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:313
 #, fuzzy
 msgid "specify target platform"
 msgstr "wymu¶ platformê docelow±"
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:339
 msgid "don't verify size of files"
 msgstr "nie sprawdzaj rozmiaru plików"
 
-#: lib/poptQV.c:332
+#: lib/poptQV.c:342
 msgid "don't verify symlink path of files"
 msgstr "nie sprawdzaj ¶cie¿ek dowi±zañ plików"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:345
 msgid "don't verify owner of files"
 msgstr "nie sprawdzaj w³a¶cicieli plików"
 
-#: lib/poptQV.c:338
+#: lib/poptQV.c:348
 msgid "don't verify group of files"
 msgstr "nie sprawdzaj grup plików"
 
-#: lib/poptQV.c:341
+#: lib/poptQV.c:351
 msgid "don't verify modification time of files"
 msgstr "nie sprawdzaj czasu modyfikacji plików"
 
-#: lib/poptQV.c:344 lib/poptQV.c:347
+#: lib/poptQV.c:354 lib/poptQV.c:357
 msgid "don't verify mode of files"
 msgstr "nie sprawdzaj uprawnieñ plików"
 
-#: lib/poptQV.c:350
+#: lib/poptQV.c:360
 msgid "don't verify file security contexts"
 msgstr "nie sprawdzaj kontekstów bezpieczeñstwa plików"
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:362
 msgid "don't verify files in package"
 msgstr "nie sprawdzaj plików pakietu"
 
-#: lib/poptQV.c:355 lib/poptQV.c:358 tools/rpmgraph.c:266
+#: lib/poptQV.c:365 lib/poptQV.c:368 tools/rpmgraph.c:266
 msgid "don't verify package dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
-#: lib/poptQV.c:363 lib/poptQV.c:367 lib/poptQV.c:370 lib/poptQV.c:373
+#: lib/poptQV.c:373 lib/poptQV.c:377 lib/poptQV.c:380 lib/poptQV.c:383
 msgid "don't execute verify script(s)"
 msgstr "nie wykonuj ¿adnych skryptów verify"
 
-#: lib/poptQV.c:397
-msgid "don't verify GPG V3 DSA signature(s)"
-msgstr "nie sprawdzaj sygnatur GPG V3 DSS"
-
-#: lib/poptQV.c:400
-msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-msgstr "nie sprawdzaj sygnatur PGP V3 RSA/MD5"
-
-#: lib/poptQV.c:415
+#: lib/poptQV.c:417
 msgid "sign package(s) (identical to --resign)"
 msgstr "podpisz pakiet(y) (identyczne z --resign)"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:419
 msgid "verify package signature(s)"
 msgstr "sprawd¼ sygnaturê pakietu"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:421
 #, fuzzy
 msgid "delete package signatures"
 msgstr "sprawd¼ sygnaturê pakietu"
 
-#: lib/poptQV.c:421
+#: lib/poptQV.c:423
 msgid "import an armored public key"
 msgstr "importuj opakowany klucz publiczny"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:425
 msgid "sign package(s) (identical to --addsign)"
 msgstr "podpisz pakiet(y) (identyczne z --addsign)"
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:427
 msgid "generate signature"
 msgstr "generuj sygnaturê"
+
+#: lib/poptQV.c:430
+#, fuzzy
+msgid "specify trust metric"
+msgstr "wymu¶ platformê docelow±"
+
+#: lib/poptQV.c:433
+msgid "set ultimate trust when importing pubkey(s)"
+msgstr ""
+
+#: lib/poptQV.c:436
+msgid "unset ultimate trust when importing pubkey(s)"
+msgstr ""
 
 #: lib/psm.c:273
 msgid "source package expected, binary found\n"
@@ -4450,6 +4455,12 @@ msgstr "u¿yj bazy danych w KATALOGu"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
+
+#~ msgid "don't verify GPG V3 DSA signature(s)"
+#~ msgstr "nie sprawdzaj sygnatur GPG V3 DSS"
+
+#~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
+#~ msgstr "nie sprawdzaj sygnatur PGP V3 RSA/MD5"
 
 #~ msgid "Unknown system: %s\n"
 #~ msgstr "Nieznany system: %s\n"

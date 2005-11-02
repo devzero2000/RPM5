@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-01 10:46-0500\n"
+"POT-Creation-Date: 2005-11-02 11:11-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1282,18 +1282,18 @@ msgstr "не перевіряти залежності перед збиранн
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "створювати заголовки сумісні з (застарілим) форматом rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:378
-#: lib/poptQV.c:387 lib/poptQV.c:428
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:388
+#: lib/poptQV.c:397 lib/poptQV.c:439
 msgid "don't verify package digest(s)"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:381
-#: lib/poptQV.c:389 lib/poptQV.c:431
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:391
+#: lib/poptQV.c:399 lib/poptQV.c:442
 msgid "don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки з бази даних"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:384
-#: lib/poptQV.c:391 lib/poptQV.c:433
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:394
+#: lib/poptQV.c:401 lib/poptQV.c:444
 msgid "don't verify package signature(s)"
 msgstr "не перевіряти підписи у пакетах"
 
@@ -2068,7 +2068,7 @@ msgstr "оновити базу даних, але не модифікувати
 msgid "do not verify package dependencies"
 msgstr "не перевіряти залежності пакету"
 
-#: lib/poptI.c:316 lib/poptQV.c:322 lib/poptQV.c:325
+#: lib/poptI.c:316 lib/poptQV.c:332 lib/poptQV.c:335
 msgid "don't verify MD5 digest of files"
 msgstr "не перевіряти MD5 контрольну суму файлів"
 
@@ -2197,226 +2197,231 @@ msgstr "не встановлювати, лише повідомити чи вд
 msgid "upgrade package(s)"
 msgstr "оновити пакет(и)"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:106
 msgid "query/verify all packages"
 msgstr "запитати/перевірити всі пакети"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:108
 msgid "rpm checksig mode"
 msgstr "режим перевірки підпису"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:110
 msgid "query/verify package(s) owning file"
 msgstr "запитати/перевірити пакет, якому належить файл"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:112
 msgid "query/verify package(s) in group"
 msgstr "запитати/перевірити пакети у групі"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:114
 msgid "query/verify a package file"
 msgstr "запитати/перевірити файл пакету"
 
-#: lib/poptQV.c:116
+#: lib/poptQV.c:117
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "запитати/перевірити пакети з транзакції встановлення"
 
-#: lib/poptQV.c:118
+#: lib/poptQV.c:119
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
 msgstr "запитати/перевірити пакети з транзакції встановлення"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:122
 msgid "query/verify package(s) with package identifier"
 msgstr "запитати/перевірити пакет(и) за ідентифікатором пакета"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:124
 msgid "query/verify package(s) with header identifier"
 msgstr "запитати/перевірити пакет(и) за ідентифікатором заголовка"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:126
 msgid "query/verify package(s) with file identifier"
 msgstr "запитати/перевірити пакет за ідентифікатором файлу"
 
-#: lib/poptQV.c:128
+#: lib/poptQV.c:129
 msgid "rpm query mode"
 msgstr "режим запиту rpm"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:131
 msgid "query/verify a header instance"
 msgstr "запитати/перевірити заголовок"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:133
 msgid "query a spec file"
 msgstr "запитати файл специфікації"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:133
 msgid "<spec>"
 msgstr "<специфікації>"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:135
 msgid "query/verify package(s) from install transaction"
 msgstr "запитати/перевірити пакети з транзакції встановлення"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:137
 msgid "query the package(s) triggered by the package"
 msgstr "запитати/перевірити пакет(и) з тригер-сценаріями на пакет"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:139
 msgid "rpm verify mode"
 msgstr "режим перевірки rpm"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:141
 msgid "query/verify the package(s) which require a dependency"
 msgstr "запитати/перевірити пакети, які потребують залежність"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:143
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "запитати/перевірити пакети, які постачають залежність"
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:146
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:148
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:150
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "не вказані аргументи"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:152
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:154
 #, fuzzy
 msgid "do not read headers"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: lib/poptQV.c:271
+#: lib/poptQV.c:281
 msgid "list all configuration files"
 msgstr "показати перелік усіх конфігураційних файлів"
 
-#: lib/poptQV.c:273
+#: lib/poptQV.c:283
 msgid "list all documentation files"
 msgstr "показати всі файли документації"
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:285
 msgid "dump basic file information"
 msgstr "показати основну інформацію про файл"
 
-#: lib/poptQV.c:279
+#: lib/poptQV.c:289
 msgid "list files in package"
 msgstr "показати перелік файлів пакету"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:294
 #, c-format
 msgid "skip %%ghost files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:298
 #, c-format
 msgid "skip %%license files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:291
+#: lib/poptQV.c:301
 #, c-format
 msgid "skip %%readme files"
 msgstr "пропустити файли %%readme"
 
-#: lib/poptQV.c:297
+#: lib/poptQV.c:307
 msgid "use the following query format"
 msgstr "використовувати заданий формат запиту"
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:309
 msgid "substitute i18n sections into spec file"
 msgstr "замінити розділи i18n у файлі специфікації"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:311
 msgid "display the states of the listed files"
 msgstr "показати інформацію про стан файлів з переліку"
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:313
 #, fuzzy
 msgid "specify target platform"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:339
 msgid "don't verify size of files"
 msgstr "не перевіряти розмір файла"
 
-#: lib/poptQV.c:332
+#: lib/poptQV.c:342
 msgid "don't verify symlink path of files"
 msgstr "не перевіряти шлях символічних посилань"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:345
 msgid "don't verify owner of files"
 msgstr "не перевіряти власника файлів"
 
-#: lib/poptQV.c:338
+#: lib/poptQV.c:348
 msgid "don't verify group of files"
 msgstr "не перевіряти групи файлів"
 
-#: lib/poptQV.c:341
+#: lib/poptQV.c:351
 msgid "don't verify modification time of files"
 msgstr "не перевіряти час модифікації файлів"
 
-#: lib/poptQV.c:344 lib/poptQV.c:347
+#: lib/poptQV.c:354 lib/poptQV.c:357
 msgid "don't verify mode of files"
 msgstr "не перевіряти права доступу файлів"
 
-#: lib/poptQV.c:350
+#: lib/poptQV.c:360
 msgid "don't verify file security contexts"
 msgstr "не перевіряти контекст безпеки файлів"
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:362
 msgid "don't verify files in package"
 msgstr "не перевіряти файли пакета"
 
-#: lib/poptQV.c:355 lib/poptQV.c:358 tools/rpmgraph.c:266
+#: lib/poptQV.c:365 lib/poptQV.c:368 tools/rpmgraph.c:266
 msgid "don't verify package dependencies"
 msgstr "не перевіряти залежності пакета"
 
-#: lib/poptQV.c:363 lib/poptQV.c:367 lib/poptQV.c:370 lib/poptQV.c:373
+#: lib/poptQV.c:373 lib/poptQV.c:377 lib/poptQV.c:380 lib/poptQV.c:383
 msgid "don't execute verify script(s)"
 msgstr "не виконувати сценарії перевірки"
 
-#: lib/poptQV.c:397
-msgid "don't verify GPG V3 DSA signature(s)"
-msgstr "не перевіряти підписи типу GPG V3 DSA"
-
-#: lib/poptQV.c:400
-msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-msgstr "не перевіряти підписи типу PGP V3 RSA/MD5"
-
-#: lib/poptQV.c:415
+#: lib/poptQV.c:417
 msgid "sign package(s) (identical to --resign)"
 msgstr "підписати пакет(и) (ідентично до --resign)"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:419
 msgid "verify package signature(s)"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:421
 #, fuzzy
 msgid "delete package signatures"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:421
+#: lib/poptQV.c:423
 msgid "import an armored public key"
 msgstr "імпортувати відкритий ключ"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:425
 msgid "sign package(s) (identical to --addsign)"
 msgstr "підписати пакет(и) (ідентично до --addsign)"
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:427
 msgid "generate signature"
 msgstr "створити підпис"
+
+#: lib/poptQV.c:430
+#, fuzzy
+msgid "specify trust metric"
+msgstr "перевизначити цільову платформу"
+
+#: lib/poptQV.c:433
+msgid "set ultimate trust when importing pubkey(s)"
+msgstr ""
+
+#: lib/poptQV.c:436
+msgid "unset ultimate trust when importing pubkey(s)"
+msgstr ""
 
 #: lib/psm.c:273
 msgid "source package expected, binary found\n"
@@ -4459,6 +4464,12 @@ msgstr "використовувати базу даних з КАТАЛОГУ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "don't verify GPG V3 DSA signature(s)"
+#~ msgstr "не перевіряти підписи типу GPG V3 DSA"
+
+#~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
+#~ msgstr "не перевіряти підписи типу PGP V3 RSA/MD5"
 
 #~ msgid "Unknown system: %s\n"
 #~ msgstr "Невідома система: %s\n"

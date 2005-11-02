@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-01 10:46-0500\n"
+"POT-Creation-Date: 2005-11-02 11:11-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1276,20 +1276,20 @@ msgstr "nekontrolovat závislosti balíèkù"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "generovat hlavièky balíèkù kompatibilní s RPM verze 2 a 3"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:378
-#: lib/poptQV.c:387 lib/poptQV.c:428
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:388
+#: lib/poptQV.c:397 lib/poptQV.c:439
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "nekontrolovat závislosti balíèkù"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:381
-#: lib/poptQV.c:389 lib/poptQV.c:431
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:391
+#: lib/poptQV.c:399 lib/poptQV.c:442
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "nekontrolovat architekturu balíèku"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:384
-#: lib/poptQV.c:391 lib/poptQV.c:433
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:394
+#: lib/poptQV.c:401 lib/poptQV.c:444
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "ovìøit podpis v balíèku"
@@ -2079,7 +2079,7 @@ msgstr "upravit databázi, ale neupravovat systém souborovù"
 msgid "do not verify package dependencies"
 msgstr "nekontrolovat závislosti balíèkù"
 
-#: lib/poptI.c:316 lib/poptQV.c:322 lib/poptQV.c:325
+#: lib/poptI.c:316 lib/poptQV.c:332 lib/poptQV.c:335
 msgid "don't verify MD5 digest of files"
 msgstr "nekontrolovat MD5 souborù v balíèku"
 
@@ -2210,240 +2210,243 @@ msgstr "neinstalovat ale sdìlit, zda-li by to fungovalo èi nikoli"
 msgid "upgrade package(s)"
 msgstr "aktualizace balíèku"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:106
 msgid "query/verify all packages"
 msgstr "dotázat/ovìøit v¹echny balíèky"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:108
 #, fuzzy
 msgid "rpm checksig mode"
 msgstr "re¾im kontroly"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:110
 msgid "query/verify package(s) owning file"
 msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:112
 msgid "query/verify package(s) in group"
 msgstr "dotaz/ovìøení balíèkù ve skupinì"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:114
 #, fuzzy
 msgid "query/verify a package file"
 msgstr "dotázat/ovìøit v¹echny balíèky"
 
-#: lib/poptQV.c:116
+#: lib/poptQV.c:117
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "dotaz/ovìøení balíèkù ve skupinì"
 
-#: lib/poptQV.c:118
+#: lib/poptQV.c:119
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
 msgstr "dotaz/ovìøení balíèkù ve skupinì"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:122
 #, fuzzy
 msgid "query/verify package(s) with package identifier"
 msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:124
 #, fuzzy
 msgid "query/verify package(s) with header identifier"
 msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:126
 #, fuzzy
 msgid "query/verify package(s) with file identifier"
 msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 
-#: lib/poptQV.c:128
+#: lib/poptQV.c:129
 msgid "rpm query mode"
 msgstr "re¾im dotazù"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:131
 #, fuzzy
 msgid "query/verify a header instance"
 msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:133
 msgid "query a spec file"
 msgstr "dotaz na spec soubor"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:133
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:135
 #, fuzzy
 msgid "query/verify package(s) from install transaction"
 msgstr "dotaz/ovìøení balíèkù ve skupinì"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:137
 msgid "query the package(s) triggered by the package"
 msgstr "dotaz na balíèky aktivované balíèkem"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:139
 msgid "rpm verify mode"
 msgstr "re¾im kontroly"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:141
 msgid "query/verify the package(s) which require a dependency"
 msgstr "dotaz/ovìøení balíèkù vy¾adujících závislost"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:143
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "dotaz/ovìøení balíèkù poskytujících závislost"
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:146
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:148
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:150
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "k dotazu nezadány ¾ádné parametry"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:152
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:154
 #, fuzzy
 msgid "do not read headers"
 msgstr "©patná nebo neèitelná hlavièka"
 
-#: lib/poptQV.c:271
+#: lib/poptQV.c:281
 msgid "list all configuration files"
 msgstr "vypsat v¹echny konfiguraèní soubory"
 
-#: lib/poptQV.c:273
+#: lib/poptQV.c:283
 msgid "list all documentation files"
 msgstr "vypsat v¹echny soubory s dokumentací"
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:285
 msgid "dump basic file information"
 msgstr "zobrazit základní informace o souborech"
 
-#: lib/poptQV.c:279
+#: lib/poptQV.c:289
 msgid "list files in package"
 msgstr "vypsat soubory v balíèku"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:294
 #, c-format
 msgid "skip %%ghost files"
 msgstr "vynechat %%ghost soubory"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:298
 #, c-format
 msgid "skip %%license files"
 msgstr "vynechat %%license soubory"
 
-#: lib/poptQV.c:291
+#: lib/poptQV.c:301
 #, c-format
 msgid "skip %%readme files"
 msgstr "vynechat %%readme soubory"
 
-#: lib/poptQV.c:297
+#: lib/poptQV.c:307
 msgid "use the following query format"
 msgstr "pou¾ij následující formát dotazù"
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:309
 msgid "substitute i18n sections into spec file"
 msgstr "nahradit i18n sekce do spec souboru"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:311
 msgid "display the states of the listed files"
 msgstr "zobrazit stav vypsaných souborù"
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:313
 #, fuzzy
 msgid "specify target platform"
 msgstr "cílová platforma pøedefinována"
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:339
 msgid "don't verify size of files"
 msgstr "nekontrolovat velikost souborù"
 
-#: lib/poptQV.c:332
+#: lib/poptQV.c:342
 msgid "don't verify symlink path of files"
 msgstr "nekontrolovat cesty symbolických linek"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:345
 msgid "don't verify owner of files"
 msgstr "nekontrolovat vlastníka souborù"
 
-#: lib/poptQV.c:338
+#: lib/poptQV.c:348
 msgid "don't verify group of files"
 msgstr "nekontrolovat skupinu souborù"
 
-#: lib/poptQV.c:341
+#: lib/poptQV.c:351
 msgid "don't verify modification time of files"
 msgstr "nekontrolovat èas zmìny souboru"
 
-#: lib/poptQV.c:344 lib/poptQV.c:347
+#: lib/poptQV.c:354 lib/poptQV.c:357
 msgid "don't verify mode of files"
 msgstr "nekontrolovat mód souborù"
 
-#: lib/poptQV.c:350
+#: lib/poptQV.c:360
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "nekontrolovat soubory v balíèku"
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:362
 msgid "don't verify files in package"
 msgstr "nekontrolovat soubory v balíèku"
 
-#: lib/poptQV.c:355 lib/poptQV.c:358 tools/rpmgraph.c:266
+#: lib/poptQV.c:365 lib/poptQV.c:368 tools/rpmgraph.c:266
 msgid "don't verify package dependencies"
 msgstr "nekontrolovat závislosti balíèkù"
 
-#: lib/poptQV.c:363 lib/poptQV.c:367 lib/poptQV.c:370 lib/poptQV.c:373
+#: lib/poptQV.c:373 lib/poptQV.c:377 lib/poptQV.c:380 lib/poptQV.c:383
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "nespou¹tìt %verifyscript (pokud existuje)"
 
-#: lib/poptQV.c:397
-#, fuzzy
-msgid "don't verify GPG V3 DSA signature(s)"
-msgstr "nekontrolovat SHA1 digest v hlavièce"
-
-#: lib/poptQV.c:400
-#, fuzzy
-msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-msgstr "nekontrolovat MD5 souborù v balíèku"
-
-#: lib/poptQV.c:415
+#: lib/poptQV.c:417
 #, fuzzy
 msgid "sign package(s) (identical to --resign)"
 msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:419
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "ovìøit podpis v balíèku"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:421
 #, fuzzy
 msgid "delete package signatures"
 msgstr "ovìøit podpis v balíèku"
 
-#: lib/poptQV.c:421
+#: lib/poptQV.c:423
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:425
 #, fuzzy
 msgid "sign package(s) (identical to --addsign)"
 msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:427
 msgid "generate signature"
 msgstr "generovat PGP/GPG podpis"
+
+#: lib/poptQV.c:430
+#, fuzzy
+msgid "specify trust metric"
+msgstr "cílová platforma pøedefinována"
+
+#: lib/poptQV.c:433
+msgid "set ultimate trust when importing pubkey(s)"
+msgstr ""
+
+#: lib/poptQV.c:436
+msgid "unset ultimate trust when importing pubkey(s)"
+msgstr ""
 
 #: lib/psm.c:273
 msgid "source package expected, binary found\n"
@@ -4501,6 +4504,14 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "don't verify GPG V3 DSA signature(s)"
+#~ msgstr "nekontrolovat SHA1 digest v hlavièce"
+
+#, fuzzy
+#~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
+#~ msgstr "nekontrolovat MD5 souborù v balíèku"
 
 #, fuzzy
 #~ msgid "Unknown system: %s\n"
