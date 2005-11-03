@@ -66,6 +66,7 @@
 	- divvy up locale specific man pages between sub-pkgs (#146842).
 	- perl: handle the 'v' in "use v5.6.0" (#140597).
 	- add run-time perl(...) provides name space dependency set.
+	- add -lresolv and build on CentOS3.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

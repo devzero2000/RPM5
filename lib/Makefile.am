@@ -46,6 +46,7 @@ librpm_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAG
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
+	-lresolv \
 	@INTLLIBS@
 
 if HAVE_LD_VERSION_SCRIPT
