@@ -11,6 +11,9 @@
 
 #include "debug.h"
 
+#define	_isspace(_c)	\
+	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
+
 /**
  * Enable noisy range comparison debugging message?
  */
@@ -1111,9 +1114,6 @@ static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
 /*@unchecked@*/ /*@observer@*/
 static const char * cpuinfo = _PROC_CPUINFO;
 
-#define	_isspace(_c)	\
-	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
-
 int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 	/*@globals ctags @*/
 	/*@modifies ctags @*/
@@ -1294,9 +1294,6 @@ int rpmdsRpmlib(rpmds * dsp, void * tblp)
 #define	_ETC_RPM_SYSINFO	"/etc/rpm/sysinfo"
 /*@unchecked@*/ /*@observer@*/
 static const char * etcrpmsysinfo = _ETC_RPM_SYSINFO;
-
-#define	_isspace(_c)	\
-	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
 
 /**
  */
@@ -2425,9 +2422,6 @@ static const char * _sbin_ldconfig_p = _SBIN_LDCONFIG;
 #define	_LD_SO_CACHE	"/etc/ld.so.cache"
 /*@unchecked@*/ /*@observer@*/
 static const char * _ld_so_cache = _LD_SO_CACHE;
-
-#define	_isspace(_c)	\
-	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
 
 int rpmdsLdconfig(rpmds * dsp, const char * fn)
 {
