@@ -41,7 +41,7 @@ librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFL
 	@WITH_LUA_LIB@ \
 	@WITH_MAGIC_LIB@ \
 	@WITH_ZLIB_LIB@ \
-	-lpthread
+	-lpthread -lresolv
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
 
