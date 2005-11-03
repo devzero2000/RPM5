@@ -11,7 +11,7 @@ extern int _rpmds_debug;
 #define _PERL_PROVIDES  "/usr/bin/find /usr/lib/perl5 | /usr/lib/rpm/perl.prov"
 static const char * _perl_provides = _PERL_PROVIDES;
 
-#define _PERL_REQUIRES  "/usr/bin/find /usr/lib/perl5 | /usr/lib/rpm/perl.req"
+#define _PERL_REQUIRES  "rpm -qa --fileclass | grep 'perl script' | sed -e 's/\t.*$//' | /usr/lib/rpm/perl.req"
 static const char * _perl_requires = _PERL_REQUIRES;
 
 int main(int argc, char *argv[])
@@ -20,18 +20,20 @@ int main(int argc, char *argv[])
     rpmds R = NULL;
     int rc;
 
-    fprintf(stderr, "Perl Provides: from \"%s\" pipe:\n", _perl_provides);
+fprintf(stderr, "\n*** Gathering perl Provides: using\n\t%s\n", _perl_provides);
     rc = rpmdsPipe(&P, RPMTAG_PROVIDENAME, _perl_provides);
-    P = rpmdsInit(P);
-    while (rpmdsNext(P) >= 0)
-	fprintf(stderr, "%d %s\n", rpmdsIx(P), rpmdsDNEVR(P)+2);
-    P = rpmdsFree(P);
-
-    fprintf(stderr, "\n\nPerl Requires: from \"%s\" pipe:\n", _perl_requires);
+fprintf(stderr, "\n*** Gathering perl Requires: using\n\t%s\n", _perl_requires);
     rc = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _perl_requires);
+
+fprintf(stderr, "\n*** Checking for Requires: against Provides: closure:\n");
     R = rpmdsInit(R);
-    while (rpmdsNext(R) >= 0)
-	fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
+    while (rpmdsNext(R) >= 0) {
+	rc = rpmdsSearch(P, R);
+	if (rc < 0)
+	    fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
+    }
+
+    P = rpmdsFree(P);
     R = rpmdsFree(R);
 
     return 0;
