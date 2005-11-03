@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 12:11-0500\n"
+"POT-Creation-Date: 2005-11-02 20:34-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2759,11 +2759,11 @@ msgstr ")"
 msgid "OK"
 msgstr "확인"
 
-#: lib/rpmds.c:739 lib/rpmds.c:2645
+#: lib/rpmds.c:739 lib/rpmds.c:2777
 msgid "NO "
 msgstr "아니오"
 
-#: lib/rpmds.c:739 lib/rpmds.c:2645
+#: lib/rpmds.c:739 lib/rpmds.c:2777
 msgid "YES"
 msgstr "예"
 
@@ -2827,7 +2827,34 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2611
+#: lib/rpmds.c:2570 lib/rpmds.c:2600 lib/rpmds.c:2612
+#, c-format
+msgid "running \"%s\" pipe command\n"
+msgstr ""
+
+#: lib/rpmds.c:2573
+#, fuzzy, c-format
+msgid ""
+"\tline %d: \"%s\"  must begin with alphanumeric, _, or /. Skipping ...\n"
+msgstr ""
+"%d 번째 행: 의존성 토큰(token)은 반드시 '문자-숫자 조합', '_' 또는 '/' 로 시"
+"작해야 합니다: %s\n"
+
+#. XXX No comparison operator found.
+#: lib/rpmds.c:2602
+#, c-format
+msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
+msgstr ""
+
+#. XXX No EVR comparison value found.
+#: lib/rpmds.c:2614
+#, c-format
+msgid ""
+"\tline %d: No EVR comparison value found.\n"
+" Skipping ..."
+msgstr ""
+
+#: lib/rpmds.c:2743
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2836,13 +2863,13 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:2644
+#: lib/rpmds.c:2776
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2668
+#: lib/rpmds.c:2800
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"

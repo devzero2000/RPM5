@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 12:11-0500\n"
+"POT-Creation-Date: 2005-11-02 20:34-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2767,11 +2767,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2645
+#: lib/rpmds.c:739 lib/rpmds.c:2777
 msgid "NO "
 msgstr "NE "
 
-#: lib/rpmds.c:739 lib/rpmds.c:2645
+#: lib/rpmds.c:739 lib/rpmds.c:2777
 msgid "YES"
 msgstr "ANO"
 
@@ -2835,7 +2835,34 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2611
+#: lib/rpmds.c:2570 lib/rpmds.c:2600 lib/rpmds.c:2612
+#, c-format
+msgid "running \"%s\" pipe command\n"
+msgstr ""
+
+#: lib/rpmds.c:2573
+#, fuzzy, c-format
+msgid ""
+"\tline %d: \"%s\"  must begin with alphanumeric, _, or /. Skipping ...\n"
+msgstr ""
+"øádek %d: Polo¾ky v závislostech musí zaèínat alfanumerickým znakem, '_' "
+"nebo '/': %s\n"
+
+#. XXX No comparison operator found.
+#: lib/rpmds.c:2602
+#, c-format
+msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
+msgstr ""
+
+#. XXX No EVR comparison value found.
+#: lib/rpmds.c:2614
+#, c-format
+msgid ""
+"\tline %d: No EVR comparison value found.\n"
+" Skipping ..."
+msgstr ""
+
+#: lib/rpmds.c:2743
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2844,13 +2871,13 @@ msgstr ""
 "Závislost \"B\" potøebuje období (pøedpokládáno stejné jako \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:2644
+#: lib/rpmds.c:2776
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2668
+#: lib/rpmds.c:2800
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"

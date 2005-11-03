@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.32
+Release: 0.33
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -541,12 +541,13 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Wed Nov  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.32
+* Wed Nov  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.33
 - python: add python peculier build macros (#120635).
 - popt: support for lone dashes (#129944).
 - permit Build{Suggests,Enhances}: and BuildRequires(hint): (#114338).
 - divvy up locale specific man pages between sub-pkgs (#146842).
 - perl: handle the 'v' in "use v5.6.0" (#140597).
+- add run-time perl(...) provides name space dependency set.
 
 * Tue Nov  1 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.31
 - add access(2) run-time probe dependencies.

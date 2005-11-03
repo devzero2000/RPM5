@@ -8,6 +8,7 @@
 
 extern int _rpmds_debug;
 
+#ifdef	DYING
 #define	_isspace(_c)	\
 	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
 
@@ -36,7 +37,7 @@ static struct cmpop {
 /*@unchecked@*/ /*@observer@*/
 static const char * _perl_provides = _PERL_PROVIDES;
 
-static int rpmdsPerlProvides(rpmds * dsp, const char * fn)
+int rpmdsPerl(rpmds * dsp, const char * cmd)
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
@@ -46,14 +47,19 @@ static int rpmdsPerlProvides(rpmds * dsp, const char * fn)
     char * g, * ge;
     FILE * fp = NULL;
     int rc = -1;
+    int cmdprinted;
     int ln;
     int xx;
 
-    fp = popen(_perl_provides, "r");
+    if (cmd == NULL)
+	cmd = _perl_provides;
+
+    fp = popen(cmd, "r");
     if (fp == NULL)
 	goto exit;
 
     ln = 0;
+    cmdprinted = 0;
     while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
 	ln++;
 
@@ -81,10 +87,12 @@ static int rpmdsPerlProvides(rpmds * dsp, const char * fn)
 	    *fe++ = '\0';
 
 	if (!(xisalnum(f[0]) || f[0] == '_' || f[0] == '/')) {
+	    if (!cmdprinted++)
+		fprintf(stderr, _("running \"%s\" pipe command\n"), cmd);
 	    /* XXX N must begin with alphanumeric, _, or /. */
 	    fprintf(stderr,
-		_("%s:%d N must begin with alphanumeric, _, or /.\n"),
-		    fn, ln);
+		_("\tline %d: \"%s\"  must begin with alphanumeric, _, or /. Skipping ...\n"),
+		    ln, f);
             continue;
 	}
 
@@ -109,9 +117,11 @@ static int rpmdsPerlProvides(rpmds * dsp, const char * fn)
 	    }
 
 	    if (Flags == 0) {
+		if (!cmdprinted++)
+		    fprintf(stderr, _("running \"%s\" pipe command\n"), cmd),
 		/* XXX No comparison operator found. */
-		fprintf(stderr, _("%s:%d No comparison operator found.\n"),
-			fn, ln);
+		fprintf(stderr, _("\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"),
+			ln, g);
 		continue;
 	    }
 
@@ -119,9 +129,11 @@ static int rpmdsPerlProvides(rpmds * dsp, const char * fn)
 	    while (*g && _isspace(*g))
 		g++;
 	    if (*g == '\0') {
+		if (!cmdprinted++)
+		    fprintf(stderr, _("running \"%s\" pipe command\n"), cmd),
 		/* XXX No EVR comparison value found. */
-		fprintf(stderr, _("%s:%d No EVR comparison value found.\n"),
-			fn, ln);
+		fprintf(stderr, _("\tline %d: No EVR comparison value found.\n Skipping ..."),
+			ln);
 		continue;
 	    }
 
@@ -148,18 +160,18 @@ exit:
     if (fp != NULL) (void) pclose(fp);
     return rc;
 }
+#endif
 
 int main(int argc, char *argv[])
 {
     rpmds ds = NULL;
     int rc;
 
-    rc = rpmdsPerlProvides(&ds, NULL);
+    rc = rpmdsPipe(&ds, 0, NULL);
     
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0)
 	fprintf(stderr, "%d %s\n", rpmdsIx(ds), rpmdsDNEVR(ds)+2);
-
     ds = rpmdsFree(ds);
 
     return 0;

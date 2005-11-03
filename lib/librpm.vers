@@ -113,6 +113,7 @@ LIBRPM_0
     rpmdsNoPromote;
     rpmdsNotify;
     rpmdsNVRMatchesDep;
+    rpmdsPipe;
     rpmdsProblem;
     rpmdsRefs;
     rpmdsRpmlib;

@@ -53,10 +53,10 @@
 	- add --suggests and --enhances popt aliases for header extensions.
 	- implement %triggerprein scriptlets.
 	- fix: unlink __db* files if dbenv->open returns EINVAL.
-	- fix: attempt solve db open only once.
+	- fix: attempt solvedb open only once.
 	- python: change ts.check callback, pass rpmds, not TagN, N, EVR, Flags.
 	- python: set pkgorigin in hdr by extracting from yum (h,path) pkgkey.
-	- fix: handle file:///var/lib/rpm in %_dbpath correctly.
+	- fix: handle file:///var/lib/rpm in %_dbpath correctly for queries.
 	- update to file-4.16 internal.
 	- add access(2) run-time probe dependencies.
 	- eliminate --nogpg and --nopgp, use --nosignature instead.
@@ -65,6 +65,7 @@
 	- permit Build{Suggests,Enhances}: and BuildRequires(hint): (#114338).
 	- divvy up locale specific man pages between sub-pkgs (#146842).
 	- perl: handle the 'v' in "use v5.6.0" (#140597).
+	- add run-time perl(...) provides name space dependency set.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

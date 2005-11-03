@@ -402,6 +402,17 @@ int rpmdsLdconfig(rpmds * dsp, /*@null@*/ const char * fn)
 	/*@modifies *dsp, fileSystem, internalState @*/;
 
 /**
+ * Load provides from a pipe into a dependency set.
+ * @retval *dsp		(loaded) depedency set
+ * @param tag		rpmds tag (<= 0 uses RPMTAG_PROVIDENAME).
+ * @param cmd		popen cmd to run (NULL loads perl provides)
+ * @return		0 on success
+ */
+int rpmdsPipe(rpmds * dsp, int_32 tagN, /*@null@*/ const char * cmd)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *dsp, fileSystem, internalState @*/;
+
+/**
  * Compare two versioned dependency ranges, looking for overlap.
  * @param A		1st dependency
  * @param B		2nd dependency

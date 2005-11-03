@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 12:11-0500\n"
+"POT-Creation-Date: 2005-11-02 20:34-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2777,12 +2777,12 @@ msgstr ")"
 msgid "OK"
 msgstr "O.K."
 
-#: lib/rpmds.c:739 lib/rpmds.c:2645
+#: lib/rpmds.c:739 lib/rpmds.c:2777
 #, fuzzy
 msgid "NO "
 msgstr "IKKE O.K."
 
-#: lib/rpmds.c:739 lib/rpmds.c:2645
+#: lib/rpmds.c:739 lib/rpmds.c:2777
 msgid "YES"
 msgstr ""
 
@@ -2846,7 +2846,34 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2611
+#: lib/rpmds.c:2570 lib/rpmds.c:2600 lib/rpmds.c:2612
+#, c-format
+msgid "running \"%s\" pipe command\n"
+msgstr ""
+
+#: lib/rpmds.c:2573
+#, fuzzy, c-format
+msgid ""
+"\tline %d: \"%s\"  must begin with alphanumeric, _, or /. Skipping ...\n"
+msgstr ""
+"linie %d: Afhængigheds-symbol skal starte med alfanumerisk, '_' eller '/': %"
+"s\n"
+
+#. XXX No comparison operator found.
+#: lib/rpmds.c:2602
+#, c-format
+msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
+msgstr ""
+
+#. XXX No EVR comparison value found.
+#: lib/rpmds.c:2614
+#, c-format
+msgid ""
+"\tline %d: No EVR comparison value found.\n"
+" Skipping ..."
+msgstr ""
+
+#: lib/rpmds.c:2743
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2855,13 +2882,13 @@ msgstr ""
 "\"B\"-afhængighed kræver en epoke (antager samme som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:2644
+#: lib/rpmds.c:2776
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2668
+#: lib/rpmds.c:2800
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
