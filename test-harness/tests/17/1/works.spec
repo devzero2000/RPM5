@@ -3,7 +3,7 @@ Name: 		works
 Version:	2
 Release:	0
 Group: 		System Environment/Base
-Copyright:	GPL
+License:	GPL
 BuildRoot:	/tmp/%{name}-%{version}-%{release}
 
 %description

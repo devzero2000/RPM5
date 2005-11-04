@@ -5,7 +5,7 @@ Name: 		t1
 Version:	1
 Release:	1
 Group: 		Who/Cares
-Copyright:	GPL
+License:	GPL
 
 BuildRoot:  /tmp/%{name}-%{version}-%{release}
 

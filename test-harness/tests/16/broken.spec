@@ -3,7 +3,7 @@ Name: 		broken
 Version:	1
 Release:	1
 Group: 		BROKEN/STUFF
-Copyright:	GPL
+License:	GPL
 
 Requires:	t1
 BuildRoot:	/tmp/%{name}-%{verison}-%{release}

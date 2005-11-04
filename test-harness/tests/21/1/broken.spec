@@ -3,7 +3,7 @@ Name: 		broken
 Version:	1
 Release:	2
 Group: 		System Environment/Base
-Copyright:	GPL
+License:	GPL
 BuildRoot:	/tmp/%{name}-%{version}-%{release}
 
 Requires: something-that-wont-be-provided = nadia-mequiere
