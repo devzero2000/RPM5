@@ -2127,6 +2127,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/*@notreached@*/ break;
 
     case FSM_UNLINK:
+	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
+	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
+	    struct stat stb;
+	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
+		/* XXX rc = fsmNext(fsm, FSM_CHMOD); instead */
+		chmod(fsm->path, stb.st_mode & 0777);
+	}
 	rc = Unlink(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s) %s\n", cur,
@@ -2135,6 +2142,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
 	break;
     case FSM_RENAME:
+	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
+	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
+	    struct stat stb;
+	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
+		/* XXX rc = fsmNext(fsm, FSM_CHMOD); instead */
+		chmod(fsm->path, stb.st_mode & 0777);
+	}
 	rc = Rename(fsm->opath, fsm->path);
 #if defined(ETXTBSY)
 	if (rc && errno == ETXTBSY) {

@@ -541,6 +541,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Nov  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.35
+- fix: wipe setuid/setgid bits on updated files (#125517).
+
 * Thu Nov  3 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.34
 - add -lresolv and build on CentOS3.
 
