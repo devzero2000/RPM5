@@ -526,17 +526,21 @@ fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_IDTXload(rpmtsObject * s)
+rpmts_IDTXload(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject * result = NULL;
     rpmTag tag = RPMTAG_INSTALLTID;
+    char * kwlist[] = {"rbtid", NULL};
     uint_32 rbtid = 0;
     IDTX idtx;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i:IDTXload", kwlist, &rbtid))
+	return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     idtx = IDTXload(s->ts, tag, rbtid);
@@ -572,18 +576,22 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_IDTXglob(rpmtsObject * s)
+rpmts_IDTXglob(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject * result = NULL;
     const char * globstr;
     rpmTag tag = RPMTAG_REMOVETID;
+    char * kwlist[] = {"rbtid", NULL};
     uint_32 rbtid = 0;
     IDTX idtx;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i:IDTXglob", kwlist, &rbtid))
+	return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
@@ -1411,11 +1419,11 @@ static struct PyMethodDef rpmts_methods[] = {
   Note: The callback may not be None.\n" },
  {"clean",	(PyCFunction) rpmts_Clean,	METH_NOARGS,
 	NULL },
- {"IDTXload",	(PyCFunction) rpmts_IDTXload,	METH_NOARGS,
-"ts.IDTXload() -> ((tid,hdr,instance)+)\n\
+ {"IDTXload",	(PyCFunction) rpmts_IDTXload,	METH_VARARGS|METH_KEYWORDS,
+"ts.IDTXload(rbtid=iid) -> ((tid,hdr,instance)+)\n\
 - Return list of installed packages reverse sorted by transaction id.\n" },
- {"IDTXglob",	(PyCFunction) rpmts_IDTXglob,	METH_NOARGS,
-"ts.IDTXglob() -> ((tid,hdr,instance)+)\n\
+ {"IDTXglob",	(PyCFunction) rpmts_IDTXglob,	METH_VARARGS|METH_KEYWORDS,
+"ts.IDTXglob(rbtid=rid) -> ((tid,hdr,instance)+)\n\
 - Return list of removed packages reverse sorted by transaction id.\n" },
  {"rollback",	(PyCFunction) rpmts_Rollback,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -1449,6 +1457,7 @@ static struct PyMethodDef rpmts_methods[] = {
     rpm.RPMVSF_NEEDPAYLOAD   if not set, check header+payload (if possible)\n\
     rpm.RPMVSF_NOSHA1HEADER  if set, don't check header SHA1 digest\n\
     rpm.RPMVSF_NODSAHEADER   if set, don't check header DSA signature\n\
+    rpm.RPMVSF_NORSAHEADER   if set, don't check header RSA signature\n\
     rpm.RPMVSF_NOMD5         if set, don't check header+payload MD5 digest\n\
     rpm.RPMVSF_NODSA         if set, don't check header+payload DSA signature\n\
     rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\

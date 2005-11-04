@@ -68,6 +68,7 @@
 	- add run-time perl(...) provides name space dependency set.
 	- add -lresolv and build on CentOS3.
 	- fix: wipe setuid/setgid bits on updated files (#125517).
+	- python: add optional transaction id goal to ts.IDTX{load,glob}.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

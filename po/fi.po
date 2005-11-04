@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-03 18:44-0500\n"
+"POT-Creation-Date: 2005-11-04 16:23-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2812,11 +2812,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2777
+#: lib/rpmds.c:742 lib/rpmds.c:2771
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:739 lib/rpmds.c:2777
+#: lib/rpmds.c:742 lib/rpmds.c:2771
 msgid "YES"
 msgstr ""
 
@@ -2860,62 +2860,62 @@ msgstr ""
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1370
+#: lib/rpmds.c:1367
 #, fuzzy, c-format
 msgid "%s:%d N must begin with alphanumeric, _, or /.\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1404
+#: lib/rpmds.c:1401
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1414
+#: lib/rpmds.c:1411
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2570 lib/rpmds.c:2600 lib/rpmds.c:2612
+#: lib/rpmds.c:2564 lib/rpmds.c:2594 lib/rpmds.c:2606
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2573
+#: lib/rpmds.c:2567
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\"  must begin with alphanumeric, _, or /. Skipping ...\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:2602
+#: lib/rpmds.c:2596
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:2614
+#: lib/rpmds.c:2608
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:2743
+#: lib/rpmds.c:2737
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:2776
+#: lib/rpmds.c:2770
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:2800
+#: lib/rpmds.c:2794
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
@@ -2955,7 +2955,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1048 lib/rpmts.c:646
+#: lib/rpminstall.c:611 lib/rpminstall.c:1050 lib/rpmts.c:646
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2968,7 +2968,7 @@ msgstr "tuntematon nimiˆ"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:655 lib/rpminstall.c:839
-#: lib/rpminstall.c:1304 lib/transaction.c:1211 tools/rpmgraph.c:196
+#: lib/rpminstall.c:1310 lib/transaction.c:1219 tools/rpmgraph.c:196
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
@@ -3075,7 +3075,7 @@ msgstr "asenna paketti"
 msgid "cannot open file %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpminstall.c:783 lib/transaction.c:1187
+#: lib/rpminstall.c:783 lib/transaction.c:1195
 #, c-format
 msgid "Autorollback Goal: %-24.24s\n"
 msgstr ""
@@ -3095,23 +3095,23 @@ msgstr "virhe: en voi avata %s\n"
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
 
-#: lib/rpminstall.c:1211
+#: lib/rpminstall.c:1217
 #, c-format
 msgid "Excluding TID %d from rollback\n"
 msgstr ""
 
-#: lib/rpminstall.c:1298 lib/transaction.c:1191
+#: lib/rpminstall.c:1304 lib/transaction.c:1199
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1329 lib/transaction.c:1264
+#: lib/rpminstall.c:1335 lib/transaction.c:1272
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1336
+#: lib/rpminstall.c:1342
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Haen: %s\n"
@@ -3621,66 +3621,66 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:926
+#: lib/transaction.c:934
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/transaction.c:1048 lib/transaction.c:1294
+#: lib/transaction.c:1056 lib/transaction.c:1302
 #, c-format
 msgid "Rolling back successful transactions to %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1053 lib/transaction.c:1299
+#: lib/transaction.c:1061 lib/transaction.c:1307
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr ""
 
-#: lib/transaction.c:1185
+#: lib/transaction.c:1193
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1193
+#: lib/transaction.c:1201
 #, c-format
 msgid "Failed Tran:  0x%08x\n"
 msgstr ""
 
-#: lib/transaction.c:1199
+#: lib/transaction.c:1207
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr ""
 
-#: lib/transaction.c:1203
+#: lib/transaction.c:1211
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/transaction.c:1223
+#: lib/transaction.c:1231
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1364
+#: lib/transaction.c:1372
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/transaction.c:1405
+#: lib/transaction.c:1413
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1431
+#: lib/transaction.c:1439
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1435
+#: lib/transaction.c:1443
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1439
+#: lib/transaction.c:1447
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1452
+#: lib/transaction.c:1460
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "paketilla ei ole nime‰"
@@ -3692,88 +3692,88 @@ msgstr "paketilla ei ole nime‰"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1473
+#: lib/transaction.c:1481
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1475
+#: lib/transaction.c:1483
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1498
+#: lib/transaction.c:1506
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
 #. XXX: Can't happen
-#: lib/transaction.c:1548
+#: lib/transaction.c:1556
 #, fuzzy
 msgid "Could not aquire transaction score!.\n"
 msgstr "en voinut lukea tietokannan tietuetta!\n"
 
 #. XXX: Can't happen
-#: lib/transaction.c:1553
+#: lib/transaction.c:1561
 #, fuzzy, c-format
 msgid "Could not acquire score entry %s!.\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: lib/transaction.c:1571
+#: lib/transaction.c:1579
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1574
+#: lib/transaction.c:1582
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: lib/transaction.c:1585
+#: lib/transaction.c:1593
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "kysele kaikki paketit"
 
-#: lib/transaction.c:1598
+#: lib/transaction.c:1606
 #, c-format
 msgid "Processing failed erase element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1602
+#: lib/transaction.c:1610
 #, fuzzy
 msgid "\tForce removing header from rpmdb.\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: lib/transaction.c:1613
+#: lib/transaction.c:1621
 msgid "\tCould not remove failed package header from db!\n"
 msgstr ""
 
-#: lib/transaction.c:1622 lib/transaction.c:1737
+#: lib/transaction.c:1630 lib/transaction.c:1762
 msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1623 lib/transaction.c:1738
+#: lib/transaction.c:1631 lib/transaction.c:1763
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1636
+#: lib/transaction.c:1661
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1637 lib/transaction.c:1692
+#: lib/transaction.c:1662 lib/transaction.c:1717
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1645
+#: lib/transaction.c:1670
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1658
+#: lib/transaction.c:1683
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1668
+#: lib/transaction.c:1693
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "kysele kaikki paketit"
@@ -3781,41 +3781,41 @@ msgstr "kysele kaikki paketit"
 #. Add the header as an erase element, we did not
 #. * have a repackaged package.
 #.
-#: lib/transaction.c:1677
+#: lib/transaction.c:1702
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1684
+#: lib/transaction.c:1709
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1691
+#: lib/transaction.c:1716
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1699
+#: lib/transaction.c:1724
 msgid "\tErase element already added for complimentary install.\n"
 msgstr ""
 
-#: lib/transaction.c:1712
+#: lib/transaction.c:1737
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "kysele kaikki paketit"
 
-#: lib/transaction.c:1717
+#: lib/transaction.c:1742
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1723
+#: lib/transaction.c:1748
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1729
+#: lib/transaction.c:1754
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: lib/transaction.c:1809
+#: lib/transaction.c:1834
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3827,12 +3827,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1863
+#: lib/transaction.c:1888
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1949
+#: lib/transaction.c:1974
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3844,7 +3844,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2024
+#: lib/transaction.c:2049
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3852,24 +3852,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2105
+#: lib/transaction.c:2130
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2283
+#: lib/transaction.c:2308
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2553
+#: lib/transaction.c:2581
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2560
+#: lib/transaction.c:2588
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2603
+#: lib/transaction.c:2631
 msgid "running post-transaction scripts\n"
 msgstr ""
 

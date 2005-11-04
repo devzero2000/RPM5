@@ -30,13 +30,13 @@ typedef enum rpmVSFlags_e {
     RPMVSF_NOSHA1HEADER	= (1 <<  8),
     RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
     RPMVSF_NODSAHEADER	= (1 << 10),
-    RPMVSF_NORSAHEADER	= (1 << 11),	/* unimplemented */
+    RPMVSF_NORSAHEADER	= (1 << 11),
     /* bit(s) 12-15 unused */
     RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
     RPMVSF_NOMD5	= (1 << 17),
     RPMVSF_NODSA	= (1 << 18),
     RPMVSF_NORSA	= (1 << 19)
-    /* bit(s) 16-31 unused */
+    /* bit(s) 20-31 unused */
 } rpmVSFlags;
 
 /**
