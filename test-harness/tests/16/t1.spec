@@ -4,7 +4,7 @@ Name: 		t1
 Version:	1
 Release:	2
 Group: 		Does/It/Matter
-Copyright:	GPL
+License:	GPL
 
 BuildRoot:  /tmp/%{name}-%{version}-%{release}
 

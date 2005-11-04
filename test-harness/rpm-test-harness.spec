@@ -7,7 +7,7 @@ Release:	1
 Group: 		System Environment/Base
 Source:         http://lee.k12.nc.us/~joden/misc/patches/rpm/rpm-test-harness/rpm-test-harness-%{version}.tgz
 Prefix:         %{my_prefix}
-Copyright:	GPL
+License:	GPL
 BuildArch:  noarch
 
 BuildRoot:      /tmp/%(echo $USER)/rpm-test-harness-%{version}-%{release}

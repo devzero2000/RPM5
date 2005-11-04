@@ -63,7 +63,7 @@ TEST #	TYPE	COMMENTS
                 rollback to test-1-1, except that test-1-1 will fail in %pre
                 at this point.  Should snip the erasure of test-1-2.  If not 
                 you end up with zero "test" packages installed.
-22      RB      Install a package test-1-1.  test-1-1 will intentionally remove
+23      RB      Install a package test-1-1.  test-1-1 will intentionally remove
                 one of its files from the system in %post.  Now upgrade to 
                 test-1-2; when test-1-1 is repackaged it will have a missing
                 file.  Next, rollback to test-1-1.

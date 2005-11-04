@@ -4,7 +4,7 @@ Epoch:		0
 Version:	1
 Release:	1
 Group: 		System Environment/Base
-Copyright:	GPL
+License:	GPL
 BuildRoot:	/tmp/%{name}-%{version}-%{release}
 
 Requires: t2 
