@@ -1437,7 +1437,7 @@ static rpmRC getRepackageHeaderFromTE(rpmte te, rpmts ts,
 
     /* Get the index of possible repackaged packages */
     rpmMessage(RPMMESS_DEBUG, _("\tLooking for %s...\n"), rp);
-    rtids = IDTXglob(ts, rp, RPMTAG_REMOVETID);
+    rtids = IDTXglob(ts, rp, RPMTAG_REMOVETID, tid);
     if (rp) rp = _free(rp);
     if (rtids != NULL) {
     	rpmMessage(RPMMESS_DEBUG, _("\tMatches found.\n"));

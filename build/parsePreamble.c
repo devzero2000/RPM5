@@ -757,7 +757,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_EPOCH,		0, 0, 0, "epoch"},
     {RPMTAG_EPOCH,		0, 0, 1, "serial"},
     {RPMTAG_SUMMARY,		0, 1, 0, "summary"},
-    {RPMTAG_LICENSE,		0, 0, 1, "copyright"},
+    {RPMTAG_LICENSE,		0, 0, 0, "copyright"},
     {RPMTAG_LICENSE,		0, 0, 0, "license"},
     {RPMTAG_DISTRIBUTION,	0, 0, 0, "distribution"},
     {RPMTAG_DISTURL,		0, 0, 0, "disturl"},

@@ -265,6 +265,7 @@ preEraseTestPkgs() {
 		then
 			echo "INFO: Removing ${nvr} before test..."
 			$RPM -ev${VERBOSE} \
+				--repackage \
 				--noscripts \
 				--nodeps \
 				--define "${DBPATH_OPT}" \
@@ -382,6 +383,7 @@ check() {
 		if check_locks 
 		then
 			$RPM -e \
+				--repackage \
 				--noscripts \
 				--nodeps \
 				--define "${DBPATH_OPT}" \
@@ -435,23 +437,24 @@ run_rb_upgrade_install_test() {
 	# should succeed.
 	echo "**** RUNNING CMD ****"
 	echo $RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
 		--define \'${TMPPATH_OPT}\' \
 		$RPMS
 	echo "*********************"
 	$RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
 		$RPMS
-	sleep 1			# Make sure we have seperate TID's
+	sleep 4			# Make sure we have seperate TID's
 
 	#
 	# Now rollback the transaction
 	echo "**** RUNNING CMD ****"
 	echo $RPM -Uv${VERBOSE}h \
-		--repackage \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
 		--define \'${TMPPATH_OPT}\' \
@@ -492,12 +495,14 @@ run_rb_multitran_test() {
 		# Install/Upgrade this transaction
 		echo "**** RUNNING CMD ****"
 		echo $RPM -Uv${VERBOSE}h \
+			--repackage \
 			--define \'${DBPATH_OPT}\' \
 			--define \'_repackage_dir ${RPDIR}\' \
 			--define \'${TMPPATH_OPT}\' \
 			$RPMS
 		echo "*********************"
 		$RPM -Uv${VERBOSE}h \
+			--repackage \
 			--define "${DBPATH_OPT}" \
 			--define "_repackage_dir ${RPDIR}" \
 			--define "${TMPPATH_OPT}" \
@@ -513,14 +518,12 @@ run_rb_multitran_test() {
 	# Now rollback the transaction
 	echo "**** RUNNING CMD ****"
 	echo $RPM -Uv${VERBOSE}h \
-		--repackage \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
 		--define \'${TMPPATH_OPT}\' \
 		--rollback \'${rb_goal}\'
 	echo "*********************"
 	$RPM -Uv${VERBOSE}h \
-		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
@@ -679,12 +682,14 @@ run_standard_test() {
 run_standard_upgrade_install_test() {
 	echo "**** RUNNING CMD ****"
 	echo $RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
 		$RPMS
 	echo "*********************"
 	$RPM -Uv${VERBOSE}h \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
@@ -711,12 +716,14 @@ run_standard_multitran_test() {
 		# Install/Upgrade this transaction
 		echo "**** RUNNING CMD ****"
 		echo $RPM -Uv${VERBOSE}h \
+			--repackage \
 			--define \'${DBPATH_OPT}\' \
 			--define \'_repackage_dir ${RPDIR}\' \
 			--define \'${TMPPATH_OPT}\' \
 			$RPMS
 		echo "*********************"
 		$RPM -Uv${VERBOSE}h \
+			--repackage \
 			--define "${DBPATH_OPT}" \
 			--define "_repackage_dir ${RPDIR}" \
 			--define "${TMPPATH_OPT}" \
@@ -729,12 +736,14 @@ run_standard_multitran_test() {
 run_standard_erase_test() {
 	echo "**** RUNNING CMD ****"
 	echo $RPM -ev${VERBOSE} \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
 		${ERASE_TEST_RPMS}
 	echo "*********************"
 	$RPM -ev${VERBOSE} \
+		--repackage \
 		--define "${DBPATH_OPT}" \
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
@@ -806,6 +815,7 @@ setup_test() {
 	if [ -d "${SETUP_DIR}" ]
 	then
 		$RPM -Uv${VERBOSE}h \
+			--repackage \
 			--force \
 			--define "${DBPATH_OPT}" \
 			--define "_repackage_dir ${RPDIR}" \

@@ -684,10 +684,11 @@ IDTX IDTXsort(/*@only@*/ /*@null@*/ IDTX idtx)
  * Load tag (instance,value) pairs from rpm databse, and return sorted id index.
  * @param ts		transaction set
  * @param tag		rpm tag
+ * @param rbtid		rollback goal
  * @return 		id index
  */
 /*@only@*/ /*@null@*/
-IDTX IDTXload(rpmts ts, rpmTag tag)
+IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
@@ -696,10 +697,11 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
  * @param ts		transaction set
  * @param globstr	glob expression
  * @param tag		rpm tag
+ * @param rbtid		rollback goal
  * @return 		id index
  */
 /*@only@*/ /*@null@*/
-IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 

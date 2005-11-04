@@ -310,6 +310,7 @@ LIBRPM_0
     rpmtsCurrDir;
     _rpmts_debug;
     rpmtsDig;
+    rpmtsDoARBGoal;
     rpmtsElement;
     rpmtsEmpty;
     rpmtsFilterFlags;

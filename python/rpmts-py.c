@@ -532,13 +532,14 @@ rpmts_IDTXload(rpmtsObject * s)
 {
     PyObject * result = NULL;
     rpmTag tag = RPMTAG_INSTALLTID;
+    uint_32 rbtid = 0;
     IDTX idtx;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
 
     Py_BEGIN_ALLOW_THREADS
-    idtx = IDTXload(s->ts, tag);
+    idtx = IDTXload(s->ts, tag, rbtid);
     Py_END_ALLOW_THREADS
 
 /*@-branchstate@*/
@@ -576,8 +577,9 @@ rpmts_IDTXglob(rpmtsObject * s)
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject * result = NULL;
-    rpmTag tag = RPMTAG_REMOVETID;
     const char * globstr;
+    rpmTag tag = RPMTAG_REMOVETID;
+    uint_32 rbtid = 0;
     IDTX idtx;
 
 if (_rpmts_debug)
@@ -585,7 +587,7 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
 
     Py_BEGIN_ALLOW_THREADS
     globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
-    idtx = IDTXglob(s->ts, globstr, tag);
+    idtx = IDTXglob(s->ts, globstr, tag, rbtid);
     globstr = _free(globstr);
     Py_END_ALLOW_THREADS
 

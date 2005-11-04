@@ -974,7 +974,7 @@ IDTX IDTXsort(IDTX idtx)
     return idtx;
 }
 
-IDTX IDTXload(rpmts ts, rpmTag tag)
+IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 {
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
@@ -998,10 +998,12 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 	if (type == RPM_INT32_TYPE && (*tidp == 0 || *tidp == -1))
 	    continue;
 
-	idtx = IDTXgrow(idtx, 1);
-	if (idtx == NULL)
+	/* Don't bother with headers installed prior to the rollback goal. */
+	if (*tidp < rbtid)
 	    continue;
-	if (idtx->idt == NULL)
+
+	idtx = IDTXgrow(idtx, 1);
+	if (idtx == NULL || idtx->idt == NULL)
 	    continue;
 
 	{   IDT idt;
@@ -1021,7 +1023,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
     return IDTXsort(idtx);
 }
 
-IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 {
     IDTX idtx = NULL;
     HGE_t hge = (HGE_t) headerGetEntry;
@@ -1068,22 +1070,26 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 
 	tidp = NULL;
 	/*@-branchstate@*/
-	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp != NULL) {
+	if (!hge(h, tag, &type, (void **) &tidp, &count) || tidp == NULL)
+	    goto bottom;
 
-	    idtx = IDTXgrow(idtx, 1);
-	    if (idtx == NULL || idtx->idt == NULL)
-		goto bottom;
+	/* Don't bother with headers installed prior to the rollback goal. */
+	if (*tidp < rbtid)
+	    continue;
 
-	    {	IDT idt;
-		idt = idtx->idt + idtx->nidt;
-		idt->h = headerLink(h);
-		idt->key = av[i];
-		av[i] = NULL;
-		idt->instance = 0;
-		idt->val.u32 = *tidp;
-	    }
-	    idtx->nidt++;
+	idtx = IDTXgrow(idtx, 1);
+	if (idtx == NULL || idtx->idt == NULL)
+	    goto bottom;
+
+	{   IDT idt;
+	    idt = idtx->idt + idtx->nidt;
+	    idt->h = headerLink(h);
+	    idt->key = av[i];
+	    av[i] = NULL;
+	    idt->instance = 0;
+	    idt->val.u32 = *tidp;
 	}
+	idtx->nidt++;
 	/*@=branchstate@*/
 bottom:
 	h = headerFree(h);
@@ -1142,7 +1148,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
      */
     rpmtsSetType(ts, RPMTRANS_TYPE_ROLLBACK);
 
-    itids = IDTXload(ts, RPMTAG_INSTALLTID);
+    itids = IDTXload(ts, RPMTAG_INSTALLTID, ia->rbtid);
     if (itids != NULL) {
 	ip = itids->idt;
 	niids = itids->nidt;
@@ -1157,7 +1163,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    rc = -1;
 	    goto exit;
 	}
-	rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID);
+	rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID, ia->rbtid);
 
 	if (rtids != NULL) {
 	    rp = rtids->idt;
