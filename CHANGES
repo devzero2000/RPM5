@@ -71,6 +71,7 @@
 	- python: add optional transaction id goal to ts.IDTX{load,glob}.
 	- use bsearch to speed up tagname() and tagvalue().
 	- display tag value and type with rpmquery -v --querytags.
+	- remove tag{Name,Value,Type} from the ABI, rpmTags vectors instead.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

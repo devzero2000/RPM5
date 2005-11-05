@@ -544,6 +544,7 @@ exit 0
 * Sat Nov  5 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.36
 - use bsearch to speed up tagname() and tagvalue().
 - display tag value and type with rpmquery -v --querytags.
+- remove tag{Name,Value,Type} from the ABI, rpmTags vectors instead.
 
 * Fri Nov  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.35
 - fix: wipe setuid/setgid bits on updated files (#125517).

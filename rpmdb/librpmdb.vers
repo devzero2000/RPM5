@@ -75,14 +75,8 @@ LIBRPMDB_0
     rpmfiBuildFNames;
     rpmTagTable;
     rpmTagTableSize;
-    rpmTagsByName;
-    rpmTagsByNameSize;
-    rpmTagsByValue;
-    rpmTagsByValueSize;
+    rpmTags;
     sqlitevec;
-    tagName;
-    tagType;
-    tagValue;
     XrpmdbLink;
     XrpmdbUnlink;
 # for Berkeley DB utils relink

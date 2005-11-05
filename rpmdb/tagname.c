@@ -8,16 +8,7 @@
 #include "debug.h"
 
 /*@access headerTagTableEntry @*/
-
-/*@unchecked@*/
-headerTagTableEntry * rpmTagsByValue = NULL;
-/*@unchecked@*/
-int rpmTagsByValueSize = 0;
-
-/*@unchecked@*/
-headerTagTableEntry * rpmTagsByName = NULL;
-/*@unchecked@*/
-int rpmTagsByNameSize = 0;
+/*@access headerTagIndices @*/
 
 /**
  * Compare tag table entries by name.
@@ -71,7 +62,26 @@ static int tagLoadIndex(headerTagTableEntry ** ipp, int * np,
     return 0;
 }
 
-const char * tagName(int tag)
+
+/* forward refs */
+static const char * _tagName(int tag)
+	/*@*/;
+static int _tagType(int tag)
+	/*@*/;
+static int _tagValue(const char * tagstr)
+	/*@*/;
+
+/*@unchecked@*/
+static struct headerTagIndices_s _rpmTags = {
+    tagLoadIndex,
+    NULL, 0, tagCmpName, _tagValue,
+    NULL, 0, tagCmpValue, _tagName, _tagType,
+};
+
+/*@unchecked@*/
+headerTagIndices rpmTags = &_rpmTags;
+
+static const char * _tagName(int tag)
 {
     static char nameBuf[128];	/* XXX yuk */
     const struct headerTagTableEntry_s *t;
@@ -79,8 +89,8 @@ const char * tagName(int tag)
     int xx;
     char *s;
 
-    if (rpmTagsByValue == NULL)
-	xx = tagLoadIndex(&rpmTagsByValue, &rpmTagsByValueSize, tagCmpValue);
+    if (_rpmTags.byValue == NULL)
+	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
 
     switch (tag) {
     case RPMDBI_PACKAGES:
@@ -111,10 +121,10 @@ const char * tagName(int tag)
 	strcpy(nameBuf, "(unknown)");
 /*@-boundswrite@*/
 	l = 0;
-	u = rpmTagsByValueSize;
+	u = _rpmTags.byValueSize;
 	while (l < u) {
 	    i = (l + u) / 2;
-	    t = rpmTagsByValue[i];
+	    t = _rpmTags.byValue[i];
 	
 	    comparison = (tag - t->val);
 
@@ -136,14 +146,14 @@ const char * tagName(int tag)
     return nameBuf;
 }
 
-int tagType(int tag)
+static int _tagType(int tag)
 {
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
     int xx;
 
-    if (rpmTagsByValue == NULL)
-	xx = tagLoadIndex(&rpmTagsByValue, &rpmTagsByValueSize, tagCmpValue);
+    if (_rpmTags.byValue == NULL)
+	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
 
     switch (tag) {
     case RPMDBI_PACKAGES:
@@ -158,10 +168,10 @@ int tagType(int tag)
     default:
 /*@-boundswrite@*/
 	l = 0;
-	u = rpmTagsByValueSize;
+	u = _rpmTags.byValueSize;
 	while (l < u) {
 	    i = (l + u) / 2;
-	    t = rpmTagsByValue[i];
+	    t = _rpmTags.byValue[i];
 	
 	    comparison = (tag - t->val);
 
@@ -177,7 +187,7 @@ int tagType(int tag)
     return RPM_NULL_TYPE;
 }
 
-int tagValue(const char * tagstr)
+static int _tagValue(const char * tagstr)
 {
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
@@ -200,14 +210,14 @@ int tagValue(const char * tagstr)
     if (!xstrcasecmp(tagstr, "Ftswalk"))
 	return RPMDBI_FTSWALK;
 
-    if (rpmTagsByName == NULL)
-	xx = tagLoadIndex(&rpmTagsByName, &rpmTagsByNameSize, tagCmpName);
+    if (_rpmTags.byName == NULL)
+	xx = tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
 
     l = 0;
-    u = rpmTagsByNameSize;
+    u = _rpmTags.byNameSize;
     while (l < u) {
 	i = (l + u) / 2;
-	t = rpmTagsByName[i];
+	t = _rpmTags.byName[i];
 	
 	comparison = xstrcasecmp(tagstr, t->name + (sizeof("RPMTAG_")-1));
 
