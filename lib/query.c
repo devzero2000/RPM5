@@ -341,8 +341,21 @@ void rpmDisplayQueryTags(FILE * fp)
     int i;
     const struct headerSprintfExtension_s * ext = rpmHeaderFormats;
 
-    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++)
-	if (t->name) fprintf(fp, "%s\n", t->name + 7);
+    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
+	if (t->name == NULL)
+	    continue;
+	fprintf(fp, "%-20s", t->name + 7);
+	if (rpmIsVerbose()) {
+	    static const char * tagtypes[] = {
+		"", "char", "int8", "int16", "int32", "int64",
+		"string", "blob", "argv", "i18nstring"
+	    };
+	    fprintf(fp, " %6d", t->val);
+	    if (t->type > RPM_NULL_TYPE && t->type <= RPM_MAX_TYPE)
+		fprintf(fp, " %s", tagtypes[t->type]);
+	}
+	fprintf(fp, "\n");
+    }
 
     while (ext->name != NULL) {
 	if (ext->type == HEADER_EXT_MORE) {

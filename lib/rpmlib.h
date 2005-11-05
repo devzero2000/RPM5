@@ -202,6 +202,16 @@ extern const struct headerTagTableEntry_s * rpmTagTable;
 extern const int rpmTagTableSize;
 /*@=redecl@*/
 
+/*@unchecked@*/
+extern headerTagTableEntry * rpmTagsByValue;
+/*@unchecked@*/
+extern int rpmTagsByValueSize;
+
+/*@unchecked@*/
+extern headerTagTableEntry * rpmTagsByName;
+/*@unchecked@*/
+extern int rpmTagsByNameSize;
+
 /**
  * Table of query format extensions.
  * @note Chains to headerDefaultFormats[].

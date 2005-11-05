@@ -70,10 +70,11 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 	@echo '/*@-bounds@*/' > $@
 	@echo '#include "system.h"' >> $@
 	@echo '#include <rpmlib.h>' >> $@
+	@echo '#include "debug.h"' >> $@
 	@echo '' >> $@
 	@echo '/*@observer@*/ /*@unchecked@*/' >> $@
 	@echo 'static const struct headerTagTableEntry_s rpmTagTbl[] = {' >> $@
-	${AWK} '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ { tt = "NULL"; if ($$5 == "c") {tt = "CHAR"} if ($$5 == "h") {tt = "INT16"} if ($$5 == "i") {tt = "INT32"} if ($$5 == "l") {tt = "INT64"} if ($$5 == "s") {tt = "STRING"} if ($$5 == "x") {tt = "BIN"} if ($$5 == "s[]") {tt = "STRING_ARRAY"} if ($$5 == "s{}") {tt = "I18NSTRING"} if ($$2 == "=") { printf("\t{ \"%s\",	%s	RPM_%s_TYPE },\n", $$1, $$3, tt) } else { printf("\t{ \"%s\",	%s,	RPM_%s_TYPE },\n", $$2, $$3, tt) } }' < $(top_srcdir)/lib/rpmlib.h >> $@
+	${AWK} '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ { tt = "NULL"; if ($$5 == "c") {tt = "CHAR"} if ($$5 == "h") {tt = "INT16"} if ($$5 == "i") {tt = "INT32"} if ($$5 == "l") {tt = "INT64"} if ($$5 == "s") {tt = "STRING"} if ($$5 == "x") {tt = "BIN"} if ($$5 == "s[]") {tt = "STRING_ARRAY"} if ($$5 == "s{}") {tt = "I18NSTRING"} if ($$2 == "=") { printf("\t{ \"%s\",	%s	RPM_%s_TYPE },\n", $$1, $$3, tt) } else { printf("\t{ \"%s\",	%s,	RPM_%s_TYPE },\n", $$2, $$3, tt) } }' < $(top_srcdir)/lib/rpmlib.h | sort >> $@
 	@echo '	{ NULL, 0, 0 }' >> $@
 	@echo '};' >> $@
 	@echo '' >> $@
@@ -193,8 +194,11 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
 
-tdbi: librpmdb.la tdbi.o
-	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+tdbi: tdbi.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
 
-tsql: librpmdb.la tsql.o
-	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+tsql: tsql.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+ttag: ttag.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)

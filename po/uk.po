@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-04 16:23-0500\n"
+"POT-Creation-Date: 2005-11-05 10:11-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -2572,62 +2572,62 @@ msgid "package has neither file owner or id lists\n"
 msgstr ""
 "пакет не містить ані власників файлів, ані ідентифікаторів їх списків\n"
 
-#: lib/query.c:460
+#: lib/query.c:473
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "група %s не містить ніяких пакетів\n"
 
-#: lib/query.c:469
+#: lib/query.c:482
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "жоден пакет не підпадає під тригер %s\n"
 
-#: lib/query.c:482 lib/query.c:503 lib/query.c:523 lib/query.c:557
+#: lib/query.c:495 lib/query.c:516 lib/query.c:536 lib/query.c:570
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "неправильний %s: %s\n"
 
-#: lib/query.c:492 lib/query.c:509 lib/query.c:533 lib/query.c:562
+#: lib/query.c:505 lib/query.c:522 lib/query.c:546 lib/query.c:575
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "жоден пакет не відповідає %s: %s\n"
 
-#: lib/query.c:572
+#: lib/query.c:585
 #, c-format
 msgid "no package requires %s\n"
 msgstr "жоден пакет не вимагає %s\n"
 
-#: lib/query.c:583
+#: lib/query.c:596
 #, c-format
 msgid "no package provides %s\n"
 msgstr "жоден пакет не постачає %s\n"
 
-#: lib/query.c:622
+#: lib/query.c:635
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:626
+#: lib/query.c:639
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не належить жодному пакету\n"
 
-#: lib/query.c:651
+#: lib/query.c:664
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неправильний номер пакету: %s\n"
 
-#: lib/query.c:654
+#: lib/query.c:667
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер елементу пакету: %u\n"
 
-#: lib/query.c:659
+#: lib/query.c:672
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:669 lib/rpminstall.c:805
+#: lib/query.c:682 lib/rpminstall.c:805
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"

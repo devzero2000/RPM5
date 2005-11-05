@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-04 16:23-0500\n"
+"POT-Creation-Date: 2005-11-05 10:11-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -2568,62 +2568,62 @@ msgstr "pakiet nie ma list w³a¶cicieli/grup plików\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "pakiet nie ma list w³a¶cicieli ani id plików\n"
 
-#: lib/query.c:460
+#: lib/query.c:473
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:469
+#: lib/query.c:482
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:482 lib/query.c:503 lib/query.c:523 lib/query.c:557
+#: lib/query.c:495 lib/query.c:516 lib/query.c:536 lib/query.c:570
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "b³êdne sformu³owanie %s: %s\n"
 
-#: lib/query.c:492 lib/query.c:509 lib/query.c:533 lib/query.c:562
+#: lib/query.c:505 lib/query.c:522 lib/query.c:546 lib/query.c:575
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¿aden pakiet nie pasuje do %s: %s\n"
 
-#: lib/query.c:572
+#: lib/query.c:585
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:583
+#: lib/query.c:596
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:622
+#: lib/query.c:635
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:626
+#: lib/query.c:639
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:651
+#: lib/query.c:664
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:654
+#: lib/query.c:667
 #, c-format
 msgid "package record number: %u\n"
 msgstr "numer rekordu pakietu: %u\n"
 
-#: lib/query.c:659
+#: lib/query.c:672
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:669 lib/rpminstall.c:805
+#: lib/query.c:682 lib/rpminstall.c:805
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"

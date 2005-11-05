@@ -69,6 +69,8 @@
 	- add -lresolv and build on CentOS3.
 	- fix: wipe setuid/setgid bits on updated files (#125517).
 	- python: add optional transaction id goal to ts.IDTX{load,glob}.
+	- use bsearch to speed up tagname() and tagvalue().
+	- display tag value and type with rpmquery -v --querytags.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

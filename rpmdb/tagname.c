@@ -9,34 +9,78 @@
 
 /*@access headerTagTableEntry @*/
 
-static int tagcmp(const void * a, const void * b)
+/*@unchecked@*/
+headerTagTableEntry * rpmTagsByValue = NULL;
+/*@unchecked@*/
+int rpmTagsByValueSize = 0;
+
+/*@unchecked@*/
+headerTagTableEntry * rpmTagsByName = NULL;
+/*@unchecked@*/
+int rpmTagsByNameSize = 0;
+
+/**
+ * Compare tag table entries by name.
+ * @param *avp		tag table entry a
+ * @param *bvp		tag table entry b
+ * @return		comparison
+ */
+static int tagCmpName(const void * avp, const void * bvp)
         /*@*/
 {
-    const headerTagTableEntry aptr = a;
-    const headerTagTableEntry bptr = b;
-    return (aptr->val - bptr->val);
+    headerTagTableEntry a = *(headerTagTableEntry *) avp;
+    headerTagTableEntry b = *(headerTagTableEntry *) bvp;
+    return strcmp(a->name, b->name);
 }
 
-int tagType(int tag)
+/**
+ * Compare tag table entries by value.
+ * @param *avp		tag table entry a
+ * @param *bvp		tag table entry b
+ * @return		comparison
+ */
+static int tagCmpValue(const void * avp, const void * bvp)
+        /*@*/
 {
-    headerTagTableEntry t = memset(alloca(sizeof(*t)), 0, sizeof(*t));
-    headerTagTableEntry needle;
-    int tagtype = RPM_NULL_TYPE;
+    headerTagTableEntry a = *(headerTagTableEntry *) avp;
+    headerTagTableEntry b = *(headerTagTableEntry *) bvp;
+    return (a->val - b->val);
+}
 
-    t->val = tag;
-/*@-boundswrite@*/
-    needle = bsearch(t, rpmTagTable, rpmTagTableSize, sizeof(*t), tagcmp);
-/*@=boundswrite@*/
-    if (needle != NULL)
-	tagtype = needle->type;
-    return tagtype;
+/**
+ * Load/sort a tag index.
+ * @retval *ipp		tag index
+ * @retval *np		no. of tags
+ * @param cmp		sort compare routine
+ * @return		0 always
+ */
+static int tagLoadIndex(headerTagTableEntry ** ipp, int * np,
+		int (*cmp) (const void * avp, const void * bvp))
+	/*@ modifies *ipp, *np */
+{
+    headerTagTableEntry tte;
+
+    *ipp = xcalloc(rpmTagTableSize, sizeof(**ipp));
+    *np = 0;
+    for (tte = (headerTagTableEntry)rpmTagTable; tte->name != NULL; tte++)
+	    (*ipp)[(*np)++] = tte;
+    (*ipp)[*np] = NULL;
+
+    if (*np > 1)
+	qsort(*ipp, *np, sizeof(**ipp), cmp);
+    return 0;
 }
 
 const char * tagName(int tag)
 {
     static char nameBuf[128];	/* XXX yuk */
+    const struct headerTagTableEntry_s *t;
+    int comparison, i, l, u;
+    int xx;
     char *s;
-    int i;
+
+    if (rpmTagsByValue == NULL)
+	xx = tagLoadIndex(&rpmTagsByValue, &rpmTagsByValueSize, tagCmpValue);
 
     switch (tag) {
     case RPMDBI_PACKAGES:
@@ -66,25 +110,78 @@ const char * tagName(int tag)
     default:
 	strcpy(nameBuf, "(unknown)");
 /*@-boundswrite@*/
-	for (i = 0; i < rpmTagTableSize; i++) {
-	    if (tag != rpmTagTable[i].val)
-		continue;
-	    nameBuf[0] = nameBuf[1] = '\0';
-	    if (rpmTagTable[i].name != NULL)	/* XXX programmer error. */
-		strcpy(nameBuf, rpmTagTable[i].name + (sizeof("RPMTAG_")-1));
-	    for (s = nameBuf+1; *s != '\0'; s++)
-		*s = xtolower(*s);
-	    /*@loopbreak@*/ break;
+	l = 0;
+	u = rpmTagsByValueSize;
+	while (l < u) {
+	    i = (l + u) / 2;
+	    t = rpmTagsByValue[i];
+	
+	    comparison = (tag - t->val);
+
+	    if (comparison < 0)
+		u = i;
+	    else if (comparison > 0)
+		l = i + 1;
+	    else {
+		nameBuf[0] = nameBuf[1] = '\0';
+		if (t->name != NULL)
+		    strcpy(nameBuf, t->name + (sizeof("RPMTAG_")-1));
+		for (s = nameBuf+1; *s != '\0'; s++)
+		    *s = xtolower(*s);
+		break;
+	    }
 	}
-/*@=boundswrite@*/
 	break;
     }
     return nameBuf;
 }
 
+int tagType(int tag)
+{
+    const struct headerTagTableEntry_s *t;
+    int comparison, i, l, u;
+    int xx;
+
+    if (rpmTagsByValue == NULL)
+	xx = tagLoadIndex(&rpmTagsByValue, &rpmTagsByValueSize, tagCmpValue);
+
+    switch (tag) {
+    case RPMDBI_PACKAGES:
+    case RPMDBI_DEPENDS:
+    case RPMDBI_ADDED:
+    case RPMDBI_REMOVED:
+    case RPMDBI_AVAILABLE:
+    case RPMDBI_HDLIST:
+    case RPMDBI_ARGLIST:
+    case RPMDBI_FTSWALK:
+	break;
+    default:
+/*@-boundswrite@*/
+	l = 0;
+	u = rpmTagsByValueSize;
+	while (l < u) {
+	    i = (l + u) / 2;
+	    t = rpmTagsByValue[i];
+	
+	    comparison = (tag - t->val);
+
+	    if (comparison < 0)
+		u = i;
+	    else if (comparison > 0)
+		l = i + 1;
+	    else
+		return t->type;
+	}
+	break;
+    }
+    return RPM_NULL_TYPE;
+}
+
 int tagValue(const char * tagstr)
 {
     const struct headerTagTableEntry_s *t;
+    int comparison, i, l, u;
+    int xx;
 
     if (!xstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
@@ -103,8 +200,22 @@ int tagValue(const char * tagstr)
     if (!xstrcasecmp(tagstr, "Ftswalk"))
 	return RPMDBI_FTSWALK;
 
-    for (t = rpmTagTable; t->name != NULL; t++) {
-	if (!xstrcasecmp(t->name + (sizeof("RPMTAG_")-1), tagstr))
+    if (rpmTagsByName == NULL)
+	xx = tagLoadIndex(&rpmTagsByName, &rpmTagsByNameSize, tagCmpName);
+
+    l = 0;
+    u = rpmTagsByNameSize;
+    while (l < u) {
+	i = (l + u) / 2;
+	t = rpmTagsByName[i];
+	
+	comparison = xstrcasecmp(tagstr, t->name + (sizeof("RPMTAG_")-1));
+
+	if (comparison < 0)
+	    u = i;
+	else if (comparison > 0)
+	    l = i + 1;
+	else
 	    return t->val;
     }
     return -1;
