@@ -73,6 +73,8 @@
 	- display tag value and type with rpmquery -v --querytags.
 	- remove tag{Name,Value,Type} from the ABI, rpmTags vectors instead.
 	- add Requires: %%{rpm_license_check} to rpm packaging.
+	- add Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL to rpm packaging.
+	- resurrect a rpm-perl subpackage from perl-RPM2-0.66.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

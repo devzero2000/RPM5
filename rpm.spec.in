@@ -1,5 +1,6 @@
 %define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@%{nil}
 %define	with_python_version	@WITH_PYTHON_VERSION@%{nil}
+%define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
@@ -20,7 +21,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.36
+Release: 0.37
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -30,6 +31,7 @@ Prereq: fileutils shadow-utils
 %endif
 BuildRequires(hint): %%{rpm_license_check}
 Requires(hint): %%{rpm_license_check}
+Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 Requires: popt = 1.10.3
 Obsoletes: rpm-perl < %{version}
 
@@ -52,6 +54,9 @@ BuildRequires: bzip2-devel >= 0.9.0c-2
 %if %{with_python_subpackage}
 BuildRequires: python-devel >= %{with_python_version}
 %endif
+%if %{with_perl_subpackage}
+BuildRequires: perl >= 2:5.8.0
+%endif
 
 BuildRoot: %{_tmppath}/%{name}-root
 
@@ -66,6 +71,7 @@ the package like its version, a description, etc.
 Summary:  Libraries for manipulating RPM packages.
 Group: Development/Libraries
 Requires(hint): %%{rpm_license_check}
+Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 %description libs
 This package contains the RPM shared libraries.
@@ -79,6 +85,7 @@ Requires: beecrypt >= 4.1.2
 Requires: neon-devel
 Requires: sqlite-devel
 Requires(hint): %%{rpm_license_check}
+Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 %description devel
 This package contains the RPM C library and header files. These
@@ -97,6 +104,7 @@ Group: Development/Tools
 Requires: rpm = %{rpm_version}-%{release}, patch >= 2.5, file
 Provides: rpmbuild(VendorConfig) = 4.1-1
 Requires(hint): %%{rpm_license_check}
+Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 %description build
 The rpm-build package contains the scripts and executable programs
@@ -119,6 +127,27 @@ supplied by RPM Package Manager libraries.
 
 This package should be installed if you want to develop Python
 programs that will manipulate RPM packages and databases.
+%endif
+
+%if %{with_perl_subpackage}
+%package perl
+Summary: Perl bindings for apps which will manipulate RPM packages.
+Group: Development/Libraries
+Requires: rpm = %{rpm_version}-%{release}
+Requires: rpm-libs = %{rpm_version}-%{release}
+Requires(hint): %%{rpm_license_check}
+Obsoletes: perl-RPM2
+Conflicts: perl-RPM2
+
+%description perl
+The rpm-perl package contains a module that permits applications
+written in the Perl programming language to use the interface
+supplied by RPM Package Manager libraries.
+
+This package should be installed if you want to develop Perl
+programs that will manipulate RPM packages and databases.
+
+(Note: rpm-perl perl-RPM2-0.66, and will obsolete existing perl-RPM2 packages)
 %endif
 
 %package -n popt
@@ -151,19 +180,23 @@ WITH_PYTHON="--with-python=%{with_python_version}"
 WITH_PYTHON="--without-python"
 %endif
 
+%if %{with_perl_subpackage}
+WITH_PYTHON="--with-perl"
+%else
+WITH_PYTHON="--without-perl"
+%endif
+
 %ifos linux
 CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 ./configure --prefix=%{__prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
-	$WITH_PYTHON --enable-posixmutexes --without-javaglue
+	$WITH_PYTHON $WITH_PERL --enable-posixmutexes --without-javaglue
 %else
 export CPPFLAGS=-I%{__prefix}/include 
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON $WITH_PERL \
 	--without-javaglue
 %endif
-
-make -C zlib || :
 
 make %{?_smp_mflags}
 
@@ -214,27 +247,22 @@ gzip -9n apidocs/man/man*/* || :
   rm -f .%{__libdir}/python%{with_python_version}/site-packages/*.{a,la}
   rm -f .%{__libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
 %endif
+%if %{with_perl_subpackage}
+  find .%{__libdir}/perl5 -type f -a \( -name perllocal.pod -o -name .packlist \
+    -o \( -name '*.bs' -a -empty \) \) -exec rm -f {} ';'
+  find .%{__libdir}/perl5 -type d -depth -exec rmdir {} 2>/dev/null ';'
+%endif
 }
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
 %ifos linux
-if [ -f /var/lib/rpm/packages.rpm ]; then
-    echo "
-You have (unsupported)
-	/var/lib/rpm/packages.rpm	db1 format installed package headers
-Please install rpm-4.0.4 first, and do
-	rpm --rebuilddb
-to convert your database from db1 to db3 format.
-"
-    exit 1
-fi
+%pre
 /usr/sbin/groupadd -g 37 @RPMGROUP@				> /dev/null 2>&1
 /usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 @RPMUSER@ -s /sbin/nologin	> /dev/null 2>&1
-%endif
 exit 0
+%endif
 
 %post
 %ifos linux
@@ -243,12 +271,12 @@ exit 0
 # Establish correct rpmdb ownership.
 /bin/chown @RPMUSER@:@RPMGROUP@ /var/lib/rpm/[A-Z]*
 
-# XXX Detect (and remove) incompatible dbenv files during db-4.3.14 upgrade.
+# XXX Detect (and remove) incompatible dbenv files during db-4.4.11 upgrade.
 # XXX Removing dbenv files in %%post opens a lock race window, a tolerable
 # XXX risk compared to the support issues involved with upgrading Berkeley DB.
 [ -w /var/lib/rpm/__db.001 ] &&
 /usr/lib/rpm/rpmdb_stat -CA -h /var/lib/rpm 2>&1 |
-grep "db_stat: Program version 4.3 doesn't match environment version" 2>&1 > /dev/null &&
+grep "db_stat: Program version 4.4 doesn't match environment version" 2>&1 > /dev/null &&
 	rm -f /var/lib/rpm/__db*
                                                                                 
 %endif
@@ -268,11 +296,6 @@ exit 0
 
 %post -n popt -p /sbin/ldconfig
 %postun -n popt -p /sbin/ldconfig
-%endif
-
-%if %{with_python_subpackage}
-%post python -p /sbin/ldconfig
-%postun python -p /sbin/ldconfig
 %endif
 
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
@@ -472,6 +495,14 @@ exit 0
 %{__libdir}/python%{with_python_version}/site-packages/rpm
 %endif
 
+%if %{with_perl_subpackage}
+%files perl
+%defattr(-,root,root)
+%{__libdir}/perl5/site_perl/*/*/auto/RPM2
+%{__libdir}/perl5/site_perl/*/*/RPM2.*
+%{__mandir}/man3/RPM2.*
+%endif
+
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
@@ -548,11 +579,13 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sat Nov  5 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.36
+* Sat Nov  5 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.37
 - use bsearch to speed up tagname() and tagvalue().
 - display tag value and type with rpmquery -v --querytags.
 - remove tag{Name,Value,Type} from the ABI, rpmTags vectors instead.
 - add Requires: %%%%{rpm_license_check} to rpm packaging.
+- add Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL to rpm packaging.
+- resurrect a rpm-perl subpackage from perl-RPM2-0.66.
 
 * Fri Nov  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.35
 - fix: wipe setuid/setgid bits on updated files (#125517).

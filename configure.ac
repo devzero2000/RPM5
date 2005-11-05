@@ -944,6 +944,22 @@ dnl
     AC_LIBOBJ(glob)
     AC_LIBOBJ(fnmatch)
 #fi
+
+dnl
+dnl Auto-detect whether perl bindings should be built.
+dnl
+AC_ARG_WITH(perl,   [  --with-perl             build rpm perl bindings ])
+
+if test "$WITH_PERL_VERSION" != no ; then
+  WITH_PERL_SUBDIR=perl-RPM2
+  WITH_PERL_SUBPACKAGE=1
+else
+  WITH_PERL_SUBDIR=
+  WITH_PERL_SUBPACKAGE=0
+fi
+AC_SUBST(WITH_PERL_SUBDIR)
+AC_SUBST(WITH_PERL_SUBPACKAGE)
+
 dnl
 dnl Auto-detect which python bindings should be built.
 dnl
@@ -1422,6 +1438,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
+	cd perl-RPM2 && perl Makefile.PL
   
 ]],[[]])
 AC_OUTPUT
