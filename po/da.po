@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-05 12:48-0500\n"
+"POT-Creation-Date: 2005-11-05 14:37-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1426,93 +1426,93 @@ msgstr ""
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:641
+#: lib/depends.c:642
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:660
+#: lib/depends.c:661
 #, fuzzy
 msgid "(access probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:673
+#: lib/depends.c:674
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:694
+#: lib/depends.c:695
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:710
+#: lib/depends.c:711
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:726
+#: lib/depends.c:727
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:755
+#: lib/depends.c:756
 #, fuzzy
 msgid "(db files)"
 msgstr "ugyldig db-fil %s\n"
 
-#: lib/depends.c:768
+#: lib/depends.c:769
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db tilfører)\n"
 
-#: lib/depends.c:781
+#: lib/depends.c:782
 #, fuzzy
 msgid "(db package)"
 msgstr "ingen pakker\n"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:812
+#: lib/depends.c:813
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1145
+#: lib/depends.c:1146
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1267
+#: lib/depends.c:1268
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1504
+#: lib/depends.c:1505
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1596
+#: lib/depends.c:1597
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:1687
+#: lib/depends.c:1688
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1760
+#: lib/depends.c:1761
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1795
+#: lib/depends.c:1796
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1800
+#: lib/depends.c:1801
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""

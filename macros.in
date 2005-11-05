@@ -1237,6 +1237,17 @@ done \
 %find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
 
 #------------------------------------------------------------------------
+# lua macros
+#
+%rpm_license_check	%{expand:%%define rpm_license_check %{lua:\
+f = io.open("/dev/tty", "w")\
+if f then\
+    f:write ("Just checking to see who is using rpm-4.4.3.\\nThe RPM Package Manager license is LGPL, as always.\\nRelax ...\\n")\
+    f:close()\
+end\
+}1}%{rpm_license_check}
+
+#------------------------------------------------------------------------
 # Perl configuration
 #
 

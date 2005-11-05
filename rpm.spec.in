@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.35
+Release: 0.36
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -28,6 +28,8 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: fileutils shadow-utils
 %endif
+BuildRequires(hint): %%{rpm_license_check}
+Requires(hint): %%{rpm_license_check}
 Requires: popt = 1.10.3
 Obsoletes: rpm-perl < %{version}
 
@@ -63,6 +65,7 @@ the package like its version, a description, etc.
 %package libs
 Summary:  Libraries for manipulating RPM packages.
 Group: Development/Libraries
+Requires(hint): %%{rpm_license_check}
 
 %description libs
 This package contains the RPM shared libraries.
@@ -75,6 +78,7 @@ Requires: rpm-libs = %{rpm_version}-%{release}
 Requires: beecrypt >= 4.1.2
 Requires: neon-devel
 Requires: sqlite-devel
+Requires(hint): %%{rpm_license_check}
 
 %description devel
 This package contains the RPM C library and header files. These
@@ -92,6 +96,7 @@ Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
 Requires: rpm = %{rpm_version}-%{release}, patch >= 2.5, file
 Provides: rpmbuild(VendorConfig) = 4.1-1
+Requires(hint): %%{rpm_license_check}
 
 %description build
 The rpm-build package contains the scripts and executable programs
@@ -105,6 +110,7 @@ Requires: rpm = %{rpm_version}-%{release}
 Requires: rpm-libs = %{rpm_version}-%{release}
 Requires: python >= %{with_python_version}
 Requires: elfutils >= 0.55
+Requires(hint): %%{rpm_license_check}
 
 %description python
 The rpm-python package contains a module that permits applications
@@ -119,6 +125,7 @@ programs that will manipulate RPM packages and databases.
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
 Version: 1.10.3
+Requires(hint): %%{rpm_license_check}
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -545,6 +552,7 @@ exit 0
 - use bsearch to speed up tagname() and tagvalue().
 - display tag value and type with rpmquery -v --querytags.
 - remove tag{Name,Value,Type} from the ABI, rpmTags vectors instead.
+- add Requires: %%%%{rpm_license_check} to rpm packaging.
 
 * Fri Nov  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.35
 - fix: wipe setuid/setgid bits on updated files (#125517).

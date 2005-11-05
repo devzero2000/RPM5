@@ -72,6 +72,7 @@
 	- use bsearch to speed up tagname() and tagvalue().
 	- display tag value and type with rpmquery -v --querytags.
 	- remove tag{Name,Value,Type} from the ABI, rpmTags vectors instead.
+	- add Requires: %%{rpm_license_check} to rpm packaging.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

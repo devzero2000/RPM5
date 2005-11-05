@@ -635,6 +635,7 @@ retry:
     /* Expand macro probe dependencies. */
     if (Name[0] == '%' && Name[1] == '{' && Name[strlen(Name)-1] == '}') {
 	xx = rpmExpandNumeric(Name);
+	/* XXX how should macro values be mapped? */
 	rc = (xx ? 0 : 1);
 	if (rpmdsFlags(dep) & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
