@@ -460,6 +460,9 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   /* XXX "python 2.3 byte-compiled" */
   { "python ",			RPMFC_PYTHON|RPMFC_INCLUDE },
 
+  { "libtool library ",		RPMFC_LIBTOOL|RPMFC_INCLUDE },
+  { "pkgconfig ",		RPMFC_PKGCONFIG|RPMFC_INCLUDE },
+
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
@@ -732,6 +735,20 @@ static int rpmfcSCRIPT(rpmfc fc)
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "python");
+    }
+    if (fc->fcolor->vals[fc->ix] & RPMFC_LIBTOOL) {
+	xx = rpmfcHelper(fc, 'P', "libtool");
+#ifdef	NOTYET
+	if (is_executable)
+#endif
+	    xx = rpmfcHelper(fc, 'R', "libtool");
+    }
+    if (fc->fcolor->vals[fc->ix] & RPMFC_PKGCONFIG) {
+	xx = rpmfcHelper(fc, 'P', "pkgconfig");
+#ifdef	NOTYET
+	if (is_executable)
+#endif
+	    xx = rpmfcHelper(fc, 'R', "pkgconfig");
     }
 
     return 0;
@@ -1235,6 +1252,15 @@ assert(s != NULL);
 	    /* XXX all files with extension ".pm" are perl modules for now. */
 	    if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
 		ftype = "Perl5 module source text";
+
+	    /* XXX all files with extension ".la" are libtool for now. */
+	    else if (slen >= sizeof(".la") && !strcmp(s+slen-(sizeof(".la")-1), ".pm"))
+		ftype = "libtool library file";
+
+	    /* XXX all files with extension ".pc" are pkgconfig for now. */
+	    else if (slen >= sizeof(".pc") && !strcmp(s+slen-(sizeof(".pc")-1), ".pm"))
+		ftype = "pkgconfig file";
+
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";

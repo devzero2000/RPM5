@@ -8,10 +8,10 @@
 
 extern int _rpmds_debug;
 
-#define _LIBTOOL_PROVIDES  "/usr/bin/find /usr/lib -name '*.la' | /usr/lib/rpm/libtool.prov.sh"
+#define _LIBTOOL_PROVIDES  "/usr/bin/find /usr/lib -name '*.la' | /usr/lib/rpm/libtooldeps.sh -P"
 static const char * _libtool_provides = _LIBTOOL_PROVIDES;
 
-#define _LIBTOOL_REQUIRES  "/bin/rpm -qal | grep '\.la$' | /usr/lib/rpm/libtool.req.sh"
+#define _LIBTOOL_REQUIRES  "/bin/rpm -qal | grep '\.la$' | /usr/lib/rpm/libtooldeps.sh -R"
 static const char * _libtool_requires = _LIBTOOL_REQUIRES;
 
 int main(int argc, char *argv[])

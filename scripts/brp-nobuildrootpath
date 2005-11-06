@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+    exit 0
+fi
+
+# Remove occurences of $RPM_BUILD_ROOT from *.la and *.pc files.
+for f in `find $RPM_BUILD_ROOT -type f` ; do
+    case "$f" in
+    *.la|*.pc)
+	grep "${RPM_BUILD_ROOT}\/" "$f" 2>&1 > /dev/null && \
+	sed -e "s|${RPM_BUILD_ROOT}/|/|g" "$f" 2>/dev/null > "$f.out" && \
+	mv "$f.out" "$f"
+	;;
+    esac
+done

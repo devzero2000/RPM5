@@ -1242,16 +1242,16 @@ done \
 %rpm_license_check	%{expand:%%define rpm_license_check %{lua:\
 f = io.open("/dev/tty", "w")\
 if f then\
-    f:write ("Just checking to see who is using rpm-4.4.3.\\nThe RPM Package Manager license is LGPL, as always.\\nRelax ...\\n")\
+    f:write ("\\nJust checking to see who is using rpm-4.4.3.\\nThe RPM Package Manager license is LGPL, as always.\\nRelax ...\\n")\
     f:close()\
 end\
 }1}%{rpm_license_check}
 
 #------------------------------------------------------------------------
-# Perl configuration
+# perl(...) configuration
 #
 
-# Path to scripts to autogenerate per-interpreter package dependencies,
+# Path to scripts to autogenerate perl package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
@@ -1293,9 +1293,9 @@ end\
 %perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
 
 #------------------------------------------------------------------------
-# Python configuration.
+# python(...) configuration.
 #
-# Path to scripts to autogenerate per-interpreter package dependencies,
+# Path to scripts to autogenerate python package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
@@ -1322,6 +1322,26 @@ python -O -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_
 %define maxver %(python -c "import sys; a,b=sys.version_info[:2]; print '%%d.%%d'%%(a,b+1)" 2>/dev/null || echo PYTHON-NOT-FOUND) \
 BuildRequires: python %{-d:python-devel} \
 PreReq: python >= %minver, python < %maxver
+
+#------------------------------------------------------------------------
+# libtool(...) configuration.
+#
+# Path to scripts to autogenerate libtool package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
+%__libtool_provides	@RPMCONFIGDIR@/libtooldeps.sh --provides
+%__libtool_requires	@RPMCONFIGDIR@/libtooldeps.sh --requires
+
+#------------------------------------------------------------------------
+# pkgconfig(...) configuration.
+#
+# Path to scripts to autogenerate pkgconfig package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
+%__pkgconfig_provides	@RPMCONFIGDIR@/pkgconfigdeps.sh --provides
+%__pkgconfig_requires	@RPMCONFIGDIR@/pkgconfigdeps.sh --requires
 
 # \endverbatim
 #*/

@@ -8,10 +8,10 @@
 
 extern int _rpmds_debug;
 
-#define _PKGCONFIG_PROVIDES  "/usr/bin/find /usr/lib -name '*.pc' | /usr/lib/rpm/pkgconfig.prov.sh"
+#define _PKGCONFIG_PROVIDES  "/usr/bin/find /usr/lib -name '*.pc' | /usr/lib/rpm/pkgconfigdeps.sh -P"
 static const char * _pkgconfig_provides = _PKGCONFIG_PROVIDES;
 
-#define _PKGCONFIG_REQUIRES  "/bin/rpm -qal | grep '\.pc$' | /usr/lib/rpm/pkgconfig.req.sh"
+#define _PKGCONFIG_REQUIRES  "/bin/rpm -qal | grep '\.pc$' | /usr/lib/rpm/pkgconfigdeps.sh -R"
 static const char * _pkgconfig_requires = _PKGCONFIG_REQUIRES;
 
 int main(int argc, char *argv[])

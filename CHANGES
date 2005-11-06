@@ -75,6 +75,9 @@
 	- add Requires: %%{rpm_license_check} to rpm packaging.
 	- add Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL to rpm packaging.
 	- resurrect a rpm-perl subpackage from perl-RPM2-0.66.
+	- autogenerate libtool *.la dependencies (#159221).
+	- autogenerate pkgconfig *.pc dependencies (#159235).
+	- add brp-nobuildrootpath to scrub $RPM_BUILD_ROOT from *.la and *.pc.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
