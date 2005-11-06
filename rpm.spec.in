@@ -586,6 +586,7 @@ exit 0
 - autogenerate libtool *.la dependencies (#159221).
 - autogenerate pkgconfig *.pc dependencies (#159235).
 - add brp-nobuildrootpath to scrub $RPM_BUILD_ROOT from *.la and *.pc.
+- fix: rescusitate doxygen doco, don't bother tools/dump.c.
 
 * Sat Nov  5 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.37
 - use bsearch to speed up tagname() and tagvalue().
