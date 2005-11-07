@@ -272,7 +272,6 @@ typedef enum rpmTag_e {
 #define	RPMTAG_R	RPMTAG_RELEASE	/* s */
     RPMTAG_EPOCH   		= 1003,	/* i */
 #define	RPMTAG_E	RPMTAG_EPOCH	/* i */
-#define	RPMTAG_SERIAL	RPMTAG_EPOCH	/* i backward comaptibility */
     RPMTAG_SUMMARY		= 1004,	/* s{} */
     RPMTAG_DESCRIPTION		= 1005,	/* s{} */
     RPMTAG_BUILDTIME		= 1006,	/* i */
@@ -284,7 +283,6 @@ typedef enum rpmTag_e {
     RPMTAG_GIF			= 1012,	/* x */
     RPMTAG_XPM			= 1013,	/* x */
     RPMTAG_LICENSE		= 1014,	/* s */
-#define	RPMTAG_COPYRIGHT RPMTAG_LICENSE	/* s backward comaptibility */
     RPMTAG_PACKAGER		= 1015,	/* s */
     RPMTAG_GROUP		= 1016,	/* s{} */
 /*@-enummemuse@*/

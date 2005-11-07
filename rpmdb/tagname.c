@@ -35,7 +35,11 @@ static int tagCmpValue(const void * avp, const void * bvp)
 {
     headerTagTableEntry a = *(headerTagTableEntry *) avp;
     headerTagTableEntry b = *(headerTagTableEntry *) bvp;
-    return (a->val - b->val);
+    int ret = (a->val - b->val);
+    /* Make sure that sort is stable, longest name first. */
+    if (ret == 0)
+	ret = (strlen(b->name) - strlen(a->name));
+    return ret;
 }
 
 /**
@@ -140,6 +144,12 @@ static const char * _tagName(int tag)
 		l = i + 1;
 	    else {
 		nameBuf[0] = nameBuf[1] = '\0';
+		/* Make sure that the bsearch retrieve is stable. */
+		while (i > 0 && tag == _rpmTags.byValue[i-1]->val) {
+		    i--;
+		    t--;
+		}
+		t = _rpmTags.byValue[i];
 		if (t->name != NULL)
 		    strcpy(nameBuf, t->name + (sizeof("RPMTAG_")-1));
 		for (s = nameBuf+1; *s != '\0'; s++)
@@ -189,8 +199,14 @@ static int _tagType(int tag)
 		u = i;
 	    else if (comparison > 0)
 		l = i + 1;
-	    else
+	    else {
+		/* Make sure that the bsearch retrieve is stable. */
+		while (i > 0 && t->val == _rpmTags.byValue[i-1]->val) {
+		    i--;
+		    t--;
+		}
 		return t->type;
+	    }
 	}
 	break;
     }
