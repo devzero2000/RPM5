@@ -5,7 +5,7 @@
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
 # Autogenerate shell script dependencies.
-%define __executable_requires	@RPMCONFIGDIR@/executabledeps.sh --requires
+#%%define __executable_requires	@RPMCONFIGDIR@/executabledeps.sh --requires
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
