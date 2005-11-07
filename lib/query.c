@@ -346,6 +346,7 @@ void rpmDisplayQueryTags(FILE * fp)
 	    continue;
 	fprintf(fp, "%-20s", t->name + 7);
 	if (rpmIsVerbose()) {
+	    /*@observer@*/
 	    static const char * tagtypes[] = {
 		"", "char", "int8", "int16", "int32", "int64",
 		"string", "blob", "argv", "i18nstring"

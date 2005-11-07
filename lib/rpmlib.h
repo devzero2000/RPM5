@@ -1056,7 +1056,9 @@ int rpmvercmp(const char * a, const char * b)
 const char * tagName(int tag)
 	/*@*/
 {
+/*@-type@*/
     return ((*rpmTags->tagName)(tag));
+/*@=type@*/
 }
 /*@=redecl@*/
 
@@ -1069,7 +1071,9 @@ const char * tagName(int tag)
 int tagType(int tag)
 	/*@*/
 {
+/*@-type@*/
     return ((*rpmTags->tagType)(tag));
+/*@=type@*/
 }
 
 /**
@@ -1081,7 +1085,9 @@ int tagType(int tag)
 int tagValue(const char * tagstr)
 	/*@*/
 {
+/*@-type@*/
     return ((*rpmTags->tagValue)(tagstr));
+/*@=type@*/
 }
 
 #define	RPMLEAD_BINARY 0

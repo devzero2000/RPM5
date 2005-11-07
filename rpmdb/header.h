@@ -125,7 +125,7 @@ typedef /*@abstract@*/ struct headerIterator_s * HeaderIterator;
  */
 typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
     const char * name;		/*!< Tag name. */
     int val;			/*!< Tag numeric value. */
     int type;			/*!< Tag type. */

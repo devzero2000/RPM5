@@ -344,8 +344,8 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
  * @param fp	file handle to use for display
  */
 void rpmDisplayQueryTags(FILE * fp)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *fp, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Common query/verify source interface, called once for each CLI arg.

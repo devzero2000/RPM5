@@ -2130,9 +2130,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
 	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
 	    struct stat stb;
-	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
+	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
 		/* XXX rc = fsmNext(fsm, FSM_CHMOD); instead */
-		chmod(fsm->path, stb.st_mode & 0777);
+		int xx = chmod(fsm->path, stb.st_mode & 0777);
+	    }
 	}
 	rc = Unlink(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
@@ -2145,9 +2146,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
 	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
 	    struct stat stb;
-	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
+	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
 		/* XXX rc = fsmNext(fsm, FSM_CHMOD); instead */
-		chmod(fsm->path, stb.st_mode & 0777);
+		int xx = chmod(fsm->path, stb.st_mode & 0777);
+	    }
 	}
 	rc = Rename(fsm->opath, fsm->path);
 #if defined(ETXTBSY)

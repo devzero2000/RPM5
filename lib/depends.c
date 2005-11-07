@@ -1802,7 +1802,7 @@ rescan:
 			loopcheck);
 
 	/* Do autorollback goal since we could not sort this transaction properly. */
-	rpmtsDoARBGoal(ts, NULL, RPMPROB_FILTER_NONE);
+	(void) rpmtsDoARBGoal(ts, NULL, RPMPROB_FILTER_NONE);
 
 	return loopcheck;
     }
@@ -2039,7 +2039,7 @@ exit:
 
      /* If we have a failure we need to do the autorollback goal if specified.  */
     if (rc || rpmpsNumProblems(rpmtsProblems(ts)) > 0)
-	rpmtsDoARBGoal(ts, NULL, RPMPROB_FILTER_NONE);
+	(void) rpmtsDoARBGoal(ts, NULL, RPMPROB_FILTER_NONE);
 
     return rc;
 }

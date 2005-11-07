@@ -1039,6 +1039,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
     av = NULL;	ac = 0;
     xx = rpmGlob(globstr, &ac, &av);
 
+/*@-branchstate@*/
     if (xx == 0)
     for (i = 0; i < ac; i++) {
 	rpmTagType type;
@@ -1069,7 +1070,6 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	}
 
 	tidp = NULL;
-	/*@-branchstate@*/
 	if (!hge(h, tag, &type, (void **) &tidp, &count) || tidp == NULL)
 	    goto bottom;
 
@@ -1090,10 +1090,10 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	    idt->val.u32 = *tidp;
 	}
 	idtx->nidt++;
-	/*@=branchstate@*/
 bottom:
 	h = headerFree(h);
     }
+/*@=branchstate@*/
 
     for (i = 0; i < ac; i++)
 	av[i] = _free(av[i]);
