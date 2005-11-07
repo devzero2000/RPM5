@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.39
+Release: 0.40
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -586,8 +586,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Mon Nov  7 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.39
+* Mon Nov  7 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.40
 - generate executable(foo) run-time shell requirements, opt-in for now.
+- fix: python/rpmte-py.c te.Key() return needs Py_INCREF(Key).
 
 * Sun Nov  6 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.38
 - autogenerate libtool *.la dependencies (#159221).

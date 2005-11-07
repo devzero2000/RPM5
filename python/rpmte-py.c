@@ -48,7 +48,7 @@
  * - te.AddedKey() Return the added package index (TR_ADDED).
  * - te.DependsOnKey() Return the package index for the added package (TR_REMOVED).
  * - te.DBOffset() Return the Packages database instance number (TR_REMOVED)
- * - te.Key()	Return the associated opaque key, i.e. 2nd arg ts.addInstall().
+ * - te.Key()	Return the associated opaque key, i.e. 2nd arg to ts.addInstall().
  * - te.DS(tag)	Return package dependency set.
  * @param tag	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'
  * - te.FI(tag)	Return package file info set.
@@ -176,6 +176,14 @@ rpmte_PkgFileSize(rpmteObject * s)
 
 /*@null@*/
 static PyObject *
+rpmte_Breadth(rpmteObject * s)
+	/*@*/
+{
+    return Py_BuildValue("i", rpmteBreadth(s->te));
+}
+
+/*@null@*/
+static PyObject *
 rpmte_Depth(rpmteObject * s)
 	/*@*/
 {
@@ -248,10 +256,9 @@ rpmte_Key(rpmteObject * s)
 
     /* XXX how to insure this is a PyObject??? */
     Key = (PyObject *) rpmteKey(s->te);
-    if (Key == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
-    }
+    if (Key == NULL)
+	Key = Py_NONE;
+    Py_INCREF(Key);
     return Key;
 }
 
@@ -277,13 +284,8 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     ds = rpmteDS(s->te, tag);
     if (ds == NULL) {
-#ifdef	DYING
-	PyErr_SetString(PyExc_TypeError, "invalid ds tag");
-	return NULL;
-#else
 	Py_INCREF(Py_None);
 	return Py_None;
-#endif
     }
     return (PyObject *) rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
 }
@@ -310,13 +312,8 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     fi = rpmteFI(s->te, tag);
     if (fi == NULL) {
-#ifdef	DYING
-	PyErr_SetString(PyExc_TypeError, "invalid fi tag");
-	return NULL;
-#else
 	Py_INCREF(Py_None);
 	return Py_None;
-#endif
     }
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
 }
@@ -364,6 +361,8 @@ static struct PyMethodDef rpmte_methods[] = {
     {"Color",(PyCFunction)rpmte_Color,		METH_NOARGS,
 	NULL},
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
+	NULL},
+    {"Breadth",	(PyCFunction)rpmte_Breadth,	METH_NOARGS,
 	NULL},
     {"Depth",	(PyCFunction)rpmte_Depth,	METH_NOARGS,
 	NULL},
