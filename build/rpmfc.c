@@ -454,14 +454,16 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
   { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
 
-  { " /usr/bin/python",		RPMFC_PYTHON|RPMFC_INCLUDE },
-
   /* XXX "a /usr/bin/python -t script text executable" */
   /* XXX "python 2.3 byte-compiled" */
+  { " /usr/bin/python",		RPMFC_PYTHON|RPMFC_INCLUDE },
   { "python ",			RPMFC_PYTHON|RPMFC_INCLUDE },
 
   { "libtool library ",		RPMFC_LIBTOOL|RPMFC_INCLUDE },
   { "pkgconfig ",		RPMFC_PKGCONFIG|RPMFC_INCLUDE },
+
+  { "Bourne ",			RPMFC_BOURNE|RPMFC_INCLUDE },
+  { "Bourne-Again ",		RPMFC_BOURNE|RPMFC_INCLUDE },
 
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
@@ -729,27 +731,34 @@ static int rpmfcSCRIPT(rpmfc fc)
 	    xx = rpmfcHelper(fc, 'P', "perl");
 	if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
 	    xx = rpmfcHelper(fc, 'R', "perl");
-    }
+    } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
 	xx = rpmfcHelper(fc, 'P', "python");
 #ifdef	NOTYET
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "python");
-    }
+    } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_LIBTOOL) {
 	xx = rpmfcHelper(fc, 'P', "libtool");
 #ifdef	NOTYET
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "libtool");
-    }
+    } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_PKGCONFIG) {
 	xx = rpmfcHelper(fc, 'P', "pkgconfig");
 #ifdef	NOTYET
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "pkgconfig");
+    } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_BOURNE) {
+#ifdef	NOTYET
+	xx = rpmfcHelper(fc, 'P', "executable");
+#endif
+	if (is_executable)
+	    xx = rpmfcHelper(fc, 'R', "executable");
     }
 
     return 0;
@@ -1078,8 +1087,7 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PYTHON) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE) },
     { NULL, 0 }
 };
 

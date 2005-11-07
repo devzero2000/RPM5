@@ -79,6 +79,7 @@
 	- autogenerate pkgconfig *.pc dependencies (#159235).
 	- add brp-nobuildrootpath to scrub $RPM_BUILD_ROOT from *.la and *.pc.
 	- fix: rescusitate doxygen doco, don't bother tools/dump.c.
+	- generate executable(foo) run-time shell requirements, opt-in for now.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
