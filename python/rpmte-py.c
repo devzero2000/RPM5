@@ -254,10 +254,10 @@ rpmte_Key(rpmteObject * s)
 {
     PyObject * Key;
 
-    /* XXX how to insure this is a PyObject??? */
+    /* XXX how to insure that returned Key is a PyObject??? */
     Key = (PyObject *) rpmteKey(s->te);
     if (Key == NULL)
-	Key = Py_NONE;
+	Key = Py_None;
     Py_INCREF(Key);
     return Key;
 }
