@@ -711,6 +711,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 	}
 
 	/* Set color based on interpreter name. */
+	/* XXX magic token should have already done this?!? */
 	bn = basename(s);
 	if (!strcmp(bn, "perl"))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
@@ -1072,6 +1073,7 @@ typedef struct rpmfcApplyTbl_s {
 } * rpmfcApplyTbl;
 
 /**
+ * XXX Having two entries for rpmfcSCRIPT may be unnecessary duplication.
  */
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {

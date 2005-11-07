@@ -7,6 +7,7 @@ EXTRA_DIST = \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs convertrpmrc.sh cross-build \
+	executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
@@ -30,6 +31,7 @@ config_SCRIPTS = \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs convertrpmrc.sh cross-build \
+	executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \

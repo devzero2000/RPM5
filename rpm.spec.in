@@ -4,6 +4,9 @@
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
+# Autogenerate shell script dependencies.
+%define __executable_requires	@RPMCONFIGDIR@/executabledeps.sh --requires
+
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
 
@@ -21,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.38
+Release: 0.39
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -459,6 +462,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/magic.prov
 %rpmattr	%{__prefix}/lib/rpm/magic.req
 
+%rpmattr	%{__prefix}/lib/rpm/executabledeps.sh
 %rpmattr	%{__prefix}/lib/rpm/libtooldeps.sh
 %rpmattr	%{__prefix}/lib/rpm/perldeps.pl
 %rpmattr	%{__prefix}/lib/rpm/perl.prov
@@ -582,6 +586,8 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Nov  7 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.39
+
 * Sun Nov  6 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.38
 - autogenerate libtool *.la dependencies (#159221).
 - autogenerate pkgconfig *.pc dependencies (#159235).

@@ -36,3 +36,4 @@ case $1 in
     done
     ;;
 esac
+exit 0

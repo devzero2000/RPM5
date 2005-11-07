@@ -1343,5 +1343,15 @@ PreReq: python >= %minver, python < %maxver
 %__pkgconfig_provides	@RPMCONFIGDIR@/pkgconfigdeps.sh --provides
 %__pkgconfig_requires	@RPMCONFIGDIR@/pkgconfigdeps.sh --requires
 
+#------------------------------------------------------------------------
+# executable(...) configuration (not yet implemented).
+#
+# Path to scripts to autogenerate executable(foo) script dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
+#%__executable_provides	@RPMCONFIGDIR@/executabledeps.sh --provides
+#%__executable_requires	@RPMCONFIGDIR@/executabledeps.sh --requires
+
 # \endverbatim
 #*/
