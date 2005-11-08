@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-05 14:37-0500\n"
+"POT-Creation-Date: 2005-11-08 06:27-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1540,7 +1540,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
-#: rpmdb/header.c:3620 rpmdb/header.c:3649 rpmdb/header.c:3673
+#: rpmdb/header.c:3622 rpmdb/header.c:3651 rpmdb/header.c:3675
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
@@ -2647,62 +2647,62 @@ msgstr "balík neobsahuje ani vlastníka súboru, ani zoznamy identifikácií"
 msgid "package has neither file owner or id lists\n"
 msgstr "balík neobsahuje ani vlastníka súboru, ani zoznamy identifikácií"
 
-#: lib/query.c:473
+#: lib/query.c:474
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾iadne balíky\n"
 
-#: lib/query.c:482
+#: lib/query.c:483
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/query.c:495 lib/query.c:516 lib/query.c:536 lib/query.c:570
+#: lib/query.c:496 lib/query.c:517 lib/query.c:537 lib/query.c:571
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Nie je mo¾né preèíta» %s: %s."
 
-#: lib/query.c:505 lib/query.c:522 lib/query.c:546 lib/query.c:575
+#: lib/query.c:506 lib/query.c:523 lib/query.c:547 lib/query.c:576
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/query.c:585
+#: lib/query.c:586
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾iadny z balíkov nevy¾aduje %s\n"
 
-#: lib/query.c:596
+#: lib/query.c:597
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾iadny z balíkov neposkytuje %s\n"
 
-#: lib/query.c:635
+#: lib/query.c:636
 #, c-format
 msgid "file %s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: lib/query.c:639
+#: lib/query.c:640
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/query.c:664
+#: lib/query.c:665
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/query.c:667
+#: lib/query.c:668
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "po¾aduje sa záznam èíslo %d\n"
 
-#: lib/query.c:672
+#: lib/query.c:673
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:682 lib/rpminstall.c:805
+#: lib/query.c:683 lib/rpminstall.c:805
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
@@ -2960,7 +2960,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1050 lib/rpmts.c:646
+#: lib/rpminstall.c:611 lib/rpminstall.c:1051 lib/rpmts.c:646
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -4039,12 +4039,12 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3711
+#: rpmdb/header.c:3713
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3727
+#: rpmdb/header.c:3729
 msgid "%a %b %d %Y"
 msgstr ""
 

@@ -83,6 +83,7 @@
 	- fix: python/rpmte-py.c te.Key() return needs Py_INCREF(Key).
 	- fix: stablize tagValue() sort, prefer longest name.
 	- eliminate RPMTAG_{SERIAL,COPYRIGHT} names (for sort stability ;-).
+	- don't display "(none)\n" in --queryformat '[...]' (i.e. --conflicts)
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

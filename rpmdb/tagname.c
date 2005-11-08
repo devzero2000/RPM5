@@ -125,6 +125,15 @@ static const char * _tagName(int tag)
     case RPMDBI_FTSWALK:
 	strcpy(nameBuf, "Ftswalk");
 	break;
+
+    /* XXX make sure rpmdb indices are identically named. */
+    case RPMTAG_CONFLICTS:
+	strcpy(nameBuf, "Conflictname");
+	break;
+    case RPMTAG_HDRID:
+	strcpy(nameBuf, "Sha1header");
+	break;
+
     default:
 	strcpy(nameBuf, "(unknown)");
 	if (_rpmTags.byValue == NULL)

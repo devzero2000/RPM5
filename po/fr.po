@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-05 14:37-0500\n"
+"POT-Creation-Date: 2005-11-08 06:27-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1538,7 +1538,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "échec de rpmtsOrder, %d éléments toujours présents\n"
 
 #: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
-#: rpmdb/header.c:3620 rpmdb/header.c:3649 rpmdb/header.c:3673
+#: rpmdb/header.c:3622 rpmdb/header.c:3651 rpmdb/header.c:3675
 msgid "(not a number)"
 msgstr "(n'est pas un nombre)"
 
@@ -2618,62 +2618,62 @@ msgid "package has neither file owner or id lists\n"
 msgstr ""
 "le paquetage n'a ni la liste des id ni celle des possesseurs de fichiers\n"
 
-#: lib/query.c:473
+#: lib/query.c:474
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "le groupe %s ne contient aucun paquetage\n"
 
-#: lib/query.c:482
+#: lib/query.c:483
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "aucun paquetage ne surveille %s\n"
 
-#: lib/query.c:495 lib/query.c:516 lib/query.c:536 lib/query.c:570
+#: lib/query.c:496 lib/query.c:517 lib/query.c:537 lib/query.c:571
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s malformé: %s\n"
 
-#: lib/query.c:505 lib/query.c:522 lib/query.c:546 lib/query.c:575
+#: lib/query.c:506 lib/query.c:523 lib/query.c:547 lib/query.c:576
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "aucun paquetage ne correspond à %s: %s\n"
 
-#: lib/query.c:585
+#: lib/query.c:586
 #, c-format
 msgid "no package requires %s\n"
 msgstr "aucun paquetage ne requiert %s\n"
 
-#: lib/query.c:596
+#: lib/query.c:597
 #, c-format
 msgid "no package provides %s\n"
 msgstr "aucun paquetage ne fournit %s\n"
 
-#: lib/query.c:635
+#: lib/query.c:636
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fichier %s: %s\n"
 
-#: lib/query.c:639
+#: lib/query.c:640
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "le fichier %s n'appartient à aucun paquetage\n"
 
-#: lib/query.c:664
+#: lib/query.c:665
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "numéro de paquetage invalide: %s\n"
 
-#: lib/query.c:667
+#: lib/query.c:668
 #, c-format
 msgid "package record number: %u\n"
 msgstr "numéro d'article de paquetage: %u\n"
 
-#: lib/query.c:672
+#: lib/query.c:673
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "impossible de lire l'article %u\n"
 
-#: lib/query.c:682 lib/rpminstall.c:805
+#: lib/query.c:683 lib/rpminstall.c:805
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "le paquetage %s n'est pas installé\n"
@@ -2944,7 +2944,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "relogement du répertoire %s vers %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1050 lib/rpmts.c:646
+#: lib/rpminstall.c:611 lib/rpminstall.c:1051 lib/rpmts.c:646
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -4024,12 +4024,12 @@ msgstr "(index hors bornes)"
 msgid "array iterator used with different sized arrays"
 msgstr "itérateur de tableau utilisé avec des tableaux de tailles différentes"
 
-#: rpmdb/header.c:3711
+#: rpmdb/header.c:3713
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3727
+#: rpmdb/header.c:3729
 msgid "%a %b %d %Y"
 msgstr ""
 

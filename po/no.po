@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-05 14:37-0500\n"
+"POT-Creation-Date: 2005-11-08 06:27-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1499,7 +1499,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
-#: rpmdb/header.c:3620 rpmdb/header.c:3649 rpmdb/header.c:3673
+#: rpmdb/header.c:3622 rpmdb/header.c:3651 rpmdb/header.c:3675
 msgid "(not a number)"
 msgstr ""
 
@@ -2565,62 +2565,62 @@ msgstr "pakken har verken fileier eller id-lister\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "pakken har verken fileier eller id-lister\n"
 
-#: lib/query.c:473
+#: lib/query.c:474
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s inneholder ingen pakker\n"
 
-#: lib/query.c:482
+#: lib/query.c:483
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ingen pakke utløser %s\n"
 
-#: lib/query.c:495 lib/query.c:516 lib/query.c:536 lib/query.c:570
+#: lib/query.c:496 lib/query.c:517 lib/query.c:537 lib/query.c:571
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#: lib/query.c:505 lib/query.c:522 lib/query.c:546 lib/query.c:575
+#: lib/query.c:506 lib/query.c:523 lib/query.c:547 lib/query.c:576
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ingen pakke utløser %s\n"
 
-#: lib/query.c:585
+#: lib/query.c:586
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakke krever %s\n"
 
-#: lib/query.c:596
+#: lib/query.c:597
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakke gir %s\n"
 
-#: lib/query.c:635
+#: lib/query.c:636
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:639
+#: lib/query.c:640
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s eies ikke av noen pakke\n"
 
-#: lib/query.c:664
+#: lib/query.c:665
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldig pakkenummer: %s\n"
 
-#: lib/query.c:667
+#: lib/query.c:668
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:672
+#: lib/query.c:673
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:682 lib/rpminstall.c:805
+#: lib/query.c:683 lib/rpminstall.c:805
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakke %s er ikke installert\n"
@@ -2879,7 +2879,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "relokerer katalog %s til %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1050 lib/rpmts.c:646
+#: lib/rpminstall.c:611 lib/rpminstall.c:1051 lib/rpmts.c:646
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3952,12 +3952,12 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3711
+#: rpmdb/header.c:3713
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3727
+#: rpmdb/header.c:3729
 msgid "%a %b %d %Y"
 msgstr ""
 

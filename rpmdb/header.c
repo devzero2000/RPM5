@@ -3401,12 +3401,14 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	}
 
 	if (numElements == -1) {
-	    need = sizeof("(none)") - 1;
+#ifdef	DYING	/* XXX lots of pugly "(none)" lines with --conflicts. */
+	    need = sizeof("(none)\n") - 1;
 	    t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-	    te = stpcpy(t, "(none)");
+	    te = stpcpy(t, "(none)\n");
 /*@=boundswrite@*/
 	    hsa->vallen += (te - t);
+#endif
 	} else {
 	    int isxml;
 
