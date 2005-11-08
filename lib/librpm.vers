@@ -116,6 +116,7 @@ LIBRPM_0
     rpmdsPipe;
     rpmdsProblem;
     rpmdsRefs;
+    rpmdsResult;
     rpmdsRpmlib;
     rpmdsSearch;
     rpmdsSetBT;
@@ -123,6 +124,7 @@ LIBRPM_0
     rpmdsSetIx;
     rpmdsSetNoPromote;
     rpmdsSetRefs;
+    rpmdsSetResult;
     rpmdsSingle;
     rpmdsSysinfo;
     rpmdsTagN;
