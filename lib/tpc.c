@@ -11,7 +11,7 @@ extern int _rpmds_debug;
 #define _PKGCONFIG_PROVIDES  "/usr/bin/find /usr/lib -name '*.pc' | /usr/lib/rpm/pkgconfigdeps.sh -P"
 static const char * _pkgconfig_provides = _PKGCONFIG_PROVIDES;
 
-#define _PKGCONFIG_REQUIRES  "/bin/rpm -qal | grep '\.pc$' | /usr/lib/rpm/pkgconfigdeps.sh -R"
+#define _PKGCONFIG_REQUIRES  "/bin/rpm -qal | grep '\\.pc$' | /usr/lib/rpm/pkgconfigdeps.sh -R"
 static const char * _pkgconfig_requires = _PKGCONFIG_REQUIRES;
 
 int main(int argc, char *argv[])
@@ -25,7 +25,7 @@ fprintf(stderr, "\n*** Gathering pkgconfig Provides: using\n\t%s\n", _pkgconfig_
 fprintf(stderr, "\n*** Gathering pkgconfig Requires: using\n\t%s\n", _pkgconfig_requires);
     rc = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _pkgconfig_requires);
 
-fprintf(stderr, "\n*** Checking pkgconfig Requires: against Provides: closure --\n");
+fprintf(stderr, "\n*** Checking pkgconfig Requires(%d): against Provides(%d): closure --\n", rpmdsCount(R), rpmdsCount(P));
 
     /* Allocate the R results array (to be filled in by rpmdsSearch). */
     (void) rpmdsSetResult(R, 0);
