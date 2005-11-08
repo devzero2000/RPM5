@@ -3,9 +3,11 @@
 Makefile
 Makefile.in
 getdate.c
-tagtable.c
 .libs
 *.la
 *.lcd
 *.lo
 tgi
+tla
+tpc
+tpl
