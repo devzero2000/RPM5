@@ -26,10 +26,19 @@ fprintf(stderr, "\n*** Gathering pkgconfig Requires: using\n\t%s\n", _pkgconfig_
     rc = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _pkgconfig_requires);
 
 fprintf(stderr, "\n*** Checking pkgconfig Requires: against Provides: closure --\n");
+
+    /* Allocate the R results array (to be filled in by rpmdsSearch). */
+    (void) rpmdsSetResult(R, 0);
+
+    /* Collect the rpmdsSearch results (in the R dependency set). */
+    R = rpmdsInit(R);
+    while (rpmdsNext(R) >= 0)
+	rc = rpmdsSearch(P, R);
+
+    /* Display the results. */
     R = rpmdsInit(R);
     while (rpmdsNext(R) >= 0) {
-	rc = rpmdsSearch(P, R);
-	if (rc < 0)
+	rc = rpmdsResult(R);
 	    fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
     }
 

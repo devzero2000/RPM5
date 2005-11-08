@@ -26,11 +26,22 @@ fprintf(stderr, "\n*** Gathering libtool Requires: using\n\t%s\n", _libtool_requ
     rc = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _libtool_requires);
 
 fprintf(stderr, "\n*** Checking libtool Requires: against Provides: closure --\n");
+
+    /* Allocate the R results array (to be filled in by rpmdsSearch). */
+    (void) rpmdsSetResult(R, 0);
+
+    /* Collect the rpmdsSearch results (in the R dependency set). */
+    R = rpmdsInit(R);
+    while (rpmdsNext(R) >= 0)
+	rc = rpmdsSearch(P, R);
+
+    /* Display the results. */
     R = rpmdsInit(R);
     while (rpmdsNext(R) >= 0) {
-	rc = rpmdsSearch(P, R);
-	if (rc < 0)
-	    fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
+	rc = rpmdsResult(R);
+	if (rc > 0)
+	    continue;
+	fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
     }
 
     P = rpmdsFree(P);
