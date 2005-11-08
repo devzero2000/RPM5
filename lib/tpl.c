@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     rpmds P = NULL;
     rpmds R = NULL;
     int rc;
+    int xx;
 
 fprintf(stderr, "\n*** Gathering perl Provides: using\n\t%s\n", _perl_provides);
     rc = rpmdsPipe(&P, RPMTAG_PROVIDENAME, _perl_provides);
@@ -26,11 +27,22 @@ fprintf(stderr, "\n*** Gathering perl Requires: using\n\t%s\n", _perl_requires);
     rc = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _perl_requires);
 
 fprintf(stderr, "\n*** Checking for Requires: against Provides: closure:\n");
+
+    /* Allocate the R results array (to be filled in by rpmdsSearch). */
+    (void) rpmdsSetResult(R, 0);
+
+    /* Collect the rpmdsSearch results (in the R dependency set). */
+    R = rpmdsInit(R);
+    while (rpmdsNext(R) >= 0)
+	rc = rpmdsSearch(P, R);
+
+    /* Display the results. */
     R = rpmdsInit(R);
     while (rpmdsNext(R) >= 0) {
-	rc = rpmdsSearch(P, R);
-	if (rc < 0)
-	    fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
+	rc = rpmdsResult(R);
+	if (rc > 0)
+	    continue;
+	fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
     }
 
     P = rpmdsFree(P);

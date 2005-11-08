@@ -157,6 +157,14 @@ rpmds_Refs(rpmdsObject * s)
     return Py_BuildValue("i", rpmdsRefs(s->ds));
 }
 
+/*@null@*/
+static PyObject *
+rpmds_Result(rpmdsObject * s)
+	/*@*/
+{
+    return Py_BuildValue("i", rpmdsResult(s->ds));
+}
+
 /**
  */
 static int compare_values(const char *str1, const char *str2)
@@ -503,6 +511,8 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.Color -> Color	- Return current Color.\n" },
  {"Refs",	(PyCFunction)rpmds_Refs,	METH_NOARGS,
 	"ds.Refs -> Refs	- Return current Refs.\n" },
+ {"Result",	(PyCFunction)rpmds_Result,	METH_NOARGS,
+	"ds.Result -> Result	- Return current Result.\n" },
  {"next",	(PyCFunction)rpmds_Next,	METH_NOARGS,
 "ds.next() -> (N, EVR, Flags)\n\
 - Retrieve next dependency triple.\n" },

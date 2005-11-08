@@ -107,6 +107,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     ds->DNEVR = _free(ds->DNEVR);
     ds->Color = _free(ds->Color);
     ds->Refs = _free(ds->Refs);
+    ds->Result = _free(ds->Result);
 
     (void) rpmdsUnlink(ds, ds->Type);
     /*@-refcounttrans -usereleased@*/
@@ -353,7 +354,6 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
 /*@=boundsread@*/
 	ds->Color = xcalloc(Count, sizeof(*ds->Color));
-	ds->Refs = xcalloc(Count, sizeof(*ds->Refs));
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
@@ -691,7 +691,13 @@ uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
 {
     uint_32 ocolor = 0;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds == NULL)
+	return ocolor;
+
+    if (ds->Color == NULL && ds->Count > 0)	/* XXX lazy malloc */
+	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
+
+    if (ds->i >= 0 && ds->i < ds->Count) {
 /*@-bounds@*/
 	if (ds->Color != NULL) {
 	    ocolor = ds->Color[ds->i];
@@ -719,7 +725,13 @@ int_32 rpmdsSetRefs(const rpmds ds, int_32 refs)
 {
     int_32 orefs = 0;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds == NULL)
+	return orefs;
+
+    if (ds->Refs == NULL && ds->Count > 0)	/* XXX lazy malloc */
+	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
+
+    if (ds->i >= 0 && ds->i < ds->Count) {
 /*@-bounds@*/
 	if (ds->Refs != NULL) {
 	    orefs = ds->Refs[ds->i];
@@ -728,6 +740,40 @@ int_32 rpmdsSetRefs(const rpmds ds, int_32 refs)
 /*@=bounds@*/
     }
     return orefs;
+}
+
+int_32 rpmdsResult(const rpmds ds)
+{
+    int_32 result = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
+	if (ds->Result != NULL)
+	    result = ds->Result[ds->i];
+/*@=boundsread@*/
+    }
+    return result;
+}
+
+int_32 rpmdsSetResult(const rpmds ds, int_32 result)
+{
+    int_32 oresult = 0;
+
+    if (ds == NULL)
+	return oresult;
+
+    if (ds->Result == NULL && ds->Count > 0)	/* XXX lazy malloc */
+	ds->Result = xcalloc(ds->Count, sizeof(*ds->Result));
+
+    if (ds->i >= 0 && ds->i < ds->Count) {
+/*@-bounds@*/
+	if (ds->Result != NULL) {
+	    oresult = ds->Result[ds->i];
+	    ds->Result[ds->i] = result;
+	}
+/*@=bounds@*/
+    }
+    return oresult;
 }
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)
@@ -970,7 +1016,7 @@ ods->i = save;
     return 0;
 }
 
-int rpmdsSearch(rpmds ds, const rpmds ods)
+int rpmdsSearch(rpmds ds, rpmds ods)
 {
     int comparison;
     int i, l, u;
@@ -1023,6 +1069,9 @@ int rpmdsSearch(rpmds ds, const rpmds ods)
 	    (void) rpmdsSetIx(ds, save);
 	    i = -1;
 	}
+	/* Save the return value. */
+	if (ods->Result != NULL)
+	    (void) rpmdsSetResult(ods, (i != -1 ? 1 : 0));
     }
     return i;
 }

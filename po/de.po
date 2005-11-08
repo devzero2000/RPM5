@@ -7,14 +7,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-08 06:27-0500\n"
+"POT-Creation-Date: 2005-11-08 11:44-0500\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -68,12 +68,10 @@ msgid "Building for target %s\n"
 msgstr "Baue für das Ziel %s\n"
 
 #: rpm2cpio.c:56
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "Argument ist kein RPM-Paket\n"
 
 #: rpm2cpio.c:61
-#, c-format
 msgid "error reading header from package\n"
 msgstr "Fehler beim Lesen des Paket-Headers\n"
 
@@ -131,12 +129,10 @@ msgid "RPM version %s\n"
 msgstr "RPM, Version %s\n"
 
 #: rpmqv.c:147
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1997-2005 - Red Hat, Inc.\n"
 
 #: rpmqv.c:148
-#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -296,7 +292,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "Argumente für --root (-r) müssen mit einem / beginnen"
 
 #: rpmqv.c:548
-#, c-format
 msgid "no files to sign\n"
 msgstr "Keine Dateien zu signieren\n"
 
@@ -306,7 +301,6 @@ msgid "cannot access file %s\n"
 msgstr "Kann auf die Datei %s nicht zugreifen\n"
 
 #: rpmqv.c:573
-#, c-format
 msgid "pgp not found: "
 msgstr "PGP nicht gefunden: "
 
@@ -315,12 +309,10 @@ msgid "Enter pass phrase: "
 msgstr "Bitte das Passwort eingeben: "
 
 #: rpmqv.c:583
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Die Passwort-Überprüfung ist fehlgeschlagen\n"
 
 #: rpmqv.c:587
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Das Passwort ist richtig.\n"
 
@@ -334,7 +326,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paket-Erstellung benutzt werden"
 
 #: rpmqv.c:616
-#, c-format
 msgid "exec failed\n"
 msgstr "Ausführung fehlgeschlagen\n"
 
@@ -1690,17 +1681,14 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "Regionsgröße: UNGÜLTIG, ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: UNGÜLTIG, nicht hexadezimal\n"
 
 #: lib/package.c:470
-#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "hdr RSA: UNGÜLTIG, nicht binär\n"
 
 #: lib/package.c:482
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA: UNGÜLTIG, nicht binär\n"
 
@@ -1717,7 +1705,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr Größe(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
 #: lib/package.c:678
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: UNGÜLTIG\n"
 
@@ -1737,7 +1724,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr Blob(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
 #: lib/package.c:722
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr Load: UNGÜLTIG\n"
 
@@ -2743,61 +2729,61 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:742 lib/rpmds.c:2771
+#: lib/rpmds.c:788 lib/rpmds.c:2820
 msgid "NO "
 msgstr "NEIN "
 
-#: lib/rpmds.c:742 lib/rpmds.c:2771
+#: lib/rpmds.c:788 lib/rpmds.c:2820
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1239
+#: lib/rpmds.c:1288
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, und Obsoletes: unterstützen Versionen."
 
-#: lib/rpmds.c:1242
+#: lib/rpmds.c:1291
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Dateiname(n) als (dirName,baseName,dirIndex)-Tupel gespeichert, nicht als "
 "Pfad."
 
-#: lib/rpmds.c:1245
+#: lib/rpmds.c:1294
 msgid "package payload can be compressed using bzip2."
 msgstr "Paket-Nutzdaten können mit bzip2 komprimiert werden."
 
-#: lib/rpmds.c:1248
+#: lib/rpmds.c:1297
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "Dateien der Paket-Nutzdaten haben \"./\" als Präfix"
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1300
 msgid "package name-version-release is not implicitly provided."
 msgstr "Paket Name-Version-Release wird nicht unbedingt bereitgestellt."
 
-#: lib/rpmds.c:1254
+#: lib/rpmds.c:1303
 msgid "header tags are always sorted after being loaded."
 msgstr "Header-Tags werden immer nach dem Laden sortiert."
 
-#: lib/rpmds.c:1257
+#: lib/rpmds.c:1306
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "Der Skriptlet-Interpreter kann Argumente aus dem Header benutzen."
 
-#: lib/rpmds.c:1260
+#: lib/rpmds.c:1309
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "Eine harte Verlinkung kann auch ohne eine komplette Installation angelegt "
 "werden."
 
-#: lib/rpmds.c:1263
+#: lib/rpmds.c:1312
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "Paket-Skriptlets können während der Installation auf die RPM-Datenbank "
 "zugreifen."
 
-#: lib/rpmds.c:1266
+#: lib/rpmds.c:1315
 msgid "internal support for lua scripts."
 msgstr "Interne Unterstützung für LUA-Skripte"
 
-#: lib/rpmds.c:1367
+#: lib/rpmds.c:1416
 #, fuzzy, c-format
 msgid "%s:%d N must begin with alphanumeric, _, or /.\n"
 msgstr ""
@@ -2805,23 +2791,23 @@ msgstr ""
 "s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1401
+#: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1411
+#: lib/rpmds.c:1460
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2564 lib/rpmds.c:2594 lib/rpmds.c:2606
+#: lib/rpmds.c:2613 lib/rpmds.c:2643 lib/rpmds.c:2655
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2567
+#: lib/rpmds.c:2616
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\"  must begin with alphanumeric, _, or /. Skipping ...\n"
@@ -2830,20 +2816,20 @@ msgstr ""
 "s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:2596
+#: lib/rpmds.c:2645
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:2608
+#: lib/rpmds.c:2657
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:2737
+#: lib/rpmds.c:2786
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2853,13 +2839,13 @@ msgstr ""
 "als \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2770
+#: lib/rpmds.c:2819
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2794
+#: lib/rpmds.c:2843
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Paket %s hat unerfüllte %s: %s\n"
@@ -3225,22 +3211,18 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kann %s nicht zum Lesen öffnen: %s.\n"
 
 #: lib/rpmrc.c:1942
-#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1954
-#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1969
-#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
-#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
@@ -3400,7 +3382,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "sigh-Größe(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
 #: lib/signature.c:193
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "sigh Magic: UNGÜLTIG\n"
 
@@ -3425,7 +3406,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh-Tag[%d]: UNGÜLTIG, Tag %d, Typ %d, Offset %d, Count %d\n"
 
 #: lib/signature.c:313
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr "sigh-Load: UNGÜLTIG\n"
 
@@ -3499,9 +3479,6 @@ msgstr "%d Byte der GPG-Signatur erhalten\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3543,12 +3520,10 @@ msgid " DSA signature: "
 msgstr " DSA-Signatur: "
 
 #: lib/signature.c:1505
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Überprüfe Signatur: UNGÜLTIGE PARAMETER\n"
 
 #: lib/signature.c:1536
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Fehlerhafte MD5-Kurzfassung: NICHT UNTERSTÜTZT\n"
 
@@ -4345,7 +4320,6 @@ msgid "(no error)"
 msgstr "(kein Fehler)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "Schwerwiegender Fehler: "

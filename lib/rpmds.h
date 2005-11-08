@@ -43,6 +43,8 @@ struct rpmds_s {
     uint_32 * Color;		/*!< Bit(s) calculated from file color(s). */
 /*@only@*/ /*@null@*/
     int_32 * Refs;		/*!< No. of file refs. */
+/*@only@*/ /*@null@*/
+    int_32 * Result;		/*!< Dependency check result. */
     int_32 BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
@@ -264,13 +266,13 @@ int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
 /**
  * Return current dependency color.
  * @param ds		dependency set
- * @return		current dependency color
+ * @return		current dependency color (0 if not set)
  */
 uint_32 rpmdsColor(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
- * Return current dependency color.
+ * Set current dependency color.
  * @param ds		dependency set
  * @param color		new dependency color
  * @return		previous dependency color
@@ -281,18 +283,35 @@ uint_32 rpmdsSetColor(/*@null@*/ const rpmds ds, uint_32 color)
 /**
  * Return current dependency file refs.
  * @param ds		dependency set
- * @return		current dependency file refs, -1 on global
+ * @return		current dependency file refs (0 if not set)
  */
 int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
- * Return current dependency color.
+ * Set current dependency file refs.
  * @param ds		dependency set
  * @param refs		new dependency refs
  * @return		previous dependency refs
  */
 int_32 rpmdsSetRefs(/*@null@*/ const rpmds ds, int_32 refs)
+	/*@modifies ds @*/;
+
+/**
+ * Return current dependency comparison result.
+ * @param ds		dependency set
+ * @return		current dependency result (0 if not set)
+ */
+int_32 rpmdsResult(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
+ * Set current dependency comparison result.
+ * @param ds		dependency set
+ * @param refs		new dependency result
+ * @return		previous dependency result
+ */
+int_32 rpmdsSetResult(/*@null@*/ const rpmds ds, int_32 result)
 	/*@modifies ds @*/;
 
 /**
@@ -348,7 +367,7 @@ int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
  * @param ods		dependency set element to find.
  * @return		dependency index (or -1 if not found)
  */
-int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ const rpmds ods)
+int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ rpmds ods)
 	/*@modifies ds @*/;
 
 /**
