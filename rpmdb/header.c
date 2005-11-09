@@ -2047,7 +2047,6 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
 
 /** \ingroup header
  * Add or append element to tag array in header.
- * @todo Arg "p" should have const.
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type

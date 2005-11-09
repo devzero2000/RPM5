@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2005-11-08 11:44-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-11-08 23:02-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
 #: build.c:40
@@ -64,11 +64,12 @@ msgid "Building for target %s\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
 #: rpm2cpio.c:61
-#, fuzzy
+#, fuzzy, c-format
 msgid "error reading header from package\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
@@ -125,11 +126,12 @@ msgid "RPM version %s\n"
 msgstr "RPM verzija %s\n"
 
 #: rpmqv.c:147
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
 #: rpmqv.c:148
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Mo¾ete slobodno distribuirati dalje pod odredbama GNU GPL"
@@ -279,6 +281,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenti za --root (-r) moraju poèeti znakom /"
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -288,7 +291,7 @@ msgid "cannot access file %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: rpmqv.c:573
-#, fuzzy
+#, fuzzy, c-format
 msgid "pgp not found: "
 msgstr "Datoteka nije pronaðena na serveru"
 
@@ -297,10 +300,12 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Neuspela provera lozinke\n"
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Lozinka je dobra.\n"
 
@@ -314,7 +319,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign se mo¾e koristiti samo kod kreiranja paketa"
 
 #: rpmqv.c:616
-#, fuzzy
+#, fuzzy, c-format
 msgid "exec failed\n"
 msgstr "%s: Neuspelo otvaranje\n"
 
@@ -566,7 +571,7 @@ msgstr "preme¹tanja moraju poèeti znakom '/'"
 msgid "Glob not permitted: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: build/files.c:1894 lib/rpminstall.c:362
+#: build/files.c:1894 lib/rpminstall.c:372
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteka nije pronaðena na serveru"
@@ -796,32 +801,32 @@ msgstr "Ne mogu da otvorim datoteku %s: "
 msgid "line %d: second %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parseChangelog.c:131
+#: build/parseChangelog.c:148
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr ""
 
-#: build/parseChangelog.c:139
+#: build/parseChangelog.c:156
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr ""
 
-#: build/parseChangelog.c:156
+#: build/parseChangelog.c:173
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr ""
 
-#: build/parseChangelog.c:161
+#: build/parseChangelog.c:178
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr ""
 
-#: build/parseChangelog.c:169 build/parseChangelog.c:180
+#: build/parseChangelog.c:186 build/parseChangelog.c:197
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr ""
 
-#: build/parseChangelog.c:187
+#: build/parseChangelog.c:204
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr ""
@@ -1526,7 +1531,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
-#: rpmdb/header.c:3622 rpmdb/header.c:3651 rpmdb/header.c:3675
+#: rpmdb/header.c:3621 rpmdb/header.c:3650 rpmdb/header.c:3674
 msgid "(not a number)"
 msgstr "(nije broj)"
 
@@ -1688,14 +1693,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
+#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1711,6 +1719,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1730,6 +1739,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -1947,6 +1957,11 @@ msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
 #: lib/poptI.c:154
 msgid "Option --rollback needs a time/date stamp argument"
+msgstr ""
+
+#: lib/poptI.c:158
+#, c-format
+msgid "Rollback goal:  %-24.24s (0x%08x)\n"
 msgstr ""
 
 #: lib/poptI.c:162
@@ -2682,7 +2697,7 @@ msgstr "pogre¹an broj paketa: %s\n"
 msgid "record %u could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:683 lib/rpminstall.c:805
+#: lib/query.c:683 lib/rpminstall.c:816
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -2938,8 +2953,8 @@ msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1051 lib/rpmts.c:646
+#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:490
+#: lib/rpminstall.c:621 lib/rpminstall.c:1062 lib/rpmts.c:646
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2951,13 +2966,13 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "nepoznat tag"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:655 lib/rpminstall.c:839
-#: lib/rpminstall.c:1310 lib/transaction.c:1219 tools/rpmgraph.c:196
+#: lib/rpmgi.c:625 lib/rpminstall.c:665 lib/rpminstall.c:850
+#: lib/rpminstall.c:1323 lib/transaction.c:1224 tools/rpmgraph.c:196
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "lo¹e meðuzavisnosti:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:662 tools/rpmgraph.c:202
+#: lib/rpmgi.c:631 lib/rpminstall.c:672 tools/rpmgraph.c:202
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -2987,115 +3002,115 @@ msgstr ""
 msgid "Upgrading packages..."
 msgstr "instaliraj paket"
 
-#: lib/rpminstall.c:409
+#: lib/rpminstall.c:330 lib/rpminstall.c:794 lib/transaction.c:1199
+#, c-format
+msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
+msgstr ""
+
+#: lib/rpminstall.c:419
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpminstall.c:425
+#: lib/rpminstall.c:435
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Pribavljam %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:438
+#: lib/rpminstall.c:448
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:442
+#: lib/rpminstall.c:452
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 
-#: lib/rpminstall.c:499 lib/rpminstall.c:902 tools/rpmgraph.c:141
+#: lib/rpminstall.c:509 lib/rpminstall.c:913 tools/rpmgraph.c:141
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
 
-#: lib/rpminstall.c:516
+#: lib/rpminstall.c:526
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "upit nad svim paketima"
 
-#: lib/rpminstall.c:541
+#: lib/rpminstall.c:551
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/rpminstall.c:586
+#: lib/rpminstall.c:596
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "instaliraj paket"
 
-#: lib/rpminstall.c:591
+#: lib/rpminstall.c:601
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpminstall.c:597
+#: lib/rpminstall.c:607
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:626
+#: lib/rpminstall.c:636
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:651
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/rpminstall.c:692
+#: lib/rpminstall.c:702
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "instaliraj paket"
 
-#: lib/rpminstall.c:716
+#: lib/rpminstall.c:726
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpminstall.c:783 lib/transaction.c:1195
-#, c-format
-msgid "Autorollback Goal: %-24.24s\n"
-msgstr ""
-
-#: lib/rpminstall.c:814
+#: lib/rpminstall.c:825
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-#: lib/rpminstall.c:886
+#: lib/rpminstall.c:897
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpminstall.c:892
+#: lib/rpminstall.c:903
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
 
-#: lib/rpminstall.c:1217
+#: lib/rpminstall.c:1229
 #, c-format
-msgid "Excluding TID %d from rollback\n"
+msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1304 lib/transaction.c:1199
+#: lib/rpminstall.c:1317 lib/transaction.c:1204
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1335 lib/transaction.c:1272
+#: lib/rpminstall.c:1348 lib/transaction.c:1277
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1342
+#: lib/rpminstall.c:1355
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Pribavljam %s\n"
@@ -3267,18 +3282,22 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1954
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1969
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
@@ -3436,6 +3455,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3460,6 +3480,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3537,6 +3558,9 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3581,10 +3605,12 @@ msgid " DSA signature: "
 msgstr "%s: Potpis nije na raspolaganju\n"
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3599,61 +3625,66 @@ msgstr ""
 msgid "excluding directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:1056 lib/transaction.c:1302
+#: lib/transaction.c:1058
 #, c-format
-msgid "Rolling back successful transactions to %s.\n"
+msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr ""
 
-#: lib/transaction.c:1061 lib/transaction.c:1307
+#: lib/transaction.c:1063 lib/transaction.c:1314
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr ""
 
-#: lib/transaction.c:1193
+#: lib/transaction.c:1196
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1201
+#: lib/transaction.c:1206
 #, c-format
 msgid "Failed Tran:  0x%08x\n"
 msgstr ""
 
-#: lib/transaction.c:1207
+#: lib/transaction.c:1212
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr ""
 
-#: lib/transaction.c:1211
+#: lib/transaction.c:1216
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:1231
+#: lib/transaction.c:1236
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1372
+#: lib/transaction.c:1309
+#, c-format
+msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
+msgstr ""
+
+#: lib/transaction.c:1379
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:1413
+#: lib/transaction.c:1420
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1439
+#: lib/transaction.c:1446
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1443
+#: lib/transaction.c:1450
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1447
+#: lib/transaction.c:1454
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1460
+#: lib/transaction.c:1467
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "paket nema imena"
@@ -3665,88 +3696,88 @@ msgstr "paket nema imena"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1481
+#: lib/transaction.c:1488
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1483
+#: lib/transaction.c:1490
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1506
+#: lib/transaction.c:1513
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
 #. XXX: Can't happen
-#: lib/transaction.c:1556
+#: lib/transaction.c:1563
 #, fuzzy
 msgid "Could not aquire transaction score!.\n"
 msgstr "neuspelo èitanje sloga baze podataka!\n"
 
 #. XXX: Can't happen
-#: lib/transaction.c:1561
+#: lib/transaction.c:1568
 #, fuzzy, c-format
 msgid "Could not acquire score entry %s!.\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: lib/transaction.c:1579
+#: lib/transaction.c:1586
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1582
+#: lib/transaction.c:1589
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: lib/transaction.c:1593
+#: lib/transaction.c:1600
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "upit nad svim paketima"
 
-#: lib/transaction.c:1606
+#: lib/transaction.c:1613
 #, c-format
 msgid "Processing failed erase element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1610
+#: lib/transaction.c:1617
 #, fuzzy
 msgid "\tForce removing header from rpmdb.\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: lib/transaction.c:1621
+#: lib/transaction.c:1628
 msgid "\tCould not remove failed package header from db!\n"
 msgstr ""
 
-#: lib/transaction.c:1630 lib/transaction.c:1762
+#: lib/transaction.c:1637 lib/transaction.c:1769
 msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1631 lib/transaction.c:1763
+#: lib/transaction.c:1638 lib/transaction.c:1770
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1661
+#: lib/transaction.c:1668
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1662 lib/transaction.c:1717
+#: lib/transaction.c:1669 lib/transaction.c:1724
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1670
+#: lib/transaction.c:1677
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1683
+#: lib/transaction.c:1690
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1693
+#: lib/transaction.c:1700
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "upit nad svim paketima"
@@ -3754,41 +3785,41 @@ msgstr "upit nad svim paketima"
 #. Add the header as an erase element, we did not
 #. * have a repackaged package.
 #.
-#: lib/transaction.c:1702
+#: lib/transaction.c:1709
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1709
+#: lib/transaction.c:1716
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1716
+#: lib/transaction.c:1723
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1724
+#: lib/transaction.c:1731
 msgid "\tErase element already added for complimentary install.\n"
 msgstr ""
 
-#: lib/transaction.c:1737
+#: lib/transaction.c:1744
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "upit nad svim paketima"
 
-#: lib/transaction.c:1742
+#: lib/transaction.c:1749
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1748
+#: lib/transaction.c:1755
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1754
+#: lib/transaction.c:1761
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: lib/transaction.c:1834
+#: lib/transaction.c:1841
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3800,12 +3831,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1888
+#: lib/transaction.c:1895
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1974
+#: lib/transaction.c:1981
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3817,7 +3848,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2049
+#: lib/transaction.c:2056
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3825,24 +3856,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2130
+#: lib/transaction.c:2137
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2308
+#: lib/transaction.c:2315
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2581
+#: lib/transaction.c:2588
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2588
+#: lib/transaction.c:2595
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2631
+#: lib/transaction.c:2638
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -3939,79 +3970,79 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2793
+#: rpmdb/header.c:2792
 msgid "missing { after %"
 msgstr "nedostaje { posle %"
 
-#: rpmdb/header.c:2823
+#: rpmdb/header.c:2822
 msgid "missing } after %{"
 msgstr "nedostaje } posle %"
 
-#: rpmdb/header.c:2839
+#: rpmdb/header.c:2838
 msgid "empty tag format"
 msgstr "prazan 'tag' format'"
 
-#: rpmdb/header.c:2851
+#: rpmdb/header.c:2850
 msgid "empty tag name"
 msgstr "prazno ime tag-a"
 
-#: rpmdb/header.c:2860
+#: rpmdb/header.c:2859
 msgid "unknown tag"
 msgstr "nepoznat tag"
 
-#: rpmdb/header.c:2887
+#: rpmdb/header.c:2886
 msgid "] expected at end of array"
 msgstr "] oèekivano na kraju niza"
 
-#: rpmdb/header.c:2900
+#: rpmdb/header.c:2899
 msgid "unexpected ]"
 msgstr "neoèekivano ]"
 
-#: rpmdb/header.c:2913
+#: rpmdb/header.c:2912
 msgid "unexpected }"
 msgstr "neoèekivano }"
 
-#: rpmdb/header.c:2977
+#: rpmdb/header.c:2976
 msgid "? expected in expression"
 msgstr "oèekivan znak ? u izrazu"
 
-#: rpmdb/header.c:2984
+#: rpmdb/header.c:2983
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ oèekivano posle ? u izrazu"
 
-#: rpmdb/header.c:2996 rpmdb/header.c:3036
+#: rpmdb/header.c:2995 rpmdb/header.c:3035
 msgid "} expected in expression"
 msgstr "} oèekivano u izrazu"
 
-#: rpmdb/header.c:3004
+#: rpmdb/header.c:3003
 msgid ": expected following ? subexpression"
 msgstr "oèekivano : praæeno ? podizrazom"
 
-#: rpmdb/header.c:3022
+#: rpmdb/header.c:3021
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ oèekivano posle : u izrazu"
 
-#: rpmdb/header.c:3044
+#: rpmdb/header.c:3043
 msgid "| expected at end of expression"
 msgstr "| oèekivano na kraju izraza"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3145
+#: rpmdb/header.c:3144
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3392
+#: rpmdb/header.c:3391
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3713
+#: rpmdb/header.c:3712
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3729
+#: rpmdb/header.c:3728
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -4376,6 +4407,7 @@ msgid "(no error)"
 msgstr "gre¹ka: "
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatalna gre¹ka: "

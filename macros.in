@@ -239,6 +239,13 @@ package or when debugging this package.\
 #
 #%buildsubdir
 
+#	Truncate changelogs to no. of entries or date.
+#	<=0	disables
+#	<1000	truncates to no. of entries
+#	Otherwise, a get_date string (e.g. "2 years ago") may be entered,
+#`	and changelog entries older than that date will not be added to headers.
+%_changelog_truncate	1 year ago
+
 #	Configurable distribution information, same as Distribution: tag in a
 #	specfile.
 #

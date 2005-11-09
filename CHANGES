@@ -83,11 +83,12 @@
 	- fix: python/rpmte-py.c te.Key() return needs Py_INCREF(Key).
 	- fix: stablize tagValue() sort, prefer longest name.
 	- eliminate RPMTAG_{SERIAL,COPYRIGHT} names (for sort stability ;-).
-	- don't display "(none)\n" in --queryformat '[...]' (i.e. --conflicts)
+	- don't display "(none)\n" in --queryformat '[...]' (i.e. --conflicts).
 	- add dependency result int array to dependency sets.
 	- lazy malloc for dependency set color/refs/result on 1st setter call.
 	- set boolean result in rpmdsSearch (if malloc'd).
 	- fix: set transaction autorollback goal from popt on --install.
+	- truncate changelogs to no. of entries or date (default: 1y) (#147362).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

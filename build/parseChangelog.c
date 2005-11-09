@@ -13,22 +13,14 @@
 
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
-    int_32 mytime = time;	/* XXX convert to header representation */
-    if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {
-	(void) headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
-			  &mytime, 1);
-	(void) headerAppendEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
-			  &name, 1);
-	(void) headerAppendEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
-			 &text, 1);
-    } else {
-	(void) headerAddEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
-		       &mytime, 1);
-	(void) headerAddEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
-		       &name, 1);
-	(void) headerAddEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
-		       &text, 1);
-    }
+    int_32 mytime = time;	/* XXX convert to int_32 in header */
+
+    (void) headerAddOrAppendEntry(h, RPMTAG_CHANGELOGTIME,
+		RPM_INT32_TYPE, &mytime, 1);
+    (void) headerAddOrAppendEntry(h, RPMTAG_CHANGELOGNAME,
+		RPM_STRING_ARRAY_TYPE, &name, 1);
+    (void) headerAddOrAppendEntry(h, RPMTAG_CHANGELOGTEXT,
+		RPM_STRING_ARRAY_TYPE, &text, 1);
 }
 
 /**
@@ -104,6 +96,10 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 }
 /*@=boundswrite@*/
 
+/*@-redecl@*/
+extern time_t get_date(const char * p, void * now);     /* XXX expedient lies */
+/*@=redecl@*/
+
 /**
  * Add %changelog section to header.
  * @param h		header
@@ -114,13 +110,34 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 static int addChangelog(Header h, StringBuf sb)
 	/*@modifies h @*/
 {
-    char *s;
+    char * s = getStringBuf(sb);
+    char * se;
+    char *date, *name, *text;
     int i;
     time_t time;
     time_t lastTime = 0;
-    char *date, *name, *text, *next;
+    int nentries = 0;
+    static time_t last = 0;
+    static int oneshot = 0;
 
-    s = getStringBuf(sb);
+    /* Determine changelog truncation criteria. */
+    if (!oneshot++) {
+	char * t = rpmExpand("%{?_changelog_truncate}", NULL);
+	char *te = NULL;
+	if (t && *t) {
+	    long res = strtol(t, &te, 0);
+	    if (res >= 0 && *te == '\0') {
+		last = res;		/* truncate to no. of entries. */
+	    } else {
+		res = get_date (t, NULL);
+		/* XXX malformed date string silently ignored. */
+		if (res > 0) {
+		    last = res;		/* truncate to date. */
+		}
+	    }
+	}
+	t = _free(t);
+    }
 
     /* skip space */
     mySKIPSPACE(s);
@@ -139,9 +156,9 @@ static int addChangelog(Header h, StringBuf sb)
 	    rpmError(RPMERR_BADSPEC, _("incomplete %%changelog entry\n"));
 	    return RPMERR_BADSPEC;
 	}
-	/*@-modobserver@*/
+/*@-modobserver@*/
 	*s = '\0';
-	/*@=modobserver@*/
+/*@=modobserver@*/
 	text = s + 1;
 	
 	/* 4 fields of date */
@@ -173,9 +190,9 @@ static int addChangelog(Header h, StringBuf sb)
 	/* name */
 	name = s;
 	while (*s != '\0') s++;
-	while (s > name && xisspace(*s)) {
+	while (s > name && isspace(*s))
 	    *s-- = '\0';
-	}
+
 	if (s == name) {
 	    rpmError(RPMERR_BADSPEC, _("missing name in %%changelog\n"));
 	    return RPMERR_BADSPEC;
@@ -193,16 +210,23 @@ static int addChangelog(Header h, StringBuf sb)
 	do {
 	   s++;
 	} while (*s && (*(s-1) != '\n' || *s != '*'));
-	next = s;
+	se = s;
 	s--;
 
 	/* backup to end of description */
-	while ((s > text) && xisspace(*s)) {
+	while ((s > text) && xisspace(*s))
 	    *s-- = '\0';
-	}
 	
-	addChangelogEntry(h, time, name, text);
-	s = next;
+	/* Add entry if not truncated. */
+	nentries++;
+
+	if (last <= 0
+	 || (last < 1000 && nentries < last)
+	 || (last > 1000 && time >= last))
+	    addChangelogEntry(h, time, name, text);
+
+	s = se;
+
     }
 
     return 0;

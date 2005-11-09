@@ -212,6 +212,7 @@ int parseNum(/*@null@*/ const char * line, /*@null@*/ /*@out@*/int * res)
 
 /** \ingroup rpmbuild
  * Add changelog entry to header.
+ * @todo addChangelogEntry should be static.
  * @param h		header
  * @param time		time of change
  * @param name		person who made the change
