@@ -1030,6 +1030,7 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rollbackTransaction,
     rpmtransFlags tsFlags;
     rpmVSFlags ovsflags;
     struct rpmInstallArguments_s ia;
+    time_t ttid;
     int xx;
 
     /* Seg fault avoidage */
@@ -1052,9 +1053,10 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rollbackTransaction,
 	return RPMRC_OK;
     }
 
+    ttid = (time_t)arbgoal;
     rpmMessage(RPMMESS_NORMAL,
-	_("Rolling back successful transactions to %s.\n"),
-	ctime((const time_t *) &arbgoal));
+	_("Rolling back successful transactions to %-24.24s (0x%08x).\n"),
+	ctime(&ttid), arbgoal);
 
     /* Create transaction for rpmRollback() */
     rpmMessage(RPMMESS_DEBUG,
@@ -1163,6 +1165,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
     rpmte  te;
     rpmps  ps;
     const char *rollback_semaphore;
+    time_t ttid;
 
     /*
      * Gather information about this rollback transaction for reporting.
@@ -1192,12 +1195,14 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 
     rpmMessage(RPMMESS_NORMAL, _("Transaction failed...rolling back\n"));
     if (arbgoal != 0xffffffff) {
-    	rpmMessage(RPMMESS_NORMAL, _("Autorollback Goal: %-24.24s\n"),
-	    ctime((const time_t *) &arbgoal));
+	ttid = (time_t)ttid;
+    	rpmMessage(RPMMESS_NORMAL, _("Autorollback Goal: %-24.24s (0x%08x)\n"),
+	    ctime(&ttid), arbgoal);
     }
+    ttid = (time_t)ttid;
     rpmMessage(RPMMESS_NORMAL,
 	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
-	    numAdded, numRemoved, ctime((const time_t *) &tid), tid);
+	    numAdded, numRemoved, ctime(&ttid), tid);
     rpmMessage(RPMMESS_DEBUG, _("Failed Tran:  0x%08x\n"), failedtid);
 
     /* Create the backout_server semaphore */
@@ -1296,11 +1301,13 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 	rpmtransFlags tsFlags;
 	rpmVSFlags ovsflags;
 	struct rpmInstallArguments_s ia;
+	time_t ttid;
 	int xx;
 
+	ttid = (time_t)arbgoal;
 	rpmMessage(RPMMESS_NORMAL,
-	    _("Rolling back successful transactions to %s.\n"),
-	    ctime((const time_t *) &arbgoal));
+	    _("Rolling back successful transactions to %-24.24s (0x%08x)\n"),
+	    ctime(&ttid), arbgoal);
 
 	/* Create transaction for rpmRollback() */
 	rpmMessage(RPMMESS_DEBUG,

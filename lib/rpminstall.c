@@ -323,6 +323,16 @@ int rpmInstall(rpmts ts,
     }
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
+    /* Display and set autorollback goal. */
+    if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
+	if (ia->arbtid) {
+	    time_t ttid = (time_t)ia->arbtid;
+	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+		ctime(&ttid), ia->arbtid);
+	    rpmtsSetARBGoal(ts, ia->arbtid);
+	}	
+    }
+
     probFilter = ia->probFilter;
     relocations = ia->relocations;
 
@@ -780,8 +790,9 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
     /* Display and set autorollback goal. */
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
 	if (ia->arbtid) {
-	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s\n"), 
-		ctime(&(ia->arbtid)));
+	    time_t ttid = (time_t)ia->arbtid;
+	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
 	}	
     }
@@ -1213,8 +1224,10 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		excludedTID < ia->rbtidExcludes + ia->numrbtidExcludes;
 		excludedTID++) {
 		if (thistid == *excludedTID) {
+		    time_t ttid = (time_t)thistid;
 		    rpmMessage(RPMMESS_NORMAL,
-			_("Excluding TID %d from rollback\n"), thistid);
+			_("Excluding TID from rollback: %-24.24s (0x%08x)\n"),
+				ctime(&ttid), thistid);
 		    excluded = 1;
 		    /*@innerbreak@*/ break;	
 		}

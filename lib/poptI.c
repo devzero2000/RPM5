@@ -155,7 +155,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 
 	/*@-moduncon@*/
 	tid = get_date(arg, NULL);
-	rpmMessage(RPMMESS_VERBOSE, "Rollback goal:  %d\n", (int) tid);
+	rpmMessage(RPMMESS_VERBOSE, _("Rollback goal:  %-24.24s (0x%08x)\n"), ctime(&tid), (int)tid);
 	/*@=moduncon@*/
 
 	if (tid == (time_t)-1 || tid == (time_t)0)

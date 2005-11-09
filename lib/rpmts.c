@@ -942,27 +942,27 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
  * dueling rollbacks (-;).  AUTOROLLBACK's additionally need instance
  * counts passed to scriptlets to be altered.
  */
-void rpmtsSetType(rpmts ts, rpmTSType type)
-{
-    if (ts != NULL)
-	ts->type = type;
-}
-
 /* Let them know what type of transaction we are */
 rpmTSType rpmtsType(rpmts ts)
 {
     return ((ts != NULL) ? ts->type : 0);
 }
 
-void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
+void rpmtsSetType(rpmts ts, rpmTSType type)
 {
     if (ts != NULL)
-	ts->arbgoal = goal;
+	ts->type = type;
 }
 
 uint_32 rpmtsARBGoal(rpmts ts)
 {
     return ((ts != NULL) ?  ts->arbgoal : 0);
+}
+
+void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
+{
+    if (ts != NULL)
+	ts->arbgoal = goal;
 }
 
 int rpmtsUnorderedSuccessors(rpmts ts, int first)

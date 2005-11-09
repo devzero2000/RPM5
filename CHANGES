@@ -87,6 +87,7 @@
 	- add dependency result int array to dependency sets.
 	- lazy malloc for dependency set color/refs/result on 1st setter call.
 	- set boolean result in rpmdsSearch (if malloc'd).
+	- fix: set transaction autorollback goal from popt on --install.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
