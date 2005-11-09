@@ -17,7 +17,12 @@ rpmdb_svc
 rpmdb_upgrade
 rpmdb_verify
 tagtbl.c
+tdpkg
+tmpkg
+tpkgadd
+trepomd
 tsql
+ttag
 *.la
 *.lcd
 *.lo

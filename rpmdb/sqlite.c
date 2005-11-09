@@ -75,7 +75,7 @@ struct _sql_dbcursor_s {
   /* Table -- result of query */
 /*@only@*/ /*@relnull@*/
     char ** av;			/* item ptrs */
-/*@only@*/ /*rel@null@*/
+/*@only@*/ /*@relnull@*/
     int * avlen;		/* item sizes */
     int nalloc;
     int ac;			/* no. of items */
@@ -903,7 +903,7 @@ enterChroot(dbi);
 /*@=kepttrans@*/
     }
 
-    dbi->dbi_mode=O_RDWR;
+    dbi->dbi_mode = O_RDWR;
        
     /*
      * Either the root or directory components may be a URL. Concatenate,

@@ -197,7 +197,19 @@ lint:
 tdbi: tdbi.o librpmdb.la
 	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
 
+tdpkg: tdpkg.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+tmpkg: tmpkg.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
 tsql: tsql.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+tpkgadd: tpkgadd.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+trepomd: trepomd.o librpmdb.la
 	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
 
 ttag: ttag.o librpmdb.la
