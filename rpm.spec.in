@@ -32,8 +32,6 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: fileutils shadow-utils
 %endif
-BuildRequires(hint): %%{rpm_license_check}
-Requires(hint): %%{rpm_license_check}
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 Requires: popt = 1.10.3
 Obsoletes: rpm-perl < %{version}
@@ -73,7 +71,7 @@ the package like its version, a description, etc.
 %package libs
 Summary:  Libraries for manipulating RPM packages.
 Group: Development/Libraries
-Requires(hint): %%{rpm_license_check}
+Provides: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 %description libs
@@ -87,7 +85,6 @@ Requires: rpm-libs = %{rpm_version}-%{release}
 Requires: beecrypt >= 4.1.2
 Requires: neon-devel
 Requires: sqlite-devel
-Requires(hint): %%{rpm_license_check}
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 %description devel
@@ -106,7 +103,6 @@ Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
 Requires: rpm = %{rpm_version}-%{release}, patch >= 2.5, file
 Provides: rpmbuild(VendorConfig) = 4.1-1
-Requires(hint): %%{rpm_license_check}
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 %description build
@@ -121,7 +117,6 @@ Requires: rpm = %{rpm_version}-%{release}
 Requires: rpm-libs = %{rpm_version}-%{release}
 Requires: python >= %{with_python_version}
 Requires: elfutils >= 0.55
-Requires(hint): %%{rpm_license_check}
 
 %description python
 The rpm-python package contains a module that permits applications
@@ -138,7 +133,6 @@ Summary: Perl bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{rpm_version}-%{release}
 Requires: rpm-libs = %{rpm_version}-%{release}
-Requires(hint): %%{rpm_license_check}
 Obsoletes: perl-RPM2
 Conflicts: perl-RPM2
 
@@ -157,7 +151,6 @@ programs that will manipulate RPM packages and databases.
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
 Version: 1.10.3
-Requires(hint): %%{rpm_license_check}
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -201,6 +194,8 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON $WITH_PERL
 	--without-javaglue
 %endif
 
+make -C zlib || :
+
 make %{?_smp_mflags}
 
 %install
@@ -208,6 +203,11 @@ make %{?_smp_mflags}
 unset LD_ASSUME_KERNEL || :
 
 rm -rf $RPM_BUILD_ROOT
+
+%if %{with_perl_subpackage}
+eval `perl '-V:installarchlib'`
+mkdir -p $RPM_BUILD_ROOT$installarchlib
+%endif
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 
