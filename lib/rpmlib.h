@@ -545,7 +545,7 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_PACKAGE	= (1 << 30)
 } rpmsenseFlags;
 
-#define	RPMSENSE_SENSEMASK	0xe0	 /* Mask to get senses, ie serial, */
+#define	RPMSENSE_SENSEMASK	0x0e	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */
 
 #define	RPMSENSE_TRIGGER	\

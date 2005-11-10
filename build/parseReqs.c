@@ -110,8 +110,8 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	 || (nr > 3 && r[0] == '%' && r[1] == '{' && r[nr-1] == '}')))
 	{
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
-		     spec->lineNum, spec->line);
+		     _("line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"),
+		     spec->lineNum, spec->line, r);
 	    return RPMERR_BADSPEC;
 	}
 
@@ -132,6 +132,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	/* Check for possible logical operator */
 	if (ve > v) {
 	  struct ReqComp *rc;
+
 	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
 	    if ((ve-v) != strlen(rc->token) || strncmp(v, rc->token, (ve-v)))
 		/*@innercontinue@*/ continue;
@@ -167,7 +168,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	}
 
 	/*@-branchstate@*/
-	if (Flags & RPMSENSE_SENSEMASK) {
+ 	if (Flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
 		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s\n"),
 			spec->lineNum, spec->line);

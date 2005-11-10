@@ -11,6 +11,7 @@ Prefix:		/tmp
 It just works.  What more do you want?
 
 %install
+rm -rf ${RPM_BUILD_ROOT}
 
 mkdir -p $RPM_BUILD_ROOT/tmp
 
