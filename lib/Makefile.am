@@ -126,6 +126,9 @@ tre: tre.o librpm.la
 tcpu: tcpu.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
+tdpkg: tdpkg.o librpm.la
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+
 tgetconf: tgetconf.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 

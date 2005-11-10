@@ -1410,11 +1410,11 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
 	while (--fe > f && _isspace(*fe))
 	    *fe = '\0';
 
-	if (!(xisalnum(f[0]) || f[0] == '_' || f[0] == '/')) {
-	    /* XXX N must begin with alphanumeric, _, or /. */
+	if (!(xisalnum(f[0]) || f[0] == '_' || f[0] == '/' || f[0] == '%')) {
+	    /* XXX N must begin with alphanumeric, _, / or %. */
 	    fprintf(stderr,
-		_("%s:%d N must begin with alphanumeric, _, or /.\n"),
-		    fn, ln);
+		_("%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"),
+		    fn, ln, f);
 	    continue;
         }
 
@@ -2608,12 +2608,12 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 	while (*fe && _isspace(*fe))
 	    *fe++ = '\0';
 
-	if (!(xisalnum(f[0]) || f[0] == '_' || f[0] == '/')) {
+	if (!(xisalnum(f[0]) || f[0] == '_' || f[0] == '/' || f[0] == '%')) {
 	    if (!cmdprinted++)
 		fprintf(stderr, _("running \"%s\" pipe command\n"), cmd);
-	    /* XXX N must begin with alphanumeric, _, or /. */
+	    /* XXX N must begin with alphanumeric, _, / or %. */
 	    fprintf(stderr,
-		_("\tline %d: \"%s\"  must begin with alphanumeric, _, or /. Skipping ...\n"),
+		_("\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. Skipping ...\n"),
 		    ln, f);
             continue;
 	}
