@@ -510,14 +510,14 @@ typedef	enum rpmfileAttrs_e {
 typedef	enum rpmsenseFlags_e {
     RPMSENSE_ANY	= 0,
 /*@-enummemuse@*/
-    RPMSENSE_SERIAL	= (1 << 0),	/*!< @todo Legacy. */
+    RPMSENSE_SERIAL	= (1 << 0),	/*!< (obsolete). */
 /*@=enummemuse@*/
     RPMSENSE_LESS	= (1 << 1),
     RPMSENSE_GREATER	= (1 << 2),
     RPMSENSE_EQUAL	= (1 << 3),
     RPMSENSE_PROVIDES	= (1 << 4), /* only used internally by builds */
     RPMSENSE_CONFLICTS	= (1 << 5), /* only used internally by builds */
-    RPMSENSE_PREREQ	= (1 << 6), /* phased out. */
+    RPMSENSE_PREREQ	= (1 << 6),	/*!< (obsolete). */
     RPMSENSE_OBSOLETES	= (1 << 7), /* only used internally by builds */
     RPMSENSE_INTERP	= (1 << 8),	/*!< Interpreter used by scriptlet. */
     RPMSENSE_SCRIPT_PRE	= (1 << 9),	/*!< %pre dependency. */
@@ -525,8 +525,8 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_PREUN = (1 << 11),	/*!< %preun dependency. */
     RPMSENSE_SCRIPT_POSTUN = (1 << 12), /*!< %postun dependency. */
     RPMSENSE_SCRIPT_VERIFY = (1 << 13),	/*!< %verify dependency. */
-    RPMSENSE_FIND_REQUIRES = (1 << 14), /*!< find-requires generated dependency. */
-    RPMSENSE_FIND_PROVIDES = (1 << 15), /*!< find-provides generated dependency. */
+    RPMSENSE_FIND_REQUIRES = (1 << 14), /*!< find-requires dependency. */
+    RPMSENSE_FIND_PROVIDES = (1 << 15), /*!< find-provides dependency. */
 
     RPMSENSE_TRIGGERIN	= (1 << 16),	/*!< %triggerin dependency. */
     RPMSENSE_TRIGGERUN	= (1 << 17),	/*!< %triggerun dependency. */
@@ -537,16 +537,15 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
     RPMSENSE_SCRIPT_CLEAN = (1 << 23),	/*!< %clean build dependency. */
     RPMSENSE_RPMLIB = (1 << 24),	/*!< rpmlib(feature) dependency. */
-/*@-enummemuse@*/
-    RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< @todo Implement %triggerprein. */
-/*@=enummemuse@*/
+    RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
     RPMSENSE_PATCHES	= (1 << 27),
     RPMSENSE_CONFIG	= (1 << 28),
-    RPMSENSE_PROBE	= (1 << 29)
+    RPMSENSE_PROBE	= (1 << 29),
+    RPMSENSE_PACKAGE	= (1 << 30)
 } rpmsenseFlags;
 
-#define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */
+#define	RPMSENSE_SENSEMASK	0xe0	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */
 
 #define	RPMSENSE_TRIGGER	\
@@ -566,7 +565,8 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_INSTALL | \
     RPMSENSE_SCRIPT_CLEAN | \
     RPMSENSE_RPMLIB | \
-    RPMSENSE_KEYRING )
+    RPMSENSE_KEYRING | \
+    RPMSENSE_PACKAGE )
 
 #define	_notpre(_x)		((_x) & ~RPMSENSE_PREREQ)
 #define	_INSTALL_ONLY_MASK \
@@ -583,7 +583,6 @@ typedef	enum rpmsenseFlags_e {
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 #define	RPMVAR_OPTFLAGS			3
-#define	RPMVAR_PROVIDES			38
 #define	RPMVAR_INCLUDE			43
 #define	RPMVAR_MACROFILES		49
 
@@ -595,7 +594,8 @@ typedef	enum rpmsenseFlags_e {
  * @todo Eliminate from API.
  */
 /*@-redecl@*/
-/*@observer@*/ /*@null@*/ extern const char * rpmGetVar(int var)
+/*@observer@*/ /*@null@*/
+extern const char * rpmGetVar(int var)
 	/*@*/;
 /*@=redecl@*/
 

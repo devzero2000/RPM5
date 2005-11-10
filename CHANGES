@@ -89,6 +89,8 @@
 	- set boolean result in rpmdsSearch (if malloc'd).
 	- fix: set transaction autorollback goal from popt on --install.
 	- truncate changelogs to no. of entries or date (default: 1y) (#147362).
+	- rpmdb: expose dbiTagsInit, rpmdbNew, rpmdbOpenDatabase symbols.
+	- rpmrc: eliminate RPMVAR_PROVIDES, use /etc/rpm/sysinfo instead.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

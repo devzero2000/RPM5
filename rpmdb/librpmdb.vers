@@ -13,6 +13,7 @@ LIBRPMDB_0
     dbiIndexSetCount;
     dbiOpen;
     dbiTags;
+    dbiTagsInit;
     dbiTagsMax;
     domd5;
     expandFilelist;
@@ -61,8 +62,10 @@ LIBRPMDB_0
     rpmdbInit;
     rpmdbInitIterator;
     rpmdbNextIterator;
+    rpmdbNew;
     rpmdbOpen;
     rpmdbOpenAll;
+    rpmdbOpenDatabase;
     rpmdbPruneIterator;
     rpmdbRebuild;
     rpmdbRemove;

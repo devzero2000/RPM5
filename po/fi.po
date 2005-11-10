@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-08 23:02-0500\n"
+"POT-Creation-Date: 2005-11-10 10:16-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2867,7 +2867,7 @@ msgstr ""
 
 #: lib/rpmds.c:1416
 #, fuzzy, c-format
-msgid "%s:%d N must begin with alphanumeric, _, or /.\n"
+msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
@@ -2890,7 +2890,8 @@ msgstr ""
 #: lib/rpmds.c:2616
 #, fuzzy, c-format
 msgid ""
-"\tline %d: \"%s\"  must begin with alphanumeric, _, or /. Skipping ...\n"
+"\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
+"Skipping ...\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
@@ -3201,108 +3202,108 @@ msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:199
+#: lib/rpmrc.c:198
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "toinen ':' puuttuu, %s:%d"
 
-#: lib/rpmrc.c:202
+#: lib/rpmrc.c:201
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "puuttuva arkkitehtuurin nimi, %s:%d"
 
-#: lib/rpmrc.c:356
+#: lib/rpmrc.c:355
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Ep‰t‰ydellinen datarivi, %s:%d"
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:360
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "liian monta parametri‰ datarivill‰ %s:%d"
 
-#: lib/rpmrc.c:369
+#: lib/rpmrc.c:368
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Huono arkkitehtuuri/k‰yttˆj‰rjestelm‰ numero: %s (%s:%d)"
 
-#: lib/rpmrc.c:406
+#: lib/rpmrc.c:405
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Ep‰t‰ydellinen oletusrivi, %s:%d"
 
-#: lib/rpmrc.c:411
+#: lib/rpmrc.c:410
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "liian monta parametri‰ oletusrivill‰ %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:577
+#: lib/rpmrc.c:576
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "En voi lukea %s: %s."
 
-#: lib/rpmrc.c:615
+#: lib/rpmrc.c:614
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "puuttuva ':', %s:%d"
 
-#: lib/rpmrc.c:632 lib/rpmrc.c:706
+#: lib/rpmrc.c:631 lib/rpmrc.c:694
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s:n puuttuva parametri %s:%d"
 
-#: lib/rpmrc.c:649 lib/rpmrc.c:671
+#: lib/rpmrc.c:648 lib/rpmrc.c:670
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/rpmrc.c:658
+#: lib/rpmrc.c:657
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpmrc.c:698
+#: lib/rpmrc.c:686
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
 
-#: lib/rpmrc.c:765
+#: lib/rpmrc.c:753
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "huono parametri '%s', %s:%d"
 
-#: lib/rpmrc.c:1809
+#: lib/rpmrc.c:1797
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpmrc.c:1814
+#: lib/rpmrc.c:1802
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1831
+#: lib/rpmrc.c:1819
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "En voi avata %s luettavaksi: %s."
 
-#: lib/rpmrc.c:1942
+#: lib/rpmrc.c:1930
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1954
+#: lib/rpmrc.c:1942
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1969
+#: lib/rpmrc.c:1957
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1985
+#: lib/rpmrc.c:1973
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
@@ -3956,22 +3957,22 @@ msgstr "jaettua"
 msgid "locked   db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/dbconfig.c:339
+#: rpmdb/dbconfig.c:338
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:379
+#: rpmdb/dbconfig.c:378
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:388
+#: rpmdb/dbconfig.c:387
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:397
+#: rpmdb/dbconfig.c:396
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -4080,172 +4081,172 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:300
+#: rpmdb/rpmdb.c:303
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: rpmdb/rpmdb.c:320
+#: rpmdb/rpmdb.c:323
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: rpmdb/rpmdb.c:965
+#: rpmdb/rpmdb.c:971
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:1243 rpmdb/rpmdb.c:1374 rpmdb/rpmdb.c:1430 rpmdb/rpmdb.c:2399
-#: rpmdb/rpmdb.c:2528 rpmdb/rpmdb.c:3282
+#: rpmdb/rpmdb.c:1249 rpmdb/rpmdb.c:1380 rpmdb/rpmdb.c:1436 rpmdb/rpmdb.c:2405
+#: rpmdb/rpmdb.c:2534 rpmdb/rpmdb.c:3288
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:1624
+#: rpmdb/rpmdb.c:1630
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1634
+#: rpmdb/rpmdb.c:1640
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:2278
+#: rpmdb/rpmdb.c:2284
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2310
+#: rpmdb/rpmdb.c:2316
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2632
+#: rpmdb/rpmdb.c:2638
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
 
-#: rpmdb/rpmdb.c:2698
+#: rpmdb/rpmdb.c:2704
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2806
+#: rpmdb/rpmdb.c:2812
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2810
+#: rpmdb/rpmdb.c:2816
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2838
+#: rpmdb/rpmdb.c:2844
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2859
+#: rpmdb/rpmdb.c:2865
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:2869
+#: rpmdb/rpmdb.c:2875
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:3029
+#: rpmdb/rpmdb.c:3035
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: rpmdb/rpmdb.c:3092
+#: rpmdb/rpmdb.c:3098
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3257
+#: rpmdb/rpmdb.c:3263
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3261
+#: rpmdb/rpmdb.c:3267
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:3301
+#: rpmdb/rpmdb.c:3307
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:3710
+#: rpmdb/rpmdb.c:3716
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3749
+#: rpmdb/rpmdb.c:3755
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:3781
+#: rpmdb/rpmdb.c:3787
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3785
+#: rpmdb/rpmdb.c:3791
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "v‰liaikainen tietokanta %s on jo olemassa"
 
-#: rpmdb/rpmdb.c:3791
+#: rpmdb/rpmdb.c:3797
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3793
+#: rpmdb/rpmdb.c:3799
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3802
+#: rpmdb/rpmdb.c:3808
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3813
+#: rpmdb/rpmdb.c:3819
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3844
+#: rpmdb/rpmdb.c:3850
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:3884
+#: rpmdb/rpmdb.c:3890
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "en voi lis‰t‰ tietuetta %d:st‰"
 
-#: rpmdb/rpmdb.c:3898
+#: rpmdb/rpmdb.c:3904
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3906
+#: rpmdb/rpmdb.c:3912
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3908
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3918
+#: rpmdb/rpmdb.c:3924
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3920
+#: rpmdb/rpmdb.c:3926
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"

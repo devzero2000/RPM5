@@ -170,7 +170,7 @@ static int dbiTagToDbix(int rpmtag)
 /**
  * Initialize database (index, tag) tuple from configuration.
  */
-static void dbiTagsInit(void)
+void dbiTagsInit(void)
 	/*@globals dbiTags, dbiTagsMax, rpmGlobalMacroContext, h_errno @*/
 	/*@modifies dbiTags, dbiTagsMax, rpmGlobalMacroContext @*/
 {
@@ -263,6 +263,9 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
     dbiIndex dbi = NULL;
     int _dbapi, _dbapi_rebuild, _dbapi_wanted;
     int rc = 0;
+
+if (_rpmdb_debug)
+fprintf(stderr, "==> %s(%p, %s, 0x%x)\n", __FUNCTION__, db, tagName(rpmtag), flags);
 
     if (db == NULL)
 	return NULL;
@@ -908,8 +911,8 @@ int rpmdbSync(rpmdb db)
 }
 
 /*@-mods@*/	/* FIX: dbTemplate structure assignment */
-static /*@only@*/ /*@null@*/
-rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
+/*@only@*/ /*@null@*/
+rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
 	/*@globals _db_filter_dups, rpmGlobalMacroContext, h_errno @*/
@@ -918,6 +921,9 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     rpmdb db = xcalloc(sizeof(*db), 1);
     const char * epfx = _DB_ERRPFX;
     static int _initialized = 0;
+
+if (_rpmdb_debug)
+fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, home, mode, perms, flags, db);
 
     if (!_initialized) {
 	_db_filter_dups = rpmExpandNumeric("%{_filterdbdups}");
@@ -980,7 +986,7 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 }
 /*@=mods@*/
 
-static int openDatabase(/*@null@*/ const char * prefix,
+int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
 		int mode, int perms, int flags)
@@ -1012,7 +1018,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
     if (mode & O_WRONLY) 
 	return 1;
 
-    db = newRpmdb(prefix, dbpath, mode, perms, flags);
+    db = rpmdbNew(prefix, dbpath, mode, perms, flags);
     if (db == NULL)
 	return 1;
 
@@ -1109,7 +1115,7 @@ int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
 /*@-boundswrite@*/
-    return openDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
+    return rpmdbOpenDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
 /*@=boundswrite@*/
 }
 
@@ -1120,7 +1126,7 @@ int rpmdbInit (const char * prefix, int perms)
     int rc;
 
 /*@-boundswrite@*/
-    rc = openDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR),
+    rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR),
 		perms, RPMDB_FLAG_JUSTCHECK);
 /*@=boundswrite@*/
     if (db != NULL) {
@@ -1141,7 +1147,7 @@ int rpmdbVerify(const char * prefix)
     int rc = 0;
 
 /*@-boundswrite@*/
-    rc = openDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
+    rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
 /*@=boundswrite@*/
 
     if (db != NULL) {
@@ -3802,7 +3808,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     rpmMessage(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
 		_dbapi);
 /*@-boundswrite@*/
-    if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
+    if (rpmdbOpenDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
 	goto exit;
@@ -3814,7 +3820,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
 /*@-boundswrite@*/
-    if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
+    if (rpmdbOpenDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
