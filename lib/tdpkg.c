@@ -13,7 +13,7 @@ extern int _rpmds_debug;
 	N\n\
 	/not-installed/d\n\
 	N\n\
-	s|^Package: \([^\\n]*\)\\n[^\\n]*\\nVersion: \(.*\)$|\1 = \2|\n\
+	s|^Package: \\([^\\n]*\\)\\n[^\\n]*\\nVersion: \\(.*\\)$|\\1 = \\2|\n\
 }\n\
 /^Provides: / {\n\
 	s|^Provides: ||\n\
