@@ -1964,13 +1964,25 @@ int rpmShowRC(FILE * fp)
 	    ds = rpmdsFree(ds);
 	    fprintf(fp, "\n");
 	}
-    }
 
-    if (rpmIsVerbose()) {
 	xx = rpmdsGetconf(&ds, NULL);
 	if (ds != NULL) {
 	    fprintf(fp,
 		_("Features provided by current getconf:\n"));
+	    ds = rpmdsInit(ds);
+	    while (rpmdsNext(ds) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(ds);
+		if (DNEVR != NULL)
+		    fprintf(fp, "    %s\n", DNEVR+2);
+	    }
+	    ds = rpmdsFree(ds);
+	    fprintf(fp, "\n");
+	}
+
+	xx = rpmdsUname(&ds, NULL);
+	if (ds != NULL) {
+	    fprintf(fp,
+		_("Features provided by current uname:\n"));
 	    ds = rpmdsInit(ds);
 	    while (rpmdsNext(ds) >= 0) {
 		const char * DNEVR = rpmdsDNEVR(ds);

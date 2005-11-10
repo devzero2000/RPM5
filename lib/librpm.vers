@@ -129,6 +129,7 @@ LIBRPM_0
     rpmdsSysinfo;
     rpmdsTagN;
     rpmdsThis;
+    rpmdsUname;
     _rpmds_unspecified_epoch_noise;
     rpmErase;
     rpmEVR;

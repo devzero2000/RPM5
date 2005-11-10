@@ -308,7 +308,7 @@ int_32 rpmdsResult(/*@null@*/ const rpmds ds)
 /**
  * Set current dependency comparison result.
  * @param ds		dependency set
- * @param refs		new dependency result
+ * @param result	new dependency result
  * @return		previous dependency result
  */
 int_32 rpmdsSetResult(/*@null@*/ const rpmds ds, int_32 result)
@@ -421,9 +421,19 @@ int rpmdsLdconfig(rpmds * dsp, /*@null@*/ const char * fn)
 	/*@modifies *dsp, fileSystem, internalState @*/;
 
 /**
+ * Load uname(2) provides into a dependency set.
+ * @retval *dsp		(loaded) depedency set
+ * @param un		utsname struct (NULL calls uname(2))
+ * @return		0 on success
+ */
+int rpmdsUname(rpmds * dsp, /*@null@*/ const struct utsname * un)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *dsp, fileSystem, internalState @*/;
+
+/**
  * Load provides from a pipe into a dependency set.
  * @retval *dsp		(loaded) depedency set
- * @param tag		rpmds tag (<= 0 uses RPMTAG_PROVIDENAME).
+ * @param tagN		rpmds tag (<= 0 uses RPMTAG_PROVIDENAME).
  * @param cmd		popen cmd to run (NULL loads perl provides)
  * @return		0 on success
  */

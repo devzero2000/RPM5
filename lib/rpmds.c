@@ -2553,6 +2553,43 @@ exit:
     return rc;
 }
 
+int rpmdsUname(rpmds *dsp, const struct utsname * un)
+{
+    static const char * NS = "uname";
+    struct utsname myun;
+    int rc = -1;
+    int xx;
+
+    if (un == NULL) {
+	xx = uname(&myun);
+	if (xx != 0)
+	    goto exit;
+	un = &myun;
+    }
+
+    /* XXX values need to be checked for EVR (i.e. no '-' character.) */
+    if (un->sysname != NULL)
+	rpmdsNSAdd(dsp, NS, "sysname", un->sysname, RPMSENSE_EQUAL);
+    if (un->nodename != NULL)
+	rpmdsNSAdd(dsp, NS, "nodename", un->nodename, RPMSENSE_EQUAL);
+    if (un->release != NULL)
+	rpmdsNSAdd(dsp, NS, "release", un->release, RPMSENSE_EQUAL);
+#if 0	/* XXX has embedded spaces */
+    if (un->version != NULL)
+	rpmdsNSAdd(dsp, NS, "version", un->version, RPMSENSE_EQUAL);
+#endif
+    if (un->machine != NULL)
+	rpmdsNSAdd(dsp, NS, "machine", un->machine, RPMSENSE_EQUAL);
+#if defined(_GNU_SOURCE)
+    if (un->domainname != NULL && strcmp(un->domainname, "(none)"))
+	rpmdsNSAdd(dsp, NS, "domainname", un->domainname, RPMSENSE_EQUAL);
+#endif
+    rc = 0;
+
+exit:
+    return rc;
+}
+
 #define	_PERL_PROVIDES	"/usr/bin/find /usr/lib/perl5 | /usr/lib/rpm/perl.prov"
 /*@unchecked@*/ /*@observer@*/
 static const char * _perl_provides = _PERL_PROVIDES;

@@ -730,6 +730,22 @@ retry:
 	goto unsatisfied;
     }
 
+    if (!strncmp(Name, "uname(", sizeof("uname(")-1)) {
+	static rpmds unameds = NULL;
+	static int oneshot = -1;
+
+	if (oneshot)
+	    oneshot = rpmdsUname(&unameds, NULL);
+	if (unameds == NULL)
+	    goto unsatisfied;
+
+	if (rpmdsSearch(unameds, dep) >= 0) {
+	    rpmdsNotify(dep, _("(uname provides)"), rc);
+	    goto exit;
+	}
+	goto unsatisfied;
+    }
+
     /* Search added packages for the dependency. */
     if (rpmalSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL) {
 	/*

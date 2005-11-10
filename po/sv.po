@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-10 10:16-0500\n"
+"POT-Creation-Date: 2005-11-10 12:45-0500\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1050,18 +1050,18 @@ msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
 
 #: build/parseReqs.c:113
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+"line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
 
-#: build/parseReqs.c:141
+#: build/parseReqs.c:142
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "rad %d: Filnamn med version inte tillåtet: %s\n"
 
-#: build/parseReqs.c:172
+#: build/parseReqs.c:173
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "rad %d: Version krävs: %s\n"
@@ -1442,40 +1442,45 @@ msgstr "(rpmlib tillhandahåller)"
 msgid "(getconf provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:756
+#: lib/depends.c:743
+#, fuzzy
+msgid "(uname provides)"
+msgstr "(lade till tillhandahållande)"
+
+#: lib/depends.c:772
 msgid "(db files)"
 msgstr "(db-filer)"
 
-#: lib/depends.c:769
+#: lib/depends.c:785
 msgid "(db provides)"
 msgstr "(db tillhandahåller)"
 
-#: lib/depends.c:782
+#: lib/depends.c:798
 msgid "(db package)"
 msgstr "(db-paket)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:813
+#: lib/depends.c:829
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1146
+#: lib/depends.c:1162
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1268
+#: lib/depends.c:1284
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1505
+#: lib/depends.c:1521
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1597
+#: lib/depends.c:1613
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1484,21 +1489,21 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "djup, bredd)\n"
 
-#: lib/depends.c:1688
+#: lib/depends.c:1704
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== endast efterföljare (%d byte)\n"
 
-#: lib/depends.c:1761
+#: lib/depends.c:1777
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1796
+#: lib/depends.c:1812
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1801
+#: lib/depends.c:1817
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -2716,11 +2721,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:788 lib/rpmds.c:2820
+#: lib/rpmds.c:788 lib/rpmds.c:2857
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:788 lib/rpmds.c:2820
+#: lib/rpmds.c:788 lib/rpmds.c:2857
 msgid "YES"
 msgstr "JA"
 
@@ -2782,12 +2787,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2613 lib/rpmds.c:2643 lib/rpmds.c:2655
+#: lib/rpmds.c:2650 lib/rpmds.c:2680 lib/rpmds.c:2692
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2616
+#: lib/rpmds.c:2653
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2796,20 +2801,20 @@ msgstr ""
 "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:2645
+#: lib/rpmds.c:2682
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:2657
+#: lib/rpmds.c:2694
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:2786
+#: lib/rpmds.c:2823
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2818,13 +2823,13 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2819
+#: lib/rpmds.c:2856
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2843
+#: lib/rpmds.c:2880
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"
@@ -3201,9 +3206,14 @@ msgstr ""
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1973
+#: lib/rpmrc.c:1971
 #, c-format
 msgid "Features provided by current getconf:\n"
+msgstr ""
+
+#: lib/rpmrc.c:1985
+#, c-format
+msgid "Features provided by current uname:\n"
 msgstr ""
 
 #: lib/rpmsx.c:374

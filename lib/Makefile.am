@@ -159,6 +159,9 @@ trl: trl.o librpm.la
 tsys: tsys.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
+tuname: tuname.o librpm.la
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+
 tgi_SOURCES = tgi.c
 tgi_LDFLAGS = @LDFLAGS_STATIC@
 tgi_LDADD = librpm.la

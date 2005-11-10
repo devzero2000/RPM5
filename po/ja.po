@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-10 10:16-0500\n"
+"POT-Creation-Date: 2005-11-10 12:45-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1064,18 +1064,18 @@ msgid "line %d: second %%prep\n"
 msgstr "%d 行目: 2番目の %%prep\n"
 
 #: build/parseReqs.c:113
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+"line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
-#: build/parseReqs.c:141
+#: build/parseReqs.c:142
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "%d 行目: バージョン付けされたファイル名は許可されていません: %s\n"
 
-#: build/parseReqs.c:172
+#: build/parseReqs.c:173
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "%d 行目: バージョンが必要です: %s\n"
@@ -1450,40 +1450,45 @@ msgstr "(rpmlib 提供)"
 msgid "(getconf provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:756
+#: lib/depends.c:743
+#, fuzzy
+msgid "(uname provides)"
+msgstr "(provideに追加済み)"
+
+#: lib/depends.c:772
 msgid "(db files)"
 msgstr "(files データベース)"
 
-#: lib/depends.c:769
+#: lib/depends.c:785
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#: lib/depends.c:782
+#: lib/depends.c:798
 msgid "(db package)"
 msgstr "(package データベース)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:813
+#: lib/depends.c:829
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1146
+#: lib/depends.c:1162
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1268
+#: lib/depends.c:1284
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
 #. Record all relations.
-#: lib/depends.c:1505
+#: lib/depends.c:1521
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1597
+#: lib/depends.c:1613
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1492,21 +1497,21 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:1688
+#: lib/depends.c:1704
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:1761
+#: lib/depends.c:1777
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:1796
+#: lib/depends.c:1812
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1801
+#: lib/depends.c:1817
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -2729,11 +2734,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:788 lib/rpmds.c:2820
+#: lib/rpmds.c:788 lib/rpmds.c:2857
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:788 lib/rpmds.c:2820
+#: lib/rpmds.c:788 lib/rpmds.c:2857
 msgid "YES"
 msgstr "YES"
 
@@ -2798,12 +2803,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2613 lib/rpmds.c:2643 lib/rpmds.c:2655
+#: lib/rpmds.c:2650 lib/rpmds.c:2680 lib/rpmds.c:2692
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2616
+#: lib/rpmds.c:2653
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2812,20 +2817,20 @@ msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:2645
+#: lib/rpmds.c:2682
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:2657
+#: lib/rpmds.c:2694
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:2786
+#: lib/rpmds.c:2823
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2834,13 +2839,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします (\"A\" と同じであると仮定して)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2819
+#: lib/rpmds.c:2856
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2843
+#: lib/rpmds.c:2880
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"
@@ -3225,9 +3230,14 @@ msgstr ""
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1973
+#: lib/rpmrc.c:1971
 #, c-format
 msgid "Features provided by current getconf:\n"
+msgstr ""
+
+#: lib/rpmrc.c:1985
+#, c-format
+msgid "Features provided by current uname:\n"
 msgstr ""
 
 #: lib/rpmsx.c:374
