@@ -92,6 +92,7 @@
 	- rpmdb: expose dbiTagsInit, rpmdbNew, rpmdbOpenDatabase symbols.
 	- rpmrc: eliminate RPMVAR_PROVIDES, use /etc/rpm/sysinfo instead.
 	- add uname(foo) dependency name space to map uname(2) provides.
+	- link all rpm executables statically.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
