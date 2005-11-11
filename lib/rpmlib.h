@@ -469,6 +469,40 @@ typedef enum rpmTag_e {
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 /**
+ * Scriptlet identifiers.
+ */
+typedef enum rpmScriptID_e {
+    RPMSCRIPT_UNKNOWN		=  0,	/*!< unknown scriptlet */
+    RPMSCRIPT_PRETRANS		=  1,	/*!< %pretrans scriptlet */
+    RPMSCRIPT_TRIGGERPREIN	=  2,	/*!< %triggerprein scriptlet */
+    RPMSCRIPT_PREIN		=  3,	/*!< %pre scriptlet */
+    RPMSCRIPT_POSTIN		=  4,	/*!< %post scriptlet  */
+    RPMSCRIPT_TRIGGERIN		=  5,	/*!< %triggerin scriptlet  */
+    RPMSCRIPT_TRIGGERUN		=  6,	/*!< %triggerun scriptlet  */
+    RPMSCRIPT_PREUN		=  7,	/*!< %preun scriptlet  */
+    RPMSCRIPT_POSTUN		=  8,	/*!< %postun scriptlet  */
+    RPMSCRIPT_TRIGGERPOSTUN	=  9,	/*!< %triggerpostun scriptlet  */
+    RPMSCRIPT_POSTTRANS		= 10,	/*!< %posttrans scriptlet  */
+	/* 11-15 unused */
+    RPMSCRIPT_VERIFY		= 16,	/*!< %verify scriptlet  */
+    RPMSCRIPT_MAX		= 32
+} rpmScriptID;
+
+/**
+ * Scriptlet states (when installed).
+ */
+typedef enum rpmScriptState_e {
+    RPMSCRIPT_STATE_UNKNOWN	= 0,
+	/* 0-15 reserved for waitpid return. */
+    RPMSCRIPT_STATE_EXEC	= (1 << 16), /*!< scriptlet was exec'd */
+    RPMSCRIPT_STATE_REAPED	= (1 << 17), /*!< scriptlet was reaped */
+	/* 18-23 unused */
+    RPMSCRIPT_STATE_SELINUX	= (1 << 24), /*!< scriptlet exec by SELinux */
+    RPMSCRIPT_STATE_EMULATOR	= (1 << 25), /*!< scriptlet exec in emulator */
+    RPMSCRIPT_STATE_LUA		= (1 << 26)  /*!< scriptlet exec with lua */
+} rpmScriptState;
+
+/**
  * File States (when installed).
  */
 typedef enum rpmfileState_e {

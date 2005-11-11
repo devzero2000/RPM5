@@ -448,15 +448,43 @@ static /*@observer@*/ const char * tag2sln(int tag)
 	/*@*/
 {
     switch (tag) {
+    case RPMTAG_PRETRANS:	return "%pretrans";
+    case RPMTAG_TRIGGERPREIN:	return "%triggerprein";
     case RPMTAG_PREIN:		return "%pre";
     case RPMTAG_POSTIN:		return "%post";
+    case RPMTAG_TRIGGERIN:	return "%triggerin";
+    case RPMTAG_TRIGGERUN:	return "%triggerun";
     case RPMTAG_PREUN:		return "%preun";
     case RPMTAG_POSTUN:		return "%postun";
-    case RPMTAG_VERIFYSCRIPT:	return "%verify";
-    case RPMTAG_PRETRANS:	return "%pretrans";
     case RPMTAG_POSTTRANS:	return "%posttrans";
+    case RPMTAG_TRIGGERPOSTUN:	return "%triggerpostun";
+    case RPMTAG_VERIFYSCRIPT:	return "%verify";
     }
     return "%unknownscript";
+}
+
+/**
+ * Return scriptlet id from tag.
+ * @param tag		scriptlet tag
+ * @return		id of scriptlet
+ */
+static /*@observer@*/ rpmScriptID tag2slx(int tag)
+	/*@*/
+{
+    switch (tag) {
+    case RPMTAG_PRETRANS:	return RPMSCRIPT_PRETRANS;
+    case RPMTAG_TRIGGERPREIN:	return RPMSCRIPT_TRIGGERPREIN;
+    case RPMTAG_PREIN:		return RPMSCRIPT_PREIN;
+    case RPMTAG_POSTIN:		return RPMSCRIPT_POSTIN;
+    case RPMTAG_TRIGGERIN:	return RPMSCRIPT_TRIGGERIN;
+    case RPMTAG_TRIGGERUN:	return RPMSCRIPT_TRIGGERUN;
+    case RPMTAG_PREUN:		return RPMSCRIPT_PREUN;
+    case RPMTAG_POSTUN:		return RPMSCRIPT_POSTUN;
+    case RPMTAG_POSTTRANS:	return RPMSCRIPT_POSTTRANS;
+    case RPMTAG_TRIGGERPOSTUN:	return RPMSCRIPT_TRIGGERPOSTUN;
+    case RPMTAG_VERIFYSCRIPT:	return RPMSCRIPT_VERIFY;
+    }
+    return RPMSCRIPT_UNKNOWN;
 }
 
 /**
