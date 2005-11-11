@@ -563,7 +563,7 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 	/*@globals _cacheDependsRC, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies ts, _cacheDependsRC, rpmGlobalMacroContext,
+	/*@modifies ts, dep, _cacheDependsRC, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     DBT * key = alloca(sizeof(*key));

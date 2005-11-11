@@ -363,12 +363,14 @@ int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
 
 /**
  * Search a sorted dependency set for an element that overlaps.
+ * A boolean result is saved (if allocated) and accessible through
+ * rpmdsResult(ods) afterwards.
  * @param ds		dependency set to search
  * @param ods		dependency set element to find.
  * @return		dependency index (or -1 if not found)
  */
 int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ rpmds ods)
-	/*@modifies ds @*/;
+	/*@modifies ds, ods @*/;
 
 /**
  * Load /proc/cpuinfo provides into a dependency set.
@@ -427,8 +429,8 @@ int rpmdsLdconfig(rpmds * dsp, /*@null@*/ const char * fn)
  * @return		0 on success
  */
 int rpmdsUname(rpmds * dsp, /*@null@*/ const struct utsname * un)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *dsp, fileSystem, internalState @*/;
+	/*@globals internalState @*/
+	/*@modifies *dsp, internalState @*/;
 
 /**
  * Load provides from a pipe into a dependency set.

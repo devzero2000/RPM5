@@ -108,7 +108,8 @@ extern time_t get_date(const char * p, void * now);     /* XXX expedient lies */
  */
 /*@-boundswrite@*/
 static int addChangelog(Header h, StringBuf sb)
-	/*@modifies h @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies h, rpmGlobalMacroContext @*/
 {
     char * s = getStringBuf(sb);
     char * se;
@@ -129,7 +130,9 @@ static int addChangelog(Header h, StringBuf sb)
 	    if (res >= 0 && *te == '\0') {
 		last = res;		/* truncate to no. of entries. */
 	    } else {
+/*@-moduncon@*/
 		res = get_date (t, NULL);
+/*@=moduncon@*/
 		/* XXX malformed date string silently ignored. */
 		if (res > 0) {
 		    last = res;		/* truncate to date. */

@@ -170,6 +170,7 @@ static int dbiTagToDbix(int rpmtag)
 /**
  * Initialize database (index, tag) tuple from configuration.
  */
+/*@-exportheader@*/
 void dbiTagsInit(void)
 	/*@globals dbiTags, dbiTagsMax, rpmGlobalMacroContext, h_errno @*/
 	/*@modifies dbiTags, dbiTagsMax, rpmGlobalMacroContext @*/
@@ -223,6 +224,7 @@ void dbiTagsInit(void)
 
     dbiTagStr = _free(dbiTagStr);
 }
+/*@=exportheader@*/
 
 /*@-redecl@*/
 #define	DB1vec		NULL
@@ -264,8 +266,10 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
     int _dbapi, _dbapi_rebuild, _dbapi_wanted;
     int rc = 0;
 
+/*@-modfilesys@*/
 if (_rpmdb_debug)
 fprintf(stderr, "==> %s(%p, %s, 0x%x)\n", __FUNCTION__, db, tagName(rpmtag), flags);
+/*@=modfilesys@*/
 
     if (db == NULL)
 	return NULL;
@@ -910,6 +914,7 @@ int rpmdbSync(rpmdb db)
     return rc;
 }
 
+/*@-exportheader@*/
 /*@-mods@*/	/* FIX: dbTemplate structure assignment */
 /*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
@@ -922,8 +927,10 @@ rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
     const char * epfx = _DB_ERRPFX;
     static int _initialized = 0;
 
+/*@-modfilesys@*/ /*@-nullpass@*/
 if (_rpmdb_debug)
 fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, home, mode, perms, flags, db);
+/*@=modfilesys@*/ /*@=nullpass@*/
 
     if (!_initialized) {
 	_db_filter_dups = rpmExpandNumeric("%{_filterdbdups}");
@@ -985,7 +992,9 @@ fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, h
     /*@=globstate@*/
 }
 /*@=mods@*/
+/*@=exportheader@*/
 
+/*@-exportheader@*/
 int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
@@ -1089,6 +1098,7 @@ exit:
 
     return rc;
 }
+/*@=exportheader@*/
 
 rpmdb XrpmdbUnlink(rpmdb db, const char * msg, const char * fn, unsigned ln)
 {

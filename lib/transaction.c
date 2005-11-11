@@ -1301,7 +1301,6 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 	rpmtransFlags tsFlags;
 	rpmVSFlags ovsflags;
 	struct rpmInstallArguments_s ia;
-	time_t ttid;
 	int xx;
 
 	ttid = (time_t)arbgoal;

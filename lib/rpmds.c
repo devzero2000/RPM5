@@ -2555,6 +2555,7 @@ exit:
 
 int rpmdsUname(rpmds *dsp, const struct utsname * un)
 {
+/*@observer@*/
     static const char * NS = "uname";
     struct utsname myun;
     int rc = -1;
@@ -2567,6 +2568,7 @@ int rpmdsUname(rpmds *dsp, const struct utsname * un)
 	un = &myun;
     }
 
+/*@-type@*/
     /* XXX values need to be checked for EVR (i.e. no '-' character.) */
     if (un->sysname != NULL)
 	rpmdsNSAdd(dsp, NS, "sysname", un->sysname, RPMSENSE_EQUAL);
@@ -2584,6 +2586,7 @@ int rpmdsUname(rpmds *dsp, const struct utsname * un)
     if (un->domainname != NULL && strcmp(un->domainname, "(none)"))
 	rpmdsNSAdd(dsp, NS, "domainname", un->domainname, RPMSENSE_EQUAL);
 #endif
+/*@=type@*/
     rc = 0;
 
 exit:
