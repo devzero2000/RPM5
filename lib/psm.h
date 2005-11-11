@@ -76,9 +76,9 @@ struct rpmpsm_s {
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage header. */
 /*@null@*/
-    rpmdbMatchIterator mi;
+    rpmdbMatchIterator mi;	/*!< An rpmdb iterator for this psm's use. */
 /*@observer@*/
-    const char * stepName;
+    const char * stepName;	/*!< The current PSM step (for display). */
 /*@only@*/ /*@null@*/
     const char * rpmio_flags;
 /*@only@*/ /*@null@*/
@@ -87,6 +87,8 @@ struct rpmpsm_s {
     const char * pkgURL;	/*!< Repackage URL. */
 /*@dependent@*/
     const char * pkgfn;		/*!< Repackage file name. */
+/*@only@*/ /*@null@*/
+    int *sstates;		/*!< Scriptlet states and return codes. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */

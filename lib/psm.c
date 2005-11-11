@@ -509,6 +509,13 @@ static pid_t psmWait(rpmpsm psm)
 	(unsigned)psm->sq.reaped, psm->sq.status,
 	(unsigned)msecs/1000, (unsigned)msecs%1000);
 
+    if (psm->sstates != NULL)
+    {	int * ssp = psm->sstates + tag2slx(psm->scriptTag);
+	*ssp &= ~0xffff;
+	*ssp |= (psm->sq.status & 0xffff);
+	*ssp |= RPMSCRIPT_STATE_REAPED;
+    }
+
     return psm->sq.reaped;
 }
 
@@ -529,6 +536,12 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     int xx;
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
+    int * ssp = NULL;
+
+    if (psm->sstates != NULL)
+	ssp = psm->sstates + tag2slx(psm->scriptTag);
+    if (ssp != NULL)
+	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
 
     xx = headerNVR(h, &n, &v, &r);
 
@@ -575,8 +588,14 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     {
 	char buf[BUFSIZ];
 	xx = snprintf(buf, BUFSIZ, "%s(%s-%s-%s)", sln, n, v, r);
-	if (rpmluaRunScript(lua, script, buf) == -1)
+	xx = rpmluaRunScript(lua, script, buf);
+	if (xx == -1)
 	    rc = RPMRC_FAIL;
+	if (ssp != NULL) {
+	    *ssp &= ~0xffff;
+	    *ssp |= (xx & 0xffff);
+	    *ssp |= RPMSCRIPT_STATE_REAPED;
+	}
     }
 
     rpmluaDelVar(lua, "arg");
@@ -650,6 +669,12 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t out;
     rpmRC rc = RPMRC_OK;
     const char *n, *v, *r, *a;
+    int * ssp = NULL;
+
+    if (psm->sstates != NULL)
+	ssp = psm->sstates + tag2slx(psm->scriptTag);
+    if (ssp != NULL)
+	*ssp = RPMSCRIPT_STATE_UNKNOWN;
 
     if (progArgv == NULL && script == NULL)
 	return rc;
@@ -905,8 +930,13 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    /* XXX Don't mtrace into children. */
 	    unsetenv("MALLOC_CHECK_");
 
+	    if (ssp != NULL)
+		*ssp |= RPMSCRIPT_STATE_EXEC;
+
 	    /* Permit libselinux to do the scriptlet exec. */
 	    if (rpmtsSELinuxEnabled(ts) == 1) {	
+		if (ssp != NULL)
+		    *ssp |= RPMSCRIPT_STATE_SELINUX;
 /*@-moduncon@*/
 		xx = rpm_execcon(0, argv[0], argv, environ);
 /*@=moduncon@*/
@@ -926,6 +956,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	default:
 	    break;
 	}
+
+	if (ssp != NULL)
+	    *ssp &= ~RPMSCRIPT_STATE_EXEC;
 
  	_exit(-1);
 	/*@notreached@*/
@@ -1313,6 +1346,8 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 
     (void) rpmpsmUnlink(psm, msg);
 
+    psm->sstates = _free(psm->sstates);
+
     /*@-refcounttrans -usereleased@*/
 /*@-boundswrite@*/
     memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
@@ -1338,6 +1373,8 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 /*@=assignexpose =temptrans @*/
 #endif
     if (fi)	psm->fi = rpmfiLink(fi, msg);
+
+    psm->sstates = xcalloc(RPMSCRIPT_MAX, sizeof(*psm->sstates));
 
     return rpmpsmLink(psm, msg);
 }

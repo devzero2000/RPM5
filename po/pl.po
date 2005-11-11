@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
-"POT-Creation-Date: 2005-11-11 13:55-0500\n"
+"POT-Creation-Date: 2005-11-11 15:02-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -743,7 +743,7 @@ msgstr "Nie mo¿na ponownie odczytaæ nag³ówka sygnatury.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1685
+#: build/pack.c:645 lib/psm.c:1722
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s\n"
@@ -773,7 +773,7 @@ msgstr "Nie mo¿na odczytaæ danych z %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ danych do %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1998
+#: build/pack.c:738 lib/psm.c:2035
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -2430,90 +2430,90 @@ msgstr "pakiet ¼ród³owy nie zawiera pliku .spec\n"
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 
-#: lib/psm.c:663
+#: lib/psm.c:688
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "%s: %s(%s-%s-%s) %ssynchroniczny start skryptu\n"
 
-#: lib/psm.c:681
+#: lib/psm.c:706
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s) pomijanie nadmiarowego \"%s\".\n"
 
-#: lib/psm.c:689
+#: lib/psm.c:714
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s) %ssynchroniczny start skryptu\n"
 
-#: lib/psm.c:901
+#: lib/psm.c:926
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 
-#: lib/psm.c:941
+#: lib/psm.c:974
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "skrypt %s(%s-%s-%s) nie powiód³ siê, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:948
+#: lib/psm.c:981
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "skrypt %s(%s-%s-%s) nie powiód³ siê, status wyj¶cia %d\n"
 
-#: lib/psm.c:952
+#: lib/psm.c:985
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "skrypt %s(%s-%s-%s) nie powiód³ siê, status wyj¶cia %d\n"
 
-#: lib/psm.c:1387
+#: lib/psm.c:1424
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s ma %d plików, test = %d\n"
 
-#: lib/psm.c:1581
+#: lib/psm.c:1618
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: skrypt %s nie powiód³ siê (%d), pomijanie %s\n"
 
-#: lib/psm.c:1697
+#: lib/psm.c:1734
 msgid "Unable to reload signature header\n"
 msgstr "Nie mo¿na ponownie odczytaæ nag³ówka sygnatury\n"
 
-#: lib/psm.c:1797
+#: lib/psm.c:1834
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozpakowanie archiwum nie powiod³o siê%s%s: %s\n"
 
-#: lib/psm.c:1798
+#: lib/psm.c:1835
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:2006
+#: lib/psm.c:2043
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s nie powiód³ siê na pliku %s: %s\n"
 
-#: lib/psm.c:2009
+#: lib/psm.c:2046
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê: %s\n"
 
-#: lib/psm.c:2185
+#: lib/psm.c:2222
 #, c-format
 msgid "Could not aquire transaction score entry for %s\n"
 msgstr ""
 
-#: lib/psm.c:2198
+#: lib/psm.c:2235
 #, c-format
 msgid "Setting %s to TID of 0x%08x\n"
 msgstr ""
 
-#: lib/psm.c:2222
+#: lib/psm.c:2259
 #, fuzzy, c-format
 msgid "Attempting to mark %s as installed in trasaction score\n"
 msgstr "Próba oznakowania %s jako zainstalowanego w tablicy punktów(%p).\n"
 
-#: lib/psm.c:2254
+#: lib/psm.c:2291
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr "Próba oznakowania %s jako usuniêtego w tablicy punktów(0x%x).\n"
