@@ -660,14 +660,15 @@ static int rpmfcSCRIPT(rpmfc fc)
     FILE * fp;
     char * s, * se;
     int i;
-    struct stat sb, * st = &sb;
     int is_executable;
     int xx;
 
-    /* Only executable scripts are searched. */
-    if (stat(fn, st) < 0)
-	return -1;
-    is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+    /* Extract dependencies only from files with executable bit set. */
+    {	struct stat sb, * st = &sb;
+	if (stat(fn, st) != 0)
+	    return -1;
+	is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+    }
 
     fp = fopen(fn, "r");
     if (fp == NULL || ferror(fp)) {
@@ -790,7 +791,7 @@ static int rpmfcELF(rpmfc fc)
     int cnt;
     char buf[BUFSIZ];
     const char * s;
-    struct stat sb, * st = &sb;
+    int is_executable;
     const char * soname = NULL;
     rpmds * depsp, ds;
     int_32 tagN, dsContext;
@@ -808,9 +809,12 @@ static int rpmfcELF(rpmfc fc)
 	filter_GLIBC_PRIVATE = rpmExpandNumeric("%{?_filter_GLIBC_PRIVATE}");
     }
 
-    /* Files with executable bit set only. */
-    if (stat(fn, st) != 0)
-	return(-1);
+    /* Extract dependencies only from files with executable bit set. */
+    {	struct stat sb, * st = &sb;
+	if (stat(fn, st) != 0)
+	    return -1;
+	is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+    }
 
     fdno = open(fn, O_RDONLY);
     if (fdno < 0)
@@ -902,8 +906,8 @@ static int rpmfcELF(rpmfc fc)
 	    /*@switchbreak@*/ break;
 	case SHT_GNU_verneed:
 	    data = NULL;
-	    /* Files with executable bit set only. */
-	    if (!fc->skipReq && (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
+	    /* Only from files with executable bit set. */
+	    if (!fc->skipReq && is_executable)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		offset = 0;
 		for (cnt = shdr->sh_info; --cnt >= 0; ) {
@@ -976,8 +980,8 @@ static int rpmfcELF(rpmfc fc)
 			gotDEBUG = 1;
 			/*@innercontinue@*/ continue;
 		    case DT_NEEDED:
-			/* Files with executable bit set only. */
-			if (fc->skipReq || !(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
+			/* Only from files with executable bit set. */
+			if (fc->skipReq || !is_executable)
 			    /*@innercontinue@*/ continue;
 			/* Add to package requires. */
 			depsp = &fc->requires;
