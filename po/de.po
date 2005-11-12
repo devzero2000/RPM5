@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-11 23:18-0500\n"
+"POT-Creation-Date: 2005-11-12 14:30-0500\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1473,40 +1473,45 @@ msgstr "(rpmlib bietet an)"
 msgid "(uname provides)"
 msgstr "(angebotene Fähigkeit hinzugefügt)"
 
-#: lib/depends.c:772
+#: lib/depends.c:778
+#, fuzzy
+msgid "(soname provides)"
+msgstr "(angebotene Fähigkeit hinzugefügt)"
+
+#: lib/depends.c:807
 msgid "(db files)"
 msgstr "(Datenbank-Dateien)"
 
-#: lib/depends.c:785
+#: lib/depends.c:820
 msgid "(db provides)"
 msgstr "(Datenbank bietet an)"
 
-#: lib/depends.c:798
+#: lib/depends.c:833
 msgid "(db package)"
 msgstr "(Datenbank-Paket)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:829
+#: lib/depends.c:864
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1162
+#: lib/depends.c:1197
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "Ignoriere Paketnamensrelation(en) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1284
+#: lib/depends.c:1319
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "Entferne %s \"%s\" von tsort-Relationen.\n"
 
 #. Record all relations.
-#: lib/depends.c:1521
+#: lib/depends.c:1556
 msgid "========== recording tsort relations\n"
 msgstr "========== zeichne tsort-Relationen auf\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1613
+#: lib/depends.c:1648
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1515,21 +1520,21 @@ msgstr ""
 "========== tsorting Pakete (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 
-#: lib/depends.c:1704
+#: lib/depends.c:1739
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== Nur Nachfolger (%d Bytes)\n"
 
-#: lib/depends.c:1777
+#: lib/depends.c:1812
 msgid "LOOP:\n"
 msgstr "SCHLEIFE:\n"
 
-#: lib/depends.c:1812
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr "========== setze tsort fort...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1817
+#: lib/depends.c:1852
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder fehlgeschlagen, %d Elemente verbleiben\n"
@@ -2749,61 +2754,61 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:788 lib/rpmds.c:2860
+#: lib/rpmds.c:793 lib/rpmds.c:3186
 msgid "NO "
 msgstr "NEIN "
 
-#: lib/rpmds.c:788 lib/rpmds.c:2860
+#: lib/rpmds.c:793 lib/rpmds.c:3186
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1288
+#: lib/rpmds.c:1293
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, und Obsoletes: unterstützen Versionen."
 
-#: lib/rpmds.c:1291
+#: lib/rpmds.c:1296
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Dateiname(n) als (dirName,baseName,dirIndex)-Tupel gespeichert, nicht als "
 "Pfad."
 
-#: lib/rpmds.c:1294
+#: lib/rpmds.c:1299
 msgid "package payload can be compressed using bzip2."
 msgstr "Paket-Nutzdaten können mit bzip2 komprimiert werden."
 
-#: lib/rpmds.c:1297
+#: lib/rpmds.c:1302
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "Dateien der Paket-Nutzdaten haben \"./\" als Präfix"
 
-#: lib/rpmds.c:1300
+#: lib/rpmds.c:1305
 msgid "package name-version-release is not implicitly provided."
 msgstr "Paket Name-Version-Release wird nicht unbedingt bereitgestellt."
 
-#: lib/rpmds.c:1303
+#: lib/rpmds.c:1308
 msgid "header tags are always sorted after being loaded."
 msgstr "Header-Tags werden immer nach dem Laden sortiert."
 
-#: lib/rpmds.c:1306
+#: lib/rpmds.c:1311
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "Der Skriptlet-Interpreter kann Argumente aus dem Header benutzen."
 
-#: lib/rpmds.c:1309
+#: lib/rpmds.c:1314
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "Eine harte Verlinkung kann auch ohne eine komplette Installation angelegt "
 "werden."
 
-#: lib/rpmds.c:1312
+#: lib/rpmds.c:1317
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "Paket-Skriptlets können während der Installation auf die RPM-Datenbank "
 "zugreifen."
 
-#: lib/rpmds.c:1315
+#: lib/rpmds.c:1320
 msgid "internal support for lua scripts."
 msgstr "Interne Unterstützung für LUA-Skripte"
 
-#: lib/rpmds.c:1416
+#: lib/rpmds.c:1421
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
@@ -2811,23 +2816,23 @@ msgstr ""
 "s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1455
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1460
+#: lib/rpmds.c:1465
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2653 lib/rpmds.c:2683 lib/rpmds.c:2695
+#: lib/rpmds.c:2979 lib/rpmds.c:3009 lib/rpmds.c:3021
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2656
+#: lib/rpmds.c:2982
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2837,20 +2842,20 @@ msgstr ""
 "s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:2685
+#: lib/rpmds.c:3011
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:2697
+#: lib/rpmds.c:3023
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:2826
+#: lib/rpmds.c:3152
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2860,13 +2865,13 @@ msgstr ""
 "als \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2859
+#: lib/rpmds.c:3185
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2883
+#: lib/rpmds.c:3209
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Paket %s hat unerfüllte %s: %s\n"

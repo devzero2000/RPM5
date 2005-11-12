@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-11 23:18-0500\n"
+"POT-Creation-Date: 2005-11-12 14:30-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1462,40 +1462,45 @@ msgstr "(rpmlib постачає)"
 msgid "(uname provides)"
 msgstr "(додано залежність)"
 
-#: lib/depends.c:772
+#: lib/depends.c:778
+#, fuzzy
+msgid "(soname provides)"
+msgstr "(додано залежність)"
+
+#: lib/depends.c:807
 msgid "(db files)"
 msgstr "(db файли)"
 
-#: lib/depends.c:785
+#: lib/depends.c:820
 msgid "(db provides)"
 msgstr "(db постачає)"
 
-#: lib/depends.c:798
+#: lib/depends.c:833
 msgid "(db package)"
 msgstr "(db пакет)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:829
+#: lib/depends.c:864
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1162
+#: lib/depends.c:1197
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ігноруються зв'язки між іменами пакетів [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1284
+#: lib/depends.c:1319
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
 #. Record all relations.
-#: lib/depends.c:1521
+#: lib/depends.c:1556
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1613
+#: lib/depends.c:1648
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1504,21 +1509,21 @@ msgstr ""
 "========== сортування пакетів (порядок, #predecessors, #succesors, дерево, "
 "глибина)\n"
 
-#: lib/depends.c:1704
+#: lib/depends.c:1739
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== лише спадкоємці (%d байт)\n"
 
-#: lib/depends.c:1777
+#: lib/depends.c:1812
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1812
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1817
+#: lib/depends.c:1852
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
@@ -2744,56 +2749,56 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:788 lib/rpmds.c:2860
+#: lib/rpmds.c:793 lib/rpmds.c:3186
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:788 lib/rpmds.c:2860
+#: lib/rpmds.c:793 lib/rpmds.c:3186
 msgid "YES"
 msgstr "ТАК"
 
-#: lib/rpmds.c:1288
+#: lib/rpmds.c:1293
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, та Obsoletes: залежності підтримують версії."
 
-#: lib/rpmds.c:1291
+#: lib/rpmds.c:1296
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "імена файлу(ів) зберігаються у форматі (dirName,baseName,dirIndex)"
 
-#: lib/rpmds.c:1294
+#: lib/rpmds.c:1299
 msgid "package payload can be compressed using bzip2."
 msgstr "вміст пакету може бути стиснений програмою bzip2."
 
-#: lib/rpmds.c:1297
+#: lib/rpmds.c:1302
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "для файлу(ів) вмісту пакета використовується префікс \"./\""
 
-#: lib/rpmds.c:1300
+#: lib/rpmds.c:1305
 msgid "package name-version-release is not implicitly provided."
 msgstr "назва-версія-випуск не надається автоматично."
 
-#: lib/rpmds.c:1303
+#: lib/rpmds.c:1308
 msgid "header tags are always sorted after being loaded."
 msgstr "ярлики тегів завжди сортуються після завантаження."
 
-#: lib/rpmds.c:1306
+#: lib/rpmds.c:1311
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "інтерпретатор сценаріїв може користуватись аргументами з заголовка."
 
-#: lib/rpmds.c:1309
+#: lib/rpmds.c:1314
 msgid "a hardlink file set may be installed without being complete."
 msgstr "набір жорстких посилань може встановитись частково."
 
-#: lib/rpmds.c:1312
+#: lib/rpmds.c:1317
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "сценарії пакета при встановленні можуть мати доступ до бази даних rpm."
 
-#: lib/rpmds.c:1315
+#: lib/rpmds.c:1320
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- не підтримується для рядків\n"
 
-#: lib/rpmds.c:1416
+#: lib/rpmds.c:1421
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
@@ -2801,23 +2806,23 @@ msgstr ""
 "'/': %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1455
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1460
+#: lib/rpmds.c:1465
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2653 lib/rpmds.c:2683 lib/rpmds.c:2695
+#: lib/rpmds.c:2979 lib/rpmds.c:3009 lib/rpmds.c:3021
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2656
+#: lib/rpmds.c:2982
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2827,20 +2832,20 @@ msgstr ""
 "'/': %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:2685
+#: lib/rpmds.c:3011
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:2697
+#: lib/rpmds.c:3023
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:2826
+#: lib/rpmds.c:3152
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2850,13 +2855,13 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2859
+#: lib/rpmds.c:3185
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2883
+#: lib/rpmds.c:3209
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"

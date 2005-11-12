@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-11 23:18-0500\n"
+"POT-Creation-Date: 2005-11-12 14:30-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1455,40 +1455,45 @@ msgstr "(rpmlib 提供)"
 msgid "(uname provides)"
 msgstr "(provideに追加済み)"
 
-#: lib/depends.c:772
+#: lib/depends.c:778
+#, fuzzy
+msgid "(soname provides)"
+msgstr "(provideに追加済み)"
+
+#: lib/depends.c:807
 msgid "(db files)"
 msgstr "(files データベース)"
 
-#: lib/depends.c:785
+#: lib/depends.c:820
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#: lib/depends.c:798
+#: lib/depends.c:833
 msgid "(db package)"
 msgstr "(package データベース)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:829
+#: lib/depends.c:864
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1162
+#: lib/depends.c:1197
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1284
+#: lib/depends.c:1319
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
 #. Record all relations.
-#: lib/depends.c:1521
+#: lib/depends.c:1556
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1613
+#: lib/depends.c:1648
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1497,21 +1502,21 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:1704
+#: lib/depends.c:1739
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:1777
+#: lib/depends.c:1812
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:1812
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1817
+#: lib/depends.c:1852
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -2730,81 +2735,81 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:788 lib/rpmds.c:2860
+#: lib/rpmds.c:793 lib/rpmds.c:3186
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:788 lib/rpmds.c:2860
+#: lib/rpmds.c:793 lib/rpmds.c:3186
 msgid "YES"
 msgstr "YES"
 
-#: lib/rpmds.c:1288
+#: lib/rpmds.c:1293
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
 
-#: lib/rpmds.c:1291
+#: lib/rpmds.c:1296
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
 
-#: lib/rpmds.c:1294
+#: lib/rpmds.c:1299
 msgid "package payload can be compressed using bzip2."
 msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
 
-#: lib/rpmds.c:1297
+#: lib/rpmds.c:1302
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "パッケージペイロードファイルが「./」接頭語を持っています。"
 
-#: lib/rpmds.c:1300
+#: lib/rpmds.c:1305
 msgid "package name-version-release is not implicitly provided."
 msgstr "「パッケージ名-バージョン-リリース」が暗黙で提供されません。"
 
-#: lib/rpmds.c:1303
+#: lib/rpmds.c:1308
 msgid "header tags are always sorted after being loaded."
 msgstr "ヘッダータグが読み込まれた後、常にソートされます。"
 
-#: lib/rpmds.c:1306
+#: lib/rpmds.c:1311
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "スクリプトインタプリターがヘッダから引数を使用できます。"
 
-#: lib/rpmds.c:1309
+#: lib/rpmds.c:1314
 msgid "a hardlink file set may be installed without being complete."
 msgstr "ハードリンクファイル群が完全でなくてもインストールできます。"
 
-#: lib/rpmds.c:1312
+#: lib/rpmds.c:1317
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
 
-#: lib/rpmds.c:1315
+#: lib/rpmds.c:1320
 msgid "internal support for lua scripts."
 msgstr "lua スクリプトの内部サポート。"
 
-#: lib/rpmds.c:1416
+#: lib/rpmds.c:1421
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1455
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1460
+#: lib/rpmds.c:1465
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2653 lib/rpmds.c:2683 lib/rpmds.c:2695
+#: lib/rpmds.c:2979 lib/rpmds.c:3009 lib/rpmds.c:3021
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2656
+#: lib/rpmds.c:2982
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2813,20 +2818,20 @@ msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:2685
+#: lib/rpmds.c:3011
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:2697
+#: lib/rpmds.c:3023
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:2826
+#: lib/rpmds.c:3152
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2835,13 +2840,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします (\"A\" と同じであると仮定して)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:2859
+#: lib/rpmds.c:3185
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2883
+#: lib/rpmds.c:3209
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"

@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.45
+Release: 0.46
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -586,6 +586,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sat Nov 12 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.46
+- refactor rpmfcELF() to rpmdsELF() to extract ELF dependencies.
+- add soname(/path/to/libfoo.so) run-time dependency probe.
+
 * Fri Nov 11 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.45
 - link all rpm executables statically.
 - add tag types RPM_INT64_TYPE, RPM_ASN1_TYPE, and RPM_OPENPGP_TYPE.

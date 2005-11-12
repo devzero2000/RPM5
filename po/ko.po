@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-11 23:18-0500\n"
+"POT-Creation-Date: 2005-11-12 14:30-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1447,43 +1447,48 @@ msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 msgid "(uname provides)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:772
+#: lib/depends.c:778
+#, fuzzy
+msgid "(soname provides)"
+msgstr "%s: %-45s 예 (제공이 추가됨)\n"
+
+#: lib/depends.c:807
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/depends.c:785
+#: lib/depends.c:820
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:798
+#: lib/depends.c:833
 #, fuzzy
 msgid "(db package)"
 msgstr "패키지가 없습니다\n"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:829
+#: lib/depends.c:864
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1162
+#: lib/depends.c:1197
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1284
+#: lib/depends.c:1319
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1521
+#: lib/depends.c:1556
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1613
+#: lib/depends.c:1648
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1492,21 +1497,21 @@ msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 트리, 깊이"
 "[depth])\n"
 
-#: lib/depends.c:1704
+#: lib/depends.c:1739
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 후임자만 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1777
+#: lib/depends.c:1812
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1812
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1817
+#: lib/depends.c:1852
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2765,56 +2770,56 @@ msgstr ")"
 msgid "OK"
 msgstr "확인"
 
-#: lib/rpmds.c:788 lib/rpmds.c:2860
+#: lib/rpmds.c:793 lib/rpmds.c:3186
 msgid "NO "
 msgstr "아니오"
 
-#: lib/rpmds.c:788 lib/rpmds.c:2860
+#: lib/rpmds.c:793 lib/rpmds.c:3186
 msgid "YES"
 msgstr "예"
 
-#: lib/rpmds.c:1288
+#: lib/rpmds.c:1293
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1291
+#: lib/rpmds.c:1296
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1294
+#: lib/rpmds.c:1299
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1297
+#: lib/rpmds.c:1302
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1300
+#: lib/rpmds.c:1305
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1303
+#: lib/rpmds.c:1308
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1306
+#: lib/rpmds.c:1311
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1309
+#: lib/rpmds.c:1314
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1312
+#: lib/rpmds.c:1317
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1315
+#: lib/rpmds.c:1320
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
 
-#: lib/rpmds.c:1416
+#: lib/rpmds.c:1421
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
@@ -2822,23 +2827,23 @@ msgstr ""
 "작해야 합니다: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1455
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1460
+#: lib/rpmds.c:1465
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2653 lib/rpmds.c:2683 lib/rpmds.c:2695
+#: lib/rpmds.c:2979 lib/rpmds.c:3009 lib/rpmds.c:3021
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2656
+#: lib/rpmds.c:2982
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2848,20 +2853,20 @@ msgstr ""
 "작해야 합니다: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:2685
+#: lib/rpmds.c:3011
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:2697
+#: lib/rpmds.c:3023
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:2826
+#: lib/rpmds.c:3152
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2870,13 +2875,13 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:2859
+#: lib/rpmds.c:3185
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:2883
+#: lib/rpmds.c:3209
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"

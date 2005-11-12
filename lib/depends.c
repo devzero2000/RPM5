@@ -664,13 +664,13 @@ retry:
 
     /* Search system configured provides. */
     if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
-	static rpmds sysinfods = NULL;
+	static rpmds sysinfoP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)
-	    oneshot = rpmdsSysinfo(&sysinfods, NULL);
-	if (sysinfods != NULL) {
-	    if (rpmdsSearch(sysinfods, dep) >= 0) {
+	    oneshot = rpmdsSysinfo(&sysinfoP, NULL);
+	if (sysinfoP != NULL) {
+	    if (rpmdsSearch(sysinfoP, dep) >= 0) {
 		rpmdsNotify(dep, _("(sysinfo provides)"), rc);
 		goto exit;
 	    }
@@ -683,15 +683,15 @@ retry:
      * Check those dependencies now.
      */
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
-	static rpmds rpmlibds = NULL;
+	static rpmds rpmlibP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)
-	    oneshot = rpmdsRpmlib(&rpmlibds, NULL);
-	if (rpmlibds == NULL)
+	    oneshot = rpmdsRpmlib(&rpmlibP, NULL);
+	if (rpmlibP == NULL)
 	    goto unsatisfied;
 
-	if (rpmdsSearch(rpmlibds, dep) >= 0) {
+	if (rpmdsSearch(rpmlibP, dep) >= 0) {
 	    rpmdsNotify(dep, _("(rpmlib provides)"), rc);
 	    goto exit;
 	}
@@ -699,15 +699,15 @@ retry:
     }
 
     if (!strncmp(Name, "cpuinfo(", sizeof("cpuinfo(")-1)) {
-	static rpmds cpuinfods = NULL;
+	static rpmds cpuinfoP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)
-	    oneshot = rpmdsCpuinfo(&cpuinfods, NULL);
-	if (cpuinfods == NULL)
+	    oneshot = rpmdsCpuinfo(&cpuinfoP, NULL);
+	if (cpuinfoP == NULL)
 	    goto unsatisfied;
 
-	if (rpmdsSearch(cpuinfods, dep) >= 0) {
+	if (rpmdsSearch(cpuinfoP, dep) >= 0) {
 	    rpmdsNotify(dep, _("(cpuinfo provides)"), rc);
 	    goto exit;
 	}
@@ -715,15 +715,15 @@ retry:
     }
 
     if (!strncmp(Name, "getconf(", sizeof("getconf(")-1)) {
-	static rpmds getconfds = NULL;
+	static rpmds getconfP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)
-	    oneshot = rpmdsGetconf(&getconfds, NULL);
-	if (getconfds == NULL)
+	    oneshot = rpmdsGetconf(&getconfP, NULL);
+	if (getconfP == NULL)
 	    goto unsatisfied;
 
-	if (rpmdsSearch(getconfds, dep) >= 0) {
+	if (rpmdsSearch(getconfP, dep) >= 0) {
 	    rpmdsNotify(dep, _("(getconf provides)"), rc);
 	    goto exit;
 	}
@@ -731,16 +731,51 @@ retry:
     }
 
     if (!strncmp(Name, "uname(", sizeof("uname(")-1)) {
-	static rpmds unameds = NULL;
+	static rpmds unameP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)
-	    oneshot = rpmdsUname(&unameds, NULL);
-	if (unameds == NULL)
+	    oneshot = rpmdsUname(&unameP, NULL);
+	if (unameP == NULL)
 	    goto unsatisfied;
 
-	if (rpmdsSearch(unameds, dep) >= 0) {
+	if (rpmdsSearch(unameP, dep) >= 0) {
 	    rpmdsNotify(dep, _("(uname provides)"), rc);
+	    goto exit;
+	}
+	goto unsatisfied;
+    }
+
+    if (!strncmp(Name, "soname(", sizeof("soname(")-1)) {
+	rpmds sonameP = NULL;
+	rpmMergePRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
+	char * fn = strcpy(alloca(strlen(Name)+1), Name);
+	int flags = 0;	/* XXX RPMELF_FLAG_SKIPREQUIRES? */
+	rpmds ds;
+
+	/* Strip the soname(/path/to/dso) wrapper. */
+	fn += sizeof("soname(")-1;
+
+	/* XXX Only absolute paths for now. */
+	if (*fn != '/')
+	    goto unsatisfied;
+	fn[strlen(fn)-1] = '\0';
+
+	/* Extract ELF Provides: from /path/to/DSO. */
+	PRCO->Pdsp = &sonameP;
+	xx = rpmdsELF(fn, flags, rpmdsMergePRCO, PRCO);
+	if (!(xx == 0 && sonameP != NULL))
+	    goto unsatisfied;
+
+	/* Search using the original {EVR,"",Flags} from the dep set. */
+	ds = rpmdsSingle(rpmdsTagN(dep), rpmdsEVR(dep), "", rpmdsFlags(dep));
+	xx = rpmdsSearch(sonameP, ds);
+	ds = rpmdsFree(ds);
+	sonameP = rpmdsFree(sonameP);
+
+	/* Was the dependency satisfied? */
+	if (xx >= 0) {
+	    rpmdsNotify(dep, _("(soname provides)"), rc);
 	    goto exit;
 	}
 	goto unsatisfied;
