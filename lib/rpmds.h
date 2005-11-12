@@ -58,6 +58,16 @@ struct rpmds_s {
 };
 #endif	/* _RPMDS_INTERNAL */
 
+/**
+ * Container to carry provides/requires/conflicts/obsoletes dependencies.
+ */
+typedef struct rpmMergePRCO_s {
+    rpmds * Pdsp;		/*!< Provides: collector. */
+    rpmds * Rdsp;		/*!< Requires: collector. */
+    rpmds * Cdsp;		/*!< Conflicts: collector. */
+    rpmds * Odsp;		/*!< Obsoletes: collector. */
+} * rpmMergePRCO;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -358,7 +368,7 @@ int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
  * @param ods		dependency set to merge
  * @return		0 on success
  */
-int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
+int rpmdsMerge(/*@null@*/ /*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
 	/*@modifies *dsp, ods @*/;
 
 /**
@@ -412,15 +422,39 @@ int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * path)
 	/*@modifies *dsp, fileSystem, internalState @*/;
 
 /**
+ * Merge provides/requires/conflicts/obsoletes dependencies.
+ * @param context	merge dependency set(s) container
+ * @param ds		dependency set to merge
+ * @return		0 on success
+ */
+int rpmdsMergePRCO(void * context, rpmds ds)
+	/*@modifies context, ds @*/;
+
+/**
+ * Extract ELF dependencies from a file.
+ * @param fn		file name
+ * @param flags		1: skip provides 2: skip requires
+ * @param *add		add(arg, ds) saves next provide/require elf dependency.
+ * @param context	add() callback context
+ * @return		0 on success
+ */
+int rpmdsELF(const char * fn, int flags,
+		int (*add) (void * context, rpmds ds), void * context)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+#define RPMELF_FLAG_SKIPPROVIDES	0x1	/*<! rpmdsELF: skip provides */
+#define RPMELF_FLAG_SKIPREQUIRES	0x2	/*<! rpmdsELF: skip requires */
+
+/**
  * Load /etc/ld.so.cache provides into a dependency set.
  * @todo Add dependency colors, and attach to file.
- * @retval *dsp		(loaded) depedency set
+ * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
  * @param fn		cache file name (NULL uses /etc/ld.so.cache)
  * @return		0 on success
  */
-int rpmdsLdconfig(rpmds * dsp, /*@null@*/ const char * fn)
+int rpmdsLdconfig(rpmMergePRCO PRCO, /*@null@*/ const char * fn)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies *dsp, fileSystem, internalState @*/;
+	/*@modifies *PRCO, fileSystem, internalState @*/;
 
 /**
  * Load uname(2) provides into a dependency set.
