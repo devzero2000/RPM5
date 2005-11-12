@@ -186,10 +186,6 @@ package or when debugging this package.\
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
 
-#	The number of changelog entries kept when installing (legacy, unused in
-#	rpm-4.0.1 and later).
-%_instchangelog		5
-
 #	The path to the pgp executable (legacy, use %{__pgp} instead).
 %_pgpbin		%{__pgp}
 
@@ -1337,8 +1333,8 @@ PreReq: python >= %minver, python < %maxver
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-%__libtool_provides	@RPMCONFIGDIR@/libtooldeps.sh --provides
-%__libtool_requires	@RPMCONFIGDIR@/libtooldeps.sh --requires
+%__libtool_provides	@RPMCONFIGDIR@/libtooldeps.sh --provides %{buildroot}
+%__libtool_requires	@RPMCONFIGDIR@/libtooldeps.sh --requires %{buildroot}
 
 #------------------------------------------------------------------------
 # pkgconfig(...) configuration.

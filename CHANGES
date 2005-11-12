@@ -95,6 +95,7 @@
 	- link all rpm executables statically.
 	- refactor rpmfcELF() to rpmdsELF() to extract ELF dependencies.
 	- add soname(/path/to/libfoo.so) run-time dependency probe.
+	- fix: strip ${RPM_BUILD_ROOT} in libtooldeps.sh --provides.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
