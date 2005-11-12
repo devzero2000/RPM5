@@ -10,10 +10,6 @@
 #include <rpmds.h>
 #include <rpmfi.h>
 
-#if HAVE_GELF_H
-#include <gelf.h>
-#endif
-
 #include "debug.h"
 
 /*@access rpmds @*/
@@ -765,6 +761,45 @@ static int rpmfcSCRIPT(rpmfc fc)
     return 0;
 }
 
+
+/**
+ * Merge provides/requires dependencies into a rpmfc container.
+ * @param context	merge dependency set(s) container
+ * @param ds		dependency set to merge
+ * @return		0 on success
+ */
+static int rpmfcMergePR(void * context, rpmds ds)
+	/*@modifies context, ds @*/
+{
+    rpmfc fc = context;
+    char buf[BUFSIZ];
+    int rc = -1;
+
+if (_rpmfc_debug < 0)
+fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsTagN(ds)));
+    switch(rpmdsTagN(ds)) {
+    default:
+	break;
+    case RPMTAG_PROVIDENAME:
+	/* Add to package provides. */
+	rc = rpmdsMerge(&fc->provides, ds);
+
+	/* Add to file dependencies. */
+	buf[0] = '\0';
+	rc = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	break;
+    case RPMTAG_REQUIRENAME:
+	/* Add to package requires. */
+	rc = rpmdsMerge(&fc->requires, ds);
+
+	/* Add to file dependencies. */
+	buf[0] = '\0';
+	rc = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	break;
+    }
+    return rc;
+}
+
 /**
  * Extract Elf dependencies.
  * @param fc		file classifier
@@ -774,310 +809,15 @@ static int rpmfcELF(rpmfc fc)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-#if HAVE_GELF_H && HAVE_LIBELF
     const char * fn = fc->fn[fc->ix];
-    Elf * elf;
-    Elf_Scn * scn;
-    Elf_Data * data;
-    GElf_Ehdr ehdr_mem, * ehdr;
-    GElf_Shdr shdr_mem, * shdr;
-    GElf_Verdef def_mem, * def;
-    GElf_Verneed need_mem, * need;
-    GElf_Dyn dyn_mem, * dyn;
-    unsigned int auxoffset;
-    unsigned int offset;
-    int fdno;
-    int cnt2;
-    int cnt;
-    char buf[BUFSIZ];
-    const char * s;
-    int is_executable;
-    const char * soname = NULL;
-    rpmds * depsp, ds;
-    int_32 tagN, dsContext;
-    char * t;
-    int xx;
-    int isElf64;
-    int isDSO;
-    int gotSONAME = 0;
-    int gotDEBUG = 0;
-    static int filter_GLIBC_PRIVATE = 0;
-    static int oneshot = 0;
+    int flags = 0;
 
-    if (oneshot == 0) {
-	oneshot = 1;
-	filter_GLIBC_PRIVATE = rpmExpandNumeric("%{?_filter_GLIBC_PRIVATE}");
-    }
+    if (fc->skipProv)
+	flags |= RPMELF_FLAG_SKIPPROVIDES;
+    if (fc->skipReq)
+	flags |= RPMELF_FLAG_SKIPREQUIRES;
 
-    /* Extract dependencies only from files with executable bit set. */
-    {	struct stat sb, * st = &sb;
-	if (stat(fn, st) != 0)
-	    return -1;
-	is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
-    }
-
-    fdno = open(fn, O_RDONLY);
-    if (fdno < 0)
-	return fdno;
-
-    (void) elf_version(EV_CURRENT);
-
-/*@-evalorder@*/
-    elf = NULL;
-    if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
-     || elf_kind(elf) != ELF_K_ELF
-     || (ehdr = gelf_getehdr(elf, &ehdr_mem)) == NULL
-     || !(ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC))
-	goto exit;
-/*@=evalorder@*/
-
-    isElf64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
-    isDSO = ehdr->e_type == ET_DYN;
-
-    /*@-branchstate -uniondef @*/
-    scn = NULL;
-    while ((scn = elf_nextscn(elf, scn)) != NULL) {
-	shdr = gelf_getshdr(scn, &shdr_mem);
-	if (shdr == NULL)
-	    break;
-
-	soname = _free(soname);
-	switch (shdr->sh_type) {
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	case SHT_GNU_verdef:
-	    data = NULL;
-	    if (!fc->skipProv)
-	    while ((data = elf_getdata (scn, data)) != NULL) {
-		offset = 0;
-		for (cnt = shdr->sh_info; --cnt >= 0; ) {
-		
-		    def = gelf_getverdef (data, offset, &def_mem);
-		    if (def == NULL)
-			/*@innerbreak@*/ break;
-		    auxoffset = offset + def->vd_aux;
-		    for (cnt2 = def->vd_cnt; --cnt2 >= 0; ) {
-			GElf_Verdaux aux_mem, * aux;
-
-			aux = gelf_getverdaux (data, auxoffset, &aux_mem);
-			if (aux == NULL)
-			    /*@innerbreak@*/ break;
-
-			s = elf_strptr(elf, shdr->sh_link, aux->vda_name);
-			if (s == NULL)
-			    /*@innerbreak@*/ break;
-			if (def->vd_flags & VER_FLG_BASE) {
-			    soname = _free(soname);
-			    soname = xstrdup(s);
-			    auxoffset += aux->vda_next;
-			    /*@innercontinue@*/ continue;
-			} else
-			if (soname != NULL
-			 && !(filter_GLIBC_PRIVATE != 0
-				&& !strcmp(s, "GLIBC_PRIVATE")))
-			{
-			    buf[0] = '\0';
-			    t = buf;
-			    t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
-
-#if !defined(__alpha__)
-			    if (isElf64)
-				t = stpcpy(t, "(64bit)");
-#endif
-			    t++;
-
-			    /* Add to package provides. */
-			    ds = rpmdsSingle(RPMTAG_PROVIDES,
-					buf, "", RPMSENSE_FIND_PROVIDES);
-			    xx = rpmdsMerge(&fc->provides, ds);
-
-			    /* Add to file dependencies. */
-			    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, ds));
-
-			    ds = rpmdsFree(ds);
-			}
-			auxoffset += aux->vda_next;
-		    }
-		    offset += def->vd_next;
-		}
-	    }
-	    /*@switchbreak@*/ break;
-	case SHT_GNU_verneed:
-	    data = NULL;
-	    /* Only from files with executable bit set. */
-	    if (!fc->skipReq && is_executable)
-	    while ((data = elf_getdata (scn, data)) != NULL) {
-		offset = 0;
-		for (cnt = shdr->sh_info; --cnt >= 0; ) {
-		    need = gelf_getverneed (data, offset, &need_mem);
-		    if (need == NULL)
-			/*@innerbreak@*/ break;
-
-		    s = elf_strptr(elf, shdr->sh_link, need->vn_file);
-		    if (s == NULL)
-			/*@innerbreak@*/ break;
-		    soname = _free(soname);
-		    soname = xstrdup(s);
-		    auxoffset = offset + need->vn_aux;
-		    for (cnt2 = need->vn_cnt; --cnt2 >= 0; ) {
-			GElf_Vernaux aux_mem, * aux;
-
-			aux = gelf_getvernaux (data, auxoffset, &aux_mem);
-			if (aux == NULL)
-			    /*@innerbreak@*/ break;
-
-			s = elf_strptr(elf, shdr->sh_link, aux->vna_name);
-			if (s == NULL)
-			    /*@innerbreak@*/ break;
-
-			/* Filter dependencies that contain GLIBC_PRIVATE */
-			if (soname != NULL
-			 && !(filter_GLIBC_PRIVATE != 0
-				&& !strcmp(s, "GLIBC_PRIVATE")))
-			{
-			    buf[0] = '\0';
-			    t = buf;
-			    t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
-
-#if !defined(__alpha__)
-			    if (isElf64)
-				t = stpcpy(t, "(64bit)");
-#endif
-			    t++;
-
-			    /* Add to package dependencies. */
-			    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
-					buf, "", RPMSENSE_FIND_REQUIRES);
-			    xx = rpmdsMerge(&fc->requires, ds);
-
-			    /* Add to file dependencies. */
-			    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, ds));
-			    ds = rpmdsFree(ds);
-			}
-			auxoffset += aux->vna_next;
-		    }
-		    offset += need->vn_next;
-		}
-	    }
-	    /*@switchbreak@*/ break;
-	case SHT_DYNAMIC:
-	    data = NULL;
-	    while ((data = elf_getdata (scn, data)) != NULL) {
-/*@-boundswrite@*/
-		for (cnt = 0; cnt < (shdr->sh_size / shdr->sh_entsize); ++cnt) {
-		    dyn = gelf_getdyn (data, cnt, &dyn_mem);
-		    if (dyn == NULL)
-			/*@innerbreak@*/ break;
-		    s = NULL;
-		    switch (dyn->d_tag) {
-		    default:
-			/*@innercontinue@*/ continue;
-			/*@notreached@*/ /*@switchbreak@*/ break;
-                    case DT_DEBUG:    
-			gotDEBUG = 1;
-			/*@innercontinue@*/ continue;
-		    case DT_NEEDED:
-			/* Only from files with executable bit set. */
-			if (fc->skipReq || !is_executable)
-			    /*@innercontinue@*/ continue;
-			/* Add to package requires. */
-			depsp = &fc->requires;
-			tagN = RPMTAG_REQUIRENAME;
-			dsContext = RPMSENSE_FIND_REQUIRES;
-			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
-assert(s != NULL);
-			/*@switchbreak@*/ break;
-		    case DT_SONAME:
-			gotSONAME = 1;
-			/* Add to package provides. */
-			if (fc->skipProv)
-			    /*@innercontinue@*/ continue;
-			depsp = &fc->provides;
-			tagN = RPMTAG_PROVIDENAME;
-			dsContext = RPMSENSE_FIND_PROVIDES;
-			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
-assert(s != NULL);
-			/*@switchbreak@*/ break;
-		    }
-		    if (s == NULL)
-			/*@innercontinue@*/ continue;
-
-		    buf[0] = '\0';
-		    t = buf;
-		    t = stpcpy(t, s);
-
-#if !defined(__alpha__)
-		    if (isElf64)
-			t = stpcpy(t, "()(64bit)");
-#endif
-		    t++;
-
-		    /* Add to package dependencies. */
-		    ds = rpmdsSingle(tagN, buf, "", dsContext);
-		    xx = rpmdsMerge(depsp, ds);
-
-		    /* Add to file dependencies. */
-		    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, ds));
-
-		    ds = rpmdsFree(ds);
-		}
-/*@=boundswrite@*/
-	    }
-	    /*@switchbreak@*/ break;
-	}
-    }
-    /*@=branchstate =uniondef @*/
-
-    /* For DSO's, provide the basename of the file if DT_SONAME not found. */
-    if (!fc->skipProv && isDSO && !gotDEBUG && !gotSONAME) {
-	depsp = &fc->provides;
-	tagN = RPMTAG_PROVIDENAME;
-	dsContext = RPMSENSE_FIND_PROVIDES;
-
-	s = strrchr(fn, '/');
-	if (s)
-	    s++;
-	else
-	    s = fn;
-
-/*@-boundswrite@*/
-	buf[0] = '\0';
-	t = buf;
-/*@-nullpass@*/ /* LCL: s is not null. */
-	t = stpcpy(t, s);
-/*@=nullpass@*/
-
-#if !defined(__alpha__)
-	if (isElf64)
-	    t = stpcpy(t, "()(64bit)");
-#endif
-/*@=boundswrite@*/
-	t++;
-
-	/* Add to package dependencies. */
-	ds = rpmdsSingle(tagN, buf, "", dsContext);
-	xx = rpmdsMerge(depsp, ds);
-
-	/* Add to file dependencies. */
-/*@-boundswrite@*/
-	xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(t, fc->ix, ds));
-/*@=boundswrite@*/
-
-	ds = rpmdsFree(ds);
-    }
-
-exit:
-    soname = _free(soname);
-    if (elf) (void) elf_end(elf);
-    xx = close(fdno);
-    return 0;
-#else
-    return -1;
-#endif
+    return rpmdsELF(fn, flags, rpmfcMergePR, fc);
 }
 
 typedef struct rpmfcApplyTbl_s {
