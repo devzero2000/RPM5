@@ -39,7 +39,7 @@ static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
     char * val;
 
     if (type != RPM_INT32_TYPE)
-	val = xstrdup(_("(not a number)"));
+	val = xstrdup(_("(invalid type)"));
     else if (*item & RPMSENSE_TRIGGERPREIN)
 	val = xstrdup("prein");
     else if (*item & RPMSENSE_TRIGGERIN)
@@ -71,7 +71,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data,
     char * buf;
 
     if (type != RPM_INT32_TYPE) {
-	val = xstrdup(_("(not a number)"));
+	val = xstrdup(_("(invalid type)"));
     } else {
 	val = xmalloc(15 + padding);
 /*@-boundswrite@*/
@@ -106,7 +106,7 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
     int anint = *((int_32 *) data);
 
     if (type != RPM_INT32_TYPE) {
-	val = xstrdup(_("(not a number)"));
+	val = xstrdup(_("(invalid type)"));
     } else {
 	buf[0] = '\0';
 /*@-boundswrite@*/
@@ -161,6 +161,8 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     int atype;
 
     switch (type) {
+    case RPM_OPENPGP_TYPE:
+    case RPM_ASN1_TYPE:		/* XXX WRONG */
     case RPM_BIN_TYPE:
 	s = data;
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
@@ -179,6 +181,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
+    case RPM_INT64_TYPE:
     case RPM_I18NSTRING_TYPE:
     default:
 	return xstrdup(_("(invalid type)"));
@@ -205,7 +208,7 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 {
     char * val;
 
-    if (type != RPM_BIN_TYPE) {
+    if (!(type == RPM_BIN_TYPE || type == RPM_ASN1_TYPE || type == RPM_OPENPGP_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
 	const char * enc;
@@ -302,7 +305,7 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     char * val;
     const char * s = NULL;
     char * t, * te;
-    unsigned long anint = 0;
+    unsigned long long anint = 0;
     int xx;
 
 /*@-branchstate@*/
@@ -312,6 +315,8 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	s = data;
 	xtag = "string";
 	break;
+    case RPM_OPENPGP_TYPE:
+    case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
     {	int cpl = b64encode_chars_per_line;
 /*@-mods@*/
@@ -335,6 +340,9 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     case RPM_INT32_TYPE:
 	anint = *((uint_32 *) data);
 	break;
+    case RPM_INT64_TYPE:
+	anint = *((uint_64 *) data);
+	break;
     case RPM_NULL_TYPE:
     case RPM_STRING_ARRAY_TYPE:
     default:
@@ -348,7 +356,7 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	int tlen = 32;
 	t = memset(alloca(tlen+1), 0, tlen+1);
 	if (anint != 0)
-	    xx = snprintf(t, tlen, "%lu", anint);
+	    xx = snprintf(t, tlen, "%llu", anint);
 	s = t;
 	xtag = "integer";
     }
@@ -405,7 +413,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 {
     char * val, * t;
 
-    if (type != RPM_BIN_TYPE) {
+    if (!(type == RPM_BIN_TYPE || type == RPM_ASN1_TYPE || type == RPM_OPENPGP_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
 	unsigned char * pkt = (byte *) data;
@@ -520,7 +528,7 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
     int anint;
 
     if (type != RPM_INT32_TYPE) {
-	val = xstrdup(_("(not a number)"));
+	val = xstrdup(_("(invalid type)"));
     } else {
 	anint = *((int_32 *) data);
 	buf[0] = '\0';

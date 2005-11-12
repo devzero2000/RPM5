@@ -460,6 +460,9 @@ typedef enum rpmTag_e {
     RPMTAG_TRIGGERPREIN		= 1171, /*!< internal */
     RPMTAG_BUILDSUGGESTS	= 1172, /*!< internal */
     RPMTAG_BUILDENHANCES	= 1173, /*!< internal */
+    RPMTAG_SCRIPTSTATES		= 1174, /*!< i scriptlet exit codes */
+    RPMTAG_SCRIPTMETRICS	= 1175, /*!< i scriptlet times */
+    RPMTAG_BUILDCPUCLOCK	= 1176, /*!< i */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

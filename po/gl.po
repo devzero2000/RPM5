@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2005-11-11 15:02-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-11-11 23:18-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -62,10 +62,12 @@ msgid "Building for target %s\n"
 msgstr ""
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr ""
 
@@ -122,10 +124,12 @@ msgid "RPM version %s\n"
 msgstr ""
 
 #: rpmqv.c:147
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
 #: rpmqv.c:148
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -263,6 +267,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -272,6 +277,7 @@ msgid "cannot access file %s\n"
 msgstr ""
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr ""
 
@@ -280,10 +286,12 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr ""
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr ""
 
@@ -297,6 +305,7 @@ msgid "--sign may only be used during package building"
 msgstr ""
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr ""
 
@@ -1468,28 +1477,24 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
-#: rpmdb/header.c:3621 rpmdb/header.c:3650 rpmdb/header.c:3674
-msgid "(not a number)"
-msgstr ""
-
-#: lib/formats.c:174
-msgid "(not base64)"
-msgstr ""
-
-#: lib/formats.c:184
+#: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:187
+#: lib/formats.c:531
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:209 lib/formats.c:409
+#: lib/formats.c:176
+msgid "(not base64)"
+msgstr ""
+
+#: lib/formats.c:212 lib/formats.c:417
 msgid "(not a blob)"
 msgstr ""
 
-#: lib/formats.c:341
+#: lib/formats.c:349
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:434
+#: lib/formats.c:442
 msgid "(not an OpenPGP signature)"
 msgstr ""
 
@@ -1628,14 +1633,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
+#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1651,6 +1659,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1670,6 +1679,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -3125,22 +3135,27 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
 
 #: lib/rpmrc.c:1930
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3298,6 +3313,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3322,6 +3338,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3395,6 +3412,9 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3436,10 +3456,12 @@ msgid " DSA signature: "
 msgstr ""
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3793,77 +3815,81 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2792
+#: rpmdb/header.c:2825
 msgid "missing { after %"
 msgstr ""
 
-#: rpmdb/header.c:2822
+#: rpmdb/header.c:2855
 msgid "missing } after %{"
 msgstr ""
 
-#: rpmdb/header.c:2838
+#: rpmdb/header.c:2871
 msgid "empty tag format"
 msgstr ""
 
-#: rpmdb/header.c:2850
+#: rpmdb/header.c:2883
 msgid "empty tag name"
 msgstr ""
 
-#: rpmdb/header.c:2859
+#: rpmdb/header.c:2892
 msgid "unknown tag"
 msgstr ""
 
-#: rpmdb/header.c:2886
+#: rpmdb/header.c:2919
 msgid "] expected at end of array"
 msgstr ""
 
-#: rpmdb/header.c:2899
+#: rpmdb/header.c:2932
 msgid "unexpected ]"
 msgstr ""
 
-#: rpmdb/header.c:2912
+#: rpmdb/header.c:2945
 msgid "unexpected }"
 msgstr ""
 
-#: rpmdb/header.c:2976
+#: rpmdb/header.c:3009
 msgid "? expected in expression"
 msgstr ""
 
-#: rpmdb/header.c:2983
+#: rpmdb/header.c:3016
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: rpmdb/header.c:2995 rpmdb/header.c:3035
+#: rpmdb/header.c:3028 rpmdb/header.c:3068
 msgid "} expected in expression"
 msgstr ""
 
-#: rpmdb/header.c:3003
+#: rpmdb/header.c:3036
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: rpmdb/header.c:3021
+#: rpmdb/header.c:3054
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: rpmdb/header.c:3043
+#: rpmdb/header.c:3076
 msgid "| expected at end of expression"
 msgstr ""
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3144
+#: rpmdb/header.c:3178
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3391
+#: rpmdb/header.c:3445
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3712
+#: rpmdb/header.c:3693 rpmdb/header.c:3729 rpmdb/header.c:3744
+msgid "(not a number)"
+msgstr ""
+
+#: rpmdb/header.c:3782
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3728
+#: rpmdb/header.c:3798
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -4215,6 +4241,7 @@ msgid "(no error)"
 msgstr ""
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr ""

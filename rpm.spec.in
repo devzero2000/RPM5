@@ -588,6 +588,7 @@ exit 0
 %changelog
 * Fri Nov 11 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.45
 - link all rpm executables statically.
+- add tag types RPM_INT64_TYPE, RPM_ASN1_TYPE, and RPM_OPENPGP_TYPE.
 
 * Thu Nov 10 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.44
 - add uname(foo) dependency name space to map uname(2) provides.

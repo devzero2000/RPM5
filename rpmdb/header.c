@@ -54,8 +54,8 @@ static int typeAlign[16] =  {
     1,	/*!< RPM_BIN_TYPE */
     1,	/*!< RPM_STRING_ARRAY_TYPE */
     1,	/*!< RPM_I18NSTRING_TYPE */
-    0,
-    0,
+    1,  /*!< RPM_ASN1_TYPE */
+    1,  /*!< RPM_OPENPGP_TYPE */
     0,
     0,
     0,
@@ -72,13 +72,13 @@ static int typeSizes[16] =  {
     1,	/*!< RPM_INT8_TYPE */
     2,	/*!< RPM_INT16_TYPE */
     4,	/*!< RPM_INT32_TYPE */
-    -1,	/*!< RPM_INT64_TYPE */
+    8,	/*!< RPM_INT64_TYPE */
     -1,	/*!< RPM_STRING_TYPE */
     1,	/*!< RPM_BIN_TYPE */
     -1,	/*!< RPM_STRING_ARRAY_TYPE */
     -1,	/*!< RPM_I18NSTRING_TYPE */
-    0,
-    0,
+    1,  /*!< RPM_ASN1_TYPE */
+    1,  /*!< RPM_OPENPGP_TYPE */
     0,
     0,
     0,
@@ -559,6 +559,19 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
 /*@-bounds@*/
+	case RPM_INT64_TYPE:
+	{   int_64 * it = (int_64 *)t;
+	    int_32 b[2];
+	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
+		if (dataEnd && ((unsigned char *)it) >= dataEnd)
+		    return -1;
+		b[1] = htonl(((int_32 *)it)[0]);
+		b[0] = htonl(((int_32 *)it)[1]);
+		if (b[1] != ((int_32 *)it)[0])
+		    memcpy(it, b, sizeof(b));
+	    }
+	    t = (char *) it;
+	}   /*@switchbreak@*/ break;
 	case RPM_INT32_TYPE:
 	{   int_32 * it = (int_32 *)t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
@@ -817,6 +830,22 @@ t = te;
 	/* copy data w/ endian conversions */
 /*@-boundswrite@*/
 	switch (entry->info.type) {
+	case RPM_INT64_TYPE:
+	{   int_32 b[2];
+	    count = entry->info.count;
+	    src = entry->data;
+	    while (count--) {
+		b[1] = htonl(((int_32 *)src)[0]);
+		b[0] = htonl(((int_32 *)src)[1]);
+		if (b[1] == ((int_32 *)src)[0])
+		    memcpy(te, src, sizeof(b));
+		else
+		    memcpy(te, b, sizeof(b));
+		te += sizeof(b);
+		src += sizeof(b);
+	    }
+	}   /*@switchbreak@*/ break;
+
 	case RPM_INT32_TYPE:
 	    count = entry->info.count;
 	    src = entry->data;
@@ -1576,6 +1605,8 @@ static int copyEntry(const indexEntry entry,
 	}
     }	break;
 
+    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
+    case RPM_ASN1_TYPE:		/* XXX W2DO? */
     default:
 	*p = entry->data;
 	break;
@@ -1788,7 +1819,9 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
 	if (type == -1 ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
-	    type == RPM_BIN_TYPE)
+	    type == RPM_BIN_TYPE ||
+	    type == RPM_ASN1_TYPE ||
+	    type == RPM_OPENPGP_TYPE)
 		data = _free(data);
 	/*@=branchstate@*/
     }
@@ -3110,6 +3143,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     int_32 count, type;
     hPTR_t data;
     unsigned int intVal;
+    uint_64 llVal;
     const char ** strarray;
     int datafree = 0;
     int countBuf;
@@ -3145,6 +3179,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 		return NULL;
 	    }
 	    break;
+	case RPM_OPENPGP_TYPE:
+	case RPM_ASN1_TYPE:
 	case RPM_BIN_TYPE:
 	case RPM_STRING_TYPE:
 	    break;
@@ -3206,6 +3242,22 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	}
 	break;
 
+    case RPM_INT64_TYPE:
+	llVal = *(((int_64 *) data) + element);
+	if (tag->fmt)
+	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, element);
+	if (val) {
+	    need = strlen(val);
+	} else {
+	    need = 10 + tag->pad + 40;
+	    val = xmalloc(need+1);
+	    strcat(buf, "lld");
+	    /*@-formatconst@*/
+	    sprintf(val, buf, llVal);
+	    /*@=formatconst@*/
+	}
+	break;
+
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
@@ -3239,6 +3291,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	}
 	break;
 
+    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
+    case RPM_ASN1_TYPE:		/* XXX W2DO? */
     case RPM_BIN_TYPE:
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	if (tag->fmt)
@@ -3381,7 +3435,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 /*@=boundswrite@*/
 	    } 
 
-	    if (type == RPM_BIN_TYPE)
+	    if (type == RPM_BIN_TYPE || type == RPM_ASN1_TYPE || type == RPM_OPENPGP_TYPE)
 		count = 1;	/* XXX count abused as no. of bytes. */
 
 	    if (numElements > 1 && count != numElements)
@@ -3391,6 +3445,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 			_("array iterator used with different sized arrays");
 		return NULL;
 		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case RPM_OPENPGP_TYPE:
+	    case RPM_ASN1_TYPE:
 	    case RPM_BIN_TYPE:
 	    case RPM_STRING_TYPE:
 		/*@switchbreak@*/ break;
@@ -3617,9 +3673,7 @@ static char * octalFormat(int_32 type, hPTR_t data,
 {
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
-	val = xstrdup(_("(not a number)"));
-    } else {
+    if (type == RPM_INT32_TYPE) {
 	val = xmalloc(20 + padding);
 /*@-boundswrite@*/
 	strcat(formatPrefix, "o");
@@ -3627,7 +3681,16 @@ static char * octalFormat(int_32 type, hPTR_t data,
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, *((int_32 *) data));
 	/*@=formatconst@*/
-    }
+    } else if (type == RPM_INT64_TYPE) {
+	val = xmalloc(40 + padding);
+/*@-boundswrite@*/
+	strcat(formatPrefix, "llo");
+/*@=boundswrite@*/
+	/*@-formatconst@*/
+	sprintf(val, formatPrefix, *((int_64 *) data));
+	/*@=formatconst@*/
+    } else
+	val = xstrdup(_("(not a number)"));
 
     return val;
 }
@@ -3646,9 +3709,7 @@ static char * hexFormat(int_32 type, hPTR_t data,
 {
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
-	val = xstrdup(_("(not a number)"));
-    } else {
+    if (type == RPM_INT32_TYPE) {
 	val = xmalloc(20 + padding);
 /*@-boundswrite@*/
 	strcat(formatPrefix, "x");
@@ -3656,7 +3717,16 @@ static char * hexFormat(int_32 type, hPTR_t data,
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, *((int_32 *) data));
 	/*@=formatconst@*/
-    }
+    } else if (type == RPM_INT64_TYPE) {
+	val = xmalloc(40 + padding);
+/*@-boundswrite@*/
+	strcat(formatPrefix, "llx");
+/*@=boundswrite@*/
+	/*@-formatconst@*/
+	sprintf(val, formatPrefix, *((int_64 *) data));
+	/*@=formatconst@*/
+    } else
+	val = xstrdup(_("(not a number)"));
 
     return val;
 }
@@ -3749,6 +3819,14 @@ static char * shescapeFormat(int_32 type, hPTR_t data,
 /*@=boundswrite@*/
 	/*@-formatconst@*/
 	sprintf(result, formatPrefix, *((int_32 *) data));
+	/*@=formatconst@*/
+    } else if (type == RPM_INT64_TYPE) {
+	result = xmalloc(padding + 40);
+/*@-boundswrite@*/
+	strcat(formatPrefix, "lld");
+/*@=boundswrite@*/
+	/*@-formatconst@*/
+	sprintf(result, formatPrefix, *((int_64 *) data));
 	/*@=formatconst@*/
     } else {
 	buf = alloca(strlen(data) + padding + 2);

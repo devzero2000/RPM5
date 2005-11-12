@@ -53,18 +53,23 @@ static int tagLoadIndex(headerTagTableEntry ** ipp, int * np,
 		int (*cmp) (const void * avp, const void * bvp))
 	/*@modifies *ipp, *np @*/
 {
-    headerTagTableEntry tte;
+    headerTagTableEntry tte, *ip;
+    int n = 0;
 
-    *ipp = xcalloc(rpmTagTableSize, sizeof(**ipp));
-    *np = 0;
+    ip = xcalloc(rpmTagTableSize, sizeof(*ip));
+    n = 0;
 /*@-dependenttrans@*/ /*@-observertrans@*/ /*@-castexpose@*/ /*@-mods@*/ /*@-modobserver@*/
-    for (tte = (headerTagTableEntry)rpmTagTable; tte->name != NULL; tte++)
-	    (*ipp)[(*np)++] = tte;
-    (*ipp)[*np] = NULL;
+    for (tte = (headerTagTableEntry)rpmTagTable; tte->name != NULL; tte++) {
+	ip[n] = tte;
+	n++;
+    }
+assert(n == rpmTagTableSize);
 /*@=dependenttrans@*/ /*@=observertrans@*/ /*@=castexpose@*/ /*@=mods@*/ /*@=modobserver@*/
 
-    if (*np > 1)
-	qsort(*ipp, *np, sizeof(**ipp), cmp);
+    if (n > 1)
+	qsort(ip, n, sizeof(*ip), cmp);
+    *ipp = ip;
+    *np = n;
     return 0;
 }
 

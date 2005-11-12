@@ -12,14 +12,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
-"POT-Creation-Date: 2005-11-11 15:02-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-11-11 23:18-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 "X-Generator: KBabel 1.3.1\n"
 
 #: build.c:40
@@ -74,10 +74,12 @@ msgid "Building for target %s\n"
 msgstr "ターゲット %s 用にビルド中\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません。\n"
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr "パッケージのヘッダ読み込み中にエラー\n"
 
@@ -134,10 +136,12 @@ msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
 
 #: rpmqv.c:147
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:148
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "このプログラムは GNU GPL の下で自由に配布できます。\n"
@@ -287,6 +291,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらなければなりません。"
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr "署名するファイルがありません\n"
 
@@ -296,6 +301,7 @@ msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません。\n"
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp が見付かりません: "
 
@@ -304,10 +310,12 @@ msgid "Enter pass phrase: "
 msgstr "パスフレーズの入力: "
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズのチェックに失敗しました。\n"
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です。\n"
 
@@ -321,6 +329,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ指定できます。"
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
@@ -1507,28 +1516,24 @@ msgstr "========== tsort を続行中...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
 
-#: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:523
-#: rpmdb/header.c:3621 rpmdb/header.c:3650 rpmdb/header.c:3674
-msgid "(not a number)"
-msgstr "(数字ではありません)"
-
-#: lib/formats.c:174
-msgid "(not base64)"
-msgstr "(base64 ではありません)"
-
-#: lib/formats.c:184
+#: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:187
+#: lib/formats.c:531
 msgid "(invalid type)"
 msgstr "(不正なタイプ)"
 
-#: lib/formats.c:209 lib/formats.c:409
+#: lib/formats.c:176
+msgid "(not base64)"
+msgstr "(base64 ではありません)"
+
+#: lib/formats.c:212 lib/formats.c:417
 msgid "(not a blob)"
 msgstr "(blob ではありません)"
 
-#: lib/formats.c:341
+#: lib/formats.c:349
 msgid "(invalid xml type)"
 msgstr "(不正な XML タイプ)"
 
-#: lib/formats.c:434
+#: lib/formats.c:442
 msgid "(not an OpenPGP signature)"
 msgstr "(OpenPGP 署名ではありません)"
 
@@ -1669,15 +1674,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "SHA1 ヘッダ: 異常です。16 進数ではありません。\n"
 
 #: lib/package.c:470
-#, fuzzy
+#, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
@@ -1693,6 +1700,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "ヘッダマジック: 異常です。\n"
 
@@ -1712,6 +1720,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "ヘッダ blob(%d): 異常です。読み込み結果は %d です。\n"
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr "ヘッダロード: 異常です。\n"
 
@@ -3203,22 +3212,27 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s を読み込み用にオープンできません: %s。\n"
 
 #: lib/rpmrc.c:1930
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3376,6 +3390,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "署名サイズ (%d): 不正、read が %d を返しました\n"
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "署名の目印: 不正\n"
 
@@ -3400,6 +3415,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "署名タグ[%d]: 不正、タグ %d タイプ %d オフセット %d カウント %d\n"
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr "署名の読み込み: 不正。\n"
 
@@ -3473,6 +3489,9 @@ msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3516,10 +3535,12 @@ msgid " DSA signature: "
 msgstr "V3 DSA 署名: "
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "署名確認: 異常なパラメータです。\n"
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "MD5 ダイジェストが破損: サポートされていません。\n"
 
@@ -3879,77 +3900,81 @@ msgstr "%s には大き/小さ過ぎるlong値があります。スキップします\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s には大き/小さ過ぎる整数値があります。スキップします\n"
 
-#: rpmdb/header.c:2792
+#: rpmdb/header.c:2825
 msgid "missing { after %"
 msgstr "% の後に { がありません。"
 
-#: rpmdb/header.c:2822
+#: rpmdb/header.c:2855
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません。"
 
-#: rpmdb/header.c:2838
+#: rpmdb/header.c:2871
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
-#: rpmdb/header.c:2850
+#: rpmdb/header.c:2883
 msgid "empty tag name"
 msgstr "空のタグ名"
 
-#: rpmdb/header.c:2859
+#: rpmdb/header.c:2892
 msgid "unknown tag"
 msgstr "不明なタグ"
 
-#: rpmdb/header.c:2886
+#: rpmdb/header.c:2919
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます。"
 
-#: rpmdb/header.c:2899
+#: rpmdb/header.c:2932
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
-#: rpmdb/header.c:2912
+#: rpmdb/header.c:2945
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
-#: rpmdb/header.c:2976
+#: rpmdb/header.c:3009
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます。"
 
-#: rpmdb/header.c:2983
+#: rpmdb/header.c:3016
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます。"
 
-#: rpmdb/header.c:2995 rpmdb/header.c:3035
+#: rpmdb/header.c:3028 rpmdb/header.c:3068
 msgid "} expected in expression"
 msgstr "式中に } が期待されます。"
 
-#: rpmdb/header.c:3003
+#: rpmdb/header.c:3036
 msgid ": expected following ? subexpression"
 msgstr "? サブ式の後に : が期待されます。"
 
-#: rpmdb/header.c:3021
+#: rpmdb/header.c:3054
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます。"
 
-#: rpmdb/header.c:3043
+#: rpmdb/header.c:3076
 msgid "| expected at end of expression"
 msgstr "式の終わりに | が期待されます。"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3144
+#: rpmdb/header.c:3178
 msgid "(index out of range)"
 msgstr "(インデックスが範囲外)"
 
-#: rpmdb/header.c:3391
+#: rpmdb/header.c:3445
 msgid "array iterator used with different sized arrays"
 msgstr "配列の繰り返し指定が、サイズが異なる配列の間で使用されています"
 
-#: rpmdb/header.c:3712
+#: rpmdb/header.c:3693 rpmdb/header.c:3729 rpmdb/header.c:3744
+msgid "(not a number)"
+msgstr "(数字ではありません)"
+
+#: rpmdb/header.c:3782
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3728
+#: rpmdb/header.c:3798
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
@@ -4304,6 +4329,7 @@ msgid "(no error)"
 msgstr "(エラーなし)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "致命的なエラー: "

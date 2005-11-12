@@ -86,16 +86,14 @@
 extern "C" {
 #endif
 
-#if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
+/* XXX hpux needs -Ae in CFLAGS to grok this */
 typedef long long int int_64;
-#endif
 typedef int int_32;
 typedef short int int_16;
 typedef char int_8;
 
-#if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
+/* XXX hpux needs -Ae in CFLAGS to grok this */
 typedef unsigned long long int uint_64;
-#endif
 typedef unsigned int uint_32;
 typedef unsigned short uint_16;
 typedef unsigned char uint_8;
@@ -244,12 +242,14 @@ typedef enum rpmTagType_e {
     RPM_INT8_TYPE		=  2,
     RPM_INT16_TYPE		=  3,
     RPM_INT32_TYPE		=  4,
-/*    RPM_INT64_TYPE	= 5,   ---- These aren't supported (yet) */
+    RPM_INT64_TYPE		=  5,
     RPM_STRING_TYPE		=  6,
     RPM_BIN_TYPE		=  7,
     RPM_STRING_ARRAY_TYPE	=  8,
-    RPM_I18NSTRING_TYPE		=  9
-#define	RPM_MAX_TYPE		9
+    RPM_I18NSTRING_TYPE		=  9,
+    RPM_ASN1_TYPE		= 10,
+    RPM_OPENPGP_TYPE		= 11,
+#define	RPM_MAX_TYPE		11
 } rpmTagType;
 
 /** \ingroup header

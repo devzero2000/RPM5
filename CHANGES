@@ -93,6 +93,7 @@
 	- rpmrc: eliminate RPMVAR_PROVIDES, use /etc/rpm/sysinfo instead.
 	- add uname(foo) dependency name space to map uname(2) provides.
 	- link all rpm executables statically.
+	- add tag types RPM_INT64_TYPE, RPM_ASN1_TYPE, and RPM_OPENPGP_TYPE.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
