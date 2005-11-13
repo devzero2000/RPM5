@@ -590,6 +590,7 @@ exit 0
 * Sun Nov 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.47
 - fix: simpler python peculier macros, multilib aware (#120635).
 - ornament the rpmds API with diagnostic helpers.
+- rpmdeps: add --{cpuinfo,rpmlib,sysinfo,getconf,elf,ldconfiguname } options.
 
 * Sat Nov 12 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.46
 - refactor rpmfcELF() to rpmdsELF() to extract ELF dependencies.

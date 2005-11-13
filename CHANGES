@@ -98,6 +98,7 @@
 	- fix: strip ${RPM_BUILD_ROOT} in libtooldeps.sh --provides.
 	- fix: simpler python peculier macros, multilib aware (#120635).
 	- ornament the rpmds API with diagnostic helpers.
+	- rpmdeps: add --{cpuinfo,rpmlib,sysinfo,getconf,elf,ldconfiguname } options.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
