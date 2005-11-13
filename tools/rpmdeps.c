@@ -83,7 +83,7 @@ static const char * _pkgconfig_requires = _PKGCONFIG_REQUIRES;
 /^Provides: / {\n\
 	s|^Provides: ||\n\
 	s|, |\\n|g\n\
-}' | sort -u"
+}' | sed -f /usr/lib/rpm/dpkg2fc.sed | sort -u | tee /tmp/dpkg"
 static const char * _dpkg_provides = _DPKG_PROVIDES;
 
 #define _RPMDB_PACKAGE_PROVIDES  "/bin/rpm -qa --qf '%{name} = %|epoch?{%{epoch}:}|%{version}-%{release}\n' | sort -u"
