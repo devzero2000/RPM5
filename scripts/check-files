@@ -6,7 +6,7 @@
 #
 # filon@pld.org.pl
 
-RPM_BUILD_ROOT=$1
+RPM_BUILD_ROOT="$1"
 
 if [ ! -d "$RPM_BUILD_ROOT" ] ; then
 	cat > /dev/null

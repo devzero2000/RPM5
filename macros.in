@@ -1294,6 +1294,7 @@ end\
 %perl_vendorlib  %(eval "`%{__perl} -V:installvendorlib`"; echo $installvendorlib)
 %perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
 %perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
+%perl_version	%(eval "`%{__perl} -V:version`"; echo $version)
 
 #------------------------------------------------------------------------
 # python(...) configuration.
@@ -1305,26 +1306,20 @@ end\
 %__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
 %__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
 
-# Useful macros for building *.rpm python packages.
+# Useful macros for building *.rpm python packages (for python > 1.6).
 #
-%py_ver                 %(python -c "import sys; v=sys.version_info[:2]; print '%%d.%%d'%%v" 2>/dev/null || echo PYTHON-NOT-FOUND)
-%py_prefix              %(python -c "import sys; print sys.prefix" 2>/dev/null || echo PYTHON-NOT-FOUND)
-%py_libdir              %{py_prefix}/lib/python%{py_ver}
-%py_incdir              %{py_prefix}/include/python%{py_ver}
-%py_sitedir             %{py_libdir}/site-packages
+%python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")
+%python_sitelib	%(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")
+%python_version	%(%{__python} -c "import sys; print(sys.version[0:3])")
 
 %py_compile(O)  \
 find %1 -name '*.pyc' -name '*.pyo' -exec rm -f {} \\; \
-python -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1 \
-%{-O: \
-python -O -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1 \
-}
+%{__python} %{?O:-O} -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1 \
 
 %py_requires(d) \
-%define minver %py_ver \
-%define maxver %(python -c "import sys; a,b=sys.version_info[:2]; print '%%d.%%d'%%(a,b+1)" 2>/dev/null || echo PYTHON-NOT-FOUND) \
+%define maxver %(%{__python} -c "import sys; a,b=sys.version_info[:2]; print '%%d.%%d'%%(a,b+1)" 2>/dev/null || echo PYTHON-NOT-FOUND) \
 BuildRequires: python %{-d:python-devel} \
-PreReq: python >= %minver, python < %maxver
+PreReq: python >= %{python_version}, python < %{maxver}
 
 #------------------------------------------------------------------------
 # libtool(...) configuration.
@@ -1347,7 +1342,7 @@ PreReq: python >= %minver, python < %maxver
 %__pkgconfig_requires	@RPMCONFIGDIR@/pkgconfigdeps.sh --requires
 
 #------------------------------------------------------------------------
-# executable(...) configuration (not yet implemented).
+# executable(...) configuration.
 #
 # Path to scripts to autogenerate executable(foo) script dependencies,
 #
