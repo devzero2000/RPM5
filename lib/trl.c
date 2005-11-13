@@ -10,16 +10,15 @@ extern int _rpmds_debug;
 
 int main(int argc, char *argv[])
 {
-    rpmds ds = NULL;
+    rpmds P = NULL;
     int rc;
+    int xx;
 
-    rc = rpmdsRpmlib(&ds, NULL);
+    rc = rpmdsRpmlib(&P, NULL);
     
-    ds = rpmdsInit(ds);
-    while (rpmdsNext(ds) >= 0)
-	fprintf(stderr, "%d %s\n", rpmdsIx(ds), rpmdsDNEVR(ds)+2);
+    xx = rpmdsPrint(P, NULL);
 
-    ds = rpmdsFree(ds);
+    P = rpmdsFree(P);
 
     return 0;
 }

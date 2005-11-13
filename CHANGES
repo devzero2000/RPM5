@@ -97,6 +97,7 @@
 	- add soname(/path/to/libfoo.so) run-time dependency probe.
 	- fix: strip ${RPM_BUILD_ROOT} in libtooldeps.sh --provides.
 	- fix: simpler python peculier macros, multilib aware (#120635).
+	- ornament the rpmds API with diagnostic helpers.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

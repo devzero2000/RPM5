@@ -14,21 +14,18 @@ int main(int argc, char *argv[])
     rpmds P = NULL;
     rpmds R = NULL;
     int rc;
+    int xx;
 
     PRCO->Pdsp = &P;
     PRCO->Rdsp = &R;
 
     rc = rpmdsLdconfig(PRCO, NULL);
-    
-    P = rpmdsInit(P);
-    while (rpmdsNext(P) >= 0)
-	fprintf(stderr, "%d Provides: %s\n", rpmdsIx(P), rpmdsDNEVR(P)+2);
-    P = rpmdsFree(P);
 
-    R = rpmdsInit(R);
-    while (rpmdsNext(R) >= 0)
-	fprintf(stderr, "%d Requires: %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
+    xx = rpmdsPrint(P, NULL);
+    xx = rpmdsPrint(R, NULL);
+    
+    P = rpmdsFree(P);
     R = rpmdsFree(R);
 
-    return 0;
+    return rc;
 }

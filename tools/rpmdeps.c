@@ -17,16 +17,14 @@ static int print_provides;
 /*@unchecked@*/
 static int print_requires;
 
-static void rpmdsPrint(const char * msg, rpmds ds, FILE * fp)
+static void rpmdepPrint(const char * msg, rpmds ds, FILE * fp)
 {
     if (fp == NULL) fp = stderr;
 
     if (msg)
 	fprintf(fp, "===================================== %s\n", msg);
 
-    ds = rpmdsInit(ds);
-    while (rpmdsNext(ds) >= 0)
-	fprintf(fp, "%s\n", rpmdsDNEVR(ds)+2);
+    (void) rpmdsPrint(ds, fp);
 }
 
 static struct poptOption optionsTable[] = {
@@ -99,9 +97,9 @@ rpmfcPrint(buf, fc, NULL);
 }
 
     if (print_provides)
-	rpmdsPrint(NULL, fc->provides, stdout);
+	rpmdepPrint(NULL, fc->provides, stdout);
     if (print_requires)
-	rpmdsPrint(NULL, fc->requires, stdout);
+	rpmdepPrint(NULL, fc->requires, stdout);
 
     fc = rpmfcFree(fc);
 

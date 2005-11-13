@@ -24,7 +24,8 @@
 int
 main (int argc, char *argv[])
 {
-     rpmds ds = NULL;
+     rpmds P = NULL;
+     int rc;
      int xx;
 
     /* Set locale.  Do not set LC_ALL because the other categories must
@@ -35,13 +36,10 @@ main (int argc, char *argv[])
     /* Initialize the message catalog.  */
     textdomain (PACKAGE);
 
-    xx = rpmdsGetconf (&ds, NULL);
+    rc = rpmdsGetconf (&P, NULL);
+    xx = rpmdsPrint(P, NULL);
 
-    ds = rpmdsInit(ds);
-    while (rpmdsNext(ds) >= 0)
-	fprintf(stderr, "%d\tProvides: %s\n", rpmdsIx(ds), rpmdsDNEVR(ds)+2);
+    P = rpmdsFree(P);
 
-    ds = rpmdsFree(ds);
-
-    return 0;
+    return rc;
 }

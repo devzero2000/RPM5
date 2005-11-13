@@ -54,18 +54,15 @@
 
 int main (int argc, const char * argv[])
 {
-    rpmds cpuinfods = NULL;
+    rpmds P = NULL;
     int rc;
+    int xx;
 
-_rpmio_debug = 0;
-    rc = rpmdsCpuinfo(&cpuinfods, NULL);
+    rc = rpmdsCpuinfo(&P, NULL);
 
-    cpuinfods = rpmdsInit(cpuinfods);
-    if (cpuinfods != NULL)
-    while (rpmdsNext(cpuinfods) >= 0)
-	fprintf(stderr, "Provides: %s\n", rpmdsDNEVR(cpuinfods)+2);
+    xx = rpmdsPrint(P, NULL);
 
-    cpuinfods = rpmdsFree(cpuinfods);
+    P = rpmdsFree(P);
 
     return rc;
 }

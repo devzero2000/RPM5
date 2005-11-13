@@ -8,10 +8,10 @@
 
 extern int _rpmds_debug;
 
-#define _LIBTOOL_PROVIDES  "/usr/bin/find /usr/lib -name '*.la' | /usr/lib/rpm/libtooldeps.sh -P"
+#define _LIBTOOL_PROVIDES  "/usr/bin/find /usr/lib -name '*.la' | /usr/lib/rpm/libtooldeps.sh -P /"
 static const char * _libtool_provides = _LIBTOOL_PROVIDES;
 
-#define _LIBTOOL_REQUIRES  "/bin/rpm -qal | grep '\\.la$' | /usr/lib/rpm/libtooldeps.sh -R"
+#define _LIBTOOL_REQUIRES  "/bin/rpm -qal | grep '\\.la$' | /usr/lib/rpm/libtooldeps.sh -R /"
 static const char * _libtool_requires = _LIBTOOL_REQUIRES;
 
 int main(int argc, char *argv[])
@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     rpmds P = NULL;
     rpmds R = NULL;
     int rc;
+    int xx;
 
 fprintf(stderr, "\n*** Gathering libtool Provides: using\n\t%s\n", _libtool_provides);
     rc = rpmdsPipe(&P, RPMTAG_PROVIDENAME, _libtool_provides);
@@ -27,22 +28,8 @@ fprintf(stderr, "\n*** Gathering libtool Requires: using\n\t%s\n", _libtool_requ
 
 fprintf(stderr, "\n*** Checking libtool Requires(%d): against Provides(%d): closure --\n", rpmdsCount(R), rpmdsCount(P));
 
-    /* Allocate the R results array (to be filled in by rpmdsSearch). */
-    (void) rpmdsSetResult(R, 0);
-
-    /* Collect the rpmdsSearch results (in the R dependency set). */
-    R = rpmdsInit(R);
-    while (rpmdsNext(R) >= 0)
-	rc = rpmdsSearch(P, R);
-
-    /* Display the results. */
-    R = rpmdsInit(R);
-    while (rpmdsNext(R) >= 0) {
-	rc = rpmdsResult(R);
-	if (rc > 0)
-	    continue;
-	fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
-    }
+    /* Display the closure results. */
+    xx = rpmdsPrintClosure(P, R, NULL);
 
     P = rpmdsFree(P);
     R = rpmdsFree(R);

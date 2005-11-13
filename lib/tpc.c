@@ -1,7 +1,6 @@
 #include "system.h"
 
 #include <rpmlib.h>
-
 #include <rpmds.h>
 
 #include "debug.h"
@@ -19,28 +18,19 @@ int main(int argc, char *argv[])
     rpmds P = NULL;
     rpmds R = NULL;
     int rc;
+    int xx;
 
 fprintf(stderr, "\n*** Gathering pkgconfig Provides: using\n\t%s\n", _pkgconfig_provides);
     rc = rpmdsPipe(&P, RPMTAG_PROVIDENAME, _pkgconfig_provides);
+    xx = rpmdsPrint(P, NULL);
+
 fprintf(stderr, "\n*** Gathering pkgconfig Requires: using\n\t%s\n", _pkgconfig_requires);
     rc = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _pkgconfig_requires);
+    xx = rpmdsPrint(R, NULL);
 
 fprintf(stderr, "\n*** Checking pkgconfig Requires(%d): against Provides(%d): closure --\n", rpmdsCount(R), rpmdsCount(P));
 
-    /* Allocate the R results array (to be filled in by rpmdsSearch). */
-    (void) rpmdsSetResult(R, 0);
-
-    /* Collect the rpmdsSearch results (in the R dependency set). */
-    R = rpmdsInit(R);
-    while (rpmdsNext(R) >= 0)
-	rc = rpmdsSearch(P, R);
-
-    /* Display the results. */
-    R = rpmdsInit(R);
-    while (rpmdsNext(R) >= 0) {
-	rc = rpmdsResult(R);
-	    fprintf(stderr, "%d %s\n", rpmdsIx(R), rpmdsDNEVR(R)+2);
-    }
+    xx = rpmdsPrintClosure(P, R, NULL);
 
     P = rpmdsFree(P);
     R = rpmdsFree(R);

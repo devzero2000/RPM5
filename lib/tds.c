@@ -1,8 +1,8 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
-#include "rpmds.h"
+#include <rpmds.h>
 
 #include "debug.h"
 
@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     rpmds dsA2;
     rpmds dsB;
     rpmds dsC;
+    int rc = 0;
+    int xx;
 
     _rpmds_debug = 0;
     dsA = rpmdsSingle(tagN, "A", "0", RPMSENSE_EQUAL);
@@ -31,9 +33,9 @@ int main(int argc, char *argv[])
     rpmdsMerge(&ds, dsB);
     rpmdsMerge(&ds, dsA1);
 
-    ds = rpmdsInit(ds);
-    while (rpmdsNext(ds) >= 0)
-	fprintf(stderr, "%d %s\n", rpmdsIx(ds), rpmdsDNEVR(ds)+2);
+    xx = rpmdsPrint(ds, NULL);
+
+    ds = rpmdsFree(ds);
 
     return 0;
 }

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-12 14:30-0500\n"
+"POT-Creation-Date: 2005-11-13 10:31-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -108,7 +108,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:115 tools/rpmcache.c:525 tools/rpmdeps.c:35 tools/rpmgraph.c:275
+#: rpmqv.c:115 tools/rpmcache.c:525 tools/rpmdeps.c:33 tools/rpmgraph.c:275
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -2672,11 +2672,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:793 lib/rpmds.c:3186
+#: lib/rpmds.c:793 lib/rpmds.c:3189
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:793 lib/rpmds.c:3186
+#: lib/rpmds.c:793 lib/rpmds.c:3189
 msgid "YES"
 msgstr ""
 
@@ -2720,29 +2720,33 @@ msgstr ""
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1421
+#: lib/rpmds.c:1323
+msgid "header tags can be type int_64."
+msgstr ""
+
+#: lib/rpmds.c:1424
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1455
+#: lib/rpmds.c:1458
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1465
+#: lib/rpmds.c:1468
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2979 lib/rpmds.c:3009 lib/rpmds.c:3021
+#: lib/rpmds.c:2982 lib/rpmds.c:3012 lib/rpmds.c:3024
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2982
+#: lib/rpmds.c:2985
 #, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2750,33 +2754,33 @@ msgid ""
 msgstr ""
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3011
+#: lib/rpmds.c:3014
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3023
+#: lib/rpmds.c:3026
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3152
+#: lib/rpmds.c:3155
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3185
+#: lib/rpmds.c:3188
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:3209
+#: lib/rpmds.c:3212
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""

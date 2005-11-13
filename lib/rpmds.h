@@ -520,6 +520,92 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 	/*@*/;
 
+/**
+ * Return current dependency type name.
+ * @param ds		dependency set
+ * @return		current dependency type name
+ */
+/*@unused@*/ static inline /*@observer@*/
+const char * rpmdsTagName(/*@null@*/ const rpmds ds)
+	/*@*/
+{
+    int tagN = rpmdsTagN(ds);
+
+    switch (tagN) {
+    case RPMTAG_PROVIDENAME:	return "Provides";	/*@notreached@*/ break;
+    case RPMTAG_REQUIRENAME:	return "Requires";	/*@notreached@*/ break;
+    case RPMTAG_CONFLICTNAME:	return "Conflicts";	/*@notreached@*/ break;
+    case RPMTAG_OBSOLETENAME:	return "Obsoletes";	/*@notreached@*/ break;
+    }
+    return tagName(tagN);
+}
+
+/**
+ * Print current dependency set contents.
+ * @param ds		dependency set
+ * @param fp		file handle (NULL uses stderr)
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int rpmdsPrint(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
+	/*@*/
+{
+    if (fp == NULL)
+	fp = stderr;
+    ds = rpmdsInit(ds);
+    while (rpmdsNext(ds) >= 0)
+        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsTagName(ds), rpmdsDNEVR(ds)+2);
+    return 0;
+}
+
+/**
+ * Print current dependency set results.
+ * @param ds		dependency set
+ * @param fp		file handle (NULL uses stderr)
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int rpmdsPrintResults(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
+	/*@*/
+{
+    if (fp == NULL)
+	fp = stderr;
+
+    ds = rpmdsInit(ds);
+    while (rpmdsNext(ds) >= 0) {
+	int rc = rpmdsResult(ds);
+	if (rc > 0)
+	    continue;
+        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsTagName(ds), rpmdsDNEVR(ds)+2);
+    }
+    return 0;
+}
+
+/**
+ * Check Provides: against Requires: and print closure results.
+ * @param P		Provides: dependency set
+ * @param R		Requires: dependency set
+ * @param fp		file handle (NULL uses stderr)
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int rpmdsPrintClosure(/*@null@*/ rpmds P, /*@null@*/ rpmds R,
+		/*@null@*/ FILE * fp)
+	/*@modifies R @*/
+{
+    int rc;
+
+    /* Allocate the R results array (to be filled in by rpmdsSearch). */
+    (void) rpmdsSetResult(R, 0);	/* allocate result array. */
+
+    /* Collect the rpmdsSearch results (in the R dependency set). */
+    R = rpmdsInit(R);
+    while (rpmdsNext(R) >= 0)
+        rc = rpmdsSearch(P, R);
+
+    return rpmdsPrintResults(R, fp);
+}
+
 #ifdef __cplusplus
 }
 #endif
