@@ -86,6 +86,28 @@ static const char * _pkgconfig_requires = _PKGCONFIG_REQUIRES;
 }' | sed -f /usr/lib/rpm/dpkg2fc.sed | sort -u | tee /tmp/dpkg"
 static const char * _dpkg_provides = _DPKG_PROVIDES;
 
+#define	_DPKG_REQUIRES "egrep '^(Package|Status|Pre-Depends|Depends):' /var/lib/dpkg/status | sed -e '\n\
+/^Package: / {\n\
+	N\n\
+	/not-installed/d\n\
+	s|^Package: [^\\n]*\\n.*$||\n\
+}\n\
+/^Depends: / {\n\
+	s|^Depends: ||\n\
+	s|(\\([^)]*\\))|\\1|g\n\
+	s|>>|>|\n\
+	s|<<|<|\n\
+	s|, |\\n|g\n\
+}\n\
+/^Pre-Depends: / {\n\
+	s|^Pre-Depends: ||\n\
+	s|(\\([^)]*\\))|\\1|g\n\
+	s|>>|>|\n\
+	s|<<|<|\n\
+	s|, |\\n|g\n\
+}' | sed -f /usr/lib/rpm/dpkg2fc.sed | sed -e 's/ |.*$//' | sort -u | tee /tmp/dpkg"
+static const char * _dpkg_requires = _DPKG_REQUIRES;
+
 #define _RPMDB_PACKAGE_PROVIDES  "/bin/rpm -qa --qf '%{name} = %|epoch?{%{epoch}:}|%{version}-%{release}\n' | sort -u"
 static const char * _rpmdb_package_provides = _RPMDB_PACKAGE_PROVIDES;
 
@@ -371,16 +393,14 @@ fprintf(stderr, "\n*** Gathering rpmdb package Requires: using\n\t%s\n", _rpmdb_
 	break;
     case RPMDEP_RPMDSRPMDPKG:
 	closure_name = "rpmdpkg(...)";
-if (rpmIsVerbose())
+if (print_closure || rpmIsVerbose()) {
 fprintf(stderr, "\n*** Gathering rpmdb package Provides: using\n\t%s\n", _rpmdb_package_provides);
 	xx = rpmdsPipe(&P, RPMTAG_PROVIDENAME, _rpmdb_package_provides);
-#if NOTYET
-if (print_closure || rpmIsVerbose()) {
-fprintf(stderr, "\n*** Gathering dpkg Requires: using\n\t%s\n", _dpkg_requires);
-	xx = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _dpkg_requires);
 	print_closure = 1;
 }
-#endif
+if (rpmIsVerbose())
+fprintf(stderr, "\n*** Gathering dpkg Requires: using\n\t%s\n", _dpkg_requires);
+	xx = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _dpkg_requires);
 	break;
     }
 
