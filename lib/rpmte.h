@@ -583,6 +583,9 @@ void rpmteColorDS(rpmte te, rpmTag tag)
         /*@modifies te @*/;
 /*@=exportlocal@*/
 
+int rpmteFlink(rpmte p, rpmte q, Header oh, const char * msg)
+	/*@modifies p, q, oh @*/;
+
 /**
  * Return transaction element index.
  * @param tsi		transaction element iterator
@@ -646,6 +649,44 @@ rpmtsi XrpmtsiInit(rpmts ts,
 /*@dependent@*/ /*@null@*/
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
         /*@modifies tsi @*/;
+
+#if	defined(_RPMTE_INTERNAL)
+static inline void rpmtePrintID(rpmte p)
+{
+if (p->ePkgid) argvPrint("ePkgid", p->ePkgid, NULL);
+if (p->eHdrid) argvPrint("eHdrid", p->eHdrid, NULL);
+if (p->eNEVRA) argvPrint("eNEVRA", p->eNEVRA, NULL);
+if (p->aPkgid) argvPrint("aPkgid", p->aPkgid, NULL);
+if (p->aHdrid) argvPrint("aHdrid", p->aHdrid, NULL);
+if (p->aNEVRA) argvPrint("aNEVRA", p->aNEVRA, NULL);
+};
+#endif
+
+static inline void hdrPrintInstalled(Header h)
+{
+    const char * qfmt = "[%{erasednevra} O:%{packageorigin} P:%{erasedpkgid} H:%{erasedhdrid}\n]";
+    const char * errstr = "(unknown error)";
+    const char * str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+    if (str == NULL)
+	fprintf(stderr, "error: %s\n", errstr);
+    else {
+	fprintf(stderr, "%s", str);
+	str = _free(str);
+    }
+}
+
+static inline void hdrPrintErased(Header h)
+{
+    const char * qfmt = "[%{installednevra} O:%{packageorigin} P:%{installedpkgid} H:%{installedhdrid}\n]";
+    const char * errstr = "(unknown error)";
+    const char * str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+    if (str == NULL)
+	fprintf(stderr, "error: %s\n", errstr);
+    else {
+	fprintf(stderr, "%s", str);
+	str = _free(str);
+    }
+}
 
 #ifdef __cplusplus
 }

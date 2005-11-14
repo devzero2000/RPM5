@@ -1650,7 +1650,13 @@ psm->te->h = headerLink(fi->h);
 	    {	void * uh = NULL;
 		int_32 uht, uhc;
 
-		/* Save original header's origin (i.e. URL) */
+fprintf(stderr, "==> %s: >>> PSM_PKGSAVE %p\n", __FUNCTION__, fi->h);
+hdrPrintInstalled(fi->h);
+hdrPrintErased(fi->h);
+fprintf(stderr, "==> erased te %p\n", psm->te);
+rpmtePrintID(psm->te);
+
+		/* Save originnal header's origin (i.e. URL) */
 		origin = NULL;
 		xx = headerGetEntry(fi->h, RPMTAG_PACKAGEORIGIN, NULL,
 			(void **)&origin, NULL);
@@ -1750,23 +1756,26 @@ psm->te->h = headerLink(fi->h);
 
 		/* Add original header's origin (i.e. URL) */
 		if (origin != NULL)
-		    xx = hae(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
+		    xx = hae(psm->oh, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
 				origin, 1);
 
 assert(psm->te != NULL);
 		ac = argvCount(psm->te->aNEVRA);
 		if (ac > 0)
-		    xx = hae(fi->h,RPMTAG_INSTALLEDNEVRA, RPM_STRING_ARRAY_TYPE,
+		    xx = hae(psm->oh, RPMTAG_INSTALLEDNEVRA, RPM_STRING_ARRAY_TYPE,
 				argvData(psm->te->aNEVRA), ac);
 		ac = argvCount(psm->te->aPkgid);
 		if (ac > 0)
-		    xx = hae(fi->h,RPMTAG_INSTALLEDPKGID, RPM_STRING_ARRAY_TYPE,
+		    xx = hae(psm->oh, RPMTAG_INSTALLEDPKGID, RPM_STRING_ARRAY_TYPE,
 				argvData(psm->te->aPkgid), ac);
 		ac = argvCount(psm->te->aHdrid);
 		if (ac > 0)
-		    xx = hae(fi->h,RPMTAG_INSTALLEDHDRID, RPM_STRING_ARRAY_TYPE,
+		    xx = hae(psm->oh, RPMTAG_INSTALLEDHDRID, RPM_STRING_ARRAY_TYPE,
 				argvData(psm->te->aHdrid), ac);
 
+fprintf(stderr, "==> %s: >>> headerWrite %p\n", __FUNCTION__, psm->oh);
+hdrPrintInstalled(psm->oh);
+hdrPrintErased(psm->oh);
 	    }
 
 	    /* Write the metadata section into the package. */
@@ -1952,6 +1961,9 @@ assert(psm->te != NULL);
 	    if (ac > 0)
 		xx = hae(fi->h, RPMTAG_ERASEDHDRID, RPM_STRING_ARRAY_TYPE,
 				argvData(psm->te->eHdrid), ac);
+fprintf(stderr, "==> %s: +++ PSM_POST %p\n", __FUNCTION__, fi->h);
+hdrPrintInstalled(fi->h);
+hdrPrintErased(fi->h);
 
 	    /*
 	     * If this package has already been installed, remove it from
@@ -2199,6 +2211,9 @@ assert(psm->mi == NULL);
 	if (fi->h != NULL) {
 	    (void) headerSetInstance(fi->h, fi->record);
 	    rc = RPMRC_OK;
+fprintf(stderr, "==> %s:     PSM_RPMDB_LOAD %p\n", __FUNCTION__, fi->h);
+hdrPrintInstalled(fi->h);
+hdrPrintErased(fi->h);
 	} else
 	    rc = RPMRC_FAIL;
 	break;
@@ -2236,6 +2251,9 @@ assert(psm->mi == NULL);
 			rpmteNEVRA(psm->te), tid);
 	}
 
+fprintf(stderr, "==> %s: +++ PSM_RPMDB_ADD %p\n", __FUNCTION__, fi->h);
+hdrPrintInstalled(fi->h);
+hdrPrintErased(fi->h);
 	/* Add header to db, doing header check if requested */
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
@@ -2271,6 +2289,9 @@ assert(psm->mi == NULL);
 
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
+fprintf(stderr, "==> %s: +++ PSM_RPMDB_REMOVE %p\n", __FUNCTION__, fi->h);
+hdrPrintInstalled(fi->h);
+hdrPrintErased(fi->h);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
 				NULL, NULL);

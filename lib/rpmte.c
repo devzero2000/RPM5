@@ -647,6 +647,85 @@ assert (ix < Count);
     }
 }
 
+/*@unchecked@*/
+static int __mydebug = 0;
+
+int rpmteFlink(rpmte p, rpmte q, Header oh, const char * msg)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    const char * ohNEVRA = NULL;
+    const char * ohPkgid = NULL;
+    const char * ohHdrid = NULL;
+    const unsigned char * pkgid;
+    int_32 pkgidcnt;
+    int xx;
+
+    ohNEVRA = hGetNEVRA(oh, NULL);
+
+    /*
+     * Convert binary pkgid to a string.
+     * XXX Yum's borken conception of a "header" doesn't have signature
+     * tags appended.
+     */
+    pkgid = NULL;
+    pkgidcnt = 0;
+    xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
+    if (pkgid != NULL) {
+	static const char hex[] = "0123456789abcdef";
+	char * t;
+	int i;
+
+	ohPkgid = t = xmalloc((2*pkgidcnt) + 1);
+	for (i = 0 ; i < pkgidcnt; i++) {
+	    *t++ = hex[ ((pkgid[i] >> 4) & 0x0f) ];
+	    *t++ = hex[ ((pkgid[i]     ) & 0x0f) ];
+	}
+	*t = '\0';
+#if NOTYET	/* XXX MinMemory. */
+	pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
+#endif
+    } else
+	ohPkgid = NULL;
+
+    ohHdrid = NULL;
+    xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
+
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&q->aNEVRA, \"%s\")\n", msg, p->NEVRA);
+	xx = argvAdd(&q->aNEVRA, p->NEVRA);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&p->eNEVRA, \"%s\")\n", msg, ohNEVRA);
+	xx = argvAdd(&p->eNEVRA, ohNEVRA);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&q->ePkgid, \"%s\")\n", msg, p->pkgid);
+    if (p->pkgid != NULL)
+	xx = argvAdd(&q->aPkgid, p->pkgid);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&p->ePkgid, \"%s\")\n", msg, ohPkgid);
+    if (ohPkgid != NULL)
+	xx = argvAdd(&p->ePkgid, ohPkgid);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&q->aHdrid, \"%s\")\n", msg, p->hdrid);
+    if (p->hdrid != NULL)
+	xx = argvAdd(&q->aHdrid, p->hdrid);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&p->eHdrid, \"%s\")\n", msg, ohHdrid);
+    if (ohHdrid != NULL)
+	xx = argvAdd(&p->eHdrid, ohHdrid);
+
+fprintf(stderr, "==> %s  added package %p\n", msg, p);
+rpmtePrintID(p);
+fprintf(stderr, "==> %s erased package %p\n", msg, q);
+rpmtePrintID(q);
+
+    ohNEVRA = _free(ohNEVRA);
+    ohPkgid = _free(ohPkgid);
+#ifdef	NOTYET	/* XXX MinMemory. */
+    ohHdrid = _free(ohHdrid);
+#endif
+    return 0;
+}
+
 int rpmtsiOc(rpmtsi tsi)
 {
     return tsi->ocsave;

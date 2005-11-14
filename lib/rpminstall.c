@@ -1012,7 +1012,9 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 	/* Don't bother with headers installed prior to the rollback goal. */
 	if (*tidp < rbtid)
 	    continue;
-
+fprintf(stderr, "==> %s: %p\n", __FUNCTION__, h);
+hdrPrintInstalled(h);
+hdrPrintErased(h);
 	idtx = IDTXgrow(idtx, 1);
 	if (idtx == NULL || idtx->idt == NULL)
 	    continue;
@@ -1088,6 +1090,9 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	if (*tidp < rbtid)
 	    continue;
 
+fprintf(stderr, "==> %s: %p\n", __FUNCTION__, h);
+hdrPrintInstalled(h);
+hdrPrintErased(h);
 	idtx = IDTXgrow(idtx, 1);
 	if (idtx == NULL || idtx->idt == NULL)
 	    goto bottom;
@@ -1245,6 +1250,9 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
 			(rp->key ? rp->key : "???"));
 
+fprintf(stderr, "==> %s: +++ install %p\n", __FUNCTION__, rp->h);
+hdrPrintInstalled(rp->h);
+hdrPrintErased(rp->h);
 /*@-abstract@*/
 		rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
 			       0, ia->relocations);
@@ -1278,6 +1286,9 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		rpmMessage(RPMMESS_DEBUG,
 		    "\t--- erase h#%u\n", ip->instance);
 
+fprintf(stderr, "==> %s: --- erase %p #%u\n", __FUNCTION__, ip->h, ip->instance);
+hdrPrintInstalled(ip->h);
+hdrPrintErased(ip->h);
 		rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
 		if (rc != 0)
 		    goto exit;

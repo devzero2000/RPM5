@@ -45,9 +45,6 @@ struct orderListIndex_s {
 /*@unchecked@*/
 int _cacheDependsRC = 1;
 
-/*@unchecked@*/
-static int __mydebug = 0;
-
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
 
@@ -338,11 +335,6 @@ assert(p != NULL);
 
     mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
-	const char * ohNEVRA = NULL;
-	const char * ohPkgid = NULL;
-	const char * ohHdrid = NULL;
-	const unsigned char * pkgid;
-	int_32 pkgidcnt;
 	int lastx;
 	rpmte q;
 
@@ -355,67 +347,19 @@ assert(p != NULL);
 	if (rpmHeadersIdentical(h, oh))
 	    continue;
 
-	ohNEVRA = hGetNEVRA(oh, NULL);
-
-	pkgid = NULL;
-	pkgidcnt = 0;
-	xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
-	if (pkgid != NULL) {
-	    static const char hex[] = "0123456789abcdef";
-	    char * t;
-	    int i;
-
-	    ohPkgid = t = xmalloc((2*pkgidcnt) + 1);
-	    for (i = 0 ; i < pkgidcnt; i++) {
-		*t++ = hex[ ((pkgid[i] >> 4) & 0x0f) ];
-		*t++ = hex[ ((pkgid[i]     ) & 0x0f) ];
-	    }
-	    *t = '\0';
-#if NOTYET	/* XXX MinMemory. */
-	    pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
-#endif
-	} else
-	    ohPkgid = NULL;
-
-	ohHdrid = NULL;
-	xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
-
-/*@-nullptrarith@*/
-	rpmMessage(RPMMESS_DEBUG, _("  upgrade erases %s\n"), ohNEVRA);
-/*@=nullptrarith@*/
-
+	/* Create an erasure element. */
 	lastx = -1;
 	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
 assert(lastx >= 0 && lastx < ts->orderCount);
 	q = ts->order[lastx];
-if (__mydebug)
-fprintf(stderr, "U argvAdd(&q->aNEVRA, \"%s\")\n", p->NEVRA);
-	xx = argvAdd(&q->aNEVRA, p->NEVRA);
-if (__mydebug)
-fprintf(stderr, "U argvAdd(&p->eNEVRA, \"%s\")\n", ohNEVRA);
-	xx = argvAdd(&p->eNEVRA, ohNEVRA);
-if (__mydebug)
-fprintf(stderr, "U argvAdd(&q->ePkgid, \"%s\")\n", p->pkgid);
-	if (p->pkgid != NULL)
-	    xx = argvAdd(&q->aPkgid, p->pkgid);
-if (__mydebug)
-fprintf(stderr, "U argvAdd(&p->ePkgid, \"%s\")\n", ohPkgid);
-	if (ohPkgid != NULL)
-	    xx = argvAdd(&p->ePkgid, ohPkgid);
-if (__mydebug)
-fprintf(stderr, "U argvAdd(&q->aHdrid, \"%s\")\n", p->hdrid);
-	if (p->hdrid != NULL)
-	    xx = argvAdd(&q->aHdrid, p->hdrid);
-if (__mydebug)
-fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
-	if (ohHdrid != NULL)
-	    xx = argvAdd(&p->eHdrid, ohHdrid);
 
-	ohNEVRA = _free(ohNEVRA);
-	ohPkgid = _free(ohPkgid);
-#ifdef	NOTYET	/* XXX MinMemory. */
-	ohHdrid = _free(ohHdrid);
-#endif
+	/* Chain through upgrade flink. */
+	xx = rpmteFlink(p, q, oh, "Upgrades");
+
+/*@-nullptrarith@*/
+	rpmMessage(RPMMESS_DEBUG, _("  upgrade erases %s\n"), rpmteNEVRA(q));
+/*@=nullptrarith@*/
+
     }
     mi = rpmdbFreeIterator(mi);
 
@@ -442,6 +386,7 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 	if (!strcmp(rpmteN(p), Name))
 	    continue;
 
+	/* Obsolete containing package if given a file, otherwise provide. */
 	if (Name[0] == '/')
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 	else
@@ -451,16 +396,12 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 	    ts->removedPackages, ts->numRemovedPackages, 1);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
-	    const char * ohNEVRA;
-	    const char * ohPkgid;
-	    const char * ohHdrid;
-	    const unsigned char * pkgid;
-	    int_32 pkgidcnt;
 	    int lastx;
 	    rpmte q;
 
 	    /* Ignore colored packages not in our rainbow. */
 	    ohcolor = hGetColor(oh);
+
 	    /* XXX provides *are* colored, effectively limiting Obsoletes:
 		to matching only colored Provides: based on pkg coloring. */
 	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
@@ -474,68 +415,19 @@ fprintf(stderr, "U argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)))
 		/*@innercontinue@*/ continue;
 
-	    ohNEVRA = hGetNEVRA(oh, NULL);
-
-	    pkgid = NULL;
-	    pkgidcnt = 0;
-	    xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
-	    if (pkgid != NULL) {
-		static const char hex[] = "0123456789abcdef";
-		char * t;
-		int i;
-
-		ohPkgid = t = xmalloc((2*pkgidcnt) + 1);
-		for (i = 0 ; i < pkgidcnt; i++) {
-		    *t++ = hex[ ((pkgid[i] >> 4) & 0x0f) ];
-		    *t++ = hex[ ((pkgid[i]     ) & 0x0f) ];
-		}
-		*t = '\0';
-#if NOTYET	/* XXX MinMemory. */
-		pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
-#endif
-	    } else
-		ohPkgid = NULL;
-
-	    ohHdrid = NULL;
-	    xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
-
-/*@-nullptrarith@*/
-	    rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
-			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
-/*@=nullptrarith@*/
-
+	    /* Create an erasure element. */
 	    lastx = -1;
 	    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
 assert(lastx >= 0 && lastx < ts->orderCount);
 	    q = ts->order[lastx];
-if (__mydebug)
-fprintf(stderr, "O argvAdd(&q->aNEVRA, \"%s\")\n", p->NEVRA);
-	    xx = argvAdd(&q->aNEVRA, p->NEVRA);
-if (__mydebug)
-fprintf(stderr, "O argvAdd(&p->eNEVRA, \"%s\")\n", ohNEVRA);
-	    xx = argvAdd(&p->eNEVRA, ohNEVRA);
-if (__mydebug)
-fprintf(stderr, "O argvAdd(&q->ePkgid, \"%s\")\n", p->pkgid);
-	    if (p->pkgid != NULL)
-		xx = argvAdd(&q->aPkgid, p->pkgid);
-if (__mydebug)
-fprintf(stderr, "O argvAdd(&p->ePkgid, \"%s\")\n", ohPkgid);
-	    if (ohPkgid != NULL)
-		xx = argvAdd(&p->ePkgid, ohPkgid);
-if (__mydebug)
-fprintf(stderr, "O argvAdd(&q->aHdrid, \"%s\")\n", p->hdrid);
-	    if (p->hdrid != NULL)
-		xx = argvAdd(&q->aHdrid, p->hdrid);
-if (__mydebug)
-fprintf(stderr, "O argvAdd(&p->eHdrid, \"%s\")\n", ohHdrid);
-	    if (ohHdrid != NULL)
-		xx = argvAdd(&p->eHdrid, ohHdrid);
 
-	    ohNEVRA = _free(ohNEVRA);
-	    ohPkgid = _free(ohPkgid);
-#ifdef	NOTYET	/* XXX MinMemory. */
-	    ohHdrid = _free(ohHdrid);
-#endif
+	    /* Chain through obsoletes flink. */
+	    xx = rpmteFlink(p, q, oh, "Obsoletes");
+
+/*@-nullptrarith@*/
+	    rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
+			rpmdsDNEVR(obsoletes)+2, rpmteNEVRA(q));
+/*@=nullptrarith@*/
 	}
 	mi = rpmdbFreeIterator(mi);
     }

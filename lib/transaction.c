@@ -1206,7 +1206,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
     }
     ttid = (time_t)ttid;
     rpmMessage(RPMMESS_NORMAL,
-	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
+	_("XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 	    numAdded, numRemoved, ctime(&ttid), tid);
     rpmMessage(RPMMESS_DEBUG, _("Failed Tran:  0x%08x\n"), failedtid);
 
@@ -2535,9 +2535,11 @@ assert(psm != NULL);
 		}
 		psm->fi = rpmfiLink(p->fi, NULL);
 
-		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {
+		if ((xx = rpmpsmStage(psm, PSM_PKGINSTALL)) != 0) {
 		    ourrc++;
 		    lastFailKey = pkgKey;
+fprintf(stderr, "==> %p failed(%d): %s\n", p, xx, rpmteNEVRA(p));
+rpmtePrintID(p);
 		}
 
 	    } else {
