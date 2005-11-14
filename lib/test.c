@@ -1,5 +1,4 @@
 #include "system.h"
-
 #include <rpmlib.h>
 #include "debug.h"
 
@@ -13,7 +12,7 @@ void main(int argc, char **argv)
     int_16 i16 = 1;
     int_16 i16a[] = {100, 200, 300};
     char ca[] = "char array";
-    int rc;
+    int rc = 0;
 
     h = headerNew();
 
@@ -54,4 +53,5 @@ void main(int argc, char **argv)
 #if 0
     convertDB("");
 #endif
+    return rc;
 }

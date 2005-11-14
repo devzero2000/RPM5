@@ -1,12 +1,7 @@
 #include "system.h"
-
 #include <rpmlib.h>
-
 #include <rpmds.h>
-
 #include "debug.h"
-
-extern int _rpmds_debug;
 
 #define _PERL_PROVIDES  "/usr/bin/find /usr/lib/perl5 | /usr/lib/rpm/perl.prov"
 static const char * _perl_provides = _PERL_PROVIDES;
@@ -18,7 +13,7 @@ int main(int argc, char *argv[])
 {
     rpmds P = NULL;
     rpmds R = NULL;
-    int rc;
+    int rc = 0;
     int xx;
 
 fprintf(stderr, "\n*** Gathering perl Provides: using\n\t%s\n", _perl_provides);
@@ -33,5 +28,5 @@ fprintf(stderr, "\n*** Checking for Requires: against Provides: closure:\n");
     P = rpmdsFree(P);
     R = rpmdsFree(R);
 
-    return 0;
+    return rc;
 }

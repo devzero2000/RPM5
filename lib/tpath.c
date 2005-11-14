@@ -1,12 +1,10 @@
 #include "system.h"
-
 #include <rpmlib.h>
-
 #include "debug.h"
 
 int main(int argc, char *argv[])
 {
-    int rc;
+    int rc = 0;
     int i;
 
     for (i = 1; i < argc; i++) {
@@ -14,5 +12,5 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "%s: %d\n", argv[i], rc);
     }
 
-    return 0;
+    return rc;
 }

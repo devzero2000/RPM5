@@ -1,6 +1,5 @@
 #include "system.h"
 #include <rpmlib.h>
-#include <rpmmacro.h>
 #include <rpmds.h>
 #include "debug.h"
 

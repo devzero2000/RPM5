@@ -1,10 +1,7 @@
 #include "system.h"
-
 #include <pthread.h>
-
 #include <rpmsq.h>
 #include <popt.h>
-
 #include "debug.h"
 
 static void *

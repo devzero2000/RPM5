@@ -1,9 +1,6 @@
 #include "system.h"
-
 #include <rpmlib.h>
-
 #include <rpmds.h>
-
 #include "debug.h"
 
 extern int _rpmds_debug;
@@ -37,5 +34,5 @@ int main(int argc, char *argv[])
 
     ds = rpmdsFree(ds);
 
-    return 0;
+    return rc;
 }
