@@ -166,6 +166,7 @@ static int handleInstInstalledFiles(const rpmts ts,
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
 	int isCfgFile;
+	int isGhostFile;
 
 	otherFileNum = shared->otherFileNum;
 	(void) rpmfiSetFX(otherFi, otherFileNum);
@@ -178,6 +179,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	FColor &= tscolor;
 
 	isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
+	isGhostFile = ((rpmfiFFlags(otherFi) & RPMFILE_GHOST) && (rpmfiFFlags(fi) & RPMFILE_GHOST));
 
 #ifdef	DYING
 	/* XXX another tedious segfault, assume file state normal. */
@@ -194,6 +196,9 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    if (S_ISREG(omode) && (omode & 06000) != 0)
 		fi->mapflags |= CPIO_SBIT_CHECK;
 	}
+
+	if (isGhostFile)
+	    continue;
 
 	if (rpmfiCompare(otherFi, fi)) {
 	    int rConflicts;
