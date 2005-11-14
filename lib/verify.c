@@ -428,20 +428,26 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	for (i = 0; i < numProblems; i++) {
 	    p = ps->probs + i;
 	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
-	    nb += strlen(altNEVR+2) + sizeof(", ") - 1;
+	    if (altNEVR[0] == 'R' && altNEVR[1] == ' ')
+		nb += sizeof("\tRequires: ")-1;
+	    if (altNEVR[0] == 'C' && altNEVR[1] == ' ')
+		nb += sizeof("\tConflicts: ")-1;
+	    nb += strlen(altNEVR+2) + sizeof("\n") - 1;
 	}
 	te = t = alloca(nb);
 /*@-boundswrite@*/
 	*te = '\0';
 	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
-	sprintf(te, _("Unsatisfied dependencies for %s: "), pkgNEVR);
+	sprintf(te, _("Unsatisfied dependencies for %s:\n"), pkgNEVR);
 	te += strlen(te);
 	for (i = 0; i < numProblems; i++) {
 	    p = ps->probs + i;
 	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
-	    if (i) te = stpcpy(te, ", ");
-	    /* XXX FIXME: should probably supply the "[R|C] " type prefix */
-	    te = stpcpy(te, altNEVR+2);
+	    if (altNEVR[0] == 'R' && altNEVR[1] == ' ')
+		te = stpcpy(te, "\tRequires: ");
+	    if (altNEVR[0] == 'C' && altNEVR[1] == ' ')
+		te = stpcpy(te, "\tConflicts: ");
+	    te = stpcpy( stpcpy(te, altNEVR+2), "\n");
 	}
 
 	if (te > t) {

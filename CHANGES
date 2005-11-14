@@ -99,6 +99,7 @@
 	- fix: simpler python peculier macros, multilib aware (#120635).
 	- ornament the rpmds API with diagnostic helpers.
 	- rpmdeps: add --{cpuinfo,rpmlib,sysinfo,getconf,elf,ldconfiguname } options.
+	- display -Va dependency failures as Requires: or Conflicts: (#172878).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
