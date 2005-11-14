@@ -41,7 +41,8 @@ main(int argc, const char *argv[])
     const char * ifn;
     const char * ofn = "/dev/null";
     DIGEST_CTX ctx = NULL;
-    GcryMDHd gcry = NULL;
+    gcry_md_hd_t h;
+    gcry_error_t gcry = NULL;
     const char * idigest;
     const char * odigest;
     const char * sdigest;
@@ -60,7 +61,7 @@ main(int argc, const char *argv[])
     if (fips) {
 	struct rpmsw_s begin, end;
 	if (gcrypt)
-	    gcry = gcry_md_open(GCRY_MD_SHA1, 0);
+	    gcry = gcry_md_open(h, GCRY_MD_SHA1, 0);
 
 	(void) rpmswNow(&begin);
 
