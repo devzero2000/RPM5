@@ -468,7 +468,7 @@ static /*@observer@*/ const char * tag2sln(int tag)
  * @param tag		scriptlet tag
  * @return		id of scriptlet
  */
-static /*@observer@*/ rpmScriptID tag2slx(int tag)
+static rpmScriptID tag2slx(int tag)
 	/*@*/
 {
     switch (tag) {
@@ -1344,9 +1344,9 @@ rpmpsm rpmpsmFree(rpmpsm psm)
     psm->ts = rpmtsFree(psm->ts);
 /*@=internalglobs@*/
 
-    (void) rpmpsmUnlink(psm, msg);
-
     psm->sstates = _free(psm->sstates);
+
+    (void) rpmpsmUnlink(psm, msg);
 
     /*@-refcounttrans -usereleased@*/
 /*@-boundswrite@*/
