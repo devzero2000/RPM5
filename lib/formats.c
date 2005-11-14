@@ -353,10 +353,12 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 
 /*@-branchstate@*/
     if (s == NULL) {
-	int tlen = 32;
+	int tlen = 64;
 	t = memset(alloca(tlen+1), 0, tlen+1);
+/*@-duplicatequals@*/
 	if (anint != 0)
 	    xx = snprintf(t, tlen, "%llu", anint);
+/*@=duplicatequals@*/
 	s = t;
 	xtag = "integer";
     }

@@ -771,14 +771,16 @@ static int rpmfcSCRIPT(rpmfc fc)
  * @return		0 on success
  */
 static int rpmfcMergePR(void * context, rpmds ds)
-	/*@modifies context, ds @*/
+	/*@modifies ds @*/
 {
     rpmfc fc = context;
     char buf[BUFSIZ];
     int rc = -1;
 
+/*@-modfilesys@*/
 if (_rpmfc_debug < 0)
 fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsTagN(ds)));
+/*@=modfilesys@*/
     switch(rpmdsTagN(ds)) {
     default:
 	break;
@@ -809,7 +811,7 @@ fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsT
  */
 static int rpmfcELF(rpmfc fc)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * fn = fc->fn[fc->ix];
     int flags = 0;

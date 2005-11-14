@@ -62,9 +62,13 @@ struct rpmds_s {
  * Container to carry provides/requires/conflicts/obsoletes dependencies.
  */
 typedef struct rpmMergePRCO_s {
+/*@dependent@*/ /*@null@*/
     rpmds * Pdsp;		/*!< Provides: collector. */
+/*@dependent@*/ /*@null@*/
     rpmds * Rdsp;		/*!< Requires: collector. */
+/*@dependent@*/ /*@null@*/
     rpmds * Cdsp;		/*!< Conflicts: collector. */
+/*@dependent@*/ /*@null@*/
     rpmds * Odsp;		/*!< Obsoletes: collector. */
 } * rpmMergePRCO;
 
@@ -193,7 +197,7 @@ int rpmdsSetIx(/*@null@*/ rpmds ds, int ix)
  * @param ds		dependency set
  * @return		current dependency DNEVR, NULL on invalid
  */
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
 extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
 	/*@*/;
 
@@ -211,7 +215,7 @@ extern const char * rpmdsN(/*@null@*/ const rpmds ds)
  * @param ds		dependency set
  * @return		current dependency EVR, NULL on invalid
  */
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
 extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
 	/*@*/;
 
@@ -453,8 +457,8 @@ int rpmdsELF(const char * fn, int flags,
  * @return		0 on success
  */
 int rpmdsLdconfig(rpmMergePRCO PRCO, /*@null@*/ const char * fn)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *PRCO, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Load uname(2) provides into a dependency set.
@@ -548,7 +552,8 @@ const char * rpmdsTagName(/*@null@*/ const rpmds ds)
  */
 /*@unused@*/ static inline
 int rpmdsPrint(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies ds, *fp, fileSystem @*/
 {
     if (fp == NULL)
 	fp = stderr;
@@ -566,11 +571,11 @@ int rpmdsPrint(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
  */
 /*@unused@*/ static inline
 int rpmdsPrintResults(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies ds, *fp, fileSystem @*/
 {
     if (fp == NULL)
 	fp = stderr;
-
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0) {
 	int rc = rpmdsResult(ds);
@@ -588,10 +593,12 @@ int rpmdsPrintResults(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
  * @param fp		file handle (NULL uses stderr)
  * @return		0 always
  */
+/*@-mods@*/	/* XXX LCL wonky */
 /*@unused@*/ static inline
 int rpmdsPrintClosure(/*@null@*/ rpmds P, /*@null@*/ rpmds R,
 		/*@null@*/ FILE * fp)
-	/*@modifies R @*/
+	/*@globals fileSystem @*/
+	/*@modifies P, R, *fp, fileSystem @*/
 {
     int rc;
 
@@ -605,6 +612,7 @@ int rpmdsPrintClosure(/*@null@*/ rpmds P, /*@null@*/ rpmds R,
 
     return rpmdsPrintResults(R, fp);
 }
+/*@=mods@*/
 
 #ifdef __cplusplus
 }

@@ -2477,8 +2477,10 @@ int rpmdsMergePRCO(void * context, rpmds ds)
     rpmMergePRCO PRCO = context;
     int rc = -1;
 
+/*@-modfilesys@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsTagN(ds)));
+/*@=modfilesys@*/
     switch(rpmdsTagN(ds)) {
     default:
 	break;
@@ -2501,9 +2503,8 @@ fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsT
 /**
  * Return a soname dependency constructed from an elf string.
  * @retval t		soname dependency
- * @param s		elf string
+ * @param s		elf string (NULL uses "")
  * @param isElf64	is this an ELF64 symbol?
- * @		soname dependency
  */
 static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 	/*@modifies t @*/
@@ -2551,8 +2552,10 @@ int rpmdsELF(const char * fn, int flags,
     static int filter_GLIBC_PRIVATE = 0;
     static int oneshot = 0;
 
+/*@-castfcnptr@*/
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** %s(%s, %d, %p, %p)\n", __FUNCTION__, fn, flags, add, context);
+fprintf(stderr, "*** %s(%s, %d, %p, %p)\n", __FUNCTION__, fn, flags, (void *)add, context);
+/*@=castfcnptr@*/
     if (oneshot == 0) {
 	oneshot = 1;
 	filter_GLIBC_PRIVATE = rpmExpandNumeric("%{?_filter_GLIBC_PRIVATE}");
@@ -2719,6 +2722,7 @@ fprintf(stderr, "*** %s(%s, %d, %p, %p)\n", __FUNCTION__, fn, flags, add, contex
 			/* Add next require dependency. */
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
 assert(s != NULL);
+			buf[0] = '\0';
 			ds = rpmdsSingle(RPMTAG_REQUIRENAME,
 				sonameDep(buf, s, isElf64),
 				"", RPMSENSE_FIND_REQUIRES);
@@ -2732,6 +2736,7 @@ assert(s != NULL);
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
 assert(s != NULL);
 			/* Add next provide dependency. */
+			buf[0] = '\0';
 			ds = rpmdsSingle(RPMTAG_PROVIDENAME,
 				sonameDep(buf, s, isElf64),
 				"", RPMSENSE_FIND_PROVIDES);
@@ -2750,12 +2755,14 @@ assert(s != NULL);
     /* For DSO's, provide the basename of the file if DT_SONAME not found. */
     if (!skipP && isDSO && !gotDEBUG && !gotSONAME) {
 	s = strrchr(fn, '/');
-	if (s)
+	if (s != NULL)
 	    s++;
 	else
 	    s = fn;
+assert(s != NULL);
 
 	/* Add next provide dependency. */
+	buf[0] = '\0';
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME,
 		sonameDep(buf, s, isElf64), "", RPMSENSE_FIND_PROVIDES);
 	xx = add(context, ds);
