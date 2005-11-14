@@ -437,7 +437,6 @@ exit 0
 %rpmattr	%{__bindir}/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-files
-%rpmattr	%{__prefix}/lib/rpm/check-java-closure.sh
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs
 %rpmattr	%{__prefix}/lib/rpm/config.site
 %rpmattr	%{__prefix}/lib/rpm/cross-build
@@ -453,8 +452,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/get_magic.pl
 %rpmattr	%{__prefix}/lib/rpm/getpo.sh
 %rpmattr	%{__prefix}/lib/rpm/http.req
-%rpmattr	%{__prefix}/lib/rpm/java.prov.sh
-%rpmattr	%{__prefix}/lib/rpm/java.req.sh
+%rpmattr	%{__prefix}/lib/rpm/javadeps.sh
 %rpmattr	%{__prefix}/lib/rpm/javadeps
 %rpmattr	%{__prefix}/lib/rpm/magic
 %rpmattr	%{__prefix}/lib/rpm/magic.mgc
