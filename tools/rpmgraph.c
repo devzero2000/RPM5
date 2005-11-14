@@ -3,13 +3,14 @@ const char *__progname;
 
 #include <rpmcli.h>
 
-#include "rpmdb.h"
-#include "rpmps.h"
+#include <rpmdb.h>
+#include <rpmps.h>
 
-#include "rpmte.h"
+#include <rpmds.h>
+#include <rpmte.h>
 
 #define _RPMTS_INTERNAL         /* ts->goal, ts->dbmode, ts->suggests */
-#include "rpmts.h"
+#include <rpmts.h>
 
 #include "manifest.h"
 #include "misc.h"		/* rpmGlob */

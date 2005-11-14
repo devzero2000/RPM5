@@ -1322,6 +1322,16 @@ BuildRequires: python %{-d:python-devel} \
 PreReq: python >= %{python_version}, python < %{maxver}
 
 #------------------------------------------------------------------------
+# java(...) configuration.
+#
+# Path to scripts to autogenerate java package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
+%__java_provides	@RPMCONFIGDIR@/javadeps.sh --provides
+%__java_requires	@RPMCONFIGDIR@/javadeps.sh --requires
+
+#------------------------------------------------------------------------
 # libtool(...) configuration.
 #
 # Path to scripts to autogenerate libtool package dependencies,

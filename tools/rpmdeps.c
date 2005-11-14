@@ -59,6 +59,14 @@ static const char * _perl_provides = _PERL_PROVIDES;
 /*@unchecked@*/ /*@observer@*/
 static const char * _perl_requires = _PERL_REQUIRES;
 
+#define _JAVA_PROVIDES  "rpm -qal | egrep '\\.(jar|class)$' | /usr/lib/rpm/javadeps.sh -P"
+/*@unchecked@*/ /*@observer@*/
+static const char * _java_provides = _JAVA_PROVIDES;
+
+#define _JAVA_REQUIRES  "rpm -qal | egrep '\\.(jar|class)$' | /usr/lib/rpm/javadeps.sh -R"
+/*@unchecked@*/ /*@observer@*/
+static const char * _java_requires = _JAVA_REQUIRES;
+
 #define _LIBTOOL_PROVIDES  "/usr/bin/find /usr/lib -name '*.la' | /usr/lib/rpm/libtooldeps.sh -P /"
 /*@unchecked@*/ /*@observer@*/
 static const char * _libtool_provides = _LIBTOOL_PROVIDES;
@@ -375,6 +383,15 @@ fprintf(stderr, "\n*** Gathering rpmdb package Requires: using\n\t%s\n", _rpmdb_
 	break;
 
     case RPMDEP_RPMDSJAVA:
+	closure_name = "java(...)";
+if (rpmIsVerbose())
+fprintf(stderr, "\n*** Gathering %s Provides: using\n\t%s\n", closure_name, _java_provides);
+	xx = rpmdsPipe(&P, RPMTAG_PROVIDENAME, _java_provides);
+if (print_closure || rpmIsVerbose()) {
+fprintf(stderr, "\n*** Gathering %s Requires: using\n\t%s\n", closure_name, _java_requires);
+	xx = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _java_requires);
+	print_closure = 1;
+}
 	break;
     case RPMDEP_RPMDSRUBY:
 	break;

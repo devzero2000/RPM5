@@ -101,6 +101,7 @@
 	- rpmdeps: add --{cpuinfo,rpmlib,sysinfo,getconf,elf,ldconfiguname } options.
 	- display -Va dependency failures as Requires: or Conflicts: (#172878).
 	- fix: ignore %ghost vs. %ghost file conflicts (#155256).
+	- autogenerate java *.{jar|class) dependencies (#117382).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

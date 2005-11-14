@@ -461,6 +461,8 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { "Bourne ",			RPMFC_BOURNE|RPMFC_INCLUDE },
   { "Bourne-Again ",		RPMFC_BOURNE|RPMFC_INCLUDE },
 
+  { "Java ",			RPMFC_JAVA|RPMFC_INCLUDE },
+
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
@@ -831,7 +833,7 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA) },
     { NULL, 0 }
 };
 
@@ -1006,6 +1008,14 @@ assert(s != NULL);
 	    /* XXX all files with extension ".pm" are perl modules for now. */
 	    if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
 		ftype = "Perl5 module source text";
+
+	    /* XXX all files with extension ".jar" are java for now. */
+	    else if (slen >= sizeof(".jar") && !strcmp(s+slen-(sizeof(".jar")-1), ".pm"))
+		ftype = "Java archive file";
+
+	    /* XXX all files with extension ".jar" are java for now. */
+	    else if (slen >= sizeof(".class") && !strcmp(s+slen-(sizeof(".class")-1), ".pm"))
+		ftype = "Java class file";
 
 	    /* XXX all files with extension ".la" are libtool for now. */
 	    else if (slen >= sizeof(".la") && !strcmp(s+slen-(sizeof(".la")-1), ".pm"))

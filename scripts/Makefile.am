@@ -12,7 +12,7 @@ EXTRA_DIST = \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
-	libtooldeps.sh pkgconfigdeps.sh \
+	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
@@ -35,8 +35,7 @@ config_SCRIPTS = \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
-	check-java-closure.sh java.prov.sh java.req.sh \
-	libtooldeps.sh pkgconfigdeps.sh \
+	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \

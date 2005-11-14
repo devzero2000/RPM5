@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-13 14:24-0500\n"
+"POT-Creation-Date: 2005-11-14 09:12-0500\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -108,7 +108,7 @@ msgstr "Byggflaggor med [ <specfil> | <tar-arkiv> | <källpaket> ]:"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Installations-/Uppdaterings-/Raderingsflaggor"
 
-#: rpmqv.c:115 tools/rpmcache.c:525 tools/rpmdeps.c:122 tools/rpmgraph.c:275
+#: rpmqv.c:115 tools/rpmcache.c:525 tools/rpmdeps.c:152 tools/rpmgraph.c:276
 msgid "Common options for all rpm modes and executables:"
 msgstr "Gemensamma flaggor för alla rpm-lägen och binärer:"
 
@@ -1960,7 +1960,7 @@ msgstr ""
 "ta bort alla paket som matchar <paket> (normalt ger det ett fel om <paket> "
 "anger flera paket)"
 
-#: lib/poptI.c:245 tools/rpmgraph.c:272
+#: lib/poptI.c:245 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr "använda anacondas \"presentationsordning\""
 
@@ -2360,7 +2360,7 @@ msgstr "verifiera inte filsäkerhetskontexter"
 msgid "don't verify files in package"
 msgstr "verifiera inte filerna i paketet"
 
-#: lib/poptQV.c:365 lib/poptQV.c:368 tools/rpmgraph.c:266
+#: lib/poptQV.c:365 lib/poptQV.c:368 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "verifiera inte paketberoenden"
 
@@ -2875,7 +2875,7 @@ msgstr "flyttar katalogen %s till %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:490
 #: lib/rpminstall.c:621 lib/rpminstall.c:1062 lib/rpmts.c:646
-#: tools/rpmgraph.c:121 tools/rpmgraph.c:158
+#: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
@@ -2887,11 +2887,11 @@ msgstr "okänd tagg: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:665 lib/rpminstall.c:850
-#: lib/rpminstall.c:1323 lib/transaction.c:1224 tools/rpmgraph.c:196
+#: lib/rpminstall.c:1323 lib/transaction.c:1229 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:672 tools/rpmgraph.c:202
+#: lib/rpmgi.c:631 lib/rpminstall.c:672 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "    Föreslagna lösningar:\n"
 
@@ -2919,7 +2919,7 @@ msgstr "Uppgraderar..."
 msgid "Upgrading packages..."
 msgstr "Uppgraderar paket..."
 
-#: lib/rpminstall.c:330 lib/rpminstall.c:794 lib/transaction.c:1199
+#: lib/rpminstall.c:330 lib/rpminstall.c:794 lib/transaction.c:1204
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
@@ -2946,7 +2946,7 @@ msgstr " ... som %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "hoppar över %s - överföring misslyckades - %s\n"
 
-#: lib/rpminstall.c:509 lib/rpminstall.c:913 tools/rpmgraph.c:141
+#: lib/rpminstall.c:509 lib/rpminstall.c:913 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
@@ -3015,12 +3015,12 @@ msgstr "Installerar %s\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1317 lib/transaction.c:1204
+#: lib/rpminstall.c:1317 lib/transaction.c:1209
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1348 lib/transaction.c:1277
+#: lib/rpminstall.c:1348 lib/transaction.c:1282
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Rensar upp ompaketerade paket:\n"
 
@@ -3539,73 +3539,73 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: OKÄND (%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:934
+#: lib/transaction.c:939
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
 
-#: lib/transaction.c:1058
+#: lib/transaction.c:1063
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1063 lib/transaction.c:1313
+#: lib/transaction.c:1068 lib/transaction.c:1318
 #, fuzzy
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr "Skapar automatiskt återrullad transaktion\n"
 
-#: lib/transaction.c:1196
+#: lib/transaction.c:1201
 msgid "Transaction failed...rolling back\n"
 msgstr "Transaktion misslyckades...rullar tillbaka\n"
 
-#: lib/transaction.c:1206
+#: lib/transaction.c:1211
 #, c-format
 msgid "Failed Tran:  0x%08x\n"
 msgstr ""
 
-#: lib/transaction.c:1212
+#: lib/transaction.c:1217
 #, fuzzy
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr "Kunde inte ordna automatiskt återrullad transaktion!\n"
 
-#: lib/transaction.c:1216
+#: lib/transaction.c:1221
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "skapar katalog %s\n"
 
-#: lib/transaction.c:1236
+#: lib/transaction.c:1241
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "Kunde inte ordna automatiskt återrullad transaktion!\n"
 
-#: lib/transaction.c:1308
+#: lib/transaction.c:1313
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1378
+#: lib/transaction.c:1383
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "tar bort katalog %s\n"
 
-#: lib/transaction.c:1419
+#: lib/transaction.c:1424
 msgid "Getting repackaged header from transaction element\n"
 msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1445
+#: lib/transaction.c:1450
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\tLetar efter %s...\n"
 
-#: lib/transaction.c:1449
+#: lib/transaction.c:1454
 msgid "\tMatches found.\n"
 msgstr "\tTräffar hittade.\n"
 
-#: lib/transaction.c:1453
+#: lib/transaction.c:1458
 msgid "\tNo matches found.\n"
 msgstr "\tInga träffar hittade.\n"
 
-#: lib/transaction.c:1466
+#: lib/transaction.c:1471
 msgid "\tRepackaged package not found!.\n"
 msgstr "\tOmpaketerat paket hittades inte!\n"
 
@@ -3616,94 +3616,94 @@ msgstr "\tOmpaketerat paket hittades inte!\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1487
+#: lib/transaction.c:1492
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "REMOVETID matchar INSTALLTID.\n"
 
-#: lib/transaction.c:1489
+#: lib/transaction.c:1494
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\tNamn:  %s.\n"
 
-#: lib/transaction.c:1512
+#: lib/transaction.c:1517
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\tOmpaketerat paket var %s ...\n"
 
 #. XXX: Can't happen
-#: lib/transaction.c:1562
+#: lib/transaction.c:1567
 #, fuzzy
 msgid "Could not aquire transaction score!.\n"
 msgstr "ordna inte transaktionsmängd"
 
 #. XXX: Can't happen
-#: lib/transaction.c:1567
+#: lib/transaction.c:1572
 #, fuzzy, c-format
 msgid "Could not acquire score entry %s!.\n"
 msgstr "Kunde inte öppna PreIn-fil: %s\n"
 
-#: lib/transaction.c:1585
+#: lib/transaction.c:1590
 #, fuzzy, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 "Lägger till installationselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:1588
+#: lib/transaction.c:1593
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "fel vid läsning av pakethuvud\n"
 
-#: lib/transaction.c:1599
+#: lib/transaction.c:1604
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "Tilläggande misslyckades.  Kunde inte läsa pakethuvud.\n"
 
-#: lib/transaction.c:1612
+#: lib/transaction.c:1617
 #, fuzzy, c-format
 msgid "Processing failed erase element %s for autorollback.\n"
 msgstr ""
 "Kunde inte lägga till raderingselement till automatiskt återrullad "
 "transaktion.\n"
 
-#: lib/transaction.c:1616
+#: lib/transaction.c:1621
 #, fuzzy
 msgid "\tForce removing header from rpmdb.\n"
 msgstr "fel vid läsning av pakethuvud\n"
 
-#: lib/transaction.c:1627
+#: lib/transaction.c:1632
 #, fuzzy
 msgid "\tCould not remove failed package header from db!\n"
 msgstr "Tilläggande misslyckades.  Kunde inte läsa pakethuvud.\n"
 
-#: lib/transaction.c:1636 lib/transaction.c:1768
+#: lib/transaction.c:1641 lib/transaction.c:1773
 msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1637 lib/transaction.c:1769
+#: lib/transaction.c:1642 lib/transaction.c:1774
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1667
+#: lib/transaction.c:1672
 #, fuzzy
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 "Lägger till installationselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:1668 lib/transaction.c:1723
+#: lib/transaction.c:1673 lib/transaction.c:1728
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1676
+#: lib/transaction.c:1681
 msgid "Could not get install element database instance!\n"
 msgstr "Kunde inte hämta databasinstans för installationselement!\n"
 
-#: lib/transaction.c:1689
+#: lib/transaction.c:1694
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "Kunde inte hämta huvud för automatisk återrullningstransaktion!\n"
 
-#: lib/transaction.c:1699
+#: lib/transaction.c:1704
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tLade till ompaketerat pakethuvud: %s.\n"
@@ -3711,44 +3711,44 @@ msgstr "\tLade till ompaketerat pakethuvud: %s.\n"
 #. Add the header as an erase element, we did not
 #. * have a repackaged package.
 #.
-#: lib/transaction.c:1708
+#: lib/transaction.c:1713
 msgid "\tAdded erase element.\n"
 msgstr "\tLade till raderingselement.\n"
 
-#: lib/transaction.c:1715
+#: lib/transaction.c:1720
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 "Kunde inte hämta ompaketerat huvud för automatisk återrullningstransaktion!\n"
 
-#: lib/transaction.c:1722
+#: lib/transaction.c:1727
 #, fuzzy
 msgid "Processing erase element for autorollback...\n"
 msgstr "Lägg till raderingselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:1730
+#: lib/transaction.c:1735
 msgid "\tErase element already added for complimentary install.\n"
 msgstr ""
 
-#: lib/transaction.c:1743
+#: lib/transaction.c:1748
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tLade till ompaketerat paket %s.\n"
 
-#: lib/transaction.c:1748
+#: lib/transaction.c:1753
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 "Kunde inte lägga till raderingselement till automatiskt återrullad "
 "transaktion.\n"
 
-#: lib/transaction.c:1754
+#: lib/transaction.c:1759
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\tInget ompaketerat paket ... inget att göra.\n"
 
-#: lib/transaction.c:1760
+#: lib/transaction.c:1765
 msgid "Failure reading repackaged package!\n"
 msgstr "Misslyckades läsa ompaketerat paket!\n"
 
-#: lib/transaction.c:1840
+#: lib/transaction.c:1845
 #, fuzzy
 msgid "Invalid number of transaction elements.\n"
 msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
@@ -3761,12 +3761,12 @@ msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1894
+#: lib/transaction.c:1899
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "rimlighetskontrollerar %d element\n"
 
-#: lib/transaction.c:1980
+#: lib/transaction.c:1985
 msgid "running pre-transaction scripts\n"
 msgstr "kör skript före transaktion\n"
 
@@ -3778,7 +3778,7 @@ msgstr "kör skript före transaktion\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2055
+#: lib/transaction.c:2060
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "beräknar %d filfingeravtryck\n"
@@ -3786,28 +3786,28 @@ msgstr "beräknar %d filfingeravtryck\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2136
+#: lib/transaction.c:2141
 msgid "computing file dispositions\n"
 msgstr "beräknar filåtgärder\n"
 
-#: lib/transaction.c:2314
+#: lib/transaction.c:2319
 msgid "Creating auto-rollback transaction\n"
 msgstr "Skapar automatiskt återrullad transaktion\n"
 
-#: lib/transaction.c:2587
+#: lib/transaction.c:2592
 #, fuzzy, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 "Lägger till installationselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:2594
+#: lib/transaction.c:2599
 #, fuzzy
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 "Kunde inte lägga till raderingselement till automatiskt återrullad "
 "transaktion.\n"
 
-#: lib/transaction.c:2637
+#: lib/transaction.c:2642
 msgid "running post-transaction scripts\n"
 msgstr "kör skript efter transaktion\n"
 
@@ -3816,9 +3816,9 @@ msgstr "kör skript efter transaktion\n"
 msgid "missing   %c %s"
 msgstr "saknas    %c %s"
 
-#: lib/verify.c:437
-#, c-format
-msgid "Unsatisfied dependencies for %s: "
+#: lib/verify.c:441
+#, fuzzy, c-format
+msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ouppfyllda beroenden för %s: "
 
 #: rpmdb/db3.c:160
@@ -4388,7 +4388,7 @@ msgstr "url-port måste vara ett tal\n"
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:268
+#: tools/rpmcache.c:515 tools/rpmgraph.c:269
 msgid "don't verify header+payload signature"
 msgstr "verifiera inte huvud+lastsignatur"
 
@@ -4410,109 +4410,109 @@ msgstr "%s: %%{_cache_dbpath}-makro är felkonfigurerat.\n"
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: cacheoperation misslyckades: ec %d.\n"
 
-#: tools/rpmdeps.c:126
+#: tools/rpmdeps.c:156
 msgid "print cpuinfo(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:128
+#: tools/rpmdeps.c:158
 msgid "print rpmlib(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:130
+#: tools/rpmdeps.c:160
 msgid "print /etc/rpm/sysinfo dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:132
+#: tools/rpmdeps.c:162
 msgid "print getconf(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:134
+#: tools/rpmdeps.c:164
 msgid "print soname(...) dependencies for elf files"
 msgstr ""
 
-#: tools/rpmdeps.c:136
+#: tools/rpmdeps.c:166
 msgid "print soname(...) dependencies from /etc/ld.so.cache"
 msgstr ""
 
-#: tools/rpmdeps.c:138
+#: tools/rpmdeps.c:168
 msgid "print uname(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:140
+#: tools/rpmdeps.c:170
 #, fuzzy
 msgid "print dependency set from a command pipe"
 msgstr "skriv beroendecykler som varningar"
 
-#: tools/rpmdeps.c:143
+#: tools/rpmdeps.c:173
 msgid "print perl(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:145
+#: tools/rpmdeps.c:175
 msgid "print python(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:147
+#: tools/rpmdeps.c:177
 msgid "print libtool(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:149
+#: tools/rpmdeps.c:179
 msgid "print pkgconfig(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:152
+#: tools/rpmdeps.c:182
 msgid "print pubkey(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:154
+#: tools/rpmdeps.c:184
 msgid "print arch(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:156
+#: tools/rpmdeps.c:186
 msgid "print file(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:158
+#: tools/rpmdeps.c:188
 msgid "print soname(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:160
+#: tools/rpmdeps.c:190
 #, fuzzy
 msgid "print package(...) dependency set"
 msgstr "verifiera inte paketberoenden"
 
-#: tools/rpmdeps.c:163
+#: tools/rpmdeps.c:193
 msgid "print java(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:165
+#: tools/rpmdeps.c:195
 msgid "print php(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:167
+#: tools/rpmdeps.c:197
 msgid "print ruby(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:169
+#: tools/rpmdeps.c:199
 msgid "print /var/lib/dpkg Provides: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:171
+#: tools/rpmdeps.c:201
 msgid "print /var/lib/dpkg Requires: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:174
+#: tools/rpmdeps.c:204
 msgid "print Provides: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:176
+#: tools/rpmdeps.c:206
 msgid "print Requires: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:178
+#: tools/rpmdeps.c:208
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
 
-#: tools/rpmgraph.c:171
+#: tools/rpmgraph.c:172
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: läsning av paketlista misslyckades: %s\n"

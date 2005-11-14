@@ -6,6 +6,7 @@
  */
 
 #include <rpmlib.h>
+#include <rpmds.h>
 #include <rpmte.h>
 #include <rpmts.h>
 #include <fts.h>

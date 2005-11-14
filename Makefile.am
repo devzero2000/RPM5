@@ -93,7 +93,7 @@ rpmk.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMK -o $@ -c $(top_srcdir)/rpmqv.c
 
 rpmq_SOURCES =
-rpmq_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
+rpmq_LDFLAGS =		$(myLDFLAGS) # $(staticLDFLAGS)
 rpmq_LDADD =		rpmq.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmq.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
