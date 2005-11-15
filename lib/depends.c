@@ -360,7 +360,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	xx = rpmteChain(p, q, oh, "Upgrades");
 
 /*@-nullptrarith@*/
-	rpmMessage(RPMMESS_DEBUG, _("  upgrade erases %s\n"), rpmteNEVRA(q));
+	rpmMessage(RPMMESS_DEBUG, _("   upgrade erases %s\n"), rpmteNEVRA(q));
 /*@=nullptrarith@*/
 
     }

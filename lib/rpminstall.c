@@ -1127,8 +1127,10 @@ static int cmpArgvStr(const char ** AV, const char * B)
 {
     const char ** a;
 
+fprintf(stderr, "	%s(%p,%p)\n", __FUNCTION__, AV, B);
     if (AV != NULL && B != NULL)
     for (a = AV; *a != NULL; a++) {
+fprintf(stderr, "	strcmp(\"%s\", \"%s\")\n", *a, B);
 	if (**a && *B && !strcmp(*a, B))
 	    return 1;
     }
@@ -1146,12 +1148,13 @@ static int cmpArgvStr(const char ** AV, const char * B)
  * @param ts		transaction set (ts->teInstall set to last added pkg)
  * @param p		most recently added install element (NULL skips linking)
  * @param thistid	current transaction id
+ * @param excluded	icky poo
  * @param ip		currently installed package(s) to be erased
  * @param niids		no. of currently installed package(s)
  * @return		-1 on error, otherwise no. of erase elemnts added
  */
 static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
-		/*@null@*/ IDT ip, int niids)
+		int excluded, /*@null@*/ IDT ip, int niids)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, ip, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1162,8 +1165,9 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
      * Provided this transaction is not excluded from the rollback.
      */
     while (ip != NULL && ip->val.u32 == thistid) {
+fprintf(stderr, "==> top ip %p\n", ip);
 
-	if (ip->done)
+	if (excluded || ip->done)
 	    goto bottom;
 
 	if (p != NULL) {
@@ -1171,11 +1175,15 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    const char ** flinkPkgid = NULL;
 	    const char ** flinkHdrid = NULL;
 	    const char ** flinkNEVRA = NULL;
+	    int_32 tp, th, tn;
 	    int bingo;
 
-	    xx = hge(ip->h, RPMTAG_BLINKPKGID, NULL, (void **)&flinkPkgid,NULL);
-	    xx = hge(ip->h, RPMTAG_BLINKHDRID, NULL, (void **)&flinkHdrid,NULL);
-	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, NULL, (void **)&flinkNEVRA,NULL);
+fprintf(stderr, "==> BLINKPKGID ip %p\n", ip);
+	    xx = hge(ip->h, RPMTAG_BLINKPKGID, &tp, (void **)&flinkPkgid,NULL);
+fprintf(stderr, "==> BLINKHDRID ip %p\n", ip);
+	    xx = hge(ip->h, RPMTAG_BLINKHDRID, &th, (void **)&flinkHdrid,NULL);
+fprintf(stderr, "==> BLINKNEVRA ip %p\n", ip);
+	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, &tn, (void **)&flinkNEVRA,NULL);
 
 	    /*
 	     * Either element may have missing data and can have multiple entries.
@@ -1187,9 +1195,9 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    if (!bingo)
 		bingo = cmpArgvStr(flinkNEVRA, p->NEVRA);
 
-	    flinkPkgid = headerFreeData(flinkPkgid, -1);
-	    flinkHdrid = headerFreeData(flinkHdrid, -1);
-	    flinkNEVRA = headerFreeData(flinkNEVRA, -1);
+	    flinkPkgid = headerFreeData(flinkPkgid, tp);
+	    flinkHdrid = headerFreeData(flinkHdrid, th);
+	    flinkNEVRA = headerFreeData(flinkNEVRA, tn);
 
 	    if (!bingo)
 		goto bottom;
@@ -1204,7 +1212,9 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	/* Cross link the transaction elements to mimic --upgrade. */
 	if (p != NULL) {
 	    rpmte q = ts->teErase;
+fprintf(stderr, "rpmteChain(%p, %p, %p)\n", p, q, ip->h);
 	    xx = rpmteChain(p, q, ip->h, "Rollback");
+fprintf(stderr, "rpmteChain returns %d\n", xx);
 	}
 
 #ifdef	NOTYET
@@ -1214,15 +1224,18 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 
 bottom:
 
+fprintf(stderr, "==> next ip %p\n", ip);
 	/* Go to the next header in the rpmdb */
 	niids--;
 	if (niids > 0)
 	    ip++;
 	else
 	    ip = NULL;
+fprintf(stderr, "==> bot ip %p\n", ip);
     }
 
 exit:
+fprintf(stderr, "==> %s exit rc %d\n", __FUNCTION__, rc);
     return rc;
 }
 
@@ -1272,7 +1285,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
      */
     rpmtsSetType(ts, RPMTRANS_TYPE_ROLLBACK);
 
-    itids = IDTXload(ts, RPMTAG_INSTALLTID, ia->rbtid);
+    itids = IDTXload(ts, RPMTAG_INSTALLTID, 1);
     if (itids != NULL) {
 	ip = itids->idt;
 	niids = itids->nidt;
@@ -1287,7 +1300,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    rc = -1;
 	    goto exit;
 	}
-	rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID, ia->rbtid);
+	rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID, 1);
 
 	if (rtids != NULL) {
 	    rp = rtids->idt;
@@ -1371,7 +1384,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		    ia->installInterfaceFlags |= INSTALL_UPGRADE;
 
 		/* Re-add linked (i.e. from upgrade/obsoletes) erasures. */
-		rc = findErases(ts, ts->teInstall, thistid, ip, niids);
+		rc = findErases(ts, ts->teInstall, thistid, excluded, ip, niids);
 		if (rc < 0)
 		    goto exit;
 #ifdef	NOTYET
@@ -1380,6 +1393,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		rp->done = 1;
 	    }
 
+fprintf(stderr, "==> next rp\n");
 	    /* Go to the next repackaged package */
 	    nrids--;
 	    if (nrids > 0)
@@ -1387,9 +1401,10 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    else
 		rp = NULL;
 	}
+fprintf(stderr, "==> finish rp\n");
 
 	/* Re-add pure (i.e. not from upgrade/obsoletes) erasures. */
-	rc = findErases(ts, NULL, thistid, ip, niids);
+	rc = findErases(ts, NULL, thistid, excluded, ip, niids);
 	if (rc < 0)
 	    goto exit;
 
@@ -1408,6 +1423,7 @@ assert(excluded || ip->done);
 		}
 	    }
 
+fprintf(stderr, "==> next ip\n");
 	    /* Go to the next header in the rpmdb */
 	    niids--;
 	    if (niids > 0)
@@ -1415,6 +1431,7 @@ assert(excluded || ip->done);
 	    else
 		ip = NULL;
 	}
+fprintf(stderr, "==> finish ip\n");
 
 	/* If this transaction is excluded then continue */
 	if (excluded) continue;
