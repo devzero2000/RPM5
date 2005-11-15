@@ -583,7 +583,15 @@ void rpmteColorDS(rpmte te, rpmTag tag)
         /*@modifies te @*/;
 /*@=exportlocal@*/
 
-int rpmteFlink(rpmte p, rpmte q, Header oh, const char * msg)
+/**
+ * Chain p <-> q forward/backward transaction element links.
+ * @param p		installed element (needs backward link)
+ * @param q		erased element (needs forward link)
+ * @param oh		erased element header
+ * @param msg		operation identifier for debugging (NULL uses "")
+ * @return		0 on success
+ */
+int rpmteChain(rpmte p, rpmte q, Header oh, /*@null@*/ const char * msg)
 	/*@modifies p, q, oh @*/;
 
 /**
@@ -653,12 +661,14 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
 #if	defined(_RPMTE_INTERNAL)
 static inline void rpmtePrintID(rpmte p)
 {
-if (p->ePkgid) argvPrint("ePkgid", p->ePkgid, NULL);
-if (p->eHdrid) argvPrint("eHdrid", p->eHdrid, NULL);
-if (p->eNEVRA) argvPrint("eNEVRA", p->eNEVRA, NULL);
-if (p->aPkgid) argvPrint("aPkgid", p->aPkgid, NULL);
-if (p->aHdrid) argvPrint("aHdrid", p->aHdrid, NULL);
-if (p->aNEVRA) argvPrint("aNEVRA", p->aNEVRA, NULL);
+    if (p != NULL) {
+	if (p->ePkgid) argvPrint("ePkgid", p->ePkgid, NULL);
+	if (p->eHdrid) argvPrint("eHdrid", p->eHdrid, NULL);
+	if (p->eNEVRA) argvPrint("eNEVRA", p->eNEVRA, NULL);
+	if (p->aPkgid) argvPrint("aPkgid", p->aPkgid, NULL);
+	if (p->aHdrid) argvPrint("aHdrid", p->aHdrid, NULL);
+	if (p->aNEVRA) argvPrint("aNEVRA", p->aNEVRA, NULL);
+    }
 };
 #endif
 

@@ -650,7 +650,7 @@ assert (ix < Count);
 /*@unchecked@*/
 static int __mydebug = 0;
 
-int rpmteFlink(rpmte p, rpmte q, Header oh, const char * msg)
+int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * ohNEVRA = NULL;
@@ -660,6 +660,10 @@ int rpmteFlink(rpmte p, rpmte q, Header oh, const char * msg)
     int_32 pkgidcnt;
     int xx;
 
+/*@-branchstate@*/
+    if (msg == NULL)
+	msg = "";
+/*@=branchstate@*/
     ohNEVRA = hGetNEVRA(oh, NULL);
 
     /*
@@ -712,11 +716,6 @@ if (__mydebug)
 fprintf(stderr, "%s argvAdd(&p->eHdrid, \"%s\")\n", msg, ohHdrid);
     if (ohHdrid != NULL)
 	xx = argvAdd(&p->eHdrid, ohHdrid);
-
-fprintf(stderr, "==> %s  added package %p\n", msg, p);
-rpmtePrintID(p);
-fprintf(stderr, "==> %s erased package %p\n", msg, q);
-rpmtePrintID(q);
 
     ohNEVRA = _free(ohNEVRA);
     ohPkgid = _free(ohPkgid);

@@ -1650,12 +1650,6 @@ psm->te->h = headerLink(fi->h);
 	    {	void * uh = NULL;
 		int_32 uht, uhc;
 
-fprintf(stderr, "==> %s: >>> PSM_PKGSAVE %p\n", __FUNCTION__, fi->h);
-hdrPrintInstalled(fi->h);
-hdrPrintErased(fi->h);
-fprintf(stderr, "==> erased te %p\n", psm->te);
-rpmtePrintID(psm->te);
-
 		/* Save originnal header's origin (i.e. URL) */
 		origin = NULL;
 		xx = headerGetEntry(fi->h, RPMTAG_PACKAGEORIGIN, NULL,
@@ -1773,9 +1767,6 @@ assert(psm->te != NULL);
 		    xx = hae(psm->oh, RPMTAG_INSTALLEDHDRID, RPM_STRING_ARRAY_TYPE,
 				argvData(psm->te->aHdrid), ac);
 
-fprintf(stderr, "==> %s: >>> headerWrite %p\n", __FUNCTION__, psm->oh);
-hdrPrintInstalled(psm->oh);
-hdrPrintErased(psm->oh);
 	    }
 
 	    /* Write the metadata section into the package. */
@@ -1961,9 +1952,6 @@ assert(psm->te != NULL);
 	    if (ac > 0)
 		xx = hae(fi->h, RPMTAG_ERASEDHDRID, RPM_STRING_ARRAY_TYPE,
 				argvData(psm->te->eHdrid), ac);
-fprintf(stderr, "==> %s: +++ PSM_POST %p\n", __FUNCTION__, fi->h);
-hdrPrintInstalled(fi->h);
-hdrPrintErased(fi->h);
 
 	    /*
 	     * If this package has already been installed, remove it from
@@ -2211,9 +2199,6 @@ assert(psm->mi == NULL);
 	if (fi->h != NULL) {
 	    (void) headerSetInstance(fi->h, fi->record);
 	    rc = RPMRC_OK;
-fprintf(stderr, "==> %s:     PSM_RPMDB_LOAD %p\n", __FUNCTION__, fi->h);
-hdrPrintInstalled(fi->h);
-hdrPrintErased(fi->h);
 	} else
 	    rc = RPMRC_FAIL;
 	break;
@@ -2251,9 +2236,6 @@ hdrPrintErased(fi->h);
 			rpmteNEVRA(psm->te), tid);
 	}
 
-fprintf(stderr, "==> %s: +++ PSM_RPMDB_ADD %p\n", __FUNCTION__, fi->h);
-hdrPrintInstalled(fi->h);
-hdrPrintErased(fi->h);
 	/* Add header to db, doing header check if requested */
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
@@ -2289,9 +2271,6 @@ hdrPrintErased(fi->h);
 
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
-fprintf(stderr, "==> %s: +++ PSM_RPMDB_REMOVE %p\n", __FUNCTION__, fi->h);
-hdrPrintInstalled(fi->h);
-hdrPrintErased(fi->h);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
 				NULL, NULL);

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-14 09:12-0500\n"
+"POT-Creation-Date: 2005-11-15 08:42-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -579,7 +579,7 @@ msgstr "Datoteki manjka uvodni \"/\": %s"
 msgid "Glob not permitted: %s\n"
 msgstr "vrstica %d: Razlièica ni dovoljena: %s"
 
-#: build/files.c:1894 lib/rpminstall.c:372
+#: build/files.c:1894 lib/rpminstall.c:373
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
@@ -1426,135 +1426,135 @@ msgstr ""
 msgid " failed - "
 msgstr " neuspe¹no - "
 
-#: lib/depends.c:246
+#: lib/depends.c:243
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:260
+#: lib/depends.c:257
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
 #. @-nullptrarith@
-#: lib/depends.c:384
+#: lib/depends.c:363
 #, fuzzy, c-format
 msgid "  upgrade erases %s\n"
 msgstr "noben paket ne potrebuje %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:503
+#: lib/depends.c:431
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:626
+#: lib/depends.c:527
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:642
+#: lib/depends.c:543
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:661
+#: lib/depends.c:562
 #, fuzzy
 msgid "(access probe)"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:674
+#: lib/depends.c:575
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:695
+#: lib/depends.c:596
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:711
+#: lib/depends.c:612
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:727
+#: lib/depends.c:628
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:743
+#: lib/depends.c:644
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:778
+#: lib/depends.c:679
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:807
+#: lib/depends.c:708
 #, fuzzy
 msgid "(db files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:820
+#: lib/depends.c:721
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:833
+#: lib/depends.c:734
 #, fuzzy
 msgid "(db package)"
 msgstr "ni paketov\n"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:864
+#: lib/depends.c:765
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1197
+#: lib/depends.c:1098
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1319
+#: lib/depends.c:1220
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1556
+#: lib/depends.c:1457
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1648
+#: lib/depends.c:1549
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:1739
+#: lib/depends.c:1640
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1812
+#: lib/depends.c:1713
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1847
+#: lib/depends.c:1748
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1852
+#: lib/depends.c:1753
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:187
-#: lib/formats.c:531
+#: lib/formats.c:533
 msgid "(invalid type)"
 msgstr ""
 
@@ -1563,7 +1563,7 @@ msgstr ""
 msgid "(not base64)"
 msgstr "(ni ¹tevilo)"
 
-#: lib/formats.c:212 lib/formats.c:417
+#: lib/formats.c:212 lib/formats.c:419
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(ni ¹tevilo)"
@@ -1572,7 +1572,7 @@ msgstr "(ni ¹tevilo)"
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:442
+#: lib/formats.c:444
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "preskoèi vse podpise PGP"
@@ -2711,7 +2711,7 @@ msgstr "¹tevilka zapisa paketa: %d\n"
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:683 lib/rpminstall.c:816
+#: lib/query.c:683 lib/rpminstall.c:817
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2824,12 +2824,12 @@ msgstr ")"
 msgid "OK"
 msgstr "V REDU"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3189
+#: lib/rpmds.c:793 lib/rpmds.c:3196
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3189
+#: lib/rpmds.c:793 lib/rpmds.c:3196
 msgid "YES"
 msgstr ""
 
@@ -2897,12 +2897,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2982 lib/rpmds.c:3012 lib/rpmds.c:3024
+#: lib/rpmds.c:2989 lib/rpmds.c:3019 lib/rpmds.c:3031
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2985
+#: lib/rpmds.c:2992
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2912,20 +2912,20 @@ msgstr ""
 "'/`: %s"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3014
+#: lib/rpmds.c:3021
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3026
+#: lib/rpmds.c:3033
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3155
+#: lib/rpmds.c:3162
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2934,13 +2934,13 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:3188
+#: lib/rpmds.c:3195
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3212
+#: lib/rpmds.c:3219
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"
@@ -2979,8 +2979,8 @@ msgstr "premikanje %s v %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "premiokanje imenika %s v %s\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:490
-#: lib/rpminstall.c:621 lib/rpminstall.c:1062 lib/rpmts.c:646
+#: lib/rpmgi.c:81 lib/rpminstall.c:125 lib/rpminstall.c:491
+#: lib/rpminstall.c:622 lib/rpminstall.c:1063 lib/rpmts.c:646
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2992,151 +2992,151 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "neznana znaèka"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:665 lib/rpminstall.c:850
-#: lib/rpminstall.c:1323 lib/transaction.c:1229 tools/rpmgraph.c:197
+#: lib/rpmgi.c:625 lib/rpminstall.c:666 lib/rpminstall.c:851
+#: lib/rpminstall.c:1439 lib/transaction.c:1229 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:672 tools/rpmgraph.c:203
+#: lib/rpmgi.c:631 lib/rpminstall.c:673 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:191
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:194
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "paketi za namestitev niso navedeni"
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:212
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:214
 #, fuzzy
 msgid "Repackaging erased files..."
 msgstr "paket ne vsebuje datotek\n"
 
-#: lib/rpminstall.c:232
+#: lib/rpminstall.c:233
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:234
+#: lib/rpminstall.c:235
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "    --upgrade <paket>      "
 
-#: lib/rpminstall.c:330 lib/rpminstall.c:794 lib/transaction.c:1204
+#: lib/rpminstall.c:331 lib/rpminstall.c:795 lib/transaction.c:1204
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:419
+#: lib/rpminstall.c:420
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: lib/rpminstall.c:435
+#: lib/rpminstall.c:436
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prena¹anje %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:448
+#: lib/rpminstall.c:449
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... kot %s\n"
 
-#: lib/rpminstall.c:452
+#: lib/rpminstall.c:453
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "preskoèeno - %s - prenos neuspe¹en - %s\n"
 
-#: lib/rpminstall.c:509 lib/rpminstall.c:913 tools/rpmgraph.c:142
+#: lib/rpminstall.c:510 lib/rpminstall.c:914 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:527
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "ni paketov\n"
 
-#: lib/rpminstall.c:551
+#: lib/rpminstall.c:552
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:596
+#: lib/rpminstall.c:597
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "binarni paket v starem zapisu\n"
 
-#: lib/rpminstall.c:601
+#: lib/rpminstall.c:602
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "napaka pri branju iz datoteke %s\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:608
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:637
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/rpminstall.c:651
+#: lib/rpminstall.c:652
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "najdeno %d izvornih in %d binarnih paketov\n"
 
-#: lib/rpminstall.c:702
+#: lib/rpminstall.c:703
 msgid "installing binary packages\n"
 msgstr "name¹èanje binarnih paketov\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:825
+#: lib/rpminstall.c:826
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:897
+#: lib/rpminstall.c:898
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:903
+#: lib/rpminstall.c:904
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpminstall.c:1229
+#: lib/rpminstall.c:1330
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1317 lib/transaction.c:1209
+#: lib/rpminstall.c:1433
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1348 lib/transaction.c:1282
+#: lib/rpminstall.c:1464 lib/transaction.c:1282
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1355
+#: lib/rpminstall.c:1471
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Prena¹anje %s\n"
@@ -3672,6 +3672,11 @@ msgstr ""
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
+#: lib/transaction.c:1209
+#, c-format
+msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+msgstr ""
+
 #: lib/transaction.c:1211
 #, c-format
 msgid "Failed Tran:  0x%08x\n"
@@ -3899,16 +3904,16 @@ msgstr ""
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2592
+#: lib/transaction.c:2596
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2599
+#: lib/transaction.c:2603
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2642
+#: lib/transaction.c:2646
 #, fuzzy
 msgid "running post-transaction scripts\n"
 msgstr "poganjanje poodnamestitvenih skriptov (èe obstajajo)\n"

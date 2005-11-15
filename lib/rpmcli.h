@@ -622,6 +622,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
  */
 /*@-fielduse@*/
 typedef /*@abstract@*/ struct IDT_s {
+    int done;			/*!< package processed? */
     unsigned int instance;	/*!< installed package transaction id. */
 /*@owned@*/ /*@null@*/
     const char * key;		/*! removed package file name. */

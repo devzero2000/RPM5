@@ -9,6 +9,7 @@
 #include "rpmdb.h"
 #include "rpmds.h"
 
+#define	_RPMTE_INTERNAL
 #include "rpmte.h"	/* XXX: rpmts.h needs this for rpmtsScoreEntries */
 #define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
 #include "rpmts.h"
@@ -801,7 +802,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
     {	int notifyFlags;
 	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
-			rpmShowProgress, (void *) ((long)notifyFlags)
+			rpmShowProgress, (void *) ((long)notifyFlags));
     }
 #endif
 
@@ -1012,9 +1013,6 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 	/* Don't bother with headers installed prior to the rollback goal. */
 	if (*tidp < rbtid)
 	    continue;
-fprintf(stderr, "==> %s: %p\n", __FUNCTION__, h);
-hdrPrintInstalled(h);
-hdrPrintErased(h);
 	idtx = IDTXgrow(idtx, 1);
 	if (idtx == NULL || idtx->idt == NULL)
 	    continue;
@@ -1023,6 +1021,7 @@ hdrPrintErased(h);
 	    /*@-nullderef@*/
 	    idt = idtx->idt + idtx->nidt;
 	    /*@=nullderef@*/
+	    idt->done = 0;
 	    idt->h = headerLink(h);
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
@@ -1090,15 +1089,13 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	if (*tidp < rbtid)
 	    continue;
 
-fprintf(stderr, "==> %s: %p\n", __FUNCTION__, h);
-hdrPrintInstalled(h);
-hdrPrintErased(h);
 	idtx = IDTXgrow(idtx, 1);
 	if (idtx == NULL || idtx->idt == NULL)
 	    goto bottom;
 
 	{   IDT idt;
 	    idt = idtx->idt + idtx->nidt;
+	    idt->done = 0;
 	    idt->h = headerLink(h);
 	    idt->key = av[i];
 	    av[i] = NULL;
@@ -1116,6 +1113,105 @@ bottom:
     av = _free(av);	ac = 0;
 
     return IDTXsort(idtx);
+}
+
+static int cmpargv(const char ** av, const char * b)
+{
+    const char ** a;
+
+    if (av != NULL && b != NULL)
+    for (a = av; *a != NULL; a++) {
+	if (**a && *b && !strcmp(*a, b))
+	    return 1;
+    }
+    return 0;
+}
+
+static int findErases(rpmts ts, struct rpmInstallArguments_s * ia,
+		unsigned thistid, IDT rp, IDT ip, int niids)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    const char ** iPkgid = NULL;
+    const char ** iHdrid = NULL;
+    const char ** iNEVRA = NULL;
+    int numRemoved = 0;
+    rpmte p;
+    rpmte q;
+    int rc = 0;
+    int xx;
+
+    p = ts->teInstall;
+
+/*
+ * XXX Find (and addEraseElement) for all headers that match.
+ *
+ * XXX rp->h has empty ERASEDNEVRA, populated INSTALLEDNEVRA.
+ * XXX ip->h has populated ERASEDNEVRA, empty INSTALLEDNEVRA.
+ *
+ * XXX p = ts->teInstall is added, but has empty links because not an upgrade.
+ */
+
+    /* Erase the previously installed packages for this transaction. 
+     * Provided this transaction is not excluded from the rollback.
+     */
+    while (ip != NULL && ip->val.u32 == thistid) {
+	int bingo;
+
+	if (ip->done)
+	    goto bottom;
+
+	xx = hge(ip->h, RPMTAG_ERASEDPKGID, NULL, (void **)&iPkgid, NULL);
+	xx = hge(ip->h, RPMTAG_ERASEDHDRID, NULL, (void **)&iHdrid, NULL);
+	xx = hge(ip->h, RPMTAG_ERASEDNEVRA, NULL, (void **)&iNEVRA, NULL);
+
+	/*
+	 * Either header may have missing data and multiple entries.
+	 * Try for hdrid, then pkgid, finally NEVRA, argv compares.
+	 */
+	bingo = cmpargv(iHdrid, p->hdrid);
+	if (!bingo)
+	    bingo = cmpargv(iPkgid, p->pkgid);
+	if (!bingo)
+	    bingo = cmpargv(iNEVRA, p->NEVRA);
+	if (!bingo)
+	    goto bottom;
+
+	rpmMessage(RPMMESS_DEBUG, "\t--- erase h#%u\n", ip->instance);
+
+	rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
+	if (rc != 0) {
+	    rc = -1;
+	    goto exit;
+	}
+
+	q = ts->teErase;
+
+	/* Cross link the transaction elements to mimic --upgrade. */
+	rpmteChain(p, q, ip->h, "Rollback");
+
+	numRemoved++;
+
+#ifdef	NOTYET
+	ip->instance = 0;
+#endif
+	ip->done = 1;
+
+bottom:
+	iPkgid = headerFreeData(iPkgid, -1);
+	iHdrid = headerFreeData(iHdrid, -1);
+	iNEVRA = headerFreeData(iNEVRA, -1);
+
+	/* Go to the next header in the rpmdb */
+	niids--;
+	if (niids > 0)
+	    ip++;
+	else
+	    ip = NULL;
+    }
+    rc = numRemoved;
+
+exit:
+    return rc;
 }
 
 /** @todo Transaction handling, more, needs work. */
@@ -1246,13 +1342,10 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	 * Provided this transaction is not excluded from the rollback.
 	 */
 	while (rp != NULL && rp->val.u32 == thistid) {
-	    if (!excluded) {
+	    if (!excluded && !rp->done) {
 		rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
 			(rp->key ? rp->key : "???"));
 
-fprintf(stderr, "==> %s: +++ install %p\n", __FUNCTION__, rp->h);
-hdrPrintInstalled(rp->h);
-hdrPrintErased(rp->h);
 /*@-abstract@*/
 		rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
 			       0, ia->relocations);
@@ -1265,9 +1358,23 @@ hdrPrintErased(rp->h);
 		if (!(ia->installInterfaceFlags & ifmask))
 		    ia->installInterfaceFlags |= INSTALL_UPGRADE;
 
+		rc = findErases(ts, ia, thistid, rp, ip, niids);
+		if (rc < 0)
+		    goto exit;
+		if (rc > 0) {
+		    numRemoved += rc;
+		    if (_unsafe_rollbacks)
+			rpmcliPackagesTotal++;
+		    if (!(ia->installInterfaceFlags & ifmask)) {
+			ia->installInterfaceFlags |= INSTALL_ERASE;
+			(void) rpmtsSetFlags(ts, (transFlags | RPMTRANS_FLAG_REVERSE));
+		    }
+		}
+
 #ifdef	NOTYET
 	    	rp->h = headerFree(rp->h);
 #endif
+		rp->done = 1;
 	    }
 
 	    /* Go to the next repackaged package */
@@ -1282,13 +1389,10 @@ hdrPrintErased(rp->h);
 	 * Provided this transaction is not excluded from the rollback.
 	 */
 	while (ip != NULL && ip->val.u32 == thistid) {
-	    if (!excluded) {
+	    if (!excluded && !ip->done) {
 		rpmMessage(RPMMESS_DEBUG,
 		    "\t--- erase h#%u\n", ip->instance);
 
-fprintf(stderr, "==> %s: --- erase %p #%u\n", __FUNCTION__, ip->h, ip->instance);
-hdrPrintInstalled(ip->h);
-hdrPrintErased(ip->h);
 		rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
 		if (rc != 0)
 		    goto exit;
@@ -1306,6 +1410,7 @@ hdrPrintErased(ip->h);
 #ifdef	NOTYET
 		ip->instance = 0;
 #endif
+		ip->done = 1;
 	    }
 
 	    /* Go to the next header in the rpmdb */

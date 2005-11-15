@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-14 09:12-0500\n"
+"POT-Creation-Date: 2005-11-15 08:42-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -574,7 +574,7 @@ msgstr "Файл повинен починатись з \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Шаблони не дозволяються: %s\n"
 
-#: build/files.c:1894 lib/rpminstall.c:372
+#: build/files.c:1894 lib/rpminstall.c:373
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не знайдено: %s\n"
@@ -1402,105 +1402,105 @@ msgstr "У заголовку не вказано файл архіву"
 msgid " failed - "
 msgstr " помилка - "
 
-#: lib/depends.c:246
+#: lib/depends.c:243
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "пакет %s вже добавлений, замінюється на %s\n"
 
-#: lib/depends.c:260
+#: lib/depends.c:257
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакет %s вже добавлений, замінюється на %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:384
+#: lib/depends.c:363
 #, fuzzy, c-format
 msgid "  upgrade erases %s\n"
 msgstr "жоден пакет не вимагає %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:503
+#: lib/depends.c:431
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:626
+#: lib/depends.c:527
 msgid "(cached)"
 msgstr "(кешований)"
 
-#: lib/depends.c:642
+#: lib/depends.c:543
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc постачає)"
 
-#: lib/depends.c:661
+#: lib/depends.c:562
 #, fuzzy
 msgid "(access probe)"
 msgstr "(rpmrc постачає)"
 
-#: lib/depends.c:674
+#: lib/depends.c:575
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:695
+#: lib/depends.c:596
 msgid "(rpmlib provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:711
+#: lib/depends.c:612
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:727
+#: lib/depends.c:628
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:743
+#: lib/depends.c:644
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(додано залежність)"
 
-#: lib/depends.c:778
+#: lib/depends.c:679
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(додано залежність)"
 
-#: lib/depends.c:807
+#: lib/depends.c:708
 msgid "(db files)"
 msgstr "(db файли)"
 
-#: lib/depends.c:820
+#: lib/depends.c:721
 msgid "(db provides)"
 msgstr "(db постачає)"
 
-#: lib/depends.c:833
+#: lib/depends.c:734
 msgid "(db package)"
 msgstr "(db пакет)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:864
+#: lib/depends.c:765
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1197
+#: lib/depends.c:1098
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ігноруються зв'язки між іменами пакетів [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1319
+#: lib/depends.c:1220
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
 #. Record all relations.
-#: lib/depends.c:1556
+#: lib/depends.c:1457
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1648
+#: lib/depends.c:1549
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1509,27 +1509,27 @@ msgstr ""
 "========== сортування пакетів (порядок, #predecessors, #succesors, дерево, "
 "глибина)\n"
 
-#: lib/depends.c:1739
+#: lib/depends.c:1640
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== лише спадкоємці (%d байт)\n"
 
-#: lib/depends.c:1812
+#: lib/depends.c:1713
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1847
+#: lib/depends.c:1748
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1852
+#: lib/depends.c:1753
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
 
 #: lib/formats.c:42 lib/formats.c:74 lib/formats.c:109 lib/formats.c:187
-#: lib/formats.c:531
+#: lib/formats.c:533
 msgid "(invalid type)"
 msgstr "(неправильний тип)"
 
@@ -1537,7 +1537,7 @@ msgstr "(неправильний тип)"
 msgid "(not base64)"
 msgstr "(не base64)"
 
-#: lib/formats.c:212 lib/formats.c:417
+#: lib/formats.c:212 lib/formats.c:419
 msgid "(not a blob)"
 msgstr "(не двійковий об'єкт)"
 
@@ -1545,7 +1545,7 @@ msgstr "(не двійковий об'єкт)"
 msgid "(invalid xml type)"
 msgstr "(неправильний тип xml)"
 
-#: lib/formats.c:442
+#: lib/formats.c:444
 msgid "(not an OpenPGP signature)"
 msgstr "(не підпис OpenPGP)"
 
@@ -2638,7 +2638,7 @@ msgstr "номер елементу пакету: %u\n"
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:683 lib/rpminstall.c:816
+#: lib/query.c:683 lib/rpminstall.c:817
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"
@@ -2749,11 +2749,11 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3189
+#: lib/rpmds.c:793 lib/rpmds.c:3196
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:793 lib/rpmds.c:3189
+#: lib/rpmds.c:793 lib/rpmds.c:3196
 msgid "YES"
 msgstr "ТАК"
 
@@ -2821,12 +2821,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2982 lib/rpmds.c:3012 lib/rpmds.c:3024
+#: lib/rpmds.c:2989 lib/rpmds.c:3019 lib/rpmds.c:3031
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2985
+#: lib/rpmds.c:2992
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2836,20 +2836,20 @@ msgstr ""
 "'/': %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3014
+#: lib/rpmds.c:3021
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3026
+#: lib/rpmds.c:3033
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3155
+#: lib/rpmds.c:3162
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2859,13 +2859,13 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3188
+#: lib/rpmds.c:3195
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3212
+#: lib/rpmds.c:3219
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
@@ -2904,8 +2904,8 @@ msgstr "переміщується %s у %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:490
-#: lib/rpminstall.c:621 lib/rpminstall.c:1062 lib/rpmts.c:646
+#: lib/rpmgi.c:81 lib/rpminstall.c:125 lib/rpminstall.c:491
+#: lib/rpminstall.c:622 lib/rpminstall.c:1063 lib/rpmts.c:646
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2917,147 +2917,147 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:665 lib/rpminstall.c:850
-#: lib/rpminstall.c:1323 lib/transaction.c:1229 tools/rpmgraph.c:197
+#: lib/rpmgi.c:625 lib/rpminstall.c:666 lib/rpminstall.c:851
+#: lib/rpminstall.c:1439 lib/transaction.c:1229 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Незадоволені залежності:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:672 tools/rpmgraph.c:203
+#: lib/rpmgi.c:631 lib/rpminstall.c:673 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "  Запропоновані залежності:\n"
 
-#: lib/rpminstall.c:191
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "Підготовка..."
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:194
 msgid "Preparing packages for installation..."
 msgstr "Підготовка пакетів до встановлення..."
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:212
 msgid "Repackaging..."
 msgstr "Перепакування..."
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:214
 msgid "Repackaging erased files..."
 msgstr "Перепакування файлів відмічених до видалення..."
 
-#: lib/rpminstall.c:232
+#: lib/rpminstall.c:233
 msgid "Upgrading..."
 msgstr "Оновлення..."
 
-#: lib/rpminstall.c:234
+#: lib/rpminstall.c:235
 msgid "Upgrading packages..."
 msgstr "Оновлення пакетів..."
 
-#: lib/rpminstall.c:330 lib/rpminstall.c:794 lib/transaction.c:1204
+#: lib/rpminstall.c:331 lib/rpminstall.c:795 lib/transaction.c:1204
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:419
+#: lib/rpminstall.c:420
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "Додається ціль: %s\n"
 
-#: lib/rpminstall.c:435
+#: lib/rpminstall.c:436
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Завантажується %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:448
+#: lib/rpminstall.c:449
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... як %s\n"
 
-#: lib/rpminstall.c:452
+#: lib/rpminstall.c:453
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s пропускається - помилка передачі - %s\n"
 
-#: lib/rpminstall.c:509 lib/rpminstall.c:913 tools/rpmgraph.c:142
+#: lib/rpminstall.c:510 lib/rpminstall.c:914 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не може бути встановлений\n"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:527
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/rpminstall.c:551
+#: lib/rpminstall.c:552
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакет %s не є переміщуваним\n"
 
-#: lib/rpminstall.c:596
+#: lib/rpminstall.c:597
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\tдобавлений двійковий пакет [%d]\n"
 
-#: lib/rpminstall.c:601
+#: lib/rpminstall.c:602
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "помилка читання з файлу %s\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:608
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "файл %s потребує більш нової версії RPM\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:637
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не є rpm пакетом (чи маніфестом пакету): %s\n"
 
-#: lib/rpminstall.c:651
+#: lib/rpminstall.c:652
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "знайдено %d вихідних та %d двійкових пакетів\n"
 
-#: lib/rpminstall.c:702
+#: lib/rpminstall.c:703
 msgid "installing binary packages\n"
 msgstr "встановлюються двійкові пакети\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "неможливо відкрити файл %s: %s\n"
 
-#: lib/rpminstall.c:825
+#: lib/rpminstall.c:826
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" визначає декілька пакетів\n"
 
-#: lib/rpminstall.c:897
+#: lib/rpminstall.c:898
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpminstall.c:903
+#: lib/rpminstall.c:904
 #, c-format
 msgid "Installing %s\n"
 msgstr "Встановлюється %s\n"
 
-#: lib/rpminstall.c:1229
+#: lib/rpminstall.c:1330
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1317 lib/transaction.c:1209
+#: lib/rpminstall.c:1433
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1348 lib/transaction.c:1282
+#: lib/rpminstall.c:1464 lib/transaction.c:1282
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1355
+#: lib/rpminstall.c:1471
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Завантажується %s\n"
@@ -3588,6 +3588,11 @@ msgstr ""
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
+#: lib/transaction.c:1209
+#, fuzzy, c-format
+msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
+
 #: lib/transaction.c:1211
 #, c-format
 msgid "Failed Tran:  0x%08x\n"
@@ -3813,16 +3818,16 @@ msgstr "обчислюється розташування файлів\n"
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2592
+#: lib/transaction.c:2596
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2599
+#: lib/transaction.c:2603
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2642
+#: lib/transaction.c:2646
 msgid "running post-transaction scripts\n"
 msgstr ""
 

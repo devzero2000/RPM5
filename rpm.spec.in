@@ -589,6 +589,7 @@ exit 0
 - display -Va dependency failures as Requires: or Conflicts: (#172878).
 - fix: ignore %ghost vs. %ghost file conflicts (#155256).
 - autogenerate java *.(jar|class) dependencies (#117382).
+- fix: add flink (pkgid,hdrid,nevra) to repackaged packages correctly.
 
 * Sun Nov 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.47
 - fix: simpler python peculier macros, multilib aware (#120635).

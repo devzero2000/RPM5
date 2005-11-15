@@ -2538,8 +2538,10 @@ assert(psm != NULL);
 		if ((xx = rpmpsmStage(psm, PSM_PKGINSTALL)) != 0) {
 		    ourrc++;
 		    lastFailKey = pkgKey;
+#if 0
 fprintf(stderr, "==> %p failed(%d): %s\n", p, xx, rpmteNEVRA(p));
 rpmtePrintID(p);
+#endif
 		}
 
 	    } else {

@@ -304,6 +304,7 @@ assert(p != NULL);
 /*@-boundswrite@*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
 /*@=boundswrite@*/
+	ts->teInstall = NULL;
 	ec = 1;
 	goto exit;
     }
@@ -312,6 +313,8 @@ assert(p != NULL);
     if (!duplicate) {
 	ts->numAddedPackages++;
     }
+
+    ts->teInstall = ts->order[oc];
 
     /* XXX rpmgi hack: Save header in transaction element if requested. */
     if (upgrade & 0x2)
@@ -354,7 +357,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	q = ts->order[lastx];
 
 	/* Chain through upgrade flink. */
-	xx = rpmteFlink(p, q, oh, "Upgrades");
+	xx = rpmteChain(p, q, oh, "Upgrades");
 
 /*@-nullptrarith@*/
 	rpmMessage(RPMMESS_DEBUG, _("  upgrade erases %s\n"), rpmteNEVRA(q));
@@ -422,7 +425,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	    q = ts->order[lastx];
 
 	    /* Chain through obsoletes flink. */
-	    xx = rpmteFlink(p, q, oh, "Obsoletes");
+	    xx = rpmteChain(p, q, oh, "Obsoletes");
 
 /*@-nullptrarith@*/
 	    rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
@@ -442,7 +445,13 @@ exit:
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
-    return removePackage(ts, h, dboffset, NULL, RPMAL_NOMATCH);
+    int oc = -1;
+    int rc = removePackage(ts, h, dboffset, &oc, RPMAL_NOMATCH);
+    if (rc == 0 && oc >= 0 && oc < ts->orderCount)
+	ts->teErase = ts->order[oc];
+    else
+	ts->teErase = NULL;
+    return rc;
 }
 
 /**
