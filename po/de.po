@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
-"POT-Creation-Date: 2005-11-15 14:11-0500\n"
+"POT-Creation-Date: 2005-11-15 15:03-0500\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1616,27 +1616,27 @@ msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, Kontext.\n"
 msgid "archive file %s was not found in header file list\n"
 msgstr "Archiv-Datei %s wurde nicht in der Header-Dateiliste gefunden\n"
 
-#: lib/fsm.c:1784 lib/fsm.c:1920
+#: lib/fsm.c:1784 lib/fsm.c:1924
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s als %s gesichert\n"
 
-#: lib/fsm.c:1947
+#: lib/fsm.c:1951
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir von %s fehlgeschlagen: Verzeichnis ist nicht leer\n"
 
-#: lib/fsm.c:1953
+#: lib/fsm.c:1957
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:1968
+#: lib/fsm.c:1972
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s trennen von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:1990
+#: lib/fsm.c:1994
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s erstellt als %s\n"
@@ -2866,36 +2866,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Paket %s hat unerfüllte %s: %s\n"
 
-#: lib/rpmfi.c:561
+#: lib/rpmfi.c:562
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s durch \"missingok flag\" übersprungen\n"
 
-#: lib/rpmfi.c:803
+#: lib/rpmfi.c:804
 msgid "========== relocations\n"
 msgstr "========== Verschiebungen\n"
 
-#: lib/rpmfi.c:807
+#: lib/rpmfi.c:808
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d schließe %s aus\n"
 
-#: lib/rpmfi.c:810
+#: lib/rpmfi.c:811
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d verschiebe %s -> %s\n"
 
-#: lib/rpmfi.c:944
+#: lib/rpmfi.c:945
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "Ausschließen %s %s\n"
 
-#: lib/rpmfi.c:954
+#: lib/rpmfi.c:955
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "Verschiebe %s nach %s\n"
 
-#: lib/rpmfi.c:1046
+#: lib/rpmfi.c:1047
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Verschiebe Verzeichnis %s nach %s\n"
@@ -3042,7 +3042,7 @@ msgstr "Installiere %s\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1428
+#: lib/rpminstall.c:1428 lib/transaction.c:1209
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
@@ -3571,11 +3571,6 @@ msgstr "Erstelle Transaktion für ein Auto-Rollback\n"
 #: lib/transaction.c:1201
 msgid "Transaction failed...rolling back\n"
 msgstr "Transaktion fehlgeschlagen...mache Rollback\n"
-
-#: lib/transaction.c:1209
-#, fuzzy, c-format
-msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
 
 #: lib/transaction.c:1211
 #, c-format
@@ -4625,6 +4620,10 @@ msgstr "Benutze Datenbank in VERZEICHNIS"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "VERZEICHNIS"
+
+#, fuzzy
+#~ msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+#~ msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
 
 #~ msgid "don't verify GPG V3 DSA signature(s)"
 #~ msgstr "Keine Überprüfung der GPG V3 DSA-Signatur(en)"

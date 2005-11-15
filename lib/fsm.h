@@ -180,6 +180,7 @@ struct fsm_s {
     int astriplen;		/*!< Length of buildroot prefix. */
     int rc;			/*!< External file stage return code. */
     int commit;			/*!< Commit synchronously? */
+    int repackaged;		/*!< Is payload repackaged? */
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
 /*@shared@*/ /*@relnull@*/
     const char * dirName;	/*!< File directory name. */

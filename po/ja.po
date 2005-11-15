@@ -12,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
-"POT-Creation-Date: 2005-11-15 14:11-0500\n"
+"POT-Creation-Date: 2005-11-15 15:03-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1599,27 +1599,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr "アーカイブファイル %s がヘッダファイルリストにありません。\n"
 
-#: lib/fsm.c:1784 lib/fsm.c:1920
+#: lib/fsm.c:1784 lib/fsm.c:1924
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s は %s として保存されした。\n"
 
-#: lib/fsm.c:1947
+#: lib/fsm.c:1951
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s の rmdir に失敗: ディレクトリが空ではありません。\n"
 
-#: lib/fsm.c:1953
+#: lib/fsm.c:1957
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/fsm.c:1968
+#: lib/fsm.c:1972
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s %s の unlink に失敗: %s\n"
 
-#: lib/fsm.c:1990
+#: lib/fsm.c:1994
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s は %s として作成されました。\n"
@@ -2842,36 +2842,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"
 
-#: lib/rpmfi.c:561
+#: lib/rpmfi.c:562
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
-#: lib/rpmfi.c:803
+#: lib/rpmfi.c:804
 msgid "========== relocations\n"
 msgstr "========== 再配置\n"
 
-#: lib/rpmfi.c:807
+#: lib/rpmfi.c:808
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 除外しています   %s\n"
 
-#: lib/rpmfi.c:810
+#: lib/rpmfi.c:811
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 再配置しています %s -> %s\n"
 
-#: lib/rpmfi.c:944
+#: lib/rpmfi.c:945
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s を除外しています。\n"
 
-#: lib/rpmfi.c:954
+#: lib/rpmfi.c:955
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています。\n"
 
-#: lib/rpmfi.c:1046
+#: lib/rpmfi.c:1047
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
@@ -3019,7 +3019,7 @@ msgstr "%s をインストール中です。\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "ロールバックから TID %d を除外しています\n"
 
-#: lib/rpminstall.c:1428
+#: lib/rpminstall.c:1428 lib/transaction.c:1209
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
@@ -3551,11 +3551,6 @@ msgstr "アーカイブ目標のためのロールバックトランザクションを作成しています。\n"
 #: lib/transaction.c:1201
 msgid "Transaction failed...rolling back\n"
 msgstr "トランザクションに失敗しました...ロールバック中\n"
-
-#: lib/transaction.c:1209
-#, fuzzy, c-format
-msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 
 #: lib/transaction.c:1211
 #, c-format
@@ -4590,6 +4585,10 @@ msgstr "DIRECTORY のデータベースを使用"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "DIRECTORY"
+
+#, fuzzy
+#~ msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+#~ msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 
 #~ msgid "don't verify GPG V3 DSA signature(s)"
 #~ msgstr "GPG V3 RSA 署名を検証しません。"

@@ -1844,6 +1844,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (rc == CPIOERR_ENOENT)
 		rc = fsmNext(fsm, FSM_MKNOD);
 	} else {
+	    /* XXX Repackaged payloads may be missing files. */
+	    if (fsm->repackaged)
+		break;
+
 	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
 	    if (!IS_DEV_LOG(fsm->path))
 		rc = CPIOERR_UNKNOWN_FILETYPE;
@@ -2152,6 +2156,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    }
 	}
 	rc = Rename(fsm->opath, fsm->path);
+	/* XXX Repackaged payloads may be missing files. */
+	if (fsm->repackaged)
+	    rc = 0;
 #if defined(ETXTBSY)
 	if (rc && errno == ETXTBSY) {
 	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));

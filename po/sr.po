@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2005-11-15 14:11-0500\n"
+"POT-Creation-Date: 2005-11-15 15:03-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -1623,27 +1623,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1784 lib/fsm.c:1920
+#: lib/fsm.c:1784 lib/fsm.c:1924
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/fsm.c:1947
+#: lib/fsm.c:1951
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "ne mogu da uklonim %s - direktorijum nije prazan"
 
-#: lib/fsm.c:1953
+#: lib/fsm.c:1957
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "neuspela komanda rmdir %s: %s"
 
-#: lib/fsm.c:1968
+#: lib/fsm.c:1972
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
 
-#: lib/fsm.c:1990
+#: lib/fsm.c:1994
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
@@ -2920,36 +2920,36 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: lib/rpmfi.c:561
+#: lib/rpmfi.c:562
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:803
+#: lib/rpmfi.c:804
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:807
+#: lib/rpmfi.c:808
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/rpmfi.c:810
+#: lib/rpmfi.c:811
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpmfi.c:944
+#: lib/rpmfi.c:945
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/rpmfi.c:954
+#: lib/rpmfi.c:955
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmfi.c:1046
+#: lib/rpmfi.c:1047
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
@@ -3100,7 +3100,7 @@ msgstr "Instaliram %s\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1428
+#: lib/rpminstall.c:1428 lib/transaction.c:1209
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -3630,11 +3630,6 @@ msgstr ""
 
 #: lib/transaction.c:1201
 msgid "Transaction failed...rolling back\n"
-msgstr ""
-
-#: lib/transaction.c:1209
-#, c-format
-msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
 #: lib/transaction.c:1211

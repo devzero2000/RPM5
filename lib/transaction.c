@@ -1206,7 +1206,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
     }
     ttid = (time_t)ttid;
     rpmMessage(RPMMESS_NORMAL,
-	_("XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
+	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 	    numAdded, numRemoved, ctime(&ttid), tid);
     rpmMessage(RPMMESS_DEBUG, _("Failed Tran:  0x%08x\n"), failedtid);
 
