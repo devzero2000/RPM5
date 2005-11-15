@@ -54,6 +54,15 @@ struct tsortInfo_s {
 };
 /*@=fielduse@*/
 
+struct rpmChainLink_s {
+/*@only@*/ /*@null@*/
+    ARGV_t Pkgid;		/*!< link element pkgid's. */
+/*@only@*/ /*@null@*/
+    ARGV_t Hdrid;		/*!< link element hdrid's. */
+/*@only@*/ /*@null@*/
+    ARGV_t NEVRA;		/*!< link element NEVRA's. */
+};
+
 /** \ingroup rpmte
  * A single package instance to be installed/removed atomically.
  */
@@ -121,18 +130,8 @@ struct rpmte_s {
 /*@refcounted@*/ /*@null@*/	
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
-/*@only@*/ /*@null@*/
-    ARGV_t ePkgid;		/*!< (TR_ADDED) Erased element pkgid's. */
-/*@only@*/ /*@null@*/
-    ARGV_t eHdrid;		/*!< (TR_ADDED) Erased element hdrid's. */
-/*@only@*/ /*@null@*/
-    ARGV_t eNEVRA;		/*!< (TR_ADDED) Erased element NEVRA's. */
-/*@only@*/ /*@null@*/
-    ARGV_t aPkgid;		/*!< (TR_REMOVED) Added element pkgid's. */
-/*@only@*/ /*@null@*/
-    ARGV_t aHdrid;		/*!< (TR_REMOVED) Added element hdrid's. */
-/*@only@*/ /*@null@*/
-    ARGV_t aNEVRA;		/*!< (TR_REMOVED) Added element NEVRA's. */
+    struct rpmChainLink_s blink;/*!< Backward link info to erased element. */
+    struct rpmChainLink_s flink;/*!< Forward link info to installed element. */
 
 /*@-fielduse@*/	/* LCL: confused by union? */
     union {
@@ -662,12 +661,12 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
 static inline void rpmtePrintID(rpmte p)
 {
     if (p != NULL) {
-	if (p->ePkgid) argvPrint("ePkgid", p->ePkgid, NULL);
-	if (p->eHdrid) argvPrint("eHdrid", p->eHdrid, NULL);
-	if (p->eNEVRA) argvPrint("eNEVRA", p->eNEVRA, NULL);
-	if (p->aPkgid) argvPrint("aPkgid", p->aPkgid, NULL);
-	if (p->aHdrid) argvPrint("aHdrid", p->aHdrid, NULL);
-	if (p->aNEVRA) argvPrint("aNEVRA", p->aNEVRA, NULL);
+	if (p->blink.Pkgid) argvPrint("blink.Pkgid", p->blink.Pkgid, NULL);
+	if (p->blink.Hdrid) argvPrint("blink.Hdrid", p->blink.Hdrid, NULL);
+	if (p->blink.NEVRA) argvPrint("blink.NEVRA", p->blink.NEVRA, NULL);
+	if (p->flink.Pkgid) argvPrint("flink.Pkgid", p->flink.Pkgid, NULL);
+	if (p->flink.Hdrid) argvPrint("flink.Hdrid", p->flink.Hdrid, NULL);
+	if (p->flink.NEVRA) argvPrint("flink.NEVRA", p->flink.NEVRA, NULL);
     }
 };
 #endif

@@ -1754,18 +1754,18 @@ psm->te->h = headerLink(fi->h);
 				origin, 1);
 
 assert(psm->te != NULL);
-		ac = argvCount(psm->te->aNEVRA);
+		ac = argvCount(psm->te->flink.NEVRA);
 		if (ac > 0)
-		    xx = hae(psm->oh, RPMTAG_INSTALLEDNEVRA, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->aNEVRA), ac);
-		ac = argvCount(psm->te->aPkgid);
+		    xx = hae(psm->oh, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+				argvData(psm->te->flink.NEVRA), ac);
+		ac = argvCount(psm->te->flink.Pkgid);
 		if (ac > 0)
-		    xx = hae(psm->oh, RPMTAG_INSTALLEDPKGID, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->aPkgid), ac);
-		ac = argvCount(psm->te->aHdrid);
+		    xx = hae(psm->oh, RPMTAG_FLINKPKGID, RPM_STRING_ARRAY_TYPE,
+				argvData(psm->te->flink.Pkgid), ac);
+		ac = argvCount(psm->te->flink.Hdrid);
 		if (ac > 0)
-		    xx = hae(psm->oh, RPMTAG_INSTALLEDHDRID, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->aHdrid), ac);
+		    xx = hae(psm->oh, RPMTAG_FLINKHDRID, RPM_STRING_ARRAY_TYPE,
+				argvData(psm->te->flink.Hdrid), ac);
 
 	    }
 
@@ -1940,18 +1940,18 @@ assert(psm->te != NULL);
 				origin, 1);
 	
 assert(psm->te != NULL);
-	    ac = argvCount(psm->te->eNEVRA);
+	    ac = argvCount(psm->te->blink.NEVRA);
 	    if (ac > 0)
-		xx = hae(fi->h, RPMTAG_ERASEDNEVRA, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->eNEVRA), ac);
-	    ac = argvCount(psm->te->ePkgid);
+		xx = hae(fi->h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+				argvData(psm->te->blink.NEVRA), ac);
+	    ac = argvCount(psm->te->blink.Pkgid);
 	    if (ac > 0)
-		xx = hae(fi->h, RPMTAG_ERASEDPKGID, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->ePkgid), ac);
-	    ac = argvCount(psm->te->eHdrid);
+		xx = hae(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
+				argvData(psm->te->blink.Pkgid), ac);
+	    ac = argvCount(psm->te->blink.Hdrid);
 	    if (ac > 0)
-		xx = hae(fi->h, RPMTAG_ERASEDHDRID, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->eHdrid), ac);
+		xx = hae(fi->h, RPMTAG_BLINKHDRID, RPM_STRING_ARRAY_TYPE,
+				argvData(psm->te->blink.Hdrid), ac);
 
 	    /*
 	     * If this package has already been installed, remove it from

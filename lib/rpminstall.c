@@ -1131,9 +1131,9 @@ static int findErases(rpmts ts, struct rpmInstallArguments_s * ia,
 		unsigned thistid, IDT rp, IDT ip, int niids)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char ** iPkgid = NULL;
-    const char ** iHdrid = NULL;
-    const char ** iNEVRA = NULL;
+    const char ** flinkPkgid = NULL;
+    const char ** flinkHdrid = NULL;
+    const char ** flinkNEVRA = NULL;
     int numRemoved = 0;
     rpmte p;
     rpmte q;
@@ -1145,8 +1145,8 @@ static int findErases(rpmts ts, struct rpmInstallArguments_s * ia,
 /*
  * XXX Find (and addEraseElement) for all headers that match.
  *
- * XXX rp->h has empty ERASEDNEVRA, populated INSTALLEDNEVRA.
- * XXX ip->h has populated ERASEDNEVRA, empty INSTALLEDNEVRA.
+ * XXX rp->h has empty BLINKNEVRA, populated FLINKNEVRA.
+ * XXX ip->h has populated BLINKNEVRA, empty FLINKNEVRA.
  *
  * XXX p = ts->teInstall is added, but has empty links because not an upgrade.
  */
@@ -1160,19 +1160,19 @@ static int findErases(rpmts ts, struct rpmInstallArguments_s * ia,
 	if (ip->done)
 	    goto bottom;
 
-	xx = hge(ip->h, RPMTAG_ERASEDPKGID, NULL, (void **)&iPkgid, NULL);
-	xx = hge(ip->h, RPMTAG_ERASEDHDRID, NULL, (void **)&iHdrid, NULL);
-	xx = hge(ip->h, RPMTAG_ERASEDNEVRA, NULL, (void **)&iNEVRA, NULL);
+	xx = hge(ip->h, RPMTAG_BLINKPKGID, NULL, (void **)&flinkPkgid, NULL);
+	xx = hge(ip->h, RPMTAG_BLINKHDRID, NULL, (void **)&flinkHdrid, NULL);
+	xx = hge(ip->h, RPMTAG_BLINKNEVRA, NULL, (void **)&flinkNEVRA, NULL);
 
 	/*
 	 * Either header may have missing data and multiple entries.
 	 * Try for hdrid, then pkgid, finally NEVRA, argv compares.
 	 */
-	bingo = cmpargv(iHdrid, p->hdrid);
+	bingo = cmpargv(flinkHdrid, p->hdrid);
 	if (!bingo)
-	    bingo = cmpargv(iPkgid, p->pkgid);
+	    bingo = cmpargv(flinkPkgid, p->pkgid);
 	if (!bingo)
-	    bingo = cmpargv(iNEVRA, p->NEVRA);
+	    bingo = cmpargv(flinkNEVRA, p->NEVRA);
 	if (!bingo)
 	    goto bottom;
 
@@ -1197,9 +1197,9 @@ static int findErases(rpmts ts, struct rpmInstallArguments_s * ia,
 	ip->done = 1;
 
 bottom:
-	iPkgid = headerFreeData(iPkgid, -1);
-	iHdrid = headerFreeData(iHdrid, -1);
-	iNEVRA = headerFreeData(iNEVRA, -1);
+	flinkPkgid = headerFreeData(flinkPkgid, -1);
+	flinkHdrid = headerFreeData(flinkHdrid, -1);
+	flinkNEVRA = headerFreeData(flinkNEVRA, -1);
 
 	/* Go to the next header in the rpmdb */
 	niids--;

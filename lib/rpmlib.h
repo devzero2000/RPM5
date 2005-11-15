@@ -450,12 +450,12 @@ typedef enum rpmTag_e {
     RPMTAG_PRIORITY		= 1162, /* i   extension placeholder */
     RPMTAG_CVSID		= 1163, /* s */
 #define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
-    RPMTAG_ERASEDPKGID		= 1164, /* s[] */
-    RPMTAG_ERASEDHDRID		= 1165, /* s[] */
-    RPMTAG_ERASEDNEVRA		= 1166, /* s[] */
-    RPMTAG_INSTALLEDPKGID	= 1167, /* s[] */
-    RPMTAG_INSTALLEDHDRID	= 1168, /* s[] */
-    RPMTAG_INSTALLEDNEVRA	= 1169, /* s[] */
+    RPMTAG_BLINKPKGID		= 1164, /* s[] */
+    RPMTAG_BLINKHDRID		= 1165, /* s[] */
+    RPMTAG_BLINKNEVRA		= 1166, /* s[] */
+    RPMTAG_FLINKPKGID		= 1167, /* s[] */
+    RPMTAG_FLINKHDRID		= 1168, /* s[] */
+    RPMTAG_FLINKNEVRA		= 1169, /* s[] */
     RPMTAG_PACKAGEORIGIN	= 1170, /* s */
     RPMTAG_TRIGGERPREIN		= 1171, /*!< internal */
     RPMTAG_BUILDSUGGESTS	= 1172, /*!< internal */

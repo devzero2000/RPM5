@@ -65,12 +65,12 @@ static void delTE(rpmte p)
     p->pkgid = _free(p->pkgid);
     p->hdrid = _free(p->hdrid);
 
-    p->aNEVRA = argvFree(p->aNEVRA);
-    p->aPkgid = argvFree(p->aPkgid);
-    p->aHdrid = argvFree(p->aHdrid);
-    p->eNEVRA = argvFree(p->eNEVRA);
-    p->ePkgid = argvFree(p->ePkgid);
-    p->eHdrid = argvFree(p->eHdrid);
+    p->flink.NEVRA = argvFree(p->flink.NEVRA);
+    p->flink.Pkgid = argvFree(p->flink.Pkgid);
+    p->flink.Hdrid = argvFree(p->flink.Hdrid);
+    p->blink.NEVRA = argvFree(p->blink.NEVRA);
+    p->blink.Pkgid = argvFree(p->blink.Pkgid);
+    p->blink.Hdrid = argvFree(p->blink.Hdrid);
 
     p->h = headerFree(p->h);
 
@@ -653,9 +653,9 @@ static int __mydebug = 0;
 int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char * ohNEVRA = NULL;
-    const char * ohPkgid = NULL;
-    const char * ohHdrid = NULL;
+    const char * blinkNEVRA = NULL;
+    const char * blinkPkgid = NULL;
+    const char * blinkHdrid = NULL;
     const unsigned char * pkgid;
     int_32 pkgidcnt;
     int xx;
@@ -664,7 +664,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     if (msg == NULL)
 	msg = "";
 /*@=branchstate@*/
-    ohNEVRA = hGetNEVRA(oh, NULL);
+    blinkNEVRA = hGetNEVRA(oh, NULL);
 
     /*
      * Convert binary pkgid to a string.
@@ -679,7 +679,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 	char * t;
 	int i;
 
-	ohPkgid = t = xmalloc((2*pkgidcnt) + 1);
+	blinkPkgid = t = xmalloc((2*pkgidcnt) + 1);
 	for (i = 0 ; i < pkgidcnt; i++) {
 	    *t++ = hex[ ((pkgid[i] >> 4) & 0x0f) ];
 	    *t++ = hex[ ((pkgid[i]     ) & 0x0f) ];
@@ -689,38 +689,38 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 	pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
 #endif
     } else
-	ohPkgid = NULL;
+	blinkPkgid = NULL;
 
-    ohHdrid = NULL;
-    xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&ohHdrid, NULL);
+    blinkHdrid = NULL;
+    xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&blinkHdrid, NULL);
 
 if (__mydebug)
-fprintf(stderr, "%s argvAdd(&q->aNEVRA, \"%s\")\n", msg, p->NEVRA);
-	xx = argvAdd(&q->aNEVRA, p->NEVRA);
+fprintf(stderr, "%s argvAdd(&q->flink.NEVRA, \"%s\")\n", msg, p->NEVRA);
+	xx = argvAdd(&q->flink.NEVRA, p->NEVRA);
 if (__mydebug)
-fprintf(stderr, "%s argvAdd(&p->eNEVRA, \"%s\")\n", msg, ohNEVRA);
-	xx = argvAdd(&p->eNEVRA, ohNEVRA);
+fprintf(stderr, "%s argvAdd(&p->blink.NEVRA, \"%s\")\n", msg, blinkNEVRA);
+	xx = argvAdd(&p->blink.NEVRA, blinkNEVRA);
 if (__mydebug)
-fprintf(stderr, "%s argvAdd(&q->ePkgid, \"%s\")\n", msg, p->pkgid);
+fprintf(stderr, "%s argvAdd(&q->flink.Pkgid, \"%s\")\n", msg, p->pkgid);
     if (p->pkgid != NULL)
-	xx = argvAdd(&q->aPkgid, p->pkgid);
+	xx = argvAdd(&q->flink.Pkgid, p->pkgid);
 if (__mydebug)
-fprintf(stderr, "%s argvAdd(&p->ePkgid, \"%s\")\n", msg, ohPkgid);
-    if (ohPkgid != NULL)
-	xx = argvAdd(&p->ePkgid, ohPkgid);
+fprintf(stderr, "%s argvAdd(&p->blink.Pkgid, \"%s\")\n", msg, blinkPkgid);
+    if (blinkPkgid != NULL)
+	xx = argvAdd(&p->blink.Pkgid, blinkPkgid);
 if (__mydebug)
-fprintf(stderr, "%s argvAdd(&q->aHdrid, \"%s\")\n", msg, p->hdrid);
+fprintf(stderr, "%s argvAdd(&q->flink.Hdrid, \"%s\")\n", msg, p->hdrid);
     if (p->hdrid != NULL)
-	xx = argvAdd(&q->aHdrid, p->hdrid);
+	xx = argvAdd(&q->flink.Hdrid, p->hdrid);
 if (__mydebug)
-fprintf(stderr, "%s argvAdd(&p->eHdrid, \"%s\")\n", msg, ohHdrid);
-    if (ohHdrid != NULL)
-	xx = argvAdd(&p->eHdrid, ohHdrid);
+fprintf(stderr, "%s argvAdd(&p->blink.Hdrid, \"%s\")\n", msg, blinkHdrid);
+    if (blinkHdrid != NULL)
+	xx = argvAdd(&p->blink.Hdrid, blinkHdrid);
 
-    ohNEVRA = _free(ohNEVRA);
-    ohPkgid = _free(ohPkgid);
+    blinkNEVRA = _free(blinkNEVRA);
+    blinkPkgid = _free(blinkPkgid);
 #ifdef	NOTYET	/* XXX MinMemory. */
-    ohHdrid = _free(ohHdrid);
+    blinkHdrid = _free(blinkHdrid);
 #endif
     return 0;
 }
