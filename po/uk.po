@@ -5,14 +5,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-15 09:31-0500\n"
+"POT-Creation-Date: 2005-11-15 14:11-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -66,12 +66,10 @@ msgid "Building for target %s\n"
 msgstr "Збирання для платформи %s\n"
 
 #: rpm2cpio.c:56
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "вказаний аргумент не є RPM пакетом\n"
 
 #: rpm2cpio.c:61
-#, c-format
 msgid "error reading header from package\n"
 msgstr "помилка читання заголовка пакету\n"
 
@@ -131,12 +129,10 @@ msgid "RPM version %s\n"
 msgstr "RPM версії %s\n"
 
 #: rpmqv.c:147
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Авторські права належать - Red Hat, Inc. Copyright (C) 1998-2002\n"
 
 #: rpmqv.c:148
-#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Цю програму можна розповсюджувати на умовах ліцензії GNU GPL\n"
@@ -289,7 +285,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументи для --root (-r) повинні починатись з /"
 
 #: rpmqv.c:548
-#, c-format
 msgid "no files to sign\n"
 msgstr "немає файлів для підпису\n"
 
@@ -299,7 +294,6 @@ msgid "cannot access file %s\n"
 msgstr "немає доступу до файлу %s\n"
 
 #: rpmqv.c:573
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp не знайдено:"
 
@@ -308,12 +302,10 @@ msgid "Enter pass phrase: "
 msgstr "Введіть ключову фразу:"
 
 #: rpmqv.c:583
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Неправильна ключова фраза\n"
 
 #: rpmqv.c:587
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Ключову фразу прийнято.\n"
 
@@ -327,7 +319,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign дозволяється вказувати лише при збиранні пакету"
 
 #: rpmqv.c:616
-#, c-format
 msgid "exec failed\n"
 msgstr "помилка запуску\n"
 
@@ -574,7 +565,7 @@ msgstr "Файл повинен починатись з \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Шаблони не дозволяються: %s\n"
 
-#: build/files.c:1894 lib/rpminstall.c:373
+#: build/files.c:1894 lib/rpminstall.c:374
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не знайдено: %s\n"
@@ -1685,17 +1676,15 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "неправильний розмір області: ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "неправильний заголовок SHA1: не є шістнадцятковим\n"
 
 #: lib/package.c:470
-#, fuzzy, c-format
+#, fuzzy
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "неправильний заголовок DSA: не є двійковим\n"
 
 #: lib/package.c:482
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "неправильний заголовок DSA: не є двійковим\n"
 
@@ -1711,7 +1700,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "неправильний розмір заголовка(%d): зчитування повернуло %d\n"
 
 #: lib/package.c:678
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "неправильна сигнатура заголовка: помилка\n"
 
@@ -1731,7 +1719,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "неправильний двійковий об'єкт(%d): зчитування повернуло %d\n"
 
 #: lib/package.c:722
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr "помилка завантаження об'єкта: помилка\n"
 
@@ -2638,7 +2625,7 @@ msgstr "номер елементу пакету: %u\n"
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:683 lib/rpminstall.c:817
+#: lib/query.c:683 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"
@@ -2904,8 +2891,8 @@ msgstr "переміщується %s у %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:125 lib/rpminstall.c:491
-#: lib/rpminstall.c:622 lib/rpminstall.c:1063 lib/rpmts.c:646
+#: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
+#: lib/rpminstall.c:623 lib/rpminstall.c:1064 lib/rpmts.c:646
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2917,147 +2904,147 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:666 lib/rpminstall.c:851
-#: lib/rpminstall.c:1439 lib/transaction.c:1229 tools/rpmgraph.c:197
+#: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
+#: lib/rpminstall.c:1434 lib/transaction.c:1229 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Незадоволені залежності:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:673 tools/rpmgraph.c:203
+#: lib/rpmgi.c:631 lib/rpminstall.c:674 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "  Запропоновані залежності:\n"
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr "Підготовка..."
 
-#: lib/rpminstall.c:194
+#: lib/rpminstall.c:195
 msgid "Preparing packages for installation..."
 msgstr "Підготовка пакетів до встановлення..."
 
-#: lib/rpminstall.c:212
+#: lib/rpminstall.c:213
 msgid "Repackaging..."
 msgstr "Перепакування..."
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:215
 msgid "Repackaging erased files..."
 msgstr "Перепакування файлів відмічених до видалення..."
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:234
 msgid "Upgrading..."
 msgstr "Оновлення..."
 
-#: lib/rpminstall.c:235
+#: lib/rpminstall.c:236
 msgid "Upgrading packages..."
 msgstr "Оновлення пакетів..."
 
-#: lib/rpminstall.c:331 lib/rpminstall.c:795 lib/transaction.c:1204
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1204
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:421
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "Додається ціль: %s\n"
 
-#: lib/rpminstall.c:436
+#: lib/rpminstall.c:437
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Завантажується %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:450
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... як %s\n"
 
-#: lib/rpminstall.c:453
+#: lib/rpminstall.c:454
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s пропускається - помилка передачі - %s\n"
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:914 tools/rpmgraph.c:142
+#: lib/rpminstall.c:511 lib/rpminstall.c:915 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не може бути встановлений\n"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:528
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:553
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакет %s не є переміщуваним\n"
 
-#: lib/rpminstall.c:597
+#: lib/rpminstall.c:598
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\tдобавлений двійковий пакет [%d]\n"
 
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:603
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "помилка читання з файлу %s\n"
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:609
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "файл %s потребує більш нової версії RPM\n"
 
-#: lib/rpminstall.c:637
+#: lib/rpminstall.c:638
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не є rpm пакетом (чи маніфестом пакету): %s\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:653
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "знайдено %d вихідних та %d двійкових пакетів\n"
 
-#: lib/rpminstall.c:703
+#: lib/rpminstall.c:704
 msgid "installing binary packages\n"
 msgstr "встановлюються двійкові пакети\n"
 
-#: lib/rpminstall.c:727
+#: lib/rpminstall.c:728
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "неможливо відкрити файл %s: %s\n"
 
-#: lib/rpminstall.c:826
+#: lib/rpminstall.c:827
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" визначає декілька пакетів\n"
 
-#: lib/rpminstall.c:898
+#: lib/rpminstall.c:899
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpminstall.c:904
+#: lib/rpminstall.c:905
 #, c-format
 msgid "Installing %s\n"
 msgstr "Встановлюється %s\n"
 
-#: lib/rpminstall.c:1330
+#: lib/rpminstall.c:1342
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1433
+#: lib/rpminstall.c:1428
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1464 lib/transaction.c:1282
+#: lib/rpminstall.c:1459 lib/transaction.c:1282
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1471
+#: lib/rpminstall.c:1466
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Завантажується %s\n"
@@ -3229,27 +3216,22 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Неможливо відкрити %s для читання: %s.\n"
 
 #: lib/rpmrc.c:1930
-#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
-#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
-#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
-#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
-#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3409,7 +3391,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "неправильний розмір загол.підпису(%d): зчитування повернуло %d\n"
 
 #: lib/signature.c:193
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "неправильна сигнатура загол.підпису: помилка\n"
 
@@ -3435,7 +3416,6 @@ msgstr ""
 "неправильний тег загол.підпису[%d]: тег %d тип %d зсув %d кількість %d\n"
 
 #: lib/signature.c:313
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr "помилка завантаження загол.підпису: помилка\n"
 
@@ -3509,9 +3489,6 @@ msgstr "Розмір GPG підпису: %d\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3555,12 +3532,10 @@ msgid " DSA signature: "
 msgstr "Підпис V3 DSA: "
 
 #: lib/signature.c:1505
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Перевірка підпису: НЕПРАВИЛЬНІ ПАРАМЕТРИ\n"
 
 #: lib/signature.c:1536
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Неправильна контрольна сума MD5: НЕ ПІДТРИМУЄТЬСЯ\n"
 
@@ -3773,7 +3748,7 @@ msgstr ""
 msgid "Failure reading repackaged package!\n"
 msgstr "помилка читання заголовка пакету\n"
 
-#: lib/transaction.c:1845
+#: lib/transaction.c:1950
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3785,12 +3760,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1899
+#: lib/transaction.c:2004
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "перевірка правильності %d елементів\n"
 
-#: lib/transaction.c:1985
+#: lib/transaction.c:2090
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3802,7 +3777,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2060
+#: lib/transaction.c:2165
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "обчислюються відбитки %d файлів\n"
@@ -3810,24 +3785,24 @@ msgstr "обчислюються відбитки %d файлів\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2141
+#: lib/transaction.c:2246
 msgid "computing file dispositions\n"
 msgstr "обчислюється розташування файлів\n"
 
-#: lib/transaction.c:2319
+#: lib/transaction.c:2424
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2596
+#: lib/transaction.c:2695
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2603
+#: lib/transaction.c:2702
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2646
+#: lib/transaction.c:2745
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -4354,7 +4329,6 @@ msgid "(no error)"
 msgstr "(помилки немає)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "фатальна помилка: "

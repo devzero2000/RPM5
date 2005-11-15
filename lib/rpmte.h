@@ -54,6 +54,9 @@ struct tsortInfo_s {
 };
 /*@=fielduse@*/
 
+/** \ingroup rpmte
+ * Info used to link transaction element upgrade/rollback side effects.
+ */
 struct rpmChainLink_s {
 /*@only@*/ /*@null@*/
     ARGV_t Pkgid;		/*!< link element pkgid's. */
@@ -132,6 +135,8 @@ struct rpmte_s {
 
     struct rpmChainLink_s blink;/*!< Backward link info to erased element. */
     struct rpmChainLink_s flink;/*!< Forward link info to installed element. */
+    int linkFailed;		/*!< Did the linked element upgrade succeed? */
+    int done;			/*!< Has the element been installed/erased? */
 
 /*@-fielduse@*/	/* LCL: confused by union? */
     union {

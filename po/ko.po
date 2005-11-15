@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-15 09:31-0500\n"
+"POT-Creation-Date: 2005-11-15 14:11-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-KR\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -63,12 +63,10 @@ msgid "Building for target %s\n"
 msgstr "%s(을)를 제작하고 있습니다\n"
 
 #: rpm2cpio.c:56
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "인수 값으로 RPM 패키지가 지정되어야 합니다\n"
 
 #: rpm2cpio.c:61
-#, c-format
 msgid "error reading header from package\n"
 msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 
@@ -128,12 +126,12 @@ msgid "RPM version %s\n"
 msgstr "RPM 버전 - %s\n"
 
 #: rpmqv.c:147
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:148
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "이 프로그램은 GNU Public License 내에서 자유롭게 재배포할 수 있습니다"
@@ -277,7 +275,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
 #: rpmqv.c:548
-#, c-format
 msgid "no files to sign\n"
 msgstr "서명할 파일이 없습니다\n"
 
@@ -287,7 +284,6 @@ msgid "cannot access file %s\n"
 msgstr "%s 파일에 접근할 수 없습니다\n"
 
 #: rpmqv.c:573
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp를 찾을 수 없음: "
 
@@ -296,12 +292,10 @@ msgid "Enter pass phrase: "
 msgstr "패스 구문(pass phrase) 입력: "
 
 #: rpmqv.c:583
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "패스 구문(pass phrase)이 올바르지 않습니다\n"
 
 #: rpmqv.c:587
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "패스 구문(pass phrase)이 일치합니다.\n"
 
@@ -315,7 +309,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign 옵션은 패키지 제작시에만 사용할 수 있습니다"
 
 #: rpmqv.c:616
-#, c-format
 msgid "exec failed\n"
 msgstr "실행에 실패했습니다\n"
 
@@ -563,7 +556,7 @@ msgstr "파일은 \"/\" 로 시작해야함: %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Glob을 사용할 수 없음: %s\n"
 
-#: build/files.c:1894 lib/rpminstall.c:373
+#: build/files.c:1894 lib/rpminstall.c:374
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
@@ -1675,17 +1668,14 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
-#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1701,7 +1691,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1721,7 +1710,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2657,7 +2645,7 @@ msgstr "패키지 기록(record) 번호: %u\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:683 lib/rpminstall.c:817
+#: lib/query.c:683 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -2924,8 +2912,8 @@ msgstr "%s(을)를 %s(으)로 재배치 합니다\n"
 msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:125 lib/rpminstall.c:491
-#: lib/rpminstall.c:622 lib/rpminstall.c:1063 lib/rpmts.c:646
+#: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
+#: lib/rpminstall.c:623 lib/rpminstall.c:1064 lib/rpmts.c:646
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2937,151 +2925,151 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "알 수 없는 태그 입니다"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:666 lib/rpminstall.c:851
-#: lib/rpminstall.c:1439 lib/transaction.c:1229 tools/rpmgraph.c:197
+#: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
+#: lib/rpminstall.c:1434 lib/transaction.c:1229 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:673 tools/rpmgraph.c:203
+#: lib/rpmgi.c:631 lib/rpminstall.c:674 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr "준비 중..."
 
-#: lib/rpminstall.c:194
+#: lib/rpminstall.c:195
 msgid "Preparing packages for installation..."
 msgstr "설치할 패키지를 준비하고 있습니다..."
 
-#: lib/rpminstall.c:212
+#: lib/rpminstall.c:213
 #, fuzzy
 msgid "Repackaging..."
 msgstr "준비 중..."
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:215
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:234
 #, fuzzy
 msgid "Upgrading..."
 msgstr "준비 중..."
 
-#: lib/rpminstall.c:235
+#: lib/rpminstall.c:236
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "패키지를 업그레이드 합니다"
 
-#: lib/rpminstall.c:331 lib/rpminstall.c:795 lib/transaction.c:1204
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1204
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:421
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
 
-#: lib/rpminstall.c:436
+#: lib/rpminstall.c:437
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:450
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... %s(으)로\n"
 
-#: lib/rpminstall.c:453
+#: lib/rpminstall.c:454
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s(을)를 생략합니다 - 전송(transfer)에 실패함 - %s\n"
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:914 tools/rpmgraph.c:142
+#: lib/rpminstall.c:511 lib/rpminstall.c:915 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:528
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "<소스 패키지>"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:553
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
 
-#: lib/rpminstall.c:597
+#: lib/rpminstall.c:598
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:603
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:609
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s 파일은 최신 버전의 RPM을 필요로 합니다\n"
 
-#: lib/rpminstall.c:637
+#: lib/rpminstall.c:638
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:653
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d의 소스와 %d의 바이너리 패키지가 검색되었습니다\n"
 
-#: lib/rpminstall.c:703
+#: lib/rpminstall.c:704
 msgid "installing binary packages\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:727
+#: lib/rpminstall.c:728
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:826
+#: lib/rpminstall.c:827
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:898
+#: lib/rpminstall.c:899
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:904
+#: lib/rpminstall.c:905
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1330
+#: lib/rpminstall.c:1342
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1433
+#: lib/rpminstall.c:1428
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1464 lib/transaction.c:1282
+#: lib/rpminstall.c:1459 lib/transaction.c:1282
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1471
+#: lib/rpminstall.c:1466
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "%s(을)를 복구합니다\n"
@@ -3259,27 +3247,22 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
 #: lib/rpmrc.c:1930
-#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
-#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
-#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
-#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
-#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3437,7 +3420,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3462,7 +3444,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3536,9 +3517,6 @@ msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3584,12 +3562,10 @@ msgid " DSA signature: "
 msgstr "서명이 없습니다\n"
 
 #: lib/signature.c:1505
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 
@@ -3802,7 +3778,7 @@ msgstr ""
 msgid "Failure reading repackaged package!\n"
 msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/transaction.c:1845
+#: lib/transaction.c:1950
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3814,12 +3790,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1899
+#: lib/transaction.c:2004
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1985
+#: lib/transaction.c:2090
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3831,7 +3807,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2060
+#: lib/transaction.c:2165
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3839,24 +3815,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2141
+#: lib/transaction.c:2246
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2319
+#: lib/transaction.c:2424
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2596
+#: lib/transaction.c:2695
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2603
+#: lib/transaction.c:2702
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2646
+#: lib/transaction.c:2745
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -4389,7 +4365,6 @@ msgid "(no error)"
 msgstr "(오류 없음)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "치명적 오류: "

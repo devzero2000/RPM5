@@ -1786,6 +1786,112 @@ cleanup:
     return rc;
 }
 
+#ifdef	UNUSED
+/**
+ * Test if any string from argv array BV is in argv array AV.
+ * @param AV		1st argv array
+ * @param B		2nd argv string
+ * @return		1 if found, 0 otherwise
+ */
+static int cmpArgvArgv(const char ** AV, const char ** BV)
+	/*@*/
+{
+    const char ** a, ** b;
+
+    if (AV != NULL && BV != NULL)
+    for (a = AV; *a != NULL; a++) {
+	for (b = BV; *b != NULL; b++) {
+fprintf(stderr, "\tstrmp(\"%s\", \"%s\")\n", *a, *b);
+	    if (**a && **b && !strcmp(*a, *b))
+		return 1;
+	}
+    }
+    return 0;
+}
+#endif
+
+/**
+ * Search for string B in argv array AV.
+ * @param AV		argv array
+ * @param B		string
+ * @return		1 if found, 0 otherwise
+ */
+static int cmpArgvStr(const char ** AV, const char * B)
+	/*@*/
+{
+    const char ** a;
+
+    if (AV != NULL && B != NULL)
+    for (a = AV; *a != NULL; a++) {
+#if 0
+fprintf(stderr, "\tstrmp(\"%s\", \"%s\")\n", *a, B);
+#endif
+	if (**a && *B && !strcmp(*a, B))
+	    return 1;
+    }
+    return 0;
+}
+
+
+/**
+ * Mark all erasure elements linked to installed element p as failed.
+ * @param ts		transaction set
+ * @param p		failed install transaction element
+ * @retun		0 always
+ */
+static int markLinkedFailed(rpmts ts, rpmte p)
+	/*@globals fileSystem @*/
+	/*@modifies ts, p, fileSystem @*/
+{
+    rpmtsi qi; rpmte q;
+    int bingo;
+
+#if 0
+fprintf(stderr, "==> %s(%p, %p)\n", __FUNCTION__, ts, p);
+#endif
+
+    p->linkFailed = 1;
+
+#if 0
+/*@-modfilesys@*/
+fprintf(stderr, "==> %p failed: %s\n", p, rpmteNEVRA(p));
+rpmtePrintID(p);
+/*@=modfilesys@*/
+#endif
+
+    qi = rpmtsiInit(ts);
+    while ((q = rpmtsiNext(qi, TR_REMOVED)) != NULL) {
+
+	if (q->done)
+	    continue;
+
+	/*
+	 * Either element may have missing data and can have multiple entries.
+	 * Try for hdrid, then pkgid, finally NEVRA, argv vs. argv compares.
+	 */
+	bingo = cmpArgvStr(q->flink.Hdrid, p->hdrid);
+	if (!bingo)
+		bingo = cmpArgvStr(q->flink.Pkgid, p->pkgid);
+	if (!bingo)
+		bingo = cmpArgvStr(q->flink.NEVRA, p->NEVRA);
+
+	if (!bingo)
+	    continue;
+
+#if 0
+/*@-modfilesys@*/
+fprintf(stderr, "==> %p skipped: %s\n", q, rpmteNEVRA(q));
+rpmtePrintID(q);
+/*@=modfilesys@*/
+#endif
+
+	q->linkFailed = p->linkFailed;
+    }
+    qi = rpmtsiFree(qi);
+
+    return 0;
+}
+
 #define	NOTIFY(_ts, _al) /*@i@*/ if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
@@ -1798,7 +1904,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     sharedFileInfo shared, sharedList;
     int numShared;
     int nexti;
-    alKey lastFailKey;
     fingerPrintCache fpc;
     rpmps ps;
     rpmpsm psm;
@@ -2436,7 +2541,6 @@ assert(psm != NULL);
     /* ===============================================
      * Install and remove packages.
      */
-    lastFailKey = (alKey)-2;	/* erased packages have -1 */
     pi = rpmtsiInit(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -2537,16 +2641,12 @@ assert(psm != NULL);
 
 		if ((xx = rpmpsmStage(psm, PSM_PKGINSTALL)) != 0) {
 		    ourrc++;
-		    lastFailKey = pkgKey;
-#if 0
-fprintf(stderr, "==> %p failed(%d): %s\n", p, xx, rpmteNEVRA(p));
-rpmtePrintID(p);
-#endif
-		}
+		    xx = markLinkedFailed(ts, p);
+		} else
+		    p->done = 1;
 
 	    } else {
 		ourrc++;
-		lastFailKey = pkgKey;
 	    }
 
 	    if (gotfd) {
@@ -2569,15 +2669,14 @@ rpmtePrintID(p);
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	    /*
-	     * XXX This has always been a hack, now mostly broken.
-	     * If install failed, then we shouldn't erase.
-	     */
-	    if (rpmteDependsOnKey(p) != lastFailKey) {
-		if (rpmpsmStage(psm, PSM_PKGERASE)) {
+	    /* If linked element install failed, then don't erase. */
+	    if (p->linkFailed == 0) {
+		if ((xx != rpmpsmStage(psm, PSM_PKGERASE)) != 0) {
 		    ourrc++;
-		}
-	    }
+		} else
+		    p->done = 1;
+	    } else
+		ourrc++;
 
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
 

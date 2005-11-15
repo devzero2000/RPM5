@@ -4,14 +4,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-15 09:31-0500\n"
+"POT-Creation-Date: 2005-11-15 14:11-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -71,12 +71,10 @@ msgid "Building for target %s\n"
 msgstr "instale pacote"
 
 #: rpm2cpio.c:56
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
 #: rpm2cpio.c:61
-#, c-format
 msgid "error reading header from package\n"
 msgstr ""
 
@@ -143,12 +141,11 @@ msgid "RPM version %s\n"
 msgstr "RPM verso %s\n"
 
 #: rpmqv.c:147
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
 #: rpmqv.c:148
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -317,7 +314,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumentos para --root (-r) devem comear com uma /"
 
 #: rpmqv.c:548
-#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -327,7 +323,7 @@ msgid "cannot access file %s\n"
 msgstr ""
 
 #: rpmqv.c:573
-#, fuzzy, c-format
+#, fuzzy
 msgid "pgp not found: "
 msgstr "no foi passado pacote para desinstalao"
 
@@ -336,12 +332,10 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:583
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Checagem de pass phrase falhou\n"
 
 #: rpmqv.c:587
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Pass phrase ok.\n"
 
@@ -355,7 +349,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign somente pode ser usado durante a construo de pacotes"
 
 #: rpmqv.c:616
-#, fuzzy, c-format
+#, fuzzy
 msgid "exec failed\n"
 msgstr "Construo falhou.\n"
 
@@ -622,7 +616,7 @@ msgstr "argumentos para o --dbpath devem comear com uma /"
 msgid "Glob not permitted: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:1894 lib/rpminstall.c:373
+#: build/files.c:1894 lib/rpminstall.c:374
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "no foi passado pacote para desinstalao"
@@ -1828,17 +1822,14 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
-#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1854,7 +1845,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1874,7 +1864,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2843,7 +2832,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:683 lib/rpminstall.c:817
+#: lib/query.c:683 lib/rpminstall.c:818
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "no foi passado pacote para instalao"
@@ -3130,8 +3119,8 @@ msgstr "No consegui abrir: %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:125 lib/rpminstall.c:491
-#: lib/rpminstall.c:622 lib/rpminstall.c:1063 lib/rpmts.c:646
+#: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
+#: lib/rpminstall.c:623 lib/rpminstall.c:1064 lib/rpmts.c:646
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -3144,49 +3133,49 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "No consegui abrir: %s\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:666 lib/rpminstall.c:851
-#: lib/rpminstall.c:1439 lib/transaction.c:1229 tools/rpmgraph.c:197
+#: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
+#: lib/rpminstall.c:1434 lib/transaction.c:1229 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "lista dependncias do pacote"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:673 tools/rpmgraph.c:203
+#: lib/rpmgi.c:631 lib/rpminstall.c:674 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:194
+#: lib/rpminstall.c:195
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpminstall.c:212
+#: lib/rpminstall.c:213
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:215
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:234
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:235
+#: lib/rpminstall.c:236
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "instale pacote"
 
-#: lib/rpminstall.c:331 lib/rpminstall.c:795 lib/transaction.c:1204
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1204
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
 
 # , c-format
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:421
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
@@ -3199,101 +3188,101 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpminstall.c:436
+#: lib/rpminstall.c:437
 #, fuzzy, c-format
 msgid "Retrieving %s\n"
 msgstr "RPM verso %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:450
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:453
+#: lib/rpminstall.c:454
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:914 tools/rpmgraph.c:142
+#: lib/rpminstall.c:511 lib/rpminstall.c:915 tools/rpmgraph.c:142
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:528
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "pesquise todos os pacotes"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:553
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpminstall.c:597
+#: lib/rpminstall.c:598
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "instale pacote"
 
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:603
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:609
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:637
+#: lib/rpminstall.c:638
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "no foram passados pacotes para assinatura"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:653
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:703
+#: lib/rpminstall.c:704
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "instale pacote"
 
 # , c-format
-#: lib/rpminstall.c:727
+#: lib/rpminstall.c:728
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:826
+#: lib/rpminstall.c:827
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
 # , c-format
-#: lib/rpminstall.c:898
+#: lib/rpminstall.c:899
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:904
+#: lib/rpminstall.c:905
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1330
+#: lib/rpminstall.c:1342
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1433
+#: lib/rpminstall.c:1428
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1464 lib/transaction.c:1282
+#: lib/rpminstall.c:1459 lib/transaction.c:1282
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
@@ -3307,7 +3296,7 @@ msgstr ""
 # , c-format
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1471
+#: lib/rpminstall.c:1466
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "RPM verso %s\n"
@@ -3486,27 +3475,22 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "No consegui abrir: %s\n"
 
 #: lib/rpmrc.c:1930
-#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
-#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
-#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
-#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
-#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3677,7 +3661,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3702,7 +3685,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3781,9 +3763,6 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3828,12 +3807,10 @@ msgid " DSA signature: "
 msgstr "gere assinatura PGP"
 
 #: lib/signature.c:1505
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -4063,7 +4040,7 @@ msgstr ""
 msgid "Failure reading repackaged package!\n"
 msgstr ""
 
-#: lib/transaction.c:1845
+#: lib/transaction.c:1950
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -4075,12 +4052,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1899
+#: lib/transaction.c:2004
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1985
+#: lib/transaction.c:2090
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -4092,7 +4069,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2060
+#: lib/transaction.c:2165
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -4100,24 +4077,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2141
+#: lib/transaction.c:2246
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2319
+#: lib/transaction.c:2424
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2596
+#: lib/transaction.c:2695
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2603
+#: lib/transaction.c:2702
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2646
+#: lib/transaction.c:2745
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -4669,7 +4646,6 @@ msgid "(no error)"
 msgstr ""
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr ""

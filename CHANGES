@@ -103,6 +103,7 @@
 	- fix: ignore %ghost vs. %ghost file conflicts (#155256).
 	- autogenerate java *.(jar|class) dependencies (#117382).
 	- fix: add flink (pkgid,hdrid,nevra) to repackaged packages correctly.
+	- fix: if install element fails, don't erase any linked element.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-15 09:31-0500\n"
+"POT-Creation-Date: 2005-11-15 14:11-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -63,12 +63,10 @@ msgid "Building for target %s\n"
 msgstr "Sestavuji pro cíl %s\n"
 
 #: rpm2cpio.c:56
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "parametr není RPM balíèek\n"
 
 #: rpm2cpio.c:61
-#, c-format
 msgid "error reading header from package\n"
 msgstr "chyba pøi pøi ètení hlavièky balíèku\n"
 
@@ -128,12 +126,12 @@ msgid "RPM version %s\n"
 msgstr "RPM verze %s\n"
 
 #: rpmqv.c:147
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (c) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:148
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Tento program lze volnì ¹íøit podle podmínek GNU GPL."
@@ -282,7 +280,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametry pro --root (-r) musejí zaèínat znakem /"
 
 #: rpmqv.c:548
-#, c-format
 msgid "no files to sign\n"
 msgstr "¾ádné soubory k podepsání\n"
 
@@ -292,7 +289,6 @@ msgid "cannot access file %s\n"
 msgstr "pøístup k souboru %s se nezdaøil\n"
 
 #: rpmqv.c:573
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp nenalezeno: "
 
@@ -301,12 +297,10 @@ msgid "Enter pass phrase: "
 msgstr "Vlo¾te heslovou frázi: "
 
 #: rpmqv.c:583
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Chybná heslová fráze\n"
 
 #: rpmqv.c:587
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Heslová fráze je v poøádku.\n"
 
@@ -320,7 +314,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign mù¾e být pou¾it jen pøi sestavování balíèkù"
 
 #: rpmqv.c:616
-#, c-format
 msgid "exec failed\n"
 msgstr "spu¹tìní selhalo\n"
 
@@ -569,7 +562,7 @@ msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: build/files.c:1894 lib/rpminstall.c:373
+#: build/files.c:1894 lib/rpminstall.c:374
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
@@ -1688,17 +1681,14 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
-#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1714,7 +1704,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1734,7 +1723,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2664,7 +2652,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %u nelze pøeèíst\n"
 
-#: lib/query.c:683 lib/rpminstall.c:817
+#: lib/query.c:683 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2933,8 +2921,8 @@ msgstr "Provádìní(%s): %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:125 lib/rpminstall.c:491
-#: lib/rpminstall.c:622 lib/rpminstall.c:1063 lib/rpmts.c:646
+#: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
+#: lib/rpminstall.c:623 lib/rpminstall.c:1064 lib/rpmts.c:646
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2946,151 +2934,151 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "neznámá znaèka"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:666 lib/rpminstall.c:851
-#: lib/rpminstall.c:1439 lib/transaction.c:1229 tools/rpmgraph.c:197
+#: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
+#: lib/rpminstall.c:1434 lib/transaction.c:1229 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:673 tools/rpmgraph.c:203
+#: lib/rpmgi.c:631 lib/rpminstall.c:674 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:194
+#: lib/rpminstall.c:195
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: lib/rpminstall.c:212
+#: lib/rpminstall.c:213
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:215
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:234
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:235
+#: lib/rpminstall.c:236
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "aktualizace balíèku"
 
-#: lib/rpminstall.c:331 lib/rpminstall.c:795 lib/transaction.c:1204
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1204
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:421
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: lib/rpminstall.c:436
+#: lib/rpminstall.c:437
 #, fuzzy, c-format
 msgid "Retrieving %s\n"
 msgstr "RPM verze %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:450
 #, fuzzy, c-format
 msgid " ... as %s\n"
 msgstr "%s ulo¾eno jako %s\n"
 
-#: lib/rpminstall.c:453
+#: lib/rpminstall.c:454
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:914 tools/rpmgraph.c:142
+#: lib/rpminstall.c:511 lib/rpminstall.c:915 tools/rpmgraph.c:142
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "neinstalován  "
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:528
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "<zdrojový balíèek>"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:553
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/rpminstall.c:597
+#: lib/rpminstall.c:598
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "nainstalovat balíèek"
 
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:603
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:609
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:637
+#: lib/rpminstall.c:638
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:653
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "vytvoøení zdrojového a binárního balíèku z <tar_soubor>"
 
-#: lib/rpminstall.c:703
+#: lib/rpminstall.c:704
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "nainstalovat balíèek"
 
-#: lib/rpminstall.c:727
+#: lib/rpminstall.c:728
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:826
+#: lib/rpminstall.c:827
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s\n"
 
-#: lib/rpminstall.c:898
+#: lib/rpminstall.c:899
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:904
+#: lib/rpminstall.c:905
 #, fuzzy, c-format
 msgid "Installing %s\n"
 msgstr "øádek: %s\n"
 
-#: lib/rpminstall.c:1330
+#: lib/rpminstall.c:1342
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1433
+#: lib/rpminstall.c:1428
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1464 lib/transaction.c:1282
+#: lib/rpminstall.c:1459 lib/transaction.c:1282
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1471
+#: lib/rpminstall.c:1466
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "RPM verze %s\n"
@@ -3262,27 +3250,22 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nemohu otevøít %s: %s\n"
 
 #: lib/rpmrc.c:1930
-#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
-#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
-#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
-#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
-#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3441,7 +3424,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3466,7 +3448,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3544,9 +3525,6 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3592,12 +3570,10 @@ msgid " DSA signature: "
 msgstr "generovat PGP/GPG podpis"
 
 #: lib/signature.c:1505
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3810,7 +3786,7 @@ msgstr ""
 msgid "Failure reading repackaged package!\n"
 msgstr "chyba pøi pøi ètení hlavièky balíèku\n"
 
-#: lib/transaction.c:1845
+#: lib/transaction.c:1950
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3822,12 +3798,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1899
+#: lib/transaction.c:2004
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1985
+#: lib/transaction.c:2090
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3839,7 +3815,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2060
+#: lib/transaction.c:2165
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3847,24 +3823,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2141
+#: lib/transaction.c:2246
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2319
+#: lib/transaction.c:2424
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2596
+#: lib/transaction.c:2695
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2603
+#: lib/transaction.c:2702
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2646
+#: lib/transaction.c:2745
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -4393,7 +4369,6 @@ msgid "(no error)"
 msgstr "(chyba: 0x%x)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 #, fuzzy
 msgid "fatal error: "

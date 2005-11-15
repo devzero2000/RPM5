@@ -1122,7 +1122,7 @@ bottom:
  * @param B		string
  * @return		1 if found, 0 otherwise
  */
-static int cmpargv(const char ** AV, const char * B)
+static int cmpArgvStr(const char ** AV, const char * B)
 	/*@*/
 {
     const char ** a;
@@ -1178,14 +1178,14 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, NULL, (void **)&flinkNEVRA,NULL);
 
 	    /*
-	     * Either header may have missing data and multiple entries.
-	     * Try for hdrid, then pkgid, finally NEVRA, argv compares.
+	     * Either element may have missing data and can have multiple entries.
+	     * Try for hdrid, then pkgid, finally NEVRA, argv vs. str compares.
 	     */
-	    bingo = cmpargv(flinkHdrid, p->hdrid);
+	    bingo = cmpArgvStr(flinkHdrid, p->hdrid);
 	    if (!bingo)
-		bingo = cmpargv(flinkPkgid, p->pkgid);
+		bingo = cmpArgvStr(flinkPkgid, p->pkgid);
 	    if (!bingo)
-		bingo = cmpargv(flinkNEVRA, p->NEVRA);
+		bingo = cmpArgvStr(flinkNEVRA, p->NEVRA);
 
 	    flinkPkgid = headerFreeData(flinkPkgid, -1);
 	    flinkHdrid = headerFreeData(flinkHdrid, -1);
