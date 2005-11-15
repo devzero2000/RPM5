@@ -25,7 +25,8 @@ extern "C" {
  * @param argv		argv array
  * @param fp		output file handle (NULL uses stderr)
  */
-void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
+void argvPrint(/*@null@*/ const char * msg, /*@null@*/ ARGV_t argv,
+		/*@null@*/ FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 

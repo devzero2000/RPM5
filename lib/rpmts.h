@@ -296,7 +296,9 @@ struct rpmts_s {
     int ntrees;			/*!< No. of dependency trees. */
     int maxDepth;		/*!< Maximum depth of dependency tree(s). */
 
+/*@dependent@*/
     rpmte teInstall;		/*!< current rpmtsAddInstallElement element. */
+/*@dependent@*/
     rpmte teErase;		/*!< current rpmtsAddEraseElement element. */
 
     int selinuxEnabled;		/*!< Is SE linux enabled? */

@@ -659,6 +659,8 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
 
 #if	defined(_RPMTE_INTERNAL)
 static inline void rpmtePrintID(rpmte p)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     if (p != NULL) {
 	if (p->blink.Pkgid) argvPrint("blink.Pkgid", p->blink.Pkgid, NULL);
@@ -672,10 +674,15 @@ static inline void rpmtePrintID(rpmte p)
 #endif
 
 static inline void hdrPrintInstalled(Header h)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     const char * qfmt = "[%{erasednevra} O:%{packageorigin} P:%{erasedpkgid} H:%{erasedhdrid}\n]";
     const char * errstr = "(unknown error)";
+/*@-modobserver@*/
     const char * str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+/*@=modobserver@*/
+
     if (str == NULL)
 	fprintf(stderr, "error: %s\n", errstr);
     else {
@@ -685,10 +692,14 @@ static inline void hdrPrintInstalled(Header h)
 }
 
 static inline void hdrPrintErased(Header h)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     const char * qfmt = "[%{installednevra} O:%{packageorigin} P:%{installedpkgid} H:%{installedhdrid}\n]";
     const char * errstr = "(unknown error)";
+/*@-modobserver@*/
     const char * str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+/*@=modobserver@*/
     if (str == NULL)
 	fprintf(stderr, "error: %s\n", errstr);
     else {

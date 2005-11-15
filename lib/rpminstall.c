@@ -19,6 +19,7 @@
 #include "debug.h"
 
 /*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
+/*@access rpmte @*/	/* XXX p->hdrid, p->pkgid, p->NEVRA */
 /*@access IDTX @*/
 /*@access IDT @*/
 
@@ -1115,81 +1116,96 @@ bottom:
     return IDTXsort(idtx);
 }
 
-static int cmpargv(const char ** av, const char * b)
+/**
+ * Search for string B in argv array AV.
+ * @param AV		argv array
+ * @param B		string
+ * @return		1 if found, 0 otherwise
+ */
+static int cmpargv(const char ** AV, const char * B)
+	/*@*/
 {
     const char ** a;
 
-    if (av != NULL && b != NULL)
-    for (a = av; *a != NULL; a++) {
-	if (**a && *b && !strcmp(*a, b))
+    if (AV != NULL && B != NULL)
+    for (a = AV; *a != NULL; a++) {
+	if (**a && *B && !strcmp(*a, B))
 	    return 1;
     }
     return 0;
 }
 
-static int findErases(rpmts ts, struct rpmInstallArguments_s * ia,
-		unsigned thistid, IDT rp, IDT ip, int niids)
+/**
+ * Find (and add to transaction set) all erase elements with matching blink.
+ * In addition, recreate any added transaction element linkages.
+ *
+ * XXX rp->h should have FLINK{HDRID,PKGID,NEVRA} populated.
+ * XXX ip->h should have BLINK{HDRID,PKGID,NEVRA} populated.
+ * XXX p = ts->teInstall is added transaction element from rp->h.
+ *
+ * @param ts		transaction set (ts->teInstall set to last added pkg)
+ * @param p		most recently added install element (NULL skips linking)
+ * @param thistid	current transaction id
+ * @param ip		currently installed package(s) to be erased
+ * @param niids		no. of currently installed package(s)
+ * @return		-1 on error, otherwise no. of erase elemnts added
+ */
+static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
+		/*@null@*/ IDT ip, int niids)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, p, ip, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char ** flinkPkgid = NULL;
-    const char ** flinkHdrid = NULL;
-    const char ** flinkNEVRA = NULL;
-    int numRemoved = 0;
-    rpmte p;
-    rpmte q;
     int rc = 0;
     int xx;
-
-    p = ts->teInstall;
-
-/*
- * XXX Find (and addEraseElement) for all headers that match.
- *
- * XXX rp->h has empty BLINKNEVRA, populated FLINKNEVRA.
- * XXX ip->h has populated BLINKNEVRA, empty FLINKNEVRA.
- *
- * XXX p = ts->teInstall is added, but has empty links because not an upgrade.
- */
 
     /* Erase the previously installed packages for this transaction. 
      * Provided this transaction is not excluded from the rollback.
      */
     while (ip != NULL && ip->val.u32 == thistid) {
-	int bingo;
 
 	if (ip->done)
 	    goto bottom;
 
-	xx = hge(ip->h, RPMTAG_BLINKPKGID, NULL, (void **)&flinkPkgid, NULL);
-	xx = hge(ip->h, RPMTAG_BLINKHDRID, NULL, (void **)&flinkHdrid, NULL);
-	xx = hge(ip->h, RPMTAG_BLINKNEVRA, NULL, (void **)&flinkNEVRA, NULL);
+	if (p != NULL) {
+	    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+	    const char ** flinkPkgid = NULL;
+	    const char ** flinkHdrid = NULL;
+	    const char ** flinkNEVRA = NULL;
+	    int bingo;
 
-	/*
-	 * Either header may have missing data and multiple entries.
-	 * Try for hdrid, then pkgid, finally NEVRA, argv compares.
-	 */
-	bingo = cmpargv(flinkHdrid, p->hdrid);
-	if (!bingo)
-	    bingo = cmpargv(flinkPkgid, p->pkgid);
-	if (!bingo)
-	    bingo = cmpargv(flinkNEVRA, p->NEVRA);
-	if (!bingo)
-	    goto bottom;
+	    xx = hge(ip->h, RPMTAG_BLINKPKGID, NULL, (void **)&flinkPkgid,NULL);
+	    xx = hge(ip->h, RPMTAG_BLINKHDRID, NULL, (void **)&flinkHdrid,NULL);
+	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, NULL, (void **)&flinkNEVRA,NULL);
+
+	    /*
+	     * Either header may have missing data and multiple entries.
+	     * Try for hdrid, then pkgid, finally NEVRA, argv compares.
+	     */
+	    bingo = cmpargv(flinkHdrid, p->hdrid);
+	    if (!bingo)
+		bingo = cmpargv(flinkPkgid, p->pkgid);
+	    if (!bingo)
+		bingo = cmpargv(flinkNEVRA, p->NEVRA);
+
+	    flinkPkgid = headerFreeData(flinkPkgid, -1);
+	    flinkHdrid = headerFreeData(flinkHdrid, -1);
+	    flinkNEVRA = headerFreeData(flinkNEVRA, -1);
+
+	    if (!bingo)
+		goto bottom;
+	}
 
 	rpmMessage(RPMMESS_DEBUG, "\t--- erase h#%u\n", ip->instance);
 
 	rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
-	if (rc != 0) {
-	    rc = -1;
+	if (rc != 0)
 	    goto exit;
-	}
-
-	q = ts->teErase;
 
 	/* Cross link the transaction elements to mimic --upgrade. */
-	rpmteChain(p, q, ip->h, "Rollback");
-
-	numRemoved++;
+	if (p != NULL) {
+	    rpmte q = ts->teErase;
+	    xx = rpmteChain(p, q, ip->h, "Rollback");
+	}
 
 #ifdef	NOTYET
 	ip->instance = 0;
@@ -1197,9 +1213,6 @@ static int findErases(rpmts ts, struct rpmInstallArguments_s * ia,
 	ip->done = 1;
 
 bottom:
-	flinkPkgid = headerFreeData(flinkPkgid, -1);
-	flinkHdrid = headerFreeData(flinkHdrid, -1);
-	flinkNEVRA = headerFreeData(flinkNEVRA, -1);
 
 	/* Go to the next header in the rpmdb */
 	niids--;
@@ -1208,7 +1221,6 @@ bottom:
 	else
 	    ip = NULL;
     }
-    rc = numRemoved;
 
 exit:
     return rc;
@@ -1358,19 +1370,10 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		if (!(ia->installInterfaceFlags & ifmask))
 		    ia->installInterfaceFlags |= INSTALL_UPGRADE;
 
-		rc = findErases(ts, ia, thistid, rp, ip, niids);
+		/* Re-add linked (i.e. from upgrade/obsoletes) erasures. */
+		rc = findErases(ts, ts->teInstall, thistid, ip, niids);
 		if (rc < 0)
 		    goto exit;
-		if (rc > 0) {
-		    numRemoved += rc;
-		    if (_unsafe_rollbacks)
-			rpmcliPackagesTotal++;
-		    if (!(ia->installInterfaceFlags & ifmask)) {
-			ia->installInterfaceFlags |= INSTALL_ERASE;
-			(void) rpmtsSetFlags(ts, (transFlags | RPMTRANS_FLAG_REVERSE));
-		    }
-		}
-
 #ifdef	NOTYET
 	    	rp->h = headerFree(rp->h);
 #endif
@@ -1385,18 +1388,15 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		rp = NULL;
 	}
 
-	/* Erase the previously installed packages for this transaction. 
-	 * Provided this transaction is not excluded from the rollback.
-	 */
+	/* Re-add pure (i.e. not from upgrade/obsoletes) erasures. */
+	rc = findErases(ts, NULL, thistid, ip, niids);
+	if (rc < 0)
+	    goto exit;
+
+	/* Check that all erasures have been re-added. */
 	while (ip != NULL && ip->val.u32 == thistid) {
-	    if (!excluded && !ip->done) {
-		rpmMessage(RPMMESS_DEBUG,
-		    "\t--- erase h#%u\n", ip->instance);
-
-		rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
-		if (rc != 0)
-		    goto exit;
-
+assert(excluded || ip->done);
+	    if (!excluded) {
 		numRemoved++;
 
 		if (_unsafe_rollbacks)
@@ -1406,11 +1406,6 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		    ia->installInterfaceFlags |= INSTALL_ERASE;
 		    (void) rpmtsSetFlags(ts, (transFlags | RPMTRANS_FLAG_REVERSE));
 		}
-
-#ifdef	NOTYET
-		ip->instance = 0;
-#endif
-		ip->done = 1;
 	    }
 
 	    /* Go to the next header in the rpmdb */

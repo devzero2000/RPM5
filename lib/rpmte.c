@@ -694,6 +694,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     blinkHdrid = NULL;
     xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&blinkHdrid, NULL);
 
+/*@-modfilesys@*/
 if (__mydebug)
 fprintf(stderr, "%s argvAdd(&q->flink.NEVRA, \"%s\")\n", msg, p->NEVRA);
 	xx = argvAdd(&q->flink.NEVRA, p->NEVRA);
@@ -716,6 +717,7 @@ if (__mydebug)
 fprintf(stderr, "%s argvAdd(&p->blink.Hdrid, \"%s\")\n", msg, blinkHdrid);
     if (blinkHdrid != NULL)
 	xx = argvAdd(&p->blink.Hdrid, blinkHdrid);
+/*@=modfilesys@*/
 
     blinkNEVRA = _free(blinkNEVRA);
     blinkPkgid = _free(blinkPkgid);
