@@ -24,7 +24,7 @@
 #endif
 
 /* XXX HP-UX w/o -D_XOPEN_SOURCE needs */
-#if !defined(HAVE_HERRNO) && (defined(__hpux) || defined(__LCLINT__))
+#if !defined(HAVE_HERRNO) && (defined(hpux) || defined(__hpux) || defined(__LCLINT__))
 /*@unchecked@*/
 extern int h_errno;
 #endif

@@ -1434,7 +1434,7 @@ struct dirent * avReaddir(DIR * dir)
     dp->d_ino = i + 1;		/* W2DO? */
     dp->d_reclen = 0;		/* W2DO? */
 
-#if !defined(hpux) && !defined(sun)
+#if !(defined(hpux) || defined(__hpux) || defined(sun))
 #if !defined(__APPLE__)
     dp->d_off = 0;		/* W2DO? */
 #endif
@@ -1558,7 +1558,7 @@ struct dirent * davReaddir(DIR * dir)
     dp->d_ino = i + 1;		/* W2DO? */
     dp->d_reclen = 0;		/* W2DO? */
 
-#if !defined(hpux) && !defined(sun)
+#if !(defined(hpux) || defined(__hpux) || defined(sun))
 #if !defined(__APPLE__)
     dp->d_off = 0;		/* W2DO? */
 #endif

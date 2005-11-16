@@ -45,7 +45,7 @@
 # define __END_DECLS
 #endif
 
-#if defined(hpux)
+#if defined(hpux) || defined(__hpux)
 # define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 # define	_INCLUDE_POSIX_SOURCE
 # define	_LARGEFILE64_SOURCE
