@@ -589,7 +589,8 @@ exit 0
 - fix: add flink (pkgid,hdrid,nevra) to repackaged packages correctly.
 - fix: if install element fails, don't erase any linked element.
 - fix: repackaged payloads can be missing files, continue unpacking.
-- fix: hpux uses _GLOB_INCLUDED, not _GLOB_H (#113340).
+- hpux: use _GLOB_INCLUDED as well as _GLOB_H (#113340).
+- hpux: test for (__hpux) everywhere that hpux was tested (#101717).
 
 * Mon Nov 14 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.48
 - display -Va dependency failures as Requires: or Conflicts: (#172878).
