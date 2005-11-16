@@ -648,7 +648,7 @@ assert (ix < Count);
 }
 
 /*@unchecked@*/
-static int __mydebug = 1;
+static int __mydebug = 0;
 
 int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
@@ -660,7 +660,6 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     int_32 pkgidcnt;
     int xx;
 
-fprintf(stderr, "==> %s(%p, %p, %p, %p)\n", __FUNCTION__, p, q, oh, msg);
 /*@-branchstate@*/
     if (msg == NULL)
 	msg = "";
@@ -720,14 +719,11 @@ fprintf(stderr, "%s argvAdd(&p->blink.Hdrid, \"%s\")\n", msg, blinkHdrid);
 	xx = argvAdd(&p->blink.Hdrid, blinkHdrid);
 /*@=modfilesys@*/
 
-fprintf(stderr, "==> blinkNEVRA = _free(blinkNEVRA);\n");
     blinkNEVRA = _free(blinkNEVRA);
-fprintf(stderr, "==> blinkPkgid = _free(blinkPkgid);\n");
     blinkPkgid = _free(blinkPkgid);
 #ifdef	NOTYET	/* XXX MinMemory. */
     blinkHdrid = _free(blinkHdrid);
 #endif
-fprintf(stderr, "%s exit.\n", __FUNCTION__);
     return 0;
 }
 
