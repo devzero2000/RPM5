@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.50
+Release: 0.51
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -585,6 +585,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Thu Nov 17 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.51
+- rollback: plug IDTXglob header memory leak.
+- rollback: use earlier of arbgoal and rbtid times.
+
 * Wed Nov 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.50
 - fix: if install element fails, don't erase any linked element.
 - fix: repackaged payloads can be missing files, continue unpacking.

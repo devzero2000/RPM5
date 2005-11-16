@@ -1014,6 +1014,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 	/* Don't bother with headers installed prior to the rollback goal. */
 	if (*tidp < rbtid)
 	    continue;
+
 	idtx = IDTXgrow(idtx, 1);
 	if (idtx == NULL || idtx->idt == NULL)
 	    continue;
@@ -1038,8 +1039,8 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 
 IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 {
+    HGE_t hge = (HGE_t) headerGetEntry;		/* XXX MinMem? <shrug> */
     IDTX idtx = NULL;
-    HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
     int_32 * tidp;
     FD_t fd;
@@ -1082,13 +1083,14 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	    /*@switchbreak@*/ break;
 	}
 
+assert(!strcmp(av[i], headerGetOrigin(h)));
 	tidp = NULL;
 	if (!hge(h, tag, &type, (void **) &tidp, &count) || tidp == NULL)
 	    goto bottom;
 
 	/* Don't bother with headers installed prior to the rollback goal. */
 	if (*tidp < rbtid)
-	    continue;
+	    goto bottom;
 
 	idtx = IDTXgrow(idtx, 1);
 	if (idtx == NULL || idtx->idt == NULL)
@@ -1335,6 +1337,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 
 	/* Make sure this tid is not excluded */
 	excluded = 0;	/* Assume its not */
+	if (ia->rbtidExcludes != NULL && ia->numrbtidExcludes > 0)
 	{
 	    uint_32 *excludedTID;
 	    for(excludedTID = ia->rbtidExcludes; 
@@ -1421,7 +1424,8 @@ assert(excluded || ip->done);
 	}
 
 	/* If this transaction is excluded then continue */
-	if (excluded) continue;
+	if (excluded)
+	    continue;
 
 	/* Anything to do? */
 	if (rpmcliPackagesTotal <= 0)

@@ -338,20 +338,6 @@ static int fpsCompare (const void * one, const void * two)
 /*@=boundswrite@*/
 
     rc = strcmp(afn, bfn);
-/*@-modfilesys@*/
-if (_fps_debug)
-fprintf(stderr, "\trc(%d) = strcmp(\"%s\", \"%s\")\n", rc, afn, bfn);
-/*@=modfilesys@*/
-
-/*@-modfilesys@*/
-if (_fps_debug)
-fprintf(stderr, "\t%s/%s%s\trc %d\n",
-ISROOT(b->entry->dirName),
-(b->subDir ? b->subDir : ""),
-b->baseName,
-rc
-);
-/*@=modfilesys@*/
 
     return rc;
 }
@@ -366,26 +352,10 @@ static int findFps(const struct fingerPrint_s * fiFps,
 {
     int otherFileNum;
 
-/*@-modfilesys@*/
-if (_fps_debug)
-fprintf(stderr, "==> %s/%s%s\n",
-ISROOT(fiFps->entry->dirName),
-(fiFps->subDir ? fiFps->subDir : ""),
-fiFps->baseName);
-/*@=modfilesys@*/
-
   if (_linear_fps_search) {
 
 linear:
     for (otherFileNum = 0; otherFileNum < otherFc; otherFileNum++, otherFps++) {
-
-/*@-modfilesys@*/
-if (_fps_debug)
-fprintf(stderr, "\t%4d %s/%s%s\n", otherFileNum,
-ISROOT(otherFps->entry->dirName),
-(otherFps->subDir ? otherFps->subDir : ""),
-otherFps->baseName);
-/*@=modfilesys@*/
 
 	/* If the addresses are the same, so are the values. */
 	if (fiFps == otherFps)
@@ -398,16 +368,6 @@ otherFps->baseName);
 	/*@=nullpass@*/
     }
 
-if (otherFileNum == otherFc) {
-/*@-modfilesys@*/
-if (_fps_debug)
-fprintf(stderr, "*** FP_EQUAL NULL %s/%s%s\n",
-ISROOT(fiFps->entry->dirName),
-(fiFps->subDir ? fiFps->subDir : ""),
-fiFps->baseName);
-/*@=modfilesys@*/
-}
-
     return otherFileNum;
 
   } else {
@@ -417,29 +377,12 @@ fiFps->baseName);
 /*@-boundswrite@*/
     bingoFps = bsearch(fiFps, otherFps, otherFc, sizeof(*otherFps), fpsCompare);
 /*@=boundswrite@*/
-    if (bingoFps == NULL) {
-/*@-modfilesys@*/
-if (_fps_debug)
-fprintf(stderr, "*** bingoFps NULL %s/%s%s\n",
-ISROOT(fiFps->entry->dirName),
-(fiFps->subDir ? fiFps->subDir : ""),
-fiFps->baseName);
-/*@=modfilesys@*/
+    if (bingoFps == NULL)
 	goto linear;
-    }
 
     /* If the addresses are the same, so are the values. */
-    /*@-nullpass@*/	/* LCL: looks good to me */
-    if (!(fiFps == bingoFps || FP_EQUAL((*fiFps), (*bingoFps)))) {
-/*@-modfilesys@*/
-if (_fps_debug)
-fprintf(stderr, "***  BAD %s/%s%s\n",
-ISROOT(bingoFps->entry->dirName),
-(bingoFps->subDir ? bingoFps->subDir : ""),
-bingoFps->baseName);
-/*@=modfilesys@*/
+    if (!(fiFps == bingoFps || FP_EQUAL((*fiFps), (*bingoFps))))
 	goto linear;
-    }
 
     otherFileNum = (bingoFps != NULL ? (bingoFps - otherFps) : 0);
 
@@ -1200,15 +1143,16 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 
     rpmMessage(RPMMESS_NORMAL, _("Transaction failed...rolling back\n"));
     if (arbgoal != 0xffffffff) {
-	ttid = (time_t)ttid;
+	ttid = (time_t)arbgoal;
     	rpmMessage(RPMMESS_NORMAL, _("Autorollback Goal: %-24.24s (0x%08x)\n"),
 	    ctime(&ttid), arbgoal);
     }
-    ttid = (time_t)ttid;
+    ttid = (time_t)tid;
     rpmMessage(RPMMESS_NORMAL,
 	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 	    numAdded, numRemoved, ctime(&ttid), tid);
-    rpmMessage(RPMMESS_DEBUG, _("Failed Tran:  0x%08x\n"), failedtid);
+    ttid = (time_t)failedtid;
+    rpmMessage(RPMMESS_DEBUG, _("Failed Tran:  %-24.24s(0x%08x)\n"), ctime(&ttid), failedtid);
 
     /* Create the backout_server semaphore */
     rollback_semaphore = rpmExpand("%{?semaphore_backout}", NULL);
@@ -1302,10 +1246,10 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
      *      create the complimentary header.
      */
     if (arbgoal != 0xffffffff) {
-	rpmts ts;
-	rpmtransFlags tsFlags;
-	rpmVSFlags ovsflags;
-	struct rpmInstallArguments_s ia;
+	struct rpmInstallArguments_s *ia =
+		memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
+	rpmts ts = rpmtsCreate();
+	int_32 rbtidExcludes[2];
 	int xx;
 
 	ttid = (time_t)arbgoal;
@@ -1313,67 +1257,40 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 	    _("Rolling back successful transactions to %-24.24s (0x%08x)\n"),
 	    ctime(&ttid), arbgoal);
 
-	/* Create transaction for rpmRollback() */
-	rpmMessage(RPMMESS_DEBUG,
-	    _("Creating rollback transaction to achieve goal\n"));
-	ts = rpmtsCreate();
-
 	/* Set the verify signature flags to that of rollback transaction */
-	ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(rollbackTransaction));
+	(void) rpmtsSetVSFlags(ts, rpmtsVSFlags(rollbackTransaction));
 
 	/* Set transaction flags to be the same as the rollback transaction */
-	tsFlags = rpmtsFlags(rollbackTransaction);
-	tsFlags = rpmtsSetFlags(ts, tsFlags);
+	(void) rpmtsSetFlags(ts, rpmtsFlags(rollbackTransaction));
 
 	/* Set root dir to be the same as the rollback transaction */
 	rpmtsSetRootDir(ts, rpmtsRootDir(rollbackTransaction));
 
-	/* Setup the notify of the call back to be the same as the rollback
-	 * transaction
-	 */
+	/* Set notify call back to be the same as the rollback transaction */
 	xx = rpmtsSetNotifyCallback(ts,
 		rollbackTransaction->notify, rollbackTransaction->notifyData);
 
+
 	/* Create install arguments structure */ 	
-	ia.rbtid      = arbgoal;
-	ia.transFlags = rpmtsFlags(ts);
-	ia.probFilter = ignoreSet;
-	ia.qva_flags  = 0;
-	ia.arbtid = 0;
-	ia.noDeps = 0;
-	ia.incldocs = 0;
-	ia.eraseInterfaceFlags = 0;
-	ia.prefix = NULL;
-	ia.rootdir = NULL;
+	ia->rbtid      = arbgoal;
+	ia->transFlags = rpmtsFlags(ts);
+	ia->probFilter = ignoreSet;
+
+	memset(rbtidExcludes, 0, sizeof(rbtidExcludes));
+	ia->rbtidExcludes = rbtidExcludes;
+	ia->rbtidExcludes[ia->numrbtidExcludes++] = tid;
 
 	/* Setup the install interface flags.  XXX: This is an utter hack.
 	 * I haven't quite figured out how to get these from a transaction.
 	 */
-	ia.installInterfaceFlags = INSTALL_UPGRADE | INSTALL_HASH ;
-
-	/* XXX: HACK 2.  The rollback goal will be without relocations.
-	 * Don't know what the right thing to do, but a hint for the
-	 * next I look at this code, is that the te's all have the same
-	 * relocs from CLI.  100% correct would be to iterate over the
-	 * trasaction elements and build a new list of relocations (ahhh!).
-	 */
-	ia.relocations = NULL;
-	ia.numRelocations = 0;
-
-	/* Add our tid and the failed transaction tid */
-	ia.rbtidExcludes = xcalloc(2, sizeof(*ia.rbtidExcludes));
-	ia.rbtidExcludes[0] = tid;
-	ia.rbtidExcludes[1] = failedtid;
-	ia.numrbtidExcludes = 2;
+	ia->installInterfaceFlags = INSTALL_UPGRADE | INSTALL_HASH ;
 
 	/* Segfault here we go... */
-	rc = rpmRollback(ts, &ia, NULL);
+	rc = rpmRollback(ts, ia, NULL);
 
 	/* Free arbgoal transaction */
 	ts = rpmtsFree(ts);
 
-	/* Free tid excludes memory */
-	ia.rbtidExcludes = _free(ia.rbtidExcludes);
     }
 
 cleanup:
@@ -1391,21 +1308,22 @@ cleanup:
  * Get the repackaged header and filename from the repackage directory.
  * @todo Find a suitable home for this function.
  * @todo This function creates an IDTX everytime it is called.  Needs to
- *       be made more efficient (only create on per running transaction).
- * @param te		transaction element
+ *       be made more efficient (only create once per running transaction).
  * @param ts		transaction set
- * @retval *hdrp		Repackaged header
- * @retval *fn		Repackaged package's path (transaction key)
+ * @param te		current transaction element
+ * @retval *hdrp	repackaged header
+ * @retval *fn		repackaged package's path (transaction key)
  * @return 		RPMRC_NOTFOUND or RPMRC_OK
  */
-static rpmRC getRepackageHeaderFromTE(rpmte te, rpmts ts,
+static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 		/*@out@*/ /*@null@*/ Header *hdrp,
 		/*@out@*/ /*@null@*/ char **fn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *hdrp, *fn,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int_32 tid;
+    uint_32 tid;
+    uint_32 arbgoal;
     const char * name;
     const char * rpname = NULL;
     const char * _repackage_dir = NULL;
@@ -1431,6 +1349,10 @@ static rpmRC getRepackageHeaderFromTE(rpmte te, rpmts ts,
 
     /* Get the TID of the current transaction */
     tid = rpmtsGetTid(ts);
+    arbgoal = rpmtsARBGoal(ts);
+    if (arbgoal > 0 && arbgoal != 0xffffffff && arbgoal < tid)
+	tid = arbgoal;
+
     /* Need the repackage dir if the user want to
      * rollback on a failure.
      */
@@ -1696,7 +1618,7 @@ assert(psm != NULL);
 	}
 
 	/* Now see if there is a repackaged package for this */
-	rc = getRepackageHeaderFromTE(p, runningTransaction, &rph, &rpn);
+	rc = getRepackageHeaderFromTE(runningTransaction, p, &rph, &rpn);
 	switch(rc) {
 	case RPMRC_OK:
 	    /* Add the install element, as we had a repackaged package */
@@ -1740,7 +1662,7 @@ assert(psm != NULL);
 	/* Get the repackage header from the current transaction
 	 * element.
 	 */
-	rc = getRepackageHeaderFromTE(p, runningTransaction, &rph, &rpn);
+	rc = getRepackageHeaderFromTE(runningTransaction, p, &rph, &rpn);
 	switch(rc) {
 	case RPMRC_OK:
 	    /* Add the install element */
@@ -1786,30 +1708,6 @@ cleanup:
     return rc;
 }
 
-#ifdef	UNUSED
-/**
- * Test if any string from argv array BV is in argv array AV.
- * @param AV		1st argv array
- * @param B		2nd argv string
- * @return		1 if found, 0 otherwise
- */
-static int cmpArgvArgv(const char ** AV, const char ** BV)
-	/*@*/
-{
-    const char ** a, ** b;
-
-    if (AV != NULL && BV != NULL)
-    for (a = AV; *a != NULL; a++) {
-	for (b = BV; *b != NULL; b++) {
-fprintf(stderr, "\tstrmp(\"%s\", \"%s\")\n", *a, *b);
-	    if (**a && **b && !strcmp(*a, *b))
-		return 1;
-	}
-    }
-    return 0;
-}
-#endif
-
 /**
  * Search for string B in argv array AV.
  * @param AV		argv array
@@ -1823,9 +1721,6 @@ static int cmpArgvStr(const char ** AV, const char * B)
 
     if (AV != NULL && B != NULL)
     for (a = AV; *a != NULL; a++) {
-#if 0
-fprintf(stderr, "\tstrmp(\"%s\", \"%s\")\n", *a, B);
-#endif
 	if (**a && *B && !strcmp(*a, B))
 	    return 1;
     }
@@ -1846,18 +1741,7 @@ static int markLinkedFailed(rpmts ts, rpmte p)
     rpmtsi qi; rpmte q;
     int bingo;
 
-#if 0
-fprintf(stderr, "==> %s(%p, %p)\n", __FUNCTION__, ts, p);
-#endif
-
     p->linkFailed = 1;
-
-#if 0
-/*@-modfilesys@*/
-fprintf(stderr, "==> %p failed: %s\n", p, rpmteNEVRA(p));
-rpmtePrintID(p);
-/*@=modfilesys@*/
-#endif
 
     qi = rpmtsiInit(ts);
     while ((q = rpmtsiNext(qi, TR_REMOVED)) != NULL) {
@@ -1877,13 +1761,6 @@ rpmtePrintID(p);
 
 	if (!bingo)
 	    continue;
-
-#if 0
-/*@-modfilesys@*/
-fprintf(stderr, "==> %p skipped: %s\n", q, rpmteNEVRA(q));
-rpmtePrintID(q);
-/*@=modfilesys@*/
-#endif
 
 	q->linkFailed = p->linkFailed;
     }
