@@ -18,6 +18,10 @@
 #ifndef	_GLOB_H
 #define	_GLOB_H	1
 
+#if defined(hpux) || defined(__hpux)
+#define _GLOB_INCLUDED
+#endif
+
 #ifdef	__cplusplus
 extern "C" {
 #endif

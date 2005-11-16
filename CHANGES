@@ -105,6 +105,7 @@
 	- fix: add flink (pkgid,hdrid,nevra) to repackaged packages correctly.
 	- fix: if install element fails, don't erase any linked element.
 	- fix: repackaged payloads can be missing files, continue unpacking.
+	- fix: hpux uses _GLOB_INCLUDED, not _GLOB_H (#113340).
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
