@@ -255,6 +255,7 @@ LIBRPM_0
     rpmteA;
     rpmteAddedKey;
     rpmteBreadth;
+    rpmteChain;
     rpmteCleanDS;
     rpmteColor;
     rpmteColorDS;

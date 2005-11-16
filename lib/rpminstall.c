@@ -1119,17 +1119,19 @@ bottom:
 /**
  * Search for string B in argv array AV.
  * @param AV		argv array
+ * @param AC		no. of args
  * @param B		string
  * @return		1 if found, 0 otherwise
  */
-static int cmpArgvStr(const char ** AV, const char * B)
+static int cmpArgvStr(const char ** AV, int AC, const char * B)
 	/*@*/
 {
-    const char ** a;
+    const char * A;
+    int i;
 
     if (AV != NULL && B != NULL)
-    for (a = AV; *a != NULL; a++) {
-	if (**a && *B && !strcmp(*a, B))
+    for (i = 0; i < AC && (A = AV[i]) != NULL; i++) {
+	if (*A && *B && !strcmp(A, B))
 	    return 1;
     }
     return 0;
@@ -1171,25 +1173,27 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    const char ** flinkPkgid = NULL;
 	    const char ** flinkHdrid = NULL;
 	    const char ** flinkNEVRA = NULL;
+	    rpmTagType pt, ht, nt;
+	    int_32 pn, hn, nn;
 	    int bingo;
 
-	    xx = hge(ip->h, RPMTAG_BLINKPKGID, NULL, (void **)&flinkPkgid,NULL);
-	    xx = hge(ip->h, RPMTAG_BLINKHDRID, NULL, (void **)&flinkHdrid,NULL);
-	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, NULL, (void **)&flinkNEVRA,NULL);
+	    xx = hge(ip->h, RPMTAG_BLINKPKGID, &pt, (void **)&flinkPkgid, &pn);
+	    xx = hge(ip->h, RPMTAG_BLINKHDRID, &ht, (void **)&flinkHdrid, &hn);
+	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, &nt, (void **)&flinkNEVRA, &nn);
 
 	    /*
 	     * Either element may have missing data and can have multiple entries.
 	     * Try for hdrid, then pkgid, finally NEVRA, argv vs. str compares.
 	     */
-	    bingo = cmpArgvStr(flinkHdrid, p->hdrid);
+	    bingo = cmpArgvStr(flinkHdrid, hn, p->hdrid);
 	    if (!bingo)
-		bingo = cmpArgvStr(flinkPkgid, p->pkgid);
+		bingo = cmpArgvStr(flinkPkgid, pn, p->pkgid);
 	    if (!bingo)
-		bingo = cmpArgvStr(flinkNEVRA, p->NEVRA);
+		bingo = cmpArgvStr(flinkNEVRA, nn, p->NEVRA);
 
-	    flinkPkgid = headerFreeData(flinkPkgid, -1);
-	    flinkHdrid = headerFreeData(flinkHdrid, -1);
-	    flinkNEVRA = headerFreeData(flinkNEVRA, -1);
+	    flinkPkgid = headerFreeData(flinkPkgid, pt);
+	    flinkHdrid = headerFreeData(flinkHdrid, ht);
+	    flinkNEVRA = headerFreeData(flinkNEVRA, nt);
 
 	    if (!bingo)
 		goto bottom;

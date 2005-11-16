@@ -48,8 +48,8 @@ export EF_PROTECT_FREE=0
 #
 # Valgrind support
 VALGRIND=0
-VALGRIND_CMD=/usr/local/bin/valgrind
-VALGRIND_OPTS='-v --leak-check=yes'
+VALGRIND_CMD=/usr/bin/valgrind
+VALGRIND_OPTS='-v --leak-check=full'
 
  
 #####################

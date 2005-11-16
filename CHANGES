@@ -107,6 +107,7 @@
 	- fix: repackaged payloads can be missing files, continue unpacking.
 	- hpux: use _GLOB_INCLUDED as well as _GLOB_H (#113340).
 	- hpux: test for (__hpux) everywhere that hpux was tested (#101717).
+	- rollback: use explicit no. of args comparing header flink/blink data.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

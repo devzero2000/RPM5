@@ -246,8 +246,8 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 
 	    sq->id = NULL;
 /*@-bounds@*/
-	    if (sq->pipes[1])	ret = close(sq->pipes[1]);
-	    if (sq->pipes[0])	ret = close(sq->pipes[0]);
+	    if (sq->pipes[1] > 0)	ret = close(sq->pipes[1]);
+	    if (sq->pipes[0] > 0)	ret = close(sq->pipes[0]);
 	    sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/
 #ifdef	NOTYET	/* rpmpsmWait debugging message needs */
