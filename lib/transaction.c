@@ -1486,7 +1486,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction, rpmts runningTr
      */
     score = rpmtsGetScore(runningTransaction);
     if (score == NULL) {	/* XXX: Can't happen */
-	rpmMessage(RPMMESS_ERROR, _("Could not aquire transaction score!.\n"));
+	rpmMessage(RPMMESS_ERROR, _("Could not acquire transaction score!.\n"));
 	goto cleanup;
     }
     se = rpmtsScoreGetEntry(score, rpmteN(p));

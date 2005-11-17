@@ -2219,7 +2219,7 @@ assert(psm->mi == NULL);
 	    se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
 	    if (se == NULL) {
 		rpmMessage(RPMMESS_ERROR,
-			_("Could not aquire transaction score entry for %s\n"),
+			_("Could not acquire transaction score entry for %s\n"),
 			rpmteNEVRA(psm->te));
 		rc = RPMRC_FAIL;
 	    }
