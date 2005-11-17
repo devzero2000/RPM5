@@ -111,6 +111,7 @@
 	- rollback: plug IDTXglob header memory leak.
 	- rollback: use earlier of arbgoal and rbtid times.
 	- don't generate libtool/pkgconfig/java/python Requires: by default.
+	- establish/expose default macro configuration for --rollback.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
