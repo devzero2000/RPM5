@@ -622,7 +622,7 @@ print (t)\
 	pgps +batchmode=on +verbose=0 +armor=off \
 	"+myname=%{_pgp_name}" -b %{__plaintext_filename} -o %{__signature_filename}
 
-# XXX rpm-4.1 verifies signatures using beecrypt.
+# rpm-4.1 and later verifies signatures using beecrypt.
 #%__gpg_verify_cmd		%{__gpg} \
 #	gpg --batch --no-verbose --verify --no-secmem-warning \
 #	%{__signature_filename} %{__plaintext_filename}
@@ -648,8 +648,8 @@ print (t)\
 
 # Horowitz Key Protocol server configuration
 #
-%_hkp_keyserver         hkp://pgp.mit.edu
-%_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=0x
+#%_hkp_keyserver         hkp://sks.keyserver.penguin.de
+#%_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=0x
 
 #==============================================================================
 # ---- Transaction macros.
@@ -735,16 +735,10 @@ print (t)\
 #	digest/signature checking, disables signature checking, but attempts
 #	digest checking, also when retrieving headers from the database.
 #
-#	You also can do:
-#	 >>> hex(rpm._RPMVSF_NOSIGNATURES)
-#	 '0xc0c00'
-#	or:
-#	 >>> hex(rpm._RPMVSF_NOSIGNATURES|rpm._RPMVSF_NOPAYLOAD)
-#	 '0xf0c00'
-#	at the python prompt for example, after "import rpm".
+#	The checking overhead was ~11ms per header for digests/signatures on
+#	a 600 Mhz Dell SMP server circa 1998.
 #
-#	The checking overhead is ~11ms per header for digests/signatures;
-#	each header from the database is checked only when first encountered
+#	Each header from the database is checked only when first encountered
 #	for each database open.
 #
 #	Note: the %_vsflags_erase applies to --upgrade/--freshen modes as
