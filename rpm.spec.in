@@ -588,6 +588,8 @@ exit 0
 * Thu Nov 17 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.51
 - rollback: plug IDTXglob header memory leak.
 - rollback: use earlier of arbgoal and rbtid times.
+- don't generate libtool/pkgconfig/java/python Requires: by default.
+- rpm-4.4.3 release candidate.
 
 * Wed Nov 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.50
 - fix: if install element fails, don't erase any linked element.

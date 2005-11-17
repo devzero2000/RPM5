@@ -110,6 +110,7 @@
 	- rollback: use explicit no. of args comparing header flink/blink data.
 	- rollback: plug IDTXglob header memory leak.
 	- rollback: use earlier of arbgoal and rbtid times.
+	- don't generate libtool/pkgconfig/java/python Requires: by default.
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

@@ -1304,7 +1304,7 @@ end\
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
 %__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
-%__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
+#%__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
 
 # Useful macros for building *.rpm python packages (for python > 1.6).
 #
@@ -1329,7 +1329,7 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
 %__java_provides	@RPMCONFIGDIR@/javadeps.sh --provides
-%__java_requires	@RPMCONFIGDIR@/javadeps.sh --requires
+#%__java_requires	@RPMCONFIGDIR@/javadeps.sh --requires
 
 #------------------------------------------------------------------------
 # libtool(...) configuration.
@@ -1339,7 +1339,7 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
 %__libtool_provides	@RPMCONFIGDIR@/libtooldeps.sh --provides %{buildroot}
-%__libtool_requires	@RPMCONFIGDIR@/libtooldeps.sh --requires %{buildroot}
+#%__libtool_requires	@RPMCONFIGDIR@/libtooldeps.sh --requires %{buildroot}
 
 #------------------------------------------------------------------------
 # pkgconfig(...) configuration.
@@ -1349,7 +1349,7 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
 %__pkgconfig_provides	@RPMCONFIGDIR@/pkgconfigdeps.sh --provides
-%__pkgconfig_requires	@RPMCONFIGDIR@/pkgconfigdeps.sh --requires
+#%__pkgconfig_requires	@RPMCONFIGDIR@/pkgconfigdeps.sh --requires
 
 #------------------------------------------------------------------------
 # executable(...) configuration.
