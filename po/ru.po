@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-16 18:50-0500\n"
+"POT-Creation-Date: 2005-11-17 07:24-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -64,10 +64,12 @@ msgid "Building for target %s\n"
 msgstr "Сборка для платформы %s\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "заданный аргумент не является пакетом RPM\n"
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr "ошибка чтения заголовка из пакета\n"
 
@@ -126,10 +128,12 @@ msgid "RPM version %s\n"
 msgstr "RPM версия %s\n"
 
 #: rpmqv.c:147
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:148
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Эту программу можно свободно распространять на условиях GNU GPL\n"
@@ -282,6 +286,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументы для --root (-r) должны начинаться с /"
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr "нет файлов для подписи\n"
 
@@ -291,6 +296,7 @@ msgid "cannot access file %s\n"
 msgstr "нет доступа к файлу %s\n"
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp не найден: "
 
@@ -299,10 +305,12 @@ msgid "Enter pass phrase: "
 msgstr "Введите ключевую фразу: "
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Неверная ключевая фраза\n"
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Ключевая фраза принята.\n"
 
@@ -316,6 +324,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign может быть использован только при сборке пакетов"
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr "запуск не удался\n"
 
@@ -1677,14 +1686,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
+#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1701,6 +1713,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1720,6 +1733,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2509,9 +2523,9 @@ msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
 #: lib/psm.c:2222
-#, c-format
-msgid "Could not aquire transaction score entry for %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Could not acquire transaction score entry for %s\n"
+msgstr "Невозможно открыть файл PreIn: %s\n"
 
 #: lib/psm.c:2235
 #, c-format
@@ -3223,22 +3237,27 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
 
 #: lib/rpmrc.c:1930
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3397,6 +3416,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3421,6 +3441,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3494,6 +3515,9 @@ msgstr "Получено %d байт подписи GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3537,10 +3561,12 @@ msgid " DSA signature: "
 msgstr "подпись DSA V3: "
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Проверка подписи: НЕПРАВИЛЬНЫЕ ПАРАМЕТРЫ\n"
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Контр. сумма MD5 повреждена: НЕ ПОДДЕРЖИВАЕТСЯ\n"
 
@@ -3642,8 +3668,9 @@ msgstr "ни один пакет не подходит к %s: %s\n"
 
 #. XXX: Can't happen
 #: lib/transaction.c:1489
-msgid "Could not aquire transaction score!.\n"
-msgstr ""
+#, fuzzy
+msgid "Could not acquire transaction score!.\n"
+msgstr "Невозможно открыть файл PreIn: %s\n"
 
 #. XXX: Can't happen
 #: lib/transaction.c:1494
@@ -4332,6 +4359,7 @@ msgid "(no error)"
 msgstr "(нет ошибки)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "фатальная ошибка: "

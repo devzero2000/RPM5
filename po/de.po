@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.4.2\n"
+"Project-Id-Version: rpm 4.4.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-16 18:50-0500\n"
-"PO-Revision-Date: 2005-07-08 17:21+0200\n"
+"POT-Creation-Date: 2005-11-17 07:24-0500\n"
+"PO-Revision-Date: 2005-11-17 12:54+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -68,10 +68,12 @@ msgid "Building for target %s\n"
 msgstr "Baue für das Ziel %s\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "Argument ist kein RPM-Paket\n"
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr "Fehler beim Lesen des Paket-Headers\n"
 
@@ -129,10 +131,12 @@ msgid "RPM version %s\n"
 msgstr "RPM, Version %s\n"
 
 #: rpmqv.c:147
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1997-2005 - Red Hat, Inc.\n"
 
 #: rpmqv.c:148
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -292,6 +296,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "Argumente für --root (-r) müssen mit einem / beginnen"
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr "Keine Dateien zu signieren\n"
 
@@ -301,6 +306,7 @@ msgid "cannot access file %s\n"
 msgstr "Kann auf die Datei %s nicht zugreifen\n"
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr "PGP nicht gefunden: "
 
@@ -309,10 +315,12 @@ msgid "Enter pass phrase: "
 msgstr "Bitte das Passwort eingeben: "
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Die Passwort-Überprüfung ist fehlgeschlagen\n"
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Das Passwort ist richtig.\n"
 
@@ -326,6 +334,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paket-Erstellung benutzt werden"
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr "Ausführung fehlgeschlagen\n"
 
@@ -1061,12 +1070,12 @@ msgid "line %d: second %%prep\n"
 msgstr "Zeile %d: Zweites %%prep\n"
 
 #: build/parseReqs.c:113
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"Zeile %d: Abhängigkeiten müssen alphanumerisch, mit '_' oder '/' beginnen: %"
-"s\n"
+"Zeile %d: Die Abhängigkeit \"%s\" muss alphanumerisch, mit '_' oder '/' "
+"beginnen: %s\n"
 
 #: build/parseReqs.c:142
 #, c-format
@@ -1353,15 +1362,15 @@ msgid "query of specfile %s failed, can't parse\n"
 msgstr "Abfragen der Spec-Datei %s fehlgeschlagen, kann nicht geparst werden\n"
 
 #: build/spec.c:776
-#, fuzzy, c-format
+#, c-format
 msgid "Query specfile for platform(s): %s\n"
-msgstr "Baue für die Zielplattform(en): %s\n"
+msgstr "Abfragen der Spec-Datei für die Zielplattform(en): %s\n"
 
 #. Query spec for this target platform.
 #: build/spec.c:790
-#, fuzzy, c-format
+#, c-format
 msgid "    target platform: %s\n"
-msgstr "Baue für die Zielplattform(en): %s\n"
+msgstr "    Zielplattform(en): %s\n"
 
 #: lib/cpio.c:207
 #, c-format
@@ -1416,9 +1425,9 @@ msgstr "Paket %s würde bereits hinzugefügt, ersetze es durch %s\n"
 
 #. @-nullptrarith@
 #: lib/depends.c:363
-#, fuzzy, c-format
+#, c-format
 msgid "   upgrade erases %s\n"
-msgstr "Kein Paket benötigt %s\n"
+msgstr "   Upgrade deinstalliert %s\n"
 
 #. @-nullptrarith@
 #: lib/depends.c:431
@@ -1431,43 +1440,36 @@ msgid "(cached)"
 msgstr "(zwischengespeichert)"
 
 #: lib/depends.c:543
-#, fuzzy
 msgid "(macro probe)"
-msgstr "(rpmrc bietet an)"
+msgstr "(Makro-Probe)"
 
 #: lib/depends.c:562
-#, fuzzy
 msgid "(access probe)"
-msgstr "(rpmrc bietet an)"
+msgstr "(Zugriffsprobe)"
 
 #: lib/depends.c:575
-#, fuzzy
 msgid "(sysinfo provides)"
-msgstr "(rpmlib bietet an)"
+msgstr "(sysinfo bietet an)"
 
 #: lib/depends.c:596
 msgid "(rpmlib provides)"
 msgstr "(rpmlib bietet an)"
 
 #: lib/depends.c:612
-#, fuzzy
 msgid "(cpuinfo provides)"
-msgstr "(rpmlib bietet an)"
+msgstr "(cpuinfo bietet an)"
 
 #: lib/depends.c:628
-#, fuzzy
 msgid "(getconf provides)"
-msgstr "(rpmlib bietet an)"
+msgstr "(getconf bietet an)"
 
 #: lib/depends.c:644
-#, fuzzy
 msgid "(uname provides)"
-msgstr "(angebotene Fähigkeit hinzugefügt)"
+msgstr "(uname bietet an)"
 
 #: lib/depends.c:679
-#, fuzzy
 msgid "(soname provides)"
-msgstr "(angebotene Fähigkeit hinzugefügt)"
+msgstr "(soname bietet an)"
 
 #: lib/depends.c:708
 msgid "(db files)"
@@ -1484,7 +1486,7 @@ msgstr "(Datenbank-Paket)"
 #. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:765
 msgid "(hint skipped)"
-msgstr ""
+msgstr "(Hinweis übersprungen)"
 
 #: lib/depends.c:1098
 #, c-format
@@ -1503,13 +1505,12 @@ msgstr "========== zeichne tsort-Relationen auf\n"
 
 #. T4. Scan for zeroes.
 #: lib/depends.c:1549
-#, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
-"========== tsorting Pakete (order, #predecessors, #succesors, tree, depth, "
-"breadth)\n"
+"========== tsorting Pakete (order, #predecessors, #succesors, tree, Ldepth, "
+"Rbreadth)\n"
 
 #: lib/depends.c:1640
 #, c-format
@@ -1639,7 +1640,7 @@ msgstr "%s trennen von %s fehlgeschlagen: %s\n"
 #: lib/fsm.c:1994
 #, c-format
 msgid "%s created as %s\n"
-msgstr "%s erstellt als %s\n"
+msgstr "%s als %s erstellt\n"
 
 #: lib/manifest.c:133
 #, c-format
@@ -1687,14 +1688,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "Regionsgröße: UNGÜLTIG, ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: UNGÜLTIG, nicht hexadezimal\n"
 
 #: lib/package.c:470
+#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "hdr RSA: UNGÜLTIG, nicht binär\n"
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA: UNGÜLTIG, nicht binär\n"
 
@@ -1711,6 +1715,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr Größe(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: UNGÜLTIG\n"
 
@@ -1730,6 +1735,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr Blob(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr Load: UNGÜLTIG\n"
 
@@ -1916,7 +1922,7 @@ msgstr "Ausgeschlossene Pfade müssen mit einem / beginnen"
 
 #: lib/poptI.c:97
 msgid "Option --relocate needs /old/path=/new/path argument"
-msgstr ""
+msgstr "Die Option --relocate benötigt /alter/Pfad=/neuer/Pfad"
 
 #: lib/poptI.c:99
 msgid "relocations must begin with a /"
@@ -1931,31 +1937,27 @@ msgid "relocations must have a / following the ="
 msgstr "Verschiebungen müssen einen / nach dem = enthalten"
 
 #: lib/poptI.c:123
-#, fuzzy
 msgid "Option --rbexclude needs transaction id argument(s)"
-msgstr "Rollback benötigt einen Datums-/Zeitstempel als Argument"
+msgstr "Die Option --rbexclude benötigt eine Transaktions-ID"
 
 #: lib/poptI.c:154
-#, fuzzy
 msgid "Option --rollback needs a time/date stamp argument"
-msgstr "Rollback benötigt einen Datums-/Zeitstempel als Argument"
+msgstr "Die Option --rollback benötigt einen Datums-/Zeitstempel"
 
 #: lib/poptI.c:158
-#, fuzzy, c-format
+#, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
-msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
+msgstr "Rollback-Ziel:  %-24.24s (0x%08x)\n"
 
 #: lib/poptI.c:162
 msgid "malformed rollback time/date stamp argument"
 msgstr "Missgebildeter Datums-/Zeitstempel für ein Rollback"
 
 #: lib/poptI.c:169
-#, fuzzy
 msgid "arbgoal takes a time/date stamp argument"
-msgstr "Rollback benötigt einen Datums-/Zeitstempel als Argument"
+msgstr "Rollback benötigt einen Datums-/Zeitstempel"
 
 #: lib/poptI.c:176
-#, fuzzy
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "Missgebildeter Datums-/Zeitstempel für ein Rollback"
 
@@ -2182,19 +2184,16 @@ msgid "<date>"
 msgstr "<Datum>"
 
 #: lib/poptI.c:393
-#, fuzzy
 msgid "If transaction fails rollback to <date>"
-msgstr "Transaktion fehlgeschlagen...mache Rollback\n"
+msgstr "Wenn die Transaktion fehlschlägt, mache ein Rollback zum <Datum>"
 
 #: lib/poptI.c:396
-#, fuzzy
 msgid "Exclude Transaction I.D. from rollback"
-msgstr "Transaktion fehlgeschlagen...mache Rollback\n"
+msgstr "Transaktions-ID vom Rollback ausschließen"
 
 #: lib/poptI.c:397
-#, fuzzy
 msgid "<tid>"
-msgstr "<Option>"
+msgstr "<TID>"
 
 #: lib/poptI.c:399
 msgid "don't install, but tell if it would work or not"
@@ -2344,9 +2343,8 @@ msgid "display the states of the listed files"
 msgstr "Anzeigen der Zustände der aufgelisteten Dateien"
 
 #: lib/poptQV.c:313
-#, fuzzy
 msgid "specify target platform"
-msgstr "Überschreibe Zielplattform"
+msgstr "Zielplattform bestimmen"
 
 #: lib/poptQV.c:339
 msgid "don't verify size of files"
@@ -2413,17 +2411,16 @@ msgid "generate signature"
 msgstr "Erzeuge Signatur"
 
 #: lib/poptQV.c:430
-#, fuzzy
 msgid "specify trust metric"
-msgstr "Überschreibe Zielplattform"
+msgstr "Vertrauensbereich festlegen"
 
 #: lib/poptQV.c:433
 msgid "set ultimate trust when importing pubkey(s)"
-msgstr ""
+msgstr "Importierten Schlüsseln wird absolut vertraut"
 
 #: lib/poptQV.c:436
 msgid "unset ultimate trust when importing pubkey(s)"
-msgstr ""
+msgstr "Importierten Schlüsseln wird nicht vertraut"
 
 #: lib/psm.c:273
 msgid "source package expected, binary found\n"
@@ -2507,19 +2504,19 @@ msgid "%s failed: %s\n"
 msgstr "%s fehlgeschlagen: %s\n"
 
 #: lib/psm.c:2222
-#, fuzzy, c-format
-msgid "Could not aquire transaction score entry for %s\n"
-msgstr "Keine Sortierung des Transaktionssets"
+#, c-format
+msgid "Could not acquire transaction score entry for %s\n"
+msgstr "Keinen Transaktionsscore-Eintrag für %s erhalten\n"
 
 #: lib/psm.c:2235
 #, c-format
 msgid "Setting %s to TID of 0x%08x\n"
-msgstr ""
+msgstr "Setze %s auf TID von 0x%08x\n"
 
 #: lib/psm.c:2259
-#, fuzzy, c-format
+#, c-format
 msgid "Attempting to mark %s as installed in trasaction score\n"
-msgstr "Versuche %s im Score-Board(%u) als installiert zu markieren.\n"
+msgstr "Versuche %s im Score-Board als installiert zu markieren.\n"
 
 #: lib/psm.c:2291
 #, c-format
@@ -2796,46 +2793,44 @@ msgstr "Interne Unterstützung für LUA-Skripte"
 
 #: lib/rpmds.c:1323
 msgid "header tags can be type int_64."
-msgstr ""
+msgstr "Header-Tags können vom Typ int_64 sein."
 
 #: lib/rpmds.c:1424
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
-"Zeile %d: Abhängigkeiten müssen alphanumerisch, mit '_' oder '/' beginnen: %"
-"s\n"
+"Zeile %d:%d \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen: %s\n"
 
 #. XXX No comparison operator found.
 #: lib/rpmds.c:1458
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
-msgstr ""
+msgstr "%s:%d Keinen Vergleichsoperator gefunden.\n"
 
 #. XXX No EVR comparison value found.
 #: lib/rpmds.c:1468
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
-msgstr ""
+msgstr "%s:%d Keinen EVR-Vergleichswert gefunden.\n"
 
 #: lib/rpmds.c:2989 lib/rpmds.c:3019 lib/rpmds.c:3031
 #, c-format
 msgid "running \"%s\" pipe command\n"
-msgstr ""
+msgstr "Führe Pipe-Befehl \"%s\" aus\n"
 
 #: lib/rpmds.c:2992
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
 "Skipping ...\n"
-msgstr ""
-"Zeile %d: Abhängigkeiten müssen alphanumerisch, mit '_' oder '/' beginnen: %"
-"s\n"
+msgstr "Zeile %d: \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen: %s\n"
 
 #. XXX No comparison operator found.
 #: lib/rpmds.c:3021
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
+"\tZeile %d: \"%s\" hat keinen Vergleichsoperator gefunden. Überspringe...\n"
 
 #. XXX No EVR comparison value found.
 #: lib/rpmds.c:3033
@@ -2844,6 +2839,8 @@ msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
+"\tZeile %d: Keinen EVR-Vergleichswert gefunden.\n"
+" Überspringe..."
 
 #: lib/rpmds.c:3162
 #, c-format
@@ -2947,9 +2944,9 @@ msgid "Upgrading packages..."
 msgstr "Aktualisiere Pakete..."
 
 #: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1147
-#, fuzzy, c-format
+#, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
-msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
+msgstr "Autorollback-Ziel: %-24.24s (0x%08x)\n"
 
 #: lib/rpminstall.c:421
 #, c-format
@@ -3040,7 +3037,7 @@ msgstr "Installiere %s\n"
 #: lib/rpminstall.c:1349
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
-msgstr ""
+msgstr "Schließe TID vom Rollback aus: %-24.24s (0x%08x)\n"
 
 #: lib/rpminstall.c:1436 lib/transaction.c:1152
 #, c-format
@@ -3227,24 +3224,29 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kann %s nicht zum Lesen öffnen: %s.\n"
 
 #: lib/rpmrc.c:1930
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
-msgstr ""
+msgstr "Konfiguriertes System bietet (aus /etc/rpm/sysinfo):\n"
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
-msgstr ""
+msgstr "Vom rpmlib-Installer angebotene Features:\n"
 
 #: lib/rpmrc.c:1957
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
-msgstr ""
+msgstr "Von cpuinfo derzeit angebotene Features (aus /proc/cpuinfo):\n"
 
 #: lib/rpmrc.c:1971
+#, c-format
 msgid "Features provided by current getconf:\n"
-msgstr ""
+msgstr "Von getconf derzeit angebotene Features:\n"
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current uname:\n"
-msgstr ""
+msgstr "Von uname derzeit angebotene Features:\n"
 
 #: lib/rpmsx.c:374
 #, c-format
@@ -3356,24 +3358,23 @@ msgid "\tUpdating entry for %s in score board.\n"
 msgstr "\tAktualisiere Eintrag für %s im Score-Board.\n"
 
 #: lib/rpmts.c:1679
-#, fuzzy
 msgid "Could not get header for transaction score!\n"
-msgstr "Keine Header der Transaktion für das Auto-Rollback!\n"
+msgstr "Keinen Header des Transaktionsscores erhalten!\n"
 
 #: lib/rpmts.c:1680
 #, c-format
 msgid "NEVRA: %s"
-msgstr ""
+msgstr "NEVRA: %s"
 
 #: lib/rpmts.c:1689
 #, c-format
 msgid "\tCould not get INSTALLTID for %s.\n"
-msgstr ""
+msgstr "\tKeine INSTALLTID für %s erhalten.\n"
 
 #: lib/rpmts.c:1694
 #, c-format
 msgid "\tINSTALLTID for %s is 0x%08x.\n"
-msgstr ""
+msgstr "\tINSTALLTID für %s ist 0x%08x.\n"
 
 #. Assume we don't find it
 #: lib/rpmts.c:1780
@@ -3402,6 +3403,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "sigh-Größe(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "sigh Magic: UNGÜLTIG\n"
 
@@ -3426,6 +3428,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh-Tag[%d]: UNGÜLTIG, Tag %d, Typ %d, Offset %d, Count %d\n"
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr "sigh-Load: UNGÜLTIG\n"
 
@@ -3499,6 +3502,9 @@ msgstr "%d Byte der GPG-Signatur erhalten\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3540,10 +3546,12 @@ msgid " DSA signature: "
 msgstr " DSA-Signatur: "
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Überprüfe Signatur: UNGÜLTIGE PARAMETER\n"
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Fehlerhafte MD5-Kurzfassung: NICHT UNTERSTÜTZT\n"
 
@@ -3559,47 +3567,45 @@ msgid "excluding directory %s\n"
 msgstr "Schließe Verzeichnis %s aus\n"
 
 #: lib/transaction.c:1006
-#, fuzzy, c-format
+#, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
-msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
+msgstr "Rollback-Transaktionen erfolgreich bis %-24.24s (0x%08x).\n"
 
 #: lib/transaction.c:1011
-#, fuzzy
 msgid "Creating rollback transaction to achieve goal\n"
-msgstr "Erstelle Transaktion für ein Auto-Rollback\n"
+msgstr "Erstelle Rollback-Transaktion, um das Ziel zu erreichen\n"
 
 #: lib/transaction.c:1144
 msgid "Transaction failed...rolling back\n"
 msgstr "Transaktion fehlgeschlagen...mache Rollback\n"
 
 #: lib/transaction.c:1155
-#, fuzzy, c-format
+#, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
-msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
+msgstr "Fehlgeschlagene Transaktionen: %-24.24s(0x%08x)\n"
 
 #: lib/transaction.c:1161
-#, fuzzy
 msgid "Could not resolve semaphore_backout macro!\n"
-msgstr "Konnte Auto-Rollback-Transaktion nicht sortieren!\n"
+msgstr "Konnte das Makro semaphore_backout nicht auflösen!\n"
 
 #: lib/transaction.c:1165
-#, fuzzy, c-format
+#, c-format
 msgid "Creating semaphore %s...\n"
-msgstr "Erstelle Verzeichnis %s\n"
+msgstr "Erstelle Semaphore %s...\n"
 
 #: lib/transaction.c:1185
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "Konnte Auto-Rollback-Transaktion nicht sortieren!\n"
 
 #: lib/transaction.c:1257
-#, fuzzy, c-format
+#, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
-msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
+msgstr "Rollback-Transaktionen erfolgreich bis %-24.24s (0x%08x)\n"
 
 #: lib/transaction.c:1300
-#, fuzzy, c-format
+#, c-format
 msgid "Removing semaphore %s...\n"
-msgstr "Entferne Verzeichnis %s\n"
+msgstr "Entferne Semaphore %s...\n"
 
 #: lib/transaction.c:1342
 msgid "Getting repackaged header from transaction element\n"
@@ -3646,68 +3652,64 @@ msgstr "\tErneut gebautes Paket war %s...\n"
 
 #. XXX: Can't happen
 #: lib/transaction.c:1489
-#, fuzzy
-msgid "Could not aquire transaction score!.\n"
-msgstr "Keine Sortierung des Transaktionssets"
+msgid "Could not acquire transaction score!.\n"
+msgstr "Kein Transaktionsscore erhalten!\n"
 
 #. XXX: Can't happen
 #: lib/transaction.c:1494
-#, fuzzy, c-format
+#, c-format
 msgid "Could not acquire score entry %s!.\n"
-msgstr "Konnte PreIn-Datei nicht öffnen: %s\n"
+msgstr "Keinen Transaktionsscore-Eintrag für %s erhalten!\n"
 
 #: lib/transaction.c:1512
-#, fuzzy, c-format
+#, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
-"Installationselement zur Transaktion für das Auto-Rollback hinzugefügt.\n"
+"Verarbeiten des Installationselements %s für das Auto-Rollback "
+"fehlgeschlagen.\n"
 
 #: lib/transaction.c:1515
-#, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
-msgstr "Fehler beim Lesen des Paket-Headers\n"
+msgstr "\tErzwinge das Hinzufügen des Headers zur rpmdb.\n"
 
 #: lib/transaction.c:1526
-#, fuzzy
 msgid "\tCould not add failed package header to db!\n"
-msgstr "Hinzufügen fehlgeschlagen. Konnte den Paket-Header nicht lesen.\n"
+msgstr ""
+"\tKonnte fehlgeschlagenen Paket-Header nicht zur Datenbank hinzufügen!\n"
 
 #: lib/transaction.c:1539
-#, fuzzy, c-format
+#, c-format
 msgid "Processing failed erase element %s for autorollback.\n"
 msgstr ""
-"Konnte das Deinstallationselement für Transaktion des Auto-Rollbacks nicht "
-"hinzufügen.\n"
+"Verarbeiten des Deinstallationselements %s für das Auto-Rollback "
+"fehlgeschlagen.\n"
 
 #: lib/transaction.c:1543
-#, fuzzy
 msgid "\tForce removing header from rpmdb.\n"
-msgstr "Fehler beim Lesen des Paket-Headers\n"
+msgstr "\tErzwinge das Entfernen des Headers aus der rpmdb.\n"
 
 #: lib/transaction.c:1554
-#, fuzzy
 msgid "\tCould not remove failed package header from db!\n"
-msgstr "Hinzufügen fehlgeschlagen. Konnte den Paket-Header nicht lesen.\n"
+msgstr ""
+"\tKonnte fehlgeschlagenen Paket-Header nicht aus der Datenbank entfernen!\n"
 
 #: lib/transaction.c:1563 lib/transaction.c:1695
 msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
-msgstr ""
+msgstr "_rpmtsAddRollbackElement: Unbekannter Transaktionstyp!\n"
 
 #: lib/transaction.c:1564 lib/transaction.c:1696
 #, c-format
 msgid "TYPE:  %d\n"
-msgstr ""
+msgstr "TYP:   %d\n"
 
 #: lib/transaction.c:1594
-#, fuzzy
 msgid "Processing install element for autorollback...\n"
-msgstr ""
-"Installationselement zur Transaktion für das Auto-Rollback hinzugefügt.\n"
+msgstr "Verarbeite Installationselement für Auto-Rollback...\n"
 
 #: lib/transaction.c:1595 lib/transaction.c:1650
 #, c-format
 msgid "\tNEVRA: %s\n"
-msgstr ""
+msgstr "\tNEVRA: %s\n"
 
 #: lib/transaction.c:1603
 msgid "Could not get install element database instance!\n"
@@ -3734,14 +3736,12 @@ msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr "Kein erneut gepackter Header für Transaktion des Auto-Rollbacks!\n"
 
 #: lib/transaction.c:1649
-#, fuzzy
 msgid "Processing erase element for autorollback...\n"
-msgstr ""
-"Deinstallationselement für Transaktion des Auto-Rollbacks hinzufügen.\n"
+msgstr "Verarbeite Deinstallationselement für Auto-Rollback...\n"
 
 #: lib/transaction.c:1657
 msgid "\tErase element already added for complimentary install.\n"
-msgstr ""
+msgstr "\tDeinstallationselement bereits zur Installation hinzugefügt.\n"
 
 #: lib/transaction.c:1670
 #, c-format
@@ -3763,9 +3763,8 @@ msgid "Failure reading repackaged package!\n"
 msgstr "Fehler beim Lesen des erneut gepackten Pakets!\n"
 
 #: lib/transaction.c:1827
-#, fuzzy
 msgid "Invalid number of transaction elements.\n"
-msgstr "Hole erneut gepackten Header des Transaktionselements\n"
+msgstr "Ungültige Anzahl an Transaktionselementen.\n"
 
 #. ===============================================
 #. * For packages being installed:
@@ -3809,17 +3808,13 @@ msgid "Creating auto-rollback transaction\n"
 msgstr "Erstelle Transaktion für ein Auto-Rollback\n"
 
 #: lib/transaction.c:2572
-#, fuzzy, c-format
+#, c-format
 msgid "Adding %s to autorollback transaction.\n"
-msgstr ""
-"Installationselement zur Transaktion für das Auto-Rollback hinzugefügt.\n"
+msgstr "Füge %s zur Auto-Rollbacktransaktion hinzu.\n"
 
 #: lib/transaction.c:2579
-#, fuzzy
 msgid "Could not add transaction element to autorollback!.\n"
-msgstr ""
-"Konnte das Deinstallationselement für Transaktion des Auto-Rollbacks nicht "
-"hinzufügen.\n"
+msgstr "Konnte Transaktionselement nicht zun Auto-Rollback hinzufügen!\n"
 
 #: lib/transaction.c:2622
 msgid "running post-transaction scripts\n"
@@ -3831,9 +3826,9 @@ msgid "missing   %c %s"
 msgstr "fehlend   %c %s"
 
 #: lib/verify.c:441
-#, fuzzy, c-format
+#, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "Unerfüllte Abhängigkeiten für %s: "
+msgstr "Unerfüllte Abhängigkeiten für %s:\n"
 
 #: rpmdb/db3.c:160
 #, c-format
@@ -4349,6 +4344,7 @@ msgid "(no error)"
 msgstr "(kein Fehler)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "Schwerwiegender Fehler: "
@@ -4427,105 +4423,105 @@ msgstr "%s: Cache-Operation(en) fehlgeschlagen: Fehler-Code %d.\n"
 
 #: tools/rpmdeps.c:156
 msgid "print cpuinfo(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für cpuinfo(...)"
 
 #: tools/rpmdeps.c:158
 msgid "print rpmlib(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für rpmlib(...)"
 
 #: tools/rpmdeps.c:160
 msgid "print /etc/rpm/sysinfo dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für /etc/rpm/sysinfo"
 
 #: tools/rpmdeps.c:162
 msgid "print getconf(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für getconf(...)"
 
 #: tools/rpmdeps.c:164
 msgid "print soname(...) dependencies for elf files"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für soname(...) für ELF-Dateien"
 
 #: tools/rpmdeps.c:166
 msgid "print soname(...) dependencies from /etc/ld.so.cache"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für soname(...) aus /etc/ld.so.cache"
 
 #: tools/rpmdeps.c:168
 msgid "print uname(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für uname(...)"
 
 #: tools/rpmdeps.c:170
-#, fuzzy
 msgid "print dependency set from a command pipe"
-msgstr "Zeige Abhängigkeitsschleifen als Warnung"
+msgstr "Zeige Abhängigkeiten aus einer Befehlspipe"
 
 #: tools/rpmdeps.c:173
 msgid "print perl(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für perl(...)"
 
 #: tools/rpmdeps.c:175
 msgid "print python(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für python(...)"
 
 #: tools/rpmdeps.c:177
 msgid "print libtool(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für libtool(...)"
 
 #: tools/rpmdeps.c:179
 msgid "print pkgconfig(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für pkgconfig(...)"
 
 #: tools/rpmdeps.c:182
 msgid "print pubkey(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für pubkey(...)"
 
 #: tools/rpmdeps.c:184
 msgid "print arch(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für arch(...)"
 
 #: tools/rpmdeps.c:186
 msgid "print file(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für file(...)"
 
 #: tools/rpmdeps.c:188
 msgid "print soname(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für soname(...)"
 
 #: tools/rpmdeps.c:190
-#, fuzzy
 msgid "print package(...) dependency set"
-msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
+msgstr "Zeige Abhängigkeiten für package(...)"
 
 #: tools/rpmdeps.c:193
 msgid "print java(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für java(...)"
 
 #: tools/rpmdeps.c:195
 msgid "print php(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für php(...)"
 
 #: tools/rpmdeps.c:197
 msgid "print ruby(...) dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für ruby(...)"
 
 #: tools/rpmdeps.c:199
 msgid "print /var/lib/dpkg Provides: dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für \"/var/lib/dpkg Provides:\""
 
 #: tools/rpmdeps.c:201
 msgid "print /var/lib/dpkg Requires: dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für \"/var/lib/dpkg Requires:\""
 
 #: tools/rpmdeps.c:204
 msgid "print Provides: dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für \"Provides:\""
 
 #: tools/rpmdeps.c:206
 msgid "print Requires: dependency set"
-msgstr ""
+msgstr "Zeige Abhängigkeiten für \"Requires:\""
 
 #: tools/rpmdeps.c:208
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+"Überprüfe der Abhängigkeiten von \"Requires:\" und \"Provides:\" "
+"gegeneinander"
 
 #: tools/rpmgraph.c:172
 #, c-format
@@ -4620,46 +4616,3 @@ msgstr "Benutze Datenbank in VERZEICHNIS"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "VERZEICHNIS"
-
-#, fuzzy
-#~ msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-#~ msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
-
-#~ msgid "don't verify GPG V3 DSA signature(s)"
-#~ msgstr "Keine Überprüfung der GPG V3 DSA-Signatur(en)"
-
-#~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-#~ msgstr "Keine Überprüfung der PGP V3 RSA/MD5-Sigantur(en)"
-
-#~ msgid "Unknown system: %s\n"
-#~ msgstr "Unbekanntes System: %s\n"
-
-#~ msgid "Please contact rpm-list@redhat.com\n"
-#~ msgstr "Bitte (in Englisch) rpm-list@redhat.com kontaktieren\n"
-
-#~ msgid "\tAdded from install element %s.\n"
-#~ msgstr "\tVom Installationselement %s hinzugefügt.\n"
-
-#~ msgid "\tFound existing upgrade element.\n"
-#~ msgstr "\tBereits vorhandenes Aktualisierungselement gefunden.\n"
-
-#~ msgid "\tNot adding erase element for %s.\n"
-#~ msgstr "\tKein Deinstallationselement für %s hinzufügen.\n"
-
-#~ msgid "\tAdded from erase element %s.\n"
-#~ msgstr "\tVom Deinstallationselement %s hinzugefügt.\n"
-
-#~ msgid "Add failed in rpmpsmStage().\n"
-#~ msgstr "Hinzufügen fehlgeschlagen bei rpmpsmStage().\n"
-
-#~ msgid "Add failed.  Could not get file list.\n"
-#~ msgstr "Hinzufügen fehlgeschlagen. Konnte keine Dateiliste bekommen.\n"
-
-#~ msgid "Erase failed failed in rpmpsmStage().\n"
-#~ msgstr "Löschen fehlgeschlagen bei rpmpsmStage().\n"
-
-#~ msgid "May free Score board(%p)\n"
-#~ msgstr "Möglicherweise freies Score-Board(%p)\n"
-
-#~ msgid "\tRefcount is zero...will free\n"
-#~ msgstr "\tRefcount ist null...ist frei\n"

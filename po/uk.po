@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-16 18:50-0500\n"
+"POT-Creation-Date: 2005-11-17 07:24-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -66,10 +66,12 @@ msgid "Building for target %s\n"
 msgstr "Збирання для платформи %s\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "вказаний аргумент не є RPM пакетом\n"
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr "помилка читання заголовка пакету\n"
 
@@ -129,10 +131,12 @@ msgid "RPM version %s\n"
 msgstr "RPM версії %s\n"
 
 #: rpmqv.c:147
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Авторські права належать - Red Hat, Inc. Copyright (C) 1998-2002\n"
 
 #: rpmqv.c:148
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Цю програму можна розповсюджувати на умовах ліцензії GNU GPL\n"
@@ -285,6 +289,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументи для --root (-r) повинні починатись з /"
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr "немає файлів для підпису\n"
 
@@ -294,6 +299,7 @@ msgid "cannot access file %s\n"
 msgstr "немає доступу до файлу %s\n"
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp не знайдено:"
 
@@ -302,10 +308,12 @@ msgid "Enter pass phrase: "
 msgstr "Введіть ключову фразу:"
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Неправильна ключова фраза\n"
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Ключову фразу прийнято.\n"
 
@@ -319,6 +327,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign дозволяється вказувати лише при збиранні пакету"
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr "помилка запуску\n"
 
@@ -1676,15 +1685,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "неправильний розмір області: ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "неправильний заголовок SHA1: не є шістнадцятковим\n"
 
 #: lib/package.c:470
-#, fuzzy
+#, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "неправильний заголовок DSA: не є двійковим\n"
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "неправильний заголовок DSA: не є двійковим\n"
 
@@ -1700,6 +1711,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "неправильний розмір заголовка(%d): зчитування повернуло %d\n"
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "неправильна сигнатура заголовка: помилка\n"
 
@@ -1719,6 +1731,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "неправильний двійковий об'єкт(%d): зчитування повернуло %d\n"
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr "помилка завантаження об'єкта: помилка\n"
 
@@ -2503,9 +2516,9 @@ msgid "%s failed: %s\n"
 msgstr "%s помилка: %s\n"
 
 #: lib/psm.c:2222
-#, c-format
-msgid "Could not aquire transaction score entry for %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Could not acquire transaction score entry for %s\n"
+msgstr "Неможливо відкрити файл PreIn: %s\n"
 
 #: lib/psm.c:2235
 #, c-format
@@ -3216,22 +3229,27 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Неможливо відкрити %s для читання: %s.\n"
 
 #: lib/rpmrc.c:1930
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3391,6 +3409,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "неправильний розмір загол.підпису(%d): зчитування повернуло %d\n"
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "неправильна сигнатура загол.підпису: помилка\n"
 
@@ -3416,6 +3435,7 @@ msgstr ""
 "неправильний тег загол.підпису[%d]: тег %d тип %d зсув %d кількість %d\n"
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr "помилка завантаження загол.підпису: помилка\n"
 
@@ -3489,6 +3509,9 @@ msgstr "Розмір GPG підпису: %d\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3532,10 +3555,12 @@ msgid " DSA signature: "
 msgstr "Підпис V3 DSA: "
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Перевірка підпису: НЕПРАВИЛЬНІ ПАРАМЕТРИ\n"
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Неправильна контрольна сума MD5: НЕ ПІДТРИМУЄТЬСЯ\n"
 
@@ -3637,8 +3662,9 @@ msgstr "жоден пакет не відповідає %s: %s\n"
 
 #. XXX: Can't happen
 #: lib/transaction.c:1489
-msgid "Could not aquire transaction score!.\n"
-msgstr ""
+#, fuzzy
+msgid "Could not acquire transaction score!.\n"
+msgstr "Неможливо відкрити файл PreIn: %s\n"
 
 #. XXX: Can't happen
 #: lib/transaction.c:1494
@@ -4324,6 +4350,7 @@ msgid "(no error)"
 msgstr "(помилки немає)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "фатальна помилка: "
