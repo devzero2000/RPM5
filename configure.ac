@@ -4,7 +4,7 @@ echo "
 *                                                                          *
 *                   *** WARNING WARNING WARNING ***                        *
 *                                                                          *
-* This is source code from the development branch of rpm-4.4.3.            *
+* This is source code from the development branch of rpm-4.4.4.            *
 *                                                                          *
 * If you want the "production" rpm-4.3.3 code, then you should use a       *
 * rpm-4.3.3 src.rpm. Alternatively, if using a CVS checkout, do            *
@@ -14,6 +14,9 @@ echo "
 *       (no password, just carriage return)                                *
 *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
 *       cd rpm                                                             *
+*                                                                          *
+* Here's the rpm-4_4 branch, latest is rpm-4.4.3:                          *
+*       cvs up -r rpm-4_4                                                  *
 *                                                                          *
 * Here's the rpm-4_3 branch, latest is rpm-4.3.3:                          *
 *       cvs up -r rpm-4_3                                                  *
@@ -26,7 +29,7 @@ echo "
 sleep 10
 
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.4.3, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.4.4, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])

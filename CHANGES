@@ -1,3 +1,11 @@
+4.4.3 -> 4.4.4:
+	- start rpm-4.4.4 development.
+	- re-enable libtool/pkgconfig/python/java automagic requires extractors.
+	- re-enable pubkey server configuration.
+	- perl: diddle Makefile.PL to build/link within rpm source tree.
+	- perl: add build dependency on perl(ExtUtils::MakeMaker) >= 6.17.
+	- don't build rpmgetconf by default.
+
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.
 	- put a --stats stopwatch on rpmReadPackageFile() I/O.

@@ -33,7 +33,7 @@ Conflicts: patch < 2.5
 Prereq: fileutils shadow-utils
 %endif
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
-Requires: popt = 1.10.3
+Requires: popt = 1.10.4
 Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
@@ -72,7 +72,7 @@ the package like its version, a description, etc.
 Summary:  Libraries for manipulating RPM packages.
 Group: Development/Libraries
 # XXX this Provides: is bogus, but getconf(...) needs to be bootstrapped.
-Provides: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
+#Provides: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 %description libs
@@ -132,6 +132,7 @@ programs that will manipulate RPM packages and databases.
 %package perl
 Summary: Perl bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
+BuildRequires: perl(ExtUtils::MakeMaker) >= 6.17
 Requires: rpm = %{rpm_version}-%{release}
 Requires: rpm-libs = %{rpm_version}-%{release}
 Obsoletes: perl-RPM2
@@ -585,196 +586,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Thu Nov 17 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-1
-- rollback: plug IDTXglob header memory leak.
-- rollback: use earlier of arbgoal and rbtid times.
-- don't generate libtool/pkgconfig/java/python Requires: by default.
-- establish/expose default macro configuration for --rollback.
-- update de.po.
-- rpm-4.4.3 release.
-
-* Wed Nov 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.50
-- fix: if install element fails, don't erase any linked element.
-- fix: repackaged payloads can be missing files, continue unpacking.
-- hpux: use _GLOB_INCLUDED as well as _GLOB_H (#113340).
-- hpux: test for (__hpux) everywhere that hpux was tested (#101717).
-- rollback: use explicit no. of args comparing header flink/blink data.
-
-* Tue Nov 15 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.49
-- fix: add flink (pkgid,hdrid,nevra) to repackaged packages correctly.
-
-* Mon Nov 14 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.48
-- display -Va dependency failures as Requires: or Conflicts: (#172878).
-- fix: ignore %ghost vs. %ghost file conflicts (#155256).
-- autogenerate java *.(jar|class) dependencies (#117382).
-
-* Sun Nov 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.47
-- fix: simpler python peculier macros, multilib aware (#120635).
-- ornament the rpmds API with diagnostic helpers.
-- rpmdeps: add --{cpuinfo,rpmlib,sysinfo,getconf,elf,ldconfiguname } options.
-
-* Sat Nov 12 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.46
-- refactor rpmfcELF() to rpmdsELF() to extract ELF dependencies.
-- add soname(/path/to/libfoo.so) run-time dependency probe.
-- fix: strip ${RPM_BUILD_ROOT} in libtooldeps.sh --provides.
-
-* Fri Nov 11 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.45
-- link all rpm executables statically.
-- add tag types RPM_INT64_TYPE, RPM_ASN1_TYPE, and RPM_OPENPGP_TYPE.
-
-* Thu Nov 10 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.44
-- add uname(foo) dependency name space to map uname(2) provides.
-
-* Wed Nov  9 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.43
-- rpmdb: expose dbiTagsInit, rpmdbNew, rpmdbOpenDatabase symbols.
-- rpmrc: eliminate RPMVAR_PROVIDES, use /etc/rpm/sysinfo instead.
-
-* Tue Nov  8 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.42
-- don't display "(none)\n" in --queryformat '[...]' (i.e. --conflicts).
-- add dependency result int array to dependency sets.
-- lazy malloc for dependency set color/refs/result on 1st setter call.
-- set boolean result in rpmdsSearch (if malloc'd).
-- fix: set transaction autorollback goal from popt on --install.
-- truncate changelogs to no. of entries or date (default: 1y) (#147362).
-
-* Mon Nov  7 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.40
-- generate executable(foo) run-time shell requirements, opt-in for now.
-- fix: python/rpmte-py.c te.Key() return needs Py_INCREF(Key).
-- fix: stablize tagValue() sort, prefer longest name.
-- eliminate RPMTAG_{SERIAL,COPYRIGHT} names (for sort stability;-).
-
-* Sun Nov  6 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.38
-- autogenerate libtool *.la dependencies (#159221).
-- autogenerate pkgconfig *.pc dependencies (#159235).
-- add brp-nobuildrootpath to scrub $RPM_BUILD_ROOT from *.la and *.pc.
-- fix: rescusitate doxygen doco, don't bother tools/dump.c.
-
-* Sat Nov  5 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.37
-- use bsearch to speed up tagname() and tagvalue().
-- display tag value and type with rpmquery -v --querytags.
-- remove tag{Name,Value,Type} from the ABI, rpmTags vectors instead.
-- add Requires: %%%%{rpm_license_check} to rpm packaging.
-- add Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL to rpm packaging.
-- resurrect a rpm-perl subpackage from perl-RPM2-0.66.
-
-* Fri Nov  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.35
-- fix: wipe setuid/setgid bits on updated files (#125517).
-- python: add optional transaction id goal to ts.IDTX{load,glob}.
-
-* Thu Nov  3 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.34
-- add -lresolv and build on CentOS3.
-
-* Wed Nov  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.33
-- python: add python peculier build macros (#120635).
-- popt: support for lone dashes (#129944).
-- permit Build{Suggests,Enhances}: and BuildRequires(hint): (#114338).
-- divvy up locale specific man pages between sub-pkgs (#146842).
-- perl: handle the 'v' in "use v5.6.0" (#140597).
-- add run-time perl(...) provides name space dependency set.
-
-* Tue Nov  1 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.31
-- add access(2) run-time probe dependencies.
-
-* Mon Oct 31 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.30
-- update to file-4.16 internal.
-
-* Sun Oct 30 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.29
-- implement %triggerprein scriptlets.
-- fix: unlink __db* files if dbenv->open returns EINVAL.
-- fix: attempt solve db open only once.
-- python: change ts.check callback, pass rpmds, not TagN, N, EVR, Flags.
-- python: set pkgorigin in hdr by extracting from yum (h,path) pkgkey.
-
-* Sat Oct 29 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.28
-- add /etc/ld.so.cache provides as a dependency name space set.
-- fix: remove context markers from :depflags format modifier.
-- permit Requires:/Conflicts: macro expand probes during rpmtsCheck().
-- Suggests: and Enhances: spec syntax, synonym(s) for Requires(hint):.
-- add suggests/enhances header extensions with --query.
-- add --suggests and --enhances popt aliases for header extensions.
-
-* Fri Oct 28 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.27
-- upgrade to db-4.4.11 internal.
-
-* Thu Oct 27 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.26
-- add getconf(1) provides as a dependency name space set.
-
-* Wed Oct 26 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.25
-- permit Requires: hints.
-- convert changelogs to utf8 on input and output (#140050).
-
-* Tue Oct 25 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.23
-- use generic /usr/src/rpm path for building instead.
-- don't check /usr/local routinely when configuring (#116709).
-
-* Mon Oct 24 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.22
-- python: bindings for rpmds{Search,Cpuinfo,Rpmlib,Sysinfo}.
-
-* Sun Oct 23 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.21
-- add cpuinfo(foo) dependency name space to map /proc/cpuinfo provides.
-- add rpmlib(foo) dependency name space to map rpmlib provides.
-- eliminate rpmCheckRpmlibProvides(), use rpmdsSearch() instead.
-- eliminate rpmGetRpmlibProvides(), use rpmdsRpmlib() instead.
-- eliminate rpmShowRpmlibProvides(), print rpmdsRpmlib() instead.
-- add system configurable provides read from /etc/rpm/sysinfo.
-- display sysinfo/cpuinfo provides with --showrc iff --verboose.
-- fix: boundary case segfault in rpmdsSearch.
-
-* Sat Oct 22 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.18
-- rollback: merge latest hackery for composting.
-- upgrade same NEVR with --force if not literally identical (#134388).
-
-* Fri Oct 21 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.16
-- upgrade to db-4.3.29.
-- add --target to rpm queries.
-- rollback: add --rbexclude tid option.
-
-* Wed Oct  5 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.15
-- eliminate rpmtsGetKeys() and ancient ts.getKeys() python method.
-
-* Tue Oct  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.14
-- add path to *.rpm package into rpmdb/repackaged headers.
-- track many-to-many relation between installed and erased packages.
-
-* Fri Sep 30 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.13
-- rpmluaFree: substitute globalLuaState for NULL arg.
-
-* Tue Sep 27 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.12
-- add --dupes popt alias.
-- identify headers from whence they came.
-
-* Thu Sep 22 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.11
-- remove gcc warning from popt and rpmio compilation.
-- rpmdb.c: remove need to include rpmio_internal.h.
-
-* Fri Sep 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.10
-- add symbol versions everywhere, proof-of-concept.
-- don't re-export zlib-in-rpmio and bdb-in-rpmdb symbols.
-
-* Thu Sep 15 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.8
-- fix: revert to older/slower perldeps avoid getOutputFrom() error.
-- zlib: uniqify several more symbols.
-- re-build against wraptastic,org packaging.
-
-* Wed Sep 14 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.6
-- build against neon-0.25.3.
-
-* Tue Aug 30 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.5
-- update uk.po (#142740).
-- fix: check-prereqs typo (#147196).
-- remove all uses of RPMSENSE_PREREQ.
-
-* Thu Aug 25 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.4
-- sqlite: path to find internal sqlite3.h
-- debuginfo: canonicalize paths (#165434).
-- debuginfo: pass --remove-comment switch (#165418).
-- java: add automagic req/prov extractors and closure helper (#164953).
-- statically link rpmi and rpm again again again.
-
-* Tue Aug 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.2
-- ignore %excluded files for size
-- add debugging labels for pre/post trans scriptlet execution.
-
-* Mon Jul 25 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.1
-- start 4.4.3 devel.
-- put a --stats stopwatch on rpmReadPackageFile() I/O.
+* Thu Nov 17 2005 Jeff Johnson <jbj@jbj.org> rpm-4.4.4-0.1
+- start rpm-4.4.4 development.
+- re-enable libtool/pkgconfig/python/java automagic requires extractors.
+- re-enable pubkey server configuration.
+- perl: diddle Makefile.PL to build/link within rpm source tree.
+- perl: add build dependency on perl(ExtUtils::MakeMaker) = 6.17.
+- don't build rpmgetconf by default.
