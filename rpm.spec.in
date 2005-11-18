@@ -152,7 +152,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.10.3
+Version: 1.10.4
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -588,6 +588,8 @@ exit 0
 %changelog
 * Fri Nov 18 2005 Jeff Johnson <jbj@jbj.org> rpm-4.4.4-0.2
 - correct release.
+- don't enable the fcntl transaction lock by default.
+- popt R++.
 
 * Thu Nov 17 2005 Jeff Johnson <jbj@jbj.org> rpm-4.4.4-0.1
 - start rpm-4.4.4 development.

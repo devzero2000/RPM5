@@ -5,6 +5,8 @@
 	- perl: diddle Makefile.PL to build/link within rpm source tree.
 	- perl: add build dependency on perl(ExtUtils::MakeMaker) >= 6.17.
 	- don't build rpmgetconf by default.
+	- don't enable the fcntl transaction lock by default.
+	- popt R++.
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.
