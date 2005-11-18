@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -586,6 +586,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Nov 18 2005 Jeff Johnson <jbj@jbj.org> rpm-4.4.4-0.2
+- correct release.
+
 * Thu Nov 17 2005 Jeff Johnson <jbj@jbj.org> rpm-4.4.4-0.1
 - start rpm-4.4.4 development.
 - re-enable libtool/pkgconfig/python/java automagic requires extractors.
