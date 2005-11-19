@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-17 07:24-0500\n"
+"POT-Creation-Date: 2005-11-19 12:33-0500\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2509,7 +2509,7 @@ msgstr "Försöker markera %s som installerad på resultattavla(%u).\n"
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr "Försöker markera %s som raderat på resultattavla(0x%x).\n"
 
-#: lib/query.c:123 lib/rpmts.c:635
+#: lib/query.c:123 lib/rpmts.c:632
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "fel format: %s\n"
@@ -2874,7 +2874,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1065 lib/rpmts.c:646
+#: lib/rpminstall.c:623 lib/rpminstall.c:1065 lib/rpmts.c:643
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3251,73 +3251,73 @@ msgstr "%s:  ogiltigt sammanhang %s på rad nummer %d\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/rpmts.c:286
+#: lib/rpmts.c:283
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "överflödigt \"(\" i paketetikett: %s\n"
 
-#: lib/rpmts.c:304
+#: lib/rpmts.c:301
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "\"(\" saknas i etikett: %s\n"
 
-#: lib/rpmts.c:312
+#: lib/rpmts.c:309
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "\")\" saknas i paketetikett: %s\n"
 
-#: lib/rpmts.c:523
+#: lib/rpmts.c:520
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "kan inte öppna Solve-databas i %s\n"
 
-#: lib/rpmts.c:667
+#: lib/rpmts.c:664
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Lägger till: %s\n"
 
-#: lib/rpmts.c:679
+#: lib/rpmts.c:676
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Föreslår %s\n"
 
-#: lib/rpmts.c:1232
+#: lib/rpmts.c:1229
 msgid "mounted filesystems:\n"
 msgstr "monterade filsystem:\n"
 
-#: lib/rpmts.c:1234
+#: lib/rpmts.c:1231
 #, fuzzy
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i  enhet bstrl       btillg       itillg monteringspunkt\n"
 
-#: lib/rpmts.c:1290
+#: lib/rpmts.c:1287
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
-#: lib/rpmts.c:1596
+#: lib/rpmts.c:1593
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr "Skapar resultattavla för transaktion(%p, %p)\n"
 
-#: lib/rpmts.c:1601
+#: lib/rpmts.c:1598
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr "\tResultattavleadress:  %p\n"
 
-#: lib/rpmts.c:1611
+#: lib/rpmts.c:1608
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "\tAllokerar utrymme för %d poster\n"
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1638
+#: lib/rpmts.c:1635
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr "\tLägger till post för %s till resultattavla.\n"
 
-#: lib/rpmts.c:1642
+#: lib/rpmts.c:1639
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr "\t\tStartadress:  %p\n"
@@ -3325,38 +3325,38 @@ msgstr "\t\tStartadress:  %p\n"
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1654
+#: lib/rpmts.c:1651
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr "\tUppdaterar post för %s i resultattavla.\n"
 
-#: lib/rpmts.c:1679
+#: lib/rpmts.c:1676
 #, fuzzy
 msgid "Could not get header for transaction score!\n"
 msgstr "Kunde inte hämta huvud för automatisk återrullningstransaktion!\n"
 
-#: lib/rpmts.c:1680
+#: lib/rpmts.c:1677
 #, c-format
 msgid "NEVRA: %s"
 msgstr ""
 
-#: lib/rpmts.c:1689
+#: lib/rpmts.c:1686
 #, c-format
 msgid "\tCould not get INSTALLTID for %s.\n"
 msgstr ""
 
-#: lib/rpmts.c:1694
+#: lib/rpmts.c:1691
 #, c-format
 msgid "\tINSTALLTID for %s is 0x%08x.\n"
 msgstr ""
 
 #. Assume we don't find it
-#: lib/rpmts.c:1780
+#: lib/rpmts.c:1777
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr "Letar i resultattavla(%p) efter %s\n"
 
-#: lib/rpmts.c:1786
+#: lib/rpmts.c:1783
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr "\tHittade post vid adress:  %p\n"
@@ -3748,7 +3748,7 @@ msgstr "\tInget ompaketerat paket ... inget att göra.\n"
 msgid "Failure reading repackaged package!\n"
 msgstr "Misslyckades läsa ompaketerat paket!\n"
 
-#: lib/transaction.c:1827
+#: lib/transaction.c:1825
 #, fuzzy
 msgid "Invalid number of transaction elements.\n"
 msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
@@ -3761,12 +3761,12 @@ msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1881
+#: lib/transaction.c:1879
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "rimlighetskontrollerar %d element\n"
 
-#: lib/transaction.c:1967
+#: lib/transaction.c:1965
 msgid "running pre-transaction scripts\n"
 msgstr "kör skript före transaktion\n"
 
@@ -3778,7 +3778,7 @@ msgstr "kör skript före transaktion\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2042
+#: lib/transaction.c:2040
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "beräknar %d filfingeravtryck\n"
@@ -3786,28 +3786,28 @@ msgstr "beräknar %d filfingeravtryck\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2123
+#: lib/transaction.c:2121
 msgid "computing file dispositions\n"
 msgstr "beräknar filåtgärder\n"
 
-#: lib/transaction.c:2301
+#: lib/transaction.c:2299
 msgid "Creating auto-rollback transaction\n"
 msgstr "Skapar automatiskt återrullad transaktion\n"
 
-#: lib/transaction.c:2572
+#: lib/transaction.c:2570
 #, fuzzy, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 "Lägger till installationselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:2579
+#: lib/transaction.c:2577
 #, fuzzy
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 "Kunde inte lägga till raderingselement till automatiskt återrullad "
 "transaktion.\n"
 
-#: lib/transaction.c:2622
+#: lib/transaction.c:2620
 msgid "running post-transaction scripts\n"
 msgstr "kör skript efter transaktion\n"
 

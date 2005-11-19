@@ -12,7 +12,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	xmlspec/examples/*.sh xmlspec/examples/*.lst \
 	xmlspec/examples/*.xmlspec \
 	sqlite/* \
-	perl-RPM2/* \
+	perl/* \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 

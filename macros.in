@@ -850,20 +850,20 @@ print (t)\
 %_query_all_fmt		%%{name}-%%{version}-%%{release}.%%{arch}
 
 #
-# Default path to the file used for transaction fcmtl lock.
+# Default path used for serializing transactions with a  fcntl lock.
 #
-# The previous, FHS clompliant, name was /var/lock/run/transaction,
-# but the transaction lock needs to be per-database, not global, for
-# some rpmdb operations.
+# The original, FHS clompliant, path was /var/lock/run/transaction,
+# but the transaction lock needs to be finer grained, at least
+# per-database, not global, for many rpm operations with transaction sets.
 #
-# The fcntl lock is now off by default, posix mutexes are sufficient.
-# to protect Berkeley DB data, and multiple databases with concurrent
+# The fcntl lock is now off by default, posix mutexes (or equiv) are sufficient.
+# to protect Berkeley DB data, and using multiple databases with concurrent
 # access is a more important feature to rpm than serializing transaction
-# access.
+# sets. Change your configuration if you disagree.
 #
-# XXX Note: the file name is chosesn as __db.000 to expedite
-# support issues, as many users are doing "rm -f /var/lib/rpm/__db*"
-# these days.
+# XXX Note: the suggested file name is __db.000 to expedite
+# support issues, because users typically do "rm -f /var/lib/rpm/__db*",
+# which will clean up the fcntl lock.
 #%_rpmlock_path	%{_dbpath}/__db.000
 
 #==============================================================================
@@ -877,7 +877,7 @@ print (t)\
 %_bhpath        file://localhost/mnt/dist
 %_bhcoll        @(7.3|7.2|7.1|7.1sbe|7.1k|7.0|7.01j|7.0j|7.0sbe|7.0tc|6.2|6.2ha|6.2ee|6.1|6.0|5.2|5.1|5.0)
 %_bhN           @(SRPMS|i386|alpha|sparc|s390|ia64)
-%_bhVR          RedHat
+%_bhVR          @(RedHat|Fedora)
 %_bhA           RPMS
 
 #	The cache database directory.

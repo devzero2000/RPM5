@@ -133,8 +133,15 @@ rpm alias --vendorrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendo
 rpm alias --autorollback --define '_rollback_transaction_on_failure 1' \
 	--POPTdesc=$"Failed transactions will be rolled back automatically"
 
+rpm     alias --blink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|\n%|BLINKNEVRA?{[\t<= %{BLINKNEVRA}.rpm\n]}|'
+ \
+rpm     alias --flink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|\n%|FLINKNEVRA?{[\t=> %{FLINKNEVRA}.rpm\n]}|'
+ \
+        --POPTdesc=$"display previously installed packages"
+
+
 # colon separated i18n domains to use as PO catalogue lookaside for
-* retrieving header group/description/summary.
+# retrieving header group/description/summary.
 #
 # For vendors, value should be "vendor-dist".
 rpm alias --i18ndomains --define '_i18ndomains !#:+'

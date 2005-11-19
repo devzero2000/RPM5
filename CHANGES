@@ -7,6 +7,7 @@
 	- don't build rpmgetconf by default.
 	- don't enable the fcntl transaction lock by default.
 	- popt R++.
+	- complete forking perl-RPM2/* to perl/* module name "RPM".
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.

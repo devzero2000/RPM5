@@ -1,4 +1,3 @@
-
 #include "system.h"
 
 #include <rpmlib.h>
@@ -9,66 +8,65 @@
 
 #include "debug.h"
 
-/* Internal interface */
-
-#define RPMLOCK_PATH "/var/lock/rpm/transaction"
 /*@unchecked@*/ /*@observer@*/
 static const char * rpmlock_path_default = "%{?_rpmlock_path}";
 /*@unchecked@*/ /*@only@*/ /*relnull@*/
 static const char * rpmlock_path = NULL;
 
 enum {
-	RPMLOCK_READ   = 1 << 0,
-	RPMLOCK_WRITE  = 1 << 1,
-	RPMLOCK_WAIT   = 1 << 2,
+    RPMLOCK_READ   = 1 << 0,
+    RPMLOCK_WRITE  = 1 << 1,
+    RPMLOCK_WAIT   = 1 << 2,
 };
 
 typedef struct {
-	int fd;
-	int openmode;
+    int fd;
+    int omode;
 } * rpmlock;
 
 /*@null@*/
-static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
-	/*@globals rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
+static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *lockp)
+    /*@globals rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
+    /*@modifies *lockp, rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
 {
-	rpmlock lock = (rpmlock) malloc(sizeof(*lock));
+    rpmlock lock = (rpmlock) malloc(sizeof(*lock));
+    int rc = -1;
+    static int oneshot = 0;
 
-	/* XXX oneshot to determine path for fcntl lock. */
-	if (rpmlock_path == NULL) {
-	    char * t = rpmExpand(rpmlock_path_default, NULL);
-	    if (t == NULL || *t == '\0' || *t == '%') {
-		t = _free(t);
-		t = xstrdup(RPMLOCK_PATH);
-	    }
-	    rpmlock_path = t;
-	}
-	if (lock != NULL) {
-		mode_t oldmask = umask(022);
-		lock->fd = open(rpmlock_path, O_RDWR|O_CREAT, 0644);
-		(void) umask(oldmask);
+    if (lockp)
+	*lockp = NULL;
 
-/*@-branchstate@*/
-		if (lock->fd == -1) {
-			lock->fd = open(rpmlock_path, O_RDONLY);
-			if (lock->fd == -1) {
-				free(lock);
-				lock = NULL;
-			} else {
-/*@-nullderef@*/	/* XXX splint on crack */
-				lock->openmode = RPMLOCK_READ;
-/*@=nullderef@*/
-			}
-		} else {
-/*@-nullderef@*/	/* XXX splint on crack */
-			lock->openmode = RPMLOCK_WRITE | RPMLOCK_READ;
-/*@=nullderef@*/
-		}
-/*@=branchstate@*/
-	}
+    /* XXX oneshot to determine path for fcntl lock. */
+    /* XXX rpmlock_path is set once, cannot be changed with %{_rpmlock_path}. */
+    if (!oneshot) {
+	char * t = rpmExpand(rpmlock_path_default, NULL);
+	if (t == NULL || *t == '\0' || *t == '%')
+	    t = _free(t);
+	rpmlock_path = t;
+	oneshot++;
+    }
+
+    if (rpmlock_path != NULL) {
+	mode_t oldmask = umask(022);
+	lock->fd = open(rpmlock_path, O_RDWR|O_CREAT, 0644);
+	(void) umask(oldmask);
+
+	if (lock->fd == -1) {
+	    lock->fd = open(rpmlock_path, O_RDONLY);
+	    if (lock->fd == -1)
+		rc = -1;
+	    else
+/*@i@*/		lock->omode = RPMLOCK_READ;
+	} else
+/*@i@*/	    lock->omode = RPMLOCK_WRITE | RPMLOCK_READ;
+	rc = 0;
+    }
+    if (rc == 0 && lockp != NULL)
+	*lockp = lock;
+    else
+	lock = _free(lock);
 /*@-compdef@*/
-	return lock;
+    return rc;
 /*@=compdef@*/
 }
 
@@ -76,85 +74,85 @@ static void rpmlock_free(/*@only@*/ /*@null@*/ rpmlock lock)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies lock, fileSystem, internalState @*/
 {
-	if (lock) {
-		(void) close(lock->fd);
-		free(lock);
-	}
+    if (lock != NULL) {
+	if (lock->fd > 0)
+	    (void) close(lock->fd);
+	lock = _free(lock);
+    }
 }
 
 static int rpmlock_acquire(/*@null@*/ rpmlock lock, int mode)
 	/*@*/
 {
-	int res = 0;
-	if (lock && (mode & lock->openmode)) {
-		struct flock info;
-		int cmd;
-		if (mode & RPMLOCK_WAIT)
-			cmd = F_SETLKW;
-		else
-			cmd = F_SETLK;
-		if (mode & RPMLOCK_READ)
-			info.l_type = F_RDLCK;
-		else
-			info.l_type = F_WRLCK;
-		info.l_whence = SEEK_SET;
-		info.l_start = 0;
-		info.l_len = 0;
-		info.l_pid = 0;
-		if (fcntl(lock->fd, cmd, &info) != -1)
-			res = 1;
-	}
-	return res;
+    int rc = 0;
+
+    if (lock != NULL && (mode & lock->omode)) {
+	struct flock info;
+	int cmd;
+	if (mode & RPMLOCK_WAIT)
+	    cmd = F_SETLKW;
+	else
+	    cmd = F_SETLK;
+	if (mode & RPMLOCK_READ)
+	    info.l_type = F_RDLCK;
+	else
+	    info.l_type = F_WRLCK;
+	info.l_whence = SEEK_SET;
+	info.l_start = 0;
+	info.l_len = 0;
+	info.l_pid = 0;
+	if (fcntl(lock->fd, cmd, &info) != -1)
+	    rc = 1;
+    }
+    return rc;
 }
 
-static void rpmlock_release(/*@null@*/ rpmlock lock)
+static int rpmlock_release(/*@null@*/ rpmlock lock)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-	if (lock) {
-		struct flock info;
-		info.l_type = F_UNLCK;
-		info.l_whence = SEEK_SET;
-		info.l_start = 0;
-		info.l_len = 0;
-		info.l_pid = 0;
-		(void) fcntl(lock->fd, F_SETLK, &info);
-	}
+    int rc = 0;
+
+    if (lock != NULL) {
+	struct flock info;
+	info.l_type = F_UNLCK;
+	info.l_whence = SEEK_SET;
+	info.l_start = 0;
+	info.l_len = 0;
+	info.l_pid = 0;
+	rc = fcntl(lock->fd, F_SETLK, &info);
+    }
+    return rc;
 }
-
-
-/* External interface */
 
 void *rpmtsAcquireLock(rpmts ts)
 {
-	const char *rootDir = rpmtsRootDir(ts);
-	rpmlock lock;
+    const char *rootDir = rpmtsRootDir(ts);
+    rpmlock lock = NULL;
+    int rc = rpmlock_new((rootDir != NULL ? rootDir : "/"), &lock);
 
-	if (!rootDir)
-		rootDir = "/";
-	lock = rpmlock_new(rootDir);
 /*@-branchstate@*/
-	if (!lock) {
-		rpmMessage(RPMMESS_ERROR, _("can't create transaction lock on %s\n"), rpmlock_path);
-	} else if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
-		if (lock->openmode & RPMLOCK_WRITE)
-			rpmMessage(RPMMESS_WARNING,
-				   _("waiting for transaction lock on %s\n"), rpmlock_path);
-		if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
-			rpmMessage(RPMMESS_ERROR,
-				   _("can't create transaction lock on %s\n"), rpmlock_path);
-			rpmlock_free(lock);
-			lock = NULL;
-		}
+    if (rc) {
+	rpmMessage(RPMMESS_ERROR, _("can't create transaction lock on %s\n"), rpmlock_path);
+    } else if (lock != NULL) {
+	if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
+	    if (lock->omode & RPMLOCK_WRITE)
+		rpmMessage(RPMMESS_WARNING,
+		   _("waiting for transaction lock on %s\n"), rpmlock_path);
+	    if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
+		rpmMessage(RPMMESS_ERROR,
+		   _("can't create transaction lock on %s\n"), rpmlock_path);
+		rpmlock_free(lock);
+		lock = NULL;
+	    }
 	}
+    }
 /*@=branchstate@*/
-	return lock;
+    return lock;
 }
 
-void rpmtsFreeLock(void *lock)
+void * rpmtsFreeLock(void *lock)
 {
-	rpmlock_release((rpmlock)lock); /* Not really needed here. */
-	rpmlock_free((rpmlock)lock);
+    rpmlock_release((rpmlock)lock); /* Not really needed here. */
+    rpmlock_free((rpmlock)lock);
 }
-
-

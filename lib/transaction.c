@@ -1812,8 +1812,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	rollbackOnFailure = 0;
     } else {
 	lock = rpmtsAcquireLock(ts);
-	if (lock == NULL)
-	    return -1;	/* XXX W2DO? */
     }
 /*@=branchstate@*/
 
@@ -1849,7 +1847,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 	/* Open database RDWR for installing packages. */
 	if (rpmtsOpenDB(ts, dbmode)) {
-	    rpmtsFreeLock(lock);
+	    lock = rpmtsFreeLock(lock);
 	    return -1;	/* XXX W2DO? */
 	}
     }
@@ -2144,7 +2142,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	matches = xcalloc(fc, sizeof(*matches));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
 	    ps = rpmpsFree(ps);
-	    rpmtsFreeLock(lock);
+	    lock = rpmtsFreeLock(lock);
 	    return 1;	/* XXX WTFO? */
 	}
 
@@ -2284,7 +2282,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))
        )
     {
-	rpmtsFreeLock(lock);
+	lock = rpmtsFreeLock(lock);
 	return ts->orderCount;
     }
 
@@ -2683,7 +2681,7 @@ assert(psm != NULL);
     }
     pi = rpmtsiFree(pi);
 
-    rpmtsFreeLock(lock);
+    lock = rpmtsFreeLock(lock);
 
     /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
     if (ourrc)

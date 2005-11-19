@@ -954,7 +954,7 @@ dnl
 AC_ARG_WITH(perl,   [  --with-perl             build rpm perl bindings ])
 
 if test "$WITH_PERL_VERSION" != no ; then
-  WITH_PERL_SUBDIR=perl-RPM2
+  WITH_PERL_SUBDIR=perl
   WITH_PERL_SUBPACKAGE=1
 else
   WITH_PERL_SUBDIR=
@@ -1441,7 +1441,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
-	cd perl-RPM2 && perl Makefile.PL
+	cd perl && perl Makefile.PL
   
 ]],[[]])
 AC_OUTPUT
