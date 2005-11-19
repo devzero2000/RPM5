@@ -588,6 +588,7 @@ exit 0
 %changelog
 * Sat Nov 19 2005 Jeff Johnson <jbj@jbj.org> 4.4.4-0.3
 - complete forking perl-RPM2/* to perl/* with module name "RPM".
+- upgrade to db-4.4.16 internal.
 
 * Fri Nov 18 2005 Jeff Johnson <jbj@jbj.org> 4.4.4-0.2
 - correct release.
