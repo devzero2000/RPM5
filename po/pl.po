@@ -1,18 +1,19 @@
-# Polskie komunikaty dla RPM
+# Polish translation for rpm.
 # Copyright (C) 1999 Free Software Foundation, Inc.
 # Pre-translation has bean done using PePeSza v0.7[C
 # get your own copy of PePeSza from http://www.ids.pl/~pkollegu/pepesza.html
 # Wojciech Drapiñski <wojciech.drapinski@zie.pg.gda.pl>, 1999.
 # Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>, 1999
-# Jakub Bogusz <qboosh@pld-linux.org>, 2002-2003.
+# Jakub Bogusz <qboosh@pld-linux.org>, 2002-2005.
+# Arkadiusz Mi¶kiewicz <arekm@pld-linux.org>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.3-20030515\n"
+"Project-Id-Version: rpm 4.4.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-19 12:33-0500\n"
-"PO-Revision-Date: 2003-06-08 22:42+0200\n"
-"Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
+"POT-Creation-Date: 2005-11-17 07:24-0500\n"
+"PO-Revision-Date: 2005-11-18 21:30+0100\n"
+"Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
@@ -93,13 +94,12 @@ msgid "Verify options (with -V or --verify):"
 msgstr "Opcje weryfikacji (z -V lub --verify):"
 
 #: rpmqv.c:82
-#, fuzzy
 msgid "Source options (with --query or --verify):"
-msgstr "Opcje weryfikacji (z -V lub --verify):"
+msgstr "Opcje dla ¼ród³a (z --query lub --verify):"
 
 #: rpmqv.c:86
 msgid "File tree walk options (with --ftswalk):"
-msgstr ""
+msgstr "Opcje przechodzenia po drzewie plików (z --ftswalk):"
 
 #: rpmqv.c:92
 msgid "Signature options:"
@@ -971,7 +971,7 @@ msgstr "B³±d wewnêtrzny: Fa³szywa etykieta %d\n"
 #: build/parsePreamble.c:835
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
-msgstr ""
+msgstr "Przestarza³a sk³adnia nie jest obs³ugiwana: %s\n"
 
 #: build/parsePreamble.c:904
 #, c-format
@@ -1062,12 +1062,11 @@ msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
 
 #: build/parseReqs.c:113
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"linia %d: Oznaczenia zale¿no¶ci musz± siê zaczynaæ od alfanumerycznych, '_' "
-"lub '/': %s\n"
+"linia %d: Zale¿no¶æ \"%s\" musi zaczynaæ siê liter±, cyfr±, '_' lub '/': %s\n"
 
 #: build/parseReqs.c:142
 #, c-format
@@ -1345,15 +1344,15 @@ msgid "query of specfile %s failed, can't parse\n"
 msgstr "odpytywanie pliku spec %s nie powiod³o siê, nie mo¿na interpretowaæ\n"
 
 #: build/spec.c:776
-#, fuzzy, c-format
+#, c-format
 msgid "Query specfile for platform(s): %s\n"
-msgstr "Budowanie dla platform: %s\n"
+msgstr "Odpytywanie pliku spec dla platform(y): %s\n"
 
 #. Query spec for this target platform.
 #: build/spec.c:790
-#, fuzzy, c-format
+#, c-format
 msgid "    target platform: %s\n"
-msgstr "Budowanie dla platform: %s\n"
+msgstr " platforma docelowa: %s\n"
 
 #: lib/cpio.c:207
 #, c-format
@@ -1397,9 +1396,9 @@ msgid " failed - "
 msgstr " nie powiod³o siê -"
 
 #: lib/depends.c:243
-#, fuzzy, c-format
+#, c-format
 msgid "package %s was already added, skipping %s\n"
-msgstr "pakiet %s by³ ju¿ dodany, jest zastêpowany przez %s\n"
+msgstr "pakiet %s by³ ju¿ dodany, pomijanie %s\n"
 
 #: lib/depends.c:257
 #, c-format
@@ -1408,58 +1407,51 @@ msgstr "pakiet %s by³ ju¿ dodany, jest zastêpowany przez %s\n"
 
 #. @-nullptrarith@
 #: lib/depends.c:363
-#, fuzzy, c-format
+#, c-format
 msgid "   upgrade erases %s\n"
-msgstr "¿aden pakiet nie wymaga %s\n"
+msgstr "   uaktualnienie usuwa %s\n"
 
 #. @-nullptrarith@
 #: lib/depends.c:431
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
-msgstr ""
+msgstr "  Obsoletes: %s\t\tusuwa %s\n"
 
 #: lib/depends.c:527
 msgid "(cached)"
 msgstr "(zbuforowane)"
 
 #: lib/depends.c:543
-#, fuzzy
 msgid "(macro probe)"
-msgstr "(zasób rpmrc)"
+msgstr "(test makra)"
 
 #: lib/depends.c:562
-#, fuzzy
 msgid "(access probe)"
-msgstr "(zasób rpmrc)"
+msgstr "(test dostêpu)"
 
 #: lib/depends.c:575
-#, fuzzy
 msgid "(sysinfo provides)"
-msgstr "(zasób rpmliba)"
+msgstr "(zasób sysinfo)"
 
 #: lib/depends.c:596
 msgid "(rpmlib provides)"
 msgstr "(zasób rpmliba)"
 
 #: lib/depends.c:612
-#, fuzzy
 msgid "(cpuinfo provides)"
-msgstr "(zasób rpmliba)"
+msgstr "(zasób cpuinfo)"
 
 #: lib/depends.c:628
-#, fuzzy
 msgid "(getconf provides)"
-msgstr "(zasób rpmliba)"
+msgstr "(zasób getconf)"
 
 #: lib/depends.c:644
-#, fuzzy
 msgid "(uname provides)"
-msgstr "(dodany zasób)"
+msgstr "(zasób uname)"
 
 #: lib/depends.c:679
-#, fuzzy
 msgid "(soname provides)"
-msgstr "(dodany zasób)"
+msgstr "(zasób soname)"
 
 #: lib/depends.c:708
 msgid "(db files)"
@@ -1476,7 +1468,7 @@ msgstr "(pakiet w bazie)"
 #. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:765
 msgid "(hint skipped)"
-msgstr ""
+msgstr "(podpowied¼ pominiêta)"
 
 #: lib/depends.c:1098
 #, c-format
@@ -1495,13 +1487,12 @@ msgstr "========== zapisywanie relacji tsort\n"
 
 #. T4. Scan for zeroes.
 #: lib/depends.c:1549
-#, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
-"========== tsortowanie pakietów (kolejno¶æ, #poprzedniki, #nastêpniki, "
-"drzewo, g³êboko¶æ)\n"
+"========== tsortowanie pakietów (kolejno¶æ, #poprzedników, #nastêpników, "
+"drzewo, g³êboko¶æ, Rbreadth)\n"
 
 #: lib/depends.c:1640
 #, c-format
@@ -1633,9 +1624,9 @@ msgid "%s created as %s\n"
 msgstr "%s utworzony jako %s\n"
 
 #: lib/manifest.c:133
-#, fuzzy, c-format
+#, c-format
 msgid "adding %d args from manifest.\n"
-msgstr "dodawanie %d wpisów do indeksu %s.\n"
+msgstr "dodawanie %d argumentów z manifestu.\n"
 
 #: lib/misc.c:41
 #, c-format
@@ -1683,9 +1674,9 @@ msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: B£ÊDNY, nie szesnastkowy\n"
 
 #: lib/package.c:470
-#, fuzzy, c-format
+#, c-format
 msgid "hdr RSA: BAD, not binary\n"
-msgstr "hdr DSA: B£ÊDNY, nie binarny\n"
+msgstr "hdr RSA: B£ÊDNY, nie binarny\n"
 
 #: lib/package.c:482
 #, c-format
@@ -1694,9 +1685,10 @@ msgstr "hdr DSA: B£ÊDNY, nie binarny\n"
 
 #: lib/package.c:546 lib/package.c:586 lib/package.c:930 lib/package.c:956
 #: lib/package.c:988
-#, fuzzy, c-format
+#, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-msgstr "tylko sygnatury V3 mog± byæ sprawdzone, sygnatura V%u jest pomijana\n"
+msgstr ""
+"tylko sygnatury V3 i V4 mog± byæ sprawdzone, sygnatura V%u jest pomijana\n"
 
 #: lib/package.c:674
 #, c-format
@@ -1759,44 +1751,36 @@ msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread nie powiod³o siê: %s\n"
 
 #: lib/poptALL.c:230
-#, fuzzy
 msgid "FTS_COMFOLLOW: follow command line symlinks"
-msgstr "pod±¿aj za dowi±zaniami z linii poleceñ"
+msgstr "FTS_COMFOLLOW: pod±¿aj za dowi±zaniami z linii poleceñ"
 
 #: lib/poptALL.c:232
-#, fuzzy
 msgid "FTS_LOGICAL: logical walk"
-msgstr "przechod¼ logicznie"
+msgstr "FTS_LOGICAL: przechod¼ logicznie"
 
 #: lib/poptALL.c:234
-#, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
-msgstr "nie zmieniaj katalogów"
+msgstr "FTS_NOCHDIR: nie zmieniaj katalogów"
 
 #: lib/poptALL.c:236
-#, fuzzy
 msgid "FTS_NOSTAT: don't get stat info"
-msgstr "nie odczytuj informacji stat"
+msgstr "FTS_NOSTAT: nie odczytuj informacji stat"
 
 #: lib/poptALL.c:238
-#, fuzzy
 msgid "FTS_PHYSICAL: physical walk"
-msgstr "przechod¼ fizycznie"
+msgstr "FTS_PHYSICAL: przechod¼ fizycznie"
 
 #: lib/poptALL.c:240
-#, fuzzy
 msgid "FTS_SEEDOT: return dot and dot-dot"
-msgstr "zwracaj kropkê i kropkê-kropkê"
+msgstr "FTS_SEEDOT: zwracaj kropkê i kropkê-kropkê"
 
 #: lib/poptALL.c:242
-#, fuzzy
 msgid "FTS_XDEV: don't cross devices"
-msgstr "nie przechod¼ miêdzy urz±dzeniami"
+msgstr "FTS_XDEV: nie przechod¼ miêdzy urz±dzeniami"
 
 #: lib/poptALL.c:244
-#, fuzzy
 msgid "FTS_WHITEOUT: return whiteout information"
-msgstr "zwróæ informacje o whiteout"
+msgstr "FTS_WHITEOUT: zwróæ informacje o whiteout"
 
 #: lib/poptALL.c:260
 msgid "predefine MACRO with value EXPR"
@@ -1875,18 +1859,16 @@ msgid "use threads for file state machine"
 msgstr "u¿yj w±tków dla maszyny stanu plików"
 
 #: lib/poptALL.c:325
-#, fuzzy
 msgid "debug FTP/HTTP data stream"
-msgstr "¶led¼ strumieñ danych protoko³u"
+msgstr "¶led¼ strumieñ danych FTP/HTTP"
 
 #: lib/poptALL.c:327
 msgid "debug argv collections"
-msgstr ""
+msgstr "¶led¼ zbiory argv"
 
 #: lib/poptALL.c:329
-#, fuzzy
 msgid "debug WebDAV data stream"
-msgstr "¶led¼ strumieñ danych protoko³u"
+msgstr "¶led¼ strumieñ danych WebDAV"
 
 #: lib/poptALL.c:334
 msgid "debug option/argument processing"
@@ -1920,7 +1902,7 @@ msgstr "¶cie¿ki wy³±czeñ musz± siê zaczynaæ od /"
 
 #: lib/poptI.c:97
 msgid "Option --relocate needs /old/path=/new/path argument"
-msgstr ""
+msgstr "Opcja --relocate wymaga argumentu /stara/¶cie¿ka=/nowa/¶cie¿ka"
 
 #: lib/poptI.c:99
 msgid "relocations must begin with a /"
@@ -1935,33 +1917,29 @@ msgid "relocations must have a / following the ="
 msgstr "specyfikacja przesuniêcia musi zawieraæ / po ="
 
 #: lib/poptI.c:123
-#, fuzzy
 msgid "Option --rbexclude needs transaction id argument(s)"
-msgstr "cofniêcie przyjmuje argument w postaci znacznika czasu/daty"
+msgstr "Opcja --rbexclude wymaga id transakcji jako argumentu(ów)"
 
 #: lib/poptI.c:154
-#, fuzzy
 msgid "Option --rollback needs a time/date stamp argument"
-msgstr "cofniêcie przyjmuje argument w postaci znacznika czasu/daty"
+msgstr "Opcja --rollback wymaga czasu/daty jako argumentu"
 
 #: lib/poptI.c:158
-#, fuzzy, c-format
+#, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
-msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
+msgstr "Cel wycofania:  %-24.24s (0x%08x)\n"
 
 #: lib/poptI.c:162
 msgid "malformed rollback time/date stamp argument"
-msgstr "b³êdny argument znacznika czasu/daty dla cofniêcie"
+msgstr "b³êdny argument znacznika czasu/daty dla wycofania"
 
 #: lib/poptI.c:169
-#, fuzzy
 msgid "arbgoal takes a time/date stamp argument"
-msgstr "cofniêcie przyjmuje argument w postaci znacznika czasu/daty"
+msgstr "arbgoal wymaga czasu/daty jako argumentu"
 
 #: lib/poptI.c:176
-#, fuzzy
 msgid "malformed arbgoal time/date stamp argument"
-msgstr "b³êdny argument znacznika czasu/daty dla cofniêcie"
+msgstr "b³êdny argument znacznika czasu/daty dla arbgoal"
 
 #: lib/poptI.c:232
 msgid "add suggested packages to transaction"
@@ -1991,11 +1969,11 @@ msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
 #: lib/poptI.c:254
 msgid "relocate files in non-relocatable package"
-msgstr "przesuwanie plików w nieprzesuwalnym pakiecie"
+msgstr "przesuñ pliki w nieprzesuwalnym pakiecie"
 
 #: lib/poptI.c:258
 msgid "print dependency loops as warning"
-msgstr ""
+msgstr "wypisuj pêtle zale¿no¶ci jako ostrze¿enie"
 
 #: lib/poptI.c:262
 msgid "save erased package files by renaming into sub-directory"
@@ -2026,9 +2004,8 @@ msgid "<path>"
 msgstr "<¶cie¿ka>"
 
 #: lib/poptI.c:278
-#, fuzzy
 msgid "detect file conflicts between packages"
-msgstr "przesuwanie plików w nieprzesuwalnym pakiecie"
+msgstr "wykryj konflikty plików miêdzy pakietami"
 
 #: lib/poptI.c:280
 msgid "short hand for --replacepkgs --replacefiles"
@@ -2168,7 +2145,7 @@ msgstr "zapisz usuwane pliki z pakietu poprzez przepakowanie"
 
 #: lib/poptI.c:385
 msgid "ignore file conflicts between packages"
-msgstr ""
+msgstr "ignoruj konflikty plików miêdzy pakietami"
 
 #: lib/poptI.c:388
 msgid "reinstall if the package is already present"
@@ -2183,19 +2160,16 @@ msgid "<date>"
 msgstr "<data>"
 
 #: lib/poptI.c:393
-#, fuzzy
 msgid "If transaction fails rollback to <date>"
-msgstr "Transakcja niepowiod³a siê... wycowujê\n"
+msgstr "Je¶li transakcja nie powiedzie siê, cofnij do <daty>"
 
 #: lib/poptI.c:396
-#, fuzzy
 msgid "Exclude Transaction I.D. from rollback"
-msgstr "Transakcja niepowiod³a siê... wycowujê\n"
+msgstr "Wy³±czenie I.D. transakcji z wycofania"
 
 #: lib/poptI.c:397
-#, fuzzy
 msgid "<tid>"
-msgstr "<opcja>"
+msgstr "<tid>"
 
 #: lib/poptI.c:399
 msgid "don't install, but tell if it would work or not"
@@ -2226,14 +2200,12 @@ msgid "query/verify a package file"
 msgstr "odpytaj/sprawd¼ plik pakietu"
 
 #: lib/poptQV.c:117
-#, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
-msgstr "odpytaj/sprawd¼ pakiety z transakcji instalacji"
+msgstr "odpytaj/sprawd¼ pakiety z GÓRY przechodzenia po drzewie plików"
 
 #: lib/poptQV.c:119
-#, fuzzy
 msgid "query/verify package(s) from system HDLIST"
-msgstr "odpytaj/sprawd¼ pakiety z transakcji instalacji"
+msgstr "odpytaj/sprawd¼ pakiety z systemowej HDLIST"
 
 #: lib/poptQV.c:122
 msgid "query/verify package(s) with package identifier"
@@ -2285,25 +2257,23 @@ msgstr "odpytaj/sprawd¼ pakiet(y) udostêpniaj±ce zasób"
 
 #: lib/poptQV.c:146
 msgid "create transaction set"
-msgstr ""
+msgstr "utwórz zbiór transakcji"
 
 #: lib/poptQV.c:148
 msgid "do not order transaction set"
-msgstr ""
+msgstr "nie porz±dkuj zbioru transakcji"
 
 #: lib/poptQV.c:150
-#, fuzzy
 msgid "do not glob arguments"
-msgstr "nie podano argumentów"
+msgstr "nie rozwijaj masek w argumentach"
 
 #: lib/poptQV.c:152
 msgid "do not process non-package files as manifests"
-msgstr ""
+msgstr "nie przetwarzaj plików spoza pakietu jako manifestów"
 
 #: lib/poptQV.c:154
-#, fuzzy
 msgid "do not read headers"
-msgstr "%s: nie mo¿na odczytaæ nag³ówka pod 0x%x\n"
+msgstr "nie czytaj nag³ówków"
 
 #: lib/poptQV.c:281
 msgid "list all configuration files"
@@ -2349,9 +2319,8 @@ msgid "display the states of the listed files"
 msgstr "wy¶wietl status pokazywanych plików"
 
 #: lib/poptQV.c:313
-#, fuzzy
 msgid "specify target platform"
-msgstr "wymu¶ platformê docelow±"
+msgstr "okre¶l platformê docelow±"
 
 #: lib/poptQV.c:339
 msgid "don't verify size of files"
@@ -2402,9 +2371,8 @@ msgid "verify package signature(s)"
 msgstr "sprawd¼ sygnaturê pakietu"
 
 #: lib/poptQV.c:421
-#, fuzzy
 msgid "delete package signatures"
-msgstr "sprawd¼ sygnaturê pakietu"
+msgstr "usuñ sygnatury pakietu"
 
 #: lib/poptQV.c:423
 msgid "import an armored public key"
@@ -2419,17 +2387,16 @@ msgid "generate signature"
 msgstr "generuj sygnaturê"
 
 #: lib/poptQV.c:430
-#, fuzzy
 msgid "specify trust metric"
-msgstr "wymu¶ platformê docelow±"
+msgstr "okre¶l metrykê zaufania"
 
 #: lib/poptQV.c:433
 msgid "set ultimate trust when importing pubkey(s)"
-msgstr ""
+msgstr "ustaw ostateczne zaufanie przy importowaniu kluczy publicznych"
 
 #: lib/poptQV.c:436
 msgid "unset ultimate trust when importing pubkey(s)"
-msgstr ""
+msgstr "wy³±cz ostateczne zaufanie przy importowaniu kluczy publicznych"
 
 #: lib/psm.c:273
 msgid "source package expected, binary found\n"
@@ -2445,39 +2412,39 @@ msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 
 #: lib/psm.c:688
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
-msgstr "%s: %s(%s-%s-%s) %ssynchroniczny start skryptu\n"
+msgstr "%s: %s(%s-%s-%s.%s) uruchamianie skryptletu <lua>.\n"
 
 #: lib/psm.c:706
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
-msgstr "%s: %s(%s-%s-%s) pomijanie nadmiarowego \"%s\".\n"
+msgstr "%s: %s(%s-%s-%s.%s) pomijanie nadmiarowego \"%s\".\n"
 
 #: lib/psm.c:714
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
-msgstr "%s: %s(%s-%s-%s) %ssynchroniczny start skryptu\n"
+msgstr "%s: %s(%s-%s-%s.%s) %ssynchroniczny start skryptletu\n"
 
 #: lib/psm.c:926
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
-msgstr "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
+msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 
 #: lib/psm.c:974
-#, fuzzy, c-format
+#, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
-msgstr "skrypt %s(%s-%s-%s) nie powiód³ siê, waitpid(%d) rc %d: %s\n"
+msgstr "%s(%s-%s-%s.%s) skryptlet nie powiód³ siê, waitpid(%d) rc %d: %s\n"
 
 #: lib/psm.c:981
-#, fuzzy, c-format
+#, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
-msgstr "skrypt %s(%s-%s-%s) nie powiód³ siê, status wyj¶cia %d\n"
+msgstr "%s(%s-%s-%s.%s) skryptlet nie powiód³ siê, sygna³ %d\n"
 
 #: lib/psm.c:985
-#, fuzzy, c-format
+#, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
-msgstr "skrypt %s(%s-%s-%s) nie powiód³ siê, status wyj¶cia %d\n"
+msgstr "%s(%s-%s-%s.%s) skryptlet nie powiód³ siê, status wyj¶cia %d\n"
 
 #: lib/psm.c:1424
 #, c-format
@@ -2513,26 +2480,26 @@ msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê: %s\n"
 
 #: lib/psm.c:2222
-#, fuzzy, c-format
+#, c-format
 msgid "Could not acquire transaction score entry for %s\n"
-msgstr "Nie mo¿na otworzyæ pliku PreIn: %s\n"
+msgstr "Nie uda³o siê uzyskaæ wpisu wyniku transakcji dla %s\n"
 
 #: lib/psm.c:2235
 #, c-format
 msgid "Setting %s to TID of 0x%08x\n"
-msgstr ""
+msgstr "Ustawianie %s na TID 0x%08x\n"
 
 #: lib/psm.c:2259
-#, fuzzy, c-format
+#, c-format
 msgid "Attempting to mark %s as installed in trasaction score\n"
-msgstr "Próba oznakowania %s jako zainstalowanego w tablicy punktów(%p).\n"
+msgstr "Próba oznakowania %s jako zainstalowanego w tablicy punktów\n"
 
 #: lib/psm.c:2291
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr "Próba oznakowania %s jako usuniêtego w tablicy punktów(0x%x).\n"
 
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³êdny format: %s\n"
@@ -2692,9 +2659,9 @@ msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature nie powiod³o siê: %s\n"
 
 #: lib/rpmchecksig.c:602
-#, fuzzy, c-format
+#, c-format
 msgid "%s: import read failed(%d).\n"
-msgstr "%s: read przy imporcie nie powiod³o siê.\n"
+msgstr "%s: read przy imporcie nie powiod³o siê (%d).\n"
 
 #: lib/rpmchecksig.c:614
 #, c-format
@@ -2717,9 +2684,10 @@ msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Sygnatura nie jest dostêpna (RPM v1.0)\n"
 
 #: lib/rpmchecksig.c:862
-#, fuzzy, c-format
+#, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-msgstr "tylko sygnatury V3 mog± byæ sprawdzone, sygnatura V%u jest pomijana\n"
+msgstr ""
+"tylko sygnatury V3 i V4 mog± byæ sprawdzone, sygnatura V%u jest pomijana\n"
 
 #: lib/rpmchecksig.c:1028
 msgid "NOT OK"
@@ -2796,46 +2764,44 @@ msgstr "wewnêtrzna obs³uga dla skryptów lua."
 
 #: lib/rpmds.c:1323
 msgid "header tags can be type int_64."
-msgstr ""
+msgstr "znaczniki nag³ówka mog± byæ typu int_64."
 
 #: lib/rpmds.c:1424
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
-msgstr ""
-"linia %d: Oznaczenia zale¿no¶ci musz± siê zaczynaæ od alfanumerycznych, '_' "
-"lub '/': %s\n"
+msgstr "%s:%d \"%s\" musi zaczynaæ siê liter±, cyfr±, '_', '/' lub '%%'.\n"
 
 #. XXX No comparison operator found.
 #: lib/rpmds.c:1458
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
-msgstr ""
+msgstr "%s:%d Brak operatora porównania.\n"
 
 #. XXX No EVR comparison value found.
 #: lib/rpmds.c:1468
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
-msgstr ""
+msgstr "%s:%d Nie znaleziono warto¶ci do porównania EVR.\n"
 
 #: lib/rpmds.c:2989 lib/rpmds.c:3019 lib/rpmds.c:3031
 #, c-format
 msgid "running \"%s\" pipe command\n"
-msgstr ""
+msgstr "uruchamianie polecenia potokowego \"%s\"\n"
 
 #: lib/rpmds.c:2992
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
 "Skipping ...\n"
 msgstr ""
-"linia %d: Oznaczenia zale¿no¶ci musz± siê zaczynaæ od alfanumerycznych, '_' "
-"lub '/': %s\n"
+"\tlinia %d: \"%s\" musi zaczynaæ siê liter±, cyfr±, '_', '/' lub '%%'. "
+"Pomijanie...\n"
 
 #. XXX No comparison operator found.
 #: lib/rpmds.c:3021
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
-msgstr ""
+msgstr "\tlinia %d: \"%s\" nie ma operatora porównania. Pomijanie...\n"
 
 #. XXX No EVR comparison value found.
 #: lib/rpmds.c:3033
@@ -2844,6 +2810,8 @@ msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
+"\tlinia %d: Brak warto¶ci porównania EVR.\n"
+" Pomijanie..."
 
 #: lib/rpmds.c:3162
 #, c-format
@@ -2900,7 +2868,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie katalogu %s do %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1065 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1065 lib/rpmts.c:646
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2946,9 +2914,9 @@ msgid "Upgrading packages..."
 msgstr "Uaktualnianie pakietów..."
 
 #: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1147
-#, fuzzy, c-format
+#, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
-msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
+msgstr "Cel automatycznego wycofania: %-24.24s (0x%08x):\n"
 
 #: lib/rpminstall.c:421
 #, c-format
@@ -3039,12 +3007,12 @@ msgstr "Instalacja %s\n"
 #: lib/rpminstall.c:1349
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
-msgstr ""
+msgstr "Wy³±czanie TID z wycofania: %-24.24s (0x%08x)\n"
 
 #: lib/rpminstall.c:1436 lib/transaction.c:1152
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
+msgstr "Wycofanie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
 
 #: lib/rpminstall.c:1467 lib/transaction.c:1226
 msgid "Cleaning up repackaged packages:\n"
@@ -3226,47 +3194,49 @@ msgstr "Nie mo¿na otworzyæ %s do odczytu: %s.\n"
 #: lib/rpmrc.c:1930
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
-msgstr ""
+msgstr "Skonfigurowane zasoby systemu (z /etc/rpm/sysinfo):\n"
 
 #: lib/rpmrc.c:1942
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
-msgstr ""
+msgstr "Cechy dostarczane przez instalator rpmlib:\n"
 
 #: lib/rpmrc.c:1957
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
-msgstr ""
+msgstr "Cechy dostarczane przez bie¿±ce cpuinfo (z /proc/cpuinfo):\n"
 
 #: lib/rpmrc.c:1971
 #, c-format
 msgid "Features provided by current getconf:\n"
-msgstr ""
+msgstr "Cechy dostarczane przez bie¿±cy getconf:\n"
 
 #: lib/rpmrc.c:1985
 #, c-format
 msgid "Features provided by current uname:\n"
-msgstr ""
+msgstr "Cechy dostarczane przez bie¿±ce uname:\n"
 
 #: lib/rpmsx.c:374
 #, c-format
 msgid "%s:  no newline on line number %d (only read %s)\n"
-msgstr ""
+msgstr "%s:  brak nowej linii w linii numer %d (przeczytano tylko %s)\n"
 
 #: lib/rpmsx.c:391
 #, c-format
 msgid "%s:  line number %d is missing fields (only read %s)\n"
-msgstr ""
+msgstr "%s:  brak pól w linii numer %d (przeczytano tylko %s)\n"
 
 #: lib/rpmsx.c:424
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
+"%s:  nie uda³o siê skompilowaæ wyra¿enia regularnego %s w linii numer %d:  %"
+"s\n"
 
 #: lib/rpmsx.c:439 lib/rpmsx.c:454
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
-msgstr ""
+msgstr "%s:  b³êdne okre¶lenie typu %s w linii numer %d\n"
 
 #: lib/rpmsx.c:467
 #, c-format
@@ -3278,114 +3248,113 @@ msgstr "%s:  nieprawid³owy kontekst %s w lini numer %d\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Packages w %s\n"
 
-#: lib/rpmts.c:283
+#: lib/rpmts.c:286
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "dodatkowe '(' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:301
+#: lib/rpmts.c:304
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "brak '(' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:309
+#: lib/rpmts.c:312
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "brak ')' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:520
+#: lib/rpmts.c:523
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Solve w %s\n"
 
-#: lib/rpmts.c:664
+#: lib/rpmts.c:667
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Dodawane: %s\n"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:679
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Sugerowane: %s\n"
 
-#: lib/rpmts.c:1229
+#: lib/rpmts.c:1232
 msgid "mounted filesystems:\n"
 msgstr "podmontowane systemy plików:\n"
 
-#: lib/rpmts.c:1231
-#, fuzzy
+#: lib/rpmts.c:1234
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
-msgstr "    i    urz bloków  bl.wolnych    i.wolnych punkt montowania\n"
+msgstr "    i        urz    bloków  bl.wolnych    i.wolnych punkt montowania\n"
 
-#: lib/rpmts.c:1287
-#, fuzzy, c-format
+#: lib/rpmts.c:1290
+#, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
-msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
+msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
 
-#: lib/rpmts.c:1593
+#: lib/rpmts.c:1596
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
-msgstr ""
+msgstr "Tworzenie tablicy wyników transakcji(%p, %p)\n"
 
-#: lib/rpmts.c:1598
+#: lib/rpmts.c:1601
 #, c-format
 msgid "\tScore board address:  %p\n"
-msgstr ""
+msgstr "\tAdres tablicy wyników:  %p\n"
 
-#: lib/rpmts.c:1608
+#: lib/rpmts.c:1611
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "\tPrzydzielanie przestrzeni na %d wpisów\n"
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1635
+#: lib/rpmts.c:1638
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
-msgstr ""
+msgstr "\tDodawanie wpisu dla %s do tablicy wyników.\n"
 
-#: lib/rpmts.c:1639
+#: lib/rpmts.c:1642
 #, c-format
 msgid "\t\tEntry address:  %p\n"
-msgstr ""
+msgstr "\t\tAdres wpisu:  %p\n"
 
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1651
+#: lib/rpmts.c:1654
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
-msgstr ""
+msgstr "\tUaktualnianie wpisu dla %s w tablicy wyników.\n"
 
-#: lib/rpmts.c:1676
+#: lib/rpmts.c:1679
 msgid "Could not get header for transaction score!\n"
-msgstr ""
+msgstr "Nie uda³o siê pobraæ nag³ówka dla wyników transakcji!\n"
 
-#: lib/rpmts.c:1677
+#: lib/rpmts.c:1680
 #, c-format
 msgid "NEVRA: %s"
-msgstr ""
+msgstr "NEVRA: %s"
 
-#: lib/rpmts.c:1686
+#: lib/rpmts.c:1689
 #, c-format
 msgid "\tCould not get INSTALLTID for %s.\n"
-msgstr ""
+msgstr "\tNie uda³o siê pobraæ INSTALLTID-a dla %s.\n"
 
-#: lib/rpmts.c:1691
+#: lib/rpmts.c:1694
 #, c-format
 msgid "\tINSTALLTID for %s is 0x%08x.\n"
-msgstr ""
+msgstr "\tINSTALLTID dla %s to 0x%08x.\n"
 
 #. Assume we don't find it
-#: lib/rpmts.c:1777
+#: lib/rpmts.c:1780
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
-msgstr ""
+msgstr "Przeszukiwanie tablicy wyników(%p) pod k±tem %s\n"
 
-#: lib/rpmts.c:1783
+#: lib/rpmts.c:1786
 #, c-format
 msgid "\tFound entry at address:  %p\n"
-msgstr ""
+msgstr "\tZnaleziono wpis pod adresem:  %p\n"
 
 #: lib/signature.c:140
 #, c-format
@@ -3438,9 +3407,9 @@ msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr "sigh wyrównanie(%d): B£ÊDNE, odczytano %d bajtów\n"
 
 #: lib/signature.c:334
-#, fuzzy, c-format
+#, c-format
 msgid "sigh sigSize(%d): BAD, fstat(2) failed\n"
-msgstr "sigh rozmiar(%d): B£ÊDNY, read zwróci³o %d\n"
+msgstr "sigh sigSize(%d): B£ÊDNE, fstat(2) nie powiod³o siê\n"
 
 #: lib/signature.c:371
 #, c-format
@@ -3480,9 +3449,9 @@ msgid "Got %d bytes of PGP sig\n"
 msgstr "Otrzymano %d bajtów sygnatury PGP\n"
 
 #: lib/signature.c:614
-#, fuzzy, c-format
+#, c-format
 msgid "gpg exec failed (%d)\n"
-msgstr "wykonanie nie powiod³o siê\n"
+msgstr "wywo³anie gpg nie powiod³o siê (%d)\n"
 
 #. GPG failed to write signature
 #. Just in case
@@ -3538,14 +3507,12 @@ msgstr "Nag³ówek "
 
 #. @=branchstate@
 #: lib/signature.c:1296
-#, fuzzy
 msgid " signature: "
-msgstr "Sygnatura V3 DSA: "
+msgstr " sygnatura: "
 
 #: lib/signature.c:1423
-#, fuzzy
 msgid " DSA signature: "
-msgstr "Sygnatura V3 DSA: "
+msgstr " sygnatura DSA: "
 
 #: lib/signature.c:1505
 #, c-format
@@ -3569,50 +3536,49 @@ msgid "excluding directory %s\n"
 msgstr "wy³±czanie katalogu %s\n"
 
 #: lib/transaction.c:1006
-#, fuzzy, c-format
+#, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
-msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
+msgstr "Cofanie udanych transakcji do %-24.24s (0x%08x).\n"
 
 #: lib/transaction.c:1011
-#, fuzzy
 msgid "Creating rollback transaction to achieve goal\n"
-msgstr "Tworzenie transakcji auto-wycofywania\n"
+msgstr "Tworzenie transakcji wycofania do osi±gniêcia celu\n"
 
 #: lib/transaction.c:1144
 msgid "Transaction failed...rolling back\n"
-msgstr "Transakcja niepowiod³a siê... wycowujê\n"
+msgstr "Transakcja nie powiod³a siê... wycofywanie\n"
 
 #: lib/transaction.c:1155
-#, fuzzy, c-format
+#, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
-msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
+msgstr "Nieudana transakcja:  %-24.24s(0x%08x)\n"
 
 #: lib/transaction.c:1161
 msgid "Could not resolve semaphore_backout macro!\n"
-msgstr ""
+msgstr "Nie uda³o siê rozwi±zaæ makra semaphore_backout!\n"
 
 #: lib/transaction.c:1165
-#, fuzzy, c-format
+#, c-format
 msgid "Creating semaphore %s...\n"
-msgstr "tworzenie katalogu %s\n"
+msgstr "Tworzenie semafora %s...\n"
 
 #: lib/transaction.c:1185
 msgid "Could not order auto-rollback transaction!\n"
-msgstr ""
+msgstr "Nie uda³o siê wykonaæ transakcji automatycznego wycofania!\n"
 
 #: lib/transaction.c:1257
-#, fuzzy, c-format
+#, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
-msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
+msgstr "Cofanie udanych transakcji do %-24.24s (0x%08x)\n"
 
 #: lib/transaction.c:1300
-#, fuzzy, c-format
+#, c-format
 msgid "Removing semaphore %s...\n"
-msgstr "usuwanie katalogu %s\n"
+msgstr "Usuwanie semafora %s...\n"
 
 #: lib/transaction.c:1342
 msgid "Getting repackaged header from transaction element\n"
-msgstr ""
+msgstr "Pobieranie przepakowanego nag³ówka z elementu transakcji\n"
 
 #. Get the index of possible repackaged packages
 #: lib/transaction.c:1372
@@ -3641,7 +3607,7 @@ msgstr "\tPrzepakowany pakiet nie znaleziony!.\n"
 #.
 #: lib/transaction.c:1414
 msgid "\tREMOVETID matched INSTALLTID.\n"
-msgstr ""
+msgstr "\tREMOVETID dopasowano do INSTALLTID.\n"
 
 #: lib/transaction.c:1416
 #, c-format
@@ -3655,71 +3621,67 @@ msgstr "\tPrzepakowany Pakiet %s...\n"
 
 #. XXX: Can't happen
 #: lib/transaction.c:1489
-#, fuzzy
 msgid "Could not acquire transaction score!.\n"
-msgstr "Nie mo¿na otworzyæ pliku PreIn: %s\n"
+msgstr "Nie uda³o siê uzyskaæ wyniku transakcji!\n"
 
 #. XXX: Can't happen
 #: lib/transaction.c:1494
-#, fuzzy, c-format
+#, c-format
 msgid "Could not acquire score entry %s!.\n"
-msgstr "Nie mo¿na otworzyæ pliku PreIn: %s\n"
+msgstr "Nie uda³o siê uzyskaæ wpisu wyniku %s!\n"
 
 #: lib/transaction.c:1512
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
-msgstr ""
+msgstr "Przetwarzanie nieudanego elementu instalacji %s do automatycznego wycofania.\n"
 
 #: lib/transaction.c:1515
-#, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
-msgstr "b³±d odczytu nag³ówka z pakietu\n"
+msgstr "\tWymuszenie dodania nag³ówka do rpmdb.\n"
 
 #: lib/transaction.c:1526
-#, fuzzy
 msgid "\tCould not add failed package header to db!\n"
-msgstr "Dodanie niepowiod³o siê. Nie mo¿na przeczytaæ nag³ó³ka pakietu.\n"
+msgstr "\tNie uda³o siê dodaæ nag³ówka nieudanego pakietu do bazy!\n"
 
 #: lib/transaction.c:1539
 #, c-format
 msgid "Processing failed erase element %s for autorollback.\n"
-msgstr ""
+msgstr "Przetwarzanie nieudanego elementu usuniêcia %s do automatycznego wycofania.\n"
 
 #: lib/transaction.c:1543
-#, fuzzy
 msgid "\tForce removing header from rpmdb.\n"
-msgstr "b³±d odczytu nag³ówka z pakietu\n"
+msgstr "\tWymuszenie usuniêcia nag³ówka z rpmdb.\n"
 
 #: lib/transaction.c:1554
-#, fuzzy
 msgid "\tCould not remove failed package header from db!\n"
-msgstr "Dodanie niepowiod³o siê. Nie mo¿na przeczytaæ nag³ó³ka pakietu.\n"
+msgstr "\tNie uda³o siê usun±æ nag³ówka nieudanego pakietu z bazy!\n"
 
 #: lib/transaction.c:1563 lib/transaction.c:1695
 msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
-msgstr ""
+msgstr "_rpmtsAddRollbackElement: Nieznany rodzaj elementu transakcji!\n"
 
 #: lib/transaction.c:1564 lib/transaction.c:1696
 #, c-format
 msgid "TYPE:  %d\n"
-msgstr ""
+msgstr "RODZAJ:  %d\n"
 
 #: lib/transaction.c:1594
 msgid "Processing install element for autorollback...\n"
-msgstr ""
+msgstr "Przetwarzanie elementu instalacji do automatycznego wycofania...\n"
 
 #: lib/transaction.c:1595 lib/transaction.c:1650
 #, c-format
 msgid "\tNEVRA: %s\n"
-msgstr ""
+msgstr "\tNEVRA: %s\n"
 
 #: lib/transaction.c:1603
 msgid "Could not get install element database instance!\n"
-msgstr ""
+msgstr "Nie uda³o siê uzyskaæ instancji bazy danych elementu instalacji!\n"
 
 #: lib/transaction.c:1616
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
+"Nie uda³o siê uzyskaæ nag³ówka do transakcji automatycznego wycofania!\n"
 
 #: lib/transaction.c:1626
 #, c-format
@@ -3731,19 +3693,21 @@ msgstr "\tDodano przepakowany nag³ówek pakietu: %s.\n"
 #.
 #: lib/transaction.c:1635
 msgid "\tAdded erase element.\n"
-msgstr ""
+msgstr "\tDodano element usuniêcia.\n"
 
 #: lib/transaction.c:1642
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
+"Nie uda³o siê uzyskaæ przepakowanego nag³ówka do transakcji automatycznego "
+"wycofania!\n"
 
 #: lib/transaction.c:1649
 msgid "Processing erase element for autorollback...\n"
-msgstr ""
+msgstr "Przetwarzanie elementu usuniêcia do automatycznego wycofania...\n"
 
 #: lib/transaction.c:1657
 msgid "\tErase element already added for complimentary install.\n"
-msgstr ""
+msgstr "\tElement usuniêcia ju¿ dodany do grzeczno¶ciowej instalacji.\n"
 
 #: lib/transaction.c:1670
 #, c-format
@@ -3753,18 +3717,20 @@ msgstr "\tDodano przepakowany pakiet %s.\n"
 #: lib/transaction.c:1675
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
+"Nie uda³o siê dodaæ elementu usuniêcia do transakcji automatycznego "
+"wycofania.\n"
 
 #: lib/transaction.c:1681
 msgid "\tNo repackaged package...nothing to do.\n"
-msgstr ""
+msgstr "\tNie ma przepakowanych pakietów... nie ma nic do zrobienia.\n"
 
 #: lib/transaction.c:1687
 msgid "Failure reading repackaged package!\n"
-msgstr "B³ad podczas odczytu przepakowanego pakietu!\n"
+msgstr "B³±d podczas odczytu przepakowanego pakietu!\n"
 
-#: lib/transaction.c:1825
+#: lib/transaction.c:1827
 msgid "Invalid number of transaction elements.\n"
-msgstr ""
+msgstr "B³êdna liczba elementów transakcji.\n"
 
 #. ===============================================
 #. * For packages being installed:
@@ -3774,14 +3740,14 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1879
+#: lib/transaction.c:1881
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "sprawdzanie poprawno¶ci %d elementów\n"
 
-#: lib/transaction.c:1965
+#: lib/transaction.c:1967
 msgid "running pre-transaction scripts\n"
-msgstr ""
+msgstr "uruchamianie skryptów pre-transakcyjnych\n"
 
 #. ===============================================
 #. * Initialize transaction element file info for package:
@@ -3791,7 +3757,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2040
+#: lib/transaction.c:2042
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "obliczanie %d odcisków plików\n"
@@ -3799,36 +3765,36 @@ msgstr "obliczanie %d odcisków plików\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2121
+#: lib/transaction.c:2123
 msgid "computing file dispositions\n"
 msgstr "obliczanie dyspozycji plików\n"
 
-#: lib/transaction.c:2299
+#: lib/transaction.c:2301
 msgid "Creating auto-rollback transaction\n"
-msgstr "Tworzenie transakcji auto-wycofywania\n"
+msgstr "Tworzenie transakcji automatycznego wycofania\n"
 
-#: lib/transaction.c:2570
-#, fuzzy, c-format
+#: lib/transaction.c:2572
+#, c-format
 msgid "Adding %s to autorollback transaction.\n"
-msgstr "Tworzenie transakcji auto-wycofywania\n"
+msgstr "Dodawanie %s do transakcji automatycznego wycofania.\n"
 
-#: lib/transaction.c:2577
+#: lib/transaction.c:2579
 msgid "Could not add transaction element to autorollback!.\n"
-msgstr ""
+msgstr "Nie uda³o siê dodaæ elementu transakcji do automatycznego wycofania!\n"
 
-#: lib/transaction.c:2620
+#: lib/transaction.c:2622
 msgid "running post-transaction scripts\n"
 msgstr "uruchamianie skryptów po-transakcyjnych\n"
 
 #: lib/verify.c:321
 #, c-format
 msgid "missing   %c %s"
-msgstr "brak     %c %s"
+msgstr "brak      %c %s"
 
 #: lib/verify.c:441
-#, fuzzy, c-format
+#, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "Niespe³nione zale¿no¶ci dla %s: "
+msgstr "Niespe³nione zale¿no¶ci dla %s:\n"
 
 #: rpmdb/db3.c:160
 #, c-format
@@ -4406,9 +4372,8 @@ msgid "don't update cache database, only print package paths"
 msgstr "nie uaktualniaj bazy danych bufora, tylko wypisz ¶cie¿ki pakietu"
 
 #: tools/rpmcache.c:521
-#, fuzzy
 msgid "File tree walk options:"
-msgstr "Opcje dotycz±ce sygnatur:"
+msgstr "Opcje przechodzenia po drzewie plików:"
 
 #: tools/rpmcache.c:557
 #, c-format
@@ -4422,104 +4387,103 @@ msgstr "%s: operacja na cache nie powiod³a siê: ec %d.\n"
 
 #: tools/rpmdeps.c:156
 msgid "print cpuinfo(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci cpuinfo(...)"
 
 #: tools/rpmdeps.c:158
 msgid "print rpmlib(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci rpmlib(...)"
 
 #: tools/rpmdeps.c:160
 msgid "print /etc/rpm/sysinfo dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci /etc/rpm/sysinfo"
 
 #: tools/rpmdeps.c:162
 msgid "print getconf(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci getconf(...)"
 
 #: tools/rpmdeps.c:164
 msgid "print soname(...) dependencies for elf files"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci soname(...) dla plików ELF"
 
 #: tools/rpmdeps.c:166
 msgid "print soname(...) dependencies from /etc/ld.so.cache"
-msgstr ""
+msgstr "wypisz zale¿no¶ci soname(...) z /etc/ld.so.cache"
 
 #: tools/rpmdeps.c:168
 msgid "print uname(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci uname(...)"
 
 #: tools/rpmdeps.c:170
 msgid "print dependency set from a command pipe"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci z polecenia potokowego"
 
 #: tools/rpmdeps.c:173
 msgid "print perl(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci perl(...)"
 
 #: tools/rpmdeps.c:175
 msgid "print python(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci python(...)"
 
 #: tools/rpmdeps.c:177
 msgid "print libtool(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci libtool(...)"
 
 #: tools/rpmdeps.c:179
 msgid "print pkgconfig(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci pkgconfig(...)"
 
 #: tools/rpmdeps.c:182
 msgid "print pubkey(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci pubkey(...)"
 
 #: tools/rpmdeps.c:184
 msgid "print arch(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci arch(...)"
 
 #: tools/rpmdeps.c:186
 msgid "print file(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci file(...)"
 
 #: tools/rpmdeps.c:188
 msgid "print soname(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci soname(...)"
 
 #: tools/rpmdeps.c:190
-#, fuzzy
 msgid "print package(...) dependency set"
-msgstr "nie sprawdzaj zale¿no¶ci pakietu"
+msgstr "wypisz zbiór zale¿no¶ci package(...)"
 
 #: tools/rpmdeps.c:193
 msgid "print java(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci java(...)"
 
 #: tools/rpmdeps.c:195
 msgid "print php(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci php(...)"
 
 #: tools/rpmdeps.c:197
 msgid "print ruby(...) dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci ruby(...)"
 
 #: tools/rpmdeps.c:199
 msgid "print /var/lib/dpkg Provides: dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci Provides: z /var/lib/dpkg"
 
 #: tools/rpmdeps.c:201
 msgid "print /var/lib/dpkg Requires: dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci Requires: z /var/lib/dpkg"
 
 #: tools/rpmdeps.c:204
 msgid "print Provides: dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci Provides:"
 
 #: tools/rpmdeps.c:206
 msgid "print Requires: dependency set"
-msgstr ""
+msgstr "wypisz zbiór zale¿no¶ci Requires:"
 
 #: tools/rpmdeps.c:208
 msgid "check Requires: against Provides: for dependency closure"
-msgstr ""
+msgstr "sprawd¼ Requires: wzglêdem Provides: dla dope³nienia zale¿no¶ci"
 
 #: tools/rpmgraph.c:172
 #, c-format
@@ -4584,11 +4548,11 @@ msgstr ""
 
 #: ../rpmpopt:103
 msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr "ustaw <polisê> buildroot (np. kompresowanie stron manuala)"
+msgstr "ustaw <politykê> buildroot (np. kompresowanie stron manuala)"
 
 #: ../rpmpopt:104
 msgid "<policy>"
-msgstr "<polisa>"
+msgstr "<polityka>"
 
 #: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
 msgid "enable configure <option> for build"
@@ -4615,78 +4579,16 @@ msgstr "u¿yj bazy danych w KATALOGu"
 msgid "DIRECTORY"
 msgstr "KATALOG"
 
-#, fuzzy
-#~ msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-#~ msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
-
-#~ msgid "don't verify GPG V3 DSA signature(s)"
-#~ msgstr "nie sprawdzaj sygnatur GPG V3 DSS"
-
-#~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-#~ msgstr "nie sprawdzaj sygnatur PGP V3 RSA/MD5"
-
-#~ msgid "Unknown system: %s\n"
-#~ msgstr "Nieznany system: %s\n"
-
-#~ msgid "Please contact rpm-list@redhat.com\n"
-#~ msgstr "Proszê skontaktowaæ siê z rpm-list@redhat.com\n"
-
-#~ msgid "\tAdded from erase element %s.\n"
-#~ msgstr "\tDodano usuniêty element %s.\n"
-
-#~ msgid "Add failed in rpmpsmStage().\n"
-#~ msgstr "Dodanie niepowiod³o siê w rpmpsmStage().\n"
-
-#~ msgid "Add failed.  Could not get file list.\n"
-#~ msgstr "Dodanie niepowiod³o siê. Nie mo¿na uzyskaæ listy plików.\n"
-
-#~ msgid "Erase failed failed in rpmpsmStage().\n"
-#~ msgstr "Usuwanie niepowiod³o siê w rpmpsmStage().\n"
-
-#~ msgid "gpg failed\n"
-#~ msgstr "gpg nie powiod³o siê\n"
-
-#~ msgid "V3 RSA/MD5 signature: "
-#~ msgstr "Sygnatura V3 RSA/MD5: "
-
-#, fuzzy
-#~ msgid "disable use of libneon for HTTP"
-#~ msgstr "wy³±cz u¿ywanie API libio(3)"
-
-#~ msgid "setexeccon(%s) fails from context \"%s\": %s\n"
-#~ msgstr "setexeccon(%s) nie powiod³o siê z kontekstu \"%s\": %s\n"
-
-#~ msgid ""
-#~ "setexeccon(%s) fails from context \"%s\": %s\n"
-#~ "Continuing ...\n"
-#~ msgstr ""
-#~ "setexeccon(%s) nie powiod³o siê z kontekstu \"%s\": %s\n"
-#~ "Kontynujê ...\n"
-
-#~ msgid "Common options for all rpm modes:"
-#~ msgstr "Wspólne opcje dla wszystkich trybów rpm-a:"
-
-#~ msgid "--replacefiles may only be specified during package installation"
-#~ msgstr "--replacefiles mo¿na u¿yæ tylko w trakcie instalacji pakietów"
-
-#~ msgid "line %d: File name not permitted: %s\n"
-#~ msgstr "linia %d: Nazwa pliku niedozwolona: %s\n"
-
-#~ msgid "install even if the package replaces installed files"
-#~ msgstr "instaluj nawet gdy pakiet zastêpuje inne zainstalowane pliki"
-
-#~ msgid "query of %s failed\n"
-#~ msgstr "odpytywanie %s nie powiod³o siê\n"
-
-#~ msgid "old format source packages cannot be queried\n"
-#~ msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
-
-#~ msgid "no packages\n"
-#~ msgstr "brak pakietów\n"
-
 # --- from popt/po/pl.po (in popt.h, not in .pot) ---
-#~ msgid "Options implemented via popt alias/exec:"
-#~ msgstr "Opcje zaimplementowane poprzez popt alias/exec:"
+msgid "Options implemented via popt alias/exec:"
+msgstr "Opcje zaimplementowane poprzez popt alias/exec:"
 
-#~ msgid "Help options:"
-#~ msgstr "Opcje pomocy:"
+msgid "Help options:"
+msgstr "Opcje pomocy:"
+
+# --- from popt (displayed using rpm domain)
+msgid "Show this help message"
+msgstr "Poka¿ tê pomoc"
+
+msgid "Display brief usage message"
+msgstr "Wy¶wietl skrócony sposób u¿ycia"
