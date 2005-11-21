@@ -136,7 +136,9 @@ void *rpmtsAcquireLock(rpmts ts)
 
 /*@-branchstate@*/
     if (rc) {
-	rpmMessage(RPMMESS_ERROR, _("can't create transaction lock on %s\n"), rpmlock_path);
+	if (rpmlock_path != NULL)
+	    rpmMessage(RPMMESS_ERROR,
+		_("can't create transaction lock on %s\n"), rpmlock_path);
     } else if (lock != NULL) {
 	if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
 	    if (lock->omode & RPMLOCK_WRITE)

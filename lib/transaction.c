@@ -57,7 +57,6 @@
 /*@access IDT @*/
 /*@access IDTX @*/
 /*@access FD_t @*/
-/*@access rpmtsScoreEntry @*/
 
 /* XXX: This is a hack.  I needed a to setup a notify callback
  * for the rollback transaction, but I did not want to create
@@ -1488,28 +1487,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction, rpmts runningTr
     char * rpn;	
     unsigned int db_instance = 0;
     int rc  = RPMRC_FAIL;	/* Assume Failure */
-    rpmtsScoreEntry se = NULL;
-    rpmtsScore score;
     rpmpsm psm;
-
-    /* No matter what we need to look at the transaction score to
-     * to determine if the header has been removed or installed.
-     * This is used to determine, whether this transaction element
-     * is part of an upgrade or not.  Also, it is used to determine
-     * for failed packages to see if their header has added/removed
-     * from the rpmdb.
-     */
-    score = rpmtsGetScore(runningTransaction);
-    if (score == NULL) {	/* XXX: Can't happen */
-	rpmMessage(RPMMESS_ERROR, _("Could not acquire transaction score!.\n"));
-	goto cleanup;
-    }
-    se = rpmtsScoreGetEntry(score, rpmteN(p));
-    if (se == NULL) {	/* XXX: Can't happen */
-	rpmMessage(RPMMESS_ERROR, _("Could not acquire score entry %s!.\n"),
-	    rpmteNEVRA(p));
-	goto cleanup;
-    }
 
     /* Handle failed packages. */
     if (failed) {
@@ -1526,7 +1504,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction, rpmts runningTr
 	    rpmMessage(RPMMESS_DEBUG,
 		_("Processing failed install element %s for autorollback.\n"),
 		rpmteNEVRA(p));
-	    if (!se->installed) {
+	    if (!p->installed) {
 	    	rpmMessage(RPMMESS_DEBUG, _("\tForce adding header to rpmdb.\n"));
 /*@-compdef -usereleased@*/	/* p->fi->te undefined */
 		psm = rpmpsmNew(runningTransaction, p, p->fi);
@@ -1553,7 +1531,7 @@ assert(psm != NULL);
 	    rpmMessage(RPMMESS_DEBUG,
 		_("Processing failed erase element %s for autorollback.\n"),
 		rpmteNEVRA(p));
-	    if (!se->erased) {
+	    if (!p->erased) {
 	    	rpmMessage(RPMMESS_DEBUG,
 		    _("\tForce removing header from rpmdb.\n"));
 /*@-compdef -usereleased@*/	/* p->fi->te undefined */
@@ -1575,7 +1553,7 @@ assert(psm != NULL);
 	default:
 	    /* If its an unknown type, we won't fail, but will issue warning */
 	    rpmMessage(RPMMESS_WARNING,
-		_("_rpmtsAddRollbackElement: Unknown transaction element type!\n"));
+		_("%s: Unknown transaction element type!\n"), __FUNCTION__);
 	    rpmMessage(RPMMESS_WARNING, _("TYPE:  %d\n"), rpmteType(p));
 	    rc = RPMRC_OK;
 	    goto cleanup;
@@ -1667,7 +1645,7 @@ assert(psm != NULL);
 	/* See if this element is part of an upgrade.  If so we don't
 	 * need to process the erase component of the upgrade.
 	 */
-	if ((se->te_types & TR_ADDED) && (se->te_types & TR_REMOVED)) {
+	if ((p->te_types & TR_ADDED) && (p->te_types & TR_REMOVED)) {
 	    rpmMessage(RPMMESS_DEBUG,
 		_("\tErase element already added for complimentary install.\n"));
 	    rc = RPMRC_OK;
@@ -1707,7 +1685,7 @@ assert(psm != NULL);
     default:
 	/* If its an unknown type, we won't fail, but will issue warning */
 	rpmMessage(RPMMESS_WARNING,
-		_("_rpmtsAddRollbackElement: Unknown transaction element type!\n"));
+		_("%s: Unknown transaction element type!\n"), __FUNCTION__);
 	rpmMessage(RPMMESS_WARNING, _("TYPE:  %d\n"), rpmteType(p));
 	rc = RPMRC_OK;
 	goto cleanup;
@@ -2377,8 +2355,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	    xx = rpmtsSetNotifyCallback(rollbackTransaction, notify, notifyData);
 	}
 
-	/* Create rpmtsScore for running transaction and rollback transaction */
-	xx = rpmtsScoreInit(ts, rollbackTransaction);
      }
 
     /* ===============================================

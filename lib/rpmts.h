@@ -102,90 +102,6 @@ typedef	enum rpmtsOpX_e {
 #include "rpmhash.h"	/* XXX hashTable */
 #include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
 
-/**********************
- * Transaction Scores *
- **********************
- *
- * In order to allow instance counts to be adjusted properly when an
- * autorollback transaction is ran, we keep a list that is indexed
- * by rpm name of whether the rpm has been installed or erased.  This listed
- * is only updated:
- *
- *	iif autorollbacks are enabled.
- *	iif this is not a rollback or autorollback transaction.
- *
- * When creating an autorollback transaction, its rpmts points to the same
- * rpmtsScore object as the running transaction.  So when the autorollback
- * transaction runs it can see where each package was in the running transaction
- * at the point the running transaction failed, and thus on a per package
- * basis make adjustments to the instance counts.
- *
- * XXX: Jeff, I am not convinced that this does not need to be in its own file
- *      (i.e. rpmtsScore.{h,c}), but I first wanted to get it working.
- */
-struct rpmtsScoreEntry_s {
-    char *         N;			/*!<Name of package                */
-    rpmElementType te_types;		/*!<te types this entry represents */
-    int            installed;		/*!<Was the new header installed?  */
-    int            erased;		/*!<Was the old header removed?    */
-    int_32	   tid;			/*!<Install tod of removed header. */
-};
-
-typedef /*@abstract@*/ struct rpmtsScoreEntry_s * rpmtsScoreEntry;
-
-struct rpmtsScore_s {
-	int entries;			/*!< Number of scores       */
-	rpmtsScoreEntry * scores;	/*!< Array of score entries */
-    	int nrefs;			/*!< Reference count.       */
-};
-
-typedef /*@abstract@*/ struct rpmtsScore_s * rpmtsScore;
-
-
-/** \ingroup rpmts
- * initialize rpmtsScore for running transaction and autorollback
- * transaction.
- * @param runningTS	Running Transaction.
- * @param rollbackTS	Rollback Transaction.
- * @return		RPMRC_OK
- */
-rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies runningTS, rollbackTS, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/;
-
-/** \ingroup rpmts
- * Free rpmtsScore provided no more references exist against it.
- * @param score		rpmtsScore to free
- * @return		NULL always
- */
-/*@-exportlocal@*/
-/*@null@*/
-rpmtsScore rpmtsScoreFree(/*@only@*/ /*@null@*/ rpmtsScore score)
-	/*@modifies score @*/;
-/*@=exportlocal@*/
-
-/** \ingroup rpmts
- * Get rpmtsScore from transaction.
- * @param ts	RPM Transaction.
- * @return	rpmtsScore or NULL.
- */
-/*@exposed@*/ /*@null@*/
-rpmtsScore rpmtsGetScore(rpmts ts)
-	/*@*/;
-
-/** \ingroup rpmts
- * Get rpmtsScoreEntry from rpmtsScore.
- * @param score   RPM Transaction Score.
- * @return	  rpmtsScoreEntry or NULL.
- */
-/*@null@*/
-rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N)
-	/*@*/;
-
-/**************************
- * END Transaction Scores *
- **************************/
-
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _cacheDependsRC;
@@ -337,8 +253,10 @@ struct rpmts_s {
 /*@null@*/
     Spec spec;			/*!< Spec file control structure. */
 
+#ifdef	DYING
 /*@kept@*/ /*@null@*/
     rpmtsScore score;		/*!< Transaction score (autorollback). */
+#endif
 
     uint_32 arbgoal;		/*!< Autorollback goal */
 

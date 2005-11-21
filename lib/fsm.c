@@ -1969,7 +1969,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    default:
 			rpmError(
 			    (strict_erasures ? RPMERR_UNLINK : RPMDEBUG_UNLINK),
-				_("%s unlink of %s failed: %s\n"),
+				_(" %s: unlink of %s failed: %s\n"),
 				rpmfiTypeString(fi), fsm->path, strerror(errno));
 			/*@innerbreak@*/ break;
 		    }

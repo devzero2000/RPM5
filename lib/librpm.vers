@@ -326,7 +326,6 @@ LIBRPM_0
     rpmtsFree;
     rpmtsFreeLock;
     rpmtsGetRdb;
-    rpmtsGetScore;
     rpmtsGetTid;
     rpmtsGetType;
     rpmtsiNext;
@@ -347,9 +346,6 @@ LIBRPM_0
     rpmtsRelocateElement;
     rpmtsRootDir;
     rpmtsRun;
-    rpmtsScoreFree;
-    rpmtsScoreGetEntry;
-    rpmtsScoreInit;
     rpmtsScriptFd;
     rpmtsSELinuxEnabled;
     rpmtsSetChrootDone;

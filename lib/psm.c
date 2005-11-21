@@ -47,8 +47,6 @@ int _psm_threads = 0;
 /*@access rpmts @*/	/* XXX ts->notify */
 
 /*@access rpmluav @*/
-/*@access rpmtsScore @*/
-/*@access rpmtsScoreEntry @*/
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -1445,37 +1443,12 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	 * component of the upgrade, or even more absurd to do this when doing a
 	 * PKGSAVE.
 	 */
-	if (rpmtsGetScore(ts) != NULL &&
-	    rpmtsType(ts) == RPMTRANS_TYPE_AUTOROLLBACK &&
-	    (psm->goal & ~(PSM_PKGSAVE|PSM_PKGERASE))) {
-	    /* Get the score, if its not NULL, get the appropriate
- 	     * score entry.
-	     */
-	    rpmtsScore score = rpmtsGetScore(ts);
-	    if (score != NULL) {
-		/* OK, we got a real score so lets get the appropriate
-		 * score entry.
-		 */
-		rpmtsScoreEntry se;
-		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
-
-		/* IF the header for the install element has been installed,
-		 * but the header for the erase element has not been erased,
-		 * then decrement the instance count.  This is because in an
-		 * autorollback, if the header was added in the initial transaction
-		 * then in the case of an upgrade the instance count will be
-		 * 2 instead of one when re-installing the old package, and 3 when
-		 * erasing the new package.
-		 *
-		 * Another wrinkle is we only want to make this adjustement
-		 * if the thing we are rollback was an upgrade of package.  A pure
-		 * install or erase does not need the adjustment
-		 */
-		if (se && se->installed &&
-	 	    !se->erased &&
-		    (se->te_types & (TR_ADDED|TR_REMOVED)))
-		    psm->npkgs_installed--;
-	   }
+	if (rpmtsType(ts) == RPMTRANS_TYPE_AUTOROLLBACK &&
+	    (psm->goal & ~(PSM_PKGSAVE|PSM_PKGERASE)))
+	{
+	    if (psm->te->installed && !psm->te->erased
+	     && (psm->te->te_types & (TR_ADDED|TR_REMOVED)))
+		psm->npkgs_installed--;
 	}
 
 	if (psm->goal == PSM_PKGINSTALL) {
@@ -2203,35 +2176,17 @@ assert(psm->mi == NULL);
 	    rc = RPMRC_FAIL;
 	break;
     case PSM_RPMDB_ADD:
-    {   rpmtsScore score;
-	rpmtsScoreEntry se = NULL;
-	int_32 tid;
+    {	int_32 tid;
 
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h == NULL)	break;	/* XXX can't happen */
-
-	/* Get the score for this transaction if it exists, and then
-	 * the appropriate score entry.
-	 */
-	score = rpmtsGetScore(ts);
-/*@-branchstate @*/
-	if (score != NULL) {
-	    se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
-	    if (se == NULL) {
-		rpmMessage(RPMMESS_ERROR,
-			_("Could not acquire transaction score entry for %s\n"),
-			rpmteNEVRA(psm->te));
-		rc = RPMRC_FAIL;
-	    }
-	}
-/*@=branchstate @*/
 
 	/* If this is an autorolback transaction, then we need to set
 	 * the TID of the header to that of its remove tid
 	 */
 	tid = rpmtsGetTid(ts);
 	if (rpmtsType(ts) == RPMTRANS_TYPE_AUTOROLLBACK) {
-	    if (se != NULL) tid = se->tid;
+	    tid = psm->te->tid;
 	    rpmMessage(RPMMESS_DEBUG, _("Setting %s to TID of 0x%08x\n"),
 			rpmteNEVRA(psm->te), tid);
 	}
@@ -2251,14 +2206,14 @@ assert(psm->mi == NULL);
 	/* If the score exists and this is not a rollback or autorollback
 	 * then lets check off installed for this package.
 	 */
-	if (se != NULL &&
+	if (
 	    rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK &&
 	    rpmtsType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
 	{
 	    rpmMessage(RPMMESS_DEBUG,
 		_("Attempting to mark %s as installed in trasaction score\n"),
 		rpmteN(psm->te));
-	    se->installed = 1;
+	    psm->te->installed = 1;
 	}
 
 	/* Set the database instance for (possible) rollbacks. */
@@ -2266,8 +2221,7 @@ assert(psm->mi == NULL);
 
     }	break;
     case PSM_RPMDB_REMOVE:
-    {	rpmtsScore score;
-	rpmtsScoreEntry se;
+    {	
 
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
@@ -2282,16 +2236,12 @@ assert(psm->mi == NULL);
 	 * If the score exists and this is not a rollback or autorollback
 	 * then lets check off erased for this package.
 	 */
-	score = rpmtsGetScore(ts);
-	if (score != NULL &&
-	   rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK &&
-	   rpmtsType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
+	if (rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK &&
+	    rpmtsType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
 	{
 	    rpmMessage(RPMMESS_DEBUG,
-		_("Attempting to mark %s as erased in score board(0x%x).\n"),
-		    rpmteN(psm->te), (unsigned) score);
-	    se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
-	    if (se != NULL) se->erased = 1;
+		_("Attempting to mark %s as erased.\n"), rpmteN(psm->te));
+	    psm->te->erased = 1;
 	}
     }	break;
 

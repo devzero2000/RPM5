@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-19 12:33-0500\n"
+"POT-Creation-Date: 2005-11-21 16:47-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=KOI8-R\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 "Date: 1999-04-03 12:20+0200\n"
 "X-Generator: KBabel 0.9.6\n"
 
@@ -64,12 +64,10 @@ msgid "Building for target %s\n"
 msgstr "Сборка для платформы %s\n"
 
 #: rpm2cpio.c:56
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "заданный аргумент не является пакетом RPM\n"
 
 #: rpm2cpio.c:61
-#, c-format
 msgid "error reading header from package\n"
 msgstr "ошибка чтения заголовка из пакета\n"
 
@@ -128,12 +126,10 @@ msgid "RPM version %s\n"
 msgstr "RPM версия %s\n"
 
 #: rpmqv.c:147
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:148
-#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Эту программу можно свободно распространять на условиях GNU GPL\n"
@@ -286,7 +282,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументы для --root (-r) должны начинаться с /"
 
 #: rpmqv.c:548
-#, c-format
 msgid "no files to sign\n"
 msgstr "нет файлов для подписи\n"
 
@@ -296,7 +291,6 @@ msgid "cannot access file %s\n"
 msgstr "нет доступа к файлу %s\n"
 
 #: rpmqv.c:573
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp не найден: "
 
@@ -305,12 +299,10 @@ msgid "Enter pass phrase: "
 msgstr "Введите ключевую фразу: "
 
 #: rpmqv.c:583
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Неверная ключевая фраза\n"
 
 #: rpmqv.c:587
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Ключевая фраза принята.\n"
 
@@ -324,7 +316,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign может быть использован только при сборке пакетов"
 
 #: rpmqv.c:616
-#, c-format
 msgid "exec failed\n"
 msgstr "запуск не удался\n"
 
@@ -749,7 +740,7 @@ msgstr "Невозможно перезагрузить заголовок подписи.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1722
+#: build/pack.c:645 lib/psm.c:1695
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -779,7 +770,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:2035
+#: build/pack.c:738 lib/psm.c:2008
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -1631,8 +1622,8 @@ msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s ошибка удаления каталога %s: %s\n"
 
 #: lib/fsm.c:1972
-#, c-format
-msgid "%s unlink of %s failed: %s\n"
+#, fuzzy, c-format
+msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s невозможно удалить %s: %s\n"
 
 #: lib/fsm.c:1994
@@ -1686,17 +1677,14 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
-#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1713,7 +1701,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1733,7 +1720,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2441,105 +2427,100 @@ msgstr ""
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/psm.c:273
+#: lib/psm.c:271
 msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 
-#: lib/psm.c:391
+#: lib/psm.c:389
 msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
-#: lib/psm.c:507
+#: lib/psm.c:505
 #, fuzzy, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr "%s: waitpid(%d) rc %d status %x\n"
 
-#: lib/psm.c:688
+#: lib/psm.c:686
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "%s: %s(%s-%s-%s) %sзапуск синхронного сценария\n"
 
-#: lib/psm.c:706
+#: lib/psm.c:704
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s) пропускается лишний \"%s\".\n"
 
-#: lib/psm.c:714
+#: lib/psm.c:712
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s) %sзапуск синхронного сценария\n"
 
-#: lib/psm.c:926
+#: lib/psm.c:924
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 
-#: lib/psm.c:974
+#: lib/psm.c:972
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s) ошибка сценария, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:981
+#: lib/psm.c:979
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s-%s-%s) ошибка выполнения сценария, код возврата %d\n"
 
-#: lib/psm.c:985
+#: lib/psm.c:983
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) ошибка выполнения сценария, код возврата %d\n"
 
-#: lib/psm.c:1424
+#: lib/psm.c:1422
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s содержит %d файлов, результат проверки: %d\n"
 
-#: lib/psm.c:1618
+#: lib/psm.c:1591
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s ошибка сценария (%d), пропускается %s\n"
 
-#: lib/psm.c:1734
+#: lib/psm.c:1707
 msgid "Unable to reload signature header\n"
 msgstr "Невозможно перезагрузить заголовок подписи\n"
 
-#: lib/psm.c:1834
+#: lib/psm.c:1807
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:1835
+#: lib/psm.c:1808
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:2043
+#: lib/psm.c:2016
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s ошибка на файле %s: %s\n"
 
-#: lib/psm.c:2046
+#: lib/psm.c:2019
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: lib/psm.c:2222
-#, fuzzy, c-format
-msgid "Could not acquire transaction score entry for %s\n"
-msgstr "Невозможно открыть файл PreIn: %s\n"
-
-#: lib/psm.c:2235
+#: lib/psm.c:2190
 #, c-format
 msgid "Setting %s to TID of 0x%08x\n"
 msgstr ""
 
-#: lib/psm.c:2259
+#: lib/psm.c:2214
 #, c-format
 msgid "Attempting to mark %s as installed in trasaction score\n"
 msgstr ""
 
-#: lib/psm.c:2291
+#: lib/psm.c:2243
 #, c-format
-msgid "Attempting to mark %s as erased in score board(0x%x).\n"
+msgid "Attempting to mark %s as erased.\n"
 msgstr ""
 
 #: lib/query.c:123 lib/rpmts.c:632
@@ -2926,7 +2907,7 @@ msgstr "неизвестный тэг"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1442 lib/transaction.c:1173 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1445 lib/transaction.c:1181 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Неудовлетворенные зависимости:\n"
 
@@ -2958,7 +2939,7 @@ msgstr "Обновление..."
 msgid "Upgrading packages..."
 msgstr "Обновление пакетов..."
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1147
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1154
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Откат пакетов (+%d/-%d) на %-24.24s (0x%08x):\n"
@@ -3049,23 +3030,23 @@ msgstr "невозможно открыть %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
 
-#: lib/rpminstall.c:1349
+#: lib/rpminstall.c:1352
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1436 lib/transaction.c:1152
+#: lib/rpminstall.c:1439 lib/transaction.c:1159
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Откат пакетов (+%d/-%d) на %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1467 lib/transaction.c:1226
+#: lib/rpminstall.c:1470 lib/transaction.c:1234
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1474
+#: lib/rpminstall.c:1477
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Загружается %s\n"
@@ -3237,27 +3218,22 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
 
 #: lib/rpmrc.c:1930
-#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
-#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
-#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
-#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
-#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3321,84 +3297,19 @@ msgstr "Добавляется: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "Предлагается: %s\n"
 
-#: lib/rpmts.c:1229
+#: lib/rpmts.c:1224
 #, fuzzy
 msgid "mounted filesystems:\n"
 msgstr "строится список смонтированных файловых систем\n"
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1226
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1287
+#: lib/rpmts.c:1282
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "Файл%5d: %07o %s.%s\t %s\n"
-
-#: lib/rpmts.c:1593
-#, c-format
-msgid "Creating transaction score board(%p, %p)\n"
-msgstr ""
-
-#: lib/rpmts.c:1598
-#, c-format
-msgid "\tScore board address:  %p\n"
-msgstr ""
-
-#: lib/rpmts.c:1608
-#, fuzzy, c-format
-msgid "\tAllocating space for %d entries\n"
-msgstr "перемещается %s в %s\n"
-
-#. @-compdef -usereleased@
-#. XXX p->fi->te undefined.
-#: lib/rpmts.c:1635
-#, c-format
-msgid "\tAdding entry for %s to score board.\n"
-msgstr ""
-
-#: lib/rpmts.c:1639
-#, c-format
-msgid "\t\tEntry address:  %p\n"
-msgstr ""
-
-#. We found this one, so just add the element type to the one
-#. * already there.
-#.
-#: lib/rpmts.c:1651
-#, c-format
-msgid "\tUpdating entry for %s in score board.\n"
-msgstr ""
-
-#: lib/rpmts.c:1676
-msgid "Could not get header for transaction score!\n"
-msgstr ""
-
-#: lib/rpmts.c:1677
-#, c-format
-msgid "NEVRA: %s"
-msgstr ""
-
-#: lib/rpmts.c:1686
-#, c-format
-msgid "\tCould not get INSTALLTID for %s.\n"
-msgstr ""
-
-#: lib/rpmts.c:1691
-#, c-format
-msgid "\tINSTALLTID for %s is 0x%08x.\n"
-msgstr ""
-
-#. Assume we don't find it
-#: lib/rpmts.c:1777
-#, c-format
-msgid "Looking in score board(%p) for %s\n"
-msgstr ""
-
-#: lib/rpmts.c:1783
-#, c-format
-msgid "\tFound entry at address:  %p\n"
-msgstr ""
 
 #: lib/signature.c:140
 #, c-format
@@ -3416,7 +3327,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3441,7 +3351,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3515,9 +3424,6 @@ msgstr "Получено %d байт подписи GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3561,12 +3467,10 @@ msgid " DSA signature: "
 msgstr "подпись DSA V3: "
 
 #: lib/signature.c:1505
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Проверка подписи: НЕПРАВИЛЬНЫЕ ПАРАМЕТРЫ\n"
 
 #: lib/signature.c:1536
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Контр. сумма MD5 повреждена: НЕ ПОДДЕРЖИВАЕТСЯ\n"
 
@@ -3576,71 +3480,71 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Подпись: НЕИЗВЕСТНО (%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:882
+#: lib/transaction.c:885
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
 
-#: lib/transaction.c:1006
+#: lib/transaction.c:1010
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr "Откат пакетов (+%d/-%d) на %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1011
+#: lib/transaction.c:1015
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr ""
 
-#: lib/transaction.c:1144
+#: lib/transaction.c:1151
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1155
+#: lib/transaction.c:1162
 #, fuzzy, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr "Откат пакетов (+%d/-%d) на %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1161
+#: lib/transaction.c:1168
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr ""
 
-#: lib/transaction.c:1165
+#: lib/transaction.c:1172
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "создаётся каталог %s\n"
 
-#: lib/transaction.c:1185
+#: lib/transaction.c:1193
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1257
+#: lib/transaction.c:1265
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr "Откат пакетов (+%d/-%d) на %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1300
+#: lib/transaction.c:1310
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "удаляется каталог %s\n"
 
-#: lib/transaction.c:1342
+#: lib/transaction.c:1354
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1372
+#: lib/transaction.c:1384
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1376
+#: lib/transaction.c:1388
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1380
+#: lib/transaction.c:1392
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1393
+#: lib/transaction.c:1405
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
@@ -3652,88 +3556,77 @@ msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1414
+#: lib/transaction.c:1426
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1416
+#: lib/transaction.c:1428
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1439
+#: lib/transaction.c:1451
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "ни один пакет не подходит к %s: %s\n"
 
-#. XXX: Can't happen
-#: lib/transaction.c:1489
-#, fuzzy
-msgid "Could not acquire transaction score!.\n"
-msgstr "Невозможно открыть файл PreIn: %s\n"
-
-#. XXX: Can't happen
-#: lib/transaction.c:1494
-#, fuzzy, c-format
-msgid "Could not acquire score entry %s!.\n"
-msgstr "Невозможно открыть файл PreIn: %s\n"
-
-#: lib/transaction.c:1512
+#: lib/transaction.c:1505
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1515
+#: lib/transaction.c:1508
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "ошибка чтения заголовка из пакета\n"
 
-#: lib/transaction.c:1526
+#: lib/transaction.c:1519
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "<исходный пакет>"
 
-#: lib/transaction.c:1539
+#: lib/transaction.c:1532
 #, c-format
 msgid "Processing failed erase element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1543
+#: lib/transaction.c:1536
 #, fuzzy
 msgid "\tForce removing header from rpmdb.\n"
 msgstr "ошибка чтения заголовка из пакета\n"
 
-#: lib/transaction.c:1554
+#: lib/transaction.c:1547
 msgid "\tCould not remove failed package header from db!\n"
 msgstr ""
 
-#: lib/transaction.c:1563 lib/transaction.c:1695
-msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
+#: lib/transaction.c:1556 lib/transaction.c:1688
+#, c-format
+msgid "%s: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1564 lib/transaction.c:1696
+#: lib/transaction.c:1557 lib/transaction.c:1689
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1594
+#: lib/transaction.c:1587
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1595 lib/transaction.c:1650
+#: lib/transaction.c:1588 lib/transaction.c:1643
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1603
+#: lib/transaction.c:1596
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1616
+#: lib/transaction.c:1609
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1626
+#: lib/transaction.c:1619
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "<исходный пакет>"
@@ -3741,41 +3634,41 @@ msgstr "<исходный пакет>"
 #. Add the header as an erase element, we did not
 #. * have a repackaged package.
 #.
-#: lib/transaction.c:1635
+#: lib/transaction.c:1628
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1642
+#: lib/transaction.c:1635
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1649
+#: lib/transaction.c:1642
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1657
+#: lib/transaction.c:1650
 msgid "\tErase element already added for complimentary install.\n"
 msgstr ""
 
-#: lib/transaction.c:1670
+#: lib/transaction.c:1663
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "<исходный пакет>"
 
-#: lib/transaction.c:1675
+#: lib/transaction.c:1668
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1681
+#: lib/transaction.c:1674
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1687
+#: lib/transaction.c:1680
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "ошибка чтения заголовка из пакета\n"
 
-#: lib/transaction.c:1825
+#: lib/transaction.c:1819
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3787,12 +3680,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1879
+#: lib/transaction.c:1873
 #, fuzzy, c-format
 msgid "sanity checking %d elements\n"
 msgstr "провeряется %d элементов\n"
 
-#: lib/transaction.c:1965
+#: lib/transaction.c:1959
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3804,7 +3697,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2040
+#: lib/transaction.c:2034
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "подсчитывается отпечаток(ки) %d файла(ов)\n"
@@ -3812,7 +3705,7 @@ msgstr "подсчитывается отпечаток(ки) %d файла(ов)\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2121
+#: lib/transaction.c:2115
 msgid "computing file dispositions\n"
 msgstr "подсчитывается диспозиция файлов\n"
 
@@ -3820,12 +3713,12 @@ msgstr "подсчитывается диспозиция файлов\n"
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2570
+#: lib/transaction.c:2569
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2577
+#: lib/transaction.c:2576
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
@@ -4359,7 +4252,6 @@ msgid "(no error)"
 msgstr "(нет ошибки)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "фатальная ошибка: "
@@ -4636,6 +4528,22 @@ msgstr "использовать базу данных в КАТАЛОГЕ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#, fuzzy
+#~ msgid "Could not acquire transaction score entry for %s\n"
+#~ msgstr "Невозможно открыть файл PreIn: %s\n"
+
+#, fuzzy
+#~ msgid "\tAllocating space for %d entries\n"
+#~ msgstr "перемещается %s в %s\n"
+
+#, fuzzy
+#~ msgid "Could not acquire transaction score!.\n"
+#~ msgstr "Невозможно открыть файл PreIn: %s\n"
+
+#, fuzzy
+#~ msgid "Could not acquire score entry %s!.\n"
+#~ msgstr "Невозможно открыть файл PreIn: %s\n"
 
 #, fuzzy
 #~ msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"

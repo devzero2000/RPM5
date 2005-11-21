@@ -138,6 +138,11 @@ struct rpmte_s {
     int linkFailed;		/*!< Did the linked element upgrade succeed? */
     int done;			/*!< Has the element been installed/erased? */
 
+    rpmElementType te_types;	/*!< Bit mask of TR_ADDED and TR_REMOVED. */
+    int installed;		/*!< Was the header installed? */
+    int erased;			/*!< Was the header erased? */
+    int_32 tid;			/*!< Install tid of removed header. */
+
 /*@-fielduse@*/	/* LCL: confused by union? */
     union {
 /*@exposed@*/ /*@dependent@*/ /*@null@*/

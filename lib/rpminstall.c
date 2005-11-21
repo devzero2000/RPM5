@@ -9,8 +9,8 @@
 #include "rpmdb.h"
 #include "rpmds.h"
 
-#define	_RPMTE_INTERNAL
-#include "rpmte.h"	/* XXX: rpmts.h needs this for rpmtsScoreEntries */
+#define	_RPMTE_INTERNAL		/* XXX findErases needs rpmte internals. */
+#include "rpmte.h"		/* XXX: rpmteChain */
 #define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
 #include "rpmts.h"
 
