@@ -10,7 +10,7 @@
 
 /*@unchecked@*/ /*@observer@*/
 static const char * rpmlock_path_default = "%{?_rpmlock_path}";
-/*@unchecked@*/ /*@only@*/ /*relnull@*/
+/*@unchecked@*/ /*@only@*/ /*null@*/
 static const char * rpmlock_path = NULL;
 
 enum {
@@ -29,9 +29,9 @@ static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *loc
     /*@globals rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
     /*@modifies *lockp, rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
 {
-    rpmlock lock = (rpmlock) malloc(sizeof(*lock));
-    int rc = -1;
     static int oneshot = 0;
+    rpmlock lock = xmalloc(sizeof(*lock));
+    int rc = -1;
 
     if (lockp)
 	*lockp = NULL;
@@ -56,21 +56,23 @@ static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *loc
 	    if (lock->fd == -1)
 		rc = -1;
 	    else
-/*@i@*/		lock->omode = RPMLOCK_READ;
+		lock->omode = RPMLOCK_READ;
 	} else
-/*@i@*/	    lock->omode = RPMLOCK_WRITE | RPMLOCK_READ;
+	    lock->omode = RPMLOCK_WRITE | RPMLOCK_READ;
 	rc = 0;
     }
+/*@-branchstate@*/
     if (rc == 0 && lockp != NULL)
 	*lockp = lock;
     else
 	lock = _free(lock);
-/*@-compdef@*/
+/*@=branchstate@*/
+/*@-compdef@*/ /*@-nullstate@*/ /*@-globstate@*/
     return rc;
-/*@=compdef@*/
+/*@=compdef@*/ /*@=nullstate@*/ /*@=globstate@*/
 }
 
-static void rpmlock_free(/*@only@*/ /*@null@*/ rpmlock lock)
+static void * rpmlock_free(/*@only@*/ /*@null@*/ rpmlock lock)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies lock, fileSystem, internalState @*/
 {
@@ -79,6 +81,7 @@ static void rpmlock_free(/*@only@*/ /*@null@*/ rpmlock lock)
 	    (void) close(lock->fd);
 	lock = _free(lock);
     }
+    return NULL;
 }
 
 static int rpmlock_acquire(/*@null@*/ rpmlock lock, int mode)
@@ -142,8 +145,7 @@ void *rpmtsAcquireLock(rpmts ts)
 	    if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
 		rpmMessage(RPMMESS_ERROR,
 		   _("can't create transaction lock on %s\n"), rpmlock_path);
-		rpmlock_free(lock);
-		lock = NULL;
+		lock = rpmlock_free(lock);
 	    }
 	}
     }
@@ -153,6 +155,7 @@ void *rpmtsAcquireLock(rpmts ts)
 
 void * rpmtsFreeLock(void *lock)
 {
-    rpmlock_release((rpmlock)lock); /* Not really needed here. */
-    rpmlock_free((rpmlock)lock);
+    (void) rpmlock_release((rpmlock)lock); /* Not really needed here. */
+    lock = rpmlock_free((rpmlock)lock);
+    return NULL;
 }

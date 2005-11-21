@@ -1083,7 +1083,10 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	    /*@switchbreak@*/ break;
 	}
 
-assert(!strcmp(av[i], headerGetOrigin(h)));
+{ const char * origin = headerGetOrigin(h);
+assert(origin != NULL);
+assert(!strcmp(av[i], origin));
+}
 	tidp = NULL;
 	if (!hge(h, tag, &type, (void **) &tidp, &count) || tidp == NULL)
 	    goto bottom;

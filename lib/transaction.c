@@ -597,6 +597,7 @@ assert(otherFi != NULL);
 	    if (strcmp(fn, "/var/log/lastlog"))
 	    {	char md5sum[50];
 		const unsigned char * MD5 = rpmfiMD5(fi);
+assert(MD5 != NULL);
 		if (!domd5(fn, md5sum, 0, NULL) && memcmp(MD5, md5sum, 16)) {
 		    fi->actions[i] = FA_BACKUP;
 		    /*@switchbreak@*/ break;
@@ -622,6 +623,7 @@ assert(otherFi != NULL);
  * @param h		installed header
  * @return		0 if not newer, 1 if okay
  */
+/*@-nullpass@*/
 static int ensureOlder(rpmts ts,
 		const rpmte p, const Header h)
 	/*@modifies ts @*/
@@ -667,6 +669,7 @@ static int ensureOlder(rpmts ts,
 
     return rc;
 }
+/*@=nullpass@*/
 
 /**
  * Skip any files that do not match install policies.
@@ -675,6 +678,7 @@ static int ensureOlder(rpmts ts,
  */
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
 /*@-bounds@*/
+/*@-nullpass@*/
 static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
@@ -893,6 +897,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (languages) freeSplitString((char **)languages);
 /*@=dependenttrans@*/
 }
+/*@=nullpass@*/
 /*@=bounds@*/
 /*@=mustmod@*/
 
@@ -1024,8 +1029,10 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rollbackTransaction,
     /* Setup the notify of the call back to be the same as the rollback
      * transaction
      */
+/*@-nullpass@*/
     xx = rpmtsSetNotifyCallback(ts, failedTransaction->notify,
 	failedTransaction->notifyData);
+/*@=nullpass@*/
 
     /* Create install arguments structure */ 	
     ia.rbtid      = arbgoal;
@@ -1096,6 +1103,7 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rollbackTransaction,
  * @param ignoreSet			Problems to ignore
  * @return 				RPMRC_OK, or RPMRC_FAIL
  */
+/*@-nullpass@*/
 static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 	rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -1163,7 +1171,8 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 	FD_t semaPtr = Fopen(rollback_semaphore, "w.fdio");
 	rpmMessage(RPMMESS_DEBUG,
 	    _("Creating semaphore %s...\n"), rollback_semaphore);
-	(void) Fclose(semaPtr);
+	if (semaPtr != NULL)
+	    (void) Fclose(semaPtr);
     }
 
     /* Check the transaction to see if it is doable */
@@ -1286,7 +1295,9 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
 	ia->installInterfaceFlags = INSTALL_UPGRADE | INSTALL_HASH ;
 
 	/* Segfault here we go... */
+/*@-compmempass@*/
 	rc = rpmRollback(ts, ia, NULL);
+/*@=compmempass@*/
 
 	/* Free arbgoal transaction */
 	ts = rpmtsFree(ts);
@@ -1303,6 +1314,7 @@ cleanup:
 
     return rc;
 }
+/*@=nullpass@*/
 
 /**
  * Get the repackaged header and filename from the repackage directory.
@@ -1315,6 +1327,7 @@ cleanup:
  * @retval *fn		repackaged package's path (transaction key)
  * @return 		RPMRC_NOTFOUND or RPMRC_OK
  */
+/*@-nullpass@*/
 static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 		/*@out@*/ /*@null@*/ Header *hdrp,
 		/*@out@*/ /*@null@*/ char **fn)
@@ -1451,6 +1464,7 @@ exit:
     rtids = IDTXfree(rtids);
     return rc;	
 }
+/*@=nullpass@*/
 
 /**
  * This is not a generalized function to be called from outside
@@ -1464,6 +1478,7 @@ exit:
  *					set 0.
  * @return 				RPMRC_OK, or RPMRC_FAIL
  */
+/*@-nullpass@*/
 static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction, rpmts runningTransaction, rpmte p, int failed)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rollbackTransaction, runningTransaction, p, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -1707,6 +1722,7 @@ cleanup:
 	rph = headerFree(rph);
     return rc;
 }
+/*@=nullpass@*/
 
 /**
  * Search for string B in argv array AV.
@@ -1714,7 +1730,7 @@ cleanup:
  * @param B		string
  * @return		1 if found, 0 otherwise
  */
-static int cmpArgvStr(const char ** AV, const char * B)
+static int cmpArgvStr(/*@null@*/ const char ** AV, /*@null@*/ const char * B)
 	/*@*/
 {
     const char ** a;
@@ -2121,6 +2137,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     ps = rpmtsProblems(ts);
     pi = rpmtsiInit(ts);
+/*@-nullpass@*/
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	dbiIndexSet * matches;
 	int knownBad;
@@ -2189,6 +2206,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);
 
 	/* For all files from this package that are in the database ... */
+/*@-nullpass@*/
 	/*@-branchstate@*/
 	for (i = 0; i < numShared; i = nexti) {
 	    int beingRemoved;
@@ -2224,11 +2242,14 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	    }
 	}
 	/*@=branchstate@*/
+/*@=nullpass@*/
 
 	free(sharedList);
 
 	/* Update disk space needs on each partition for this package. */
+/*@-nullpass@*/
 	handleOverlappedFiles(ts, p, fi);
+/*@=nullpass@*/
 
 	/* Check added package has sufficient space on each partition used. */
 	switch (rpmteType(p)) {
@@ -2240,6 +2261,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
     }
+/*@=nullpass@*/
     pi = rpmtsiFree(pi);
     ps = rpmpsFree(ps);
 
@@ -2416,6 +2438,7 @@ assert(psm != NULL);
     /* ===============================================
      * Install and remove packages.
      */
+/*@-nullpass@*/
     pi = rpmtsiInit(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -2606,6 +2629,7 @@ assert(psm != NULL);
 	 */
 	if (ourrc && rollbackOnFailure) break;
     }
+/*@=nullpass@*/
     /*@=branchstate@*/
     pi = rpmtsiFree(pi);
 
@@ -2656,6 +2680,7 @@ assert(psm != NULL);
 	    }
 	}
 
+/*@-nullpass@*/
 	if (rpmteFd(p) != NULL) {
 	    p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
 	    if (p->fi != NULL)	/* XXX can't happen */
@@ -2678,6 +2703,7 @@ assert(psm != NULL);
 	    p->fi = rpmfiFree(p->fi);
 	    p->h = headerFree(p->h);
 	}
+/*@=nullpass@*/
     }
     pi = rpmtsiFree(pi);
 

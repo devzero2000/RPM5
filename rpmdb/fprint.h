@@ -45,8 +45,10 @@ struct fingerPrint_s {
 /*! directory finger print entry (the directory path is stat(2)-able */
     const struct fprintCacheEntry_s * entry;
 /*! trailing sub-directory path (directories that are not stat(2)-able */
-/*@owned@*/ /*@null@*/ const char * subDir;
-/*@dependent@*/ const char * baseName;	/*!< file base name */
+/*@owned@*/ /*@relnull@*/
+    const char * subDir;
+/*@dependent@*/
+    const char * baseName;	/*!< file base name */
 };
 
 /** */
