@@ -325,11 +325,11 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
  * programmer decision.
  *
  * @param failedTransaction	Failed transaction.
- * @param rollbackTransaction	rollback transaction (can be NULL).
+ * @param rbts			rollback transaction (can be NULL).
  * @param ignoreSet		Problems to ignore.
  * @return			RPMRC_OK, or RPMRC_FAIL
  */
-rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rollbackTransaction,
+rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rbts,
     rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/;

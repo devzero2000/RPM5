@@ -139,7 +139,6 @@ struct rpmte_s {
     int done;			/*!< Has the element been installed/erased? */
 
     int installed;		/*!< Was the header installed? */
-    int erased;			/*!< Was the header erased? */
     int downgrade;		/*!< Adjust package count on downgrades. */
 
 /*@-fielduse@*/	/* LCL: confused by union? */

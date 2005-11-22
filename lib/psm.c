@@ -2211,17 +2211,6 @@ assert(psm->mi == NULL);
 
 	if (rc != RPMRC_OK) break;
 
-	/*
-	 * If the score exists and this is not a rollback or autorollback
-	 * then lets check off erased for this package.
-	 */
-	if (rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK &&
-	    rpmtsType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
-	{
-	    rpmMessage(RPMMESS_DEBUG,
-		_("Attempting to mark %s as erased.\n"), rpmteN(psm->te));
-	    psm->te->erased = 1;
-	}
     }	break;
 
     default:

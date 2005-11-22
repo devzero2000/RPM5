@@ -187,7 +187,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
 /*@=branchstate@*/
 
     p->installed = 0;
-    p->erased = 0;
 
     p->nrelocs = 0;
     p->relocs = NULL;
