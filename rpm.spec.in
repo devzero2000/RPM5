@@ -588,6 +588,8 @@ exit 0
 %changelog
 * Mon Nov 21 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.4
 - rollback: move score board into transaction elements and eliminate.
+- rollback: adjust installed package counts when rollback downgrading.
+- rollback: don't force erase rpmdb headers, rollback downgrade will do.
 
 * Sat Nov 19 2005 Jeff Johnson <jbj@jbj.org> 4.4.4-0.3
 - complete forking perl-RPM2/* to perl/* with module name "RPM".

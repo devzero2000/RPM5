@@ -1054,7 +1054,7 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rollbackTransaction,
      * Don't know what the right thing to do, but a hint for the
      * next I look at this code, is that the te's all have the same
      * relocs from CLI.  100% correct would be to iterate over the
-     * trasaction elements and build a new list of relocations (ahhh!).
+     * transaction elements and build a new list of relocations (ahhh!).
      */
     ia.relocations = NULL;
     ia.numRelocations = 0;
@@ -1137,13 +1137,13 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction, rpmts failedTransaction,
     while((te = rpmtsiNext(tsi, 0)) != NULL) {
 	switch (rpmteType(te)) {
 	case TR_ADDED:
-	   numAdded++;
-	   /*@switchbreak@*/ break;
+	    numAdded++;
+	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
-	   numRemoved++;
-	   /*@switchbreak@*/ break;
+	    numRemoved++;
+	    /*@switchbreak@*/ break;
 	default:
-	   /*@switchbreak@*/ break;
+	    /*@switchbreak@*/ break;
 	}	
     }
     tsi = rpmtsiFree(tsi);
@@ -1496,10 +1496,10 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction, rpmts runningTr
 	    /*
  	     * If it died before the header was put in the rpmdb, we need
 	     * do to something wacky which is add the header to the DB anyway.
-	     * This will allow us, then to add the failed package as an erase
-	     * to the rollback transaction.  Must do this because we want the
-	     * the erase scriptlets to run, and the only way that is going
-	     * is if the header is in the rpmdb.
+	     * This will allow us to add the failed package as an erase
+	     * to the rollback transaction.  This must be done because we
+	     * want the the erase scriptlets to run, and the only way that
+	     * is going is if the header is in the rpmdb.
 	     */
 	    rpmMessage(RPMMESS_DEBUG,
 		_("Processing failed install element %s for autorollback.\n"),
@@ -1523,31 +1523,6 @@ assert(psm != NULL);
 	    break;
 
 	case TR_REMOVED:
-	    /*
- 	     * If the header has not been erased, force remove it such that
-	     * that it will act like things that are a pure erase will be
-	     * seen as such by the scriptlets.
-	     */
-	    rpmMessage(RPMMESS_DEBUG,
-		_("Processing failed erase element %s for autorollback.\n"),
-		rpmteNEVRA(p));
-	    if (!p->erased) {
-	    	rpmMessage(RPMMESS_DEBUG,
-		    _("\tForce removing header from rpmdb.\n"));
-/*@-compdef -usereleased@*/	/* p->fi->te undefined */
-		psm = rpmpsmNew(runningTransaction, p, p->fi);
-/*@=compdef =usereleased@*/
-assert(psm != NULL);
-		psm->stepName = "failed";	/* XXX W2DO? */
-		rc = rpmpsmStage(psm, PSM_RPMDB_REMOVE);
-		psm = rpmpsmFree(psm);
-
-		if (rc != RPMRC_OK) {
-		    rpmMessage(RPMMESS_WARNING,
-			_("\tCould not remove failed package header from db!\n"));
-		    goto cleanup;	
-		}
-	    }
 	    break;
 
 	default:
@@ -1619,6 +1594,10 @@ assert(psm != NULL);
 		_("\tAdded repackaged package header: %s.\n"), rpn);
 	    rc = rpmtsAddInstallElement(rollbackTransaction, headerLink(rph),
 		(fnpyKey) rpn, 1, p->relocs);
+{   rpmte q = rollbackTransaction->teInstall;
+    if (q != NULL)
+	q->downgrade = 1;
+}
 	    /*@innerbreak@*/ break;
 
 	case RPMRC_NOTFOUND:
@@ -1645,9 +1624,11 @@ assert(psm != NULL);
 	/* See if this element is part of an upgrade.  If so we don't
 	 * need to process the erase component of the upgrade.
 	 */
-	if ((p->te_types & TR_ADDED) && (p->te_types & TR_REMOVED)) {
-	    rpmMessage(RPMMESS_DEBUG,
-		_("\tErase element already added for complimentary install.\n"));
+	/* XXX prolly should not check blinks. */
+	if (p->blink.Pkgid != NULL || p->blink.Hdrid != NULL || p->blink.NEVRA != NULL
+	 || p->flink.Pkgid != NULL || p->flink.Hdrid != NULL || p->flink.NEVRA != NULL)
+	{
+	    rpmMessage(RPMMESS_DEBUG, _("\tErase element(s) already added.\n"));
 	    rc = RPMRC_OK;
 	    goto cleanup;
 	}
@@ -1666,6 +1647,11 @@ assert(psm != NULL);
 	    if (rc != RPMRC_OK)
 	        rpmMessage(RPMMESS_ERROR,
 		    _("Could not add erase element to auto-rollback transaction.\n"));
+if (failed)
+{   rpmte q = rollbackTransaction->teInstall;
+    if (q != NULL)
+	q->downgrade = 1;
+}
 	    /*@innerbreak@*/ break;
 
 	case RPMRC_NOTFOUND:

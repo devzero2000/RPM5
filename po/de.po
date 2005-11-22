@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.3\n"
-"POT-Creation-Date: 2005-11-21 16:47-0500\n"
+"POT-Creation-Date: 2005-11-22 14:32-0500\n"
 "PO-Revision-Date: 2005-11-17 12:54+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -750,7 +750,7 @@ msgstr "Kann den Header der Signatur nicht erneut laden.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Konnte %s nicht öffnen: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1695
+#: build/pack.c:645 lib/psm.c:1686
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kann das Paket nicht schreiben: %s\n"
@@ -780,7 +780,7 @@ msgstr "Konnte Nutzdaten von %s nicht lesen: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Konnte Nutzdaten nicht nach %s schreiben: %s\n"
 
-#: build/pack.c:738 lib/psm.c:2008
+#: build/pack.c:738 lib/psm.c:1999
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Erstellt: %s\n"
@@ -2461,45 +2461,40 @@ msgstr "%s(%s-%s-%s.%s) Skriptlet fehlgeschlagen, Beenden-Status %d\n"
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s hat %d Dateien, Test = %d\n"
 
-#: lib/psm.c:1591
+#: lib/psm.c:1582
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s Skriptlet fehlgeschlagen (%d), überspringe %s\n"
 
-#: lib/psm.c:1707
+#: lib/psm.c:1698
 msgid "Unable to reload signature header\n"
 msgstr "Kann den Header der Signatur nicht erneut laden\n"
 
-#: lib/psm.c:1807
+#: lib/psm.c:1798
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "Entpacken des Archivs fehlgeschlagen%s%s: %s\n"
 
-#: lib/psm.c:1808
+#: lib/psm.c:1799
 msgid " on file "
 msgstr " bei Datei "
 
-#: lib/psm.c:2016
+#: lib/psm.c:2007
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s fehlgeschlagen bei Datei %s: %s\n"
 
-#: lib/psm.c:2019
+#: lib/psm.c:2010
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s fehlgeschlagen: %s\n"
 
-#: lib/psm.c:2190
-#, c-format
-msgid "Setting %s to TID of 0x%08x\n"
-msgstr "Setze %s auf TID von 0x%08x\n"
-
-#: lib/psm.c:2214
-#, c-format
-msgid "Attempting to mark %s as installed in trasaction score\n"
+#: lib/psm.c:2193
+#, fuzzy, c-format
+msgid "Attempting to mark %s as installed in transaction score\n"
 msgstr "Versuche %s im Score-Board als installiert zu markieren.\n"
 
-#: lib/psm.c:2243
+#: lib/psm.c:2222
 #, fuzzy, c-format
 msgid "Attempting to mark %s as erased.\n"
 msgstr "Versuche %s im Score-Board(0x%x) als deinstalliert zu markieren.\n"
@@ -3570,50 +3565,34 @@ msgid "\tCould not add failed package header to db!\n"
 msgstr ""
 "\tKonnte fehlgeschlagenen Paket-Header nicht zur Datenbank hinzufügen!\n"
 
-#: lib/transaction.c:1532
-#, c-format
-msgid "Processing failed erase element %s for autorollback.\n"
-msgstr ""
-"Verarbeiten des Deinstallationselements %s für das Auto-Rollback "
-"fehlgeschlagen.\n"
-
-#: lib/transaction.c:1536
-msgid "\tForce removing header from rpmdb.\n"
-msgstr "\tErzwinge das Entfernen des Headers aus der rpmdb.\n"
-
-#: lib/transaction.c:1547
-msgid "\tCould not remove failed package header from db!\n"
-msgstr ""
-"\tKonnte fehlgeschlagenen Paket-Header nicht aus der Datenbank entfernen!\n"
-
-#: lib/transaction.c:1556 lib/transaction.c:1688
+#: lib/transaction.c:1531 lib/transaction.c:1674
 #, fuzzy, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr "_rpmtsAddRollbackElement: Unbekannter Transaktionstyp!\n"
 
-#: lib/transaction.c:1557 lib/transaction.c:1689
+#: lib/transaction.c:1532 lib/transaction.c:1675
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr "TYP:   %d\n"
 
-#: lib/transaction.c:1587
+#: lib/transaction.c:1562
 msgid "Processing install element for autorollback...\n"
 msgstr "Verarbeite Installationselement für Auto-Rollback...\n"
 
-#: lib/transaction.c:1588 lib/transaction.c:1643
+#: lib/transaction.c:1563 lib/transaction.c:1622
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr "\tNEVRA: %s\n"
 
-#: lib/transaction.c:1596
+#: lib/transaction.c:1571
 msgid "Could not get install element database instance!\n"
 msgstr "Keine Datenbank-Instanz des Installationselements!\n"
 
-#: lib/transaction.c:1609
+#: lib/transaction.c:1584
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "Keine Header der Transaktion für das Auto-Rollback!\n"
 
-#: lib/transaction.c:1619
+#: lib/transaction.c:1594
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tErneut gepackten Paket-Header hinzugefügt: %s.\n"
@@ -3621,42 +3600,43 @@ msgstr "\tErneut gepackten Paket-Header hinzugefügt: %s.\n"
 #. Add the header as an erase element, we did not
 #. * have a repackaged package.
 #.
-#: lib/transaction.c:1628
+#: lib/transaction.c:1607
 msgid "\tAdded erase element.\n"
 msgstr "\tDeinstallationselement hinzugefügt.\n"
 
-#: lib/transaction.c:1635
+#: lib/transaction.c:1614
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr "Kein erneut gepackter Header für Transaktion des Auto-Rollbacks!\n"
 
-#: lib/transaction.c:1642
+#: lib/transaction.c:1621
 msgid "Processing erase element for autorollback...\n"
 msgstr "Verarbeite Deinstallationselement für Auto-Rollback...\n"
 
-#: lib/transaction.c:1650
-msgid "\tErase element already added for complimentary install.\n"
+#: lib/transaction.c:1631
+#, fuzzy
+msgid "\tErase element(s) already added.\n"
 msgstr "\tDeinstallationselement bereits zur Installation hinzugefügt.\n"
 
-#: lib/transaction.c:1663
+#: lib/transaction.c:1644
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tErneut gepacktes Paket %s hinzugefügt.\n"
 
-#: lib/transaction.c:1668
+#: lib/transaction.c:1649
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 "Konnte das Deinstallationselement für Transaktion des Auto-Rollbacks nicht "
 "hinzufügen.\n"
 
-#: lib/transaction.c:1674
+#: lib/transaction.c:1660
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\tKein erneut gepacktes Paket...nichts zu tun.\n"
 
-#: lib/transaction.c:1680
+#: lib/transaction.c:1666
 msgid "Failure reading repackaged package!\n"
 msgstr "Fehler beim Lesen des erneut gepackten Pakets!\n"
 
-#: lib/transaction.c:1819
+#: lib/transaction.c:1805
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ungültige Anzahl an Transaktionselementen.\n"
 
@@ -3668,12 +3648,12 @@ msgstr "Ungültige Anzahl an Transaktionselementen.\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1873
+#: lib/transaction.c:1859
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "Gesundheitsprüfung von %d Elementen\n"
 
-#: lib/transaction.c:1959
+#: lib/transaction.c:1945
 msgid "running pre-transaction scripts\n"
 msgstr "Führe Pre-Transaktionsskripte aus\n"
 
@@ -3685,7 +3665,7 @@ msgstr "Führe Pre-Transaktionsskripte aus\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2034
+#: lib/transaction.c:2020
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "Berechne %d Datei-Fingerabdrücke\n"
@@ -3693,24 +3673,24 @@ msgstr "Berechne %d Datei-Fingerabdrücke\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2115
+#: lib/transaction.c:2101
 msgid "computing file dispositions\n"
 msgstr "Berechne Dateianordnungen\n"
 
-#: lib/transaction.c:2299
+#: lib/transaction.c:2285
 msgid "Creating auto-rollback transaction\n"
 msgstr "Erstelle Transaktion für ein Auto-Rollback\n"
 
-#: lib/transaction.c:2569
+#: lib/transaction.c:2555
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr "Füge %s zur Auto-Rollbacktransaktion hinzu.\n"
 
-#: lib/transaction.c:2576
+#: lib/transaction.c:2562
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr "Konnte Transaktionselement nicht zun Auto-Rollback hinzufügen!\n"
 
-#: lib/transaction.c:2620
+#: lib/transaction.c:2606
 msgid "running post-transaction scripts\n"
 msgstr "Führe Post-Transaktionsskripte aus\n"
 
@@ -4509,6 +4489,22 @@ msgstr "Benutze Datenbank in VERZEICHNIS"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "VERZEICHNIS"
+
+#~ msgid "Setting %s to TID of 0x%08x\n"
+#~ msgstr "Setze %s auf TID von 0x%08x\n"
+
+#~ msgid "Processing failed erase element %s for autorollback.\n"
+#~ msgstr ""
+#~ "Verarbeiten des Deinstallationselements %s für das Auto-Rollback "
+#~ "fehlgeschlagen.\n"
+
+#~ msgid "\tForce removing header from rpmdb.\n"
+#~ msgstr "\tErzwinge das Entfernen des Headers aus der rpmdb.\n"
+
+#~ msgid "\tCould not remove failed package header from db!\n"
+#~ msgstr ""
+#~ "\tKonnte fehlgeschlagenen Paket-Header nicht aus der Datenbank "
+#~ "entfernen!\n"
 
 #~ msgid "Could not acquire transaction score entry for %s\n"
 #~ msgstr "Keinen Transaktionsscore-Eintrag für %s erhalten\n"

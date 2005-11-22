@@ -10,6 +10,8 @@
 	- complete forking perl-RPM2/* to perl/* module name "RPM".
 	- upgrade to db-4.4.16 internal.
 	- rollback: move score board into transaction elements and eliminate.
+	- rollback: adjust installed package counts when rollback downgrading.
+	- rollback: don't force erase rpmdb headers, rollback downgrade will do.
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.

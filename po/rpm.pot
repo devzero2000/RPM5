@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2005-11-21 16:47-0500\n"
+"POT-Creation-Date: 2005-11-22 14:32-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -721,7 +721,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:645 lib/psm.c:1695
+#: build/pack.c:645 lib/psm.c:1686
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -751,7 +751,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:738 lib/psm.c:2008
+#: build/pack.c:738 lib/psm.c:1999
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2402,45 +2402,40 @@ msgstr ""
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1591
+#: lib/psm.c:1582
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1707
+#: lib/psm.c:1698
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:1807
+#: lib/psm.c:1798
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1808
+#: lib/psm.c:1799
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2016
+#: lib/psm.c:2007
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2019
+#: lib/psm.c:2010
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/psm.c:2190
+#: lib/psm.c:2193
 #, c-format
-msgid "Setting %s to TID of 0x%08x\n"
+msgid "Attempting to mark %s as installed in transaction score\n"
 msgstr ""
 
-#: lib/psm.c:2214
-#, c-format
-msgid "Attempting to mark %s as installed in trasaction score\n"
-msgstr ""
-
-#: lib/psm.c:2243
+#: lib/psm.c:2222
 #, c-format
 msgid "Attempting to mark %s as erased.\n"
 msgstr ""
@@ -3490,47 +3485,34 @@ msgstr ""
 msgid "\tCould not add failed package header to db!\n"
 msgstr ""
 
-#: lib/transaction.c:1532
-#, c-format
-msgid "Processing failed erase element %s for autorollback.\n"
-msgstr ""
-
-#: lib/transaction.c:1536
-msgid "\tForce removing header from rpmdb.\n"
-msgstr ""
-
-#: lib/transaction.c:1547
-msgid "\tCould not remove failed package header from db!\n"
-msgstr ""
-
-#: lib/transaction.c:1556 lib/transaction.c:1688
+#: lib/transaction.c:1531 lib/transaction.c:1674
 #, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1557 lib/transaction.c:1689
+#: lib/transaction.c:1532 lib/transaction.c:1675
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1587
+#: lib/transaction.c:1562
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1588 lib/transaction.c:1643
+#: lib/transaction.c:1563 lib/transaction.c:1622
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1596
+#: lib/transaction.c:1571
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1609
+#: lib/transaction.c:1584
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1619
+#: lib/transaction.c:1594
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr ""
@@ -3538,40 +3520,40 @@ msgstr ""
 #. Add the header as an erase element, we did not
 #. * have a repackaged package.
 #.
-#: lib/transaction.c:1628
+#: lib/transaction.c:1607
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1635
+#: lib/transaction.c:1614
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1642
+#: lib/transaction.c:1621
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1650
-msgid "\tErase element already added for complimentary install.\n"
+#: lib/transaction.c:1631
+msgid "\tErase element(s) already added.\n"
 msgstr ""
 
-#: lib/transaction.c:1663
+#: lib/transaction.c:1644
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1668
+#: lib/transaction.c:1649
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1674
+#: lib/transaction.c:1660
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1680
+#: lib/transaction.c:1666
 msgid "Failure reading repackaged package!\n"
 msgstr ""
 
-#: lib/transaction.c:1819
+#: lib/transaction.c:1805
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3583,12 +3565,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1873
+#: lib/transaction.c:1859
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1959
+#: lib/transaction.c:1945
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3600,7 +3582,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2034
+#: lib/transaction.c:2020
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3608,24 +3590,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2115
+#: lib/transaction.c:2101
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2299
+#: lib/transaction.c:2285
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2569
+#: lib/transaction.c:2555
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2576
+#: lib/transaction.c:2562
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2620
+#: lib/transaction.c:2606
 msgid "running post-transaction scripts\n"
 msgstr ""
 

@@ -1434,20 +1434,11 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    break;
 	}
 
-	/* If we have a score then autorollback is enabled.  If autorollback is
- 	 * enabled, and this is an autorollback transaction, then we may need to
-	 * adjust the pkgs installed count.
-	 *
-	 * If all this is true, this adjustment should only be made if the PSM goal
-	 * is an install.  No need to make this adjustment on the erase
-	 * component of the upgrade, or even more absurd to do this when doing a
-	 * PKGSAVE.
-	 */
+	/* Adjust package count on rollback downgrade. */
 	if (rpmtsType(ts) == RPMTRANS_TYPE_AUTOROLLBACK &&
 	    (psm->goal & ~(PSM_PKGSAVE|PSM_PKGERASE)))
 	{
-	    if (psm->te->installed && !psm->te->erased
-	     && (psm->te->te_types & (TR_ADDED|TR_REMOVED)))
+	    if (psm->te->downgrade)
 		psm->npkgs_installed--;
 	}
 
@@ -2176,20 +2167,8 @@ assert(psm->mi == NULL);
 	    rc = RPMRC_FAIL;
 	break;
     case PSM_RPMDB_ADD:
-    {	int_32 tid;
-
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h == NULL)	break;	/* XXX can't happen */
-
-	/* If this is an autorolback transaction, then we need to set
-	 * the TID of the header to that of its remove tid
-	 */
-	tid = rpmtsGetTid(ts);
-	if (rpmtsType(ts) == RPMTRANS_TYPE_AUTOROLLBACK) {
-	    tid = psm->te->tid;
-	    rpmMessage(RPMMESS_DEBUG, _("Setting %s to TID of 0x%08x\n"),
-			rpmteNEVRA(psm->te), tid);
-	}
 
 	/* Add header to db, doing header check if requested */
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
@@ -2211,7 +2190,7 @@ assert(psm->mi == NULL);
 	    rpmtsType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
 	{
 	    rpmMessage(RPMMESS_DEBUG,
-		_("Attempting to mark %s as installed in trasaction score\n"),
+		_("Attempting to mark %s as installed in transaction score\n"),
 		rpmteN(psm->te));
 	    psm->te->installed = 1;
 	}
@@ -2219,7 +2198,7 @@ assert(psm->mi == NULL);
 	/* Set the database instance for (possible) rollbacks. */
 	rpmteSetDBInstance(psm->te, headerGetInstance(fi->h));
 
-    }	break;
+	break;
     case PSM_RPMDB_REMOVE:
     {	
 

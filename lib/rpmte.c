@@ -186,9 +186,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->epoch = NULL;
 /*@=branchstate@*/
 
-    ep = NULL;
-    xx = hge(h, RPMTAG_INSTALLTID, NULL, (void **)&ep, NULL);
-    p->tid = (ep != NULL ? *ep : 0xffffffff);
     p->installed = 0;
     p->erased = 0;
 
@@ -256,7 +253,6 @@ rpmte rpmteNew(const rpmts ts, Header h,
     int xx;
 
     p->type = type;
-    p->te_types = type;
 
     addTE(ts, p, h, key, relocs);
     switch (type) {
@@ -732,9 +728,6 @@ fprintf(stderr, "%s argvAdd(&p->blink.Hdrid, \"%s\")\n", msg, blinkHdrid);
 #ifdef	NOTYET	/* XXX MinMemory. */
     blinkHdrid = _free(blinkHdrid);
 #endif
-
-    p->te_types |= q->type;
-    q->te_types |= p->type;
 
     return 0;
 }
