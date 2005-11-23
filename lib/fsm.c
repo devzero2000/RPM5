@@ -555,6 +555,13 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     size_t pos = 0;
     int rc, ec = 0;
 
+    if (fsm->headerRead == NULL)
+	fsm->headerRead = &cpioHeaderRead;
+    if (fsm->headerWrite == NULL)
+	fsm->headerWrite = &cpioHeaderWrite;
+    if (fsm->trailerWrite == NULL)
+	fsm->trailerWrite = &cpioTrailerWrite;
+
     fsm->goal = goal;
     if (cfd != NULL) {
 	fsm->cfd = fdLink(cfd, "persist (fsm)");
@@ -2355,15 +2362,15 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 	break;
     case FSM_TRAILER:
-	rc = cpioTrailerWrite(fsm);
+	rc = (*fsm->trailerWrite) (fsm);	/* Write payload trailer. */
 	break;
     case FSM_HREAD:
 	rc = fsmNext(fsm, FSM_POS);
 	if (!rc)
-	    rc = cpioHeaderRead(fsm, st);	/* Read next payload header. */
+	    rc = (*fsm->headerRead) (fsm, st);	/* Read next payload header. */
 	break;
     case FSM_HWRITE:
-	rc = cpioHeaderWrite(fsm, st);		/* Write next payload header. */
+	rc = (*fsm->headerWrite) (fsm, st);	/* Write next payload header. */
 	break;
     case FSM_DREAD:
 /*@-boundswrite@*/

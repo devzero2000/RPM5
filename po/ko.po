@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-22 14:32-0500\n"
+"POT-Creation-Date: 2005-11-23 17:45-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -63,10 +63,12 @@ msgid "Building for target %s\n"
 msgstr "%s(을)를 제작하고 있습니다\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "인수 값으로 RPM 패키지가 지정되어야 합니다\n"
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 
@@ -126,12 +128,12 @@ msgid "RPM version %s\n"
 msgstr "RPM 버전 - %s\n"
 
 #: rpmqv.c:147
-#, fuzzy
+#, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:148
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "이 프로그램은 GNU Public License 내에서 자유롭게 재배포할 수 있습니다"
@@ -275,6 +277,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr "서명할 파일이 없습니다\n"
 
@@ -284,6 +287,7 @@ msgid "cannot access file %s\n"
 msgstr "%s 파일에 접근할 수 없습니다\n"
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp를 찾을 수 없음: "
 
@@ -292,10 +296,12 @@ msgid "Enter pass phrase: "
 msgstr "패스 구문(pass phrase) 입력: "
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "패스 구문(pass phrase)이 올바르지 않습니다\n"
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "패스 구문(pass phrase)이 일치합니다.\n"
 
@@ -309,6 +315,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign 옵션은 패키지 제작시에만 사용할 수 있습니다"
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr "실행에 실패했습니다\n"
 
@@ -1572,52 +1579,52 @@ msgstr "========= 패키지에 디렉토리가 포함되어 있지 않음:\n"
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:773
+#: lib/fsm.c:780
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "%s 사용자가 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/fsm.c:781
+#: lib/fsm.c:788
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "%s 그룹이 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/fsm.c:1350
+#: lib/fsm.c:1357
 #, fuzzy, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "%2$04o의 허가권(perms)을 가진 %1$s 디렉토리가 생성되었습니다.\n"
 
-#: lib/fsm.c:1354
+#: lib/fsm.c:1361
 #, fuzzy, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "%2$04o의 허가권(perms)을 가진 %1$s 디렉토리가 생성되었습니다.\n"
 
-#: lib/fsm.c:1657
+#: lib/fsm.c:1664
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "헤더 파일 목록에서 아카이브 파일 %s(을)를 찾을 수 없습니다\n"
 
-#: lib/fsm.c:1784 lib/fsm.c:1924
+#: lib/fsm.c:1791 lib/fsm.c:1931
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s(이)가 %s(으)로 저장되었습니다\n"
 
-#: lib/fsm.c:1951
+#: lib/fsm.c:1958
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:1957
+#: lib/fsm.c:1964
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: lib/fsm.c:1972
+#: lib/fsm.c:1979
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s %s 링크 해제에 실패함: %s\n"
 
-#: lib/fsm.c:1994
+#: lib/fsm.c:2001
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
@@ -1668,14 +1675,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
+#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1691,6 +1701,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1710,6 +1721,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2527,11 +2539,6 @@ msgstr "%s(이)가 실패함: %s\n"
 msgid "Attempting to mark %s as installed in transaction score\n"
 msgstr ""
 
-#: lib/psm.c:2222
-#, c-format
-msgid "Attempting to mark %s as erased.\n"
-msgstr ""
-
 #: lib/query.c:123 lib/rpmts.c:632
 #, c-format
 msgid "incorrect format: %s\n"
@@ -2916,7 +2923,7 @@ msgstr "알 수 없는 태그 입니다"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1445 lib/transaction.c:1181 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1445 lib/transaction.c:1180 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
@@ -2952,7 +2959,7 @@ msgstr "준비 중..."
 msgid "Upgrading packages..."
 msgstr "패키지를 업그레이드 합니다"
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1154
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1153
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
@@ -3048,12 +3055,12 @@ msgstr "%s(을)를 설치합니다\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1439 lib/transaction.c:1159
+#: lib/rpminstall.c:1439 lib/transaction.c:1158
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1470 lib/transaction.c:1234
+#: lib/rpminstall.c:1470 lib/transaction.c:1233
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
@@ -3237,22 +3244,27 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
 #: lib/rpmrc.c:1930
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3345,6 +3357,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3369,6 +3382,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3442,6 +3456,9 @@ msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3487,10 +3504,12 @@ msgid " DSA signature: "
 msgstr "서명이 없습니다\n"
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 
@@ -3514,57 +3533,57 @@ msgstr ""
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr ""
 
-#: lib/transaction.c:1151
+#: lib/transaction.c:1150
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1162
+#: lib/transaction.c:1161
 #, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1168
+#: lib/transaction.c:1167
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr ""
 
-#: lib/transaction.c:1172
+#: lib/transaction.c:1171
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: lib/transaction.c:1193
+#: lib/transaction.c:1192
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1265
+#: lib/transaction.c:1264
 #, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1310
+#: lib/transaction.c:1308
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: lib/transaction.c:1354
+#: lib/transaction.c:1352
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1384
+#: lib/transaction.c:1382
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1388
+#: lib/transaction.c:1386
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1392
+#: lib/transaction.c:1390
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1405
+#: lib/transaction.c:1403
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "소스 패키지가 필요하며, 바이너리가 검색되었습니다\n"
@@ -3576,105 +3595,103 @@ msgstr "소스 패키지가 필요하며, 바이너리가 검색되었습니다\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1426
+#: lib/transaction.c:1424
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1428
+#: lib/transaction.c:1426
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1451
+#: lib/transaction.c:1449
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
 
-#: lib/transaction.c:1505
+#: lib/transaction.c:1501
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1508
+#: lib/transaction.c:1504
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/transaction.c:1519
+#: lib/transaction.c:1515
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "<소스 패키지>"
 
-#: lib/transaction.c:1531 lib/transaction.c:1674
+#: lib/transaction.c:1527 lib/transaction.c:1663
 #, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1532 lib/transaction.c:1675
+#: lib/transaction.c:1528 lib/transaction.c:1664
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1562
+#: lib/transaction.c:1558
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1563 lib/transaction.c:1622
+#: lib/transaction.c:1559 lib/transaction.c:1614
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1571
+#: lib/transaction.c:1567
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1584
+#: lib/transaction.c:1579
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1594
+#: lib/transaction.c:1589
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "<소스 패키지>"
 
-#. Add the header as an erase element, we did not
-#. * have a repackaged package.
-#.
-#: lib/transaction.c:1607
+#. Add the header as a pure erase element, no repackaged package.
+#: lib/transaction.c:1599
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1614
+#: lib/transaction.c:1606
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1621
+#: lib/transaction.c:1613
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1631
+#: lib/transaction.c:1623
 msgid "\tErase element(s) already added.\n"
 msgstr ""
 
-#: lib/transaction.c:1644
+#: lib/transaction.c:1634
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "<소스 패키지>"
 
-#: lib/transaction.c:1649
+#: lib/transaction.c:1638
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1660
+#: lib/transaction.c:1649
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1666
+#: lib/transaction.c:1655
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/transaction.c:1805
+#: lib/transaction.c:1794
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3686,12 +3703,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1859
+#: lib/transaction.c:1848
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1945
+#: lib/transaction.c:1934
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3703,7 +3720,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2020
+#: lib/transaction.c:2009
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3711,24 +3728,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2101
+#: lib/transaction.c:2090
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2285
+#: lib/transaction.c:2274
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2555
+#: lib/transaction.c:2544
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2562
+#: lib/transaction.c:2551
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2606
+#: lib/transaction.c:2595
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -4261,6 +4278,7 @@ msgid "(no error)"
 msgstr "(오류 없음)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "치명적 오류: "

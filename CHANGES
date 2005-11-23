@@ -13,6 +13,7 @@
 	- rollback: adjust installed package counts when rollback downgrading.
 	- rollback: don't force erase rpmdb headers, rollback downgrade will do.
 	- remove (broken) test programs trb.c and tgi.c.
+	- add fsm vectors for cpio peculier routines.
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.

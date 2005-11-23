@@ -200,6 +200,10 @@ struct fsm_s {
     fileStage nstage;		/*!< Next file stage. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
+
+    int (*headerRead) (FSM_t fsm, struct stat *st);
+    int (*headerWrite) (FSM_t fsm, struct stat *st);
+    int (*trailerWrite) (FSM_t fsm);
 };
 
 #ifdef __cplusplus

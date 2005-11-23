@@ -588,6 +588,7 @@ exit 0
 %changelog
 * Wed Nov 23 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.5
 - remove (broken) test programs trb.c and tgi.c.
+- add fsm vectors for cpio peculier routines.
 
 * Mon Nov 21 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.4
 - rollback: move score board into transaction elements and eliminate.
