@@ -4,10 +4,7 @@ LIBRPM_0
     appendStringBufAux;
     __assert_program_name;
     _cacheDependsRC;
-    cpioHeaderRead;
-    cpioHeaderWrite;
     cpioStrerror;
-    cpioTrailerWrite;
     currentDirectory;
     doputenv;
     dosetenv;
