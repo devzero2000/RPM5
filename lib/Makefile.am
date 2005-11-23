@@ -14,9 +14,9 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
-EXTRA_DIST = getdate.y tgi.c librpm.vers
+EXTRA_DIST = getdate.y librpm.vers
 
-EXTRA_PROGRAMS = tgi
+EXTRA_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -110,9 +110,6 @@ setfiles: setfiles.o
 tds: tds.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
-trb: trb.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-
 tthread: tthread.o librpm.la
 	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs) @WITH_LIBELF_LIB@
 
@@ -146,7 +143,3 @@ tpl: tpl.o librpm.la
 
 tplatform: tplatform.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-
-tgi_SOURCES = tgi.c
-tgi_LDFLAGS = @LDFLAGS_STATIC@
-tgi_LDADD = librpm.la
