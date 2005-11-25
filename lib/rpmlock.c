@@ -39,7 +39,7 @@ static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *loc
     /* XXX oneshot to determine path for fcntl lock. */
     /* XXX rpmlock_path is set once, cannot be changed with %{_rpmlock_path}. */
     if (!oneshot) {
-	char * t = rpmExpand(rpmlock_path_default, NULL);
+	char * t = rpmGenPath(rootdir, rpmlock_path_default, NULL);
 	if (t == NULL || *t == '\0' || *t == '%')
 	    t = _free(t);
 	rpmlock_path = t;
@@ -132,9 +132,12 @@ void *rpmtsAcquireLock(rpmts ts)
 {
     const char *rootDir = rpmtsRootDir(ts);
     rpmlock lock = NULL;
-    int rc = rpmlock_new((rootDir != NULL ? rootDir : "/"), &lock);
+    int rc;
 
 /*@-branchstate@*/
+    if (rootDir == NULL || rpmtsChrootDone(ts))
+	rootDir = "/";
+    rc = rpmlock_new(rootDir, &lock);
     if (rc) {
 	if (rpmlock_path != NULL)
 	    rpmMessage(RPMMESS_ERROR,
@@ -161,3 +164,4 @@ void * rpmtsFreeLock(void *lock)
     lock = rpmlock_free((rpmlock)lock);
     return NULL;
 }
+k
