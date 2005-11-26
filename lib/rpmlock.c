@@ -164,4 +164,3 @@ void * rpmtsFreeLock(void *lock)
     lock = rpmlock_free((rpmlock)lock);
     return NULL;
 }
-k

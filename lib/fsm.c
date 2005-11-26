@@ -555,12 +555,12 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     size_t pos = 0;
     int rc, ec = 0;
 
-    if (fsm->headerRead == NULL)
+    if (fsm->headerRead == NULL) {
 	fsm->headerRead = &cpioHeaderRead;
-    if (fsm->headerWrite == NULL)
 	fsm->headerWrite = &cpioHeaderWrite;
-    if (fsm->trailerWrite == NULL)
 	fsm->trailerWrite = &cpioTrailerWrite;
+	fsm->blksize = 4;
+    }
 
     fsm->goal = goal;
     if (cfd != NULL) {
@@ -829,7 +829,7 @@ int fsmMapAttrs(FSM_t fsm)
  * @return		0 on success
  */
 /*@-compdef@*/
-static int expandRegular(/*@special@*/ FSM_t fsm)
+static int extractRegular(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->fmd5sum, fsm->md5sum, fsm->sb, fsm->wfd  @*/
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
@@ -858,7 +858,7 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
 
 	left -= fsm->wrnb;
 
-	/* don't call this with fileSize == fileComplete */
+	/* Notify iff progress, completion is done elsewhere */
 	if (!rc && left)
 	    (void) fsmNext(fsm, FSM_NOTIFY);
     }
@@ -1439,7 +1439,6 @@ int fsmStage(FSM_t fsm, fileStage stage)
     fileStage prevStage = fsm->stage;
     const char * const prev = fileStageString(prevStage);
 #endif
-    static int modulo = 4;
     const char * const cur = fileStageString(stage);
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
@@ -1799,7 +1798,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    fsm->path = path;
 	    /*@=dependenttrans@*/
 	    if (!(rc == CPIOERR_ENOENT)) return rc;
-	    rc = expandRegular(fsm);
+	    rc = extractRegular(fsm);
 	} else if (S_ISDIR(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
@@ -2344,14 +2343,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 	break;
     case FSM_POS:
-	left = (modulo - (fdGetCpioPos(fsm->cfd) % modulo)) % modulo;
+	left = (fsm->blksize - (fdGetCpioPos(fsm->cfd) % fsm->blksize)) % fsm->blksize;
 	if (left) {
 	    fsm->wrlen = left;
 	    (void) fsmNext(fsm, FSM_DREAD);
 	}
 	break;
     case FSM_PAD:
-	left = (modulo - (fdGetCpioPos(fsm->cfd) % modulo)) % modulo;
+	left = (fsm->blksize - (fdGetCpioPos(fsm->cfd) % fsm->blksize)) % fsm->blksize;
 	if (left) {
 /*@-boundswrite@*/
 	    memset(fsm->rdbuf, 0, left);
