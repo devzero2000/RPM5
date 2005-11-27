@@ -649,7 +649,7 @@ retry:
 
     if (!strncmp(Name, "soname(", sizeof("soname(")-1)) {
 	rpmds sonameP = NULL;
-	rpmMergePRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
+	rpmPRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
 	char * fn = strcpy(alloca(strlen(Name)+1), Name);
 	int flags = 0;	/* XXX RPMELF_FLAG_SKIPREQUIRES? */
 	rpmds ds;

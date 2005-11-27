@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-    rpmMergePRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
+    rpmPRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
     rpmds P = NULL;
     rpmds R = NULL;
     int rc;

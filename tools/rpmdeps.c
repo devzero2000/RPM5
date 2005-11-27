@@ -220,7 +220,7 @@ main(int argc, char *const argv[])
     rpmfc fc = NULL;
     rpmds P = NULL;
     rpmds R = NULL;
-    rpmMergePRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
+    rpmPRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
 const char * closure_name = "for";
     FILE * fp = NULL;
     int flags = 0;

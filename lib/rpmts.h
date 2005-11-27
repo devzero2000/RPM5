@@ -164,7 +164,7 @@ struct rpmts_s {
 /*@observer@*/ /*@null@*/
     rpmCallbackData notifyData;	/*!< Callback private data. */
 
-    struct rpmMergePRCO_s PRCO;	/*!< Current transaction dependencies. */
+    struct rpmPRCO_s PRCO;	/*!< Current transaction dependencies. */
 
 /*@refcounted@*/ /*@null@*/
     rpmps probs;		/*!< Current problems in transaction. */

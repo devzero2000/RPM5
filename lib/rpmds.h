@@ -61,7 +61,7 @@ struct rpmds_s {
 /**
  * Container to carry provides/requires/conflicts/obsoletes dependencies.
  */
-typedef struct rpmMergePRCO_s {
+typedef struct rpmPRCO_s {
 /*@dependent@*/ /*@null@*/
     rpmds * Pdsp;		/*!< Provides: collector. */
 /*@dependent@*/ /*@null@*/
@@ -70,7 +70,7 @@ typedef struct rpmMergePRCO_s {
     rpmds * Cdsp;		/*!< Conflicts: collector. */
 /*@dependent@*/ /*@null@*/
     rpmds * Odsp;		/*!< Obsoletes: collector. */
-} * rpmMergePRCO;
+} * rpmPRCO;
 
 #ifdef __cplusplus
 extern "C" {
@@ -456,7 +456,7 @@ int rpmdsELF(const char * fn, int flags,
  * @param fn		cache file name (NULL uses /etc/ld.so.cache)
  * @return		0 on success
  */
-int rpmdsLdconfig(rpmMergePRCO PRCO, /*@null@*/ const char * fn)
+int rpmdsLdconfig(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
 

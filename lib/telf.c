@@ -6,7 +6,7 @@
 static rpmds P = NULL;
 static rpmds R = NULL;
 
-static struct rpmMergePRCO_s mergePRCO = { &P, &R, NULL, NULL };
+static struct rpmPRCO_s mergePRCO = { &P, &R, NULL, NULL };
 
 int main(int argc, char *argv[])
 {
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     int i;
 
     for (i = 1; i < argc; i++)
-	rc = rpmdsELF(argv[i], flags, rpmdsMergePRCO, &mergePRCO);
+	rc = rpmdsELF(argv[i], flags, rpmdsPRCO, &mergePRCO);
 	
     xx = rpmdsPrint(P, NULL);
     xx = rpmdsPrint(R, NULL);

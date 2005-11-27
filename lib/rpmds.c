@@ -2474,7 +2474,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 
 int rpmdsMergePRCO(void * context, rpmds ds)
 {
-    rpmMergePRCO PRCO = context;
+    rpmPRCO PRCO = context;
     int rc = -1;
 
 /*@-modfilesys@*/
@@ -2788,7 +2788,7 @@ static const char * _sbin_ldconfig_p = _SBIN_LDCONFIG;
 /*@unchecked@*/ /*@observer@*/
 static const char * _ld_so_cache = _LD_SO_CACHE;
 
-int rpmdsLdconfig(rpmMergePRCO PRCO, const char * fn)
+int rpmdsLdconfig(rpmPRCO PRCO, const char * fn)
 {
     char buf[BUFSIZ];
     const char *DSOfn;
