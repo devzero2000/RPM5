@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-23 17:45-0500\n"
+"POT-Creation-Date: 2005-11-27 11:15-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -115,7 +115,7 @@ msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
 #. @-modfilesys -globs @
-#: rpmqv.c:132 lib/poptI.c:55
+#: rpmqv.c:132 lib/poptI.c:56
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -1286,20 +1286,20 @@ msgstr "nemoj proveravati zavisnosti paketa"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:388
-#: lib/poptQV.c:397 lib/poptQV.c:439
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:347 lib/poptQV.c:403
+#: lib/poptQV.c:412 lib/poptQV.c:454
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "nemoj proveravati zavisnosti paketa"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:391
-#: lib/poptQV.c:399 lib/poptQV.c:442
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:349 lib/poptQV.c:406
+#: lib/poptQV.c:414 lib/poptQV.c:457
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "nemoj proveravati arhitekturu paketa"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:394
-#: lib/poptQV.c:401 lib/poptQV.c:444
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:409
+#: lib/poptQV.c:416 lib/poptQV.c:459
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "proveri potpis u paketu"
@@ -1623,32 +1623,32 @@ msgstr ""
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 
-#: lib/fsm.c:1664
+#: lib/fsm.c:1663
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1791 lib/fsm.c:1931
+#: lib/fsm.c:1790 lib/fsm.c:1930
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/fsm.c:1958
+#: lib/fsm.c:1957
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "ne mogu da uklonim %s - direktorijum nije prazan"
 
-#: lib/fsm.c:1964
+#: lib/fsm.c:1963
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "neuspela komanda rmdir %s: %s"
 
-#: lib/fsm.c:1979
+#: lib/fsm.c:1978
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
 
-#: lib/fsm.c:2001
+#: lib/fsm.c:2000
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
@@ -1934,65 +1934,65 @@ msgstr ""
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
 
-#: lib/poptI.c:83
+#: lib/poptI.c:84
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: lib/poptI.c:97
+#: lib/poptI.c:98
 #, fuzzy
 msgid "Option --relocate needs /old/path=/new/path argument"
 msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
-#: lib/poptI.c:99
+#: lib/poptI.c:100
 msgid "relocations must begin with a /"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: lib/poptI.c:102
+#: lib/poptI.c:103
 msgid "relocations must contain a ="
 msgstr "preme¹tanja moraju imati znak ="
 
-#: lib/poptI.c:105
+#: lib/poptI.c:106
 msgid "relocations must have a / following the ="
 msgstr "preme¹tanja moraju imati / praæeno sa ="
 
-#: lib/poptI.c:123
+#: lib/poptI.c:124
 #, fuzzy
 msgid "Option --rbexclude needs transaction id argument(s)"
 msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
-#: lib/poptI.c:154
+#: lib/poptI.c:155
 msgid "Option --rollback needs a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:158
+#: lib/poptI.c:159
 #, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/poptI.c:162
+#: lib/poptI.c:163
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:169
+#: lib/poptI.c:170
 msgid "arbgoal takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:176
+#: lib/poptI.c:177
 msgid "malformed arbgoal time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:232
+#: lib/poptI.c:233
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "paket nema imena"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:237
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "instaliraj sve datoteke, èak i konfiguracije koje bi inaèe bile preskoèene"
 
-#: lib/poptI.c:240
+#: lib/poptI.c:241
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -2000,498 +2000,508 @@ msgstr ""
 "ukloni sve pakete koji odgovaraju <paketu> (normalno, javlja se gre¹ka ako "
 "<paket> oznaèava vi¹e paketa)"
 
-#: lib/poptI.c:245 tools/rpmgraph.c:273
+#: lib/poptI.c:246 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptI.c:250 lib/poptI.c:330
+#: lib/poptI.c:251 lib/poptI.c:331
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "nemoj izvr¹iti nijedan skript iz paketa"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:255
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/poptI.c:258
+#: lib/poptI.c:259
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptI.c:262
+#: lib/poptI.c:263
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:265
+#: lib/poptI.c:266
 msgid "erase (uninstall) package"
 msgstr "izbri¹i (deinstaliraj) paket"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:266
 #, fuzzy
 msgid "<package>+"
 msgstr "upit nad svim paketima"
 
-#: lib/poptI.c:268 lib/poptI.c:308
+#: lib/poptI.c:269 lib/poptI.c:309
 #, fuzzy
 msgid "do not install configuration files"
 msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
 
-#: lib/poptI.c:271 lib/poptI.c:313
+#: lib/poptI.c:272 lib/poptI.c:314
 msgid "do not install documentation"
 msgstr "nemoj da instalira¹ dokumentaciju"
 
-#: lib/poptI.c:273
+#: lib/poptI.c:274
 msgid "skip files with leading component <path> "
 msgstr ""
 
-#: lib/poptI.c:274
+#: lib/poptI.c:275
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:278
+#: lib/poptI.c:279
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:281
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "skraæenica za --replacepkgs --replacefiles"
 
-#: lib/poptI.c:284
+#: lib/poptI.c:285
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/poptI.c:285 lib/poptI.c:301 lib/poptI.c:403
+#: lib/poptI.c:286 lib/poptI.c:302 lib/poptI.c:404
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "    -b<faza> <spec>\t "
 
-#: lib/poptI.c:287
+#: lib/poptI.c:288
 msgid "print hash marks as package installs (good with -v)"
 msgstr "pi¹i he¹-znak (#) kako odmièe instaliranje paketa (dobro doðe sa -v)"
 
-#: lib/poptI.c:290
+#: lib/poptI.c:291
 msgid "don't verify package architecture"
 msgstr "nemoj proveravati arhitekturu paketa"
 
-#: lib/poptI.c:293
+#: lib/poptI.c:294
 msgid "don't verify package operating system"
 msgstr "nemoj proveravati operativni sistem za paket"
 
-#: lib/poptI.c:296
+#: lib/poptI.c:297
 msgid "don't check disk space before installing"
 msgstr ""
 
-#: lib/poptI.c:298
+#: lib/poptI.c:299
 msgid "install documentation"
 msgstr "instaliraj dokumentaciju"
 
-#: lib/poptI.c:301
+#: lib/poptI.c:302
 #, fuzzy
 msgid "install package(s)"
 msgstr "instaliraj paket"
 
-#: lib/poptI.c:304
+#: lib/poptI.c:305
 msgid "update the database, but do not modify the filesystem"
 msgstr "a¾uriraj bazu podataka, ali nemoj menjati fajl-sistem"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:311
 msgid "do not verify package dependencies"
 msgstr "nemoj proveravati zavisnosti paketa"
 
-#: lib/poptI.c:316 lib/poptQV.c:332 lib/poptQV.c:335
+#: lib/poptI.c:317 lib/poptQV.c:347 lib/poptQV.c:350
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "instaliraj paket"
 
-#: lib/poptI.c:318
+#: lib/poptI.c:319
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
 
-#: lib/poptI.c:322
+#: lib/poptI.c:323
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "nemoj preurediti redosled instalacije paketa kako bi zadovoljio zavisnosti"
 
-#: lib/poptI.c:327
+#: lib/poptI.c:328
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:334
+#: lib/poptI.c:335
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "nemoj izvr¹iti nijednu fazu"
 
-#: lib/poptI.c:337
+#: lib/poptI.c:338
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "nemoj izvr¹iti nijednu fazu"
 
-#: lib/poptI.c:340
+#: lib/poptI.c:341
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "nemoj izvr¹iti nijednu fazu"
 
-#: lib/poptI.c:343
+#: lib/poptI.c:344
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "nemoj izvr¹iti nijednu fazu"
 
-#: lib/poptI.c:353
+#: lib/poptI.c:354
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/poptI.c:356
+#: lib/poptI.c:357
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "nemoj izvr¹iti nijedan skript iz paketa"
 
-#: lib/poptI.c:359
+#: lib/poptI.c:360
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "nemoj izvr¹iti nijedan instalacioni skript"
 
-#: lib/poptI.c:362
+#: lib/poptI.c:363
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "nemoj izvr¹iti nijedan instalacioni skript"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:366
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nemoj izvr¹iti nijedan instalacioni skript"
 
-#: lib/poptI.c:369
+#: lib/poptI.c:370
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
 "a¾uriraj na staru verziju paketa (--force kod a¾uriranja ovo radi automatski)"
 
-#: lib/poptI.c:373
+#: lib/poptI.c:374
 msgid "print percentages as package installs"
 msgstr "pi¹i procente instalacije paketa"
 
-#: lib/poptI.c:375
+#: lib/poptI.c:376
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "premesti paket u <dir>, ako se mo¾e premestiti"
 
-#: lib/poptI.c:376
+#: lib/poptI.c:377
 msgid "<dir>"
 msgstr ""
 
-#: lib/poptI.c:378
+#: lib/poptI.c:379
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
-#: lib/poptI.c:379
+#: lib/poptI.c:380
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
-#: lib/poptI.c:382
+#: lib/poptI.c:383
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:385
+#: lib/poptI.c:386
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:388
+#: lib/poptI.c:389
 msgid "reinstall if the package is already present"
 msgstr "ponovo instaliraj ako je paket veæ prisutan"
 
-#: lib/poptI.c:390
+#: lib/poptI.c:391
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:391 lib/poptI.c:394
+#: lib/poptI.c:392 lib/poptI.c:395
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:393
+#: lib/poptI.c:394
 msgid "If transaction fails rollback to <date>"
 msgstr ""
 
-#: lib/poptI.c:396
+#: lib/poptI.c:397
 msgid "Exclude Transaction I.D. from rollback"
 msgstr ""
 
-#: lib/poptI.c:397
+#: lib/poptI.c:398
 msgid "<tid>"
 msgstr ""
 
-#: lib/poptI.c:399
+#: lib/poptI.c:400
 msgid "don't install, but tell if it would work or not"
 msgstr "nemoj instalirati, ali reci da li æe da radi ili ne"
 
-#: lib/poptI.c:402
+#: lib/poptI.c:403
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:106
+#: lib/poptQV.c:107
 #, fuzzy
 msgid "query/verify all packages"
 msgstr "upit nad svim paketima"
 
-#: lib/poptQV.c:108
+#: lib/poptQV.c:109
 #, fuzzy
 msgid "rpm checksig mode"
 msgstr "re¾im upita"
 
-#: lib/poptQV.c:110
+#: lib/poptQV.c:111
 #, fuzzy
 msgid "query/verify package(s) owning file"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/poptQV.c:112
+#: lib/poptQV.c:113
 #, fuzzy
 msgid "query/verify package(s) in group"
 msgstr "paket nema imena"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:115
 #, fuzzy
 msgid "query/verify a package file"
 msgstr "upit nad svim paketima"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:118
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "paket nema imena"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:120
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
 msgstr "paket nema imena"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:123
 #, fuzzy
 msgid "query/verify package(s) with package identifier"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:125
 #, fuzzy
 msgid "query/verify package(s) with header identifier"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/poptQV.c:126
+#: lib/poptQV.c:127
 #, fuzzy
 msgid "query/verify package(s) with file identifier"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/poptQV.c:129
+#: lib/poptQV.c:130
 #, fuzzy
 msgid "rpm query mode"
 msgstr "re¾im upita"
 
-#: lib/poptQV.c:131
+#: lib/poptQV.c:132
 #, fuzzy
 msgid "query/verify a header instance"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/poptQV.c:133
+#: lib/poptQV.c:134
 #, fuzzy
 msgid "query a spec file"
 msgstr "upit nad %s neuspeo\n"
 
-#: lib/poptQV.c:133
+#: lib/poptQV.c:134
 msgid "<spec>"
 msgstr ""
 
-#: lib/poptQV.c:135
+#: lib/poptQV.c:136
 #, fuzzy
 msgid "query/verify package(s) from install transaction"
 msgstr "paket nema imena"
 
-#: lib/poptQV.c:137
+#: lib/poptQV.c:138
 #, fuzzy
 msgid "query the package(s) triggered by the package"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/poptQV.c:139
+#: lib/poptQV.c:140
 #, fuzzy
 msgid "rpm verify mode"
 msgstr "re¾im upita"
 
-#: lib/poptQV.c:141
+#: lib/poptQV.c:142
 #, fuzzy
 msgid "query/verify the package(s) which require a dependency"
 msgstr "upit za pakete koji zahtevaju <i> svojstvo"
 
-#: lib/poptQV.c:143
+#: lib/poptQV.c:144
 #, fuzzy
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "upit za pakete koji omoguæavaju <i> svojstvo"
 
-#: lib/poptQV.c:146
+#: lib/poptQV.c:147
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:148
+#: lib/poptQV.c:149
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:150
+#: lib/poptQV.c:151
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "nedostaju argumenti za upit"
 
-#: lib/poptQV.c:152
+#: lib/poptQV.c:153
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:154
+#: lib/poptQV.c:155
 #, fuzzy
 msgid "do not read headers"
 msgstr "ne mogu da proèitam zaglavlje na %d za proveru"
 
-#: lib/poptQV.c:281
+#: lib/poptQV.c:282
 #, fuzzy
 msgid "list all configuration files"
 msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
 
-#: lib/poptQV.c:283
+#: lib/poptQV.c:284
 #, fuzzy
 msgid "list all documentation files"
 msgstr "instaliraj dokumentaciju"
 
-#: lib/poptQV.c:285
+#: lib/poptQV.c:286
 #, fuzzy
 msgid "dump basic file information"
 msgstr "prika¾i informacije o paketu"
 
-#: lib/poptQV.c:289
+#: lib/poptQV.c:290
 #, fuzzy
 msgid "list files in package"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:294
+#: lib/poptQV.c:295 lib/poptQV.c:338
+#, fuzzy, c-format
+msgid "skip %%config files"
+msgstr "%s: Neuspeo 'readLead'\n"
+
+#: lib/poptQV.c:298 lib/poptQV.c:341
+#, fuzzy, c-format
+msgid "skip %%doc files"
+msgstr "%s: Neuspeo 'readLead'\n"
+
+#: lib/poptQV.c:301
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:298
+#: lib/poptQV.c:305
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:308
 #, fuzzy, c-format
 msgid "skip %%readme files"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: lib/poptQV.c:307
+#: lib/poptQV.c:314
 #, fuzzy
 msgid "use the following query format"
 msgstr "neoèekivan izvor upita"
 
-#: lib/poptQV.c:309
+#: lib/poptQV.c:316
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/poptQV.c:311
+#: lib/poptQV.c:318
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:313
+#: lib/poptQV.c:320
 #, fuzzy
 msgid "specify target platform"
 msgstr "    -b<faza> <spec>\t "
 
-#: lib/poptQV.c:339
+#: lib/poptQV.c:354
 #, fuzzy
 msgid "don't verify size of files"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:342
+#: lib/poptQV.c:357
 #, fuzzy
 msgid "don't verify symlink path of files"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:345
+#: lib/poptQV.c:360
 #, fuzzy
 msgid "don't verify owner of files"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:348
+#: lib/poptQV.c:363
 #, fuzzy
 msgid "don't verify group of files"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:351
+#: lib/poptQV.c:366
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:354 lib/poptQV.c:357
+#: lib/poptQV.c:369 lib/poptQV.c:372
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:360
+#: lib/poptQV.c:375
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:362
+#: lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify files in package"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:365 lib/poptQV.c:368 tools/rpmgraph.c:267
+#: lib/poptQV.c:380 lib/poptQV.c:383 tools/rpmgraph.c:267
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "nemoj proveravati zavisnosti paketa"
 
-#: lib/poptQV.c:373 lib/poptQV.c:377 lib/poptQV.c:380 lib/poptQV.c:383
+#: lib/poptQV.c:388 lib/poptQV.c:392 lib/poptQV.c:395 lib/poptQV.c:398
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "nemoj izvr¹iti nijednu fazu"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:432
 #, fuzzy
 msgid "sign package(s) (identical to --resign)"
 msgstr "potpi¹i paket (ukloni tekuæi potpis)"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:434
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "proveri potpis u paketu"
 
-#: lib/poptQV.c:421
+#: lib/poptQV.c:436
 #, fuzzy
 msgid "delete package signatures"
 msgstr "proveri potpis u paketu"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:438
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:440
 #, fuzzy
 msgid "sign package(s) (identical to --addsign)"
 msgstr "potpi¹i paket (ukloni tekuæi potpis)"
 
-#: lib/poptQV.c:427
+#: lib/poptQV.c:442
 #, fuzzy
 msgid "generate signature"
 msgstr "napravi PGP potpis"
 
-#: lib/poptQV.c:430
+#: lib/poptQV.c:445
 #, fuzzy
 msgid "specify trust metric"
 msgstr "    -b<faza> <spec>\t "
 
-#: lib/poptQV.c:433
+#: lib/poptQV.c:448
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:451
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2593,102 +2603,102 @@ msgstr "gre¹ka u formatu: %s\n"
 msgid "(contains no files)"
 msgstr "(nema datoteka)"
 
-#: lib/query.c:235
+#: lib/query.c:243
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:238
+#: lib/query.c:246
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:241
+#: lib/query.c:249
 #, fuzzy
 msgid "not installed "
 msgstr "paket %s nije instaliran\n"
 
-#: lib/query.c:244
+#: lib/query.c:252
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:247
+#: lib/query.c:255
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:250
+#: lib/query.c:258
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:253
+#: lib/query.c:261
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(nepoznat tip)"
 
-#: lib/query.c:271
+#: lib/query.c:279
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "paket nema imena"
 
-#: lib/query.c:304
+#: lib/query.c:312
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "paket nema imena"
 
-#: lib/query.c:474
+#: lib/query.c:482
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/query.c:483
+#: lib/query.c:491
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:496 lib/query.c:517 lib/query.c:537 lib/query.c:571
+#: lib/query.c:504 lib/query.c:525 lib/query.c:545 lib/query.c:579
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/query.c:506 lib/query.c:523 lib/query.c:547 lib/query.c:576
+#: lib/query.c:514 lib/query.c:531 lib/query.c:555 lib/query.c:584
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:586
+#: lib/query.c:594
 #, c-format
 msgid "no package requires %s\n"
 msgstr "nijedan paket ne zahteva %s\n"
 
-#: lib/query.c:597
+#: lib/query.c:605
 #, c-format
 msgid "no package provides %s\n"
 msgstr "nijedan paket ne obezbeðuje %s\n"
 
-#: lib/query.c:636
+#: lib/query.c:644
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/query.c:640
+#: lib/query.c:648
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/query.c:665
+#: lib/query.c:673
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:676
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:673
+#: lib/query.c:681
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:683 lib/rpminstall.c:818
+#: lib/query.c:691 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -3786,12 +3796,12 @@ msgstr ""
 msgid "running post-transaction scripts\n"
 msgstr ""
 
-#: lib/verify.c:321
+#: lib/verify.c:329
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "nedostaje { posle %"
 
-#: lib/verify.c:441
+#: lib/verify.c:449
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "

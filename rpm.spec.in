@@ -586,8 +586,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Thu Nov 24 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.6
+* Sun Nov 27 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.6
 - make the fcntl transaction lock sensitive to --root (#151255).
+- add --noconfig and --nodoc to query/verify modes.
 
 * Wed Nov 23 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.5
 - remove (broken) test programs trb.c and tgi.c.

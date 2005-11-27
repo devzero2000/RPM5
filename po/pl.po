@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-23 17:45-0500\n"
+"POT-Creation-Date: 2005-11-27 11:15-0500\n"
 "PO-Revision-Date: 2005-11-18 21:30+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -122,7 +122,7 @@ msgid "Common options for all rpm modes and executables:"
 msgstr "Wspólne opcje dla wszystkich trybów i binarek rpm-a:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:132 lib/poptI.c:55
+#: rpmqv.c:132 lib/poptI.c:56
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
@@ -1275,18 +1275,18 @@ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 "generuj nag³ówki pakietu kompatybilne z (wymieraj±cymi) pakietami rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:388
-#: lib/poptQV.c:397 lib/poptQV.c:439
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:347 lib/poptQV.c:403
+#: lib/poptQV.c:412 lib/poptQV.c:454
 msgid "don't verify package digest(s)"
 msgstr "nie sprawdzaj skrótów pakietu"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:391
-#: lib/poptQV.c:399 lib/poptQV.c:442
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:349 lib/poptQV.c:406
+#: lib/poptQV.c:414 lib/poptQV.c:457
 msgid "don't verify database header(s) when retrieved"
 msgstr "nie sprawdzaj nag³ówków bazy danych przy odczycie"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:394
-#: lib/poptQV.c:401 lib/poptQV.c:444
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:409
+#: lib/poptQV.c:416 lib/poptQV.c:459
 msgid "don't verify package signature(s)"
 msgstr "nie sprawdzaj sygnatur pakietu"
 
@@ -1593,32 +1593,32 @@ msgstr "katalog %s utworzony z uprawnieniami %04o bez kontekstu.\n"
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "katalog %s utworzony z uprawnieniami %04o, kontekst %s.\n"
 
-#: lib/fsm.c:1664
+#: lib/fsm.c:1663
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "plik archiwum %s nie znaleziony na li¶cie plików w nag³ówku\n"
 
-#: lib/fsm.c:1791 lib/fsm.c:1931
+#: lib/fsm.c:1790 lib/fsm.c:1930
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s zapisano jako %s\n"
 
-#: lib/fsm.c:1958
+#: lib/fsm.c:1957
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s nie powiod³o siê: katalog nie jest pusty\n"
 
-#: lib/fsm.c:1964
+#: lib/fsm.c:1963
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:1979
+#: lib/fsm.c:1978
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:2001
+#: lib/fsm.c:2000
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s utworzony jako %s\n"
@@ -1896,62 +1896,62 @@ msgstr "¶led¼ obs³ugê buforowania URL-i"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: tabela opcji b³êdnie skonfigurowana (%d)\n"
 
-#: lib/poptI.c:83
+#: lib/poptI.c:84
 msgid "exclude paths must begin with a /"
 msgstr "¶cie¿ki wy³±czeñ musz± siê zaczynaæ od /"
 
-#: lib/poptI.c:97
+#: lib/poptI.c:98
 msgid "Option --relocate needs /old/path=/new/path argument"
 msgstr "Opcja --relocate wymaga argumentu /stara/¶cie¿ka=/nowa/¶cie¿ka"
 
-#: lib/poptI.c:99
+#: lib/poptI.c:100
 msgid "relocations must begin with a /"
 msgstr "specyfikacja przesuniêcia musi zaczynaæ siê od /"
 
-#: lib/poptI.c:102
+#: lib/poptI.c:103
 msgid "relocations must contain a ="
 msgstr "specyfikacja przesuniêcia musi zawieraæ ="
 
-#: lib/poptI.c:105
+#: lib/poptI.c:106
 msgid "relocations must have a / following the ="
 msgstr "specyfikacja przesuniêcia musi zawieraæ / po ="
 
-#: lib/poptI.c:123
+#: lib/poptI.c:124
 msgid "Option --rbexclude needs transaction id argument(s)"
 msgstr "Opcja --rbexclude wymaga id transakcji jako argumentu(ów)"
 
-#: lib/poptI.c:154
+#: lib/poptI.c:155
 msgid "Option --rollback needs a time/date stamp argument"
 msgstr "Opcja --rollback wymaga czasu/daty jako argumentu"
 
-#: lib/poptI.c:158
+#: lib/poptI.c:159
 #, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
 msgstr "Cel wycofania:  %-24.24s (0x%08x)\n"
 
-#: lib/poptI.c:162
+#: lib/poptI.c:163
 msgid "malformed rollback time/date stamp argument"
 msgstr "b³êdny argument znacznika czasu/daty dla wycofania"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:170
 msgid "arbgoal takes a time/date stamp argument"
 msgstr "arbgoal wymaga czasu/daty jako argumentu"
 
-#: lib/poptI.c:176
+#: lib/poptI.c:177
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "b³êdny argument znacznika czasu/daty dla arbgoal"
 
-#: lib/poptI.c:232
+#: lib/poptI.c:233
 msgid "add suggested packages to transaction"
 msgstr "dodaj sugerowane pakiety do transakcji"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:237
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "instaluj wszystkie pliki, nawet konfiguracyjne, które w innym przypadku by "
 "pominiêto"
 
-#: lib/poptI.c:240
+#: lib/poptI.c:241
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1959,159 +1959,159 @@ msgstr ""
 "usuñ wszystkie pakiety, które spe³niaj± wzorzec <pakiet> (zazwyczaj "
 "wy¶wietlany jest b³±d gdy <pakiet> opisuje wiele pakietów)"
 
-#: lib/poptI.c:245 tools/rpmgraph.c:273
+#: lib/poptI.c:246 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr "u¿yj porz±dku wy¶wietlania anacondy"
 
-#: lib/poptI.c:250 lib/poptI.c:330
+#: lib/poptI.c:251 lib/poptI.c:331
 msgid "do not execute package scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:255
 msgid "relocate files in non-relocatable package"
 msgstr "przesuñ pliki w nieprzesuwalnym pakiecie"
 
-#: lib/poptI.c:258
+#: lib/poptI.c:259
 msgid "print dependency loops as warning"
 msgstr "wypisuj pêtle zale¿no¶ci jako ostrze¿enie"
 
-#: lib/poptI.c:262
+#: lib/poptI.c:263
 msgid "save erased package files by renaming into sub-directory"
 msgstr "zapisz usuwane pliki z pakietu przenosz±c do podkatalogu"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:266
 msgid "erase (uninstall) package"
 msgstr "usuñ (odinstaluj) pakiet"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:266
 msgid "<package>+"
 msgstr "<pakiet>+"
 
-#: lib/poptI.c:268 lib/poptI.c:308
+#: lib/poptI.c:269 lib/poptI.c:309
 msgid "do not install configuration files"
 msgstr "nie instaluj plików konfiguracyjnych"
 
-#: lib/poptI.c:271 lib/poptI.c:313
+#: lib/poptI.c:272 lib/poptI.c:314
 msgid "do not install documentation"
 msgstr "nie instaluj dokumentacji"
 
-#: lib/poptI.c:273
+#: lib/poptI.c:274
 msgid "skip files with leading component <path> "
 msgstr "pomiñ pliki zaczynaj±ce siê od <¶cie¿ki> "
 
-#: lib/poptI.c:274
+#: lib/poptI.c:275
 msgid "<path>"
 msgstr "<¶cie¿ka>"
 
-#: lib/poptI.c:278
+#: lib/poptI.c:279
 msgid "detect file conflicts between packages"
 msgstr "wykryj konflikty plików miêdzy pakietami"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:281
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "skrócona wersja kombinacji --replacepkgs --replacefiles"
 
-#: lib/poptI.c:284
+#: lib/poptI.c:285
 msgid "upgrade package(s) if already installed"
 msgstr "uaktualnij pakiet(y) je¶li jest ju¿ zainstalowany"
 
-#: lib/poptI.c:285 lib/poptI.c:301 lib/poptI.c:403
+#: lib/poptI.c:286 lib/poptI.c:302 lib/poptI.c:404
 msgid "<packagefile>+"
 msgstr "<plik pakietu>+"
 
-#: lib/poptI.c:287
+#: lib/poptI.c:288
 msgid "print hash marks as package installs (good with -v)"
 msgstr "wy¶wietlaj znaki hash przy instalacji (dobre z -v)"
 
-#: lib/poptI.c:290
+#: lib/poptI.c:291
 msgid "don't verify package architecture"
 msgstr "nie sprawdzaj architektury systemu"
 
-#: lib/poptI.c:293
+#: lib/poptI.c:294
 msgid "don't verify package operating system"
 msgstr "nie sprawdzaj rodzaju systemu operacyjnego"
 
-#: lib/poptI.c:296
+#: lib/poptI.c:297
 msgid "don't check disk space before installing"
 msgstr "nie sprawdzaj zajêto¶ci dysku przed instalacj±"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:299
 msgid "install documentation"
 msgstr "zainstaluj dokumentacjê"
 
-#: lib/poptI.c:301
+#: lib/poptI.c:302
 msgid "install package(s)"
 msgstr "instaluj pakiet(y)"
 
-#: lib/poptI.c:304
+#: lib/poptI.c:305
 msgid "update the database, but do not modify the filesystem"
 msgstr "uaktualnij bazê, ale nie modyfikuj systemu plików"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:311
 msgid "do not verify package dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
-#: lib/poptI.c:316 lib/poptQV.c:332 lib/poptQV.c:335
+#: lib/poptI.c:317 lib/poptQV.c:347 lib/poptQV.c:350
 msgid "don't verify MD5 digest of files"
 msgstr "nie sprawdzaj skrótów MD5 plików"
 
-#: lib/poptI.c:318
+#: lib/poptI.c:319
 msgid "don't install file security contexts"
 msgstr "nie instaluj plików z kontekstami bezpieczeñstwa"
 
-#: lib/poptI.c:322
+#: lib/poptI.c:323
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "nie zmieniaj kolejno¶ci instalacji pakietów by zapewniæ zale¿no¶ci"
 
-#: lib/poptI.c:327
+#: lib/poptI.c:328
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "nie sugeruj sposobu(ów) spe³nienia brakuj±cych zale¿no¶ci"
 
-#: lib/poptI.c:334
+#: lib/poptI.c:335
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "nie wykonuj skryptu %%pre (je¶li jest)"
 
-#: lib/poptI.c:337
+#: lib/poptI.c:338
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "nie wykonuj skryptu %%post (je¶li jest)"
 
-#: lib/poptI.c:340
+#: lib/poptI.c:341
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "nie wykonuj skryptu %%preun (je¶li jest)"
 
-#: lib/poptI.c:343
+#: lib/poptI.c:344
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "nie wykonuj skryptu %%postun (je¶li jest)"
 
-#: lib/poptI.c:353
+#: lib/poptI.c:354
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "nie wykonuj ¿adnych triggerów uaktywnianych przez ten pakiet"
 
-#: lib/poptI.c:356
+#: lib/poptI.c:357
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów %%triggerprein"
 
-#: lib/poptI.c:359
+#: lib/poptI.c:360
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów %%triggerin"
 
-#: lib/poptI.c:362
+#: lib/poptI.c:363
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów %%triggerun"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:366
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów %%triggerpostun"
 
-#: lib/poptI.c:369
+#: lib/poptI.c:370
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2119,282 +2119,292 @@ msgstr ""
 "uaktualnij do starej wersji (--force robi to samo automatycznie podczas "
 "uaktualniania)"
 
-#: lib/poptI.c:373
+#: lib/poptI.c:374
 msgid "print percentages as package installs"
 msgstr "wy¶wietlaj stan instalacji w procentach"
 
-#: lib/poptI.c:375
+#: lib/poptI.c:376
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "przesuñ pliki pakietu do drzewa <katalog>, je¶li jest przesuwalny"
 
-#: lib/poptI.c:376
+#: lib/poptI.c:377
 msgid "<dir>"
 msgstr "<katalog>"
 
-#: lib/poptI.c:378
+#: lib/poptI.c:379
 msgid "relocate files from path <old> to <new>"
 msgstr "przesuñ pliki z drzewa <stara-¶cie¿ka> do drzewa <nowa-¶cie¿ka>"
 
-#: lib/poptI.c:379
+#: lib/poptI.c:380
 msgid "<old>=<new>"
 msgstr "<stara-¶cie¿ka>=<nowa-¶cie¿ka>"
 
-#: lib/poptI.c:382
+#: lib/poptI.c:383
 msgid "save erased package files by repackaging"
 msgstr "zapisz usuwane pliki z pakietu poprzez przepakowanie"
 
-#: lib/poptI.c:385
+#: lib/poptI.c:386
 msgid "ignore file conflicts between packages"
 msgstr "ignoruj konflikty plików miêdzy pakietami"
 
-#: lib/poptI.c:388
+#: lib/poptI.c:389
 msgid "reinstall if the package is already present"
 msgstr "przeinstaluj je¶li pakiet jest ju¿ zainstalowany"
 
-#: lib/poptI.c:390
+#: lib/poptI.c:391
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "odinstaluj nowe, zainstaluj z powrotem stare pakiety a¿ do <daty>"
 
-#: lib/poptI.c:391 lib/poptI.c:394
+#: lib/poptI.c:392 lib/poptI.c:395
 msgid "<date>"
 msgstr "<data>"
 
-#: lib/poptI.c:393
+#: lib/poptI.c:394
 msgid "If transaction fails rollback to <date>"
 msgstr "Je¶li transakcja nie powiedzie siê, cofnij do <daty>"
 
-#: lib/poptI.c:396
+#: lib/poptI.c:397
 msgid "Exclude Transaction I.D. from rollback"
 msgstr "Wy³±czenie I.D. transakcji z wycofania"
 
-#: lib/poptI.c:397
+#: lib/poptI.c:398
 msgid "<tid>"
 msgstr "<tid>"
 
-#: lib/poptI.c:399
+#: lib/poptI.c:400
 msgid "don't install, but tell if it would work or not"
 msgstr "nie instaluj, podaj tylko czy instalacja zadzia³a czy nie"
 
-#: lib/poptI.c:402
+#: lib/poptI.c:403
 msgid "upgrade package(s)"
 msgstr "uaktualnij pakiet(y)"
 
-#: lib/poptQV.c:106
+#: lib/poptQV.c:107
 msgid "query/verify all packages"
 msgstr "odpytaj/sprawd¼ wszystkie pakiety"
 
-#: lib/poptQV.c:108
+#: lib/poptQV.c:109
 msgid "rpm checksig mode"
 msgstr "tryb sprawdzania sygnatur"
 
-#: lib/poptQV.c:110
+#: lib/poptQV.c:111
 msgid "query/verify package(s) owning file"
 msgstr "odpytaj/sprawd¼ pakiet(y) zawieraj±ce plik"
 
-#: lib/poptQV.c:112
+#: lib/poptQV.c:113
 msgid "query/verify package(s) in group"
 msgstr "odpytaj/sprawd¼ pakiet(y) w grupie"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:115
 msgid "query/verify a package file"
 msgstr "odpytaj/sprawd¼ plik pakietu"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:118
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "odpytaj/sprawd¼ pakiety z GÓRY przechodzenia po drzewie plików"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:120
 msgid "query/verify package(s) from system HDLIST"
 msgstr "odpytaj/sprawd¼ pakiety z systemowej HDLIST"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:123
 msgid "query/verify package(s) with package identifier"
 msgstr "odpytaj/sprawd¼ pakiet(y) z identyfikatorem pakietu"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:125
 msgid "query/verify package(s) with header identifier"
 msgstr "odpytaj/sprawd¼ pakiet(y) z identyfikatorem nag³ówka"
 
-#: lib/poptQV.c:126
+#: lib/poptQV.c:127
 msgid "query/verify package(s) with file identifier"
 msgstr "odpytaj/sprawd¼ pakiet(y) z identyfikatorem pliku"
 
-#: lib/poptQV.c:129
+#: lib/poptQV.c:130
 msgid "rpm query mode"
 msgstr "tryb odpytywania"
 
-#: lib/poptQV.c:131
+#: lib/poptQV.c:132
 msgid "query/verify a header instance"
 msgstr "odpytaj/sprawd¼ instancjê nag³ówka"
 
-#: lib/poptQV.c:133
+#: lib/poptQV.c:134
 msgid "query a spec file"
 msgstr "odpytywanie pliku spec"
 
-#: lib/poptQV.c:133
+#: lib/poptQV.c:134
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:135
+#: lib/poptQV.c:136
 msgid "query/verify package(s) from install transaction"
 msgstr "odpytaj/sprawd¼ pakiety z transakcji instalacji"
 
-#: lib/poptQV.c:137
+#: lib/poptQV.c:138
 msgid "query the package(s) triggered by the package"
 msgstr "odpytaj pakiety z triggerami uaktywnianymi przez pakiet"
 
-#: lib/poptQV.c:139
+#: lib/poptQV.c:140
 msgid "rpm verify mode"
 msgstr "tryb sprawdzania"
 
-#: lib/poptQV.c:141
+#: lib/poptQV.c:142
 msgid "query/verify the package(s) which require a dependency"
 msgstr "odpytaj/sprawd¼ pakiet(y) wymagaj±ce zasobu"
 
-#: lib/poptQV.c:143
+#: lib/poptQV.c:144
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "odpytaj/sprawd¼ pakiet(y) udostêpniaj±ce zasób"
 
-#: lib/poptQV.c:146
+#: lib/poptQV.c:147
 msgid "create transaction set"
 msgstr "utwórz zbiór transakcji"
 
-#: lib/poptQV.c:148
+#: lib/poptQV.c:149
 msgid "do not order transaction set"
 msgstr "nie porz±dkuj zbioru transakcji"
 
-#: lib/poptQV.c:150
+#: lib/poptQV.c:151
 msgid "do not glob arguments"
 msgstr "nie rozwijaj masek w argumentach"
 
-#: lib/poptQV.c:152
+#: lib/poptQV.c:153
 msgid "do not process non-package files as manifests"
 msgstr "nie przetwarzaj plików spoza pakietu jako manifestów"
 
-#: lib/poptQV.c:154
+#: lib/poptQV.c:155
 msgid "do not read headers"
 msgstr "nie czytaj nag³ówków"
 
-#: lib/poptQV.c:281
+#: lib/poptQV.c:282
 msgid "list all configuration files"
 msgstr "wy¶wietl wszystkie pliki konfiguracyjne"
 
-#: lib/poptQV.c:283
+#: lib/poptQV.c:284
 msgid "list all documentation files"
 msgstr "wy¶wietl wszystkie pliki dokumentacji"
 
-#: lib/poptQV.c:285
+#: lib/poptQV.c:286
 msgid "dump basic file information"
 msgstr "podaj podstawowe informacje o pliku"
 
-#: lib/poptQV.c:289
+#: lib/poptQV.c:290
 msgid "list files in package"
 msgstr "wy¶wietl pliki zawarte w pakiecie"
 
-#: lib/poptQV.c:294
+#: lib/poptQV.c:295 lib/poptQV.c:338
+#, fuzzy, c-format
+msgid "skip %%config files"
+msgstr "pomiñ pliki %%license"
+
+#: lib/poptQV.c:298 lib/poptQV.c:341
+#, fuzzy, c-format
+msgid "skip %%doc files"
+msgstr "pomiñ pliki %%ghost"
+
+#: lib/poptQV.c:301
 #, c-format
 msgid "skip %%ghost files"
 msgstr "pomiñ pliki %%ghost"
 
-#: lib/poptQV.c:298
+#: lib/poptQV.c:305
 #, c-format
 msgid "skip %%license files"
 msgstr "pomiñ pliki %%license"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:308
 #, c-format
 msgid "skip %%readme files"
 msgstr "pomiñ pliki %%readme"
 
-#: lib/poptQV.c:307
+#: lib/poptQV.c:314
 msgid "use the following query format"
 msgstr "u¿yj nastêpuj±cego formatu zapytania"
 
-#: lib/poptQV.c:309
+#: lib/poptQV.c:316
 msgid "substitute i18n sections into spec file"
 msgstr "zamieñ sekcje i18n w plik spec"
 
-#: lib/poptQV.c:311
+#: lib/poptQV.c:318
 msgid "display the states of the listed files"
 msgstr "wy¶wietl status pokazywanych plików"
 
-#: lib/poptQV.c:313
+#: lib/poptQV.c:320
 msgid "specify target platform"
 msgstr "okre¶l platformê docelow±"
 
-#: lib/poptQV.c:339
+#: lib/poptQV.c:354
 msgid "don't verify size of files"
 msgstr "nie sprawdzaj rozmiaru plików"
 
-#: lib/poptQV.c:342
+#: lib/poptQV.c:357
 msgid "don't verify symlink path of files"
 msgstr "nie sprawdzaj ¶cie¿ek dowi±zañ plików"
 
-#: lib/poptQV.c:345
+#: lib/poptQV.c:360
 msgid "don't verify owner of files"
 msgstr "nie sprawdzaj w³a¶cicieli plików"
 
-#: lib/poptQV.c:348
+#: lib/poptQV.c:363
 msgid "don't verify group of files"
 msgstr "nie sprawdzaj grup plików"
 
-#: lib/poptQV.c:351
+#: lib/poptQV.c:366
 msgid "don't verify modification time of files"
 msgstr "nie sprawdzaj czasu modyfikacji plików"
 
-#: lib/poptQV.c:354 lib/poptQV.c:357
+#: lib/poptQV.c:369 lib/poptQV.c:372
 msgid "don't verify mode of files"
 msgstr "nie sprawdzaj uprawnieñ plików"
 
-#: lib/poptQV.c:360
+#: lib/poptQV.c:375
 msgid "don't verify file security contexts"
 msgstr "nie sprawdzaj kontekstów bezpieczeñstwa plików"
 
-#: lib/poptQV.c:362
+#: lib/poptQV.c:377
 msgid "don't verify files in package"
 msgstr "nie sprawdzaj plików pakietu"
 
-#: lib/poptQV.c:365 lib/poptQV.c:368 tools/rpmgraph.c:267
+#: lib/poptQV.c:380 lib/poptQV.c:383 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
-#: lib/poptQV.c:373 lib/poptQV.c:377 lib/poptQV.c:380 lib/poptQV.c:383
+#: lib/poptQV.c:388 lib/poptQV.c:392 lib/poptQV.c:395 lib/poptQV.c:398
 msgid "don't execute verify script(s)"
 msgstr "nie wykonuj ¿adnych skryptów verify"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:432
 msgid "sign package(s) (identical to --resign)"
 msgstr "podpisz pakiet(y) (identyczne z --resign)"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:434
 msgid "verify package signature(s)"
 msgstr "sprawd¼ sygnaturê pakietu"
 
-#: lib/poptQV.c:421
+#: lib/poptQV.c:436
 msgid "delete package signatures"
 msgstr "usuñ sygnatury pakietu"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:438
 msgid "import an armored public key"
 msgstr "importuj opakowany klucz publiczny"
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:440
 msgid "sign package(s) (identical to --addsign)"
 msgstr "podpisz pakiet(y) (identyczne z --addsign)"
 
-#: lib/poptQV.c:427
+#: lib/poptQV.c:442
 msgid "generate signature"
 msgstr "generuj sygnaturê"
 
-#: lib/poptQV.c:430
+#: lib/poptQV.c:445
 msgid "specify trust metric"
 msgstr "okre¶l metrykê zaufania"
 
-#: lib/poptQV.c:433
+#: lib/poptQV.c:448
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr "ustaw ostateczne zaufanie przy importowaniu kluczy publicznych"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:451
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr "wy³±cz ostateczne zaufanie przy importowaniu kluczy publicznych"
 
@@ -2494,99 +2504,99 @@ msgstr "b³êdny format: %s\n"
 msgid "(contains no files)"
 msgstr "(nie zawiera plików)"
 
-#: lib/query.c:235
+#: lib/query.c:243
 msgid "normal        "
 msgstr "normalny      "
 
-#: lib/query.c:238
+#: lib/query.c:246
 msgid "replaced      "
 msgstr "zast±piony    "
 
-#: lib/query.c:241
+#: lib/query.c:249
 msgid "not installed "
 msgstr "niezainstalowany"
 
-#: lib/query.c:244
+#: lib/query.c:252
 msgid "net shared    "
 msgstr "udostêpniony w sieci"
 
-#: lib/query.c:247
+#: lib/query.c:255
 msgid "wrong color   "
 msgstr "z³y kolor     "
 
-#: lib/query.c:250
+#: lib/query.c:258
 msgid "(no state)    "
 msgstr "(brak statusu)"
 
-#: lib/query.c:253
+#: lib/query.c:261
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(nieznany %3d)"
 
-#: lib/query.c:271
+#: lib/query.c:279
 msgid "package has not file owner/group lists\n"
 msgstr "pakiet nie ma list w³a¶cicieli/grup plików\n"
 
-#: lib/query.c:304
+#: lib/query.c:312
 msgid "package has neither file owner or id lists\n"
 msgstr "pakiet nie ma list w³a¶cicieli ani id plików\n"
 
-#: lib/query.c:474
+#: lib/query.c:482
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:483
+#: lib/query.c:491
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:496 lib/query.c:517 lib/query.c:537 lib/query.c:571
+#: lib/query.c:504 lib/query.c:525 lib/query.c:545 lib/query.c:579
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "b³êdne sformu³owanie %s: %s\n"
 
-#: lib/query.c:506 lib/query.c:523 lib/query.c:547 lib/query.c:576
+#: lib/query.c:514 lib/query.c:531 lib/query.c:555 lib/query.c:584
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¿aden pakiet nie pasuje do %s: %s\n"
 
-#: lib/query.c:586
+#: lib/query.c:594
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:597
+#: lib/query.c:605
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:636
+#: lib/query.c:644
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:640
+#: lib/query.c:648
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:665
+#: lib/query.c:673
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:676
 #, c-format
 msgid "package record number: %u\n"
 msgstr "numer rekordu pakietu: %u\n"
 
-#: lib/query.c:673
+#: lib/query.c:681
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:683 lib/rpminstall.c:818
+#: lib/query.c:691 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -3684,12 +3694,12 @@ msgstr "Nie uda³o siê dodaæ elementu transakcji do automatycznego wycofania!\n"
 msgid "running post-transaction scripts\n"
 msgstr "uruchamianie skryptów po-transakcyjnych\n"
 
-#: lib/verify.c:321
+#: lib/verify.c:329
 #, c-format
 msgid "missing   %c %s"
 msgstr "brak      %c %s"
 
-#: lib/verify.c:441
+#: lib/verify.c:449
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Niespe³nione zale¿no¶ci dla %s:\n"

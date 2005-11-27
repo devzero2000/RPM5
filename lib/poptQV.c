@@ -31,6 +31,7 @@ int specedit = 0;
 #define POPT_HDLIST		-1011
 #define POPT_FTSWALK		-1012
 
+/* -1025 thrugh -1032 are common in rpmcli.h. */
 #define	POPT_TARGETPLATFORM	-1036
 #define	POPT_TRUST		-1037
 
@@ -289,7 +290,13 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("list files in package"), NULL },
 
  /* Duplicate file attr flags from packages into command line options. */
- { "noghost", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
+ { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_CONFIG,
+        N_("skip %%config files"), NULL },
+ { "nodoc", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_DOC,
+        N_("skip %%doc files"), NULL },
+ { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
         N_("skip %%ghost files"), NULL },
 #ifdef	NOTEVER		/* XXX there's hardly a need for these */
@@ -324,6 +331,14 @@ struct poptOption rpmVerifyPoptTable[] = {
 /*@=type@*/
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
+
+ /* Duplicate file attr flags from packages into command line options. */
+ { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_CONFIG,
+        N_("skip %%config files"), NULL },
+ { "nodoc", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_DOC,
+        N_("skip %%doc files"), NULL },
 
  /* Duplicate file verify flags from packages into command line options. */
 /** @todo Add --nomd5 alias to rpmpopt, eliminate. */

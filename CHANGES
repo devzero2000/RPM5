@@ -15,6 +15,7 @@
 	- remove (broken) test programs trb.c and tgi.c.
 	- add fsm vectors for cpio peculier routines.
 	- make the fcntl transaction lock sensitive to --root (#151255).
+	- add --noconfig and --nodoc to query/verify modes.
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.

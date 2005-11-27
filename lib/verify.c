@@ -303,28 +303,36 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)	/* XXX lclint */
     while ((i = rpmfiNext(fi)) >= 0) {
-	rpmfileAttrs fileAttrs;
+	rpmfileAttrs fflags;
 	int rc;
 
-	fileAttrs = rpmfiFFlags(fi);
+	fflags = rpmfiFFlags(fi);
+
+	/* If not querying %config, skip config files. */
+	if ((qva->qva_fflags & RPMFILE_CONFIG) && (fflags & RPMFILE_CONFIG))
+	    continue;
+
+	/* If not querying %doc, skip doc files. */
+	if ((qva->qva_fflags & RPMFILE_DOC) && (fflags & RPMFILE_DOC))
+	    continue;
 
 	/* If not verifying %ghost, skip ghost files. */
-	if (!(qva->qva_fflags & RPMFILE_GHOST)
-	&& (fileAttrs & RPMFILE_GHOST))
+	/* XXX the broken!!! logic disables %ghost queries always. */
+	if (!(qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
 	    continue;
 
 /*@-boundswrite@*/
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
 /*@=boundswrite@*/
 	if (rc) {
-	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
+	    if (!(fflags & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
 		sprintf(te, _("missing   %c %s"),
-			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
-			 (fileAttrs & RPMFILE_DOC)	? 'd' :
-			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
-			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
-			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
-			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
+			((fflags & RPMFILE_CONFIG)	? 'c' :
+			 (fflags & RPMFILE_DOC)		? 'd' :
+			 (fflags & RPMFILE_GHOST)	? 'g' :
+			 (fflags & RPMFILE_LICENSE)	? 'l' :
+			 (fflags & RPMFILE_PUBKEY)	? 'P' :
+			 (fflags & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
 		te += strlen(te);
 		ec = rc;
@@ -368,12 +376,12 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 
 	    sprintf(te, "%s%s%s%s%s%s%s%s%s %c %s",
 			size, mode, MD5, rdev, link, user, group, mtime, ctxt,
-			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
-			 (fileAttrs & RPMFILE_DOC)	? 'd' :
-			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
-			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
-			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
-			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
+			((fflags & RPMFILE_CONFIG)	? 'c' :
+			 (fflags & RPMFILE_DOC)	? 'd' :
+			 (fflags & RPMFILE_GHOST)	? 'g' :
+			 (fflags & RPMFILE_LICENSE)	? 'l' :
+			 (fflags & RPMFILE_PUBKEY)	? 'P' :
+			 (fflags & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
 	    te += strlen(te);
 	}

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-23 17:45-0500\n"
+"POT-Creation-Date: 2005-11-27 11:15-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -125,7 +125,7 @@ msgid "Common options for all rpm modes and executables:"
 msgstr "全モード・コマンドで共通のオプション:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:132 lib/poptI.c:55
+#: rpmqv.c:132 lib/poptI.c:56
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
@@ -1275,18 +1275,18 @@ msgstr "ビルド依存性を検証しない"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "(古い) rpm[23] パッケージング互換のヘッダを生成"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:346 lib/poptQV.c:388
-#: lib/poptQV.c:397 lib/poptQV.c:439
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:347 lib/poptQV.c:403
+#: lib/poptQV.c:412 lib/poptQV.c:454
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:348 lib/poptQV.c:391
-#: lib/poptQV.c:399 lib/poptQV.c:442
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:349 lib/poptQV.c:406
+#: lib/poptQV.c:414 lib/poptQV.c:457
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:350 lib/poptQV.c:394
-#: lib/poptQV.c:401 lib/poptQV.c:444
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:409
+#: lib/poptQV.c:416 lib/poptQV.c:459
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
 
@@ -1603,32 +1603,32 @@ msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 "ディレクトリ %s がパーミッション %04o でコンテキスト %s で作成されました。\n"
 
-#: lib/fsm.c:1664
+#: lib/fsm.c:1663
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "アーカイブファイル %s がヘッダファイルリストにありません。\n"
 
-#: lib/fsm.c:1791 lib/fsm.c:1931
+#: lib/fsm.c:1790 lib/fsm.c:1930
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s は %s として保存されした。\n"
 
-#: lib/fsm.c:1958
+#: lib/fsm.c:1957
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s の rmdir に失敗: ディレクトリが空ではありません。\n"
 
-#: lib/fsm.c:1964
+#: lib/fsm.c:1963
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/fsm.c:1979
+#: lib/fsm.c:1978
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s %s の unlink に失敗: %s\n"
 
-#: lib/fsm.c:2001
+#: lib/fsm.c:2000
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s は %s として作成されました。\n"
@@ -1908,62 +1908,62 @@ msgstr "URL キャッシュハンドリングのデバッグ"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: オプションテーブルの設定が正しくありません (%d)\n"
 
-#: lib/poptI.c:83
+#: lib/poptI.c:84
 msgid "exclude paths must begin with a /"
 msgstr "除外するパスは / から始まらなければなりません。"
 
-#: lib/poptI.c:97
+#: lib/poptI.c:98
 msgid "Option --relocate needs /old/path=/new/path argument"
 msgstr ""
 
-#: lib/poptI.c:99
+#: lib/poptI.c:100
 msgid "relocations must begin with a /"
 msgstr "再配置は / から始まらなければなりません。"
 
-#: lib/poptI.c:102
+#: lib/poptI.c:103
 msgid "relocations must contain a ="
 msgstr "再配置は = を含んでいなければなりません。"
 
-#: lib/poptI.c:105
+#: lib/poptI.c:106
 msgid "relocations must have a / following the ="
 msgstr "再配置は = の次に / でなければなりません。"
 
-#: lib/poptI.c:123
+#: lib/poptI.c:124
 #, fuzzy
 msgid "Option --rbexclude needs transaction id argument(s)"
 msgstr "rbexclude にはトランザクション ID 引数が必要です"
 
-#: lib/poptI.c:154
+#: lib/poptI.c:155
 #, fuzzy
 msgid "Option --rollback needs a time/date stamp argument"
 msgstr "ロールバックには日付/時刻スタンプの指定が必要です"
 
-#: lib/poptI.c:158
+#: lib/poptI.c:159
 #, fuzzy, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
 msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 
-#: lib/poptI.c:162
+#: lib/poptI.c:163
 msgid "malformed rollback time/date stamp argument"
 msgstr "ロールバックの時刻/日付スタンプの形式が正しくありません"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:170
 msgid "arbgoal takes a time/date stamp argument"
 msgstr "arbgoal には日付/時刻スタンプの指定が必要です"
 
-#: lib/poptI.c:176
+#: lib/poptI.c:177
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "arbgoal の時刻/日付スタンプの形式が正しくありません"
 
-#: lib/poptI.c:232
+#: lib/poptI.c:233
 msgid "add suggested packages to transaction"
 msgstr "トランザクションに提案パッケージを追加します。"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:237
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr "設定がスキップを指示していても、全ファイルをインストールします。"
 
-#: lib/poptI.c:240
+#: lib/poptI.c:241
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1971,160 +1971,160 @@ msgstr ""
 "<package> と一致するパッケージ全てを削除します(通常は <package> が複数のパッ"
 "ケージを指す場合はエラーになります)"
 
-#: lib/poptI.c:245 tools/rpmgraph.c:273
+#: lib/poptI.c:246 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr "anaconda の \"presentation order\" を使う"
 
-#: lib/poptI.c:250 lib/poptI.c:330
+#: lib/poptI.c:251 lib/poptI.c:331
 msgid "do not execute package scriptlet(s)"
 msgstr "パッケージ指定のスクリプトを実行しません。"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:255
 msgid "relocate files in non-relocatable package"
 msgstr "再配置不可能なパッケージのファイルを再配置します。"
 
-#: lib/poptI.c:258
+#: lib/poptI.c:259
 msgid "print dependency loops as warning"
 msgstr "依存のループを警告として表示します。"
 
-#: lib/poptI.c:262
+#: lib/poptI.c:263
 msgid "save erased package files by renaming into sub-directory"
 msgstr "削除されたパッケージを、サブディレクトリに名前を変えて保存します。"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:266
 msgid "erase (uninstall) package"
 msgstr "パッケージを削除 (アンインストール) します。"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:266
 msgid "<package>+"
 msgstr "<package>+"
 
-#: lib/poptI.c:268 lib/poptI.c:308
+#: lib/poptI.c:269 lib/poptI.c:309
 msgid "do not install configuration files"
 msgstr "設定ファイルをインストールしません。"
 
-#: lib/poptI.c:271 lib/poptI.c:313
+#: lib/poptI.c:272 lib/poptI.c:314
 msgid "do not install documentation"
 msgstr "ドキュメントをインストールしません。"
 
-#: lib/poptI.c:273
+#: lib/poptI.c:274
 msgid "skip files with leading component <path> "
 msgstr "パス <path> 中のファイルをスキップします。"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:275
 msgid "<path>"
 msgstr "<path>"
 
-#: lib/poptI.c:278
+#: lib/poptI.c:279
 msgid "detect file conflicts between packages"
 msgstr "パッケージ間でのファイルの競合を検知します。"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:281
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs と --replacefiles を短縮したもの"
 
-#: lib/poptI.c:284
+#: lib/poptI.c:285
 msgid "upgrade package(s) if already installed"
 msgstr "既にインストール済みの場合のみアップグレード"
 
-#: lib/poptI.c:285 lib/poptI.c:301 lib/poptI.c:403
+#: lib/poptI.c:286 lib/poptI.c:302 lib/poptI.c:404
 msgid "<packagefile>+"
 msgstr "<packagefile>+"
 
-#: lib/poptI.c:287
+#: lib/poptI.c:288
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "パッケージをインストールにつれて '#' を表示します (-v と使用すると良い)"
 
-#: lib/poptI.c:290
+#: lib/poptI.c:291
 msgid "don't verify package architecture"
 msgstr "パッケージの対象アーキテクチャを検証しません。"
 
-#: lib/poptI.c:293
+#: lib/poptI.c:294
 msgid "don't verify package operating system"
 msgstr "パッケージ対象 OS の検証を行いません。"
 
-#: lib/poptI.c:296
+#: lib/poptI.c:297
 msgid "don't check disk space before installing"
 msgstr "インストール前のディスク容量チェックを行いません。"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:299
 msgid "install documentation"
 msgstr "ドキュメントをインストールします。"
 
-#: lib/poptI.c:301
+#: lib/poptI.c:302
 msgid "install package(s)"
 msgstr "パッケージをインストールします。"
 
-#: lib/poptI.c:304
+#: lib/poptI.c:305
 msgid "update the database, but do not modify the filesystem"
 msgstr "データベースを更新しますが、ファイルシステムの変更は行いません。"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:311
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証を行いません。"
 
-#: lib/poptI.c:316 lib/poptQV.c:332 lib/poptQV.c:335
+#: lib/poptI.c:317 lib/poptQV.c:347 lib/poptQV.c:350
 msgid "don't verify MD5 digest of files"
 msgstr "ファイルの MD5 ダイジェストを検証しません。"
 
-#: lib/poptI.c:318
+#: lib/poptI.c:319
 msgid "don't install file security contexts"
 msgstr "ファイルのセキュリティコンテキストをインストールしません。"
 
-#: lib/poptI.c:322
+#: lib/poptI.c:323
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "依存性を満たす為のパッケージのインストール順序を変更しません。"
 
-#: lib/poptI.c:327
+#: lib/poptI.c:328
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "不足する依存関係の解決を提案しません。"
 
-#: lib/poptI.c:334
+#: lib/poptI.c:335
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "%%pre スクリプトを実行しません。"
 
-#: lib/poptI.c:337
+#: lib/poptI.c:338
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "%%post スクリプトを実行しません。"
 
-#: lib/poptI.c:340
+#: lib/poptI.c:341
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "%%preun スクリプトを実行しません。"
 
-#: lib/poptI.c:343
+#: lib/poptI.c:344
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "%%postun スクリプトを実行しません。"
 
-#: lib/poptI.c:353
+#: lib/poptI.c:354
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "このパッケージによってトリガーされるスクリプトを実行しません。"
 
-#: lib/poptI.c:356
+#: lib/poptI.c:357
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "%%triggerprein スクリプトを実行しません。"
 
-#: lib/poptI.c:359
+#: lib/poptI.c:360
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "%%triggerin スクリプトを実行しません。"
 
-#: lib/poptI.c:362
+#: lib/poptI.c:363
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "%%triggerun スクリプトを実行しません。"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:366
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "%%triggerpostun スクリプトを実行しません。"
 
-#: lib/poptI.c:369
+#: lib/poptI.c:370
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2132,287 +2132,297 @@ msgstr ""
 "古いバージョンのパッケージにアップグレードします(アップグレード時の --force "
 "はこれを自動的に行います)"
 
-#: lib/poptI.c:373
+#: lib/poptI.c:374
 msgid "print percentages as package installs"
 msgstr "インストールする際にパーセント表示を行います。"
 
-#: lib/poptI.c:375
+#: lib/poptI.c:376
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "パッケージが再配置可能ならば、 <dir> に再配置します。"
 
-#: lib/poptI.c:376
+#: lib/poptI.c:377
 msgid "<dir>"
 msgstr "<dir>"
 
-#: lib/poptI.c:378
+#: lib/poptI.c:379
 msgid "relocate files from path <old> to <new>"
 msgstr "パス <old> からパス <new> にファイルを再配置させます。"
 
-#: lib/poptI.c:379
+#: lib/poptI.c:380
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
-#: lib/poptI.c:382
+#: lib/poptI.c:383
 msgid "save erased package files by repackaging"
 msgstr "再パッケージすることで削除したパッケージを保存します。"
 
-#: lib/poptI.c:385
+#: lib/poptI.c:386
 msgid "ignore file conflicts between packages"
 msgstr "パッケージ間のファイルの競合を無視します。"
 
-#: lib/poptI.c:388
+#: lib/poptI.c:389
 msgid "reinstall if the package is already present"
 msgstr "既に存在するパッケージでも再インストールします。"
 
-#: lib/poptI.c:390
+#: lib/poptI.c:391
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 "<date> の状態に戻すため、新しいパッケージを削除し、古いパッケージを再インス"
 "トールします。"
 
-#: lib/poptI.c:391 lib/poptI.c:394
+#: lib/poptI.c:392 lib/poptI.c:395
 msgid "<date>"
 msgstr "<date>"
 
-#: lib/poptI.c:393
+#: lib/poptI.c:394
 msgid "If transaction fails rollback to <date>"
 msgstr "トランザクションに失敗した場合に <date> にロールバックする"
 
-#: lib/poptI.c:396
+#: lib/poptI.c:397
 msgid "Exclude Transaction I.D. from rollback"
 msgstr "ロールバックでトランザクション ID を除外する"
 
-#: lib/poptI.c:397
+#: lib/poptI.c:398
 msgid "<tid>"
 msgstr "<tid>"
 
-#: lib/poptI.c:399
+#: lib/poptI.c:400
 msgid "don't install, but tell if it would work or not"
 msgstr "インストールせずに、テストのみを行います。"
 
-#: lib/poptI.c:402
+#: lib/poptI.c:403
 msgid "upgrade package(s)"
 msgstr "パッケージをアップグレードします。"
 
-#: lib/poptQV.c:106
+#: lib/poptQV.c:107
 msgid "query/verify all packages"
 msgstr "全てのパッケージについて問い合わせ/検証します。"
 
-#: lib/poptQV.c:108
+#: lib/poptQV.c:109
 msgid "rpm checksig mode"
 msgstr "rpm の署名検査モード"
 
-#: lib/poptQV.c:110
+#: lib/poptQV.c:111
 msgid "query/verify package(s) owning file"
 msgstr "<file> を所有しているパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:112
+#: lib/poptQV.c:113
 msgid "query/verify package(s) in group"
 msgstr "グループに所属するパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:115
 msgid "query/verify a package file"
 msgstr "パッケージファイルの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:118
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "ファイルツリー探索の先頭から、問い合わせ/検証します"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:120
 msgid "query/verify package(s) from system HDLIST"
 msgstr "システムの HDLIST から問い合わせ/検証をします。"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:123
 msgid "query/verify package(s) with package identifier"
 msgstr "パッケージ ID で問い合わせ/検証します。"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:125
 msgid "query/verify package(s) with header identifier"
 msgstr "ヘッダ ID でパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:126
+#: lib/poptQV.c:127
 msgid "query/verify package(s) with file identifier"
 msgstr "ファイル ID でパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:129
+#: lib/poptQV.c:130
 msgid "rpm query mode"
 msgstr "rpm 問い合わせモード"
 
-#: lib/poptQV.c:131
+#: lib/poptQV.c:132
 msgid "query/verify a header instance"
 msgstr "ヘッダインスタンスの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:133
+#: lib/poptQV.c:134
 msgid "query a spec file"
 msgstr "spec ファイルを問い合わせます。"
 
-#: lib/poptQV.c:133
+#: lib/poptQV.c:134
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:135
+#: lib/poptQV.c:136
 msgid "query/verify package(s) from install transaction"
 msgstr ""
 "インストールトランザクションからのパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:137
+#: lib/poptQV.c:138
 msgid "query the package(s) triggered by the package"
 msgstr "パッケージによってトリガーされるパッケージを問い合わせます。"
 
-#: lib/poptQV.c:139
+#: lib/poptQV.c:140
 msgid "rpm verify mode"
 msgstr "RPM 検証モード"
 
-#: lib/poptQV.c:141
+#: lib/poptQV.c:142
 msgid "query/verify the package(s) which require a dependency"
 msgstr "依存性を要求するパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:143
+#: lib/poptQV.c:144
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "依存性を提供するパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:146
+#: lib/poptQV.c:147
 msgid "create transaction set"
 msgstr "トランザクションセットの作成"
 
-#: lib/poptQV.c:148
+#: lib/poptQV.c:149
 msgid "do not order transaction set"
 msgstr "トランザクションセットを並び替えません。"
 
-#: lib/poptQV.c:150
+#: lib/poptQV.c:151
 msgid "do not glob arguments"
 msgstr "引数を glob パターンとしてみなしません。"
 
-#: lib/poptQV.c:152
+#: lib/poptQV.c:153
 msgid "do not process non-package files as manifests"
 msgstr "リスト内の非パッケージファイルを処理しません。"
 
-#: lib/poptQV.c:154
+#: lib/poptQV.c:155
 msgid "do not read headers"
 msgstr "ヘッダーを読み込みません。"
 
-#: lib/poptQV.c:281
+#: lib/poptQV.c:282
 msgid "list all configuration files"
 msgstr "全ての設定ファイルを列挙します。"
 
-#: lib/poptQV.c:283
+#: lib/poptQV.c:284
 msgid "list all documentation files"
 msgstr "全てのドキュメントファイルを列挙します。"
 
-#: lib/poptQV.c:285
+#: lib/poptQV.c:286
 msgid "dump basic file information"
 msgstr "基本的なファイル情報をダンプします。"
 
-#: lib/poptQV.c:289
+#: lib/poptQV.c:290
 msgid "list files in package"
 msgstr "パッケージ中のファイルを列挙します。"
 
-#: lib/poptQV.c:294
+#: lib/poptQV.c:295 lib/poptQV.c:338
+#, fuzzy, c-format
+msgid "skip %%config files"
+msgstr "%%license ファイルをスキップします。"
+
+#: lib/poptQV.c:298 lib/poptQV.c:341
+#, fuzzy, c-format
+msgid "skip %%doc files"
+msgstr "%%ghost ファイルをスキップします。"
+
+#: lib/poptQV.c:301
 #, c-format
 msgid "skip %%ghost files"
 msgstr "%%ghost ファイルをスキップします。"
 
-#: lib/poptQV.c:298
+#: lib/poptQV.c:305
 #, c-format
 msgid "skip %%license files"
 msgstr "%%license ファイルをスキップします。"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:308
 #, c-format
 msgid "skip %%readme files"
 msgstr "%%readme ファイルをスキップします。"
 
-#: lib/poptQV.c:307
+#: lib/poptQV.c:314
 msgid "use the following query format"
 msgstr "以下の問い合わせフォーマットを使用します。"
 
-#: lib/poptQV.c:309
+#: lib/poptQV.c:316
 msgid "substitute i18n sections into spec file"
 msgstr "spec ファイルの i18n 部分を書き換えます。"
 
-#: lib/poptQV.c:311
+#: lib/poptQV.c:318
 msgid "display the states of the listed files"
 msgstr "列挙したファイルの状態を表示します。"
 
-#: lib/poptQV.c:313
+#: lib/poptQV.c:320
 #, fuzzy
 msgid "specify target platform"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: lib/poptQV.c:339
+#: lib/poptQV.c:354
 msgid "don't verify size of files"
 msgstr "ファイルサイズを検証しません。"
 
-#: lib/poptQV.c:342
+#: lib/poptQV.c:357
 msgid "don't verify symlink path of files"
 msgstr "ファイルのシンボリックリンクを検証しません。"
 
-#: lib/poptQV.c:345
+#: lib/poptQV.c:360
 msgid "don't verify owner of files"
 msgstr "ファイルの所有者を検証しません。"
 
-#: lib/poptQV.c:348
+#: lib/poptQV.c:363
 msgid "don't verify group of files"
 msgstr "ファイルの所有グループを検証しません。"
 
-#: lib/poptQV.c:351
+#: lib/poptQV.c:366
 msgid "don't verify modification time of files"
 msgstr "ファイルの最終更新日を検証しません。"
 
-#: lib/poptQV.c:354 lib/poptQV.c:357
+#: lib/poptQV.c:369 lib/poptQV.c:372
 msgid "don't verify mode of files"
 msgstr "ファイルのモードを検証しません。"
 
-#: lib/poptQV.c:360
+#: lib/poptQV.c:375
 msgid "don't verify file security contexts"
 msgstr "ファイルセキュリティコンテキストを検証しません。"
 
-#: lib/poptQV.c:362
+#: lib/poptQV.c:377
 msgid "don't verify files in package"
 msgstr "パッケージ中のファイルを検証しません。"
 
-#: lib/poptQV.c:365 lib/poptQV.c:368 tools/rpmgraph.c:267
+#: lib/poptQV.c:380 lib/poptQV.c:383 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "パッケージの依存関係を検証しません。"
 
-#: lib/poptQV.c:373 lib/poptQV.c:377 lib/poptQV.c:380 lib/poptQV.c:383
+#: lib/poptQV.c:388 lib/poptQV.c:392 lib/poptQV.c:395 lib/poptQV.c:398
 msgid "don't execute verify script(s)"
 msgstr "検証スクリプトを実行しません。"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:432
 msgid "sign package(s) (identical to --resign)"
 msgstr "パッケージに署名します (--resign と同一です)"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:434
 msgid "verify package signature(s)"
 msgstr "署名の検証を行います。"
 
-#: lib/poptQV.c:421
+#: lib/poptQV.c:436
 msgid "delete package signatures"
 msgstr "パッケージの署名を削除する"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:438
 msgid "import an armored public key"
 msgstr "ASCII 化された公開鍵を取り込みます。"
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:440
 msgid "sign package(s) (identical to --addsign)"
 msgstr "パッケージに署名する (--addsign と同一です)"
 
-#: lib/poptQV.c:427
+#: lib/poptQV.c:442
 msgid "generate signature"
 msgstr "署名を生成します。"
 
-#: lib/poptQV.c:430
+#: lib/poptQV.c:445
 #, fuzzy
 msgid "specify trust metric"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: lib/poptQV.c:433
+#: lib/poptQV.c:448
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:451
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2515,99 +2525,99 @@ msgstr "不正なフォーマット: %s\n"
 msgid "(contains no files)"
 msgstr "(ファイルが含まれていません)"
 
-#: lib/query.c:235
+#: lib/query.c:243
 msgid "normal        "
 msgstr "通常          "
 
-#: lib/query.c:238
+#: lib/query.c:246
 msgid "replaced      "
 msgstr "置換          "
 
-#: lib/query.c:241
+#: lib/query.c:249
 msgid "not installed "
 msgstr "未インストール"
 
-#: lib/query.c:244
+#: lib/query.c:252
 msgid "net shared    "
 msgstr "ネット共有    "
 
-#: lib/query.c:247
+#: lib/query.c:255
 msgid "wrong color   "
 msgstr "間違った色    "
 
-#: lib/query.c:250
+#: lib/query.c:258
 msgid "(no state)    "
 msgstr "(状態なし)    "
 
-#: lib/query.c:253
+#: lib/query.c:261
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(未知の %3d)  "
 
-#: lib/query.c:271
+#: lib/query.c:279
 msgid "package has not file owner/group lists\n"
 msgstr "パッケージはファイル所有者/グループ一覧を持っていません。\n"
 
-#: lib/query.c:304
+#: lib/query.c:312
 msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者も id リストも持っていません\n"
 
-#: lib/query.c:474
+#: lib/query.c:482
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません。\n"
 
-#: lib/query.c:483
+#: lib/query.c:491
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージが存在しません。\n"
 
-#: lib/query.c:496 lib/query.c:517 lib/query.c:537 lib/query.c:571
+#: lib/query.c:504 lib/query.c:525 lib/query.c:545 lib/query.c:579
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "不正な %s 指定: %s\n"
 
-#: lib/query.c:506 lib/query.c:523 lib/query.c:547 lib/query.c:576
+#: lib/query.c:514 lib/query.c:531 lib/query.c:555 lib/query.c:584
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s にマッチするパッケージは存在しません: %s\n"
 
-#: lib/query.c:586
+#: lib/query.c:594
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません。\n"
 
-#: lib/query.c:597
+#: lib/query.c:605
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません。\n"
 
-#: lib/query.c:636
+#: lib/query.c:644
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:640
+#: lib/query.c:648
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません。\n"
 
-#: lib/query.c:665
+#: lib/query.c:673
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:676
 #, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号: %u\n"
 
-#: lib/query.c:673
+#: lib/query.c:681
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "レコード %u は読み込めませんでした\n"
 
-#: lib/query.c:683 lib/rpminstall.c:818
+#: lib/query.c:691 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません。\n"
@@ -3708,12 +3718,12 @@ msgstr "自動ロールバックにトランザクション要素を追加できませんでした。\n"
 msgid "running post-transaction scripts\n"
 msgstr "トランザクション後のスクリプトを実行中\n"
 
-#: lib/verify.c:321
+#: lib/verify.c:329
 #, c-format
 msgid "missing   %c %s"
 msgstr "%c %s が見つかりません。"
 
-#: lib/verify.c:441
+#: lib/verify.c:449
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s のための依存性を満たしていません: "

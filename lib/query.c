@@ -221,8 +221,16 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	if ((qva->qva_flags & QUERY_FOR_CONFIG) && !(fflags & RPMFILE_CONFIG))
 	    continue;
 
+	/* If not querying %config, skip config files. */
+	if ((qva->qva_fflags & RPMFILE_CONFIG) && (fflags & RPMFILE_CONFIG))
+	    continue;
+
+	/* If not querying %doc, skip doc files. */
+	if ((qva->qva_fflags & RPMFILE_DOC) && (fflags & RPMFILE_DOC))
+	    continue;
+
 	/* If not querying %ghost, skip ghost files. */
-	if (!(qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
+	if ((qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
 	    continue;
 
 /*@-boundswrite@*/
