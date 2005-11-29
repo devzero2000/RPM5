@@ -77,10 +77,10 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
 	mandir=/usr/man
 	infodir=/usr/info
     fi
-    if [ -d /usr/lib/nptl ]; then
+    if [ -d /usr/include/nptl ]; then
 	enable_posixmutexes="--enable-posixmutexes"
     else
-	enable_posixmutexes=
+	enable_posixmutexes="--with-mutex=UNIX/fcntl"
     fi
     if [ -d /usr/include/selinux ]; then
 	disable_selinux=

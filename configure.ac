@@ -164,6 +164,10 @@ if test -f /usr/lib/nptl/libpthread.a ; then
     LDFLAGS_NPTL="-L/usr/lib/nptl"
 #    INCPATH="$INCPATH -I/usr/include/nptl"
 fi
+if test -f /usr/lib64/nptl/libpthread.a ; then
+    LDFLAGS_NPTL="-L/usr/lib64/nptl"
+#    INCPATH="$INCPATH -I/usr/include/nptl"
+fi
 AC_SUBST(LDFLAGS_NPTL)
 
 dnl
