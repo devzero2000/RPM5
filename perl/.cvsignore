@@ -1,5 +1,5 @@
 Makefile
-RPM2.bs
-RPM2.c
+RPM.bs
+RPM.c
 blib
 pm_to_blib

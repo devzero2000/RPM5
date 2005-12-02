@@ -479,14 +479,28 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
+/*
+ * XXX Sick hackery to work around qva being clobbered on CentOS3
+ * XXX using gcc-3.2.3-49.x86_64.
+ */
+#if defined(__x86_64__)
+static QVA_t Qva;
+#endif
     int scareMem = 1;	/* XXX only rpmVerifyScript needs now */
-    rpmfi fi;
+    rpmfi fi = NULL;
     int ec = 0;
     int rc;
 
+#if defined(__x86_64__)
+fi = rpmfiFree(fi);	/* XXX do something to confuse the optimizer. */
+Qva = qva;
+#endif
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     if (fi != NULL) {
 
+#if defined(__x86_64__)
+qva = Qva;
+#endif
 	if (qva->qva_flags & VERIFY_DEPS) {
 	    int save_noise = _rpmds_unspecified_epoch_noise;
 /*@-mods@*/

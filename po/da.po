@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-27 11:15-0500\n"
+"POT-Creation-Date: 2005-12-02 10:57-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 "X-Generator: KBabel 0.9alpha\n"
 
 #: build.c:40
@@ -64,12 +64,10 @@ msgid "Building for target %s\n"
 msgstr "Opbygger for mål %s\n"
 
 #: rpm2cpio.c:56
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "parameter er ikke en RPM-pakke\n"
 
 #: rpm2cpio.c:61
-#, c-format
 msgid "error reading header from package\n"
 msgstr "fejl ved læsning af hovedet på pakke\n"
 
@@ -128,12 +126,12 @@ msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: rpmqv.c:147
-#, fuzzy, c-format
+#, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:148
-#, fuzzy, c-format
+#, fuzzy
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Dette program kan frit distribueres under betingelserne i GNU GPL"
@@ -277,7 +275,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "parameteren til --root (-r) skal starte med et /"
 
 #: rpmqv.c:548
-#, c-format
 msgid "no files to sign\n"
 msgstr "ingen filer at underskrive\n"
 
@@ -287,7 +284,6 @@ msgid "cannot access file %s\n"
 msgstr "kan ikke tilgå filen %s\n"
 
 #: rpmqv.c:573
-#, c-format
 msgid "pgp not found: "
 msgstr "pgp ikke fundet: "
 
@@ -296,12 +292,10 @@ msgid "Enter pass phrase: "
 msgstr "Indtast adgangskode: "
 
 #: rpmqv.c:583
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Adgangskode ikke godkendt\n"
 
 #: rpmqv.c:587
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Adgangskode godkendt.\n"
 
@@ -315,7 +309,6 @@ msgid "--sign may only be used during package building"
 msgstr "--sign kan kun bruges ved pakkeopbygning"
 
 #: rpmqv.c:616
-#, c-format
 msgid "exec failed\n"
 msgstr "eksekvering mislykkedes\n"
 
@@ -1686,17 +1679,14 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
-#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1712,7 +1702,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1732,7 +1721,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -3268,27 +3256,22 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kunne ikke åbne %s for læsning: %s.\n"
 
 #: lib/rpmrc.c:1930
-#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
-#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
-#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
-#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
-#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3384,7 +3367,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3409,7 +3391,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3483,9 +3464,6 @@ msgstr "Fik %d byte GPG-signatur\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3531,12 +3509,10 @@ msgid " DSA signature: "
 msgstr "Ingen signatur\n"
 
 #: lib/signature.c:1505
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -4305,7 +4281,6 @@ msgid "(no error)"
 msgstr "(ingen fejl)"
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatal fejl: "
