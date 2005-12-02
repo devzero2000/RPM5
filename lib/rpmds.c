@@ -2511,9 +2511,12 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 {
     *t = '\0';
 #if !defined(__alpha__)
-    if (isElf64)
+    if (isElf64) {
+	if (s[strlen(s)-1] != ')')
 	(void) stpcpy( stpcpy(t, s), "()(64bit)");
     else
+	    (void) stpcpy( stpcpy(t, s), "(64bit)");
+    }else
 #endif
 	(void) stpcpy(t, s);
     return t;
