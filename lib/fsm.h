@@ -125,6 +125,8 @@ struct fsm_s {
 /*@owned@*/ /*@relnull@*/
     const char * path;		/*!< Current file name. */
 /*@owned@*/ /*@relnull@*/
+    const char * lpath;		/*!< Current link name. */
+/*@owned@*/ /*@relnull@*/
     const char * opath;		/*!< Original file name. */
 /*@relnull@*/
     FD_t cfd;			/*!< Payload file handle. */

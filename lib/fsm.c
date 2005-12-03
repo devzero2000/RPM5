@@ -668,7 +668,7 @@ int fsmMapPath(FSM_t fsm)
     fsm->nsuffix = NULL;
     fsm->astriplen = 0;
     fsm->action = FA_UNKNOWN;
-    fsm->mapFlags = 0;
+    fsm->mapFlags = fi->mapflags;
 
     i = fsm->ix;
     if (fi && i >= 0 && i < fi->fc) {
@@ -1604,6 +1604,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 #undef _tsmask
 	}
 	fsm->path = _free(fsm->path);
+	fsm->lpath = _free(fsm->lpath);
 	fsm->opath = _free(fsm->opath);
 	fsm->dnlx = _free(fsm->dnlx);
 
@@ -1637,6 +1638,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	break;
     case FSM_INIT:
 	fsm->path = _free(fsm->path);
+	fsm->lpath = _free(fsm->lpath);
 	fsm->postpone = 0;
 	fsm->diskchecked = fsm->exists = 0;
 	fsm->subdir = NULL;
@@ -1655,6 +1657,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->ix = ((fsm->goal == FSM_PKGINSTALL)
 		? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
 
+if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_HDRS)) {
 	/* Detect end-of-loop and/or mapping error. */
 	if (fsm->ix < 0) {
 	    if (fsm->goal == FSM_PKGINSTALL) {
@@ -1679,6 +1682,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    rpmfi fi = fsmGetFi(fsm);
 	    st->st_mode = fi->fmodes[fsm->ix];
 	}
+}
 
 	/* Generate file path. */
 	rc = fsmNext(fsm, FSM_MAP);
@@ -1725,6 +1729,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		fsm->postpone = saveHardLink(fsm);
 	    /*@=evalorder@*/
 	}
+if (fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_HDRS) fsm->postpone = 1;
 	break;
     case FSM_PRE:
 	break;
@@ -1910,6 +1915,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmNext(fsm, FSM_COMMIT);
 	}
 	fsm->path = _free(fsm->path);
+	fsm->lpath = _free(fsm->lpath);
 	fsm->opath = _free(fsm->opath);
 /*@-boundswrite@*/
 	memset(st, 0, sizeof(*st));
