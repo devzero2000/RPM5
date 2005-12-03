@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2005-12-02 10:57-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-12-03 15:09-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
-"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -63,10 +63,12 @@ msgid "Building for target %s\n"
 msgstr "Þýði fyrir markkerfi %s\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr ""
 
@@ -123,12 +125,12 @@ msgid "RPM version %s\n"
 msgstr "RPM útgáfa %s\n"
 
 #: rpmqv.c:147
-#, fuzzy
+#, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Höfundarréttur (C) 1998-2000 - Red Hat Inc"
 
 #: rpmqv.c:148
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Þessu má dreifa frjálst samkvæmt skilmálum GNU GPL"
@@ -266,6 +268,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -275,6 +278,7 @@ msgid "cannot access file %s\n"
 msgstr ""
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr ""
 
@@ -283,10 +287,12 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr ""
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr ""
 
@@ -300,6 +306,7 @@ msgid "--sign may only be used during package building"
 msgstr ""
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr ""
 
@@ -335,7 +342,7 @@ msgstr ""
 msgid "no arguments given"
 msgstr ""
 
-#: build/build.c:140 build/pack.c:510
+#: build/build.c:140 build/pack.c:527
 msgid "Unable to open temp file.\n"
 msgstr "Get ekki opnað tempi skrá.\n"
 
@@ -674,7 +681,7 @@ msgstr ""
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:327 build/pack.c:556
+#: build/pack.c:327 build/pack.c:574
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek brást: %s\n"
@@ -689,81 +696,81 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:498
+#: build/pack.c:515
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Get ekki lesið haus úr %s: %s\n"
 
-#: build/pack.c:517
+#: build/pack.c:534
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Gat ekki ritað haus í %s: %s\n"
 
-#: build/pack.c:527
+#: build/pack.c:544
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:563
+#: build/pack.c:581
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "Gat ekki ritað haus í %s: %s\n"
 
-#: build/pack.c:583
+#: build/pack.c:601
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:601
+#: build/pack.c:619
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Get ekki lesið haus úr %s: %s\n"
 
-#: build/pack.c:609
+#: build/pack.c:627
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:645 lib/psm.c:1686
+#: build/pack.c:663 lib/psm.c:1686
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Get ekki ritað í pakka: %s\n"
 
-#: build/pack.c:660
+#: build/pack.c:678
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Get ekki opnað sigtarget %s: %s\n"
 
-#: build/pack.c:671
+#: build/pack.c:689
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Get ekki lesið haus úr %s: %s\n"
 
-#: build/pack.c:685
+#: build/pack.c:703
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Gat ekki ritað haus í %s: %s\n"
 
-#: build/pack.c:695
+#: build/pack.c:713
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Get ekki lesið innihald %s: %s\n"
 
-#: build/pack.c:701
+#: build/pack.c:719
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Get ekki ritað innihald í %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1999
+#: build/pack.c:756 lib/psm.c:1999
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrifaði: %s\n"
 
-#: build/pack.c:811
+#: build/pack.c:829
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:828
+#: build/pack.c:846
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -1565,32 +1572,32 @@ msgstr ""
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 
-#: lib/fsm.c:1663
+#: lib/fsm.c:1666
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1790 lib/fsm.c:1930
+#: lib/fsm.c:1795 lib/fsm.c:1936
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s vistað sem %s\n"
 
-#: lib/fsm.c:1957
+#: lib/fsm.c:1963
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1963
+#: lib/fsm.c:1969
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s brást: %s\n"
 
-#: lib/fsm.c:1978
+#: lib/fsm.c:1984
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s gat ekki eytt %s: %s\n"
 
-#: lib/fsm.c:2000
+#: lib/fsm.c:2006
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s búið til sem %s\n"
@@ -1641,14 +1648,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
+#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1664,6 +1674,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1683,6 +1694,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2688,11 +2700,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:793 lib/rpmds.c:3196
+#: lib/rpmds.c:793 lib/rpmds.c:3199
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:793 lib/rpmds.c:3196
+#: lib/rpmds.c:793 lib/rpmds.c:3199
 msgid "YES"
 msgstr ""
 
@@ -2757,12 +2769,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2989 lib/rpmds.c:3019 lib/rpmds.c:3031
+#: lib/rpmds.c:2992 lib/rpmds.c:3022 lib/rpmds.c:3034
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2992
+#: lib/rpmds.c:2995
 #, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2770,33 +2782,33 @@ msgid ""
 msgstr ""
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3021
+#: lib/rpmds.c:3024
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3033
+#: lib/rpmds.c:3036
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3162
+#: lib/rpmds.c:3165
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3195
+#: lib/rpmds.c:3198
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:3219
+#: lib/rpmds.c:3222
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
@@ -3161,22 +3173,27 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Get ekki opnað %s til lesturs: %s.\n"
 
 #: lib/rpmrc.c:1930
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3269,6 +3286,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3293,6 +3311,7 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3366,6 +3385,9 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3409,10 +3431,12 @@ msgid " DSA signature: "
 msgstr ""
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -4168,6 +4192,7 @@ msgid "(no error)"
 msgstr "(engin villa)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "banvæn villa: "

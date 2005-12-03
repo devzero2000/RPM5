@@ -5,14 +5,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2005-12-02 10:57-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-12-03 15:09-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -66,10 +66,12 @@ msgid "Building for target %s\n"
 msgstr "Збирання для платформи %s\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "вказаний аргумент не є RPM пакетом\n"
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr "помилка читання заголовка пакету\n"
 
@@ -129,10 +131,12 @@ msgid "RPM version %s\n"
 msgstr "RPM версії %s\n"
 
 #: rpmqv.c:147
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Авторські права належать - Red Hat, Inc. Copyright (C) 1998-2002\n"
 
 #: rpmqv.c:148
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Цю програму можна розповсюджувати на умовах ліцензії GNU GPL\n"
@@ -285,6 +289,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументи для --root (-r) повинні починатись з /"
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr "немає файлів для підпису\n"
 
@@ -294,6 +299,7 @@ msgid "cannot access file %s\n"
 msgstr "немає доступу до файлу %s\n"
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp не знайдено:"
 
@@ -302,10 +308,12 @@ msgid "Enter pass phrase: "
 msgstr "Введіть ключову фразу:"
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Неправильна ключова фраза\n"
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Ключову фразу прийнято.\n"
 
@@ -319,6 +327,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign дозволяється вказувати лише при збиранні пакету"
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr "помилка запуску\n"
 
@@ -354,7 +363,7 @@ msgstr "не вказані аргументи перевірки"
 msgid "no arguments given"
 msgstr "не вказані аргументи"
 
-#: build/build.c:140 build/pack.c:510
+#: build/build.c:140 build/pack.c:527
 msgid "Unable to open temp file.\n"
 msgstr "Неможливо відкрити тимчасовий файл.\n"
 
@@ -698,7 +707,7 @@ msgstr "readRPM: відкривання %s: %s\n"
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: читання %s: %s\n"
 
-#: build/pack.c:327 build/pack.c:556
+#: build/pack.c:327 build/pack.c:574
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: помилка Fseek: %s\n"
@@ -713,77 +722,77 @@ msgstr "readRPM: %s - не є RPM пакетом\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читається заголовок з %s\n"
 
-#: build/pack.c:498
+#: build/pack.c:515
 msgid "Unable to create immutable header region.\n"
 msgstr "Неможливо помістити заголовок в незмінну область пам'яті.\n"
 
-#: build/pack.c:517
+#: build/pack.c:534
 msgid "Unable to write temp header\n"
 msgstr "Неможливо записати тимчасовий заголовок\n"
 
-#: build/pack.c:527
+#: build/pack.c:544
 msgid "Bad CSA data\n"
 msgstr "Неправильні дані CSA\n"
 
-#: build/pack.c:563
+#: build/pack.c:581
 msgid "Unable to write final header\n"
 msgstr "Неможливо записати остаточний заголовок\n"
 
-#: build/pack.c:583
+#: build/pack.c:601
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Створюється підпис: %d\n"
 
-#: build/pack.c:601
+#: build/pack.c:619
 msgid "Unable to reload signature header.\n"
 msgstr "Неможливо перезавантажити заголовок підпису.\n"
 
-#: build/pack.c:609
+#: build/pack.c:627
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Не вдається відкрити %s: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1686
+#: build/pack.c:663 lib/psm.c:1686
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не вдається записати пакет: %s\n"
 
-#: build/pack.c:660
+#: build/pack.c:678
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Не вдається відкрити ціль підпису %s: %s\n"
 
-#: build/pack.c:671
+#: build/pack.c:689
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Неможливо прочитати заголовок з %s: %s\n"
 
-#: build/pack.c:685
+#: build/pack.c:703
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Неможливо записати заголовок у %s: %s\n"
 
-#: build/pack.c:695
+#: build/pack.c:713
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Неможливо прочитати вміст з %s: %s\n"
 
-#: build/pack.c:701
+#: build/pack.c:719
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Неможливо записати вміст з %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1999
+#: build/pack.c:756 lib/psm.c:1999
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
 
-#: build/pack.c:811
+#: build/pack.c:829
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Неможливо створити назву файла для пакету %s: %s\n"
 
-#: build/pack.c:828
+#: build/pack.c:846
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "неможливо створити %s: %s\n"
@@ -1600,32 +1609,32 @@ msgstr "каталог %s створений з правами %04o, конте�
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "каталог %s створений з правами %04o, контектс %s.\n"
 
-#: lib/fsm.c:1663
+#: lib/fsm.c:1666
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "файл архіву %s не знайдено у списку файлів заголовка\n"
 
-#: lib/fsm.c:1790 lib/fsm.c:1930
+#: lib/fsm.c:1795 lib/fsm.c:1936
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s збережено як %s\n"
 
-#: lib/fsm.c:1957
+#: lib/fsm.c:1963
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s неможливо видалити %s: Каталог не порожній\n"
 
-#: lib/fsm.c:1963
+#: lib/fsm.c:1969
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s помилка видалення каталогу %s: %s\n"
 
-#: lib/fsm.c:1978
+#: lib/fsm.c:1984
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s неможливо видалити %s: %s\n"
 
-#: lib/fsm.c:2000
+#: lib/fsm.c:2006
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s створений як %s\n"
@@ -1676,15 +1685,17 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "неправильний розмір області: ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "неправильний заголовок SHA1: не є шістнадцятковим\n"
 
 #: lib/package.c:470
-#, fuzzy
+#, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "неправильний заголовок DSA: не є двійковим\n"
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "неправильний заголовок DSA: не є двійковим\n"
 
@@ -1700,6 +1711,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "неправильний розмір заголовка(%d): зчитування повернуло %d\n"
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "неправильна сигнатура заголовка: помилка\n"
 
@@ -1719,6 +1731,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "неправильний двійковий об'єкт(%d): зчитування повернуло %d\n"
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr "помилка завантаження об'єкта: помилка\n"
 
@@ -2731,11 +2744,11 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3196
+#: lib/rpmds.c:793 lib/rpmds.c:3199
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:793 lib/rpmds.c:3196
+#: lib/rpmds.c:793 lib/rpmds.c:3199
 msgid "YES"
 msgstr "ТАК"
 
@@ -2803,12 +2816,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2989 lib/rpmds.c:3019 lib/rpmds.c:3031
+#: lib/rpmds.c:2992 lib/rpmds.c:3022 lib/rpmds.c:3034
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2992
+#: lib/rpmds.c:2995
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2818,20 +2831,20 @@ msgstr ""
 "'/': %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3021
+#: lib/rpmds.c:3024
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3033
+#: lib/rpmds.c:3036
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3162
+#: lib/rpmds.c:3165
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2841,13 +2854,13 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3195
+#: lib/rpmds.c:3198
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3219
+#: lib/rpmds.c:3222
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
@@ -3211,22 +3224,27 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "Неможливо відкрити %s для читання: %s.\n"
 
 #: lib/rpmrc.c:1930
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
+#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3321,6 +3339,7 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "неправильний розмір загол.підпису(%d): зчитування повернуло %d\n"
 
 #: lib/signature.c:193
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "неправильна сигнатура загол.підпису: помилка\n"
 
@@ -3346,6 +3365,7 @@ msgstr ""
 "неправильний тег загол.підпису[%d]: тег %d тип %d зсув %d кількість %d\n"
 
 #: lib/signature.c:313
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr "помилка завантаження загол.підпису: помилка\n"
 
@@ -3419,6 +3439,9 @@ msgstr "Розмір GPG підпису: %d\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3462,10 +3485,12 @@ msgid " DSA signature: "
 msgstr "Підпис V3 DSA: "
 
 #: lib/signature.c:1505
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Перевірка підпису: НЕПРАВИЛЬНІ ПАРАМЕТРИ\n"
 
 #: lib/signature.c:1536
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Неправильна контрольна сума MD5: НЕ ПІДТРИМУЄТЬСЯ\n"
 
@@ -4228,6 +4253,7 @@ msgid "(no error)"
 msgstr "(помилки немає)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "фатальна помилка: "

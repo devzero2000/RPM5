@@ -54,7 +54,7 @@ static inline int genSourceRpmName(Spec spec)
  * @todo Create transaction set *much* earlier.
  */
 static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
-		const char * fmodeMacro)
+		const char * payload_format, const char * fmodeMacro)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fdo, csa, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -425,6 +425,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     int_32 count, sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
+    const char * payload_format = NULL;
     const char * SHA1 = NULL;
     char *s;
     char buf[BUFSIZ];
@@ -456,20 +457,36 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /*@-branchstate@*/
     switch(type) {
     case RPMLEAD_SOURCE:
+	payload_format = rpmExpand("%{?_source_payload_format}", NULL);
 	rpmio_flags = rpmExpand("%{?_source_payload}", NULL);
 	break;
     case RPMLEAD_BINARY:
+	payload_format = rpmExpand("%{?_binary_payload_format}", NULL);
 	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
 	break;
     }
     /*@=branchstate@*/
+    if (!(payload_format && *payload_format)) {
+	payload_format = _free(payload_format);
+	payload_format = xstrdup("cpio");
+    }
     if (!(rpmio_flags && *rpmio_flags)) {
 	rpmio_flags = _free(rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");
     }
     s = strchr(rpmio_flags, '.');
     if (s) {
-	(void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE, "cpio", 1);
+
+	if (payload_format) {
+	    if (!strcmp(payload_format, "ustar")
+	     || !strcmp(payload_format, "tar"))
+		/* Add prereq on rpm version that understands bzip2 payloads */
+		(void) rpmlibNeedsFeature(h, "PayloadFormatUstar", "4.4.4-1");
+
+	    (void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE,
+			payload_format, 1);
+	}
+
 	if (s[1] == 'g' && s[2] == 'z')
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"gzip", 1);
@@ -519,7 +536,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	(void) Fflush(fd);
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
 	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, h, csa, rpmio_flags);
+	    rc = cpio_doio(fd, h, csa, payload_format, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
@@ -528,6 +545,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	}
     }
     rpmio_flags = _free(rpmio_flags);
+    payload_format = _free(payload_format);
 
     if (rc)
 	goto exit;

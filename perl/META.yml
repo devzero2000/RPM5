@@ -3,7 +3,7 @@
 name:         RPM
 version:      0.66
 version_from: RPM.pm
-installdirs:  site
+installdirs:  vendor
 requires:
 
 distribution_type: module
