@@ -248,6 +248,7 @@ int headerIsEntry(/*@null@*/ Header h, int_32 tag)
 		/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 	/*@modifies data @*/
 {
+    if (h == NULL) return 0;
     return (h2hv(h)->hdrfreetag) (h, data, type);
 }
 
@@ -271,6 +272,7 @@ int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
+    if (h == NULL) return 0;
     return (h2hv(h)->hdrget) (h, tag, type, p, c);
 }
 
@@ -293,6 +295,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
+    if (h == NULL) return 0;
     return (h2hv(h)->hdrgetmin) (h, tag, type, p, c);
 }
 

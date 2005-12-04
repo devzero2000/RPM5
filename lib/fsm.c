@@ -86,8 +86,8 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
     const char * s = NULL;
 
     if (fsm) {
-	int nb;
 	char * t;
+	int nb;
 	nb = strlen(fsm->dirName) +
 	    (st && !S_ISDIR(st->st_mode) ? (subdir ? strlen(subdir) : 0) : 0) +
 	    (st && !S_ISDIR(st->st_mode) ? (suffix ? strlen(suffix) : 0) : 0) +
@@ -555,6 +555,8 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     size_t pos = 0;
     int rc, ec = 0;
 
+if (_fsm_debug < 0)
+fprintf(stderr, "--> %s(%p, 0x%x, %p, %p, %p, %p, %p)\n", __FUNCTION__, fsm, goal, ts, fi, cfd, archiveSize, failedFile);
     if (fsm->headerRead == NULL) {
 	fsm->headerRead = &cpioHeaderRead;
 	fsm->headerWrite = &cpioHeaderWrite;
@@ -615,6 +617,8 @@ int fsmTeardown(FSM_t fsm)
 {
     int rc = fsm->rc;
 
+if (_fsm_debug < 0)
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, fsm);
     if (!rc)
 	rc = fsmUNSAFE(fsm, FSM_DESTROY);
 
@@ -1657,8 +1661,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->ix = ((fsm->goal == FSM_PKGINSTALL)
 		? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
 
-if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_HDRS)) {
+if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_LIST)) {
 	/* Detect end-of-loop and/or mapping error. */
+if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (fsm->ix < 0) {
 	    if (fsm->goal == FSM_PKGINSTALL) {
 #if 0
@@ -1676,6 +1681,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_HDRS)) {
 	    }
 	    break;
 	}
+}
 
 	/* On non-install, mode must be known so that dirs don't get suffix. */
 	if (fsm->goal != FSM_PKGINSTALL) {
@@ -1729,7 +1735,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_HDRS)) {
 		fsm->postpone = saveHardLink(fsm);
 	    /*@=evalorder@*/
 	}
-if (fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_HDRS) fsm->postpone = 1;
+if (fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_LIST) fsm->postpone = 1;
 	break;
     case FSM_PRE:
 	break;
@@ -1816,6 +1822,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	} else if (S_ISLNK(st->st_mode)) {
 	    const char * opath = fsm->opath;
 
+if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    if ((st->st_size + 1) > fsm->rdsize) {
 		rc = CPIOERR_HDR_SIZE;
 		break;
@@ -1833,6 +1840,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    /* XXX symlink(fsm->opath, fsm->path) */
 	    /*@-dependenttrans@*/
 	    fsm->opath = fsm->wrbuf;
+} else {
+assert(fsm->lpath);
+fsm->opath = fsm->lpath;
+}
 	    /*@=dependenttrans@*/
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_ENOENT)
@@ -1993,6 +2004,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 
 	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
+if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
 	    /* Rename temporary to final file name. */
 	    if (!S_ISDIR(st->st_mode) &&
@@ -2037,6 +2049,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		}
 	    }
 	}
+}
 
 	/* Notify on success. */
 	if (!rc)		rc = fsmNext(fsm, FSM_NOTIFY);

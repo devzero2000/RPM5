@@ -1246,7 +1246,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     fi->hre = (HRE_t) headerRemoveEntry;
     fi->hfd = headerFreeData;
 
-    fi->h = (scareMem ? headerLink(h) : NULL);
+    fi->h = (h != NULL && scareMem ? headerLink(h) : NULL);
 
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
