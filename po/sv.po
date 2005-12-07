@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-03 15:09-0500\n"
+"POT-Creation-Date: 2005-12-07 07:06-0500\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1346,44 +1346,44 @@ msgstr "Bygger målplattformar: %s\n"
 msgid "    target platform: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: lib/cpio.c:207
+#: lib/cpio.c:219
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(fel 0x%x)"
 
-#: lib/cpio.c:210
+#: lib/cpio.c:222
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
 
-#: lib/cpio.c:211
+#: lib/cpio.c:223
 msgid "Bad/unreadable  header"
 msgstr "Felaktigt/oläsbart huvud"
 
-#: lib/cpio.c:233
+#: lib/cpio.c:245
 msgid "Header size too big"
 msgstr "Huvudstorleken för stor"
 
-#: lib/cpio.c:234
+#: lib/cpio.c:246
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: lib/cpio.c:235
+#: lib/cpio.c:247
 msgid "Missing hard link(s)"
 msgstr "Saknade hårda länkar"
 
-#: lib/cpio.c:236
+#: lib/cpio.c:248
 msgid "MD5 sum mismatch"
 msgstr "MD5-summan stämmer inte"
 
-#: lib/cpio.c:237
+#: lib/cpio.c:249
 msgid "Internal error"
 msgstr "Internt fel"
 
-#: lib/cpio.c:238
+#: lib/cpio.c:250
 msgid "Archive file not in header"
 msgstr "Ingen arkivfilen i huvud"
 
-#: lib/cpio.c:251
+#: lib/cpio.c:263
 msgid " failed - "
 msgstr " misslyckades - "
 
@@ -1564,61 +1564,61 @@ msgstr "%5d 0x%04x %s %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "filen %s är på en okänd enhet\n"
 
-#: lib/fsm.c:352
+#: lib/fsm.c:353
 msgid "========== Directories not explicitly included in package:\n"
 msgstr "========== Kataloger ej uttryckligen inkluderade i paketet:\n"
 
-#: lib/fsm.c:354
+#: lib/fsm.c:355
 #, c-format
 msgid "%10d %s\n"
 msgstr "%10d %s\n"
 
-#: lib/fsm.c:780
+#: lib/fsm.c:797
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "användare %s finns inte - använder root\n"
 
-#: lib/fsm.c:788
+#: lib/fsm.c:805
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupp %s finns inte - använder root\n"
 
-#: lib/fsm.c:1357
+#: lib/fsm.c:1366
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "katalog %s skapad med rättigheter %04o, ingen kontext.\n"
 
-#: lib/fsm.c:1361
+#: lib/fsm.c:1370
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "katalog %s skapad med rättigheter %04o, kontext %s.\n"
 
-#: lib/fsm.c:1666
+#: lib/fsm.c:1676
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "arkivfil %s fanns inte i huvudets fillista\n"
 
-#: lib/fsm.c:1795 lib/fsm.c:1936
+#: lib/fsm.c:1806 lib/fsm.c:1952
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sparades som %s\n"
 
-#: lib/fsm.c:1963
+#: lib/fsm.c:1979
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir av %s misslyckades: Katalogen är inte tom\n"
 
-#: lib/fsm.c:1969
+#: lib/fsm.c:1985
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s misslyckades: %s\n"
 
-#: lib/fsm.c:1984
+#: lib/fsm.c:2000
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink av %s misslyckades: %s\n"
 
-#: lib/fsm.c:2006
+#: lib/fsm.c:2023
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"

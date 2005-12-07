@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-03 15:09-0500\n"
+"POT-Creation-Date: 2005-12-07 07:06-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1382,45 +1382,45 @@ msgstr "predefinova» cieµovú platformu"
 msgid "    target platform: %s\n"
 msgstr "predefinova» cieµovú platformu"
 
-#: lib/cpio.c:207
+#: lib/cpio.c:219
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(chyba 0x%x)"
 
-#: lib/cpio.c:210
+#: lib/cpio.c:222
 msgid "Bad magic"
 msgstr "Chybné magické èíslo"
 
-#: lib/cpio.c:211
+#: lib/cpio.c:223
 msgid "Bad/unreadable  header"
 msgstr "Chybná/neèitateµná hlavièka"
 
-#: lib/cpio.c:233
+#: lib/cpio.c:245
 msgid "Header size too big"
 msgstr "Priveµká hlavièka"
 
-#: lib/cpio.c:234
+#: lib/cpio.c:246
 msgid "Unknown file type"
 msgstr "Neznámy typ súboru"
 
-#: lib/cpio.c:235
+#: lib/cpio.c:247
 #, fuzzy
 msgid "Missing hard link(s)"
 msgstr "chýbajúca ':' na %s:%d"
 
-#: lib/cpio.c:236
+#: lib/cpio.c:248
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:237
+#: lib/cpio.c:249
 msgid "Internal error"
 msgstr "Interná chyba"
 
-#: lib/cpio.c:238
+#: lib/cpio.c:250
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:251
+#: lib/cpio.c:263
 msgid " failed - "
 msgstr " zlyhalo - "
 
@@ -1603,61 +1603,61 @@ msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "súbor %s sa nachádza na neznámom zariadení"
 
-#: lib/fsm.c:352
+#: lib/fsm.c:353
 msgid "========== Directories not explicitly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:354
+#: lib/fsm.c:355
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "riadok %d: %s"
 
-#: lib/fsm.c:780
+#: lib/fsm.c:797
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "pou¾ívateµ %s neexistuje - pou¾ije sa root"
 
-#: lib/fsm.c:788
+#: lib/fsm.c:805
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s neexistuje - pou¾ije sa root"
 
-#: lib/fsm.c:1357
+#: lib/fsm.c:1366
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr ""
 
-#: lib/fsm.c:1361
+#: lib/fsm.c:1370
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 
-#: lib/fsm.c:1666
+#: lib/fsm.c:1676
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1795 lib/fsm.c:1936
+#: lib/fsm.c:1806 lib/fsm.c:1952
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/fsm.c:1963
+#: lib/fsm.c:1979
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "nie je mo¾né odstráni» %s - adresár nie je prázdny"
 
-#: lib/fsm.c:1969
+#: lib/fsm.c:1985
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "rmdir %s zlyhalo: %s"
 
-#: lib/fsm.c:1984
+#: lib/fsm.c:2000
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
 
-#: lib/fsm.c:2006
+#: lib/fsm.c:2023
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "varovanie: %s vytvorené ako %s"

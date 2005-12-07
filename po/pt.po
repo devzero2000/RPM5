@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-03 15:09-0500\n"
+"POT-Creation-Date: 2005-12-07 07:06-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1360,44 +1360,44 @@ msgstr "A construir plataformas alvo: %s\n"
 msgid "    target platform: %s\n"
 msgstr "A construir plataformas alvo: %s\n"
 
-#: lib/cpio.c:207
+#: lib/cpio.c:219
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(erro 0x%x)"
 
-#: lib/cpio.c:210
+#: lib/cpio.c:222
 msgid "Bad magic"
 msgstr "Código de integridade inválido"
 
-#: lib/cpio.c:211
+#: lib/cpio.c:223
 msgid "Bad/unreadable  header"
 msgstr "Cabeçalho inválido/ilegível"
 
-#: lib/cpio.c:233
+#: lib/cpio.c:245
 msgid "Header size too big"
 msgstr "Tamanho do cabeçalho demasiado grande"
 
-#: lib/cpio.c:234
+#: lib/cpio.c:246
 msgid "Unknown file type"
 msgstr "Tipo de ficheiro desconhecido"
 
-#: lib/cpio.c:235
+#: lib/cpio.c:247
 msgid "Missing hard link(s)"
 msgstr "Falta(m) o(s) 'hard link(s)'"
 
-#: lib/cpio.c:236
+#: lib/cpio.c:248
 msgid "MD5 sum mismatch"
 msgstr "erro na soma de MD5"
 
-#: lib/cpio.c:237
+#: lib/cpio.c:249
 msgid "Internal error"
 msgstr "Erro interno"
 
-#: lib/cpio.c:238
+#: lib/cpio.c:250
 msgid "Archive file not in header"
 msgstr "Ficheiro de arquivo não está no cabeçalho"
 
-#: lib/cpio.c:251
+#: lib/cpio.c:263
 msgid " failed - "
 msgstr " falhou - "
 
@@ -1583,64 +1583,64 @@ msgstr "Ficheiro%5d: %07o %s.%s\t %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "o ficheiro %s está num dispositivo desconhecido\n"
 
-#: lib/fsm.c:352
+#: lib/fsm.c:353
 #, fuzzy
 msgid "========== Directories not explicitly included in package:\n"
 msgstr "========= Directorias não incluidas explicitamente no pacote:\n"
 
-#: lib/fsm.c:354
+#: lib/fsm.c:355
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:780
+#: lib/fsm.c:797
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "o utilizador %s não existe - a usar o root\n"
 
-#: lib/fsm.c:788
+#: lib/fsm.c:805
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "o grupo %s não existe - a usar o root\n"
 
-#: lib/fsm.c:1357
+#: lib/fsm.c:1366
 #, fuzzy, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "directoria %s criada com as permissões %04o.\n"
 
-#: lib/fsm.c:1361
+#: lib/fsm.c:1370
 #, fuzzy, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "directoria %s criada com as permissões %04o.\n"
 
-#: lib/fsm.c:1666
+#: lib/fsm.c:1676
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "o ficheiro de arquivo %s não foi encontrado na lista de ficheiros do "
 "cabeçalho\n"
 
-#: lib/fsm.c:1795 lib/fsm.c:1936
+#: lib/fsm.c:1806 lib/fsm.c:1952
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gravado como %s\n"
 
-#: lib/fsm.c:1963
+#: lib/fsm.c:1979
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir de %s falhou: Directoria não está vazia\n"
 
-#: lib/fsm.c:1969
+#: lib/fsm.c:1985
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir de %s falhou: %s\n"
 
-#: lib/fsm.c:1984
+#: lib/fsm.c:2000
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink de %s falhou: %s\n"
 
-#: lib/fsm.c:2006
+#: lib/fsm.c:2023
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"

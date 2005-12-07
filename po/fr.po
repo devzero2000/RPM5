@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-03 15:09-0500\n"
+"POT-Creation-Date: 2005-12-07 07:06-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1379,44 +1379,44 @@ msgstr "Construction pour plate-formes cibles: %s\n"
 msgid "    target platform: %s\n"
 msgstr "Construction pour plate-formes cibles: %s\n"
 
-#: lib/cpio.c:207
+#: lib/cpio.c:219
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(erreur 0x%x)"
 
-#: lib/cpio.c:210
+#: lib/cpio.c:222
 msgid "Bad magic"
 msgstr "Mauvaise magie, blah"
 
-#: lib/cpio.c:211
+#: lib/cpio.c:223
 msgid "Bad/unreadable  header"
 msgstr "Entête mauvais ou illisible"
 
-#: lib/cpio.c:233
+#: lib/cpio.c:245
 msgid "Header size too big"
 msgstr "Entête trop gros"
 
-#: lib/cpio.c:234
+#: lib/cpio.c:246
 msgid "Unknown file type"
 msgstr "Type de fichier inconnu"
 
-#: lib/cpio.c:235
+#: lib/cpio.c:247
 msgid "Missing hard link(s)"
 msgstr "lien(s) dur(s) manquant(s)"
 
-#: lib/cpio.c:236
+#: lib/cpio.c:248
 msgid "MD5 sum mismatch"
 msgstr "la somme MD5 ne correspond pas"
 
-#: lib/cpio.c:237
+#: lib/cpio.c:249
 msgid "Internal error"
 msgstr "Erreur interne"
 
-#: lib/cpio.c:238
+#: lib/cpio.c:250
 msgid "Archive file not in header"
 msgstr "L'entête ne contient pas le fichier archive"
 
-#: lib/cpio.c:251
+#: lib/cpio.c:263
 msgid " failed - "
 msgstr " échec - "
 
@@ -1598,62 +1598,62 @@ msgstr ""
 msgid "file %s is on an unknown device\n"
 msgstr "le fichier %s est sur un périphérique inconnu\n"
 
-#: lib/fsm.c:352
+#: lib/fsm.c:353
 #, fuzzy
 msgid "========== Directories not explicitly included in package:\n"
 msgstr "========== Répertoires non explicitement inclus dans le paquetage:\n"
 
-#: lib/fsm.c:354
+#: lib/fsm.c:355
 #, c-format
 msgid "%10d %s\n"
 msgstr ""
 
-#: lib/fsm.c:780
+#: lib/fsm.c:797
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "utilisateur %s inexistant - utilisation de root\n"
 
-#: lib/fsm.c:788
+#: lib/fsm.c:805
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "groupe %s inexistant - utilisation de root\n"
 
-#: lib/fsm.c:1357
+#: lib/fsm.c:1366
 #, fuzzy, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "le répertoire %s a été créé avec les permissions %04o.\n"
 
-#: lib/fsm.c:1361
+#: lib/fsm.c:1370
 #, fuzzy, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "le répertoire %s a été créé avec les permissions %04o.\n"
 
-#: lib/fsm.c:1666
+#: lib/fsm.c:1676
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "l'archive %s n'était pas dans la liste de fichiers d'entêtes\n"
 
-#: lib/fsm.c:1795 lib/fsm.c:1936
+#: lib/fsm.c:1806 lib/fsm.c:1952
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sauvé en tant que %s\n"
 
-#: lib/fsm.c:1963
+#: lib/fsm.c:1979
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s échec du rmdir sur %s : répertoire non-vide\n"
 
-#: lib/fsm.c:1969
+#: lib/fsm.c:1985
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s échec du rmdir sur %s: %s\n"
 
-#: lib/fsm.c:1984
+#: lib/fsm.c:2000
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s n'a pu délier %s: %s\n"
 
-#: lib/fsm.c:2006
+#: lib/fsm.c:2023
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s créé en tant que %s\n"
