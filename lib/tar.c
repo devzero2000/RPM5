@@ -55,6 +55,8 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
 }
 
 static int tarHeaderReadName(FSM_t fsm, int len, const char ** fnp)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     char * t;
     int nb;
@@ -261,6 +263,8 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
 }
 
 static int tarHeaderWriteName(FSM_t fsm, const char * path)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * s = path;
     int nb = strlen(s);
@@ -288,6 +292,8 @@ fprintf(stderr, "\t%s(%p, %s) nb %d\n", __FUNCTION__, fsm, path, nb);
 }
 
 static int tarHeaderWriteBlock(FSM_t fsm, tarHeader hdr)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     int rc;
 
@@ -320,6 +326,7 @@ fprintf(stderr, "\thdrchksum \"%s\"\n", hdr->checksum);
 
 int tarHeaderWrite(FSM_t fsm, struct stat * st)
 {
+/*@observer@*/
     static const char * llname = "././@LongLink";
     tarHeader hdr = (tarHeader) fsm->rdbuf;
     char uname[32] = "root";

@@ -126,7 +126,7 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
 	rc = fsmNext(fsm, FSM_PAD);
 
     if (!rc && S_ISLNK(st->st_mode)) {
-assert(fsm->lpath);
+assert(fsm->lpath != NULL);
 	fsm->rdnb = strlen(fsm->lpath);
 	memcpy(fsm->rdbuf, fsm->lpath, fsm->rdnb);
 	rc = fsmNext(fsm, FSM_DWRITE);
