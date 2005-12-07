@@ -79,7 +79,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     if (cfd == NULL)
 	return 1;
 
-    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
+    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, payload_format, ts, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
     (void) Fclose(cfd);
     ec = fsmTeardown(fi->fsm);
@@ -478,10 +478,10 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     if (s) {
 
 	if (payload_format) {
-	    if (!strcmp(payload_format, "ustar")
-	     || !strcmp(payload_format, "tar"))
-		/* Add prereq on rpm version that understands bzip2 payloads */
-		(void) rpmlibNeedsFeature(h, "PayloadFormatUstar", "4.4.4-1");
+	    if (!strcmp(payload_format, "tar")
+	     || !strcmp(payload_format, "ustar"))
+		/* Add prereq on rpm version that understands tar payloads */
+		(void) rpmlibNeedsFeature(h, "PayloadIsUstar", "4.4.4-1");
 
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE,
 			payload_format, 1);

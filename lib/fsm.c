@@ -9,6 +9,7 @@
 #include <rpmlib.h>
 
 #include "cpio.h"
+#include "tar.h"
 
 #include "fsm.h"
 #define	fsmUNSAFE	fsmStage
@@ -548,7 +549,7 @@ FSM_t freeFSM(FSM_t fsm)
     return _free(fsm);
 }
 
-int fsmSetup(FSM_t fsm, fileStage goal,
+int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
 		const rpmts ts, const rpmfi fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
@@ -556,12 +557,24 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     int rc, ec = 0;
 
 if (_fsm_debug < 0)
-fprintf(stderr, "--> %s(%p, 0x%x, %p, %p, %p, %p, %p)\n", __FUNCTION__, fsm, goal, ts, fi, cfd, archiveSize, failedFile);
+fprintf(stderr, "--> %s(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", __FUNCTION__, fsm, goal, afmt, ts, fi, cfd, archiveSize, failedFile);
+
     if (fsm->headerRead == NULL) {
-	fsm->headerRead = &cpioHeaderRead;
-	fsm->headerWrite = &cpioHeaderWrite;
-	fsm->trailerWrite = &cpioTrailerWrite;
-	fsm->blksize = 4;
+	if (!strcmp(afmt, "tar") || !strcmp(afmt, "ustar")) {
+if (_fsm_debug < 0)
+fprintf(stderr, "\ttar vectors set\n");
+	    fsm->headerRead = &tarHeaderRead;
+	    fsm->headerWrite = &tarHeaderWrite;
+	    fsm->trailerWrite = &tarTrailerWrite;
+	    fsm->blksize = TAR_BLOCK_SIZE;
+	} else  {
+if (_fsm_debug < 0)
+fprintf(stderr, "\tcpio vectors set\n");
+	    fsm->headerRead = &cpioHeaderRead;
+	    fsm->headerWrite = &cpioHeaderWrite;
+	    fsm->trailerWrite = &cpioTrailerWrite;
+	    fsm->blksize = 4;
+	}
     }
 
     fsm->goal = goal;
@@ -930,7 +943,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	rc = fsmUNSAFE(fsm, FSM_READLINK);
 	if (rc) goto exit;
 	st->st_size = fsm->rdnb;
-	symbuf = alloca_strdup(fsm->rdbuf);	/* XXX save readlink return. */
+	fsm->lpath = xstrdup(fsm->rdbuf);	/* XXX save readlink return. */
     }
     /*@=branchstate@*/
 
@@ -1014,14 +1027,6 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 /*@=branchstate@*/
 #endif
 
-    } else if (writeData && S_ISLNK(st->st_mode)) {
-	/* XXX DWRITE uses rdnb for I/O length. */
-/*@-boundswrite@*/
-	strcpy(fsm->rdbuf, symbuf);	/* XXX restore readlink buffer. */
-/*@=boundswrite@*/
-	fsm->rdnb = strlen(symbuf);
-	rc = fsmNext(fsm, FSM_DWRITE);
-	if (rc) goto exit;
     }
 
     rc = fsmNext(fsm, FSM_PAD);

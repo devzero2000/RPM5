@@ -1769,7 +1769,7 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
+	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, "cpio", ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_READ));
@@ -1822,7 +1822,7 @@ assert(psm->te != NULL);
 	    psm->total = fc;
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi,
+	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, "cpio", ts, fi,
 			NULL, NULL, &psm->failedFile);
 	    xx = fsmTeardown(fi->fsm);
 
@@ -1852,7 +1852,7 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd,
+	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, "cpio", ts, fi, psm->cfd,
 			NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_COMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_WRITE));
@@ -2069,7 +2069,7 @@ psm->te->h = headerFree(psm->te->h);
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
 
-	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
+	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, "cpio", ts, fi,
 			NULL, NULL, &psm->failedFile);
 	xx = fsmTeardown(fi->fsm);
 	break;

@@ -124,6 +124,18 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
 	rc = CPIOERR_WRITE_FAILED;
     if (!rc)
 	rc = fsmNext(fsm, FSM_PAD);
+
+    if (!rc && S_ISLNK(st->st_mode)) {
+assert(fsm->lpath);
+	fsm->rdnb = strlen(fsm->lpath);
+	memcpy(fsm->rdbuf, fsm->lpath, fsm->rdnb);
+	rc = fsmNext(fsm, FSM_DWRITE);
+	if (!rc && fsm->rdnb != fsm->wrnb)
+	    rc = CPIOERR_WRITE_FAILED;
+	if (!rc)
+	    rc = fsmNext(fsm, FSM_PAD);
+    }
+
     return rc;
 }
 

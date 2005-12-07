@@ -249,6 +249,7 @@ extern "C" {
  * Load external data into file state machine.
  * @param fsm		file state machine
  * @param goal
+ * @param afmt		archive format
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param cfd
@@ -256,7 +257,7 @@ extern "C" {
  * @retval failedFile	pointer to first file name that failed.
  * @return		0 on success
  */
-int fsmSetup(FSM_t fsm, fileStage goal,
+int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
 		const rpmts ts,
 		const rpmfi fi,
 		FD_t cfd,
