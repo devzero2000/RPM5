@@ -329,8 +329,7 @@ int tarHeaderWrite(FSM_t fsm, struct stat * st)
 /*@observer@*/
     static const char * llname = "././@LongLink";
     tarHeader hdr = (tarHeader) fsm->rdbuf;
-    char uname[32] = "root";
-    char gname[32] = "root";
+    char * t;
     dev_t dev;
     int rc = 0;
     int len;
@@ -419,8 +418,12 @@ fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
 	hdr->typeflag = (st->st_nlink > 1 ? '0' : '0');
 
     /* XXX FIXME: map uname/gname from uid/gid. */
-    strncpy(hdr->uname, uname, sizeof(hdr->uname));
-    strncpy(hdr->gname, gname, sizeof(hdr->gname));
+    t = uidToUname(st->st_uid);
+    if (t == NULL) t = "root";
+    strncpy(hdr->uname, t, sizeof(hdr->uname));
+    t = gidToGname(st->st_gid);
+    if (t == NULL) t = "root";
+    strncpy(hdr->gname, t, sizeof(hdr->gname));
 
     /* XXX W2DO? st_dev or st_rdev? */
     dev = major((unsigned)st->st_dev);

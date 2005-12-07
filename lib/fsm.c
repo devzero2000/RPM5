@@ -924,7 +924,6 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
     const char * opath = fsm->opath;
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
-    char * symbuf = NULL;
     int left;
     int xx;
     int rc;
