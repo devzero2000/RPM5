@@ -291,7 +291,7 @@ fprintf(stderr, "\t%s(%p, %s) nb %d\n", __FUNCTION__, fsm, path, nb);
     return rc;
 }
 
-static int tarHeaderWriteBlock(FSM_t fsm, tarHeader hdr)
+static int tarHeaderWriteBlock(FSM_t fsm, struct stat * st, tarHeader hdr)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
@@ -299,6 +299,12 @@ static int tarHeaderWriteBlock(FSM_t fsm, tarHeader hdr)
 
 if (_tar_debug)
 fprintf(stderr, "\t%s(%p, %p)\n", __FUNCTION__, fsm, hdr);
+if (_tar_debug)
+fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n",
+                (unsigned)st->st_mode, (int)st->st_nlink,
+                (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
+                (fsm->path ? fsm->path : ""));
+
 
     (void) stpcpy( stpcpy(hdr->magic, TAR_MAGIC), TAR_VERSION);
 
@@ -349,7 +355,7 @@ fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
 	hdr->typeflag = 'L';
 	strncpy(hdr->uname, "root", sizeof(hdr->uname));
 	strncpy(hdr->gname, "root", sizeof(hdr->gname));
-	rc = tarHeaderWriteBlock(fsm, hdr);
+	rc = tarHeaderWriteBlock(fsm, st, hdr);
 	if (rc) return rc;
 	rc = tarHeaderWriteName(fsm, fsm->path);
 	if (rc) return rc;
@@ -368,7 +374,7 @@ fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
 	    hdr->typeflag = 'K';
 	strncpy(hdr->uname, "root", sizeof(hdr->uname));
 	strncpy(hdr->gname, "root", sizeof(hdr->gname));
-	    rc = tarHeaderWriteBlock(fsm, hdr);
+	    rc = tarHeaderWriteBlock(fsm, st, hdr);
 	    if (rc) return rc;
 	    rc = tarHeaderWriteName(fsm, fsm->lpath);
 	    if (rc) return rc;
@@ -383,7 +389,6 @@ fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
     else
 	strcpy(hdr->name, llname);
 
-    /* XXX check st_nlink? */
     if (fsm->lpath && fsm->lpath[0] != '0') {
 	len = strlen(fsm->lpath);
 	if (len <= sizeof(hdr->linkname))
@@ -415,7 +420,7 @@ fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
 	hdr->typeflag = '?';
 #endif
     else if (S_ISREG(st->st_mode))
-	hdr->typeflag = (st->st_nlink > 1 ? '0' : '0');
+	hdr->typeflag = (fsm->lpath != NULL ? '1' : '0');
 
     /* XXX FIXME: map uname/gname from uid/gid. */
     t = uidToUname(st->st_uid);
@@ -431,7 +436,7 @@ fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
     dev = minor((unsigned)st->st_dev);
     sprintf(hdr->devMinor, "%07o", (unsigned) (dev & 07777777));
 
-    rc = tarHeaderWriteBlock(fsm, hdr);
+    rc = tarHeaderWriteBlock(fsm, st, hdr);
 
     /* XXX Padding is unnecessary but shouldn't hurt. */
     if (!rc)

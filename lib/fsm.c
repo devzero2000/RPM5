@@ -1055,13 +1055,17 @@ static int writeLinkedFile(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
+    const char * lpath = fsm->lpath;
     const char * nsuffix = fsm->nsuffix;
     int iterIndex = fsm->ix;
     int ec = 0;
     int rc;
     int i;
+    const char * linkpath = NULL;
+    int firstfile = 1;
 
     fsm->path = NULL;
+    fsm->lpath = NULL;
     fsm->nsuffix = NULL;
     fsm->ix = -1;
 
@@ -1076,8 +1080,24 @@ static int writeLinkedFile(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	rc = fsmNext(fsm, FSM_MAP);
 /*@=compdef@*/
 
-	/* Write data after last link. */
-	rc = writeFile(fsm, (i == 0));
+	/* XXX tar and cpio have to do things differently. */
+	if (fsm->headerWrite == tarHeaderWrite) {
+	    if (firstfile) {
+		char *t;
+		/* Remove the buildroot prefix. */
+		t = xmalloc(sizeof(".") + strlen(fsm->path + fsm->astriplen));
+		(void) stpcpy( stpcpy(t, "."), fsm->path + fsm->astriplen);
+		linkpath = t;
+		firstfile = 0;
+	    } else
+		fsm->lpath = linkpath;
+
+	    /* Write data after first link for tar. */
+	    rc = writeFile(fsm, (fsm->lpath == NULL));
+	} else {
+	    /* Write data after last link for cpio. */
+	    rc = writeFile(fsm, (i == 0));
+	}
 	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
 	    ec = rc;
 	    *fsm->failedFile = xstrdup(fsm->path);
@@ -1089,8 +1109,10 @@ static int writeLinkedFile(/*@special@*/ /*@partial@*/ FSM_t fsm)
 /*@=branchstate@*/
 /*@=boundswrite@*/
 
+    linkpath = _free(linkpath);
     fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
+    fsm->lpath = lpath;
     fsm->path = path;
     return ec;
 }
