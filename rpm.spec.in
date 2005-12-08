@@ -588,6 +588,7 @@ exit 0
 %changelog
 * Thu Dec  8 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.9
 - fix: remove faux error msg when fcntl transaction lock is disabled.
+- functional tar payload creation in *.rpm packages.
 
 * Wed Dec  7 2005 Jeff Johnson <jbj@jbj.org> 4.4.3-0.8
 - support for tar payloads (hardlinks still need work).

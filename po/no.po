@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-07 07:06-0500\n"
+"POT-Creation-Date: 2005-12-08 15:41-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1579,42 +1579,42 @@ msgstr ""
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:1366
+#: lib/fsm.c:1387
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr ""
 
-#: lib/fsm.c:1370
+#: lib/fsm.c:1391
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 
-#: lib/fsm.c:1676
+#: lib/fsm.c:1697
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1806 lib/fsm.c:1952
+#: lib/fsm.c:1827 lib/fsm.c:1973
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s lagret som %s\n"
 
-#: lib/fsm.c:1979
+#: lib/fsm.c:2000
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir av %s feilet: Katalogen er ikke tom\n"
 
-#: lib/fsm.c:1985
+#: lib/fsm.c:2006
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s feilet: %s\n"
 
-#: lib/fsm.c:2000
+#: lib/fsm.c:2021
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink av %s feilet: %s\n"
 
-#: lib/fsm.c:2023
+#: lib/fsm.c:2044
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s opprettet som %s\n"

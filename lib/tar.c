@@ -18,7 +18,7 @@
 /*@access FSM_t @*/
 
 /*@unchecked@*/
-int _tar_debug = -1;
+int _tar_debug = 0;
 
 /*@unchecked@*/
 static int nochksum = 0;

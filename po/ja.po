@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-07 07:06-0500\n"
+"POT-Creation-Date: 2005-12-08 15:41-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1591,44 +1591,44 @@ msgstr "ユーザ %s は存在しません - root を使用します\n"
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します\n"
 
-#: lib/fsm.c:1366
+#: lib/fsm.c:1387
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr ""
 "ディレクトリ %s がパーミッション %04o でコンテキストなしで作成されました。\n"
 
-#: lib/fsm.c:1370
+#: lib/fsm.c:1391
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 "ディレクトリ %s がパーミッション %04o でコンテキスト %s で作成されました。\n"
 
-#: lib/fsm.c:1676
+#: lib/fsm.c:1697
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "アーカイブファイル %s がヘッダファイルリストにありません。\n"
 
-#: lib/fsm.c:1806 lib/fsm.c:1952
+#: lib/fsm.c:1827 lib/fsm.c:1973
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s は %s として保存されした。\n"
 
-#: lib/fsm.c:1979
+#: lib/fsm.c:2000
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s の rmdir に失敗: ディレクトリが空ではありません。\n"
 
-#: lib/fsm.c:1985
+#: lib/fsm.c:2006
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/fsm.c:2000
+#: lib/fsm.c:2021
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s %s の unlink に失敗: %s\n"
 
-#: lib/fsm.c:2023
+#: lib/fsm.c:2044
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s は %s として作成されました。\n"
