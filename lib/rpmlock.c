@@ -139,7 +139,7 @@ void *rpmtsAcquireLock(rpmts ts)
 	rootDir = "/";
     rc = rpmlock_new(rootDir, &lock);
     if (rc) {
-	if (rpmlock_path != NULL)
+	if (rpmlock_path != NULL && strcmp(rpmlock_path, rootDir))
 	    rpmMessage(RPMMESS_ERROR,
 		_("can't create transaction lock on %s\n"), rpmlock_path);
     } else if (lock != NULL) {

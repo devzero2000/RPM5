@@ -18,6 +18,7 @@
 	- add --noconfig and --nodoc to query/verify modes.
 	- perl: install in vendor dir.
 	- support for tar payloads (hardlinks still need work).
+	- fix: remove faux error msg when fcntl transaction lock is disabled.
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.
