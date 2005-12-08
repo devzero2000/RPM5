@@ -10,6 +10,7 @@
 
 #include "tar.h"
 #include "fsm.h"
+#include "ugid.h"
 
 #include "rpmerr.h"
 #include "debug.h"
@@ -288,6 +289,9 @@ fprintf(stderr, "\t%s(%p, %s) nb %d\n", __FUNCTION__, fsm, path, nb);
 	nb -= fsm->rdnb;
     }
 
+    if (!rc)
+	rc = fsmNext(fsm, FSM_PAD);
+
     return rc;
 }
 
@@ -298,7 +302,7 @@ static int tarHeaderWriteBlock(FSM_t fsm, struct stat * st, tarHeader hdr)
     int rc;
 
 if (_tar_debug)
-fprintf(stderr, "\t%s(%p, %p)\n", __FUNCTION__, fsm, hdr);
+fprintf(stderr, "\t%s(%p, %p) type %c\n", __FUNCTION__, fsm, hdr, hdr->typeflag);
 if (_tar_debug)
 fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
@@ -383,21 +387,12 @@ fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
 
     memset(hdr, 0, sizeof(*hdr));
 
-    len = strlen(fsm->path);
-    if (len <= sizeof(hdr->name))
-	strncpy(hdr->name, fsm->path, sizeof(hdr->name));
-    else
-	strcpy(hdr->name, llname);
+    strncpy(hdr->name, fsm->path, sizeof(hdr->name));
 
-    if (fsm->lpath && fsm->lpath[0] != '0') {
-	len = strlen(fsm->lpath);
-	if (len <= sizeof(hdr->linkname))
-	    strncpy(hdr->linkname, fsm->lpath, sizeof(hdr->linkname));
-	else
-	    strcpy(hdr->linkname, llname);
-    }
+    if (fsm->lpath && fsm->lpath[0] != '0')
+	strncpy(hdr->linkname, fsm->lpath, sizeof(hdr->linkname));
 
-    sprintf(hdr->mode, "%07o", (st->st_mode & 07777777));
+    sprintf(hdr->mode, "%07o", (st->st_mode & 00007777));
     sprintf(hdr->uid, "%07o", (st->st_uid & 07777777));
     sprintf(hdr->gid, "%07o", (st->st_gid & 07777777));
 
