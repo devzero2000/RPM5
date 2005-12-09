@@ -479,9 +479,11 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
 	if (payload_format) {
 	    if (!strcmp(payload_format, "tar")
-	     || !strcmp(payload_format, "ustar"))
+	     || !strcmp(payload_format, "ustar")) {
+		/* XXX addition to header is too late to be displayed/sorted. */
 		/* Add prereq on rpm version that understands tar payloads */
 		(void) rpmlibNeedsFeature(h, "PayloadIsUstar", "4.4.4-1");
+	    }
 
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE,
 			payload_format, 1);
@@ -493,6 +495,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	if (s[1] == 'b' && s[2] == 'z') {
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"bzip2", 1);
+	    /* XXX addition to header is too late to be displayed/sorted. */
 	    /* Add prereq on rpm version that understands bzip2 payloads */
 	    (void) rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
 	}

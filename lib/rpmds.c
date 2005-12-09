@@ -1321,6 +1321,9 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(HeaderTagTypeInt64)",    "4.4.3-1",
 	(                RPMSENSE_EQUAL),
     N_("header tags can be type int_64.") },
+    { "rpmlib(PayloadIsUstar)",		"4.4.4-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("package payload can be in ustar tar archive format.") },
     { NULL,				NULL, 0,	NULL }
 };
 

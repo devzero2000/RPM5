@@ -1757,7 +1757,8 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	fsm->postpone = XFA_SKIPPING(fsm->action);
 	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	    /*@-evalorder@*/ /* FIX: saveHardLink can modify fsm */
-	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1)
+	    if (!(S_ISDIR(st->st_mode) || S_ISLNK(st->st_mode))
+	     && (st->st_nlink > 1 || fsm->lpath != NULL))
 		fsm->postpone = saveHardLink(fsm);
 	    /*@=evalorder@*/
 	}
@@ -1811,6 +1812,22 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->goal != FSM_PKGINSTALL)
 	    break;
 
+	if (S_ISREG(st->st_mode) && fsm->lpath != NULL) {
+	    const char * opath = fsm->opath;
+	    char * t = xmalloc(strlen(fsm->lpath+1) + strlen(fsm->suffix) + 1);
+	    (void) stpcpy(t, fsm->lpath+1);
+	     fsm->opath = t;
+	    /* XXX link(fsm->opath, fsm->path) */
+	    rc = fsmNext(fsm, FSM_LINK);
+	    if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
+/*@-boundswrite@*/
+		*fsm->failedFile = xstrdup(fsm->path);
+/*@=boundswrite@*/
+	    }
+	    fsm->opath = _free(fsm->opath);
+	    fsm->opath = opath;
+	    break;	/* XXX so that delayed hard links get skipped. */
+	}
 	if (S_ISREG(st->st_mode)) {
 	    const char * path = fsm->path;
 	    if (fsm->osuffix)
@@ -1846,35 +1863,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
-	    const char * opath = fsm->opath;
-
-if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
-	    if ((st->st_size + 1) > fsm->rdsize) {
-		rc = CPIOERR_HDR_SIZE;
-		break;
-	    }
-
-	    fsm->wrlen = st->st_size;
-	    rc = fsmNext(fsm, FSM_DREAD);
-	    if (!rc && fsm->rdnb != fsm->wrlen)
-		rc = CPIOERR_READ_FAILED;
-	    if (rc) break;
-
-/*@-boundswrite@*/
-	    fsm->wrbuf[st->st_size] = '\0';
-/*@=boundswrite@*/
-	    /* XXX symlink(fsm->opath, fsm->path) */
-	    /*@-dependenttrans@*/
-	    fsm->opath = fsm->wrbuf;
-} else {
 assert(fsm->lpath);
-fsm->opath = fsm->lpath;
-}
 	    /*@=dependenttrans@*/
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_ENOENT)
 		rc = fsmNext(fsm, FSM_SYMLINK);
-	    fsm->opath = opath;		/* XXX restore fsm->path */
 	} else if (S_ISFIFO(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
 	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
@@ -1882,7 +1875,7 @@ fsm->opath = fsm->lpath;
 	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode = 0000;		/* XXX abuse st->st_mode */
 		rc = fsmNext(fsm, FSM_MKFIFO);
-		st->st_mode = st_mode;	/* XXX restore st->st_mode */
+		st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	    }
 	} else if (S_ISCHR(st->st_mode) ||
 		   S_ISBLK(st->st_mode) ||
@@ -2297,10 +2290,10 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	}
 	break;
     case FSM_SYMLINK:
-	rc = symlink(fsm->opath, fsm->path);
+	rc = symlink(fsm->lpath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
+		fsm->lpath, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
 	break;
     case FSM_LINK:

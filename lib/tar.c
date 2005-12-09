@@ -166,7 +166,9 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %d)\n", hdrchecksum, checksum, sizeof(
 	break;
     case '1':		/* hard link */
 	st->st_mode |= S_IFREG;
+#ifdef DYING
 	st->st_nlink++;
+#endif
 	break;
     case '2':		/* symbolic link */
 	st->st_mode |= S_IFLNK;
@@ -212,16 +214,6 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %d)\n", hdrchecksum, checksum, sizeof(
     st->st_mtime = strntoul(hdr->mtime, NULL, 8, sizeof(hdr->mtime));
     st->st_ctime = st->st_atime = st->st_mtime;		/* XXX compat? */
 
-    /* char checksum[8]; */
-    /* char typeflag; */
-    /* char linkname[NAME_SIZE]; */
-
-    /* char magic[6]; */
-    /* char version[2]; */
-
-    /* char uname[32]; */
-    /* char gname[32]; */
-
     major = strntoul(hdr->devMajor, NULL, 8, sizeof(hdr->devMajor));
     minor = strntoul(hdr->devMinor, NULL, 8, sizeof(hdr->devMinor));
     /*@-shiftimplementation@*/
@@ -260,7 +252,7 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
                 (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
                 (fsm->path ? fsm->path : ""), (fsm->lpath ? fsm->lpath : ""));
 
-    return 0;
+    return rc;
 }
 
 static int tarHeaderWriteName(FSM_t fsm, const char * path)

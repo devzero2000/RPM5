@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-08 15:41-0500\n"
+"POT-Creation-Date: 2005-12-09 14:19-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -361,7 +361,7 @@ msgstr "tarkistukselle ei annettu parametrej‰"
 msgid "no arguments given"
 msgstr "kyselylle ei annettu parametrej‰"
 
-#: build/build.c:140 build/pack.c:527
+#: build/build.c:140 build/pack.c:530
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "En voi avata %s luettavaksi: %s."
@@ -706,7 +706,7 @@ msgstr "en voinut avata %s: %s"
 msgid "readRPM: read %s: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/pack.c:327 build/pack.c:574
+#: build/pack.c:327 build/pack.c:577
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: readLead  ep‰onnistui\n"
@@ -721,81 +721,81 @@ msgstr "virhe: %s ei vaikuta RPM paketilta\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: build/pack.c:515
+#: build/pack.c:518
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:534
+#: build/pack.c:537
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:544
+#: build/pack.c:547
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:581
+#: build/pack.c:584
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:601
+#: build/pack.c:604
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "generoi PGP-allekirjoitus"
 
-#: build/pack.c:619
+#: build/pack.c:622
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:627
+#: build/pack.c:630
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus ep‰onnistui\n"
 
-#: build/pack.c:663 lib/psm.c:1686
+#: build/pack.c:666 lib/psm.c:1686
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:678
+#: build/pack.c:681
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:689
+#: build/pack.c:692
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:703
+#: build/pack.c:706
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:713
+#: build/pack.c:716
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:719
+#: build/pack.c:722
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:756 lib/psm.c:1999
+#: build/pack.c:759 lib/psm.c:1999
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:829
+#: build/pack.c:832
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:846
+#: build/pack.c:849
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
@@ -1375,47 +1375,47 @@ msgstr ""
 msgid "    target platform: %s\n"
 msgstr "    -b<vaihe> <m‰‰rittely> "
 
-#: lib/cpio.c:219
+#: lib/cpio.c:248
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "virhe: "
 
-#: lib/cpio.c:222
+#: lib/cpio.c:251
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:223
+#: lib/cpio.c:252
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:245
+#: lib/cpio.c:274
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:246
+#: lib/cpio.c:275
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(tuntematon tyyppi)"
 
-#: lib/cpio.c:247
+#: lib/cpio.c:276
 #, fuzzy
 msgid "Missing hard link(s)"
 msgstr "puuttuva ':', %s:%d"
 
-#: lib/cpio.c:248
+#: lib/cpio.c:277
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:249
+#: lib/cpio.c:278
 #, fuzzy
 msgid "Internal error"
 msgstr "vakava virhe: "
 
-#: lib/cpio.c:250
+#: lib/cpio.c:279
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:263
+#: lib/cpio.c:292
 #, fuzzy
 msgid " failed - "
 msgstr "pgp ep‰onnistui"
@@ -1632,27 +1632,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1827 lib/fsm.c:1973
+#: lib/fsm.c:1844 lib/fsm.c:1966
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/fsm.c:2000
+#: lib/fsm.c:1993
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "en voi poistaa %s -hakemisto ei ole tyhj‰"
 
-#: lib/fsm.c:2006
+#: lib/fsm.c:1999
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s:n rmdir ep‰onnistui: %s"
 
-#: lib/fsm.c:2021
+#: lib/fsm.c:2014
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/fsm.c:2044
+#: lib/fsm.c:2037
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
@@ -2594,11 +2594,6 @@ msgstr "en voinut avata %s: %s"
 msgid "%s failed: %s\n"
 msgstr "pgp ep‰onnistui"
 
-#: lib/psm.c:2193
-#, c-format
-msgid "Attempting to mark %s as installed in transaction score\n"
-msgstr ""
-
 #: lib/query.c:123 lib/rpmts.c:632
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
@@ -2818,11 +2813,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:793 lib/rpmds.c:3199
+#: lib/rpmds.c:793 lib/rpmds.c:3202
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:793 lib/rpmds.c:3199
+#: lib/rpmds.c:793 lib/rpmds.c:3202
 msgid "YES"
 msgstr ""
 
@@ -2870,29 +2865,33 @@ msgstr ""
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1424
+#: lib/rpmds.c:1326
+msgid "package payload can be in ustar tar archive format."
+msgstr ""
+
+#: lib/rpmds.c:1427
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1458
+#: lib/rpmds.c:1461
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1468
+#: lib/rpmds.c:1471
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2992 lib/rpmds.c:3022 lib/rpmds.c:3034
+#: lib/rpmds.c:2995 lib/rpmds.c:3025 lib/rpmds.c:3037
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2995
+#: lib/rpmds.c:2998
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2900,33 +2899,33 @@ msgid ""
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3024
+#: lib/rpmds.c:3027
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3036
+#: lib/rpmds.c:3039
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3165
+#: lib/rpmds.c:3168
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3198
+#: lib/rpmds.c:3201
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:3222
+#: lib/rpmds.c:3225
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"

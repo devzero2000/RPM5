@@ -2182,16 +2182,11 @@ assert(psm->mi == NULL);
 
 	if (rc != RPMRC_OK) break;
 
-	/* If the score exists and this is not a rollback or autorollback
-	 * then lets check off installed for this package.
-	 */
+	/* Mark non-rollback elements as installed. */
 	if (
 	    rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK &&
 	    rpmtsType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
 	{
-	    rpmMessage(RPMMESS_DEBUG,
-		_("Attempting to mark %s as installed in transaction score\n"),
-		rpmteN(psm->te));
 	    psm->te->installed = 1;
 	}
 

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-08 15:41-0500\n"
+"POT-Creation-Date: 2005-12-09 14:19-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -365,7 +365,7 @@ msgstr "検証のための引数が指定されていません。"
 msgid "no arguments given"
 msgstr "引数が指定されていません。"
 
-#: build/build.c:140 build/pack.c:527
+#: build/build.c:140 build/pack.c:530
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません。\n"
 
@@ -709,7 +709,7 @@ msgstr "readRPM: %s のオープン: %s\n"
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:327 build/pack.c:574
+#: build/pack.c:327 build/pack.c:577
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek に失敗しました: %s\n"
@@ -724,77 +724,77 @@ msgstr "readRPM: %s は RPM パッケージではありません\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からヘッダの読み込み中\n"
 
-#: build/pack.c:515
+#: build/pack.c:518
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダ領域を作成できません。\n"
 
-#: build/pack.c:534
+#: build/pack.c:537
 msgid "Unable to write temp header\n"
 msgstr "一時ヘッダの書き込みができません。\n"
 
-#: build/pack.c:544
+#: build/pack.c:547
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ\n"
 
-#: build/pack.c:581
+#: build/pack.c:584
 msgid "Unable to write final header\n"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: build/pack.c:601
+#: build/pack.c:604
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の作成中: %d\n"
 
-#: build/pack.c:619
+#: build/pack.c:622
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: build/pack.c:627
+#: build/pack.c:630
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:663 lib/psm.c:1686
+#: build/pack.c:666 lib/psm.c:1686
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:678
+#: build/pack.c:681
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s のオープンに失敗: %s\n"
 
-#: build/pack.c:689
+#: build/pack.c:692
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s からヘッダ読み込みに失敗: %s\n"
 
-#: build/pack.c:703
+#: build/pack.c:706
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s へのヘッダ書き込みに失敗: %s\n"
 
-#: build/pack.c:713
+#: build/pack.c:716
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s から Payload 読み込みに失敗: %s\n"
 
-#: build/pack.c:719
+#: build/pack.c:722
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:756 lib/psm.c:1999
+#: build/pack.c:759 lib/psm.c:1999
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:829
+#: build/pack.c:832
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:846
+#: build/pack.c:849
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1354,44 +1354,44 @@ msgstr "ビルド対象プラットフォーム: %s\n"
 msgid "    target platform: %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
 
-#: lib/cpio.c:219
+#: lib/cpio.c:248
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(エラー 0x%x)"
 
-#: lib/cpio.c:222
+#: lib/cpio.c:251
 msgid "Bad magic"
 msgstr "不正なマジック"
 
-#: lib/cpio.c:223
+#: lib/cpio.c:252
 msgid "Bad/unreadable  header"
 msgstr "不正な/不可読なヘッダ"
 
-#: lib/cpio.c:245
+#: lib/cpio.c:274
 msgid "Header size too big"
 msgstr "ヘッダサイズが大きすぎます。"
 
-#: lib/cpio.c:246
+#: lib/cpio.c:275
 msgid "Unknown file type"
 msgstr "不明なファイルタイプ"
 
-#: lib/cpio.c:247
+#: lib/cpio.c:276
 msgid "Missing hard link(s)"
 msgstr "ハードリンクが見つかりません。"
 
-#: lib/cpio.c:248
+#: lib/cpio.c:277
 msgid "MD5 sum mismatch"
 msgstr "MD5 チェックサムが適合しません。"
 
-#: lib/cpio.c:249
+#: lib/cpio.c:278
 msgid "Internal error"
 msgstr "内部エラー"
 
-#: lib/cpio.c:250
+#: lib/cpio.c:279
 msgid "Archive file not in header"
 msgstr "アーカイブファイルがヘッダにありません。"
 
-#: lib/cpio.c:263
+#: lib/cpio.c:292
 msgid " failed - "
 msgstr "失敗 - "
 
@@ -1608,27 +1608,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr "アーカイブファイル %s がヘッダファイルリストにありません。\n"
 
-#: lib/fsm.c:1827 lib/fsm.c:1973
+#: lib/fsm.c:1844 lib/fsm.c:1966
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s は %s として保存されした。\n"
 
-#: lib/fsm.c:2000
+#: lib/fsm.c:1993
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s の rmdir に失敗: ディレクトリが空ではありません。\n"
 
-#: lib/fsm.c:2006
+#: lib/fsm.c:1999
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/fsm.c:2021
+#: lib/fsm.c:2014
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s %s の unlink に失敗: %s\n"
 
-#: lib/fsm.c:2044
+#: lib/fsm.c:2037
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s は %s として作成されました。\n"
@@ -2508,13 +2508,6 @@ msgstr "%s: ファイル %s で失敗: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
 
-#: lib/psm.c:2193
-#, fuzzy, c-format
-msgid "Attempting to mark %s as installed in transaction score\n"
-msgstr ""
-"トランザクションスコアにおいて、インストールされたものとしてマーク %s を付け"
-"ようとしています。\n"
-
 #: lib/query.c:123 lib/rpmts.c:632
 #, c-format
 msgid "incorrect format: %s\n"
@@ -2728,11 +2721,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3199
+#: lib/rpmds.c:793 lib/rpmds.c:3202
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:793 lib/rpmds.c:3199
+#: lib/rpmds.c:793 lib/rpmds.c:3202
 msgid "YES"
 msgstr "YES"
 
@@ -2783,30 +2776,34 @@ msgstr "lua スクリプトの内部サポート。"
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1424
+#: lib/rpmds.c:1326
+msgid "package payload can be in ustar tar archive format."
+msgstr ""
+
+#: lib/rpmds.c:1427
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1458
+#: lib/rpmds.c:1461
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1468
+#: lib/rpmds.c:1471
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2992 lib/rpmds.c:3022 lib/rpmds.c:3034
+#: lib/rpmds.c:2995 lib/rpmds.c:3025 lib/rpmds.c:3037
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2995
+#: lib/rpmds.c:2998
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2815,20 +2812,20 @@ msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3024
+#: lib/rpmds.c:3027
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3036
+#: lib/rpmds.c:3039
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3165
+#: lib/rpmds.c:3168
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2837,13 +2834,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします (\"A\" と同じであると仮定して)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3198
+#: lib/rpmds.c:3201
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3222
+#: lib/rpmds.c:3225
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"
@@ -4515,6 +4512,12 @@ msgstr "DIRECTORY のデータベースを使用"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "DIRECTORY"
+
+#, fuzzy
+#~ msgid "Attempting to mark %s as installed in transaction score\n"
+#~ msgstr ""
+#~ "トランザクションスコアにおいて、インストールされたものとしてマーク %s を付"
+#~ "けようとしています。\n"
 
 #, fuzzy
 #~ msgid "Attempting to mark %s as erased.\n"

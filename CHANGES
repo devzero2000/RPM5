@@ -20,6 +20,7 @@
 	- support for tar payloads (hardlinks still need work).
 	- fix: remove faux error msg when fcntl transaction lock is disabled.
 	- functional tar payload creation in *.rpm packages.
+	- functional tar payload extraction from *.rpm packages.
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.
