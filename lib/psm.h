@@ -80,7 +80,9 @@ struct rpmpsm_s {
 /*@observer@*/
     const char * stepName;	/*!< The current PSM step (for display). */
 /*@only@*/ /*@null@*/
-    const char * rpmio_flags;
+    const char * rpmio_flags;	/*!< Payload compression type/flags. */
+/*@only@*/ /*@null@*/
+    const char * payload_format;/*!< Payload archive format. */
 /*@only@*/ /*@null@*/
     const char * failedFile;
 /*@only@*/ /*@null@*/

@@ -27,6 +27,9 @@ static int _debug = 0;
 extern int _rpmds_nopromote;
 
 /*@unchecked@*/
+extern int _cpio_debug;
+
+/*@unchecked@*/
 extern int _fps_debug;
 
 /*@unchecked@*/
@@ -83,6 +86,9 @@ extern int _rpmts_debug;
 
 /*@unchecked@*/
 extern int _rpmts_stats;
+
+/*@unchecked@*/
+extern int _tar_debug;
 
 /*@unchecked@*/
 extern int noLibio;
@@ -315,6 +321,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
 
+ { "cpiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_cpio_debug, -1,
+	N_("debug cpio payloads"), NULL},
  { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
 	NULL, NULL},
  { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
@@ -363,6 +371,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "rpmtsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_debug, -1,
 	NULL, NULL},
+ { "tardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tar_debug, -1,
+	N_("debug tar payloads"), NULL},
  { "stats", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_stats, -1,
 	NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,

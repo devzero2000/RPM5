@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 14:19-0500\n"
+"POT-Creation-Date: 2005-12-11 10:56-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -122,7 +122,7 @@ msgstr "Spoleèné volby pro v¹echny módy:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:140 lib/poptALL.c:128
+#: rpmqv.c:140 lib/poptALL.c:134
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM verze %s\n"
@@ -1276,19 +1276,19 @@ msgstr "nekontrolovat závislosti balíèkù"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "generovat hlavièky balíèkù kompatibilní s RPM verze 2 a 3"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:347 lib/poptQV.c:403
+#: build/poptBT.c:229 lib/poptALL.c:279 lib/poptI.c:347 lib/poptQV.c:403
 #: lib/poptQV.c:412 lib/poptQV.c:454
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "nekontrolovat závislosti balíèkù"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:349 lib/poptQV.c:406
+#: build/poptBT.c:231 lib/poptALL.c:281 lib/poptI.c:349 lib/poptQV.c:406
 #: lib/poptQV.c:414 lib/poptQV.c:457
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "nekontrolovat architekturu balíèku"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:409
+#: build/poptBT.c:233 lib/poptALL.c:287 lib/poptI.c:351 lib/poptQV.c:409
 #: lib/poptQV.c:416 lib/poptQV.c:459
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1767,160 +1767,168 @@ msgstr "%s: readLead selhalo\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/poptALL.c:230
+#: lib/poptALL.c:236
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:232
+#: lib/poptALL.c:238
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:240
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:242
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:244
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:246
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:248
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:250
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:260
+#: lib/poptALL.c:266
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:261 lib/poptALL.c:264
+#: lib/poptALL.c:267 lib/poptALL.c:270
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:263
+#: lib/poptALL.c:269
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:266
+#: lib/poptALL.c:272
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "vypsat expanzi makra <výraz>+"
 
-#: lib/poptALL.c:267
+#: lib/poptALL.c:273
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:269 lib/poptALL.c:288 lib/poptALL.c:292
+#: lib/poptALL.c:275 lib/poptALL.c:294 lib/poptALL.c:298
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "èíst <soubor:...> místo implicitního makro souboru"
 
-#: lib/poptALL.c:270 lib/poptALL.c:289 lib/poptALL.c:293
+#: lib/poptALL.c:276 lib/poptALL.c:295 lib/poptALL.c:299
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:278 lib/poptALL.c:312
+#: lib/poptALL.c:284 lib/poptALL.c:318
 msgid "disable use of libio(3) API"
 msgstr "zakázat pou¾ití libio(3) API"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:290
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "odeslat stdout do <pøíkazu>"
 
-#: lib/poptALL.c:285
+#: lib/poptALL.c:291
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:302
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "pou¾ít <adr> jako adresáø nejvy¹¹í úrovnì"
 
-#: lib/poptALL.c:297
+#: lib/poptALL.c:303
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:300
+#: lib/poptALL.c:306
 msgid "display known query tags"
 msgstr "zobrazit známé znaèky pro dotazy"
 
-#: lib/poptALL.c:302
+#: lib/poptALL.c:308
 msgid "display final rpmrc and macro configuration"
 msgstr "zobrazit finální konfiguraci rpmrc a maker"
 
-#: lib/poptALL.c:304
+#: lib/poptALL.c:310
 msgid "provide less detailed output"
 msgstr "poskytnout výstu s ménì detaily"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:312
 msgid "provide more detailed output"
 msgstr "poskytnout detailnìj¹í výstup"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:314
 msgid "print the version of rpm being used"
 msgstr "vypsat pou¾ívanou verzi rpm"
 
-#: lib/poptALL.c:321
-#, fuzzy
-msgid "debug payload file state machine"
-msgstr "ladit nástroj stavu souborù"
-
-#: lib/poptALL.c:323
-#, fuzzy
-msgid "use threads for file state machine"
-msgstr "ladit nástroj stavu souborù"
-
 #: lib/poptALL.c:325
-#, fuzzy
-msgid "debug FTP/HTTP data stream"
-msgstr "ladit protokol datového toku"
-
-#: lib/poptALL.c:327
-msgid "debug argv collections"
+msgid "debug cpio payloads"
 msgstr ""
 
 #: lib/poptALL.c:329
 #, fuzzy
+msgid "debug payload file state machine"
+msgstr "ladit nástroj stavu souborù"
+
+#: lib/poptALL.c:331
+#, fuzzy
+msgid "use threads for file state machine"
+msgstr "ladit nástroj stavu souborù"
+
+#: lib/poptALL.c:333
+#, fuzzy
+msgid "debug FTP/HTTP data stream"
+msgstr "ladit protokol datového toku"
+
+#: lib/poptALL.c:335
+msgid "debug argv collections"
+msgstr ""
+
+#: lib/poptALL.c:337
+#, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "ladit protokol datového toku"
 
-#: lib/poptALL.c:334
+#: lib/poptALL.c:342
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Interní chyba pøi zpracování parametrù (%d) :-(\n"
 
-#: lib/poptALL.c:339
+#: lib/poptALL.c:347
 #, fuzzy
 msgid "debug package state machine"
 msgstr "ladit nástroj stavu souborù"
 
-#: lib/poptALL.c:341
+#: lib/poptALL.c:349
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "ladit nástroj stavu souborù"
 
-#: lib/poptALL.c:355
+#: lib/poptALL.c:363
 msgid "debug rpmio I/O"
 msgstr "ladit rpmio I/O"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:375
+msgid "debug tar payloads"
+msgstr ""
+
+#: lib/poptALL.c:379
 msgid "debug URL cache handling"
 msgstr "ladit manipulaci s URL cache"
 
 #. @-nullpass@
-#: lib/poptALL.c:439
+#: lib/poptALL.c:449
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""

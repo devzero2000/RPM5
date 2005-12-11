@@ -1769,7 +1769,7 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, "cpio", ts, fi,
+	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, psm->payload_format, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_READ));
@@ -1822,7 +1822,7 @@ assert(psm->te != NULL);
 	    psm->total = fc;
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, "cpio", ts, fi,
+	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, psm->payload_format, ts, fi,
 			NULL, NULL, &psm->failedFile);
 	    xx = fsmTeardown(fi->fsm);
 
@@ -1852,8 +1852,8 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, "cpio", ts, fi, psm->cfd,
-			NULL, &psm->failedFile);
+	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, psm->payload_format, ts, fi,
+			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_COMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_WRITE));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
@@ -2031,6 +2031,7 @@ psm->te->h = headerFree(psm->te->h);
 	psm->oh = headerFree(psm->oh);
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
+	psm->payload_format = _free(psm->payload_format);
 	psm->failedFile = _free(psm->failedFile);
 
 	fi->fgroup = hfd(fi->fgroup, -1);
@@ -2069,7 +2070,7 @@ psm->te->h = headerFree(psm->te->h);
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
 
-	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, "cpio", ts, fi,
+	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, psm->payload_format, ts, fi,
 			NULL, NULL, &psm->failedFile);
 	xx = fsmTeardown(fi->fsm);
 	break;
@@ -2134,6 +2135,7 @@ psm->te->h = headerFree(psm->te->h);
 
     case PSM_RPMIO_FLAGS:
     {	const char * payload_compressor = NULL;
+	const char * payload_format = NULL;
 	char * t;
 
 	/*@-branchstate@*/
@@ -2148,6 +2150,14 @@ psm->te->h = headerFree(psm->te->h);
 	    t = stpcpy(t, ".gzdio");
 	if (!strcmp(payload_compressor, "bzip2"))
 	    t = stpcpy(t, ".bzdio");
+
+	/*@-branchstate@*/
+	if (!hge(fi->h, RPMTAG_PAYLOADFORMAT, NULL,
+			    (void **) &payload_format, NULL)
+	 || !(!strcmp(payload_format, "tar") || !strcmp(payload_format, "ustar")))
+	    payload_format = "cpio";
+	/*@=branchstate@*/
+	psm->payload_format = xstrdup(payload_format);
 	rc = RPMRC_OK;
     }	break;
 

@@ -560,7 +560,7 @@ if (_fsm_debug < 0)
 fprintf(stderr, "--> %s(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", __FUNCTION__, fsm, goal, afmt, ts, fi, cfd, archiveSize, failedFile);
 
     if (fsm->headerRead == NULL) {
-	if (!strcmp(afmt, "tar") || !strcmp(afmt, "ustar")) {
+	if (afmt != NULL && (!strcmp(afmt, "tar") || !strcmp(afmt, "ustar"))) {
 if (_fsm_debug < 0)
 fprintf(stderr, "\ttar vectors set\n");
 	    fsm->headerRead = &tarHeaderRead;

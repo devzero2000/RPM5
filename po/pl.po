@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 14:19-0500\n"
+"POT-Creation-Date: 2005-12-11 10:56-0500\n"
 "PO-Revision-Date: 2005-11-18 21:30+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -127,7 +127,7 @@ msgstr "Wspólne opcje dla wszystkich trybów i binarek rpm-a:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:140 lib/poptALL.c:128
+#: rpmqv.c:140 lib/poptALL.c:134
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM wersja %s\n"
@@ -1275,17 +1275,17 @@ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 "generuj nag³ówki pakietu kompatybilne z (wymieraj±cymi) pakietami rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:347 lib/poptQV.c:403
+#: build/poptBT.c:229 lib/poptALL.c:279 lib/poptI.c:347 lib/poptQV.c:403
 #: lib/poptQV.c:412 lib/poptQV.c:454
 msgid "don't verify package digest(s)"
 msgstr "nie sprawdzaj skrótów pakietu"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:349 lib/poptQV.c:406
+#: build/poptBT.c:231 lib/poptALL.c:281 lib/poptI.c:349 lib/poptQV.c:406
 #: lib/poptQV.c:414 lib/poptQV.c:457
 msgid "don't verify database header(s) when retrieved"
 msgstr "nie sprawdzaj nag³ówków bazy danych przy odczycie"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:409
+#: build/poptBT.c:233 lib/poptALL.c:287 lib/poptI.c:351 lib/poptQV.c:409
 #: lib/poptQV.c:416 lib/poptQV.c:459
 msgid "don't verify package signature(s)"
 msgstr "nie sprawdzaj sygnatur pakietu"
@@ -1750,148 +1750,157 @@ msgstr "%s: headerRead nie powiod³o siê: %s"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread nie powiod³o siê: %s\n"
 
-#: lib/poptALL.c:230
+#: lib/poptALL.c:236
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: pod±¿aj za dowi±zaniami z linii poleceñ"
 
-#: lib/poptALL.c:232
+#: lib/poptALL.c:238
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: przechod¼ logicznie"
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:240
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: nie zmieniaj katalogów"
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:242
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: nie odczytuj informacji stat"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:244
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: przechod¼ fizycznie"
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:246
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: zwracaj kropkê i kropkê-kropkê"
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:248
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: nie przechod¼ miêdzy urz±dzeniami"
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:250
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: zwróæ informacje o whiteout"
 
-#: lib/poptALL.c:260
+#: lib/poptALL.c:266
 msgid "predefine MACRO with value EXPR"
 msgstr "predefiniuj MAKRO z warto¶ci± WYR"
 
-#: lib/poptALL.c:261 lib/poptALL.c:264
+#: lib/poptALL.c:267 lib/poptALL.c:270
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO WYR'"
 
-#: lib/poptALL.c:263
+#: lib/poptALL.c:269
 msgid "define MACRO with value EXPR"
 msgstr "definiuj MAKRO z warto¶ci± WYR"
 
-#: lib/poptALL.c:266
+#: lib/poptALL.c:272
 msgid "print macro expansion of EXPR"
 msgstr "wy¶wietl rozwiniêcie makr z WYR"
 
-#: lib/poptALL.c:267
+#: lib/poptALL.c:273
 msgid "'EXPR'"
 msgstr "'WYR'"
 
-#: lib/poptALL.c:269 lib/poptALL.c:288 lib/poptALL.c:292
+#: lib/poptALL.c:275 lib/poptALL.c:294 lib/poptALL.c:298
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów)"
 
-#: lib/poptALL.c:270 lib/poptALL.c:289 lib/poptALL.c:293
+#: lib/poptALL.c:276 lib/poptALL.c:295 lib/poptALL.c:299
 msgid "<FILE:...>"
 msgstr "<PLIK:...>"
 
-#: lib/poptALL.c:278 lib/poptALL.c:312
+#: lib/poptALL.c:284 lib/poptALL.c:318
 msgid "disable use of libio(3) API"
 msgstr "wy³±cz u¿ywanie API libio(3)"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:290
 msgid "send stdout to CMD"
 msgstr "przeka¿ standardowe wyj¶cie do POLECENIA"
 
-#: lib/poptALL.c:285
+#: lib/poptALL.c:291
 msgid "CMD"
 msgstr "POLECENIE"
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:302
 msgid "use ROOT as top level directory"
 msgstr "u¿yj KAGALOGu jako katalogu najwy¿szego poziomu"
 
-#: lib/poptALL.c:297
+#: lib/poptALL.c:303
 msgid "ROOT"
 msgstr "KATALOG"
 
-#: lib/poptALL.c:300
+#: lib/poptALL.c:306
 msgid "display known query tags"
 msgstr "wy¶wietl znane etykiety zapytañ"
 
-#: lib/poptALL.c:302
+#: lib/poptALL.c:308
 msgid "display final rpmrc and macro configuration"
 msgstr "wy¶wietl ostateczn± konfiguracjê rpmrc i makr"
 
-#: lib/poptALL.c:304
+#: lib/poptALL.c:310
 msgid "provide less detailed output"
 msgstr "u¿ywaj mniej szczegó³owego wyj¶cia"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:312
 msgid "provide more detailed output"
 msgstr "u¿ywaj bardziej szczegó³owego wyj¶cia"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:314
 msgid "print the version of rpm being used"
 msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
 
-#: lib/poptALL.c:321
+#: lib/poptALL.c:325
+msgid "debug cpio payloads"
+msgstr ""
+
+#: lib/poptALL.c:329
 msgid "debug payload file state machine"
 msgstr "¶led¼ maszynê stanu danych pliku"
 
-#: lib/poptALL.c:323
+#: lib/poptALL.c:331
 msgid "use threads for file state machine"
 msgstr "u¿yj w±tków dla maszyny stanu plików"
 
-#: lib/poptALL.c:325
+#: lib/poptALL.c:333
 msgid "debug FTP/HTTP data stream"
 msgstr "¶led¼ strumieñ danych FTP/HTTP"
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:335
 msgid "debug argv collections"
 msgstr "¶led¼ zbiory argv"
 
-#: lib/poptALL.c:329
+#: lib/poptALL.c:337
 msgid "debug WebDAV data stream"
 msgstr "¶led¼ strumieñ danych WebDAV"
 
-#: lib/poptALL.c:334
+#: lib/poptALL.c:342
 msgid "debug option/argument processing"
 msgstr "¶led¼ przetwarzanie opcji/argumentów"
 
-#: lib/poptALL.c:339
+#: lib/poptALL.c:347
 msgid "debug package state machine"
 msgstr "¶led¼ maszynê stanu pakietu"
 
-#: lib/poptALL.c:341
+#: lib/poptALL.c:349
 msgid "use threads for package state machine"
 msgstr "u¿yj w±tków dla maszyny stanu pakietów"
 
-#: lib/poptALL.c:355
+#: lib/poptALL.c:363
 msgid "debug rpmio I/O"
 msgstr "¶led¼ wej¶cie/wyj¶cie rpmio"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:375
+#, fuzzy
+msgid "debug tar payloads"
+msgstr "¶led¼ zbiory argv"
+
+#: lib/poptALL.c:379
 msgid "debug URL cache handling"
 msgstr "¶led¼ obs³ugê buforowania URL-i"
 
 #. @-nullpass@
-#: lib/poptALL.c:439
+#: lib/poptALL.c:449
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: tabela opcji b³êdnie skonfigurowana (%d)\n"
