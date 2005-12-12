@@ -135,9 +135,10 @@ rpm alias --autorollback --define '_rollback_transaction_on_failure 1' \
 
 rpm     alias --blink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|\n%|BLINKNEVRA?{[\t<= %{BLINKNEVRA}.rpm\n]}|'
  \
+        --POPTdesc=$"display package(s) previously installed"
 rpm     alias --flink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|\n%|FLINKNEVRA?{[\t=> %{FLINKNEVRA}.rpm\n]}|'
  \
-        --POPTdesc=$"display previously installed packages"
+        --POPTdesc=$"display package(s) which replaced"
 
 
 # colon separated i18n domains to use as PO catalogue lookaside for
