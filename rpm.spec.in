@@ -276,14 +276,6 @@ exit 0
 # Establish correct rpmdb ownership.
 /bin/chown @RPMUSER@:@RPMGROUP@ /var/lib/rpm/[A-Z]*
 
-# XXX Detect (and remove) incompatible dbenv files during db-4.4.11 upgrade.
-# XXX Removing dbenv files in %%post opens a lock race window, a tolerable
-# XXX risk compared to the support issues involved with upgrading Berkeley DB.
-[ -w /var/lib/rpm/__db.001 ] &&
-/usr/lib/rpm/rpmdb_stat -CA -h /var/lib/rpm 2>&1 |
-grep "db_stat: Program version 4.4 doesn't match environment version" 2>&1 > /dev/null &&
-	rm -f /var/lib/rpm/__db*
-                                                                                
 %endif
 exit 0
 
