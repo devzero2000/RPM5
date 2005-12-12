@@ -2022,7 +2022,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
     int rc;
 
     if (mi->mi_h == NULL)	/* XXX can't happen */
-	return 0;
+	return 1;
 
     /*
      * Apply tag tests, implicitly "||" for multiple patterns/values of a
@@ -2101,7 +2101,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    nmatches++;
     }
 
-    return (ntags == nmatches ? 0 : 1);
+    return (ntags > 0 && ntags == nmatches ? 0 : 1);
 }
 
 int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite)

@@ -22,6 +22,7 @@
 	- functional tar payload creation in *.rpm packages.
 	- functional tar payload extraction from *.rpm packages.
 	- automated cpio/tar payload detection installing *.rpm packages.
+	- fix: mireSkip returned false positive match for non-existent tags.
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.
