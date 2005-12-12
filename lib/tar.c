@@ -55,9 +55,16 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     return ret;
 }
 
-static int tarHeaderReadName(FSM_t fsm, int len, const char ** fnp)
+/**
+ * Read long file/link name from tar archive.
+ * @param fsm		file state machine
+ * @param len		no. bytes of name
+ * @retval *fnp		long file/link name
+ * @return		0 on success
+ */
+static int tarHeaderReadName(FSM_t fsm, int len, /*@out@*/ const char ** fnp)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@modifies fsm, *fnp, fileSystem, internalState @*/
 {
     char * t;
     int nb;
@@ -255,6 +262,12 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
     return rc;
 }
 
+/**
+ * Write long file/link name into tar archive.
+ * @param fsm		file state machine
+ * @param path		long file/link name
+ * @return		0 on success
+ */
 static int tarHeaderWriteName(FSM_t fsm, const char * path)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
@@ -271,7 +284,7 @@ fprintf(stderr, "\t%s(%p, %s) nb %d\n", __FUNCTION__, fsm, path, nb);
 
 	/* XXX DWRITE uses rdnb for I/O length. */
 	fsm->rdnb = (nb < TAR_BLOCK_SIZE) ? nb : TAR_BLOCK_SIZE;
-	memcpy(fsm->rdbuf, s, fsm->rdnb);
+	memmove(fsm->rdbuf, s, fsm->rdnb);
 	rc = fsmNext(fsm, FSM_DWRITE);
 	if (!rc && fsm->rdnb != fsm->wrnb)
 		rc = CPIOERR_WRITE_FAILED;
@@ -287,9 +300,16 @@ fprintf(stderr, "\t%s(%p, %s) nb %d\n", __FUNCTION__, fsm, path, nb);
     return rc;
 }
 
+/**
+ * Write tar header block with checksum  into tar archive.
+ * @param fsm		file state machine
+ * @param st		file info
+ * @param hdr		tar header block
+ * @return		0 on success
+ */
 static int tarHeaderWriteBlock(FSM_t fsm, struct stat * st, tarHeader hdr)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@modifies fsm, hdr, fileSystem, internalState @*/
 {
     int rc;
 

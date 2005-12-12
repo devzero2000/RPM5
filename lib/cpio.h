@@ -97,6 +97,9 @@ struct cpioCrcPhysicalHeader {
 
 #define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
 
+/*@unchecked@*/
+extern int _cpio_debug;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

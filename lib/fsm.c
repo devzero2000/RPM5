@@ -557,7 +557,7 @@ int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
     int rc, ec = 0;
 
 if (_fsm_debug < 0)
-fprintf(stderr, "--> %s(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", __FUNCTION__, fsm, goal, afmt, ts, fi, cfd, archiveSize, failedFile);
+fprintf(stderr, "--> %s(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", __FUNCTION__, fsm, goal, afmt, (void *)ts, fi, cfd, archiveSize, failedFile);
 
     if (fsm->headerRead == NULL) {
 	if (afmt != NULL && (!strcmp(afmt, "tar") || !strcmp(afmt, "ustar"))) {
@@ -1863,7 +1863,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
-assert(fsm->lpath);
+assert(fsm->lpath != NULL);
 	    /*@=dependenttrans@*/
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_ENOENT)
