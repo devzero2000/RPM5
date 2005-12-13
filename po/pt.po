@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-12 13:52-0500\n"
+"POT-Creation-Date: 2005-12-13 07:22-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1477,33 +1477,28 @@ msgstr "ficheiro db inválido %s\n"
 msgid "(db provides)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:734
-#, fuzzy
-msgid "(db package)"
-msgstr "nenhum pacote\n"
-
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:765
+#: lib/depends.c:751
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1098
+#: lib/depends.c:1084
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorar relações entre o nome do pacote [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1206
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1457
+#: lib/depends.c:1443
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1549
+#: lib/depends.c:1535
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1511,21 +1506,21 @@ msgid ""
 msgstr ""
 "========== ordenar pacotes (order, #predecessors, #succesors, tree, depth)\n"
 
-#: lib/depends.c:1640
+#: lib/depends.c:1626
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1713
+#: lib/depends.c:1699
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1748
+#: lib/depends.c:1734
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1753
+#: lib/depends.c:1739
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2937,7 +2932,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "a mudar a directoria %s para %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1065 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:643
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2950,7 +2945,7 @@ msgstr "opção desconhecida"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1445 lib/transaction.c:1180 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1443 lib/transaction.c:1180 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "dependências falhadas:\n"
@@ -3013,7 +3008,7 @@ msgstr " ... como %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "a ignorar o %s - a transferência falhou - %s\n"
 
-#: lib/rpminstall.c:511 lib/rpminstall.c:915 tools/rpmgraph.c:142
+#: lib/rpminstall.c:511 lib/rpminstall.c:913 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "o %s não pode ser instalado\n"
@@ -3067,33 +3062,33 @@ msgstr "não consigo aceder ao ficheiro %s: %s\n"
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "o \"%s\" especifica vários pacotes\n"
 
-#: lib/rpminstall.c:899
+#: lib/rpminstall.c:897
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "não consigo aceder ao %s: %s\n"
 
-#: lib/rpminstall.c:905
+#: lib/rpminstall.c:903
 #, c-format
 msgid "Installing %s\n"
 msgstr "A instalar o %s\n"
 
-#: lib/rpminstall.c:1352
+#: lib/rpminstall.c:1350
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1439 lib/transaction.c:1158
+#: lib/rpminstall.c:1437 lib/transaction.c:1158
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1470 lib/transaction.c:1233
+#: lib/rpminstall.c:1468 lib/transaction.c:1233
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1477
+#: lib/rpminstall.c:1475
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "A obter o %s\n"
@@ -3989,8 +3984,8 @@ msgstr "não consigo abrir o índice do %s\n"
 msgid "no dbpath has been set\n"
 msgstr "não foi definido o dbpath\n"
 
-#: rpmdb/rpmdb.c:1259 rpmdb/rpmdb.c:1390 rpmdb/rpmdb.c:1446 rpmdb/rpmdb.c:2415
-#: rpmdb/rpmdb.c:2544 rpmdb/rpmdb.c:3298
+#: rpmdb/rpmdb.c:1259 rpmdb/rpmdb.c:1390 rpmdb/rpmdb.c:1446 rpmdb/rpmdb.c:2417
+#: rpmdb/rpmdb.c:2546 rpmdb/rpmdb.c:3300
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
@@ -4004,144 +3999,144 @@ msgstr ""
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:2294
+#: rpmdb/rpmdb.c:2296
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2326
+#: rpmdb/rpmdb.c:2328
 #, fuzzy, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada, a ignorar.\n"
 
-#: rpmdb/rpmdb.c:2648
+#: rpmdb/rpmdb.c:2650
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"
 
-#: rpmdb/rpmdb.c:2714
+#: rpmdb/rpmdb.c:2716
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:2822
+#: rpmdb/rpmdb.c:2824
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "a remover o \"%s\" do índice %s.\n"
 
-#: rpmdb/rpmdb.c:2826
+#: rpmdb/rpmdb.c:2828
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "a remover %d registos do índice %s.\n"
 
-#: rpmdb/rpmdb.c:2854
+#: rpmdb/rpmdb.c:2856
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:2875
+#: rpmdb/rpmdb.c:2877
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:2885
+#: rpmdb/rpmdb.c:2887
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "erro(%d) ao remover o registo %s do %s\n"
 
-#: rpmdb/rpmdb.c:3045
+#: rpmdb/rpmdb.c:3047
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erro(%d) ao criar uma nova instância do pacote\n"
 
-#: rpmdb/rpmdb.c:3108
+#: rpmdb/rpmdb.c:3110
 #, fuzzy
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada, a ignorar.\n"
 
-#: rpmdb/rpmdb.c:3273
+#: rpmdb/rpmdb.c:3275
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "a adicionar o \"%s\" ao índice %s.\n"
 
-#: rpmdb/rpmdb.c:3277
+#: rpmdb/rpmdb.c:3279
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "a adicionar %d registos ao índice %s.\n"
 
-#: rpmdb/rpmdb.c:3317
+#: rpmdb/rpmdb.c:3319
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:3726
+#: rpmdb/rpmdb.c:3728
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "a remover o %s depois duma reconstrução bem sucedida do db3.\n"
 
-#: rpmdb/rpmdb.c:3765
+#: rpmdb/rpmdb.c:3767
 msgid "no dbpath has been set"
 msgstr "não foi definido o dbpath"
 
-#: rpmdb/rpmdb.c:3797
+#: rpmdb/rpmdb.c:3799
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "a reconstruir a base de dados %s em %s\n"
 
-#: rpmdb/rpmdb.c:3801
+#: rpmdb/rpmdb.c:3803
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "A base de dados temporária %s já existe\n"
 
-#: rpmdb/rpmdb.c:3807
+#: rpmdb/rpmdb.c:3809
 #, c-format
 msgid "creating directory %s\n"
 msgstr "a criar a directoria %s\n"
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3811
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "a criar a directoria %s: %s\n"
 
-#: rpmdb/rpmdb.c:3818
+#: rpmdb/rpmdb.c:3820
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "a abrir a base de dados antiga com a dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3829
+#: rpmdb/rpmdb.c:3831
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "a abrir a base de dados nova com a dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3860
+#: rpmdb/rpmdb.c:3862
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "o número do registo %u na base de dados está errado -- a ignorar.\n"
 
-#: rpmdb/rpmdb.c:3900
+#: rpmdb/rpmdb.c:3902
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "não consigo adicionar o registo originalmente em %u\n"
 
-#: rpmdb/rpmdb.c:3914
+#: rpmdb/rpmdb.c:3916
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "falhou a reconstrução da base de dados: a base de dados original mantém-se\n"
 
-#: rpmdb/rpmdb.c:3922
+#: rpmdb/rpmdb.c:3924
 msgid "failed to replace old database with new database!\n"
 msgstr "falhou a substituição da base de dados antiga pela nova!\n"
 
-#: rpmdb/rpmdb.c:3924
+#: rpmdb/rpmdb.c:3926
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "substituir os ficheiros em %s por ficheiros de %s a recuperar"
 
-#: rpmdb/rpmdb.c:3934
+#: rpmdb/rpmdb.c:3936
 #, c-format
 msgid "removing directory %s\n"
 msgstr "a remover a directoria %s\n"
 
-#: rpmdb/rpmdb.c:3936
+#: rpmdb/rpmdb.c:3938
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "falhou a remoção da directoria %s: %s\n"
@@ -4570,6 +4565,10 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "(db package)"
+#~ msgstr "nenhum pacote\n"
 
 #, fuzzy
 #~ msgid "\tForce removing header from rpmdb.\n"

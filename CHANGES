@@ -23,6 +23,9 @@
 	- functional tar payload extraction from *.rpm packages.
 	- automated cpio/tar payload detection installing *.rpm packages.
 	- fix: mireSkip returned false positive match for non-existent tags.
+	- display dependency loops with rpm -qvT.
+	- popt: assume utf-8 encoding for untranslated strings (#172155).
+	- release rpm-4.4.4.
 
 4.4.2 -> 4.4.3:
 	- start 4.4.3 devel.

@@ -648,6 +648,10 @@ enditer:
 	ps = rpmpsFree(ps);
 	ts->probs = rpmpsFree(ts->probs);	/* XXX hackery */
 
+	/* XXX Display dependency loops with rpm -qvT. */
+	if (rpmIsVerbose())
+	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_DEPLOOPS));
+
 	xx = rpmtsOrder(ts);
 
 	gi->tag = RPMDBI_ADDED;			/* XXX hackery */

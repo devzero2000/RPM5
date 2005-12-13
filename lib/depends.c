@@ -725,20 +725,6 @@ retry:
 	}
 	mi = rpmdbFreeIterator(mi);
 
-#if defined(DYING) || defined(__LCLINT__)
-	mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
-	(void) rpmdbPruneIterator(mi,
-			ts->removedPackages, ts->numRemovedPackages, 1);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
-		rpmdsNotify(dep, _("(db package)"), rc);
-		mi = rpmdbFreeIterator(mi);
-		goto exit;
-	    }
-	}
-	mi = rpmdbFreeIterator(mi);
-#endif
-
     }
 
     /*

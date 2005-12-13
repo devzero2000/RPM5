@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-12 13:52-0500\n"
+"POT-Creation-Date: 2005-12-13 07:22-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1468,32 +1468,28 @@ msgstr "(files データベース)"
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#: lib/depends.c:734
-msgid "(db package)"
-msgstr "(package データベース)"
-
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:765
+#: lib/depends.c:751
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1098
+#: lib/depends.c:1084
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1206
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
 #. Record all relations.
-#: lib/depends.c:1457
+#: lib/depends.c:1443
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1549
+#: lib/depends.c:1535
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1502,21 +1498,21 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:1640
+#: lib/depends.c:1626
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:1713
+#: lib/depends.c:1699
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:1748
+#: lib/depends.c:1734
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1753
+#: lib/depends.c:1739
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -2889,7 +2885,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1065 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:643
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2902,7 +2898,7 @@ msgstr "不明なタグ: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1445 lib/transaction.c:1180 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1443 lib/transaction.c:1180 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
@@ -2961,7 +2957,7 @@ msgstr " ... (%s として)\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送に失敗 - %s\n"
 
-#: lib/rpminstall.c:511 lib/rpminstall.c:915 tools/rpmgraph.c:142
+#: lib/rpminstall.c:511 lib/rpminstall.c:913 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません。\n"
@@ -3016,33 +3012,33 @@ msgstr "ファイル %s をオープンできません: %s\n"
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:899
+#: lib/rpminstall.c:897
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません: %s\n"
 
-#: lib/rpminstall.c:905
+#: lib/rpminstall.c:903
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中です。\n"
 
-#: lib/rpminstall.c:1352
+#: lib/rpminstall.c:1350
 #, fuzzy, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "ロールバックから TID %d を除外しています\n"
 
-#: lib/rpminstall.c:1439 lib/transaction.c:1158
+#: lib/rpminstall.c:1437 lib/transaction.c:1158
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 
-#: lib/rpminstall.c:1470 lib/transaction.c:1233
+#: lib/rpminstall.c:1468 lib/transaction.c:1233
 msgid "Cleaning up repackaged packages:\n"
 msgstr "再パッケージされたパッケージを削除中:\n"
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1477
+#: lib/rpminstall.c:1475
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\t%s を削除中:\n"
@@ -3939,8 +3935,8 @@ msgstr "%s インデックスをオープンできません。\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
-#: rpmdb/rpmdb.c:1259 rpmdb/rpmdb.c:1390 rpmdb/rpmdb.c:1446 rpmdb/rpmdb.c:2415
-#: rpmdb/rpmdb.c:2544 rpmdb/rpmdb.c:3298
+#: rpmdb/rpmdb.c:1259 rpmdb/rpmdb.c:1390 rpmdb/rpmdb.c:1446 rpmdb/rpmdb.c:2417
+#: rpmdb/rpmdb.c:2546 rpmdb/rpmdb.c:3300
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
@@ -3954,143 +3950,143 @@ msgstr "miFreeHeader: スキップします。"
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:2294
+#: rpmdb/rpmdb.c:2296
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: スキップします。"
 
-#: rpmdb/rpmdb.c:2326
+#: rpmdb/rpmdb.c:2328
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
-#: rpmdb/rpmdb.c:2648
+#: rpmdb/rpmdb.c:2650
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダを読むことができません (0x%x)\n"
 
-#: rpmdb/rpmdb.c:2714
+#: rpmdb/rpmdb.c:2716
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "エラー(%d) - ヘッダ #%d レコードに %s の削除を設定時\n"
 
-#: rpmdb/rpmdb.c:2822
+#: rpmdb/rpmdb.c:2824
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "\"%s\" を %s インデックスから削除します。\n"
 
-#: rpmdb/rpmdb.c:2826
+#: rpmdb/rpmdb.c:2828
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%d エントリを %s インデックスから削除します。\n"
 
-#: rpmdb/rpmdb.c:2854
+#: rpmdb/rpmdb.c:2856
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - \"%s\" のレコード設定時 (%s インデックスから)\n"
 
-#: rpmdb/rpmdb.c:2875
+#: rpmdb/rpmdb.c:2877
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:2885
+#: rpmdb/rpmdb.c:2887
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s から削除時\n"
 
-#: rpmdb/rpmdb.c:3045
+#: rpmdb/rpmdb.c:3047
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当て時\n"
 
-#: rpmdb/rpmdb.c:3108
+#: rpmdb/rpmdb.c:3110
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: スキップします。"
 
-#: rpmdb/rpmdb.c:3273
+#: rpmdb/rpmdb.c:3275
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "\"%s\" を %s インデックスに追加します。\n"
 
-#: rpmdb/rpmdb.c:3277
+#: rpmdb/rpmdb.c:3279
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%d エントリを %s インデックスに追加します。\n"
 
-#: rpmdb/rpmdb.c:3317
+#: rpmdb/rpmdb.c:3319
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "エラー(%d) - レコード %s を %s にストア時\n"
 
-#: rpmdb/rpmdb.c:3726
+#: rpmdb/rpmdb.c:3728
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3 再構築が成功した後で %s を削除します。\n"
 
-#: rpmdb/rpmdb.c:3765
+#: rpmdb/rpmdb.c:3767
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません。"
 
-#: rpmdb/rpmdb.c:3797
+#: rpmdb/rpmdb.c:3799
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "データベース %s を %s として再構築しています。\n"
 
-#: rpmdb/rpmdb.c:3801
+#: rpmdb/rpmdb.c:3803
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s は既に存在しています。\n"
 
-#: rpmdb/rpmdb.c:3807
+#: rpmdb/rpmdb.c:3809
 #, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3811
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s: %s\n"
 
-#: rpmdb/rpmdb.c:3818
+#: rpmdb/rpmdb.c:3820
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースを dbapi %d でオープンしています。\n"
 
-#: rpmdb/rpmdb.c:3829
+#: rpmdb/rpmdb.c:3831
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースを dbapi %d でオープンしています。\n"
 
-#: rpmdb/rpmdb.c:3860
+#: rpmdb/rpmdb.c:3862
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/rpmdb.c:3900
+#: rpmdb/rpmdb.c:3902
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "元々 %u にあったレコードを追加できません。\n"
 
-#: rpmdb/rpmdb.c:3914
+#: rpmdb/rpmdb.c:3916
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
 
-#: rpmdb/rpmdb.c:3922
+#: rpmdb/rpmdb.c:3924
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:3924
+#: rpmdb/rpmdb.c:3926
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "復元するには %s 内のファイルを %s 内のファイルで置き換えて下さい"
 
-#: rpmdb/rpmdb.c:3934
+#: rpmdb/rpmdb.c:3936
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの削除: %s\n"
 
-#: rpmdb/rpmdb.c:3936
+#: rpmdb/rpmdb.c:3938
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -4521,6 +4517,9 @@ msgstr "DIRECTORY のデータベースを使用"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "DIRECTORY"
+
+#~ msgid "(db package)"
+#~ msgstr "(package データベース)"
 
 #, fuzzy
 #~ msgid "Attempting to mark %s as installed in transaction score\n"

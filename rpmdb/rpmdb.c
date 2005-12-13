@@ -2029,7 +2029,9 @@ static int mireSkip (const rpmdbMatchIterator mi)
      * single tag, implicitly "&&" between multiple tag patterns.
      */
 /*@-boundsread@*/
-    if ((mire = mi->mi_re) != NULL)
+    if ((mire = mi->mi_re) == NULL)
+	return 0;
+
     for (i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
 
