@@ -75,14 +75,24 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     const char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
     const char ** argv = (argvPtr ? *argvPtr : NULL);
-/*@+voidabstract@*/
-    FILE * f = (FILE *) fdGetFp(fd);
-/*@=voidabstract@*/
+    FD_t xfd;
+    FILE * f;
     rpmRC rpmrc = RPMRC_OK;
     int i, j, next, npre;
 
 /*@-boundswrite@*/
-    if (f != NULL)
+    if (fdGetFp(fd) == NULL)
+	xfd = Fdopen(fd, "r.fpio");
+    else
+	xfd = fd;
+
+/*@+voidabstract@*/
+    if ((f = (FILE *) fdGetFp(xfd)) == NULL) {
+/*@=voidabstract@*/
+	rpmrc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+
     while (1) {
 	char line[BUFSIZ];
 
