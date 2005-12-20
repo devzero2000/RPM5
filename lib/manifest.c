@@ -81,10 +81,12 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     int i, j, next, npre;
 
 /*@-boundswrite@*/
+/*@-branchstate@*/
     if (fdGetFp(fd) == NULL)
 	xfd = Fdopen(fd, "r.fpio");
     else
 	xfd = fd;
+/*@=branchstate@*/
 
 /*@+voidabstract@*/
     if ((f = (FILE *) fdGetFp(xfd)) == NULL) {

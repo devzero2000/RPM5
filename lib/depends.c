@@ -25,8 +25,6 @@
 /*@access rpmte @*/		/* XXX for install <-> erase associate. */
 /*@access rpmts @*/
 
-/*@access dbiIndex @*/		/* XXX for dbi->dbi_txnid */
-
 /*@access alKey @*/	/* XXX for reordering and RPMAL_NOMATCH assign */
 
 /**
@@ -499,7 +497,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 		size_t datalen = 0;
 		size_t DNEVRlen = strlen(DNEVR);
 
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
 		memset(key, 0, sizeof(*key));
 /*@i@*/		key->data = (void *) DNEVR;
@@ -771,7 +769,7 @@ exit:
 		DBC * dbcursor = NULL;
 		size_t DNEVRlen = strlen(DNEVR);
 
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
 		memset(key, 0, sizeof(*key));
 /*@i@*/		key->data = (void *) DNEVR;

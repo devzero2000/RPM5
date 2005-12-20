@@ -155,7 +155,9 @@ void *rpmtsAcquireLock(rpmts ts)
 	}
     }
 /*@=branchstate@*/
+/*@-globstate@*/	/* rpmlock_path may be NULL. */
     return lock;
+/*@=globstate@*/
 }
 
 void * rpmtsFreeLock(void *lock)

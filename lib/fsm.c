@@ -556,8 +556,10 @@ int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
     size_t pos = 0;
     int rc, ec = 0;
 
+/*@+voidabstract -nullpass@*/
 if (_fsm_debug < 0)
 fprintf(stderr, "--> %s(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", __FUNCTION__, fsm, goal, afmt, (void *)ts, fi, cfd, archiveSize, failedFile);
+/*@=voidabstract =nullpass@*/
 
     if (fsm->headerRead == NULL) {
 	if (afmt != NULL && (!strcmp(afmt, "tar") || !strcmp(afmt, "ustar"))) {
@@ -1109,7 +1111,9 @@ static int writeLinkedFile(/*@special@*/ /*@partial@*/ FSM_t fsm)
 /*@=branchstate@*/
 /*@=boundswrite@*/
 
+/*@-dependenttrans@*/
     linkpath = _free(linkpath);
+/*@=dependenttrans@*/
     fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
     fsm->lpath = lpath;

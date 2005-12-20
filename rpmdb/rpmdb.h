@@ -749,7 +749,7 @@ int dbiByteSwapped(dbiIndex dbi)
     return dbi->dbi_byteswapped;
 }
 /** \ingroup dbi
- * Is database byte swapped?
+ * Return dbi statistics.
  * @param dbi		index database handle
  * @param flags		DB_FAST_STAT or 0
  * @return		0 on success
@@ -759,6 +759,18 @@ int dbiStat(dbiIndex dbi, unsigned int flags)
 	/*@modifies dbi @*/
 {
     return (*dbi->dbi_vec->stat) (dbi, flags);
+}
+
+/** \ingroup dbi
+ * Return dbi transaction id.
+ * @param dbi		index database handle
+ * @return		transaction id
+ */
+/*@unused@*/ static inline /*@observer@*/ /*@null@*/
+DB_TXN * dbiTxnid(dbiIndex dbi)
+	/*@*/
+{
+    return dbi->dbi_txnid;
 }
 /*@=globuse =mustmod @*/
 

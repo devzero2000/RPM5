@@ -1435,6 +1435,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 
 	/* Adjust package count on rollback downgrade. */
+assert(psm->te != NULL);
 	if (rpmtsType(ts) == RPMTRANS_TYPE_AUTOROLLBACK &&
 	    (psm->goal & ~(PSM_PKGSAVE|PSM_PKGERASE)))
 	{
@@ -2192,6 +2193,7 @@ assert(psm->mi == NULL);
 
 	if (rc != RPMRC_OK) break;
 
+assert(psm->te != NULL);
 	/* Mark non-rollback elements as installed. */
 	if (
 	    rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK &&

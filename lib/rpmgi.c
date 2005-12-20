@@ -650,7 +650,7 @@ enditer:
 
 	/* XXX Display dependency loops with rpm -qvT. */
 	if (rpmIsVerbose())
-	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_DEPLOOPS));
+	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_DEPLOOPS));
 
 	xx = rpmtsOrder(ts);
 
