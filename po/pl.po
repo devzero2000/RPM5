@@ -9,10 +9,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.4.3\n"
+"Project-Id-Version: rpm 4.4.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-13 07:22-0500\n"
-"PO-Revision-Date: 2005-11-18 21:30+0100\n"
+"PO-Revision-Date: 2005-12-14 23:47+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -1610,9 +1610,9 @@ msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nie powiod³o siê: %s\n"
 
 #: lib/fsm.c:2014
-#, fuzzy, c-format
+#, c-format
 msgid " %s: unlink of %s failed: %s\n"
-msgstr "%s unlink %s nie powiod³o siê: %s\n"
+msgstr " %s: unlink %s nie powiod³o siê: %s\n"
 
 #: lib/fsm.c:2037
 #, c-format
@@ -1848,7 +1848,7 @@ msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
 
 #: lib/poptALL.c:325
 msgid "debug cpio payloads"
-msgstr ""
+msgstr "¶led¼ dane cpio"
 
 #: lib/poptALL.c:329
 msgid "debug payload file state machine"
@@ -1887,9 +1887,8 @@ msgid "debug rpmio I/O"
 msgstr "¶led¼ wej¶cie/wyj¶cie rpmio"
 
 #: lib/poptALL.c:375
-#, fuzzy
 msgid "debug tar payloads"
-msgstr "¶led¼ zbiory argv"
+msgstr "¶led¼ dane tar"
 
 #: lib/poptALL.c:379
 msgid "debug URL cache handling"
@@ -2297,14 +2296,14 @@ msgid "list files in package"
 msgstr "wy¶wietl pliki zawarte w pakiecie"
 
 #: lib/poptQV.c:295 lib/poptQV.c:338
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%config files"
-msgstr "pomiñ pliki %%license"
+msgstr "pomiñ pliki %%config"
 
 #: lib/poptQV.c:298 lib/poptQV.c:341
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%doc files"
-msgstr "pomiñ pliki %%ghost"
+msgstr "pomiñ pliki %%doc"
 
 #: lib/poptQV.c:301
 #, c-format
@@ -2763,7 +2762,7 @@ msgstr "znaczniki nag³ówka mog± byæ typu int_64."
 
 #: lib/rpmds.c:1326
 msgid "package payload can be in ustar tar archive format."
-msgstr ""
+msgstr "dane pakietu mog± byæ w formacie archiwum tara ustar."
 
 #: lib/rpmds.c:1427
 #, c-format
@@ -3569,9 +3568,9 @@ msgid "\tCould not add failed package header to db!\n"
 msgstr "\tNie uda³o siê dodaæ nag³ówka nieudanego pakietu do bazy!\n"
 
 #: lib/transaction.c:1527 lib/transaction.c:1663
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown transaction element type!\n"
-msgstr "_rpmtsAddRollbackElement: Nieznany rodzaj elementu transakcji!\n"
+msgstr "%s: Nieznany typ elementu transakcji!\n"
 
 #: lib/transaction.c:1528 lib/transaction.c:1664
 #, c-format
@@ -3617,9 +3616,8 @@ msgid "Processing erase element for autorollback...\n"
 msgstr "Przetwarzanie elementu usuniêcia do automatycznego wycofania...\n"
 
 #: lib/transaction.c:1623
-#, fuzzy
 msgid "\tErase element(s) already added.\n"
-msgstr "\tElement usuniêcia ju¿ dodany do grzeczno¶ciowej instalacji.\n"
+msgstr "\tElement(y) usuniêcia ju¿ dodane.\n"
 
 #: lib/transaction.c:1634
 #, c-format
@@ -4490,87 +4488,3 @@ msgstr "u¿yj bazy danych w KATALOGu"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
-
-#~ msgid "(db package)"
-#~ msgstr "(pakiet w bazie)"
-
-#, fuzzy
-#~ msgid "Attempting to mark %s as installed in transaction score\n"
-#~ msgstr "Próba oznakowania %s jako zainstalowanego w tablicy punktów\n"
-
-#, fuzzy
-#~ msgid "Attempting to mark %s as erased.\n"
-#~ msgstr "Próba oznakowania %s jako usuniêtego w tablicy punktów(0x%x).\n"
-
-#~ msgid "Setting %s to TID of 0x%08x\n"
-#~ msgstr "Ustawianie %s na TID 0x%08x\n"
-
-#~ msgid "Processing failed erase element %s for autorollback.\n"
-#~ msgstr ""
-#~ "Przetwarzanie nieudanego elementu usuniêcia %s do automatycznego "
-#~ "wycofania.\n"
-
-#~ msgid "\tForce removing header from rpmdb.\n"
-#~ msgstr "\tWymuszenie usuniêcia nag³ówka z rpmdb.\n"
-
-#~ msgid "\tCould not remove failed package header from db!\n"
-#~ msgstr "\tNie uda³o siê usun±æ nag³ówka nieudanego pakietu z bazy!\n"
-
-#~ msgid "Could not acquire transaction score entry for %s\n"
-#~ msgstr "Nie uda³o siê uzyskaæ wpisu wyniku transakcji dla %s\n"
-
-#~ msgid "Creating transaction score board(%p, %p)\n"
-#~ msgstr "Tworzenie tablicy wyników transakcji(%p, %p)\n"
-
-#~ msgid "\tScore board address:  %p\n"
-#~ msgstr "\tAdres tablicy wyników:  %p\n"
-
-#~ msgid "\tAllocating space for %d entries\n"
-#~ msgstr "\tPrzydzielanie przestrzeni na %d wpisów\n"
-
-#~ msgid "\tAdding entry for %s to score board.\n"
-#~ msgstr "\tDodawanie wpisu dla %s do tablicy wyników.\n"
-
-#~ msgid "\t\tEntry address:  %p\n"
-#~ msgstr "\t\tAdres wpisu:  %p\n"
-
-#~ msgid "\tUpdating entry for %s in score board.\n"
-#~ msgstr "\tUaktualnianie wpisu dla %s w tablicy wyników.\n"
-
-#~ msgid "Could not get header for transaction score!\n"
-#~ msgstr "Nie uda³o siê pobraæ nag³ówka dla wyników transakcji!\n"
-
-#~ msgid "NEVRA: %s"
-#~ msgstr "NEVRA: %s"
-
-#~ msgid "\tCould not get INSTALLTID for %s.\n"
-#~ msgstr "\tNie uda³o siê pobraæ INSTALLTID-a dla %s.\n"
-
-#~ msgid "\tINSTALLTID for %s is 0x%08x.\n"
-#~ msgstr "\tINSTALLTID dla %s to 0x%08x.\n"
-
-#~ msgid "Looking in score board(%p) for %s\n"
-#~ msgstr "Przeszukiwanie tablicy wyników(%p) pod k±tem %s\n"
-
-#~ msgid "\tFound entry at address:  %p\n"
-#~ msgstr "\tZnaleziono wpis pod adresem:  %p\n"
-
-#~ msgid "Could not acquire transaction score!.\n"
-#~ msgstr "Nie uda³o siê uzyskaæ wyniku transakcji!\n"
-
-#~ msgid "Could not acquire score entry %s!.\n"
-#~ msgstr "Nie uda³o siê uzyskaæ wpisu wyniku %s!\n"
-
-# --- from popt/po/pl.po (in popt.h, not in .pot) ---
-#~ msgid "Options implemented via popt alias/exec:"
-#~ msgstr "Opcje zaimplementowane poprzez popt alias/exec:"
-
-#~ msgid "Help options:"
-#~ msgstr "Opcje pomocy:"
-
-# --- from popt (displayed using rpm domain)
-#~ msgid "Show this help message"
-#~ msgstr "Poka¿ tê pomoc"
-
-#~ msgid "Display brief usage message"
-#~ msgstr "Wy¶wietl skrócony sposób u¿ycia"
