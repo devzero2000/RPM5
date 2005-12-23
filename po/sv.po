@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-13 07:22-0500\n"
+"POT-Creation-Date: 2005-12-22 21:50-0500\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -740,7 +740,7 @@ msgstr "Kan inte läsa om signaturhuvud.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:666 lib/psm.c:1686
+#: build/pack.c:666 lib/psm.c:1687
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
@@ -770,7 +770,7 @@ msgstr "Kan inte läsa last från %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:759 lib/psm.c:1999
+#: build/pack.c:759 lib/psm.c:2000
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -1387,101 +1387,101 @@ msgstr "Ingen arkivfilen i huvud"
 msgid " failed - "
 msgstr " misslyckades - "
 
-#: lib/depends.c:243
+#: lib/depends.c:241
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s var redan tillagt, hoppar över %s\n"
 
-#: lib/depends.c:257
+#: lib/depends.c:255
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s är redan tillagt, ersätter med %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:363
+#: lib/depends.c:361
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "inget paket behöver %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:431
+#: lib/depends.c:429
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr "  Gör föråldrat: %s\t\traderar %s\n"
 
-#: lib/depends.c:527
+#: lib/depends.c:525
 msgid "(cached)"
 msgstr "(cachad)"
 
-#: lib/depends.c:543
+#: lib/depends.c:541
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc tillhandahåller)"
 
-#: lib/depends.c:562
+#: lib/depends.c:560
 #, fuzzy
 msgid "(access probe)"
 msgstr "(rpmrc tillhandahåller)"
 
-#: lib/depends.c:575
+#: lib/depends.c:573
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:596
+#: lib/depends.c:594
 msgid "(rpmlib provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:612
+#: lib/depends.c:610
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:628
+#: lib/depends.c:626
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:644
+#: lib/depends.c:642
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(lade till tillhandahållande)"
 
-#: lib/depends.c:679
+#: lib/depends.c:677
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(lade till tillhandahållande)"
 
-#: lib/depends.c:708
+#: lib/depends.c:706
 msgid "(db files)"
 msgstr "(db-filer)"
 
-#: lib/depends.c:721
+#: lib/depends.c:719
 msgid "(db provides)"
 msgstr "(db tillhandahåller)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:751
+#: lib/depends.c:749
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1084
+#: lib/depends.c:1082
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1206
+#: lib/depends.c:1204
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1443
+#: lib/depends.c:1441
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1535
+#: lib/depends.c:1533
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1490,21 +1490,21 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "djup, bredd)\n"
 
-#: lib/depends.c:1626
+#: lib/depends.c:1624
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== endast efterföljare (%d byte)\n"
 
-#: lib/depends.c:1699
+#: lib/depends.c:1697
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1734
+#: lib/depends.c:1732
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1739
+#: lib/depends.c:1737
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -1569,57 +1569,57 @@ msgstr "========== Kataloger ej uttryckligen inkluderade i paketet:\n"
 msgid "%10d %s\n"
 msgstr "%10d %s\n"
 
-#: lib/fsm.c:797
+#: lib/fsm.c:799
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "användare %s finns inte - använder root\n"
 
-#: lib/fsm.c:805
+#: lib/fsm.c:807
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupp %s finns inte - använder root\n"
 
-#: lib/fsm.c:1387
+#: lib/fsm.c:1391
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "katalog %s skapad med rättigheter %04o, ingen kontext.\n"
 
-#: lib/fsm.c:1391
+#: lib/fsm.c:1395
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "katalog %s skapad med rättigheter %04o, kontext %s.\n"
 
-#: lib/fsm.c:1697
+#: lib/fsm.c:1701
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "arkivfil %s fanns inte i huvudets fillista\n"
 
-#: lib/fsm.c:1844 lib/fsm.c:1966
+#: lib/fsm.c:1848 lib/fsm.c:1970
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sparades som %s\n"
 
-#: lib/fsm.c:1993
+#: lib/fsm.c:1997
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir av %s misslyckades: Katalogen är inte tom\n"
 
-#: lib/fsm.c:1999
+#: lib/fsm.c:2003
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s misslyckades: %s\n"
 
-#: lib/fsm.c:2014
+#: lib/fsm.c:2018
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink av %s misslyckades: %s\n"
 
-#: lib/fsm.c:2037
+#: lib/fsm.c:2041
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
 
-#: lib/manifest.c:133
+#: lib/manifest.c:145
 #, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "lägger till %d poster från förteckning.\n"
@@ -2476,30 +2476,30 @@ msgstr "%s(%s-%s-%s.%s) skript misslyckades, slutstatus %d\n"
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s har %d filer, test = %d\n"
 
-#: lib/psm.c:1582
+#: lib/psm.c:1583
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s-skript misslyckades (%d), hoppar över %s\n"
 
-#: lib/psm.c:1698
+#: lib/psm.c:1699
 msgid "Unable to reload signature header\n"
 msgstr "Kan inte läsa om signaturhuvud\n"
 
-#: lib/psm.c:1798
+#: lib/psm.c:1799
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "uppackning av arkiv misslyckades%s%s: %s\n"
 
-#: lib/psm.c:1799
+#: lib/psm.c:1800
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/psm.c:2007
+#: lib/psm.c:2008
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s misslyckades på fil %s: %s\n"
 
-#: lib/psm.c:2010
+#: lib/psm.c:2011
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
