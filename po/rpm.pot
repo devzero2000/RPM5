@@ -7,8 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-22 21:50-0500\n"
+"POT-Creation-Date: 2006-01-05 14:44-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,12 +67,10 @@ msgid "Building for target %s\n"
 msgstr ""
 
 #: rpm2cpio.c:56
-#, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
 #: rpm2cpio.c:61
-#, c-format
 msgid "error reading header from package\n"
 msgstr ""
 
@@ -130,12 +127,10 @@ msgid "RPM version %s\n"
 msgstr ""
 
 #: rpmqv.c:147
-#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
 #: rpmqv.c:148
-#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
@@ -273,7 +268,6 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
 #: rpmqv.c:548
-#, c-format
 msgid "no files to sign\n"
 msgstr ""
 
@@ -283,7 +277,6 @@ msgid "cannot access file %s\n"
 msgstr ""
 
 #: rpmqv.c:573
-#, c-format
 msgid "pgp not found: "
 msgstr ""
 
@@ -292,12 +285,10 @@ msgid "Enter pass phrase: "
 msgstr ""
 
 #: rpmqv.c:583
-#, c-format
 msgid "Pass phrase check failed\n"
 msgstr ""
 
 #: rpmqv.c:587
-#, c-format
 msgid "Pass phrase is good.\n"
 msgstr ""
 
@@ -311,7 +302,6 @@ msgid "--sign may only be used during package building"
 msgstr ""
 
 #: rpmqv.c:616
-#, c-format
 msgid "exec failed\n"
 msgstr ""
 
@@ -1639,17 +1629,14 @@ msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
 #: lib/package.c:455
-#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
 #: lib/package.c:470
-#, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
 #: lib/package.c:482
-#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
@@ -1665,7 +1652,6 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:678
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
@@ -1685,7 +1671,6 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/package.c:722
-#, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
@@ -2837,7 +2822,7 @@ msgstr ""
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1443 lib/transaction.c:1180 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1443 lib/transaction.c:1179 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr ""
 
@@ -2869,7 +2854,7 @@ msgstr ""
 msgid "Upgrading packages..."
 msgstr ""
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1153
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1152
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
@@ -2965,12 +2950,12 @@ msgstr ""
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1437 lib/transaction.c:1158
+#: lib/rpminstall.c:1437 lib/transaction.c:1157
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1468 lib/transaction.c:1233
+#: lib/rpminstall.c:1468
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
@@ -3147,27 +3132,22 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
 
 #: lib/rpmrc.c:1930
-#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1942
-#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1957
-#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
 #: lib/rpmrc.c:1971
-#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
 #: lib/rpmrc.c:1985
-#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3260,7 +3240,6 @@ msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
 #: lib/signature.c:193
-#, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
@@ -3285,7 +3264,6 @@ msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/signature.c:313
-#, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
@@ -3359,9 +3337,6 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:950 lib/signature.c:1003
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3403,12 +3378,10 @@ msgid " DSA signature: "
 msgstr ""
 
 #: lib/signature.c:1505
-#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
 #: lib/signature.c:1536
-#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
@@ -3432,57 +3405,57 @@ msgstr ""
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr ""
 
-#: lib/transaction.c:1150
+#: lib/transaction.c:1149
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1161
+#: lib/transaction.c:1160
 #, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1167
+#: lib/transaction.c:1166
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr ""
 
-#: lib/transaction.c:1171
+#: lib/transaction.c:1170
 #, c-format
 msgid "Creating semaphore %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1192
+#: lib/transaction.c:1191
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1264
+#: lib/transaction.c:1238
 #, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1308
+#: lib/transaction.c:1283
 #, c-format
 msgid "Removing semaphore %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1352
+#: lib/transaction.c:1327
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1382
+#: lib/transaction.c:1357
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1386
+#: lib/transaction.c:1361
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1390
+#: lib/transaction.c:1365
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1403
+#: lib/transaction.c:1378
 msgid "\tRepackaged package not found!.\n"
 msgstr ""
 
@@ -3493,100 +3466,100 @@ msgstr ""
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1424
+#: lib/transaction.c:1399
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1401
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1449
+#: lib/transaction.c:1424
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1501
+#: lib/transaction.c:1476
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1504
+#: lib/transaction.c:1479
 msgid "\tForce adding header to rpmdb.\n"
 msgstr ""
 
-#: lib/transaction.c:1515
+#: lib/transaction.c:1490
 msgid "\tCould not add failed package header to db!\n"
 msgstr ""
 
-#: lib/transaction.c:1527 lib/transaction.c:1663
+#: lib/transaction.c:1502 lib/transaction.c:1638
 #, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1528 lib/transaction.c:1664
+#: lib/transaction.c:1503 lib/transaction.c:1639
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1558
+#: lib/transaction.c:1533
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1559 lib/transaction.c:1614
+#: lib/transaction.c:1534 lib/transaction.c:1589
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1567
+#: lib/transaction.c:1542
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1579
+#: lib/transaction.c:1554
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1589
+#: lib/transaction.c:1564
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr ""
 
 #. Add the header as a pure erase element, no repackaged package.
-#: lib/transaction.c:1599
+#: lib/transaction.c:1574
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1606
+#: lib/transaction.c:1581
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1613
+#: lib/transaction.c:1588
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1623
+#: lib/transaction.c:1598
 msgid "\tErase element(s) already added.\n"
 msgstr ""
 
-#: lib/transaction.c:1634
+#: lib/transaction.c:1609
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1638
+#: lib/transaction.c:1613
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1649
+#: lib/transaction.c:1624
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1655
+#: lib/transaction.c:1630
 msgid "Failure reading repackaged package!\n"
 msgstr ""
 
-#: lib/transaction.c:1794
+#: lib/transaction.c:1769
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3598,12 +3571,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1848
+#: lib/transaction.c:1823
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1934
+#: lib/transaction.c:1909
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3615,7 +3588,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:2009
+#: lib/transaction.c:1984
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3623,24 +3596,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2090
+#: lib/transaction.c:2065
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2274
+#: lib/transaction.c:2249
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2544
+#: lib/transaction.c:2519
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2551
+#: lib/transaction.c:2526
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2595
+#: lib/transaction.c:2570
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -4163,7 +4136,6 @@ msgid "(no error)"
 msgstr ""
 
 #. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr ""

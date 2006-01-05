@@ -1111,7 +1111,6 @@ static rpmRC _rpmtsRollback(rpmts rbts, rpmts failedTransaction,
     int rc         = 0;
     int numAdded   = 0;
     int numRemoved = 0;
-    int unlinked   = 0;
     uint_32 tid;
     uint_32 failedtid;
     uint_32 arbgoal;
@@ -1203,6 +1202,9 @@ static rpmRC _rpmtsRollback(rpmts rbts, rpmts failedTransaction,
      * 	2.  If a header for the old package is there we
      *      we want to replace it.  No questions asked.
      */
+    /* XXX Don't repackage the elements in the rollback. */
+  { rpmtransFlags rbtsFlags = rpmtsFlags(rbts);
+    (void) rpmtsSetFlags(rbts, (rbtsFlags & ~RPMTRANS_FLAG_REPACKAGE));
     rc = rpmtsRun(rbts, NULL,
 	ignoreSet |  RPMPROB_FILTER_REPLACEPKG
 	| RPMPROB_FILTER_REPLACEOLDFILES
@@ -1213,36 +1215,8 @@ static rpmRC _rpmtsRollback(rpmts rbts, rpmts failedTransaction,
     if (rc > 0 && rpmpsNumProblems(ps) > 0)
 	rpmpsPrint(stderr, ps);
     ps = rpmpsFree(ps);
-
-    /*
-     * After we have ran through the transaction we need to
-     * remove any repackaged packages we just installed/upgraded
-     * from the rp repository.
-     */
-    /* XXX: Should I do this conditionally on success of rpmtsRun()? */
-    unlinked = 0;
-    tsi = rpmtsiInit(rbts);
-    while((te = rpmtsiNext(tsi, 0)) != NULL) {
-	switch (rpmteType(te)) {
-	/* The install elements are repackaged packages */
-	case TR_ADDED:
-	    /* Make sure the filename is still there.  XXX: Can't happen */
-	    if (te->key) {
-		if (!unlinked)
-		    rpmMessage(RPMMESS_NORMAL,
-			_("Cleaning up repackaged packages:\n"));
-		rpmMessage(RPMMESS_NORMAL, "\t%s\n", te->key);
-		(void) Unlink(te->key);	/* XXX: Should check for an error? */
-		unlinked++;
-	    }
-	    /*@switchbreak@*/ break;
-
-	/* Ignore erase elements...nothing to do */
-	default:
-	    /*@switchbreak@*/ break;
-	}	
-    }
-    tsi = rpmtsiFree(tsi);
+    (void) rpmtsSetFlags(rbts, rbtsFlags);
+  }
 
     /* Handle autorollback goal if one was given.
      * XXX: What I am about to do twists up the API a bit.  I am
@@ -1282,9 +1256,10 @@ static rpmRC _rpmtsRollback(rpmts rbts, rpmts failedTransaction,
 	ia->transFlags = rpmtsFlags(ts);
 	ia->probFilter = ignoreSet;
 
+	/* XXX rpmtsRun(rbts) above has changed the tid, exclude the new tid. */
 	memset(rbtidExcludes, 0, sizeof(rbtidExcludes));
 	ia->rbtidExcludes = rbtidExcludes;
-	ia->rbtidExcludes[ia->numrbtidExcludes++] = tid;
+	ia->rbtidExcludes[ia->numrbtidExcludes++] = rpmtsGetTid(rbts);
 
 	/* Setup the install interface flags.  XXX: This is an utter hack.
 	 * I haven't quite figured out how to get these from a transaction.

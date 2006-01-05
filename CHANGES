@@ -1,5 +1,7 @@
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.
+	- rollback: insure that rpmtsRollback excluded tid is correct.
+	- rollback: don't bother erasing rollback repackages, just don't create.
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.
