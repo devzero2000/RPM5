@@ -52,7 +52,7 @@
 #endif
 
 #if defined(sun)
-# define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
+# define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
 #endif
 
 #if defined(__APPLE__)
