@@ -3,6 +3,7 @@
 	- rollback: insure that rpmtsRollback excluded tid is correct.
 	- rollback: don't bother erasing rollback repackages, just don't create.
 	- fix: solaris d->d_reclen is unreliable in certain cases (#128593).
+	- fix: perldeps and prov.pl not to emit perl(main) (#177960)
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.
