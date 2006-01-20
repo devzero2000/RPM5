@@ -26,10 +26,6 @@
 /*@access pgpDig@*/
 /*@access pgpDigParams@*/
 
-#if !defined(__GLIBC__) && !defined(__APPLE__)
-char ** environ = NULL;
-#endif
-
 int rpmLookupSignatureType(int action)
 {
     /*@unchecked@*/
