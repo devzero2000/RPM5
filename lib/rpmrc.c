@@ -1326,12 +1326,25 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
 	    if ( pvr ) {
 		pvr >>= 16;
-		if ( pvr >= 0x40)
-		    strcpy(un.machine, "ppcpseries");
-		else if ( (pvr == 0x36) || (pvr == 0x37) )
+		switch (pvr) {
+		/* IBM750FX, 7410, 7450,  7451, 7441, 7455, 7445 */ 
+		case 0x7000:
+		case 0x8000:
+		case 0x8001:
+		case 0x800c:
+		    strcpy(un.machine, "ppc"); 
+		    break;
+		case 0x36:
+		case 0x37:
 		    strcpy(un.machine, "ppciseries");
-		else
-		    strcpy(un.machine, "ppc");
+		    break;
+		default:
+		    if ( pvr >= 0x40)
+			strcpy(un.machine, "ppcpseries");
+		    else
+			strcpy(un.machine, "ppc");
+		    break;
+		}
 	    }
 	}
 #	endif

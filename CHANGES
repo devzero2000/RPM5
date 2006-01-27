@@ -6,6 +6,7 @@
 	- fix: perldeps and prov.pl not to emit perl(main) (#177960)
 	- build against FC5t2+.
 	- irix: avoid NULL environ segfault with non-gcc sgi compiler (#178133).
+	- ppc: detect certain cpu's as "ppc", not "ppciseries" (#128604).
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.
