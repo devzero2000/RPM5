@@ -1,0 +1,11 @@
+#ifndef VERSION_HPP
+#define VERSION_HPP
+/*****************************************************************************
+* Aeroflex, Inc        COPYRIGHT (C)2004      DESIGN ENGINEERING
+******************************************************************************
+ FILE        : version.hpp.in
+ AUTHOR      : David Hagood
+ DESCRIPTION : Full version info
+*****************************************************************************/
+#define FULL_VERSION "@PACKAGE_VERSION@"
+#endif

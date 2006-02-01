@@ -1,0 +1,4 @@
+package ifneeded RPM @PACKAGE_VERSION@ [list tclPkgSetup $dir RPM @PACKAGE_VERSION@ {{rpm.so load RPM} {rpm.tcl source {
+::RPM::Find_package ::RPM::Parse_changelogs ::RPM::Add_path ::RPM::Init ::RPM::Scan ::RPM::Find_newest ::RPM::Upgrade
+::RPM::Find_new
+}}}]

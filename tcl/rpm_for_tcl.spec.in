@@ -1,0 +1,56 @@
+#
+# spec file for package @PACKAGE_NAME@ (Version @PACKAGE_VERSION@)
+#
+# Copyright (c) 2004 Aeroflex, Inc
+# This file and all modifications and additions to the pristine
+# package are under the same license as the package itself.
+#
+# Please submit bugfixes or comments via @PACKAGE_BUGREPORT@
+#
+
+Name:         @PACKAGE_TARNAME@
+Version:      @PACKAGE_VERSION@
+Release:      initial
+BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+Summary:      RPM bindings for TCL
+License:      X11/MIT
+Group:        Development/Languages/Tcl
+Autoreqprov:  on
+Provides:     rpm-for-tcl
+Requires:     tcl >= 8.4
+Requires:     rpm >= 4.2
+Source0:      %name-%version.tar.gz
+URL:          http://home.eng.ifrsys.com/eric
+Distribution: IFR-3900
+Vendor: Aeroflex, Inc.
+Packager: David Hagood <david.hagoo@aeroflex.com>
+
+%description
+RPM bindings for TCL
+This package provides a TCL package named "RPM" that provides functions
+for reading RPM file headers, accessing the RPM database,
+installing/upgrading/removing RPMs from the system.
+
+Authors:
+--------
+    David Hagood <david.hagood@aeroflex.com>
+
+%prep
+%setup
+
+%build
+./bootstrap
+./configure --prefix=$RPM_BUILD_ROOT/usr
+make
+
+%install
+make install
+
+%files
+%defattr(-,root,root)
+#%doc README ChangeLog AUTHORS INSTALL NEWS
+#%docdir %_mandir/mann
+#%doc %_mandir/mann/*
+%_libdir/RPM_for_TCL/*.so
+%_libdir/RPM_for_TCL/*.tcl
+
