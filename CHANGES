@@ -7,6 +7,8 @@
 	- build against FC5t2+.
 	- irix: avoid NULL environ segfault with non-gcc sgi compiler (#178133).
 	- ppc: detect certain cpu's as "ppc", not "ppciseries" (#128604).
+	- rollback: make default configuration opt-out rather than opt-in.
+	- build against sqlite-3.3.3.
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.

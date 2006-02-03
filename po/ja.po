@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-05 14:44-0500\n"
+"POT-Creation-Date: 2006-02-03 12:08-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -74,10 +74,12 @@ msgid "Building for target %s\n"
 msgstr "ターゲット %s 用にビルド中\n"
 
 #: rpm2cpio.c:56
+#, c-format
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません。\n"
 
 #: rpm2cpio.c:61
+#, c-format
 msgid "error reading header from package\n"
 msgstr "パッケージのヘッダ読み込み中にエラー\n"
 
@@ -134,10 +136,12 @@ msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
 
 #: rpmqv.c:147
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:148
+#, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "このプログラムは GNU GPL の下で自由に配布できます。\n"
@@ -287,6 +291,7 @@ msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらなければなりません。"
 
 #: rpmqv.c:548
+#, c-format
 msgid "no files to sign\n"
 msgstr "署名するファイルがありません\n"
 
@@ -296,6 +301,7 @@ msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません。\n"
 
 #: rpmqv.c:573
+#, c-format
 msgid "pgp not found: "
 msgstr "pgp が見付かりません: "
 
@@ -304,10 +310,12 @@ msgid "Enter pass phrase: "
 msgstr "パスフレーズの入力: "
 
 #: rpmqv.c:583
+#, c-format
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズのチェックに失敗しました。\n"
 
 #: rpmqv.c:587
+#, c-format
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です。\n"
 
@@ -321,6 +329,7 @@ msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ指定できます。"
 
 #: rpmqv.c:616
+#, c-format
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
@@ -1645,36 +1654,38 @@ msgstr "一時ファイル %s の作成に失敗しました。\n"
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "blob サイズ (%d): 異常です。8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:372 lib/package.c:436 lib/package.c:513 lib/signature.c:233
+#: lib/package.c:372 lib/package.c:436 lib/package.c:513 lib/signature.c:229
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:392 lib/signature.c:249
+#: lib/package.c:392 lib/signature.c:245
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "region オフセット: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:413 lib/signature.c:276
+#: lib/package.c:413 lib/signature.c:272
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "region ヘッダ以降: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:427 lib/signature.c:290
+#: lib/package.c:427 lib/signature.c:286
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
 
 #: lib/package.c:455
+#, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "SHA1 ヘッダ: 異常です。16 進数ではありません。\n"
 
 #: lib/package.c:470
-#, fuzzy
+#, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
 #: lib/package.c:482
+#, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
@@ -1690,6 +1701,7 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
 #: lib/package.c:678
+#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "ヘッダマジック: 異常です。\n"
 
@@ -1709,6 +1721,7 @@ msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "ヘッダ blob(%d): 異常です。読み込み結果は %d です。\n"
 
 #: lib/package.c:722
+#, c-format
 msgid "hdr load: BAD\n"
 msgstr "ヘッダロード: 異常です。\n"
 
@@ -3187,38 +3200,43 @@ msgstr "%s 用のアーキテクチャが見つかりません (%s:%d)\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "不正なオプションです: '%s' (%s:%d)\n"
 
-#: lib/rpmrc.c:1797
+#: lib/rpmrc.c:1810
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s を展開できません。\n"
 
-#: lib/rpmrc.c:1802
+#: lib/rpmrc.c:1815
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s を読み込めません。HOME が大きすぎます。\n"
 
-#: lib/rpmrc.c:1819
+#: lib/rpmrc.c:1832
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s を読み込み用にオープンできません: %s。\n"
 
-#: lib/rpmrc.c:1930
+#: lib/rpmrc.c:1943
+#, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1942
+#: lib/rpmrc.c:1955
+#, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1957
+#: lib/rpmrc.c:1970
+#, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1971
+#: lib/rpmrc.c:1984
+#, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1985
+#: lib/rpmrc.c:1998
+#, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
@@ -3295,170 +3313,177 @@ msgstr "    i        dev    bsize       bavail       iavail mount point\n"
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
 
-#: lib/signature.c:140
+#: lib/signature.c:136
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "期待されるサイズ: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 
-#: lib/signature.c:145
+#: lib/signature.c:141
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "    実際のサイズ: %12d\n"
 
-#: lib/signature.c:188
+#: lib/signature.c:184
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "署名サイズ (%d): 不正、read が %d を返しました\n"
 
-#: lib/signature.c:193
+#: lib/signature.c:189
+#, c-format
 msgid "sigh magic: BAD\n"
 msgstr "署名の目印: 不正\n"
 
-#: lib/signature.c:201
+#: lib/signature.c:197
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
 msgstr "署名タグ: 不正、タグの数 (%d) が範囲外です。\n"
 
-#: lib/signature.c:209
+#: lib/signature.c:205
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
 msgstr "署名データ: 不正、バイト数 (%d) が範囲外です。\n"
 
-#: lib/signature.c:225
+#: lib/signature.c:221
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "署名 blob(%d): 不正、read が %d を返しました。\n"
 
-#: lib/signature.c:303
+#: lib/signature.c:299
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "署名タグ[%d]: 不正、タグ %d タイプ %d オフセット %d カウント %d\n"
 
-#: lib/signature.c:313
+#: lib/signature.c:309
+#, c-format
 msgid "sigh load: BAD\n"
 msgstr "署名の読み込み: 不正。\n"
 
-#: lib/signature.c:325
+#: lib/signature.c:321
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr "署名の pad サイズ(%d): 不正、%d バイト読み込みました。\n"
 
-#: lib/signature.c:334
+#: lib/signature.c:330
 #, c-format
 msgid "sigh sigSize(%d): BAD, fstat(2) failed\n"
 msgstr "署名のサイズ(%d): 不正、fstat(2) に失敗しました。\n"
 
-#: lib/signature.c:371
+#: lib/signature.c:367
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名: size(%d)+pad(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:469 lib/signature.c:597 lib/signature.c:906
-#: lib/signature.c:945
+#: lib/signature.c:465 lib/signature.c:593 lib/signature.c:902
+#: lib/signature.c:941
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s\n"
 
-#: lib/signature.c:485
+#: lib/signature.c:481
 msgid "pgp failed\n"
 msgstr "pgp 失敗\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:492
+#: lib/signature.c:488
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました。\n"
 
-#: lib/signature.c:498
+#: lib/signature.c:494
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:516 lib/signature.c:645
+#: lib/signature.c:512 lib/signature.c:641
 msgid "unable to read the signature\n"
 msgstr "署名を読み込めませんでした。\n"
 
-#: lib/signature.c:521
+#: lib/signature.c:517
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:614
+#: lib/signature.c:610
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "実行失敗\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:621
+#: lib/signature.c:617
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました。\n"
 
-#: lib/signature.c:627
+#: lib/signature.c:623
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %d\n"
 
-#: lib/signature.c:650
+#: lib/signature.c:646
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:950 lib/signature.c:1003
+#. Currently the calling function (rpm.c:main) is checking this and
+#. * doing a better job.  This section should never be accessed.
+#.
+#: lib/signature.c:946 lib/signature.c:999
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の不正な %%_signature\n"
 
-#: lib/signature.c:983
+#: lib/signature.c:979
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイル内で \"%%_gpg_name\" を設定しなければなりません。\n"
 
-#: lib/signature.c:997
+#: lib/signature.c:993
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイル内で \"%%_pgp_name\" を設定しなければなりません。\n"
 
-#: lib/signature.c:1045
+#: lib/signature.c:1041
 msgid "Header+Payload size: "
 msgstr "ヘッダとペイロードサイズ:"
 
-#: lib/signature.c:1086
+#: lib/signature.c:1082
 msgid "MD5 digest: "
 msgstr "MD5 ダイジェスト: "
 
-#: lib/signature.c:1146
+#: lib/signature.c:1142
 msgid "Header SHA1 digest: "
 msgstr "ヘッダ SHA1 ダイジェスト: "
 
-#: lib/signature.c:1227 lib/signature.c:1417
+#: lib/signature.c:1223 lib/signature.c:1413
 msgid "Header "
 msgstr "ヘッダ "
 
 #. @=branchstate@
-#: lib/signature.c:1296
+#: lib/signature.c:1292
 #, fuzzy
 msgid " signature: "
 msgstr "V4 DSA 署名: "
 
-#: lib/signature.c:1423
+#: lib/signature.c:1419
 #, fuzzy
 msgid " DSA signature: "
 msgstr "V3 DSA 署名: "
 
-#: lib/signature.c:1505
+#: lib/signature.c:1501
+#, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "署名確認: 異常なパラメータです。\n"
 
-#: lib/signature.c:1536
+#: lib/signature.c:1532
+#, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "MD5 ダイジェストが破損: サポートされていません。\n"
 
-#: lib/signature.c:1540
+#: lib/signature.c:1536
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名: 未知(%d)\n"
@@ -4219,6 +4244,7 @@ msgid "(no error)"
 msgstr "(エラーなし)"
 
 #. !< RPMLOG_EMERG
+#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "致命的なエラー: "

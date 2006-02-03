@@ -679,16 +679,6 @@ print (t)\
 #	auto-relocated.
 %_autorelocate_dcolor @autorelocate_dcolor@
 
-#	Prevent pure erasure transactions with --rollback. Pure
-#	erasure rollback transactions will undo an anaconda install,
-#	for example, which %_unsafe_rollbacks tries to prevent.
-#
-#	Undefine, or set to 0 if you're clumsy and/or paranoid. 
-%_unsafe_rollbacks	1
-
-#	Automate transaction rollbacks. Set this iff you're brave.
-#%_rollback_transaction_on_failure	1
-
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-vendor location. The macro is usually defined in
 #	/etc/rpm/macros.solve, installed with the rpmdb-vendor package.
@@ -719,11 +709,19 @@ print (t)\
 %_repackage_root	%{nil}
 
 #	If non-zero, all erasures will be automagically repackaged.
-%_repackage_all_erasures	0
+%_repackage_all_erasures	1
 
-# If non-zero, a failed transaction will be automagically rolled 
-# back (sans, the failing transaction element).
-%_rollback_transaction_on_failure	0
+#	Prevent pure erasure transactions with --rollback. Pure
+#	erasure rollback transactions will undo an anaconda install,
+#	for example, which %_unsafe_rollbacks tries to prevent.
+#
+#	Undefine, or set to 0 if you're clumsy and/or paranoid. 
+%_unsafe_rollbacks	1
+
+#	Automate transaction rollbacks on upgrade failure.
+#
+#	Undefine, or set to 0 if you're clumsy and/or paranoid. 
+%_rollback_transaction_on_failure	1
 
 #	Verify digest/signature flags for various rpm modes:
 #	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
