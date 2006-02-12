@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: 2005-11-17 12:54+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1638,7 +1638,7 @@ msgstr "%s trennen von %s fehlgeschlagen: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s als %s erstellt\n"
 
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "Füge %d Argumente aus Paket-Liste hinzu.\n"

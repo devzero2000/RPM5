@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1624,7 +1624,7 @@ msgstr "%s %s 링크 해제에 실패함: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
 
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, fuzzy, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"

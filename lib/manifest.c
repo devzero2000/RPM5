@@ -105,6 +105,13 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	    break;
 	}
 
+	/* XXX stop processing manifest if HTML is found. */
+#define	DOCTYPE_HTML_PUBLIC	"<!DOCTYPE HTML PUBLIC"
+	if (!strncmp(line, DOCTYPE_HTML_PUBLIC, sizeof(DOCTYPE_HTML_PUBLIC)-1)) {
+	    rpmrc = RPMRC_NOTFOUND;
+	    goto exit;
+	}
+
 	/* Skip comments. */
 	if ((se = strchr(s, '#')) != NULL) *se = '\0';
 

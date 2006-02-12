@@ -14,6 +14,7 @@
 	- debuginfo: follow symlinks when copying source files (#149113).
 	- lua: don't link -lreadline and -lhistory (#147013).
 	- add tweaks to permit building in subdir, more to do yet (#81196).
+	- fix: don't process package manifest if HTML is found (#75774).
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.

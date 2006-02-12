@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1774,7 +1774,7 @@ msgid "%s created as %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, fuzzy, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "No consegui abrir: %s\n"

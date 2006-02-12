@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1593,7 +1593,7 @@ msgstr ""
 msgid "%s created as %s\n"
 msgstr ""
 
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, c-format
 msgid "adding %d args from manifest.\n"
 msgstr ""

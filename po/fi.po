@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -1652,7 +1652,7 @@ msgstr "%s:n avaus ei onnistunut: %s\n"
 msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, fuzzy, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"

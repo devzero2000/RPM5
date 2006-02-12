@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1619,7 +1619,7 @@ msgstr "%s unlink av %s misslyckades: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
 
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "lägger till %d poster från förteckning.\n"

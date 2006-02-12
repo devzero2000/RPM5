@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1661,7 +1661,7 @@ msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 msgid "%s created as %s\n"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, fuzzy, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "dodajanje vnosov 0 %s.\n"

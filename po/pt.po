@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1640,7 +1640,7 @@ msgstr "%s unlink de %s falhou: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"
 
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, fuzzy, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "a adicionar %d registos ao índice %s.\n"

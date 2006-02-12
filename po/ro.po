@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-03 12:08-0500\n"
+"POT-Creation-Date: 2006-02-12 13:17-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -1587,7 +1587,7 @@ msgstr ""
 msgid "%s created as %s\n"
 msgstr ""
 
-#: lib/manifest.c:145
+#: lib/manifest.c:152
 #, c-format
 msgid "adding %d args from manifest.\n"
 msgstr ""
