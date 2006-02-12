@@ -581,6 +581,7 @@ exit 0
 * Sun Feb 12 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.10
 - debuginfo: follow symlinks when copying source files (#149113).
 - lua: don't link -lreadline and -lhistory (#147013).
+- add tweaks to permit building in subdir, more to do yet (#81196).
 
 * Sat Feb 11 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.9
 - rollback: revert opt-out config, not ready for prime time yet.

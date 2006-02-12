@@ -13,6 +13,7 @@
 	- rollback: revert opt-out config, not ready for prime time yet.
 	- debuginfo: follow symlinks when copying source files (#149113).
 	- lua: don't link -lreadline and -lhistory (#147013).
+	- add tweaks to permit building in subdir, more to do yet (#81196).
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.

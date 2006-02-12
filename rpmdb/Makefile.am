@@ -66,6 +66,9 @@ endif
 # XXX make sure that db.h symlink is generated
 dbconfig.c $(DBLIBSRCS): db.h
 
+dbconfig.o: $(top_srcdir)/dbconfig.c
+	$(COMPILE) -o $@ -c $<
+
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '/*@-bounds@*/' > $@
 	@echo '#include "system.h"' >> $@
