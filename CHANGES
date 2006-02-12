@@ -17,6 +17,7 @@
 	- fix: don't process package manifest if HTML is found (#75774).
 	- fix: teach GNUconfigure about configure.[ac][in] (#170961).
 	- fix: insure that netsharedpath basename contains no '/' (#52725).
+	- popt: handle POPT_ARGFLAG_OPTIONAL correctly (#71147).
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.
