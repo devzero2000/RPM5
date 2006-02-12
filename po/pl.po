@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-12 13:17-0500\n"
+"POT-Creation-Date: 2006-02-12 15:23-0500\n"
 "PO-Revision-Date: 2005-12-14 23:47+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -2879,7 +2879,7 @@ msgstr "nieznana etykieta: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1443 lib/transaction.c:1179 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1443 lib/transaction.c:1182 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Niespe³nione zale¿no¶ci:\n"
 
@@ -2911,7 +2911,7 @@ msgstr "Uaktualnianie..."
 msgid "Upgrading packages..."
 msgstr "Uaktualnianie pakietów..."
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1152
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1155
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Cel automatycznego wycofania: %-24.24s (0x%08x):\n"
@@ -3007,7 +3007,7 @@ msgstr "Instalacja %s\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "Wy³±czanie TID z wycofania: %-24.24s (0x%08x)\n"
 
-#: lib/rpminstall.c:1437 lib/transaction.c:1157
+#: lib/rpminstall.c:1437 lib/transaction.c:1160
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Wycofanie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
@@ -3463,71 +3463,71 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Sygnatura: NIEZNANA (%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:885
+#: lib/transaction.c:888
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "wy³±czanie katalogu %s\n"
 
-#: lib/transaction.c:1010
+#: lib/transaction.c:1013
 #, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr "Cofanie udanych transakcji do %-24.24s (0x%08x).\n"
 
-#: lib/transaction.c:1015
+#: lib/transaction.c:1018
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr "Tworzenie transakcji wycofania do osi±gniêcia celu\n"
 
-#: lib/transaction.c:1149
+#: lib/transaction.c:1152
 msgid "Transaction failed...rolling back\n"
 msgstr "Transakcja nie powiod³a siê... wycofywanie\n"
 
-#: lib/transaction.c:1160
+#: lib/transaction.c:1163
 #, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr "Nieudana transakcja:  %-24.24s(0x%08x)\n"
 
-#: lib/transaction.c:1166
+#: lib/transaction.c:1169
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr "Nie uda³o siê rozwi±zaæ makra semaphore_backout!\n"
 
-#: lib/transaction.c:1170
+#: lib/transaction.c:1173
 #, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "Tworzenie semafora %s...\n"
 
-#: lib/transaction.c:1191
+#: lib/transaction.c:1194
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "Nie uda³o siê wykonaæ transakcji automatycznego wycofania!\n"
 
-#: lib/transaction.c:1238
+#: lib/transaction.c:1241
 #, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr "Cofanie udanych transakcji do %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:1283
+#: lib/transaction.c:1286
 #, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "Usuwanie semafora %s...\n"
 
-#: lib/transaction.c:1327
+#: lib/transaction.c:1330
 msgid "Getting repackaged header from transaction element\n"
 msgstr "Pobieranie przepakowanego nag³ówka z elementu transakcji\n"
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1357
+#: lib/transaction.c:1360
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\tPoszukiwanie %s...\n"
 
-#: lib/transaction.c:1361
+#: lib/transaction.c:1364
 msgid "\tMatches found.\n"
 msgstr "\tPasuj±cych znaleziono.\n"
 
-#: lib/transaction.c:1365
+#: lib/transaction.c:1368
 msgid "\tNo matches found.\n"
 msgstr "\tNie znaleziono pasuj±cych.\n"
 
-#: lib/transaction.c:1378
+#: lib/transaction.c:1381
 msgid "\tRepackaged package not found!.\n"
 msgstr "\tPrzepakowany pakiet nie znaleziony!.\n"
 
@@ -3538,107 +3538,107 @@ msgstr "\tPrzepakowany pakiet nie znaleziony!.\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1399
+#: lib/transaction.c:1402
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "\tREMOVETID dopasowano do INSTALLTID.\n"
 
-#: lib/transaction.c:1401
+#: lib/transaction.c:1404
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\tNazwa:  %s.\n"
 
-#: lib/transaction.c:1424
+#: lib/transaction.c:1427
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\tPrzepakowany Pakiet %s...\n"
 
-#: lib/transaction.c:1476
+#: lib/transaction.c:1479
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 "Przetwarzanie nieudanego elementu instalacji %s do automatycznego "
 "wycofania.\n"
 
-#: lib/transaction.c:1479
+#: lib/transaction.c:1482
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "\tWymuszenie dodania nag³ówka do rpmdb.\n"
 
-#: lib/transaction.c:1490
+#: lib/transaction.c:1493
 msgid "\tCould not add failed package header to db!\n"
 msgstr "\tNie uda³o siê dodaæ nag³ówka nieudanego pakietu do bazy!\n"
 
-#: lib/transaction.c:1502 lib/transaction.c:1638
+#: lib/transaction.c:1505 lib/transaction.c:1641
 #, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr "%s: Nieznany typ elementu transakcji!\n"
 
-#: lib/transaction.c:1503 lib/transaction.c:1639
+#: lib/transaction.c:1506 lib/transaction.c:1642
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr "RODZAJ:  %d\n"
 
-#: lib/transaction.c:1533
+#: lib/transaction.c:1536
 msgid "Processing install element for autorollback...\n"
 msgstr "Przetwarzanie elementu instalacji do automatycznego wycofania...\n"
 
-#: lib/transaction.c:1534 lib/transaction.c:1589
+#: lib/transaction.c:1537 lib/transaction.c:1592
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr "\tNEVRA: %s\n"
 
-#: lib/transaction.c:1542
+#: lib/transaction.c:1545
 msgid "Could not get install element database instance!\n"
 msgstr "Nie uda³o siê uzyskaæ instancji bazy danych elementu instalacji!\n"
 
-#: lib/transaction.c:1554
+#: lib/transaction.c:1557
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 "Nie uda³o siê uzyskaæ nag³ówka do transakcji automatycznego wycofania!\n"
 
-#: lib/transaction.c:1564
+#: lib/transaction.c:1567
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tDodano przepakowany nag³ówek pakietu: %s.\n"
 
 #. Add the header as a pure erase element, no repackaged package.
-#: lib/transaction.c:1574
+#: lib/transaction.c:1577
 msgid "\tAdded erase element.\n"
 msgstr "\tDodano element usuniêcia.\n"
 
-#: lib/transaction.c:1581
+#: lib/transaction.c:1584
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 "Nie uda³o siê uzyskaæ przepakowanego nag³ówka do transakcji automatycznego "
 "wycofania!\n"
 
-#: lib/transaction.c:1588
+#: lib/transaction.c:1591
 msgid "Processing erase element for autorollback...\n"
 msgstr "Przetwarzanie elementu usuniêcia do automatycznego wycofania...\n"
 
-#: lib/transaction.c:1598
+#: lib/transaction.c:1601
 msgid "\tErase element(s) already added.\n"
 msgstr "\tElement(y) usuniêcia ju¿ dodane.\n"
 
-#: lib/transaction.c:1609
+#: lib/transaction.c:1612
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tDodano przepakowany pakiet %s.\n"
 
-#: lib/transaction.c:1613
+#: lib/transaction.c:1616
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 "Nie uda³o siê dodaæ elementu usuniêcia do transakcji automatycznego "
 "wycofania.\n"
 
-#: lib/transaction.c:1624
+#: lib/transaction.c:1627
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\tNie ma przepakowanych pakietów... nie ma nic do zrobienia.\n"
 
-#: lib/transaction.c:1630
+#: lib/transaction.c:1633
 msgid "Failure reading repackaged package!\n"
 msgstr "B³±d podczas odczytu przepakowanego pakietu!\n"
 
-#: lib/transaction.c:1769
+#: lib/transaction.c:1772
 msgid "Invalid number of transaction elements.\n"
 msgstr "B³êdna liczba elementów transakcji.\n"
 
@@ -3650,12 +3650,12 @@ msgstr "B³êdna liczba elementów transakcji.\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1823
+#: lib/transaction.c:1826
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "sprawdzanie poprawno¶ci %d elementów\n"
 
-#: lib/transaction.c:1909
+#: lib/transaction.c:1912
 msgid "running pre-transaction scripts\n"
 msgstr "uruchamianie skryptów pre-transakcyjnych\n"
 
@@ -3667,7 +3667,7 @@ msgstr "uruchamianie skryptów pre-transakcyjnych\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1984
+#: lib/transaction.c:1987
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "obliczanie %d odcisków plików\n"
@@ -3675,24 +3675,24 @@ msgstr "obliczanie %d odcisków plików\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2065
+#: lib/transaction.c:2068
 msgid "computing file dispositions\n"
 msgstr "obliczanie dyspozycji plików\n"
 
-#: lib/transaction.c:2249
+#: lib/transaction.c:2252
 msgid "Creating auto-rollback transaction\n"
 msgstr "Tworzenie transakcji automatycznego wycofania\n"
 
-#: lib/transaction.c:2519
+#: lib/transaction.c:2522
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr "Dodawanie %s do transakcji automatycznego wycofania.\n"
 
-#: lib/transaction.c:2526
+#: lib/transaction.c:2529
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr "Nie uda³o siê dodaæ elementu transakcji do automatycznego wycofania!\n"
 
-#: lib/transaction.c:2570
+#: lib/transaction.c:2573
 msgid "running post-transaction scripts\n"
 msgstr "uruchamianie skryptów po-transakcyjnych\n"
 

@@ -584,6 +584,7 @@ exit 0
 - add tweaks to permit building in subdir, more to do yet (#81196).
 - fix: don't process package manifest if HTML is found (#75774).
 - fix: teach GNUconfigure about configure.[ac][in] (#170961).
+- fix: insure that netsharedpath basename contains no '/' (#52725).
 
 * Sat Feb 11 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.9
 - rollback: revert opt-out config, not ready for prime time yet.

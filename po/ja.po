@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-12 13:17-0500\n"
+"POT-Creation-Date: 2006-02-12 15:23-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -2898,7 +2898,7 @@ msgstr "不明なタグ: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1443 lib/transaction.c:1179 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1443 lib/transaction.c:1182 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
@@ -2930,7 +2930,7 @@ msgstr "アップグレード中..."
 msgid "Upgrading packages..."
 msgstr "パッケージをアップグレード中..."
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1152
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1155
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "自動ロールバック 目標: %-24.24s\n"
@@ -3027,7 +3027,7 @@ msgstr "%s をインストール中です。\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "ロールバックから TID %d を除外しています\n"
 
-#: lib/rpminstall.c:1437 lib/transaction.c:1157
+#: lib/rpminstall.c:1437 lib/transaction.c:1160
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
@@ -3489,72 +3489,72 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名: 未知(%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:885
+#: lib/transaction.c:888
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:1010
+#: lib/transaction.c:1013
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr "%s へのトランザクションのロールバックに成功しました。\n"
 
-#: lib/transaction.c:1015
+#: lib/transaction.c:1018
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr "アーカイブ目標のためのロールバックトランザクションを作成しています。\n"
 
-#: lib/transaction.c:1149
+#: lib/transaction.c:1152
 msgid "Transaction failed...rolling back\n"
 msgstr "トランザクションに失敗しました...ロールバック中\n"
 
-#: lib/transaction.c:1160
+#: lib/transaction.c:1163
 #, fuzzy, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr "トランザクション失敗:  0x%08x\n"
 
-#: lib/transaction.c:1166
+#: lib/transaction.c:1169
 #, fuzzy
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr "自動ロールバックトランザクションを順序付けできませんでした!\n"
 
-#: lib/transaction.c:1170
+#: lib/transaction.c:1173
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/transaction.c:1191
+#: lib/transaction.c:1194
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "自動ロールバックトランザクションを順序付けできませんでした!\n"
 
-#: lib/transaction.c:1238
+#: lib/transaction.c:1241
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr "%s へのトランザクションのロールバックに成功しました。\n"
 
-#: lib/transaction.c:1283
+#: lib/transaction.c:1286
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "ディレクトリの削除: %s\n"
 
-#: lib/transaction.c:1327
+#: lib/transaction.c:1330
 msgid "Getting repackaged header from transaction element\n"
 msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1357
+#: lib/transaction.c:1360
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\t%s を検索中...\n"
 
-#: lib/transaction.c:1361
+#: lib/transaction.c:1364
 msgid "\tMatches found.\n"
 msgstr "\t一致を見つけました。\n"
 
-#: lib/transaction.c:1365
+#: lib/transaction.c:1368
 msgid "\tNo matches found.\n"
 msgstr "\t一致が見つかりません。\n"
 
-#: lib/transaction.c:1378
+#: lib/transaction.c:1381
 msgid "\tRepackaged package not found!.\n"
 msgstr "\t再パッケージされたパッケージが見つかりません!\n"
 
@@ -3565,103 +3565,103 @@ msgstr "\t再パッケージされたパッケージが見つかりません!\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1399
+#: lib/transaction.c:1402
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "\tREMOVETID が INSTALLTID に一致しました。\n"
 
-#: lib/transaction.c:1401
+#: lib/transaction.c:1404
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\t名前:  %s.\n"
 
-#: lib/transaction.c:1424
+#: lib/transaction.c:1427
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\t再パッケージされたパッケージは %s です...\n"
 
-#: lib/transaction.c:1476
+#: lib/transaction.c:1479
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 "自動ロールバックのために、インストールに失敗した要素 %s を処理しています。\n"
 
-#: lib/transaction.c:1479
+#: lib/transaction.c:1482
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "\trpmdb にヘッダーを強制的に追加しています。\n"
 
-#: lib/transaction.c:1490
+#: lib/transaction.c:1493
 msgid "\tCould not add failed package header to db!\n"
 msgstr "\t失敗したパッケージのヘッダーを db に追加できませんでした。\n"
 
-#: lib/transaction.c:1502 lib/transaction.c:1638
+#: lib/transaction.c:1505 lib/transaction.c:1641
 #, fuzzy, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr "_rpmtsAddRollbackElement: 不明なトランザクションエレメント種別。\n"
 
-#: lib/transaction.c:1503 lib/transaction.c:1639
+#: lib/transaction.c:1506 lib/transaction.c:1642
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr "TYPE:  %d\n"
 
-#: lib/transaction.c:1533
+#: lib/transaction.c:1536
 msgid "Processing install element for autorollback...\n"
 msgstr "自動ロールバックのために、インストール要素を処理中...\n"
 
-#: lib/transaction.c:1534 lib/transaction.c:1589
+#: lib/transaction.c:1537 lib/transaction.c:1592
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr "\tNEVRA: %s\n"
 
-#: lib/transaction.c:1542
+#: lib/transaction.c:1545
 msgid "Could not get install element database instance!\n"
 msgstr "インストール要素データベースのインスタンスを取得できませんでした!\n"
 
-#: lib/transaction.c:1554
+#: lib/transaction.c:1557
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "自動ロールバックトランザクションのヘッダを取得できませんでした。\n"
 
-#: lib/transaction.c:1564
+#: lib/transaction.c:1567
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\t再パッケージされたパッケージヘッダを追加しました: %s.\n"
 
 #. Add the header as a pure erase element, no repackaged package.
-#: lib/transaction.c:1574
+#: lib/transaction.c:1577
 msgid "\tAdded erase element.\n"
 msgstr "\t削除要素を追加しました。\n"
 
-#: lib/transaction.c:1581
+#: lib/transaction.c:1584
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 "自動ロールバックトランザクションの再パッケージヘッダを取得できませんでした!\n"
 
-#: lib/transaction.c:1588
+#: lib/transaction.c:1591
 msgid "Processing erase element for autorollback...\n"
 msgstr "自動ロールバックのために、削除要素を処理中...\n"
 
-#: lib/transaction.c:1598
+#: lib/transaction.c:1601
 #, fuzzy
 msgid "\tErase element(s) already added.\n"
 msgstr "\t削除要素は、既にインストール対象に追加されています。\n"
 
-#: lib/transaction.c:1609
+#: lib/transaction.c:1612
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\t再パッケージされたパッケージ %s を追加しました。\n"
 
-#: lib/transaction.c:1613
+#: lib/transaction.c:1616
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr "自動ロールバックトランザクションに削除要素を追加できません。\n"
 
-#: lib/transaction.c:1624
+#: lib/transaction.c:1627
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\t再パッケージされたパッケージがありません...何もしません。\n"
 
-#: lib/transaction.c:1630
+#: lib/transaction.c:1633
 msgid "Failure reading repackaged package!\n"
 msgstr "再パッケージされたパッケージの読み込みに失敗しました!\n"
 
-#: lib/transaction.c:1769
+#: lib/transaction.c:1772
 #, fuzzy
 msgid "Invalid number of transaction elements.\n"
 msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
@@ -3674,12 +3674,12 @@ msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1823
+#: lib/transaction.c:1826
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "%d 個の要素の健全性チェック中\n"
 
-#: lib/transaction.c:1909
+#: lib/transaction.c:1912
 msgid "running pre-transaction scripts\n"
 msgstr "トランザクション前のスクリプトを実行中\n"
 
@@ -3691,7 +3691,7 @@ msgstr "トランザクション前のスクリプトを実行中\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1984
+#: lib/transaction.c:1987
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "%d ファイルの指紋を計算しています。\n"
@@ -3699,24 +3699,24 @@ msgstr "%d ファイルの指紋を計算しています。\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2065
+#: lib/transaction.c:2068
 msgid "computing file dispositions\n"
 msgstr "ファイルの性質を計算しています。\n"
 
-#: lib/transaction.c:2249
+#: lib/transaction.c:2252
 msgid "Creating auto-rollback transaction\n"
 msgstr "自動ロールバックトランザクションを作成しています。\n"
 
-#: lib/transaction.c:2519
+#: lib/transaction.c:2522
 #, fuzzy, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr "自動ロールバックトランザクションに %s を追加しました。\n"
 
-#: lib/transaction.c:2526
+#: lib/transaction.c:2529
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr "自動ロールバックにトランザクション要素を追加できませんでした。\n"
 
-#: lib/transaction.c:2570
+#: lib/transaction.c:2573
 msgid "running post-transaction scripts\n"
 msgstr "トランザクション後のスクリプトを実行中\n"
 

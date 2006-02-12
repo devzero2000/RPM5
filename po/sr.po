@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-12 13:17-0500\n"
+"POT-Creation-Date: 2006-02-12 15:23-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -2975,7 +2975,7 @@ msgstr "nepoznat tag"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1443 lib/transaction.c:1179 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1443 lib/transaction.c:1182 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "lo¹e meðuzavisnosti:\n"
@@ -3010,7 +3010,7 @@ msgstr ""
 msgid "Upgrading packages..."
 msgstr "instaliraj paket"
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1152
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1155
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
@@ -3107,7 +3107,7 @@ msgstr "Instaliram %s\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1437 lib/transaction.c:1157
+#: lib/rpminstall.c:1437 lib/transaction.c:1160
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -3568,71 +3568,71 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:885
+#: lib/transaction.c:888
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:1010
+#: lib/transaction.c:1013
 #, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr ""
 
-#: lib/transaction.c:1015
+#: lib/transaction.c:1018
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr ""
 
-#: lib/transaction.c:1149
+#: lib/transaction.c:1152
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1160
+#: lib/transaction.c:1163
 #, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1166
+#: lib/transaction.c:1169
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr ""
 
-#: lib/transaction.c:1170
+#: lib/transaction.c:1173
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:1191
+#: lib/transaction.c:1194
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1238
+#: lib/transaction.c:1241
 #, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1283
+#: lib/transaction.c:1286
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:1327
+#: lib/transaction.c:1330
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1357
+#: lib/transaction.c:1360
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1361
+#: lib/transaction.c:1364
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1365
+#: lib/transaction.c:1368
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1378
+#: lib/transaction.c:1381
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "paket nema imena"
@@ -3644,103 +3644,103 @@ msgstr "paket nema imena"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1399
+#: lib/transaction.c:1402
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1401
+#: lib/transaction.c:1404
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1424
+#: lib/transaction.c:1427
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/transaction.c:1476
+#: lib/transaction.c:1479
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1479
+#: lib/transaction.c:1482
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: lib/transaction.c:1490
+#: lib/transaction.c:1493
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "upit nad svim paketima"
 
-#: lib/transaction.c:1502 lib/transaction.c:1638
+#: lib/transaction.c:1505 lib/transaction.c:1641
 #, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1503 lib/transaction.c:1639
+#: lib/transaction.c:1506 lib/transaction.c:1642
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1533
+#: lib/transaction.c:1536
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1534 lib/transaction.c:1589
+#: lib/transaction.c:1537 lib/transaction.c:1592
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1542
+#: lib/transaction.c:1545
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1554
+#: lib/transaction.c:1557
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1564
+#: lib/transaction.c:1567
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "upit nad svim paketima"
 
 #. Add the header as a pure erase element, no repackaged package.
-#: lib/transaction.c:1574
+#: lib/transaction.c:1577
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1581
+#: lib/transaction.c:1584
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1588
+#: lib/transaction.c:1591
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1598
+#: lib/transaction.c:1601
 msgid "\tErase element(s) already added.\n"
 msgstr ""
 
-#: lib/transaction.c:1609
+#: lib/transaction.c:1612
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "upit nad svim paketima"
 
-#: lib/transaction.c:1613
+#: lib/transaction.c:1616
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1624
+#: lib/transaction.c:1627
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1630
+#: lib/transaction.c:1633
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: lib/transaction.c:1769
+#: lib/transaction.c:1772
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3752,12 +3752,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1823
+#: lib/transaction.c:1826
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1909
+#: lib/transaction.c:1912
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3769,7 +3769,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1984
+#: lib/transaction.c:1987
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3777,24 +3777,24 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2065
+#: lib/transaction.c:2068
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2249
+#: lib/transaction.c:2252
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2519
+#: lib/transaction.c:2522
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2526
+#: lib/transaction.c:2529
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2570
+#: lib/transaction.c:2573
 msgid "running post-transaction scripts\n"
 msgstr ""
 
