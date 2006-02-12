@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.7
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -578,6 +578,15 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Feb 12 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.10
+- debuginfo: follow symlinks when copying source files (#149113).
+
+* Sat Feb 11 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.9
+- rollback: revert opt-out config, not ready for prime time yet.
+
+* Fri Feb 10 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.8
+- build against neon-0.25.5.
+
 * Fri Feb  3 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.7
 - irix: avoid NULL environ segfault with non-gcc sgi compiler (#178133).
 - ppc: detect certain cpu's as "ppc", not "ppciseries" (#128604).

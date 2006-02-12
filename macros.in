@@ -715,13 +715,13 @@ print (t)\
 #	erasure rollback transactions will undo an anaconda install,
 #	for example, which %_unsafe_rollbacks tries to prevent.
 #
-#	Undefine, or set to 0 if you're clumsy and/or paranoid. 
-%_unsafe_rollbacks	1
+#	Set this to non-zero at your own risk, it's dangerous.
+%_unsafe_rollbacks	0
 
 #	Automate transaction rollbacks on upgrade failure.
 #
-#	Undefine, or set to 0 if you're clumsy and/or paranoid. 
-%_rollback_transaction_on_failure	1
+#	Set this to non-zero at your own risk, it's dangerous.
+%_rollback_transaction_on_failure	0
 
 #	Verify digest/signature flags for various rpm modes:
 #	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)

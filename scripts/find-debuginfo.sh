@@ -49,7 +49,7 @@ do
 done
 
 mkdir -p ${RPM_BUILD_ROOT}/usr/src/debug
-cat $SOURCEFILE | (cd $RPM_BUILD_DIR; LANG=C sort -z -u | cpio -pd0m ${RPM_BUILD_ROOT}/usr/src/debug)
+cat $SOURCEFILE | (cd $RPM_BUILD_DIR; LANG=C sort -z -u | cpio -pd0mL ${RPM_BUILD_ROOT}/usr/src/debug)
 # stupid cpio creates new directories in mode 0700, fixup
 find ${RPM_BUILD_ROOT}/usr/src/debug -type d -print0 | xargs -0 chmod a+rx
 

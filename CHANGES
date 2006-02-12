@@ -9,6 +9,9 @@
 	- ppc: detect certain cpu's as "ppc", not "ppciseries" (#128604).
 	- rollback: make default configuration opt-out rather than opt-in.
 	- build against sqlite-3.3.3.
+	- build against neon-0.25.5.
+	- rollback: revert opt-out config, not ready for prime time yet.
+	- debuginfo: follow symlinks when copying source files (#149113).
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.
