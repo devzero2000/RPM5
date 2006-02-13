@@ -19,6 +19,8 @@
 	- fix: insure that netsharedpath basename contains no '/' (#52725).
 	- popt: handle POPT_ARGFLAG_OPTIONAL correctly (#71147).
 	- python: doco strings for te.{Depth,Breadth}.
+	- upgrade to db-4.4.20.
+	- handle trailing delimiters in rpmvercmp more carefully (#178798).
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.
