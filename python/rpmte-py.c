@@ -39,9 +39,10 @@
  * - te.Pkgid()	Return package identifier (header+payload md5 digest).
  * - te.Hdrid()	Return package header identifier (header sha1 digest).
  * - te.Color() Return package color bits.
- * - te.PkgFileSize() Return no. of bytes in package file (approx).
- * - te.Depth()	Return the level in the dependency tree (after ordering).
- * - te.Npreds() Return the number of package prerequisites (after ordering).
+ * - te.PkgFileSize() Return no. of bytes in package file.
+ * - te.Breadth() Return element breadth index.
+ * - te.Depth() Return element depth index.
+ * - te.Npreds() Return the number of package prerequisites.
  * - te.Degree() Return the parent's degree + 1.
  * - te.Parent() Return the parent element index.
  * - te.Tree()	Return the root dependency tree index.
@@ -363,9 +364,9 @@ static struct PyMethodDef rpmte_methods[] = {
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
 	NULL},
     {"Breadth",	(PyCFunction)rpmte_Breadth,	METH_NOARGS,
-	NULL},
+"te.Breadth() -> transaction element breadth index.\n" },
     {"Depth",	(PyCFunction)rpmte_Depth,	METH_NOARGS,
-	NULL},
+"te.Depth() -> transaction element depth index.\n" },
     {"Npreds",	(PyCFunction)rpmte_Npreds,	METH_NOARGS,
 	NULL},
     {"Degree",	(PyCFunction)rpmte_Degree,	METH_NOARGS,
