@@ -21,6 +21,7 @@
 	- python: doco strings for te.{Depth,Breadth}.
 	- upgrade to db-4.4.20.
 	- handle trailing delimiters in rpmvercmp more carefully (#178798).
+	- remove sqlite from the rpm-4_4 branch.
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.
