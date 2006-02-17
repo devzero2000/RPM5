@@ -12,7 +12,6 @@ LIBRPM_0
     fileStageString;
     _fini;
     _fps_debug;
-    freeFilesystems;
     freeFSM;
     freeSplitString;
     freeStringBuf;
@@ -176,6 +175,7 @@ LIBRPM_0
     rpmfiTypeString;
     rpmfiVFlags;
     rpmFLAGS;
+    rpmFreeFilesystems;
     rpmFreeRpmrc;
     rpmFreeSignature;
     rpmGetArchInfo;

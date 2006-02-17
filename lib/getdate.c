@@ -4,10 +4,10 @@
 /*@-globs -evalorderuncon -modobserveruncon -modnomods @*/
 /*@-noeffect -branchstate -sizeoftype -usereleased @*/
 /*@unused@*/
-/* A Bison parser, made by GNU Bison 2.1.  */
+/* A Bison parser, made by GNU Bison 1.875c.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
@@ -41,9 +41,6 @@
 
 /* Identify Bison output.  */
 #define YYBISON 1
-
-/* Bison version.  */
-#define YYBISON_VERSION "2.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -77,7 +74,6 @@
      tDST = 270
    };
 #endif
-/* Tokens.  */
 #define tAGO 258
 #define tDAY 259
 #define tDAYZONE 260
@@ -194,6 +190,10 @@ struct timeb {
 #include <stdlib.h>
 #endif
 
+#if HAVE_MALLOC_H && !defined(__LCLINT__)
+#include <malloc.h>
+#endif
+
 /* NOTES on rebuilding getdate.c (particularly for inclusion in CVS
    releases):
 
@@ -212,27 +212,15 @@ extern struct tm	*gmtime();
 extern struct tm	*localtime();
 #endif
 
-/*@-exportheader@*/
-extern time_t get_date(char * p, struct timeb * now);
-/*@=exportheader@*/
-
-#define yyparse getdate_yyparse
-#define yylex getdate_yylex
-#define yyerror getdate_yyerror
-
-static int yyparse (void);
-static int yylex (void);
-static int yyerror(const char * s);
-
 #define EPOCH		1970
 #define HOUR(x)		((time_t)(x) * 60)
 #define SECSPERDAY	(24L * 60L * 60L)
-
 
 /*
 **  An entry in the lexical lookup table.
 */
 typedef struct _TABLE {
+/*@observer@*/ /*@relnull@*/
     char	*name;
     int		type;
     time_t	value;
@@ -260,25 +248,57 @@ typedef enum _MERIDIAN {
 **  yacc had the %union construct.)  Maybe someday; right now we only use
 **  the %union very rarely.
 */
+/*@unchecked@*/
 static char	*yyInput;
+/*@unchecked@*/
 static DSTMODE	yyDSTmode;
+/*@unchecked@*/
 static time_t	yyDayOrdinal;
+/*@unchecked@*/
 static time_t	yyDayNumber;
+/*@unchecked@*/
 static int	yyHaveDate;
+/*@unchecked@*/
 static int	yyHaveDay;
+/*@unchecked@*/
 static int	yyHaveRel;
+/*@unchecked@*/
 static int	yyHaveTime;
+/*@unchecked@*/
 static int	yyHaveZone;
+/*@unchecked@*/
 static time_t	yyTimezone;
+/*@unchecked@*/
 static time_t	yyDay;
+/*@unchecked@*/
 static time_t	yyHour;
+/*@unchecked@*/
 static time_t	yyMinutes;
+/*@unchecked@*/
 static time_t	yyMonth;
+/*@unchecked@*/
 static time_t	yySeconds;
+/*@unchecked@*/
 static time_t	yyYear;
+/*@unchecked@*/
 static MERIDIAN	yyMeridian;
+/*@unchecked@*/
 static time_t	yyRelMonth;
+/*@unchecked@*/
 static time_t	yyRelSeconds;
+
+#define yyparse getdate_yyparse
+#define yylex getdate_yylex
+#define yyerror getdate_yyerror
+
+static int yyparse (void);
+static int yylex (void);
+static int yyerror(const char * s)
+	/*@*/;
+
+/*@-exportheader@*/
+extern time_t get_date(char * p, struct timeb * now);
+/*@=exportheader@*/
 
 
 
@@ -295,19 +315,14 @@ static time_t	yyRelSeconds;
 # define YYERROR_VERBOSE 0
 #endif
 
-/* Enabling the token table.  */
-#ifndef YYTOKEN_TABLE
-# define YYTOKEN_TABLE 0
-#endif
-
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 186 "./getdate.y"
+#line 210 "./getdate.y"
 typedef union YYSTYPE {
     time_t		Number;
     enum _MERIDIAN	Meridian;
 } YYSTYPE;
-/* Line 196 of yacc.c.  */
-#line 305 "getdate.c"
+/* Line 191 of yacc.c.  */
+#line 320 "getdate.c"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -318,34 +333,8 @@ typedef union YYSTYPE {
 /* Copy the second part of user declarations.  */
 
 
-/* Line 219 of yacc.c.  */
-#line 317 "getdate.c"
-
-#if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
-# define YYSIZE_T __SIZE_TYPE__
-#endif
-#if ! defined (YYSIZE_T) && defined (size_t)
-# define YYSIZE_T size_t
-#endif
-#if ! defined (YYSIZE_T) && (defined (__STDC__) || defined (__cplusplus))
-# include <stddef.h> /* INFRINGES ON USER NAME SPACE */
-# define YYSIZE_T size_t
-#endif
-#if ! defined (YYSIZE_T)
-# define YYSIZE_T unsigned int
-#endif
-
-#ifndef YY_
-# if YYENABLE_NLS
-#  if ENABLE_NLS
-#   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
-#   define YY_(msgid) dgettext ("bison-runtime", msgid)
-#  endif
-# endif
-# ifndef YY_
-#  define YY_(msgid) msgid
-# endif
-#endif
+/* Line 214 of yacc.c.  */
+#line 332 "getdate.c"
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
@@ -353,14 +342,14 @@ typedef union YYSTYPE {
 
 # ifdef YYSTACK_USE_ALLOCA
 #  if YYSTACK_USE_ALLOCA
+#   define YYSTACK_ALLOC alloca
+#  endif
+# else
+#  if defined (alloca) || defined (_ALLOCA_H)
+#   define YYSTACK_ALLOC alloca
+#  else
 #   ifdef __GNUC__
 #    define YYSTACK_ALLOC __builtin_alloca
-#   else
-#    define YYSTACK_ALLOC alloca
-#    if defined (__STDC__) || defined (__cplusplus)
-#     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#     define YYINCLUDED_STDLIB_H
-#    endif
 #   endif
 #  endif
 # endif
@@ -368,39 +357,13 @@ typedef union YYSTYPE {
 # ifdef YYSTACK_ALLOC
    /* Pacify GCC's `empty if-body' warning. */
 #  define YYSTACK_FREE(Ptr) do { /* empty */; } while (0)
-#  ifndef YYSTACK_ALLOC_MAXIMUM
-    /* The OS might guarantee only one guard page at the bottom of the stack,
-       and a page size can be as small as 4096 bytes.  So we cannot safely
-       invoke alloca (N) if N exceeds 4096.  Use a slightly smaller number
-       to allow for a few compiler-allocated temporary stack slots.  */
-#   define YYSTACK_ALLOC_MAXIMUM 4032 /* reasonable circa 2005 */
-#  endif
 # else
-#  define YYSTACK_ALLOC YYMALLOC
-#  define YYSTACK_FREE YYFREE
-#  ifndef YYSTACK_ALLOC_MAXIMUM
-#   define YYSTACK_ALLOC_MAXIMUM ((YYSIZE_T) -1)
+#  if defined (__STDC__) || defined (__cplusplus)
+#   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
+#   define YYSIZE_T size_t
 #  endif
-#  ifdef __cplusplus
-extern "C" {
-#  endif
-#  ifndef YYMALLOC
-#   define YYMALLOC malloc
-#   if (! defined (malloc) && ! defined (YYINCLUDED_STDLIB_H) \
-	&& (defined (__STDC__) || defined (__cplusplus)))
-void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
-#   endif
-#  endif
-#  ifndef YYFREE
-#   define YYFREE free
-#   if (! defined (free) && ! defined (YYINCLUDED_STDLIB_H) \
-	&& (defined (__STDC__) || defined (__cplusplus)))
-void free (void *); /* INFRINGES ON USER NAME SPACE */
-#   endif
-#  endif
-#  ifdef __cplusplus
-}
-#  endif
+#  define YYSTACK_ALLOC malloc
+#  define YYSTACK_FREE free
 # endif
 #endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
 
@@ -412,7 +375,7 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  short int yyss;
+  short yyss;
   YYSTYPE yyvs;
   };
 
@@ -422,7 +385,7 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (short int) + sizeof (YYSTYPE))			\
+     ((N) * (sizeof (short) + sizeof (YYSTYPE))				\
       + YYSTACK_GAP_MAXIMUM)
 
 /* Copy COUNT objects from FROM to TO.  The source and destination do
@@ -435,7 +398,7 @@ union yyalloc
 #   define YYCOPY(To, From, Count)		\
       do					\
 	{					\
-	  YYSIZE_T yyi;				\
+	  register YYSIZE_T yyi;		\
 	  for (yyi = 0; yyi < (Count); yyi++)	\
 	    (To)[yyi] = (From)[yyi];		\
 	}					\
@@ -464,7 +427,7 @@ union yyalloc
 #if defined (__STDC__) || defined (__cplusplus)
    typedef signed char yysigned_char;
 #else
-   typedef short int yysigned_char;
+   typedef short yysigned_char;
 #endif
 
 /* YYFINAL -- State number of the termination state. */
@@ -485,7 +448,7 @@ union yyalloc
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   270
 
-#define YYTRANSLATE(YYX)						\
+#define YYTRANSLATE(YYX) 						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 /* YYTRANSLATE[YYLEX] -- Bison symbol number corresponding to YYLEX.  */
@@ -552,18 +515,18 @@ static const yysigned_char yyrhs[] =
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const unsigned short int yyrline[] =
+static const unsigned short yyrline[] =
 {
-       0,   200,   200,   201,   204,   207,   210,   213,   216,   219,
-     222,   228,   234,   241,   247,   257,   261,   266,   272,   276,
-     280,   286,   290,   301,   307,   313,   317,   322,   326,   333,
-     337,   340,   343,   346,   349,   352,   355,   358,   361,   364,
-     369,   396,   399
+       0,   224,   224,   225,   228,   231,   234,   237,   240,   243,
+     246,   252,   258,   265,   271,   281,   285,   290,   296,   300,
+     304,   310,   314,   325,   331,   337,   341,   346,   350,   357,
+     361,   364,   367,   370,   373,   376,   379,   382,   385,   388,
+     393,   420,   423
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE
-/* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
+#if YYDEBUG || YYERROR_VERBOSE
+/* YYTNME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
@@ -578,7 +541,7 @@ static const char *const yytname[] =
 # ifdef YYPRINT
 /* YYTOKNUM[YYLEX-NUM] -- Internal token number corresponding to
    token YYLEX-NUM.  */
-static const unsigned short int yytoknum[] =
+static const unsigned short yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,    58,    44,    47
@@ -680,6 +643,22 @@ static const unsigned char yystos[] =
       12,    29
 };
 
+#if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
+# define YYSIZE_T __SIZE_TYPE__
+#endif
+#if ! defined (YYSIZE_T) && defined (size_t)
+# define YYSIZE_T size_t
+#endif
+#if ! defined (YYSIZE_T)
+# if defined (__STDC__) || defined (__cplusplus)
+#  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
+#  define YYSIZE_T size_t
+# endif
+#endif
+#if ! defined (YYSIZE_T)
+# define YYSIZE_T unsigned int
+#endif
+
 #define yyerrok		(yyerrstatus = 0)
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		(-2)
@@ -709,58 +688,25 @@ do								\
       goto yybackup;						\
     }								\
   else								\
-    {								\
-      yyerror (YY_("syntax error: cannot back up")); \
+    { 								\
+      yyerror ("syntax error: cannot back up");\
       YYERROR;							\
     }								\
 while (0)
 
-
 #define YYTERROR	1
 #define YYERRCODE	256
 
+/* YYLLOC_DEFAULT -- Compute the default location (before the actions
+   are run).  */
 
-/* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
-   If N is 0, then set CURRENT to the empty location which ends
-   the previous symbol: RHS[0] (always defined).  */
-
-#define YYRHSLOC(Rhs, K) ((Rhs)[K])
 #ifndef YYLLOC_DEFAULT
-# define YYLLOC_DEFAULT(Current, Rhs, N)				\
-    do									\
-      if (N)								\
-	{								\
-	  (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;	\
-	  (Current).first_column = YYRHSLOC (Rhs, 1).first_column;	\
-	  (Current).last_line    = YYRHSLOC (Rhs, N).last_line;		\
-	  (Current).last_column  = YYRHSLOC (Rhs, N).last_column;	\
-	}								\
-      else								\
-	{								\
-	  (Current).first_line   = (Current).last_line   =		\
-	    YYRHSLOC (Rhs, 0).last_line;				\
-	  (Current).first_column = (Current).last_column =		\
-	    YYRHSLOC (Rhs, 0).last_column;				\
-	}								\
-    while (0)
+# define YYLLOC_DEFAULT(Current, Rhs, N)		\
+   ((Current).first_line   = (Rhs)[1].first_line,	\
+    (Current).first_column = (Rhs)[1].first_column,	\
+    (Current).last_line    = (Rhs)[N].last_line,	\
+    (Current).last_column  = (Rhs)[N].last_column)
 #endif
-
-
-/* YY_LOCATION_PRINT -- Print the location on the stream.
-   This macro was not mandated originally: define only if we know
-   we won't break user code: when these are the locations we know.  */
-
-#ifndef YY_LOCATION_PRINT
-# if YYLTYPE_IS_TRIVIAL
-#  define YY_LOCATION_PRINT(File, Loc)			\
-     fprintf (File, "%d.%d-%d.%d",			\
-              (Loc).first_line, (Loc).first_column,	\
-              (Loc).last_line,  (Loc).last_column)
-# else
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
-#endif
-
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
 
@@ -784,13 +730,19 @@ do {						\
     YYFPRINTF Args;				\
 } while (0)
 
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)		\
+# define YYDSYMPRINT(Args)			\
+do {						\
+  if (yydebug)					\
+    yysymprint Args;				\
+} while (0)
+
+# define YYDSYMPRINTF(Title, Token, Value, Location)		\
 do {								\
   if (yydebug)							\
     {								\
       YYFPRINTF (stderr, "%s ", Title);				\
-      yysymprint (stderr,					\
-                  Type, Value);	\
+      yysymprint (stderr, 					\
+                  Token, Value);	\
       YYFPRINTF (stderr, "\n");					\
     }								\
 } while (0)
@@ -802,12 +754,12 @@ do {								\
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yy_stack_print (short int *bottom, short int *top)
+yy_stack_print (short *bottom, short *top)
 #else
 static void
 yy_stack_print (bottom, top)
-    short int *bottom;
-    short int *top;
+    short *bottom;
+    short *top;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
@@ -837,13 +789,13 @@ yy_reduce_print (yyrule)
 #endif
 {
   int yyi;
-  unsigned long int yylno = yyrline[yyrule];
-  YYFPRINTF (stderr, "Reducing stack by rule %d (line %lu), ",
+  unsigned int yylno = yyrline[yyrule];
+  YYFPRINTF (stderr, "Reducing stack by rule %d (line %u), ",
              yyrule - 1, yylno);
   /* Print the symbols being reduced, and their result.  */
   for (yyi = yyprhs[yyrule]; 0 <= yyrhs[yyi]; yyi++)
-    YYFPRINTF (stderr, "%s ", yytname[yyrhs[yyi]]);
-  YYFPRINTF (stderr, "-> %s\n", yytname[yyr1[yyrule]]);
+    YYFPRINTF (stderr, "%s ", yytname [yyrhs[yyi]]);
+  YYFPRINTF (stderr, "-> %s\n", yytname [yyr1[yyrule]]);
 }
 
 # define YY_REDUCE_PRINT(Rule)		\
@@ -857,7 +809,8 @@ do {					\
 /*@unused@*/ static int yydebug;
 #else /* !YYDEBUG */
 # define YYDPRINTF(Args)
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)
+# define YYDSYMPRINT(Args)
+# define YYDSYMPRINTF(Title, Token, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
@@ -872,8 +825,12 @@ do {					\
    if the built-in stack extension method is used).
 
    Do not make this value too large; the results are undefined if
-   YYSTACK_ALLOC_MAXIMUM < YYSTACK_BYTES (YYMAXDEPTH)
+   SIZE_MAX < YYSTACK_BYTES (YYMAXDEPTH)
    evaluated with infinite-precision integer arithmetic.  */
+
+#if defined (YYMAXDEPTH) && YYMAXDEPTH == 0
+# undef YYMAXDEPTH
+#endif
 
 #ifndef YYMAXDEPTH
 # define YYMAXDEPTH 10000
@@ -896,7 +853,7 @@ yystrlen (yystr)
      const char *yystr;
 #   endif
 {
-  const char *yys = yystr;
+  register const char *yys = yystr;
 
   while (*yys++ != '\0')
     continue;
@@ -921,8 +878,8 @@ yystpcpy (yydest, yysrc)
      const char *yysrc;
 #   endif
 {
-  char *yyd = yydest;
-  const char *yys = yysrc;
+  register char *yyd = yydest;
+  register const char *yys = yysrc;
 
   while ((*yyd++ = *yys++) != '\0')
     continue;
@@ -932,55 +889,7 @@ yystpcpy (yydest, yysrc)
 #  endif
 # endif
 
-# ifndef yytnamerr
-/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
-   quotes and backslashes, so that it's suitable for yyerror.  The
-   heuristic is that double-quoting is unnecessary unless the string
-   contains an apostrophe, a comma, or backslash (other than
-   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
-   null, do not copy; instead, return the length of what the result
-   would have been.  */
-static YYSIZE_T
-yytnamerr (char *yyres, const char *yystr)
-{
-  if (*yystr == '"')
-    {
-      size_t yyn = 0;
-      char const *yyp = yystr;
-
-      for (;;)
-	switch (*++yyp)
-	  {
-	  case '\'':
-	  case ',':
-	    goto do_not_strip_quotes;
-
-	  case '\\':
-	    if (*++yyp != '\\')
-	      goto do_not_strip_quotes;
-	    /* Fall through.  */
-	  default:
-	    if (yyres)
-	      yyres[yyn] = *yyp;
-	    yyn++;
-	    break;
-
-	  case '"':
-	    if (yyres)
-	      yyres[yyn] = '\0';
-	    return yyn;
-	  }
-    do_not_strip_quotes: ;
-    }
-
-  if (! yyres)
-    return yystrlen (yystr);
-
-  return yystpcpy (yyres, yystr) - yyres;
-}
-# endif
-
-#endif /* YYERROR_VERBOSE */
+#endif /* !YYERROR_VERBOSE */
 
 
 
@@ -1004,15 +913,15 @@ yysymprint (yyoutput, yytype, yyvaluep)
   (void) yyvaluep;
 
   if (yytype < YYNTOKENS)
-    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
+    {
+      YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
+# ifdef YYPRINT
+      YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
+# endif
+    }
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
-
-# ifdef YYPRINT
-  if (yytype < YYNTOKENS)
-    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
-# endif
   switch (yytype)
     {
       default:
@@ -1028,21 +937,16 @@ yysymprint (yyoutput, yytype, yyvaluep)
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
+yydestruct (int yytype, YYSTYPE *yyvaluep)
 #else
 static void
-yydestruct (yymsg, yytype, yyvaluep)
-    const char *yymsg;
+yydestruct (yytype, yyvaluep)
     int yytype;
     YYSTYPE *yyvaluep;
 #endif
 {
   /* Pacify ``unused variable'' warnings.  */
   (void) yyvaluep;
-
-  if (!yymsg)
-    yymsg = "Deleting";
-  YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   switch (yytype)
     {
@@ -1071,10 +975,10 @@ static int yyparse ();
 
 
 
-/* The look-ahead symbol.  */
+/* The lookahead symbol.  */
 static int yychar;
 
-/* The semantic value of the look-ahead symbol.  */
+/* The semantic value of the lookahead symbol.  */
 static YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
@@ -1100,17 +1004,17 @@ yyparse (void)
 #else
 int
 yyparse ()
-    ;
+
 #endif
 #endif
 {
   
-  int yystate;
-  int yyn;
+  register int yystate;
+  register int yyn;
   int yyresult;
   /* Number of tokens to shift before error messages enabled.  */
   int yyerrstatus;
-  /* Look-ahead token as an internal (translated) token number.  */
+  /* Lookahead token as an internal (translated) token number.  */
   int yytoken = 0;
 
   /* Three stacks and their tools:
@@ -1122,14 +1026,14 @@ yyparse ()
      to reallocate them elsewhere.  */
 
   /* The state stack.  */
-  short int yyssa[YYINITDEPTH];
-  short int *yyss = yyssa;
-  short int *yyssp;
+  short	yyssa[YYINITDEPTH];
+  short *yyss = yyssa;
+  register short *yyssp;
 
   /* The semantic value stack.  */
   YYSTYPE yyvsa[YYINITDEPTH];
   YYSTYPE *yyvs = yyvsa;
-  YYSTYPE *yyvsp;
+  register YYSTYPE *yyvsp;
 
 
 
@@ -1186,14 +1090,14 @@ yyparse ()
 	   these so that the &'s don't force the real ones into
 	   memory.  */
 	YYSTYPE *yyvs1 = yyvs;
-	short int *yyss1 = yyss;
+	short *yyss1 = yyss;
 
 
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
 	   be undefined if yyoverflow is a macro.  */
-	yyoverflow (YY_("memory exhausted"),
+	yyoverflow ("parser stack overflow",
 		    &yyss1, yysize * sizeof (*yyssp),
 		    &yyvs1, yysize * sizeof (*yyvsp),
 
@@ -1204,21 +1108,21 @@ yyparse ()
       }
 #else /* no yyoverflow */
 # ifndef YYSTACK_RELOCATE
-      goto yyexhaustedlab;
+      goto yyoverflowlab;
 # else
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-	goto yyexhaustedlab;
+	goto yyoverflowlab;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
 	yystacksize = YYMAXDEPTH;
 
       {
-	short int *yyss1 = yyss;
+	short *yyss1 = yyss;
 	union yyalloc *yyptr =
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
-	  goto yyexhaustedlab;
+	  goto yyoverflowlab;
 	YYSTACK_RELOCATE (yyss);
 	YYSTACK_RELOCATE (yyvs);
 
@@ -1250,18 +1154,18 @@ yyparse ()
 yybackup:
 
 /* Do appropriate processing given the current state.  */
-/* Read a look-ahead token if we need one and don't already have one.  */
+/* Read a lookahead token if we need one and don't already have one.  */
 /* yyresume: */
 
-  /* First try to decide what to do without reference to look-ahead token.  */
+  /* First try to decide what to do without reference to lookahead token.  */
 
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
 
-  /* Not known => get a look-ahead token if don't already have one.  */
+  /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -1276,7 +1180,7 @@ yybackup:
   else
     {
       yytoken = YYTRANSLATE (yychar);
-      YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
+      YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
     }
 
   /* If the proper action on seeing token YYTOKEN is to reduce or to
@@ -1296,8 +1200,8 @@ yybackup:
   if (yyn == YYFINAL)
     YYACCEPT;
 
-  /* Shift the look-ahead token.  */
-  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
+  /* Shift the lookahead token.  */
+  YYDPRINTF ((stderr, "Shifting token %s, ", yytname[yytoken]));
 
   /* Discard the token being shifted unless it is eof.  */
   if (yychar != YYEOF)
@@ -1347,220 +1251,220 @@ yyreduce:
   switch (yyn)
     {
         case 4:
-#line 204 "./getdate.y"
+#line 228 "./getdate.y"
     {
 	    yyHaveTime++;
 	}
     break;
 
   case 5:
-#line 207 "./getdate.y"
+#line 231 "./getdate.y"
     {
 	    yyHaveZone++;
 	}
     break;
 
   case 6:
-#line 210 "./getdate.y"
+#line 234 "./getdate.y"
     {
 	    yyHaveDate++;
 	}
     break;
 
   case 7:
-#line 213 "./getdate.y"
+#line 237 "./getdate.y"
     {
 	    yyHaveDay++;
 	}
     break;
 
   case 8:
-#line 216 "./getdate.y"
+#line 240 "./getdate.y"
     {
 	    yyHaveRel++;
 	}
     break;
 
   case 10:
-#line 222 "./getdate.y"
+#line 246 "./getdate.y"
     {
-	    yyHour = (yyvsp[-1].Number);
+	    yyHour = yyvsp[-1].Number;
 	    yyMinutes = 0;
 	    yySeconds = 0;
-	    yyMeridian = (yyvsp[0].Meridian);
+	    yyMeridian = yyvsp[0].Meridian;
 	}
     break;
 
   case 11:
-#line 228 "./getdate.y"
+#line 252 "./getdate.y"
     {
-	    yyHour = (yyvsp[-3].Number);
-	    yyMinutes = (yyvsp[-1].Number);
+	    yyHour = yyvsp[-3].Number;
+	    yyMinutes = yyvsp[-1].Number;
 	    yySeconds = 0;
-	    yyMeridian = (yyvsp[0].Meridian);
+	    yyMeridian = yyvsp[0].Meridian;
 	}
     break;
 
   case 12:
-#line 234 "./getdate.y"
+#line 258 "./getdate.y"
     {
-	    yyHour = (yyvsp[-3].Number);
-	    yyMinutes = (yyvsp[-1].Number);
+	    yyHour = yyvsp[-3].Number;
+	    yyMinutes = yyvsp[-1].Number;
 	    yyMeridian = MER24;
 	    yyDSTmode = DSToff;
-	    yyTimezone = - ((yyvsp[0].Number) % 100 + ((yyvsp[0].Number) / 100) * 60);
+	    yyTimezone = - (yyvsp[0].Number % 100 + (yyvsp[0].Number / 100) * 60);
 	}
     break;
 
   case 13:
-#line 241 "./getdate.y"
+#line 265 "./getdate.y"
     {
-	    yyHour = (yyvsp[-5].Number);
-	    yyMinutes = (yyvsp[-3].Number);
-	    yySeconds = (yyvsp[-1].Number);
-	    yyMeridian = (yyvsp[0].Meridian);
+	    yyHour = yyvsp[-5].Number;
+	    yyMinutes = yyvsp[-3].Number;
+	    yySeconds = yyvsp[-1].Number;
+	    yyMeridian = yyvsp[0].Meridian;
 	}
     break;
 
   case 14:
-#line 247 "./getdate.y"
+#line 271 "./getdate.y"
     {
-	    yyHour = (yyvsp[-5].Number);
-	    yyMinutes = (yyvsp[-3].Number);
-	    yySeconds = (yyvsp[-1].Number);
+	    yyHour = yyvsp[-5].Number;
+	    yyMinutes = yyvsp[-3].Number;
+	    yySeconds = yyvsp[-1].Number;
 	    yyMeridian = MER24;
 	    yyDSTmode = DSToff;
-	    yyTimezone = - ((yyvsp[0].Number) % 100 + ((yyvsp[0].Number) / 100) * 60);
+	    yyTimezone = - (yyvsp[0].Number % 100 + (yyvsp[0].Number / 100) * 60);
 	}
     break;
 
   case 15:
-#line 257 "./getdate.y"
+#line 281 "./getdate.y"
     {
-	    yyTimezone = (yyvsp[0].Number);
+	    yyTimezone = yyvsp[0].Number;
 	    yyDSTmode = DSToff;
 	}
     break;
 
   case 16:
-#line 261 "./getdate.y"
+#line 285 "./getdate.y"
     {
-	    yyTimezone = (yyvsp[0].Number);
+	    yyTimezone = yyvsp[0].Number;
 	    yyDSTmode = DSTon;
 	}
     break;
 
   case 17:
-#line 266 "./getdate.y"
+#line 290 "./getdate.y"
     {
-	    yyTimezone = (yyvsp[-1].Number);
+	    yyTimezone = yyvsp[-1].Number;
 	    yyDSTmode = DSTon;
 	}
     break;
 
   case 18:
-#line 272 "./getdate.y"
+#line 296 "./getdate.y"
     {
 	    yyDayOrdinal = 1;
-	    yyDayNumber = (yyvsp[0].Number);
+	    yyDayNumber = yyvsp[0].Number;
 	}
     break;
 
   case 19:
-#line 276 "./getdate.y"
+#line 300 "./getdate.y"
     {
 	    yyDayOrdinal = 1;
-	    yyDayNumber = (yyvsp[-1].Number);
+	    yyDayNumber = yyvsp[-1].Number;
 	}
     break;
 
   case 20:
-#line 280 "./getdate.y"
+#line 304 "./getdate.y"
     {
-	    yyDayOrdinal = (yyvsp[-1].Number);
-	    yyDayNumber = (yyvsp[0].Number);
+	    yyDayOrdinal = yyvsp[-1].Number;
+	    yyDayNumber = yyvsp[0].Number;
 	}
     break;
 
   case 21:
-#line 286 "./getdate.y"
+#line 310 "./getdate.y"
     {
-	    yyMonth = (yyvsp[-2].Number);
-	    yyDay = (yyvsp[0].Number);
+	    yyMonth = yyvsp[-2].Number;
+	    yyDay = yyvsp[0].Number;
 	}
     break;
 
   case 22:
-#line 290 "./getdate.y"
+#line 314 "./getdate.y"
     {
-	    if ((yyvsp[-4].Number) >= 100) {
-		yyYear = (yyvsp[-4].Number);
-		yyMonth = (yyvsp[-2].Number);
-		yyDay = (yyvsp[0].Number);
+	    if (yyvsp[-4].Number >= 100) {
+		yyYear = yyvsp[-4].Number;
+		yyMonth = yyvsp[-2].Number;
+		yyDay = yyvsp[0].Number;
 	    } else {
-		yyMonth = (yyvsp[-4].Number);
-		yyDay = (yyvsp[-2].Number);
-		yyYear = (yyvsp[0].Number);
+		yyMonth = yyvsp[-4].Number;
+		yyDay = yyvsp[-2].Number;
+		yyYear = yyvsp[0].Number;
 	    }
 	}
     break;
 
   case 23:
-#line 301 "./getdate.y"
+#line 325 "./getdate.y"
     {
 	    /* ISO 8601 format.  yyyy-mm-dd.  */
-	    yyYear = (yyvsp[-2].Number);
-	    yyMonth = -(yyvsp[-1].Number);
-	    yyDay = -(yyvsp[0].Number);
+	    yyYear = yyvsp[-2].Number;
+	    yyMonth = -yyvsp[-1].Number;
+	    yyDay = -yyvsp[0].Number;
 	}
     break;
 
   case 24:
-#line 307 "./getdate.y"
+#line 331 "./getdate.y"
     {
 	    /* e.g. 17-JUN-1992.  */
-	    yyDay = (yyvsp[-2].Number);
-	    yyMonth = (yyvsp[-1].Number);
-	    yyYear = -(yyvsp[0].Number);
+	    yyDay = yyvsp[-2].Number;
+	    yyMonth = yyvsp[-1].Number;
+	    yyYear = -yyvsp[0].Number;
 	}
     break;
 
   case 25:
-#line 313 "./getdate.y"
+#line 337 "./getdate.y"
     {
-	    yyMonth = (yyvsp[-1].Number);
-	    yyDay = (yyvsp[0].Number);
+	    yyMonth = yyvsp[-1].Number;
+	    yyDay = yyvsp[0].Number;
 	}
     break;
 
   case 26:
-#line 317 "./getdate.y"
+#line 341 "./getdate.y"
     {
-	    yyMonth = (yyvsp[-3].Number);
-	    yyDay = (yyvsp[-2].Number);
-	    yyYear = (yyvsp[0].Number);
+	    yyMonth = yyvsp[-3].Number;
+	    yyDay = yyvsp[-2].Number;
+	    yyYear = yyvsp[0].Number;
 	}
     break;
 
   case 27:
-#line 322 "./getdate.y"
+#line 346 "./getdate.y"
     {
-	    yyMonth = (yyvsp[0].Number);
-	    yyDay = (yyvsp[-1].Number);
+	    yyMonth = yyvsp[0].Number;
+	    yyDay = yyvsp[-1].Number;
 	}
     break;
 
   case 28:
-#line 326 "./getdate.y"
+#line 350 "./getdate.y"
     {
-	    yyMonth = (yyvsp[-1].Number);
-	    yyDay = (yyvsp[-2].Number);
-	    yyYear = (yyvsp[0].Number);
+	    yyMonth = yyvsp[-1].Number;
+	    yyDay = yyvsp[-2].Number;
+	    yyYear = yyvsp[0].Number;
 	}
     break;
 
   case 29:
-#line 333 "./getdate.y"
+#line 357 "./getdate.y"
     {
 	    yyRelSeconds = -yyRelSeconds;
 	    yyRelMonth = -yyRelMonth;
@@ -1568,89 +1472,89 @@ yyreduce:
     break;
 
   case 31:
-#line 340 "./getdate.y"
+#line 364 "./getdate.y"
     {
-	    yyRelSeconds += (yyvsp[-1].Number) * (yyvsp[0].Number) * 60L;
+	    yyRelSeconds += yyvsp[-1].Number * yyvsp[0].Number * 60L;
 	}
     break;
 
   case 32:
-#line 343 "./getdate.y"
+#line 367 "./getdate.y"
     {
-	    yyRelSeconds += (yyvsp[-1].Number) * (yyvsp[0].Number) * 60L;
+	    yyRelSeconds += yyvsp[-1].Number * yyvsp[0].Number * 60L;
 	}
     break;
 
   case 33:
-#line 346 "./getdate.y"
+#line 370 "./getdate.y"
     {
-	    yyRelSeconds += (yyvsp[0].Number) * 60L;
+	    yyRelSeconds += yyvsp[0].Number * 60L;
 	}
     break;
 
   case 34:
-#line 349 "./getdate.y"
+#line 373 "./getdate.y"
     {
-	    yyRelSeconds += (yyvsp[-1].Number);
+	    yyRelSeconds += yyvsp[-1].Number;
 	}
     break;
 
   case 35:
-#line 352 "./getdate.y"
+#line 376 "./getdate.y"
     {
-	    yyRelSeconds += (yyvsp[-1].Number);
+	    yyRelSeconds += yyvsp[-1].Number;
 	}
     break;
 
   case 36:
-#line 355 "./getdate.y"
+#line 379 "./getdate.y"
     {
 	    yyRelSeconds++;
 	}
     break;
 
   case 37:
-#line 358 "./getdate.y"
+#line 382 "./getdate.y"
     {
-	    yyRelMonth += (yyvsp[-1].Number) * (yyvsp[0].Number);
+	    yyRelMonth += yyvsp[-1].Number * yyvsp[0].Number;
 	}
     break;
 
   case 38:
-#line 361 "./getdate.y"
+#line 385 "./getdate.y"
     {
-	    yyRelMonth += (yyvsp[-1].Number) * (yyvsp[0].Number);
+	    yyRelMonth += yyvsp[-1].Number * yyvsp[0].Number;
 	}
     break;
 
   case 39:
-#line 364 "./getdate.y"
+#line 388 "./getdate.y"
     {
-	    yyRelMonth += (yyvsp[0].Number);
+	    yyRelMonth += yyvsp[0].Number;
 	}
     break;
 
   case 40:
-#line 369 "./getdate.y"
+#line 393 "./getdate.y"
     {
 	    if (yyHaveTime && yyHaveDate && !yyHaveRel)
-		yyYear = (yyvsp[0].Number);
+		yyYear = yyvsp[0].Number;
 	    else {
-		if ((yyvsp[0].Number)>10000) {
+		if (yyvsp[0].Number>10000) {
 		    yyHaveDate++;
-		    yyDay= ((yyvsp[0].Number))%100;
-		    yyMonth= ((yyvsp[0].Number)/100)%100;
-		    yyYear = (yyvsp[0].Number)/10000;
+		    yyDay= (yyvsp[0].Number)%100;
+		    yyMonth= (yyvsp[0].Number/100)%100;
+		    yyYear = yyvsp[0].Number/10000;
 		}
 		else {
 		    yyHaveTime++;
-		    if ((yyvsp[0].Number) < 100) {
-			yyHour = (yyvsp[0].Number);
+		    if (yyvsp[0].Number < 100) {
+			yyHour = yyvsp[0].Number;
 			yyMinutes = 0;
 		    }
 		    else {
-		    	yyHour = (yyvsp[0].Number) / 100;
-		    	yyMinutes = (yyvsp[0].Number) % 100;
+		    	yyHour = yyvsp[0].Number / 100;
+		    	yyMinutes = yyvsp[0].Number % 100;
 		    }
 		    yySeconds = 0;
 		    yyMeridian = MER24;
@@ -1660,25 +1564,24 @@ yyreduce:
     break;
 
   case 41:
-#line 396 "./getdate.y"
+#line 420 "./getdate.y"
     {
-	    (yyval.Meridian) = MER24;
+	    yyval.Meridian = MER24;
 	}
     break;
 
   case 42:
-#line 399 "./getdate.y"
+#line 423 "./getdate.y"
     {
-	    (yyval.Meridian) = (yyvsp[0].Meridian);
+	    yyval.Meridian = yyvsp[0].Meridian;
 	}
     break;
 
 
-      default: break;
     }
 
-/* Line 1126 of yacc.c.  */
-#line 1676 "getdate.c"
+/* Line 993 of yacc.c.  */
+#line 1579 "getdate.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1717,35 +1620,11 @@ yyerrlab:
 
       if (YYPACT_NINF < yyn && yyn < YYLAST)
 	{
+	  YYSIZE_T yysize = 0;
 	  int yytype = YYTRANSLATE (yychar);
-	  YYSIZE_T yysize0 = yytnamerr (0, yytname[yytype]);
-	  YYSIZE_T yysize = yysize0;
-	  YYSIZE_T yysize1;
-	  int yysize_overflow = 0;
-	  char *yymsg = 0;
-#	  define YYERROR_VERBOSE_ARGS_MAXIMUM 5
-	  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
+	  const char* yyprefix;
+	  char *yymsg;
 	  int yyx;
-
-#if 0
-	  /* This is so xgettext sees the translatable formats that are
-	     constructed on the fly.  */
-	  YY_("syntax error, unexpected %s");
-	  YY_("syntax error, unexpected %s, expecting %s");
-	  YY_("syntax error, unexpected %s, expecting %s or %s");
-	  YY_("syntax error, unexpected %s, expecting %s or %s or %s");
-	  YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s");
-#endif
-	  char *yyfmt;
-	  char const *yyf;
-	  static char const yyunexpected[] = "syntax error, unexpected %s";
-	  static char const yyexpecting[] = ", expecting %s";
-	  static char const yyor[] = " or %s";
-	  char yyformat[sizeof yyunexpected
-			+ sizeof yyexpecting - 1
-			+ ((YYERROR_VERBOSE_ARGS_MAXIMUM - 2)
-			   * (sizeof yyor - 1))];
-	  char const *yyprefix = yyexpecting;
 
 	  /* Start YYX at -YYN if negative to avoid negative indexes in
 	     YYCHECK.  */
@@ -1754,91 +1633,81 @@ yyerrlab:
 	  /* Stay within bounds of both yycheck and yytname.  */
 	  int yychecklim = YYLAST - yyn;
 	  int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-	  int yycount = 1;
+	  int yycount = 0;
 
-	  yyarg[0] = yytname[yytype];
-	  yyfmt = yystpcpy (yyformat, yyunexpected);
-
+	  yyprefix = ", expecting ";
 	  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
 	    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
 	      {
-		if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+		yysize += yystrlen (yyprefix) + yystrlen (yytname [yyx]);
+		yycount += 1;
+		if (yycount == 5)
 		  {
-		    yycount = 1;
-		    yysize = yysize0;
-		    yyformat[sizeof yyunexpected - 1] = '\0';
+		    yysize = 0;
 		    break;
 		  }
-		yyarg[yycount++] = yytname[yyx];
-		yysize1 = yysize + yytnamerr (0, yytname[yyx]);
-		yysize_overflow |= yysize1 < yysize;
-		yysize = yysize1;
-		yyfmt = yystpcpy (yyfmt, yyprefix);
-		yyprefix = yyor;
 	      }
-
-	  yyf = YY_(yyformat);
-	  yysize1 = yysize + yystrlen (yyf);
-	  yysize_overflow |= yysize1 < yysize;
-	  yysize = yysize1;
-
-	  if (!yysize_overflow && yysize <= YYSTACK_ALLOC_MAXIMUM)
-	    yymsg = (char *) YYSTACK_ALLOC (yysize);
-	  if (yymsg)
+	  yysize += (sizeof ("syntax error, unexpected ")
+		     + yystrlen (yytname[yytype]));
+	  yymsg = (char *) YYSTACK_ALLOC (yysize);
+	  if (yymsg != 0)
 	    {
-	      /* Avoid sprintf, as that infringes on the user's name space.
-		 Don't have undefined behavior even if the translation
-		 produced a string with the wrong number of "%s"s.  */
-	      char *yyp = yymsg;
-	      int yyi = 0;
-	      while ((*yyp = *yyf))
+	      char *yyp = yystpcpy (yymsg, "syntax error, unexpected ");
+	      yyp = yystpcpy (yyp, yytname[yytype]);
+
+	      if (yycount < 5)
 		{
-		  if (*yyp == '%' && yyf[1] == 's' && yyi < yycount)
-		    {
-		      yyp += yytnamerr (yyp, yyarg[yyi++]);
-		      yyf += 2;
-		    }
-		  else
-		    {
-		      yyp++;
-		      yyf++;
-		    }
+		  yyprefix = ", expecting ";
+		  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+		    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
+		      {
+			yyp = yystpcpy (yyp, yyprefix);
+			yyp = yystpcpy (yyp, yytname[yyx]);
+			yyprefix = " or ";
+		      }
 		}
 	      yyerror (yymsg);
 	      YYSTACK_FREE (yymsg);
 	    }
 	  else
-	    {
-	      yyerror (YY_("syntax error"));
-	      goto yyexhaustedlab;
-	    }
+	    yyerror ("syntax error; also virtual memory exhausted");
 	}
       else
 #endif /* YYERROR_VERBOSE */
-	yyerror (YY_("syntax error"));
+	yyerror ("syntax error");
     }
 
 
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse look-ahead token after an
+      /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
         {
-	  /* Return failure if at end of input.  */
+          /* If at end of input, pop the error token,
+	     then the rest of the stack, then return failure.  */
 	  if (yychar == YYEOF)
-	    YYABORT;
+	     for (;;)
+	       {
+		 YYPOPSTACK;
+		 if (yyssp == yyss)
+		   YYABORT;
+		 YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
+		 yydestruct (yystos[*yyssp], yyvsp);
+	       }
         }
       else
 	{
-	  yydestruct ("Error: discarding", yytoken, &yylval);
+	  YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
+	  yydestruct (yytoken, &yylval);
 	  yychar = YYEMPTY;
+
 	}
     }
 
-  /* Else will try to reuse look-ahead token after shifting the error
+  /* Else will try to reuse lookahead token after shifting the error
      token.  */
   goto yyerrlab1;
 
@@ -1848,13 +1717,14 @@ yyerrlab:
 `---------------------------------------------------*/
 yyerrorlab:
 
-  /* Pacify compilers like GCC when the user code never invokes
-     YYERROR and the label yyerrorlab therefore never appears in user
-     code.  */
+#ifdef __GNUC__
+  /* Pacify GCC when the user code never invokes YYERROR and the label
+     yyerrorlab therefore never appears in user code.  */
   if (0)
      goto yyerrorlab;
+#endif
 
-yyvsp -= yylen;
+  yyvsp -= yylen;
   yyssp -= yylen;
   yystate = *yyssp;
   goto yyerrlab1;
@@ -1884,8 +1754,8 @@ yyerrlab1:
       if (yyssp == yyss)
 	YYABORT;
 
-
-      yydestruct ("Error: popping", yystos[yystate], yyvsp);
+      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
+      yydestruct (yystos[yystate], yyvsp);
       YYPOPSTACK;
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -1894,11 +1764,10 @@ yyerrlab1:
   if (yyn == YYFINAL)
     YYACCEPT;
 
+  YYDPRINTF ((stderr, "Shifting error token, "));
+
   *++yyvsp = yylval;
 
-
-  /* Shift the error token. */
-  YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
 
   yystate = yyn;
   goto yynewstate;
@@ -1919,25 +1788,16 @@ yyabortlab:
   goto yyreturn;
 
 #ifndef yyoverflow
-/*-------------------------------------------------.
-| yyexhaustedlab -- memory exhaustion comes here.  |
-`-------------------------------------------------*/
-yyexhaustedlab:
-  yyerror (YY_("memory exhausted"));
+/*----------------------------------------------.
+| yyoverflowlab -- parser overflow comes here.  |
+`----------------------------------------------*/
+yyoverflowlab:
+  yyerror ("parser stack overflow");
   yyresult = 2;
   /* Fall through.  */
 #endif
 
 yyreturn:
-  if (yychar != YYEOF && yychar != YYEMPTY)
-     yydestruct ("Cleanup: discarding lookahead",
-		 yytoken, &yylval);
-  while (yyssp != yyss)
-    {
-      yydestruct ("Cleanup: popping",
-		  yystos[*yyssp], yyvsp);
-      YYPOPSTACK;
-    }
 #ifndef yyoverflow
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
@@ -1946,10 +1806,11 @@ yyreturn:
 }
 
 
-#line 404 "./getdate.y"
+#line 428 "./getdate.y"
 
 
 /* Month and day table. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const MonthDayTable[] = {
     { "january",	tMONTH,  1 },
     { "february",	tMONTH,  2 },
@@ -1979,6 +1840,7 @@ static TABLE const MonthDayTable[] = {
 };
 
 /* Time units table. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const UnitsTable[] = {
     { "year",		tMONTH_UNIT,	12 },
     { "month",		tMONTH_UNIT,	1 },
@@ -1994,6 +1856,7 @@ static TABLE const UnitsTable[] = {
 };
 
 /* Assorted relative-time words. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const OtherTable[] = {
     { "tomorrow",	tMINUTE_UNIT,	1 * 24 * 60 },
     { "yesterday",	tMINUTE_UNIT,	-1 * 24 * 60 },
@@ -2020,6 +1883,7 @@ static TABLE const OtherTable[] = {
 
 /* The timezone table. */
 /* Some of these are commented out because a time_t can't store a float. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const TimezoneTable[] = {
     { "gmt",	tZONE,     HOUR( 0) },	/* Greenwich Mean */
     { "ut",	tZONE,     HOUR( 0) },	/* Universal (Coordinated) */
@@ -2104,6 +1968,7 @@ static TABLE const TimezoneTable[] = {
 };
 
 /* Military timezone table. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const MilitaryTable[] = {
     { "a",	tZONE,	HOUR(  1) },
     { "b",	tZONE,	HOUR(  2) },
@@ -2146,6 +2011,7 @@ yyerror(/*@unused@*/ const char * s)
 
 static time_t
 ToSeconds(time_t Hours, time_t Minutes, time_t Seconds, MERIDIAN Meridian)
+	/*@*/
 {
     if (Minutes < 0 || Minutes > 59 || Seconds < 0 || Seconds > 59)
 	return -1;
@@ -2181,6 +2047,7 @@ static time_t
 Convert(time_t Month, time_t Day, time_t Year,
 	time_t Hours, time_t Minutes, time_t Seconds,
 	MERIDIAN Meridian, DSTMODE DSTmode)
+	/*@*/
 {
     static int DaysInMonth[12] = {
 	31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
@@ -2223,6 +2090,7 @@ Convert(time_t Month, time_t Day, time_t Year,
 
 static time_t
 DSTcorrect(time_t Start, time_t Future)
+	/*@*/
 {
     time_t	StartDay;
     time_t	FutureDay;
@@ -2235,6 +2103,7 @@ DSTcorrect(time_t Start, time_t Future)
 
 static time_t
 RelativeDate(time_t Start, time_t DayOrdinal, time_t DayNumber)
+	/*@*/
 {
     struct tm	*tm;
     time_t	now;
@@ -2249,6 +2118,7 @@ RelativeDate(time_t Start, time_t DayOrdinal, time_t DayNumber)
 
 static time_t
 RelativeMonth(time_t Start, time_t RelMonth)
+	/*@*/
 {
     struct tm	*tm;
     time_t	Month;
@@ -2269,6 +2139,8 @@ RelativeMonth(time_t Start, time_t RelMonth)
 
 static int
 LookupWord(char * buff)
+	/*@globals yylval @*/
+	/*@modifies *buff, yylval @*/
 {
     register char	*p;
     register char	*q;
@@ -2373,8 +2245,11 @@ LookupWord(char * buff)
 }
 
 
+/*@-incondefs@*/
 static int
 yylex(void)
+	/*@globals yyInput, yylval @*/
+	/*@modifies yyInput, yylval @*/
 {
     register char	c;
     register char	*p;
@@ -2426,12 +2301,14 @@ yylex(void)
     /*@notreached@*/
     return 0;
 }
+/*@=incondefs@*/
 
 #define TM_YEAR_ORIGIN 1900
 
 /* Yield A - B, measured in seconds.  */
 static long
 difftm (const struct tm * a, const struct tm * b)
+	/*@*/
 {
   unsigned ay = a->tm_year + (TM_YEAR_ORIGIN - 1);
   unsigned by = b->tm_year + (TM_YEAR_ORIGIN - 1);

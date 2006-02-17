@@ -5,6 +5,9 @@
 #include "system.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
+
+#include "fs.h"
+
 #include "debug.h"
 
 /*@-usereleased -onlytrans@*/
@@ -25,7 +28,7 @@ static const char ** fsnames = NULL;
 /*@unchecked@*/
 static int numFilesystems = 0;
 
-void freeFilesystems(void)
+void rpmFreeFilesystems(void)
 	/*@globals filesystems, fsnames, numFilesystems @*/
 	/*@modifies filesystems, fsnames, numFilesystems @*/
 {
@@ -112,7 +115,7 @@ static int getFilesystemList(void)
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), fsnames[i],
 			strerror(errno));
 
-	    freeFilesystems();
+	    rpmFreeFilesystems();
 	    return 1;
 	}
 	
@@ -213,7 +216,7 @@ static int getFilesystemList(void)
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), mntdir,
 			strerror(errno));
 
-	    freeFilesystems();
+	    rpmFreeFilesystems();
 	    return 1;
 	}
 

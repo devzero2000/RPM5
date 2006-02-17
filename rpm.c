@@ -3,6 +3,8 @@
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
+#include "fs.h"		/* XXX for rpmFreeFilesystems() */
+
 #include "build.h"
 #include "signature.h"
 #include "debug.h"
@@ -1309,7 +1311,7 @@ int main(int argc, const char ** argv)
 
     /* keeps memory leak checkers quiet */
     freeNames();
-    freeFilesystems();
+    rpmFreeFilesystems();
     urlFreeCache();
     if (qva->qva_queryFormat) free((void *)qva->qva_queryFormat);
 

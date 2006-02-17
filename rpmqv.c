@@ -20,6 +20,8 @@ extern const char *__progname;
 
 #include "rpmlua.h"	/* XXX for rpmluaFree() */
 
+#include "fs.h"		/* XXX for rpmFreeFilesystems() */
+
 #ifdef	IAM_RPMBT
 #include "build.h"
 #define GETOPT_REBUILD		1003
@@ -885,7 +887,7 @@ exit:
     }
 
     /* keeps memory leak checkers quiet */
-    freeFilesystems();
+    rpmFreeFilesystems();
 /*@i@*/	urlFreeCache();
     rpmlogClose();
     dbiTags = _free(dbiTags);

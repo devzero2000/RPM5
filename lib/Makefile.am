@@ -20,7 +20,7 @@ EXTRA_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	misc.h rpmcli.h rpmlib.h \
+	fs.h misc.h rpmcli.h rpmlib.h \
 	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
 	stringbuf.h
 noinst_HEADERS = \
