@@ -23,6 +23,8 @@
 	- handle trailing delimiters in rpmvercmp more carefully (#178798).
 	- remove sqlite from the rpm-4_4 branch.
 	- encapsulate mounted file system handling in fs.[ch].
+	- sum package file sizes into uint_64 accumulator for fssizes.
+	- skip, don't error, if ESTALE is returned from mount point stat.
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.

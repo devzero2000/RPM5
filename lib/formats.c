@@ -659,7 +659,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
     int_32 * filesizes;
-    uint_32 * usages;
+    uint_64 * usages;
     int numFiles;
 
     if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles)) {
@@ -675,11 +675,11 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	return 1;
 /*@=boundswrite@*/
 
-    *type = RPM_INT32_TYPE;
+    *type = RPM_INT64_TYPE;
     *freeData = 1;
 
     if (filenames == NULL) {
-	usages = xcalloc((*count), sizeof(usages));
+	usages = xcalloc((*count), sizeof(*usages));
 	*data = usages;
 
 	return 0;

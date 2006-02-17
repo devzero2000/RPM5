@@ -43,7 +43,7 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
  */
 /*@-incondefs@*/
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
-		int numFiles, /*@null@*/ /*@out@*/ uint_32 ** usagesPtr,
+		int numFiles, /*@null@*/ /*@out@*/ uint_64 ** usagesPtr,
 		int flags)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
