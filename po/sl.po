@@ -1,4 +1,4 @@
-# -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
+# -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for RPM pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
 # $Id$
