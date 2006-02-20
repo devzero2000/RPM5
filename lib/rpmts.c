@@ -1265,6 +1265,12 @@ int rpmtsInitDSI(const rpmts ts)
 	if (rc)
 	    break;
 	dsi->dev = sb.st_dev;
+/* XXX figger out how to get this info for non-statvfs systems. */
+#if STATFS_IN_SYS_STATVFS
+	dsi->f_fsid = sfb.f_fsid;
+	dsi->f_flag = sfb.f_flag;
+	dsi->f_namemax = sfb.f_namemax;
+#endif
 
 	dsi->bsize = sfb.f_bsize;
 	dsi->bneeded = 0;
@@ -1281,9 +1287,13 @@ int rpmtsInitDSI(const rpmts ts)
 	/* XXX Avoid FAT and other file systems that have not inodes. */
 	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
-	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s\n"),
+#if !defined(ST_RDONLY)
+#define	ST_RDONLY	1
+#endif
+	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s %s\n"),
 		i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
 		(signed long) dsi->bavail, (signed long) dsi->iavail,
+		((dsi->f_flag & ST_RDONLY) ? "ro" : "rw"),
 		ts->filesystems[i]);
     }
     return rc;
@@ -1371,6 +1381,12 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
  	    (adj_fs_blocks(dsi->ineeded) - dsi->iavail));
+	}
+
+	if ((dsi->bneeded || dsi->ineeded) && (dsi->f_flag & ST_RDONLY)) {
+	    rpmpsAppend(ps, RPMPROB_RDONLY,
+			rpmteNEVR(te), rpmteKey(te),
+			ts->filesystems[i], NULL, NULL, 0);
 	}
     }
     ps = rpmpsFree(ps);

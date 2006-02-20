@@ -115,6 +115,9 @@ typedef	/*@abstract@*/ struct diskspaceInfo_s * rpmDiskSpaceInfo;
  */
 struct diskspaceInfo_s {
     dev_t dev;			/*!< File system device number. */
+    unsigned long f_fsid;	/*!< File system id. */
+    unsigned long f_flag;	/*!< Mount flags. */
+    unsigned long f_namemax;	/*!< Maximum filename length. */
     signed long bneeded;	/*!< No. of blocks needed. */
     signed long ineeded;	/*!< No. of inodes needed. */
     int bsize;			/*!< File system block size. */

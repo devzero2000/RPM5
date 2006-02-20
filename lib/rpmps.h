@@ -36,6 +36,7 @@ typedef enum rpmProblemType_e {
     RPMPROB_OLDPACKAGE,	/*!< package ... (which is newer than ...) is already installed */
     RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ... filesystem */
     RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ... filesystem */
+    RPMPROB_RDONLY,	/*!< installing package ... on ... rdonly filesystem */
     RPMPROB_BADPRETRANS	/*!< (unimplemented) */
  } rpmProblemType;
 

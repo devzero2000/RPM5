@@ -268,6 +268,11 @@ const char * rpmProblemString(const rpmProblem prob)
 		altNEVR+2,
 		(prob->ulong1 ? "" : _("(installed) ")), pkgNEVR);
 	break;
+    case RPMPROB_RDONLY:
+	rc = snprintf(buf, nb,
+	    _("installing package %s on %s rdonly filesystem"),
+		pkgNEVR, str1);
+	break;
     default:
 	rc = snprintf(buf, nb,
 		_("unknown error %d encountered while manipulating package %s"),

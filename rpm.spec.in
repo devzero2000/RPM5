@@ -578,6 +578,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Feb 20 2006 Jeff Johnsomn <jbj@jbj.org> 4.4.5-0.14
+- don't install on rdonly file systems (#119185).
+
 * Tue Feb 14 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.12
 - remove sqlite from the rpm-4_4 branch.
 - rebuild with latest gcc 4.1.
