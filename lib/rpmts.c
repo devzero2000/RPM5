@@ -21,6 +21,8 @@
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
+#include "fs.h"
+
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
 #if STATFS_IN_SYS_STATVFS
@@ -1375,7 +1377,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 }
 
 void * rpmtsNotify(rpmts ts, rpmte te,
-		rpmCallbackType what, unsigned long amount, unsigned long total)
+		rpmCallbackType what, unsigned long long amount, unsigned long long total)
 {
     void * ptr = NULL;
     if (ts && ts->notify && te) {

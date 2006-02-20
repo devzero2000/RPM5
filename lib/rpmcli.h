@@ -518,13 +518,15 @@ extern int rpmcliHashesCurrent;
 /*@unchecked@*/
 extern int rpmcliHashesTotal;
 /*@unchecked@*/
-extern int rpmcliProgressCurrent;
+extern unsigned long long rpmcliProgressCurrent;
 /*@unchecked@*/
-extern int rpmcliProgressTotal;
+extern unsigned long long rpmcliProgressTotal;
 
 /** \ingroup rpmcli
  * The rpm CLI generic transaction callback handler.
  * @todo Remove headerSprintf() from the progress callback.
+ * @warning This function's args have changed, so the function cannot be
+ * used portably
  * @deprecated Transaction callback arguments need to change, so don't rely on
  * this routine in the rpmcli API.
  *
@@ -539,8 +541,8 @@ extern int rpmcliProgressTotal;
 /*@null@*/
 void * rpmShowProgress(/*@null@*/ const void * arg,
 		const rpmCallbackType what,
-		const unsigned long amount,
-		const unsigned long total,
+		const unsigned long long amount,
+		const unsigned long long total,
 		/*@null@*/ fnpyKey key,
 		/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent,

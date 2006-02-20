@@ -219,10 +219,10 @@ static int getFilesystemList(void)
 			strerror(errno));
 		rpmFreeFilesystems();
 		return 1;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case ESTALE:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 	}
 

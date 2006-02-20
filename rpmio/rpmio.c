@@ -351,8 +351,6 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     memset(fd->digests, 0, sizeof(fd->digests));
 
     fd->ftpFileDoneNeeded = 0;
-    fd->firstFree = 0;
-    fd->fileSize = 0;
     fd->fd_cpioPos = 0;
 
     return XfdLink(fd, msg, file, line);

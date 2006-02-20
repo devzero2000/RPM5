@@ -179,9 +179,7 @@ struct _FD_s {
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */
-    unsigned int firstFree;	/* fadio: */
-    long int	fileSize;	/* fadio: */
-    long int	fd_cpioPos;	/* cpio: */
+    unsigned long long	fd_cpioPos;	/* cpio: */
 };
 /*@access FD_t@*/
 
@@ -547,7 +545,7 @@ int fdGetRdTimeoutSecs(FD_t fd)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-long int fdGetCpioPos(FD_t fd)
+unsigned long long fdGetCpioPos(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);

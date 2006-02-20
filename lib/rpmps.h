@@ -52,7 +52,7 @@ struct rpmProblem_s {
     int ignoreProblem;
 /*@only@*/ /*@null@*/
     char * str1;
-    unsigned long ulong1;
+    unsigned long long ulong1;
 };
 
 /**
@@ -152,6 +152,8 @@ void rpmpsPrint(/*@null@*/ FILE *fp, /*@null@*/ rpmps ps)
 
 /**
  * Append a problem to current set of problems.
+ * @warning This function's args have changed, so the function cannot be
+ * used portably
  * @param ps		problem set
  * @param type		type of problem
  * @param pkgNEVR	package name
@@ -166,7 +168,7 @@ void rpmpsAppend(/*@null@*/ rpmps ps, rpmProblemType type,
 		/*@exposed@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ const char * dn, /*@null@*/ const char * bn,
 		/*@null@*/ const char * altNEVR,
-		unsigned long ulong1)
+		unsigned long long ulong1)
 	/*@modifies ps @*/;
 
 /**

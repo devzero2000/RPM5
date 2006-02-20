@@ -198,11 +198,12 @@ fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, 
 	}
     } else {
 	rpmProblem p = memset(alloca(sizeof(*p)), 0, sizeof(*p));
+	unsigned long ulong1 = p->ulong1;
 
 	if (!PyArg_ParseTuple(value, "ssOiisN:rpmps value tuple",
 				&p->pkgNEVR, &p->altNEVR, &p->key,
 				&p->type, &p->ignoreProblem, &p->str1,
-				&p->ulong1))
+				&ulong1))
 	{
 	    return -1;
 	}
@@ -211,7 +212,7 @@ fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, 
 	if (ix >= ps->numProblems) {
 	    /* XXX force append for indices out of range. */
 	    rpmpsAppend(s->ps, p->type, p->pkgNEVR, p->key,
-		p->str1, NULL, p->altNEVR, p->ulong1);
+		p->str1, NULL, p->altNEVR, ulong1);
 	} else {
 	    rpmProblem op = ps->probs + ix;
 

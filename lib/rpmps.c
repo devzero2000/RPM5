@@ -81,7 +81,7 @@ rpmps rpmpsFree(rpmps ps)
 void rpmpsAppend(rpmps ps, rpmProblemType type,
 		const char * pkgNEVR, fnpyKey key,
 		const char * dn, const char * bn,
-		const char * altNEVR, unsigned long ulong1)
+		const char * altNEVR, unsigned long long ulong1)
 {
     rpmProblem p;
     char *t;
@@ -240,23 +240,23 @@ const char * rpmProblemString(const rpmProblem prob)
 	break;
     case RPMPROB_DISKSPACE:
 	rc = snprintf(buf, nb,
-	    _("installing package %s needs %ld%cB on the %s filesystem"),
+	    _("installing package %s needs %lu%cB on the %s filesystem"),
 		pkgNEVR,
-		prob->ulong1 > (1024*1024)
+		(unsigned long) (prob->ulong1 > (1024*1024)
 		    ? (prob->ulong1 + 1024 * 1024 - 1) / (1024 * 1024)
-		    : (prob->ulong1 + 1023) / 1024,
+		    : (prob->ulong1 + 1023) / 1024),
 		prob->ulong1 > (1024*1024) ? 'M' : 'K',
 		str1);
 	break;
     case RPMPROB_DISKNODES:
 	rc = snprintf(buf, nb,
-	    _("installing package %s needs %ld inodes on the %s filesystem"),
-		pkgNEVR, (long)prob->ulong1, str1);
+	    _("installing package %s needs %lu inodes on the %s filesystem"),
+		pkgNEVR, (unsigned long)prob->ulong1, str1);
 	break;
     case RPMPROB_BADPRETRANS:
 	rc = snprintf(buf, nb,
 		_("package %s pre-transaction syscall(s): %s failed: %s"),
-		pkgNEVR, str1, strerror(prob->ulong1));
+		pkgNEVR, str1, strerror((int)(prob->ulong1)));
 	break;
     case RPMPROB_REQUIRES:
 	rc = snprintf(buf, nb, _("%s is needed by %s%s"),

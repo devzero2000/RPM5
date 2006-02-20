@@ -448,13 +448,15 @@ static PyObject *
 rpmds_Ldconfig(rpmdsObject * s)
 	/*@*/
 {
-    rpmds ds = NULL;
+    rpmPRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
+    rpmds P = NULL;
     int xx;
 
+    PRCO->Pdsp = &P;
     /* XXX check return code, permit arg (NULL uses system default). */
-    xx = rpmdsLdconfig(&ds, NULL);
+    xx = rpmdsLdconfig(PRCO, NULL);
 
-    return (PyObject *) rpmds_Wrap( ds );
+    return (PyObject *) rpmds_Wrap( P );
 }
 
 #ifdef	NOTYET

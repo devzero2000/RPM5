@@ -15,6 +15,8 @@ const char *__progname;
 #include "rpmds.h"
 #include "rpmts.h"
 
+#include "misc.h"	/* XXX rpmMkdirPath */
+
 #include "debug.h"
 
 static int _debug = 0;

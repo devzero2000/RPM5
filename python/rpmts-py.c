@@ -995,7 +995,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
 /*@null@*/
 static void *
 rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
-		         const unsigned long amount, const unsigned long total,
+		         const unsigned long long amount, const unsigned long long total,
 	                 const void * pkgKey, rpmCallbackData data)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
@@ -1008,6 +1008,8 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
     PyObject * oh = NULL;
     const char * origin = NULL;
     PyObject * args, * result;
+    unsigned long oamount = amount;
+    unsigned long ototal = total;
     static FD_t fd;
 
     if (cbInfo->pythonError) return NULL;
@@ -1035,7 +1037,7 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 
     PyEval_RestoreThread(cbInfo->_save);
 
-    args = Py_BuildValue("(illOO)", what, amount, total, pkgObj, cbInfo->data);
+    args = Py_BuildValue("(illOO)", what, oamount, ototal, pkgObj, cbInfo->data);
     result = PyEval_CallObject(cbInfo->cb, args);
     Py_DECREF(args);
     Py_DECREF(pkgObj);
@@ -1074,7 +1076,7 @@ fprintf(stderr, "\tFclose(%p)\n", fd);
 	Fclose (fd);
     } else {
 if (_rpmts_debug)
-fprintf(stderr, "\t%ld:%ld key %p\n", amount, total, pkgKey);
+fprintf(stderr, "\t%lu:%lu key %p\n", oamount, ototal, pkgKey);
     }
 
     Py_DECREF(result);
@@ -1213,10 +1215,11 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     list = PyList_New(0);
     for (i = 0; i < ps->numProblems; i++) {
 	rpmProblem p = ps->probs + i;
+	unsigned long ulong1 = p->ulong1;
 	PyObject * prob = Py_BuildValue("s(isN)", rpmProblemString(p),
 			     p->type,
 			     p->str1,
-			     PyLong_FromLongLong(p->ulong1));
+			     PyLong_FromLongLong(ulong1));
 	PyList_Append(list, prob);
 	Py_DECREF(prob);
     }

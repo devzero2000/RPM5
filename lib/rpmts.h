@@ -837,6 +837,8 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 
 /**
  * Perform transaction progress notify callback.
+ * @warning This function's args have changed, so the function cannot be
+ * used portably
  * @param ts		transaction set
  * @param te		current transaction element
  * @param what		type of call back
@@ -846,7 +848,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
  */
 /*@null@*/
 void * rpmtsNotify(rpmts ts, rpmte te,
-                rpmCallbackType what, unsigned long amount, unsigned long total)
+                rpmCallbackType what, unsigned long long amount, unsigned long long total)
 	/*@*/;
 
 /**

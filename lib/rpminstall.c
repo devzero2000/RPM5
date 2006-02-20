@@ -30,9 +30,9 @@ int rpmcliHashesCurrent = 0;
 /*@unchecked@*/
 int rpmcliHashesTotal = 0;
 /*@unchecked@*/
-int rpmcliProgressCurrent = 0;
+unsigned long long rpmcliProgressCurrent = 0;
 /*@unchecked@*/
-int rpmcliProgressTotal = 0;
+unsigned long long rpmcliProgressTotal = 0;
 
 /**
  * Print a CLI progress bar.
@@ -40,7 +40,7 @@ int rpmcliProgressTotal = 0;
  * @param amount	current
  * @param total		final
  */
-static void printHash(const unsigned long amount, const unsigned long total)
+static void printHash(const unsigned long long amount, const unsigned long long total)
 	/*@globals rpmcliHashesCurrent, rpmcliHashesTotal,
 		rpmcliProgressCurrent, fileSystem @*/
 	/*@modifies rpmcliHashesCurrent, rpmcliHashesTotal,
@@ -93,8 +93,8 @@ static void printHash(const unsigned long amount, const unsigned long total)
 
 void * rpmShowProgress(/*@null@*/ const void * arg,
 			const rpmCallbackType what,
-			const unsigned long amount,
-			const unsigned long total,
+			const unsigned long long amount,
+			const unsigned long long total,
 			/*@null@*/ fnpyKey key,
 			/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
@@ -156,7 +156,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	    s = headerSprintf(h, "%{NAME}",
 				rpmTagTable, rpmHeaderFormats, NULL);
 	    if (isatty (STDOUT_FILENO))
-		fprintf(stdout, "%4d:%-23.23s", rpmcliProgressCurrent + 1, s);
+		fprintf(stdout, "%4d:%-23.23s", (int)rpmcliProgressCurrent + 1, s);
 	    else
 		fprintf(stdout, "%-28.28s", s);
 	    (void) fflush(stdout);

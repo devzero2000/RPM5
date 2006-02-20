@@ -64,8 +64,8 @@
  */
 extern void * rpmShowProgress(/*@null@*/ const void * arg,
                         const rpmCallbackType what,
-                        const unsigned long amount,
-                        const unsigned long total,
+                        const unsigned long long amount,
+                        const unsigned long long total,
                         /*@null@*/ fnpyKey key,
                         /*@null@*/ void * data)
 	/*@*/;
