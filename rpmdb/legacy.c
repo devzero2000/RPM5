@@ -155,6 +155,7 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
     FD_t fd;
     size_t fsize = 0;
     pid_t pid = 0;
+    int use_mmap;
     int rc = 0;
     int fdno;
     int xx;
@@ -167,11 +168,14 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 	goto exit;
     }
 
+    /* XXX resource cap at 128Mb, let MADV_SEQUENTIAL handle paging. */
+    use_mmap = (pid == 0 && fsize <= 0x07ffffff);
+
     switch(ut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 #if HAVE_MMAP
-      if (pid == 0) {
+      if (use_mmap) {
 	DIGEST_CTX ctx;
 	void * mapped = NULL;
 

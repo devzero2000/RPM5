@@ -926,7 +926,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
     const char * opath = fsm->opath;
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
-    int left;
+    size_t left;
     int xx;
     int rc;
 
@@ -973,6 +973,8 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	char * rdbuf = NULL;
 	void * mapped = (void *)-1;
 	size_t nmapped;
+	/* XXX resource cap at 128Mb, let MADV_SEQUENTIAL handle paging. */
+	int use_mmap = (st->st_size <= 0x07ffffff);
 #endif
 
 	rc = fsmNext(fsm, FSM_ROPEN);
@@ -980,15 +982,17 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 
 	/* XXX unbuffered mmap generates *lots* of fdio debugging */
 #if HAVE_MMAP
-	nmapped = 0;
-	mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fsm->rfd), 0);
-	if (mapped != (void *)-1) {
-	    rdbuf = fsm->rdbuf;
-	    fsm->rdbuf = (char *) mapped;
-	    fsm->rdlen = nmapped = st->st_size;
+	if (use_mmap) {
+	    nmapped = 0;
+	    mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fsm->rfd), 0);
+	    if (mapped != (void *)-1) {
+		rdbuf = fsm->rdbuf;
+		fsm->rdbuf = (char *) mapped;
+		fsm->rdlen = nmapped = st->st_size;
 #if defined(MADV_DONTNEED)
-	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
+		xx = madvise(mapped, nmapped, MADV_DONTNEED);
 #endif
+	    }
 	}
 #endif
 
@@ -1489,19 +1493,19 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	/* do nothing */
     } else if (stage & FSM_INTERNAL) {
 	if (_fsm_debug && !(stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s %06o%3d (%4d,%4d)%10d %s %s\n",
+	    rpmMessage(RPMMESS_DEBUG, " %8s %06o%3d (%4d,%4d)%12lu %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
-		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
+		(int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
 		(fsm->path ? fsm->path : ""),
 		_fafilter(fsm->action));
     } else {
 	fsm->stage = stage;
 	if (_fsm_debug || !(stage & FSM_VERBOSE))
-	    rpmMessage(RPMMESS_DEBUG, "%-8s  %06o%3d (%4d,%4d)%10d %s %s\n",
+	    rpmMessage(RPMMESS_DEBUG, "%-8s  %06o%3d (%4d,%4d)%12lu %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
-		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
+		(int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
 		(fsm->path ? fsm->path + fsm->astriplen : ""),
 		_fafilter(fsm->action));
     }

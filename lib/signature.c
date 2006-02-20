@@ -115,12 +115,13 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @param datalen		length of header+payload
  * @return 			rpmRC return code
  */
-static inline rpmRC printSize(FD_t fd, int siglen, int pad, int datalen)
+static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    struct stat st;
     int fdno = Fileno(fd);
+    struct stat st;
+    size_t expected;
 
     /* HACK: workaround for davRead wiring. */
     if (fdno == 123456789) {
@@ -131,14 +132,16 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, int datalen)
     } else if (fstat(fdno, &st) < 0)
 	return RPMRC_FAIL;
 
+    expected = sizeof(struct rpmlead) + siglen + pad;
+    expected += datalen,
 /*@-sizeoftype@*/
     rpmMessage(RPMMESS_DEBUG,
-	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
-		(int)sizeof(struct rpmlead)+siglen+pad+datalen,
-		(int)sizeof(struct rpmlead), siglen, pad, datalen);
+	_("Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"),
+		(unsigned long)expected,
+		(int)sizeof(struct rpmlead), siglen, pad, (unsigned long)datalen);
 /*@=sizeoftype@*/
     rpmMessage(RPMMESS_DEBUG,
-	_("  Actual size: %12d\n"), (int)st.st_size);
+	_("  Actual size: %12lu\n"), (unsigned long)st.st_size);
 
     return RPMRC_OK;
 }
@@ -324,7 +327,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 
 	/* Print package component sizes. */
 	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(void **)&archSize, NULL)) {
-	    rc = printSize(fd, sigSize, pad, *archSize);
+	    size_t datasize = *(uint_32 *)archSize;
+	    rc = printSize(fd, sigSize, pad, datasize);
 	    if (rc != RPMRC_OK)
 		(void) snprintf(buf, sizeof(buf),
 			_("sigh sigSize(%d): BAD, fstat(2) failed\n"), sigSize);

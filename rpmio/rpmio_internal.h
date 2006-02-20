@@ -500,14 +500,14 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	switch (opx) {
 	case FDSTAT_READ:
 	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%06d secs\n",
-		op->count, (long)op->bytes,
+	    fprintf(fp, "%8d reads, %8lu total bytes in %d.%06d secs\n",
+		op->count, (unsigned long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
 	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%06d secs\n",
-		op->count, (long)op->bytes,
+	    fprintf(fp, "%8d writes, %8lu total bytes in %d.%06d secs\n",
+		op->count, (unsigned long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_SEEK:
