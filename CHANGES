@@ -30,6 +30,8 @@
 	- pass disk space errors using 64 bits.
 	- solaris: avoid diff -d in check-files (#130394).
 	- fix: payload reposition not needed for skipped symlinks in archive.
+	- remove hoary /usr/lib/{rpmpopt,rpmrc} legacy symlinks.
+	- x86_64: remove gcc warning cruft.
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.

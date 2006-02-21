@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-20 20:46-0500\n"
+"POT-Creation-Date: 2006-02-21 20:03-0500\n"
 "PO-Revision-Date: 2006-02-19 22:53+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1597,42 +1597,42 @@ msgstr "Benutzer %s existiert nicht - benutze Root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "Gruppe %s existiert nicht - benutze Root\n"
 
-#: lib/fsm.c:1395
+#: lib/fsm.c:1394
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, kein Kontext.\n"
 
-#: lib/fsm.c:1399
+#: lib/fsm.c:1398
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, Kontext.\n"
 
-#: lib/fsm.c:1705
+#: lib/fsm.c:1704
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "Archiv-Datei %s wurde nicht in der Header-Dateiliste gefunden\n"
 
-#: lib/fsm.c:1852 lib/fsm.c:1974
+#: lib/fsm.c:1854 lib/fsm.c:1976
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s als %s gesichert\n"
 
-#: lib/fsm.c:2001
+#: lib/fsm.c:2003
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir von %s fehlgeschlagen: Verzeichnis ist nicht leer\n"
 
-#: lib/fsm.c:2007
+#: lib/fsm.c:2009
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:2022
+#: lib/fsm.c:2024
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:2045
+#: lib/fsm.c:2047
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s als %s erstellt\n"

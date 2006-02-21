@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-20 20:46-0500\n"
+"POT-Creation-Date: 2006-02-21 20:03-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1730,45 +1730,45 @@ msgstr ""
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:1395
+#: lib/fsm.c:1394
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr ""
 
-#: lib/fsm.c:1399
+#: lib/fsm.c:1398
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 
-#: lib/fsm.c:1705
+#: lib/fsm.c:1704
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:1852 lib/fsm.c:1974
+#: lib/fsm.c:1854 lib/fsm.c:1976
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/fsm.c:2001
+#: lib/fsm.c:2003
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/fsm.c:2007
+#: lib/fsm.c:2009
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/fsm.c:2022
+#: lib/fsm.c:2024
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: lib/fsm.c:2045
+#: lib/fsm.c:2047
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "No consegui abrir: %s\n"

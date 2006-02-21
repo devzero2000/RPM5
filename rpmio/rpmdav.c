@@ -1072,7 +1072,7 @@ assert(count >= 128);	/* HACK: see ne_request.h comment */
     rc = ne_read_response_block(fd->req, buf, count);
 
 if (_dav_debug < 0) {
-fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, (unsigned)rc);
+fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
 #ifdef	DYING
 hexdump(buf, rc);
 #endif
@@ -1110,7 +1110,7 @@ assert(fd->req != NULL);
     rc = (xx == 0 ? count : -1);
 
 if (_dav_debug < 0)
-fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, rc);
+fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
 #ifdef	DYING
 if (count > 0)
 hexdump(buf, count);

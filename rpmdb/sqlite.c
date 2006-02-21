@@ -400,7 +400,7 @@ assert(scp->avlen != NULL);
 		    const void * v = sqlite3_column_blob(scp->pStmt, i);
 		    nb = sqlite3_column_bytes(scp->pStmt, i);
 if (_debug)
-fprintf(stderr, "\t%d %s %s %p[%d]\n", i, cname, vtype, v, nb);
+fprintf(stderr, "\t%d %s %s %p[%d]\n", i, cname, vtype, v, (int)nb);
 		    if (nb > 0) {
 			void * t = xmalloc(nb);
 			scp->av[scp->ac] = memcpy(t, v, nb);

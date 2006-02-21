@@ -144,7 +144,7 @@ fprintf(stderr, "\tsum %ld\n", sum);
 	memset(checksum, ' ', sizeof(checksum));
 	sprintf(checksum, "%06o", (unsigned) (sum & 07777777));
 if (_tar_debug)
-fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %d)\n", hdrchecksum, checksum, sizeof(hdrchecksum));
+fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsigned)sizeof(hdrchecksum));
 	if (memcmp(hdrchecksum, checksum, sizeof(hdrchecksum)))
 	    if (!nochksum)
 		return CPIOERR_BAD_HEADER;

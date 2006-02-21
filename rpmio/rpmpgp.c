@@ -934,7 +934,7 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 	    while (j < i && h[j] == '\0')
 		j++;
 	    if (_print && j)
-		fprintf(stderr, "%.*s", strlen((const char *)h), (const char *)h);
+		fprintf(stderr, "%.*s", (int)strlen((const char *)h), (const char *)h);
 	} else {
 	    pgpPrtHex("", h, i);
 	    j = i;
