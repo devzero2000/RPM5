@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.15
+Release: 1
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -577,11 +577,12 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Tue Feb 21 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.15
+* Tue Feb 21 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-1
 - fix: payload reposition not needed for skipped symlinks in archive.
 - remove hoary /usr/lib/{rpmpopt,rpmrc} legacy symlinks.
 - x86_64: remove gcc warning cruft.
 - detect missing re-install elements in a rollback transaction and exit.
+- release rpm-4.4.5.
 
 * Mon Feb 20 2006 Jeff Johnsomn <jbj@jbj.org> 4.4.5-0.14
 - don't install on rdonly file systems (#119185).
