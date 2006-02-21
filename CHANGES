@@ -29,6 +29,7 @@
 	- don't install on rdonly file systems (#119185).
 	- pass disk space errors using 64 bits.
 	- solaris: avoid diff -d in check-files (#130394).
+	- fix: payload reposition not needed for skipped symlinks in archive.
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.

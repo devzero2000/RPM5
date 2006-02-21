@@ -972,7 +972,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 #if HAVE_MMAP
 	char * rdbuf = NULL;
 	void * mapped = (void *)-1;
-	size_t nmapped;
+	size_t nmapped = 0;
 	/* XXX resource cap at 128Mb, let MADV_SEQUENTIAL handle paging. */
 	int use_mmap = (st->st_size <= 0x07ffffff);
 #endif
@@ -983,7 +983,6 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	/* XXX unbuffered mmap generates *lots* of fdio debugging */
 #if HAVE_MMAP
 	if (use_mmap) {
-	    nmapped = 0;
 	    mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fsm->rfd), 0);
 	    if (mapped != (void *)-1) {
 		rdbuf = fsm->rdbuf;
@@ -1786,8 +1785,11 @@ if (fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_LIST) fsm->postpone = 1;
 	break;
     case FSM_PROCESS:
 	if (fsm->postpone) {
-	    if (fsm->goal == FSM_PKGINSTALL)
-		rc = fsmNext(fsm, FSM_EAT);
+	    if (fsm->goal == FSM_PKGINSTALL) {
+		/* XXX Skip over file body, archive headers already done. */
+		if (S_ISREG(st->st_mode))
+		    rc = fsmNext(fsm, FSM_EAT);
+	    }
 	    break;
 	}
 
