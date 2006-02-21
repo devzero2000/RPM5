@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-21 20:03-0500\n"
+"POT-Creation-Date: 2006-02-21 21:35-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2960,7 +2960,7 @@ msgstr "bilinmeyen etiket"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1443 lib/transaction.c:1182 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1456 lib/transaction.c:1182 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "baðýmlýlýklarda hata; gerekli paketler:\n"
@@ -3087,23 +3087,33 @@ msgstr "%s açýlamadý: %s\n"
 msgid "Installing %s\n"
 msgstr "%s kuruluyor\n"
 
-#: lib/rpminstall.c:1350
+#: lib/rpminstall.c:1138
+#, fuzzy
+msgid "Missing repackaged package(s) detected:\n"
+msgstr "paketten baþlýk okunmasý sýrasýnda hata oluþtu\n"
+
+#: lib/rpminstall.c:1140
+#, fuzzy, c-format
+msgid "    %s[%d]: %s\n"
+msgstr "dosya %s: %s\n"
+
+#: lib/rpminstall.c:1363
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1437 lib/transaction.c:1160
+#: lib/rpminstall.c:1450 lib/transaction.c:1160
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1468
+#: lib/rpminstall.c:1481
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1475
+#: lib/rpminstall.c:1488
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "%s alýnýyor\n"

@@ -32,6 +32,7 @@
 	- fix: payload reposition not needed for skipped symlinks in archive.
 	- remove hoary /usr/lib/{rpmpopt,rpmrc} legacy symlinks.
 	- x86_64: remove gcc warning cruft.
+	- detect missing re-install elements in a rollback transaction and exit.
 
 4.4.3 -> 4.4.4:
 	- start rpm-4.4.4 development.

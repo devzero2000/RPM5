@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-21 20:03-0500\n"
+"POT-Creation-Date: 2006-02-21 21:35-0500\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2886,7 +2886,7 @@ msgstr "okänd tagg: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1443 lib/transaction.c:1182 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1456 lib/transaction.c:1182 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
 
@@ -3009,23 +3009,33 @@ msgstr "kan inte öppna %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpminstall.c:1350
+#: lib/rpminstall.c:1138
+#, fuzzy
+msgid "Missing repackaged package(s) detected:\n"
+msgstr "Rensar upp ompaketerade paket:\n"
+
+#: lib/rpminstall.c:1140
+#, fuzzy, c-format
+msgid "    %s[%d]: %s\n"
+msgstr "%s: %s\n"
+
+#: lib/rpminstall.c:1363
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1437 lib/transaction.c:1160
+#: lib/rpminstall.c:1450 lib/transaction.c:1160
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1468
+#: lib/rpminstall.c:1481
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Rensar upp ompaketerade paket:\n"
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1475
+#: lib/rpminstall.c:1488
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\tTar bort %s:\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-21 20:03-0500\n"
+"POT-Creation-Date: 2006-02-21 21:35-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2935,7 +2935,7 @@ msgstr "알 수 없는 태그 입니다"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1443 lib/transaction.c:1182 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1456 lib/transaction.c:1182 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
@@ -3062,23 +3062,33 @@ msgstr "%s(을)를 열 수 없음: %s\n"
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1350
+#: lib/rpminstall.c:1138
+#, fuzzy
+msgid "Missing repackaged package(s) detected:\n"
+msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
+
+#: lib/rpminstall.c:1140
+#, fuzzy, c-format
+msgid "    %s[%d]: %s\n"
+msgstr "%s: %s\n"
+
+#: lib/rpminstall.c:1363
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1437 lib/transaction.c:1160
+#: lib/rpminstall.c:1450 lib/transaction.c:1160
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1468
+#: lib/rpminstall.c:1481
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1475
+#: lib/rpminstall.c:1488
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "%s(을)를 복구합니다\n"
