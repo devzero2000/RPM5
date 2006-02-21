@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-17 23:23-0500\n"
+"POT-Creation-Date: 2006-02-20 20:46-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -110,7 +110,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:117 tools/rpmcache.c:525 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmcache.c:527 tools/rpmdeps.c:152 tools/rpmgraph.c:276
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -2602,7 +2602,7 @@ msgstr "nepodarilo sa otvori» %s: %s"
 msgid "%s failed: %s\n"
 msgstr "%s zlyhalo"
 
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123 lib/rpmts.c:634
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "chyba formátu: %s\n"
@@ -2973,7 +2973,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:645
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -3181,12 +3181,12 @@ msgstr "balík %s nie je nain¹talovaný\n"
 
 #: lib/rpmps.c:243
 #, c-format
-msgid "installing package %s needs %ld%cB on the %s filesystem"
+msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 
 #: lib/rpmps.c:253
 #, c-format
-msgid "installing package %s needs %ld inodes on the %s filesystem"
+msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 
 #: lib/rpmps.c:258
@@ -3210,6 +3210,11 @@ msgid "%s conflicts with %s%s"
 msgstr " koliduje s %s-%s-%s\n"
 
 #: lib/rpmps.c:273
+#, c-format
+msgid "installing package %s on %s rdonly filesystem"
+msgstr ""
+
+#: lib/rpmps.c:278
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3350,52 +3355,52 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:187
+#: lib/rpmts.c:189
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmts.c:283
+#: lib/rpmts.c:285
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/rpmts.c:301
+#: lib/rpmts.c:303
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "chýbajúce    %s\n"
 
-#: lib/rpmts.c:309
+#: lib/rpmts.c:311
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/rpmts.c:520
+#: lib/rpmts.c:522
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmts.c:664
+#: lib/rpmts.c:666
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "riadok: %s"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:678
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "zdroje v: %s\n"
 
-#: lib/rpmts.c:1224
+#: lib/rpmts.c:1226
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1226
+#: lib/rpmts.c:1228
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1282
+#: lib/rpmts.c:1293
 #, fuzzy, c-format
-msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 
 #: lib/signature.c:139
@@ -4274,61 +4279,61 @@ msgstr "Súbor %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Súbor %s je men¹í ako %d bajtov"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr "Úspech"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr "Chybná odpoveï servera"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:704
 #, fuzzy
 msgid "Server I/O error"
 msgstr "Chyba vstupu/výstupu servera"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr "Prekroèenie èasového limitu servera"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr "Nie je mo¾né vyhµada» adresu servera"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr "Nie je mo¾né vyhµada» názov servera"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr "Pripojenie k serveru zlyhalo"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:716
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "Chyba vstupu/výstupu lokálneho súboru"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "Súbor sa na serveri nenachádza"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr "Zru¹enie prebieha"
 
-#: rpmio/rpmio.c:728
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr "Neznáma alebo neoèakávaná chyba"
 
-#: rpmio/rpmio.c:1424
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prihlasuje sa na %s ako %s, heslo %s\n"
@@ -4394,26 +4399,26 @@ msgstr "url port musí by» èíslo\n"
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:517 tools/rpmgraph.c:269
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "overi» podpis balíka"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:520
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:521
+#: tools/rpmcache.c:523
 #, fuzzy
 msgid "File tree walk options:"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:559
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:597
+#: tools/rpmcache.c:599
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: otvorenie zlyhalo\n"

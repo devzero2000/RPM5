@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-17 23:23-0500\n"
+"POT-Creation-Date: 2006-02-20 20:46-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr "Параметри встановлення/оновлення/видалення:"
 
-#: rpmqv.c:117 tools/rpmcache.c:525 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmcache.c:527 tools/rpmdeps.c:152 tools/rpmgraph.c:276
 msgid "Common options for all rpm modes and executables:"
 msgstr "Загальні параметри для всіх режимів та компонентів rpm:"
 
@@ -2529,7 +2529,7 @@ msgstr "%s помилка на файлі %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s помилка: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123 lib/rpmts.c:634
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "неправильний формат: %s\n"
@@ -2903,7 +2903,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:645
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3107,13 +3107,13 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "вже встановлено пакет %s (який новіший за %s)"
 
 #: lib/rpmps.c:243
-#, c-format
-msgid "installing package %s needs %ld%cB on the %s filesystem"
+#, fuzzy, c-format
+msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr "для встановлення пакету %s потрібно %ld%c байт на файловій системі %s"
 
 #: lib/rpmps.c:253
-#, c-format
-msgid "installing package %s needs %ld inodes on the %s filesystem"
+#, fuzzy, c-format
+msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr "для встановлення пакету %s потрібно %ld inodes на файловій системі %s"
 
 #: lib/rpmps.c:258
@@ -3136,6 +3136,11 @@ msgid "%s conflicts with %s%s"
 msgstr "%s конфліктує з %s%s"
 
 #: lib/rpmps.c:273
+#, fuzzy, c-format
+msgid "installing package %s on %s rdonly filesystem"
+msgstr "для встановлення пакету %s потрібно %ld%c байт на файловій системі %s"
+
+#: lib/rpmps.c:278
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "невідома помилка %d при обробці з пакету %s"
@@ -3277,53 +3282,53 @@ msgstr "%s:  неправильний специфікатор типу %s у р
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  неправильний контекст %s у рядку з номером %d\n"
 
-#: lib/rpmts.c:187
+#: lib/rpmts.c:189
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "неможливо відкрити базу даних пакетів у %s\n"
 
-#: lib/rpmts.c:283
+#: lib/rpmts.c:285
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "зайва дужка '(' у позначці пакету: %s\n"
 
-#: lib/rpmts.c:301
+#: lib/rpmts.c:303
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "відсутня дужка '(' у позначці пакету: %s\n"
 
-#: lib/rpmts.c:309
+#: lib/rpmts.c:311
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "відсутня дужка ')' у позначці пакету: %s\n"
 
-#: lib/rpmts.c:520
+#: lib/rpmts.c:522
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "неможливо відкрити базу даних розв'язання залежностей у %s\n"
 
-#: lib/rpmts.c:664
+#: lib/rpmts.c:666
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Додається: %s\n"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:678
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Пропонується: %s\n"
 
-#: lib/rpmts.c:1224
+#: lib/rpmts.c:1226
 msgid "mounted filesystems:\n"
 msgstr "змонтовані файлові системи:\n"
 
-#: lib/rpmts.c:1226
+#: lib/rpmts.c:1228
 #, fuzzy
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "   i   пристр розм.бл.   вільн.бл   вільн.inod місце монтув.\n"
 
-#: lib/rpmts.c:1282
+#: lib/rpmts.c:1293
 #, fuzzy, c-format
-msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
 #: lib/signature.c:139
@@ -4194,59 +4199,59 @@ msgstr "Файл %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Довжина файла %s менше за %u байт\n"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr "Виконано"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr "Неправильна відповідь від сервера"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:704
 msgid "Server I/O error"
 msgstr "Помилка вводу/виводу сервера"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr "Неможливо знайти адресу сервера"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr "Неможливо знайти назву сервера"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr "Неможливо з'єднатись з сервером"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr "Неможливо встановити з'єднання з сервером"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:716
 msgid "I/O error to local file"
 msgstr "Файлова помилка вводу/виводу"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr "Помилка при переході сервера у пасивний режим"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "Файл не знайдено на сервері"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr "Триває відміна"
 
-#: rpmio/rpmio.c:728
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr "Невідома або неочікувана помилка"
 
-#: rpmio/rpmio.c:1424
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "триває реєстрація у %s як %s, пароль %s\n"
@@ -4311,25 +4316,25 @@ msgstr "порт url має бути числом\n"
 msgid "failed to create %s: %s\n"
 msgstr "неможливо створити %s: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:517 tools/rpmgraph.c:269
 msgid "don't verify header+payload signature"
 msgstr "не перевіряти підпис заголовка та вмісту"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:520
 msgid "don't update cache database, only print package paths"
 msgstr "не оновлювати кеш бази даних, лише вивести перелік шляхів пакету"
 
-#: tools/rpmcache.c:521
+#: tools/rpmcache.c:523
 #, fuzzy
 msgid "File tree walk options:"
 msgstr "Параметри підпису:"
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:559
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr "%s: макрос %%{_cache_dbpath} визначений неправильно.\n"
 
-#: tools/rpmcache.c:597
+#: tools/rpmcache.c:599
 #, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: помилка роботи з кешем: код помилки %d.\n"

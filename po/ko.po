@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-17 23:23-0500\n"
+"POT-Creation-Date: 2006-02-20 20:46-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -111,7 +111,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr "설치/업그레이드/삭제 옵션:"
 
-#: rpmqv.c:117 tools/rpmcache.c:525 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmcache.c:527 tools/rpmdeps.c:152 tools/rpmgraph.c:276
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "모든 rpm 모드에서의 일반적인 옵션:"
@@ -2547,7 +2547,7 @@ msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123 lib/rpmts.c:634
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
@@ -2922,7 +2922,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:645
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3130,14 +3130,14 @@ msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
 #: lib/rpmps.c:243
 #, fuzzy, c-format
-msgid "installing package %s needs %ld%cB on the %s filesystem"
+msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
 "니다"
 
 #: lib/rpmps.c:253
-#, c-format
-msgid "installing package %s needs %ld inodes on the %s filesystem"
+#, fuzzy, c-format
+msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld의 아이노드(inode)"
 "가 필요합니다"
@@ -3164,6 +3164,13 @@ msgid "%s conflicts with %s%s"
 msgstr " %s-%s-%s (와)과 충돌합니다\n"
 
 #: lib/rpmps.c:273
+#, fuzzy, c-format
+msgid "installing package %s on %s rdonly filesystem"
+msgstr ""
+"%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
+"니다"
+
+#: lib/rpmps.c:278
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3305,52 +3312,52 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:187
+#: lib/rpmts.c:189
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:283
+#: lib/rpmts.c:285
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:301
+#: lib/rpmts.c:303
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "%s %s에 '(' 가 없습니다\n"
 
-#: lib/rpmts.c:309
+#: lib/rpmts.c:311
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:520
+#: lib/rpmts.c:522
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s의 rpm 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:664
+#: lib/rpmts.c:666
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "행: %s\n"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:678
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
-#: lib/rpmts.c:1224
+#: lib/rpmts.c:1226
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1226
+#: lib/rpmts.c:1228
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1282
+#: lib/rpmts.c:1293
 #, fuzzy, c-format
-msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "파일%5d: %07o %s.%s\t %s\n"
 
 #: lib/signature.c:139
@@ -4227,60 +4234,60 @@ msgstr "%s 파일: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr "성공"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr "잘못된 서버 응답입니다"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:704
 msgid "Server I/O error"
 msgstr "서버 입/출력 오류입니다"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr "서버 대기시간이 초과되었습니다"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr "서버 호스트 주소를 검색할 수 없습니다"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr "서버 호스트 이름을 검색할 수 없습니다"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr "서버에 접속하는데 실패했습니다"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr "서버에 데이터 접속을 시도하는데 실패했습니다"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:716
 msgid "I/O error to local file"
 msgstr "로컬 파일에 입/출력 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr ""
 "원격 서버를 수동 모드(passive mode)로 설정하는 도중 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "서버에서 파일을 찾을 수 없습니다"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr "진행이 중단되었습니다"
 
-#: rpmio/rpmio.c:728
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr "알 수 없는 혹은 예상치 못한 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:1424
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s에 %s(으)로 기록(logging)합니다, pw %s\n"
@@ -4345,26 +4352,26 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 msgid "failed to create %s: %s\n"
 msgstr "%s(을)를 생성하는데 실패함: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:517 tools/rpmgraph.c:269
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "패키지의 서명을 검사합니다"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:520
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:521
+#: tools/rpmcache.c:523
 #, fuzzy
 msgid "File tree walk options:"
 msgstr "서명 옵션:"
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:559
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:597
+#: tools/rpmcache.c:599
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: 여는데 실패했습니다: %s\n"

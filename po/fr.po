@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-17 23:23-0500\n"
+"POT-Creation-Date: 2006-02-20 20:46-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -120,7 +120,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr "Options d'installation/désinstallation/mise à jour:"
 
-#: rpmqv.c:117 tools/rpmcache.c:525 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmcache.c:527 tools/rpmdeps.c:152 tools/rpmgraph.c:276
 msgid "Common options for all rpm modes and executables:"
 msgstr "Options communes a tous les modes et executables rpm:"
 
@@ -2576,7 +2576,7 @@ msgstr "échec de %s sur le fichier %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "échec %s: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123 lib/rpmts.c:634
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "format incorrect: %s\n"
@@ -2959,7 +2959,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "relogement du répertoire %s vers %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:645
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3167,14 +3167,14 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "le paquetage %s (plus récent que %s) est déjà installé"
 
 #: lib/rpmps.c:243
-#, c-format
-msgid "installing package %s needs %ld%cB on the %s filesystem"
+#, fuzzy, c-format
+msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 "installer le paquetage %s nécessite %ld%co sur le système de fichiers %s"
 
 #: lib/rpmps.c:253
-#, c-format
-msgid "installing package %s needs %ld inodes on the %s filesystem"
+#, fuzzy, c-format
+msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 "installer le paquetage %s nécessite %ld i-noeuds sur le système de fichiers %"
 "s"
@@ -3201,6 +3201,12 @@ msgid "%s conflicts with %s%s"
 msgstr "%s entre en conflit avec %s%s"
 
 #: lib/rpmps.c:273
+#, fuzzy, c-format
+msgid "installing package %s on %s rdonly filesystem"
+msgstr ""
+"installer le paquetage %s nécessite %ld%co sur le système de fichiers %s"
+
+#: lib/rpmps.c:278
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "erreur %d inconnue rencontrée en manipulant le paquetage %s"
@@ -3341,52 +3347,52 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:187
+#: lib/rpmts.c:189
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "impossible d'ouvrir la base de données Package dans %s\n"
 
-#: lib/rpmts.c:283
+#: lib/rpmts.c:285
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "'(' supplémentaire dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:301
+#: lib/rpmts.c:303
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "'(' manquante dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:309
+#: lib/rpmts.c:311
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "')' manquante dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:520
+#: lib/rpmts.c:522
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "Impossible d'ouvrir la base de données Solve dans %s\n"
 
-#: lib/rpmts.c:664
+#: lib/rpmts.c:666
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Ajout de: %s\n"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:678
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Suggestion: %s\n"
 
-#: lib/rpmts.c:1224
+#: lib/rpmts.c:1226
 msgid "mounted filesystems:\n"
 msgstr "systèmes de fichiers montés:\n"
 
-#: lib/rpmts.c:1226
+#: lib/rpmts.c:1228
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1282
+#: lib/rpmts.c:1293
 #, fuzzy, c-format
-msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
 #: lib/signature.c:139
@@ -4268,59 +4274,59 @@ msgstr "Fichier %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Le fichier %s est plus petit que %u octets\n"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr "Succès"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr "Mauvaise réponse du serveur"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:704
 msgid "Server I/O error"
 msgstr "Erreur d'E/S avec le serveur"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr "Timeout du serveur"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr "Impossible de résoudre l'adresse IP du serveur"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr "Impossible de retrouver le nom d'hôte du serveur"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr "Impossible de se connecter au serveur"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr "Impossible d'établir une connexion de données avec le serveur"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:716
 msgid "I/O error to local file"
 msgstr "erreur d'E/S dans le fichier local"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr "Erreur en mettant le serveur distant en mode passif"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "Fichier non trouvé sur le serveur"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr "Abandon en cours"
 
-#: rpmio/rpmio.c:728
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr "Erreur inconnue ou inattendue"
 
-#: rpmio/rpmio.c:1424
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "connexion à %s en tant que %s, mdp %s\n"
@@ -4385,27 +4391,27 @@ msgstr "le port dans l'url doit être un nombre\n"
 msgid "failed to create %s: %s\n"
 msgstr "échec de la création de %s: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:517 tools/rpmgraph.c:269
 msgid "don't verify header+payload signature"
 msgstr "ne pas vérifier la signature de l'entete+charge_utile"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:520
 msgid "don't update cache database, only print package paths"
 msgstr ""
 "ne pas mettre à jour le cache de la base de données, afficher seulement les "
 "chemins du paquetage"
 
-#: tools/rpmcache.c:521
+#: tools/rpmcache.c:523
 #, fuzzy
 msgid "File tree walk options:"
 msgstr "Otions de signatures"
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:559
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr "%s: la macro %%{_cache_dbpath} est mal configurée.\n"
 
-#: tools/rpmcache.c:597
+#: tools/rpmcache.c:599
 #, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: échec de l'opération sur le cache: ec %d.\n"

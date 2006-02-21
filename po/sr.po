@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-17 23:23-0500\n"
+"POT-Creation-Date: 2006-02-20 20:46-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -110,7 +110,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:117 tools/rpmcache.c:525 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmcache.c:527 tools/rpmdeps.c:152 tools/rpmgraph.c:276
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -2591,7 +2591,7 @@ msgstr "neuspelo otvaranje %s: %s"
 msgid "%s failed: %s\n"
 msgstr "PGP omanuo"
 
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123 lib/rpmts.c:634
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "gre¹ka u formatu: %s\n"
@@ -2962,7 +2962,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:645
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -3170,12 +3170,12 @@ msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
 #: lib/rpmps.c:243
 #, c-format
-msgid "installing package %s needs %ld%cB on the %s filesystem"
+msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 
 #: lib/rpmps.c:253
 #, c-format
-msgid "installing package %s needs %ld inodes on the %s filesystem"
+msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 
 #: lib/rpmps.c:258
@@ -3199,6 +3199,11 @@ msgid "%s conflicts with %s%s"
 msgstr " se sudara sa %s-%s-%s\n"
 
 #: lib/rpmps.c:273
+#, fuzzy, c-format
+msgid "installing package %s on %s rdonly filesystem"
+msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
+
+#: lib/rpmps.c:278
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3339,52 +3344,52 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:187
+#: lib/rpmts.c:189
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:283
+#: lib/rpmts.c:285
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/rpmts.c:301
+#: lib/rpmts.c:303
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "nedostaje { posle %"
 
-#: lib/rpmts.c:309
+#: lib/rpmts.c:311
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/rpmts.c:520
+#: lib/rpmts.c:522
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:664
+#: lib/rpmts.c:666
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:678
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/rpmts.c:1224
+#: lib/rpmts.c:1226
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1226
+#: lib/rpmts.c:1228
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1282
+#: lib/rpmts.c:1293
 #, fuzzy, c-format
-msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/signature.c:139
@@ -4260,68 +4265,68 @@ msgstr "neuspelo otvaranje %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:702
 #, fuzzy
 msgid "Bad server response"
 msgstr "Lo¹ odgovor FTP servera"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:704
 #, fuzzy
 msgid "Server I/O error"
 msgstr "Ulazno/izlazna FTP gre¹ka"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:706
 #, fuzzy
 msgid "Server timeout"
 msgstr "Tajm-aut FTP servera"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:708
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Ne mogu da odredim host adresu FTP servera"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:710
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Ne mogu da odredim ime FTP hosta"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:712
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Ne mogu da se pove¾em sa FTP serverom"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:714
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Ne mogu da uspostavim vezu podataka sa FTP serverom"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:716
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "Ulazno/izlazna gre¹ka kod lokalne datoteke"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr "Gre¹ka kod stavljanja udaljenog servera u pasivni re¾im"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:728
+#: rpmio/rpmio.c:726
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
 
-#: rpmio/rpmio.c:1424
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -4388,25 +4393,25 @@ msgstr "gre¹ka: FTP port mora biti broj\n"
 msgid "failed to create %s: %s\n"
 msgstr "neuspelo kreiranje %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:517 tools/rpmgraph.c:269
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "proveri potpis u paketu"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:520
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:521
+#: tools/rpmcache.c:523
 msgid "File tree walk options:"
 msgstr ""
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:559
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:597
+#: tools/rpmcache.c:599
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: Neuspelo otvaranje\n"
@@ -5897,10 +5902,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "package %s is now obsolete and will be removed\n"
 #~ msgstr "paket %s nije instaliran\n"
-
-#, fuzzy
-#~ msgid "package %s contains no files"
-#~ msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
 #, fuzzy
 #~ msgid "file %s is shared\n"

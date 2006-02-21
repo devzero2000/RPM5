@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-17 23:23-0500\n"
+"POT-Creation-Date: 2006-02-20 20:46-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -118,7 +118,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:117 tools/rpmcache.c:525 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmcache.c:527 tools/rpmdeps.c:152 tools/rpmgraph.c:276
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -2732,7 +2732,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "%s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123 lib/rpmts.c:634
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -3130,7 +3130,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "No consegui abrir: %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:643
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:645
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -3359,12 +3359,12 @@ msgstr "no foi passado pacote para instalao"
 
 #: lib/rpmps.c:243
 #, c-format
-msgid "installing package %s needs %ld%cB on the %s filesystem"
+msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 
 #: lib/rpmps.c:253
 #, c-format
-msgid "installing package %s needs %ld inodes on the %s filesystem"
+msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 
 #: lib/rpmps.c:258
@@ -3388,6 +3388,11 @@ msgid "%s conflicts with %s%s"
 msgstr "no foi passado pacote para desinstalao"
 
 #: lib/rpmps.c:273
+#, fuzzy, c-format
+msgid "installing package %s on %s rdonly filesystem"
+msgstr "no foi passado pacote para instalao"
+
+#: lib/rpmps.c:278
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3535,34 +3540,34 @@ msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmts.c:187
+#: lib/rpmts.c:189
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmts.c:283
+#: lib/rpmts.c:285
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:301
+#: lib/rpmts.c:303
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "instale pacote"
 
-#: lib/rpmts.c:309
+#: lib/rpmts.c:311
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "instale pacote"
 
 # , c-format
-#: lib/rpmts.c:520
+#: lib/rpmts.c:522
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmts.c:664
+#: lib/rpmts.c:666
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
@@ -3575,23 +3580,23 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmts.c:676
+#: lib/rpmts.c:678
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "RPM verso %s\n"
 
-#: lib/rpmts.c:1224
+#: lib/rpmts.c:1226
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1226
+#: lib/rpmts.c:1228
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmts.c:1282
+#: lib/rpmts.c:1293
 #, fuzzy, c-format
-msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 #: lib/signature.c:139
@@ -4507,59 +4512,59 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:679
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:702
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:704
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:706
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:708
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:710
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:712
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:714
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:716
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:718
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:720
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:722
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:728
+#: rpmio/rpmio.c:726
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1424
+#: rpmio/rpmio.c:1422
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -4625,26 +4630,26 @@ msgstr ""
 msgid "failed to create %s: %s\n"
 msgstr "No consegui abrir o pipe tar: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:269
+#: tools/rpmcache.c:517 tools/rpmgraph.c:269
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "verifique a assinatura do pacote"
 
-#: tools/rpmcache.c:518
+#: tools/rpmcache.c:520
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:521
+#: tools/rpmcache.c:523
 msgid "File tree walk options:"
 msgstr ""
 
-#: tools/rpmcache.c:557
+#: tools/rpmcache.c:559
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
 # , c-format
-#: tools/rpmcache.c:597
+#: tools/rpmcache.c:599
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "No consegui abrir: %s\n"
@@ -6164,10 +6169,6 @@ msgstr ""
 
 #, fuzzy
 #~ msgid "package %s is now obsolete and will be removed\n"
-#~ msgstr "no foi passado pacote para instalao"
-
-#, fuzzy
-#~ msgid "package %s contains no files"
 #~ msgstr "no foi passado pacote para instalao"
 
 # "Project-Id-Version: rpm-2.5.3\n"
