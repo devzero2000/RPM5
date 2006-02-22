@@ -168,7 +168,7 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 	goto exit;
     }
 
-    /* XXX resource cap at 128Mb, let MADV_SEQUENTIAL handle paging. */
+    /* XXX 128 Mb resource cap for top(1) scrutiny, MADV_SEQUENTIAL better. */
     use_mmap = (pid == 0 && fsize <= 0x07ffffff);
 
     switch(ut) {

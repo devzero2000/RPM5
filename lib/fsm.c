@@ -973,7 +973,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	char * rdbuf = NULL;
 	void * mapped = (void *)-1;
 	size_t nmapped = 0;
-	/* XXX resource cap at 128Mb, let MADV_SEQUENTIAL handle paging. */
+	/* XXX 128 Mb resource cap for top(1) scrutiny, MADV_DONTNEED better. */
 	int use_mmap = (st->st_size <= 0x07ffffff);
 #endif
 
