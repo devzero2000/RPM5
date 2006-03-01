@@ -1,3 +1,7 @@
+4.4.5 -> 4.4.6:
+	- start 4.4.6 development.
+	- perl: fix exuberant cut-n-paste.
+
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.
 	- rollback: insure that rpmtsRollback excluded tid is correct.

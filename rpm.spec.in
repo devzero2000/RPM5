@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -33,7 +33,7 @@ Conflicts: patch < 2.5
 Prereq: fileutils shadow-utils
 %endif
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
-Requires: popt = 1.10.5
+Requires: popt = 1.10.6
 Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
@@ -135,8 +135,8 @@ Group: Development/Libraries
 BuildRequires: perl(ExtUtils::MakeMaker) >= 6.17
 Requires: rpm = %{rpm_version}-%{release}
 Requires: rpm-libs = %{rpm_version}-%{release}
-Obsoletes: perl-RPM
-Conflicts: perl-RPM
+Obsoletes: perl-RPM, perl-RPM2
+Conflicts: perl-RPM, perl-RPM2
 
 %description perl
 The rpm-perl package contains a module that permits applications
@@ -152,7 +152,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.10.5
+Version: 1.10.6
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -179,9 +179,9 @@ WITH_PYTHON="--without-python"
 %endif
 
 %if %{with_perl_subpackage}
-WITH_PYTHON="--with-perl"
+WITH_PERL="--with-perl"
 %else
-WITH_PYTHON="--without-perl"
+WITH_PERL="--without-perl"
 %endif
 
 %ifos linux
@@ -577,70 +577,8 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Tue Feb 21 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-1
-- fix: payload reposition not needed for skipped symlinks in archive.
-- remove hoary /usr/lib/{rpmpopt,rpmrc} legacy symlinks.
-- x86_64: remove gcc warning cruft.
-- detect missing re-install elements in a rollback transaction and exit.
-- release rpm-4.4.5.
+* Wed Mar  1 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.2
+- perl: fix exuberant cut-n-paste.
 
-* Mon Feb 20 2006 Jeff Johnsomn <jbj@jbj.org> 4.4.5-0.14
-- don't install on rdonly file systems (#119185).
-- pass disk space errors using 64 bits.
-- solaris: avoid diff -d in check-files (#130394).
-
-* Fri Feb 17 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.13
-- encapsulate mounted file system handling in fs.[ch].
-- sum package file sizes into uint_64 accumulator for fssizes.
-- fix: skip mount points with ESTALE return from stat(2).
-- handle files up to 4Gb in packages.
-
-* Tue Feb 14 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.12
-- remove sqlite from the rpm-4_4 branch.
-- rebuild with latest gcc 4.1.
-
-* Mon Feb 13 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.11
-- popt: handle POPT_ARGFLAG_OPTIONAL correctly (#71147).
-- python: doco strings for te.{Depth,Breadth}.
-- upgrade to db-4.4.20.
-- handle trailing delimiters in rpmvercmp more carefully (#178798).
-
-* Sun Feb 12 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.10
-- debuginfo: follow symlinks when copying source files (#149113).
-- lua: don't link -lreadline and -lhistory (#147013).
-- add tweaks to permit building in subdir, more to do yet (#81196).
-- fix: don't process package manifest if HTML is found (#75774).
-- fix: teach GNUconfigure about configure.[ac][in] (#170961).
-- fix: insure that netsharedpath basename contains no '/' (#52725).
-
-* Sat Feb 11 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.9
-- rollback: revert opt-out config, not ready for prime time yet.
-
-* Fri Feb 10 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.8
-- build against neon-0.25.5.
-
-* Fri Feb  3 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.7
-- irix: avoid NULL environ segfault with non-gcc sgi compiler (#178133).
-- ppc: detect certain cpu's as "ppc", not "ppciseries" (#128604).
-- rollback: make default configuration opt-out rather than opt-in.
-- build against sqlite-3.3.3.
-
-* Fri Jan 20 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.6
-- fix: perldeps and prov.pl not to emit perl(main) (#177960)
-- build against FC5t2+.
-
-* Fri Jan  6 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.5
-- fix: solaris d->d_reclen is unreliable in certain cases (#128593).
-
-* Thu Jan  5 2006 Jeff Johnson <jbj@jbj.org> 4.4.5-0.4
-- rollback: insure that rpmtsRollback excluded tid is correct.
-- rollback: don't bother erasing rollback repackages, just don't create.
-
-* Thu Dec 22 2005 Jeff Johnson <jbj@jbj.org> 4.4.5-0.3
-- rebuild with gcc-4.1.0.
-
-* Wed Dec 14 2005 Jeff Johnson <jbj@jbj.org> 4.4.5-0.2
-- nolibio: reopen FD_t to insure attached FILE * reading manifests.
-
-* Tue Dec 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.5-0.1
-- start rpm-4.4.5 development.
+* Wed Feb 22 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.1
+- start 4.4.6 development.

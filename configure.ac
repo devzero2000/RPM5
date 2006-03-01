@@ -29,7 +29,7 @@ echo "
 sleep 10
 
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.4.5, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.4.6, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
@@ -955,8 +955,9 @@ dnl
 dnl
 dnl Auto-detect whether perl bindings should be built.
 dnl
+withval=auto
 AC_ARG_WITH(perl,   [  --with-perl             build rpm perl bindings ])
-
+WITH_PERL_VERSION=$withval
 if test "$WITH_PERL_VERSION" != no ; then
   WITH_PERL_SUBDIR=perl
   WITH_PERL_SUBPACKAGE=1
@@ -966,6 +967,7 @@ else
 fi
 AC_SUBST(WITH_PERL_SUBDIR)
 AC_SUBST(WITH_PERL_SUBPACKAGE)
+AC_SUBST(WITH_PERL_VERSION)
 
 dnl
 dnl Auto-detect which python bindings should be built.
