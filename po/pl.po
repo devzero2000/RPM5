@@ -4,15 +4,15 @@
 # get your own copy of PePeSza from http://www.ids.pl/~pkollegu/pepesza.html
 # Wojciech Drapiñski <wojciech.drapinski@zie.pg.gda.pl>, 1999.
 # Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>, 1999
-# Jakub Bogusz <qboosh@pld-linux.org>, 2002-2005.
+# Jakub Bogusz <qboosh@pld-linux.org>, 2002-2006.
 # Arkadiusz Mi¶kiewicz <arekm@pld-linux.org>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.4.4\n"
+"Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-22 13:19-0500\n"
-"PO-Revision-Date: 2005-12-14 23:47+0100\n"
+"POT-Creation-Date: 2006-02-21 19:05-0500\n"
+"PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -2897,7 +2897,7 @@ msgstr "Przygotowywanie pakietów do instalacji..."
 
 #: lib/rpminstall.c:213
 msgid "Repackaging..."
-msgstr "Ponowne pakowywanie..."
+msgstr "Ponowne pakowanie..."
 
 #: lib/rpminstall.c:215
 msgid "Repackaging erased files..."
@@ -3003,14 +3003,13 @@ msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
 
 #: lib/rpminstall.c:1138
-#, fuzzy
 msgid "Missing repackaged package(s) detected:\n"
-msgstr "Czyszczenie przepakowanych pakietów:\n"
+msgstr "Wykryto brakuj±ce przepakowane pakiety:\n"
 
 #: lib/rpminstall.c:1140
-#, fuzzy, c-format
+#, c-format
 msgid "    %s[%d]: %s\n"
-msgstr "%s: %s\n"
+msgstr "    %s[%d]: %s\n"
 
 #: lib/rpminstall.c:1363
 #, c-format
@@ -3079,14 +3078,14 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "pakiet %s (nowszy ni¿ %s) jest ju¿ zainstalowany"
 
 #: lib/rpmps.c:243
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
-msgstr "instalacja pakietu %s wymaga %ld%cB w systemie plików %s"
+msgstr "instalacja pakietu %s wymaga %lu%cB w systemie plików %s"
 
 #: lib/rpmps.c:253
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
-msgstr "instalacja pakietu %s wymaga %ld i-wêz³ów w systemie plików %s"
+msgstr "instalacja pakietu %s wymaga %lu i-wêz³ów w systemie plików %s"
 
 #: lib/rpmps.c:258
 #, c-format
@@ -3109,9 +3108,9 @@ msgid "%s conflicts with %s%s"
 msgstr "%s jest w konflikcie z %s%s"
 
 #: lib/rpmps.c:273
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s on %s rdonly filesystem"
-msgstr "instalacja pakietu %s wymaga %ld%cB w systemie plików %s"
+msgstr "instalacja pakietu %s w systemie plików %s tylko do odczytu"
 
 #: lib/rpmps.c:278
 #, c-format
@@ -3300,19 +3299,19 @@ msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        urz    bloków  bl.wolnych    i.wolnych punkt montowania\n"
 
 #: lib/rpmts.c:1293
-#, fuzzy, c-format
+#, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
-msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgstr "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 
 #: lib/signature.c:139
-#, fuzzy, c-format
+#, c-format
 msgid "Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"
-msgstr "Oczekiwany rozmiar: %12d = nag³(%d)+sygn(%d)+wyrówn(%d)+dane(%d)\n"
+msgstr "Oczekiwany rozmiar: %12lu = nag³(%d)+sygn(%d)+wyrówn(%d)+dane(%lu)\n"
 
 #: lib/signature.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "  Actual size: %12lu\n"
-msgstr "  Faktyczny rozmiar: %12d\n"
+msgstr "  Faktyczny rozmiar: %12lu\n"
 
 #: lib/signature.c:187
 #, c-format
