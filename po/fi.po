@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-22 13:19-0500\n"
+"POT-Creation-Date: 2006-03-07 11:22-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2816,11 +2816,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:793 lib/rpmds.c:3202
+#: lib/rpmds.c:793 lib/rpmds.c:3206
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:793 lib/rpmds.c:3202
+#: lib/rpmds.c:793 lib/rpmds.c:3206
 msgid "YES"
 msgstr ""
 
@@ -2889,12 +2889,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2995 lib/rpmds.c:3025 lib/rpmds.c:3037
+#: lib/rpmds.c:2999 lib/rpmds.c:3029 lib/rpmds.c:3041
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2998
+#: lib/rpmds.c:3002
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2902,33 +2902,33 @@ msgid ""
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3027
+#: lib/rpmds.c:3031
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3039
+#: lib/rpmds.c:3043
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3168
+#: lib/rpmds.c:3172
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3201
+#: lib/rpmds.c:3205
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:3225
+#: lib/rpmds.c:3229
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"

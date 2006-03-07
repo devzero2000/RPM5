@@ -2425,6 +2425,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	case SYSCONF:
 	    value = sysconf(c->call_name);
 	    if (value == -1l) {
+#if defined(_SC_UINT_MAX) && defined(_SC_ULONG_MAX)
 /*@-unrecog@*/
 		if (c->call_name == _SC_UINT_MAX
 		|| c->call_name == _SC_ULONG_MAX) {
@@ -2432,6 +2433,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 		    sprintf(EVR, "%lu", value);
 		}
 /*@=unrecog@*/
+#endif
 	    } else {
 		EVR = xmalloc(32);
 		sprintf(EVR, "%ld", value);
@@ -2441,8 +2443,10 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	    clen = confstr(c->call_name, (char *) NULL, 0);
 	    EVR = xmalloc(clen+1);
 	    *EVR = '\0';
-	    if (confstr (c->call_name, EVR, clen) != clen)
-		error (3, errno, "confstr");
+	    if (confstr (c->call_name, EVR, clen) != clen) {
+		fprintf(stderr, "confstr: %s\n", strerror(errno));
+		exit (3);
+	    }
 	    EVR[clen] = '\0';
 	    /*@switchbreak@*/ break;
 	}
@@ -2924,7 +2928,7 @@ int rpmdsUname(rpmds *dsp, const struct utsname * un)
 #endif
     if (un->machine != NULL)
 	rpmdsNSAdd(dsp, NS, "machine", un->machine, RPMSENSE_EQUAL);
-#if defined(_GNU_SOURCE)
+#if defined(__linux__)
     if (un->domainname != NULL && strcmp(un->domainname, "(none)"))
 	rpmdsNSAdd(dsp, NS, "domainname", un->domainname, RPMSENSE_EQUAL);
 #endif

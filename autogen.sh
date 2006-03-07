@@ -32,7 +32,8 @@ esac
 
 myopts=
 if [ X"$@" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
-    export myopts="--prefix=/usr --disable-nls"
+    export myprefix=/opt/local
+    export myopts="--prefix=${myprefix} --disable-nls"
     export CPPFLAGS="-I${myprefix}/include"
 fi
 

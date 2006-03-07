@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-22 13:19-0500\n"
+"POT-Creation-Date: 2006-03-07 11:22-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -2773,11 +2773,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3202
+#: lib/rpmds.c:793 lib/rpmds.c:3206
 msgid "NO "
 msgstr "NÃO"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3202
+#: lib/rpmds.c:793 lib/rpmds.c:3206
 msgid "YES"
 msgstr "SIM"
 
@@ -2849,12 +2849,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:2995 lib/rpmds.c:3025 lib/rpmds.c:3037
+#: lib/rpmds.c:2999 lib/rpmds.c:3029 lib/rpmds.c:3041
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:2998
+#: lib/rpmds.c:3002
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2864,20 +2864,20 @@ msgstr ""
 "ou '/': %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3027
+#: lib/rpmds.c:3031
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3039
+#: lib/rpmds.c:3043
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3168
+#: lib/rpmds.c:3172
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2886,13 +2886,13 @@ msgstr ""
 "A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
 "\t %s\tB %s\n"
 
-#: lib/rpmds.c:3201
+#: lib/rpmds.c:3205
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s     A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3225
+#: lib/rpmds.c:3229
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "o pacote %s tem requisitos não satisfeitos: %s\n"
