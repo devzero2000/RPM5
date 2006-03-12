@@ -27,6 +27,13 @@
 #include "ne_string.h"
 #include "ne_utils.h"
 
+/* XXX API changes for neon-0.26.0 */
+#if !defined(NE_FREE)
+#define	ne_set_persist(_sess, _flag)
+#define	ne_propfind_set_private(_pfh, _create_item, NULL) \
+	ne_propfind_set_private(_pfh, _create_item, NULL, NULL)
+#endif
+
 #include <rpmio_internal.h>
 
 #define _RPMDAV_INTERNAL
@@ -406,8 +413,8 @@ struct fetch_resource_s {
 static void *fetch_destroy_item(/*@only@*/ struct fetch_resource_s *res)
 	/*@modifies res @*/
 {
-    NE_FREE(res->uri);
-    NE_FREE(res->error_reason);
+    ne_free(res->uri);
+    ne_free(res->error_reason);
     res = _free(res);
     return NULL;
 }
@@ -557,7 +564,7 @@ static int fetch_compare(const struct fetch_resource_s *r1,
     }
 }
 
-static void fetch_results(void *userdata, const char *uri,
+static void fetch_results(void *userdata, void *uarg,
 		    const ne_prop_result_set *set)
 	/*@*/
 {
@@ -568,7 +575,13 @@ static void fetch_results(void *userdata, const char *uri,
     const ne_status *status = NULL;
     const char * path = NULL;
 
+#if !defined(NE_FREE)
+    const ne_uri * uri = uarg;
+    (void) urlPath(uri->path, &path);
+#else
+    const char * uri = uarg;
     (void) urlPath(uri, &path);
+#endif
     if (path == NULL)
 	return;
 
@@ -727,7 +740,7 @@ static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
 	xx = argvAdd(&ctx->av, val);
 if (_dav_debug < 0)
 fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
-	NE_FREE(val);
+	ne_free(val);
 
 	while (ctx->ac >= ctx->nalloced) {
 	    if (ctx->nalloced <= 0)

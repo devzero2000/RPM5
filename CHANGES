@@ -2,6 +2,7 @@
 	- start 4.4.6 development.
 	- perl: fix exuberant cut-n-paste.
 	- macosx: remove compile nits.
+	- dirty hacks to handle neon-0.26.0.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.
