@@ -498,6 +498,7 @@ extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	/*@globals rpmGlobalMacroContext, errno, h_errno @*/
 	/*@modifies db, rpmGlobalMacroContext, errno @*/;
 
+#if !defined(SWIG)
 /*@-globuse -mustmod @*/ /* FIX: vector annotations */
 /** \ingroup dbi
  * Open a database cursor.
@@ -748,6 +749,7 @@ int dbiByteSwapped(dbiIndex dbi)
         dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
     return dbi->dbi_byteswapped;
 }
+
 /** \ingroup dbi
  * Return dbi statistics.
  * @param dbi		index database handle
@@ -773,6 +775,7 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
     return dbi->dbi_txnid;
 }
 /*@=globuse =mustmod @*/
+#endif	/* SWIG */
 
 /*@=exportlocal@*/
 

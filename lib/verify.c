@@ -9,6 +9,8 @@
 
 #include "psm.h"
 #include "rpmfi.h"
+
+#define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
 #include "rpmts.h"
 
 #include "legacy.h"	/* XXX domd5(), uidToUname(), gnameToGid */

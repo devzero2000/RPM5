@@ -5,6 +5,8 @@
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX for fdSetOpen */
+
+#define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator */
 #include <rpmcli.h>
 #include <rpmpgp.h>
 #include <rpmdb.h>

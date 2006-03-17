@@ -42,6 +42,7 @@ typedef enum rpmProblemType_e {
 
 /**
  */
+#if defined(_RPMPS_INTERNAL)
 struct rpmProblem_s {
 /*@only@*/ /*@null@*/
     char * pkgNEVR;
@@ -65,6 +66,7 @@ struct rpmps_s {
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
+#endif
 
 #ifdef __cplusplus
 extern "C" {

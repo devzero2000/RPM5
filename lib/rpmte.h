@@ -665,6 +665,7 @@ rpmtsi XrpmtsiInit(rpmts ts,
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
         /*@modifies tsi @*/;
 
+#if !defined(SWIG)
 #if	defined(_RPMTE_INTERNAL)
 static inline void rpmtePrintID(rpmte p)
 	/*@globals fileSystem @*/
@@ -715,6 +716,7 @@ static inline void hdrPrintErased(Header h)
 	str = _free(str);
     }
 }
+#endif
 
 #ifdef __cplusplus
 }

@@ -524,6 +524,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 	/*@*/;
 
+#if !defined(SWIG)
 /**
  * Return current dependency type name.
  * @param ds		dependency set
@@ -613,6 +614,7 @@ int rpmdsPrintClosure(/*@null@*/ rpmds P, /*@null@*/ rpmds R,
     return rpmdsPrintResults(R, fp);
 }
 /*@=mods@*/
+#endif
 
 #ifdef __cplusplus
 }

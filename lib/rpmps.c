@@ -6,6 +6,7 @@
 
 #include <rpmlib.h>
 
+#define	_RPMPS_INTERNAL
 #include "rpmps.h"
 
 #include "misc.h"

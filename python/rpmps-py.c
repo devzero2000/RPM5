@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator */
 #include <rpmlib.h>
 
 #include "rpmdebug-py.c"
