@@ -4,6 +4,7 @@
 	- macosx: remove compile nits.
 	- dirty hacks to handle neon-0.26.0.
 	- make rpmps internals opaque.
+	- make rpmdb internals opaque.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

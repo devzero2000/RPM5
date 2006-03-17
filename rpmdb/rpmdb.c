@@ -34,6 +34,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 #include <rpmmacro.h>
 #include <rpmsq.h>
 
+#define	_RPMDB_INTERNAL
 #include "rpmdb.h"
 #include "fprint.h"
 #include "legacy.h"
@@ -1598,6 +1599,24 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     /*@-nullstate@*/	/* FIX: *matches may be NULL. */
     return dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
     /*@=nullstate@*/
+}
+
+void * dbiStatsAccumulator(dbiIndex dbi, int opx)
+{
+    rpmsw sw = NULL;
+    switch (opx) {
+    case 14:	/* RPMTS_OP_DBGET */
+	sw = &dbi->dbi_rpmdb->db_getops;
+	break;
+    case 15:	/* RPMTS_OP_DBPUT */
+	sw = &dbi->dbi_rpmdb->db_putops;
+	break;
+    default:	/* XXX wrong, but let's not return NULL. */
+    case 16:	/* RPMTS_OP_DBDEL */
+	sw = &dbi->dbi_rpmdb->db_delops;
+	break;
+    }
+    return sw;
 }
 
 /**

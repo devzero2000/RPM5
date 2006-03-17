@@ -7,6 +7,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>
 
+#define	_RPMDB_INTERNAL
 #include "rpmdb.h"
 #include "debug.h"
 

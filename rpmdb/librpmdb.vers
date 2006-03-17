@@ -12,6 +12,7 @@ LIBRPMDB_0
     dbiIndexRecordOffset;
     dbiIndexSetCount;
     dbiOpen;
+    dbiStatsAccumulator;
     dbiTags;
     dbiTagsInit;
     dbiTagsMax;

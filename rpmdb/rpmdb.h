@@ -265,6 +265,7 @@ struct _dbiVec {
 	/*@modifies dbi, fileSystem @*/;
 };
 
+#if !defined(SWIG)	/* XXX inline dbiFoo() need */
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db3 functionality).
  */
@@ -388,7 +389,9 @@ struct _dbiIndex {
     const struct _dbiVec * dbi_vec;	/*!< private methods */
 
 };
+#endif	/* !defined(SWIG) */
 
+#if defined(_RPMDB_INTERNAL)
 /** \ingroup rpmdb
  * Describes the collection of index databases used by rpm.
  */
@@ -436,6 +439,7 @@ struct rpmdb_s {
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
+#endif
 
 /* for RPM's internal use only */
 
@@ -497,6 +501,15 @@ extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 		unsigned int flags)
 	/*@globals rpmGlobalMacroContext, errno, h_errno @*/
 	/*@modifies db, rpmGlobalMacroContext, errno @*/;
+
+/**
+ * Return dbiStats accumulator structure.
+ * @param dbi		index database handle
+ * @param opx		per-rpmdb accumulator index (aka rpmtsOpX)
+ * @return		per-rpmdb accumulator pointer
+ */
+void * dbiStatsAccumulator(dbiIndex dbi, int opx)
+        /*@*/;
 
 #if !defined(SWIG)
 /*@-globuse -mustmod @*/ /* FIX: vector annotations */
@@ -563,11 +576,12 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
+    void * sw = dbiStatsAccumulator(dbi, 16);	/* RPMTS_OP_DBDEL */
     int rc;
     assert(key->data != NULL && key->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
+    (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_delops, data->size);
+    (void) rpmswExit(sw, data->size);
     return rc;
 }
 
@@ -586,11 +600,12 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, fileSystem, internalState @*/
 {
+    void * sw = dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    (void) rpmswExit(sw, data->size);
     return rc;
 }
 
@@ -610,11 +625,12 @@ int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *pkey, *data, fileSystem, internalState @*/
 {
+    void * sw = dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    (void) rpmswExit(sw, data->size);
     return rc;
 }
 
@@ -633,11 +649,12 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, fileSystem, internalState @*/
 {
+    void * sw = dbiStatsAccumulator(dbi, 15);	/* RPMTS_OP_DBPUT */
     int rc;
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, 0);
+    (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, data->size);
+    (void) rpmswExit(sw, data->size);
     return rc;
 }
 
