@@ -5,6 +5,7 @@
 	- dirty hacks to handle neon-0.26.0.
 	- make rpmps internals opaque.
 	- make rpmdb internals opaque.
+	- fix: hGetNEVRA segfault if missing arch tag (i.e. pubkeys).
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

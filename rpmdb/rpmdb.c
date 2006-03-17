@@ -1603,7 +1603,7 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
 void * dbiStatsAccumulator(dbiIndex dbi, int opx)
 {
-    rpmsw sw = NULL;
+    void * sw = NULL;
     switch (opx) {
     case 14:	/* RPMTS_OP_DBGET */
 	sw = &dbi->dbi_rpmdb->db_getops;

@@ -94,10 +94,12 @@ char * hGetNEVRA(Header h, const char ** np)
 {
     const char * n, * v, * r, * a;
     char * NVRA, * t;
-    int xx;
 
     (void) headerNVR(h, &n, &v, &r);
-    xx = headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
+    /* XXX pubkeys have no arch. */
+    a = NULL;
+    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL) || a == NULL)
+	a = "pubkey";
     NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
 /*@-boundswrite@*/
     t = stpcpy(t, n);

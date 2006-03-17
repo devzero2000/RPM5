@@ -1025,7 +1025,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  * @retval np		name tag value
  * @return		name-version-release string
  */
-/*@only@*/ char * hGetNEVR(Header h, /*@null@*/ /*@out@*/ const char ** np )
+/*@only@*/
+char * hGetNEVR(Header h, /*@null@*/ /*@out@*/ const char ** np )
 	/*@modifies *np @*/;
 
 /**
@@ -1034,7 +1035,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  * @retval np		name tag value
  * @return		name-version-release string
  */
-/*@only@*/ char * hGetNEVRA(Header h, /*@null@*/ /*@out@*/ const char ** np )
+/*@only@*/
+char * hGetNEVRA(Header h, /*@null@*/ /*@out@*/ const char ** np )
 	/*@modifies *np @*/;
 
 /**

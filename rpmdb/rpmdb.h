@@ -52,6 +52,7 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
  */
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
+#if !defined(SWIG)	/* XXX inline dbiFoo() need */
 /* this will break if sizeof(int) != 4 */
 /** \ingroup dbi
  * A single item from an index database (i.e. the "data returned").
@@ -265,7 +266,6 @@ struct _dbiVec {
 	/*@modifies dbi, fileSystem @*/;
 };
 
-#if !defined(SWIG)	/* XXX inline dbiFoo() need */
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db3 functionality).
  */

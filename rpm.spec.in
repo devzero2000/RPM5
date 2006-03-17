@@ -580,6 +580,7 @@ exit 0
 * Fri Mar 17 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.5
 - make rpmps internals opaque.
 - make rpmdb internals opaque.
+- fix: hGetNEVRA segfault if missing arch tag (i.e. pubkeys).
 
 * Sun Mar 12 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.4
 - dirty hacks to handle neon-0.26.0.
