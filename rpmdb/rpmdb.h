@@ -439,7 +439,7 @@ struct rpmdb_s {
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
-#endif
+#endif	/* !defined(SWIG) */
 
 /* for RPM's internal use only */
 
@@ -792,7 +792,7 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
     return dbi->dbi_txnid;
 }
 /*@=globuse =mustmod @*/
-#endif	/* SWIG */
+#endif	/* !defined(SWIG) */
 
 /*@=exportlocal@*/
 
@@ -841,6 +841,7 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 /*@-exportlocal@*/
 /*@unchecked@*/
 /*@only@*/ /*@null@*/ extern int * dbiTags;
+
 /*@unchecked@*/
 extern int dbiTagsMax;
 /*@=exportlocal@*/

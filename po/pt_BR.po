@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-07 11:22-0500\n"
+"POT-Creation-Date: 2006-03-17 21:04-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -2732,7 +2732,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "%s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/query.c:123 lib/rpmts.c:634
+#: lib/query.c:123 lib/rpmts.c:637
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -3130,7 +3130,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "No consegui abrir: %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:645
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:648
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -3329,81 +3329,81 @@ msgid "read failed: %s (%d)\n"
 msgstr "No consegui abrir: %s\n"
 
 #. @observer@
-#: lib/rpmps.c:200
+#: lib/rpmps.c:201
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:208
+#: lib/rpmps.c:209
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpmps.c:213
+#: lib/rpmps.c:214
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpmps.c:218
+#: lib/rpmps.c:219
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpmps.c:223
+#: lib/rpmps.c:224
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpmps.c:228
+#: lib/rpmps.c:229
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:233
+#: lib/rpmps.c:234
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/rpmps.c:238
+#: lib/rpmps.c:239
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpmps.c:243
+#: lib/rpmps.c:244
 #, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:253
+#: lib/rpmps.c:254
 #, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:258
+#: lib/rpmps.c:259
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/rpmps.c:262
+#: lib/rpmps.c:263
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr ""
 
-#: lib/rpmps.c:264 lib/rpmps.c:269
+#: lib/rpmps.c:265 lib/rpmps.c:270
 #, fuzzy
 msgid "(installed) "
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpmps.c:267
+#: lib/rpmps.c:268
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr "no foi passado pacote para desinstalao"
 
-#: lib/rpmps.c:273
+#: lib/rpmps.c:274
 #, fuzzy, c-format
 msgid "installing package %s on %s rdonly filesystem"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpmps.c:278
+#: lib/rpmps.c:279
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3551,34 +3551,34 @@ msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmts.c:189
+#: lib/rpmts.c:192
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmts.c:285
+#: lib/rpmts.c:288
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:303
+#: lib/rpmts.c:306
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "instale pacote"
 
-#: lib/rpmts.c:311
+#: lib/rpmts.c:314
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "instale pacote"
 
 # , c-format
-#: lib/rpmts.c:522
+#: lib/rpmts.c:525
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmts.c:666
+#: lib/rpmts.c:669
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
@@ -3591,21 +3591,21 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmts.c:678
+#: lib/rpmts.c:681
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "RPM verso %s\n"
 
-#: lib/rpmts.c:1226
+#: lib/rpmts.c:1229
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1228
+#: lib/rpmts.c:1231
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmts.c:1293
+#: lib/rpmts.c:1296
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
@@ -4038,12 +4038,12 @@ msgid "running post-transaction scripts\n"
 msgstr ""
 
 # , c-format
-#: lib/verify.c:329
+#: lib/verify.c:331
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/verify.c:449
+#: lib/verify.c:451
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "lista dependncias do pacote"
@@ -4111,22 +4111,22 @@ msgstr ""
 msgid "locked   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/dbconfig.c:338
+#: rpmdb/dbconfig.c:339
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:378
+#: rpmdb/dbconfig.c:379
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:387
+#: rpmdb/dbconfig.c:388
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:396
+#: rpmdb/dbconfig.c:397
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -4234,179 +4234,179 @@ msgstr "pesquise todos os pacotes"
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: rpmdb/rpmdb.c:215
+#: rpmdb/rpmdb.c:216
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:307
+#: rpmdb/rpmdb.c:308
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:327
+#: rpmdb/rpmdb.c:328
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:978
+#: rpmdb/rpmdb.c:979
 msgid "no dbpath has been set\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:1259 rpmdb/rpmdb.c:1390 rpmdb/rpmdb.c:1446 rpmdb/rpmdb.c:2417
-#: rpmdb/rpmdb.c:2546 rpmdb/rpmdb.c:3300
+#: rpmdb/rpmdb.c:1260 rpmdb/rpmdb.c:1391 rpmdb/rpmdb.c:1447 rpmdb/rpmdb.c:2436
+#: rpmdb/rpmdb.c:2565 rpmdb/rpmdb.c:3319
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:1640
+#: rpmdb/rpmdb.c:1659
 msgid "miFreeHeader: skipping"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:1650
+#: rpmdb/rpmdb.c:1669
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:2296
+#: rpmdb/rpmdb.c:2315
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2328
+#: rpmdb/rpmdb.c:2347
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2650
+#: rpmdb/rpmdb.c:2669
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "no foi passado pacote para desinstalao"
 
 # , c-format
-#: rpmdb/rpmdb.c:2716
+#: rpmdb/rpmdb.c:2735
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:2824
+#: rpmdb/rpmdb.c:2843
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:2828
+#: rpmdb/rpmdb.c:2847
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:2856
+#: rpmdb/rpmdb.c:2875
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:2877
+#: rpmdb/rpmdb.c:2896
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:2887
+#: rpmdb/rpmdb.c:2906
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3047
+#: rpmdb/rpmdb.c:3066
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "no foi passado pacote para instalao"
 
-#: rpmdb/rpmdb.c:3110
+#: rpmdb/rpmdb.c:3129
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3275
+#: rpmdb/rpmdb.c:3294
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:3279
+#: rpmdb/rpmdb.c:3298
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3319
+#: rpmdb/rpmdb.c:3338
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3728
+#: rpmdb/rpmdb.c:3747
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3767
+#: rpmdb/rpmdb.c:3786
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3799
+#: rpmdb/rpmdb.c:3818
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3803
+#: rpmdb/rpmdb.c:3822
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3828
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3811
+#: rpmdb/rpmdb.c:3830
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3820
+#: rpmdb/rpmdb.c:3839
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3831
+#: rpmdb/rpmdb.c:3850
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3862
+#: rpmdb/rpmdb.c:3881
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3902
+#: rpmdb/rpmdb.c:3921
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3916
+#: rpmdb/rpmdb.c:3935
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3924
+#: rpmdb/rpmdb.c:3943
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3926
+#: rpmdb/rpmdb.c:3945
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
@@ -4419,13 +4419,13 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: rpmdb/rpmdb.c:3936
+#: rpmdb/rpmdb.c:3955
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "RPM verso %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3938
+#: rpmdb/rpmdb.c:3957
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"

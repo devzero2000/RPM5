@@ -80,7 +80,7 @@ rpmd.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c $<
 
 rpmi_SOURCES =
-rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
+rpmi_LDFLAGS =		$(myLDFLAGS) # $(staticLDFLAGS)
 rpmi_LDADD =		rpmi.o $(myLDADD)
 #rpmi_LDFLAGS =		$(myLDFLAGS)
 #rpmi_LDADD =		rpmi.o $(myLDADD)
