@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:46-0500\n"
+"POT-Creation-Date: 2006-03-17 21:53-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3837,65 +3837,65 @@ msgstr "chýbajúce    %s\n"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: rpmdb/db3.c:160
+#: rpmdb/db3.c:161
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:163
+#: rpmdb/db3.c:164
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:189
+#: rpmdb/db3.c:190
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db3.c:207
+#: rpmdb/db3.c:208
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db3.c:298
+#: rpmdb/db3.c:299
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db3.c:819
+#: rpmdb/db3.c:820
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db3.c:888
+#: rpmdb/db3.c:889
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db3.c:1031
+#: rpmdb/db3.c:1032
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1162
+#: rpmdb/db3.c:1163
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: rpmdb/db3.c:1404
+#: rpmdb/db3.c:1405
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: rpmdb/db3.c:1406
+#: rpmdb/db3.c:1407
 msgid "exclusive"
 msgstr "výhradný"
 
-#: rpmdb/db3.c:1406
+#: rpmdb/db3.c:1407
 msgid "shared"
 msgstr "zdieµaný"
 
-#: rpmdb/db3.c:1410
+#: rpmdb/db3.c:1411
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:46-0500\n"
+"POT-Creation-Date: 2006-03-17 21:53-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -3796,65 +3796,65 @@ msgstr "falta     %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dependências não satisfeitas para o %s-%s-%s: "
 
-#: rpmdb/db3.c:160
+#: rpmdb/db3.c:161
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "erro do db%d (%d) do %s: %s\n"
 
-#: rpmdb/db3.c:163
+#: rpmdb/db3.c:164
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "erro do db%d (%d): %s\n"
 
-#: rpmdb/db3.c:189
+#: rpmdb/db3.c:190
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "fechei o ambiente do db %s/%s\n"
 
-#: rpmdb/db3.c:207
+#: rpmdb/db3.c:208
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "removi o ambiente do db %s/%s\n"
 
-#: rpmdb/db3.c:298
+#: rpmdb/db3.c:299
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "a aceder ao ambiente do db %s/%s %s\n"
 
-#: rpmdb/db3.c:819
+#: rpmdb/db3.c:820
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "fechei o índice do db   %s/%s\n"
 
-#: rpmdb/db3.c:888
+#: rpmdb/db3.c:889
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "verifiquei o índice do db %s/%s\n"
 
-#: rpmdb/db3.c:1031
+#: rpmdb/db3.c:1032
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1162
+#: rpmdb/db3.c:1163
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "a abrir o índice do db  %s/%s %s modo=0x%x\n"
 
-#: rpmdb/db3.c:1404
+#: rpmdb/db3.c:1405
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "não consigo trancar o %s no %s/%s\n"
 
-#: rpmdb/db3.c:1406
+#: rpmdb/db3.c:1407
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:1406
+#: rpmdb/db3.c:1407
 msgid "shared"
 msgstr "partilhado"
 
-#: rpmdb/db3.c:1410
+#: rpmdb/db3.c:1411
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "tranquei o índice do db %s/%s\n"

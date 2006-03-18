@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:46-0500\n"
+"POT-Creation-Date: 2006-03-17 21:53-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -3747,67 +3747,67 @@ msgstr "%c %s が見つかりません。"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s のための依存性を満たしていません: "
 
-#: rpmdb/db3.c:160
+#: rpmdb/db3.c:161
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d エラー (%d) (%s において): %s\n"
 
-#: rpmdb/db3.c:163
+#: rpmdb/db3.c:164
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d エラー (%d): %s\n"
 
-#: rpmdb/db3.c:189
+#: rpmdb/db3.c:190
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "データベース環境 %s/%s を閉じました\n"
 
-#: rpmdb/db3.c:207
+#: rpmdb/db3.c:208
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "データベース環境 %s/%s を削除しました。\n"
 
-#: rpmdb/db3.c:298
+#: rpmdb/db3.c:299
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "データベース環境 %s/%s をオープンします %s\n"
 
-#: rpmdb/db3.c:819
+#: rpmdb/db3.c:820
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "データベースインデックス %s/%s を閉じました\n"
 
-#: rpmdb/db3.c:888
+#: rpmdb/db3.c:889
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "データベースインデックス %s/%s を検証しました。\n"
 
-#: rpmdb/db3.c:1031
+#: rpmdb/db3.c:1032
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 "共有されてない posix mutex(%d) を見つけたので、fcntl ロックを使用する "
 "DB_PRIVATE を追加しています。\n"
 
-#: rpmdb/db3.c:1162
+#: rpmdb/db3.c:1163
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースインデックス %s/%s をオープンします %s (mode=0x%x)\n"
 
-#: rpmdb/db3.c:1404
+#: rpmdb/db3.c:1405
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: rpmdb/db3.c:1406
+#: rpmdb/db3.c:1407
 msgid "exclusive"
 msgstr "排他"
 
-#: rpmdb/db3.c:1406
+#: rpmdb/db3.c:1407
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/db3.c:1410
+#: rpmdb/db3.c:1411
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "データベースインデックス %s/%s をロックしました。\n"
