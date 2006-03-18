@@ -6,6 +6,7 @@
 	- make rpmps internals opaque.
 	- make rpmdb internals opaque.
 	- fix: hGetNEVRA segfault if missing arch tag (i.e. pubkeys).
+	- updated RU man pages (#185260).
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.
