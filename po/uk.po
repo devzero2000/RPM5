@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:04-0500\n"
+"POT-Creation-Date: 2006-03-17 21:46-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -2529,7 +2529,7 @@ msgstr "%s помилка на файлі %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s помилка: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:637
+#: lib/query.c:123 lib/rpmts.c:639
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "неправильний формат: %s\n"
@@ -2903,7 +2903,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:648
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:650
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3292,51 +3292,51 @@ msgstr "%s:  неправильний специфікатор типу %s у р
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  неправильний контекст %s у рядку з номером %d\n"
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:194
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "неможливо відкрити базу даних пакетів у %s\n"
 
-#: lib/rpmts.c:288
+#: lib/rpmts.c:290
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "зайва дужка '(' у позначці пакету: %s\n"
 
-#: lib/rpmts.c:306
+#: lib/rpmts.c:308
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "відсутня дужка '(' у позначці пакету: %s\n"
 
-#: lib/rpmts.c:314
+#: lib/rpmts.c:316
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "відсутня дужка ')' у позначці пакету: %s\n"
 
-#: lib/rpmts.c:525
+#: lib/rpmts.c:527
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "неможливо відкрити базу даних розв'язання залежностей у %s\n"
 
-#: lib/rpmts.c:669
+#: lib/rpmts.c:671
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Додається: %s\n"
 
-#: lib/rpmts.c:681
+#: lib/rpmts.c:683
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Пропонується: %s\n"
 
-#: lib/rpmts.c:1229
+#: lib/rpmts.c:1231
 msgid "mounted filesystems:\n"
 msgstr "змонтовані файлові системи:\n"
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1233
 #, fuzzy
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "   i   пристр розм.бл.   вільн.бл   вільн.inod місце монтув.\n"
 
-#: lib/rpmts.c:1296
+#: lib/rpmts.c:1298
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"

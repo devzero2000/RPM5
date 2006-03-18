@@ -2445,7 +2445,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	    *EVR = '\0';
 	    if (confstr (c->call_name, EVR, clen) != clen) {
 		fprintf(stderr, "confstr: %s\n", strerror(errno));
-		exit (3);
+		exit (EXIT_FAILURE);
 	    }
 	    EVR[clen] = '\0';
 	    /*@switchbreak@*/ break;

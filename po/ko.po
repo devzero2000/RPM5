@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:04-0500\n"
+"POT-Creation-Date: 2006-03-17 21:46-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2547,7 +2547,7 @@ msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:637
+#: lib/query.c:123 lib/rpmts.c:639
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
@@ -2922,7 +2922,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:648
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:650
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3322,50 +3322,50 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:194
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:288
+#: lib/rpmts.c:290
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:306
+#: lib/rpmts.c:308
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "%s %s에 '(' 가 없습니다\n"
 
-#: lib/rpmts.c:314
+#: lib/rpmts.c:316
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:525
+#: lib/rpmts.c:527
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s의 rpm 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:669
+#: lib/rpmts.c:671
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "행: %s\n"
 
-#: lib/rpmts.c:681
+#: lib/rpmts.c:683
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
-#: lib/rpmts.c:1229
+#: lib/rpmts.c:1231
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1233
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1296
+#: lib/rpmts.c:1298
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "파일%5d: %07o %s.%s\t %s\n"

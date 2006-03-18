@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:04-0500\n"
+"POT-Creation-Date: 2006-03-17 21:46-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -2513,7 +2513,7 @@ msgstr "%s: ファイル %s で失敗: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:637
+#: lib/query.c:123 lib/rpmts.c:639
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "不正なフォーマット: %s\n"
@@ -2885,7 +2885,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:648
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:650
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3282,50 +3282,50 @@ msgstr "%s:  不正なタイプ指定 %s (%d 行目)\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s: 不正なコンテキスト %s (%d 行目)\n"
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:194
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s にある Package データベースをオープンできません。\n"
 
-#: lib/rpmts.c:288
+#: lib/rpmts.c:290
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "パッケージラベル中に余分な「(」があります: %s\n"
 
-#: lib/rpmts.c:306
+#: lib/rpmts.c:308
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "パッケージラベル中に「(」がありません: %s\n"
 
-#: lib/rpmts.c:314
+#: lib/rpmts.c:316
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "パッケージラベル中に「)」がありません: %s\n"
 
-#: lib/rpmts.c:525
+#: lib/rpmts.c:527
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s にある Solve データベースをオープンできません。\n"
 
-#: lib/rpmts.c:669
+#: lib/rpmts.c:671
 #, c-format
 msgid "Adding: %s\n"
 msgstr "追加中: %s\n"
 
-#: lib/rpmts.c:681
+#: lib/rpmts.c:683
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "提案中: %s\n"
 
-#: lib/rpmts.c:1229
+#: lib/rpmts.c:1231
 msgid "mounted filesystems:\n"
 msgstr "マウント済みファイルシステム:\n"
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1233
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        dev    bsize       bavail       iavail mount point\n"
 
-#: lib/rpmts.c:1296
+#: lib/rpmts.c:1298
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"

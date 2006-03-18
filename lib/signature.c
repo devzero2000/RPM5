@@ -132,9 +132,9 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
     } else if (fstat(fdno, &st) < 0)
 	return RPMRC_FAIL;
 
+/*@-sizeoftype@*/
     expected = sizeof(struct rpmlead) + siglen + pad;
     expected += datalen,
-/*@-sizeoftype@*/
     rpmMessage(RPMMESS_DEBUG,
 	_("Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"),
 		(unsigned long)expected,

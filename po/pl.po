@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:04-0500\n"
+"POT-Creation-Date: 2006-03-17 21:46-0500\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -2493,7 +2493,7 @@ msgstr "%s nie powiód³ siê na pliku %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:637
+#: lib/query.c:123 lib/rpmts.c:639
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³êdny format: %s\n"
@@ -2866,7 +2866,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie katalogu %s do %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:648
+#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:650
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3255,50 +3255,50 @@ msgstr "%s:  b³êdne okre¶lenie typu %s w linii numer %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  nieprawid³owy kontekst %s w lini numer %d\n"
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:194
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Packages w %s\n"
 
-#: lib/rpmts.c:288
+#: lib/rpmts.c:290
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "dodatkowe '(' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:306
+#: lib/rpmts.c:308
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "brak '(' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:314
+#: lib/rpmts.c:316
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "brak ')' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:525
+#: lib/rpmts.c:527
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Solve w %s\n"
 
-#: lib/rpmts.c:669
+#: lib/rpmts.c:671
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Dodawane: %s\n"
 
-#: lib/rpmts.c:681
+#: lib/rpmts.c:683
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Sugerowane: %s\n"
 
-#: lib/rpmts.c:1229
+#: lib/rpmts.c:1231
 msgid "mounted filesystems:\n"
 msgstr "podmontowane systemy plików:\n"
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1233
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        urz    bloków  bl.wolnych    i.wolnych punkt montowania\n"
 
-#: lib/rpmts.c:1296
+#: lib/rpmts.c:1298
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s %s\n"

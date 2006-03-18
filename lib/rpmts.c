@@ -97,9 +97,11 @@ char * hGetNEVRA(Header h, const char ** np)
 
     (void) headerNVR(h, &n, &v, &r);
     /* XXX pubkeys have no arch. */
+/*@-branchstate@*/
     a = NULL;
     if (!headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL) || a == NULL)
 	a = "pubkey";
+/*@=branchstate@*/
     NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
 /*@-boundswrite@*/
     t = stpcpy(t, n);
