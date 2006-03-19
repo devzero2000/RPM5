@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:53-0500\n"
+"POT-Creation-Date: 2006-03-19 19:27-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1523,7 +1523,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:43 lib/formats.c:75 lib/formats.c:110 lib/formats.c:188
-#: lib/formats.c:534
+#: lib/formats.c:749
 msgid "(invalid type)"
 msgstr ""
 
@@ -1532,16 +1532,20 @@ msgstr ""
 msgid "(not base64)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:213 lib/formats.c:420
+#: lib/formats.c:213 lib/formats.c:635
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:350
+#: lib/formats.c:360
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:445
+#: lib/formats.c:551
+msgid "(invalid yaml type)"
+msgstr ""
+
+#: lib/formats.c:660
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "overspring eventuelle PGP-signaturer"
@@ -3955,16 +3959,16 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3693 rpmdb/header.c:3729 rpmdb/header.c:3744
+#: rpmdb/header.c:3742 rpmdb/header.c:3778 rpmdb/header.c:3793
 msgid "(not a number)"
 msgstr "(ikke et tal)"
 
-#: rpmdb/header.c:3782
+#: rpmdb/header.c:3831
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3798
+#: rpmdb/header.c:3847
 msgid "%a %b %d %Y"
 msgstr ""
 

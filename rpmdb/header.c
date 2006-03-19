@@ -3211,7 +3211,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	strarray = (const char **)data;
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, element);
+	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, (count > 1 ? element : -1));
 
 	if (val) {
 	    need = strlen(val);
@@ -3228,7 +3228,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     case RPM_STRING_TYPE:
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, data, buf, tag->pad,  0);
+	    val = tag->fmt(RPM_STRING_TYPE, data, buf, tag->pad,  -1);
 
 	if (val) {
 	    need = strlen(val);
@@ -3245,7 +3245,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_INT64_TYPE:
 	llVal = *(((int_64 *) data) + element);
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, element);
+	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, (count > 1 ? element : -1));
 	if (val) {
 	    need = strlen(val);
 	} else {
@@ -3277,7 +3277,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	}
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, element);
+	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, (count > 1 ? element : -1));
 
 	if (val) {
 	    need = strlen(val);
@@ -3466,6 +3466,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 #endif
 	} else {
 	    int isxml;
+	    int isyaml;
 
 	    need = numElements * token->u.array.numTokens * 10;
 	    if (need == 0) break;
@@ -3473,6 +3474,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    spft = token->u.array.format;
 	    isxml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
 		!strcmp(spft->u.tag.type, "xml"));
+	    isyaml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
+		!strcmp(spft->u.tag.type, "yaml"));
 
 	    if (isxml) {
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
@@ -3480,14 +3483,32 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		need = sizeof("  <rpmTag name=\"\">\n") - 1;
 		if (tagN != NULL)
 		    need += strlen(tagN);
-		t = hsaReserve(hsa, need);
+		te = t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		te = stpcpy(t, "  <rpmTag name=\"");
+		te = stpcpy(te, "  <rpmTag name=\"");
 		if (tagN != NULL)
 		    te = stpcpy(te, tagN);
 		te = stpcpy(te, "\">\n");
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);
+	    }
+	    if (isyaml) {
+		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
+		if (tagN != NULL) {
+		    need = sizeof("  : ") - 1;
+		    need += strlen(tagN);
+		    if (numElements > 1)
+			need = sizeof("\n") - 1;
+		    te = t = hsaReserve(hsa, need);
+/*@-boundswrite@*/
+		    te = stpcpy(te, "  ");
+		    te = stpcpy(te, tagN);
+		    te = stpcpy(te, ": ");
+		    if (numElements > 1)
+			te = stpcpy(te, "\n");
+/*@=boundswrite@*/
+		    hsa->vallen += (te - t);
+		}
 	    }
 
 	    t = hsaReserve(hsa, need);
@@ -3502,11 +3523,21 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
 	    if (isxml) {
 		need = sizeof("  </rpmTag>\n") - 1;
-		t = hsaReserve(hsa, need);
+		te = t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		te = stpcpy(t, "  </rpmTag>\n");
+		te = stpcpy(te, "  </rpmTag>\n");
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);
+	    }
+	    if (isyaml) {
+#if 0
+		need = sizeof("\n") - 1;
+		te = t = hsaReserve(hsa, need);
+/*@-boundswrite@*/
+		te = stpcpy(te, "\n");
+/*@=boundswrite@*/
+		hsa->vallen += (te - t);
+#endif
 	    }
 
 	}
@@ -3589,6 +3620,7 @@ char * headerSprintf(Header h, const char * fmt,
     sprintfTag tag;
     char * t, * te;
     int isxml;
+    int isyaml;
     int need;
  
     hsa->h = headerLink(h);
@@ -3614,12 +3646,21 @@ char * headerSprintf(Header h, const char * fmt,
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
     isxml = (tag != NULL && tag->tag == -2 && tag->type != NULL && !strcmp(tag->type, "xml"));
+    isyaml = (tag != NULL && tag->tag == -2 && tag->type != NULL && !strcmp(tag->type, "yaml"));
 
     if (isxml) {
 	need = sizeof("<rpmHeader>\n") - 1;
 	t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
 	te = stpcpy(t, "<rpmHeader>\n");
+/*@=boundswrite@*/
+	hsa->vallen += (te - t);
+    }
+    if (isyaml) {
+	need = sizeof("- !!omap\n") - 1;
+	t = hsaReserve(hsa, need);
+/*@-boundswrite@*/
+	te = stpcpy(t, "- !!omap\n");
 /*@=boundswrite@*/
 	hsa->vallen += (te - t);
     }
@@ -3639,6 +3680,14 @@ char * headerSprintf(Header h, const char * fmt,
 	t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
 	te = stpcpy(t, "</rpmHeader>\n");
+/*@=boundswrite@*/
+	hsa->vallen += (te - t);
+    }
+    if (isyaml) {
+	need = sizeof("\n") - 1;
+	t = hsaReserve(hsa, need);
+/*@-boundswrite@*/
+	te = stpcpy(t, "\n");
 /*@=boundswrite@*/
 	hsa->vallen += (te - t);
     }

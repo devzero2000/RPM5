@@ -84,6 +84,8 @@ rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELO
 
 rpm	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
+rpm	alias --yaml --qf '[%{*:yaml}\n]' \
+	--POPTdesc=$"list metadata in yaml"
 
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
@@ -386,6 +388,8 @@ rpmq	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGEL
 
 rpmq	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
+rpmq	alias --yaml --qf '[%{*:yaml}\n]' \
+	--POPTdesc=$"list metadata in yaml"
 
 rpmq	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
@@ -492,6 +496,8 @@ rpmquery	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHA
 
 rpmquery	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
+rpmquery	alias --yaml --qf '[%{*:yaml}\n]' \
+	--POPTdesc=$"list metadata in yaml"
 
 rpmquery	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\

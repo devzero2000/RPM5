@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:53-0500\n"
+"POT-Creation-Date: 2006-03-19 19:27-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1526,7 +1526,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:43 lib/formats.c:75 lib/formats.c:110 lib/formats.c:188
-#: lib/formats.c:534
+#: lib/formats.c:749
 msgid "(invalid type)"
 msgstr "(tipo inválido)"
 
@@ -1534,16 +1534,21 @@ msgstr "(tipo inválido)"
 msgid "(not base64)"
 msgstr "(não é um base64)"
 
-#: lib/formats.c:213 lib/formats.c:420
+#: lib/formats.c:213 lib/formats.c:635
 msgid "(not a blob)"
 msgstr "(não é um blob)"
 
-#: lib/formats.c:350
+#: lib/formats.c:360
 #, fuzzy
 msgid "(invalid xml type)"
 msgstr "(tipo inválido)"
 
-#: lib/formats.c:445
+#: lib/formats.c:551
+#, fuzzy
+msgid "(invalid yaml type)"
+msgstr "(tipo inválido)"
+
+#: lib/formats.c:660
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "ignorar as assinaturas de PGP"
@@ -3944,16 +3949,16 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3693 rpmdb/header.c:3729 rpmdb/header.c:3744
+#: rpmdb/header.c:3742 rpmdb/header.c:3778 rpmdb/header.c:3793
 msgid "(not a number)"
 msgstr "(não é um número)"
 
-#: rpmdb/header.c:3782
+#: rpmdb/header.c:3831
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3798
+#: rpmdb/header.c:3847
 msgid "%a %b %d %Y"
 msgstr ""
 

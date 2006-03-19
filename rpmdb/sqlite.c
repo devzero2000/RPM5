@@ -41,6 +41,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>     /* XXX urlPath proto */
 
+#define	_RPMDB_INTERNAL
 #include <rpmdb.h>
 
 #include <sqlite3.h>

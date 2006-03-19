@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-17 21:53-0500\n"
+"POT-Creation-Date: 2006-03-19 19:27-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1518,7 +1518,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
 
 #: lib/formats.c:43 lib/formats.c:75 lib/formats.c:110 lib/formats.c:188
-#: lib/formats.c:534
+#: lib/formats.c:749
 msgid "(invalid type)"
 msgstr "(不正なタイプ)"
 
@@ -1526,15 +1526,20 @@ msgstr "(不正なタイプ)"
 msgid "(not base64)"
 msgstr "(base64 ではありません)"
 
-#: lib/formats.c:213 lib/formats.c:420
+#: lib/formats.c:213 lib/formats.c:635
 msgid "(not a blob)"
 msgstr "(blob ではありません)"
 
-#: lib/formats.c:350
+#: lib/formats.c:360
 msgid "(invalid xml type)"
 msgstr "(不正な XML タイプ)"
 
-#: lib/formats.c:445
+#: lib/formats.c:551
+#, fuzzy
+msgid "(invalid yaml type)"
+msgstr "(不正な XML タイプ)"
+
+#: lib/formats.c:660
 msgid "(not an OpenPGP signature)"
 msgstr "(OpenPGP 署名ではありません)"
 
@@ -3897,16 +3902,16 @@ msgstr "(インデックスが範囲外)"
 msgid "array iterator used with different sized arrays"
 msgstr "配列の繰り返し指定が、サイズが異なる配列の間で使用されています"
 
-#: rpmdb/header.c:3693 rpmdb/header.c:3729 rpmdb/header.c:3744
+#: rpmdb/header.c:3742 rpmdb/header.c:3778 rpmdb/header.c:3793
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
-#: rpmdb/header.c:3782
+#: rpmdb/header.c:3831
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3798
+#: rpmdb/header.c:3847
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 

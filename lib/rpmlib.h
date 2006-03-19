@@ -327,7 +327,6 @@ typedef enum rpmTag_e {
     RPMTAG_REQUIREFLAGS		= 1048,	/* i */
     RPMTAG_REQUIRENAME		= 1049,	/* s[] */
 #define	RPMTAG_REQUIRES RPMTAG_REQUIRENAME	/* s[] */
-#define	RPMTAG_D	RPMTAG_REQUIRENAME	/* s[] */
     RPMTAG_REQUIREVERSION	= 1050,	/* s[] */
     RPMTAG_NOSOURCE		= 1051, /*!< internal */
     RPMTAG_NOPATCH		= 1052, /*!< internal */

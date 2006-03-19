@@ -244,6 +244,9 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 }
 
 /**
+ * Return length of string represented with xml characters substituted.
+ * @param s		string
+ * @return		length of xml string
  */
 static size_t xmlstrlen(const char * s)
 	/*@*/
@@ -256,15 +259,20 @@ static size_t xmlstrlen(const char * s)
 /*@=boundsread@*/
     {
 	switch (c) {
-	case '<': case '>':	len += 4;	/*@switchbreak@*/ break;
-	case '&':		len += 5;	/*@switchbreak@*/ break;
-	default:		len += 1;	/*@switchbreak@*/ break;
+	case '<':
+	case '>':	len += sizeof("&lt;") - 1;	/*@switchbreak@*/ break;
+	case '&':	len += sizeof("&amp;") - 1;	/*@switchbreak@*/ break;
+	default:	len += 1;			/*@switchbreak@*/ break;
 	}
     }
     return len;
 }
 
 /**
+ * Copy source string to target, substituting for  xml characters.
+ * @param t		target xml string
+ * @param s		source string
+ * @return		target xml string
  */
 static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 	/*@modifies t @*/
@@ -307,6 +315,7 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     const char * s = NULL;
     char * t, * te;
     unsigned long long anint = 0;
+    int freeit = 0;
     int xx;
 
 /*@-branchstate@*/
@@ -330,6 +339,7 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	b64encode_chars_per_line = cpl;
 /*@=mods@*/
 	xtag = "base64";
+	freeit = 1;
     }	break;
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -379,9 +389,214 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
     }
 
+/*@-branchstate@*/
+    if (freeit)
+	s = _free(s);
+/*@=branchstate@*/
+
+    nb += padding;
+    val = xmalloc(nb+1);
+/*@-boundswrite@*/
+    strcat(formatPrefix, "s");
+/*@=boundswrite@*/
+/*@-formatconst@*/
+    xx = snprintf(val, nb, formatPrefix, t);
+/*@=formatconst@*/
+    val[nb] = '\0';
+
+    return val;
+}
+/*@=bounds@*/
+
+/**
+ * Return length of string represented with yaml indentation.
+ * @param s		string
+ * @param lvl		indentation level
+ * @return		length of yaml string
+ */
+static size_t yamlstrlen(const char * s, int lvl)
+	/*@*/
+{
+    size_t len = 0;
+    int indent = (lvl > 0);
+    int c;
+
+/*@-boundsread@*/
+    while ((c = *s++) != '\0')
+/*@=boundsread@*/
+    {
+	if (indent) {
+	    len += 2 * lvl;
+	    indent = 0;
+	}
+	if (c == '\n')
+	    indent = (lvl > 0);
+	len++;
+    }
+    return len;
+}
+
+/**
+ * Copy source string to target, indenting for yaml.
+ * @param t		target yaml string
+ * @param s		source string
+ * @param lvl		indentation level
+ * @return		target yaml string
+ */
+static char * yamlstrcpy(/*@returned@*/ char * t, const char * s, int lvl)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int indent = (lvl > 0);
+    int c;
+
+/*@-bounds@*/
+    while ((c = *s++) != '\0') {
+	if (indent) {
+	    int i;
+	    for (i = 0; i < lvl; i++) {
+		*te++ = ' ';
+		*te++ = ' ';
+	    }
+	    indent = 0;
+	}
+	if (c == '\n')
+	    indent = (lvl > 0);
+	*te++ = c;
+    }
+    *te = '\0';
+/*@=bounds@*/
+    return t;
+}
+
+/**
+ * Wrap tag data in simple header yaml markup.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	element index (or -1 for non-array).
+ * @return		formatted string
+ */
+/*@-bounds@*/
+static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
+		char * formatPrefix, int padding,
+		int element)
+	/*@modifies formatPrefix @*/
+{
+    const char * xtag = NULL;
+    const char * ytag = NULL;
+    size_t nb;
+    char * val;
+    const char * s = NULL;
+    char * t, * te;
+    unsigned long long anint = 0;
+    int freeit = 0;
+    int lvl = 0;
+    int xx;
+
+/*@-branchstate@*/
+    switch (type) {
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_TYPE:
+	s = data;
+	if (strchr(data, '\n') != NULL) {
+	    if (element >= 0) {
+		xtag = "- |\n";
+		lvl = 3;
+	    } else {
+		xtag = "|\n";
+		lvl = 2;
+	    }
+	} else if (strchr(data, ' ') == NULL) {
+	    xtag = (element >= 0 ? "- " : NULL);
+	} else {
+	    xtag = (element >= 0 ? "- " : NULL);
+	    ytag = NULL;
+	}
+	break;
+    case RPM_OPENPGP_TYPE:
+    case RPM_ASN1_TYPE:
+    case RPM_BIN_TYPE:
+    {	int cpl = b64encode_chars_per_line;
+/*@-mods@*/
+	b64encode_chars_per_line = 0;
+/*@=mods@*/
+/*@-formatconst@*/
+	s = base64Format(type, data, formatPrefix, padding, element);
+	element = -element;	/* XXX skip "    " indent. */
+/*@=formatconst@*/
+/*@-mods@*/
+	b64encode_chars_per_line = cpl;
+/*@=mods@*/
+	xtag = "!!binary ";
+	freeit = 1;
+    }	break;
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+	anint = *((uint_8 *) data);
+	break;
+    case RPM_INT16_TYPE:
+	anint = *((uint_16 *) data);
+	break;
+    case RPM_INT32_TYPE:
+	anint = *((uint_32 *) data);
+	break;
+    case RPM_INT64_TYPE:
+	anint = *((uint_64 *) data);
+	break;
+    case RPM_NULL_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    default:
+	return xstrdup(_("(invalid yaml type)"));
+	/*@notreached@*/ break;
+    }
+/*@=branchstate@*/
+
+/*@-branchstate@*/
+    if (s == NULL) {
+	int tlen = 64;
+	t = memset(alloca(tlen+1), 0, tlen+1);
+/*@-duplicatequals@*/
+	xx = snprintf(t, tlen, "%llu", anint);
+/*@=duplicatequals@*/
+	s = t;
+	xtag = (element >= 0 ? "- " : NULL);
+    }
+/*@=branchstate@*/
+
+    nb = yamlstrlen(s, lvl);
+    if (nb == 0) {
+	if (element >= 0)
+	    nb += sizeof("    ") - 1;
+	nb += sizeof("- ~") - 1;
+	nb++;
+	te = t = alloca(nb);
+	if (element >= 0)
+	    te = stpcpy(te, "    ");
+	te = stpcpy(te, "- ~");
+    } else {
+	if (element >= 0)
+	    nb += sizeof("    ") - 1;
+	if (xtag)
+	    nb += strlen(xtag);
+	if (ytag)
+	    nb += strlen(ytag);
+	nb++;
+	te = t = alloca(nb);
+	if (element >= 0)
+	    te = stpcpy(te, "    ");
+	if (xtag)
+	    te = stpcpy(te, xtag);
+	te = yamlstrcpy(te, s, lvl);
+	te += strlen(te);
+	if (ytag)
+	    te = stpcpy(te, ytag);
+    }
+
     /* XXX s was malloc'd */
 /*@-branchstate@*/
-    if (!strcmp(xtag, "base64"))
+    if (freeit)
 	s = _free(s);
 /*@=branchstate@*/
 
@@ -1337,6 +1552,7 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_FORMAT, "pgpsig",		{ pgpsigFormat } },
     { HEADER_EXT_FORMAT, "triggertype",		{ triggertypeFormat } },
     { HEADER_EXT_FORMAT, "xml",			{ xmlFormat } },
+    { HEADER_EXT_FORMAT, "yaml",		{ yamlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
 } ;
 /*@=type@*/
