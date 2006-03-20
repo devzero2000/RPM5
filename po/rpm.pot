@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-19 19:27-0500\n"
+"POT-Creation-Date: 2006-03-20 19:05-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3820,16 +3820,16 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3742 rpmdb/header.c:3778 rpmdb/header.c:3793
+#: rpmdb/header.c:3744 rpmdb/header.c:3780 rpmdb/header.c:3795
 msgid "(not a number)"
 msgstr ""
 
-#: rpmdb/header.c:3831
+#: rpmdb/header.c:3833
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3847
+#: rpmdb/header.c:3849
 msgid "%a %b %d %Y"
 msgstr ""
 

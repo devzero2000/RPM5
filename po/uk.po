@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-19 19:27-0500\n"
+"POT-Creation-Date: 2006-03-20 19:05-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -3914,16 +3914,16 @@ msgstr "(індекси поза межами)"
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використовується з масивом іншого розміру"
 
-#: rpmdb/header.c:3742 rpmdb/header.c:3778 rpmdb/header.c:3793
+#: rpmdb/header.c:3744 rpmdb/header.c:3780 rpmdb/header.c:3795
 msgid "(not a number)"
 msgstr "(не число)"
 
-#: rpmdb/header.c:3831
+#: rpmdb/header.c:3833
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3847
+#: rpmdb/header.c:3849
 msgid "%a %b %d %Y"
 msgstr "%a, %d %b %Y"
 

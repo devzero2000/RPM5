@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-19 19:27-0500\n"
+"POT-Creation-Date: 2006-03-20 19:05-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3918,16 +3918,16 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3742 rpmdb/header.c:3778 rpmdb/header.c:3793
+#: rpmdb/header.c:3744 rpmdb/header.c:3780 rpmdb/header.c:3795
 msgid "(not a number)"
 msgstr "(не число)"
 
-#: rpmdb/header.c:3831
+#: rpmdb/header.c:3833
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3847
+#: rpmdb/header.c:3849
 msgid "%a %b %d %Y"
 msgstr ""
 

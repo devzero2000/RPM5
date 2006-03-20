@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-19 19:27-0500\n"
+"POT-Creation-Date: 2006-03-20 19:05-0500\n"
 "PO-Revision-Date: 2006-02-19 22:53+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3904,16 +3904,16 @@ msgstr "(Index außerhalb des Bereichs)"
 msgid "array iterator used with different sized arrays"
 msgstr "Zählvariable wird mit ungleich großem Array benutzt"
 
-#: rpmdb/header.c:3742 rpmdb/header.c:3778 rpmdb/header.c:3793
+#: rpmdb/header.c:3744 rpmdb/header.c:3780 rpmdb/header.c:3795
 msgid "(not a number)"
 msgstr "(keine Nummer)"
 
-#: rpmdb/header.c:3831
+#: rpmdb/header.c:3833
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3847
+#: rpmdb/header.c:3849
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 

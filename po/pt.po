@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-19 19:27-0500\n"
+"POT-Creation-Date: 2006-03-20 19:05-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -3949,16 +3949,16 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3742 rpmdb/header.c:3778 rpmdb/header.c:3793
+#: rpmdb/header.c:3744 rpmdb/header.c:3780 rpmdb/header.c:3795
 msgid "(not a number)"
 msgstr "(não é um número)"
 
-#: rpmdb/header.c:3831
+#: rpmdb/header.c:3833
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3847
+#: rpmdb/header.c:3849
 msgid "%a %b %d %Y"
 msgstr ""
 

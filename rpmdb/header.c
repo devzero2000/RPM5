@@ -3468,7 +3468,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    int isxml;
 	    int isyaml;
 
-	    need = numElements * token->u.array.numTokens * 10;
+	    need = numElements * token->u.array.numTokens;
 	    if (need == 0) break;
 
 	    spft = token->u.array.format;
@@ -3494,23 +3494,25 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 	    if (isyaml) {
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
-		if (tagN != NULL) {
-		    need = sizeof("  : ") - 1;
+
+		need = sizeof("  : ") - 1;
+		if (tagN != NULL)
 		    need += strlen(tagN);
-		    if (numElements > 1)
-			need = sizeof("\n") - 1;
-		    te = t = hsaReserve(hsa, need);
+		if (numElements > 1)
+		    need += sizeof("\n") - 1;
+		te = t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		    te = stpcpy(te, "  ");
+		te = stpcpy(te, "  ");
+		if (tagN != NULL)
 		    te = stpcpy(te, tagN);
-		    te = stpcpy(te, ": ");
-		    if (numElements > 1)
-			te = stpcpy(te, "\n");
+		te = stpcpy(te, ": ");
+		if (numElements > 1)
+		    te = stpcpy(te, "\n");
 /*@=boundswrite@*/
-		    hsa->vallen += (te - t);
-		}
+		hsa->vallen += (te - t);
 	    }
 
+	    need = numElements * token->u.array.numTokens * 10;
 	    t = hsaReserve(hsa, need);
 	    for (j = 0; j < numElements; j++) {
 		spft = token->u.array.format;

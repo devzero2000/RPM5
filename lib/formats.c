@@ -502,10 +502,10 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
 	s = data;
 	if (strchr(data, '\n') != NULL) {
 	    if (element >= 0) {
-		xtag = "- |\n";
+		xtag = "- |-\n";
 		lvl = 3;
 	    } else {
-		xtag = "|\n";
+		xtag = "|-\n";
 		lvl = 2;
 	    }
 	} else if (strchr(data, ' ') == NULL) {
