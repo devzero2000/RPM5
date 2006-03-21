@@ -802,7 +802,7 @@ assert(dig != NULL);
 	sigp = rpmtsSignature(ts);
 
 	/* XXX RSA needs the hash_algo, so decode early. */
-	if (sigtag == RPMSIGTAG_RSA) {
+	if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
 	    xx = headerGetEntry(sigh, sigtag, &sigtype, (void **)&sig, &siglen);
 	    xx = pgpPrtPkts(sig, siglen, dig, 0);
 	    sig = headerFreeData(sig, sigtype);
