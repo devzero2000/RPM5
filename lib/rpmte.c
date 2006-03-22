@@ -39,7 +39,7 @@ static void delTE(rpmte p)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/
 {
-    rpmRelocation * r;
+    rpmRelocation r;
 
     if (p->relocs) {
 	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
@@ -93,7 +93,7 @@ static void delTE(rpmte p)
 /*@-bounds@*/
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ rpmRelocation * relocs)
+		/*@null@*/ rpmRelocation relocs)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, h,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -191,7 +191,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->nrelocs = 0;
     p->relocs = NULL;
     if (relocs != NULL) {
-	rpmRelocation * r;
+	rpmRelocation r;
 	int i;
 
 	for (r = relocs; r->oldPath || r->newPath; r++)
@@ -243,7 +243,7 @@ rpmte rpmteFree(rpmte te)
 rpmte rpmteNew(const rpmts ts, Header h,
 		rpmElementType type,
 		fnpyKey key,
-		rpmRelocation * relocs,
+		rpmRelocation relocs,
 		int dboffset,
 		alKey pkgKey)
 {

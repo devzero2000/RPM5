@@ -127,7 +127,7 @@ struct rpmte_s {
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
 /*@owned@*/ /*@null@*/
-    rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
+    rpmRelocation relocs;	/*!< (TR_ADDED) Payload file relocations. */
     int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
     int autorelocatex;		/*!< (TR_ADDED) Auto relocation entry index. */
 /*@refcounted@*/ /*@null@*/	
@@ -196,7 +196,7 @@ rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
 /*@only@*/ /*@null@*/
 rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ rpmRelocation * relocs,
+		/*@null@*/ rpmRelocation relocs,
 		int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/

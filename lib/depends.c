@@ -162,7 +162,7 @@ static int rpmHeadersIdentical(Header first, Header second)
 }
 
 int rpmtsAddInstallElement(rpmts ts, Header h,
-			fnpyKey key, int upgrade, rpmRelocation * relocs)
+			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 dscolor;

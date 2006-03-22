@@ -666,7 +666,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
-    rpmRelocation * relocations = NULL;
+    rpmRelocation relocations = NULL;
     int numRelocations;
     const char ** validRelocations;
     rpmTagType validType;
@@ -784,7 +784,7 @@ assert(p != NULL);
 	int madeSwap;
 	madeSwap = 0;
 	for (j = 1; j < numRelocations; j++) {
-	    rpmRelocation tmpReloc;
+	    struct rpmRelocation_s tmpReloc;
 	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
 		relocations[j    ].oldPath == NULL || /* XXX can't happen */
 	strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)

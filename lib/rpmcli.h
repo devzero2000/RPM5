@@ -587,7 +587,7 @@ struct rpmInstallArguments_s {
     int noDeps;
     int incldocs;
 /*@owned@*/ /*@null@*/
-    rpmRelocation * relocations;
+    rpmRelocation relocations;
 /*@null@*/
     const char * prefix;
 /*@observer@*/ /*@null@*/

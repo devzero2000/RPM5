@@ -1002,7 +1002,7 @@ rpmts rpmtsCreate(void)
  */
 int rpmtsAddInstallElement(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
-		/*@null@*/ rpmRelocation * relocs)
+		/*@null@*/ rpmRelocation relocs)
 	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, h, rpmcliPackagesTotal, rpmGlobalMacroContext,

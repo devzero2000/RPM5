@@ -279,7 +279,7 @@ struct rpmEIU {
 /*@only@*/ /*@null@*/
     str_t * argv;
 /*@dependent@*/
-    rpmRelocation * relocations;
+    rpmRelocation relocations;
     rpmRC rpmrc;
 };
 
@@ -292,7 +292,7 @@ int rpmInstall(rpmts ts,
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
     rpmps ps;
     rpmprobFilterFlags probFilter;
-    rpmRelocation * relocations;
+    rpmRelocation relocations;
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
