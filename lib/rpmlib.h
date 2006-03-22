@@ -170,24 +170,6 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	/*@modifies h @*/;
 
-/** \ingroup header
- * Retrieve tag info from header.
- * This is a "dressed" entry to headerGetEntry to do:
- *	1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
- *	2) i18n lookaside (if enabled).
- *
- * @param h		header
- * @param tag		tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
- * @return		0 on success, 1 on bad magic, 2 on error
- */
-/*@unused@*/
-int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
-		/*@out@*/ void **p, /*@out@*/ int_32 *c)
-	/*@modifies *type, *p, *c @*/;
-
 /**
  * Automatically generated table of tag name/value pairs.
  */

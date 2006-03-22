@@ -11,6 +11,7 @@
 	- add :yaml query format extension.
 	- fix: segfault brain fart with query format extension.
 	- start making rpmRelocation opaque.
+	- push rpmHeaderGetEntry() into rpm-python bindings.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

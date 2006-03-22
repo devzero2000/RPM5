@@ -579,6 +579,7 @@ exit 0
 %changelog
 * Tue Mar 21 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.8
 - start making rpmRelocation opaque.
+- push rpmHeaderGetEntry() into rpm-python bindings.
 
 * Mon Mar 20 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.7
 - fix: segfault brain fart with query format extension.
