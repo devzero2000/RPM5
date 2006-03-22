@@ -49,6 +49,7 @@ extern int rpmFLAGS;
 extern "C" {
 #endif
 
+#if !defined(SWIG)
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
@@ -61,6 +62,7 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
     if (p != NULL)	free((void *)p);
     return NULL;
 }
+#endif
 
 /** \ingroup rpmtrans
  * The RPM Transaction Set.
@@ -1080,6 +1082,7 @@ int rpmvercmp(const char * a, const char * b)
 
 /*@}*/
 
+#if !defined(SWIG)
 /**
  * Return tag name from value.
  * @param tag		tag value
@@ -1123,6 +1126,7 @@ int tagValue(const char * tagstr)
     return ((*rpmTags->tagValue)(tagstr));
 /*@=type@*/
 }
+#endif
 
 #define	RPMLEAD_BINARY 0
 #define	RPMLEAD_SOURCE 1

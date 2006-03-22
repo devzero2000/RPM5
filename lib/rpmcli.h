@@ -260,6 +260,7 @@ typedef	int (*QSpecF_t) (rpmts ts, QVA_t qva, const char * arg)
 /** \ingroup rpmcli
  * Describe query/verify/signature command line operation.
  */
+#if !defined(SWIG)
 struct rpmQVKArguments_s {
     rpmQVSources qva_source;	/*!< Identify CLI arg type. */
     int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
@@ -298,6 +299,7 @@ struct rpmQVKArguments_s {
     char qva_char;		/*!< (unused) always ' ' */
     char * targets;		/*!< Target platform(s), comma separated. */
 };
+#endif
 
 /** \ingroup rpmcli
  */
@@ -623,7 +625,9 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
  * A rollback transaction id element.
  */
 /*@-fielduse@*/
-typedef /*@abstract@*/ struct IDT_s {
+typedef /*@abstract@*/ struct IDT_s * IDT;
+#if !defined(SWIG)
+struct IDT_s {
     int done;			/*!< package processed? */
     unsigned int instance;	/*!< installed package transaction id. */
 /*@owned@*/ /*@null@*/
@@ -632,20 +636,24 @@ typedef /*@abstract@*/ struct IDT_s {
     union {
 	uint_32 u32;		/*!< install/remove transaction id */
     } val;
-} * IDT;
+};
+#endif
 /*@=fielduse@*/
 
 /**
  * A rollback transaction id index.
  */
-typedef /*@abstract@*/ struct IDTindex_s {
+typedef /*@abstract@*/ struct IDTindex_s * IDTX;
+#if !defined(SWIG)
+struct IDTindex_s {
     int delta;			/*!< no. elements to realloc as a chunk. */
     int size;			/*!< size of id index element. */
     int alloced;		/*!< current number of elements allocated. */
     int nidt;			/*!< current number of elements initialized. */
 /*@only@*/ /*@null@*/
     IDT idt;			/*!< id index elements. */
-} * IDTX;
+};
+#endif
 
 /**
  * Destroy id index.

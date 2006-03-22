@@ -61,7 +61,9 @@ struct rpmds_s {
 /**
  * Container to carry provides/requires/conflicts/obsoletes dependencies.
  */
-typedef struct rpmPRCO_s {
+typedef struct rpmPRCO_s * rpmPRCO;
+#if !defined(SWIG)
+struct rpmPRCO_s {
 /*@dependent@*/ /*@null@*/
     rpmds * Pdsp;		/*!< Provides: collector. */
 /*@dependent@*/ /*@null@*/
@@ -70,7 +72,8 @@ typedef struct rpmPRCO_s {
     rpmds * Cdsp;		/*!< Conflicts: collector. */
 /*@dependent@*/ /*@null@*/
     rpmds * Odsp;		/*!< Obsoletes: collector. */
-} * rpmPRCO;
+};
+#endif
 
 #ifdef __cplusplus
 extern "C" {
