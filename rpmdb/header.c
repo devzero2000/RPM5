@@ -3480,6 +3480,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (isxml) {
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
 
+assert(tagN != NULL);	/* XXX splats pick up old or unknown tags. */
 		need = sizeof("  <rpmTag name=\"\">\n") - 1;
 		if (tagN != NULL)
 		    need += strlen(tagN);
@@ -3495,6 +3496,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (isyaml) {
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
 
+assert(tagN != NULL);	/* XXX splats pick up old or unknown tags. */
 		need = sizeof("  : ") - 1;
 		if (tagN != NULL)
 		    need += strlen(tagN);

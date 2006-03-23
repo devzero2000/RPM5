@@ -324,6 +324,10 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     case RPM_STRING_TYPE:
 	s = data;
 	xtag = "string";
+	/* XXX Force utf8 strings. */
+	s = xstrdup(s);
+	s = xstrtolocale(s);
+	freeit = 1;
 	break;
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:
@@ -494,13 +498,34 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
     int freeit = 0;
     int lvl = 0;
     int xx;
+    int c;
 
 /*@-branchstate@*/
     switch (type) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
+	xx = 0;
 	s = data;
-	if (strchr(data, '\n') != NULL) {
+	if (strchr("[", s[0]))	/* leading [ */
+	    xx = 1;
+	if (xx == 0)
+	while ((c = *s++) != '\0') {
+	    switch (c) {
+	    default:
+		continue;
+	    case '\n':	/* multiline */
+		xx = 1;
+		break;
+	    case '-':	/* leading "- \"" */
+	    case ':':	/* embedded ": " or ":" at EOL */
+		if (s[0] != ' ' && s[0] != '\0' && s[1] != '"')
+		    continue;
+		xx = 1;
+		break;
+	    }
+	    break;
+	}
+	if (xx) {
 	    if (element >= 0) {
 		xtag = "- |-\n";
 		lvl = 3;
@@ -508,12 +533,14 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
 		xtag = "|-\n";
 		lvl = 2;
 	    }
-	} else if (strchr(data, ' ') == NULL) {
-	    xtag = (element >= 0 ? "- " : NULL);
 	} else {
 	    xtag = (element >= 0 ? "- " : NULL);
-	    ytag = NULL;
 	}
+
+	/* XXX Force utf8 strings. */
+	s = xstrdup(data);
+	s = xstrtolocale(s);
+	freeit = 1;
 	break;
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:

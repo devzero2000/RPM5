@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-20 19:05-0500\n"
+"POT-Creation-Date: 2006-03-22 21:32-0500\n"
 "PO-Revision-Date: 2006-02-19 22:53+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1527,7 +1527,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder fehlgeschlagen, %d Elemente verbleiben\n"
 
 #: lib/formats.c:43 lib/formats.c:75 lib/formats.c:110 lib/formats.c:188
-#: lib/formats.c:749
+#: lib/formats.c:776
 msgid "(invalid type)"
 msgstr "(ungültiger Typ)"
 
@@ -1535,20 +1535,20 @@ msgstr "(ungültiger Typ)"
 msgid "(not base64)"
 msgstr "(nicht Base64)"
 
-#: lib/formats.c:213 lib/formats.c:635
+#: lib/formats.c:213 lib/formats.c:662
 msgid "(not a blob)"
 msgstr "(kein Blob)"
 
-#: lib/formats.c:360
+#: lib/formats.c:364
 msgid "(invalid xml type)"
 msgstr "(ungültiger XML-Typ)"
 
-#: lib/formats.c:551
+#: lib/formats.c:578
 #, fuzzy
 msgid "(invalid yaml type)"
 msgstr "(ungültiger XML-Typ)"
 
-#: lib/formats.c:660
+#: lib/formats.c:687
 msgid "(not an OpenPGP signature)"
 msgstr "(keine OpenPGP-Signatur)"
 
@@ -3904,16 +3904,16 @@ msgstr "(Index außerhalb des Bereichs)"
 msgid "array iterator used with different sized arrays"
 msgstr "Zählvariable wird mit ungleich großem Array benutzt"
 
-#: rpmdb/header.c:3744 rpmdb/header.c:3780 rpmdb/header.c:3795
+#: rpmdb/header.c:3746 rpmdb/header.c:3782 rpmdb/header.c:3797
 msgid "(not a number)"
 msgstr "(keine Nummer)"
 
-#: rpmdb/header.c:3833
+#: rpmdb/header.c:3835
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3849
+#: rpmdb/header.c:3851
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 

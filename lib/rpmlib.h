@@ -364,7 +364,7 @@ typedef enum rpmTag_e {
     RPMTAG_AUTOREQ		= 1103, /*!< internal */
     RPMTAG_AUTOPROV		= 1104, /*!< internal */
 /*@-enummemuse@*/
-    RPMTAG_CAPABILITY		= 1105, /*!< internal - obsolete */
+    RPMTAG_CAPABILITY		= 1105, /*!< i legacy - obsolete */
 /*@=enummemuse@*/
     RPMTAG_SOURCEPACKAGE	= 1106, /*!< i src.rpm header marker */
 /*@-enummemuse@*/
@@ -383,9 +383,9 @@ typedef enum rpmTag_e {
     RPMTAG_DIRINDEXES		= 1116,	/* i */
     RPMTAG_BASENAMES		= 1117,	/* s[] */
     RPMTAG_DIRNAMES		= 1118,	/* s[] */
-    RPMTAG_ORIGDIRINDEXES	= 1119, /*!< internal */
-    RPMTAG_ORIGBASENAMES	= 1120, /*!< internal */
-    RPMTAG_ORIGDIRNAMES		= 1121, /*!< internal */
+    RPMTAG_ORIGDIRINDEXES	= 1119, /*!< i relocation */
+    RPMTAG_ORIGBASENAMES	= 1120, /*!< s[] relocation */
+    RPMTAG_ORIGDIRNAMES		= 1121, /*!< s[] relocation */
     RPMTAG_OPTFLAGS		= 1122,	/* s */
     RPMTAG_DISTURL		= 1123,	/* s */
     RPMTAG_PAYLOADFORMAT	= 1124,	/* s */

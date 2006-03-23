@@ -12,6 +12,8 @@
 	- fix: segfault brain fart with query format extension.
 	- start making rpmRelocation opaque.
 	- push rpmHeaderGetEntry() into rpm-python bindings.
+	- trick up --yaml output to avoid parsing problems from data.
+	- force utf-8 encoding for yaml/xml spewed strings.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

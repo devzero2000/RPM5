@@ -580,6 +580,8 @@ exit 0
 * Tue Mar 21 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.8
 - start making rpmRelocation opaque.
 - push rpmHeaderGetEntry() into rpm-python bindings.
+- trick up --yaml output to avoid parsing problems from data.
+- force utf-8 encoding for yaml/xml spewed strings.
 
 * Mon Mar 20 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.7
 - fix: segfault brain fart with query format extension.
