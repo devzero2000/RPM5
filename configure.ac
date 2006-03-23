@@ -1050,6 +1050,14 @@ if test $withval = auto -a $__DOXYGEN != no ; then
 elif test $withval = yes -a $__DOXYGEN = no ; then
   AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)
 fi
+if test $withval = yes; then
+  WITH_APIDOCS_TARGET=apidocs
+  WITH_APIDOCS=1
+else
+  WITH_APIDOCS=0
+fi
+AC_SUBST(WITH_APIDOCS_TARGET)
+AC_SUBST(WITH_APIDOCS)
 
 WITH_SELINUX_LIB=
 withval=${with_selinuxval}
@@ -1074,15 +1082,6 @@ fi
 AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_SUBDIR)
 AC_SUBST(WITH_LUA_INCLUDE)
-
-if test $withval = yes; then
-  WITH_APIDOCS_TARGET=apidocs
-  WITH_APIDOCS=1
-else
-  WITH_APIDOCS=0
-fi
-AC_SUBST(WITH_APIDOCS_TARGET)
-AC_SUBST(WITH_APIDOCS)
 
 withval=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])

@@ -14,6 +14,8 @@
 	- push rpmHeaderGetEntry() into rpm-python bindings.
 	- trick up --yaml output to avoid parsing problems from data.
 	- force utf-8 encoding for yaml/xml spewed strings.
+	- fix autogen.sh and configure.ac breakage.
+	- permit --without-lua.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.
