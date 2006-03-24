@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	else
 	    fprintf(stderr, "#define %s %s\n", tname, name);
 fprintf(stderr, "%d\n", tagValue(tname));
-fprintf(stderr, "%d\n", tagType(t->val));
+fprintf(stderr, "%d\n", (tagType(t->val) & RPM_MASK_TYPE));
     }
     return 0;
 }

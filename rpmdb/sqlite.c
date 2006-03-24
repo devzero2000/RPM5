@@ -517,7 +517,7 @@ if (swapped == 1) {
 	    rc = sqlite3_bind_int(scp->pStmt, pos, hnum);
 	} break;
     default:
-	switch (tagType(dbi->dbi_rpmtag)) {
+	switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
 	case RPM_NULL_TYPE:   
 	case RPM_BIN_TYPE:
 /*@-castfcnptr -nullpass@*/ /* FIX: annotate sqlite. */
@@ -705,7 +705,7 @@ static int sql_initDB(dbiIndex dbi)
 	    valtype = "blob";
 	    break;
 	default:
-	    switch (tagType(dbi->dbi_rpmtag)) {
+	    switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
 	    case RPM_NULL_TYPE:
 	    case RPM_BIN_TYPE:
 	    default:
@@ -726,7 +726,7 @@ static int sql_initDB(dbiIndex dbi)
 	    }
 	}
 if (_debug)
-fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), keytype);
+fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), keytype);
 	sprintf(cmd, "CREATE TABLE '%s' (key %s, value %s)",
 			dbi->dbi_subfile, keytype, valtype);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
@@ -1003,7 +1003,7 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
     int rc = 0;
 
 if (_debug)
-fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), scp);
+fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), scp);
 
 enterChroot(dbi);
 

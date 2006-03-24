@@ -16,6 +16,7 @@
 	- force utf-8 encoding for yaml/xml spewed strings.
 	- fix autogen.sh and configure.ac breakage.
 	- permit --without-lua.
+	- assign expected {scalar,array} return types to header tags.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

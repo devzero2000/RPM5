@@ -282,16 +282,16 @@ typedef enum rpmTag_e {
     RPMTAG_PREUN		= 1025,	/* s */
     RPMTAG_POSTUN		= 1026,	/* s */
     RPMTAG_OLDFILENAMES		= 1027, /* s[] obsolete */
-    RPMTAG_FILESIZES		= 1028,	/* i */
-    RPMTAG_FILESTATES		= 1029, /* c */
-    RPMTAG_FILEMODES		= 1030,	/* h */
+    RPMTAG_FILESIZES		= 1028,	/* i[] */
+    RPMTAG_FILESTATES		= 1029, /* c[] */
+    RPMTAG_FILEMODES		= 1030,	/* h[] */
     RPMTAG_FILEUIDS		= 1031, /*!< internal */
     RPMTAG_FILEGIDS		= 1032, /*!< internal */
-    RPMTAG_FILERDEVS		= 1033,	/* h */
-    RPMTAG_FILEMTIMES		= 1034, /* i */
+    RPMTAG_FILERDEVS		= 1033,	/* h[] */
+    RPMTAG_FILEMTIMES		= 1034, /* i[] */
     RPMTAG_FILEMD5S		= 1035,	/* s[] */
     RPMTAG_FILELINKTOS		= 1036,	/* s[] */
-    RPMTAG_FILEFLAGS		= 1037,	/* i */
+    RPMTAG_FILEFLAGS		= 1037,	/* i[] */
 /*@-enummemuse@*/
     RPMTAG_ROOT			= 1038, /*!< internal - obsolete */
 /*@=enummemuse@*/
@@ -301,20 +301,20 @@ typedef enum rpmTag_e {
     RPMTAG_EXCLUDE		= 1041, /*!< internal - obsolete */
     RPMTAG_EXCLUSIVE		= 1042, /*!< internal - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_ICON			= 1043,
+    RPMTAG_ICON			= 1043, /* internal - obsolete */
     RPMTAG_SOURCERPM		= 1044,	/* s */
-    RPMTAG_FILEVERIFYFLAGS	= 1045,	/* i */
+    RPMTAG_FILEVERIFYFLAGS	= 1045,	/* i[] */
     RPMTAG_ARCHIVESIZE		= 1046,	/* i */
     RPMTAG_PROVIDENAME		= 1047,	/* s[] */
 #define	RPMTAG_PROVIDES RPMTAG_PROVIDENAME	/* s[] */
 #define	RPMTAG_P	RPMTAG_PROVIDENAME	/* s[] */
-    RPMTAG_REQUIREFLAGS		= 1048,	/* i */
+    RPMTAG_REQUIREFLAGS		= 1048,	/* i[] */
     RPMTAG_REQUIRENAME		= 1049,	/* s[] */
 #define	RPMTAG_REQUIRES RPMTAG_REQUIRENAME	/* s[] */
     RPMTAG_REQUIREVERSION	= 1050,	/* s[] */
     RPMTAG_NOSOURCE		= 1051, /*!< internal */
     RPMTAG_NOPATCH		= 1052, /*!< internal */
-    RPMTAG_CONFLICTFLAGS	= 1053, /* i */
+    RPMTAG_CONFLICTFLAGS	= 1053, /* i[] */
     RPMTAG_CONFLICTNAME		= 1054,	/* s[] */
 #define	RPMTAG_CONFLICTS RPMTAG_CONFLICTNAME	/* s[] */
 #define	RPMTAG_C	RPMTAG_CONFLICTNAME	/* s[] */
@@ -331,10 +331,10 @@ typedef enum rpmTag_e {
     RPMTAG_TRIGGERSCRIPTS	= 1065,	/* s[] */
     RPMTAG_TRIGGERNAME		= 1066,	/* s[] */
     RPMTAG_TRIGGERVERSION	= 1067,	/* s[] */
-    RPMTAG_TRIGGERFLAGS		= 1068,	/* i */
-    RPMTAG_TRIGGERINDEX		= 1069,	/* i */
+    RPMTAG_TRIGGERFLAGS		= 1068,	/* i[] */
+    RPMTAG_TRIGGERINDEX		= 1069,	/* i[] */
     RPMTAG_VERIFYSCRIPT		= 1079,	/* s */
-    RPMTAG_CHANGELOGTIME	= 1080,	/* i */
+    RPMTAG_CHANGELOGTIME	= 1080,	/* i[] */
     RPMTAG_CHANGELOGNAME	= 1081,	/* s[] */
     RPMTAG_CHANGELOGTEXT	= 1082,	/* s[] */
 /*@-enummemuse@*/
@@ -350,11 +350,11 @@ typedef enum rpmTag_e {
 #define	RPMTAG_OBSOLETES RPMTAG_OBSOLETENAME	/* s[] */
 #define	RPMTAG_O	RPMTAG_OBSOLETENAME	/* s[] */
     RPMTAG_VERIFYSCRIPTPROG	= 1091,	/* s */
-    RPMTAG_TRIGGERSCRIPTPROG	= 1092,	/* s */
+    RPMTAG_TRIGGERSCRIPTPROG	= 1092,	/* s[] */
     RPMTAG_DOCDIR		= 1093, /*!< internal */
     RPMTAG_COOKIE		= 1094,	/* s */
-    RPMTAG_FILEDEVICES		= 1095,	/* i */
-    RPMTAG_FILEINODES		= 1096,	/* i */
+    RPMTAG_FILEDEVICES		= 1095,	/* i[] */
+    RPMTAG_FILEINODES		= 1096,	/* i[] */
     RPMTAG_FILELANGS		= 1097,	/* s[] */
     RPMTAG_PREFIXES		= 1098,	/* s[] */
     RPMTAG_INSTPREFIXES		= 1099,	/* s[] */
@@ -376,14 +376,14 @@ typedef enum rpmTag_e {
 /*@-enummemuse@*/
     RPMTAG_BUILDMACROS		= 1111, /*!< internal - unused */
 /*@=enummemuse@*/
-    RPMTAG_PROVIDEFLAGS		= 1112,	/* i */
+    RPMTAG_PROVIDEFLAGS		= 1112,	/* i[] */
     RPMTAG_PROVIDEVERSION	= 1113,	/* s[] */
-    RPMTAG_OBSOLETEFLAGS	= 1114,	/* i */
+    RPMTAG_OBSOLETEFLAGS	= 1114,	/* i[] */
     RPMTAG_OBSOLETEVERSION	= 1115,	/* s[] */
-    RPMTAG_DIRINDEXES		= 1116,	/* i */
+    RPMTAG_DIRINDEXES		= 1116,	/* i[] */
     RPMTAG_BASENAMES		= 1117,	/* s[] */
     RPMTAG_DIRNAMES		= 1118,	/* s[] */
-    RPMTAG_ORIGDIRINDEXES	= 1119, /*!< i relocation */
+    RPMTAG_ORIGDIRINDEXES	= 1119, /*!< i[] relocation */
     RPMTAG_ORIGBASENAMES	= 1120, /*!< s[] relocation */
     RPMTAG_ORIGDIRNAMES		= 1121, /*!< s[] relocation */
     RPMTAG_OPTFLAGS		= 1122,	/* s */
@@ -406,12 +406,12 @@ typedef enum rpmTag_e {
     RPMTAG_CACHEPKGPATH		= 1137,	/* s */
     RPMTAG_CACHEPKGSIZE		= 1138,	/* i */
     RPMTAG_CACHEPKGMTIME	= 1139,	/* i */
-    RPMTAG_FILECOLORS		= 1140,	/* i */
-    RPMTAG_FILECLASS		= 1141,	/* i */
+    RPMTAG_FILECOLORS		= 1140,	/* i[] */
+    RPMTAG_FILECLASS		= 1141,	/* i[] */
     RPMTAG_CLASSDICT		= 1142,	/* s[] */
-    RPMTAG_FILEDEPENDSX		= 1143,	/* i */
-    RPMTAG_FILEDEPENDSN		= 1144,	/* i */
-    RPMTAG_DEPENDSDICT		= 1145,	/* i */
+    RPMTAG_FILEDEPENDSX		= 1143,	/* i[] */
+    RPMTAG_FILEDEPENDSN		= 1144,	/* i[] */
+    RPMTAG_DEPENDSDICT		= 1145,	/* i[] */
     RPMTAG_SOURCEPKGID		= 1146,	/* x */
     RPMTAG_FILECONTEXTS		= 1147,	/* s[] */
     RPMTAG_FSCONTEXTS		= 1148,	/*!< s[] extension */
@@ -425,12 +425,12 @@ typedef enum rpmTag_e {
     RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension placeholder */
 #define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] */
     RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension placeholder */
-    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i   extension placeholder */
+    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i[]   extension placeholder */
     RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder */
 #define	RPMTAG_ENHANCES RPMTAG_ENHANCESNAME	/* s[] */
     RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder */
-    RPMTAG_ENHANCESFLAGS	= 1161,	/* i   extension placeholder */
-    RPMTAG_PRIORITY		= 1162, /* i   extension placeholder */
+    RPMTAG_ENHANCESFLAGS	= 1161,	/* i[]   extension placeholder */
+    RPMTAG_PRIORITY		= 1162, /* i[]   extension placeholder */
     RPMTAG_CVSID		= 1163, /* s */
 #define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
     RPMTAG_BLINKPKGID		= 1164, /* s[] */
@@ -443,8 +443,8 @@ typedef enum rpmTag_e {
     RPMTAG_TRIGGERPREIN		= 1171, /*!< internal */
     RPMTAG_BUILDSUGGESTS	= 1172, /*!< internal */
     RPMTAG_BUILDENHANCES	= 1173, /*!< internal */
-    RPMTAG_SCRIPTSTATES		= 1174, /*!< i scriptlet exit codes */
-    RPMTAG_SCRIPTMETRICS	= 1175, /*!< i scriptlet execution times */
+    RPMTAG_SCRIPTSTATES		= 1174, /*!< i[] scriptlet exit codes */
+    RPMTAG_SCRIPTMETRICS	= 1175, /*!< i[] scriptlet execution times */
     RPMTAG_BUILDCPUCLOCK	= 1176, /*!< i */
 
 /*@-enummemuse@*/

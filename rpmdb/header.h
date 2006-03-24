@@ -122,16 +122,19 @@ typedef /*@abstract@*/ struct headerIterator_s * HeaderIterator;
  * Associate tag names with numeric values.
  */
 typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
+#if !defined(SWIG)
 struct headerTagTableEntry_s {
 /*@observer@*/ /*@relnull@*/
     const char * name;		/*!< Tag name. */
     int val;			/*!< Tag numeric value. */
     int type;			/*!< Tag type. */
 };
+#endif
 
 /**
  */
 typedef /*@abstract@*/ struct headerTagIndices_s * headerTagIndices;
+#if !defined(SWIG)
 struct headerTagIndices_s {
     int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
                 int (*cmp) (const void * avp, const void * bvp))
@@ -153,6 +156,7 @@ struct headerTagIndices_s {
     int (*tagType) (int value)
 	/*@*/;				/* Return type from value. */
 };
+#endif
 
 /** \ingroup header
  */
@@ -203,6 +207,7 @@ typedef int (*headerTagTagFunction) (Header h,
  * Define header tag output formats.
  */
 typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
+#if !defined(SWIG)
 struct headerSprintfExtension_s {
     enum headerSprintfExtensionType type;	/*!< Type of extension. */
 /*@observer@*/ /*@null@*/
@@ -215,6 +220,7 @@ struct headerSprintfExtension_s {
 	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
     } u;
 };
+#endif
 
 /** \ingroup header
  * Supported default header tag output formats.
@@ -236,7 +242,6 @@ enum hMagic {
  * The basic types of data in tags from headers.
  */
 typedef enum rpmTagType_e {
-#define	RPM_MIN_TYPE		0
     RPM_NULL_TYPE		=  0,
     RPM_CHAR_TYPE		=  1,
     RPM_INT8_TYPE		=  2,
@@ -249,8 +254,10 @@ typedef enum rpmTagType_e {
     RPM_I18NSTRING_TYPE		=  9,
     RPM_ASN1_TYPE		= 10,
     RPM_OPENPGP_TYPE		= 11,
-#define	RPM_MAX_TYPE		11
+    RPM_MASK_TYPE		= 0x0000ffff
 } rpmTagType;
+#define	RPM_MIN_TYPE		0
+#define	RPM_MAX_TYPE		11
 
 /** \ingroup header
  * New rpm data types under consideration/development.
@@ -272,6 +279,19 @@ typedef enum rpmSubTagType_e {
 } rpmSubTagType;
 /*@=enummemuse =typeuse @*/
 
+/** \ingroup header
+ * Identify how to return the header data type.
+ */
+/*@-enummemuse -typeuse @*/
+typedef enum rpmTagReturnType_e {
+    RPM_ANY_RETURN_TYPE		= 0,
+    RPM_SCALAR_RETURN_TYPE	= 0x00010000,
+    RPM_ARRAY_RETURN_TYPE	= 0x00020000,
+    RPM_MAPPING_RETURN_TYPE	= 0x00040000,
+    RPM_MASK_RETURN_TYPE	= 0xffff0000
+} rpmTagReturnType;
+/*@=enummemuse =typeuse @*/
+
 /**
  * Header private tags.
  * @note General use tags should start at 1000 (RPM's tag space starts there).
@@ -287,7 +307,9 @@ typedef enum rpmSubTagType_e {
 /**
  */
 /*@-typeuse -fielduse@*/
-typedef union hRET_s {
+typedef union hRET_s * hRET_t;
+#if !defined(SWIG)
+union hRET_s {
     const void * ptr;
     const char ** argv;
     const char * str;
@@ -296,13 +318,16 @@ typedef union hRET_s {
     int_32 * i32p;
     int_16 * i16p;
     int_8 * i8p;
-} * hRET_t;
+};
+#endif
 /*@=typeuse =fielduse@*/
 
 /**
  */
 /*@-typeuse -fielduse@*/
-typedef struct HE_s {
+typedef struct HE_s * HE_t;
+#if !defined(SWIG)
+struct HE_s {
     int_32 tag;
 /*@null@*/
     hTYP_t typ;
@@ -314,7 +339,8 @@ typedef struct HE_s {
     } u;
 /*@null@*/
     hCNT_t cnt;
-} * HE_t;
+};
+#endif
 /*@=typeuse =fielduse@*/
 
 /** \ingroup header
@@ -717,6 +743,7 @@ int (*HDRsetinstance) (/*@null@*/ Header h, int instance)
  * Header method vectors.
  */
 typedef /*@abstract@*/ struct HV_s * HV_t;
+#if !defined(SWIG)
 struct HV_s {
     HDRlink	hdrlink;
     HDRunlink	hdrunlink;
@@ -757,7 +784,9 @@ struct HV_s {
     void *	hdrdata;
     int		hdrversion;
 };
+#endif
 
+#if !defined(SWIG)
 /** \ingroup header
  * Free data allocated when retrieved from header.
  * @deprecated Use headerFreeTag() instead.
@@ -782,6 +811,7 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
     }
     return NULL;
 }
+#endif
 
 #if !defined(__HEADER_PROTOTYPES__)
 #include "hdrinline.h"
