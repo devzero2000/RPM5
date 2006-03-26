@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-23 13:33-0500\n"
+"POT-Creation-Date: 2006-03-26 15:47-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1386,7 +1386,8 @@ msgid "Missing hard link(s)"
 msgstr "Falta(m) o(s) 'hard link(s)'"
 
 #: lib/cpio.c:277
-msgid "MD5 sum mismatch"
+#, fuzzy
+msgid "File digest mismatch"
 msgstr "erro na soma de MD5"
 
 #: lib/cpio.c:278
@@ -1603,44 +1604,44 @@ msgstr "o utilizador %s não existe - a usar o root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "o grupo %s não existe - a usar o root\n"
 
-#: lib/fsm.c:1394
+#: lib/fsm.c:1398
 #, fuzzy, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "directoria %s criada com as permissões %04o.\n"
 
-#: lib/fsm.c:1398
+#: lib/fsm.c:1402
 #, fuzzy, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "directoria %s criada com as permissões %04o.\n"
 
-#: lib/fsm.c:1704
+#: lib/fsm.c:1708
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "o ficheiro de arquivo %s não foi encontrado na lista de ficheiros do "
 "cabeçalho\n"
 
-#: lib/fsm.c:1854 lib/fsm.c:1976
+#: lib/fsm.c:1858 lib/fsm.c:1980
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gravado como %s\n"
 
-#: lib/fsm.c:2003
+#: lib/fsm.c:2007
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir de %s falhou: Directoria não está vazia\n"
 
-#: lib/fsm.c:2009
+#: lib/fsm.c:2013
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir de %s falhou: %s\n"
 
-#: lib/fsm.c:2024
+#: lib/fsm.c:2028
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink de %s falhou: %s\n"
 
-#: lib/fsm.c:2047
+#: lib/fsm.c:2051
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"

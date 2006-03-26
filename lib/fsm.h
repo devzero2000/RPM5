@@ -184,14 +184,16 @@ struct fsm_s {
     int commit;			/*!< Commit synchronously? */
     int repackaged;		/*!< Is payload repackaged? */
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
+    int fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
+    int digestlen;		/*!< No. of bytes in binary digest (~= 16) */
 /*@shared@*/ /*@relnull@*/
     const char * dirName;	/*!< File directory name. */
 /*@shared@*/ /*@relnull@*/
     const char * baseName;	/*!< File base name. */
 /*@shared@*/ /*@relnull@*/
-    const char * fmd5sum;	/*!< Hex MD5 sum (NULL disables). */
+    const char * fdigest;	/*!< Hex digest (usually MD5, NULL disables). */
 /*@shared@*/ /*@relnull@*/
-    const char * md5sum;	/*!< Binary MD5 sum (NULL disables). */
+    const char * digest;	/*!< Bin digest (usually MD5, NULL disables). */
 /*@dependent@*/ /*@observer@*/ /*@null@*/
     const char * fcontext;	/*!< File security context (NULL disables). */
     

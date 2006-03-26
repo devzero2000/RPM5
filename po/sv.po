@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-23 13:33-0500\n"
+"POT-Creation-Date: 2006-03-26 15:47-0500\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1372,7 +1372,8 @@ msgid "Missing hard link(s)"
 msgstr "Saknade hårda länkar"
 
 #: lib/cpio.c:277
-msgid "MD5 sum mismatch"
+#, fuzzy
+msgid "File digest mismatch"
 msgstr "MD5-summan stämmer inte"
 
 #: lib/cpio.c:278
@@ -1584,42 +1585,42 @@ msgstr "användare %s finns inte - använder root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "grupp %s finns inte - använder root\n"
 
-#: lib/fsm.c:1394
+#: lib/fsm.c:1398
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "katalog %s skapad med rättigheter %04o, ingen kontext.\n"
 
-#: lib/fsm.c:1398
+#: lib/fsm.c:1402
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "katalog %s skapad med rättigheter %04o, kontext %s.\n"
 
-#: lib/fsm.c:1704
+#: lib/fsm.c:1708
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "arkivfil %s fanns inte i huvudets fillista\n"
 
-#: lib/fsm.c:1854 lib/fsm.c:1976
+#: lib/fsm.c:1858 lib/fsm.c:1980
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sparades som %s\n"
 
-#: lib/fsm.c:2003
+#: lib/fsm.c:2007
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir av %s misslyckades: Katalogen är inte tom\n"
 
-#: lib/fsm.c:2009
+#: lib/fsm.c:2013
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s misslyckades: %s\n"
 
-#: lib/fsm.c:2024
+#: lib/fsm.c:2028
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink av %s misslyckades: %s\n"
 
-#: lib/fsm.c:2047
+#: lib/fsm.c:2051
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"

@@ -18,6 +18,9 @@ const char * FIPSCdigest = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 static struct poptOption optionsTable[] = {
  { "md5", '\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_MD5,	NULL, NULL },
  { "sha1",'\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_SHA1,	NULL, NULL },
+ { "sha256",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA256,	NULL, NULL },
+ { "sha384",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA384,	NULL, NULL },
+ { "sha512",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA512,	NULL, NULL },
 #ifdef	DYING
  { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
 #endif
@@ -146,6 +149,7 @@ fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
 	ssize_t nb;
 
 	sdigest = NULL;
+	if (hashalgo == PGPHASHALGO_MD5 || hashalgo == PGPHASHALGO_SHA1)
 	{   char *se;
 	    FILE * sfp;
 

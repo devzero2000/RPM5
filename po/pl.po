@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-23 13:33-0500\n"
+"POT-Creation-Date: 2006-03-26 15:47-0500\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1380,7 +1380,8 @@ msgid "Missing hard link(s)"
 msgstr "Brakuj±ce twarde dowi±zania"
 
 #: lib/cpio.c:277
-msgid "MD5 sum mismatch"
+#, fuzzy
+msgid "File digest mismatch"
 msgstr "B³±d sumy MD5"
 
 #: lib/cpio.c:278
@@ -1584,42 +1585,42 @@ msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - u¿yto grupy root\n"
 
-#: lib/fsm.c:1394
+#: lib/fsm.c:1398
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "katalog %s utworzony z uprawnieniami %04o bez kontekstu.\n"
 
-#: lib/fsm.c:1398
+#: lib/fsm.c:1402
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "katalog %s utworzony z uprawnieniami %04o, kontekst %s.\n"
 
-#: lib/fsm.c:1704
+#: lib/fsm.c:1708
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "plik archiwum %s nie znaleziony na li¶cie plików w nag³ówku\n"
 
-#: lib/fsm.c:1854 lib/fsm.c:1976
+#: lib/fsm.c:1858 lib/fsm.c:1980
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s zapisano jako %s\n"
 
-#: lib/fsm.c:2003
+#: lib/fsm.c:2007
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s nie powiod³o siê: katalog nie jest pusty\n"
 
-#: lib/fsm.c:2009
+#: lib/fsm.c:2013
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:2024
+#: lib/fsm.c:2028
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:2047
+#: lib/fsm.c:2051
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s utworzony jako %s\n"

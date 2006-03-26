@@ -830,11 +830,15 @@ int fsmMapAttrs(FSM_t fsm)
 	     * Set file md5 (if not disabled).
 	     */
 	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
-		fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
-		fsm->md5sum = (fi->md5s ? (fi->md5s + (16 * i)) : NULL);
+		fsm->fdigestalgo = PGPHASHALGO_MD5;
+		fsm->fdigest = (fi->fmd5s ? fi->fmd5s[i] : NULL);
+		fsm->digestlen = 16;
+		fsm->digest = (fi->md5s ? (fi->md5s + (fsm->digestlen * i)) : NULL);
 	    } else {
-		fsm->fmd5sum = NULL;
-		fsm->md5sum = NULL;
+		fsm->fdigestalgo = 0;
+		fsm->fdigest = NULL;
+		fsm->digestlen = 16;
+		fsm->digest = NULL;
 	    }
 	}
 
@@ -849,7 +853,7 @@ int fsmMapAttrs(FSM_t fsm)
  */
 /*@-compdef@*/
 static int extractRegular(/*@special@*/ FSM_t fsm)
-	/*@uses fsm->fmd5sum, fsm->md5sum, fsm->sb, fsm->wfd  @*/
+	/*@uses fsm->fdigest, fsm->digest, fsm->sb, fsm->wfd  @*/
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
@@ -861,8 +865,8 @@ static int extractRegular(/*@special@*/ FSM_t fsm)
     if (rc)
 	goto exit;
 
-    if (st->st_size > 0 && (fsm->fmd5sum != NULL || fsm->md5sum != NULL))
-	fdInitDigest(fsm->wfd, PGPHASHALGO_MD5, 0);
+    if (st->st_size > 0 && (fsm->fdigest != NULL || fsm->digest != NULL))
+	fdInitDigest(fsm->wfd, fsm->fdigestalgo, 0);
 
     while (left) {
 
@@ -882,26 +886,26 @@ static int extractRegular(/*@special@*/ FSM_t fsm)
 	    (void) fsmNext(fsm, FSM_NOTIFY);
     }
 
-    if (st->st_size > 0 && (fsm->fmd5sum || fsm->md5sum)) {
-	void * md5sum = NULL;
-	int asAscii = (fsm->md5sum == NULL ? 1 : 0);
+    if (st->st_size > 0 && (fsm->fdigest || fsm->digest)) {
+	void * digest = NULL;
+	int asAscii = (fsm->digest == NULL ? 1 : 0);
 
 	(void) Fflush(fsm->wfd);
-	fdFiniDigest(fsm->wfd, PGPHASHALGO_MD5, &md5sum, NULL, asAscii);
+	fdFiniDigest(fsm->wfd, fsm->fdigestalgo, &digest, NULL, asAscii);
 
-	if (md5sum == NULL) {
-	    rc = CPIOERR_MD5SUM_MISMATCH;
+	if (digest == NULL) {
+	    rc = CPIOERR_DIGEST_MISMATCH;
 	    goto exit;
 	}
 
-	if (fsm->md5sum != NULL) {
-	    if (memcmp(md5sum, fsm->md5sum, 16))
-		rc = CPIOERR_MD5SUM_MISMATCH;
+	if (fsm->digest != NULL) {
+	    if (memcmp(digest, fsm->digest, fsm->digestlen))
+		rc = CPIOERR_DIGEST_MISMATCH;
 	} else {
-	    if (strcmp(md5sum, fsm->fmd5sum))
-		rc = CPIOERR_MD5SUM_MISMATCH;
+	    if (strcmp(digest, fsm->fdigest))
+		rc = CPIOERR_DIGEST_MISMATCH;
 	}
-	md5sum = _free(md5sum);
+	digest = _free(digest);
     }
 
 exit:

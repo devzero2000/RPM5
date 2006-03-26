@@ -17,6 +17,7 @@
 	- fix autogen.sh and configure.ac breakage.
 	- permit --without-lua.
 	- assign expected {scalar,array} return types to header tags.
+	- fsm: permit file digests other than md5 to be checked.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

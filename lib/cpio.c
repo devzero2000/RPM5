@@ -274,7 +274,7 @@ const char * cpioStrerror(int rc)
     case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
     case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
     case CPIOERR_MISSING_HARDLINK: s = _("Missing hard link(s)"); break;
-    case CPIOERR_MD5SUM_MISMATCH: s = _("MD5 sum mismatch");	break;
+    case CPIOERR_DIGEST_MISMATCH: s = _("File digest mismatch");	break;
     case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
     case CPIOERR_ENOENT:	s = strerror(ENOENT); break;

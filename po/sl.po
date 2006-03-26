@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-23 13:33-0500\n"
+"POT-Creation-Date: 2006-03-26 15:47-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1411,7 +1411,7 @@ msgid "Missing hard link(s)"
 msgstr "Trda povezava manjka"
 
 #: lib/cpio.c:277
-msgid "MD5 sum mismatch"
+msgid "File digest mismatch"
 msgstr ""
 
 #: lib/cpio.c:278
@@ -1625,42 +1625,42 @@ msgstr "uporabnik %s ne obstaja - uporabljam root"
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s ne obstaja - uporabljam root"
 
-#: lib/fsm.c:1394
+#: lib/fsm.c:1398
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr ""
 
-#: lib/fsm.c:1398
+#: lib/fsm.c:1402
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 
-#: lib/fsm.c:1704
+#: lib/fsm.c:1708
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1854 lib/fsm.c:1976
+#: lib/fsm.c:1858 lib/fsm.c:1980
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/fsm.c:2003
+#: lib/fsm.c:2007
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "ni mo¾no odstraniti %s - imenik ni prazen"
 
-#: lib/fsm.c:2009
+#: lib/fsm.c:2013
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "odstranitev imenika %s je bila neuspe¹na: %s"
 
-#: lib/fsm.c:2024
+#: lib/fsm.c:2028
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: lib/fsm.c:2047
+#: lib/fsm.c:2051
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "opozorilo: %s ustvarjen kot %s"
