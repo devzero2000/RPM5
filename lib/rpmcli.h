@@ -789,6 +789,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts,
  * Bit(s) to control rpmReSign() operation.
  */
 /*@-typeuse@*/
+#if !defined(SWIG)
 typedef enum rpmSignFlags_e {
     RPMSIGN_NONE		= 0,
     RPMSIGN_CHK_SIGNATURE	= 'K',	/*!< from --checksig */
@@ -797,6 +798,7 @@ typedef enum rpmSignFlags_e {
     RPMSIGN_DEL_SIGNATURE	= 'D',	/*!< from --delsign */
     RPMSIGN_IMPORT_PUBKEY	= 'I',	/*!< from --import */
 } rpmSignFlags;
+#endif
 /*@=typeuse@*/
 
 /** \ingroup rpmcli
