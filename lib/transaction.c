@@ -1686,7 +1686,7 @@ static int cmpArgvStr(/*@null@*/ const char ** AV, /*@null@*/ const char * B)
  * Mark all erasure elements linked to installed element p as failed.
  * @param ts		transaction set
  * @param p		failed install transaction element
- * @retun		0 always
+ * @return		0 always
  */
 static int markLinkedFailed(rpmts ts, rpmte p)
 	/*@globals fileSystem @*/

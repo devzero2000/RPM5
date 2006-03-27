@@ -1290,14 +1290,14 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    case PGPHASHALGO_SHA256:
 	    case PGPHASHALGO_SHA384:
 	    case PGPHASHALGO_SHA512:
-		break;
+		/*@switchbreak@*/ break;
 	    case PGPHASHALGO_RIPEMD160:
 	    case PGPHASHALGO_MD2:
 	    case PGPHASHALGO_TIGER192:
 	    case PGPHASHALGO_HAVAL_5_160:
 	    default:
 		dalgo = PGPHASHALGO_MD5;
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    oneshot++;
 	}

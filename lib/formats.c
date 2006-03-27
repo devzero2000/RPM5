@@ -447,7 +447,7 @@ static size_t yamlstrlen(const char * s, int lvl)
  * @param lvl		indentation level
  * @return		target yaml string
  */
-static char * yamlstrcpy(/*@returned@*/ char * t, const char * s, int lvl)
+static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int lvl)
 	/*@modifies t @*/
 {
     char * te = t;
@@ -515,15 +515,15 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
 		continue;
 	    case '\n':	/* multiline */
 		xx = 1;
-		break;
+		/*@switchbreak@*/ break;
 	    case '-':	/* leading "- \"" */
 	    case ':':	/* embedded ": " or ":" at EOL */
 		if (s[0] != ' ' && s[0] != '\0' && s[1] != '"')
 		    continue;
 		xx = 1;
-		break;
+		/*@switchbreak@*/ break;
 	    }
-	    break;
+	    /*@loopbreak@*/ break;
 	}
 	if (xx) {
 	    if (element >= 0) {

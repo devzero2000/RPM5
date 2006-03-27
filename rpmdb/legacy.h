@@ -19,6 +19,7 @@ extern "C" {
 
 /**
  * Return digest and size of a file.
+ * @param digestalgo	digest algorithm to use
  * @param fn		file name
  * @retval digest	address of md5sum
  * @param asAscii	return md5sum as ascii string?
