@@ -122,18 +122,21 @@ static PyObject *
 rpmfi_MD5(rpmfiObject * s)
 	/*@*/
 {
-    const unsigned char * MD5;
-    char fmd5[33];
+    int dalgo = 0;
+    size_t dlen = 0;
+    const unsigned char * digest;
+    const char * fdigest;
     char * t;
     int i;
 
-    MD5 = rpmfiMD5(s->fi);
-    t = fmd5;
-    if (MD5 != NULL)
-    for (i = 0; i < 16; i++, t += 2)
-	sprintf(t, "%02x", MD5[i]);
+    digest = rpmfiDigest(s->fi, &dalgo, &dlen);
+    if (digest == NULL || dlen == 0)
+	return NULL;
+    fdigest = t = memset(alloca(dlen), 0, dlen);
+    for (i = 0; i < dlen; i++, t += 2)
+	sprintf(t, "%02x", digest[i]);
     *t = '\0';
-    return Py_BuildValue("s", xstrdup(fmd5));
+    return Py_BuildValue("s", xstrdup(fdigest));
 }
 
 /*@null@*/
@@ -243,12 +246,17 @@ rpmfi_iternext(rpmfiObject * s)
 	const char * FUser = rpmfiFUser(s->fi);
 	const char * FGroup = rpmfiFGroup(s->fi);
 /*@-shadow@*/
-	const unsigned char * MD5 = rpmfiMD5(s->fi), *s = MD5;
+	int dalgo = 0;
+	size_t dlen = 0;
+	const unsigned char * digest = rpmfiDigest(s->fi, &dalgo, &dlen);
+	const unsigned char * s = digest;
 /*@=shadow@*/
-	char FMD5[2*16+1], *t = FMD5;
+	const char * fdigest;
+	char * t;
 	static const char hex[] = "0123456789abcdef";
 	int gotMD5, i;
 
+	fdigest = t = memset(alloca(dlen), 0, dlen);
 	gotMD5 = 0;
 	if (s)
 	for (i = 0; i < 16; i++) {
@@ -287,7 +295,7 @@ rpmfi_iternext(rpmfiObject * s)
 	    Py_INCREF(Py_None);
 	    PyTuple_SET_ITEM(result, 12, Py_None);
 	} else
-	    PyTuple_SET_ITEM(result, 12, Py_BuildValue("s", FMD5));
+	    PyTuple_SET_ITEM(result, 12, Py_BuildValue("s", fdigest));
 
     } else
 	s->active = 0;
