@@ -45,7 +45,9 @@ struct rpmfi_s {
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
 /*@only@*/ /*@relnull@*/
-    const char ** fmd5s;	/*!< File MD5 sum(s) (from header) */
+    const char ** fdigests;	/*!< File digest(s) (from header) */
+/*@only@*/ /*@null@*/
+    uint_32 * fdigestalgos;	/*!< File digest algorithm(s) (from header) */
 /*@only@*/ /*@relnull@*/
     const char ** flinks;	/*!< File link(s) (from header) */
 /*@only@*/ /*@null@*/
@@ -126,7 +128,9 @@ struct rpmfi_s {
     int_32 * odil;		/*!< Original dirindex(s) (from header) */
 
 /*@only@*/ /*@relnull@*/
-    unsigned char * md5s;	/*!< File md5 sums in binary. */
+    unsigned char * digests;	/*!< File digest(s) in binary. */
+    uint_32 digestalgo;		/*!< File digest algorithm. */
+    uint_32 digestlen;		/*!< No. bytes in binary digest. */
 
 /*@only@*/ /*@relnull@*/
     const char * pretrans;
@@ -335,7 +339,21 @@ rpmfileState rpmfiFState(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
+ * Return current file (binary) digest from file info set.
+ * @param fi		file info set
+ * @retval *algop	digest algorithm
+ * @retval *lenp	digest length (in bytes)
+ * @return		current file digest, NULL on invalid
+ */
+/*@observer@*/ /*@null@*/
+extern const unsigned char * rpmfiDigest(/*@null@*/ rpmfi fi,
+		/*@out@*/ /*@null@*/ int * algop,
+		/*@out@*/ /*@null@*/ size_t * lenp)
+	/*@modifies *algop, *lenp @*/;
+
+/**
  * Return current file (binary) md5 digest from file info set.
+ * @deprecated Use rpmfiDigest instead.
  * @param fi		file info set
  * @return		current file md5 digest, NULL on invalid
  */

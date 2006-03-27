@@ -194,8 +194,8 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	ia->noDeps = 1;
 	break;
 
-    case RPMCLI_POPT_NOMD5:
-	ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+    case RPMCLI_POPT_NOFDIGESTS:
+	ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 	break;
 
     case RPMCLI_POPT_NOCONTEXTS:
@@ -313,8 +313,10 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NODOCS,
 	N_("do not install documentation"), NULL},
 
- { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
-	N_("don't verify MD5 digest of files"), NULL },
+ { "nomd5", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
+ { "nofdigests", '\0', 0, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
  { "nocontexts", '\0',0,  NULL, RPMCLI_POPT_NOCONTEXTS,
 	N_("don't install file security contexts"), NULL},
 

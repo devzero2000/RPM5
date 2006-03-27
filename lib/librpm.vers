@@ -143,6 +143,7 @@ LIBRPM_0
     rpmfiDC;
     _rpmfi_debug;
     rpmfiDecideFate;
+    rpmfiDigest;
     rpmfiDN;
     rpmfiDX;
     rpmfiFC;
@@ -166,7 +167,6 @@ LIBRPM_0
     rpmfiFX;
     rpmfiInit;
     rpmfiInitD;
-    rpmfiMD5;
     rpmfiNew;
     rpmfiNext;
     rpmfiNextD;

@@ -819,7 +819,7 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
     case RPMSIGTAG_MD5:
 	pktlen = 16;
 	pkt = memset(alloca(pktlen), 0, pktlen);
-	if (domd5(file, pkt, 0, NULL)
+	if (dodigest(PGPHASHALGO_MD5, file, pkt, 0, NULL)
 	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	ret = 0;

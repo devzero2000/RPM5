@@ -442,6 +442,17 @@ print (t)\
 #%_fixperms		%{__chmod} -Rf @FIXPERMS@
 #
 
+#
+# Choose metadata file digest algorithm:
+#	1 	MD5
+#	2	SHA1
+#	8	SHA256
+#	9	SHA384
+#	10	SHA512
+#
+# Note: choosing anything but MD5 introduces instant legacy incompatibility.
+%_build_file_digest_algo	1
+
 #==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.

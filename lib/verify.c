@@ -13,7 +13,7 @@
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
 #include "rpmts.h"
 
-#include "legacy.h"	/* XXX domd5(), uidToUname(), gnameToGid */
+#include "legacy.h"	/* XXX dodigest(), uidToUname(), gnameToGid */
 #include "ugid.h"
 #include "debug.h"
 
@@ -86,32 +86,32 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
      * Not all attributes of non-regular files can be verified.
      */
     if (S_ISDIR(sb.st_mode))
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+	flags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO);
     else if (S_ISLNK(sb.st_mode)) {
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
+	flags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 		RPMVERIFY_MODE);
 #if CHOWN_FOLLOWS_SYMLINK
 	    flags &= ~(RPMVERIFY_USER | RPMVERIFY_GROUP);
 #endif
     }
     else if (S_ISFIFO(sb.st_mode))
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+	flags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO);
     else if (S_ISCHR(sb.st_mode))
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+	flags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO);
     else if (S_ISBLK(sb.st_mode))
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+	flags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO);
-    else 
+    else
 	flags &= ~(RPMVERIFY_LINKTO);
 
     /*
      * Content checks of %ghost files are meaningless.
      */
     if (fileAttrs & RPMFILE_GHOST)
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+	flags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO);
 
     /*
@@ -148,21 +148,26 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 /*@=branchstate@*/
 
-    if (flags & RPMVERIFY_MD5) {
-	unsigned char md5sum[16];
-	size_t fsize;
+    if (flags & RPMVERIFY_FDIGEST) {
+	int dalgo = 0;
+	size_t dlen = 0;
+	const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
 
-	/* XXX If --nomd5, then prelinked library sizes are not corrected. */
-	rc = domd5(fn, md5sum, 0, &fsize);
-	sb.st_size = fsize;
-	if (rc)
-	    *res |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
+	if (digest == NULL)
+	    *res |= RPMVERIFY_FDIGEST;
 	else {
-	    const unsigned char * MD5 = rpmfiMD5(fi);
-	    if (MD5 == NULL || memcmp(md5sum, MD5, sizeof(md5sum)))
-		*res |= RPMVERIFY_MD5;
+	/* XXX If --nofdigest, then prelinked library sizes fail to verify. */
+	    unsigned char * fdigest = memset(alloca(dlen), 0, dlen);
+	    size_t fsize;
+	    rc = dodigest(dalgo, fn, fdigest, 0, &fsize);
+	    sb.st_size = fsize;
+	    if (rc)
+		*res |= (RPMVERIFY_READFAIL|RPMVERIFY_FDIGEST);
+	    else
+	    if (memcmp(fdigest, digest, dlen))
+		*res |= RPMVERIFY_FDIGEST;
 	}
-    } 
+    }
 
     if (flags & RPMVERIFY_LINKTO) {
 	char linkto[1024+1];
@@ -176,12 +181,12 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	    if (flink == NULL || strcmp(linkto, flink))
 		*res |= RPMVERIFY_LINKTO;
 	}
-    } 
+    }
 
     if (flags & RPMVERIFY_FILESIZE) {
 	if (sb.st_size != rpmfiFSize(fi))
 	    *res |= RPMVERIFY_FILESIZE;
-    } 
+    }
 
     if (flags & RPMVERIFY_MODE) {
 	unsigned short metamode = fmode;
@@ -189,7 +194,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 
 	/*
 	 * Platforms (like AIX) where sizeof(unsigned short) != sizeof(mode_t)
-	 * need the (unsigned short) cast here. 
+	 * need the (unsigned short) cast here.
 	 */
 	filemode = (unsigned short)sb.st_mode;
 
@@ -215,7 +220,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	    uint_16 frdev = (rpmfiFRdev(fi) & 0xffff);
 	    if (st_rdev != frdev)
 		*res |= RPMVERIFY_RDEV;
-	} 
+	}
     }
 
     if (flags & RPMVERIFY_MTIME) {
@@ -334,13 +339,13 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fflags & RPMFILE_GHOST)	? 'g' :
 			 (fflags & RPMFILE_LICENSE)	? 'l' :
 			 (fflags & RPMFILE_PUBKEY)	? 'P' :
-			 (fflags & RPMFILE_README)	? 'r' : ' '), 
+			 (fflags & RPMFILE_README)	? 'r' : ' '),
 			rpmfiFN(fi));
 		te += strlen(te);
 		ec = rc;
 	    }
 	} else if (verifyResult || rpmIsVerbose()) {
-	    const char * size, * MD5, * link, * mtime, * mode;
+	    const char * size, * digest, * link, * mtime, * mode;
 	    const char * group, * user, * rdev, *ctxt;
 	    /*@observer@*/ static const char *const aok = ".";
 	    /*@observer@*/ static const char *const unknown = "?";
@@ -361,7 +366,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	 (verifyResult & RPMVERIFY_LGETFILECONFAIL) ? unknown : \
 	 (verifyResult & _RPMVERIFY_F) ? _C : aok))
 	
-	    MD5 = _verifyfile(RPMVERIFY_MD5, "5");
+	    digest = _verifyfile(RPMVERIFY_FDIGEST, "5");
 	    size = _verify(RPMVERIFY_FILESIZE, "S");
 	    link = _verifylink(RPMVERIFY_LINKTO, "L");
 	    mtime = _verify(RPMVERIFY_MTIME, "T");
@@ -377,13 +382,13 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 #undef _verify
 
 	    sprintf(te, "%s%s%s%s%s%s%s%s%s %c %s",
-			size, mode, MD5, rdev, link, user, group, mtime, ctxt,
+		size, mode, digest, rdev, link, user, group, mtime, ctxt,
 			((fflags & RPMFILE_CONFIG)	? 'c' :
 			 (fflags & RPMFILE_DOC)	? 'd' :
 			 (fflags & RPMFILE_GHOST)	? 'g' :
 			 (fflags & RPMFILE_LICENSE)	? 'l' :
 			 (fflags & RPMFILE_PUBKEY)	? 'P' :
-			 (fflags & RPMFILE_README)	? 'r' : ' '), 
+			 (fflags & RPMFILE_README)	? 'r' : ' '),
 			rpmfiFN(fi));
 	    te += strlen(te);
 	}

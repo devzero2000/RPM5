@@ -204,17 +204,36 @@ rpmfileState rpmfiFState(rpmfi fi)
     return fstate;
 }
 
-const unsigned char * rpmfiMD5(rpmfi fi)
+const unsigned char * rpmfiDigest(rpmfi fi, int * algop, size_t * lenp)
 {
-    unsigned char * MD5 = NULL;
+    unsigned char * digest = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
-	if (fi->md5s != NULL)
-	    MD5 = fi->md5s + (16 * fi->i);
+	if (fi->digests != NULL) {
+	    digest = fi->digests + (fi->digestlen * fi->i);
+	    if (algop != NULL)
+		*algop = (fi->fdigestalgos
+			? fi->fdigestalgos[fi->i] : fi->digestalgo);
+	    if (lenp != NULL)
+		*lenp = fi->digestlen;
+	}
 /*@=boundsread@*/
     }
-    return MD5;
+    return digest;
+}
+
+const unsigned char * rpmfiMD5(rpmfi fi)
+{
+    unsigned char * digest = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->digests != NULL)
+	    digest = fi->digests + (fi->digestlen * fi->i);
+/*@=boundsread@*/
+    }
+    return digest;
 }
 
 const char * rpmfiFLink(rpmfi fi)
@@ -531,12 +550,19 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 	if (blink == NULL) return -1;
 	return strcmp(alink, blink);
     } else if (awhat == REG) {
-	const unsigned char * amd5 = rpmfiMD5(afi);
-	const unsigned char * bmd5 = rpmfiMD5(bfi);
-	if (amd5 == bmd5) return 0;
-	if (amd5 == NULL) return 1;
-	if (bmd5 == NULL) return -1;
-	return memcmp(amd5, bmd5, 16);
+	int aalgo = 0;
+	size_t alen = 0;
+	const unsigned char * adigest = rpmfiDigest(afi, &aalgo, &alen);
+	int balgo = 0;
+	size_t blen = 0;
+	const unsigned char * bdigest = rpmfiDigest(bfi, &balgo, &blen);
+	/* XXX W2DO? changing file digest algo may break rpmfiCompare. */
+	if (!(aalgo == balgo && alen == blen))
+	    return -1;
+	if (adigest == bdigest) return 0;
+	if (adigest == NULL) return 1;
+	if (bdigest == NULL) return -1;
+	return memcmp(adigest, bdigest, alen);
     }
 
     return 0;
@@ -593,17 +619,23 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      */
     memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
-	const unsigned char * omd5, * nmd5;
-	/* XXX avoid md5 on sparse /var/log/lastlog file. */
+	int oalgo = 0;
+	size_t olen = 0;
+	const unsigned char * odigest;
+	int nalgo = 0;
+	size_t nlen = 0;
+	const unsigned char * ndigest;
+	odigest = rpmfiDigest(ofi, &oalgo, &olen);
+	/* XXX avoid digest on sparse /var/log/lastlog file. */
 	if (strcmp(fn, "/var/log/lastlog"))
-	if (domd5(fn, buffer, 0, NULL))
+	if (dodigest(oalgo, fn, buffer, 0, NULL))
 	    return FA_CREATE;	/* assume file has been removed */
-	omd5 = rpmfiMD5(ofi);
-	if (omd5 && !memcmp(omd5, buffer, 16))
+	if (odigest && !memcmp(odigest, buffer, olen))
 	    return FA_CREATE;	/* unmodified config file, replace. */
-	nmd5 = rpmfiMD5(nfi);
+	ndigest = rpmfiDigest(nfi, &nalgo, &nlen);
 /*@-nullpass@*/
-	if (omd5 && nmd5 && !memcmp(omd5, nmd5, 16))
+	if (odigest && ndigest && oalgo == nalgo && olen == nlen
+	 && !memcmp(odigest, ndigest, nlen))
 	    return FA_SKIP;	/* identical file, don't bother. */
 /*@=nullpass@*/
     } else /* dbWhat == LINK */ {
@@ -1124,8 +1156,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
 	fi->flinks = hfd(fi->flinks, -1);
 	fi->flangs = hfd(fi->flangs, -1);
-	fi->fmd5s = hfd(fi->fmd5s, -1);
-	fi->md5s = _free(fi->md5s);
+	fi->fdigests = hfd(fi->fdigests, -1);
+	fi->digests = _free(fi->digests);
 
 	fi->cdict = hfd(fi->cdict, -1);
 
@@ -1314,27 +1346,53 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
     xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
 
-    fi->fmd5s = NULL;
-    xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-
-    fi->md5s = NULL;
-    if (fi->fmd5s) {
-	t = xmalloc(fi->fc * 16);
-	fi->md5s = t;
+    fi->digestalgo = PGPHASHALGO_MD5;
+    fi->digestlen = 16;
+    fi->fdigestalgos = NULL;
+    xx = hge(h, RPMTAG_FILEDIGESTALGOS, NULL, (void **) &fi->fdigestalgos, NULL);
+    if (fi->fdigestalgos) {
+	int dalgo = 0;
+	/* XXX Insure that all algorithms are either 0 or constant. */
 	for (i = 0; i < fi->fc; i++) {
-	    const char * fmd5;
+	    if (fi->fdigestalgos[i] == 0)
+		continue;
+	    if (dalgo == 0)
+		dalgo = fi->fdigestalgos[i];
+	    else
+assert(dalgo == fi->fdigestalgos[i]);
+	}
+	fi->digestalgo = dalgo;
+	switch (dalgo) {
+	case PGPHASHALGO_MD5:		fi->digestlen = 128/8;	break;
+	case PGPHASHALGO_SHA1:		fi->digestlen = 160/8;	break;
+	case PGPHASHALGO_SHA256:	fi->digestlen = 256/8;	break;
+	case PGPHASHALGO_SHA384:	fi->digestlen = 384/8;	break;
+	case PGPHASHALGO_SHA512:	fi->digestlen = 512/8;	break;
+	}
+	fi->fdigestalgos = NULL;
+    }
+
+    fi->fdigests = NULL;
+    xx = hge(h, RPMTAG_FILEDIGESTS, NULL, (void **) &fi->fdigests, NULL);
+
+    fi->digests = NULL;
+    if (fi->fdigests) {
+	t = xmalloc(fi->fc * fi->digestlen);
+	fi->digests = t;
+	for (i = 0; i < fi->fc; i++) {
+	    const char * fdigests;
 	    int j;
 
-	    fmd5 = fi->fmd5s[i];
-	    if (!(fmd5 && *fmd5 != '\0')) {
-		memset(t, 0, 16);
-		t += 16;
+	    fdigests = fi->fdigests[i];
+	    if (!(fdigests && *fdigests != '\0')) {
+		memset(t, 0, fi->digestlen);
+		t += fi->digestlen;
 		continue;
 	    }
-	    for (j = 0; j < 16; j++, t++, fmd5 += 2)
-		*t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
+	    for (j = 0; j < fi->digestlen; j++, t++, fdigests += 2)
+		*t = (nibble(fdigests[0]) << 4) | nibble(fdigests[1]);
 	}
-	fi->fmd5s = hfd(fi->fmd5s, -1);
+	fi->fdigests = hfd(fi->fdigests, -1);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
@@ -1409,7 +1467,7 @@ if (fi->actions == NULL)
 /* XXX DYING */
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	/*@-compdef@*/ /* FIX: fi-md5s undefined */
+	/*@-compdef@*/ /* FIX: fi->digests undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
 	/*@=compdef@*/
 	fi->h = headerFree(fi->h);

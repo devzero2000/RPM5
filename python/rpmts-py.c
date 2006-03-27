@@ -652,7 +652,7 @@ fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
     memset(ia, 0, sizeof(*ia));
     ia->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE|VERIFY_HDRCHK);
     ia->transFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL);
-    ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+    ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
     ia->installInterfaceFlags = (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL);
     ia->rbtid = rbtid;
     ia->relocations = NULL;

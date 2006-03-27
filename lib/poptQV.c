@@ -222,8 +222,8 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_DEPS;
 	break;
 
-    case RPMCLI_POPT_NOMD5:
-	qva->qva_flags |= VERIFY_MD5;
+    case RPMCLI_POPT_NOFDIGESTS:
+	qva->qva_flags |= VERIFY_FDIGEST;
 	break;
 
     case RPMCLI_POPT_NOCONTEXTS:
@@ -343,11 +343,13 @@ struct poptOption rpmVerifyPoptTable[] = {
  /* Duplicate file verify flags from packages into command line options. */
 /** @todo Add --nomd5 alias to rpmpopt, eliminate. */
 #ifdef	DYING
- { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
-	N_("don't verify MD5 digest of files"), NULL },
+ { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FDIGEST,
+	N_("don't verify file digests"), NULL },
 #else
- { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
-	N_("don't verify MD5 digest of files"), NULL },
+ { "nomd5", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
+ { "nofdigests", '\0', 0, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
 #endif
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SIZE,

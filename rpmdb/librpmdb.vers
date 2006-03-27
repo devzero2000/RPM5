@@ -16,7 +16,7 @@ LIBRPMDB_0
     dbiTags;
     dbiTagsInit;
     dbiTagsMax;
-    domd5;
+    dodigest;
     expandFilelist;
     _fini;
     fpCacheCreate;

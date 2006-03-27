@@ -30,7 +30,7 @@
 
 #include "buildio.h"
 
-#include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
+#include "legacy.h"	/* XXX dodigest, expandFileList, compressFileList */
 #include "misc.h"
 #include "debug.h"
 
@@ -1280,12 +1280,37 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	 *		   RPM_INT32_TYPE, &(flp->fl_gid), 1);
 	 */
 	
+      { static uint_32 dalgo = 0;
+	static int oneshot = 0;
+	if (!oneshot) {
+	    dalgo = rpmExpandNumeric("%{?_build_file_digest_algo}");
+	    switch (dalgo) {
+	    case PGPHASHALGO_MD5:
+	    case PGPHASHALGO_SHA1:
+	    case PGPHASHALGO_SHA256:
+	    case PGPHASHALGO_SHA384:
+	    case PGPHASHALGO_SHA512:
+		break;
+	    case PGPHASHALGO_RIPEMD160:
+	    case PGPHASHALGO_MD2:
+	    case PGPHASHALGO_TIGER192:
+	    case PGPHASHALGO_HAVAL_5_160:
+	    default:
+		dalgo = PGPHASHALGO_MD5;
+		break;
+	    }
+	    oneshot++;
+	}
+	    
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    (void) domd5(flp->diskURL, (unsigned char *)buf, 1, NULL);
+	    (void) dodigest(dalgo, flp->diskURL, (unsigned char *)buf, 1, NULL);
 	s = buf;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTS, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTALGOS, RPM_INT32_TYPE,
+			       &dalgo, 1);
+      }
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {

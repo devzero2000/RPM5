@@ -550,7 +550,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
         for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEMD5S, MD5, sizeof(MD5));
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, MD5, sizeof(MD5));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"fileid", arg);

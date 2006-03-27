@@ -27,7 +27,7 @@
 
 #include "cpio.h"
 #include "fprint.h"
-#include "legacy.h"	/* XXX domd5 */
+#include "legacy.h"	/* XXX dodigest */
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 
 #include "debug.h"
@@ -592,15 +592,22 @@ assert(otherFi != NULL);
 	    }
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
-	    /* XXX avoid md5 on sparse /var/log/lastlog file. */
+	    /* XXX avoid digest on sparse /var/log/lastlog file. */
 	    if (strcmp(fn, "/var/log/lastlog"))
-	    {	char md5sum[50];
-		const unsigned char * MD5 = rpmfiMD5(fi);
-assert(MD5 != NULL);
-		if (!domd5(fn, md5sum, 0, NULL) && memcmp(MD5, md5sum, 16)) {
-		    fi->actions[i] = FA_BACKUP;
+	    {	int dalgo = 0;
+		size_t dlen = 0;
+		const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
+		unsigned char * fdigest;
+assert(digest != NULL);
+		
+		fdigest = xcalloc(1, dlen);
+		if (!dodigest(dalgo, fn, fdigest, 0, NULL)) {
+		    if (memcmp(digest, fdigest, dlen))
+			fi->actions[i] = FA_BACKUP;
+		    fdigest = _free(fdigest);
 		    /*@switchbreak@*/ break;
 		}
+		fdigest = _free(fdigest);
 	    }
 	    fi->actions[i] = FA_ERASE;
 	    /*@switchbreak@*/ break;
@@ -2285,7 +2292,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	tsFlags = rpmtsFlags(ts);
 	tsFlags &= ~RPMTRANS_FLAG_DIRSTASH;	/* No repackage of rollbacks */
 	tsFlags &= ~RPMTRANS_FLAG_REPACKAGE; 	/* No repackage of rollbacks */
-	tsFlags |= RPMTRANS_FLAG_NOMD5; 	/* Don't check md5 digest    */
+	tsFlags |= RPMTRANS_FLAG_NOFDIGESTS; 	/* Don't check file digest   */
 	tsFlags = rpmtsSetFlags(rbts, tsFlags);
 
 	/* Set root dir to be the same as the running transaction */

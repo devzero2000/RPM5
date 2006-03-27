@@ -289,7 +289,8 @@ typedef enum rpmTag_e {
     RPMTAG_FILEGIDS		= 1032, /*!< internal */
     RPMTAG_FILERDEVS		= 1033,	/* h[] */
     RPMTAG_FILEMTIMES		= 1034, /* i[] */
-    RPMTAG_FILEMD5S		= 1035,	/* s[] */
+    RPMTAG_FILEDIGESTS		= 1035,	/* s[] */
+#define RPMTAG_FILEMD5S	RPMTAG_FILEDIGESTS /* s[] */
     RPMTAG_FILELINKTOS		= 1036,	/* s[] */
     RPMTAG_FILEFLAGS		= 1037,	/* i[] */
 /*@-enummemuse@*/
@@ -446,6 +447,7 @@ typedef enum rpmTag_e {
     RPMTAG_SCRIPTSTATES		= 1174, /*!< i[] scriptlet exit codes */
     RPMTAG_SCRIPTMETRICS	= 1175, /*!< i[] scriptlet execution times */
     RPMTAG_BUILDCPUCLOCK	= 1176, /*!< i */
+    RPMTAG_FILEDIGESTALGOS	= 1177, /*!< i[] */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -1034,7 +1036,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
     RPMTRANS_FLAG_ANACONDA	= (1 << 26),	/*!< from --anaconda */
-    RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
+    RPMTRANS_FLAG_NOFDIGESTS	= (1 << 27),	/*!< from --nofdigests */
     RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< from --nosuggest */
     RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */

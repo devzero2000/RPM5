@@ -311,9 +311,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	    *cookie = xstrdup(*cookie);
     }
 
-    /* XXX FIXME: can't do endian neutral MD5 verification yet. */
-/*@i@*/ fi->fmd5s = hfd(fi->fmd5s, -1);
-
     /* XXX FIXME: don't do per-file mapping, force global flags. */
     fi->fmapflags = _free(fi->fmapflags);
     fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;

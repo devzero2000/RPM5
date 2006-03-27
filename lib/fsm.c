@@ -827,17 +827,17 @@ int fsmMapAttrs(FSM_t fsm)
 	{   rpmts ts = fsmGetTs(fsm);
 
 	    /*
-	     * Set file md5 (if not disabled).
+	     * Set file digest (if not disabled).
 	     */
-	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
-		fsm->fdigestalgo = PGPHASHALGO_MD5;
-		fsm->fdigest = (fi->fmd5s ? fi->fmd5s[i] : NULL);
-		fsm->digestlen = 16;
-		fsm->digest = (fi->md5s ? (fi->md5s + (fsm->digestlen * i)) : NULL);
+	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS)) {
+		fsm->fdigestalgo = fi->digestalgo;
+		fsm->fdigest = (fi->fdigests ? fi->fdigests[i] : NULL);
+		fsm->digestlen = fi->digestlen;
+		fsm->digest = (fi->digests ? (fi->digests + (fsm->digestlen * i)) : NULL);
 	    } else {
 		fsm->fdigestalgo = 0;
 		fsm->fdigest = NULL;
-		fsm->digestlen = 16;
+		fsm->digestlen = 0;
 		fsm->digest = NULL;
 	    }
 	}

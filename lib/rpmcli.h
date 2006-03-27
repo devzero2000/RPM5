@@ -83,7 +83,7 @@ rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
  */
 #define	RPMCLI_POPT_NODEPS		-1025
 #define	RPMCLI_POPT_FORCE		-1026
-#define	RPMCLI_POPT_NOMD5		-1027
+#define	RPMCLI_POPT_NOFDIGESTS		-1027
 #define	RPMCLI_POPT_NOSCRIPTS		-1028
 #define	RPMCLI_POPT_NOSIGNATURE		-1029
 #define	RPMCLI_POPT_NODIGEST		-1030
@@ -111,7 +111,7 @@ typedef enum rpmQVSources_e {
     RPMQV_SPECFILE,	/*!< ... from spec file parse (query only). */
     RPMQV_PKGID,	/*!< ... from package id (header+payload MD5). */
     RPMQV_HDRID,	/*!< ... from header id (immutable header SHA1). */
-    RPMQV_FILEID,	/*!< ... from file id (file MD5). */
+    RPMQV_FILEID,	/*!< ... from file id (file digest, usually MD5). */
     RPMQV_TID,		/*!< ... from install transaction id (time stamp). */
     RPMQV_HDLIST,	/*!< ... from system hdlist. */
     RPMQV_FTSWALK	/*!< ... from fts(3) walk. */
@@ -122,7 +122,7 @@ typedef enum rpmQVSources_e {
  */
 typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_NONE	= 0,		/*!< */
-    RPMVERIFY_MD5	= (1 << 0),	/*!< from %verify(md5) */
+    RPMVERIFY_FDIGEST	= (1 << 0),	/*!< from %verify(digest) */
     RPMVERIFY_FILESIZE	= (1 << 1),	/*!< from %verify(size) */
     RPMVERIFY_LINKTO	= (1 << 2),	/*!< from %verify(link) */
     RPMVERIFY_USER	= (1 << 3),	/*!< from %verify(user) */
@@ -139,6 +139,7 @@ typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_LSTATFAIL	= (1 << 30),	/*!< lstat failed */
     RPMVERIFY_LGETFILECONFAIL	= (1 << 31)	/*!< lgetfilecon failed */
 } rpmVerifyAttrs;
+#define	RPMVERIFY_MD5	RPMVERIFY_FDIGEST
 #define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
 #define	RPMVERIFY_FAILURES	\
   (RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL|RPMVERIFY_LGETFILECONFAIL)
@@ -150,7 +151,7 @@ typedef enum rpmVerifyAttrs_e {
 typedef enum rpmQueryFlags_e {
 /*@-enummemuse@*/
     QUERY_FOR_DEFAULT	= 0,		/*!< */
-    QUERY_MD5		= (1 << 0),	/*!< from --nomd5 */
+    QUERY_FDIGEST	= (1 << 0),	/*!< from --nofdigest */
     QUERY_SIZE		= (1 << 1),	/*!< from --nosize */
     QUERY_LINKTO	= (1 << 2),	/*!< from --nolink */
     QUERY_USER		= (1 << 3),	/*!< from --nouser) */
@@ -193,7 +194,7 @@ typedef enum rpmVerifyFlags_e {
 /*@-enummemuse@*/
     VERIFY_DEFAULT	= 0,		/*!< */
 /*@=enummemuse@*/
-    VERIFY_MD5		= (1 << 0),	/*!< from --nomd5 */
+    VERIFY_FDIGEST	= (1 << 0),	/*!< from --nofdigest */
     VERIFY_SIZE		= (1 << 1),	/*!< from --nosize */
     VERIFY_LINKTO	= (1 << 2),	/*!< from --nolinkto */
     VERIFY_USER		= (1 << 3),	/*!< from --nouser */
@@ -221,7 +222,7 @@ typedef enum rpmVerifyFlags_e {
 } rpmVerifyFlags;
 
 #define	VERIFY_ATTRS	\
-  ( VERIFY_MD5 | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
+  ( VERIFY_FDIGEST | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
     VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV | VERIFY_CONTEXTS )
 #define	VERIFY_ALL	\
   ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
@@ -407,7 +408,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
- * Verify file attributes (including MD5 sum).
+ * Verify file attributes (including file digest).
  * @todo gnorpm and python bindings prevent this from being static.
  * @param ts		transaction set
  * @param fi		file info (with linked header and current file index)

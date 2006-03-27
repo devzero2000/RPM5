@@ -145,12 +145,12 @@ exit:
     return fdno;
 }
 
-int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
+int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 {
     const char * path;
     urltype ut = urlPath(fn, &path);
-    unsigned char * md5sum = NULL;
-    size_t md5len;
+    unsigned char * dsum = NULL;
+    size_t dlen;
     unsigned char buf[32*BUFSIZ];
     FD_t fd;
     size_t fsize = 0;
@@ -192,10 +192,10 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 #endif
 	}
 
-	ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	ctx = rpmDigestInit(digestalgo, RPMDIGEST_NONE);
 	if (fsize)
 	    xx = rpmDigestUpdate(ctx, mapped, fsize);
-	xx = rpmDigestFinal(ctx, (void **)&md5sum, &md5len, asAscii);
+	xx = rpmDigestFinal(ctx, (void **)&dsum, &dlen, asAscii);
 	if (fsize)
 	    xx = munmap(mapped, fsize);
 	xx = close(fdno);
@@ -218,11 +218,11 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 	    break;
 	}
 	
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+	fdInitDigest(fd, digestalgo, 0);
 	fsize = 0;
 	while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    fsize += rc;
-	fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, asAscii);
+	fdFiniDigest(fd, digestalgo, (void **)&dsum, &dlen, asAscii);
 	if (Ferror(fd))
 	    rc = 1;
 
@@ -243,11 +243,16 @@ exit:
     if (fsizep)
 	*fsizep = fsize;
     if (!rc)
-	memcpy(digest, md5sum, md5len);
+	memcpy(digest, dsum, dlen);
 /*@=boundswrite@*/
-    md5sum = _free(md5sum);
+    dsum = _free(dsum);
 
     return rc;
+}
+
+int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
+{
+    return dodigest(PGPHASHALGO_MD5, fn, digest, asAscii, fsizep);
 }
 
 /*@-exportheadervar@*/

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-26 15:47-0500\n"
+"POT-Creation-Date: 2006-03-27 14:15-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -529,82 +529,82 @@ msgstr "Не можна змішувати специфікацію %%doc з і�
 msgid "File listed twice: %s\n"
 msgstr "Файл вказано двічі: %s\n"
 
-#: build/files.c:1300
+#: build/files.c:1325
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символічне посилання вказує на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1547
+#: build/files.c:1572
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не відповідає префіксу (%s): %s\n"
 
-#: build/files.c:1571
+#: build/files.c:1596
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не існує: %s\n"
 
-#: build/files.c:1783
+#: build/files.c:1808
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: не вдається завантажити невідомий тег (%d).\n"
 
-#: build/files.c:1789
+#: build/files.c:1814
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: неможливо зчитати публічний ключ.\n"
 
-#: build/files.c:1793 lib/rpmchecksig.c:607
+#: build/files.c:1818 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: це не публічний ключ у текстовому вигляді.\n"
 
-#: build/files.c:1800
+#: build/files.c:1825
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: не вдається зчитати *.te політику.\n"
 
-#: build/files.c:1853
+#: build/files.c:1878
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл повинен починатись з \"/\": %s\n"
 
-#: build/files.c:1877
+#: build/files.c:1902
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Шаблони не дозволяються: %s\n"
 
-#: build/files.c:1894 lib/rpminstall.c:374
+#: build/files.c:1919 lib/rpminstall.c:374
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не знайдено: %s\n"
 
-#: build/files.c:1954
+#: build/files.c:1979
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Неможливо відкрити %%files файл %s: %s\n"
 
-#: build/files.c:1965 build/pack.c:155
+#: build/files.c:1990 build/pack.c:155
 #, c-format
 msgid "line: %s\n"
 msgstr "рядок: %s\n"
 
-#: build/files.c:2357
+#: build/files.c:2382
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неправильний файл: %s: %s\n"
 
-#: build/files.c:2369 build/parsePrep.c:50
+#: build/files.c:2394 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неправильний власник/група: %s\n"
 
-#: build/files.c:2413
+#: build/files.c:2438
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Перевірка не упакованих файлів: %s\n"
 
-#: build/files.c:2430
+#: build/files.c:2455
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -613,7 +613,7 @@ msgstr ""
 "Знайдено встановлені (але не упаковані) файли:\n"
 "%s"
 
-#: build/files.c:2458
+#: build/files.c:2483
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обробка файлу: %s-%s-%s\n"
@@ -752,7 +752,7 @@ msgstr "Неможливо перезавантажити заголовок п�
 msgid "Could not open %s: %s\n"
 msgstr "Не вдається відкрити %s: %s\n"
 
-#: build/pack.c:666 lib/psm.c:1693
+#: build/pack.c:666 lib/psm.c:1690
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не вдається записати пакет: %s\n"
@@ -782,7 +782,7 @@ msgstr "Неможливо прочитати вміст з %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Неможливо записати вміст з %s: %s\n"
 
-#: build/pack.c:759 lib/psm.c:2006
+#: build/pack.c:759 lib/psm.c:2003
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
@@ -1282,18 +1282,18 @@ msgstr "не перевіряти залежності перед збиранн
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "створювати заголовки сумісні з (застарілим) форматом rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:279 lib/poptI.c:347 lib/poptQV.c:403
-#: lib/poptQV.c:412 lib/poptQV.c:454
+#: build/poptBT.c:229 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:405
+#: lib/poptQV.c:414 lib/poptQV.c:456
 msgid "don't verify package digest(s)"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: build/poptBT.c:231 lib/poptALL.c:281 lib/poptI.c:349 lib/poptQV.c:406
-#: lib/poptQV.c:414 lib/poptQV.c:457
+#: build/poptBT.c:231 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:408
+#: lib/poptQV.c:416 lib/poptQV.c:459
 msgid "don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки з бази даних"
 
-#: build/poptBT.c:233 lib/poptALL.c:287 lib/poptI.c:351 lib/poptQV.c:409
-#: lib/poptQV.c:416 lib/poptQV.c:459
+#: build/poptBT.c:233 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:411
+#: lib/poptQV.c:418 lib/poptQV.c:461
 msgid "don't verify package signature(s)"
 msgstr "не перевіряти підписи у пакетах"
 
@@ -2000,7 +2000,7 @@ msgstr ""
 msgid "use anaconda \"presentation order\""
 msgstr "використовувати \"порядок представлення\" як у anaconda"
 
-#: lib/poptI.c:251 lib/poptI.c:331
+#: lib/poptI.c:251 lib/poptI.c:333
 msgid "do not execute package scriptlet(s)"
 msgstr "не виконувати жодних сценаріїв пакетів"
 
@@ -2053,7 +2053,7 @@ msgstr "скорочення для --replacepkgs --replacefiles"
 msgid "upgrade package(s) if already installed"
 msgstr "оновити пакет(и) навіть якщо вже встановлений(і)"
 
-#: lib/poptI.c:286 lib/poptI.c:302 lib/poptI.c:404
+#: lib/poptI.c:286 lib/poptI.c:302 lib/poptI.c:406
 msgid "<packagefile>+"
 msgstr "<файл пакету>+"
 
@@ -2089,67 +2089,69 @@ msgstr "оновити базу даних, але не модифікувати
 msgid "do not verify package dependencies"
 msgstr "не перевіряти залежності пакету"
 
-#: lib/poptI.c:317 lib/poptQV.c:347 lib/poptQV.c:350
-msgid "don't verify MD5 digest of files"
-msgstr "не перевіряти MD5 контрольну суму файлів"
+#: lib/poptI.c:317 lib/poptI.c:319 lib/poptQV.c:347 lib/poptQV.c:350
+#: lib/poptQV.c:352
+#, fuzzy
+msgid "don't verify file digests"
+msgstr "не перевіряти контрольну суму пакетів"
 
-#: lib/poptI.c:319
+#: lib/poptI.c:321
 msgid "don't install file security contexts"
 msgstr "не встановлювати контексти контексти безпеки файлів"
 
-#: lib/poptI.c:323
+#: lib/poptI.c:325
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "не міняти порядок встановлення пакетів для задовольняння залежностей"
 
-#: lib/poptI.c:328
+#: lib/poptI.c:330
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "не пропонувати розв'язання відсутніх залежностей"
 
-#: lib/poptI.c:335
+#: lib/poptI.c:337
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "не виконувати сценарій %%pre (якщо він є)"
 
-#: lib/poptI.c:338
+#: lib/poptI.c:340
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "не виконувати сценарій %%post (якщо він є)"
 
-#: lib/poptI.c:341
+#: lib/poptI.c:343
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "не виконувати сценарій %%preun (якщо він є)"
 
-#: lib/poptI.c:344
+#: lib/poptI.c:346
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "не виконувати сценарій %%postun (якщо він є)"
 
-#: lib/poptI.c:354
+#: lib/poptI.c:356
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "не виконувати жодного тригер-сценарію для цього пакету"
 
-#: lib/poptI.c:357
+#: lib/poptI.c:359
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerprein"
 
-#: lib/poptI.c:360
+#: lib/poptI.c:362
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerin"
 
-#: lib/poptI.c:363
+#: lib/poptI.c:365
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerun"
 
-#: lib/poptI.c:366
+#: lib/poptI.c:368
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerpostun"
 
-#: lib/poptI.c:370
+#: lib/poptI.c:372
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2157,64 +2159,64 @@ msgstr ""
 "повернутись до попередньої версії пакету (ключ --force при оновленні робить "
 "це автоматично)"
 
-#: lib/poptI.c:374
+#: lib/poptI.c:376
 msgid "print percentages as package installs"
 msgstr "виводити відсоток виконання при встановленні"
 
-#: lib/poptI.c:376
+#: lib/poptI.c:378
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "перемістити пакет у <каталог>, якщо він це дозволяє"
 
-#: lib/poptI.c:377
+#: lib/poptI.c:379
 msgid "<dir>"
 msgstr "<каталог>"
 
-#: lib/poptI.c:379
+#: lib/poptI.c:381
 msgid "relocate files from path <old> to <new>"
 msgstr "перемістити файли з шляху <старий> у <новий>"
 
-#: lib/poptI.c:380
+#: lib/poptI.c:382
 msgid "<old>=<new>"
 msgstr "<старий>=<новий>"
 
-#: lib/poptI.c:383
+#: lib/poptI.c:385
 msgid "save erased package files by repackaging"
 msgstr "зберегти відмічені для видалення файли у новому пакеті"
 
-#: lib/poptI.c:386
+#: lib/poptI.c:388
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:389
+#: lib/poptI.c:391
 msgid "reinstall if the package is already present"
 msgstr "перевстановити, якщо пакет вже встановлений"
 
-#: lib/poptI.c:391
+#: lib/poptI.c:393
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "видалити новий(і) пакет(и), перевстановити старий(і), назад до <дата>"
 
-#: lib/poptI.c:392 lib/poptI.c:395
+#: lib/poptI.c:394 lib/poptI.c:397
 msgid "<date>"
 msgstr "<дата>"
 
-#: lib/poptI.c:394
+#: lib/poptI.c:396
 msgid "If transaction fails rollback to <date>"
 msgstr ""
 
-#: lib/poptI.c:397
+#: lib/poptI.c:399
 msgid "Exclude Transaction I.D. from rollback"
 msgstr ""
 
-#: lib/poptI.c:398
+#: lib/poptI.c:400
 #, fuzzy
 msgid "<tid>"
 msgstr "<параметр>"
 
-#: lib/poptI.c:400
+#: lib/poptI.c:402
 msgid "don't install, but tell if it would work or not"
 msgstr "не встановлювати, лише повідомити чи вдасться встановлення"
 
-#: lib/poptI.c:403
+#: lib/poptI.c:405
 msgid "upgrade package(s)"
 msgstr "оновити пакет(и)"
 
@@ -2376,81 +2378,81 @@ msgstr "показати інформацію про стан файлів з п
 msgid "specify target platform"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:354
+#: lib/poptQV.c:356
 msgid "don't verify size of files"
 msgstr "не перевіряти розмір файла"
 
-#: lib/poptQV.c:357
+#: lib/poptQV.c:359
 msgid "don't verify symlink path of files"
 msgstr "не перевіряти шлях символічних посилань"
 
-#: lib/poptQV.c:360
+#: lib/poptQV.c:362
 msgid "don't verify owner of files"
 msgstr "не перевіряти власника файлів"
 
-#: lib/poptQV.c:363
+#: lib/poptQV.c:365
 msgid "don't verify group of files"
 msgstr "не перевіряти групи файлів"
 
-#: lib/poptQV.c:366
+#: lib/poptQV.c:368
 msgid "don't verify modification time of files"
 msgstr "не перевіряти час модифікації файлів"
 
-#: lib/poptQV.c:369 lib/poptQV.c:372
+#: lib/poptQV.c:371 lib/poptQV.c:374
 msgid "don't verify mode of files"
 msgstr "не перевіряти права доступу файлів"
 
-#: lib/poptQV.c:375
+#: lib/poptQV.c:377
 msgid "don't verify file security contexts"
 msgstr "не перевіряти контекст безпеки файлів"
 
-#: lib/poptQV.c:377
+#: lib/poptQV.c:379
 msgid "don't verify files in package"
 msgstr "не перевіряти файли пакета"
 
-#: lib/poptQV.c:380 lib/poptQV.c:383 tools/rpmgraph.c:267
+#: lib/poptQV.c:382 lib/poptQV.c:385 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "не перевіряти залежності пакета"
 
-#: lib/poptQV.c:388 lib/poptQV.c:392 lib/poptQV.c:395 lib/poptQV.c:398
+#: lib/poptQV.c:390 lib/poptQV.c:394 lib/poptQV.c:397 lib/poptQV.c:400
 msgid "don't execute verify script(s)"
 msgstr "не виконувати сценарії перевірки"
 
-#: lib/poptQV.c:432
+#: lib/poptQV.c:434
 msgid "sign package(s) (identical to --resign)"
 msgstr "підписати пакет(и) (ідентично до --resign)"
 
-#: lib/poptQV.c:434
+#: lib/poptQV.c:436
 msgid "verify package signature(s)"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:438
 #, fuzzy
 msgid "delete package signatures"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:440
 msgid "import an armored public key"
 msgstr "імпортувати відкритий ключ"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:442
 msgid "sign package(s) (identical to --addsign)"
 msgstr "підписати пакет(и) (ідентично до --addsign)"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:444
 msgid "generate signature"
 msgstr "створити підпис"
 
-#: lib/poptQV.c:445
+#: lib/poptQV.c:447
 #, fuzzy
 msgid "specify trust metric"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:448
+#: lib/poptQV.c:450
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:451
+#: lib/poptQV.c:453
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2458,79 +2460,79 @@ msgstr ""
 msgid "source package expected, binary found\n"
 msgstr "очікувався пакет з вихідним кодом, але знайдено двійковий\n"
 
-#: lib/psm.c:389
+#: lib/psm.c:386
 msgid "source package contains no .spec file\n"
 msgstr "пакет з вихідним кодом не містить файла специфікації\n"
 
-#: lib/psm.c:505
+#: lib/psm.c:502
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr "%s: waitpid(%d) код результату %d стан %x секунд %u.%03u\n"
 
-#: lib/psm.c:689
+#: lib/psm.c:686
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "%s: %s(%s-%s-%s) запуск %sсинхронного сценарію\n"
 
-#: lib/psm.c:710
+#: lib/psm.c:707
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s) пропущено зайвий \"%s\".\n"
 
-#: lib/psm.c:718
+#: lib/psm.c:715
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s) запуск %sсинхронного сценарію\n"
 
-#: lib/psm.c:930
+#: lib/psm.c:927
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 
-#: lib/psm.c:978
+#: lib/psm.c:975
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s) помилка сценарію, waitpid(%d) код результату %d: %s\n"
 
-#: lib/psm.c:985
+#: lib/psm.c:982
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s-%s-%s) помилка сценарію, код завершення %d\n"
 
-#: lib/psm.c:989
+#: lib/psm.c:986
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) помилка сценарію, код завершення %d\n"
 
-#: lib/psm.c:1428
+#: lib/psm.c:1425
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s містить %d файлів, результат перевірки: %d\n"
 
-#: lib/psm.c:1589
+#: lib/psm.c:1586
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s помилка сценарію, (%d), пропущено %s\n"
 
-#: lib/psm.c:1705
+#: lib/psm.c:1702
 msgid "Unable to reload signature header\n"
 msgstr "Неможливо перезавантажити заголовок підпису\n"
 
-#: lib/psm.c:1805
+#: lib/psm.c:1802
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "помилка розпаковування архіву%s%s: %s\n"
 
-#: lib/psm.c:1806
+#: lib/psm.c:1803
 msgid " on file "
 msgstr " на файлі "
 
-#: lib/psm.c:2014
+#: lib/psm.c:2011
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s помилка на файлі %s: %s\n"
 
-#: lib/psm.c:2017
+#: lib/psm.c:2014
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s помилка: %s\n"
@@ -2874,36 +2876,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
 
-#: lib/rpmfi.c:562
+#: lib/rpmfi.c:588
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущено через наявність ознаки missingok\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:836
 msgid "========== relocations\n"
 msgstr "========== переміщені\n"
 
-#: lib/rpmfi.c:808
+#: lib/rpmfi.c:840
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d виключено  %s\n"
 
-#: lib/rpmfi.c:811
+#: lib/rpmfi.c:843
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d перенесено %s -> %s\n"
 
-#: lib/rpmfi.c:945
+#: lib/rpmfi.c:977
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "виключається %s %s\n"
 
-#: lib/rpmfi.c:955
+#: lib/rpmfi.c:987
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "переміщується %s у %s\n"
 
-#: lib/rpmfi.c:1047
+#: lib/rpmfi.c:1079
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
@@ -2922,7 +2924,7 @@ msgstr "невідомий тег: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1456 lib/transaction.c:1182 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1456 lib/transaction.c:1189 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Незадоволені залежності:\n"
 
@@ -2954,7 +2956,7 @@ msgstr "Оновлення..."
 msgid "Upgrading packages..."
 msgstr "Оновлення пакетів..."
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1155
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1162
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
@@ -3060,7 +3062,7 @@ msgstr "%s: %s\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1450 lib/transaction.c:1160
+#: lib/rpminstall.c:1450 lib/transaction.c:1167
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
@@ -3524,71 +3526,71 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Підпис: НЕВІДОМИЙ (%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:888
+#: lib/transaction.c:895
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "виключення каталогу %s\n"
 
-#: lib/transaction.c:1013
+#: lib/transaction.c:1020
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1018
+#: lib/transaction.c:1025
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr ""
 
-#: lib/transaction.c:1152
+#: lib/transaction.c:1159
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1163
+#: lib/transaction.c:1170
 #, fuzzy, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1169
+#: lib/transaction.c:1176
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr ""
 
-#: lib/transaction.c:1173
+#: lib/transaction.c:1180
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "створюється каталог %s\n"
 
-#: lib/transaction.c:1194
+#: lib/transaction.c:1201
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1241
+#: lib/transaction.c:1248
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1286
+#: lib/transaction.c:1293
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "видаляється каталог %s\n"
 
-#: lib/transaction.c:1330
+#: lib/transaction.c:1337
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1360
+#: lib/transaction.c:1367
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1364
+#: lib/transaction.c:1371
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1368
+#: lib/transaction.c:1375
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1381
+#: lib/transaction.c:1388
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "очікувався пакет з вихідним кодом, але знайдено двійковий\n"
@@ -3600,103 +3602,103 @@ msgstr "очікувався пакет з вихідним кодом, але �
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1402
+#: lib/transaction.c:1409
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1404
+#: lib/transaction.c:1411
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1427
+#: lib/transaction.c:1434
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "жоден пакет не відповідає %s: %s\n"
 
-#: lib/transaction.c:1479
+#: lib/transaction.c:1486
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1482
+#: lib/transaction.c:1489
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "помилка читання заголовка пакету\n"
 
-#: lib/transaction.c:1493
+#: lib/transaction.c:1500
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/transaction.c:1505 lib/transaction.c:1641
+#: lib/transaction.c:1512 lib/transaction.c:1648
 #, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1506 lib/transaction.c:1642
+#: lib/transaction.c:1513 lib/transaction.c:1649
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1536
+#: lib/transaction.c:1543
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1537 lib/transaction.c:1592
+#: lib/transaction.c:1544 lib/transaction.c:1599
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1545
+#: lib/transaction.c:1552
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1557
+#: lib/transaction.c:1564
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1567
+#: lib/transaction.c:1574
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
 #. Add the header as a pure erase element, no repackaged package.
-#: lib/transaction.c:1577
+#: lib/transaction.c:1584
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1584
+#: lib/transaction.c:1591
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1591
+#: lib/transaction.c:1598
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1601
+#: lib/transaction.c:1608
 msgid "\tErase element(s) already added.\n"
 msgstr ""
 
-#: lib/transaction.c:1612
+#: lib/transaction.c:1619
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/transaction.c:1616
+#: lib/transaction.c:1623
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1627
+#: lib/transaction.c:1634
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1633
+#: lib/transaction.c:1640
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "помилка читання заголовка пакету\n"
 
-#: lib/transaction.c:1772
+#: lib/transaction.c:1779
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3708,12 +3710,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1826
+#: lib/transaction.c:1833
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "перевірка правильності %d елементів\n"
 
-#: lib/transaction.c:1912
+#: lib/transaction.c:1919
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3725,7 +3727,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1987
+#: lib/transaction.c:1994
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "обчислюються відбитки %d файлів\n"
@@ -3733,33 +3735,33 @@ msgstr "обчислюються відбитки %d файлів\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2068
+#: lib/transaction.c:2075
 msgid "computing file dispositions\n"
 msgstr "обчислюється розташування файлів\n"
 
-#: lib/transaction.c:2252
+#: lib/transaction.c:2259
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2522
+#: lib/transaction.c:2529
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2529
+#: lib/transaction.c:2536
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2573
+#: lib/transaction.c:2580
 msgid "running post-transaction scripts\n"
 msgstr ""
 
-#: lib/verify.c:331
+#: lib/verify.c:336
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "відсутній  %c %s"
 
-#: lib/verify.c:451
+#: lib/verify.c:456
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Незадовільні залежності для %s: "
@@ -4550,6 +4552,9 @@ msgstr "використовувати базу даних з КАТАЛОГУ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "don't verify MD5 digest of files"
+#~ msgstr "не перевіряти MD5 контрольну суму файлів"
 
 #~ msgid "(db package)"
 #~ msgstr "(db пакет)"
