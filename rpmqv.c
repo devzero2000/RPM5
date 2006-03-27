@@ -746,7 +746,7 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for erase"));
-ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	    ec += rpmRollback(ts, ia, NULL);
 	} else {
@@ -786,7 +786,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for install"));
-ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 /*@i@*/	    ec += rpmRollback(ts, ia, NULL);
 	} else {
@@ -825,7 +825,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 #ifdef IAM_RPMK
     case MODE_CHECKSIG:
     {	rpmVerifyFlags verifyFlags =
-		(VERIFY_MD5|VERIFY_DIGEST|VERIFY_SIGNATURE);
+		(VERIFY_FDIGEST|VERIFY_HDRCHK|VERIFY_DIGEST|VERIFY_SIGNATURE);
 
 	verifyFlags &= ~ka->qva_flags;
 	ka->qva_flags = (rpmQueryFlags) verifyFlags;
