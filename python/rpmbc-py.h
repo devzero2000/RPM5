@@ -7,16 +7,23 @@
  * \file python/rpmbc-py.h
  */
 
-/**
+__BEGIN_DECLS
+/** \name _rpm.bc */
+/*@{*/
+
+/** \ingroup py_c
  */
 typedef struct rpmbcObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
 } rpmbcObject;
 
-/**
+/** \ingroup py_c
  */
 /*@unchecked@*/
 extern PyTypeObject rpmbc_Type;
+
+/*@}*/
+__END_DECLS
 
 #endif

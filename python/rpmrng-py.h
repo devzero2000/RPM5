@@ -7,7 +7,11 @@
  * \file python/rpmrng-py.h
  */
 
-/**
+__BEGIN_DECLS
+/** \name Type: _rpm.rng */
+/*@{*/
+
+/** \ingroup py_c
  */
 typedef struct rngObject_s {
     PyObject_HEAD
@@ -16,10 +20,13 @@ typedef struct rngObject_s {
     mpbarrett b;
 } rngObject;
 
-/**
+/** \ingroup py_c
  */
 /*@unchecked@*/
 extern PyTypeObject rng_Type;
 #define is_rng(o)	((o)->ob_type == &rng_Type)
+
+/*@}*/
+__END_DECLS
 
 #endif

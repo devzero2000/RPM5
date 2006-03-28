@@ -7,6 +7,12 @@
 
 #include <fts.h>
 
+__BEGIN_DECLS
+/** \name Type: _rpm.fts */
+/*@{*/
+
+/** \ingroup py_c
+ */
 typedef struct rpmftsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
@@ -27,7 +33,12 @@ typedef struct rpmftsObject_s {
     int         active;
 } rpmftsObject;
 
+/** \ingroup py_c
+ */
 /*@unchecked@*/
 extern PyTypeObject rpmfts_Type;
+
+/*@}*/
+__END_DECLS
 
 #endif

@@ -99,7 +99,7 @@
  */
 
 /** \ingroup python
- * \name Class: rpm.db
+ * \name Class: Rpmdb
  */
 /*@{*/
 

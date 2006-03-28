@@ -7,6 +7,10 @@
  * \file python/rpmdb-py.h
  */
 
+__BEGIN_DECLS
+/** \name Type: _rpm.db */
+/*@{*/
+
 /** \ingroup py_c
  */
 typedef struct rpmdbObject_s rpmdbObject;
@@ -22,6 +26,8 @@ struct rpmdbObject_s {
     int *offsets;
 } ;
 
+/** \ingroup py_c
+ */
 /*@unchecked@*/
 extern PyTypeObject rpmdb_Type;
 
@@ -35,5 +41,8 @@ PyObject * rebuildDB (PyObject * self, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 #endif
+
+/*@}*/
+__END_DECLS
 
 #endif

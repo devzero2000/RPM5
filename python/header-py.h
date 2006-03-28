@@ -5,10 +5,16 @@
  * \file python/header-py.h
  */
 
+__BEGIN_DECLS
+/** \name Type: _rpm.hdr */
+/*@{*/
+
 /** \ingroup py_c
  */
 typedef struct hdrObject_s hdrObject;
 
+/** \ingroup py_c
+ */
 /*@unchecked@*/
 extern PyTypeObject hdr_Type;
 
@@ -45,5 +51,8 @@ PyObject * rhnLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
+
+/*@}*/
+__END_DECLS
 
 #endif

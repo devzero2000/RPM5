@@ -129,7 +129,7 @@
  */
 
 /** \ingroup python
- * \name Class: rpm.hdr
+ * \name Class: Rpmhdr
  */
 /*@{*/
 

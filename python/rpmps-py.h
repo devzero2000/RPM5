@@ -7,7 +7,11 @@
  * \file python/rpmps-py.h
  */
 
-/**
+__BEGIN_DECLS
+/** \name Type: _rpm.ps */
+/*@{*/
+
+/** \ingroup py_c
  */
 typedef struct rpmpsObject_s {
     PyObject_HEAD
@@ -18,21 +22,24 @@ typedef struct rpmpsObject_s {
     rpmps	ps;
 } rpmpsObject;
 
-/**
+/** \ingroup py_c
  */
 /*@unchecked@*/
 extern PyTypeObject rpmps_Type;
 
-/**
+/** \ingroup py_c
  */
 /*@null@*/
 rpmps psFromPs(rpmpsObject * ps)
 	/*@*/;
 
-/**
+/** \ingroup py_c
  */
 /*@null@*/
 rpmpsObject * rpmps_Wrap(rpmps ps)
 	/*@*/;
+
+/*@}*/
+__END_DECLS
 
 #endif

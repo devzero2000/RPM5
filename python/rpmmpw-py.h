@@ -7,7 +7,11 @@
  * \file python/rpmmpw-py.h
  */
 
-/**
+__BEGIN_DECLS
+/** \name Type: _rpm.mpw */
+/*@{*/
+
+/** \ingroup py_c
  */
 typedef struct mpwObject_s {
     PyObject_HEAD
@@ -15,7 +19,7 @@ typedef struct mpwObject_s {
     mpw data[1];
 } mpwObject;
 
-/**
+/** \ingroup py_c
  */
 /*@unchecked@*/
 extern PyTypeObject mpw_Type;
@@ -28,14 +32,17 @@ extern PyTypeObject mpw_Type;
 #define	MPW_SIZE(_a)	(size_t)((_a)->ob_size < 0 ? -(_a)->ob_size : (_a)->ob_size)
 #define	MPW_DATA(_a)	((_a)->data)
 
-/**
+/** \ingroup py_c
  */
 mpwObject * mpw_New(int ob_size)
 	/*@*/;
 
-/**
+/** \ingroup py_c
  */
 mpwObject * mpw_FromMPW(size_t size, mpw* data, int normalize)
 	/*@*/;
+
+/*@}*/
+__END_DECLS
 
 #endif

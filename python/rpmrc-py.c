@@ -23,7 +23,7 @@ static int _rc_debug = 0;
  */
 
 /** \ingroup python
- * \name Class: rpm.rc
+ * \name Class: Rpmrc
  */
 /*@{*/
 

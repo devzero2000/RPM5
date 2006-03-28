@@ -7,6 +7,12 @@
  * \file python/rpmts-py.h
  */
 
+__BEGIN_DECLS
+/** \name Type: _rpm.ts */
+/*@{*/
+
+/** \ingroup py_c
+ */
 typedef struct rpmtsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
@@ -19,6 +25,8 @@ typedef struct rpmtsObject_s {
     rpmprobFilterFlags ignoreSet;
 } rpmtsObject;
 
+/** \ingroup py_c
+ */
 /*@unchecked@*/
 extern PyTypeObject rpmts_Type;
 
@@ -28,8 +36,13 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
+/** \ingroup py_c
+ */
 rpmtsObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
+
+/*@}*/
+__END_DECLS
 
 #endif

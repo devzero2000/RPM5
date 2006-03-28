@@ -5,6 +5,10 @@
  * \file python/rpmmi-py.h
  */
 
+__BEGIN_DECLS
+/** \name Type: _rpm.mi */
+/*@{*/
+
 /** \ingroup py_c
  */
 typedef struct rpmmiObject_s rpmmiObject;
@@ -17,11 +21,16 @@ struct rpmmiObject_s {
     rpmdbMatchIterator mi;
 } ;
 
+/** \ingroup py_c
+ */
 /*@unchecked@*/
 extern PyTypeObject rpmmi_Type;
 
 /*@null@*/
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
 	/*@*/;
+
+/*@}*/
+__END_DECLS
 
 #endif
