@@ -1,7 +1,7 @@
 #ifndef H_RPMLIB
 #define	H_RPMLIB
 
-/** \ingroup rpmcli rpmrc rpmdep rpmtrans rpmdb lead signature header payload dbi
+/** \ingroup rpmcli rpmrc rpmts rpmte rpmds rpmfi rpmdb lead signature header payload dbi
  * \file lib/rpmlib.h
  *
  * In Memoriam: Steve Taylor <staylor@redhat.com> was here, now he's not.
@@ -64,7 +64,7 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 }
 #endif
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * The RPM Transaction Set.
  * Transaction sets are inherently unordered! RPM may reorder transaction
  * sets to reduce errors. In general, installs/upgrades are done before
@@ -76,30 +76,30 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
  */
 typedef struct Spec_s * Spec;
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * An added/available package retrieval key.
  */
 typedef /*@abstract@*/ void * alKey;
 #define	RPMAL_NOMATCH	((alKey)-1L)
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * An added/available package retrieval index.
  */
 /*@-mutrep@*/
 typedef /*@abstract@*/ int alNum;
 /*@=mutrep@*/
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts rpmds 
  * Dependency tag sets from a header, so that a header can be discarded early.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts rpmfi
  * File info tag sets from a header, so that a header can be discarded early.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts rpmte
  * An element of a transaction set, i.e. a TR_ADDED or TR_REMOVED package.
  */
 typedef /*@abstract@*/ struct rpmte_s * rpmte;
@@ -114,7 +114,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
  */
 typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 
-/** \ingroup rpmcli
+/** \ingroup rpmcli rpmgi
  * Generalized iterator.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmgi_s * rpmgi;
@@ -211,7 +211,7 @@ extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 #define	RPMDBI_ARGLIST		7	/* (rpmgi) Argument list. */
 #define	RPMDBI_FTSWALK		8	/* (rpmgi) File tree  walk. */
 
-/**
+/** \ingroup header
  * Tags identify data in package headers.
  * @note tags should not have value 0!
  */
@@ -914,7 +914,7 @@ typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
  */
 typedef /*@abstract@*/ struct fsm_s * FSM_t;
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * Package state machine data.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
@@ -993,7 +993,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	/*@modifies ts, fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * Bit(s) to control rpmtsRun() operation.
  */
 typedef enum rpmtransFlags_e {
@@ -1057,7 +1057,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERPOSTUN \
   )
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * Segmented string compare for version and/or release.
  *
  * @param a		1st string

@@ -1,7 +1,7 @@
 #ifndef H_RPMDS
 #define H_RPMDS
 
-/** \ingroup rpmdep rpmtrans
+/** \ingroup rpmds
  * \file lib/rpmds.h
  * Structure(s) used for dependency tag sets.
  */
@@ -23,7 +23,7 @@ extern int _rpmds_nopromote;
 /*@=exportlocal@*/
 
 #if defined(_RPMDS_INTERNAL)
-/**
+/** \ingroup rpmds
  * A package dependency set.
  */
 struct rpmds_s {
@@ -79,6 +79,8 @@ struct rpmPRCO_s {
 extern "C" {
 #endif
 
+/** \name RPMDS */
+/*@{*/
 /**
  * Unreference a dependency set instance.
  * @param ds		dependency set
@@ -618,6 +620,7 @@ int rpmdsPrintClosure(/*@null@*/ rpmds P, /*@null@*/ rpmds R,
 }
 /*@=mods@*/
 #endif
+/*@}*/
 
 #ifdef __cplusplus
 }

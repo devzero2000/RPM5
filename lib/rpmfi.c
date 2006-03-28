@@ -1,4 +1,4 @@
-/** \ingroup rpmdep
+/** \ingroup rpmfi
  * \file lib/rpmfi.c
  * Routines to handle file info tag sets.
  */

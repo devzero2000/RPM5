@@ -1,4 +1,4 @@
-/** \ingroup rpmdep
+/** \ingroup rpmds
  * \file lib/rpmds.c
  */
 #include "system.h"

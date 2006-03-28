@@ -1,6 +1,6 @@
 /*@-modfilesys@*/
-/** \ingroup rpmio
- * \file rpmio/rpmio.c
+/** \ingroup rpmgi
+ * \file lib/rpmgi.c
  */
 #include "system.h"
 
@@ -22,15 +22,23 @@
 /*@access rpmts @*/
 /*@access rpmps @*/
 
+/**
+ */
 /*@unchecked@*/
 int _rpmgi_debug = 0;
 
+/**
+ */
 /*@unchecked@*/
 rpmgiFlags giFlags = RPMGI_NONE;
 
+/**
+ */
 /*@unchecked@*/
 static int indent = 2;
 
+/**
+ */
 /*@unchecked@*/ /*@observer@*/
 static const char * ftsInfoStrings[] = {
     "UNKNOWN",
@@ -50,6 +58,8 @@ static const char * ftsInfoStrings[] = {
     "W",
 };
 
+/**
+ */
 /*@observer@*/
 static const char * ftsInfoStr(int fts_info)
 	/*@*/

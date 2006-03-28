@@ -421,11 +421,16 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/doc/manual/triggers \
                          @top_srcdir@/doc/manual/tsort \
                          @top_srcdir@/file/src/apprentice.c \
+                         @top_srcdir@/file/src/apptype.c \
                          @top_srcdir@/file/src/ascmagic.c \
                          @top_srcdir@/file/src/compress.c \
                          @top_srcdir@/file/src/file.c \
                          @top_srcdir@/file/src/file.h \
                          @top_srcdir@/file/src/fsmagic.c \
+                         @top_srcdir@/file/src/funcs.c \
+                         @top_srcdir@/file/src/is_tar.c \
+                         @top_srcdir@/file/src/magic.c \
+                         @top_srcdir@/file/src/magic.h \
                          @top_srcdir@/file/src/names.h \
                          @top_srcdir@/file/src/print.c \
                          @top_srcdir@/file/src/readelf.c \
@@ -480,6 +485,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/stringbuf.c \
                          @top_srcdir@/lib/stringbuf.h \
                          @top_srcdir@/lib/transaction.c \
+                         @top_srcdir@/lib/tar.c \
+                         @top_srcdir@/lib/tar.h \
                          @top_srcdir@/lib/verify.c \
 			 @top_srcdir@/lua/lapi.c \
 			 @top_srcdir@/lua/lapi.h \

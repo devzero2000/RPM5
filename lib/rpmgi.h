@@ -1,7 +1,7 @@
 #ifndef	H_RPMGI
 #define	H_RPMGI
 
-/** \ingroup rpmio
+/** \ingroup rpmgi
  * \file lib/rpmgi.h
  */
 
@@ -30,11 +30,13 @@ typedef enum rpmgiFlags_e {
     RPMGI_NOHEADER	= (1 << 4)
 } rpmgiFlags;
 
+/**
+ */
 /*@unchecked@*/
 extern rpmgiFlags giFlags;
 
 #if defined(_RPMGI_INTERNAL)
-/** \ingroup rpmio
+/** \ingroup rpmgi
  */
 struct rpmgi_s {
 /*@refcounted@*/
@@ -78,6 +80,9 @@ struct rpmgi_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \name RPMGI */
+/*@{*/
 
 /**
  * Unreference a generalized iterator instance.
@@ -189,6 +194,8 @@ rpmRC rpmgiSetArgs(/*@null@*/ rpmgi gi, /*@null@*/ ARGV_t argv,
 		int ftsOpts, rpmgiFlags flags)
 	/*@globals internalState @*/
 	/*@modifies gi, internalState @*/;
+
+/*@}*/
 
 #ifdef __cplusplus
 }

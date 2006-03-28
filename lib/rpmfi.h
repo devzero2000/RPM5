@@ -1,7 +1,7 @@
 #ifndef H_RPMFI
 #define H_RPMFI
 
-/** \ingroup rpmdep rpmtrans
+/** \ingroup rpmfi
  * \file lib/rpmfi.h
  * Structure(s) used for file info tag sets.
  */
@@ -25,7 +25,7 @@ struct sharedFileInfo_s {
     int isRemoved;
 };
 
-/**
+/** \ingroup rpmfi
  * A package filename set.
  */
 struct rpmfi_s {
@@ -177,6 +177,9 @@ struct rpmfi_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \name RPMFI */
+/*@{*/
 
 /**
  * Unreference a file info set instance.
@@ -647,6 +650,8 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 const char * rpmfiTypeString(rpmfi fi)
 	/*@*/;
 /*@=redef@*/
+
+/*@}*/
 
 #ifdef __cplusplus
 }
