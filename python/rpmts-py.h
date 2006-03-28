@@ -7,7 +7,6 @@
  * \file python/rpmts-py.h
  */
 
-__BEGIN_DECLS
 /** \name Type: _rpm.ts */
 /*@{*/
 
@@ -36,13 +35,14 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
+__BEGIN_DECLS
 /** \ingroup py_c
  */
 rpmtsObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
-/*@}*/
 __END_DECLS
+/*@}*/
 
 #endif

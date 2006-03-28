@@ -7,7 +7,6 @@
 
 #include <fts.h>
 
-__BEGIN_DECLS
 /** \name Type: _rpm.fts */
 /*@{*/
 
@@ -39,6 +38,5 @@ typedef struct rpmftsObject_s {
 extern PyTypeObject rpmfts_Type;
 
 /*@}*/
-__END_DECLS
 
 #endif

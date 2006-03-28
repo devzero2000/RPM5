@@ -7,7 +7,6 @@
  * \file python/spec-py.h
  */
 
-__BEGIN_DECLS
 /** \name Type: _rpm.spec */
 /*@{*/
 
@@ -25,6 +24,7 @@ typedef struct specObject_s {
 /*@unchecked@*/
 extern PyTypeObject spec_Type;
 
+__BEGIN_DECLS
 /** \ingroup _rpm.spec
  */
 /*@null@*/
@@ -37,7 +37,7 @@ Spec specFromSpec(specObject * spec)
 specObject * spec_Wrap(Spec spec)
 /*@*/;
 
-/*@}*/
 __END_DECLS
+/*@}*/
 
 #endif /* H_SPEC_PY */

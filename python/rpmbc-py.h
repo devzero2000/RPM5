@@ -7,7 +7,6 @@
  * \file python/rpmbc-py.h
  */
 
-__BEGIN_DECLS
 /** \name _rpm.bc */
 /*@{*/
 
@@ -24,6 +23,5 @@ typedef struct rpmbcObject_s {
 extern PyTypeObject rpmbc_Type;
 
 /*@}*/
-__END_DECLS
 
 #endif

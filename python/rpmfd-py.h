@@ -5,7 +5,6 @@
  * \file python/rpmfd-py.h
  */
 
-__BEGIN_DECLS
 /** \name Type: _rpm.fd */
 /*@{*/
 
@@ -23,13 +22,14 @@ typedef struct rpmfdObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmfd_Type;
 
+__BEGIN_DECLS
 /** \ingroup py_c
  */
 /*@null@*/
 rpmfdObject * rpmfd_Wrap(FD_t fd)
 	/*@*/;
 
-/*@}*/
 __END_DECLS
+/*@}*/
 
 #endif

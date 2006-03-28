@@ -7,7 +7,6 @@
  * \file python/rpmte-py.h
  */
 
-__BEGIN_DECLS
 /** \name Type: _rpm.te */
 /*@{*/
 
@@ -24,13 +23,14 @@ typedef struct rpmteObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmte_Type;
 
+__BEGIN_DECLS
 /** \ingroup py_c
  */
 /*@null@*/
 rpmteObject * rpmte_Wrap(rpmte te)
 	/*@*/;
 
-/*@}*/
 __END_DECLS
+/*@}*/
 
 #endif

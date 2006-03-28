@@ -5,7 +5,6 @@
  * \file python/rpmrc-py.h
  */
 
-__BEGIN_DECLS
 /** \name Type: _rpm.rc */
 /*@{*/
 
@@ -27,6 +26,7 @@ struct rpmrcObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmrc_Type;
 
+__BEGIN_DECLS
 /** \ingroup py_c
  */
 /*@null@*/
@@ -49,7 +49,7 @@ PyObject * rpmrc_Create(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 #endif
 
-/*@}*/
 __END_DECLS
+/*@}*/
 
 #endif

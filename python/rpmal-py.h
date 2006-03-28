@@ -7,7 +7,6 @@
  * \file python/rpmal-py.h
  */
 
-__BEGIN_DECLS
 /** \name Type: _rpm.al */
 /*@{*/
 
@@ -24,14 +23,14 @@ typedef struct rpmalObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmal_Type;
 
-
+__BEGIN_DECLS
 /** \ingroup py_c
  */
 /*@null@*/
 rpmalObject * rpmal_Wrap(rpmal al)
 	/*@*/;
 
-/*@}*/
 __END_DECLS
+/*@}*/
 
 #endif
