@@ -171,6 +171,10 @@ rpmfts_debug(__FUNCTION__, s);
  * \brief A python rpm.fts object represents an rpm fts(3) handle.
  */
 
+/** \ingroup python
+ * \name Class: Rpmfts
+ */
+/*@{*/
 /*@null@*/
 static PyObject *
 rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args, PyObject * kwds)
@@ -283,6 +287,7 @@ rpmfts_debug(__FUNCTION__, s);
 
     return Py_BuildValue("i", rc);
 }
+/*@}*/
 
 /** \ingroup py_c
  */

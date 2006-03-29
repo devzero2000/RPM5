@@ -56,6 +56,11 @@
  * @param tag	'Basenames'
  */
 
+/** \ingroup python
+ * \name Class: Rpmte
+ */
+/*@{*/
+
 /*@null@*/
 static PyObject *
 rpmte_Debug(/*@unused@*/ rpmteObject * s, PyObject * args, PyObject * kwds)
@@ -318,6 +323,8 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
     }
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
 }
+
+/*@}*/
 
 /** \ingroup py_c
  */

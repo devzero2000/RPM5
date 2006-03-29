@@ -168,28 +168,141 @@ struct rpmtsCallbackType_s {
     PyThreadState *_save;
 };
 
-/** \ingroup py_c
+/**
  */
-/*@null@*/
-static PyObject *
-rpmts_Debug(/*@unused@*/ rpmtsObject * s, PyObject * args, PyObject * kwds)
-        /*@globals _Py_NoneStruct @*/
-        /*@modifies _Py_NoneStruct @*/
+static int
+rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
+	/*@*/
 {
-    char * kwlist[] = {"debugLevel", NULL};
+    struct rpmtsCallbackType_s * cbInfo = (struct rpmtsCallbackType_s *) data;
+    PyObject * args, * result;
+    int res = 1;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Debug", kwlist,
-    	    &_rpmts_debug))
-	return NULL;
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmdsDNEVR(ds));
 
-if (_rpmts_debug < 0)
-fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
+    if (cbInfo->tso == NULL) return res;
+    if (cbInfo->pythonError) return res;
+    if (cbInfo->cb == Py_None) return res;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    PyEval_RestoreThread(cbInfo->_save);
+
+    cbInfo->dso = rpmds_Wrap(ds);	/* XXX perhaps persistent? */
+    args = Py_BuildValue("(OO)", cbInfo->tso, cbInfo->dso);
+    result = PyEval_CallObject(cbInfo->cb, args);
+    Py_DECREF(cbInfo->dso);
+    cbInfo->dso = NULL;
+    Py_DECREF(args);
+
+    if (!result) {
+	cbInfo->pythonError = 1;
+    } else {
+	if (PyInt_Check(result))
+	    res = PyInt_AsLong(result);
+	Py_DECREF(result);
+    }
+
+    cbInfo->_save = PyEval_SaveThread();
+
+    return res;
 }
 
-/** \ingroup py_c
+/**
+ */
+/*@null@*/
+static void *
+rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
+		         const unsigned long long amount, const unsigned long long total,
+	                 const void * pkgKey, rpmCallbackData data)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
+{
+/*@-castexpose@*/
+    Header h = (Header) hd;
+/*@=castexpose@*/
+    struct rpmtsCallbackType_s * cbInfo = data;
+    PyObject * pkgObj = (PyObject *) pkgKey;
+    PyObject * oh = NULL;
+    const char * origin = NULL;
+    PyObject * args, * result;
+    unsigned long oamount = amount;
+    unsigned long ototal = total;
+    static FD_t fd;
+
+    if (cbInfo->pythonError) return NULL;
+    if (cbInfo->cb == Py_None) return NULL;
+
+    /* Synthesize a python object for callback (if necessary). */
+    if (pkgObj == NULL) {
+	if (h) {
+	    const char * n = NULL;
+	    (void) headerNVR(h, &n, NULL, NULL);
+	    pkgObj = Py_BuildValue("s", n);
+	} else {
+	    pkgObj = Py_None;
+	    Py_INCREF(pkgObj);
+	}
+    } else {
+	Py_INCREF(pkgObj);
+	/* XXX yum has (h, rpmloc) tuple as pkgKey. Extract the path. */
+	if (!(PyTuple_Check(pkgObj) && PyArg_ParseTuple(pkgObj, "|Os", &oh, &origin)))
+	    origin = NULL;
+	/* XXX clean up the path, yum paths start "//..." */
+	if (origin && origin[0] == '/' && origin[1] == '/')
+	    origin++;
+    }
+
+    PyEval_RestoreThread(cbInfo->_save);
+
+    args = Py_BuildValue("(illOO)", what, oamount, ototal, pkgObj, cbInfo->data);
+    result = PyEval_CallObject(cbInfo->cb, args);
+    Py_DECREF(args);
+    Py_DECREF(pkgObj);
+
+    if (!result) {
+	cbInfo->pythonError = 1;
+	cbInfo->_save = PyEval_SaveThread();
+	return NULL;
+    }
+
+    if (what == RPMCALLBACK_INST_OPEN_FILE) {
+	int fdno;
+
+        if (!PyArg_Parse(result, "i", &fdno)) {
+	    cbInfo->pythonError = 1;
+	    cbInfo->_save = PyEval_SaveThread();
+	    return NULL;
+	}
+	Py_DECREF(result);
+	cbInfo->_save = PyEval_SaveThread();
+
+	fd = fdDup(fdno);
+if (_rpmts_debug)
+fprintf(stderr, "\t%p = fdDup(%d)\n", fd, fdno);
+
+	fcntl(Fileno(fd), F_SETFD, FD_CLOEXEC);
+
+	if (origin != NULL)
+	    (void) fdSetOpen(fd, origin, 0, 0);
+
+	return fd;
+    } else
+    if (what == RPMCALLBACK_INST_CLOSE_FILE) {
+if (_rpmts_debug)
+fprintf(stderr, "\tFclose(%p)\n", fd);
+	Fclose (fd);
+    } else {
+if (_rpmts_debug)
+fprintf(stderr, "\t%lu:%lu key %p\n", oamount, ototal, pkgKey);
+    }
+
+    Py_DECREF(result);
+    cbInfo->_save = PyEval_SaveThread();
+
+    return NULL;
+}
+
+/**
  * Add package to universe of possible packages to install in transaction set.
  * @param ts		transaction set
  * @param h		header
@@ -215,7 +328,83 @@ fprintf(stderr, "\tAddAvailable(%p) list %p\n", ts, ts->availablePackages);
 
 }
 
-/** \ingroup py_c
+#if Py_TPFLAGS_HAVE_ITER
+/**
+ */
+static PyObject *
+rpmts_iter(rpmtsObject * s)
+	/*@*/
+{
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_iter(%p) ts %p\n", s, s->ts);
+
+    Py_INCREF(s);
+    return (PyObject *)s;
+}
+#endif
+
+/**
+ * @todo Add TR_ADDED filter to iterator.
+ */
+/*@null@*/
+static PyObject *
+rpmts_iternext(rpmtsObject * s)
+	/*@modifies s @*/
+{
+    PyObject * result = NULL;
+    rpmte te;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s->tsiFilter);
+
+    /* Reset iterator on 1st entry. */
+    if (s->tsi == NULL) {
+	s->tsi = rpmtsiInit(s->ts);
+	if (s->tsi == NULL)
+	    return NULL;
+	s->tsiFilter = 0;
+    }
+
+    te = rpmtsiNext(s->tsi, s->tsiFilter);
+/*@-branchstate@*/
+    if (te != NULL) {
+	result = (PyObject *) rpmte_Wrap(te);
+    } else {
+	s->tsi = rpmtsiFree(s->tsi);
+	s->tsiFilter = 0;
+    }
+/*@=branchstate@*/
+
+    return result;
+}
+
+/** \ingroup python
+ * \name Class: Rpmts
+ */
+/*@{*/
+
+/**
+ */
+/*@null@*/
+static PyObject *
+rpmts_Debug(/*@unused@*/ rpmtsObject * s, PyObject * args, PyObject * kwds)
+        /*@globals _Py_NoneStruct @*/
+        /*@modifies _Py_NoneStruct @*/
+{
+    char * kwlist[] = {"debugLevel", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Debug", kwlist,
+    	    &_rpmts_debug))
+	return NULL;
+
+if (_rpmts_debug < 0)
+fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/**
  */
 /*@null@*/
 static PyObject *
@@ -262,7 +451,7 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  * @todo Permit finer control (i.e. not just --allmatches) of deleted elments.
  */
 /*@null@*/
@@ -325,46 +514,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
     return Py_None;
 }
 
-/** \ingroup py_c
- */
-static int
-rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
-	/*@*/
-{
-    struct rpmtsCallbackType_s * cbInfo = (struct rpmtsCallbackType_s *) data;
-    PyObject * args, * result;
-    int res = 1;
-
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmdsDNEVR(ds));
-
-    if (cbInfo->tso == NULL) return res;
-    if (cbInfo->pythonError) return res;
-    if (cbInfo->cb == Py_None) return res;
-
-    PyEval_RestoreThread(cbInfo->_save);
-
-    cbInfo->dso = rpmds_Wrap(ds);	/* XXX perhaps persistent? */
-    args = Py_BuildValue("(OO)", cbInfo->tso, cbInfo->dso);
-    result = PyEval_CallObject(cbInfo->cb, args);
-    Py_DECREF(cbInfo->dso);
-    cbInfo->dso = NULL;
-    Py_DECREF(args);
-
-    if (!result) {
-	cbInfo->pythonError = 1;
-    } else {
-	if (PyInt_Check(result))
-	    res = PyInt_AsLong(result);
-	Py_DECREF(result);
-    }
-
-    cbInfo->_save = PyEval_SaveThread();
-
-    return res;
-}
-
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -487,7 +637,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -507,7 +657,7 @@ fprintf(stderr, "*** rpmts_Order(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -524,7 +674,7 @@ fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -574,7 +724,7 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
     return result;
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -627,7 +777,7 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
     return result;
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -666,7 +816,7 @@ fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -684,7 +834,7 @@ fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rpmtsOpenDB(s->ts, s->ts->dbmode));
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -702,7 +852,7 @@ fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -722,7 +872,7 @@ fprintf(stderr, "*** rpmts_InitDB(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -742,7 +892,7 @@ fprintf(stderr, "*** rpmts_RebuildDB(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -762,7 +912,7 @@ fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -815,7 +965,7 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
     return result;
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -874,7 +1024,7 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
     return result;
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -897,7 +1047,7 @@ fprintf(stderr, "*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rpmtsSetVSFlags(s->ts, vsflags));
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -919,7 +1069,7 @@ fprintf(stderr, "*** rpmts_SetColor(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rpmtsSetColor(s->ts, tscolor));
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -955,7 +1105,7 @@ fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static PyObject *
@@ -992,102 +1142,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c
- */
-/*@null@*/
-static void *
-rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
-		         const unsigned long long amount, const unsigned long long total,
-	                 const void * pkgKey, rpmCallbackData data)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
-{
-/*@-castexpose@*/
-    Header h = (Header) hd;
-/*@=castexpose@*/
-    struct rpmtsCallbackType_s * cbInfo = data;
-    PyObject * pkgObj = (PyObject *) pkgKey;
-    PyObject * oh = NULL;
-    const char * origin = NULL;
-    PyObject * args, * result;
-    unsigned long oamount = amount;
-    unsigned long ototal = total;
-    static FD_t fd;
-
-    if (cbInfo->pythonError) return NULL;
-    if (cbInfo->cb == Py_None) return NULL;
-
-    /* Synthesize a python object for callback (if necessary). */
-    if (pkgObj == NULL) {
-	if (h) {
-	    const char * n = NULL;
-	    (void) headerNVR(h, &n, NULL, NULL);
-	    pkgObj = Py_BuildValue("s", n);
-	} else {
-	    pkgObj = Py_None;
-	    Py_INCREF(pkgObj);
-	}
-    } else {
-	Py_INCREF(pkgObj);
-	/* XXX yum has (h, rpmloc) tuple as pkgKey. Extract the path. */
-	if (!(PyTuple_Check(pkgObj) && PyArg_ParseTuple(pkgObj, "|Os", &oh, &origin)))
-	    origin = NULL;
-	/* XXX clean up the path, yum paths start "//..." */
-	if (origin && origin[0] == '/' && origin[1] == '/')
-	    origin++;
-    }
-
-    PyEval_RestoreThread(cbInfo->_save);
-
-    args = Py_BuildValue("(illOO)", what, oamount, ototal, pkgObj, cbInfo->data);
-    result = PyEval_CallObject(cbInfo->cb, args);
-    Py_DECREF(args);
-    Py_DECREF(pkgObj);
-
-    if (!result) {
-	cbInfo->pythonError = 1;
-	cbInfo->_save = PyEval_SaveThread();
-	return NULL;
-    }
-
-    if (what == RPMCALLBACK_INST_OPEN_FILE) {
-	int fdno;
-
-        if (!PyArg_Parse(result, "i", &fdno)) {
-	    cbInfo->pythonError = 1;
-	    cbInfo->_save = PyEval_SaveThread();
-	    return NULL;
-	}
-	Py_DECREF(result);
-	cbInfo->_save = PyEval_SaveThread();
-
-	fd = fdDup(fdno);
-if (_rpmts_debug)
-fprintf(stderr, "\t%p = fdDup(%d)\n", fd, fdno);
-
-	fcntl(Fileno(fd), F_SETFD, FD_CLOEXEC);
-
-	if (origin != NULL)
-	    (void) fdSetOpen(fd, origin, 0, 0);
-
-	return fd;
-    } else
-    if (what == RPMCALLBACK_INST_CLOSE_FILE) {
-if (_rpmts_debug)
-fprintf(stderr, "\tFclose(%p)\n", fd);
-	Fclose (fd);
-    } else {
-if (_rpmts_debug)
-fprintf(stderr, "\t%lu:%lu key %p\n", oamount, ototal, pkgKey);
-    }
-
-    Py_DECREF(result);
-    cbInfo->_save = PyEval_SaveThread();
-
-    return NULL;
-}
-
-/** \ingroup py_c
+/**
  */
 static PyObject *
 rpmts_SetFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
@@ -1132,7 +1187,7 @@ fprintf(stderr, "*** rpmts_SetProbFilter(%p) ts %p ignoreSet %x\n", s, s->ts, ig
     return Py_BuildValue("i", oignoreSet);
 }
 
-/** \ingroup py_c
+/**
  */
 /*@null@*/
 static rpmpsObject *
@@ -1146,7 +1201,7 @@ fprintf(stderr, "*** rpmts_Problems(%p) ts %p\n", s, s->ts);
     return rpmps_Wrap( rpmtsProblems(s->ts) );
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject *
 rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
@@ -1229,54 +1284,6 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     ps = rpmpsFree(ps);
 
     return list;
-}
-
-#if Py_TPFLAGS_HAVE_ITER
-static PyObject *
-rpmts_iter(rpmtsObject * s)
-	/*@*/
-{
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_iter(%p) ts %p\n", s, s->ts);
-
-    Py_INCREF(s);
-    return (PyObject *)s;
-}
-#endif
-
-/**
- * @todo Add TR_ADDED filter to iterator.
- */
-/*@null@*/
-static PyObject *
-rpmts_iternext(rpmtsObject * s)
-	/*@modifies s @*/
-{
-    PyObject * result = NULL;
-    rpmte te;
-
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s->tsiFilter);
-
-    /* Reset iterator on 1st entry. */
-    if (s->tsi == NULL) {
-	s->tsi = rpmtsiInit(s->ts);
-	if (s->tsi == NULL)
-	    return NULL;
-	s->tsiFilter = 0;
-    }
-
-    te = rpmtsiNext(s->tsi, s->tsiFilter);
-/*@-branchstate@*/
-    if (te != NULL) {
-	result = (PyObject *) rpmte_Wrap(te);
-    } else {
-	s->tsi = rpmtsiFree(s->tsi);
-	s->tsiFilter = 0;
-    }
-/*@=branchstate@*/
-
-    return result;
 }
 
 /**
@@ -1390,6 +1397,8 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 
     return rpmmi_Wrap( rpmtsInitIterator(s->ts, tag, key, len) );
 }
+
+/*@}*/
 
 /** \ingroup py_c
  */

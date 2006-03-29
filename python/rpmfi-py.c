@@ -13,6 +13,144 @@
 
 /*@access rpmfi @*/
 
+#if Py_TPFLAGS_HAVE_ITER
+static PyObject *
+rpmfi_iter(rpmfiObject * s)
+	/*@*/
+{
+    Py_INCREF(s);
+    return (PyObject *)s;
+}
+#endif
+
+/*@null@*/
+static PyObject *
+rpmfi_iternext(rpmfiObject * s)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    PyObject * result = NULL;
+
+    /* Reset loop indices on 1st entry. */
+    if (!s->active) {
+	s->fi = rpmfiInit(s->fi, 0);
+	s->active = 1;
+    }
+
+    /* If more to do, return the file tuple. */
+    if (rpmfiNext(s->fi) >= 0) {
+	const char * FN = rpmfiFN(s->fi);
+	int FSize = rpmfiFSize(s->fi);
+	int FMode = rpmfiFMode(s->fi);
+	int FMtime = rpmfiFMtime(s->fi);
+	int FFlags = rpmfiFFlags(s->fi);
+	int FRdev = rpmfiFRdev(s->fi);
+	int FInode = rpmfiFInode(s->fi);
+	int FNlink = rpmfiFNlink(s->fi);
+	int FState = rpmfiFState(s->fi);
+	int VFlags = rpmfiVFlags(s->fi);
+	const char * FUser = rpmfiFUser(s->fi);
+	const char * FGroup = rpmfiFGroup(s->fi);
+/*@-shadow@*/
+	int dalgo = 0;
+	size_t dlen = 0;
+	const unsigned char * digest = rpmfiDigest(s->fi, &dalgo, &dlen);
+	const unsigned char * s = digest;
+/*@=shadow@*/
+	const char * fdigest;
+	char * t;
+	static const char hex[] = "0123456789abcdef";
+	int gotMD5, i;
+
+	fdigest = t = memset(alloca(dlen), 0, dlen);
+	gotMD5 = 0;
+	if (s)
+	for (i = 0; i < 16; i++) {
+	    gotMD5 |= *s;
+	    *t++ = hex[ (*s >> 4) & 0xf ];
+	    *t++ = hex[ (*s++   ) & 0xf ];
+	}
+	*t = '\0';
+
+	result = PyTuple_New(13);
+	if (FN == NULL) {
+	    Py_INCREF(Py_None);
+	    PyTuple_SET_ITEM(result, 0, Py_None);
+	} else
+	    PyTuple_SET_ITEM(result,  0, Py_BuildValue("s", FN));
+	PyTuple_SET_ITEM(result,  1, PyInt_FromLong(FSize));
+	PyTuple_SET_ITEM(result,  2, PyInt_FromLong(FMode));
+	PyTuple_SET_ITEM(result,  3, PyInt_FromLong(FMtime));
+	PyTuple_SET_ITEM(result,  4, PyInt_FromLong(FFlags));
+	PyTuple_SET_ITEM(result,  5, PyInt_FromLong(FRdev));
+	PyTuple_SET_ITEM(result,  6, PyInt_FromLong(FInode));
+	PyTuple_SET_ITEM(result,  7, PyInt_FromLong(FNlink));
+	PyTuple_SET_ITEM(result,  8, PyInt_FromLong(FState));
+	PyTuple_SET_ITEM(result,  9, PyInt_FromLong(VFlags));
+	if (FUser == NULL) {
+	    Py_INCREF(Py_None);
+	    PyTuple_SET_ITEM(result, 10, Py_None);
+	} else
+	    PyTuple_SET_ITEM(result, 10, Py_BuildValue("s", FUser));
+	if (FGroup == NULL) {
+	    Py_INCREF(Py_None);
+	    PyTuple_SET_ITEM(result, 11, Py_None);
+	} else
+	    PyTuple_SET_ITEM(result, 11, Py_BuildValue("s", FGroup));
+	if (!gotMD5) {
+	    Py_INCREF(Py_None);
+	    PyTuple_SET_ITEM(result, 12, Py_None);
+	} else
+	    PyTuple_SET_ITEM(result, 12, Py_BuildValue("s", fdigest));
+
+    } else
+	s->active = 0;
+
+    return result;
+}
+
+/** \ingroup python
+ * \name Class: Rpmfi
+ */
+/*@{*/
+
+static PyObject *
+rpmfi_Next(rpmfiObject * s)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    PyObject * result = NULL;
+
+    result = rpmfi_iternext(s);
+
+    if (result == NULL) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+
+    return result;
+}
+
+#ifdef	NOTYET
+/*@null@*/
+static PyObject *
+rpmfi_NextD(rpmfiObject * s)
+	/*@*/
+{
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+/*@null@*/
+static PyObject *
+rpmfi_InitD(rpmfiObject * s)
+	/*@*/
+{
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+#endif
+
 /*@null@*/
 static PyObject *
 rpmfi_Debug(/*@unused@*/ rpmfiObject * s, PyObject * args, PyObject * kwds)
@@ -207,138 +345,7 @@ rpmfi_FClass(rpmfiObject * s)
     return Py_BuildValue("s", xstrdup(FClass));
 }
 
-#if Py_TPFLAGS_HAVE_ITER
-static PyObject *
-rpmfi_iter(rpmfiObject * s)
-	/*@*/
-{
-    Py_INCREF(s);
-    return (PyObject *)s;
-}
-#endif
-
-/*@null@*/
-static PyObject *
-rpmfi_iternext(rpmfiObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
-{
-    PyObject * result = NULL;
-
-    /* Reset loop indices on 1st entry. */
-    if (!s->active) {
-	s->fi = rpmfiInit(s->fi, 0);
-	s->active = 1;
-    }
-
-    /* If more to do, return the file tuple. */
-    if (rpmfiNext(s->fi) >= 0) {
-	const char * FN = rpmfiFN(s->fi);
-	int FSize = rpmfiFSize(s->fi);
-	int FMode = rpmfiFMode(s->fi);
-	int FMtime = rpmfiFMtime(s->fi);
-	int FFlags = rpmfiFFlags(s->fi);
-	int FRdev = rpmfiFRdev(s->fi);
-	int FInode = rpmfiFInode(s->fi);
-	int FNlink = rpmfiFNlink(s->fi);
-	int FState = rpmfiFState(s->fi);
-	int VFlags = rpmfiVFlags(s->fi);
-	const char * FUser = rpmfiFUser(s->fi);
-	const char * FGroup = rpmfiFGroup(s->fi);
-/*@-shadow@*/
-	int dalgo = 0;
-	size_t dlen = 0;
-	const unsigned char * digest = rpmfiDigest(s->fi, &dalgo, &dlen);
-	const unsigned char * s = digest;
-/*@=shadow@*/
-	const char * fdigest;
-	char * t;
-	static const char hex[] = "0123456789abcdef";
-	int gotMD5, i;
-
-	fdigest = t = memset(alloca(dlen), 0, dlen);
-	gotMD5 = 0;
-	if (s)
-	for (i = 0; i < 16; i++) {
-	    gotMD5 |= *s;
-	    *t++ = hex[ (*s >> 4) & 0xf ];
-	    *t++ = hex[ (*s++   ) & 0xf ];
-	}
-	*t = '\0';
-
-	result = PyTuple_New(13);
-	if (FN == NULL) {
-	    Py_INCREF(Py_None);
-	    PyTuple_SET_ITEM(result, 0, Py_None);
-	} else
-	    PyTuple_SET_ITEM(result,  0, Py_BuildValue("s", FN));
-	PyTuple_SET_ITEM(result,  1, PyInt_FromLong(FSize));
-	PyTuple_SET_ITEM(result,  2, PyInt_FromLong(FMode));
-	PyTuple_SET_ITEM(result,  3, PyInt_FromLong(FMtime));
-	PyTuple_SET_ITEM(result,  4, PyInt_FromLong(FFlags));
-	PyTuple_SET_ITEM(result,  5, PyInt_FromLong(FRdev));
-	PyTuple_SET_ITEM(result,  6, PyInt_FromLong(FInode));
-	PyTuple_SET_ITEM(result,  7, PyInt_FromLong(FNlink));
-	PyTuple_SET_ITEM(result,  8, PyInt_FromLong(FState));
-	PyTuple_SET_ITEM(result,  9, PyInt_FromLong(VFlags));
-	if (FUser == NULL) {
-	    Py_INCREF(Py_None);
-	    PyTuple_SET_ITEM(result, 10, Py_None);
-	} else
-	    PyTuple_SET_ITEM(result, 10, Py_BuildValue("s", FUser));
-	if (FGroup == NULL) {
-	    Py_INCREF(Py_None);
-	    PyTuple_SET_ITEM(result, 11, Py_None);
-	} else
-	    PyTuple_SET_ITEM(result, 11, Py_BuildValue("s", FGroup));
-	if (!gotMD5) {
-	    Py_INCREF(Py_None);
-	    PyTuple_SET_ITEM(result, 12, Py_None);
-	} else
-	    PyTuple_SET_ITEM(result, 12, Py_BuildValue("s", fdigest));
-
-    } else
-	s->active = 0;
-
-    return result;
-}
-
-static PyObject *
-rpmfi_Next(rpmfiObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
-{
-    PyObject * result = NULL;
-
-    result = rpmfi_iternext(s);
-
-    if (result == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
-    }
-
-    return result;
-}
-
-#ifdef	NOTYET
-/*@null@*/
-static PyObject *
-rpmfi_NextD(rpmfiObject * s)
-	/*@*/
-{
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-
-/*@null@*/
-static PyObject *
-rpmfi_InitD(rpmfiObject * s)
-	/*@*/
-{
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-#endif
+/*@}*/
 
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/

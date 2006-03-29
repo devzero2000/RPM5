@@ -62,6 +62,8 @@ rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
     return Py_None;
 }
 
+/*@}*/
+
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
 /**
  */
@@ -411,5 +413,3 @@ PyObject * rpmrc_Create(/*@unused@*/ PyObject * self, PyObject *args, PyObject *
     return rpmrc_new(&rpmrc_Type, args, kwds);
 }
 #endif
-
-/*@}*/

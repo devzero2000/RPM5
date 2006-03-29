@@ -72,7 +72,7 @@
 
 /** \ingroup python
  * \class Rpmhdr
- * \brief A python header object represents an RPM package header.
+ * \brief A python rpm.hdr object represents an RPM package header.
  *
  * All RPM packages have headers that provide metadata for the package.
  * Header objects can be returned by database queries or loaded from a
@@ -128,11 +128,6 @@
  * will fail.
  */
 
-/** \ingroup python
- * \name Class: Rpmhdr
- */
-/*@{*/
-
 /** \ingroup py_c
  */
 struct hdrObject_s {
@@ -148,6 +143,8 @@ struct hdrObject_s {
     unsigned short * modes;
 } ;
 
+/**
+ */
 /*@unused@*/ static inline Header headerAllocated(Header h)
 	/*@modifies h @*/
 {
@@ -155,7 +152,38 @@ struct hdrObject_s {
     return 0;
 }
 
-/** \ingroup py_c
+/* make a header with _all_ the tags we need */
+/**
+ */
+static void mungeFilelist(Header h)
+	/*@*/
+{
+    const char ** fileNames = NULL;
+    int count = 0;
+
+    if (!headerIsEntry (h, RPMTAG_BASENAMES)
+	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
+	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
+	compressFilelist(h);
+
+    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
+
+    if (fileNames == NULL || count <= 0)
+	return;
+
+    /* XXX Legacy tag needs to go away. */
+    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+			fileNames, count);
+
+    fileNames = _free(fileNames);
+}
+
+/** \ingroup python
+ * \name Class: Rpmhdr
+ */
+/*@{*/
+
+/**
  */
 static PyObject * hdrKeyList(hdrObject * s)
 	/*@*/
@@ -190,7 +218,7 @@ static PyObject * hdrKeyList(hdrObject * s)
     return list;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 	/*@*/
@@ -225,7 +253,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     return rc;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrExpandFilelist(hdrObject * s)
 	/*@*/
@@ -236,7 +264,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s)
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrCompressFilelist(hdrObject * s)
 	/*@*/
@@ -245,32 +273,6 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
 
     Py_INCREF(Py_None);
     return Py_None;
-}
-
-/* make a header with _all_ the tags we need */
-/** \ingroup py_c
- */
-static void mungeFilelist(Header h)
-	/*@*/
-{
-    const char ** fileNames = NULL;
-    int count = 0;
-
-    if (!headerIsEntry (h, RPMTAG_BASENAMES)
-	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
-	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
-	compressFilelist(h);
-
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
-
-    if (fileNames == NULL || count <= 0)
-	return;
-
-    /* XXX Legacy tag needs to go away. */
-    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames, count);
-
-    fileNames = _free(fileNames);
 }
 
 /**
@@ -332,7 +334,7 @@ static PyObject * rhnUnload(hdrObject * s)
     return rc;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrGetOrigin(hdrObject * s)
 	/*@*/
@@ -347,7 +349,7 @@ static PyObject * hdrGetOrigin(hdrObject * s)
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrSetOrigin(hdrObject * s, PyObject * args, PyObject * kwds)
 	/*@*/
@@ -365,7 +367,7 @@ static PyObject * hdrSetOrigin(hdrObject * s, PyObject * args, PyObject * kwds)
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrFullFilelist(hdrObject * s)
 	/*@*/
@@ -376,7 +378,7 @@ static PyObject * hdrFullFilelist(hdrObject * s)
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
 	/*@*/
@@ -402,18 +404,7 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
     return result;
 }
 
-/**
- */
-static int hdr_compare(hdrObject * a, hdrObject * b)
-	/*@*/
-{
-    return rpmVersionCompare(a->h, b->h);
-}
-
-static long hdr_hash(PyObject * h)
-{
-    return (long) h;
-}
+/*@}*/
 
 /** \ingroup py_c
  */
@@ -447,6 +438,19 @@ static struct PyMethodDef hdr_methods[] = {
 
     {NULL,		NULL}		/* sentinel */
 };
+
+/**
+ */
+static int hdr_compare(hdrObject * a, hdrObject * b)
+	/*@*/
+{
+    return rpmVersionCompare(a->h, b->h);
+}
+
+static long hdr_hash(PyObject * h)
+{
+    return (long) h;
+}
 
 static PyObject * hdr_getattro(PyObject * o, PyObject * n)
 	/*@*/
@@ -1188,5 +1192,3 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
     }
     return Py_BuildValue("i", rc);
 }
-
-/*@}*/

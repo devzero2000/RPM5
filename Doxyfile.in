@@ -687,6 +687,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/python/rpmmi-py.c \
                          @top_srcdir@/python/rpmmi-py.h \
                          @top_srcdir@/python/rpmmodule.c \
+                         @top_srcdir@/python/rpmps-py.c \
+                         @top_srcdir@/python/rpmps-py.h \
                          @top_srcdir@/python/rpmrc-py.c \
                          @top_srcdir@/python/rpmrc-py.h \
                          @top_srcdir@/python/rpmte-py.c \

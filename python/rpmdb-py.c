@@ -16,7 +16,7 @@
 
 /** \ingroup python
  * \class Rpmdb
- * \brief A python rpmdb object represents an RPM database.
+ * \brief A python rpm.db object represents an RPM database.
  *
  * Instances of the rpmdb object provide access to the records of a
  * RPM database.  The records are accessed by index number.  To
@@ -128,6 +128,8 @@ rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
 
     return rpmmi_Wrap( rpmdbInitIterator(s->db, tag, key, len) );
 }
+
+/*@}*/
 
 /**
  */
@@ -335,5 +337,3 @@ rebuildDB (/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rpmdbRebuild(rootDir, NULL, NULL));
 }
 #endif
-
-/*@}*/

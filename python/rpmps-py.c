@@ -18,21 +18,6 @@
 /*@access rpmps @*/
 /*@access rpmProblem @*/
 
-/*@null@*/
-static PyObject *
-rpmps_Debug(/*@unused@*/ rpmpsObject * s, PyObject * args, PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
-{
-    char * kwlist[] = {"debugLevel", NULL};
-    
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmps_debug))
-	return NULL;
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 static PyObject *
 rpmps_iter(rpmpsObject * s)
 	/*@modifies s @*/
@@ -71,6 +56,32 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p ix %d active %d\n", s, s->ps, s->i
 
     return result;
 }
+
+/** \ingroup python
+ * \name Class: Rpmps
+ * \class Rpmps
+ * \brief An python rpm.ps object represents an rpm problem set.
+ */
+
+/** \ingroup python
+ * \name Class: Rpmps
+/*@{*/
+
+/*@null@*/
+static PyObject *
+rpmps_Debug(/*@unused@*/ rpmpsObject * s, PyObject * args, PyObject * kwds)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
+{
+    char * kwlist[] = {"debugLevel", NULL};
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmps_debug))
+	return NULL;
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+/*@}*/
 
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
