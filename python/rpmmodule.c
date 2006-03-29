@@ -126,6 +126,7 @@ static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
     Py_INCREF(Py_None);
     return (PyObject *) Py_None;
 }
+/*@}*/
 
 /**
  */
@@ -461,5 +462,3 @@ void init_rpm(void)
 
     REGISTER_ENUM(RPMAL_NOMATCH);
 }
-
-/*@}*/
