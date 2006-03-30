@@ -4,7 +4,6 @@
 const char *__progname;
 
 #include <rpmlib.h>
-#include <rpmpgp.h>
 
 #include "depends.c"
 

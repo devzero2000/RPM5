@@ -439,7 +439,6 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
-/*@-bounds@*/ /* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     int res = 0;
@@ -698,7 +697,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
    
     return res;
 }
-/*@=bounds@*/
 
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 {
