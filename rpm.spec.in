@@ -578,7 +578,8 @@ exit 0
 
 %changelog
 * Thu Mar 30 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.10
-- fix: obscure segfault with multiply installed pkgs.
+- fix: obscure segfault erasing multiply installed packages.
+- fix: set file contexts on non-packaged dirs iff selinux enabled.
 
 * Fri Mar 24 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.9
 - assign expected {scalar,array} return types to header tags.

@@ -18,7 +18,8 @@
 	- permit --without-lua.
 	- assign expected {scalar,array} return types to header tags.
 	- permit sha1/sha256/sha384/sha512 file digests as well as md5.
-	- fix: obscure segfault with multiply installed pkgs.
+	- fix: obscure segfault erasing multiply installed packages.
+	- fix: set file contexts on non-packaged dirs iff selinux enabled.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

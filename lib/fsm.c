@@ -1325,7 +1325,12 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 /*@-compdef@*/
     rpmts ts = fsmGetTs(fsm);
 /*@=compdef@*/
-    rpmsx sx = rpmtsREContext(ts);
+    rpmsx sx = NULL;
+
+    /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
+    if (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
+      !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
+	sx = rpmtsREContext(ts);
 
     fsm->path = NULL;
 
