@@ -281,6 +281,8 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
     xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
 
 /*@-boundswrite@*/
+    /* XXX there's an obscure segfault here w/o NULL check ... */
+    if (otherStates != NULL)
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
 	otherFileNum = shared->otherFileNum;
