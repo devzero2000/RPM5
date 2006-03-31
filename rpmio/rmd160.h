@@ -39,116 +39,100 @@
  *
 \********************************************************************/
 
-#ifndef  RMD160H           /* make sure this file is read only once */
-#define  RMD160H
-
-/********************************************************************/
-
-/* typedef 8 and 32 bit types, resp.  */
-/* adapt these, if necessary, 
-   for your operating system and compiler */
-typedef    unsigned char        byte;
-typedef    unsigned long        dword;
-
-
-/********************************************************************/
-
-/* macro definitions */
-
-/* collect four bytes into one word: */
-#define BYTES_TO_DWORD(strptr)                    \
-            (((dword) *((strptr)+3) << 24) | \
-             ((dword) *((strptr)+2) << 16) | \
-             ((dword) *((strptr)+1) <<  8) | \
-             ((dword) *(strptr)))
-
-/* ROL(x, n) cyclically rotates x over n bits to the left */
-/* x must be of an unsigned 32 bits type and 0 <= n < 32. */
-#define ROL(x, n)        (((x) << (n)) | ((x) >> (32-(n))))
-
-/* the five basic functions F(), G() and H() */
-#define F(x, y, z)        ((x) ^ (y) ^ (z)) 
-#define G(x, y, z)        (((x) & (y)) | (~(x) & (z))) 
-#define H(x, y, z)        (((x) | ~(y)) ^ (z))
-#define I(x, y, z)        (((x) & (z)) | ((y) & ~(z))) 
-#define J(x, y, z)        ((x) ^ ((y) | ~(z)))
-  
-/* the ten basic operations FF() through III() */
-#define FF(a, b, c, d, e, x, s)        {\
-      (a) += F((b), (c), (d)) + (x);\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define GG(a, b, c, d, e, x, s)        {\
-      (a) += G((b), (c), (d)) + (x) + 0x5a827999UL;\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define HH(a, b, c, d, e, x, s)        {\
-      (a) += H((b), (c), (d)) + (x) + 0x6ed9eba1UL;\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define II(a, b, c, d, e, x, s)        {\
-      (a) += I((b), (c), (d)) + (x) + 0x8f1bbcdcUL;\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define JJ(a, b, c, d, e, x, s)        {\
-      (a) += J((b), (c), (d)) + (x) + 0xa953fd4eUL;\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define FFF(a, b, c, d, e, x, s)        {\
-      (a) += F((b), (c), (d)) + (x);\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define GGG(a, b, c, d, e, x, s)        {\
-      (a) += G((b), (c), (d)) + (x) + 0x7a6d76e9UL;\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define HHH(a, b, c, d, e, x, s)        {\
-      (a) += H((b), (c), (d)) + (x) + 0x6d703ef3UL;\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define III(a, b, c, d, e, x, s)        {\
-      (a) += I((b), (c), (d)) + (x) + 0x5c4dd124UL;\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-#define JJJ(a, b, c, d, e, x, s)        {\
-      (a) += J((b), (c), (d)) + (x) + 0x50a28be6UL;\
-      (a) = ROL((a), (s)) + (e);\
-      (c) = ROL((c), 10);\
-   }
-
-/********************************************************************/
-
-/* function prototypes */
-
-void MDinit(dword *MDbuf);
-/*
- *  initializes MDbuffer to "magic constants"
+/*!\file rmd160.h
+ * \brief RIPEMD-160 hash function.
+ * \ingroup HASH_m HASH_rmd160_m 
  */
 
-void compress(dword *MDbuf, dword *X);
-/*
- *  the compression function.
- *  transforms MDbuf using message bytes X[0] through X[15]
+#ifndef  _RMD160_H
+#define  _RMD160_H
+
+#include "beecrypt.h"
+
+/*!\brief Holds all the parameters necessary for the RIPEMD-160 algorithm.
+ * \ingroup HASH_rmd160_h
  */
+typedef struct
+{
+	/*!\var h
+	 */
+	uint32_t h[5];
+	/*!\var data
+	 */
+	uint32_t data[16];
+	/*!\var length
+	 * \brief Multi-precision integer counter for the bits that have been
+	 *  processed so far.
+	 */
+	#if (MP_WBITS == 64)
+	mpw length[1];
+	#elif (MP_WBITS == 32)
+	mpw length[2];
+	#else
+	# error
+	#endif
+    /*!\var offset
+     * \brief Offset into \a data; points to the place where new data will be
+     *  copied before it is processed.
+     */
+	uint32_t offset;
+} rmd160Param;
 
-void MDfinish(dword *MDbuf, byte *strptr, dword lswlen, dword mswlen);
-/*
- *  puts bytes from strptr into X and pad out; appends length 
- *  and finally, compresses the last block(s)
- *  note: length in bits == 8 * (lswlen + 2^32 mswlen).
- *  note: there are (lswlen mod 64) bytes left in strptr.
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!\var rmd160
+ * \brief Holds the full API description of the RIPEMD-160 algorithm.
  */
+/*@unchecked@*/ /*@observer@*/
+extern BEECRYPTAPI const hashFunction rmd160;
 
-#endif  /* RMD160H */
+/*!\fn int rmd160Reset(rmd160Param* mp)
+ * \brief This function resets the parameter block so that it's ready for a
+ *  new hash.
+ * \param mp The hash function's parameter block.
+ * \retval 0 on success.
+ */
+BEECRYPTAPI
+void rmd160Process(rmd160Param* mp)
+	/*@modifies mp @*/;
 
-/*********************** end of file rmd160.h ***********************/
+/*!\fn int rmd160Reset(rmd160Param* mp)
+ * \brief This function resets the parameter block so that it's ready for a
+ *  new hash.
+ * \param mp The hash function's parameter block.
+ * \retval 0 on success.
+ */
+BEECRYPTAPI
+int rmd160Reset   (rmd160Param* mp)
+	/*@modifies mp @*/;
 
+/*!\fn int rmd160Update(rmd160Param* mp, const byte* data, size_t size)
+ * \brief This function should be used to pass successive blocks of data
+ *  to be hashed.
+ * \param mp The hash function's parameter block.
+ * \param data
+ * \param size
+ * \retval 0 on success.
+ */
+BEECRYPTAPI
+int rmd160Update  (rmd160Param* mp, const byte* data, size_t size)
+	/*@modifies mp @*/;
+
+/*!\fn int rmd160Digest(rmd160Param* mp, byte* digest)
+ * \brief This function finishes the current hash computation and copies
+ *  the digest value into \a digest.
+ * \param mp The hash function's parameter block.
+ * \param digest The place to store the 20-byte digest.
+ * \retval 0 on success.
+ */
+BEECRYPTAPI
+int rmd160Digest  (rmd160Param* mp, byte* digest)
+	/*@modifies mp, digest @*/;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

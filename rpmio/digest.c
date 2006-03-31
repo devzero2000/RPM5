@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include "rpmio_internal.h"
+#include "rmd160.h"
 #include "debug.h"
 
 #ifdef	SHA_DEBUG
@@ -52,7 +53,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 
     switch (hashalgo) {
     case PGPHASHALGO_MD5:
-	ctx->digestlen = 16;
+	ctx->digestlen = 128/8;
 	ctx->datalen = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(md5Param);
@@ -65,7 +66,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@=type@*/
 	break;
     case PGPHASHALGO_SHA1:
-	ctx->digestlen = 20;
+	ctx->digestlen = 160/8;
 	ctx->datalen = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha1Param);
@@ -77,9 +78,22 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Digest = (void *) sha1Digest;
 /*@=type@*/
 	break;
+    case PGPHASHALGO_RIPEMD160:
+	ctx->digestlen = 160/8;
+	ctx->datalen = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramlen = sizeof(rmd160Param);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramlen);
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) rmd160Reset;
+	ctx->Update = (void *) rmd160Update;
+	ctx->Digest = (void *) rmd160Digest;
+/*@=type@*/
+	break;
 #if HAVE_BEECRYPT_API_H
     case PGPHASHALGO_SHA256:
-	ctx->digestlen = 32;
+	ctx->digestlen = 256/8;
 	ctx->datalen = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha256Param);
@@ -92,7 +106,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@=type@*/
 	break;
     case PGPHASHALGO_SHA384:
-	ctx->digestlen = 48;
+	ctx->digestlen = 384/8;
 	ctx->datalen = 128;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha384Param);
@@ -105,7 +119,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@=type@*/
 	break;
     case PGPHASHALGO_SHA512:
-	ctx->digestlen = 64;
+	ctx->digestlen = 512/8;
 	ctx->datalen = 128;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha512Param);
@@ -118,7 +132,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@=type@*/
 	break;
 #endif
-    case PGPHASHALGO_RIPEMD160:
     case PGPHASHALGO_MD2:
     case PGPHASHALGO_TIGER192:
     case PGPHASHALGO_HAVAL_5_160:

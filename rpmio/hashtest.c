@@ -50,15 +50,15 @@
 #define RMDsize 160
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
+#include "system.h"
+
 #if RMDsize == 128
 #include "rmd128.h"
 #elif RMDsize == 160
 #include "rmd160.h"
 #endif
+
+#include "debug.h"
 
 #define TEST_BLOCK_SIZE 8000
 #define TEST_BLOCKS 1250
@@ -66,118 +66,68 @@
 
 /********************************************************************/
 
-byte *RMD(byte *message)
+static byte *RMD(byte *message)
 /*
  * returns RMD(message)
  * message should be a string terminated by '\0'
  */
 {
-   dword         MDbuf[RMDsize/32];   /* contains (A, B, C, D(, E))   */
-   static byte   hashcode[RMDsize/8]; /* for final hash-value         */
-   dword         X[16];               /* current 16-word chunk        */
-   unsigned int  i;                   /* counter                      */
-   dword         length;              /* length in bytes of message   */
-   dword         nbytes;              /* # of bytes not yet processed */
+   static byte digest[RMDsize/8];
+   rmd160Param param;
+   size_t length = strlen((char *)message);
 
-   /* initialize */
-   MDinit(MDbuf);
-   length = (dword)strlen((char *)message);
+   rmd160Reset(&param);
+   rmd160Update(&param, message, length);
+   rmd160Digest(&param, digest);
 
-   /* process message in 16-word chunks */
-   for (nbytes=length; nbytes > 63; nbytes-=64) {
-      for (i=0; i<16; i++) {
-         X[i] = BYTES_TO_DWORD(message);
-         message += 4;
-      }
-      compress(MDbuf, X);
-   }                                    /* length mod 64 bytes left */
-
-   /* finish: */
-   MDfinish(MDbuf, message, length, 0);
-
-   for (i=0; i<RMDsize/8; i+=4) {
-      hashcode[i]   =  MDbuf[i>>2];         /* implicit cast to byte  */
-      hashcode[i+1] = (MDbuf[i>>2] >>  8);  /*  extracts the 8 least  */
-      hashcode[i+2] = (MDbuf[i>>2] >> 16);  /*  significant bits.     */
-      hashcode[i+3] = (MDbuf[i>>2] >> 24);
-   }
-
-   return (byte *)hashcode;
+   return (byte *)digest;
 }
 
 /********************************************************************/
 
-byte *RMDbinary(char *fname)
+static byte *RMDbinary(char *fname)
 /*
  * returns RMD(message in file fname)
  * fname is read as binary data.
  */
 {
-   FILE         *mf;                  /* pointer to file <fname>      */
-   byte          data[1024];          /* contains current mess. block */
-   dword         nbytes;              /* length of this block         */
-   dword         MDbuf[RMDsize/32];   /* contains (A, B, C, D(, E))   */
-   static byte   hashcode[RMDsize/8]; /* for final hash-value         */
-   dword         X[16];               /* current 16-word chunk        */
-   unsigned int  i, j;                /* counters                     */
-   dword         length[2];           /* length in bytes of message   */
-   dword         offset;              /* # of unprocessed bytes at    */
-                                      /*          call of MDfinish    */
+   static byte digest[RMDsize/8];
+   rmd160Param param;
+   FILE *fp;
+   byte data[BUFSIZ];
+   size_t nbytes;
 
    /* initialize */
-   if ((mf = fopen(fname, "rb")) == NULL) {
+   if ((fp = fopen(fname, "rb")) == NULL) {
       fprintf(stderr, "\nRMDbinary: cannot open file \"%s\".\n",
               fname);
       exit(1);
    }
-   MDinit(MDbuf);
-   length[0] = 0;
-   length[1] = 0;
 
-   while ((nbytes = fread(data, 1, 1024, mf)) != 0) {
-      /* process all complete blocks */
-      for (i=0; i<(nbytes>>6); i++) {
-         for (j=0; j<16; j++)
-            X[j] = BYTES_TO_DWORD(data+64*i+4*j);
-         compress(MDbuf, X);
-      }
-      /* update length[] */
-      if (length[0] + nbytes < length[0])
-         length[1]++;                  /* overflow to msb of length */
-      length[0] += nbytes;
-   }
+   rmd160Reset(&param);
+   while ((nbytes = fread(data, 1, 1024, fp)) != 0)
+	rmd160Update(&param, data, nbytes);
+   rmd160Digest(&param, digest);
 
-   /* finish: */
-   offset = length[0] & 0x3C0;   /* extract bytes 6 to 10 inclusive */
-   MDfinish(MDbuf, data+offset, length[0], length[1]);
+   fclose(fp);
 
-   for (i=0; i<RMDsize/8; i+=4) {
-      hashcode[i]   =  MDbuf[i>>2];
-      hashcode[i+1] = (MDbuf[i>>2] >>  8);
-      hashcode[i+2] = (MDbuf[i>>2] >> 16);
-      hashcode[i+3] = (MDbuf[i>>2] >> 24);
-   }
-
-   fclose(mf);
-
-   return (byte *)hashcode;
+   return (byte *)digest;
 }
 
 /********************************************************************/
 
-void speedtest(void)
+static void speedtest(void)
 /*
  * A time trial routine, to measure the speed of ripemd.
  * Measures processor time required to process TEST_BLOCKS times
  *  a message of TEST_BLOCK_SIZE characters.
  */
 {
+   static byte digest[RMDsize/8];
+   rmd160Param param;
    clock_t      t0, t1;
    byte        *data;
-   byte         hashcode[RMDsize/8];
-   dword        X[16];
-   dword        MDbuf[RMDsize/32];
-   unsigned int i, j, k;
+   unsigned int i;
 
    srand(time(NULL));
 
@@ -192,18 +142,14 @@ void speedtest(void)
    /* start timer */
    printf("\n\nRIPEMD-%u time trial. Processing %ld characters...\n",
           RMDsize, TEST_BYTES);
+
    t0 = clock();
 
    /* process data */
-   MDinit(MDbuf);
-   for (i=0; i<TEST_BLOCKS; i++) {
-      for (j=0; j<TEST_BLOCK_SIZE; j+=64) {
-         for (k=0; k<16; k++)
-            X[k] = BYTES_TO_DWORD(data+j+4*k);
-         compress(MDbuf, X);
-      }
-   }
-   MDfinish(MDbuf, data, TEST_BYTES, 0);
+   rmd160Reset(&param);
+   for (i=0; i<TEST_BLOCKS; i++)
+	rmd160Update(&param, data, TEST_BLOCK_SIZE);
+   rmd160Digest(&param, digest);
 
    /* stop timer, get time difference */
    t1 = clock();
@@ -212,15 +158,9 @@ void speedtest(void)
    printf("Characters processed per second: %g\n",
           (double)CLOCKS_PER_SEC*TEST_BYTES/((double)t1-t0));
 
-   for (i=0; i<RMDsize/8; i+=4) {
-      hashcode[i]   =  MDbuf[i>>2];
-      hashcode[i+1] = (MDbuf[i>>2] >>  8);
-      hashcode[i+2] = (MDbuf[i>>2] >> 16);
-      hashcode[i+3] = (MDbuf[i>>2] >> 24);
-   }
    printf("\nhashcode: ");
    for (i=0; i<RMDsize/8; i++)
-      printf("%02x", hashcode[i]);
+      printf("%02x", digest[i]);
    printf("\n");
 
    free(data);
@@ -229,50 +169,46 @@ void speedtest(void)
 
 /********************************************************************/
 
-void RMDonemillion(void)
+static void RMDonemillion(void)
 /*
  * returns RMD() of message consisting of 1 million 'a' characters
  */
 {
-   dword         MDbuf[RMDsize/32];   /* contains (A, B, C, D(, E)) */
-   static byte   hashcode[RMDsize/8]; /* for final hash-value       */
-   dword         X[16];               /* current 16-word chunk      */
+   static byte digest[RMDsize/8];
+   rmd160Param param;
+   byte data[64];
    unsigned int  i;                   /* counter                    */
 
-   MDinit(MDbuf);
-   memcpy(X, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);
-   memcpy(X+8, X, 32);
+   memset(data, 'a', sizeof(data));
+   memcpy(data, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);
+   memcpy(data+32, data, 32);
+
+   rmd160Reset(&param);
    for (i=15625; i>0; i--)
-      compress(MDbuf, X);
-   MDfinish(MDbuf, NULL, 1000000UL, 0);
-   for (i=0; i<RMDsize/8; i+=4) {
-      hashcode[i]   =  MDbuf[i>>2];
-      hashcode[i+1] = (MDbuf[i>>2] >>  8);
-      hashcode[i+2] = (MDbuf[i>>2] >> 16);
-      hashcode[i+3] = (MDbuf[i>>2] >> 24);
-   }
+      rmd160Update(&param, data, sizeof(data));
+   rmd160Digest(&param, digest);
+
    printf("\n* message: 1 million times \"a\"\n  hashcode: ");
    for (i=0; i<RMDsize/8; i++)
-      printf("%02x", hashcode[i]);
-
+      printf("%02x", digest[i]);
 }
 
 /********************************************************************/
 
-void RMDstring(char *message, char *print)
+static void RMDstring(char *message, char *print)
 {
    unsigned int  i;
-   byte         *hashcode;
+   byte         *digest;
 
-   hashcode = RMD((byte *)message);
+   digest = RMD((byte *)message);
    printf("\n* message: %s\n  hashcode: ", print);
    for (i=0; i<RMDsize/8; i++)
-      printf("%02x", hashcode[i]);
+      printf("%02x", digest[i]);
 }
 
 /********************************************************************/
 
-void testsuite (void)
+static void testsuite (void)
 /*
  *   standard test suite
  */
@@ -307,7 +243,7 @@ main (int argc, char *argv[])
  */
 {
   unsigned int   i, j;
-  byte          *hashcode;
+  byte          *digest;
 
    if (argc == 1) {
       printf("For each command line argument in turn:\n");
@@ -320,10 +256,10 @@ main (int argc, char *argv[])
       for (i = 1; i < argc; i++) {
          if (argv[i][0] == '-' && argv[i][1] == 's') {
             printf("\n\nmessage: %s", argv[i]+2);
-            hashcode = RMD((byte *)argv[i] + 2);
+            digest = RMD((byte *)argv[i] + 2);
             printf("\nhashcode: ");
             for (j=0; j<RMDsize/8; j++)
-               printf("%02x", hashcode[j]);
+               printf("%02x", digest[j]);
             printf("\n");
          }
          else if (strcmp (argv[i], "-t") == 0)
@@ -331,11 +267,11 @@ main (int argc, char *argv[])
          else if (strcmp (argv[i], "-x") == 0)
             testsuite ();
          else {
-            hashcode = RMDbinary (argv[i]);
+            digest = RMDbinary (argv[i]);
             printf("\n\nmessagefile (binary): %s", argv[i]);
             printf("\nhashcode: ");
             for (j=0; j<RMDsize/8; j++)
-               printf("%02x", hashcode[j]);
+               printf("%02x", digest[j]);
             printf("\n");
          }
       }

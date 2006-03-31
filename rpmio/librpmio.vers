@@ -122,6 +122,11 @@ LIBRPMIO_0
     Readlink;
     Rename;
     Rmdir;
+    rmd160;
+    rmd160Digest;
+    rmd160Process;
+    rmd160Reset;
+    rmd160Update;
     rpmCleanPath;
     rpmCLIMacroContext;
     rpmDefineMacro;

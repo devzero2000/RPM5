@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-27 15:31-0500\n"
+"POT-Creation-Date: 2006-03-31 12:35-0500\n"
 "PO-Revision-Date: 2006-02-19 22:53+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -66,17 +66,17 @@ msgstr "Baue für die Zielplattform(en): %s\n"
 msgid "Building for target %s\n"
 msgstr "Baue für das Ziel %s\n"
 
-#: rpm2cpio.c:56
+#: rpm2cpio.c:55
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "Argument ist kein RPM-Paket\n"
 
-#: rpm2cpio.c:61
+#: rpm2cpio.c:60
 #, c-format
 msgid "error reading header from package\n"
 msgstr "Fehler beim Lesen des Paket-Headers\n"
 
-#: rpm2cpio.c:83
+#: rpm2cpio.c:82
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "Kann Nutzdaten nicht erneut öffnen: %s\n"
@@ -1603,42 +1603,42 @@ msgstr "Benutzer %s existiert nicht - benutze Root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "Gruppe %s existiert nicht - benutze Root\n"
 
-#: lib/fsm.c:1398
+#: lib/fsm.c:1403
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, kein Kontext.\n"
 
-#: lib/fsm.c:1402
+#: lib/fsm.c:1407
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, Kontext.\n"
 
-#: lib/fsm.c:1708
+#: lib/fsm.c:1713
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "Archiv-Datei %s wurde nicht in der Header-Dateiliste gefunden\n"
 
-#: lib/fsm.c:1858 lib/fsm.c:1980
+#: lib/fsm.c:1863 lib/fsm.c:1985
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s als %s gesichert\n"
 
-#: lib/fsm.c:2007
+#: lib/fsm.c:2012
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir von %s fehlgeschlagen: Verzeichnis ist nicht leer\n"
 
-#: lib/fsm.c:2013
+#: lib/fsm.c:2018
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:2028
+#: lib/fsm.c:2033
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:2051
+#: lib/fsm.c:2056
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s als %s erstellt\n"
@@ -1751,12 +1751,12 @@ msgstr ""
 "Nur Pakete mit Versionsnummern <= 4 werden von dieser RPM-Version "
 "unterstützt\n"
 
-#: lib/package.c:821 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
+#: lib/package.c:821 lib/rpmchecksig.c:229 lib/rpmchecksig.c:766
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature fehlgeschlagen: %s"
 
-#: lib/package.c:828 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:828 lib/rpmchecksig.c:236 lib/rpmchecksig.c:774
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Keine Signatur verfügbar\n"
@@ -2571,62 +2571,62 @@ msgstr "Paket hat keine Eigentümer-/Gruppen-Liste\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "Paket weder Eigentümer- noch ID-Liste\n"
 
-#: lib/query.c:482
+#: lib/query.c:481
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s enthält keine Pakete\n"
 
-#: lib/query.c:491
+#: lib/query.c:490
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "Keine Paket-Trigger %s\n"
 
-#: lib/query.c:504 lib/query.c:525 lib/query.c:545 lib/query.c:579
+#: lib/query.c:503 lib/query.c:524 lib/query.c:544 lib/query.c:578
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "Missgebildet: %s: %s\n"
 
-#: lib/query.c:514 lib/query.c:531 lib/query.c:555 lib/query.c:584
+#: lib/query.c:513 lib/query.c:530 lib/query.c:554 lib/query.c:583
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "Kein Paket stimmt mit %s überein: %s\n"
 
-#: lib/query.c:594
+#: lib/query.c:593
 #, c-format
 msgid "no package requires %s\n"
 msgstr "Kein Paket benötigt %s\n"
 
-#: lib/query.c:605
+#: lib/query.c:604
 #, c-format
 msgid "no package provides %s\n"
 msgstr "Kein Paket bietet %s\n"
 
-#: lib/query.c:644
+#: lib/query.c:643
 #, c-format
 msgid "file %s: %s\n"
 msgstr "Datei %s: %s\n"
 
-#: lib/query.c:648
+#: lib/query.c:647
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "Die Datei %s gehört zu keinem Paket\n"
 
-#: lib/query.c:673
+#: lib/query.c:672
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "Ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:676
+#: lib/query.c:675
 #, c-format
 msgid "package record number: %u\n"
 msgstr "Nummer des Paket-Eintrags: %u\n"
 
-#: lib/query.c:681
+#: lib/query.c:680
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "Eintrag %u konnte nicht gelesen werden\n"
 
-#: lib/query.c:691 lib/rpminstall.c:818
+#: lib/query.c:690 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Das Paket %s ist nicht installiert\n"
@@ -2653,7 +2653,7 @@ msgstr "makeTempFile fehlgeschlagen\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite fehlgeschlagen: %s\n"
 
-#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:747
+#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:748
 #, c-format
 msgid "%s: not an rpm package\n"
 msgstr "%s: ist kein RPM-Paket\n"
@@ -2703,38 +2703,38 @@ msgstr "%s: headerRead fehlgeschlagen\n"
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: headerGetEntry fehlgeschlagen\n"
 
-#: lib/rpmchecksig.c:753
+#: lib/rpmchecksig.c:754
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Keine Signatur verfügbar (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:862
+#: lib/rpmchecksig.c:863
 #, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 "Nur V3- und V4-Signaturen können überprüft werden, überspringe V%u-Signatur\n"
 
-#: lib/rpmchecksig.c:1028
+#: lib/rpmchecksig.c:1029
 msgid "NOT OK"
 msgstr "NICHT OK"
 
-#: lib/rpmchecksig.c:1029 lib/rpmchecksig.c:1043
+#: lib/rpmchecksig.c:1030 lib/rpmchecksig.c:1044
 msgid " (MISSING KEYS:"
 msgstr " (FEHLENDE SCHLÜSSEL:"
 
-#: lib/rpmchecksig.c:1031 lib/rpmchecksig.c:1045
+#: lib/rpmchecksig.c:1032 lib/rpmchecksig.c:1046
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1032 lib/rpmchecksig.c:1046
+#: lib/rpmchecksig.c:1033 lib/rpmchecksig.c:1047
 msgid " (UNTRUSTED KEYS:"
 msgstr " (UNBESTÄTIGTE SCHLÜSSEL:"
 
-#: lib/rpmchecksig.c:1034 lib/rpmchecksig.c:1048
+#: lib/rpmchecksig.c:1035 lib/rpmchecksig.c:1049
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1042
+#: lib/rpmchecksig.c:1043
 msgid "OK"
 msgstr "OK"
 
@@ -2902,25 +2902,25 @@ msgstr "Verschiebe %s nach %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "Verschiebe Verzeichnis %s nach %s\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:126 lib/rpminstall.c:492
+#: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:492
 #: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:650
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/rpmgi.c:355
+#: lib/rpmgi.c:365
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "Unbekannter Tag: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1456 lib/transaction.c:1189 tools/rpmgraph.c:197
+#: lib/rpmgi.c:635 lib/rpminstall.c:667 lib/rpminstall.c:852
+#: lib/rpminstall.c:1456 lib/transaction.c:1191 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Fehlgeschlagende Abhängigkeiten:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:674 tools/rpmgraph.c:203
+#: lib/rpmgi.c:641 lib/rpminstall.c:674 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "    Vorgeschlagene Auflösungen:\n"
 
@@ -2948,7 +2948,7 @@ msgstr "Aktualisiere..."
 msgid "Upgrading packages..."
 msgstr "Aktualisiere Pakete..."
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1162
+#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1164
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Autorollback-Ziel: %-24.24s (0x%08x)\n"
@@ -3054,7 +3054,7 @@ msgstr "%s: %s\n"
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "Schließe TID vom Rollback aus: %-24.24s (0x%08x)\n"
 
-#: lib/rpminstall.c:1450 lib/transaction.c:1167
+#: lib/rpminstall.c:1450 lib/transaction.c:1169
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
@@ -3516,71 +3516,71 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: UNBEKANNT (%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:895
+#: lib/transaction.c:897
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "Schließe Verzeichnis %s aus\n"
 
-#: lib/transaction.c:1020
+#: lib/transaction.c:1022
 #, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr "Rollback-Transaktionen erfolgreich bis %-24.24s (0x%08x).\n"
 
-#: lib/transaction.c:1025
+#: lib/transaction.c:1027
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr "Erstelle Rollback-Transaktion, um das Ziel zu erreichen\n"
 
-#: lib/transaction.c:1159
+#: lib/transaction.c:1161
 msgid "Transaction failed...rolling back\n"
 msgstr "Transaktion fehlgeschlagen...mache Rollback\n"
 
-#: lib/transaction.c:1170
+#: lib/transaction.c:1172
 #, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr "Fehlgeschlagene Transaktionen: %-24.24s(0x%08x)\n"
 
-#: lib/transaction.c:1176
+#: lib/transaction.c:1178
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr "Konnte das Makro semaphore_backout nicht auflösen!\n"
 
-#: lib/transaction.c:1180
+#: lib/transaction.c:1182
 #, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "Erstelle Semaphore %s...\n"
 
-#: lib/transaction.c:1201
+#: lib/transaction.c:1203
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "Konnte Auto-Rollback-Transaktion nicht sortieren!\n"
 
-#: lib/transaction.c:1248
+#: lib/transaction.c:1250
 #, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr "Rollback-Transaktionen erfolgreich bis %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:1293
+#: lib/transaction.c:1295
 #, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "Entferne Semaphore %s...\n"
 
-#: lib/transaction.c:1337
+#: lib/transaction.c:1339
 msgid "Getting repackaged header from transaction element\n"
 msgstr "Hole erneut gepackten Header des Transaktionselements\n"
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1367
+#: lib/transaction.c:1369
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\tSuche nach %s...\n"
 
-#: lib/transaction.c:1371
+#: lib/transaction.c:1373
 msgid "\tMatches found.\n"
 msgstr "\tÜbereinstimmungen gefunden.\n"
 
-#: lib/transaction.c:1375
+#: lib/transaction.c:1377
 msgid "\tNo matches found.\n"
 msgstr "\tKeine Übereinstimmungen gefunden.\n"
 
-#: lib/transaction.c:1388
+#: lib/transaction.c:1390
 msgid "\tRepackaged package not found!.\n"
 msgstr "\tErneut gebautes Paket nicht gefunden.\n"
 
@@ -3591,105 +3591,105 @@ msgstr "\tErneut gebautes Paket nicht gefunden.\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1409
+#: lib/transaction.c:1411
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "\tREMOVETID entspricht INSTALLTID.\n"
 
-#: lib/transaction.c:1411
+#: lib/transaction.c:1413
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\tName:  %s.\n"
 
-#: lib/transaction.c:1434
+#: lib/transaction.c:1436
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\tErneut gebautes Paket war %s...\n"
 
-#: lib/transaction.c:1486
+#: lib/transaction.c:1488
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 "Verarbeiten des Installationselements %s für das Auto-Rollback "
 "fehlgeschlagen.\n"
 
-#: lib/transaction.c:1489
+#: lib/transaction.c:1491
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "\tErzwinge das Hinzufügen des Headers zur rpmdb.\n"
 
-#: lib/transaction.c:1500
+#: lib/transaction.c:1502
 msgid "\tCould not add failed package header to db!\n"
 msgstr ""
 "\tKonnte fehlgeschlagenen Paket-Header nicht zur Datenbank hinzufügen!\n"
 
-#: lib/transaction.c:1512 lib/transaction.c:1648
+#: lib/transaction.c:1514 lib/transaction.c:1650
 #, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr "%s: Unbekannter Transaktionselemententyp!\n"
 
-#: lib/transaction.c:1513 lib/transaction.c:1649
+#: lib/transaction.c:1515 lib/transaction.c:1651
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr "TYP:   %d\n"
 
-#: lib/transaction.c:1543
+#: lib/transaction.c:1545
 msgid "Processing install element for autorollback...\n"
 msgstr "Verarbeite Installationselement für Auto-Rollback...\n"
 
-#: lib/transaction.c:1544 lib/transaction.c:1599
+#: lib/transaction.c:1546 lib/transaction.c:1601
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr "\tNEVRA: %s\n"
 
-#: lib/transaction.c:1552
+#: lib/transaction.c:1554
 msgid "Could not get install element database instance!\n"
 msgstr "Keine Datenbank-Instanz des Installationselements!\n"
 
-#: lib/transaction.c:1564
+#: lib/transaction.c:1566
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "Keine Header der Transaktion für das Auto-Rollback!\n"
 
-#: lib/transaction.c:1574
+#: lib/transaction.c:1576
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tErneut gepackten Paket-Header hinzugefügt: %s.\n"
 
 #. Add the header as a pure erase element, no repackaged package.
-#: lib/transaction.c:1584
+#: lib/transaction.c:1586
 msgid "\tAdded erase element.\n"
 msgstr "\tDeinstallationselement hinzugefügt.\n"
 
-#: lib/transaction.c:1591
+#: lib/transaction.c:1593
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr "Kein erneut gepackter Header für Transaktion des Auto-Rollbacks!\n"
 
-#: lib/transaction.c:1598
+#: lib/transaction.c:1600
 msgid "Processing erase element for autorollback...\n"
 msgstr "Verarbeite Deinstallationselement für Auto-Rollback...\n"
 
-#: lib/transaction.c:1608
+#: lib/transaction.c:1610
 msgid "\tErase element(s) already added.\n"
 msgstr "\tDeinstallationselement(e) bereits hinzugefügt.\n"
 
-#: lib/transaction.c:1619
+#: lib/transaction.c:1621
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tErneut gepacktes Paket %s hinzugefügt.\n"
 
-#: lib/transaction.c:1623
+#: lib/transaction.c:1625
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 "Konnte das Deinstallationselement für Transaktion des Auto-Rollbacks nicht "
 "hinzufügen.\n"
 
-#: lib/transaction.c:1634
+#: lib/transaction.c:1636
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\tKein erneut gepacktes Paket...nichts zu tun.\n"
 
-#: lib/transaction.c:1640
+#: lib/transaction.c:1642
 msgid "Failure reading repackaged package!\n"
 msgstr "Fehler beim Lesen des erneut gepackten Pakets!\n"
 
-#: lib/transaction.c:1779
+#: lib/transaction.c:1781
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ungültige Anzahl an Transaktionselementen.\n"
 
@@ -3701,12 +3701,12 @@ msgstr "Ungültige Anzahl an Transaktionselementen.\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1833
+#: lib/transaction.c:1835
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "Gesundheitsprüfung von %d Elementen\n"
 
-#: lib/transaction.c:1919
+#: lib/transaction.c:1921
 msgid "running pre-transaction scripts\n"
 msgstr "Führe Pre-Transaktionsskripte aus\n"
 
@@ -3718,7 +3718,7 @@ msgstr "Führe Pre-Transaktionsskripte aus\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1994
+#: lib/transaction.c:1996
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "Berechne %d Datei-Fingerabdrücke\n"
@@ -3726,24 +3726,24 @@ msgstr "Berechne %d Datei-Fingerabdrücke\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2075
+#: lib/transaction.c:2077
 msgid "computing file dispositions\n"
 msgstr "Berechne Dateianordnungen\n"
 
-#: lib/transaction.c:2259
+#: lib/transaction.c:2261
 msgid "Creating auto-rollback transaction\n"
 msgstr "Erstelle Transaktion für ein Auto-Rollback\n"
 
-#: lib/transaction.c:2529
+#: lib/transaction.c:2531
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr "Füge %s zur Auto-Rollbacktransaktion hinzu.\n"
 
-#: lib/transaction.c:2536
+#: lib/transaction.c:2538
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr "Konnte Transaktionselement nicht zun Auto-Rollback hinzufügen!\n"
 
-#: lib/transaction.c:2580
+#: lib/transaction.c:2582
 msgid "running post-transaction scripts\n"
 msgstr "Führe Post-Transaktionsskripte aus\n"
 

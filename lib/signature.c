@@ -1259,16 +1259,16 @@ assert(sigp != NULL);
 	prefix = "3021300906052b0e03021a05000414";
 	break;
     case PGPHASHALGO_RIPEMD160:
-	res = RPMRC_NOKEY;
-	prefix = NULL;
+	t = stpcpy(t, " RSA/RIPEMD160");
+	prefix = "3021300906052b2403020105000414";
 	break;
     case PGPHASHALGO_MD2:
 	t = stpcpy(t, " RSA/MD2");
 	prefix = "3020300c06082a864886f70d020205000410";
 	break;
     case PGPHASHALGO_TIGER192:
-	res = RPMRC_NOKEY;
-	prefix = NULL;
+	t = stpcpy(t, " RSA/TIGER192");
+	prefix = "3029300d06092b06010401da470c0205000418";
 	break;
     case PGPHASHALGO_HAVAL_5_160:
 	res = RPMRC_NOKEY;

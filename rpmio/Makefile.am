@@ -19,7 +19,7 @@ INCLUDES = -I. \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	argv.h fts.h rpmdav.h \
+	argv.h fts.h rmd160.h rpmdav.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	rpmsq.h rpmsw.h ugid.h
 noinst_HEADERS = rpmio_internal.h rpmlua.h rpmhook.h
@@ -31,7 +31,7 @@ LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	argv.c digest.c fts.c macro.c rpmdav.c \
+	argv.c digest.c fts.c macro.c rmd160.c rpmdav.c \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c strtolocale.c \
 	stubs.c url.c ugid.c
@@ -124,6 +124,10 @@ tsw_SOURCES = tsw.c
 tsw_LDFLAGS = librpmio.la
 
 dumpasn1_SOURCES = dumpasn1.c
+
+noinst_PROGRAMS = hashtest
+hashtest_SOURCES = hashtest.c
+hashtest_LDADD = librpmio.la
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
