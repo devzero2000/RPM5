@@ -47,15 +47,23 @@
  *
 \********************************************************************/
 #ifndef RMDsize
-#define RMDsize 160
+#define RMDsize 128
 #endif
 
 #include "system.h"
 
 #if RMDsize == 128
 #include "rmd128.h"
+#define	rmdParam	rmd128Param
+#define rmdReset	rmd128Reset
+#define rmdUpdate	rmd128Update
+#define rmdDigest	rmd128Digest
 #elif RMDsize == 160
 #include "rmd160.h"
+#define	rmdParam	rmd160Param
+#define rmdReset	rmd160Reset
+#define rmdUpdate	rmd160Update
+#define rmdDigest	rmd160Digest
 #endif
 
 #include "debug.h"
@@ -73,12 +81,12 @@ static byte *RMD(byte *message)
  */
 {
    static byte digest[RMDsize/8];
-   rmd160Param param;
+   rmdParam param;
    size_t length = strlen((char *)message);
 
-   rmd160Reset(&param);
-   rmd160Update(&param, message, length);
-   rmd160Digest(&param, digest);
+   rmdReset(&param);
+   rmdUpdate(&param, message, length);
+   rmdDigest(&param, digest);
 
    return (byte *)digest;
 }
@@ -92,7 +100,7 @@ static byte *RMDbinary(char *fname)
  */
 {
    static byte digest[RMDsize/8];
-   rmd160Param param;
+   rmdParam param;
    FILE *fp;
    byte data[BUFSIZ];
    size_t nbytes;
@@ -104,10 +112,10 @@ static byte *RMDbinary(char *fname)
       exit(1);
    }
 
-   rmd160Reset(&param);
+   rmdReset(&param);
    while ((nbytes = fread(data, 1, 1024, fp)) != 0)
-	rmd160Update(&param, data, nbytes);
-   rmd160Digest(&param, digest);
+	rmdUpdate(&param, data, nbytes);
+   rmdDigest(&param, digest);
 
    fclose(fp);
 
@@ -124,7 +132,7 @@ static void speedtest(void)
  */
 {
    static byte digest[RMDsize/8];
-   rmd160Param param;
+   rmdParam param;
    clock_t      t0, t1;
    byte        *data;
    unsigned int i;
@@ -146,10 +154,10 @@ static void speedtest(void)
    t0 = clock();
 
    /* process data */
-   rmd160Reset(&param);
+   rmdReset(&param);
    for (i=0; i<TEST_BLOCKS; i++)
-	rmd160Update(&param, data, TEST_BLOCK_SIZE);
-   rmd160Digest(&param, digest);
+	rmdUpdate(&param, data, TEST_BLOCK_SIZE);
+   rmdDigest(&param, digest);
 
    /* stop timer, get time difference */
    t1 = clock();
@@ -175,7 +183,7 @@ static void RMDonemillion(void)
  */
 {
    static byte digest[RMDsize/8];
-   rmd160Param param;
+   rmdParam param;
    byte data[64];
    unsigned int  i;                   /* counter                    */
 
@@ -183,10 +191,10 @@ static void RMDonemillion(void)
    memcpy(data, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);
    memcpy(data+32, data, 32);
 
-   rmd160Reset(&param);
+   rmdReset(&param);
    for (i=15625; i>0; i--)
-      rmd160Update(&param, data, sizeof(data));
-   rmd160Digest(&param, digest);
+      rmdUpdate(&param, data, sizeof(data));
+   rmdDigest(&param, digest);
 
    printf("\n* message: 1 million times \"a\"\n  hashcode: ");
    for (i=0; i<RMDsize/8; i++)

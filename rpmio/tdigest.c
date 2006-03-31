@@ -21,7 +21,8 @@ static struct poptOption optionsTable[] = {
  { "sha256",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA256,	NULL, NULL },
  { "sha384",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA384,	NULL, NULL },
  { "sha512",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA512,	NULL, NULL },
- { "ripemd160",'\0', POPT_ARG_VAL,&hashalgo, PGPHASHALGO_RIPEMD160,NULL, NULL },
+ { "rmd128",'\0', POPT_ARG_VAL,&hashalgo, PGPHASHALGO_RIPEMD128,NULL, NULL },
+ { "rmd160",'\0', POPT_ARG_VAL,&hashalgo, PGPHASHALGO_RIPEMD160,NULL, NULL },
 #ifdef	DYING
  { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
 #endif

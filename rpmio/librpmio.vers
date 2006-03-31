@@ -122,6 +122,11 @@ LIBRPMIO_0
     Readlink;
     Rename;
     Rmdir;
+    rmd128;
+    rmd128Digest;
+    rmd128Process;
+    rmd128Reset;
+    rmd128Update;
     rmd160;
     rmd160Digest;
     rmd160Process;

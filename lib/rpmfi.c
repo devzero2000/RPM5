@@ -1365,6 +1365,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 	switch (dalgo) {
 	case PGPHASHALGO_MD5:		fi->digestlen = 128/8;	break;
 	case PGPHASHALGO_SHA1:		fi->digestlen = 160/8;	break;
+	case PGPHASHALGO_RIPEMD128:	fi->digestlen = 128/8;	break;
 	case PGPHASHALGO_RIPEMD160:	fi->digestlen = 160/8;	break;
 	case PGPHASHALGO_SHA256:	fi->digestlen = 256/8;	break;
 	case PGPHASHALGO_SHA384:	fi->digestlen = 384/8;	break;

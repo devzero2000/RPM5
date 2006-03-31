@@ -41,97 +41,100 @@
  *
 \********************************************************************/
 
-#ifndef  RMD128H           /* make sure this file is read only once */
-#define  RMD128H
-
-/********************************************************************/
-
-/* typedef 8 and 32 bit types, resp.  */
-/* adapt these, if necessary, 
-   for your operating system and compiler */
-typedef    unsigned char        byte;
-typedef    unsigned long        dword;
-
-
-/********************************************************************/
-
-/* macro definitions */
-
-/* collect four bytes into one word: */
-#define BYTES_TO_DWORD(strptr)                    \
-            (((dword) *((strptr)+3) << 24) | \
-             ((dword) *((strptr)+2) << 16) | \
-             ((dword) *((strptr)+1) <<  8) | \
-             ((dword) *(strptr)))
-
-/* ROL(x, n) cyclically rotates x over n bits to the left */
-/* x must be of an unsigned 32 bits type and 0 <= n < 32. */
-#define ROL(x, n)        (((x) << (n)) | ((x) >> (32-(n))))
-
-/* the four basic functions F(), G() and H() */
-#define F(x, y, z)        ((x) ^ (y) ^ (z)) 
-#define G(x, y, z)        (((x) & (y)) | (~(x) & (z))) 
-#define H(x, y, z)        (((x) | ~(y)) ^ (z))
-#define I(x, y, z)        (((x) & (z)) | ((y) & ~(z))) 
-  
-/* the eight basic operations FF() through III() */
-#define FF(a, b, c, d, x, s)        {\
-      (a) += F((b), (c), (d)) + (x);\
-      (a) = ROL((a), (s));\
-   }
-#define GG(a, b, c, d, x, s)        {\
-      (a) += G((b), (c), (d)) + (x) + 0x5a827999UL;\
-      (a) = ROL((a), (s));\
-   }
-#define HH(a, b, c, d, x, s)        {\
-      (a) += H((b), (c), (d)) + (x) + 0x6ed9eba1UL;\
-      (a) = ROL((a), (s));\
-   }
-#define II(a, b, c, d, x, s)        {\
-      (a) += I((b), (c), (d)) + (x) + 0x8f1bbcdcUL;\
-      (a) = ROL((a), (s));\
-   }
-#define FFF(a, b, c, d, x, s)        {\
-      (a) += F((b), (c), (d)) + (x);\
-      (a) = ROL((a), (s));\
-   }
-#define GGG(a, b, c, d, x, s)        {\
-      (a) += G((b), (c), (d)) + (x) + 0x6d703ef3UL;\
-      (a) = ROL((a), (s));\
-   }
-#define HHH(a, b, c, d, x, s)        {\
-      (a) += H((b), (c), (d)) + (x) + 0x5c4dd124UL;\
-      (a) = ROL((a), (s));\
-   }
-#define III(a, b, c, d, x, s)        {\
-      (a) += I((b), (c), (d)) + (x) + 0x50a28be6UL;\
-      (a) = ROL((a), (s));\
-   }
-
-/********************************************************************/
-
-/* function prototypes */
-
-void MDinit(dword *MDbuf);
-/*
- *  initializes MDbuffer to "magic constants"
+/*!\file rmd128.h
+ * \brief RIPEMD-128 hash function.
+ * \ingroup HASH_m HASH_rmd128_m 
  */
 
-void compress(dword *MDbuf, dword *X);
-/*
- *  the compression function.
- *  transforms MDbuf using message bytes X[0] through X[15]
+#ifndef  _RMD128_H
+#define  _RMD128_H
+
+#include "beecrypt.h"
+
+/*!\brief Holds all the parameters necessary for the RIPEMD-128 algorithm.
+ * \ingroup HASH_rmd128_h
  */
+typedef struct
+{
+	/*!\var h
+	 */
+	uint32_t h[5];
+	/*!\var data
+	 */
+	uint32_t data[16];
+	/*!\var length
+	 * \brief Multi-precision integer counter for the bits that have been
+	 *  processed so far.
+	 */
+	#if (MP_WBITS == 64)
+	mpw length[1];
+	#elif (MP_WBITS == 32)
+	mpw length[2];
+	#else
+	# error
+	#endif
+    /*!\var offset
+     * \brief Offset into \a data; points to the place where new data will be
+     *  copied before it is processed.
+     */
+	uint32_t offset;
+} rmd128Param;
 
-void MDfinish(dword *MDbuf, byte *strptr, dword lswlen, dword mswlen);
-/*
- *  puts bytes from strptr into X and pad out; appends length 
- *  and finally, compresses the last block(s)
- *  note: length in bits == 8 * (lswlen + 2^32 mswlen).
- *  note: there are (lswlen mod 64) bytes left in strptr.
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!\var rmd128
+ * \brief Holds the full API description of the RIPEMD-128 algorithm.
  */
+/*@unchecked@*/ /*@observer@*/
+extern BEECRYPTAPI const hashFunction rmd128;
 
-#endif  /* RMD128H */
+/*!\fn int rmd128Reset(rmd128Param* mp)
+ * \brief This function resets the parameter block so that it's ready for a
+ *  new hash.
+ * \param mp The hash function's parameter block.
+ * \retval 0 on success.
+ */
+BEECRYPTAPI
+void rmd128Process(rmd128Param* mp)
+	/*@modifies mp @*/;
 
-/*********************** end of file rmd128.h ***********************/
+/*!\fn int rmd128Reset(rmd128Param* mp)
+ * \brief This function resets the parameter block so that it's ready for a
+ *  new hash.
+ * \param mp The hash function's parameter block.
+ * \retval 0 on success.
+ */
+BEECRYPTAPI
+int rmd128Reset   (rmd128Param* mp)
+	/*@modifies mp @*/;
 
+/*!\fn int rmd128Update(rmd128Param* mp, const byte* data, size_t size)
+ * \brief This function should be used to pass successive blocks of data
+ *  to be hashed.
+ * \param mp The hash function's parameter block.
+ * \param data
+ * \param size
+ * \retval 0 on success.
+ */
+BEECRYPTAPI
+int rmd128Update  (rmd128Param* mp, const byte* data, size_t size)
+	/*@modifies mp @*/;
+
+/*!\fn int rmd128Digest(rmd128Param* mp, byte* digest)
+ * \brief This function finishes the current hash computation and copies
+ *  the digest value into \a digest.
+ * \param mp The hash function's parameter block.
+ * \param digest The place to store the 20-byte digest.
+ * \retval 0 on success.
+ */
+BEECRYPTAPI
+int rmd128Digest  (rmd128Param* mp, byte* digest)
+	/*@modifies mp, digest @*/;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

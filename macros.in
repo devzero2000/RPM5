@@ -446,9 +446,11 @@ print (t)\
 # Choose metadata file digest algorithm:
 #	1 	MD5
 #	2	SHA1
+#	3	RIPEMD-160
 #	8	SHA256
 #	9	SHA384
 #	10	SHA512
+#	105	RIPEMD-128
 #
 # Note: choosing anything but MD5 introduces instant legacy incompatibility.
 %_build_file_digest_algo	1

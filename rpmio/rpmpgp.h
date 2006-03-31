@@ -282,13 +282,15 @@ extern struct pgpValTbl_s pgpCompressionTbl[];
 typedef enum pgpHashAlgo_e {
     PGPHASHALGO_MD5		=  1,	/*!< MD5 */
     PGPHASHALGO_SHA1		=  2,	/*!< SHA1 */
-    PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD160 */
+    PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD-160 */
     PGPHASHALGO_MD2		=  5,	/*!< MD2 */
-    PGPHASHALGO_TIGER192	=  6,	/*!< TIGER192 */
+    PGPHASHALGO_TIGER192	=  6,	/*!< TIGER-192 */
     PGPHASHALGO_HAVAL_5_160	=  7,	/*!< HAVAL-5-160 */
     PGPHASHALGO_SHA256		=  8,	/*!< SHA256 */
     PGPHASHALGO_SHA384		=  9,	/*!< SHA384 */
     PGPHASHALGO_SHA512		= 10,	/*!< SHA512 */
+
+    PGPHASHALGO_RIPEMD128	= 105,	/*!< (private) RIPEMD-128 */
 } pgpHashAlgo;
 
 /**
