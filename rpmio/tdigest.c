@@ -9,6 +9,7 @@ static rpmDigestFlags flags = RPMDIGEST_NONE;
 extern int _rpmio_debug;
 
 static int fips = 0;
+static int crctest = 0;
 static int gcrypt = 0;
 
 const char * FIPSAdigest = "a9993e364706816aba3e25717850c26c9cd0d89d";
@@ -21,14 +22,18 @@ static struct poptOption optionsTable[] = {
  { "sha256",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA256,	NULL, NULL },
  { "sha384",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA384,	NULL, NULL },
  { "sha512",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA512,	NULL, NULL },
- { "rmd128",'\0', POPT_ARG_VAL,&hashalgo, PGPHASHALGO_RIPEMD128,NULL, NULL },
- { "rmd160",'\0', POPT_ARG_VAL,&hashalgo, PGPHASHALGO_RIPEMD160,NULL, NULL },
+ { "crc32",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_CRC32,	NULL, NULL },
+ { "rmd128",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_RIPEMD128,NULL, NULL },
+ { "rmd160",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_RIPEMD160,NULL, NULL },
 #ifdef	DYING
  { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
 #endif
  { "fipsa",'\0', POPT_ARG_VAL, &fips, 1,	NULL, NULL },
  { "fipsb",'\0', POPT_ARG_VAL, &fips, 2,	NULL, NULL },
  { "fipsc",'\0', POPT_ARG_VAL, &fips, 3,	NULL, NULL },
+ { "crc1",'\0', POPT_ARG_VAL, &crctest, 1,	NULL, NULL },
+ { "crc2",'\0', POPT_ARG_VAL, &crctest, 2,	NULL, NULL },
+ { "crc3",'\0', POPT_ARG_VAL, &crctest, 3,	NULL, NULL },
  { "gcrypt",'\0', POPT_ARG_VAL, &gcrypt, 1,	NULL, NULL },
  { "debug",'d', POPT_ARG_VAL, &_rpmio_debug, -1,	NULL, NULL },
   POPT_AUTOHELP
@@ -138,6 +143,34 @@ main(int argc, const char *argv[])
 	    fflush(stdout);
 	}
 fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
+	return 0;
+    } else
+    if (crctest) {
+	byte buf[40];
+fprintf(stderr, "===> crctest %d\n", crctest);
+	switch (crctest) {
+	case 1:		/* 40 0x00, CRC-32 is 0x864d7f99 */
+	    memset(buf, 0, sizeof(buf));
+	    ifn = "864d7f99";
+	    break;
+	case 2:		/* 40 0xff, CRC-32 is 0xc55e457a */
+	    memset(buf, -1, sizeof(buf));
+	    ifn = "c55e457a";
+	    break;
+	case 3:		/* 40 increasing bytes, CRC-32 is 0xbf671ed0 */
+	    for (i = 0; i < sizeof(buf); i++)
+		buf[i] = i + 1;
+	    ifn = "bf671ed0";
+	    break;
+	}
+	ctx = rpmDigestInit(PGPHASHALGO_CRC32, flags);
+	rpmDigestUpdate(ctx, buf, sizeof(buf));
+	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
+	if (digest) {
+	    fprintf(stdout, "%s     %s\n", digest, ifn);
+	    fflush(stdout);
+	    free((void *)digest);
+	}
 	return 0;
     }
 

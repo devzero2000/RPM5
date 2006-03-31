@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include "rpmio_internal.h"
+#include "crc32.h"
 #include "rmd128.h"
 #include "rmd160.h"
 #include "debug.h"
@@ -103,6 +104,19 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Reset = (void *) rmd128Reset;
 	ctx->Update = (void *) rmd128Update;
 	ctx->Digest = (void *) rmd128Digest;
+/*@=type@*/
+	break;
+    case PGPHASHALGO_CRC32:
+	ctx->digestlen = 32/8;
+	ctx->datalen = 8;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramlen = sizeof(crc32Param);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramlen);
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) crc32Reset;
+	ctx->Update = (void *) crc32Update;
+	ctx->Digest = (void *) crc32Digest;
 /*@=type@*/
 	break;
 #if HAVE_BEECRYPT_API_H

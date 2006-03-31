@@ -291,6 +291,7 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SHA512		= 10,	/*!< SHA512 */
 
     PGPHASHALGO_RIPEMD128	= 105,	/*!< (private) RIPEMD-128 */
+    PGPHASHALGO_CRC32		= 106,	/*!< (private) CRC-32 */
 } pgpHashAlgo;
 
 /**

@@ -60,10 +60,10 @@ static uint32_t rmd128hinit[4] =
 /*@-sizeoftype@*/
 /*@unchecked@*/ /*@observer@*/
 const hashFunction rmd128 = {
-	"RIPEMD128",
+	"RIPEMD-128",
 	sizeof(rmd128Param),
 	64,
-	16,
+	128/8,
 	(hashFunctionReset) rmd128Reset,
 	(hashFunctionUpdate) rmd128Update,
 	(hashFunctionDigest) rmd128Digest

@@ -58,10 +58,10 @@ static uint32_t rmd160hinit[5] =
 /*@-sizeoftype@*/
 /*@unchecked@*/ /*@observer@*/
 const hashFunction rmd160 = {
-	"RIPEMD160",
+	"RIPEMD-160",
 	sizeof(rmd160Param),
 	64,
-	16,
+	160/8,
 	(hashFunctionReset) rmd160Reset,
 	(hashFunctionUpdate) rmd160Update,
 	(hashFunctionDigest) rmd160Digest
@@ -451,7 +451,7 @@ int rmd160Digest(rmd160Param* mp, byte* data)
 {
 	rmd160Finish(mp);
 
-	/* encode 4 integers little-endian style */
+	/* encode 5 integers little-endian style */
 	data[ 0] = (byte)(mp->h[0]      );
 	data[ 1] = (byte)(mp->h[0] >>  8);
 	data[ 2] = (byte)(mp->h[0] >> 16);
