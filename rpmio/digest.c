@@ -4,7 +4,6 @@
 
 #include "system.h"
 #include "rpmio_internal.h"
-#include "crc32.h"
 #include "rmd128.h"
 #include "rmd160.h"
 #include "debug.h"
@@ -14,6 +13,65 @@
 #else
 #define	DPRINTF(_a)
 #endif
+
+typedef struct {
+	uint32_t crc;
+	uint32_t polynomial;
+	uint32_t xorout;
+	uint32_t table[256];
+} crc32Param;
+
+static int crc32Reset(register crc32Param* mp)
+	/*@modifies *mp @*/
+{
+	mp->crc = 0xffffffff;
+	mp->polynomial = 0xedb88320;	/* reflected 0x04c11db7 */
+	mp->xorout = 0xffffffff;
+
+	/* generate the table of CRC remainders for all possible bytes */
+	{   uint32_t c;
+	    uint32_t i, j;
+	    for (i = 0;  i < 256;  i++) {
+		c = i;
+		for (j = 0;  j < 8;  j++) {
+	             if (c & 1)
+	                c = mp->polynomial ^ (c >> 1);
+	             else
+	                c = (c >> 1);
+		}
+	        mp->table[i] = c;
+	    }
+	}
+	return 0;
+}
+
+static int crc32Update(crc32Param* mp, const byte* data, size_t size)
+	/*@modifies *mp @*/
+{
+	uint32_t c = mp->crc;
+
+	while (size) {
+		c = mp->table[(c ^ *data) & 0xff] ^ (c >> 8);
+		size--;
+		data++;
+	}
+	mp->crc = c;
+	return 0;
+}
+
+static int crc32Digest(crc32Param* mp, byte* data)
+	/*@modifies *mp @*/
+{
+	uint32_t c = mp->crc ^ mp->xorout;
+
+	data[ 0] = (byte)(c >> 24);
+	data[ 1] = (byte)(c >> 16);
+	data[ 2] = (byte)(c >>  8);
+	data[ 3] = (byte)(c      );
+
+	(void) crc32Reset(mp);
+	return 0;
+}
 
 /*@access DIGEST_CTX@*/
 
