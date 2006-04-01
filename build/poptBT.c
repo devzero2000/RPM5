@@ -9,7 +9,6 @@
 #include <rpmbuild.h>
 
 #include "build.h"
-#include "legacy.h"	/* XXX _noDirTokens */
 #include "debug.h"
 
 /*@unchecked@*/
@@ -211,8 +210,6 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("override build root"), "DIRECTORY" },
  { "clean", '\0', 0, 0, POPT_RMBUILD,
 	N_("remove build tree when done"), NULL},
- { "dirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 0,
-	N_("generate headers compatible with rpm4 packaging"), NULL},
  { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmBTArgs.force, RPMCLI_POPT_FORCE,
         N_("ignore ExcludeArch: directives from spec file"), NULL},
  { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
@@ -221,9 +218,6 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify build dependencies"), NULL },
- { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
-	N_("generate package header(s) compatible with (legacy) rpm[23] packaging"),
-	NULL},
 
  { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },

@@ -23,6 +23,7 @@
 	- add RIPEMD-160 and RIPEMD-128 digest support.
 	- drop almost all dependency whiteout from default rpm configgery.
 	- eliminate skipDirs fingerprint band-aid.
+	- eliminate support for _noDirTokens, refactoring as appropriate.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

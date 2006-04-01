@@ -20,7 +20,6 @@
 
 #include "buildio.h"
 
-#include "legacy.h"	/* XXX providePackageNVR */
 #include "signature.h"
 #include "rpmlead.h"
 #include "debug.h"
@@ -411,9 +410,96 @@ static int rpmLeadVersion(void)
     }
 
     rpmlead_version = rpmpkg_version / 10000;
-    if (_noDirTokens || (rpmlead_version < 3 || rpmlead_version > 4))
+    /* XXX silly sanity check. */
+    if (rpmlead_version < 3 || rpmlead_version > 4)
 	rpmlead_version = 3;
     return rpmlead_version;
+}
+
+/**
+ * Retrofit an explicit Provides: N = E:V-R dependency into package headers.
+ * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
+ * @param h             header
+ */
+static void providePackageNVR(Header h)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char *name, *version, *release;
+    int_32 * epoch;
+    const char *pEVR;
+    char *p;
+    int_32 pFlags = RPMSENSE_EQUAL;
+    const char ** provides = NULL;
+    const char ** providesEVR = NULL;
+    rpmTagType pnt, pvt;
+    int_32 * provideFlags = NULL;
+    int providesCount;
+    int i, xx;
+    int bingo = 1;
+
+    /* Generate provides for this package name-version-release. */
+    xx = headerNVR(h, &name, &version, &release);
+    if (!(name && version && release))
+	return;
+    pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    *p = '\0';
+    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+	sprintf(p, "%d:", *epoch);
+	while (*p != '\0')
+	    p++;
+    }
+    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
+
+    /*
+     * Rpm prior to 3.0.3 does not have versioned provides.
+     * If no provides at all are available, we can just add.
+     */
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+	goto exit;
+
+    /*
+     * Otherwise, fill in entries on legacy packages.
+     */
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
+	for (i = 0; i < providesCount; i++) {
+	    char * vdummy = "";
+	    int_32 fdummy = RPMSENSE_ANY;
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+			&vdummy, 1);
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+			&fdummy, 1);
+	}
+	goto exit;
+    }
+
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+
+    /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
+    if (provides && providesEVR && provideFlags)
+    for (i = 0; i < providesCount; i++) {
+        if (!(provides[i] && providesEVR[i]))
+            continue;
+	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
+	    !strcmp(name, provides[i]) && !strcmp(pEVR, providesEVR[i])))
+	    continue;
+	bingo = 0;
+	break;
+    }
+    /*@=nullderef@*/
+
+exit:
+    provides = hfd(provides, pnt);
+    providesEVR = hfd(providesEVR, pvt);
+
+    if (bingo) {
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
+		&name, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+		&pFlags, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+		&pEVR, 1);
+    }
 }
 
 /*@-boundswrite@*/

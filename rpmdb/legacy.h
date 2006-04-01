@@ -45,13 +45,6 @@ int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
 	/*@modifies digest, *fsizep, fileSystem, internalState @*/;
 
 /**
- * Convert absolute path tag to (dirname,basename,dirindex) tags.
- * @param h		header
- */
-void compressFilelist(Header h)
-	/*@modifies h @*/;
-
-/**
  * Retrieve file names from header.
  *
  * The representation of file names in package headers changed in rpm-4.0.
@@ -71,29 +64,6 @@ void compressFilelist(Header h)
 void rpmfiBuildFNames(Header h, rpmTag tagN,
 		/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
 	/*@modifies *fnp, *fcp @*/;
-
-/**
- * Convert (dirname,basename,dirindex) tags to absolute path tag.
- * @param h		header
- */
-void expandFilelist(Header h)
-	/*@modifies h @*/;
-
-/**
- * Retrofit a Provides: name = version-release dependency into legacy
- * package headers.
- * @param h		header
- */
-void providePackageNVR(Header h)
-	/*@modifies h @*/;
-
-/**
- * Do all necessary retorfits for a package header.
- * @param h		header
- * @param lead
- */
-void legacyRetrofit(Header h, const struct rpmlead * lead)
-	/*@modifies h@*/;
 
 #ifdef __cplusplus
 }

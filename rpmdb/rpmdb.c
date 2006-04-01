@@ -2986,9 +2986,6 @@ memset(data, 0, sizeof(*data));
 
     xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count);
 
-    if (_noDirTokens)
-	expandFilelist(h);
-
     (void) blockSignals(db, &signalMask);
 
     {

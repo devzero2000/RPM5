@@ -2,7 +2,6 @@ LIBRPMDB_0
 {
   global:
     _rpmdb_debug;
-    compressFilelist;
     db3dbi;
     db3Free;
     db3New;
@@ -17,7 +16,6 @@ LIBRPMDB_0
     dbiTagsInit;
     dbiTagsMax;
     dodigest;
-    expandFilelist;
     _fini;
     fpCacheCreate;
     fpCacheFree;
@@ -41,11 +39,8 @@ LIBRPMDB_0
     htGetEntry;
     htHasEntry;
     _init;
-    legacyRetrofit;
     mergesort;
-    _noDirTokens;
     prDbiOpenFlags;
-    providePackageNVR;
     rdbOptions;
     rpmDatabasePoptTable;
     rpmdbAdd;

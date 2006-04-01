@@ -580,6 +580,7 @@ exit 0
 * Sat Apr  1 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.12
 - drop almost all dependency whiteout from default rpm configgery.
 - eliminate skipDirs fingerprint band-aid.
+- eliminate support for _noDirTokens, refactoring as appropriate.
 
 * Fri Mar 31 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.11
 - add RIPEMD-160 and RIPEMD-128 digest support.

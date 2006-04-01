@@ -12,7 +12,6 @@
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
-#include "legacy.h"	/* XXX legacyRetrofit() */
 #include "rpmlead.h"
 
 #include "header_internal.h"	/* XXX headerCheck */
@@ -1059,9 +1058,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
-	/* Convert legacy headers on the fly ... */
-	legacyRetrofit(h, l);
-	
+
 	/* Append (and remap) signature tags to the metadata. */
 	headerMergeLegacySigs(h, sigh);
 
