@@ -1370,6 +1370,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 	case PGPHASHALGO_SHA256:	fi->digestlen = 256/8;	break;
 	case PGPHASHALGO_SHA384:	fi->digestlen = 384/8;	break;
 	case PGPHASHALGO_SHA512:	fi->digestlen = 512/8;	break;
+	case PGPHASHALGO_CRC32:		fi->digestlen = 32/8;	break;
 	}
 	fi->fdigestalgos = NULL;
     }

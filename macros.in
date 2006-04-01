@@ -451,6 +451,7 @@ print (t)\
 #	9	SHA384
 #	10	SHA512
 #	105	RIPEMD-128
+#	106	CRC-32
 #
 # Note: choosing anything but MD5 introduces instant legacy incompatibility.
 %_build_file_digest_algo	1
