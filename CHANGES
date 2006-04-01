@@ -21,6 +21,7 @@
 	- fix: obscure segfault erasing multiply installed packages.
 	- fix: set file contexts on non-packaged dirs iff selinux enabled.
 	- add RIPEMD-160 and RIPEMD-128 digest support.
+	- drop almost all dependency whiteout from default rpm configgery.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.
