@@ -3371,41 +3371,6 @@ exit:
     return ret;
 }
 
-#define _skip(_dn)	{ sizeof(_dn)-1, (_dn) }
-
-/*@unchecked@*/ /*@observer@*/
-static struct skipDir_s {
-    int dnlen;
-/*@observer@*/ /*@null@*/
-    const char * dn;
-} skipDirs[] = {
-    _skip("/usr/share/zoneinfo"),
-    _skip("/usr/share/locale"),
-    _skip("/usr/share/i18n"),
-    _skip("/usr/share/doc"),
-    _skip("/usr/lib/locale"),
-    _skip("/usr/src"),
-    _skip("/lib/modules"),
-    { 0, NULL }
-};
-
-static int skipDir(const char * dn)
-	/*@*/
-{
-    struct skipDir_s * sd = skipDirs;
-    int dnlen;
-
-    dnlen = strlen(dn);
-    for (sd = skipDirs; sd->dn != NULL; sd++) {
-	if (dnlen < sd->dnlen)
-	    continue;
-	if (strncmp(dn, sd->dn, sd->dnlen))
-	    continue;
-	return 1;
-    }
-    return 0;
-}
-
 /* XXX transaction.c */
 /*@-compmempass@*/
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
@@ -3441,9 +3406,6 @@ key->data = (void *) fpList[i].baseName;
 /*@=boundsread =dependenttrans@*/
 key->size = strlen((char *)key->data);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
-
-	if (skipDir(fpList[i].entry->dirName))
-	    continue;
 
 	xx = rpmdbGrowIterator(mi, i);
 
