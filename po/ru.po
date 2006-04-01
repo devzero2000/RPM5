@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-01 05:55-0500\n"
+"POT-Creation-Date: 2006-04-01 16:33-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -360,7 +360,7 @@ msgstr "не заданы аргументы для верификации"
 msgid "no arguments given"
 msgstr "не заданы аргументы"
 
-#: build/build.c:140 build/pack.c:530
+#: build/build.c:140 build/pack.c:616
 msgid "Unable to open temp file.\n"
 msgstr "Невозможно открыть временный файл.\n"
 
@@ -521,87 +521,87 @@ msgstr "Файл должен начинаться с \"/\": %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s\n"
 
-#: build/files.c:1161
+#: build/files.c:1269
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s\n"
 
-#: build/files.c:1325
+#: build/files.c:1433
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1572
+#: build/files.c:1677
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s\n"
 
-#: build/files.c:1596
+#: build/files.c:1701
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1808
+#: build/files.c:1913
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1814
+#: build/files.c:1919
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: ошибка чтения во время импортирования.\n"
 
-#: build/files.c:1818 lib/rpmchecksig.c:607
+#: build/files.c:1923 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: это не открытый ключ.\n"
 
-#: build/files.c:1825
+#: build/files.c:1930
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: ошибка чтения во время импортирования.\n"
 
-#: build/files.c:1878
+#: build/files.c:1983
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:1902
+#: build/files.c:2007
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob не разрешаются: %s\n"
 
-#: build/files.c:1919 lib/rpminstall.c:374
+#: build/files.c:2024 lib/rpminstall.c:374
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1979
+#: build/files.c:2084
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files %s: %s\n"
 
-#: build/files.c:1990 build/pack.c:155
+#: build/files.c:2095 build/pack.c:154
 #, c-format
 msgid "line: %s\n"
 msgstr "строка: %s\n"
 
-#: build/files.c:2382
+#: build/files.c:2487
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s\n"
 
-#: build/files.c:2394 build/parsePrep.c:50
+#: build/files.c:2499 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
-#: build/files.c:2438
+#: build/files.c:2543
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Проверка на неупакованный(е) файл(ы): %s\n"
 
-#: build/files.c:2455
+#: build/files.c:2560
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -610,7 +610,7 @@ msgstr ""
 "Обнаружен(ы) установленный(е) (но не упакованный(е)) файл(ы):\n"
 "%s"
 
-#: build/files.c:2483
+#: build/files.c:2588
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
@@ -644,152 +644,152 @@ msgstr "getGidS: слишком много идентификаторов групп.\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Невозможно канонизировать имя компьютера: %s\n"
 
-#: build/pack.c:90
+#: build/pack.c:89
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "ошибка создания архива на файле %s: %s\n"
 
-#: build/pack.c:93
+#: build/pack.c:92
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "ошибка создания архива: %s\n"
 
-#: build/pack.c:115
+#: build/pack.c:114
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy: ошибка записи: %s\n"
 
-#: build/pack.c:122
+#: build/pack.c:121
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy: ошибка чтения: %s\n"
 
-#: build/pack.c:221 build/pack.c:235
+#: build/pack.c:220 build/pack.c:234
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Невозможно открыть файл PreIn: %s\n"
 
-#: build/pack.c:228
+#: build/pack.c:227
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Невозможно открыть файл PreUn: %s\n"
 
-#: build/pack.c:242
+#: build/pack.c:241
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Невозможно открыть файл PostIn: %s\n"
 
-#: build/pack.c:249 build/pack.c:256
+#: build/pack.c:248 build/pack.c:255
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Невозможно открыть файл PostUn: %s\n"
 
-#: build/pack.c:264
+#: build/pack.c:263
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Невозможно открыть файл VerifyScript: %s\n"
 
-#: build/pack.c:279
+#: build/pack.c:278
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Невозможно открыть файл Trigger script: %s\n"
 
-#: build/pack.c:308
+#: build/pack.c:307
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: открытие %s: %s\n"
 
-#: build/pack.c:318
+#: build/pack.c:317
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: чтение %s: %s\n"
 
-#: build/pack.c:327 build/pack.c:577
+#: build/pack.c:326 build/pack.c:663
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: ошибка Fseek: %s\n"
 
-#: build/pack.c:359
+#: build/pack.c:358
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s  не является пакетом RPM\n"
 
-#: build/pack.c:364
+#: build/pack.c:363
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читается заголовок из %s\n"
 
-#: build/pack.c:518
+#: build/pack.c:604
 msgid "Unable to create immutable header region.\n"
 msgstr "Невозможно поместить заголовок в нерперывную область памяти.\n"
 
-#: build/pack.c:537
+#: build/pack.c:623
 msgid "Unable to write temp header\n"
 msgstr "Невозможно записать временный заголовок\n"
 
-#: build/pack.c:547
+#: build/pack.c:633
 msgid "Bad CSA data\n"
 msgstr "Неверные данные CSA\n"
 
-#: build/pack.c:584
+#: build/pack.c:670
 msgid "Unable to write final header\n"
 msgstr "Невозможно записать окончательный заголовок\n"
 
-#: build/pack.c:604
+#: build/pack.c:690
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Генерируется подпись: %d\n"
 
-#: build/pack.c:622
+#: build/pack.c:708
 msgid "Unable to reload signature header.\n"
 msgstr "Невозможно перезагрузить заголовок подписи.\n"
 
-#: build/pack.c:630
+#: build/pack.c:716
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:666 lib/psm.c:1690
+#: build/pack.c:752 lib/psm.c:1690
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
 
-#: build/pack.c:681
+#: build/pack.c:767
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Невозможно открыть цель подписи %s: %s\n"
 
-#: build/pack.c:692
+#: build/pack.c:778
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Невозможно прочитать заголовок из %s: %s\n"
 
-#: build/pack.c:706
+#: build/pack.c:792
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Невозможно записать заголовок в %s: %s\n"
 
-#: build/pack.c:716
+#: build/pack.c:802
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Невозможно прочитать содержимое из %s: %s\n"
 
-#: build/pack.c:722
+#: build/pack.c:808
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:759 lib/psm.c:2003
+#: build/pack.c:845 lib/psm.c:2003
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
 
-#: build/pack.c:832
+#: build/pack.c:918
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Невозможно создать имя файла для пакета %s: %s\n"
 
-#: build/pack.c:849
+#: build/pack.c:935
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
@@ -1151,177 +1151,168 @@ msgstr "Не найдены совместимые архитектуры для сборки.\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Пакет не имеет %%description: %s\n"
 
-#: build/poptBT.c:108
+#: build/poptBT.c:107
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "buildroot уже указан, %s игнорируется\n"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:159
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 "выполнить по стадию %prep (развернуть исходники и наложить заплаты) из <файл "
 "спецификации>"
 
-#: build/poptBT.c:161 build/poptBT.c:164 build/poptBT.c:167 build/poptBT.c:170
-#: build/poptBT.c:173 build/poptBT.c:176 build/poptBT.c:179
+#: build/poptBT.c:160 build/poptBT.c:163 build/poptBT.c:166 build/poptBT.c:169
+#: build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178
 msgid "<specfile>"
 msgstr "<файл спецификации>"
 
-#: build/poptBT.c:163
+#: build/poptBT.c:162
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 "выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
 
-#: build/poptBT.c:166
+#: build/poptBT.c:165
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 "выполнить по стадию %install (%prep, %build, затем установка) из <файл "
 "спецификации>"
 
-#: build/poptBT.c:169
+#: build/poptBT.c:168
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "проверить раздел %files из <файл спецификации>"
 
-#: build/poptBT.c:172
+#: build/poptBT.c:171
 msgid "build source and binary packages from <specfile>"
 msgstr "собрать исходный и двоичный пакеты по <файл спецификации>"
 
-#: build/poptBT.c:175
+#: build/poptBT.c:174
 msgid "build binary package only from <specfile>"
 msgstr "собрать двоичный пакет по <файл спецификации>"
 
-#: build/poptBT.c:178
+#: build/poptBT.c:177
 msgid "build source package only from <specfile>"
 msgstr "собрать исходный пакет по <файлу спецификации>"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:181
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 "выполнить по стадию %prep (развернуть исходники и наложить заплаты) из "
 "<архив tar>"
 
-#: build/poptBT.c:183 build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
-#: build/poptBT.c:195 build/poptBT.c:198 build/poptBT.c:201
+#: build/poptBT.c:182 build/poptBT.c:185 build/poptBT.c:188 build/poptBT.c:191
+#: build/poptBT.c:194 build/poptBT.c:197 build/poptBT.c:200
 msgid "<tarball>"
 msgstr "<архив tar>"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:184
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "выполнить по стадию %build (%prep, затем компиляция) из <архив tar>"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:187
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 "выполнить по стадию %install (%prep, %build, затем установка) из <архив tar>"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:190
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "проверить секцию %files из <архив tar>"
 
-#: build/poptBT.c:194
+#: build/poptBT.c:193
 msgid "build source and binary packages from <tarball>"
 msgstr "собрать исходный и двоичный пакеты из <архив tar>"
 
-#: build/poptBT.c:197
+#: build/poptBT.c:196
 msgid "build binary package only from <tarball>"
 msgstr "собрать двоичный пакет из <архив tar>"
 
-#: build/poptBT.c:200
+#: build/poptBT.c:199
 msgid "build source package only from <tarball>"
 msgstr "собрать исходный пакет из <архив tar>"
 
-#: build/poptBT.c:204
+#: build/poptBT.c:203
 msgid "build binary package from <source package>"
 msgstr "собрать двоичный пакет из <исходный пакет>"
 
-#: build/poptBT.c:205 build/poptBT.c:208
+#: build/poptBT.c:204 build/poptBT.c:207
 msgid "<source package>"
 msgstr "<исходный пакет>"
 
-#: build/poptBT.c:207
+#: build/poptBT.c:206
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "выполнить по стадию %install (%prep, %build, затем установка)  из <исходный "
 "пакет>"
 
-#: build/poptBT.c:211
+#: build/poptBT.c:210
 msgid "override build root"
 msgstr "переопределить build root"
 
-#: build/poptBT.c:213
+#: build/poptBT.c:212
 msgid "remove build tree when done"
 msgstr "после завершения удалить дерево исходников"
 
-#: build/poptBT.c:215 rpmdb/poptDB.c:28
-msgid "generate headers compatible with rpm4 packaging"
-msgstr "создать заголовки, совместимые с пакетами rpm4"
-
-#: build/poptBT.c:217
+#: build/poptBT.c:214
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "игнорировать ExcludeArch: в файле конфигурации"
 
-#: build/poptBT.c:219
+#: build/poptBT.c:216
 msgid "debug file state machine"
 msgstr "отладка машины состояния файлов"
 
-#: build/poptBT.c:221
+#: build/poptBT.c:218
 msgid "do not execute any stages of the build"
 msgstr "не выполнять никаких этапов сборки"
 
-#: build/poptBT.c:223
+#: build/poptBT.c:220
 msgid "do not verify build dependencies"
 msgstr "не проверять зависимости пакета перед сборкой"
 
-#: build/poptBT.c:225
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
-"создать заголовок(ки) пакета, совместимые с (устаревшими)  форматами rpm[23]"
-
-#: build/poptBT.c:229 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:405
+#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:405
 #: lib/poptQV.c:414 lib/poptQV.c:456
 msgid "don't verify package digest(s)"
 msgstr "не проверять дайджест пакета(ов)"
 
-#: build/poptBT.c:231 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:408
+#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:408
 #: lib/poptQV.c:416 lib/poptQV.c:459
 msgid "don't verify database header(s) when retrieved"
 msgstr "не проверять заголовки, извлекаемые из базы данных"
 
-#: build/poptBT.c:233 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:411
+#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:411
 #: lib/poptQV.c:418 lib/poptQV.c:461
 msgid "don't verify package signature(s)"
 msgstr "не проверять подпись(и) в пакете(ах)"
 
-#: build/poptBT.c:236
+#: build/poptBT.c:230
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "игнорировать строки i18N из файла спецификации"
 
-#: build/poptBT.c:238
+#: build/poptBT.c:232
 msgid "remove sources when done"
 msgstr "после завершения удалить исходники"
 
-#: build/poptBT.c:240
+#: build/poptBT.c:234
 msgid "remove specfile when done"
 msgstr "после завершения удалить файл спецификации"
 
-#: build/poptBT.c:242
+#: build/poptBT.c:236
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "перейти непосредственно к указанному этапу (только для c,i)"
 
-#: build/poptBT.c:244
+#: build/poptBT.c:238
 msgid "generate PGP/GPG signature"
 msgstr "генерировать PGP/GPG-подпись"
 
-#: build/poptBT.c:246
+#: build/poptBT.c:240
 msgid "override target platform"
 msgstr "переопределить целевую платформу"
 
-#: build/poptBT.c:248
+#: build/poptBT.c:242
 msgid "lookup i18N strings in specfile catalog"
 msgstr "искать строки I18N в каталоге файла спецификации"
 
@@ -1662,108 +1653,108 @@ msgstr "невозможно писать в %%%s %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "ошибка создания временного файла %s\n"
 
-#: lib/package.c:363
+#: lib/package.c:362
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:372 lib/package.c:436 lib/package.c:513 lib/signature.c:232
+#: lib/package.c:371 lib/package.c:435 lib/package.c:512 lib/signature.c:232
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:392 lib/signature.c:248
+#: lib/package.c:391 lib/signature.c:248
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:413 lib/signature.c:275
+#: lib/package.c:412 lib/signature.c:275
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:427 lib/signature.c:289
+#: lib/package.c:426 lib/signature.c:289
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:455
+#: lib/package.c:454
 #, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
-#: lib/package.c:470
+#: lib/package.c:469
 #, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:482
+#: lib/package.c:481
 #, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:930 lib/package.c:956
-#: lib/package.c:988
+#: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
+#: lib/package.c:987
 #, fuzzy, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 "только подписи версии 3 могут быть проверены, пропускается подпись версии %u"
 
-#: lib/package.c:674
+#: lib/package.c:673
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:678
+#: lib/package.c:677
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:686
+#: lib/package.c:685
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:695
+#: lib/package.c:694
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:709
+#: lib/package.c:708
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:722
+#: lib/package.c:721
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:800
+#: lib/package.c:799
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "пакеты версии 1 не поддерживаются этой версией RPM\n"
 
-#: lib/package.c:809
+#: lib/package.c:808
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
 
-#: lib/package.c:821 lib/rpmchecksig.c:229 lib/rpmchecksig.c:766
+#: lib/package.c:820 lib/rpmchecksig.c:229 lib/rpmchecksig.c:766
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/package.c:828 lib/rpmchecksig.c:236 lib/rpmchecksig.c:774
+#: lib/package.c:827 lib/rpmchecksig.c:236 lib/rpmchecksig.c:774
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
 
-#: lib/package.c:895
+#: lib/package.c:894
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: ошибка headerRead\n"
 
-#: lib/package.c:1003 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
@@ -3953,10 +3944,6 @@ msgstr ""
 msgid "verify database files"
 msgstr "проверить файлы базы данных"
 
-#: rpmdb/poptDB.c:25
-msgid "generate headers compatible with (legacy) rpm[23] packaging"
-msgstr "создать заголовки, совместимые с (устаревшими) пакетами rpm[23]"
-
 #: rpmdb/rpmdb.c:216
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
@@ -3977,7 +3964,7 @@ msgid "no dbpath has been set\n"
 msgstr "параметер dbpath не установлен\n"
 
 #: rpmdb/rpmdb.c:1260 rpmdb/rpmdb.c:1391 rpmdb/rpmdb.c:1447 rpmdb/rpmdb.c:2436
-#: rpmdb/rpmdb.c:2565 rpmdb/rpmdb.c:3319
+#: rpmdb/rpmdb.c:2565 rpmdb/rpmdb.c:3316
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "ошибка(%d) получения записей \"%s\" из индекса %s\n"
@@ -4037,100 +4024,100 @@ msgstr "ошибка(%d) сохранения записи \"%s\" в %s\n"
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "ошибка(%d) удаления записи %s из %s\n"
 
-#: rpmdb/rpmdb.c:3066
+#: rpmdb/rpmdb.c:3063
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета\n"
 
-#: rpmdb/rpmdb.c:3129
+#: rpmdb/rpmdb.c:3126
 #, fuzzy
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdb: пропускается"
 
-#: rpmdb/rpmdb.c:3294
+#: rpmdb/rpmdb.c:3291
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: rpmdb/rpmdb.c:3298
+#: rpmdb/rpmdb.c:3295
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: rpmdb/rpmdb.c:3338
+#: rpmdb/rpmdb.c:3335
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "ошибка(%d) записи записи %s в %s\n"
 
-#: rpmdb/rpmdb.c:3747
+#: rpmdb/rpmdb.c:3706
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "удаляется %s после успешного завершения переиндекации базы в db3.\n"
 
-#: rpmdb/rpmdb.c:3786
+#: rpmdb/rpmdb.c:3745
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
-#: rpmdb/rpmdb.c:3818
+#: rpmdb/rpmdb.c:3777
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: rpmdb/rpmdb.c:3822
+#: rpmdb/rpmdb.c:3781
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "временная база данных %s уже существует\n"
 
-#: rpmdb/rpmdb.c:3828
+#: rpmdb/rpmdb.c:3787
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: rpmdb/rpmdb.c:3830
+#: rpmdb/rpmdb.c:3789
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "создаётся каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:3839
+#: rpmdb/rpmdb.c:3798
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3850
+#: rpmdb/rpmdb.c:3809
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3881
+#: rpmdb/rpmdb.c:3840
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "заголовок номер %u в базе данных неверный -- пропускается.\n"
 
-#: rpmdb/rpmdb.c:3921
+#: rpmdb/rpmdb.c:3880
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "невозможно добавить запись (первоначально в %u)\n"
 
-#: rpmdb/rpmdb.c:3935
+#: rpmdb/rpmdb.c:3894
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: rpmdb/rpmdb.c:3943
+#: rpmdb/rpmdb.c:3902
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: rpmdb/rpmdb.c:3945
+#: rpmdb/rpmdb.c:3904
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: rpmdb/rpmdb.c:3955
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: rpmdb/rpmdb.c:3957
+#: rpmdb/rpmdb.c:3916
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"
@@ -4565,6 +4552,18 @@ msgstr "использовать базу данных в КАТАЛОГЕ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "generate headers compatible with rpm4 packaging"
+#~ msgstr "создать заголовки, совместимые с пакетами rpm4"
+
+#~ msgid ""
+#~ "generate package header(s) compatible with (legacy) rpm[23] packaging"
+#~ msgstr ""
+#~ "создать заголовок(ки) пакета, совместимые с (устаревшими)  форматами rpm"
+#~ "[23]"
+
+#~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
+#~ msgstr "создать заголовки, совместимые с (устаревшими) пакетами rpm[23]"
 
 #~ msgid "don't verify MD5 digest of files"
 #~ msgstr "не проверять файлы на контрольную сумму MD5"

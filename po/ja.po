@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-01 05:55-0500\n"
+"POT-Creation-Date: 2006-04-01 16:33-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -365,7 +365,7 @@ msgstr "検証のための引数が指定されていません。"
 msgid "no arguments given"
 msgstr "引数が指定されていません。"
 
-#: build/build.c:140 build/pack.c:530
+#: build/build.c:140 build/pack.c:616
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません。\n"
 
@@ -526,87 +526,87 @@ msgstr "ファイルは \"/\" から始まらなければなりません: %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s\n"
 
-#: build/files.c:1161
+#: build/files.c:1269
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s\n"
 
-#: build/files.c:1325
+#: build/files.c:1433
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "シンボリックリンクが BuildRoot を指しています: %s -> %s\n"
 
-#: build/files.c:1572
+#: build/files.c:1677
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s\n"
 
-#: build/files.c:1596
+#: build/files.c:1701
 #, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:1808
+#: build/files.c:1913
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: 不明なタグ (%d) を読み込めませんでした。\n"
 
-#: build/files.c:1814
+#: build/files.c:1919
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: build/files.c:1818 lib/rpmchecksig.c:607
+#: build/files.c:1923 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ASCII形式の公開鍵ではありません。\n"
 
-#: build/files.c:1825
+#: build/files.c:1930
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te ポリシの読み込みに失敗しました。\n"
 
-#: build/files.c:1878
+#: build/files.c:1983
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 
-#: build/files.c:1902
+#: build/files.c:2007
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob は許可されていません: %s\n"
 
-#: build/files.c:1919 lib/rpminstall.c:374
+#: build/files.c:2024 lib/rpminstall.c:374
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:1979
+#: build/files.c:2084
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files のファイル %s をオープンできません: %s\\n\n"
 
-#: build/files.c:1990 build/pack.c:155
+#: build/files.c:2095 build/pack.c:154
 #, c-format
 msgid "line: %s\n"
 msgstr "%s行目: \n"
 
-#: build/files.c:2382
+#: build/files.c:2487
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2394 build/parsePrep.c:50
+#: build/files.c:2499 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:2438
+#: build/files.c:2543
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "伸張ファイルの検査中: %s\n"
 
-#: build/files.c:2455
+#: build/files.c:2560
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -615,7 +615,7 @@ msgstr ""
 "インストール済み(ただし未伸張)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2483
+#: build/files.c:2588
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -649,152 +649,152 @@ msgstr "getGidS: gid が多すぎます。\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "ホスト名を正式なものにできません: %s\n"
 
-#: build/pack.c:90
+#: build/pack.c:89
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "ファイル %s でアーカイブ作成に失敗: %s\n"
 
-#: build/pack.c:93
+#: build/pack.c:92
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "アーカイブ作成に失敗: %s\n"
 
-#: build/pack.c:115
+#: build/pack.c:114
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy で書き込みに失敗: %s\n"
 
-#: build/pack.c:122
+#: build/pack.c:121
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy で読み込みに失敗: %s\n"
 
-#: build/pack.c:221 build/pack.c:235
+#: build/pack.c:220 build/pack.c:234
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:228
+#: build/pack.c:227
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:242
+#: build/pack.c:241
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:249 build/pack.c:256
+#: build/pack.c:248 build/pack.c:255
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:264
+#: build/pack.c:263
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:279
+#: build/pack.c:278
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "TriggerScript ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:308
+#: build/pack.c:307
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: %s のオープン: %s\n"
 
-#: build/pack.c:318
+#: build/pack.c:317
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:327 build/pack.c:577
+#: build/pack.c:326 build/pack.c:663
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek に失敗しました: %s\n"
 
-#: build/pack.c:359
+#: build/pack.c:358
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s は RPM パッケージではありません\n"
 
-#: build/pack.c:364
+#: build/pack.c:363
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からヘッダの読み込み中\n"
 
-#: build/pack.c:518
+#: build/pack.c:604
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダ領域を作成できません。\n"
 
-#: build/pack.c:537
+#: build/pack.c:623
 msgid "Unable to write temp header\n"
 msgstr "一時ヘッダの書き込みができません。\n"
 
-#: build/pack.c:547
+#: build/pack.c:633
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ\n"
 
-#: build/pack.c:584
+#: build/pack.c:670
 msgid "Unable to write final header\n"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: build/pack.c:604
+#: build/pack.c:690
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の作成中: %d\n"
 
-#: build/pack.c:622
+#: build/pack.c:708
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: build/pack.c:630
+#: build/pack.c:716
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:666 lib/psm.c:1690
+#: build/pack.c:752 lib/psm.c:1690
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:681
+#: build/pack.c:767
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s のオープンに失敗: %s\n"
 
-#: build/pack.c:692
+#: build/pack.c:778
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s からヘッダ読み込みに失敗: %s\n"
 
-#: build/pack.c:706
+#: build/pack.c:792
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s へのヘッダ書き込みに失敗: %s\n"
 
-#: build/pack.c:716
+#: build/pack.c:802
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s から Payload 読み込みに失敗: %s\n"
 
-#: build/pack.c:722
+#: build/pack.c:808
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:759 lib/psm.c:2003
+#: build/pack.c:845 lib/psm.c:2003
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:832
+#: build/pack.c:918
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:849
+#: build/pack.c:935
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1155,166 +1155,158 @@ msgstr "作成(build)可能な互換アーキテクチャはありません\n"
 msgid "Package has no %%description: %s\n"
 msgstr "パッケージには %%description がありません: %s\n"
 
-#: build/poptBT.c:108
+#: build/poptBT.c:107
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "BuildRoot は既に指定されています。%s を無視します\n"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:159
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "<specfile> の %prep (ソース展開と patch の適用) まで実行"
 
-#: build/poptBT.c:161 build/poptBT.c:164 build/poptBT.c:167 build/poptBT.c:170
-#: build/poptBT.c:173 build/poptBT.c:176 build/poptBT.c:179
+#: build/poptBT.c:160 build/poptBT.c:163 build/poptBT.c:166 build/poptBT.c:169
+#: build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178
 msgid "<specfile>"
 msgstr "<specfile>"
 
-#: build/poptBT.c:163
+#: build/poptBT.c:162
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "<specfile> の %build (%prep とコンパイル) まで実行"
 
-#: build/poptBT.c:166
+#: build/poptBT.c:165
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "<specfile> の %install (%prep, %build, インストール) まで実行"
 
-#: build/poptBT.c:169
+#: build/poptBT.c:168
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "<specfile> の %files セクションを検証"
 
-#: build/poptBT.c:172
+#: build/poptBT.c:171
 msgid "build source and binary packages from <specfile>"
 msgstr "<specfile> を元に、バイナリ/ソースパッケージ作成"
 
-#: build/poptBT.c:175
+#: build/poptBT.c:174
 msgid "build binary package only from <specfile>"
 msgstr "<specfile> を元に、バイナリパッケージのみ作成"
 
-#: build/poptBT.c:178
+#: build/poptBT.c:177
 msgid "build source package only from <specfile>"
 msgstr "<specfile> を元に、ソースパッケージのみ作成"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:181
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "<tarball> から %prep (ソース展開とパッチ適用) まで実行"
 
-#: build/poptBT.c:183 build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
-#: build/poptBT.c:195 build/poptBT.c:198 build/poptBT.c:201
+#: build/poptBT.c:182 build/poptBT.c:185 build/poptBT.c:188 build/poptBT.c:191
+#: build/poptBT.c:194 build/poptBT.c:197 build/poptBT.c:200
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:184
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "<tarball> から %build (%prep とコンパイル) まで実行"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:187
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "<tarball> から %install (%prep, %build, インストール) まで実行"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:190
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "<tarball> から %files セクションを検証"
 
-#: build/poptBT.c:194
+#: build/poptBT.c:193
 msgid "build source and binary packages from <tarball>"
 msgstr "<tarball> を元に、バイナリ/ソースパッケージを作成"
 
-#: build/poptBT.c:197
+#: build/poptBT.c:196
 msgid "build binary package only from <tarball>"
 msgstr "<tarball> を元に、バイナリパッケージのみを作成"
 
-#: build/poptBT.c:200
+#: build/poptBT.c:199
 msgid "build source package only from <tarball>"
 msgstr "<tarball> を元に、ソースパッケージのみを作成"
 
-#: build/poptBT.c:204
+#: build/poptBT.c:203
 msgid "build binary package from <source package>"
 msgstr "<source package> を元にバイナリパッケージを作成"
 
-#: build/poptBT.c:205 build/poptBT.c:208
+#: build/poptBT.c:204 build/poptBT.c:207
 msgid "<source package>"
 msgstr "<source package>"
 
-#: build/poptBT.c:207
+#: build/poptBT.c:206
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "<source package> から %install (%prep, %build, インストール) まで実行"
 
-#: build/poptBT.c:211
+#: build/poptBT.c:210
 msgid "override build root"
 msgstr "build root を強制指定"
 
-#: build/poptBT.c:213
+#: build/poptBT.c:212
 msgid "remove build tree when done"
 msgstr "パッケージ作成後ツリーを削除"
 
-#: build/poptBT.c:215 rpmdb/poptDB.c:28
-msgid "generate headers compatible with rpm4 packaging"
-msgstr "rpm4 パッケージング互換のヘッダを生成"
-
-#: build/poptBT.c:217
+#: build/poptBT.c:214
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "spec ファイルの ExcludeArch: を無視"
 
-#: build/poptBT.c:219
+#: build/poptBT.c:216
 msgid "debug file state machine"
 msgstr "ファイル状態マシーンのデバッグ"
 
-#: build/poptBT.c:221
+#: build/poptBT.c:218
 msgid "do not execute any stages of the build"
 msgstr "ビルドのどの段階も実行しない"
 
-#: build/poptBT.c:223
+#: build/poptBT.c:220
 msgid "do not verify build dependencies"
 msgstr "ビルド依存性を検証しない"
 
-#: build/poptBT.c:225
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr "(古い) rpm[23] パッケージング互換のヘッダを生成"
-
-#: build/poptBT.c:229 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:405
+#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:405
 #: lib/poptQV.c:414 lib/poptQV.c:456
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:231 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:408
+#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:408
 #: lib/poptQV.c:416 lib/poptQV.c:459
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:233 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:411
+#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:411
 #: lib/poptQV.c:418 lib/poptQV.c:461
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
 
-#: build/poptBT.c:236
+#: build/poptBT.c:230
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "specfile から i18N msgstr を受け付けない"
 
-#: build/poptBT.c:238
+#: build/poptBT.c:232
 msgid "remove sources when done"
 msgstr "終了後ソースを削除します。"
 
-#: build/poptBT.c:240
+#: build/poptBT.c:234
 msgid "remove specfile when done"
 msgstr "終了時に spec ファイルを削除"
 
-#: build/poptBT.c:242
+#: build/poptBT.c:236
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "指定した過程までスキップします (c, i でのみ有効)"
 
-#: build/poptBT.c:244
+#: build/poptBT.c:238
 msgid "generate PGP/GPG signature"
 msgstr "PGP/GPG 署名を生成します。"
 
-#: build/poptBT.c:246
+#: build/poptBT.c:240
 msgid "override target platform"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: build/poptBT.c:248
+#: build/poptBT.c:242
 msgid "lookup i18N strings in specfile catalog"
 msgstr "specfile カタログから i18N 文字列を検索する"
 
@@ -1655,111 +1647,111 @@ msgstr "%%%s を %s に書き込めません\n"
 msgid "error creating temporary file %s\n"
 msgstr "一時ファイル %s の作成に失敗しました。\n"
 
-#: lib/package.c:363
+#: lib/package.c:362
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "blob サイズ (%d): 異常です。8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:372 lib/package.c:436 lib/package.c:513 lib/signature.c:232
+#: lib/package.c:371 lib/package.c:435 lib/package.c:512 lib/signature.c:232
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:392 lib/signature.c:248
+#: lib/package.c:391 lib/signature.c:248
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "region オフセット: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:413 lib/signature.c:275
+#: lib/package.c:412 lib/signature.c:275
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "region ヘッダ以降: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:427 lib/signature.c:289
+#: lib/package.c:426 lib/signature.c:289
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
 
-#: lib/package.c:455
+#: lib/package.c:454
 #, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "SHA1 ヘッダ: 異常です。16 進数ではありません。\n"
 
-#: lib/package.c:470
+#: lib/package.c:469
 #, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
-#: lib/package.c:482
+#: lib/package.c:481
 #, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
-#: lib/package.c:546 lib/package.c:586 lib/package.c:930 lib/package.c:956
-#: lib/package.c:988
+#: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
+#: lib/package.c:987
 #, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr "V3/V4 署名のみ検証可能です、V%u 署名をスキップします\n"
 
-#: lib/package.c:674
+#: lib/package.c:673
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: lib/package.c:678
+#: lib/package.c:677
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr "ヘッダマジック: 異常です。\n"
 
-#: lib/package.c:686
+#: lib/package.c:685
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "ヘッダタグ: 異常です。タグ(%d)の番号が範囲外です。\n"
 
-#: lib/package.c:695
+#: lib/package.c:694
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "ヘッダデータ: 異常です。バイト数(%d)が範囲外です。\n"
 
-#: lib/package.c:709
+#: lib/package.c:708
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "ヘッダ blob(%d): 異常です。読み込み結果は %d です。\n"
 
-#: lib/package.c:722
+#: lib/package.c:721
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "ヘッダロード: 異常です。\n"
 
-#: lib/package.c:800
+#: lib/package.c:799
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "このバージョンの RPM ではバージョン 1 のパッケージングはサポートしていませ"
 "ん\n"
 
-#: lib/package.c:809
+#: lib/package.c:808
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "このバージョンの RPM ではメジャー番号 <=4 のパッケージ作成のみサポートしてい"
 "ます\n"
 
-#: lib/package.c:821 lib/rpmchecksig.c:229 lib/rpmchecksig.c:766
+#: lib/package.c:820 lib/rpmchecksig.c:229 lib/rpmchecksig.c:766
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature に失敗しました: %s"
 
-#: lib/package.c:828 lib/rpmchecksig.c:236 lib/rpmchecksig.c:774
+#: lib/package.c:827 lib/rpmchecksig.c:236 lib/rpmchecksig.c:774
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 署名がありません。\n"
 
-#: lib/package.c:895
+#: lib/package.c:894
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead に失敗しました: %s"
 
-#: lib/package.c:1003 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -3937,10 +3929,6 @@ msgstr ""
 msgid "verify database files"
 msgstr "データベースの検証を行います。"
 
-#: rpmdb/poptDB.c:25
-msgid "generate headers compatible with (legacy) rpm[23] packaging"
-msgstr "(古い) rpm[23] パッケージング互換のヘッダを生成します。"
-
 #: rpmdb/rpmdb.c:216
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
@@ -3961,7 +3949,7 @@ msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
 #: rpmdb/rpmdb.c:1260 rpmdb/rpmdb.c:1391 rpmdb/rpmdb.c:1447 rpmdb/rpmdb.c:2436
-#: rpmdb/rpmdb.c:2565 rpmdb/rpmdb.c:3319
+#: rpmdb/rpmdb.c:2565 rpmdb/rpmdb.c:3316
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
@@ -4020,98 +4008,98 @@ msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s から削除時\n"
 
-#: rpmdb/rpmdb.c:3066
+#: rpmdb/rpmdb.c:3063
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当て時\n"
 
-#: rpmdb/rpmdb.c:3129
+#: rpmdb/rpmdb.c:3126
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: スキップします。"
 
-#: rpmdb/rpmdb.c:3294
+#: rpmdb/rpmdb.c:3291
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "\"%s\" を %s インデックスに追加します。\n"
 
-#: rpmdb/rpmdb.c:3298
+#: rpmdb/rpmdb.c:3295
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%d エントリを %s インデックスに追加します。\n"
 
-#: rpmdb/rpmdb.c:3338
+#: rpmdb/rpmdb.c:3335
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "エラー(%d) - レコード %s を %s にストア時\n"
 
-#: rpmdb/rpmdb.c:3747
+#: rpmdb/rpmdb.c:3706
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3 再構築が成功した後で %s を削除します。\n"
 
-#: rpmdb/rpmdb.c:3786
+#: rpmdb/rpmdb.c:3745
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません。"
 
-#: rpmdb/rpmdb.c:3818
+#: rpmdb/rpmdb.c:3777
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "データベース %s を %s として再構築しています。\n"
 
-#: rpmdb/rpmdb.c:3822
+#: rpmdb/rpmdb.c:3781
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s は既に存在しています。\n"
 
-#: rpmdb/rpmdb.c:3828
+#: rpmdb/rpmdb.c:3787
 #, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3830
+#: rpmdb/rpmdb.c:3789
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s: %s\n"
 
-#: rpmdb/rpmdb.c:3839
+#: rpmdb/rpmdb.c:3798
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースを dbapi %d でオープンしています。\n"
 
-#: rpmdb/rpmdb.c:3850
+#: rpmdb/rpmdb.c:3809
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースを dbapi %d でオープンしています。\n"
 
-#: rpmdb/rpmdb.c:3881
+#: rpmdb/rpmdb.c:3840
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/rpmdb.c:3921
+#: rpmdb/rpmdb.c:3880
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "元々 %u にあったレコードを追加できません。\n"
 
-#: rpmdb/rpmdb.c:3935
+#: rpmdb/rpmdb.c:3894
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
 
-#: rpmdb/rpmdb.c:3943
+#: rpmdb/rpmdb.c:3902
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:3945
+#: rpmdb/rpmdb.c:3904
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "復元するには %s 内のファイルを %s 内のファイルで置き換えて下さい"
 
-#: rpmdb/rpmdb.c:3955
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの削除: %s\n"
 
-#: rpmdb/rpmdb.c:3957
+#: rpmdb/rpmdb.c:3916
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -4542,6 +4530,16 @@ msgstr "DIRECTORY のデータベースを使用"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "DIRECTORY"
+
+#~ msgid "generate headers compatible with rpm4 packaging"
+#~ msgstr "rpm4 パッケージング互換のヘッダを生成"
+
+#~ msgid ""
+#~ "generate package header(s) compatible with (legacy) rpm[23] packaging"
+#~ msgstr "(古い) rpm[23] パッケージング互換のヘッダを生成"
+
+#~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
+#~ msgstr "(古い) rpm[23] パッケージング互換のヘッダを生成します。"
 
 #~ msgid "don't verify MD5 digest of files"
 #~ msgstr "ファイルの MD5 ダイジェストを検証しません。"
