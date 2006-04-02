@@ -24,6 +24,7 @@
 	- drop almost all dependency whiteout from default rpm configgery.
 	- eliminate skipDirs fingerprint band-aid.
 	- eliminate support for _noDirTokens, refactoring as appropriate.
+	- eliminate SOURCEPACKAGE tag, use non-existence of SOURCERPM instead.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

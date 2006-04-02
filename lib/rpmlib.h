@@ -367,7 +367,7 @@ typedef enum rpmTag_e {
 /*@-enummemuse@*/
     RPMTAG_CAPABILITY		= 1105, /*!< i legacy - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_SOURCEPACKAGE	= 1106, /*!< i src.rpm header marker */
+    RPMTAG_SOURCEPACKAGE	= 1106, /*!< i legacy - obsolete */
 /*@-enummemuse@*/
     RPMTAG_OLDORIGFILENAMES	= 1107, /*!< internal - obsolete */
 /*@=enummemuse@*/

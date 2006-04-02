@@ -160,7 +160,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->os = NULL;
 	p->osScore = 0;
     }
-    p->isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+    p->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
 
     nb = strlen(p->NEVR) + 1;
     if (p->isSource)
@@ -173,7 +173,9 @@ static void addTE(rpmts ts, rpmte p, Header h,
     t = stpcpy(t, p->NEVR);
     if (p->isSource)
 	t = stpcpy( t, ".src");
-    else if (p->arch)
+    else if (p->arch == NULL)
+	t = stpcpy( t, ".pubkey");
+    else
 	t = stpcpy( stpcpy( t, "."), p->arch);
 
     ep = NULL;

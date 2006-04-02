@@ -522,7 +522,7 @@ if (fileURL[0] == '=') {
 	    /*@switchbreak@*/ break;
 	}
 
-	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
+	eiu->isSource = (headerIsEntry(eiu->h, RPMTAG_SOURCERPM) == 0);
 
 	if (eiu->isSource) {
 	    rpmMessage(RPMMESS_DEBUG, _("\tadded source package [%d]\n"),
@@ -1075,7 +1075,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_OK:
-	    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+	    isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
 	    if (isSource)
 		goto bottom;
 	    /*@switchbreak@*/ break;

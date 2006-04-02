@@ -1412,7 +1412,7 @@ assert(dalgo == fi->fdigestalgos[i]);
     if (ts != NULL)
     if (fi != NULL)
     if ((p = rpmtsRelocateElement(ts)) != NULL && rpmteType(p) == TR_ADDED
-     && !headerIsEntry(h, RPMTAG_SOURCEPACKAGE)
+     && headerIsEntry(h, RPMTAG_SOURCERPM)
      && !headerIsEntry(h, RPMTAG_ORIGBASENAMES))
     {
 	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
