@@ -62,9 +62,6 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p ix %d active %d\n", s, s->ps, s->i
  * \class Rpmps
  * \brief An python rpm.ps object represents an rpm problem set.
  */
-
-/** \ingroup python
- * \name Class: Rpmps
 /*@{*/
 
 /*@null@*/
