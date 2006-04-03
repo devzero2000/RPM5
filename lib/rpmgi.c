@@ -532,8 +532,7 @@ fprintf(stderr, "*** %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
     case RPMDBI_REMOVED:
     case RPMDBI_ADDED:
     {	rpmte p;
-	/* XXX TR_REMOVED in teType filter? */
-	int teType = (gi->tag == RPMDBI_ADDED ? TR_ADDED : 0);
+	int teType = 0;
 	const char * teTypeString = NULL;
 
 	if (!gi->active) {
