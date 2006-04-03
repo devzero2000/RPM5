@@ -27,7 +27,8 @@ typedef enum rpmgiFlags_e {
     RPMGI_TSORDER	= (1 << 1),
     RPMGI_NOGLOB	= (1 << 2),
     RPMGI_NOMANIFEST	= (1 << 3),
-    RPMGI_NOHEADER	= (1 << 4)
+    RPMGI_NOHEADER	= (1 << 4),
+    RPMGI_ERASING	= (1 << 5)
 } rpmgiFlags;
 
 /**

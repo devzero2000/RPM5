@@ -491,6 +491,9 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
     if (gi == NULL)
 	return rpmrc;
 
+if (_rpmgi_debug)
+fprintf(stderr, "*** %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
+
     /* Free header from previous iteration. */
     gi->h = headerFree(gi->h);
     gi->hdrPath = _free(gi->hdrPath);
@@ -526,20 +529,28 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 	    goto enditer;
 	}
 	break;
+    case RPMDBI_REMOVED:
     case RPMDBI_ADDED:
     {	rpmte p;
+	/* XXX TR_REMOVED in teType filter? */
+	int teType = (gi->tag == RPMDBI_ADDED ? TR_ADDED : 0);
+	const char * teTypeString = NULL;
 
 	if (!gi->active) {
 	    gi->tsi = rpmtsiInit(gi->ts);
 	    gi->active = 1;
 	}
-	if ((p = rpmtsiNext(gi->tsi, TR_ADDED)) != NULL) {
+	if ((p = rpmtsiNext(gi->tsi, teType)) != NULL) {
 	    Header h = rpmteHeader(p);
 	    if (h != NULL)
 		if (!(gi->flags & RPMGI_NOHEADER)) {
 		    gi->h = headerLink(h);
+		switch(rpmteType(p)) {
+		case TR_ADDED:		teTypeString = "+++";	break;
+		case TR_REMOVED:	teTypeString = "---";	break;
+		}
 		sprintf(hnum, "%u", (unsigned)gi->i);
-		gi->hdrPath = rpmExpand("added h# ", hnum, NULL);
+		gi->hdrPath = rpmExpand("%s h# ", teTypeString, hnum, NULL);
 		rpmrc = RPMRC_OK;
 		h = headerFree(h);
 	    }
@@ -585,7 +596,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	gi->hdrPath = xstrdup(gi->argv[gi->i]);
 	break;
     case RPMDBI_FTSWALK:
-	if (gi->argv == NULL)		/* HACK */
+	if (gi->argv == NULL || gi->argv[0] == NULL)		/* HACK */
 	    goto enditer;
 
 	if (!gi->active) {
@@ -611,7 +622,14 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	/* XXX rpmgi hack: Save header in transaction element. */
-	xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 2, NULL);
+	if (gi->flags & RPMGI_ERASING) {
+	    static int hdrx = 0;
+	    int dboffset = headerGetInstance(gi->h);
+	    if (dboffset <= 0)
+		dboffset = --hdrx;
+	    xx = rpmtsAddEraseElement(gi->ts, gi->h, dboffset);
+	} else
+	    xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 2, NULL);
     }
 
     return rpmrc;
@@ -622,9 +640,11 @@ enditer:
 	rpmps ps;
 	int i;
 
-	/* XXX installed database needs close here. */
-	xx = rpmtsCloseDB(ts);
-	ts->dbmode = -1;	/* XXX disable lazy opens */
+	/* XXX database needs close for added package closure check. */
+	if (!(gi->flags & RPMGI_ERASING)) {
+	    xx = rpmtsCloseDB(ts);
+	    ts->dbmode = -1;	/* XXX disable lazy opens */
+	}
 
 	xx = rpmtsCheck(ts);
 
@@ -664,7 +684,8 @@ enditer:
 
 	xx = rpmtsOrder(ts);
 
-	gi->tag = RPMDBI_ADDED;			/* XXX hackery */
+	/* XXX hackery alert! */
+	gi->tag = (!(gi->flags & RPMGI_ERASING) ? RPMDBI_ADDED : RPMDBI_REMOVED);
 	gi->flags &= ~(RPMGI_TSADD|RPMGI_TSORDER);
 
     }

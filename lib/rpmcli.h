@@ -114,7 +114,8 @@ typedef enum rpmQVSources_e {
     RPMQV_FILEID,	/*!< ... from file id (file digest, usually MD5). */
     RPMQV_TID,		/*!< ... from install transaction id (time stamp). */
     RPMQV_HDLIST,	/*!< ... from system hdlist. */
-    RPMQV_FTSWALK	/*!< ... from fts(3) walk. */
+    RPMQV_FTSWALK,	/*!< ... from fts(3) walk. */
+    RPMQV_WHATNEEDS	/*!< ... from requires using contained provides. */
 } rpmQVSources;
 
 /** \ingroup rpmcli

@@ -948,9 +948,15 @@ static int checkDependentPackages(rpmts ts, const char * dep)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    rpmdbMatchIterator mi;
-    mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
-    return checkPackageSet(ts, dep, mi, 0);
+    int rc = 0;
+
+    /* XXX rpmdb can be closed here, avoid error msg. */
+    if (rpmtsGetRdb(ts) != NULL) {
+	rpmdbMatchIterator mi;
+	mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
+	rc = checkPackageSet(ts, dep, mi, 0);
+    }
+    return rc;
 }
 
 /**
@@ -965,7 +971,8 @@ static int checkDependentConflicts(rpmts ts, const char * dep)
 {
     int rc = 0;
 
-    if (rpmtsGetRdb(ts) != NULL) {	/* XXX is this necessary? */
+    /* XXX rpmdb can be closed here, avoid error msg. */
+    if (rpmtsGetRdb(ts) != NULL) {
 	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
 	rc = checkPackageSet(ts, dep, mi, 1);

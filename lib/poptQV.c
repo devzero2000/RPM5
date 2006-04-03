@@ -34,6 +34,7 @@ int specedit = 0;
 /* -1025 thrugh -1032 are common in rpmcli.h. */
 #define	POPT_TARGETPLATFORM	-1036
 #define	POPT_TRUST		-1037
+#define	POPT_WHATNEEDS		-1038
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
@@ -63,6 +64,8 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
     case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
     case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
+    case POPT_WHATNEEDS: qva->qva_source |= RPMQV_WHATNEEDS; 
+				qva->qva_sourceCount++; break;
     case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
 				qva->qva_sourceCount++; break;
     case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
@@ -140,6 +143,10 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("rpm verify mode"), NULL },
  { "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
+ { "whatneeds", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_WHATNEEDS, 
+	N_("query/verify the package(s) which require any contained provide"),
+	"CAPABILITY" },
+
  { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
 
