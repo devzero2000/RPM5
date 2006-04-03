@@ -545,8 +545,8 @@ fprintf(stderr, "*** %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
 		if (!(gi->flags & RPMGI_NOHEADER)) {
 		    gi->h = headerLink(h);
 		switch(rpmteType(p)) {
-		case TR_ADDED:		teTypeString = "+++";	break;
-		case TR_REMOVED:	teTypeString = "---";	break;
+		case TR_ADDED:	teTypeString = "+++";	/*@switchbreak@*/break;
+		case TR_REMOVED: teTypeString = "---";	/*@switchbreak@*/break;
 		}
 		sprintf(hnum, "%u", (unsigned)gi->i);
 		gi->hdrPath = rpmExpand("%s h# ", teTypeString, hnum, NULL);

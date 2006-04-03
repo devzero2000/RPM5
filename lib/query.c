@@ -587,6 +587,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    res = rpmcliShowMatches(qva, ts);
     }	break;
 
+    case RPMQV_WHATNEEDS:
     case RPMQV_WHATREQUIRES:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
 	if (qva->qva_mi == NULL) {

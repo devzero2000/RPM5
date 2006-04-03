@@ -422,6 +422,7 @@ static int rpmLeadVersion(void)
  * @param h             header
  */
 static void providePackageNVR(Header h)
+	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;

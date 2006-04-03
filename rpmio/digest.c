@@ -60,7 +60,7 @@ static int crc32Update(crc32Param* mp, const byte* data, size_t size)
 }
 
 static int crc32Digest(crc32Param* mp, byte* data)
-	/*@modifies *mp @*/
+	/*@modifies *mp, data @*/
 {
 	uint32_t c = mp->crc ^ mp->xorout;
 
