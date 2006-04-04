@@ -42,6 +42,7 @@ extern rpmgiFlags giFlags;
 struct rpmgi_s {
 /*@refcounted@*/
     rpmts ts;			/*!< Iterator transaction set. */
+    int (*tsOrder) (rpmts ts);	/*!< Iterator transaction ordering. */
     int tag;			/*!< Iterator type. */
 /*@kept@*/ /*@relnull@*/
     const void * keyp;		/*!< Iterator key. */

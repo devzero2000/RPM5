@@ -1844,6 +1844,7 @@ assert(newOrderCount == ts->orderCount);
     return 0;
 }
 /*@=bounds@*/
+
 int rpmtsCheck(rpmts ts)
 {
     uint_32 tscolor = rpmtsColor(ts);

@@ -456,6 +456,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 	return NULL;
 
     gi->ts = rpmtsLink(ts, __FUNCTION__);
+    gi->tsOrder = rpmtsOrder;
     gi->tag = tag;
 /*@-assignexpose@*/
     gi->keyp = keyp;
@@ -681,7 +682,7 @@ enditer:
 	if (rpmIsVerbose())
 	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_DEPLOOPS));
 
-	xx = rpmtsOrder(ts);
+	xx = (*gi->tsOrder) (ts);
 
 	/* XXX hackery alert! */
 	gi->tag = (!(gi->flags & RPMGI_ERASING) ? RPMDBI_ADDED : RPMDBI_REMOVED);
