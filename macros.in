@@ -807,6 +807,22 @@ print (t)\
 #%_rpmlock_path	%{_dbpath}/__db.000
 
 #==============================================================================
+# ---- Run-time probe dependency macros.
+
+#
+%_rpmds_filter_name	archfilter
+
+#
+%_rpmds_cpuinfo_path	/proc/cpuinfo
+
+#
+%_rpmds_sysinfo_path	/etc/rpm/sysinfo
+
+#
+%_rpmds_ldconfig_cmd	/sbin/ldconfig -p
+%_rpmds_ldconfig_cache	/etc/ld.so.cache
+
+#==============================================================================
 # ---- Cache configuration macros.
 #	Macro(s) used to configure the universe of headers used to
 #	solve dependencies using rpmcache(8).
