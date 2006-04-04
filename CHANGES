@@ -25,6 +25,7 @@
 	- eliminate skipDirs fingerprint band-aid.
 	- eliminate support for _noDirTokens, refactoring as appropriate.
 	- eliminate SOURCEPACKAGE tag, use non-existence of SOURCERPM instead.
+	- add macros to parameterize rpmds probe dependency defaults.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

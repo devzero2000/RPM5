@@ -2427,8 +2427,14 @@ static const struct conf vars[] = {
     { NULL, 0, SYSCONF }
 };
 
+#define	_GETCONF_PATH	"/"
+/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
+static const char *_getconf_path = NULL;
+
 int
 rpmdsGetconf(rpmds * dsp, const char *path)
+	/*@globals _getconf_path @*/
+	/*@modifies _getconf_path @*/
 {
     const struct conf *c;
     size_t clen;
@@ -2439,9 +2445,18 @@ rpmdsGetconf(rpmds * dsp, const char *path)
     char * t;
     int_32 Flags;
 
+    if (_getconf_path == NULL) {
+	_getconf_path = rpmExpand("%{?_rpmds__getconf_path}", NULL);
+	/* XXX may need to validate path existence somewhen. */
+	if (!(_getconf_path != NULL && *_getconf_path == '/')) {
+	    _getconf_path = _free(_getconf_path);
+	    _getconf_path = xstrdup(_GETCONF_PATH);
+	}
+    }
+
 /*@-branchstate@*/
     if (path == NULL)
-	path = "/";
+	path = _getconf_path;
 
     for (c = vars; c->name != NULL; ++c) {
 	N = c->name;

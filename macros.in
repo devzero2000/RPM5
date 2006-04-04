@@ -822,6 +822,9 @@ print (t)\
 %_rpmds_ldconfig_cmd	/sbin/ldconfig -p
 %_rpmds_ldconfig_cache	/etc/ld.so.cache
 
+#
+%_rpmds_getconf_path	/
+
 #==============================================================================
 # ---- Cache configuration macros.
 #	Macro(s) used to configure the universe of headers used to
