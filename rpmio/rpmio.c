@@ -2777,6 +2777,10 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * Convert stdio fmode to open(2) mode, filtering out zlib/bzlib flags.
  *	returns stdio[0] = NUL on error.
  *
+ * @todo glibc also supports ",ccs="
+ *
+ * - glibc:	m use mmap'd input
+ * - glibc:	c no cancel
  * - gzopen:	[0-9] is compession level
  * - gzopen:	'f' is filtered (Z_FILTERED)
  * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
@@ -2824,6 +2828,8 @@ static inline void cvtfmode (const char *m,
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case 'm':	/* glibc: mmap'd reads */
+	case 'c':	/* glibc: no cancel */
 	case 'b':
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
