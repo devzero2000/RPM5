@@ -825,6 +825,9 @@ print (t)\
 #
 %_rpmds_getconf_path	/
 
+#
+%_rpmds_perldeps_cmd	/usr/bin/find /usr/lib/perl5 | /usr/lib/rpm/perl.prov
+
 #==============================================================================
 # ---- Cache configuration macros.
 #	Macro(s) used to configure the universe of headers used to
