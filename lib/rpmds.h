@@ -398,8 +398,8 @@ int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ rpmds ods)
  * @return		0 on success
  */
 int rpmdsCpuinfo(/*@out@*/ rpmds * dsp, /*@null@*/ const char * fn)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *dsp, h_errno, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *dsp, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/;
 
 /**
  * Load rpmlib provides into a dependency set.
@@ -417,8 +417,9 @@ int rpmdsRpmlib(rpmds * dsp, /*@null@*/ void * tblp)
  * @return		0 on success
  */
 int rpmdsSysinfo(rpmds * dsp, /*@null@*/ const char * fn)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *dsp, h_errno, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/;
 
 /**
  * Load getconf provides into a dependency set.
@@ -427,8 +428,9 @@ int rpmdsSysinfo(rpmds * dsp, /*@null@*/ const char * fn)
  * @return		0 on success
  */
 int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * path)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *dsp, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/;
 
 /**
  * Merge provides/requires/conflicts/obsoletes dependencies.
@@ -483,8 +485,9 @@ int rpmdsUname(rpmds * dsp, /*@null@*/ const struct utsname * un)
  * @return		0 on success
  */
 int rpmdsPipe(rpmds * dsp, int_32 tagN, /*@null@*/ const char * cmd)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *dsp, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/;
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.

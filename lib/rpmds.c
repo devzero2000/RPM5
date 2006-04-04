@@ -177,8 +177,8 @@ fprintf(stderr, "=== archScore(\"%s\") %d negate %d rc %d\n", arch, archScore, n
 
 /**
  */
-/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
-static const char * filter = NULL;
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char * _filter = NULL;
 
 /**
  * Filter dependency set, removing "foo(bar,i386,=s390,!sparcv8)" wrapper.
@@ -189,18 +189,22 @@ static const char * filter = NULL;
 /*@null@*/
 static rpmds rpmdsFilter(/*@null@*/ /*@returned@*/ rpmds ds,
 		/*@null@*/ const char * ns)
-	/*@globals filter, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ds, filter, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals _filter, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ds, _filter, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     size_t nslen;
     rpmds fds;
     int i;
 
-    if (filter == NULL)
-	filter = rpmExpand("%{?_rpmds_filter_name}", NULL);
+/*@-modobserver@*/
+    if (_filter == NULL)
+	_filter = rpmExpand("%{?_rpmds_filter_name}", NULL);
+/*@=modobserver@*/
 
+/*@-branchstate@*/
     if (ns == NULL)
-	ns = filter;
+	ns = _filter;
+/*@=branchstate@*/
 
     if (ds == NULL || ns == NULL || *ns == '\0')
 	goto exit;
@@ -381,8 +385,10 @@ exit:
     ds = rpmdsLink(ds, (ds ? ds->Type : NULL));
     /*@=nullstate@*/
 
+/*@-modobserver@*/
     if (!nofilter)
 	ds = rpmdsFilter(ds, NULL);
+/*@=modobserver@*/
 
     return ds;
 }
@@ -1175,12 +1181,12 @@ static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
 #define	_PROC_CPUINFO	"/proc/cpuinfo"
 /**
  */
-/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
-static const char * cpuinfo = NULL;
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char * _cpuinfo_path = NULL;
 
 int rpmdsCpuinfo(rpmds *dsp, const char * fn)
-	/*@globals cpuinfo, ctags @*/
-	/*@modifies cpuinfo, ctags @*/
+	/*@globals _cpuinfo_path, ctags @*/
+	/*@modifies _cpuinfo_path, ctags @*/
 {
     struct cpuinfo_s * ct;
     const char * NS = "cpuinfo";
@@ -1192,17 +1198,23 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     FILE * fp;
     int rc = -1;
 
-    if (cpuinfo == NULL) {
-	cpuinfo = rpmExpand("%{?_rpmds_cpuinfo_path}", NULL);
+/*@-modobserver@*/
+    if (_cpuinfo_path == NULL) {
+	_cpuinfo_path = rpmExpand("%{?_rpmds_cpuinfo_path}", NULL);
 	/* XXX may need to validate path existence somewhen. */
-	if (!(cpuinfo != NULL && *cpuinfo == '/')) {
-	    cpuinfo = _free(cpuinfo);
-	    cpuinfo = xstrdup(_PROC_CPUINFO);
+	if (!(_cpuinfo_path != NULL && *_cpuinfo_path == '/')) {
+/*@-observertrans @*/
+	    _cpuinfo_path = _free(_cpuinfo_path);
+/*@=observertrans @*/
+	    _cpuinfo_path = xstrdup(_PROC_CPUINFO);
 	}
     }
+/*@=modobserver@*/
 
+/*@-branchstate@*/
     if (fn == NULL)
-	fn = cpuinfo;
+	fn = _cpuinfo_path;
+/*@=branchstate@*/
 
     /* Reset done variables. */
     for (ct = ctags; ct->name != NULL; ct++)
@@ -1396,12 +1408,12 @@ static struct cmpop {
 };
 
 #define	_ETC_RPM_SYSINFO	"/etc/rpm/sysinfo"
-/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
-static const char *sysinfo = NULL;
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char *_sysinfo_path = NULL;
 
 int rpmdsSysinfo(rpmds *dsp, const char * fn)
-	/*@globals sysinfo @*/
-	/*@modifies sysinfo @*/
+	/*@globals _sysinfo_path @*/
+	/*@modifies _sysinfo_path @*/
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
@@ -1415,17 +1427,23 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
     int ln;
     int xx;
 
-    if (sysinfo == NULL) {
-	sysinfo = rpmExpand("%{?_rpmds_sysinfo_path}", NULL);
+/*@-modobserver@*/
+    if (_sysinfo_path == NULL) {
+	_sysinfo_path = rpmExpand("%{?_rpmds_sysinfo_path}", NULL);
 	/* XXX may need to validate path existence somewhen. */
-	if (!(sysinfo != NULL && *sysinfo == '/')) {
-	    sysinfo = _free(sysinfo);
-	    sysinfo = xstrdup(_ETC_RPM_SYSINFO);
+	if (!(_sysinfo_path != NULL && *_sysinfo_path == '/')) {
+/*@-observertrans @*/
+	    _sysinfo_path = _free(_sysinfo_path);
+/*@=observertrans @*/
+	    _sysinfo_path = xstrdup(_ETC_RPM_SYSINFO);
 	}
     }
+/*@=modobserver@*/
 
+/*@-branchstate@*/
     if (fn == NULL)
-	fn = sysinfo;
+	fn = _sysinfo_path;
+/*@=branchstate@*/
 
     fd = Fopen(fn, "r.fpio");
     if (fd == NULL || Ferror(fd))
@@ -2428,7 +2446,7 @@ static const struct conf vars[] = {
 };
 
 #define	_GETCONF_PATH	"/"
-/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 static const char *_getconf_path = NULL;
 
 int
@@ -2445,14 +2463,18 @@ rpmdsGetconf(rpmds * dsp, const char *path)
     char * t;
     int_32 Flags;
 
+/*@-modobserver@*/
     if (_getconf_path == NULL) {
 	_getconf_path = rpmExpand("%{?_rpmds__getconf_path}", NULL);
 	/* XXX may need to validate path existence somewhen. */
 	if (!(_getconf_path != NULL && *_getconf_path == '/')) {
+/*@-observertrans @*/
 	    _getconf_path = _free(_getconf_path);
+/*@=observertrans @*/
 	    _getconf_path = xstrdup(_GETCONF_PATH);
 	}
     }
+/*@=modobserver@*/
 
 /*@-branchstate@*/
     if (path == NULL)
@@ -2837,17 +2859,17 @@ exit:
 #endif
 }
 
-#define	_SBIN_LDCONFIG	"/sbin/ldconfig -p"
-/*@unchecked@*/ /*@observer@*/
-static const char * _sbin_ldconfig_p = _SBIN_LDCONFIG;
+#define	_SBIN_LDCONFIG_P	"/sbin/ldconfig -p"
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char * _ldconfig_cmd = _SBIN_LDCONFIG_P;
 
 #define	_LD_SO_CACHE	"/etc/ld.so.cache"
-/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
-static const char * _ld_so_cache = NULL;
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char * _ldconfig_cache = NULL;
 
 int rpmdsLdconfig(rpmPRCO PRCO, const char * fn)
-	/*@globals _ldconfig_p, _ld_so_cache @*/
-	/*@modifies _ldconfig_p, _ld_so_cache @*/
+	/*@globals _ldconfig_cmd, _ldconfig_cache @*/
+	/*@modifies _ldconfig_cmd, _ldconfig_cache @*/
 {
     char buf[BUFSIZ];
     const char *DSOfn;
@@ -2864,31 +2886,38 @@ int rpmdsLdconfig(rpmPRCO PRCO, const char * fn)
     if (PRCO == NULL)
 	return -1;
 
-    if (_sbin_ldconfig_p == NULL) {
-	_sbin_ldconfig_p = rpmExpand("%{?_rpmds_ldconfig_cmd}", NULL);
-	/* XXX may need to validate path existence somewhen. */
-	if (!(_sbin_ldconfig_p != NULL && *_sbin_ldconfig_p == '/')) {
-	    _sbin_ldconfig_p = _free(_sbin_ldconfig_p);
-	    _sbin_ldconfig_p = xstrdup(_LD_SO_CACHE);
+/*@-modobserver@*/
+    if (_ldconfig_cmd == NULL) {
+	_ldconfig_cmd = rpmExpand("%{?_rpmds_ldconfig_cmd}", NULL);
+	if (!(_ldconfig_cmd != NULL && *_ldconfig_cmd == '/')) {
+/*@-observertrans @*/
+	    _ldconfig_cmd = _free(_ldconfig_cmd);
+/*@=observertrans @*/
+	    _ldconfig_cmd = xstrdup(_SBIN_LDCONFIG_P);
 	}
     }
 
-    if (_ld_so_cache == NULL) {
-	_ld_so_cache = rpmExpand("%{?_rpmds_ldconfig_cache}", NULL);
+    if (_ldconfig_cache == NULL) {
+	_ldconfig_cache = rpmExpand("%{?_rpmds_ldconfig_cache}", NULL);
 	/* XXX may need to validate path existence somewhen. */
-	if (!(_ld_so_cache != NULL && *_ld_so_cache == '/')) {
-	    _ld_so_cache = _free(_ld_so_cache);
-	    _ld_so_cache = xstrdup(_LD_SO_CACHE);
+	if (!(_ldconfig_cache != NULL && *_ldconfig_cache == '/')) {
+/*@-observertrans @*/
+	    _ldconfig_cache = _free(_ldconfig_cache);
+/*@=observertrans @*/
+	    _ldconfig_cache = xstrdup(_LD_SO_CACHE);
 	}
     }
+/*@=modobserver@*/
 
+/*@-branchstate@*/
     if (fn == NULL)
-	fn = _ld_so_cache;
+	fn = _ldconfig_cache;
+/*@=branchstate@*/
 
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** %s(%p, %s) P %p R %p C %p O %p\n", __FUNCTION__, PRCO, fn, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp);
 
-    fp = popen(_sbin_ldconfig_p, "r");
+    fp = popen(_ldconfig_cmd, "r");
     if (fp == NULL)
 	goto exit;
 
@@ -3007,10 +3036,12 @@ exit:
 }
 
 #define	_PERL_PROVIDES	"/usr/bin/find /usr/lib/perl5 | /usr/lib/rpm/perl.prov"
-/*@unchecked@*/ /*@observer@*/
-static const char * _perl_provides = _PERL_PROVIDES;
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char * _perldeps_cmd = NULL;
 
 int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
+	/*@globals _perldeps_cmd @*/
+	/*@modifies _perldeps_cmd @*/
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
@@ -3024,10 +3055,25 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
     int ln;
     int xx;
 
+/*@-modobserver@*/
+    if (_perldeps_cmd == NULL) {
+	_perldeps_cmd = rpmExpand("%{?_rpmds_perldeps_cmd}", NULL);
+	/* XXX may need to validate path existence somewhen. */
+	if (!(_perldeps_cmd != NULL && *_perldeps_cmd == '/')) {
+/*@-observertrans @*/
+	    _perldeps_cmd = _free(_perldeps_cmd);
+/*@=observertrans @*/
+	    _perldeps_cmd = xstrdup(_PERL_PROVIDES);
+	}
+    }
+/*@=modobserver@*/
+
     if (tagN <= 0)
 	tagN = RPMTAG_PROVIDENAME;
+/*@-branchstate@*/
     if (cmd == NULL)
-	cmd = _perl_provides;
+	cmd = _perldeps_cmd;
+/*@=branchstate@*/
 
     fp = popen(cmd, "r");
     if (fp == NULL)
