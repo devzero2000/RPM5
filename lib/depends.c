@@ -1278,10 +1278,12 @@ static inline int addRelation(rpmts ts,
     bingo = 0;
     for (qi = rpmtsiInit(ts), i = 0; (q = rpmtsiNext(qi, 0)) != NULL; i++) {
 
+/*@-abstract -type @*/
 	switch (teType) {
 	case TR_ADDED:		bingo = (pkgKey == rpmteAddedKey(q));	/*@switchbreak@*/ break;
 	case TR_REMOVED:	bingo = (key == q);			/*@switchbreak@*/ break;
 	}
+/*@=abstract =type @*/
 	if (bingo)
 	    break;
     }
@@ -1433,7 +1435,9 @@ int rpmtsOrder(rpmts ts)
 	fnpyKey key;
 	int tscolor = 0x3;
 	pkgKey = RPMAL_NOMATCH;
+/*@-abstract@*/
 	key = (fnpyKey) p;
+/*@=abstract@*/
 	pkgKey = rpmalAdd(&ts->erasedPackages, pkgKey, key,
 			rpmteDS(p, RPMTAG_PROVIDENAME),
 			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
