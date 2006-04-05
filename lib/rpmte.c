@@ -163,18 +163,20 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
 
     nb = strlen(p->NEVR) + 1;
-    if (p->isSource)
+    if (p->arch == NULL)
+	nb += sizeof("pubkey");
+    else if (p->isSource)
 	nb += sizeof("src");
-    else if (p->arch)
+    else
 	nb += strlen(p->arch) + 1;
     t = xmalloc(nb);
     p->NEVRA = t;
     *t = '\0';
     t = stpcpy(t, p->NEVR);
-    if (p->isSource)
-	t = stpcpy( t, ".src");
-    else if (p->arch == NULL)
+    if (p->arch == NULL)
 	t = stpcpy( t, ".pubkey");
+    else if (p->isSource)
+	t = stpcpy( t, ".src");
     else
 	t = stpcpy( stpcpy( t, "."), p->arch);
 

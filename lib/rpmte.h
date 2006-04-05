@@ -46,7 +46,7 @@ struct tsortInfo_s {
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
 /*@owned@*/ /*@null@*/
-    struct tsortInfo_s * tsi_next;
+    tsortInfo	tsi_next;
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     rpmte tsi_chain;
     int		tsi_reqx;
