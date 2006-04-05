@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-01 16:33-0500\n"
+"POT-Creation-Date: 2006-04-05 15:01-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -365,7 +365,7 @@ msgstr "検証のための引数が指定されていません。"
 msgid "no arguments given"
 msgstr "引数が指定されていません。"
 
-#: build/build.c:140 build/pack.c:616
+#: build/build.c:140 build/pack.c:617
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません。\n"
 
@@ -709,7 +709,7 @@ msgstr "readRPM: %s のオープン: %s\n"
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:326 build/pack.c:663
+#: build/pack.c:326 build/pack.c:664
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek に失敗しました: %s\n"
@@ -724,77 +724,77 @@ msgstr "readRPM: %s は RPM パッケージではありません\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からヘッダの読み込み中\n"
 
-#: build/pack.c:604
+#: build/pack.c:605
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダ領域を作成できません。\n"
 
-#: build/pack.c:623
+#: build/pack.c:624
 msgid "Unable to write temp header\n"
 msgstr "一時ヘッダの書き込みができません。\n"
 
-#: build/pack.c:633
+#: build/pack.c:634
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ\n"
 
-#: build/pack.c:670
+#: build/pack.c:671
 msgid "Unable to write final header\n"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: build/pack.c:690
+#: build/pack.c:691
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の作成中: %d\n"
 
-#: build/pack.c:708
+#: build/pack.c:709
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: build/pack.c:716
+#: build/pack.c:717
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:752 lib/psm.c:1690
+#: build/pack.c:753 lib/psm.c:1690
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:767
+#: build/pack.c:768
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s のオープンに失敗: %s\n"
 
-#: build/pack.c:778
+#: build/pack.c:779
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s からヘッダ読み込みに失敗: %s\n"
 
-#: build/pack.c:792
+#: build/pack.c:793
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s へのヘッダ書き込みに失敗: %s\n"
 
-#: build/pack.c:802
+#: build/pack.c:803
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s から Payload 読み込みに失敗: %s\n"
 
-#: build/pack.c:808
+#: build/pack.c:809
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:845 lib/psm.c:2003
+#: build/pack.c:846 lib/psm.c:2003
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:918
+#: build/pack.c:919
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:935
+#: build/pack.c:936
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1267,18 +1267,18 @@ msgstr "ビルドのどの段階も実行しない"
 msgid "do not verify build dependencies"
 msgstr "ビルド依存性を検証しない"
 
-#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:405
-#: lib/poptQV.c:414 lib/poptQV.c:456
+#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:412
+#: lib/poptQV.c:421 lib/poptQV.c:463
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:408
-#: lib/poptQV.c:416 lib/poptQV.c:459
+#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:415
+#: lib/poptQV.c:423 lib/poptQV.c:466
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:411
-#: lib/poptQV.c:418 lib/poptQV.c:461
+#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:418
+#: lib/poptQV.c:425 lib/poptQV.c:468
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
 
@@ -1466,23 +1466,23 @@ msgstr "(provides データベース"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1082
+#: lib/depends.c:1089
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1204
+#: lib/depends.c:1211
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
 #. Record all relations.
-#: lib/depends.c:1441
+#: lib/depends.c:1466
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1533
+#: lib/depends.c:1558
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1491,21 +1491,21 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:1624
+#: lib/depends.c:1649
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:1697
+#: lib/depends.c:1722
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:1732
+#: lib/depends.c:1757
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1737
+#: lib/depends.c:1762
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -2067,8 +2067,8 @@ msgstr "データベースを更新しますが、ファイルシステムの変更は行いません。"
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証を行いません。"
 
-#: lib/poptI.c:317 lib/poptI.c:319 lib/poptQV.c:347 lib/poptQV.c:350
-#: lib/poptQV.c:352
+#: lib/poptI.c:317 lib/poptI.c:319 lib/poptQV.c:354 lib/poptQV.c:357
+#: lib/poptQV.c:359
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "パッケージダイジェストの検証をしません。"
@@ -2199,235 +2199,240 @@ msgstr "インストールせずに、テストのみを行います。"
 msgid "upgrade package(s)"
 msgstr "パッケージをアップグレードします。"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:110
 msgid "query/verify all packages"
 msgstr "全てのパッケージについて問い合わせ/検証します。"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:112
 msgid "rpm checksig mode"
 msgstr "rpm の署名検査モード"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:114
 msgid "query/verify package(s) owning file"
 msgstr "<file> を所有しているパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:116
 msgid "query/verify package(s) in group"
 msgstr "グループに所属するパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:118
 msgid "query/verify a package file"
 msgstr "パッケージファイルの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:118
+#: lib/poptQV.c:121
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "ファイルツリー探索の先頭から、問い合わせ/検証します"
 
-#: lib/poptQV.c:120
+#: lib/poptQV.c:123
 msgid "query/verify package(s) from system HDLIST"
 msgstr "システムの HDLIST から問い合わせ/検証をします。"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:126
 msgid "query/verify package(s) with package identifier"
 msgstr "パッケージ ID で問い合わせ/検証します。"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:128
 msgid "query/verify package(s) with header identifier"
 msgstr "ヘッダ ID でパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:127
+#: lib/poptQV.c:130
 msgid "query/verify package(s) with file identifier"
 msgstr "ファイル ID でパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:133
 msgid "rpm query mode"
 msgstr "rpm 問い合わせモード"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:135
 msgid "query/verify a header instance"
 msgstr "ヘッダインスタンスの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:137
 msgid "query a spec file"
 msgstr "spec ファイルを問い合わせます。"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:137
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:139
 msgid "query/verify package(s) from install transaction"
 msgstr ""
 "インストールトランザクションからのパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:141
 msgid "query the package(s) triggered by the package"
 msgstr "パッケージによってトリガーされるパッケージを問い合わせます。"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:143
 msgid "rpm verify mode"
 msgstr "RPM 検証モード"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:145
 msgid "query/verify the package(s) which require a dependency"
 msgstr "依存性を要求するパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:147
+#, fuzzy
+msgid "query/verify the package(s) which require any contained provide"
+msgstr "依存性を要求するパッケージの問い合わせ/検証をします。"
+
+#: lib/poptQV.c:151
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "依存性を提供するパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:154
 msgid "create transaction set"
 msgstr "トランザクションセットの作成"
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:156
 msgid "do not order transaction set"
 msgstr "トランザクションセットを並び替えません。"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:158
 msgid "do not glob arguments"
 msgstr "引数を glob パターンとしてみなしません。"
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:160
 msgid "do not process non-package files as manifests"
 msgstr "リスト内の非パッケージファイルを処理しません。"
 
-#: lib/poptQV.c:155
+#: lib/poptQV.c:162
 msgid "do not read headers"
 msgstr "ヘッダーを読み込みません。"
 
-#: lib/poptQV.c:282
+#: lib/poptQV.c:289
 msgid "list all configuration files"
 msgstr "全ての設定ファイルを列挙します。"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:291
 msgid "list all documentation files"
 msgstr "全てのドキュメントファイルを列挙します。"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:293
 msgid "dump basic file information"
 msgstr "基本的なファイル情報をダンプします。"
 
-#: lib/poptQV.c:290
+#: lib/poptQV.c:297
 msgid "list files in package"
 msgstr "パッケージ中のファイルを列挙します。"
 
-#: lib/poptQV.c:295 lib/poptQV.c:338
+#: lib/poptQV.c:302 lib/poptQV.c:345
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "%%license ファイルをスキップします。"
 
-#: lib/poptQV.c:298 lib/poptQV.c:341
+#: lib/poptQV.c:305 lib/poptQV.c:348
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "%%ghost ファイルをスキップします。"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:308
 #, c-format
 msgid "skip %%ghost files"
 msgstr "%%ghost ファイルをスキップします。"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:312
 #, c-format
 msgid "skip %%license files"
 msgstr "%%license ファイルをスキップします。"
 
-#: lib/poptQV.c:308
+#: lib/poptQV.c:315
 #, c-format
 msgid "skip %%readme files"
 msgstr "%%readme ファイルをスキップします。"
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:321
 msgid "use the following query format"
 msgstr "以下の問い合わせフォーマットを使用します。"
 
-#: lib/poptQV.c:316
+#: lib/poptQV.c:323
 msgid "substitute i18n sections into spec file"
 msgstr "spec ファイルの i18n 部分を書き換えます。"
 
-#: lib/poptQV.c:318
+#: lib/poptQV.c:325
 msgid "display the states of the listed files"
 msgstr "列挙したファイルの状態を表示します。"
 
-#: lib/poptQV.c:320
+#: lib/poptQV.c:327
 #, fuzzy
 msgid "specify target platform"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:363
 msgid "don't verify size of files"
 msgstr "ファイルサイズを検証しません。"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:366
 msgid "don't verify symlink path of files"
 msgstr "ファイルのシンボリックリンクを検証しません。"
 
-#: lib/poptQV.c:362
+#: lib/poptQV.c:369
 msgid "don't verify owner of files"
 msgstr "ファイルの所有者を検証しません。"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:372
 msgid "don't verify group of files"
 msgstr "ファイルの所有グループを検証しません。"
 
-#: lib/poptQV.c:368
+#: lib/poptQV.c:375
 msgid "don't verify modification time of files"
 msgstr "ファイルの最終更新日を検証しません。"
 
-#: lib/poptQV.c:371 lib/poptQV.c:374
+#: lib/poptQV.c:378 lib/poptQV.c:381
 msgid "don't verify mode of files"
 msgstr "ファイルのモードを検証しません。"
 
-#: lib/poptQV.c:377
+#: lib/poptQV.c:384
 msgid "don't verify file security contexts"
 msgstr "ファイルセキュリティコンテキストを検証しません。"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:386
 msgid "don't verify files in package"
 msgstr "パッケージ中のファイルを検証しません。"
 
-#: lib/poptQV.c:382 lib/poptQV.c:385 tools/rpmgraph.c:267
+#: lib/poptQV.c:389 lib/poptQV.c:392 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "パッケージの依存関係を検証しません。"
 
-#: lib/poptQV.c:390 lib/poptQV.c:394 lib/poptQV.c:397 lib/poptQV.c:400
+#: lib/poptQV.c:397 lib/poptQV.c:401 lib/poptQV.c:404 lib/poptQV.c:407
 msgid "don't execute verify script(s)"
 msgstr "検証スクリプトを実行しません。"
 
-#: lib/poptQV.c:434
+#: lib/poptQV.c:441
 msgid "sign package(s) (identical to --resign)"
 msgstr "パッケージに署名します (--resign と同一です)"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:443
 msgid "verify package signature(s)"
 msgstr "署名の検証を行います。"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:445
 msgid "delete package signatures"
 msgstr "パッケージの署名を削除する"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:447
 msgid "import an armored public key"
 msgstr "ASCII 化された公開鍵を取り込みます。"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:449
 msgid "sign package(s) (identical to --addsign)"
 msgstr "パッケージに署名する (--addsign と同一です)"
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:451
 msgid "generate signature"
 msgstr "署名を生成します。"
 
-#: lib/poptQV.c:447
+#: lib/poptQV.c:454
 #, fuzzy
 msgid "specify trust metric"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: lib/poptQV.c:450
+#: lib/poptQV.c:457
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:453
+#: lib/poptQV.c:460
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2580,42 +2585,42 @@ msgstr "不正な %s 指定: %s\n"
 msgid "no package matches %s: %s\n"
 msgstr "%s にマッチするパッケージは存在しません: %s\n"
 
-#: lib/query.c:593
+#: lib/query.c:594
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません。\n"
 
-#: lib/query.c:604
+#: lib/query.c:605
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません。\n"
 
-#: lib/query.c:643
+#: lib/query.c:644
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:647
+#: lib/query.c:648
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません。\n"
 
-#: lib/query.c:672
+#: lib/query.c:673
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:675
+#: lib/query.c:676
 #, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号: %u\n"
 
-#: lib/query.c:680
+#: lib/query.c:681
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "レコード %u は読み込めませんでした\n"
 
-#: lib/query.c:690 lib/rpminstall.c:818
+#: lib/query.c:691 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません。\n"
@@ -2726,89 +2731,89 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3208
+#: lib/rpmds.c:807 lib/rpmds.c:3319
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:793 lib/rpmds.c:3208
+#: lib/rpmds.c:807 lib/rpmds.c:3319
 msgid "YES"
 msgstr "YES"
 
-#: lib/rpmds.c:1293
+#: lib/rpmds.c:1324
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
 
-#: lib/rpmds.c:1296
+#: lib/rpmds.c:1327
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
 
-#: lib/rpmds.c:1299
+#: lib/rpmds.c:1330
 msgid "package payload can be compressed using bzip2."
 msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
 
-#: lib/rpmds.c:1302
+#: lib/rpmds.c:1333
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "パッケージペイロードファイルが「./」接頭語を持っています。"
 
-#: lib/rpmds.c:1305
+#: lib/rpmds.c:1336
 msgid "package name-version-release is not implicitly provided."
 msgstr "「パッケージ名-バージョン-リリース」が暗黙で提供されません。"
 
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1339
 msgid "header tags are always sorted after being loaded."
 msgstr "ヘッダータグが読み込まれた後、常にソートされます。"
 
-#: lib/rpmds.c:1311
+#: lib/rpmds.c:1342
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "スクリプトインタプリターがヘッダから引数を使用できます。"
 
-#: lib/rpmds.c:1314
+#: lib/rpmds.c:1345
 msgid "a hardlink file set may be installed without being complete."
 msgstr "ハードリンクファイル群が完全でなくてもインストールできます。"
 
-#: lib/rpmds.c:1317
+#: lib/rpmds.c:1348
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
 
-#: lib/rpmds.c:1321
+#: lib/rpmds.c:1352
 msgid "internal support for lua scripts."
 msgstr "lua スクリプトの内部サポート。"
 
-#: lib/rpmds.c:1325
+#: lib/rpmds.c:1356
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1328
+#: lib/rpmds.c:1359
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1429
+#: lib/rpmds.c:1477
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1463
+#: lib/rpmds.c:1511
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1473
+#: lib/rpmds.c:1521
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3001 lib/rpmds.c:3031 lib/rpmds.c:3043
+#: lib/rpmds.c:3112 lib/rpmds.c:3142 lib/rpmds.c:3154
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3004
+#: lib/rpmds.c:3115
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2817,20 +2822,20 @@ msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3033
+#: lib/rpmds.c:3144
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3045
+#: lib/rpmds.c:3156
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3174
+#: lib/rpmds.c:3285
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2839,13 +2844,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします (\"A\" と同じであると仮定して)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3207
+#: lib/rpmds.c:3318
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3231
+#: lib/rpmds.c:3342
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"
@@ -2897,12 +2902,12 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "不明なタグ: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:635 lib/rpminstall.c:667 lib/rpminstall.c:852
+#: lib/rpmgi.c:655 lib/rpminstall.c:667 lib/rpminstall.c:852
 #: lib/rpminstall.c:1456 lib/transaction.c:1191 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpmgi.c:641 lib/rpminstall.c:674 tools/rpmgraph.c:203
+#: lib/rpmgi.c:661 lib/rpminstall.c:674 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "    解決の提案:\n"
 
@@ -3317,15 +3322,15 @@ msgstr "追加中: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "提案中: %s\n"
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1234
 msgid "mounted filesystems:\n"
 msgstr "マウント済みファイルシステム:\n"
 
-#: lib/rpmts.c:1233
+#: lib/rpmts.c:1236
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        dev    bsize       bavail       iavail mount point\n"
 
-#: lib/rpmts.c:1298
+#: lib/rpmts.c:1301
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-01 16:33-0500\n"
+"POT-Creation-Date: 2006-04-05 15:01-0400\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -351,7 +351,7 @@ msgstr "inga parametrar angivna för verifiering"
 msgid "no arguments given"
 msgstr "inga argument angivna"
 
-#: build/build.c:140 build/pack.c:616
+#: build/build.c:140 build/pack.c:617
 msgid "Unable to open temp file.\n"
 msgstr "Kan inte öppna temporär fil.\n"
 
@@ -695,7 +695,7 @@ msgstr "readRPM: öppna %s: %s\n"
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: läs %s: %s\n"
 
-#: build/pack.c:326 build/pack.c:663
+#: build/pack.c:326 build/pack.c:664
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek misslyckades: %s\n"
@@ -710,77 +710,77 @@ msgstr "readRPM: %s är inte ett RPM-paket\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: läser huvud från %s\n"
 
-#: build/pack.c:604
+#: build/pack.c:605
 msgid "Unable to create immutable header region.\n"
 msgstr "Kan inte skapa oföränderlig huvudregion.\n"
 
-#: build/pack.c:623
+#: build/pack.c:624
 msgid "Unable to write temp header\n"
 msgstr "Kan inte skriva temporärhuvud\n"
 
-#: build/pack.c:633
+#: build/pack.c:634
 msgid "Bad CSA data\n"
 msgstr "Felaktig CSA-data\n"
 
-#: build/pack.c:670
+#: build/pack.c:671
 msgid "Unable to write final header\n"
 msgstr "Kan inte skriva slutligt huvud\n"
 
-#: build/pack.c:690
+#: build/pack.c:691
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererar signatur: %d\n"
 
-#: build/pack.c:708
+#: build/pack.c:709
 msgid "Unable to reload signature header.\n"
 msgstr "Kan inte läsa om signaturhuvud.\n"
 
-#: build/pack.c:716
+#: build/pack.c:717
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:752 lib/psm.c:1690
+#: build/pack.c:753 lib/psm.c:1690
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
 
-#: build/pack.c:767
+#: build/pack.c:768
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Kan inte läsa signaturen %s: %s\n"
 
-#: build/pack.c:778
+#: build/pack.c:779
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Kan inte läsa huvud från %s: %s\n"
 
-#: build/pack.c:792
+#: build/pack.c:793
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Kan inte skriva huvud till %s: %s\n"
 
-#: build/pack.c:802
+#: build/pack.c:803
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Kan inte läsa last från %s: %s\n"
 
-#: build/pack.c:808
+#: build/pack.c:809
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:845 lib/psm.c:2003
+#: build/pack.c:846 lib/psm.c:2003
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:918
+#: build/pack.c:919
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:935
+#: build/pack.c:936
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
@@ -1259,18 +1259,18 @@ msgstr "utför inga steg i byggnationen"
 msgid "do not verify build dependencies"
 msgstr "verifiera inte byggberoenden"
 
-#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:405
-#: lib/poptQV.c:414 lib/poptQV.c:456
+#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:412
+#: lib/poptQV.c:421 lib/poptQV.c:463
 msgid "don't verify package digest(s)"
 msgstr "verifiera inte paketkontrollsummor"
 
-#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:408
-#: lib/poptQV.c:416 lib/poptQV.c:459
+#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:415
+#: lib/poptQV.c:423 lib/poptQV.c:466
 msgid "don't verify database header(s) when retrieved"
 msgstr "verifiera inte databashuvuden när de hämtas"
 
-#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:411
-#: lib/poptQV.c:418 lib/poptQV.c:461
+#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:418
+#: lib/poptQV.c:425 lib/poptQV.c:468
 msgid "don't verify package signature(s)"
 msgstr "verifiera inte paketsignatur(er)"
 
@@ -1458,23 +1458,23 @@ msgstr "(db tillhandahåller)"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1082
+#: lib/depends.c:1089
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1204
+#: lib/depends.c:1211
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1441
+#: lib/depends.c:1466
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1533
+#: lib/depends.c:1558
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1483,21 +1483,21 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "djup, bredd)\n"
 
-#: lib/depends.c:1624
+#: lib/depends.c:1649
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== endast efterföljare (%d byte)\n"
 
-#: lib/depends.c:1697
+#: lib/depends.c:1722
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1732
+#: lib/depends.c:1757
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1737
+#: lib/depends.c:1762
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -2056,8 +2056,8 @@ msgstr "uppdatera databasen, men ändra inte filsystemet"
 msgid "do not verify package dependencies"
 msgstr "verifiera inte paketberoenden"
 
-#: lib/poptI.c:317 lib/poptI.c:319 lib/poptQV.c:347 lib/poptQV.c:350
-#: lib/poptQV.c:352
+#: lib/poptI.c:317 lib/poptI.c:319 lib/poptQV.c:354 lib/poptQV.c:357
+#: lib/poptQV.c:359
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "verifiera inte paketkontrollsummor"
@@ -2189,234 +2189,239 @@ msgstr "installera inte, men tala om ifall det skulle fungera eller inte"
 msgid "upgrade package(s)"
 msgstr "uppgradera paket"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:110
 msgid "query/verify all packages"
 msgstr "fråga/verifiera alla paket"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:112
 msgid "rpm checksig mode"
 msgstr "rpm signaturkontrolläge"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:114
 msgid "query/verify package(s) owning file"
 msgstr "fråga/verifiera paket som äger fil"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:116
 msgid "query/verify package(s) in group"
 msgstr "fråga/verifiera paket i grupp"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:118
 msgid "query/verify a package file"
 msgstr "fråga/verifiera en paketfil"
 
-#: lib/poptQV.c:118
+#: lib/poptQV.c:121
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "fråga/verifiera paket från TOP-trädtraversering"
 
-#: lib/poptQV.c:120
+#: lib/poptQV.c:123
 msgid "query/verify package(s) from system HDLIST"
 msgstr "fråga/verifiera paket från system-HDLIST"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:126
 msgid "query/verify package(s) with package identifier"
 msgstr "fråga/verifiera paket som med paketidentifierare"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:128
 msgid "query/verify package(s) with header identifier"
 msgstr "fråga/verifiera paket med huvudidentifierare"
 
-#: lib/poptQV.c:127
+#: lib/poptQV.c:130
 msgid "query/verify package(s) with file identifier"
 msgstr "fråga/verifiera paket med filidentifierare"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:133
 msgid "rpm query mode"
 msgstr "rpm frågeläge"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:135
 msgid "query/verify a header instance"
 msgstr "fråga/verifiera en huvudinstans"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:137
 msgid "query a spec file"
 msgstr "fråga en specfil"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:137
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:139
 msgid "query/verify package(s) from install transaction"
 msgstr "fråga/verifiera paket från installationstransaktion"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:141
 msgid "query the package(s) triggered by the package"
 msgstr "fråga paket utlösta av paketet"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:143
 msgid "rpm verify mode"
 msgstr "rpm verifieringsläge"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:145
 msgid "query/verify the package(s) which require a dependency"
 msgstr "fråga/verifiera paket som behöver ett beroende"
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:147
+#, fuzzy
+msgid "query/verify the package(s) which require any contained provide"
+msgstr "fråga/verifiera paket som behöver ett beroende"
+
+#: lib/poptQV.c:151
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "fråga/verifiera paket som tillhandahåller ett beroende"
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:154
 msgid "create transaction set"
 msgstr "skapa transaktionsmängd"
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:156
 msgid "do not order transaction set"
 msgstr "ordna inte transaktionsmängd"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:158
 msgid "do not glob arguments"
 msgstr "mönstermatcha inte argument"
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:160
 msgid "do not process non-package files as manifests"
 msgstr "behandla inte icke-paket-filer som förteckningar"
 
-#: lib/poptQV.c:155
+#: lib/poptQV.c:162
 msgid "do not read headers"
 msgstr "läs inte huvuden"
 
-#: lib/poptQV.c:282
+#: lib/poptQV.c:289
 msgid "list all configuration files"
 msgstr "lista alla konfigurationsfiler"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:291
 msgid "list all documentation files"
 msgstr "lista alla dokumentationsfiler"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:293
 msgid "dump basic file information"
 msgstr "visa filinformation"
 
-#: lib/poptQV.c:290
+#: lib/poptQV.c:297
 msgid "list files in package"
 msgstr "lista filer i paketet"
 
-#: lib/poptQV.c:295 lib/poptQV.c:338
+#: lib/poptQV.c:302 lib/poptQV.c:345
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "hoppa över %%license-filer"
 
-#: lib/poptQV.c:298 lib/poptQV.c:341
+#: lib/poptQV.c:305 lib/poptQV.c:348
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "hoppa över %%ghost-filer"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:308
 #, c-format
 msgid "skip %%ghost files"
 msgstr "hoppa över %%ghost-filer"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:312
 #, c-format
 msgid "skip %%license files"
 msgstr "hoppa över %%license-filer"
 
-#: lib/poptQV.c:308
+#: lib/poptQV.c:315
 #, c-format
 msgid "skip %%readme files"
 msgstr "hoppa över %%readme-filer"
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:321
 msgid "use the following query format"
 msgstr "använd följande frågeformat"
 
-#: lib/poptQV.c:316
+#: lib/poptQV.c:323
 msgid "substitute i18n sections into spec file"
 msgstr "ersätt översatta sektioner till specfil"
 
-#: lib/poptQV.c:318
+#: lib/poptQV.c:325
 msgid "display the states of the listed files"
 msgstr "visa tillstånd för de listade filerna"
 
-#: lib/poptQV.c:320
+#: lib/poptQV.c:327
 #, fuzzy
 msgid "specify target platform"
 msgstr "åsidosätt målplattform"
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:363
 msgid "don't verify size of files"
 msgstr "verifiera inte storlekar på filer"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:366
 msgid "don't verify symlink path of files"
 msgstr "verifiera inte sökvägen i symboliska länkar"
 
-#: lib/poptQV.c:362
+#: lib/poptQV.c:369
 msgid "don't verify owner of files"
 msgstr "verifiera inte ägare till filer"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:372
 msgid "don't verify group of files"
 msgstr "verifiera inte grupper till filer"
 
-#: lib/poptQV.c:368
+#: lib/poptQV.c:375
 msgid "don't verify modification time of files"
 msgstr "verifiera inte modifikationstiden för filer"
 
-#: lib/poptQV.c:371 lib/poptQV.c:374
+#: lib/poptQV.c:378 lib/poptQV.c:381
 msgid "don't verify mode of files"
 msgstr "verifiera inte rättigheter för filer"
 
-#: lib/poptQV.c:377
+#: lib/poptQV.c:384
 msgid "don't verify file security contexts"
 msgstr "verifiera inte filsäkerhetskontexter"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:386
 msgid "don't verify files in package"
 msgstr "verifiera inte filerna i paketet"
 
-#: lib/poptQV.c:382 lib/poptQV.c:385 tools/rpmgraph.c:267
+#: lib/poptQV.c:389 lib/poptQV.c:392 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "verifiera inte paketberoenden"
 
-#: lib/poptQV.c:390 lib/poptQV.c:394 lib/poptQV.c:397 lib/poptQV.c:400
+#: lib/poptQV.c:397 lib/poptQV.c:401 lib/poptQV.c:404 lib/poptQV.c:407
 msgid "don't execute verify script(s)"
 msgstr "utför inte verifieringsskript"
 
-#: lib/poptQV.c:434
+#: lib/poptQV.c:441
 msgid "sign package(s) (identical to --resign)"
 msgstr "signera paket (detsamma som --resign)"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:443
 msgid "verify package signature(s)"
 msgstr "verifiera paketsignatur(er)"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:445
 msgid "delete package signatures"
 msgstr "tag bort paketsignaturer"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:447
 msgid "import an armored public key"
 msgstr "importera en publik nyckel med skal"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:449
 msgid "sign package(s) (identical to --addsign)"
 msgstr "signera paket (detsamma som --addsign)"
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:451
 msgid "generate signature"
 msgstr "generera signatur"
 
-#: lib/poptQV.c:447
+#: lib/poptQV.c:454
 #, fuzzy
 msgid "specify trust metric"
 msgstr "åsidosätt målplattform"
 
-#: lib/poptQV.c:450
+#: lib/poptQV.c:457
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:453
+#: lib/poptQV.c:460
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2571,42 +2576,42 @@ msgstr "felformaterad %s: %s\n"
 msgid "no package matches %s: %s\n"
 msgstr "inga paket matchar %s: %s\n"
 
-#: lib/query.c:593
+#: lib/query.c:594
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:604
+#: lib/query.c:605
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:643
+#: lib/query.c:644
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:647
+#: lib/query.c:648
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tillhör inget paket\n"
 
-#: lib/query.c:672
+#: lib/query.c:673
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:675
+#: lib/query.c:676
 #, c-format
 msgid "package record number: %u\n"
 msgstr "paketpost nummer: %u\n"
 
-#: lib/query.c:680
+#: lib/query.c:681
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:690 lib/rpminstall.c:818
+#: lib/query.c:691 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -2717,86 +2722,86 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3208
+#: lib/rpmds.c:807 lib/rpmds.c:3319
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:793 lib/rpmds.c:3208
+#: lib/rpmds.c:807 lib/rpmds.c:3319
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1293
+#: lib/rpmds.c:1324
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, and Obsoletes:-beroenden stödjer versioner."
 
-#: lib/rpmds.c:1296
+#: lib/rpmds.c:1327
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "filnamn lagrade som (katNamn,basNam,katIndex)-tupel, inte som sökväg."
 
-#: lib/rpmds.c:1299
+#: lib/rpmds.c:1330
 msgid "package payload can be compressed using bzip2."
 msgstr "paketlasten kan komprimeras med bzip2."
 
-#: lib/rpmds.c:1302
+#: lib/rpmds.c:1333
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "paketlastfiler har \"./\"-prefix."
 
-#: lib/rpmds.c:1305
+#: lib/rpmds.c:1336
 msgid "package name-version-release is not implicitly provided."
 msgstr "paketets namn-version-utgåva tillhandahålls inte implicit."
 
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1339
 msgid "header tags are always sorted after being loaded."
 msgstr "huvudtaggar sorteras alltid efter att ha lästs in."
 
-#: lib/rpmds.c:1311
+#: lib/rpmds.c:1342
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "skriptinterpretatorn kan använda argument från huvudet."
 
-#: lib/rpmds.c:1314
+#: lib/rpmds.c:1345
 msgid "a hardlink file set may be installed without being complete."
 msgstr "en hårdlänkad filuppsättning får installeras utan att vara komplett."
 
-#: lib/rpmds.c:1317
+#: lib/rpmds.c:1348
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "paketskript kan komma åt rpm-databasen under installation."
 
-#: lib/rpmds.c:1321
+#: lib/rpmds.c:1352
 msgid "internal support for lua scripts."
 msgstr "internt stöd för lua-skript."
 
-#: lib/rpmds.c:1325
+#: lib/rpmds.c:1356
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1328
+#: lib/rpmds.c:1359
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1429
+#: lib/rpmds.c:1477
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1463
+#: lib/rpmds.c:1511
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1473
+#: lib/rpmds.c:1521
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3001 lib/rpmds.c:3031 lib/rpmds.c:3043
+#: lib/rpmds.c:3112 lib/rpmds.c:3142 lib/rpmds.c:3154
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3004
+#: lib/rpmds.c:3115
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2805,20 +2810,20 @@ msgstr ""
 "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3033
+#: lib/rpmds.c:3144
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3045
+#: lib/rpmds.c:3156
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3174
+#: lib/rpmds.c:3285
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2827,13 +2832,13 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3207
+#: lib/rpmds.c:3318
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3231
+#: lib/rpmds.c:3342
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"
@@ -2885,12 +2890,12 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "okänd tagg: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:635 lib/rpminstall.c:667 lib/rpminstall.c:852
+#: lib/rpmgi.c:655 lib/rpminstall.c:667 lib/rpminstall.c:852
 #: lib/rpminstall.c:1456 lib/transaction.c:1191 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
 
-#: lib/rpmgi.c:641 lib/rpminstall.c:674 tools/rpmgraph.c:203
+#: lib/rpmgi.c:661 lib/rpminstall.c:674 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "    Föreslagna lösningar:\n"
 
@@ -3295,16 +3300,16 @@ msgstr "Lägger till: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "Föreslår %s\n"
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1234
 msgid "mounted filesystems:\n"
 msgstr "monterade filsystem:\n"
 
-#: lib/rpmts.c:1233
+#: lib/rpmts.c:1236
 #, fuzzy
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i  enhet bstrl       btillg       itillg monteringspunkt\n"
 
-#: lib/rpmts.c:1298
+#: lib/rpmts.c:1301
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"

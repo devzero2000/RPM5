@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-01 16:33-0500\n"
+"POT-Creation-Date: 2006-04-05 15:01-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -371,7 +371,7 @@ msgstr "aucun argument fourni à la vérification"
 msgid "no arguments given"
 msgstr "aucun argument fourni"
 
-#: build/build.c:140 build/pack.c:616
+#: build/build.c:140 build/pack.c:617
 msgid "Unable to open temp file.\n"
 msgstr "Incapable d'ouvrir un fichier temporaire.\n"
 
@@ -715,7 +715,7 @@ msgstr "readRPM: ouverture de %s: %s\n"
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: lecture de %s: %s\n"
 
-#: build/pack.c:326 build/pack.c:663
+#: build/pack.c:326 build/pack.c:664
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: échec de fseek: %s\n"
@@ -730,77 +730,77 @@ msgstr "readRPM: %s n'est pas un paquetage RPM\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: lecture de l'entête de %s\n"
 
-#: build/pack.c:604
+#: build/pack.c:605
 msgid "Unable to create immutable header region.\n"
 msgstr "Impossible de créer la partie immuable de l'entête.\n"
 
-#: build/pack.c:623
+#: build/pack.c:624
 msgid "Unable to write temp header\n"
 msgstr "Impossible d'écrire un entête temporaire\n"
 
-#: build/pack.c:633
+#: build/pack.c:634
 msgid "Bad CSA data\n"
 msgstr "Mauvaises données CSA\n"
 
-#: build/pack.c:670
+#: build/pack.c:671
 msgid "Unable to write final header\n"
 msgstr "Impossible d'écrire l'entête définitif\n"
 
-#: build/pack.c:690
+#: build/pack.c:691
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Génération de la signature: %d\n"
 
-#: build/pack.c:708
+#: build/pack.c:709
 msgid "Unable to reload signature header.\n"
 msgstr "Impossible de recharger l'entête de la signature.\n"
 
-#: build/pack.c:716
+#: build/pack.c:717
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Impossible d'ouvrir %s: %s\n"
 
-#: build/pack.c:752 lib/psm.c:1690
+#: build/pack.c:753 lib/psm.c:1690
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Impossible d'écrire le paquetage: %s\n"
 
-#: build/pack.c:767
+#: build/pack.c:768
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Impossible d'ouvrir sigtarget %s: %s\n"
 
-#: build/pack.c:778
+#: build/pack.c:779
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Impossible de lire l'entête dans %s: %s\n"
 
-#: build/pack.c:792
+#: build/pack.c:793
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Impossible d'écrire l'entête dans %s: %s\n"
 
-#: build/pack.c:802
+#: build/pack.c:803
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Impossible de lire la charge utile dans %s: %s\n"
 
-#: build/pack.c:808
+#: build/pack.c:809
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Impossible d'écrire la charge utile dans %s: %s\n"
 
-#: build/pack.c:845 lib/psm.c:2003
+#: build/pack.c:846 lib/psm.c:2003
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Ecrit: %s\n"
 
-#: build/pack.c:918
+#: build/pack.c:919
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Ne peut générer le nom de fichier pour le package %s: %s\n"
 
-#: build/pack.c:935
+#: build/pack.c:936
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Ne peut créer %s: %s\n"
@@ -1289,18 +1289,18 @@ msgstr "n'exécuter aucune étape de la construction"
 msgid "do not verify build dependencies"
 msgstr "ne pas vérifier les dépendances de construction"
 
-#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:405
-#: lib/poptQV.c:414 lib/poptQV.c:456
+#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:412
+#: lib/poptQV.c:421 lib/poptQV.c:463
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:408
-#: lib/poptQV.c:416 lib/poptQV.c:459
+#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:415
+#: lib/poptQV.c:423 lib/poptQV.c:466
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier l'entête de la base de données à la récupération"
 
-#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:411
-#: lib/poptQV.c:418 lib/poptQV.c:461
+#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:418
+#: lib/poptQV.c:425 lib/poptQV.c:468
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la(les) signature(s) du paquetage"
 
@@ -1491,24 +1491,24 @@ msgstr "(fourni par la db)"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1082
+#: lib/depends.c:1089
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 "ignorer la(les) relation(s) entre les noms de paquetages [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1204
+#: lib/depends.c:1211
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "on enlève %s \"%s\" des relations de Ttri.\n"
 
 #. Record all relations.
-#: lib/depends.c:1441
+#: lib/depends.c:1466
 msgid "========== recording tsort relations\n"
 msgstr "========== enregistrement des relations de Ttri\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1533
+#: lib/depends.c:1558
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1517,21 +1517,21 @@ msgstr ""
 "========== Ttri des paquetages (ordre, #prédécesseurs, #succeseurs, arbre, "
 "profondeur)\n"
 
-#: lib/depends.c:1624
+#: lib/depends.c:1649
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== successeurs seulement (%d octets)\n"
 
-#: lib/depends.c:1697
+#: lib/depends.c:1722
 msgid "LOOP:\n"
 msgstr "BOUCLE:\n"
 
-#: lib/depends.c:1732
+#: lib/depends.c:1757
 msgid "========== continuing tsort ...\n"
 msgstr "========== continuation du Ttri ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1737
+#: lib/depends.c:1762
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "échec de rpmtsOrder, %d éléments toujours présents\n"
@@ -2112,8 +2112,8 @@ msgstr ""
 msgid "do not verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquetage"
 
-#: lib/poptI.c:317 lib/poptI.c:319 lib/poptQV.c:347 lib/poptQV.c:350
-#: lib/poptQV.c:352
+#: lib/poptI.c:317 lib/poptI.c:319 lib/poptQV.c:354 lib/poptQV.c:357
+#: lib/poptQV.c:359
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
@@ -2249,249 +2249,254 @@ msgstr "n'installe pas, mais dit si ça marcherait ou pas"
 msgid "upgrade package(s)"
 msgstr "mises à jour des paquetages"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:110
 msgid "query/verify all packages"
 msgstr "vérifier/demander à tous les paquetages"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:112
 msgid "rpm checksig mode"
 msgstr "mode rpm vérifsign"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:114
 msgid "query/verify package(s) owning file"
 msgstr "vérifier/demander un package possèdant un fichier"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:116
 msgid "query/verify package(s) in group"
 msgstr "vérifier/questionner le(s) paquetage(s) d'un même groupe"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:118
 msgid "query/verify a package file"
 msgstr "vérifier/questionner un fichier paquetage"
 
-#: lib/poptQV.c:118
+#: lib/poptQV.c:121
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr ""
 "questionner/vérifier le(s) paquetage(s) à partir de la transaction "
 "d'installation"
 
-#: lib/poptQV.c:120
+#: lib/poptQV.c:123
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
 msgstr ""
 "questionner/vérifier le(s) paquetage(s) à partir de la transaction "
 "d'installation"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:126
 msgid "query/verify package(s) with package identifier"
 msgstr ""
 "questionner/vérifier le(s) paquetage(s) grâce à un identifieur de paquetage"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:128
 msgid "query/verify package(s) with header identifier"
 msgstr ""
 "questionner/vérifier le(s) paquetage(s) grâce à un identifieur d'entête"
 
-#: lib/poptQV.c:127
+#: lib/poptQV.c:130
 msgid "query/verify package(s) with file identifier"
 msgstr ""
 "questionner/vérifier le(s) paquetage(s) grâce à un identifieur de fichier"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:133
 msgid "rpm query mode"
 msgstr "mode de requête de rpm"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:135
 msgid "query/verify a header instance"
 msgstr "questionner/vérifier une instance d'entête"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:137
 msgid "query a spec file"
 msgstr "questionner un fichier spec"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:137
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:139
 msgid "query/verify package(s) from install transaction"
 msgstr ""
 "questionner/vérifier le(s) paquetage(s) à partir de la transaction "
 "d'installation"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:141
 msgid "query the package(s) triggered by the package"
 msgstr "questionner le(s) paquetage(s) surveillé(s) par le paquetage"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:143
 msgid "rpm verify mode"
 msgstr "mode de vérification de rpm"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:145
 msgid "query/verify the package(s) which require a dependency"
 msgstr "vérifier/demander le(s) paquetage(s) qui requier(en)t une dépendance"
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:147
+#, fuzzy
+msgid "query/verify the package(s) which require any contained provide"
+msgstr "vérifier/demander le(s) paquetage(s) qui requier(en)t une dépendance"
+
+#: lib/poptQV.c:151
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "vérifier/demander le(s) paquetage(s) qui fourni(ssen)t une dépendance"
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:154
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:156
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:158
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "aucun argument fourni"
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:160
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:155
+#: lib/poptQV.c:162
 #, fuzzy
 msgid "do not read headers"
 msgstr "%s: impossible de lire l'entête à 0x%x\n"
 
-#: lib/poptQV.c:282
+#: lib/poptQV.c:289
 msgid "list all configuration files"
 msgstr "lister les fichiers de configuration"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:291
 msgid "list all documentation files"
 msgstr "lister les fichiers documents"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:293
 msgid "dump basic file information"
 msgstr "débite les informations de base des fichiers"
 
-#: lib/poptQV.c:290
+#: lib/poptQV.c:297
 msgid "list files in package"
 msgstr "lister les fichiers du paquetage"
 
-#: lib/poptQV.c:295 lib/poptQV.c:338
+#: lib/poptQV.c:302 lib/poptQV.c:345
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "éviter les fichiers %%license"
 
-#: lib/poptQV.c:298 lib/poptQV.c:341
+#: lib/poptQV.c:305 lib/poptQV.c:348
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "éviter les fichiers fantômes %%ghost"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:308
 #, c-format
 msgid "skip %%ghost files"
 msgstr "éviter les fichiers fantômes %%ghost"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:312
 #, c-format
 msgid "skip %%license files"
 msgstr "éviter les fichiers %%license"
 
-#: lib/poptQV.c:308
+#: lib/poptQV.c:315
 #, c-format
 msgid "skip %%readme files"
 msgstr "éviter les fichier %%readme"
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:321
 msgid "use the following query format"
 msgstr "utiliser le format de requête suivant"
 
-#: lib/poptQV.c:316
+#: lib/poptQV.c:323
 msgid "substitute i18n sections into spec file"
 msgstr "substituer les section i18n dans le fichier spec"
 
-#: lib/poptQV.c:318
+#: lib/poptQV.c:325
 msgid "display the states of the listed files"
 msgstr "affiche la liste des fichiers et leur état"
 
-#: lib/poptQV.c:320
+#: lib/poptQV.c:327
 #, fuzzy
 msgid "specify target platform"
 msgstr "surcharger la plate-forme cible"
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:363
 msgid "don't verify size of files"
 msgstr "ne pas vérifier la taille des fichiers"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:366
 msgid "don't verify symlink path of files"
 msgstr "ne pas vérifier le chemin du lien symbolique des fichiers"
 
-#: lib/poptQV.c:362
+#: lib/poptQV.c:369
 msgid "don't verify owner of files"
 msgstr "ne pas vérifier le possesseur des fichiers"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:372
 msgid "don't verify group of files"
 msgstr "ne pas vérifier le groupe possesseur des fichiers"
 
-#: lib/poptQV.c:368
+#: lib/poptQV.c:375
 msgid "don't verify modification time of files"
 msgstr "ne pas vérifier les dates de modification des fichiers"
 
-#: lib/poptQV.c:371 lib/poptQV.c:374
+#: lib/poptQV.c:378 lib/poptQV.c:381
 msgid "don't verify mode of files"
 msgstr "ne pas vérifier les permissions des fichiers"
 
-#: lib/poptQV.c:377
+#: lib/poptQV.c:384
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "ne pas vérifier les fichiers du paquetage"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:386
 msgid "don't verify files in package"
 msgstr "ne pas vérifier les fichiers du paquetage"
 
-#: lib/poptQV.c:382 lib/poptQV.c:385 tools/rpmgraph.c:267
+#: lib/poptQV.c:389 lib/poptQV.c:392 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquetage"
 
-#: lib/poptQV.c:390 lib/poptQV.c:394 lib/poptQV.c:397 lib/poptQV.c:400
+#: lib/poptQV.c:397 lib/poptQV.c:401 lib/poptQV.c:404 lib/poptQV.c:407
 msgid "don't execute verify script(s)"
 msgstr "ne pas exécuter le(s) script(s) de vérification"
 
-#: lib/poptQV.c:434
+#: lib/poptQV.c:441
 msgid "sign package(s) (identical to --resign)"
 msgstr "signer le(s) paquetage(s) (identique à --resign)"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:443
 msgid "verify package signature(s)"
 msgstr "vérifier la(les) signature(s) du paquetage"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:445
 #, fuzzy
 msgid "delete package signatures"
 msgstr "vérifier la(les) signature(s) du paquetage"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:447
 msgid "import an armored public key"
 msgstr "importer une clé publique blindé"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:449
 msgid "sign package(s) (identical to --addsign)"
 msgstr "signer le(s) paquetage(s) (identique à --addsign)"
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:451
 msgid "generate signature"
 msgstr "génération de signature"
 
-#: lib/poptQV.c:447
+#: lib/poptQV.c:454
 #, fuzzy
 msgid "specify trust metric"
 msgstr "surcharger la plate-forme cible"
 
-#: lib/poptQV.c:450
+#: lib/poptQV.c:457
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:453
+#: lib/poptQV.c:460
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2644,42 +2649,42 @@ msgstr "%s malformé: %s\n"
 msgid "no package matches %s: %s\n"
 msgstr "aucun paquetage ne correspond à %s: %s\n"
 
-#: lib/query.c:593
+#: lib/query.c:594
 #, c-format
 msgid "no package requires %s\n"
 msgstr "aucun paquetage ne requiert %s\n"
 
-#: lib/query.c:604
+#: lib/query.c:605
 #, c-format
 msgid "no package provides %s\n"
 msgstr "aucun paquetage ne fournit %s\n"
 
-#: lib/query.c:643
+#: lib/query.c:644
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fichier %s: %s\n"
 
-#: lib/query.c:647
+#: lib/query.c:648
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "le fichier %s n'appartient à aucun paquetage\n"
 
-#: lib/query.c:672
+#: lib/query.c:673
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "numéro de paquetage invalide: %s\n"
 
-#: lib/query.c:675
+#: lib/query.c:676
 #, c-format
 msgid "package record number: %u\n"
 msgstr "numéro d'article de paquetage: %u\n"
 
-#: lib/query.c:680
+#: lib/query.c:681
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "impossible de lire l'article %u\n"
 
-#: lib/query.c:690 lib/rpminstall.c:818
+#: lib/query.c:691 lib/rpminstall.c:818
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "le paquetage %s n'est pas installé\n"
@@ -2790,73 +2795,73 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3208
+#: lib/rpmds.c:807 lib/rpmds.c:3319
 msgid "NO "
 msgstr "NON"
 
-#: lib/rpmds.c:793 lib/rpmds.c:3208
+#: lib/rpmds.c:807 lib/rpmds.c:3319
 msgid "YES"
 msgstr "OUI"
 
-#: lib/rpmds.c:1293
+#: lib/rpmds.c:1324
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "Les dépendances de type PreReq:, Provides: et Obsoletes: supportent les "
 "versions."
 
-#: lib/rpmds.c:1296
+#: lib/rpmds.c:1327
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Le(s) nom(s) de fichier sont stockés en tant que triplets (NomRep,NomFich,"
 "IndexRep), pas en tant que chemin."
 
-#: lib/rpmds.c:1299
+#: lib/rpmds.c:1330
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "La charge utile du paquetage est compressée avec bzip2."
 
-#: lib/rpmds.c:1302
+#: lib/rpmds.c:1333
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 "le(s) fichier(s) de la charge utile du paquetage ont \"./\" comme préfixe."
 
-#: lib/rpmds.c:1305
+#: lib/rpmds.c:1336
 msgid "package name-version-release is not implicitly provided."
 msgstr "le nom-version-révision du paquetage n'est pas implicitement fourni."
 
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1339
 msgid "header tags are always sorted after being loaded."
 msgstr "les tags d'entête sont toujours triés après avoir été chargés."
 
-#: lib/rpmds.c:1311
+#: lib/rpmds.c:1342
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 "l'interprète du scriptlet peut utiliser des arguments à partir des entêtes."
 
-#: lib/rpmds.c:1314
+#: lib/rpmds.c:1345
 msgid "a hardlink file set may be installed without being complete."
 msgstr "un lien en dur pourrait être installé sans être complet."
 
-#: lib/rpmds.c:1317
+#: lib/rpmds.c:1348
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "les scriptlets du paquetage pourrait accéder à la base de données rpm "
 "pendant l'installation."
 
-#: lib/rpmds.c:1321
+#: lib/rpmds.c:1352
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- non supporté sur des chaînes de caractères\n"
 
-#: lib/rpmds.c:1325
+#: lib/rpmds.c:1356
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1328
+#: lib/rpmds.c:1359
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1429
+#: lib/rpmds.c:1477
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
@@ -2864,23 +2869,23 @@ msgstr ""
 "ou '/': %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1463
+#: lib/rpmds.c:1511
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1473
+#: lib/rpmds.c:1521
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3001 lib/rpmds.c:3031 lib/rpmds.c:3043
+#: lib/rpmds.c:3112 lib/rpmds.c:3142 lib/rpmds.c:3154
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3004
+#: lib/rpmds.c:3115
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2890,20 +2895,20 @@ msgstr ""
 "ou '/': %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3033
+#: lib/rpmds.c:3144
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3045
+#: lib/rpmds.c:3156
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3174
+#: lib/rpmds.c:3285
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2913,13 +2918,13 @@ msgstr ""
 "pour \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3207
+#: lib/rpmds.c:3318
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:3231
+#: lib/rpmds.c:3342
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "le paquetage %s a un(e) %s non-satisfaites: %s\n"
@@ -2971,12 +2976,12 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "tag inconnu: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:635 lib/rpminstall.c:667 lib/rpminstall.c:852
+#: lib/rpmgi.c:655 lib/rpminstall.c:667 lib/rpminstall.c:852
 #: lib/rpminstall.c:1456 lib/transaction.c:1191 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Dépendances requises:\n"
 
-#: lib/rpmgi.c:641 lib/rpminstall.c:674 tools/rpmgraph.c:203
+#: lib/rpmgi.c:661 lib/rpminstall.c:674 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "    Résolutions suggérées:\n"
 
@@ -3392,15 +3397,15 @@ msgstr "Ajout de: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "Suggestion: %s\n"
 
-#: lib/rpmts.c:1231
+#: lib/rpmts.c:1234
 msgid "mounted filesystems:\n"
 msgstr "systèmes de fichiers montés:\n"
 
-#: lib/rpmts.c:1233
+#: lib/rpmts.c:1236
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1298
+#: lib/rpmts.c:1301
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
