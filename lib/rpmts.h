@@ -195,6 +195,10 @@ struct rpmts_s {
     rpmal addedPackages;	/*!< Set of packages being installed. */
     int numAddedPackages;	/*!< No. added package instances. */
 
+/*@only@*/
+    rpmal erasedPackages;	/*!< Set of packages being erased. */
+    int numErasedPackages;	/*!< No. erased package instances. */
+
 #ifndef	DYING
 /*@only@*/
     rpmal availablePackages;	/*!< Universe of available packages. */

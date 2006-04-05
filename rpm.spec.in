@@ -579,6 +579,7 @@ exit 0
 %changelog
 * Tue Apr  4 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.14
 - add macros to parameterize rpmds probe dependency defaults.
+- tsort for erased packages (#89500).
 
 * Sun Apr  2 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.13
 - eliminate SOURCEPACKAGE tag, use non-existence of SOURCERPM instead.

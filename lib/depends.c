@@ -1250,8 +1250,11 @@ static inline int addRelation(rpmts ts,
     tsortInfo tsi;
     const char * Name;
     fnpyKey key;
+    int teType = rpmteType(p);
     alKey pkgKey;
     int i = 0;
+    rpmal al = (teType == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
+    int bingo;
 
     if ((Name = rpmdsN(requires)) == NULL)
 	return 0;
@@ -1265,29 +1268,29 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
     pkgKey = RPMAL_NOMATCH;
-    key = rpmalSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
+    key = rpmalSatisfiesDepend(al, requires, &pkgKey);
 
-    /* Ordering depends only on added package relations. */
+    /* Ordering depends only on added/erased package relations. */
     if (pkgKey == RPMAL_NOMATCH)
 	return 0;
 
-/* XXX Set q to the added package that has pkgKey == q->u.addedKey */
-/* XXX FIXME: bsearch is possible/needed here */
+/* XXX Set q to the added/removed package that was found. */
+    bingo = 0;
     for (qi = rpmtsiInit(ts), i = 0; (q = rpmtsiNext(qi, 0)) != NULL; i++) {
 
-	/* XXX Only added packages need be checked for matches. */
-	if (rpmteType(q) == TR_REMOVED)
-	    continue;
-
-	if (pkgKey == rpmteAddedKey(q))
+	switch (teType) {
+	case TR_ADDED:		bingo = (pkgKey == rpmteAddedKey(q));	/*@switchbreak@*/ break;
+	case TR_REMOVED:	bingo = (key == q);			/*@switchbreak@*/ break;
+	}
+	if (bingo)
 	    break;
     }
     qi = rpmtsiFree(qi);
-    if (q == NULL || i == ts->orderCount)
+    if (q == NULL || i >= ts->orderCount)
 	return 0;
 
     /* Avoid certain dependency relations. */
-    if (ignoreDep(ts, p, q))
+    if (teType == TR_ADDED && ignoreDep(ts, p, q))
 	return 0;
 
     /* Avoid redundant relations. */
@@ -1422,6 +1425,21 @@ int rpmtsOrder(rpmts ts)
 #ifdef	DYING
     rpmalMakeIndex(ts->addedPackages);
 #endif
+
+    /* Create erased package index. */
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
+	alKey pkgKey;
+	fnpyKey key;
+	int tscolor = 0x3;
+	pkgKey = RPMAL_NOMATCH;
+	key = (fnpyKey) p;
+	pkgKey = rpmalAdd(&ts->erasedPackages, pkgKey, key,
+			rpmteDS(p, RPMTAG_PROVIDENAME),
+			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
+    }
+    pi = rpmtsiFree(pi);
+    rpmalMakeIndex(ts->erasedPackages);
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 

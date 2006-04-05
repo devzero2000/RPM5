@@ -780,6 +780,9 @@ void rpmtsClean(rpmts ts)
     ts->addedPackages = rpmalFree(ts->addedPackages);
     ts->numAddedPackages = 0;
 
+    ts->erasedPackages = rpmalFree(ts->erasedPackages);
+    ts->numErasedPackages = 0;
+
     ts->suggests = _free(ts->suggests);
     ts->nsuggests = 0;
 
@@ -1564,6 +1567,9 @@ rpmts rpmtsCreate(void)
 
     ts->numAddedPackages = 0;
     ts->addedPackages = NULL;
+
+    ts->numErasedPackages = 0;
+    ts->erasedPackages = NULL;
 
     ts->numAvailablePackages = 0;
     ts->availablePackages = NULL;
