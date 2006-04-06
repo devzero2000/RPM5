@@ -29,6 +29,7 @@
 	- tsort for erased packages (#89500).
 	- refactoring to integrate erasure ordering.
 	- create RPMTAG_DIRNAMES dependency set, attach to transaction element.
+	- lash up for checking synthesized dependencies on parent directories.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.

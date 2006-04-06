@@ -797,13 +797,16 @@ exit:
  * @param pkgNEVRA	package name-version-release.arch
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
+ * @param dirnames	Dirnames: dependencies (or NULL)
  * @param depName	dependency name to filter (or NULL)
  * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
 static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
-		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
+		/*@null@*/ rpmds requires,
+		/*@null@*/ rpmds conflicts,
+		/*@null@*/ rpmds dirnames,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -889,6 +892,48 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	}
     }
 
+    dirnames = rpmdsInit(dirnames);
+    if (dirnames != NULL)
+    while (!ourrc && rpmdsNext(dirnames) >= 0) {
+
+	if ((Name = rpmdsN(dirnames)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	/* Filter out dirnames that came along for the ride. */
+	if (depName != NULL && strcmp(depName, Name))
+	    continue;
+
+	/* Ignore colored dirnames not in our rainbow. */
+	dscolor = rpmdsColor(dirnames);
+	if (tscolor && dscolor && !(tscolor & dscolor))
+	    continue;
+
+	rc = unsatisfiedDepend(ts, dirnames, adding);
+
+	switch (rc) {
+	case 0:		/* requirements are satisfied. */
+	    /*@switchbreak@*/ break;
+	case 1:		/* requirements are not satisfied. */
+	{   fnpyKey * suggestedKeys = NULL;
+
+	    /*@-branchstate@*/
+	    if (ts->availablePackages != NULL) {
+		suggestedKeys = rpmalAllSatisfiesDepend(ts->availablePackages,
+				dirnames, NULL);
+	    }
+	    /*@=branchstate@*/
+
+	    rpmdsProblem(ts->probs, pkgNEVRA, dirnames, suggestedKeys, adding);
+
+	}
+	    /*@switchbreak@*/ break;
+	case 2:		/* something went wrong! */
+	default:
+	    ourrc = 1;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
     return ourrc;
 }
 
@@ -915,7 +960,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	const char * pkgNEVRA;
-	rpmds requires, conflicts;
+	rpmds requires, conflicts, dirnames;
 	int rc;
 
 	pkgNEVRA = hGetNEVRA(h, NULL);
@@ -923,7 +968,11 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
-	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dep, 0, adding);
+	dirnames = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
+	(void) rpmdsSetNoPromote(dirnames, _rpmds_nopromote);
+	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dirnames,
+		dep, 0, adding);
+	dirnames = rpmdsFree(dirnames);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
@@ -1876,6 +1925,7 @@ int rpmtsCheck(rpmts ts)
 	rc = checkPackageDeps(ts, rpmteNEVRA(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
+			rpmteDS(p, RPMTAG_DIRNAMES),
 			NULL,
 			tscolor, 1);
 	if (rc)
