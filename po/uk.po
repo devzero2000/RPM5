@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-05 15:01-0400\n"
+"POT-Creation-Date: 2006-04-05 21:15-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1484,12 +1484,12 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
 #. Record all relations.
-#: lib/depends.c:1466
+#: lib/depends.c:1467
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1558
+#: lib/depends.c:1559
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1498,21 +1498,21 @@ msgstr ""
 "========== сортування пакетів (порядок, #predecessors, #succesors, дерево, "
 "глибина)\n"
 
-#: lib/depends.c:1649
+#: lib/depends.c:1650
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== лише спадкоємці (%d байт)\n"
 
-#: lib/depends.c:1722
+#: lib/depends.c:1723
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1757
+#: lib/depends.c:1758
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1762
+#: lib/depends.c:1763
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"

@@ -141,8 +141,7 @@ struct rpmte_s {
     int installed;		/*!< Was the header installed? */
     int downgrade;		/*!< Adjust package count on downgrades. */
 
-/*@-fielduse@*/	/* LCL: confused by union? */
-    union {
+    struct {
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
 	alKey addedKey;
 	struct {
@@ -151,7 +150,6 @@ struct rpmte_s {
 	    int dboffset;
 	} removed;
     } u;
-/*@=fielduse@*/
 
 };
 
@@ -485,15 +483,6 @@ alKey rpmteAddedKey(rpmte te)
 alKey rpmteSetAddedKey(rpmte te,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey npkgKey)
 	/*@modifies te @*/;
-
-/**
- * Retrieve dependent pkgKey of TR_REMOVED transaction element.
- * @param te		transaction element
- * @return		dependent pkgKey
- */
-/*@exposed@*/ /*@dependent@*/ /*@null@*/
-alKey rpmteDependsOnKey(rpmte te)
-	/*@*/;
 
 /**
  * Retrieve rpmdb instance of TR_REMOVED transaction element.

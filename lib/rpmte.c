@@ -268,7 +268,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	    p->pkgFileSize += 96 + 256 + *ep;
 	break;
     case TR_REMOVED:
-	p->u.removed.dependsOnKey = pkgKey;
+	p->u.addedKey = pkgKey;
 	p->u.removed.dboffset = dboffset;
 	break;
     }
@@ -505,11 +505,6 @@ alKey rpmteSetAddedKey(rpmte te, alKey npkgKey)
     return opkgKey;
 }
 
-
-alKey rpmteDependsOnKey(rpmte te)
-{
-    return (te != NULL ? te->u.removed.dependsOnKey : RPMAL_NOMATCH);
-}
 
 int rpmteDBOffset(rpmte te)
 {

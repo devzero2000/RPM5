@@ -1254,7 +1254,6 @@ static inline int addRelation(rpmts ts,
     alKey pkgKey;
     int i = 0;
     rpmal al = (teType == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
-    int bingo;
 
     if ((Name = rpmdsN(requires)) == NULL)
 	return 0;
@@ -1275,16 +1274,12 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
 /* XXX Set q to the added/removed package that was found. */
-    bingo = 0;
-    for (qi = rpmtsiInit(ts), i = 0; (q = rpmtsiNext(qi, 0)) != NULL; i++) {
+    /* XXX pretend erasedPackages are just appended to addedPackages. */
+    if (teType == TR_REMOVED)
+	pkgKey = (alKey)(((long)pkgKey) + ts->numAddedPackages);
 
-/*@-abstract -type @*/
-	switch (teType) {
-	case TR_ADDED:		bingo = (pkgKey == rpmteAddedKey(q));	/*@switchbreak@*/ break;
-	case TR_REMOVED:	bingo = (key == q);			/*@switchbreak@*/ break;
-	}
-/*@=abstract =type @*/
-	if (bingo)
+    for (qi = rpmtsiInit(ts), i = 0; (q = rpmtsiNext(qi, 0)) != NULL; i++) {
+	if (pkgKey == rpmteAddedKey(q))
 	    break;
     }
     qi = rpmtsiFree(qi);
@@ -1296,7 +1291,6 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
     /* Avoid redundant relations. */
-    /* XXX TODO: add control bit. */
 /*@-boundsread@*/
     if (selected[i] != 0)
 	return 0;
@@ -1441,6 +1435,9 @@ int rpmtsOrder(rpmts ts)
 	pkgKey = rpmalAdd(&ts->erasedPackages, pkgKey, key,
 			rpmteDS(p, RPMTAG_PROVIDENAME),
 			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
+	/* XXX pretend erasedPackages are just appended to addedPackages. */
+	pkgKey = (alKey)(((long)pkgKey) + ts->numAddedPackages);
+	rpmteSetAddedKey(p, pkgKey);
     }
     pi = rpmtsiFree(pi);
     rpmalMakeIndex(ts->erasedPackages);
@@ -1779,24 +1776,14 @@ rescan:
     pi = rpmtsiFree(pi);
 
     /*
-     * The order ends up as installed packages followed by removed packages,
-     * with removes for upgrades immediately following the installation of
-     * the new package. This would be easier if we could sort the
-     * addedPackages array, but we store indexes into it in various places.
+     * The order ends up as installed packages followed by removed packages.
      */
     orderList = xcalloc(numOrderList, sizeof(*orderList));
     j = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
-	/* Prepare added package ordering permutation. */
-	switch (rpmteType(p)) {
-	case TR_ADDED:
-	    orderList[j].pkgKey = rpmteAddedKey(p);
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	    orderList[j].pkgKey = RPMAL_NOMATCH;
-	    /*@switchbreak@*/ break;
-	}
+	/* Prepare added/erased package ordering permutation. */
+	orderList[j].pkgKey = rpmteAddedKey(p);
 	orderList[j].orIndex = rpmtsiOc(pi);
 	j++;
     }
@@ -1816,8 +1803,7 @@ rescan:
 	key.pkgKey = ordering[i];
 	needle = bsearch(&key, orderList, numOrderList,
 				sizeof(key), orderListIndexCmp);
-	/* bsearch should never, ever fail */
-	if (needle == NULL)
+	if (needle == NULL)	/* XXX can't happen */
 	    continue;
 
 	j = needle->orIndex;
@@ -1826,27 +1812,9 @@ rescan:
 
 	newOrder[newOrderCount++] = q;
 	ts->order[j] = NULL;
-	if (anaconda)
-	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
-	    if ((q = ts->order[j]) == NULL)
-		/*@innerbreak@*/ break;
-	    if (rpmteType(q) == TR_REMOVED
-	     && rpmteDependsOnKey(q) == needle->pkgKey)
-	    {
-		newOrder[newOrderCount++] = q;
-		ts->order[j] = NULL;
-	    } else
-		/*@innerbreak@*/ break;
-	}
     }
     /*@=branchstate@*/
 
-    for (j = 0; j < ts->orderCount; j++) {
-	if ((p = ts->order[j]) == NULL)
-	    continue;
-	newOrder[newOrderCount++] = p;
-	ts->order[j] = NULL;
-    }
 assert(newOrderCount == ts->orderCount);
 
 /*@+voidabstract@*/
