@@ -221,6 +221,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
     p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+    p->triggers = NULL;	/* XXX NOTYET */
+    p->dirnames = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
 
     savep = rpmtsSetRelocateElement(ts, p);
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
@@ -551,20 +553,19 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 
     if (tag == RPMTAG_NAME)
 	return te->this;
-    else
     if (tag == RPMTAG_PROVIDENAME)
 	return te->provides;
-    else
     if (tag == RPMTAG_REQUIRENAME)
 	return te->requires;
-    else
     if (tag == RPMTAG_CONFLICTNAME)
 	return te->conflicts;
-    else
     if (tag == RPMTAG_OBSOLETENAME)
 	return te->obsoletes;
-    else
-	return NULL;
+    if (tag == RPMTAG_TRIGGERNAME)
+	return te->triggers;
+    if (tag == RPMTAG_DIRNAMES)
+	return te->dirnames;
+    return NULL;
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 

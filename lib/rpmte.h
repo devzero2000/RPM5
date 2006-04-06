@@ -119,6 +119,10 @@ struct rpmte_s {
 /*@refcounted@*/ /*@null@*/
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
 /*@refcounted@*/ /*@null@*/
+    rpmds triggers;		/*!< Triggers: dependencies. */
+/*@refcounted@*/ /*@null@*/
+    rpmds dirnames;		/*!< Dirnames: dependencies. */
+/*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 
     uint_32 color;		/*!< Color bit(s) from package dependencies. */

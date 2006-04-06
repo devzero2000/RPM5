@@ -549,6 +549,8 @@ const char * rpmdsTagName(/*@null@*/ const rpmds ds)
     case RPMTAG_REQUIRENAME:	return "Requires";	/*@notreached@*/ break;
     case RPMTAG_CONFLICTNAME:	return "Conflicts";	/*@notreached@*/ break;
     case RPMTAG_OBSOLETENAME:	return "Obsoletes";	/*@notreached@*/ break;
+    case RPMTAG_TRIGGERNAME:	return "Triggers";	/*@notreached@*/ break;
+    case RPMTAG_DIRNAMES:	return "Dirnames";	/*@notreached@*/ break;
     }
     return tagName(tagN);
 }

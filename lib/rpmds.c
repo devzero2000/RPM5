@@ -96,6 +96,10 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	tagEVR = RPMTAG_TRIGGERVERSION;
 	tagF = RPMTAG_TRIGGERFLAGS;
     } else
+    if (ds->tagN == RPMTAG_DIRNAMES) {
+	tagEVR = 0;
+	tagF = 0;
+    } else
 	return NULL;
 
     /*@-branchstate@*/
@@ -338,9 +342,14 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	tagF = RPMTAG_OBSOLETEFLAGS;
     } else
     if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Trigger";
+	Type = "Triggers";
 	tagEVR = RPMTAG_TRIGGERVERSION;
 	tagF = RPMTAG_TRIGGERFLAGS;
+    } else
+    if (tagN == RPMTAG_DIRNAMES) {
+	Type = "Dirnames";
+	tagEVR = 0;
+	tagF = 0;
     } else
 	goto exit;
 
@@ -361,13 +370,16 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	ds->Count = Count;
 	ds->nopromote = _rpmds_nopromote;
 
-	xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
-	xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
+	if (tagEVR > 0)
+	    xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
+	if (tagF > 0)
+	    xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
 /*@-boundsread@*/
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
-	xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
+	if (tagBT > 0)
+	    xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
 	ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
 /*@=boundsread@*/
 	ds->Color = xcalloc(Count, sizeof(*ds->Color));
@@ -465,7 +477,10 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 	Type = "Obsoletes";
     } else
     if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Trigger";
+	Type = "Triggers";
+    } else
+    if (tagN == RPMTAG_DIRNAMES) {
+	Type = "Dirnames";
     } else
 	goto exit;
 
@@ -539,7 +554,10 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
 	Type = "Obsoletes";
     } else
     if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Trigger";
+	Type = "Triggers";
+    } else
+    if (tagN == RPMTAG_DIRNAMES) {
+	Type = "Dirnames";
     } else
 	goto exit;
 
