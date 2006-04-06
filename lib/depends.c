@@ -1364,6 +1364,9 @@ static void addQ(/*@dependent@*/ rpmte p,
 	 q != NULL;
 	 qprev = q, q = rpmteTSI(q)->tsi_suc)
     {
+	/* XXX Insure removed after added. */
+	if (rpmteType(p) == TR_REMOVED && rpmteType(p) != rpmteType(q))
+	    continue;
 	if (rpmteTSI(q)->tsi_qcnt <= rpmteTSI(p)->tsi_qcnt)
 	    break;
     }

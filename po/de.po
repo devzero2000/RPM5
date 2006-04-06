@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-05 21:15-0400\n"
+"POT-Creation-Date: 2006-04-05 22:07-0400\n"
 "PO-Revision-Date: 2006-02-19 22:53+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1486,12 +1486,12 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "Entferne %s \"%s\" von tsort-Relationen.\n"
 
 #. Record all relations.
-#: lib/depends.c:1467
+#: lib/depends.c:1470
 msgid "========== recording tsort relations\n"
 msgstr "========== zeichne tsort-Relationen auf\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1559
+#: lib/depends.c:1562
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
@@ -1499,21 +1499,21 @@ msgstr ""
 "========== tsorting Pakete (order, #predecessors, #succesors, tree, Ldepth, "
 "Rbreadth)\n"
 
-#: lib/depends.c:1650
+#: lib/depends.c:1653
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== Nur Nachfolger (%d Bytes)\n"
 
-#: lib/depends.c:1723
+#: lib/depends.c:1726
 msgid "LOOP:\n"
 msgstr "SCHLEIFE:\n"
 
-#: lib/depends.c:1758
+#: lib/depends.c:1761
 msgid "========== continuing tsort ...\n"
 msgstr "========== setze tsort fort...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1763
+#: lib/depends.c:1766
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder fehlgeschlagen, %d Elemente verbleiben\n"

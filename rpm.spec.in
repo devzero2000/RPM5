@@ -580,7 +580,7 @@ exit 0
 * Thu Apr  6 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.17
 - create RPMTAG_DIRNAMES dependency set, attach to transaction element.
 
-* Wed Apr  5 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.15
+* Wed Apr  5 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.16
 - refactoring to integrate erasure ordering.
 
 * Tue Apr  4 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.14
