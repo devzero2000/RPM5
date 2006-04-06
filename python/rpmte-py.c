@@ -46,8 +46,7 @@
  * - te.Degree() Return the parent's degree + 1.
  * - te.Parent() Return the parent element index.
  * - te.Tree()	Return the root dependency tree index.
- * - te.AddedKey() Return the added package index (TR_ADDED).
- * - te.DependsOnKey() Return the package index for the added package (TR_REMOVED).
+ * - te.AddedKey() Return the added package index.
  * - te.DBOffset() Return the Packages database instance number (TR_REMOVED)
  * - te.Key()	Return the associated opaque key, i.e. 2nd arg to ts.addInstall().
  * - te.DS(tag)	Return package dependency set.
@@ -238,14 +237,6 @@ rpmte_AddedKey(rpmteObject * s)
 
 /*@null@*/
 static PyObject *
-rpmte_DependsOnKey(rpmteObject * s)
-	/*@*/
-{
-    return Py_BuildValue("i", rpmteDependsOnKey(s->te));
-}
-
-/*@null@*/
-static PyObject *
 rpmte_DBOffset(rpmteObject * s)
 	/*@*/
 {
@@ -383,8 +374,6 @@ static struct PyMethodDef rpmte_methods[] = {
     {"Tree",	(PyCFunction)rpmte_Tree,	METH_NOARGS,
 	NULL},
     {"AddedKey",(PyCFunction)rpmte_AddedKey,	METH_NOARGS,
-	NULL},
-    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
 	NULL},
     {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_NOARGS,
 	NULL},
