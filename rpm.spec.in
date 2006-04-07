@@ -580,6 +580,7 @@ exit 0
 * Thu Apr  6 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.17
 - create RPMTAG_DIRNAMES dependency set, attach to transaction element.
 - lash up for checking synthesized dependencies on parent directories.
+- attempt (and abandon) parent directories as ordering relation.
 
 * Wed Apr  5 2006 Jeff Johnson <jbj@jbj.org> 4.4.6-0.16
 - refactoring to integrate erasure ordering.

@@ -48,8 +48,10 @@ struct tsortInfo_s {
 /*@owned@*/ /*@null@*/
     tsortInfo	tsi_next;
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
-    rpmte tsi_chain;
+    rpmte	tsi_chain;
+    int		tsi_tagn;
     int		tsi_reqx;
+    int		tsi_queued;
     int		tsi_qcnt;
 };
 /*@=fielduse@*/

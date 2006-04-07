@@ -384,6 +384,20 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 /*@=boundsread@*/
 	ds->Color = xcalloc(Count, sizeof(*ds->Color));
 
+	/* XXX Dirnames always have trailing '/', trim that here. */
+	if (tagN == RPMTAG_DIRNAMES) {
+	    char * t;
+	    size_t len;
+	    int i;
+	    for (i = 0; i < Count; i++) {
+		t = (char *)N[i];
+		len = strlen(t);
+		/* XXX done't truncate if parent is / */
+		if (len > 1 && t[len-1] == '/')
+		    t[len-1] = '\0';
+	    }
+	}
+
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-05 22:07-0400\n"
+"POT-Creation-Date: 2006-04-06 20:35-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1458,23 +1458,23 @@ msgstr "(zasób w bazie)"
 msgid "(hint skipped)"
 msgstr "(podpowied¼ pominiêta)"
 
-#: lib/depends.c:1089
+#: lib/depends.c:1138
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignoruj relacje nazw pakietów [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1211
+#: lib/depends.c:1260
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie %s \"%s\" z relacji tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1470
+#: lib/depends.c:1520
 msgid "========== recording tsort relations\n"
 msgstr "========== zapisywanie relacji tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1562
+#: lib/depends.c:1635
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
@@ -1482,21 +1482,21 @@ msgstr ""
 "========== tsortowanie pakietów (kolejno¶æ, #poprzedników, #nastêpników, "
 "drzewo, g³êboko¶æ, Rbreadth)\n"
 
-#: lib/depends.c:1653
+#: lib/depends.c:1726
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== tylko nastêpniki (%d bajtów)\n"
 
-#: lib/depends.c:1726
+#: lib/depends.c:1799
 msgid "LOOP:\n"
 msgstr "PÊTLA:\n"
 
-#: lib/depends.c:1761
+#: lib/depends.c:1830
 msgid "========== continuing tsort ...\n"
 msgstr "========== kontynuowanie tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1766
+#: lib/depends.c:1835
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
@@ -2711,86 +2711,86 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:807 lib/rpmds.c:3319
+#: lib/rpmds.c:839 lib/rpmds.c:3351
 msgid "NO "
 msgstr "NIE "
 
-#: lib/rpmds.c:807 lib/rpmds.c:3319
+#: lib/rpmds.c:839 lib/rpmds.c:3351
 msgid "YES"
 msgstr "TAK"
 
-#: lib/rpmds.c:1324
+#: lib/rpmds.c:1356
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "Zale¿no¶ci PreReq:, Provides: oraz Obsoletes: obs³uguj± wersje."
 
-#: lib/rpmds.c:1327
+#: lib/rpmds.c:1359
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "nazwy plików zapisano jako (dirName,baseName,dirIndex) a nie jako ¶cie¿ki."
 
-#: lib/rpmds.c:1330
+#: lib/rpmds.c:1362
 msgid "package payload can be compressed using bzip2."
 msgstr "dane pakietu mog± byæ skompresowane bzipem2."
 
-#: lib/rpmds.c:1333
+#: lib/rpmds.c:1365
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "pliki danych pakietu maj± prefix \"./\"."
 
-#: lib/rpmds.c:1336
+#: lib/rpmds.c:1368
 msgid "package name-version-release is not implicitly provided."
 msgstr "pakiet name-version-release nie jest udostêpniany domy¶lnie."
 
-#: lib/rpmds.c:1339
+#: lib/rpmds.c:1371
 msgid "header tags are always sorted after being loaded."
 msgstr "etykiety nag³ówka s± zawsze sortowane po wczytaniu."
 
-#: lib/rpmds.c:1342
+#: lib/rpmds.c:1374
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "interpreter skryptów mo¿e u¿ywaæ argumentów z nag³ówka."
 
-#: lib/rpmds.c:1345
+#: lib/rpmds.c:1377
 msgid "a hardlink file set may be installed without being complete."
 msgstr "plik z dowi±zaniem sta³ym mo¿e byæ zainstalowany bez kompletu."
 
-#: lib/rpmds.c:1348
+#: lib/rpmds.c:1380
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "skrypty pakietu mog± odwo³ywaæ siê do bazy rpm-a przy instalacji."
 
-#: lib/rpmds.c:1352
+#: lib/rpmds.c:1384
 msgid "internal support for lua scripts."
 msgstr "wewnêtrzna obs³uga dla skryptów lua."
 
-#: lib/rpmds.c:1356
+#: lib/rpmds.c:1388
 msgid "header tags can be type int_64."
 msgstr "znaczniki nag³ówka mog± byæ typu int_64."
 
-#: lib/rpmds.c:1359
+#: lib/rpmds.c:1391
 msgid "package payload can be in ustar tar archive format."
 msgstr "dane pakietu mog± byæ w formacie archiwum tara ustar."
 
-#: lib/rpmds.c:1477
+#: lib/rpmds.c:1509
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "%s:%d \"%s\" musi zaczynaæ siê liter±, cyfr±, '_', '/' lub '%%'.\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1511
+#: lib/rpmds.c:1543
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr "%s:%d Brak operatora porównania.\n"
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1521
+#: lib/rpmds.c:1553
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr "%s:%d Nie znaleziono warto¶ci do porównania EVR.\n"
 
-#: lib/rpmds.c:3112 lib/rpmds.c:3142 lib/rpmds.c:3154
+#: lib/rpmds.c:3144 lib/rpmds.c:3174 lib/rpmds.c:3186
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "uruchamianie polecenia potokowego \"%s\"\n"
 
-#: lib/rpmds.c:3115
+#: lib/rpmds.c:3147
 #, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2800,13 +2800,13 @@ msgstr ""
 "Pomijanie...\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3144
+#: lib/rpmds.c:3176
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr "\tlinia %d: \"%s\" nie ma operatora porównania. Pomijanie...\n"
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3156
+#: lib/rpmds.c:3188
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2815,7 +2815,7 @@ msgstr ""
 "\tlinia %d: Brak warto¶ci porównania EVR.\n"
 " Pomijanie..."
 
-#: lib/rpmds.c:3285
+#: lib/rpmds.c:3317
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2824,13 +2824,13 @@ msgstr ""
 "Zale¿no¶æ \"B\" wymaga epoch (przyjêto epoch takie samo jak \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3318
+#: lib/rpmds.c:3350
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3342
+#: lib/rpmds.c:3374
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"

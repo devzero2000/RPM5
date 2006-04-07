@@ -1211,7 +1211,6 @@ static inline /*@observer@*/ const char * identifyDepend(int_32 f)
  * pure Requires: dependencies) successor node(s).
  * @param q		sucessor (i.e. package required by p)
  * @param p		predecessor (i.e. package that "Requires: q")
- * @param requires	relation
  * @param zap		max. no. of co-requisites to remove (-1 is all)?
  * @retval nzaps	address of no. of relations removed
  * @param msglvl	message level at which to spew
@@ -1221,10 +1220,10 @@ static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 /*@-mustmod@*/ /* FIX: hack modifies, but -type disables */
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(rpmte q, rpmte p,
-		/*@null@*/ rpmds requires,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps, int msglvl)
 	/*@modifies q, p, requires, *nzaps @*/
 {
+    rpmds requires;
     tsortInfo tsi_prev;
     tsortInfo tsi;
     const char *dp = NULL;
@@ -1243,6 +1242,7 @@ zapRelation(rpmte q, rpmte p,
 	    continue;
 	/*@=abstractcompare@*/
 
+	requires = rpmteDS(p, tsi->tsi_tagn);
 	if (requires == NULL) continue;		/* XXX can't happen */
 
 	(void) rpmdsSetIx(requires, tsi->tsi_reqx);
@@ -1359,6 +1359,7 @@ static inline int addRelation(rpmts ts,
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->tsi_suc = p;
 
+    tsi->tsi_tagn = rpmdsTagN(requires);
     tsi->tsi_reqx = rpmdsIx(requires);
 
     tsi->tsi_next = rpmteTSI(q)->tsi_next;
@@ -1399,7 +1400,7 @@ static void addQ(/*@dependent@*/ rpmte p,
     rpmte q, qprev;
 
     /* Mark the package as queued. */
-    rpmteTSI(p)->tsi_reqx = 1;
+    rpmteTSI(p)->tsi_queued = 1;
 
     if ((*rp) == NULL) {	/* 1st element */
 	/*@-dependenttrans@*/ /* FIX: double indirection */
@@ -1520,8 +1521,7 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
-	if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) == NULL)
-	    continue;
+      if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) != NULL) {
 
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
 
@@ -1579,6 +1579,30 @@ int rpmtsOrder(rpmts ts)
 	    (void) addRelation(ts, p, selected, requires);
 
 	}
+      }
+
+#ifdef	NOTYET
+      {	const char * Name = rpmteN(p);
+	if (Name == NULL || !strcmp(Name, "setup") || !strcmp(Name, "filesystem"))
+	    continue;
+
+	/* Finally synthesize a requirement on parent directories. */
+	if ((requires = rpmteDS(p, RPMTAG_DIRNAMES)) == NULL)
+	    continue;
+	requires = rpmdsInit(requires);
+	if (requires != NULL)
+	while (rpmdsNext(requires) >= 0) {
+
+	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    (void) addRelation(ts, p, selected, requires);
+
+	    /* XXX only add the 1st dirname to avoid loops. */
+	    break;
+
+	}
+      }
+#endif
+
     }
     pi = rpmtsiFree(pi);
 
@@ -1633,7 +1657,7 @@ rescan:
     for (; q != NULL; q = rpmteTSI(q)->tsi_suc) {
 
 	/* Mark the package as unqueued. */
-	rpmteTSI(q)->tsi_reqx = 0;
+	rpmteTSI(q)->tsi_queued = 0;
 
 	if (oType != 0)
 	switch (rpmteType(q)) {
@@ -1706,7 +1730,7 @@ rescan:
 	    pi = rpmtsiInit(ts);
 	    while ((p = rpmtsiNext(pi, oType)) != NULL) {
 		/* Is this element in the queue? */
-		if (rpmteTSI(p)->tsi_reqx == 0)
+		if (rpmteTSI(p)->tsi_queued == 0)
 		    /*@innercontinue@*/ continue;
 		tsi->tsi_suc = p;
 		tsi = rpmteTSI(p);
@@ -1725,7 +1749,7 @@ rescan:
 	qi = rpmtsiInit(ts);
 	while ((q = rpmtsiNext(qi, oType)) != NULL) {
 	    rpmteTSI(q)->tsi_chain = NULL;
-	    rpmteTSI(q)->tsi_reqx = 0;
+	    rpmteTSI(q)->tsi_queued = 0;
 	    /* Mark packages already sorted. */
 	    if (rpmteTSI(q)->tsi_count == 0)
 		rpmteTSI(q)->tsi_count = -1;
@@ -1755,9 +1779,9 @@ rescan:
 	    for (q = rpmteTSI(r)->tsi_chain; q != NULL;
 		 q = rpmteTSI(q)->tsi_chain)
 	    {
-		if (rpmteTSI(q)->tsi_reqx)
+		if (rpmteTSI(q)->tsi_queued)
 		    /*@innerbreak@*/ break;
-		rpmteTSI(q)->tsi_reqx = 1;
+		rpmteTSI(q)->tsi_queued = 1;
 	    }
 
 	    /* T13. Print predecessor chain from start of loop. */
@@ -1777,11 +1801,7 @@ rescan:
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
-		requires = rpmteDS(p, RPMTAG_REQUIRENAME);
-		requires = rpmdsInit(requires);
-		if (requires == NULL)
-		    /*@innercontinue@*/ continue;	/* XXX can't happen */
-		dp = zapRelation(q, p, requires, 1, &nzaps, msglvl);
+		dp = zapRelation(q, p, 1, &nzaps, msglvl);
 
 		/* Print next member of loop. */
 		buf[0] = '\0';
@@ -1799,7 +1819,7 @@ rescan:
 	    {
 		/* Unchain linear part of predecessor loop. */
 		rpmteTSI(p)->tsi_chain = NULL;
-		rpmteTSI(p)->tsi_reqx = 0;
+		rpmteTSI(p)->tsi_queued = 0;
 	    }
 	}
 	ri = rpmtsiFree(ri);
