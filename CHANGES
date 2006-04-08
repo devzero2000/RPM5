@@ -33,6 +33,7 @@
 	- attempt (and abandon) parent directories as ordering relation.
 	- dports: add Variant:, Xmajor:, and Xminor: tags.
 	- permit separate configgery for source/binary file digests.
+	- release rpm-4.4.6.
 
 4.4.4 -> 4.4.5:
 	- nolibio: reopen FD_t to insure attached FILE * reading manifests.
