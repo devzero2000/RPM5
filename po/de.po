@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-06 20:35-0400\n"
+"POT-Creation-Date: 2006-04-08 15:03-0400\n"
 "PO-Revision-Date: 2006-02-19 22:53+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -535,82 +535,82 @@ msgstr "%%doc kann nicht mit anderen Formaten gemischt werden: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Datei doppelt aufgelistet: %s\n"
 
-#: build/files.c:1433
+#: build/files.c:1436
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolischer Link zeigt auf den BuildRoot: %s -> %s\n"
 
-#: build/files.c:1677
+#: build/files.c:1680
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Datei stimmt nicht mit dem Präfix überein (%s): %s\n"
 
-#: build/files.c:1701
+#: build/files.c:1704
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Datei nicht gefunden: %s\n"
 
-#: build/files.c:1913
+#: build/files.c:1916
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: Kann den unbekannten Tag (%d) nicht laden.\n"
 
-#: build/files.c:1919
+#: build/files.c:1922
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: Lesen des öffentlichen Schlüssels fehlgeschlagen.\n"
 
-#: build/files.c:1923 lib/rpmchecksig.c:607
+#: build/files.c:1926 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: Ist kein gepanzerter öffentlicher Schlüssel.\n"
 
-#: build/files.c:1930
+#: build/files.c:1933
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: Lesen der *.te-Richtline fehlgeschlagen.\n"
 
-#: build/files.c:1983
+#: build/files.c:1986
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datei benötigt führenden \"/\": %s\n"
 
-#: build/files.c:2007
+#: build/files.c:2010
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "\"Glob\" hat keine Berechtigung für: %s\n"
 
-#: build/files.c:2024 lib/rpminstall.c:374
+#: build/files.c:2027 lib/rpminstall.c:374
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datei von \"glob\" nicht gefunden: %s\n"
 
-#: build/files.c:2084
+#: build/files.c:2087
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Datei %s aus %%files konnte nicht geöffnet: %s\n"
 
-#: build/files.c:2095 build/pack.c:154
+#: build/files.c:2098 build/pack.c:154
 #, c-format
 msgid "line: %s\n"
 msgstr "Zeile: %s\n"
 
-#: build/files.c:2487
+#: build/files.c:2490
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ungültige Datei: %s: %s\n"
 
-#: build/files.c:2499 build/parsePrep.c:50
+#: build/files.c:2502 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ungültiger Eigentümer/Gruppe: %s\n"
 
-#: build/files.c:2543
+#: build/files.c:2546
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Prüfe auf nicht gepackte Datei(en): %s\n"
 
-#: build/files.c:2560
+#: build/files.c:2563
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -619,7 +619,7 @@ msgstr ""
 "Installierte (aber nicht gepackte) Datei(en) gefunden:\n"
 "%s"
 
-#: build/files.c:2588
+#: build/files.c:2591
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Verarbeite Paket: %s-%s-%s\n"
@@ -873,129 +873,134 @@ msgstr "Zeile %d: Fehler beim Parsen von %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "Zeile %d: Zweite %%files-Liste\n"
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:246
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektur ist ausgeschlossen: %s\n"
 
-#: build/parsePreamble.c:248
+#: build/parsePreamble.c:251
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektur ist nicht einbezogen: %s\n"
 
-#: build/parsePreamble.c:253
+#: build/parsePreamble.c:256
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Betriebssystem ist ausgeschlossen: %s\n"
 
-#: build/parsePreamble.c:258
+#: build/parsePreamble.c:261
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "Betriebssystem ist nicht einbezogen: %s\n"
 
-#: build/parsePreamble.c:281
+#: build/parsePreamble.c:284
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "%s-Feld muss im Paket vorhanden sein: %s\n"
 
-#: build/parsePreamble.c:310
+#: build/parsePreamble.c:313
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Doppelte %s-Einträge im Paket: %s\n"
 
-#: build/parsePreamble.c:373
+#: build/parsePreamble.c:376
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kann Icon %s nicht öffnen: %s\n"
 
-#: build/parsePreamble.c:391
+#: build/parsePreamble.c:394
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kann Icon %s nicht lesen: %s\n"
 
-#: build/parsePreamble.c:404
+#: build/parsePreamble.c:407
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Unbekannter Icon-Typ: %s\n"
 
-#: build/parsePreamble.c:449
+#: build/parsePreamble.c:452
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "Zeile %d: Tag benötigt nur ein Zeichen: %s\n"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:492
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "Zeile %d: Missgebildeter Tag: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:497
+#: build/parsePreamble.c:500
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "Zeile %d: Leerer Tag: %s\n"
 
-#: build/parsePreamble.c:521 build/parsePreamble.c:528
+#: build/parsePreamble.c:524 build/parsePreamble.c:531
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "Zeile %d: Ungültiges Zeichen '-' in %s: %s\n"
 
-#: build/parsePreamble.c:589 build/parseSpec.c:473
+#: build/parsePreamble.c:592 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "Der BuildRoot kann nicht \"/\" sein: %s\n"
 
-#: build/parsePreamble.c:602
+#: build/parsePreamble.c:606
+#, fuzzy, c-format
+msgid "line %d: Prefixes must begin with \"/\": %s\n"
+msgstr "Zeile %d: Präfixe dürfen nicht mit einem \"/\" enden: %s\n"
+
+#: build/parsePreamble.c:614
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "Zeile %d: Präfixe dürfen nicht mit einem \"/\" enden: %s\n"
 
-#: build/parsePreamble.c:614
+#: build/parsePreamble.c:626
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 "Zeile %d: Das Dokumentationsverzeichnis muss mit einem \"/\" beginnen: %s\n"
 
-#: build/parsePreamble.c:626
-#, c-format
-msgid "line %d: Epoch/Serial field must be a number: %s\n"
-msgstr "Zeile %d: Das Epochen-Feld muss eine Zahl sein: %s\n"
+#: build/parsePreamble.c:640
+#, fuzzy, c-format
+msgid "line %d: %s takes an integer value: %s\n"
+msgstr "Zeile %d: Tag benötigt nur ein Zeichen: %s\n"
 
-#: build/parsePreamble.c:666 build/parsePreamble.c:677
+#: build/parsePreamble.c:680 build/parsePreamble.c:691
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "Zeile %d: Ungültig %s: Kennzeichner: %s\n"
 
-#: build/parsePreamble.c:718
+#: build/parsePreamble.c:732
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "Zeile %d: Ungültiges BuildArchitecture-Format: %s\n"
 
-#: build/parsePreamble.c:727
+#: build/parsePreamble.c:741
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interner Fehler: Falscher Tag %d\n"
 
-#: build/parsePreamble.c:835
+#: build/parsePreamble.c:852
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "Alter Syntax wird nicht mehr unterstützt: %s\n"
 
-#: build/parsePreamble.c:904
+#: build/parsePreamble.c:921
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ungültige Paket-Spezifikation: %s\n"
 
-#: build/parsePreamble.c:910
+#: build/parsePreamble.c:927
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket ist bereits vorhanden: %s\n"
 
-#: build/parsePreamble.c:939
+#: build/parsePreamble.c:956
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "Zeile %d: Unbekannter Tag: %s\n"
 
-#: build/parsePreamble.c:961
+#: build/parsePreamble.c:978
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-Datei kann den BuildRoot nicht benutzen\n"
 
@@ -4534,6 +4539,9 @@ msgstr "Benutze Datenbank in VERZEICHNIS"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "VERZEICHNIS"
+
+#~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
+#~ msgstr "Zeile %d: Das Epochen-Feld muss eine Zahl sein: %s\n"
 
 #~ msgid "generate headers compatible with rpm4 packaging"
 #~ msgstr "Generiere mit RPM4-Paketen kompatible Header"

@@ -328,6 +328,13 @@ package or when debugging this package.\
 #%_source_payload	w9.gzdio
 #%_binary_payload	w9.gzdio
 
+#	Archive formats to use for source/binary package payloads.
+#		"cpio"		cpio archive (default)
+#		"ustar"		tar archive
+#
+#%_source_payload_format	cpio
+#%_binary_payload_format	cpio
+
 #	The signature to use and the location of configuration files for
 #	signing packages with PGP.
 #
@@ -455,6 +462,8 @@ print (t)\
 #
 # Note: choosing anything but MD5 introduces instant legacy incompatibility.
 %_build_file_digest_algo	1
+%_build_binary_file_digest_algo	%{_build_file_digest_algo}
+%_build_source_file_digest_algo	%{_build_file_digest_algo}
 
 #==============================================================================
 # ---- Database configuration macros.

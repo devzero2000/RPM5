@@ -1381,33 +1381,36 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
 			       &(flp->langs),  1);
 	
-	/* We used to add these, but they should not be needed */
-	/* (void) headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
-	 *		   RPM_INT32_TYPE, &(flp->fl_uid), 1);
-	 * (void) headerAddOrAppendEntry(h, RPMTAG_FILEGIDS,
-	 *		   RPM_INT32_TYPE, &(flp->fl_gid), 1);
-	 */
-	
-      { static uint_32 dalgo = 0;
+      { static uint_32 source_file_dalgo = 0;
+	static uint_32 binary_file_dalgo = 0;
 	static int oneshot = 0;
+	uint_32 dalgo = 0;
+
 	if (!oneshot) {
-	    dalgo = rpmExpandNumeric("%{?_build_file_digest_algo}");
-	    switch (dalgo) {
-	    case PGPHASHALGO_MD5:
-	    case PGPHASHALGO_SHA1:
-	    case PGPHASHALGO_SHA256:
-	    case PGPHASHALGO_SHA384:
-	    case PGPHASHALGO_SHA512:
-		/*@switchbreak@*/ break;
-	    case PGPHASHALGO_RIPEMD160:
-	    case PGPHASHALGO_MD2:
-	    case PGPHASHALGO_TIGER192:
-	    case PGPHASHALGO_HAVAL_5_160:
-	    default:
-		dalgo = PGPHASHALGO_MD5;
-		/*@switchbreak@*/ break;
-	    }
+	    source_file_dalgo =
+		rpmExpandNumeric("%{?_build_source_file_digest_algo}");
+	    binary_file_dalgo =
+		rpmExpandNumeric("%{?_build_binary_file_digest_algo}");
 	    oneshot++;
+	}
+
+	dalgo = (isSrc ? source_file_dalgo : binary_file_dalgo);
+	switch (dalgo) {
+	case PGPHASHALGO_MD5:
+	case PGPHASHALGO_SHA1:
+	case PGPHASHALGO_SHA256:
+	case PGPHASHALGO_SHA384:
+	case PGPHASHALGO_SHA512:
+	case PGPHASHALGO_RIPEMD160:
+	case PGPHASHALGO_RIPEMD128:
+	case PGPHASHALGO_CRC32:
+	    /*@switchbreak@*/ break;
+	case PGPHASHALGO_MD2:
+	case PGPHASHALGO_TIGER192:
+	case PGPHASHALGO_HAVAL_5_160:
+	default:
+	    dalgo = PGPHASHALGO_MD5;
+	    /*@switchbreak@*/ break;
 	}
 	    
 	buf[0] = '\0';

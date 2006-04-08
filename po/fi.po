@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-06 20:35-0400\n"
+"POT-Creation-Date: 2006-04-08 15:03-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -530,89 +530,89 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:1433
+#: build/files.c:1436
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1677
+#: build/files.c:1680
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:1701
+#: build/files.c:1704
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Tiedostoa ei lˆytynyt palvelimelta"
 
-#: build/files.c:1913
+#: build/files.c:1916
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1919
+#: build/files.c:1922
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: build/files.c:1923 lib/rpmchecksig.c:607
+#: build/files.c:1926 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1930
+#: build/files.c:1933
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: build/files.c:1983
+#: build/files.c:1986
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/files.c:2007
+#: build/files.c:2010
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: build/files.c:2024 lib/rpminstall.c:374
+#: build/files.c:2027 lib/rpminstall.c:374
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Tiedostoa ei lˆytynyt palvelimelta"
 
-#: build/files.c:2084
+#: build/files.c:2087
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/files.c:2095 build/pack.c:154
+#: build/files.c:2098 build/pack.c:154
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:2487
+#: build/files.c:2490
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:2499 build/parsePrep.c:50
+#: build/files.c:2502 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2543
+#: build/files.c:2546
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: build/files.c:2560
+#: build/files.c:2563
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2588
+#: build/files.c:2591
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"
@@ -870,128 +870,133 @@ msgstr "en voinut avata %s: %s"
 msgid "line %d: Second %%files list\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:246
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:248
+#: build/parsePreamble.c:251
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:253
+#: build/parsePreamble.c:256
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Haen: %s\n"
 
-#: build/parsePreamble.c:258
+#: build/parsePreamble.c:261
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "%s: avaus ei onnistunut\n"
 
-#: build/parsePreamble.c:281
+#: build/parsePreamble.c:284
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: build/parsePreamble.c:310
+#: build/parsePreamble.c:313
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: build/parsePreamble.c:373
+#: build/parsePreamble.c:376
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/parsePreamble.c:391
+#: build/parsePreamble.c:394
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/parsePreamble.c:404
+#: build/parsePreamble.c:407
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "(tuntematon tyyppi)"
 
-#: build/parsePreamble.c:449
+#: build/parsePreamble.c:452
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:492
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:497
+#: build/parsePreamble.c:500
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:521 build/parsePreamble.c:528
+#: build/parsePreamble.c:524 build/parsePreamble.c:531
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:589 build/parseSpec.c:473
+#: build/parsePreamble.c:592 build/parseSpec.c:473
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:602
+#: build/parsePreamble.c:606
 #, fuzzy, c-format
-msgid "line %d: Prefixes must not end with \"/\": %s\n"
+msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #: build/parsePreamble.c:614
 #, fuzzy, c-format
-msgid "line %d: Docdir must begin with '/': %s\n"
+msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #: build/parsePreamble.c:626
 #, fuzzy, c-format
-msgid "line %d: Epoch/Serial field must be a number: %s\n"
-msgstr "virheellinen paketin numero: %s\n"
+msgid "line %d: Docdir must begin with '/': %s\n"
+msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/parsePreamble.c:666 build/parsePreamble.c:677
+#: build/parsePreamble.c:640
+#, fuzzy, c-format
+msgid "line %d: %s takes an integer value: %s\n"
+msgstr "en voinut avata %s: %s"
+
+#: build/parsePreamble.c:680 build/parsePreamble.c:691
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:718
+#: build/parsePreamble.c:732
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
 
-#: build/parsePreamble.c:727
+#: build/parsePreamble.c:741
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "vakava virhe: "
 
-#: build/parsePreamble.c:835
+#: build/parsePreamble.c:852
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:904
+#: build/parsePreamble.c:921
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Paketin m‰‰rittelyparametrit:"
 
-#: build/parsePreamble.c:910
+#: build/parsePreamble.c:927
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "v‰liaikainen tietokanta %s on jo olemassa"
 
-#: build/parsePreamble.c:939
+#: build/parsePreamble.c:956
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:961
+#: build/parsePreamble.c:978
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -4622,6 +4627,10 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
+#~ msgstr "virheellinen paketin numero: %s\n"
 
 #, fuzzy
 #~ msgid "don't verify MD5 digest of files"

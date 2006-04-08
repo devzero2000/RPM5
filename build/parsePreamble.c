@@ -32,6 +32,9 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_RHNPLATFORM,
     RPMTAG_DISTTAG,
     RPMTAG_CVSID,
+    RPMTAG_VARIANTS,
+    RPMTAG_XMAJOR,
+    RPMTAG_XMINOR,
     0
 };
 
@@ -592,10 +595,19 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	}
 	buildRootURL = _free(buildRootURL);
       }	break;
+    case RPMTAG_VARIANTS:
     case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
 	xx = hge(pkg->header, tag, &type, (void **)&array, &num);
+	if (tag == RPMTAG_PREFIXES)
 	while (num--) {
+	    if (array[num][0] != '/') {
+		rpmError(RPMERR_BADSPEC,
+			 _("line %d: Prefixes must begin with \"/\": %s\n"),
+			 spec->lineNum, spec->line);
+		array = hfd(array, type);
+		return RPMERR_BADSPEC;
+	    }
 	    len = strlen(array[num]);
 	    if (array[num][len - 1] == '/' && len > 1) {
 		rpmError(RPMERR_BADSPEC,
@@ -619,12 +631,14 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	delMacro(NULL, "_docdir");
 	addMacro(NULL, "_docdir", NULL, field, RMIL_SPEC);
 	break;
+    case RPMTAG_XMAJOR:
+    case RPMTAG_XMINOR:
     case RPMTAG_EPOCH:
 	SINGLE_TOKEN_ONLY;
 	if (parseNum(field, &num)) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Epoch/Serial field must be a number: %s\n"),
-		     spec->lineNum, spec->line);
+		     _("line %d: %s takes an integer value: %s\n"),
+		     tagName(tag), spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
 	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
@@ -799,6 +813,9 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_ENHANCESFLAGS,	0, 0, 0, "enhances"},
     {RPMTAG_BUILDSUGGESTS,	0, 0, 0, "buildsuggests"},
     {RPMTAG_BUILDENHANCES,	0, 0, 0, "buildenhances"},
+    {RPMTAG_VARIANTS,		0, 0, 0, "variant"},
+    {RPMTAG_XMAJOR,		0, 0, 0, "xmajor"},
+    {RPMTAG_XMINOR,		0, 0, 0, "xminor"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0, 0}
     /*@=nullassign@*/
