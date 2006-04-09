@@ -23,8 +23,10 @@ static struct poptOption optionsTable[] = {
  { "sha384",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA384,	NULL, NULL },
  { "sha512",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA512,	NULL, NULL },
  { "crc32",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_CRC32,	NULL, NULL },
+ { "adler32",'\0', POPT_ARG_VAL,&hashalgo, PGPHASHALGO_ADLER32,	NULL, NULL },
  { "rmd128",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_RIPEMD128,NULL, NULL },
  { "rmd160",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_RIPEMD160,NULL, NULL },
+ { "crc64",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_CRC64,	NULL, NULL },
 #ifdef	DYING
  { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
 #endif
@@ -38,8 +40,9 @@ static struct poptOption optionsTable[] = {
   POPT_TABLEEND
 };
 
-#define	SHA1_CMD	"/usr/bin/sha1sum"
-#define	MD5_CMD		"/usr/bin/md5sum"
+#define	RMD160_CMD	"/usr/bin/openssl rmd160"
+#define	SHA1_CMD	"/usr/bin/openssl sha1"
+#define	MD5_CMD		"/usr/bin/openssl md5"
 
 int
 main(int argc, const char *argv[])
@@ -51,6 +54,7 @@ main(int argc, const char *argv[])
     DIGEST_CTX ctx = NULL;
     gcry_md_hd_t h;
     gcry_error_t gcry = NULL;
+    const char * scmd;
     const char * idigest;
     const char * odigest;
     const char * sdigest;
@@ -166,21 +170,29 @@ fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
 	unsigned char buf[BUFSIZ];
 	ssize_t nb;
 
+	switch (hashalgo) {
+	case PGPHASHALGO_MD5:		scmd = MD5_CMD;		break;
+	case PGPHASHALGO_SHA1:		scmd = SHA1_CMD;	break;
+	case PGPHASHALGO_RIPEMD160:	scmd = RMD160_CMD;	break;
+	default:			scmd = NULL;		break;
+	}
+
 	sdigest = NULL;
-	if (hashalgo == PGPHASHALGO_MD5 || hashalgo == PGPHASHALGO_SHA1)
-	{   char *se;
+	if (scmd != NULL) {
+	    char *se;
 	    FILE * sfp;
 
 	    se = buf;
 	    *se = '\0';
-	    se = stpcpy(se, ((hashalgo == PGPHASHALGO_SHA1) ? SHA1_CMD : MD5_CMD));
+	    se = stpcpy(se, scmd);
 	    *se++ = ' ';
 	    se = stpcpy(se, ifn);
 	    if ((sfp = popen(buf, "r")) != NULL) {
 		fgets(buf, sizeof(buf), sfp);
+		buf[strlen(buf)-1] = '\0';
 		if ((se = strchr(buf, ' ')) != NULL)
-		    *se = '\0';
-		sdigest = xstrdup(buf);
+		    *se++ = '\0';
+		sdigest = xstrdup(se);
 		pclose(sfp);
 	    }
 	}

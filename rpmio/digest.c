@@ -3,6 +3,9 @@
  */
 
 #include "system.h"
+
+#include <zlib.h>
+
 #include "rpmio_internal.h"
 #include "rmd128.h"
 #include "rmd160.h"
@@ -14,62 +17,264 @@
 #define	DPRINTF(_a)
 #endif
 
+#if !defined(ZLIB_H)
+/**
+ */
+static uint32_t crc32(uint32_t crc, const byte * data, size_t size)
+{
+    static uint32_t polynomial = 0xedb88320;    /* reflected 0x04c11db7 */
+    static uint32_t xorout = 0xffffffff;
+    static uint32_t table[256];
+
+    crc ^= xorout;
+
+    if (data == NULL) {
+	/* generate the table of CRC remainders for all possible bytes */
+	uint32_t c;
+	uint32_t i, j;
+	for (i = 0;  i < 256;  i++) {
+	    c = i;
+	    for (j = 0;  j < 8;  j++) {
+		if (c & 1)
+		    c = polynomial ^ (c >> 1);
+		else
+		    c = (c >> 1);
+	    }
+	    table[i] = c;
+	}
+    } else
+    while (size) {
+	crc = table[(crc ^ *data) & 0xff] ^ (crc >> 8);
+	size--;
+	data++;
+    }
+
+    crc ^= xorout;
+
+    return crc;
+
+}
+#endif
+
+/**
+ */
 typedef struct {
 	uint32_t crc;
-	uint32_t polynomial;
-	uint32_t xorout;
-	uint32_t table[256];
-} crc32Param;
+	uint32_t (*update)  (uint32_t crc, const byte * data, size_t size);
+	uint32_t (*combine) (uint32_t crc1, uint32_t crc2, size_t len2);
+} sum32Param;
 
-static int crc32Reset(register crc32Param* mp)
+/**
+ */
+static int sum32Reset(register sum32Param* mp)
 	/*@modifies *mp @*/
 {
-	mp->crc = 0xffffffff;
-	mp->polynomial = 0xedb88320;	/* reflected 0x04c11db7 */
-	mp->xorout = 0xffffffff;
-
-	/* generate the table of CRC remainders for all possible bytes */
-	{   uint32_t c;
-	    uint32_t i, j;
-	    for (i = 0;  i < 256;  i++) {
-		c = i;
-		for (j = 0;  j < 8;  j++) {
-	             if (c & 1)
-	                c = mp->polynomial ^ (c >> 1);
-	             else
-	                c = (c >> 1);
-		}
-	        mp->table[i] = c;
-	    }
-	}
-	return 0;
+    if (mp->update)
+	mp->crc = (*mp->update) (0, NULL, 0);
+    return 0;
 }
 
-static int crc32Update(crc32Param* mp, const byte* data, size_t size)
+/**
+ */
+static int sum32Update(sum32Param* mp, const byte* data, size_t size)
 	/*@modifies *mp @*/
 {
-	uint32_t c = mp->crc;
-
-	while (size) {
-		c = mp->table[(c ^ *data) & 0xff] ^ (c >> 8);
-		size--;
-		data++;
-	}
-	mp->crc = c;
-	return 0;
+    if (mp->update)
+	mp->crc = (*mp->update) (mp->crc, data, size);
+    return 0;
 }
 
-static int crc32Digest(crc32Param* mp, byte* data)
+/**
+ */
+static int sum32Digest(sum32Param* mp, byte* data)
 	/*@modifies *mp, data @*/
 {
-	uint32_t c = mp->crc ^ mp->xorout;
+	uint32_t c = mp->crc;
 
 	data[ 0] = (byte)(c >> 24);
 	data[ 1] = (byte)(c >> 16);
 	data[ 2] = (byte)(c >>  8);
 	data[ 3] = (byte)(c      );
 
-	(void) crc32Reset(mp);
+	(void) sum32Reset(mp);
+
+	return 0;
+}
+
+/*
+ * ECMA-182 polynomial, see
+ *     http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-182.pdf
+ */
+/**
+ */
+static uint64_t crc64(uint64_t crc, const byte * data, size_t size)
+{
+    static uint64_t polynomial =
+	0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
+    static uint64_t xorout = 0xffffffffffffffffULL;
+    static uint64_t table[256];
+
+    crc ^= xorout;
+
+    if (data == NULL) {
+	/* generate the table of CRC remainders for all possible bytes */
+	uint64_t c;
+	uint32_t i, j;
+	for (i = 0;  i < 256;  i++) {
+	    c = i;
+	    for (j = 0;  j < 8;  j++) {
+		if (c & 1)
+		    c = polynomial ^ (c >> 1);
+		else
+		    c = (c >> 1);
+	    }
+	    table[i] = c;
+	}
+    } else
+    while (size) {
+	crc = table[(crc ^ *data) & 0xff] ^ (crc >> 8);
+	size--;
+	data++;
+    }
+
+    crc ^= xorout;
+
+    return crc;
+
+}
+
+/*
+ * Swiped from zlib, using uint64_t rather than unsigned long computation.
+ * Use at your own risk, uint64_t problems with compilers may exist.
+ */
+#define	GF2_DIM	64
+
+/**
+ */
+static uint64_t gf2_matrix_times(uint64_t *mat, uint64_t vec)
+{
+    uint64_t sum;
+
+    sum = 0;
+    while (vec) {
+        if (vec & 1)
+            sum ^= *mat;
+        vec >>= 1;
+        mat++;
+    }
+    return sum;
+}
+
+/**
+ */
+static void gf2_matrix_square(uint64_t *square, uint64_t *mat)
+{
+    int n;
+
+    for (n = 0; n < GF2_DIM; n++)
+        square[n] = gf2_matrix_times(mat, mat[n]);
+}
+
+/**
+ */
+static uint64_t crc64_combine(uint64_t crc1, uint64_t crc2, size_t len2)
+{
+    int n;
+    uint64_t row;
+    uint64_t even[GF2_DIM];    /* even-power-of-two zeros operator */
+    uint64_t odd[GF2_DIM];     /* odd-power-of-two zeros operator */
+
+    /* degenerate case */
+    if (len2 == 0)
+        return crc1;
+
+    /* put operator for one zero bit in odd */
+    odd[0] = 0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
+    row = 1;
+    for (n = 1; n < GF2_DIM; n++) {
+        odd[n] = row;
+        row <<= 1;
+    }
+
+    /* put operator for two zero bits in even */
+    gf2_matrix_square(even, odd);
+
+    /* put operator for four zero bits in odd */
+    gf2_matrix_square(odd, even);
+
+    /* apply len2 zeros to crc1 (first square will put the operator for one
+       zero byte, eight zero bits, in even) */
+    do {
+        /* apply zeros operator for this bit of len2 */
+        gf2_matrix_square(even, odd);
+        if (len2 & 1)
+            crc1 = gf2_matrix_times(even, crc1);
+        len2 >>= 1;
+
+        /* if no more bits set, then done */
+        if (len2 == 0)
+            break;
+
+        /* another iteration of the loop with odd and even swapped */
+        gf2_matrix_square(odd, even);
+        if (len2 & 1)
+            crc1 = gf2_matrix_times(odd, crc1);
+        len2 >>= 1;
+
+        /* if no more bits set, then done */
+    } while (len2 != 0);
+
+    /* return combined crc */
+    crc1 ^= crc2;
+    return crc1;
+}
+
+/**
+ */
+typedef struct {
+	uint64_t crc;
+	uint64_t (*update)  (uint64_t crc, const byte * data, size_t size);
+	uint64_t (*combine) (uint64_t crc1, uint64_t crc2, size_t len2);
+} sum64Param;
+
+/**
+ */
+static int sum64Reset(register sum64Param* mp)
+	/*@modifies *mp @*/
+{
+    if (mp->update)
+	mp->crc = (*mp->update) (0, NULL, 0);
+    return 0;
+}
+
+/**
+ */
+static int sum64Update(sum64Param* mp, const byte* data, size_t size)
+	/*@modifies *mp @*/
+{
+    if (mp->update)
+	mp->crc = (*mp->update) (mp->crc, data, size);
+    return 0;
+}
+
+/**
+ */
+static int sum64Digest(sum64Param* mp, byte* data)
+	/*@modifies *mp, data @*/
+{
+	uint64_t c = mp->crc;
+
+	data[ 0] = (byte)(c >> 56);
+	data[ 1] = (byte)(c >> 48);
+	data[ 2] = (byte)(c >> 40);
+	data[ 3] = (byte)(c >> 32);
+	data[ 4] = (byte)(c >> 24);
+	data[ 5] = (byte)(c >> 16);
+	data[ 6] = (byte)(c >>  8);
+	data[ 7] = (byte)(c      );
+
+	(void) sum64Reset(mp);
+
 	return 0;
 }
 
@@ -167,14 +372,50 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_CRC32:
 	ctx->digestlen = 32/8;
 	ctx->datalen = 8;
-/*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramlen = sizeof(crc32Param);
-/*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramlen);
+	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
+	    mp->update = (void *) crc32;
+#if defined(ZLIB_H)
+	    mp->combine = (void *) crc32_combine;
+#endif
+	    ctx->paramlen = sizeof(*mp);
+	    ctx->param = mp;
+	}
 /*@-type@*/ /* FIX: cast? */
-	ctx->Reset = (void *) crc32Reset;
-	ctx->Update = (void *) crc32Update;
-	ctx->Digest = (void *) crc32Digest;
+	ctx->Reset = (void *) sum32Reset;
+	ctx->Update = (void *) sum32Update;
+	ctx->Digest = (void *) sum32Digest;
+/*@=type@*/
+	break;
+    case PGPHASHALGO_ADLER32:
+	ctx->digestlen = 32/8;
+	ctx->datalen = 8;
+	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
+#if defined(ZLIB_H)
+	    mp->update = (void *) adler32;
+	    mp->combine = (void *) adler32_combine;
+#endif
+	    ctx->paramlen = sizeof(*mp);
+	    ctx->param = mp;
+	}
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) sum32Reset;
+	ctx->Update = (void *) sum32Update;
+	ctx->Digest = (void *) sum32Digest;
+/*@=type@*/
+	break;
+    case PGPHASHALGO_CRC64:
+	ctx->digestlen = 64/8;
+	ctx->datalen = 8;
+	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
+	    mp->update = (void *) crc64;
+	    mp->combine = (void *) crc64_combine;
+	    ctx->paramlen = sizeof(*mp);
+	    ctx->param = mp;
+	}
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) sum64Reset;
+	ctx->Update = (void *) sum64Update;
+	ctx->Digest = (void *) sum64Digest;
 /*@=type@*/
 	break;
 #if HAVE_BEECRYPT_API_H
