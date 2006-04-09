@@ -29,7 +29,7 @@ echo "
 sleep 10
 
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.4.6, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.4.7, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
