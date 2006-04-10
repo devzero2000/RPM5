@@ -93,10 +93,10 @@
  * 	fdno = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
  * 	hdr = ts.hdrFromFdno(fdno)
  *	os.close(fdno)
- *	if hdr[rpm.RPMTAG_SOURCEPACKAGE]:
- *	   print "header is from a source package"
- *	else:
+ *	if hdr[rpm.RPMTAG_SOURCERPM]:
  *	   print "header is from a binary package"
+ *	else:
+ *	   print "header is from a source package"
  * \endcode
  *
  * The Python interface to the header data is quite elegant.  It
