@@ -17,10 +17,12 @@
 #define	DPRINTF(_a)
 #endif
 
-#if !defined(ZLIB_H)
+#if !defined(ZLIB_H) || defined(__LCLINT__)
 /**
  */
+/*@-shadow@*/
 static uint32_t crc32(uint32_t crc, const byte * data, size_t size)
+	/*@*/
 {
     static uint32_t polynomial = 0xedb88320;    /* reflected 0x04c11db7 */
     static uint32_t xorout = 0xffffffff;
@@ -54,6 +56,7 @@ static uint32_t crc32(uint32_t crc, const byte * data, size_t size)
     return crc;
 
 }
+/*@=shadow@*/
 #endif
 
 /**
@@ -108,6 +111,7 @@ static int sum32Digest(sum32Param* mp, byte* data)
 /**
  */
 static uint64_t crc64(uint64_t crc, const byte * data, size_t size)
+	/*@*/
 {
     static uint64_t polynomial =
 	0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
@@ -152,6 +156,7 @@ static uint64_t crc64(uint64_t crc, const byte * data, size_t size)
 /**
  */
 static uint64_t gf2_matrix_times(uint64_t *mat, uint64_t vec)
+	/*@*/
 {
     uint64_t sum;
 
@@ -167,7 +172,8 @@ static uint64_t gf2_matrix_times(uint64_t *mat, uint64_t vec)
 
 /**
  */
-static void gf2_matrix_square(uint64_t *square, uint64_t *mat)
+static void gf2_matrix_square(/*@out@*/ uint64_t *square, uint64_t *mat)
+	/*@modifies square @*/
 {
     int n;
 
@@ -178,6 +184,7 @@ static void gf2_matrix_square(uint64_t *square, uint64_t *mat)
 /**
  */
 static uint64_t crc64_combine(uint64_t crc1, uint64_t crc2, size_t len2)
+	/*@*/
 {
     int n;
     uint64_t row;
@@ -373,10 +380,12 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->digestlen = 32/8;
 	ctx->datalen = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
+/*@-type @*/
 	    mp->update = (void *) crc32;
 #if defined(ZLIB_H)
 	    mp->combine = (void *) crc32_combine;
 #endif
+/*@=type @*/
 	    ctx->paramlen = sizeof(*mp);
 	    ctx->param = mp;
 	}
@@ -390,10 +399,12 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->digestlen = 32/8;
 	ctx->datalen = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
+/*@-type @*/
 #if defined(ZLIB_H)
 	    mp->update = (void *) adler32;
 	    mp->combine = (void *) adler32_combine;
 #endif
+/*@=type @*/
 	    ctx->paramlen = sizeof(*mp);
 	    ctx->param = mp;
 	}

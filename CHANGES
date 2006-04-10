@@ -1,6 +1,7 @@
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
 	- use zlib's unrolled crc-32 and adler32, add crc-64, checksums.
+	- fix: build error msg had reversed args.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

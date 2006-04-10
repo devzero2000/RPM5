@@ -638,7 +638,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if (parseNum(field, &num)) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: %s takes an integer value: %s\n"),
-		     tagName(tag), spec->lineNum, spec->line);
+		     spec->lineNum, tagName(tag), spec->line);
 	    return RPMERR_BADSPEC;
 	}
 	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);

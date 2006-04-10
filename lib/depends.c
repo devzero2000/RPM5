@@ -810,7 +810,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies ts, requires, conflicts, rpmGlobalMacroContext,
+	/*@modifies ts, requires, conflicts, dirnames, rpmGlobalMacroContext,
 		fileSystem, internalState */
 {
     uint_32 dscolor;
@@ -1221,7 +1221,7 @@ static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(rpmte q, rpmte p,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps, int msglvl)
-	/*@modifies q, p, requires, *nzaps @*/
+	/*@modifies q, p, *nzaps @*/
 {
     rpmds requires;
     tsortInfo tsi_prev;
@@ -1490,7 +1490,7 @@ int rpmtsOrder(rpmts ts)
 			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
 	/* XXX pretend erasedPackages are just appended to addedPackages. */
 	pkgKey = (alKey)(((long)pkgKey) + ts->numAddedPackages);
-	rpmteSetAddedKey(p, pkgKey);
+	(void) rpmteSetAddedKey(p, pkgKey);
     }
     pi = rpmtsiFree(pi);
     rpmalMakeIndex(ts->erasedPackages);
