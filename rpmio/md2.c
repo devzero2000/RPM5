@@ -11,48 +11,27 @@
 
 #include "system.h"
 
-#if 0
-#include "tomcrypt.h"
-#endif
+#include "md2.h"
+#include "mp.h"
+#include "endianness.h"
 
 #include "debug.h"
 
-struct md2_state {
-    unsigned char chksum[16], X[48], buf[16];
-    unsigned long curlen;
+/*@-sizeoftype@*/
+/*@unchecked@*/ /*@observer@*/
+const hashFunction md2 = {
+	"MD2",
+	sizeof(md2Param),
+	16,
+	128/8,
+	(hashFunctionReset) md2Reset,
+	(hashFunctionUpdate) md2Update,
+	(hashFunctionDigest) md2Digest,
 };
+/*@=sizeoftype@*/
 
-typedef union Hash_state {
-    struct md2_state    md2;
-    void *data;
-} hash_state;
-
-/**
-   @param md2.c
-   MD2 (RFC 1319) hash function implementation by Tom St Denis 
-*/
-
-#if 0
-const struct ltc_hash_descriptor md2_desc =
-{
-    "md2",
-    7,
-    16,
-    16,
-
-    /* OID */
-   { 1, 2, 840, 113549, 2, 2,  },
-   6,
-
-    &md2_init,
-    &md2_process,
-    &md2_done,
-    &md2_test,
-    NULL
-};
-#endif
-
-static const unsigned char PI_SUBST[256] = {
+/*@unchecked@*/ /*@observer@*/
+static const byte PI_SUBST[256] = {
   41, 46, 67, 201, 162, 216, 124, 1, 61, 54, 84, 161, 236, 240, 6,
   19, 98, 167, 5, 243, 192, 199, 115, 140, 152, 147, 43, 217, 188,
   76, 130, 202, 30, 155, 87, 60, 253, 212, 224, 22, 103, 66, 111, 24,
@@ -74,131 +53,126 @@ static const unsigned char PI_SUBST[256] = {
 };
 
 /* adds 16 bytes to the checksum */
-static void md2_update_chksum(hash_state *md)
+static void md2_update_chksum(md2Param *mp)
+	/*@modifies mp @*/
 {
-   int j;
-   unsigned char L;
-   L = md->md2.chksum[15];
-   for (j = 0; j < 16; j++) {
+	byte L = mp->chksum[15];
+	int j;
+
+	for (j = 0; j < 16; j++) {
 
 /* caution, the RFC says its "C[j] = S[M[i*16+j] xor L]" but the reference source code [and test vectors] say 
    otherwise.
 */
-       L = (md->md2.chksum[j] ^= PI_SUBST[(int)(md->md2.buf[j] ^ L)] & 255);
-   }
+		L = (mp->chksum[j] ^= PI_SUBST[(int)(mp->buf[j] ^ L)] & 255);
+	}
 }
 
-static void md2_compress(hash_state *md)
+static void md2_compress(md2Param *mp)
+	/*@modifies mp @*/
 {
-   int j, k;
-   unsigned char t;
+	int j, k;
+	byte t;
    
-   /* copy block */
-   for (j = 0; j < 16; j++) {
-       md->md2.X[16+j] = md->md2.buf[j];
-       md->md2.X[32+j] = md->md2.X[j] ^ md->md2.X[16+j];
-   }
+	/* copy block */
+	for (j = 0; j < 16; j++) {
+		mp->X[16+j] = mp->buf[j];
+		mp->X[32+j] = mp->X[j] ^ mp->X[16+j];
+	}
 
-   t = (unsigned char)0;
+	t = (byte)0;
 
-   /* do 18 rounds */
-   for (j = 0; j < 18; j++) {
-       for (k = 0; k < 48; k++) {
-           t = (md->md2.X[k] ^= PI_SUBST[(int)(t & 255)]);
-       }
-       t = (t + (unsigned char)j) & 255;
-   }
+	/* do 18 rounds */
+	for (j = 0; j < 18; j++) {
+		for (k = 0; k < 48; k++) {
+			t = (mp->X[k] ^= PI_SUBST[(int)(t & 255)]);
+		}
+		t = (t + (byte)j) & 255;
+	}
 }
 
-/**
-   Initialize the hash state
-   @param md   The hash state you wish to initialize
-   @return 0 if successful
-*/
-int md2_init(hash_state *md)
+int md2Reset(md2Param *mp)
 {
-   assert(md != NULL);
+	/* MD2 uses a zero'ed state... */
+	memset(mp->X, 0, sizeof(mp->X));
+	memset(mp->chksum, 0, sizeof(mp->chksum));
+	memset(mp->buf, 0, sizeof(mp->buf));
 
-   /* MD2 uses a zero'ed state... */
-   memset(md->md2.X, 0, sizeof(md->md2.X));
-   memset(md->md2.chksum, 0, sizeof(md->md2.chksum));
-   memset(md->md2.buf, 0, sizeof(md->md2.buf));
-   md->md2.curlen = 0;
-   return 0;
+	#if (MP_WBITS == 64)
+	mpzero(1, mp->length);
+	#elif (MP_WBITS == 32)
+	mpzero(2, mp->length);
+	#else
+	# error
+	#endif
+	mp->offset = 0;
+	return 0;
 }
 
-/**
-   Process a block of memory though the hash
-   @param md     The hash state
-   @param in     The data to hash
-   @param inlen  The length of the data (octets)
-   @return 0 if successful
-*/
-int md2_process(hash_state *md, const unsigned char *in, unsigned long inlen)
+int md2Update(md2Param *mp, const byte *data, size_t size)
 {
-    unsigned long n;
-    assert(md != NULL);
-    assert(in != NULL);
-    if (md-> md2 .curlen > sizeof(md-> md2 .buf)) {                            
-       return 16;                                                           
-    }                                                                                       
-    while (inlen > 0) {
-        n = MIN(inlen, (16 - md->md2.curlen));
-        memcpy(md->md2.buf + md->md2.curlen, in, (size_t)n);
-        md->md2.curlen += n;
-        in             += n;
-        inlen          -= n;
+	uint32_t proclength;
 
-        /* is 16 bytes full? */
-        if (md->md2.curlen == 16) {
-            md2_compress(md);
-            md2_update_chksum(md);
-            md->md2.curlen = 0;
-        }
-    }
-    return 0;
+	#if (MP_WBITS == 64)
+	mpw add[1];
+	mpsetw(1, add, size);
+	mplshift(1, add, 3);
+	mpadd(1, mp->length, add);
+	#elif (MP_WBITS == 32)
+	mpw add[2];
+	mpsetw(2, add, size);
+	mplshift(2, add, 3);
+	(void) mpadd(2, mp->length, add);
+	#else
+	# error
+	#endif
+
+	while (size > 0) {
+		proclength = ((mp->offset + size) > 16U) ? (16U - mp->offset) : size;
+/*@-mayaliasunique@*/
+		memcpy(((byte *)mp->buf) + mp->offset, data, proclength);
+/*@=mayaliasunique@*/
+		size -= proclength;
+		data += proclength;
+		mp->offset += proclength;
+
+		/* is 16 bytes full? */
+		if (mp->offset == 16U) {
+			md2_compress(mp);
+			md2_update_chksum(mp);
+			mp->offset = 0;
+		}
+	}
+	return 0;
 }
 
-/**
-   Terminate the hash to get the digest
-   @param md  The hash state
-   @param out [out] The destination of the hash (16 bytes)
-   @return 0 if successful
-*/
-int md2_done(hash_state * md, unsigned char *out)
+int md2Digest(md2Param * mp, byte *digest)
 {
-    unsigned long i, k;
+	uint32_t i, k;
 
-    assert(md  != NULL);
-    assert(out != NULL);
+	/* pad the message */
+	k = 16 - mp->offset;
+	for (i = mp->offset; i < 16; i++) {
+		mp->buf[i] = (byte)k;
+	}
 
-    if (md->md2.curlen >= sizeof(md->md2.buf)) {
-       return 16;
-    }
+	/* hash and update */
+	md2_compress(mp);
+	md2_update_chksum(mp);
 
+	/* hash checksum */
+	memcpy(mp->buf, mp->chksum, 16);
+	md2_compress(mp);
 
-    /* pad the message */
-    k = 16 - md->md2.curlen;
-    for (i = md->md2.curlen; i < 16; i++) {
-        md->md2.buf[i] = (unsigned char)k;
-    }
+	/* output is lower 16 bytes of X */
+	memcpy(digest, mp->X, 16);
 
-    /* hash and update */
-    md2_compress(md);
-    md2_update_chksum(md);
+	memset(mp, 0, sizeof(md2Param));
 
-    /* hash checksum */
-    memcpy(md->md2.buf, md->md2.chksum, 16);
-    md2_compress(md);
-
-    /* output is lower 16 bytes of X */
-    memcpy(out, md->md2.X, 16);
-
-    memset(md, 0, sizeof(hash_state));
-
-    return 0;
+	return 0;
 }
 
+#ifdef	DYING
 /**
   Self-test the hash
   @return 0 if successful, CRYPT_NOP if self-tests have been disabled
@@ -207,7 +181,7 @@ int md2_test(void)
 {
    static const struct {
         char *msg;
-        unsigned char md[16];
+        byte md[16];
    } tests[] = {
       { "",
         {0x83,0x50,0xe5,0xa3,0xe2,0x4c,0x15,0x3d,
@@ -241,13 +215,13 @@ int md2_test(void)
       }
    };
    int i;
-   hash_state md;
-   unsigned char buf[16];
+   md2Param mymd, * mp = &mymd;
+   byte buf[16];
 
    for (i = 0; i < (int)(sizeof(tests) / sizeof(tests[0])); i++) {
-       md2_init(&md);
-       md2_process(&md, (unsigned char*)tests[i].msg, (unsigned long)strlen(tests[i].msg));
-       md2_done(&md, buf);
+       md2Reset(mp);
+       md2Update(mp, (byte*)tests[i].msg, strlen(tests[i].msg));
+       md2Digest(mp, buf);
        if (memcmp(buf, tests[i].md, 16) != 0) {
           return 5;
        }
@@ -263,8 +237,4 @@ int main() {
     }
     return rc;
 }
-
-
-/* $Source$ */
-/* $Revision$ */
-/* $Date$ */
+#endif

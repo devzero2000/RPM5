@@ -7,6 +7,7 @@
 #include <zlib.h>
 
 #include "rpmio_internal.h"
+#include "md2.h"
 #include "rmd128.h"
 #include "rmd160.h"
 #include "debug.h"
@@ -363,6 +364,19 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Digest = (void *) rmd160Digest;
 /*@=type@*/
 	break;
+    case PGPHASHALGO_MD2:
+	ctx->digestlen = 128/8;
+	ctx->datalen = 16;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramlen = sizeof(md2Param);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramlen);
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) md2Reset;
+	ctx->Update = (void *) md2Update;
+	ctx->Digest = (void *) md2Digest;
+/*@=type@*/
+	break;
     case PGPHASHALGO_RIPEMD128:
 	ctx->digestlen = 128/8;
 	ctx->datalen = 64;
@@ -470,7 +484,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@=type@*/
 	break;
 #endif
-    case PGPHASHALGO_MD2:
     case PGPHASHALGO_TIGER192:
     case PGPHASHALGO_HAVAL_5_160:
     default:

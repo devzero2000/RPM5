@@ -17,6 +17,7 @@ const char * FIPSBdigest = "84983e441c3bd26ebaae4aa1f95129e5e54670f1";
 const char * FIPSCdigest = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 
 static struct poptOption optionsTable[] = {
+ { "md2", '\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_MD2,	NULL, NULL },
  { "md5", '\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_MD5,	NULL, NULL },
  { "sha1",'\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_SHA1,	NULL, NULL },
  { "sha256",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA256,	NULL, NULL },
@@ -42,6 +43,7 @@ static struct poptOption optionsTable[] = {
 
 #define	RMD160_CMD	"/usr/bin/openssl rmd160"
 #define	SHA1_CMD	"/usr/bin/openssl sha1"
+#define	MD2_CMD		"/usr/bin/openssl md2"
 #define	MD5_CMD		"/usr/bin/openssl md5"
 
 int
@@ -171,6 +173,7 @@ fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
 	ssize_t nb;
 
 	switch (hashalgo) {
+	case PGPHASHALGO_MD2:		scmd = MD2_CMD;		break;
 	case PGPHASHALGO_MD5:		scmd = MD5_CMD;		break;
 	case PGPHASHALGO_SHA1:		scmd = SHA1_CMD;	break;
 	case PGPHASHALGO_RIPEMD160:	scmd = RMD160_CMD;	break;
