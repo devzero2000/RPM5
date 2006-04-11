@@ -10,6 +10,10 @@
  */
 
 #include "tomcrypt.h"
+#undef        zeromem
+#define       zeromem(_a, _b) memset((_a), 0, (_b))
+#undef        LTC_ARGCHK
+#define       LTC_ARGCHK      assert
 
 /**
    @file tiger.c
@@ -806,7 +810,14 @@ Hash of "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-ABCDEFG
         00B83EB4E53440C5 76AC6AAEE0A74858 25FD15E70A59FFE4
 */
 
-
+int main() {
+    int rc = tiger_test();
+    switch(rc) {
+    case CRYPT_OK:            printf("OK\n");         break;
+    case CRYPT_FAIL_TESTVECTOR:       printf("FAIL\n");       break;
+    }
+    return rc;
+}
 
 
 /* $Source$ */

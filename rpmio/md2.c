@@ -9,6 +9,10 @@
  * Tom St Denis, tomstdenis@gmail.com, http://libtomcrypt.com
  */
 #include "tomcrypt.h"
+#undef	zeromem
+#define	zeromem(_a, _b)	memset((_a), 0, (_b))
+#undef	LTC_ARGCHK
+#define	LTC_ARGCHK	assert
 
 /**
    @param md2.c
@@ -244,6 +248,15 @@ int md2_test(void)
 }
 
 #endif
+
+int main() {
+    int rc = md2_test();
+    switch(rc) {
+    case CRYPT_OK:		printf("OK\n");		break;
+    case CRYPT_FAIL_TESTVECTOR:	printf("FAIL\n");	break;
+    }
+    return rc;
+}
 
 
 /* $Source$ */

@@ -136,3 +136,9 @@ tficl: tficl.o
 
 md2: md2.o
 	$(LINK) -o $@ $<
+
+md4: md4.o
+	$(LINK) -o $@ $<
+
+tiger: tiger.o
+	$(LINK) -o $@ $<
