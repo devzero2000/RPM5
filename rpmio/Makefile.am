@@ -133,3 +133,6 @@ tficl.o: tficl.c
 
 tficl: tficl.o
 	$(LINK) -o $@ tficl.o -lficl -lm
+
+md2: md2.o
+	$(LINK) -o $@ $<
