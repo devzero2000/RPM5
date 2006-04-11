@@ -8,19 +8,33 @@
  *
  * Tom St Denis, tomstdenis@gmail.com, http://libtomcrypt.com
  */
+#include "system.h"
+
+#include <stdint.h>
+
+#if 0
 #include "tomcrypt.h"
-#undef        zeromem
-#define       zeromem(_a, _b) memset((_a), 0, (_b))
-#undef        LTC_ARGCHK
-#define       LTC_ARGCHK      assert
+#endif
+
+#include "debug.h"
+
+struct md4_state {
+    uint64_t length;
+    uint32_t state[4], curlen;
+    unsigned char buf[64];
+};
+
+typedef union Hash_state {
+    struct md4_state    md4;
+    void *data;
+} hash_state;
 
 /**
    @param md4.c
    Submitted by Dobes Vandermeer  (dobes@smartt.com) 
 */
 
-#ifdef MD4
-
+#if 0
 const struct ltc_hash_descriptor md4_desc =
 {
     "md4",
@@ -38,6 +52,7 @@ const struct ltc_hash_descriptor md4_desc =
     &md4_test,
     NULL
 };
+#endif
 
 #define S11 3
 #define S12 7
@@ -82,7 +97,7 @@ static int _md4_compress(hash_state *md, unsigned char *buf)
 static int  md4_compress(hash_state *md, unsigned char *buf)
 #endif
 {
-    ulong32 x[16], a, b, c, d;
+    uint32_t x[16], a, b, c, d;
     int i;
 
     /* copy state */
@@ -157,7 +172,7 @@ static int  md4_compress(hash_state *md, unsigned char *buf)
     md->md4.state[2] = md->md4.state[2] + c;
     md->md4.state[3] = md->md4.state[3] + d;
 
-    return CRYPT_OK;
+    return 0;
 }
 
 #ifdef LTC_CLEAN_STACK
@@ -165,7 +180,7 @@ static int md4_compress(hash_state *md, unsigned char *buf)
 {
    int err;
    err = _md4_compress(md, buf);
-   burn_stack(sizeof(ulong32) * 20 + sizeof(int));
+   burn_stack(sizeof(uint32_t) * 20 + sizeof(int));
    return err;
 }
 #endif
@@ -173,18 +188,18 @@ static int md4_compress(hash_state *md, unsigned char *buf)
 /**
    Initialize the hash state
    @param md   The hash state you wish to initialize
-   @return CRYPT_OK if successful
+   @return 0 if successful
 */
 int md4_init(hash_state * md)
 {
-   LTC_ARGCHK(md != NULL);
+   assert(md != NULL);
    md->md4.state[0] = 0x67452301UL;
    md->md4.state[1] = 0xefcdab89UL;
    md->md4.state[2] = 0x98badcfeUL;
    md->md4.state[3] = 0x10325476UL;
    md->md4.length  = 0;
    md->md4.curlen  = 0;
-   return CRYPT_OK;
+   return 0;
 }
 
 /**
@@ -192,7 +207,7 @@ int md4_init(hash_state * md)
    @param md     The hash state
    @param in     The data to hash
    @param inlen  The length of the data (octets)
-   @return CRYPT_OK if successful
+   @return 0 if successful
 */
 HASH_PROCESS(md4_process, md4_compress, md4, 64)
 
@@ -200,17 +215,17 @@ HASH_PROCESS(md4_process, md4_compress, md4, 64)
    Terminate the hash to get the digest
    @param md  The hash state
    @param out [out] The destination of the hash (16 bytes)
-   @return CRYPT_OK if successful
+   @return 0 if successful
 */
 int md4_done(hash_state * md, unsigned char *out)
 {
     int i;
 
-    LTC_ARGCHK(md  != NULL);
-    LTC_ARGCHK(out != NULL);
+    assert(md  != NULL);
+    assert(out != NULL);
 
     if (md->md4.curlen >= sizeof(md->md4.buf)) {
-       return CRYPT_INVALID_ARG;
+       return 16;
     }
 
     /* increase the length of the message */
@@ -244,21 +259,16 @@ int md4_done(hash_state * md, unsigned char *out)
     for (i = 0; i < 4; i++) {
         STORE32L(md->md4.state[i], out+(4*i));
     }
-#ifdef LTC_CLEAN_STACK
-    zeromem(md, sizeof(hash_state));
-#endif 
-    return CRYPT_OK;
+    zeromem(md, 0, sizeof(hash_state));
+    return 0;
 }
 
 /**
   Self-test the hash
-  @return CRYPT_OK if successful, CRYPT_NOP if self-tests have been disabled
+  @return 0 if successful, CRYPT_NOP if self-tests have been disabled
 */  
 int md4_test(void)
 {
- #ifndef LTC_TEST
-    return CRYPT_NOP;
- #else    
     static const struct md4_test_case {
         char *input;
         unsigned char digest[16];
@@ -294,21 +304,18 @@ int md4_test(void)
         md4_process(&md, (unsigned char *)cases[i].input, (unsigned long)strlen(cases[i].input));
         md4_done(&md, digest);
         if (memcmp(digest, cases[i].digest, 16) != 0) {
-           return CRYPT_FAIL_TESTVECTOR;
+           return 5;
         }
 
     }
-    return CRYPT_OK;
-  #endif
+    return 0;
 }
-
-#endif
 
 int main() {
     int rc = md4_test();
     switch(rc) {
-    case CRYPT_OK:            printf("OK\n");         break;
-    case CRYPT_FAIL_TESTVECTOR:       printf("FAIL\n");       break;
+    case 0:	printf("OK\n");		break;
+    default:	printf("FAIL\n");	break;
     }
     return rc;
 }

@@ -8,19 +8,31 @@
  *
  * Tom St Denis, tomstdenis@gmail.com, http://libtomcrypt.com
  */
+
+#include "system.h"
+
+#if 0
 #include "tomcrypt.h"
-#undef	zeromem
-#define	zeromem(_a, _b)	memset((_a), 0, (_b))
-#undef	LTC_ARGCHK
-#define	LTC_ARGCHK	assert
+#endif
+
+#include "debug.h"
+
+struct md2_state {
+    unsigned char chksum[16], X[48], buf[16];
+    unsigned long curlen;
+};
+
+typedef union Hash_state {
+    struct md2_state    md2;
+    void *data;
+} hash_state;
 
 /**
    @param md2.c
    MD2 (RFC 1319) hash function implementation by Tom St Denis 
 */
 
-#ifdef MD2
-
+#if 0
 const struct ltc_hash_descriptor md2_desc =
 {
     "md2",
@@ -38,6 +50,7 @@ const struct ltc_hash_descriptor md2_desc =
     &md2_test,
     NULL
 };
+#endif
 
 static const unsigned char PI_SUBST[256] = {
   41, 46, 67, 201, 162, 216, 124, 1, 61, 54, 84, 161, 236, 240, 6,
@@ -100,18 +113,18 @@ static void md2_compress(hash_state *md)
 /**
    Initialize the hash state
    @param md   The hash state you wish to initialize
-   @return CRYPT_OK if successful
+   @return 0 if successful
 */
 int md2_init(hash_state *md)
 {
-   LTC_ARGCHK(md != NULL);
+   assert(md != NULL);
 
    /* MD2 uses a zero'ed state... */
-   zeromem(md->md2.X, sizeof(md->md2.X));
-   zeromem(md->md2.chksum, sizeof(md->md2.chksum));
-   zeromem(md->md2.buf, sizeof(md->md2.buf));
+   memset(md->md2.X, 0, sizeof(md->md2.X));
+   memset(md->md2.chksum, 0, sizeof(md->md2.chksum));
+   memset(md->md2.buf, 0, sizeof(md->md2.buf));
    md->md2.curlen = 0;
-   return CRYPT_OK;
+   return 0;
 }
 
 /**
@@ -119,19 +132,19 @@ int md2_init(hash_state *md)
    @param md     The hash state
    @param in     The data to hash
    @param inlen  The length of the data (octets)
-   @return CRYPT_OK if successful
+   @return 0 if successful
 */
 int md2_process(hash_state *md, const unsigned char *in, unsigned long inlen)
 {
     unsigned long n;
-    LTC_ARGCHK(md != NULL);
-    LTC_ARGCHK(in != NULL);
+    assert(md != NULL);
+    assert(in != NULL);
     if (md-> md2 .curlen > sizeof(md-> md2 .buf)) {                            
-       return CRYPT_INVALID_ARG;                                                           
+       return 16;                                                           
     }                                                                                       
     while (inlen > 0) {
         n = MIN(inlen, (16 - md->md2.curlen));
-        XMEMCPY(md->md2.buf + md->md2.curlen, in, (size_t)n);
+        memcpy(md->md2.buf + md->md2.curlen, in, (size_t)n);
         md->md2.curlen += n;
         in             += n;
         inlen          -= n;
@@ -143,24 +156,24 @@ int md2_process(hash_state *md, const unsigned char *in, unsigned long inlen)
             md->md2.curlen = 0;
         }
     }
-    return CRYPT_OK;
+    return 0;
 }
 
 /**
    Terminate the hash to get the digest
    @param md  The hash state
    @param out [out] The destination of the hash (16 bytes)
-   @return CRYPT_OK if successful
+   @return 0 if successful
 */
 int md2_done(hash_state * md, unsigned char *out)
 {
     unsigned long i, k;
 
-    LTC_ARGCHK(md  != NULL);
-    LTC_ARGCHK(out != NULL);
+    assert(md  != NULL);
+    assert(out != NULL);
 
     if (md->md2.curlen >= sizeof(md->md2.buf)) {
-       return CRYPT_INVALID_ARG;
+       return 16;
     }
 
 
@@ -175,27 +188,23 @@ int md2_done(hash_state * md, unsigned char *out)
     md2_update_chksum(md);
 
     /* hash checksum */
-    XMEMCPY(md->md2.buf, md->md2.chksum, 16);
+    memcpy(md->md2.buf, md->md2.chksum, 16);
     md2_compress(md);
 
     /* output is lower 16 bytes of X */
-    XMEMCPY(out, md->md2.X, 16);
+    memcpy(out, md->md2.X, 16);
 
-#ifdef LTC_CLEAN_STACK
-    zeromem(md, sizeof(hash_state));
-#endif
-    return CRYPT_OK;
+    memset(md, 0, sizeof(hash_state));
+
+    return 0;
 }
 
 /**
   Self-test the hash
-  @return CRYPT_OK if successful, CRYPT_NOP if self-tests have been disabled
+  @return 0 if successful, CRYPT_NOP if self-tests have been disabled
 */  
 int md2_test(void)
 {
- #ifndef LTC_TEST
-    return CRYPT_NOP;
- #else    
    static const struct {
         char *msg;
         unsigned char md[16];
@@ -240,20 +249,17 @@ int md2_test(void)
        md2_process(&md, (unsigned char*)tests[i].msg, (unsigned long)strlen(tests[i].msg));
        md2_done(&md, buf);
        if (memcmp(buf, tests[i].md, 16) != 0) {
-          return CRYPT_FAIL_TESTVECTOR;
+          return 5;
        }
    }
-   return CRYPT_OK;        
-  #endif
+   return 0;        
 }
-
-#endif
 
 int main() {
     int rc = md2_test();
     switch(rc) {
-    case CRYPT_OK:		printf("OK\n");		break;
-    case CRYPT_FAIL_TESTVECTOR:	printf("FAIL\n");	break;
+    case 0:	printf("OK\n");		break;
+    default:	printf("FAIL\n");	break;
     }
     return rc;
 }
