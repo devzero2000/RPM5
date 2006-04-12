@@ -28,10 +28,11 @@ staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 noinst_PROGRAMS = dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps rpmfile
+pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps \
+	rpmcache rpmdeps rpmfile
 MAGIC	= $(pkgbindir)/magic
 
-bin_PROGRAMS =	rpmgraph
+bin_PROGRAMS =	rpmdigest rpmgraph
 
 convertdb1_SOURCES =	convertdb1.c
 
@@ -57,6 +58,9 @@ rpmfile_SOURCES =	rpmfile.c
 rpmfile_CFLAGS =	-DMAGIC='"$(MAGIC)"' $(INCLUDES)
 rpmfile_LDADD =		$(top_builddir)/rpmio/librpmio.la
 #rpmfile_LDFLAGS =	$(staticLDFLAGS)
+
+rpmdigest_SOURCES =	rpmdigest.c
+#rpmdigest_LDFLAGS =	$(staticLDFLAGS)
 
 rpmgraph_SOURCES =	rpmgraph.c
 #rpmgraph_LDFLAGS =	$(staticLDFLAGS)

@@ -4,6 +4,7 @@
 	- fix: build error msg had reversed args.
 	- add md2, md4, and tiger192 digests.
 	- teach --scripts about pre- and post-transaction scriptlets.
+	- add /usr/bin/rpmdigest.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

@@ -7,11 +7,13 @@
 #include <zlib.h>
 
 #include "rpmio_internal.h"
+
 #include "md2.h"
 #include "md4.h"
 #include "rmd128.h"
 #include "rmd160.h"
 #include "tiger.h"
+
 #include "debug.h"
 
 #ifdef	SHA_DEBUG
@@ -594,3 +596,38 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
     return 0;
 }
 /*@=boundswrite@*/
+
+pgpHashAlgo rpmDigestHashAlgo = PGPHASHALGO_MD5;
+
+/**
+ * Digest options using popt.
+ */
+struct poptOption rpmDigestPoptTable[] = {
+ { "md2", '\0', POPT_ARG_VAL, 	&rpmDigestHashAlgo, PGPHASHALGO_MD2,
+	NULL, NULL },
+ { "md4", '\0', POPT_ARG_VAL, 	&rpmDigestHashAlgo, PGPHASHALGO_MD4,
+	NULL, NULL },
+ { "md5", '\0', POPT_ARG_VAL, 	&rpmDigestHashAlgo, PGPHASHALGO_MD5,
+	NULL, NULL },
+ { "sha1",'\0', POPT_ARG_VAL, 	&rpmDigestHashAlgo, PGPHASHALGO_SHA1,
+	NULL, NULL },
+ { "sha256",'\0', POPT_ARG_VAL, &rpmDigestHashAlgo, PGPHASHALGO_SHA256,
+	NULL, NULL },
+ { "sha384",'\0', POPT_ARG_VAL, &rpmDigestHashAlgo, PGPHASHALGO_SHA384,
+	NULL, NULL },
+ { "sha512",'\0', POPT_ARG_VAL, &rpmDigestHashAlgo, PGPHASHALGO_SHA512,
+	NULL, NULL },
+ { "crc32",'\0', POPT_ARG_VAL,	&rpmDigestHashAlgo, PGPHASHALGO_CRC32,
+	NULL, NULL },
+ { "adler32",'\0', POPT_ARG_VAL,&rpmDigestHashAlgo, PGPHASHALGO_ADLER32,
+	NULL, NULL },
+ { "rmd128",'\0', POPT_ARG_VAL,	&rpmDigestHashAlgo, PGPHASHALGO_RIPEMD128,
+	NULL, NULL },
+ { "rmd160",'\0', POPT_ARG_VAL,	&rpmDigestHashAlgo, PGPHASHALGO_RIPEMD160,
+	NULL, NULL },
+ { "tiger",'\0', POPT_ARG_VAL,	&rpmDigestHashAlgo, PGPHASHALGO_TIGER192,
+	NULL, NULL },
+ { "crc64",'\0', POPT_ARG_VAL,	&rpmDigestHashAlgo, PGPHASHALGO_CRC64,
+	NULL, NULL },
+    POPT_TABLEEND
+};

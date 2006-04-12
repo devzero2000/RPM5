@@ -10,6 +10,8 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
+#include <popt.h>
+
 #if !defined(_BEECRYPT_API_H)
 /*@-redef@*/
 typedef unsigned char byte;
@@ -983,6 +985,11 @@ typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
 
+/*@unchecked@*/
+extern pgpHashAlgo rpmDigestHashAlgo;
+
+/*@unchecked@*/ /*@observer@*/
+extern struct poptOption rpmDigestPoptTable[];
 
 /*@-fcnuse@*/
 #ifdef __cplusplus

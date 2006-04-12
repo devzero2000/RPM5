@@ -4,7 +4,6 @@
 #include "popt.h"
 #include "debug.h"
 
-static pgpHashAlgo hashalgo = PGPHASHALGO_MD5;
 static rpmDigestFlags flags = RPMDIGEST_NONE;
 extern int _rpmio_debug;
 
@@ -17,22 +16,10 @@ const char * FIPSBdigest = "84983e441c3bd26ebaae4aa1f95129e5e54670f1";
 const char * FIPSCdigest = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 
 static struct poptOption optionsTable[] = {
- { "md2", '\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_MD2,	NULL, NULL },
- { "md4", '\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_MD4,	NULL, NULL },
- { "md5", '\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_MD5,	NULL, NULL },
- { "sha1",'\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_SHA1,	NULL, NULL },
- { "sha256",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA256,	NULL, NULL },
- { "sha384",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA384,	NULL, NULL },
- { "sha512",'\0', POPT_ARG_VAL, &hashalgo, PGPHASHALGO_SHA512,	NULL, NULL },
- { "crc32",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_CRC32,	NULL, NULL },
- { "adler32",'\0', POPT_ARG_VAL,&hashalgo, PGPHASHALGO_ADLER32,	NULL, NULL },
- { "rmd128",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_RIPEMD128,NULL, NULL },
- { "rmd160",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_RIPEMD160,NULL, NULL },
- { "tiger",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_TIGER192,NULL, NULL },
- { "crc64",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_CRC64,	NULL, NULL },
-#ifdef	DYING
- { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
-#endif
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmDigestPoptTable, 0,
+	N_("Digest options:"),
+	NULL },
+
  { "fipsa",'\0', POPT_ARG_VAL, &fips, 1,	NULL, NULL },
  { "fipsb",'\0', POPT_ARG_VAL, &fips, 2,	NULL, NULL },
  { "fipsc",'\0', POPT_ARG_VAL, &fips, 3,	NULL, NULL },
@@ -57,7 +44,7 @@ main(int argc, const char *argv[])
     const char * ifn;
     const char * ofn = "/dev/null";
     DIGEST_CTX ctx = NULL;
-    gcry_md_hd_t h;
+    gcry_md_hd_t h = NULL;
     gcry_error_t gcry = NULL;
     const char * scmd;
     const char * idigest;
@@ -175,7 +162,7 @@ fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
 	unsigned char buf[BUFSIZ];
 	ssize_t nb;
 
-	switch (hashalgo) {
+	switch (rpmDigestHashAlgo) {
 	case PGPHASHALGO_MD2:		scmd = MD2_CMD;		break;
 	case PGPHASHALGO_MD4:		scmd = MD4_CMD;		break;
 	case PGPHASHALGO_MD5:		scmd = MD5_CMD;		break;
@@ -214,7 +201,7 @@ fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
 	    continue;
 	}
 	idigest = NULL;
-	fdInitDigest(ifd, hashalgo, reverse);
+	fdInitDigest(ifd, rpmDigestHashAlgo, reverse);
 
 	ofd = Fopen(ofn, "w.ufdio");
 	if (ofd == NULL || Ferror(ofd)) {
@@ -225,20 +212,20 @@ fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
 	    continue;
 	}
 	odigest = NULL;
-	fdInitDigest(ofd, hashalgo, reverse);
+	fdInitDigest(ofd, rpmDigestHashAlgo, reverse);
 
-	ctx = rpmDigestInit(hashalgo, flags);
+	ctx = rpmDigestInit(rpmDigestHashAlgo, flags);
 
 	while ((nb = Fread(buf, 1, sizeof(buf), ifd)) > 0) {
 	    rpmDigestUpdate(ctx, buf, nb);
 	    (void) Fwrite(buf, 1, nb, ofd);
 	}
 
-	fdFiniDigest(ifd, hashalgo, (void **)&idigest, NULL, asAscii);
+	fdFiniDigest(ifd, rpmDigestHashAlgo, (void **)&idigest, NULL, asAscii);
 	Fclose(ifd);
 
 	Fflush(ofd);
-	fdFiniDigest(ofd, hashalgo, (void **)&odigest, NULL, asAscii);
+	fdFiniDigest(ofd, rpmDigestHashAlgo, (void **)&odigest, NULL, asAscii);
 	Fclose(ofd);
 
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
