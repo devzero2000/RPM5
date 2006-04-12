@@ -8,23 +8,8 @@
 
 #include "debug.h"
 
-#if 0
-typedef struct {
-	uint64_t h[3];
-	uint64_t data[8];
-	#if (MP_WBITS == 64)
-	mpw length[1];
-	#elif (MP_WBITS == 32)
-	mpw length[2];
-	#else
-	# error
-	#endif
-	uint32_t offset;
-} tigerParam;
-#endif
-
 /*@unchecked@*/ /*@observer@*/
-static uint64_t tigerhinit[4] =
+static uint64_t tigerhinit[3] =
 	{ 0x0123456789ABCDEFULL, 0xFEDCBA9876543210ULL, 0xF096A5B4C3B2E187ULL };
 
 /*@-sizeoftype@*/
@@ -39,26 +24,6 @@ const hashFunction tiger = {
 	(hashFunctionDigest) tigerDigest,
 };
 /*@=sizeoftype@*/
-
-#if 0
-const struct ltc_hash_descriptor tiger_desc =
-{
-    "tiger",
-    1,
-    24,
-    64,
-
-    /* OID */
-   { 1, 3, 6, 1, 4, 1, 11591, 12, 2,  },
-   9,
-
-    &tigerReset,
-    &tigerUpdate,
-    &tigerDigest,
-    &tiger_test,
-    NULL
-};
-#endif
 
 int tigerReset(tigerParam *mp)
 {
@@ -82,6 +47,7 @@ int tigerReset(tigerParam *mp)
 #define t3 (table+256*2)
 #define t4 (table+256*3)
 
+/*@unchecked@*/ /*@observer@*/
 static const uint64_t table[4*256] = {
     0x02AAB17CF7E90C5EULL /*    0 */, 0xAC424B03E243A8ECULL /*    1 */,
     0x72CD5BE30DD5FCD3ULL /*    2 */, 0x6D019B93F6F97F3AULL /*    3 */,
@@ -597,7 +563,9 @@ static const uint64_t table[4*256] = {
     0xC83223F1720AEF96ULL /* 1022 */, 0xC3A0396F7363A51FULL /* 1023 */};
 
 /* one round of the hash function */
-static inline void tiger_round(uint64_t *a, uint64_t *b, uint64_t *c, uint64_t x, int mul)
+static inline void tiger_round(uint64_t *a, uint64_t *b, uint64_t *c,
+		uint64_t x, int mul)
+	/*@modifies *a, *b, *c @*/
 {
 	uint64_t tmp;
 	*c ^= x; 
@@ -615,7 +583,9 @@ static inline void tiger_round(uint64_t *a, uint64_t *b, uint64_t *c, uint64_t x
 }
 
 /* one complete pass */
-static inline void pass(uint64_t *a, uint64_t *b, uint64_t *c, uint64_t *x, int mul)
+static inline void pass(uint64_t *a, uint64_t *b, uint64_t *c,
+		const uint64_t *x, int mul)
+	/*@modifies *a, *b, *c @*/
 {
 	tiger_round(a,b,c,x[0],mul); 
 	tiger_round(b,c,a,x[1],mul); 
@@ -629,6 +599,7 @@ static inline void pass(uint64_t *a, uint64_t *b, uint64_t *c, uint64_t *x, int 
 
 /* The key mixing schedule */
 static inline void key_schedule(uint64_t *x) 
+	/*@modifies x @*/
 {
 	x[0] -= x[7] ^ 0xA5A5A5A5A5A5A5A5ULL; 
 	x[1] ^= x[0];                               

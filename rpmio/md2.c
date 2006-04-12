@@ -167,7 +167,7 @@ int md2Digest(md2Param * mp, byte *digest)
 	/* output is lower 16 bytes of X */
 	memcpy(digest, mp->X, 16);
 
-	memset(mp, 0, sizeof(md2Param));
+	memset(mp, 0, sizeof(*mp));
 
 	return 0;
 }

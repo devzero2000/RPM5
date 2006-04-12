@@ -334,7 +334,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(md5Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) md5Reset;
 	ctx->Update = (void *) md5Update;
 	ctx->Digest = (void *) md5Digest;
@@ -347,7 +347,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(sha1Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) sha1Reset;
 	ctx->Update = (void *) sha1Update;
 	ctx->Digest = (void *) sha1Digest;
@@ -360,7 +360,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(rmd160Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) rmd160Reset;
 	ctx->Update = (void *) rmd160Update;
 	ctx->Digest = (void *) rmd160Digest;
@@ -373,7 +373,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(tigerParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) tigerReset;
 	ctx->Update = (void *) tigerUpdate;
 	ctx->Digest = (void *) tigerDigest;
@@ -386,7 +386,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(md2Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) md2Reset;
 	ctx->Update = (void *) md2Update;
 	ctx->Digest = (void *) md2Digest;
@@ -399,7 +399,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(md4Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) md4Reset;
 	ctx->Update = (void *) md4Update;
 	ctx->Digest = (void *) md4Digest;
@@ -412,7 +412,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(rmd128Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) rmd128Reset;
 	ctx->Update = (void *) rmd128Update;
 	ctx->Digest = (void *) rmd128Digest;
@@ -431,7 +431,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	    ctx->paramlen = sizeof(*mp);
 	    ctx->param = mp;
 	}
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) sum32Reset;
 	ctx->Update = (void *) sum32Update;
 	ctx->Digest = (void *) sum32Digest;
@@ -450,7 +450,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	    ctx->paramlen = sizeof(*mp);
 	    ctx->param = mp;
 	}
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) sum32Reset;
 	ctx->Update = (void *) sum32Update;
 	ctx->Digest = (void *) sum32Digest;
@@ -460,12 +460,14 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->digestlen = 64/8;
 	ctx->datalen = 8;
 	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
+/*@-type@*/
 	    mp->update = (void *) crc64;
 	    mp->combine = (void *) crc64_combine;
+/*@=type@*/
 	    ctx->paramlen = sizeof(*mp);
 	    ctx->param = mp;
 	}
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) sum64Reset;
 	ctx->Update = (void *) sum64Update;
 	ctx->Digest = (void *) sum64Digest;
@@ -479,7 +481,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(sha256Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) sha256Reset;
 	ctx->Update = (void *) sha256Update;
 	ctx->Digest = (void *) sha256Digest;
@@ -492,7 +494,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(sha384Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) sha384Reset;
 	ctx->Update = (void *) sha384Update;
 	ctx->Digest = (void *) sha384Digest;
@@ -505,7 +507,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->paramlen = sizeof(sha512Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/*@-type@*/
 	ctx->Reset = (void *) sha512Reset;
 	ctx->Update = (void *) sha512Update;
 	ctx->Digest = (void *) sha512Digest;
