@@ -32,6 +32,14 @@ rpm	alias --scripts --qf '\
 %|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
 \
+%|PRETRANS?{pretransinstall scriptlet\
+%|PRETRANSPROG?{ (using %{PRETRANSPROG})}|:\n%{PRETRANS}\n}:\
+{%|PRETRANSPROG?{pretransinstall program: %{PRETRANSPROG}\n}|}|\
+\
+%|POSTTRANS?{posttransinstall scriptlet\
+%|POSTTRANSPROG?{ (using %{POSTTRANSPROG})}|:\n%{POSTTRANS}\n}:\
+{%|POSTTRANSPROG?{posttransinstall program: %{POSTTRANSPROG}\n}|}|\
+\
 %|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"

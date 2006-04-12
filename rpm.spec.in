@@ -579,6 +579,7 @@ exit 0
 %changelog
 * Tue Apr 11 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.3
 - add md2 and md4 digests.
+- teach --scripts about pre- and post-transaction scriptlets.
 
 * Mon Apr 10 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.2
 - fix: build error msg had reversed args.

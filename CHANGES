@@ -3,6 +3,7 @@
 	- use zlib's unrolled crc-32 and adler32, add crc-64, checksums.
 	- fix: build error msg had reversed args.
 	- add md2 and md4 digests.
+	- teach --scripts about pre- and post-transaction scriptlets.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
