@@ -16,27 +16,11 @@
 #include "mp.h"
 #include "endianness.h"
 
-#if WORDS_BIGENDIAN
-#define LOAD64L(x, y)                                                        \
-   { x = (((uint64_t)((y)[7] & 255))<<56)|(((uint64_t)((y)[6] & 255))<<48) | \
-         (((uint64_t)((y)[5] & 255))<<40)|(((uint64_t)((y)[4] & 255))<<32) | \
-         (((uint64_t)((y)[3] & 255))<<24)|(((uint64_t)((y)[2] & 255))<<16) | \
-         (((uint64_t)((y)[1] & 255))<<8)|(((uint64_t)((y)[0] & 255))); }
-#else
-#define LOAD64L(x, y)         \
-    { memcpy(&(x), y, 8); }
-#endif
-
 #include "debug.h"
-
-#define	USE_LOAD64L
-
-#undef	USE_MPW
 
 typedef struct {
 	uint64_t h[3];
 	uint64_t data[8];
-#ifdef	USE_MPW
 	#if (MP_WBITS == 64)
 	mpw length[1];
 	#elif (MP_WBITS == 32)
@@ -44,9 +28,6 @@ typedef struct {
 	#else
 	# error
 	#endif
-#else
-	uint64_t length;
-#endif
 	uint32_t offset;
 } tigerParam;
 
@@ -80,7 +61,6 @@ int tigerReset(tigerParam *mp)
 	memcpy(mp->h, tigerhinit, 3 * sizeof(uint64_t));
 	memset(mp->data, 0, 8 * sizeof(uint64_t));
 /*@=sizeoftype@*/
-#ifdef USE_MPW
 	#if (MP_WBITS == 64)
 	mpzero(1, mp->length);
 	#elif (MP_WBITS == 32)
@@ -88,9 +68,6 @@ int tigerReset(tigerParam *mp)
 	#else
 	# error
 	#endif
-#else
-	mp->length = 0;
-#endif
 	mp->offset = 0;
 	return 0;
 }
@@ -669,31 +646,19 @@ static inline void key_schedule(uint64_t *x)
 static int  tigerProcess(tigerParam *mp, byte *data)
 {
 	uint64_t a, b, c;
-#ifdef	USE_LOAD64L
-	uint64_t x[8], * w = x;
-	uint32_t i;
+	uint64_t * w, x[8];
 
-	/* load words */
-	for (i = 0; i < 8; i++) {
-		LOAD64L(x[i],&data[8*i]);
-	}
-#else
-	register uint64_t* w;
+	memcpy(x, mp->data, sizeof(x));
 	#if WORDS_BIGENDIAN
-	register byte t;
-	#endif
-
-	w = mp->data;
-	#if WORDS_BIGENDIAN
-	t = 8;
-	while (t--)
-	{
-		register uint64_t temp = swapu64(*w);
-		*(w++) = temp;
+	{	register int t = 8;
+		w = x;
+		while (t--) {
+			register uint64_t temp = swapu64(*w);
+			*(w++) = temp;
+		}
 	}
-	w = mp->data;
 	#endif
-#endif
+	w = x;
 
 	a = mp->h[0]; b = mp->h[1]; c = mp->h[2];
 
@@ -714,7 +679,6 @@ int tigerUpdate (tigerParam * mp, const byte *data, size_t size)
 {
 	register uint32_t proclength;
 
-#ifdef	USE_MPW
 	#if (MP_WBITS == 64)
 	mpw add[1];
 	mpsetw(1, add, size);
@@ -728,7 +692,6 @@ int tigerUpdate (tigerParam * mp, const byte *data, size_t size)
 	#else
 	# error
 	#endif
-#endif
 
 	while (size > 0)
 	{
@@ -742,9 +705,6 @@ int tigerUpdate (tigerParam * mp, const byte *data, size_t size)
 
 		if (mp->offset == 64U)
 		{
-#ifndef	USE_MPW
-			mp->length += mp->offset * 8;
-#endif
 			tigerProcess (mp, (byte *)mp->data);
 			mp->offset = 0;
 		}
@@ -757,11 +717,6 @@ static void tigerFinish(tigerParam* mp)
 	/*@modifies mp @*/
 {
 	register byte *ptr = ((byte *) mp->data) + mp->offset;
-
-#ifndef	USE_MPW
-	/* increase the length of the message */
-	mp->length += mp->offset * 8;
-#endif
 
 	*(ptr++) = 0x01;
 	mp->offset++;
@@ -779,7 +734,6 @@ static void tigerFinish(tigerParam* mp)
 	while (mp->offset++ < 56)
 		*(ptr++) = 0;
 
-#ifdef	USE_MPW
 	#if (MP_WBITS == 64)
 	ptr[0] = (byte)(mp->length[0]      );
 	ptr[1] = (byte)(mp->length[0] >>  8);
@@ -801,16 +755,6 @@ static void tigerFinish(tigerParam* mp)
 	#else
 	# error
 	#endif
-#else
-	ptr[0] = (byte)(mp->length      );
-	ptr[1] = (byte)(mp->length >>  8);
-	ptr[2] = (byte)(mp->length >> 16);
-	ptr[3] = (byte)(mp->length >> 24);
-	ptr[4] = (byte)(mp->length >> 32);
-	ptr[5] = (byte)(mp->length >> 40);
-	ptr[6] = (byte)(mp->length >> 48);
-	ptr[7] = (byte)(mp->length >> 56);
-#endif
 
 	tigerProcess(mp, (byte *)mp->data);
 
