@@ -11,6 +11,7 @@
 #include "md4.h"
 #include "rmd128.h"
 #include "rmd160.h"
+#include "tiger.h"
 #include "debug.h"
 
 #ifdef	SHA_DEBUG
@@ -365,6 +366,19 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Digest = (void *) rmd160Digest;
 /*@=type@*/
 	break;
+    case PGPHASHALGO_TIGER192:
+	ctx->digestlen = 192/8;
+	ctx->datalen = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramlen = sizeof(tigerParam);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramlen);
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) tigerReset;
+	ctx->Update = (void *) tigerUpdate;
+	ctx->Digest = (void *) tigerDigest;
+/*@=type@*/
+	break;
     case PGPHASHALGO_MD2:
 	ctx->digestlen = 128/8;
 	ctx->datalen = 16;
@@ -380,7 +394,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	break;
     case PGPHASHALGO_MD4:
 	ctx->digestlen = 128/8;
-	ctx->datalen = 16;
+	ctx->datalen = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(md4Param);
 /*@=sizeoftype@*/
@@ -498,7 +512,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@=type@*/
 	break;
 #endif
-    case PGPHASHALGO_TIGER192:
     case PGPHASHALGO_HAVAL_5_160:
     default:
 	free(ctx);

@@ -28,6 +28,7 @@ static struct poptOption optionsTable[] = {
  { "adler32",'\0', POPT_ARG_VAL,&hashalgo, PGPHASHALGO_ADLER32,	NULL, NULL },
  { "rmd128",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_RIPEMD128,NULL, NULL },
  { "rmd160",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_RIPEMD160,NULL, NULL },
+ { "tiger",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_TIGER192,NULL, NULL },
  { "crc64",'\0', POPT_ARG_VAL,	&hashalgo, PGPHASHALGO_CRC64,	NULL, NULL },
 #ifdef	DYING
  { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
@@ -180,6 +181,8 @@ fprintf(stderr, "*** time %lu usecs\n", (unsigned long)rpmswDiff(&end, &begin));
 	case PGPHASHALGO_MD5:		scmd = MD5_CMD;		break;
 	case PGPHASHALGO_SHA1:		scmd = SHA1_CMD;	break;
 	case PGPHASHALGO_RIPEMD160:	scmd = RMD160_CMD;	break;
+	case PGPHASHALGO_TIGER192:
+	case PGPHASHALGO_HAVAL_5_160:
 	default:			scmd = NULL;		break;
 	}
 

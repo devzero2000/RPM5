@@ -26,7 +26,7 @@ static uint32_t md4hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 }
 const hashFunction md4 = {
 	"MD4",
 	sizeof(md4Param),
-	16,
+	64,
 	128/8,
 	(hashFunctionReset) md4Reset,
 	(hashFunctionUpdate) md4Update,

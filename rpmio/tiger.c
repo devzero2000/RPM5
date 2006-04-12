@@ -1,23 +1,14 @@
-/* LibTomCrypt, modular cryptographic library -- Tom St Denis
- *
- * LibTomCrypt is a library that provides various cryptographic
- * algorithms in a highly modular and flexible manner.
- *
- * The library is free for all purposes without any express
- * guarantee it works.
- *
- * Tom St Denis, tomstdenis@gmail.com, http://libtomcrypt.com
- */
-
 #include "system.h"
 
 #include <stdint.h>
 
+#include "tiger.h"
 #include "mp.h"
 #include "endianness.h"
 
 #include "debug.h"
 
+#if 0
 typedef struct {
 	uint64_t h[3];
 	uint64_t data[8];
@@ -30,10 +21,24 @@ typedef struct {
 	#endif
 	uint32_t offset;
 } tigerParam;
+#endif
 
 /*@unchecked@*/ /*@observer@*/
 static uint64_t tigerhinit[4] =
 	{ 0x0123456789ABCDEFULL, 0xFEDCBA9876543210ULL, 0xF096A5B4C3B2E187ULL };
+
+/*@-sizeoftype@*/
+/*@unchecked@*/ /*@observer@*/
+const hashFunction tiger = {
+	"TIGER-192",
+	sizeof(tigerParam),
+	64,
+	192/8,
+	(hashFunctionReset) tigerReset,
+	(hashFunctionUpdate) tigerUpdate,
+	(hashFunctionDigest) tigerDigest,
+};
+/*@=sizeoftype@*/
 
 #if 0
 const struct ltc_hash_descriptor tiger_desc =
@@ -643,7 +648,8 @@ static inline void key_schedule(uint64_t *x)
 	x[7] -= x[6] ^ 0x0123456789ABCDEFULL;
 }
 
-static int  tigerProcess(tigerParam *mp, byte *data)
+#ifndef	ASM_TIGERPROCESS
+void  tigerProcess(tigerParam *mp)
 {
 	uint64_t a, b, c;
 	uint64_t * w, x[8];
@@ -671,9 +677,8 @@ static int  tigerProcess(tigerParam *mp, byte *data)
 	mp->h[0] = a ^ mp->h[0];
 	mp->h[1] = b - mp->h[1];
 	mp->h[2] = c + mp->h[2];
-
-	return 0;
 }
+#endif
 
 int tigerUpdate (tigerParam * mp, const byte *data, size_t size)
 {
@@ -705,7 +710,7 @@ int tigerUpdate (tigerParam * mp, const byte *data, size_t size)
 
 		if (mp->offset == 64U)
 		{
-			tigerProcess (mp, (byte *)mp->data);
+			tigerProcess (mp);
 			mp->offset = 0;
 		}
 	}
@@ -726,7 +731,7 @@ static void tigerFinish(tigerParam* mp)
 		while (mp->offset++ < 64)
 			*(ptr++) = 0;
 
-		tigerProcess(mp, (byte *)mp->data);
+		tigerProcess(mp);
 		mp->offset = 0;
 	}
 
@@ -756,7 +761,7 @@ static void tigerFinish(tigerParam* mp)
 	# error
 	#endif
 
-	tigerProcess(mp, (byte *)mp->data);
+	tigerProcess(mp);
 
 	mp->offset = 0;
 }
@@ -795,6 +800,7 @@ int tigerDigest(tigerParam * mp, byte *digest)
 	return 0;
 }
 
+#if 0
 /**
   Self-test the hash
   @return 0 if successful, CRYPT_NOP if self-tests have been disabled
@@ -876,3 +882,4 @@ int main() {
     }
     return rc;
 }
+#endif
