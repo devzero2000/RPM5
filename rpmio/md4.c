@@ -12,257 +12,257 @@
 
 #include <stdint.h>
 
-#if 0
-#include "tomcrypt.h"
-#endif
+#include "md4.h"
+#include "mp.h"
+#include "endianness.h"
 
 #include "debug.h"
 
-struct md4_state {
-    uint64_t length;
-    uint32_t state[4], curlen;
-    unsigned char buf[64];
+/*@unchecked@*/ /*@observer@*/
+static uint32_t md4hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };       
+
+/*@-sizeoftype@*/
+/*@unchecked@*/ /*@observer@*/
+const hashFunction md4 = {
+	"MD4",
+	sizeof(md4Param),
+	16,
+	128/8,
+	(hashFunctionReset) md4Reset,
+	(hashFunctionUpdate) md4Update,
+	(hashFunctionDigest) md4Digest,
 };
+/*@=sizeoftype@*/
 
-typedef union Hash_state {
-    struct md4_state    md4;
-    void *data;
-} hash_state;
-
-/**
-   @param md4.c
-   Submitted by Dobes Vandermeer  (dobes@smartt.com) 
-*/
-
-#if 0
-const struct ltc_hash_descriptor md4_desc =
+int md4Reset(md4Param* mp)
 {
-    "md4",
-    6,
-    16,
-    64,
- 
-    /* OID */
-   { 1, 2, 840, 113549, 2, 4,  },
-   6,
+/*@-sizeoftype@*/
+	memcpy(mp->h, md4hinit, 4 * sizeof(uint32_t));
+	memset(mp->data, 0, 16 * sizeof(uint32_t));
+/*@=sizeoftype@*/
+	#if (MP_WBITS == 64)
+	mpzero(1, mp->length);
+	#elif (MP_WBITS == 32)
+	mpzero(2, mp->length);
+	#else   
+	# error 
+	#endif          
+	mp->offset  = 0;
+	return 0;
+}
 
-    &md4_init,
-    &md4_process,
-    &md4_done,
-    &md4_test,
-    NULL
-};
-#endif
-
-#define S11 3
-#define S12 7
-#define S13 11
-#define S14 19
-#define S21 3
-#define S22 5
-#define S23 9
-#define S24 13
-#define S31 3
-#define S32 9
-#define S33 11
-#define S34 15
-
-/* F, G and H are basic MD4 functions. */
 #define F(x, y, z) (z ^ (x & (y ^ z)))
 #define G(x, y, z) ((x & y) | (z & (x | y)))
 #define H(x, y, z) ((x) ^ (y) ^ (z))
 
-/* ROTATE_LEFT rotates x left n bits. */
-#define ROTATE_LEFT(x, n) ROLc(x, n)
-
-/* FF, GG and HH are transformations for rounds 1, 2 and 3 */ 
-/* Rotation is separate from addition to prevent recomputation */ 
-
 #define FF(a, b, c, d, x, s) { \
     (a) += F ((b), (c), (d)) + (x); \
-    (a) = ROTATE_LEFT ((a), (s)); \
+    (a) = ROTL32 ((a), (s)); \
   }
 #define GG(a, b, c, d, x, s) { \
     (a) += G ((b), (c), (d)) + (x) + 0x5a827999UL; \
-    (a) = ROTATE_LEFT ((a), (s)); \
+    (a) = ROTL32 ((a), (s)); \
   }
 #define HH(a, b, c, d, x, s) { \
     (a) += H ((b), (c), (d)) + (x) + 0x6ed9eba1UL; \
-    (a) = ROTATE_LEFT ((a), (s)); \
+    (a) = ROTL32 ((a), (s)); \
   }
 
-#ifdef LTC_CLEAN_STACK
-static int _md4_compress(hash_state *md, unsigned char *buf)
-#else
-static int  md4_compress(hash_state *md, unsigned char *buf)
-#endif
+#ifndef ASM_MD4PROCESS
+void md4Process(md4Param *mp)
+	/*@modifies mp @*/
 {
-    uint32_t x[16], a, b, c, d;
-    int i;
+	uint32_t a, b, c, d;
 
-    /* copy state */
-    a = md->md4.state[0];
-    b = md->md4.state[1];
-    c = md->md4.state[2];
-    d = md->md4.state[3];
+	register uint32_t* w;
+	#if WORDS_BIGENDIAN
+	register byte t;
+	#endif
 
-    /* copy the state into 512-bits into W[0..15] */
-    for (i = 0; i < 16; i++) {
-        LOAD32L(x[i], buf + (4*i));
-    }
- 
-    /* Round 1 */ 
-    FF (a, b, c, d, x[ 0], S11); /* 1 */ 
-    FF (d, a, b, c, x[ 1], S12); /* 2 */ 
-    FF (c, d, a, b, x[ 2], S13); /* 3 */ 
-    FF (b, c, d, a, x[ 3], S14); /* 4 */ 
-    FF (a, b, c, d, x[ 4], S11); /* 5 */ 
-    FF (d, a, b, c, x[ 5], S12); /* 6 */ 
-    FF (c, d, a, b, x[ 6], S13); /* 7 */ 
-    FF (b, c, d, a, x[ 7], S14); /* 8 */ 
-    FF (a, b, c, d, x[ 8], S11); /* 9 */ 
-    FF (d, a, b, c, x[ 9], S12); /* 10 */
-    FF (c, d, a, b, x[10], S13); /* 11 */ 
-    FF (b, c, d, a, x[11], S14); /* 12 */
-    FF (a, b, c, d, x[12], S11); /* 13 */
-    FF (d, a, b, c, x[13], S12); /* 14 */ 
-    FF (c, d, a, b, x[14], S13); /* 15 */ 
-    FF (b, c, d, a, x[15], S14); /* 16 */ 
+	w = mp->data;
+	#if WORDS_BIGENDIAN
+	t = 16;
+	while (t--)
+	{
+		register uint32_t temp = swapu32(*w);
+		*(w++) = temp;
+	}
+	w = mp->data;
+	#endif
+
+	a = mp->h[0]; b = mp->h[1]; c = mp->h[2]; d = mp->h[3];
+
+	FF (a, b, c, d, w[ 0],  3);
+	FF (d, a, b, c, w[ 1],  7);
+	FF (c, d, a, b, w[ 2], 11);
+	FF (b, c, d, a, w[ 3], 19);
+	FF (a, b, c, d, w[ 4],  3);
+	FF (d, a, b, c, w[ 5],  7);
+	FF (c, d, a, b, w[ 6], 11);
+	FF (b, c, d, a, w[ 7], 19);
+	FF (a, b, c, d, w[ 8],  3);
+	FF (d, a, b, c, w[ 9],  7);
+	FF (c, d, a, b, w[10], 11);
+	FF (b, c, d, a, w[11], 19);
+	FF (a, b, c, d, w[12],  3);
+	FF (d, a, b, c, w[13],  7);
+	FF (c, d, a, b, w[14], 11);
+	FF (b, c, d, a, w[15], 19);
     
-    /* Round 2 */ 
-    GG (a, b, c, d, x[ 0], S21); /* 17 */ 
-    GG (d, a, b, c, x[ 4], S22); /* 18 */ 
-    GG (c, d, a, b, x[ 8], S23); /* 19 */ 
-    GG (b, c, d, a, x[12], S24); /* 20 */ 
-    GG (a, b, c, d, x[ 1], S21); /* 21 */ 
-    GG (d, a, b, c, x[ 5], S22); /* 22 */ 
-    GG (c, d, a, b, x[ 9], S23); /* 23 */ 
-    GG (b, c, d, a, x[13], S24); /* 24 */ 
-    GG (a, b, c, d, x[ 2], S21); /* 25 */ 
-    GG (d, a, b, c, x[ 6], S22); /* 26 */ 
-    GG (c, d, a, b, x[10], S23); /* 27 */ 
-    GG (b, c, d, a, x[14], S24); /* 28 */ 
-    GG (a, b, c, d, x[ 3], S21); /* 29 */ 
-    GG (d, a, b, c, x[ 7], S22); /* 30 */ 
-    GG (c, d, a, b, x[11], S23); /* 31 */ 
-    GG (b, c, d, a, x[15], S24); /* 32 */ 
+	GG (a, b, c, d, w[ 0],  3);
+	GG (d, a, b, c, w[ 4],  5);
+	GG (c, d, a, b, w[ 8],  9);
+	GG (b, c, d, a, w[12], 13);
+	GG (a, b, c, d, w[ 1],  3);
+	GG (d, a, b, c, w[ 5],  5);
+	GG (c, d, a, b, w[ 9],  9);
+	GG (b, c, d, a, w[13], 13);
+	GG (a, b, c, d, w[ 2],  3);
+	GG (d, a, b, c, w[ 6],  5);
+	GG (c, d, a, b, w[10],  9);
+	GG (b, c, d, a, w[14], 13);
+	GG (a, b, c, d, w[ 3],  3);
+	GG (d, a, b, c, w[ 7],  5);
+	GG (c, d, a, b, w[11],  9);
+	GG (b, c, d, a, w[15], 13);
     
-    /* Round 3 */
-    HH (a, b, c, d, x[ 0], S31); /* 33 */ 
-    HH (d, a, b, c, x[ 8], S32); /* 34 */ 
-    HH (c, d, a, b, x[ 4], S33); /* 35 */ 
-    HH (b, c, d, a, x[12], S34); /* 36 */ 
-    HH (a, b, c, d, x[ 2], S31); /* 37 */ 
-    HH (d, a, b, c, x[10], S32); /* 38 */ 
-    HH (c, d, a, b, x[ 6], S33); /* 39 */ 
-    HH (b, c, d, a, x[14], S34); /* 40 */ 
-    HH (a, b, c, d, x[ 1], S31); /* 41 */ 
-    HH (d, a, b, c, x[ 9], S32); /* 42 */ 
-    HH (c, d, a, b, x[ 5], S33); /* 43 */ 
-    HH (b, c, d, a, x[13], S34); /* 44 */ 
-    HH (a, b, c, d, x[ 3], S31); /* 45 */ 
-    HH (d, a, b, c, x[11], S32); /* 46 */ 
-    HH (c, d, a, b, x[ 7], S33); /* 47 */ 
-    HH (b, c, d, a, x[15], S34); /* 48 */ 
-    
+	HH (a, b, c, d, w[ 0],  3);
+	HH (d, a, b, c, w[ 8],  9);
+	HH (c, d, a, b, w[ 4], 11);
+	HH (b, c, d, a, w[12], 15);
+	HH (a, b, c, d, w[ 2],  3);
+	HH (d, a, b, c, w[10],  9);
+	HH (c, d, a, b, w[ 6], 11);
+	HH (b, c, d, a, w[14], 15);
+	HH (a, b, c, d, w[ 1],  3);
+	HH (d, a, b, c, w[ 9],  9);
+	HH (c, d, a, b, w[ 5], 11);
+	HH (b, c, d, a, w[13], 15);
+	HH (a, b, c, d, w[ 3],  3);
+	HH (d, a, b, c, w[11],  9);
+	HH (c, d, a, b, w[ 7], 11);
+	HH (b, c, d, a, w[15], 15);
 
-    /* Update our state */
-    md->md4.state[0] = md->md4.state[0] + a;
-    md->md4.state[1] = md->md4.state[1] + b;
-    md->md4.state[2] = md->md4.state[2] + c;
-    md->md4.state[3] = md->md4.state[3] + d;
-
-    return 0;
-}
-
-#ifdef LTC_CLEAN_STACK
-static int md4_compress(hash_state *md, unsigned char *buf)
-{
-   int err;
-   err = _md4_compress(md, buf);
-   burn_stack(sizeof(uint32_t) * 20 + sizeof(int));
-   return err;
+	mp->h[0] +=  a;
+	mp->h[1] +=  b;
+	mp->h[2] +=  c;
+	mp->h[3] +=  d;
 }
 #endif
 
-/**
-   Initialize the hash state
-   @param md   The hash state you wish to initialize
-   @return 0 if successful
-*/
-int md4_init(hash_state * md)
+int md4Update(md4Param* mp, const byte* data, size_t size)
 {
-   assert(md != NULL);
-   md->md4.state[0] = 0x67452301UL;
-   md->md4.state[1] = 0xefcdab89UL;
-   md->md4.state[2] = 0x98badcfeUL;
-   md->md4.state[3] = 0x10325476UL;
-   md->md4.length  = 0;
-   md->md4.curlen  = 0;
-   return 0;
+	register uint32_t proclength;
+
+	#if (MP_WBITS == 64)
+	mpw add[1];
+	mpsetw(1, add, size);
+	mplshift(1, add, 3);
+	(void) mpadd(1, mp->length, add);
+	#elif (MP_WBITS == 32)
+	mpw add[2];
+	mpsetw(2, add, size);
+	mplshift(2, add, 3);
+	(void) mpadd(2, mp->length, add);
+	#else
+	# error
+	#endif
+
+	while (size > 0)
+	{
+		proclength = ((mp->offset + size) > 64U) ? (64U - mp->offset) : size;
+/*@-mayaliasunique@*/
+		memcpy(((byte *) mp->data) + mp->offset, data, proclength);
+/*@=mayaliasunique@*/
+		size -= proclength;
+		data += proclength;
+		mp->offset += proclength;
+
+		if (mp->offset == 64U)
+		{
+			md4Process(mp);
+			mp->offset = 0;
+		}
+	}
+	return 0;
 }
 
-/**
-   Process a block of memory though the hash
-   @param md     The hash state
-   @param in     The data to hash
-   @param inlen  The length of the data (octets)
-   @return 0 if successful
-*/
-HASH_PROCESS(md4_process, md4_compress, md4, 64)
-
-/**
-   Terminate the hash to get the digest
-   @param md  The hash state
-   @param out [out] The destination of the hash (16 bytes)
-   @return 0 if successful
-*/
-int md4_done(hash_state * md, unsigned char *out)
+static void md4Finish(md4Param* mp)
+	/*@modifies mp @*/
 {
-    int i;
+	register byte *ptr = ((byte *) mp->data) + mp->offset++;
 
-    assert(md  != NULL);
-    assert(out != NULL);
+	*(ptr++) = 0x80;
 
-    if (md->md4.curlen >= sizeof(md->md4.buf)) {
-       return 16;
-    }
+	if (mp->offset > 56)
+	{
+		while (mp->offset++ < 64)
+			*(ptr++) = 0;
 
-    /* increase the length of the message */
-    md->md4.length += md->md4.curlen * 8;
+		md4Process(mp);
+		mp->offset = 0;
+	}
 
-    /* append the '1' bit */
-    md->md4.buf[md->md4.curlen++] = (unsigned char)0x80;
+	ptr = ((byte *) mp->data) + mp->offset;
+	while (mp->offset++ < 56)
+		*(ptr++) = 0;
 
-    /* if the length is currently above 56 bytes we append zeros
-     * then compress.  Then we can fall back to padding zeros and length
-     * encoding like normal.
-     */
-    if (md->md4.curlen > 56) {
-        while (md->md4.curlen < 64) {
-            md->md4.buf[md->md4.curlen++] = (unsigned char)0;
-        }
-        md4_compress(md, md->md4.buf);
-        md->md4.curlen = 0;
-    }
+	#if (MP_WBITS == 64)
+	ptr[0] = (byte)(mp->length[0]      );
+	ptr[1] = (byte)(mp->length[0] >>  8);
+	ptr[2] = (byte)(mp->length[0] >> 16);
+	ptr[3] = (byte)(mp->length[0] >> 24);
+	ptr[4] = (byte)(mp->length[0] >> 32);
+	ptr[5] = (byte)(mp->length[0] >> 40);
+	ptr[6] = (byte)(mp->length[0] >> 48);
+	ptr[7] = (byte)(mp->length[0] >> 56);
+	#elif (MP_WBITS == 32)
+	ptr[0] = (byte)(mp->length[1]      );
+	ptr[1] = (byte)(mp->length[1] >>  8);
+	ptr[2] = (byte)(mp->length[1] >> 16);
+	ptr[3] = (byte)(mp->length[1] >> 24);
+	ptr[4] = (byte)(mp->length[0]      );
+	ptr[5] = (byte)(mp->length[0] >>  8);
+	ptr[6] = (byte)(mp->length[0] >> 16);
+	ptr[7] = (byte)(mp->length[0] >> 24);
+	#else
+	# error
+	#endif
 
-    /* pad upto 56 bytes of zeroes */
-    while (md->md4.curlen < 56) {
-        md->md4.buf[md->md4.curlen++] = (unsigned char)0;
-    }
+	md4Process(mp);
 
-    /* store length */
-    STORE64L(md->md4.length, md->md4.buf+56);
-    md4_compress(md, md->md4.buf);
-
-    /* copy output */
-    for (i = 0; i < 4; i++) {
-        STORE32L(md->md4.state[i], out+(4*i));
-    }
-    zeromem(md, 0, sizeof(hash_state));
-    return 0;
+	mp->offset = 0;
 }
 
+/*@-protoparammatch@*/
+int md4Digest(md4Param* mp, byte* data)
+{
+	md4Finish(mp);
+
+	/* encode 4 integers little-endian style */
+	data[ 0] = (byte)(mp->h[0]      );
+	data[ 1] = (byte)(mp->h[0] >>  8);
+	data[ 2] = (byte)(mp->h[0] >> 16);
+	data[ 3] = (byte)(mp->h[0] >> 24);
+	data[ 4] = (byte)(mp->h[1]      );
+	data[ 5] = (byte)(mp->h[1] >>  8);
+	data[ 6] = (byte)(mp->h[1] >> 16);
+	data[ 7] = (byte)(mp->h[1] >> 24);
+	data[ 8] = (byte)(mp->h[2]      );
+	data[ 9] = (byte)(mp->h[2] >>  8);
+	data[10] = (byte)(mp->h[2] >> 16);
+	data[11] = (byte)(mp->h[2] >> 24);
+	data[12] = (byte)(mp->h[3]      );
+	data[13] = (byte)(mp->h[3] >>  8);
+	data[14] = (byte)(mp->h[3] >> 16);
+	data[15] = (byte)(mp->h[3] >> 24);
+
+	(void) md4Reset(mp);
+	return 0;
+}
+/*@=protoparammatch@*/
+
+#if 0
 /**
   Self-test the hash
   @return 0 if successful, CRYPT_NOP if self-tests have been disabled
@@ -271,7 +271,7 @@ int md4_test(void)
 {
     static const struct md4_test_case {
         char *input;
-        unsigned char digest[16];
+        byte digest[16];
     } cases[] = {
         { "", 
           {0x31, 0xd6, 0xcf, 0xe0, 0xd1, 0x6a, 0xe9, 0x31,
@@ -296,13 +296,13 @@ int md4_test(void)
            0x9c, 0x3e, 0x7b, 0x16, 0x4f, 0xcc, 0x05, 0x36} },
     };
     int i;
-    hash_state md;
-    unsigned char digest[16];
+    md4Param md;
+    byte digest[16];
 
     for(i = 0; i < (int)(sizeof(cases) / sizeof(cases[0])); i++) {
-        md4_init(&md);
-        md4_process(&md, (unsigned char *)cases[i].input, (unsigned long)strlen(cases[i].input));
-        md4_done(&md, digest);
+        md4Reset(&md);
+        md4Update(&md, (byte *)cases[i].input, strlen(cases[i].input));
+        md4Digest(&md, digest);
         if (memcmp(digest, cases[i].digest, 16) != 0) {
            return 5;
         }
@@ -319,8 +319,4 @@ int main() {
     }
     return rc;
 }
-
-
-/* $Source$ */
-/* $Revision$ */
-/* $Date$ */
+#endif

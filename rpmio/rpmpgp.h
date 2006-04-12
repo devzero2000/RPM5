@@ -290,6 +290,7 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SHA384		=  9,	/*!< SHA384 */
     PGPHASHALGO_SHA512		= 10,	/*!< SHA512 */
 
+    PGPHASHALGO_MD4		= 104,	/*!< (private) MD4 */
     PGPHASHALGO_RIPEMD128	= 105,	/*!< (private) RIPEMD-128 */
     PGPHASHALGO_CRC32		= 106,	/*!< (private) CRC-32 */
     PGPHASHALGO_ADLER32		= 107,	/*!< (private) ADLER-32 */
