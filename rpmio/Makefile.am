@@ -136,4 +136,4 @@ tficl: tficl.o
 	$(LINK) -o $@ tficl.o -lficl -lm
 
 tiger: tiger.o
-	$(LINK) -o $@ $<
+	$(LINK) -o $@ $< -lbeecrypt
