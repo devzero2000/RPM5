@@ -320,6 +320,7 @@ exit 0
 %rpmattr	%{__bindir}/rpm2cpio
 %rpmattr	%{__bindir}/gendiff
 %rpmattr	%{__bindir}/rpmdb
+%rpmattr	%{__bindir}/rpmdigest
 #%rpmattr	%{__bindir}/rpm[eiu]
 %rpmattr	%{__bindir}/rpmsign
 %rpmattr	%{__bindir}/rpmquery
@@ -577,6 +578,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Apr 12 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.4
+- add /usr/bin/rpmdigest.
+
 * Tue Apr 11 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.3
 - add md2, md4, and tiger192 digests.
 - teach --scripts about pre- and post-transaction scriptlets.
