@@ -5,6 +5,7 @@
 	- add md2, md4, and tiger192 digests.
 	- teach --scripts about pre- and post-transaction scriptlets.
 	- add /usr/bin/rpmdigest.
+	- IPv4/6 and EPSV support by Arkadiusz Miskiewicz <misiek@pld.org.pl>.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
