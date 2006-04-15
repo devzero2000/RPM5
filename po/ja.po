@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-12 21:44-0400\n"
+"POT-Creation-Date: 2006-04-15 18:15-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1556,7 +1556,7 @@ msgstr "mntctl() でマウントポイントの取得に失敗しました: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s に失敗しました: %s\n"
 
-#: lib/fs.c:160 rpmio/url.c:552
+#: lib/fs.c:160 rpmio/url.c:560
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -4205,59 +4205,59 @@ msgstr "ファイル %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:683
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:706
 msgid "Bad server response"
 msgstr "サーバからの不正な応答。"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:708
 msgid "Server I/O error"
 msgstr "サーバ I/O エラーです。"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:710
 msgid "Server timeout"
 msgstr "サーバがタイムアウトしました。"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:712
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません。"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:714
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません。"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:716
 msgid "Failed to connect to server"
 msgstr "サーバとの接続に失敗しました。"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:718
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータ接続確立に失敗しました。"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:720
 msgid "I/O error to local file"
 msgstr "ローカルファイルの I/O エラーです。"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:722
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバを passive モードに設定できませんでした。"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:724
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません。"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:726
 msgid "Abort in progress"
 msgstr "処理中の中断"
 
-#: rpmio/rpmio.c:726
+#: rpmio/rpmio.c:730
 msgid "Unknown or unexpected error"
 msgstr "不明または予期せぬエラー"
 
-#: rpmio/rpmio.c:1422
+#: rpmio/rpmio.c:1570
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s に %s (パスワード %s) でログイン中\n"
@@ -4312,12 +4312,12 @@ msgstr "%s@%s のパスワード: "
 msgid "error: %sport must be a number\n"
 msgstr "エラー: %sポートは数字でなければなりません。\n"
 
-#: rpmio/url.c:500
+#: rpmio/url.c:508
 msgid "url port must be a number\n"
 msgstr "url ポートは数字でなければなりません。\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:572
+#: rpmio/url.c:580
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました: %s\n"

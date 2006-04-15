@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-12 21:44-0400\n"
+"POT-Creation-Date: 2006-04-15 18:15-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1563,7 +1563,7 @@ msgstr "mntctl() не повернула точку монтування: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "неможливо отримати інформацію про %s: %s\n"
 
-#: lib/fs.c:160 rpmio/url.c:552
+#: lib/fs.c:160 rpmio/url.c:560
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
@@ -4215,59 +4215,59 @@ msgstr "Файл %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Довжина файла %s менше за %u байт\n"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:683
 msgid "Success"
 msgstr "Виконано"
 
-#: rpmio/rpmio.c:702
+#: rpmio/rpmio.c:706
 msgid "Bad server response"
 msgstr "Неправильна відповідь від сервера"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:708
 msgid "Server I/O error"
 msgstr "Помилка вводу/виводу сервера"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:710
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:712
 msgid "Unable to lookup server host address"
 msgstr "Неможливо знайти адресу сервера"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:714
 msgid "Unable to lookup server host name"
 msgstr "Неможливо знайти назву сервера"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:716
 msgid "Failed to connect to server"
 msgstr "Неможливо з'єднатись з сервером"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:718
 msgid "Failed to establish data connection to server"
 msgstr "Неможливо встановити з'єднання з сервером"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:720
 msgid "I/O error to local file"
 msgstr "Файлова помилка вводу/виводу"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:722
 msgid "Error setting remote server to passive mode"
 msgstr "Помилка при переході сервера у пасивний режим"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:724
 msgid "File not found on server"
 msgstr "Файл не знайдено на сервері"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:726
 msgid "Abort in progress"
 msgstr "Триває відміна"
 
-#: rpmio/rpmio.c:726
+#: rpmio/rpmio.c:730
 msgid "Unknown or unexpected error"
 msgstr "Невідома або неочікувана помилка"
 
-#: rpmio/rpmio.c:1422
+#: rpmio/rpmio.c:1570
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "триває реєстрація у %s як %s, пароль %s\n"
@@ -4322,12 +4322,12 @@ msgstr "Пароль для %s@%s: "
 msgid "error: %sport must be a number\n"
 msgstr "помилка: %s порт має бути числом\n"
 
-#: rpmio/url.c:500
+#: rpmio/url.c:508
 msgid "url port must be a number\n"
 msgstr "порт url має бути числом\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:572
+#: rpmio/url.c:580
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "неможливо створити %s: %s\n"
