@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-15 19:09-0400\n"
+"POT-Creation-Date: 2006-04-16 13:12-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1007,61 +1007,61 @@ msgstr "Неправильний вихідний файл: %s: %s\n"
 msgid "No patch number %d\n"
 msgstr "Відсутня латка з номером %d\n"
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:186
 #, c-format
 msgid "No source number %d\n"
 msgstr "Відсутній файл вихідного коду %d\n"
 
-#: build/parsePrep.c:205
-#, c-format
-msgid "Couldn't download nosource %s: %s\n"
-msgstr "Неможливо завантажити nosource %s: %s\n"
+#: build/parsePrep.c:208
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s помилка: %s\n"
 
-#: build/parsePrep.c:311
+#: build/parsePrep.c:318
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Помилка аналізу %%setup: %s\n"
 
-#: build/parsePrep.c:326
+#: build/parsePrep.c:333
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "рядок %d: неправильний аргумент для %%setup: %s\n"
 
-#: build/parsePrep.c:344
+#: build/parsePrep.c:351
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "рядок %d: Неправильний параметр %s: %s\n"
 
-#: build/parsePrep.c:486
+#: build/parsePrep.c:493
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "рядок %d: Для %%patch -b потрібен аргумент: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "рядок %d: Для %%patch -z потрібен аргумент: %s\n"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:514
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "рядок %d: Для %%patch -p потрібен аргумент: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:521
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "рядок %d: неправильний аргумент для %%patch -p: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:528
 msgid "Too many patches!\n"
 msgstr "Надто багато латок!\n"
 
-#: build/parsePrep.c:525
+#: build/parsePrep.c:532
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "рядок %d: неправильний аргумент для %%patch: %s\n"
 
-#: build/parsePrep.c:561
+#: build/parsePrep.c:568
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "рядок %d: другий %%prep\n"
@@ -4550,6 +4550,9 @@ msgstr "використовувати базу даних з КАТАЛОГУ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "Couldn't download nosource %s: %s\n"
+#~ msgstr "Неможливо завантажити nosource %s: %s\n"
 
 #~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
 #~ msgstr "рядок %d: поле Epoch/Serial повинне бути числом: %s\n"

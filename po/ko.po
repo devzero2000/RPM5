@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-15 19:09-0400\n"
+"POT-Creation-Date: 2006-04-16 13:12-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -994,61 +994,61 @@ msgstr "잘못된 소스: %s: %s\n"
 msgid "No patch number %d\n"
 msgstr "패치 번호 %d가 없습니다\n"
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:186
 #, c-format
 msgid "No source number %d\n"
 msgstr "소스 번호 %d가 없습니다\n"
 
-#: build/parsePrep.c:205
-#, c-format
-msgid "Couldn't download nosource %s: %s\n"
-msgstr "nosource %s(을)를 다운로드할 수 없음: %s\n"
+#: build/parsePrep.c:208
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s(이)가 실패함: %s\n"
 
-#: build/parsePrep.c:311
+#: build/parsePrep.c:318
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup에서 오류 발생: %s\n"
 
-#: build/parsePrep.c:326
+#: build/parsePrep.c:333
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:344
+#: build/parsePrep.c:351
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 %s 옵션: %s\n"
 
-#: build/parsePrep.c:486
+#: build/parsePrep.c:493
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 번째 행: %%patch -b 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 번째 행: %%patch -z 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:514
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:521
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:528
 msgid "Too many patches!\n"
 msgstr "패치가 너무 많습니다!\n"
 
-#: build/parsePrep.c:525
+#: build/parsePrep.c:532
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 번째 행: %%patch에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:561
+#: build/parsePrep.c:568
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 번째 행: 두번째 %%prep\n"
@@ -4584,6 +4584,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "Couldn't download nosource %s: %s\n"
+#~ msgstr "nosource %s(을)를 다운로드할 수 없음: %s\n"
 
 #~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
 #~ msgstr ""

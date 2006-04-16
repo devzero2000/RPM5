@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-15 19:09-0400\n"
+"POT-Creation-Date: 2006-04-16 13:12-0400\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -995,61 +995,61 @@ msgstr "Dålig källa: %s: %s\n"
 msgid "No patch number %d\n"
 msgstr "Inget patch-nummer %d\n"
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:186
 #, c-format
 msgid "No source number %d\n"
 msgstr "Inget källkodsnummer %d\n"
 
-#: build/parsePrep.c:205
-#, c-format
-msgid "Couldn't download nosource %s: %s\n"
-msgstr "Kunde inte hämta nosource %s: %s\n"
+#: build/parsePrep.c:208
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s misslyckades: %s\n"
 
-#: build/parsePrep.c:311
+#: build/parsePrep.c:318
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fel i tolkning av %%setup: %s\n"
 
-#: build/parsePrep.c:326
+#: build/parsePrep.c:333
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "rad %d: Felaktigt argument till %%setup: %s\n"
 
-#: build/parsePrep.c:344
+#: build/parsePrep.c:351
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rad %d: Felaktig %%setup-flagga %s: %s\n"
 
-#: build/parsePrep.c:486
+#: build/parsePrep.c:493
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -b: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -z: %s\n"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:514
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:521
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:528
 msgid "Too many patches!\n"
 msgstr "För många patchar!\n"
 
-#: build/parsePrep.c:525
+#: build/parsePrep.c:532
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch: %s\n"
 
-#: build/parsePrep.c:561
+#: build/parsePrep.c:568
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
@@ -4529,6 +4529,9 @@ msgstr "använd databas i KATALOG"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
+
+#~ msgid "Couldn't download nosource %s: %s\n"
+#~ msgstr "Kunde inte hämta nosource %s: %s\n"
 
 #~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
 #~ msgstr "rad %d: Epoch/Serial-fält måste vara numeriskt: %s\n"

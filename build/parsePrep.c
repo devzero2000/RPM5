@@ -154,6 +154,9 @@ static int checkOwners(const char * urlfn)
 }
 /*@=boundswrite@*/
 
+/*@unchecked@*/
+static int autofetch = 1;
+
 /**
  * Expand %setup macro into %prep scriptlet.
  * @param spec		build info
@@ -166,7 +169,7 @@ static int checkOwners(const char * urlfn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char *fn, *urlfn;
+    const char *fn, *Lurlfn, *Rurlfn;
     static char buf[BUFSIZ];
     char *taropts;
     char *t = NULL;
@@ -184,40 +187,42 @@ static int checkOwners(const char * urlfn)
 	return NULL;
     }
 
-    urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    Rurlfn = rpmGetPath("%{_Rsourcedir}/", sp->source, NULL);
+    if (Rurlfn == NULL || *Rurlfn == '%') {
+	Rurlfn = _free(Rurlfn);
+	Rurlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    }
+    Lurlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     /*@-internalglobs@*/ /* FIX: shrug */
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
     /*@=internalglobs@*/
 
-#ifdef AUTOFETCH_NOT	/* XXX don't expect this code to be enabled */
-    /* XXX
-     * XXX If nosource file doesn't exist, try to fetch from url.
-     * XXX TODO: add a "--fetch" enabler.
-     */
-    if (sp->flags & RPMTAG_NOSOURCE && autofetchnosource) {
+    if (autofetch) {
 	struct stat st;
 	int rc;
-	if (Lstat(urlfn, &st) != 0 && errno == ENOENT &&
-	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
-	    if ((rc = urlGetFile(sp->fullSource, urlfn)) != 0) {
+	if (Lstat(Lurlfn, &st) != 0 && errno == ENOENT) {
+	    if (strcmp(Lurlfn, Rurlfn))
+	    if ((rc = urlGetFile(Rurlfn, Lurlfn)) != 0) {
 		rpmError(RPMERR_BADFILENAME,
-			_("Couldn't download nosource %s: %s\n"),
-			sp->fullSource, ftpStrerror(rc));
+			_("Fetching %s failed: %s\n"),
+			Rurlfn, ftpStrerror(rc));
+		Lurlfn = _free(Lurlfn);
+		Rurlfn = _free(Rurlfn);
 		return NULL;
 	    }
 	}
     }
-#endif
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	urlfn = _free(urlfn);
+    if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
+	Lurlfn = _free(Lurlfn);
+	Rurlfn = _free(Rurlfn);
 	return NULL;
     }
 
     fn = NULL;
-    urltype = urlPath(urlfn, &fn);
+    urltype = urlPath(Lurlfn, &fn);
     switch (urltype) {
     case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
@@ -227,7 +232,8 @@ static int checkOwners(const char * urlfn)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
-	urlfn = _free(urlfn);
+	Lurlfn = _free(Lurlfn);
+	Rurlfn = _free(Rurlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -273,7 +279,8 @@ static int checkOwners(const char * urlfn)
 	t = stpcpy(t, fn);
     }
 
-    urlfn = _free(urlfn);
+    Lurlfn = _free(Lurlfn);
+    Rurlfn = _free(Rurlfn);
     return buf;
 }
 /*@=boundswrite@*/

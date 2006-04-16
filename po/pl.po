@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-15 19:09-0400\n"
+"POT-Creation-Date: 2006-04-16 13:12-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1007,61 +1007,61 @@ msgstr "B³êdne ¼ród³o: %s: %s\n"
 msgid "No patch number %d\n"
 msgstr "Brak ³aty numer %d\n"
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:186
 #, c-format
 msgid "No source number %d\n"
 msgstr "Brak ¼ród³a numer %d\n"
 
-#: build/parsePrep.c:205
-#, c-format
-msgid "Couldn't download nosource %s: %s\n"
-msgstr "Nie mo¿na ¶ci±gn±æ pliku nosource %s: %s\n"
+#: build/parsePrep.c:208
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s nie powiod³o siê: %s\n"
 
-#: build/parsePrep.c:311
+#: build/parsePrep.c:318
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "B³±d przetwarzania %%setup: %s\n"
 
-#: build/parsePrep.c:326
+#: build/parsePrep.c:333
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linia %d: B³êdny argument dla %%setup: %s\n"
 
-#: build/parsePrep.c:344
+#: build/parsePrep.c:351
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linia %d: B³êdna opcja %%setup %s: %s\n"
 
-#: build/parsePrep.c:486
+#: build/parsePrep.c:493
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -b: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -z: %s\n"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:514
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:521
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:528
 msgid "Too many patches!\n"
 msgstr "Zbyt wiele ³at!\n"
 
-#: build/parsePrep.c:525
+#: build/parsePrep.c:532
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch: %s\n"
 
-#: build/parsePrep.c:561
+#: build/parsePrep.c:568
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
@@ -4507,6 +4507,9 @@ msgstr "u¿yj bazy danych w KATALOGu"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
+
+#~ msgid "Couldn't download nosource %s: %s\n"
+#~ msgstr "Nie mo¿na ¶ci±gn±æ pliku nosource %s: %s\n"
 
 #~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
 #~ msgstr "linia %d: pole Epoch/Serial musi byæ liczb±: %s\n"

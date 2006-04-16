@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-15 19:09-0400\n"
+"POT-Creation-Date: 2006-04-16 13:12-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1113,69 +1113,68 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 msgid "No patch number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:186
 #, c-format
 msgid "No source number %d\n"
 msgstr ""
 
-# , c-format
-#: build/parsePrep.c:205
+#: build/parsePrep.c:208
 #, fuzzy, c-format
-msgid "Couldn't download nosource %s: %s\n"
-msgstr "No consegui ler o arquivo spec de %s\n"
+msgid "Fetching %s failed: %s\n"
+msgstr "Construo falhou.\n"
 
-#: build/parsePrep.c:311
+#: build/parsePrep.c:318
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
 # , c-format
-#: build/parsePrep.c:326
+#: build/parsePrep.c:333
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/parsePrep.c:344
+#: build/parsePrep.c:351
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/parsePrep.c:486
+#: build/parsePrep.c:493
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/parsePrep.c:495
+#: build/parsePrep.c:502
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/parsePrep.c:507
+#: build/parsePrep.c:514
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/parsePrep.c:514
+#: build/parsePrep.c:521
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:528
 msgid "Too many patches!\n"
 msgstr ""
 
 # , c-format
-#: build/parsePrep.c:525
+#: build/parsePrep.c:532
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/parsePrep.c:561
+#: build/parsePrep.c:568
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -4862,6 +4861,11 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+# , c-format
+#, fuzzy
+#~ msgid "Couldn't download nosource %s: %s\n"
+#~ msgstr "No consegui ler o arquivo spec de %s\n"
 
 #, fuzzy
 #~ msgid "don't verify MD5 digest of files"

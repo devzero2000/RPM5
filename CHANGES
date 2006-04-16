@@ -6,6 +6,7 @@
 	- teach --scripts about pre- and post-transaction scriptlets.
 	- add /usr/bin/rpmdigest.
 	- IPv4/6 and EPSV support by Arkadiusz Miskiewicz <misiek@pld.org.pl>.
+	- permit autofetch for virgin sources.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
