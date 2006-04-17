@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 13:11-0400\n"
+"POT-Creation-Date: 2006-04-17 16:00-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -584,7 +584,7 @@ msgstr "linie: %s\n"
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2502 build/parsePrep.c:53
+#: build/files.c:2502 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
@@ -991,75 +991,71 @@ msgstr "linie %d: Ukendt mærke: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-fil kan ikke bruge BuildRoot\n"
 
-#: build/parsePrep.c:48
+#: build/parsePrep.c:45
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "Ugyldig kilde: %s: %s\n"
 
-#: build/parsePrep.c:104
+#: build/parsePrep.c:101
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Ingen lap nummer %d\n"
 
-#: build/parsePrep.c:131 build/parsePrep.c:251
-#, fuzzy, c-format
-msgid "Fetching %s failed: %s\n"
-msgstr "%s mislykkedes\n"
-
-#: build/parsePrep.c:132 build/parsePrep.c:252
-msgid "rpmMkdirPath failed."
-msgstr ""
-
-#: build/parsePrep.c:220
+#: build/parsePrep.c:183
 #, c-format
 msgid "No source number %d\n"
 msgstr "Ingen kilde nummer %d\n"
 
-#: build/parsePrep.c:362
+#: build/parsePrep.c:291
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fejl ved tolking af %%setup: %s\n"
 
-#: build/parsePrep.c:377
+#: build/parsePrep.c:306
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%setup %c: %s\n"
 
-#: build/parsePrep.c:395
+#: build/parsePrep.c:324
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linie %d: Ugyldigt '%%setup'-tilvalg %s: %s\n"
 
-#: build/parsePrep.c:537
+#: build/parsePrep.c:466
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -b: %s\n"
 
-#: build/parsePrep.c:546
+#: build/parsePrep.c:475
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -z: %s\n"
 
-#: build/parsePrep.c:558
+#: build/parsePrep.c:487
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -p: %s\n"
 
-#: build/parsePrep.c:565
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%patch -p: %s\n"
 
-#: build/parsePrep.c:572
+#: build/parsePrep.c:501
 msgid "Too many patches!\n"
 msgstr "For mange lapper (patches)!\n"
 
-#: build/parsePrep.c:576
+#: build/parsePrep.c:505
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%patch: %s\n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:594
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s mislykkedes\n"
+
+#: build/parsePrep.c:615
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linie %d: anden %%prep\n"
@@ -4266,59 +4262,59 @@ msgstr "Fil %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
 
-#: rpmio/rpmio.c:713
+#: rpmio/rpmio.c:716
 msgid "Success"
 msgstr "Succes"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:739
 msgid "Bad server response"
 msgstr "Ugyldigt svar fra server"
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:741
 msgid "Server I/O error"
 msgstr "I/O-fejl for server"
 
-#: rpmio/rpmio.c:740
+#: rpmio/rpmio.c:743
 msgid "Server timeout"
 msgstr "Tidsudløb for server"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:745
 msgid "Unable to lookup server host address"
 msgstr "Kunne ikke skaffe serverens IP-addresse"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:747
 msgid "Unable to lookup server host name"
 msgstr "Kunne ikke slå serverens navn op"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:749
 msgid "Failed to connect to server"
 msgstr "Kunne ikke etablere en forbindelse til serveren"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:751
 msgid "Failed to establish data connection to server"
 msgstr "Kunne ikke etablere en data-forbindelse til serveren"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:753
 msgid "I/O error to local file"
 msgstr "I/O-fejl i lokal fil"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:755
 msgid "Error setting remote server to passive mode"
 msgstr "Kunne ikke sætte fjernserveren i passiv tilstand"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:757
 msgid "File not found on server"
 msgstr "Fil ikke fundet på server"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:759
 msgid "Abort in progress"
 msgstr "Afbryder programmet"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:763
 msgid "Unknown or unexpected error"
 msgstr "Ukendt eller uventet fejl"
 
-#: rpmio/rpmio.c:1611
+#: rpmio/rpmio.c:1616
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logger på %s som %s, adgangskode %s\n"

@@ -583,6 +583,7 @@ exit 0
 - fix: lazy mkdir for local sourcedir before fetching.
 - add _patchdir macro similar to _sourcedir.
 - permit autofetch for patches.
+- fetch all (even unused) sources/patches at %%prep start.
 
 * Sun Apr 16 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.6
 - permit autofetch for virgin sources.

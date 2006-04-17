@@ -26,6 +26,7 @@ struct addrinfo
   struct addrinfo *ai_next;	/* Pointer to next in list.  */
 };
 
+/*@-exportheader@*/
 extern int getaddrinfo (__const char *__restrict __name,
 			__const char *__restrict __service,
 			__const struct addrinfo *__restrict __req,
@@ -40,8 +41,10 @@ extern int getnameinfo (__const struct sockaddr *__restrict __sa,
 
 extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 	/*@modifies __ai @*/;
+/*@=exportheader@*/
+#else
+#include <netdb.h>		/* XXX getaddrinfo et al */
 #endif
-#include <netdb.h>		/* XXX getaddrinfo */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>		/* XXX for inet_aton and HP-UX */
@@ -857,7 +860,7 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
     pbuf[sizeof(pbuf)-1] = '\0';
     rc = FTPERR_FAILED_CONNECT;
     if (getaddrinfo(host, pbuf, &hints, &res0) == 0) {
-	for (res = res0; res != NULL; res= res->ai_next) {
+	for (res = res0; res != NULL; res = res->ai_next) {
 	    if ((fdno = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
 		continue;
 	    if (connect(fdno, res->ai_addr, res->ai_addrlen) < 0) {
@@ -1300,20 +1303,22 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     passReply = NULL;
 #ifdef HAVE_GETNAMEINFO
     rc = ftpCommand(u, &passReply, "EPSV", NULL);
-    if (rc==0) {
+    if (rc == 0) {
 #ifdef HAVE_GETADDRINFO
 	struct sockaddr_storage ss;
 #else /* HAVE_GETADDRINFO */
 	struct sockaddr_in ss;
 #endif /* HAVE_GETADDRINFO */
-	int size;
+	socklen_t sslen = sizeof(ss);
+
 	/* we need to know IP of remote host */
-	size=sizeof(ss);
-	if ((getpeername(fdFileno(c2f(u->ctrl)), (struct sockaddr *)&ss, &size) == 0) &&
-			(getnameinfo((struct sockaddr *)&ss, size, remoteIP, sizeof(remoteIP),
-				NULL, 0, NI_NUMERICHOST) == 0))
+	if ((getpeername(fdFileno(c2f(u->ctrl)), (struct sockaddr *)&ss, &sslen) == 0)
+	 && (getnameinfo((struct sockaddr *)&ss, sslen,
+			remoteIP, sizeof(remoteIP),
+			NULL, 0, NI_NUMERICHOST) == 0))
+	{
 		epsv++;
-	else {
+	} else {
 		/* abort EPSV and fall back to PASV */
 		rc = ftpCommand(u, &passReply, "ABOR", NULL);
 		if (rc) {
@@ -1322,7 +1327,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 		}
 	}
     }
-   if (epsv==0)
+   if (epsv == 0)
 #endif /* HAVE_GETNAMEINFO */
 	rc = ftpCommand(u, &passReply, "PASV", NULL);
     if (rc) {

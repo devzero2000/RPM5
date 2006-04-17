@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 13:11-0400\n"
+"POT-Creation-Date: 2006-04-17 16:00-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -594,7 +594,7 @@ msgstr "linia: %s\n"
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2502 build/parsePrep.c:53
+#: build/files.c:2502 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
@@ -997,75 +997,71 @@ msgstr "linia %d: Nieznana etykieta: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Plik spec nie mo¿e u¿ywaæ BuildRoot\n"
 
-#: build/parsePrep.c:48
+#: build/parsePrep.c:45
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "B³êdne ¼ród³o: %s: %s\n"
 
-#: build/parsePrep.c:104
+#: build/parsePrep.c:101
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Brak ³aty numer %d\n"
 
-#: build/parsePrep.c:131 build/parsePrep.c:251
-#, fuzzy, c-format
-msgid "Fetching %s failed: %s\n"
-msgstr "%s nie powiod³o siê: %s\n"
-
-#: build/parsePrep.c:132 build/parsePrep.c:252
-msgid "rpmMkdirPath failed."
-msgstr ""
-
-#: build/parsePrep.c:220
+#: build/parsePrep.c:183
 #, c-format
 msgid "No source number %d\n"
 msgstr "Brak ¼ród³a numer %d\n"
 
-#: build/parsePrep.c:362
+#: build/parsePrep.c:291
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "B³±d przetwarzania %%setup: %s\n"
 
-#: build/parsePrep.c:377
+#: build/parsePrep.c:306
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linia %d: B³êdny argument dla %%setup: %s\n"
 
-#: build/parsePrep.c:395
+#: build/parsePrep.c:324
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linia %d: B³êdna opcja %%setup %s: %s\n"
 
-#: build/parsePrep.c:537
+#: build/parsePrep.c:466
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -b: %s\n"
 
-#: build/parsePrep.c:546
+#: build/parsePrep.c:475
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -z: %s\n"
 
-#: build/parsePrep.c:558
+#: build/parsePrep.c:487
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:565
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:572
+#: build/parsePrep.c:501
 msgid "Too many patches!\n"
 msgstr "Zbyt wiele ³at!\n"
 
-#: build/parsePrep.c:576
+#: build/parsePrep.c:505
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch: %s\n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:594
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s nie powiod³o siê: %s\n"
+
+#: build/parsePrep.c:615
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
@@ -4179,59 +4175,59 @@ msgstr "Plik %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
 
-#: rpmio/rpmio.c:713
+#: rpmio/rpmio.c:716
 msgid "Success"
 msgstr "Sukces"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:739
 msgid "Bad server response"
 msgstr "B³êdna odpowied¼ serwera"
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:741
 msgid "Server I/O error"
 msgstr "B³±d we/wy serwera"
 
-#: rpmio/rpmio.c:740
+#: rpmio/rpmio.c:743
 msgid "Server timeout"
 msgstr "Przekroczony limit czasu serwera"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:745
 msgid "Unable to lookup server host address"
 msgstr "Nie mo¿na znale¼æ adresu serwera"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:747
 msgid "Unable to lookup server host name"
 msgstr "Nie mo¿na znale¼æ nazwy serwera"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:749
 msgid "Failed to connect to server"
 msgstr "Po³±czenie z serwerem nie powiod³o siê"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:751
 msgid "Failed to establish data connection to server"
 msgstr "Otwarcie transmisji danych z serwera nie powiod³o siê"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:753
 msgid "I/O error to local file"
 msgstr "B³±d we/wy na lokalnym pliku"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:755
 msgid "Error setting remote server to passive mode"
 msgstr "B³±d: ustawienie zdalnego serwera w tryb pasywny nie powiod³o siê"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:757
 msgid "File not found on server"
 msgstr "Plik nie zosta³ znaleziony na serwerze"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:759
 msgid "Abort in progress"
 msgstr "Przerywanie ..."
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:763
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:1611
+#: rpmio/rpmio.c:1616
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logowanie do %s jako %s, has³o %s\n"

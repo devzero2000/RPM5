@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 13:11-0400\n"
+"POT-Creation-Date: 2006-04-17 16:00-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -596,7 +596,7 @@ msgstr "%s行目: \n"
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2502 build/parsePrep.c:53
+#: build/files.c:2502 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
@@ -999,75 +999,71 @@ msgstr "%d 行目: 不明なタグ: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "spec ファイルは BuildRoot を使用できません。\n"
 
-#: build/parsePrep.c:48
+#: build/parsePrep.c:45
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "不正なソース: %s: %s\n"
 
-#: build/parsePrep.c:104
+#: build/parsePrep.c:101
 #, c-format
 msgid "No patch number %d\n"
 msgstr "パッチ番号 %d はありません\n"
 
-#: build/parsePrep.c:131 build/parsePrep.c:251
-#, fuzzy, c-format
-msgid "Fetching %s failed: %s\n"
-msgstr "%s: 失敗: %s\n"
-
-#: build/parsePrep.c:132 build/parsePrep.c:252
-msgid "rpmMkdirPath failed."
-msgstr ""
-
-#: build/parsePrep.c:220
+#: build/parsePrep.c:183
 #, c-format
 msgid "No source number %d\n"
 msgstr "ソース番号 %d はありません\n"
 
-#: build/parsePrep.c:362
+#: build/parsePrep.c:291
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup の構文解析エラー: %s\n"
 
-#: build/parsePrep.c:377
+#: build/parsePrep.c:306
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 行目: %%setup への不正な引数: %s\n"
 
-#: build/parsePrep.c:395
+#: build/parsePrep.c:324
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 行目: 不正な %%setup オプション %s: %s\n"
 
-#: build/parsePrep.c:537
+#: build/parsePrep.c:466
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 行目: %%patch -b には引数が必要です: %s\n"
 
-#: build/parsePrep.c:546
+#: build/parsePrep.c:475
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 行目: %%patch -z には引数が必要です: %s\n"
 
-#: build/parsePrep.c:558
+#: build/parsePrep.c:487
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p には引数が必要です: %s\n"
 
-#: build/parsePrep.c:565
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p への不正な引数: %s\n"
 
-#: build/parsePrep.c:572
+#: build/parsePrep.c:501
 msgid "Too many patches!\n"
 msgstr "パッチが多すぎます!\n"
 
-#: build/parsePrep.c:576
+#: build/parsePrep.c:505
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 行目: %%patch への不正な引数: %s\n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:594
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s: 失敗: %s\n"
+
+#: build/parsePrep.c:615
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 行目: 2番目の %%prep\n"
@@ -4209,59 +4205,59 @@ msgstr "ファイル %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
 
-#: rpmio/rpmio.c:713
+#: rpmio/rpmio.c:716
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:739
 msgid "Bad server response"
 msgstr "サーバからの不正な応答。"
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:741
 msgid "Server I/O error"
 msgstr "サーバ I/O エラーです。"
 
-#: rpmio/rpmio.c:740
+#: rpmio/rpmio.c:743
 msgid "Server timeout"
 msgstr "サーバがタイムアウトしました。"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:745
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません。"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:747
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません。"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:749
 msgid "Failed to connect to server"
 msgstr "サーバとの接続に失敗しました。"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:751
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータ接続確立に失敗しました。"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:753
 msgid "I/O error to local file"
 msgstr "ローカルファイルの I/O エラーです。"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:755
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバを passive モードに設定できませんでした。"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:757
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません。"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:759
 msgid "Abort in progress"
 msgstr "処理中の中断"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:763
 msgid "Unknown or unexpected error"
 msgstr "不明または予期せぬエラー"
 
-#: rpmio/rpmio.c:1611
+#: rpmio/rpmio.c:1616
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s に %s (パスワード %s) でログイン中\n"

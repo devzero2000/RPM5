@@ -11,9 +11,6 @@
 
 /*@access StringBuf @*/	/* compared with NULL */
 
-/*@unchecked@*/
-static int autofetch = 1;
-
 /* These have to be global to make up for stupid compilers */
 /*@unchecked@*/
     static int leaveDirs, skipDefaultAction;
@@ -73,7 +70,7 @@ static int checkOwners(const char * urlfn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char *fn, *Lurlfn, *Rurlfn;
+    const char *fn, *Lurlfn;
     static char buf[BUFSIZ];
     char args[BUFSIZ];
     struct Source *sp;
@@ -105,43 +102,11 @@ static int checkOwners(const char * urlfn)
 	return NULL;
     }
 
-    Rurlfn = rpmGetPath("%{_Rpatchdir}/", sp->source, NULL);
-    if (Rurlfn == NULL || *Rurlfn == '%') {
-	Rurlfn = _free(Rurlfn);
-	Rurlfn = rpmGetPath("%{_patchdir}/", sp->source, NULL);
-    }
     Lurlfn = rpmGetPath("%{_patchdir}/", sp->source, NULL);
-
-    if (autofetch) {
-	struct stat st;
-	if (Lstat(Lurlfn, &st) != 0 && errno == ENOENT) {
-	    if (strcmp(Lurlfn, Rurlfn)) {
-		const char * _patchdir = NULL;
-		rpmRC rpmrc;
-		int rc = 0;
-
-		/* XXX insure that %{_sourcedir} exists */
-		_patchdir = rpmGenPath(NULL, "%{_patchdir}", NULL);
-		rpmrc = rpmMkdirPath(_patchdir, "_patchdir");
-		_patchdir = _free(_patchdir);
-
-		if (rpmrc != RPMRC_OK || (rc = urlGetFile(Rurlfn, Lurlfn)) != 0)
-		{
-		    rpmError(RPMERR_BADFILENAME,
-			_("Fetching %s failed: %s\n"), Rurlfn,
-			(rc ? ftpStrerror(rc) : _("rpmMkdirPath failed.")));
-		    Lurlfn = _free(Lurlfn);
-		    Rurlfn = _free(Rurlfn);
-		    return NULL;
-		}
-	    }
-	}
-    }
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
 	Lurlfn = _free(Lurlfn);
-	Rurlfn = _free(Rurlfn);
 	return NULL;
     }
 
@@ -157,7 +122,6 @@ static int checkOwners(const char * urlfn)
 	break;
     case URL_IS_DASH:
 	Lurlfn = _free(Lurlfn);
-	Rurlfn = _free(Rurlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -186,7 +150,6 @@ static int checkOwners(const char * urlfn)
     }
 
     Lurlfn = _free(Lurlfn);
-    Rurlfn = _free(Rurlfn);
     return buf;
 }
 /*@=boundswrite@*/
@@ -203,7 +166,7 @@ static int checkOwners(const char * urlfn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char *fn, *Lurlfn, *Rurlfn;
+    const char *fn, *Lurlfn;
     static char buf[BUFSIZ];
     char *taropts;
     char *t = NULL;
@@ -221,47 +184,15 @@ static int checkOwners(const char * urlfn)
 	return NULL;
     }
 
-    Rurlfn = rpmGetPath("%{_Rsourcedir}/", sp->source, NULL);
-    if (Rurlfn == NULL || *Rurlfn == '%') {
-	Rurlfn = _free(Rurlfn);
-	Rurlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
-    }
-    Lurlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
-
     /*@-internalglobs@*/ /* FIX: shrug */
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
     /*@=internalglobs@*/
 
-    if (autofetch) {
-	struct stat st;
-	if (Lstat(Lurlfn, &st) != 0 && errno == ENOENT) {
-	    if (strcmp(Lurlfn, Rurlfn)) {
-		const char * _sourcedir = NULL;
-		rpmRC rpmrc;
-		int rc = 0;
-
-		/* XXX insure that %{_sourcedir} exists */
-		_sourcedir = rpmGenPath(NULL, "%{_sourcedir}", NULL);
-		rpmrc = rpmMkdirPath(_sourcedir, "_sourcedir");
-		_sourcedir = _free(_sourcedir);
-
-		if (rpmrc != RPMRC_OK || (rc = urlGetFile(Rurlfn, Lurlfn)) != 0)
-		{
-		    rpmError(RPMERR_BADFILENAME,
-			_("Fetching %s failed: %s\n"), Rurlfn,
-			(rc ? ftpStrerror(rc) : _("rpmMkdirPath failed.")));
-		    Lurlfn = _free(Lurlfn);
-		    Rurlfn = _free(Rurlfn);
-		    return NULL;
-		}
-	    }
-	}
-    }
+    Lurlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
 	Lurlfn = _free(Lurlfn);
-	Rurlfn = _free(Rurlfn);
 	return NULL;
     }
 
@@ -277,7 +208,6 @@ static int checkOwners(const char * urlfn)
 	break;
     case URL_IS_DASH:
 	Lurlfn = _free(Lurlfn);
-	Rurlfn = _free(Rurlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -324,7 +254,6 @@ static int checkOwners(const char * urlfn)
     }
 
     Lurlfn = _free(Lurlfn);
-    Rurlfn = _free(Rurlfn);
     return buf;
 }
 /*@=boundswrite@*/
@@ -602,6 +531,80 @@ static int doPatchMacro(Spec spec, char *line)
 }
 /*@=boundswrite@*/
 
+/**
+ * Check that all sources/patches exist locally, fetching if necessary.
+ */
+static int prepFetch(Spec spec)
+{
+    const char *Lmacro, *Lurlfn = NULL;
+    const char *Rmacro, *Rurlfn = NULL;
+    struct Source *sp;
+    struct stat st;
+    rpmRC rpmrc;
+    int ec, rc;
+
+    /* XXX insure that %{_sourcedir} exists */
+    rpmrc = RPMRC_OK;
+    Lurlfn = rpmGenPath(NULL, "%{?_sourcedir}", NULL);
+    if (Lurlfn != NULL && *Lurlfn != '\0')
+	rpmrc = rpmMkdirPath(Lurlfn, "_sourcedir");
+    Lurlfn = _free(Lurlfn);
+    if (rpmrc != RPMRC_OK)
+	return -1;
+
+    /* XXX insure that %{_patchdir} exists */
+    rpmrc = RPMRC_OK;
+    Lurlfn = rpmGenPath(NULL, "%{?_patchdir}", NULL);
+    if (Lurlfn != NULL && *Lurlfn != '\0')
+	rpmrc = rpmMkdirPath(Lurlfn, "_patchdir");
+    Lurlfn = _free(Lurlfn);
+    if (rpmrc != RPMRC_OK)
+	return -1;
+
+    ec = 0;
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
+
+	if (sp->flags & RPMBUILD_ISSOURCE) {
+	    Rmacro = "%{_Rsourcedir}/";
+	    Lmacro = "%{_sourcedir}/";
+	} else
+	if (sp->flags & RPMBUILD_ISPATCH) {
+	    Rmacro = "%{_Rpatchdir}/";
+	    Lmacro = "%{_patchdir}/";
+	} else
+	    continue;
+
+	Lurlfn = rpmGetPath(Lmacro, sp->source, NULL);
+	rc = Lstat(Lurlfn, &st);
+	if (rc == 0)
+	    goto bottom;
+	if (errno != ENOENT) {
+	    ec++;
+	    goto bottom;
+	}
+
+	Rurlfn = rpmGetPath(Rmacro, sp->source, NULL);
+	if (Rurlfn == NULL || *Rurlfn == '%' || !strcmp(Lurlfn, Rurlfn)) {
+	    ec++;
+	    goto bottom;
+	}
+
+	rc = urlGetFile(Rurlfn, Lurlfn);
+	if (rc != 0) {
+	    rpmError(RPMERR_BADFILENAME, _("Fetching %s failed: %s\n"),
+		Rurlfn, ftpStrerror(rc));
+	    ec++;
+	    goto bottom;
+	}
+
+bottom:
+	Lurlfn = _free(Lurlfn);
+	Rurlfn = _free(Rurlfn);
+    }
+
+    return ec;
+}
+
 int parsePrep(Spec spec)
 {
     int nextPart, res, rc;
@@ -616,11 +619,15 @@ int parsePrep(Spec spec)
     spec->prep = newStringBuf();
 
     /* There are no options to %prep */
-    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
+    if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
 	return PART_NONE;
-    }
     if (rc)
 	return rc;
+
+    /* Check to make sure that all sources/patches are present. */
+    rc = prepFetch(spec);
+    if (rc)
+	return RPMERR_BADSPEC;
     
     sb = newStringBuf();
     

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 13:11-0400\n"
+"POT-Creation-Date: 2006-04-17 16:00-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -595,7 +595,7 @@ msgstr "en voinut avata %s: %s"
 msgid "Bad file: %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:2502 build/parsePrep.c:53
+#: build/files.c:2502 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
@@ -1000,75 +1000,71 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
-#: build/parsePrep.c:48
+#: build/parsePrep.c:45
 #, fuzzy, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/parsePrep.c:104
+#: build/parsePrep.c:101
 #, fuzzy, c-format
 msgid "No patch number %d\n"
 msgstr "(ei ole luku)"
 
-#: build/parsePrep.c:131 build/parsePrep.c:251
-#, fuzzy, c-format
-msgid "Fetching %s failed: %s\n"
-msgstr "pgp epäonnistui"
-
-#: build/parsePrep.c:132 build/parsePrep.c:252
-msgid "rpmMkdirPath failed."
-msgstr ""
-
-#: build/parsePrep.c:220
+#: build/parsePrep.c:183
 #, fuzzy, c-format
 msgid "No source number %d\n"
 msgstr "(ei ole luku)"
 
-#: build/parsePrep.c:362
+#: build/parsePrep.c:291
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:377
+#: build/parsePrep.c:306
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:395
+#: build/parsePrep.c:324
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:537
+#: build/parsePrep.c:466
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:546
+#: build/parsePrep.c:475
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:558
+#: build/parsePrep.c:487
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:565
+#: build/parsePrep.c:494
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:572
+#: build/parsePrep.c:501
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:576
+#: build/parsePrep.c:505
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:594
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "pgp epäonnistui"
+
+#: build/parsePrep.c:615
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -4288,68 +4284,68 @@ msgstr "en voinut avata %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:713
+#: rpmio/rpmio.c:716
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:739
 #, fuzzy
 msgid "Bad server response"
 msgstr "Virheellinen FTP-palvelijan vastaus"
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:741
 #, fuzzy
 msgid "Server I/O error"
 msgstr "FTP:n IO-virhe"
 
-#: rpmio/rpmio.c:740
+#: rpmio/rpmio.c:743
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP-palvelimen timeout"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:745
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP-palvelimen osoitetta ei löytynyt"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:747
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP-palvelimen nimeä ei löytynyt"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:749
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "En saanut yhteyttä FTP-palvelijaan"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:751
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "En saanut data-yhteyttä FTP-palvelijaan"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:753
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "Paikallisen tiedoston IO-virhe"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:755
 msgid "Error setting remote server to passive mode"
 msgstr "Virhe asetettaessa palvelinta passiiviin moodiin"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:757
 msgid "File not found on server"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:759
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:763
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP:n tuntematon tai odottamaton virhe"
 
-#: rpmio/rpmio.c:1611
+#: rpmio/rpmio.c:1616
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

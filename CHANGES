@@ -11,6 +11,7 @@
 	- fix: lazy mkdir for local _sourcedir.
 	- add _patchdir macro similar to _sourcedir.
 	- permit autofetch for patches.
+	- fetch all (even unused) sources/patches at %prep start.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 13:11-0400\n"
+"POT-Creation-Date: 2006-04-17 16:00-0400\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -582,7 +582,7 @@ msgstr "rad: %s\n"
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s\n"
 
-#: build/files.c:2502 build/parsePrep.c:53
+#: build/files.c:2502 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
@@ -985,75 +985,71 @@ msgstr "rad %d: Okänd tagg: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Specfil kan inte använda BuildRoot\n"
 
-#: build/parsePrep.c:48
+#: build/parsePrep.c:45
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "Dålig källa: %s: %s\n"
 
-#: build/parsePrep.c:104
+#: build/parsePrep.c:101
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Inget patch-nummer %d\n"
 
-#: build/parsePrep.c:131 build/parsePrep.c:251
-#, fuzzy, c-format
-msgid "Fetching %s failed: %s\n"
-msgstr "%s misslyckades: %s\n"
-
-#: build/parsePrep.c:132 build/parsePrep.c:252
-msgid "rpmMkdirPath failed."
-msgstr ""
-
-#: build/parsePrep.c:220
+#: build/parsePrep.c:183
 #, c-format
 msgid "No source number %d\n"
 msgstr "Inget källkodsnummer %d\n"
 
-#: build/parsePrep.c:362
+#: build/parsePrep.c:291
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fel i tolkning av %%setup: %s\n"
 
-#: build/parsePrep.c:377
+#: build/parsePrep.c:306
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "rad %d: Felaktigt argument till %%setup: %s\n"
 
-#: build/parsePrep.c:395
+#: build/parsePrep.c:324
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rad %d: Felaktig %%setup-flagga %s: %s\n"
 
-#: build/parsePrep.c:537
+#: build/parsePrep.c:466
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -b: %s\n"
 
-#: build/parsePrep.c:546
+#: build/parsePrep.c:475
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -z: %s\n"
 
-#: build/parsePrep.c:558
+#: build/parsePrep.c:487
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:565
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:572
+#: build/parsePrep.c:501
 msgid "Too many patches!\n"
 msgstr "För många patchar!\n"
 
-#: build/parsePrep.c:576
+#: build/parsePrep.c:505
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch: %s\n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:594
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s misslyckades: %s\n"
+
+#: build/parsePrep.c:615
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
@@ -4199,59 +4195,59 @@ msgstr "Fil %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
 
-#: rpmio/rpmio.c:713
+#: rpmio/rpmio.c:716
 msgid "Success"
 msgstr "Lyckades"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:739
 msgid "Bad server response"
 msgstr "Konstigt svar från server"
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:741
 msgid "Server I/O error"
 msgstr "IO-fel mot server"
 
-#: rpmio/rpmio.c:740
+#: rpmio/rpmio.c:743
 msgid "Server timeout"
 msgstr "Förbindelsen med servern dog ut (timeout)"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:745
 msgid "Unable to lookup server host address"
 msgstr "Kunde inte slå upp serverns adress"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:747
 msgid "Unable to lookup server host name"
 msgstr "Kunde inte slå upp serverns namn"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:749
 msgid "Failed to connect to server"
 msgstr "Misslyckades med att kontakta servern"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:751
 msgid "Failed to establish data connection to server"
 msgstr "Misslyckades med att etablera en dataförbindelse till servern"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:753
 msgid "I/O error to local file"
 msgstr "I/O-fel mot lokal fil"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:755
 msgid "Error setting remote server to passive mode"
 msgstr "Fel när fjärrservern sattes i passivt läge"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:757
 msgid "File not found on server"
 msgstr "Filen fanns inte på servern"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:759
 msgid "Abort in progress"
 msgstr "Avbruten under gång"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:763
 msgid "Unknown or unexpected error"
 msgstr "Okänt eller oväntat fel"
 
-#: rpmio/rpmio.c:1611
+#: rpmio/rpmio.c:1616
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "loggar in på %s som %s, lösenord %s\n"

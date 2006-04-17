@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 13:11-0400\n"
+"POT-Creation-Date: 2006-04-17 16:00-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -602,7 +602,7 @@ msgstr "Ligne: %s\n"
 msgid "Bad file: %s: %s\n"
 msgstr "Mauvais fichier: %s: %s\n"
 
-#: build/files.c:2502 build/parsePrep.c:53
+#: build/files.c:2502 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Mauvais possesseur/groupe: %s\n"
@@ -1005,75 +1005,71 @@ msgstr "ligne %d: tag inconnu: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Le fichier spec ne peut pas utiliser BuildRoot\n"
 
-#: build/parsePrep.c:48
+#: build/parsePrep.c:45
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "Mauvaise source: %s: %s\n"
 
-#: build/parsePrep.c:104
+#: build/parsePrep.c:101
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Pas de numéro de patch %d\n"
 
-#: build/parsePrep.c:131 build/parsePrep.c:251
-#, fuzzy, c-format
-msgid "Fetching %s failed: %s\n"
-msgstr "échec %s: %s\n"
-
-#: build/parsePrep.c:132 build/parsePrep.c:252
-msgid "rpmMkdirPath failed."
-msgstr ""
-
-#: build/parsePrep.c:220
+#: build/parsePrep.c:183
 #, c-format
 msgid "No source number %d\n"
 msgstr "Pas de numéro de source %d\n"
 
-#: build/parsePrep.c:362
+#: build/parsePrep.c:291
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Erreur d'analyse syntaxique du %%setup: %s\n"
 
-#: build/parsePrep.c:377
+#: build/parsePrep.c:306
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "ligne %d: mauvais argument à %%setup: %s\n"
 
-#: build/parsePrep.c:395
+#: build/parsePrep.c:324
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "ligne %d: mauvaise option à %%setup %s: %s\n"
 
-#: build/parsePrep.c:537
+#: build/parsePrep.c:466
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "ligne %d: %%patch -b a besoin d'un argument: %s\n"
 
-#: build/parsePrep.c:546
+#: build/parsePrep.c:475
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "ligne %d: %%patch -z a besoin d'un argument: %s\n"
 
-#: build/parsePrep.c:558
+#: build/parsePrep.c:487
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "ligne %d: %%patch -p a besoin d'un argument: %s\n"
 
-#: build/parsePrep.c:565
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "ligne %d: mauvais argument à %%patch: %s\n"
 
-#: build/parsePrep.c:572
+#: build/parsePrep.c:501
 msgid "Too many patches!\n"
 msgstr "Trop de patchs !!!\n"
 
-#: build/parsePrep.c:576
+#: build/parsePrep.c:505
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "ligne %d: mauvais argument a %%patch: %s\n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:594
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "échec %s: %s\n"
+
+#: build/parsePrep.c:615
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "ligne %d: deuxième %%prep\n"
@@ -4294,59 +4290,59 @@ msgstr "Fichier %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Le fichier %s est plus petit que %u octets\n"
 
-#: rpmio/rpmio.c:713
+#: rpmio/rpmio.c:716
 msgid "Success"
 msgstr "Succès"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:739
 msgid "Bad server response"
 msgstr "Mauvaise réponse du serveur"
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:741
 msgid "Server I/O error"
 msgstr "Erreur d'E/S avec le serveur"
 
-#: rpmio/rpmio.c:740
+#: rpmio/rpmio.c:743
 msgid "Server timeout"
 msgstr "Timeout du serveur"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:745
 msgid "Unable to lookup server host address"
 msgstr "Impossible de résoudre l'adresse IP du serveur"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:747
 msgid "Unable to lookup server host name"
 msgstr "Impossible de retrouver le nom d'hôte du serveur"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:749
 msgid "Failed to connect to server"
 msgstr "Impossible de se connecter au serveur"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:751
 msgid "Failed to establish data connection to server"
 msgstr "Impossible d'établir une connexion de données avec le serveur"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:753
 msgid "I/O error to local file"
 msgstr "erreur d'E/S dans le fichier local"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:755
 msgid "Error setting remote server to passive mode"
 msgstr "Erreur en mettant le serveur distant en mode passif"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:757
 msgid "File not found on server"
 msgstr "Fichier non trouvé sur le serveur"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:759
 msgid "Abort in progress"
 msgstr "Abandon en cours"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:763
 msgid "Unknown or unexpected error"
 msgstr "Erreur inconnue ou inattendue"
 
-#: rpmio/rpmio.c:1611
+#: rpmio/rpmio.c:1616
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "connexion à %s en tant que %s, mdp %s\n"
