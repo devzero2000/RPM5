@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 21:11-0400\n"
+"POT-Creation-Date: 2006-04-17 13:11-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -4288,68 +4288,68 @@ msgstr "en voinut avata %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:683
+#: rpmio/rpmio.c:713
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:736
 #, fuzzy
 msgid "Bad server response"
 msgstr "Virheellinen FTP-palvelijan vastaus"
 
-#: rpmio/rpmio.c:708
+#: rpmio/rpmio.c:738
 #, fuzzy
 msgid "Server I/O error"
 msgstr "FTP:n IO-virhe"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:740
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP-palvelimen timeout"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:742
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP-palvelimen osoitetta ei löytynyt"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:744
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP-palvelimen nimeä ei löytynyt"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:746
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "En saanut yhteyttä FTP-palvelijaan"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:748
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "En saanut data-yhteyttä FTP-palvelijaan"
 
-#: rpmio/rpmio.c:720
+#: rpmio/rpmio.c:750
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "Paikallisen tiedoston IO-virhe"
 
-#: rpmio/rpmio.c:722
+#: rpmio/rpmio.c:752
 msgid "Error setting remote server to passive mode"
 msgstr "Virhe asetettaessa palvelinta passiiviin moodiin"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:754
 msgid "File not found on server"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: rpmio/rpmio.c:726
+#: rpmio/rpmio.c:756
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:730
+#: rpmio/rpmio.c:760
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP:n tuntematon tai odottamaton virhe"
 
-#: rpmio/rpmio.c:1573
+#: rpmio/rpmio.c:1611
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

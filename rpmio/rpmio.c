@@ -13,6 +13,36 @@
 # include <sys/socket.h>
 #endif
 
+#if defined(__LCLINT__)
+struct addrinfo
+{
+  int ai_flags;			/* Input flags.  */
+  int ai_family;		/* Protocol family for socket.  */
+  int ai_socktype;		/* Socket type.  */
+  int ai_protocol;		/* Protocol for socket.  */
+  socklen_t ai_addrlen;		/* Length of socket address.  */
+  struct sockaddr *ai_addr;	/* Socket address for socket.  */
+  char *ai_canonname;		/* Canonical name for service location.  */
+  struct addrinfo *ai_next;	/* Pointer to next in list.  */
+};
+
+extern int getaddrinfo (__const char *__restrict __name,
+			__const char *__restrict __service,
+			__const struct addrinfo *__restrict __req,
+			/*@out@*/ struct addrinfo **__restrict __pai)
+	/*@modifies *__pai @*/;
+
+extern int getnameinfo (__const struct sockaddr *__restrict __sa,
+			socklen_t __salen, /*@out@*/ char *__restrict __host,
+			socklen_t __hostlen, /*@out@*/ char *__restrict __serv,
+			socklen_t __servlen, unsigned int __flags)
+	/*@modifies __host, __serv @*/;
+
+extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
+	/*@modifies __ai @*/;
+#endif
+#include <netdb.h>		/* XXX getaddrinfo */
+
 #include <netinet/in.h>
 #include <arpa/inet.h>		/* XXX for inet_aton and HP-UX */
 
@@ -164,11 +194,11 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
     if (fd->bytesRemain != -1) {
 	sprintf(be, " clen %d", (int)fd->bytesRemain);
 	be += strlen(be);
-     }
+    }
     if (fd->wr_chunked) {
 	strcpy(be, " chunked");
 	be += strlen(be);
-     }
+    }
     *be++ = '\t';
     for (i = fd->nfps; i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
@@ -207,7 +237,7 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
 off_t fdSize(FD_t fd)
 {
     struct stat sb;
-    off_t rc = -1; 
+    off_t rc = -1;
 
 #ifdef	NOISY
 DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
@@ -756,7 +786,7 @@ const char *urlStrerror(const char *url)
 }
 
 #if !defined(HAVE_GETADDRINFO)
-#if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
+#if !defined(USE_ALT_DNS) || !USE_ALT_DNS
 static int mygethostbyname(const char * host,
 		/*@out@*/ struct in_addr * address)
 	/*@globals h_errno @*/
@@ -801,22 +831,24 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 	    return FTPERR_BAD_HOSTNAME;
 	}
     }
-    
+
     return 0;
 }
 /*@=compdef@*/
 /*@=boundsread@*/
-#endif
+#endif	/* HAVE_GETADDRINFO */
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies ctrl, fileSystem, internalState @*/
 {
     int fdno = -1;
     int rc;
 #ifdef	HAVE_GETADDRINFO
+/*@-unrecog@*/
     struct addrinfo hints, *res, *res0;
     char pbuf[NI_MAXSERV];
+    int xx;
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -829,14 +861,15 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 	    if ((fdno = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
 		continue;
 	    if (connect(fdno, res->ai_addr, res->ai_addrlen) < 0) {
-		close(fdno);
+		xx = close(fdno);
 		continue;
 	    }
 	    /* success */
 	    rc = 0;
 	    if (_ftp_debug) {
 		char hbuf[NI_MAXHOST];
-		getnameinfo(res->ai_addr, res->ai_addrlen, hbuf, sizeof(hbuf),
+		hbuf[0] = '\0';
+		xx = getnameinfo(res->ai_addr, res->ai_addrlen, hbuf, sizeof(hbuf),
 				NULL, 0, NI_NUMERICHOST);
 		fprintf(stderr,"++ connect [%s]:%d on fdno %d\n",
 				/*@-unrecog@*/ hbuf /*@=unrecog@*/, port, fdno);
@@ -847,8 +880,8 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
     }
     if (rc < 0)
 	goto errxit;
-
-#else	/* HAVE_GETADDRINFO */			    
+/*@=unrecog@*/
+#else	/* HAVE_GETADDRINFO */
     struct sockaddr_in sin;
 
 /*@-boundswrite@*/
@@ -857,7 +890,7 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
     sin.sin_family = AF_INET;
     sin.sin_port = htons(port);
     sin.sin_addr.s_addr = INADDR_ANY;
-    
+
   do {
     if ((rc = getHostAddress(host, &sin.sin_addr)) < 0)
 	break;
@@ -907,13 +940,13 @@ static int checkResponse(void * uu, FD_t ctrl,
     urlinfo u = uu;
     char *buf;
     size_t bufAlloced;
-    int bufLength = 0; 
+    int bufLength = 0;
     const char *s;
     char *se;
     int ec = 0;
     int moretodo = 1;
     char errorCode[4];
- 
+
     URLSANE(u);
     if (u->bufAlloced == 0 || u->buf == NULL) {
 	u->bufAlloced = _url_iobuf_size;
@@ -924,7 +957,7 @@ static int checkResponse(void * uu, FD_t ctrl,
     *buf = '\0';
 
     errorCode[0] = '\0';
-    
+
     do {
 	int rc;
 
@@ -1130,7 +1163,7 @@ fprintf(stderr, "-> %s", t);
 }
 
 static int ftpLogin(urlinfo u)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/
 {
     const char * host;
@@ -1229,6 +1262,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     int epsv;
     int port;
 
+    remoteIP[0] = '\0';
 /*@-boundswrite@*/
     URLSANE(u);
     if (ftpCmd == NULL)
@@ -1288,9 +1322,9 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 		}
 	}
     }
-    if (epsv==0)
+   if (epsv==0)
 #endif /* HAVE_GETNAMEINFO */
-        rc = ftpCommand(u, &passReply, "PASV", NULL);
+	rc = ftpCommand(u, &passReply, "PASV", NULL);
     if (rc) {
 	rc = FTPERR_PASSIVE_ERROR;
 	goto errxit;
@@ -1298,29 +1332,29 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 
     chptr = passReply;
     while (*chptr && *chptr != '(') chptr++;
-    if (*chptr != '(') return FTPERR_PASSIVE_ERROR; 
+    if (*chptr != '(') return FTPERR_PASSIVE_ERROR;
     chptr++;
     passReply = chptr;
     while (*chptr && *chptr != ')') chptr++;
     if (*chptr != ')') return FTPERR_PASSIVE_ERROR;
     *chptr-- = '\0';
 
-    if (epsv) {
+  if (epsv) {
 	int i;
-        if(sscanf(passReply,"%*c%*c%*c%d%*c",&i) != 1) {
+	if(sscanf(passReply,"%*c%*c%*c%d%*c",&i) != 1) {
 	   rc = FTPERR_PASSIVE_ERROR;
 	   goto errxit;
 	}
 	port = i;
-    } else {
- 
+  } else {
+
     while (*chptr && *chptr != ',') chptr--;
     if (*chptr != ',') return FTPERR_PASSIVE_ERROR;
     chptr--;
     while (*chptr && *chptr != ',') chptr--;
     if (*chptr != ',') return FTPERR_PASSIVE_ERROR;
     *chptr++ = '\0';
-    
+
     /* now passReply points to the IP portion, and chptr points to the
        port number portion */
 
@@ -1338,12 +1372,14 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     }
 /*@=boundswrite@*/
     sprintf(remoteIP, "%s", passReply);
-    } /* if (epsv) */
+  } /* if (epsv) */
 
 #ifdef HAVE_GETADDRINFO
+/*@-unrecog@*/
     {
-        struct addrinfo hints, *res, *res0;
+	struct addrinfo hints, *res, *res0;
 	char pbuf[NI_MAXSERV];
+	int xx;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
@@ -1376,17 +1412,19 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	    /* XXX setsockopt SO_LINGER */
 	    /* XXX setsockopt SO_KEEPALIVE */
 	    /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
-	    
+
 	    {
 		int criterr = 0;
 	        while (connect(fdFileno(data), res->ai_addr, res->ai_addrlen) < 0) {
 	            if (errno == EINTR)
-		        continue;
+		        /*@innercontinue@*/ continue;
 		    criterr++;
 		}
 		if (criterr) {
 		    if (res->ai_addr) {
-		        fdClose(data);
+/*@-refcounttrans@*/
+		        xx = fdClose(data);
+/*@=refcounttrans@*/
 		        continue;
 		    } else {
 		        rc = FTPERR_PASSIVE_ERROR;
@@ -1401,7 +1439,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	}
 	freeaddrinfo(res0);
     }
-	    
+/*@=unrecog@*/
 #else /* HAVE_GETADDRINFO */
     memset(&dataAddress, 0, sizeof(dataAddress));
     dataAddress.sin_family = AF_INET;
@@ -1427,7 +1465,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
 
     /*@-internalglobs@*/
-    while (connect(fdFileno(data), (struct sockaddr *) &dataAddress, 
+    while (connect(fdFileno(data), (struct sockaddr *) &dataAddress,
 	        sizeof(dataAddress)) < 0)
     {
 	if (errno == EINTR)
@@ -1496,7 +1534,7 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	/*@=noeffectuncon @*/
 /*@=boundsread@*/
     }
-    
+
     while (1) {
 	rc = Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
 	if (rc < 0)
@@ -1540,7 +1578,7 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	/*@=noeffectuncon @*/
 /*@=boundsread@*/
     }
-    
+
     return rc;
 }
 
@@ -1881,8 +1919,8 @@ void * ufdGetUrlinfo(FD_t fd)
 static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies buf, fileSystem, internalState @*/
-        /*@requires maxSet(buf) >= (count - 1) @*/
-        /*@ensures maxRead(buf) == result @*/
+	/*@requires maxSet(buf) >= (count - 1) @*/
+	/*@ensures maxRead(buf) == result @*/
 {
     FD_t fd = c2f(cookie);
     int bytesRead;
@@ -2026,7 +2064,7 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     case URL_IS_FTP:
     case URL_IS_DASH:
     default:
-        return -2;
+	return -2;
 	/*@notreached@*/ break;
     }
     return fdSeek(cookie, pos, whence);
@@ -2211,7 +2249,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    break;
 
 	/* XXX W2DO? use STOU rather than STOR to prevent clobbering */
-	cmd = ((flags & O_WRONLY) 
+	cmd = ((flags & O_WRONLY)
 		?  ((flags & O_APPEND) ? "APPE" :
 		   ((flags & O_CREAT) ? "STOR" : "STOR"))
 		:  ((flags & O_CREAT) ? "STOR" : "RETR"));
@@ -2315,7 +2353,7 @@ static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
 	rc = fps->fp;
 	break;
     }
-    
+
     return rc;
 }
 
@@ -2330,7 +2368,7 @@ FD_t gzdOpen(const char * path, const char * fmode)
 	return NULL;
     fd = fdNew("open (gzdOpen)");
     fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
-    
+
 DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fdLink(fd, "gzdOpen");
 }
@@ -2553,7 +2591,7 @@ static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
 	rc = fps->fp;
 	break;
     }
-    
+
     return rc;
 }
 
@@ -3270,7 +3308,7 @@ int Fileno(FD_t fd)
 	rc = fd->fps[i].fdno;
 /*@=boundsread@*/
     }
-    
+
 DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
     return rc;
 }
@@ -3429,12 +3467,12 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", bn, mode, rc);
     for (r = alloca_strdup(path); r != NULL && *r != '\0'; r = re) {
 
 	/* Find next element, terminate current element. */
-        for (re = r; (re = strchr(re, ':')) != NULL; re++) {
-            if (!(re[1] == '/' && re[2] == '/'))
-                /*@innerbreak@*/ break;
-        }
-        if (re && *re == ':')
-            *re++ = '\0';
+	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
+	    if (!(re[1] == '/' && re[2] == '/'))
+		/*@innerbreak@*/ break;
+	}
+	if (re && *re == ':')
+	    *re++ = '\0';
 	else
 	    re = r + strlen(r);
 

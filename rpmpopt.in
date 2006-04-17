@@ -44,6 +44,10 @@ rpm	alias --scripts --qf '\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
+rpm     alias --orphandirs --nofiles \
+                   --pipe "grep '^/' | sort -u" \
+        --POPTdesc=$"display directories needed, but not provided, by packages"
+
 rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
 		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh" \
 	--POPTdesc=$"set permissions of files in a package"
