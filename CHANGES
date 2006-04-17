@@ -8,7 +8,9 @@
 	- IPv4/6 and EPSV support by Arkadiusz Miskiewicz <misiek@pld.org.pl>.
 	- permit autofetch for virgin sources.
 	- add AI_IDN flag to getaddrinfo().
-	- fix: lazy mkdir for local sourcedir.
+	- fix: lazy mkdir for local _sourcedir.
+	- add _patchdir macro similar to _sourcedir.
+	- permit autofetch for patches.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

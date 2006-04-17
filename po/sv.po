@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 20:32-0400\n"
+"POT-Creation-Date: 2006-04-16 21:11-0400\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -582,7 +582,7 @@ msgstr "rad: %s\n"
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s\n"
 
-#: build/files.c:2502 build/parsePrep.c:50
+#: build/files.c:2502 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
@@ -985,75 +985,75 @@ msgstr "rad %d: Okänd tagg: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Specfil kan inte använda BuildRoot\n"
 
-#: build/parsePrep.c:45
+#: build/parsePrep.c:48
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "Dålig källa: %s: %s\n"
 
-#: build/parsePrep.c:86
+#: build/parsePrep.c:104
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Inget patch-nummer %d\n"
 
-#: build/parsePrep.c:186
-#, c-format
-msgid "No source number %d\n"
-msgstr "Inget källkodsnummer %d\n"
-
-#: build/parsePrep.c:217
+#: build/parsePrep.c:131 build/parsePrep.c:251
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
 
-#: build/parsePrep.c:218
+#: build/parsePrep.c:132 build/parsePrep.c:252
 msgid "rpmMkdirPath failed."
 msgstr ""
 
-#: build/parsePrep.c:328
+#: build/parsePrep.c:220
+#, c-format
+msgid "No source number %d\n"
+msgstr "Inget källkodsnummer %d\n"
+
+#: build/parsePrep.c:362
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fel i tolkning av %%setup: %s\n"
 
-#: build/parsePrep.c:343
+#: build/parsePrep.c:377
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "rad %d: Felaktigt argument till %%setup: %s\n"
 
-#: build/parsePrep.c:361
+#: build/parsePrep.c:395
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rad %d: Felaktig %%setup-flagga %s: %s\n"
 
-#: build/parsePrep.c:503
+#: build/parsePrep.c:537
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -b: %s\n"
 
-#: build/parsePrep.c:512
+#: build/parsePrep.c:546
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -z: %s\n"
 
-#: build/parsePrep.c:524
+#: build/parsePrep.c:558
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:531
+#: build/parsePrep.c:565
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:538
+#: build/parsePrep.c:572
 msgid "Too many patches!\n"
 msgstr "För många patchar!\n"
 
-#: build/parsePrep.c:542
+#: build/parsePrep.c:576
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch: %s\n"
 
-#: build/parsePrep.c:578
+#: build/parsePrep.c:612
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"

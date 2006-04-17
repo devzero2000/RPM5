@@ -199,9 +199,10 @@ package or when debugging this package.\
 #	The default signature type.
 %_signature		none
 
-#	The directory where sources/patches from a source package will be
+#	The directories where sources/patches from a source package will be
 #	installed. This is also where sources/patches are found when building.
 %_sourcedir		%{_topdir}/SOURCES
+%_patchdir		%{_sourcedir}
 
 #	The directory where the spec file from a source package will be
 #	installed.

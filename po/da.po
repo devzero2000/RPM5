@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 20:32-0400\n"
+"POT-Creation-Date: 2006-04-16 21:11-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -584,7 +584,7 @@ msgstr "linie: %s\n"
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2502 build/parsePrep.c:50
+#: build/files.c:2502 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
@@ -991,75 +991,75 @@ msgstr "linie %d: Ukendt mærke: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-fil kan ikke bruge BuildRoot\n"
 
-#: build/parsePrep.c:45
+#: build/parsePrep.c:48
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "Ugyldig kilde: %s: %s\n"
 
-#: build/parsePrep.c:86
+#: build/parsePrep.c:104
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Ingen lap nummer %d\n"
 
-#: build/parsePrep.c:186
-#, c-format
-msgid "No source number %d\n"
-msgstr "Ingen kilde nummer %d\n"
-
-#: build/parsePrep.c:217
+#: build/parsePrep.c:131 build/parsePrep.c:251
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: build/parsePrep.c:218
+#: build/parsePrep.c:132 build/parsePrep.c:252
 msgid "rpmMkdirPath failed."
 msgstr ""
 
-#: build/parsePrep.c:328
+#: build/parsePrep.c:220
+#, c-format
+msgid "No source number %d\n"
+msgstr "Ingen kilde nummer %d\n"
+
+#: build/parsePrep.c:362
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fejl ved tolking af %%setup: %s\n"
 
-#: build/parsePrep.c:343
+#: build/parsePrep.c:377
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%setup %c: %s\n"
 
-#: build/parsePrep.c:361
+#: build/parsePrep.c:395
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linie %d: Ugyldigt '%%setup'-tilvalg %s: %s\n"
 
-#: build/parsePrep.c:503
+#: build/parsePrep.c:537
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -b: %s\n"
 
-#: build/parsePrep.c:512
+#: build/parsePrep.c:546
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -z: %s\n"
 
-#: build/parsePrep.c:524
+#: build/parsePrep.c:558
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -p: %s\n"
 
-#: build/parsePrep.c:531
+#: build/parsePrep.c:565
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%patch -p: %s\n"
 
-#: build/parsePrep.c:538
+#: build/parsePrep.c:572
 msgid "Too many patches!\n"
 msgstr "For mange lapper (patches)!\n"
 
-#: build/parsePrep.c:542
+#: build/parsePrep.c:576
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%patch: %s\n"
 
-#: build/parsePrep.c:578
+#: build/parsePrep.c:612
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linie %d: anden %%prep\n"

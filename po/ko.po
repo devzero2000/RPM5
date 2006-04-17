@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 20:32-0400\n"
+"POT-Creation-Date: 2006-04-16 21:11-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -583,7 +583,7 @@ msgstr "행: %s\n"
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
-#: build/files.c:2502 build/parsePrep.c:50
+#: build/files.c:2502 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
@@ -984,75 +984,75 @@ msgstr "%d 번째 행: 알 수 없는 태그입니다: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec 파일은 BuildRoot를 사용할 수 없습니다\n"
 
-#: build/parsePrep.c:45
+#: build/parsePrep.c:48
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "잘못된 소스: %s: %s\n"
 
-#: build/parsePrep.c:86
+#: build/parsePrep.c:104
 #, c-format
 msgid "No patch number %d\n"
 msgstr "패치 번호 %d가 없습니다\n"
 
-#: build/parsePrep.c:186
-#, c-format
-msgid "No source number %d\n"
-msgstr "소스 번호 %d가 없습니다\n"
-
-#: build/parsePrep.c:217
+#: build/parsePrep.c:131 build/parsePrep.c:251
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: build/parsePrep.c:218
+#: build/parsePrep.c:132 build/parsePrep.c:252
 msgid "rpmMkdirPath failed."
 msgstr ""
 
-#: build/parsePrep.c:328
+#: build/parsePrep.c:220
+#, c-format
+msgid "No source number %d\n"
+msgstr "소스 번호 %d가 없습니다\n"
+
+#: build/parsePrep.c:362
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup에서 오류 발생: %s\n"
 
-#: build/parsePrep.c:343
+#: build/parsePrep.c:377
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:361
+#: build/parsePrep.c:395
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 %s 옵션: %s\n"
 
-#: build/parsePrep.c:503
+#: build/parsePrep.c:537
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 번째 행: %%patch -b 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:512
+#: build/parsePrep.c:546
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 번째 행: %%patch -z 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:524
+#: build/parsePrep.c:558
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:531
+#: build/parsePrep.c:565
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:538
+#: build/parsePrep.c:572
 msgid "Too many patches!\n"
 msgstr "패치가 너무 많습니다!\n"
 
-#: build/parsePrep.c:542
+#: build/parsePrep.c:576
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 번째 행: %%patch에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:578
+#: build/parsePrep.c:612
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 번째 행: 두번째 %%prep\n"

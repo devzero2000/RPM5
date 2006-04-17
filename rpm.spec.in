@@ -581,6 +581,8 @@ exit 0
 * Mon Apr 17 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.7
 - add AI_IDN flag to getaddrinfo().
 - fix: lazy mkdir for local sourcedir before fetching.
+- add _patchdir macro similar to _sourcedir.
+- permit autofetch for patches.
 
 * Sun Apr 16 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.6
 - permit autofetch for virgin sources.

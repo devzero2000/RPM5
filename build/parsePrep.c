@@ -11,6 +11,9 @@
 
 /*@access StringBuf @*/	/* compared with NULL */
 
+/*@unchecked@*/
+static int autofetch = 1;
+
 /* These have to be global to make up for stupid compilers */
 /*@unchecked@*/
     static int leaveDirs, skipDefaultAction;
@@ -70,24 +73,12 @@ static int checkOwners(const char * urlfn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char *fn, *urlfn;
+    const char *fn, *Lurlfn, *Rurlfn;
     static char buf[BUFSIZ];
     char args[BUFSIZ];
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
-
-    for (sp = spec->sources; sp != NULL; sp = sp->next) {
-	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
-	    break;
-	}
-    }
-    if (sp == NULL) {
-	rpmError(RPMERR_BADSPEC, _("No patch number %d\n"), c);
-	return NULL;
-    }
-
-    urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     args[0] = '\0';
     if (db) {
@@ -104,14 +95,58 @@ static int checkOwners(const char * urlfn)
 	strcat(args, " -E");
     }
 
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
+	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
+	    break;
+	}
+    }
+    if (sp == NULL) {
+	rpmError(RPMERR_BADSPEC, _("No patch number %d\n"), c);
+	return NULL;
+    }
+
+    Rurlfn = rpmGetPath("%{_Rpatchdir}/", sp->source, NULL);
+    if (Rurlfn == NULL || *Rurlfn == '%') {
+	Rurlfn = _free(Rurlfn);
+	Rurlfn = rpmGetPath("%{_patchdir}/", sp->source, NULL);
+    }
+    Lurlfn = rpmGetPath("%{_patchdir}/", sp->source, NULL);
+
+    if (autofetch) {
+	struct stat st;
+	if (Lstat(Lurlfn, &st) != 0 && errno == ENOENT) {
+	    if (strcmp(Lurlfn, Rurlfn)) {
+		const char * _patchdir = NULL;
+		rpmRC rpmrc;
+		int rc = 0;
+
+		/* XXX insure that %{_sourcedir} exists */
+		_patchdir = rpmGenPath(NULL, "%{_patchdir}", NULL);
+		rpmrc = rpmMkdirPath(_patchdir, "_patchdir");
+		_patchdir = _free(_patchdir);
+
+		if (rpmrc != RPMRC_OK || (rc = urlGetFile(Rurlfn, Lurlfn)) != 0)
+		{
+		    rpmError(RPMERR_BADFILENAME,
+			_("Fetching %s failed: %s\n"), Rurlfn,
+			(rc ? ftpStrerror(rc) : _("rpmMkdirPath failed.")));
+		    Lurlfn = _free(Lurlfn);
+		    Rurlfn = _free(Rurlfn);
+		    return NULL;
+		}
+	    }
+	}
+    }
+
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	urlfn = _free(urlfn);
+    if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
+	Lurlfn = _free(Lurlfn);
+	Rurlfn = _free(Rurlfn);
 	return NULL;
     }
 
     fn = NULL;
-    urltype = urlPath(urlfn, &fn);
+    urltype = urlPath(Lurlfn, &fn);
     switch (urltype) {
     case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
@@ -121,7 +156,8 @@ static int checkOwners(const char * urlfn)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
-	urlfn = _free(urlfn);
+	Lurlfn = _free(Lurlfn);
+	Rurlfn = _free(Rurlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -149,13 +185,11 @@ static int checkOwners(const char * urlfn)
 		strip, args, fn);
     }
 
-    urlfn = _free(urlfn);
+    Lurlfn = _free(Lurlfn);
+    Rurlfn = _free(Rurlfn);
     return buf;
 }
 /*@=boundswrite@*/
-
-/*@unchecked@*/
-static int autofetch = 1;
 
 /**
  * Expand %setup macro into %prep scriptlet.
@@ -208,7 +242,7 @@ static int autofetch = 1;
 
 		/* XXX insure that %{_sourcedir} exists */
 		_sourcedir = rpmGenPath(NULL, "%{_sourcedir}", NULL);
-		rpmrc = rpmMkdirPath(_sourcedir, "sourcedir");
+		rpmrc = rpmMkdirPath(_sourcedir, "_sourcedir");
 		_sourcedir = _free(_sourcedir);
 
 		if (rpmrc != RPMRC_OK || (rc = urlGetFile(Rurlfn, Lurlfn)) != 0)
