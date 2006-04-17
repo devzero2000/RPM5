@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 13:12-0400\n"
+"POT-Creation-Date: 2006-04-16 20:32-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1014,56 +1014,60 @@ msgstr "パッチ番号 %d はありません\n"
 msgid "No source number %d\n"
 msgstr "ソース番号 %d はありません\n"
 
-#: build/parsePrep.c:208
+#: build/parsePrep.c:217
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
 
-#: build/parsePrep.c:318
+#: build/parsePrep.c:218
+msgid "rpmMkdirPath failed."
+msgstr ""
+
+#: build/parsePrep.c:328
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup の構文解析エラー: %s\n"
 
-#: build/parsePrep.c:333
+#: build/parsePrep.c:343
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 行目: %%setup への不正な引数: %s\n"
 
-#: build/parsePrep.c:351
+#: build/parsePrep.c:361
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 行目: 不正な %%setup オプション %s: %s\n"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 行目: %%patch -b には引数が必要です: %s\n"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 行目: %%patch -z には引数が必要です: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:524
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p には引数が必要です: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:531
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p への不正な引数: %s\n"
 
-#: build/parsePrep.c:528
+#: build/parsePrep.c:538
 msgid "Too many patches!\n"
 msgstr "パッチが多すぎます!\n"
 
-#: build/parsePrep.c:532
+#: build/parsePrep.c:542
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 行目: %%patch への不正な引数: %s\n"
 
-#: build/parsePrep.c:568
+#: build/parsePrep.c:578
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 行目: 2番目の %%prep\n"
@@ -4257,7 +4261,7 @@ msgstr "処理中の中断"
 msgid "Unknown or unexpected error"
 msgstr "不明または予期せぬエラー"
 
-#: rpmio/rpmio.c:1570
+#: rpmio/rpmio.c:1573
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s に %s (パスワード %s) でログイン中\n"
@@ -4316,7 +4320,6 @@ msgstr "エラー: %sポートは数字でなければなりません。\n"
 msgid "url port must be a number\n"
 msgstr "url ポートは数字でなければなりません。\n"
 
-#. XXX Fstrerror
 #: rpmio/url.c:580
 #, c-format
 msgid "failed to create %s: %s\n"

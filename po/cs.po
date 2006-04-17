@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 13:12-0400\n"
+"POT-Creation-Date: 2006-04-16 20:32-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1009,56 +1009,60 @@ msgstr "Patch èíslo %d neexistuje\n"
 msgid "No source number %d\n"
 msgstr "Zdroj èíslo %d neexistuje\n"
 
-#: build/parsePrep.c:208
+#: build/parsePrep.c:217
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s selhalo\n"
 
-#: build/parsePrep.c:318
+#: build/parsePrep.c:218
+msgid "rpmMkdirPath failed."
+msgstr ""
+
+#: build/parsePrep.c:328
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Chyba pøi parsování %%setup: %s\n"
 
-#: build/parsePrep.c:333
+#: build/parsePrep.c:343
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "øádek %d: ©patnı parametr v %%setup: %s\n"
 
-#: build/parsePrep.c:351
+#: build/parsePrep.c:361
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "øádek %d: ©patná volba v %%setup %s: %s\n"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "øádek %d: K %%patch -b potøebuji parametr: %s\n"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "øádek %d: K %%patch -z potøebuji parametr: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:524
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "øádek %d: K %%patch -p potøebuji parametr: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:531
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "øádek %d: ©patnı parametr pro %%patch -p: %s\n"
 
-#: build/parsePrep.c:528
+#: build/parsePrep.c:538
 msgid "Too many patches!\n"
 msgstr "Pøíli¹ mnoho patchù!\n"
 
-#: build/parsePrep.c:532
+#: build/parsePrep.c:542
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "øádek %d: ©patnı parametr pro %%patch: %s\n"
 
-#: build/parsePrep.c:568
+#: build/parsePrep.c:578
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "øádek %d: druhı %%prep\n"
@@ -4302,7 +4306,7 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr "neoèekávanı zdroj dotazu"
 
-#: rpmio/rpmio.c:1570
+#: rpmio/rpmio.c:1573
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -4365,7 +4369,6 @@ msgstr "øádek %d: Polo¾ka Epoch/Serial musí bıt èíslo: %s\n"
 msgid "url port must be a number\n"
 msgstr "øádek %d: Polo¾ka Epoch/Serial musí bıt èíslo: %s\n"
 
-#. XXX Fstrerror
 #: rpmio/url.c:580
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"

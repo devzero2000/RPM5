@@ -200,16 +200,26 @@ static int autofetch = 1;
 
     if (autofetch) {
 	struct stat st;
-	int rc;
 	if (Lstat(Lurlfn, &st) != 0 && errno == ENOENT) {
-	    if (strcmp(Lurlfn, Rurlfn))
-	    if ((rc = urlGetFile(Rurlfn, Lurlfn)) != 0) {
-		rpmError(RPMERR_BADFILENAME,
-			_("Fetching %s failed: %s\n"),
-			Rurlfn, ftpStrerror(rc));
-		Lurlfn = _free(Lurlfn);
-		Rurlfn = _free(Rurlfn);
-		return NULL;
+	    if (strcmp(Lurlfn, Rurlfn)) {
+		const char * _sourcedir = NULL;
+		rpmRC rpmrc;
+		int rc = 0;
+
+		/* XXX insure that %{_sourcedir} exists */
+		_sourcedir = rpmGenPath(NULL, "%{_sourcedir}", NULL);
+		rpmrc = rpmMkdirPath(_sourcedir, "sourcedir");
+		_sourcedir = _free(_sourcedir);
+
+		if (rpmrc != RPMRC_OK || (rc = urlGetFile(Rurlfn, Lurlfn)) != 0)
+		{
+		    rpmError(RPMERR_BADFILENAME,
+			_("Fetching %s failed: %s\n"), Rurlfn,
+			(rc ? ftpStrerror(rc) : _("rpmMkdirPath failed.")));
+		    Lurlfn = _free(Lurlfn);
+		    Rurlfn = _free(Rurlfn);
+		    return NULL;
+		}
 	    }
 	}
     }

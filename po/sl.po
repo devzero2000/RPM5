@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 13:12-0400\n"
+"POT-Creation-Date: 2006-04-16 20:32-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1021,57 +1021,61 @@ msgstr "Popravek ¹t. %d manjka"
 msgid "No source number %d\n"
 msgstr "Izvorna koda ¹t. %d manjka"
 
-#: build/parsePrep.c:208
+#: build/parsePrep.c:217
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s neuspe¹en"
 
-#: build/parsePrep.c:318
+#: build/parsePrep.c:218
+msgid "rpmMkdirPath failed."
+msgstr ""
+
+#: build/parsePrep.c:328
 #, fuzzy, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Napaka pri razèlembi %%setup: %s"
 
-#: build/parsePrep.c:333
+#: build/parsePrep.c:343
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "vrstica %d: Nepravilen argument za %%setup %c: %s"
 
-#: build/parsePrep.c:351
+#: build/parsePrep.c:361
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "vrstica %d: Nepravilna izbira %%setup %s: %s"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:503
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "vrstica %d: Manjka argument za %%patch -b: %s"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:512
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "vrstica %d: Manjka argument za %%patch -z: %s"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:524
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "vrstica %d: Manjka argument za %%patch -p: %s"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:531
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "vrstica %d: Nepravilen argument za %%patch -p: %s"
 
-#: build/parsePrep.c:528
+#: build/parsePrep.c:538
 #, fuzzy
 msgid "Too many patches!\n"
 msgstr "Preveè popravkov!"
 
-#: build/parsePrep.c:532
+#: build/parsePrep.c:542
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "vrstica %d: Nepravilen argument za %%patch: %s"
 
-#: build/parsePrep.c:568
+#: build/parsePrep.c:578
 #, fuzzy, c-format
 msgid "line %d: second %%prep\n"
 msgstr "vrstica %d: drugi %%prep"
@@ -4356,7 +4360,7 @@ msgstr "Prekinitev v teku"
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: rpmio/rpmio.c:1570
+#: rpmio/rpmio.c:1573
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"
@@ -4416,7 +4420,6 @@ msgstr "napaka: vrata %s morajo biti ¹tevilka\n"
 msgid "url port must be a number\n"
 msgstr "vrata URL morajo biti ¹tevilka\n"
 
-#. XXX Fstrerror
 #: rpmio/url.c:580
 #, c-format
 msgid "failed to create %s: %s\n"

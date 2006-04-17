@@ -1349,6 +1349,9 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_NUMERICHOST;
+#if defined(AI_IDN)
+	hints.ai_flags |= AI_IDN;
+#endif
 	sprintf(pbuf, "%d", port);
 	pbuf[sizeof(pbuf)-1] = '\0';
 	if (getaddrinfo(remoteIP, pbuf, &hints, &res0)) {

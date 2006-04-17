@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 13:12-0400\n"
+"POT-Creation-Date: 2006-04-16 20:32-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1009,56 +1009,60 @@ msgstr "Нет заплаты номер %d\n"
 msgid "No source number %d\n"
 msgstr "Нет исходника номер %d\n"
 
-#: build/parsePrep.c:208
+#: build/parsePrep.c:217
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: build/parsePrep.c:318
+#: build/parsePrep.c:218
+msgid "rpmMkdirPath failed."
+msgstr ""
+
+#: build/parsePrep.c:328
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Ошибка анализа %%setup: %s\n"
 
-#: build/parsePrep.c:333
+#: build/parsePrep.c:343
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "строка %d: Неверный аргумент для %%setup %s\n"
 
-#: build/parsePrep.c:351
+#: build/parsePrep.c:361
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "строка %d: Неверный параметр %%setup %s: %s\n"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "строка %d: Для %%patch -b нужен аргумент: %s\n"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "строка %d: Для %%patch -z нужен аргумент: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:524
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "строка %d: Для %%patch -p нужен аргумент: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:531
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "строка %d: Неверный аргумент для %%patch -p: %s\n"
 
-#: build/parsePrep.c:528
+#: build/parsePrep.c:538
 msgid "Too many patches!\n"
 msgstr "Слишком много заплат!\n"
 
-#: build/parsePrep.c:532
+#: build/parsePrep.c:542
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "строка %d: Неверный аргумент для %%patch: %s\n"
 
-#: build/parsePrep.c:568
+#: build/parsePrep.c:578
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "строка %d: второй %%prep\n"
@@ -4275,7 +4279,7 @@ msgstr "Отмена в процессе"
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: rpmio/rpmio.c:1570
+#: rpmio/rpmio.c:1573
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
@@ -4334,7 +4338,6 @@ msgstr "ошибка: %s порт должен быть числом\n"
 msgid "url port must be a number\n"
 msgstr "url порт должен быть числом\n"
 
-#. XXX Fstrerror
 #: rpmio/url.c:580
 #, c-format
 msgid "failed to create %s: %s\n"

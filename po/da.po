@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 13:12-0400\n"
+"POT-Creation-Date: 2006-04-16 20:32-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1006,56 +1006,60 @@ msgstr "Ingen lap nummer %d\n"
 msgid "No source number %d\n"
 msgstr "Ingen kilde nummer %d\n"
 
-#: build/parsePrep.c:208
+#: build/parsePrep.c:217
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: build/parsePrep.c:318
+#: build/parsePrep.c:218
+msgid "rpmMkdirPath failed."
+msgstr ""
+
+#: build/parsePrep.c:328
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fejl ved tolking af %%setup: %s\n"
 
-#: build/parsePrep.c:333
+#: build/parsePrep.c:343
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%setup %c: %s\n"
 
-#: build/parsePrep.c:351
+#: build/parsePrep.c:361
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linie %d: Ugyldigt '%%setup'-tilvalg %s: %s\n"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -b: %s\n"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -z: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:524
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -p: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:531
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%patch -p: %s\n"
 
-#: build/parsePrep.c:528
+#: build/parsePrep.c:538
 msgid "Too many patches!\n"
 msgstr "For mange lapper (patches)!\n"
 
-#: build/parsePrep.c:532
+#: build/parsePrep.c:542
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%patch: %s\n"
 
-#: build/parsePrep.c:568
+#: build/parsePrep.c:578
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linie %d: anden %%prep\n"
@@ -4314,7 +4318,7 @@ msgstr "Afbryder programmet"
 msgid "Unknown or unexpected error"
 msgstr "Ukendt eller uventet fejl"
 
-#: rpmio/rpmio.c:1570
+#: rpmio/rpmio.c:1573
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logger på %s som %s, adgangskode %s\n"
@@ -4373,7 +4377,6 @@ msgstr "Fejl: %sport skal være et tal\n"
 msgid "url port must be a number\n"
 msgstr "url-port skal være et tal\n"
 
-#. XXX Fstrerror
 #: rpmio/url.c:580
 #, c-format
 msgid "failed to create %s: %s\n"

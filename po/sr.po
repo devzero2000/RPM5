@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 13:12-0400\n"
+"POT-Creation-Date: 2006-04-16 20:32-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -1011,56 +1011,60 @@ msgstr "(nije broj)"
 msgid "No source number %d\n"
 msgstr "(nije broj)"
 
-#: build/parsePrep.c:208
+#: build/parsePrep.c:217
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "PGP omanuo"
 
-#: build/parsePrep.c:318
+#: build/parsePrep.c:218
+msgid "rpmMkdirPath failed."
+msgstr ""
+
+#: build/parsePrep.c:328
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:333
+#: build/parsePrep.c:343
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:351
+#: build/parsePrep.c:361
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:503
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:512
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:524
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:531
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:528
+#: build/parsePrep.c:538
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:532
+#: build/parsePrep.c:542
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:568
+#: build/parsePrep.c:578
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -4339,7 +4343,7 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
 
-#: rpmio/rpmio.c:1570
+#: rpmio/rpmio.c:1573
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -4400,7 +4404,6 @@ msgstr "gre¹ka: FTP port mora biti broj\n"
 msgid "url port must be a number\n"
 msgstr "gre¹ka: FTP port mora biti broj\n"
 
-#. XXX Fstrerror
 #: rpmio/url.c:580
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"

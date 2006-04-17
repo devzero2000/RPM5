@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-16 13:12-0400\n"
+"POT-Creation-Date: 2006-04-16 20:32-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1014,56 +1014,60 @@ msgstr "%d yama numarasý yok\n"
 msgid "No source number %d\n"
 msgstr "%d kaynak kodu numarasý yok\n"
 
-#: build/parsePrep.c:208
+#: build/parsePrep.c:217
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s baþarýsýz\n"
 
-#: build/parsePrep.c:318
+#: build/parsePrep.c:218
+msgid "rpmMkdirPath failed."
+msgstr ""
+
+#: build/parsePrep.c:328
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup çözümlenirken hata: %s\n"
 
-#: build/parsePrep.c:333
+#: build/parsePrep.c:343
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "satýr %d: %%setup argumaný hatalý: %s\n"
 
-#: build/parsePrep.c:351
+#: build/parsePrep.c:361
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "satýr %d: %%setup seçeneði %s hatalý: %s\n"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "satýr %d: %%patch -b'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "satýr %d: %%patch -z'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:524
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:531
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'nin argümaný hatalý: %s\n"
 
-#: build/parsePrep.c:528
+#: build/parsePrep.c:538
 msgid "Too many patches!\n"
 msgstr "Yamalar çok fazla!\n"
 
-#: build/parsePrep.c:532
+#: build/parsePrep.c:542
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "satýr %d: %%patch argüman hatasý: %s\n"
 
-#: build/parsePrep.c:568
+#: build/parsePrep.c:578
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "satýr %d: %%prep saniye\n"
@@ -4313,7 +4317,7 @@ msgstr "Kesme iþlemi sürüyor"
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1570
+#: rpmio/rpmio.c:1573
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"
@@ -4372,7 +4376,6 @@ msgstr "hata: %sport bir sayý olmalý\n"
 msgid "url port must be a number\n"
 msgstr "url portu bir sayý olmalý\n"
 
-#. XXX Fstrerror
 #: rpmio/url.c:580
 #, c-format
 msgid "failed to create %s: %s\n"

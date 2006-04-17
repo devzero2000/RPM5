@@ -578,6 +578,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Apr 17 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.7
+- add AI_IDN flag to getaddrinfo().
+- fix: lazy mkdir for local sourcedir before fetching.
+
 * Sun Apr 16 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.6
 - permit autofetch for virgin sources.
 

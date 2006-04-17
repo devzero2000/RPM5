@@ -572,11 +572,11 @@ int urlGetFile(const char * url, const char * dest)
     if (dest == NULL)
 	return FTPERR_UNKNOWN;
 
+    /* XXX this can fail if directory in path does not exist. */
     tfd = Fopen(dest, "w.ufdio");
 if (_url_debug)
 fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : NULL), dest);
     if (tfd == NULL || Ferror(tfd)) {
-	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));
 	rc = FTPERR_UNKNOWN;
 	goto exit;
