@@ -13,6 +13,7 @@
 	- permit autofetch for patches.
 	- fetch all (even unused) sources/patches at %prep start.
 	- bolt in syck, add to librpmio.
+	- absorb lsyck.c (and libsyck.la) into internal lua.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
