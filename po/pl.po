@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 16:00-0400\n"
+"POT-Creation-Date: 2006-04-26 10:24-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1631,12 +1631,12 @@ msgstr "dodawanie %d argumentów z manifestu.\n"
 msgid "cannot create %%%s %s\n"
 msgstr "nie mo¿na utworzyæ %%%s %s\n"
 
-#: lib/misc.c:46
+#: lib/misc.c:47
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nie mo¿na zapisaæ do %%%s %s\n"
 
-#: lib/misc.c:191 lib/misc.c:196 lib/misc.c:202
+#: lib/misc.c:193 lib/misc.c:198 lib/misc.c:204
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "b³±d przy tworzeniu pliku tymczasowego %s\n"

@@ -55,6 +55,9 @@ fi
 if [ -d neon ]; then
     (echo "--- neon"; cd neon; sh ./autogen.sh "$@")
 fi
+if [ -d syck ]; then
+    (echo "--- syck"; cd syck; sh ./bootstrap "$@")
+fi
 #if [ -d sqlite ]; then
 #    (echo "--- sqlite"; cd sqlite; sh ./autogen.sh --disable-tcl "$@")
 #fi

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 16:00-0400\n"
+"POT-Creation-Date: 2006-04-26 10:24-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1663,12 +1663,12 @@ msgstr "%d girdi %s indeksine ekleniyor.\n"
 msgid "cannot create %%%s %s\n"
 msgstr "%%%s dosyasý oluþturulamýyor: %s\n"
 
-#: lib/misc.c:46
+#: lib/misc.c:47
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%%%s dosyasýna yazýlamaz %s\n"
 
-#: lib/misc.c:191 lib/misc.c:196 lib/misc.c:202
+#: lib/misc.c:193 lib/misc.c:198 lib/misc.c:204
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "%s geçici dosyasý oluþturulurken hata\n"

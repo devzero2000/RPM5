@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-17 16:00-0400\n"
+"POT-Creation-Date: 2006-04-26 10:24-0400\n"
 "PO-Revision-Date: 2006-02-19 22:53+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1649,12 +1649,12 @@ msgstr "Füge %d Argumente aus Paket-Liste hinzu.\n"
 msgid "cannot create %%%s %s\n"
 msgstr "Kann %%%s %s nicht erstellen\n"
 
-#: lib/misc.c:46
+#: lib/misc.c:47
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "Kann nicht nach %%%s %s schreiben\n"
 
-#: lib/misc.c:191 lib/misc.c:196 lib/misc.c:202
+#: lib/misc.c:193 lib/misc.c:198 lib/misc.c:204
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "Fehler beim erstellen der temporären Datei %s\n"

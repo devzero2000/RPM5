@@ -1084,6 +1084,21 @@ AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_SUBDIR)
 AC_SUBST(WITH_LUA_INCLUDE)
 
+WITH_SYCK_LIB=
+WITH_SYCK_SUBDIR=
+WITH_SYCK_INCLUDE=
+withval=yes
+AC_ARG_WITH(syck, [  --with-syck             build with syck support ])
+if test $withval != no -a -d syck ; then
+  AC_DEFINE(WITH_SYCK, 1, [Build with syck support?])
+  WITH_SYCK_SUBDIR="syck"
+  WITH_SYCK_INCLUDE="-I\${top_srcdir}/${WITH_SYCK_SUBDIR}/lib"
+  WITH_SYCK_LIB="\$(top_builddir)/${WITH_SYCK_SUBDIR}/lib/libsyck.la"
+fi
+AC_SUBST(WITH_SYCK_LIB)
+AC_SUBST(WITH_SYCK_SUBDIR)
+AC_SUBST(WITH_SYCK_INCLUDE)
+
 withval=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
 if test $withval = yes ; then
@@ -1444,6 +1459,9 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	python/Makefile
 	python/rpm/Makefile
  	lua/Makefile
+ 	syck/Makefile
+ 	syck/lib/Makefile
+ 	syck/tests/Makefile
 	wnh/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
