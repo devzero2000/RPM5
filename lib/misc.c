@@ -43,7 +43,9 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	}
     }
     if ((rc = Access(dpath, W_OK))) {
+#ifdef	DYING	/* XXX -q --specfile borks here with autofetch. */
 	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"), dname, dpath);
+#endif
 	return RPMRC_FAIL;
     }
     return RPMRC_OK;
