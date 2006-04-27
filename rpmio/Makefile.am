@@ -41,6 +41,7 @@ librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFL
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \
 	@WITH_LUA_LIB@ \
+	@WITH_SYCK_LIB@ \
 	@WITH_MAGIC_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	-lpthread -lresolv
