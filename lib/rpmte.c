@@ -223,6 +223,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
     p->triggers = NULL;	/* XXX NOTYET */
     p->dirnames = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
+    p->linktos = rpmdsNew(h, RPMTAG_FILELINKTOS, scareMem);
 
     savep = rpmtsSetRelocateElement(ts, p);
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
@@ -565,6 +566,8 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 	return te->triggers;
     if (tag == RPMTAG_DIRNAMES)
 	return te->dirnames;
+    if (tag == RPMTAG_FILELINKTOS)
+	return te->linktos;
     return NULL;
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }

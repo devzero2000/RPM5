@@ -14,6 +14,8 @@
 #define	_RPMDS_INTERNAL
 #include <rpmds.h>
 
+#include <argv.h>
+
 #include "debug.h"
 
 #define	_isspace(_c)	\
@@ -97,6 +99,10 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	tagF = RPMTAG_TRIGGERFLAGS;
     } else
     if (ds->tagN == RPMTAG_DIRNAMES) {
+	tagEVR = 0;
+	tagF = 0;
+    } else
+    if (ds->tagN == RPMTAG_FILELINKTOS) {
 	tagEVR = 0;
 	tagF = 0;
     } else
@@ -305,8 +311,40 @@ exit:
     /*@=refcounttrans@*/
 }
 
+/*@-bounds@*/
+static /*@null@*/
+const char ** rpmdsDupArgv(/*@null@*/ const char ** argv, int argc)
+	/*@*/
+{
+    const char ** av;
+    size_t nb = 0;
+    int ac = 0;
+    char * t;
+
+    if (argv == NULL)
+	return NULL;
+    for (ac = 0; ac < argc; ac++) {
+assert(argv[ac] != NULL);
+	nb += strlen(argv[ac]) + 1;
+    }
+    nb += (ac + 1) * sizeof(*av);
+
+    av = xmalloc(nb);
+    t = (char *) (av + ac + 1);
+    for (ac = 0; ac < argc; ac++) {
+	av[ac] = t;
+	t = stpcpy(t, argv[ac]) + 1;
+    }
+    av[ac] = NULL;
+/*@-nullret@*/
+    return av;
+/*@=nullret@*/
+}
+/*@=bounds@*/
+
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
+    HFD_t hfd = headerFreeData;
     int scareMem = (flags & 0x1);
     int nofilter = (flags & 0x2);
     HGE_t hge =
@@ -351,6 +389,11 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	tagEVR = 0;
 	tagF = 0;
     } else
+    if (tagN == RPMTAG_FILELINKTOS) {
+	Type = "Filelinktos";
+	tagEVR = RPMTAG_DIRNAMES;
+	tagF = RPMTAG_DIRINDEXES;
+    } else
 	goto exit;
 
     /*@-branchstate@*/
@@ -384,18 +427,36 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 /*@=boundsread@*/
 	ds->Color = xcalloc(Count, sizeof(*ds->Color));
 
-	/* XXX Dirnames always have trailing '/', trim that here. */
 	if (tagN == RPMTAG_DIRNAMES) {
+	    /* XXX Dirnames always have trailing '/', trim that here. */
 	    char * t;
 	    size_t len;
 	    int i;
 	    for (i = 0; i < Count; i++) {
 		t = (char *)N[i];
 		len = strlen(t);
-		/* XXX done't truncate if parent is / */
+		/* XXX don't truncate if parent is / */
 		if (len > 1 && t[len-1] == '/')
 		    t[len-1] = '\0';
 	    }
+	} else
+	if (tagN == RPMTAG_FILELINKTOS) {
+	    /* XXX Construct the absolute path of the target symlink(s). */
+	    const char ** av = xcalloc(Count+1, sizeof(*av));
+	    int i;
+
+	    if (av != NULL)
+	    for (i = 0; i < Count; i++)
+		av[i] = (N[i] != NULL && *N[i] != '\0')
+			? rpmGenPath("/", ds->EVR[ds->Flags[i]], N[i])
+			: xstrdup("");
+	    N = ds->N = hfd(ds->N, ds->Nt);
+	    ds->N = rpmdsDupArgv(av, Count);
+	    av = argvFree(av);
+	    ds->EVR = hfd(ds->EVR, ds->EVRt);
+	    /*@-evalorder@*/
+	    ds->Flags = (ds->h != NULL ? hfd(ds->Flags, ds->Ft) : _free(ds->Flags));
+	    /*@=evalorder@*/
 	}
 
 /*@-modfilesys@*/
@@ -496,6 +557,9 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     if (tagN == RPMTAG_DIRNAMES) {
 	Type = "Dirnames";
     } else
+    if (tagN == RPMTAG_FILELINKTOS) {
+	Type = "Filelinktos";
+    } else
 	goto exit;
 
     xx = headerNVR(h, &n, &v, &r);
@@ -572,6 +636,9 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     } else
     if (tagN == RPMTAG_DIRNAMES) {
 	Type = "Dirnames";
+    } else
+    if (tagN == RPMTAG_FILELINKTOS) {
+	Type = "Filelinktos";
     } else
 	goto exit;
 
@@ -878,37 +945,6 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
     return ds;
     /*@=refcounttrans@*/
 }
-
-/*@-bounds@*/
-static /*@null@*/
-const char ** rpmdsDupArgv(/*@null@*/ const char ** argv, int argc)
-	/*@*/
-{
-    const char ** av;
-    size_t nb = 0;
-    int ac = 0;
-    char * t;
-
-    if (argv == NULL)
-	return NULL;
-    for (ac = 0; ac < argc; ac++) {
-assert(argv[ac] != NULL);
-	nb += strlen(argv[ac]) + 1;
-    }
-    nb += (ac + 1) * sizeof(*av);
-
-    av = xmalloc(nb);
-    t = (char *) (av + ac + 1);
-    for (ac = 0; ac < argc; ac++) {
-	av[ac] = t;
-	t = stpcpy(t, argv[ac]) + 1;
-    }
-    av[ac] = NULL;
-/*@-nullret@*/
-    return av;
-/*@=nullret@*/
-}
-/*@=bounds@*/
 
 /*@null@*/
 static rpmds rpmdsDup(const rpmds ods)

@@ -798,6 +798,7 @@ exit:
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
  * @param dirnames	Dirnames: dependencies (or NULL)
+ * @param linktos	Filelinktos: dependencies (or NULL)
  * @param depName	dependency name to filter (or NULL)
  * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
@@ -807,6 +808,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		/*@null@*/ rpmds requires,
 		/*@null@*/ rpmds conflicts,
 		/*@null@*/ rpmds dirnames,
+		/*@null@*/ rpmds linktos,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -934,6 +936,50 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	}
     }
 
+    linktos = rpmdsInit(linktos);
+    if (linktos != NULL)
+    while (!ourrc && rpmdsNext(linktos) >= 0) {
+
+	if ((Name = rpmdsN(linktos)) == NULL)
+	    continue;	/* XXX can't happen */
+	if (*Name == '\0')	/* XXX most linktos are empty */
+		continue;
+
+	/* Filter out linktos that came along for the ride. */
+	if (depName != NULL && strcmp(depName, Name))
+	    continue;
+
+	/* Ignore colored linktos not in our rainbow. */
+	dscolor = rpmdsColor(linktos);
+	if (tscolor && dscolor && !(tscolor & dscolor))
+	    continue;
+
+	rc = unsatisfiedDepend(ts, linktos, adding);
+
+	switch (rc) {
+	case 0:		/* requirements are satisfied. */
+	    /*@switchbreak@*/ break;
+	case 1:		/* requirements are not satisfied. */
+	{   fnpyKey * suggestedKeys = NULL;
+
+	    /*@-branchstate@*/
+	    if (ts->availablePackages != NULL) {
+		suggestedKeys = rpmalAllSatisfiesDepend(ts->availablePackages,
+				linktos, NULL);
+	    }
+	    /*@=branchstate@*/
+
+	    rpmdsProblem(ts->probs, pkgNEVRA, linktos, suggestedKeys, adding);
+
+	}
+	    /*@switchbreak@*/ break;
+	case 2:		/* something went wrong! */
+	default:
+	    ourrc = 1;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
     return ourrc;
 }
 
@@ -960,7 +1006,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	const char * pkgNEVRA;
-	rpmds requires, conflicts, dirnames;
+	rpmds requires, conflicts, dirnames, linktos;
 	int rc;
 
 	pkgNEVRA = hGetNEVRA(h, NULL);
@@ -970,7 +1016,9 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
 	dirnames = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
 	(void) rpmdsSetNoPromote(dirnames, _rpmds_nopromote);
-	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dirnames,
+	linktos = rpmdsNew(h, RPMTAG_FILELINKTOS, scareMem);
+	(void) rpmdsSetNoPromote(linktos, _rpmds_nopromote);
+	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dirnames, linktos,
 		dep, 0, adding);
 	dirnames = rpmdsFree(dirnames);
 	conflicts = rpmdsFree(conflicts);
@@ -1581,23 +1629,26 @@ int rpmtsOrder(rpmts ts)
 	}
       }
 
-#ifdef	NOTYET
+#ifdef	NOTYET	/* XXX too many loops are created to enable (yet). */
       {	const char * Name = rpmteN(p);
-	if (Name == NULL || !strcmp(Name, "setup") || !strcmp(Name, "filesystem"))
-	    continue;
 
-	/* Finally synthesize a requirement on parent directories. */
-	if ((requires = rpmteDS(p, RPMTAG_DIRNAMES)) == NULL)
-	    continue;
-	requires = rpmdsInit(requires);
+	/* Order by requiring parent directories pre-requsites. */
+	requires = rpmdsInit(rpmteDS(p, RPMTAG_DIRNAMES));
 	if (requires != NULL)
 	while (rpmdsNext(requires) >= 0) {
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, p, selected, requires);
 
-	    /* XXX only add the 1st dirname to avoid loops. */
-	    break;
+	}
+
+	/* Order by requiring no dangling symlinks. */
+	requires = rpmdsInit(rpmteDS(p, RPMTAG_FILELINKTOS));
+	if (requires != NULL)
+	while (rpmdsNext(requires) >= 0) {
+
+	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    (void) addRelation(ts, p, selected, requires);
 
 	}
       }
@@ -1946,6 +1997,7 @@ int rpmtsCheck(rpmts ts)
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			rpmteDS(p, RPMTAG_DIRNAMES),
+			rpmteDS(p, RPMTAG_FILELINKTOS),
 			NULL,
 			tscolor, 1);
 	if (rc)
