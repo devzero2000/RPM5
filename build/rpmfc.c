@@ -856,6 +856,7 @@ int rpmfcApply(rpmfc fc)
     int ix;
     int i;
     int xx;
+    int skipping;
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
@@ -903,15 +904,18 @@ assert(se != NULL);
 	Flags = strtol(se, NULL, 16);
 
 	dix = -1;
+	skipping = 0;
 	switch (deptype) {
 	default:
 	    /*@switchbreak@*/ break;
 	case 'P':	
+	    skipping = fc->skipProv;
 	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
 	    dix = rpmdsFind(fc->provides, ds);
 	    ds = rpmdsFree(ds);
 	    /*@switchbreak@*/ break;
 	case 'R':
+	    skipping = fc->skipReq;
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, N, EVR, Flags);
 	    dix = rpmdsFind(fc->requires, ds);
 	    ds = rpmdsFree(ds);
@@ -933,7 +937,7 @@ assert(dix >= 0);
 	    previx = ix;
 	    xx = argiAdd(&fc->fddictx, ix, argiCount(fc->ddictx)-1);
 	}
-	if (fc->fddictn && fc->fddictn->vals)
+	if (fc->fddictn && fc->fddictn->vals && !skipping)
 	    fc->fddictn->vals[ix]++;
     }
 /*@=boundswrite@*/
