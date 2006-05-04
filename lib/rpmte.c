@@ -29,6 +29,8 @@ void rpmteCleanDS(rpmte te)
     te->requires = rpmdsFree(te->requires);
     te->conflicts = rpmdsFree(te->conflicts);
     te->obsoletes = rpmdsFree(te->obsoletes);
+    te->dirnames = rpmdsFree(te->dirnames);
+    te->linktos = rpmdsFree(te->linktos);
 }
 
 /**
