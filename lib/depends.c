@@ -815,6 +815,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	/*@modifies ts, requires, conflicts, dirnames, rpmGlobalMacroContext,
 		fileSystem, internalState */
 {
+    rpmps ps = rpmtsProblems(ts);
     uint_32 dscolor;
     const char * Name;
     int rc;
@@ -851,7 +852,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    }
 	    /*@=branchstate@*/
 
-	    rpmdsProblem(ts->probs, pkgNEVRA, requires, suggestedKeys, adding);
+	    rpmdsProblem(ps, pkgNEVRA, requires, suggestedKeys, adding);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -883,7 +884,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
 	case 0:		/* conflicts exist. */
-	    rpmdsProblem(ts->probs, pkgNEVRA, conflicts, NULL, adding);
+	    rpmdsProblem(ps, pkgNEVRA, conflicts, NULL, adding);
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
 	    /*@switchbreak@*/ break;
@@ -925,7 +926,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    }
 	    /*@=branchstate@*/
 
-	    rpmdsProblem(ts->probs, pkgNEVRA, dirnames, suggestedKeys, adding);
+	    rpmdsProblem(ps, pkgNEVRA, dirnames, suggestedKeys, adding);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -969,7 +970,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    }
 	    /*@=branchstate@*/
 
-	    rpmdsProblem(ts->probs, pkgNEVRA, linktos, suggestedKeys, adding);
+	    rpmdsProblem(ps, pkgNEVRA, linktos, suggestedKeys, adding);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -980,6 +981,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	}
     }
 
+    ps = rpmpsFree(ps);
     return ourrc;
 }
 
@@ -2096,9 +2098,12 @@ exit:
 	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
     /*@=branchstate@*/
 
-     /* If we have a failure we need to do the autorollback goal if specified.  */
-    if (rc || rpmpsNumProblems(rpmtsProblems(ts)) > 0)
-	(void) rpmtsDoARBGoal(ts, NULL, RPMPROB_FILTER_NONE);
+     /* On failed dependencies, perform the autorollback goal (if any). */
+    {	rpmps ps = rpmtsProblems(ts);
+	if (rc || rpmpsNumProblems(ps) > 0)
+	    (void) rpmtsDoARBGoal(ts, NULL, RPMPROB_FILTER_NONE);
+	ps = rpmpsFree(ps);
+    }
 
     return rc;
 }

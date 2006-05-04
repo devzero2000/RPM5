@@ -753,7 +753,7 @@ rpmps rpmtsProblems(rpmts ts)
     rpmps ps = NULL;
     if (ts) {
 	if (ts->probs)
-	    ps = rpmpsLink(ts->probs, NULL);
+	    ps = rpmpsLink(ts->probs, __FUNCTION__);
     }
     return ps;
 }

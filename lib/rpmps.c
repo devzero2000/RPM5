@@ -22,7 +22,7 @@ rpmps XrpmpsUnlink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
 /*@-modfilesys@*/
-if (_rpmps_debug > 0 && msg != NULL)
+if (_rpmps_debug && msg != NULL)
 fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
     ps->nrefs--;
@@ -36,7 +36,7 @@ rpmps XrpmpsLink(rpmps ps, const char * msg,
 {
     ps->nrefs++;
 /*@-modfilesys@*/
-if (_rpmps_debug > 0 && msg != NULL)
+if (_rpmps_debug && msg != NULL)
 fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
 /*@-refcounttrans@*/
