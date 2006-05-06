@@ -1022,6 +1022,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	(void) rpmdsSetNoPromote(linktos, _rpmds_nopromote);
 	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dirnames, linktos,
 		dep, 0, adding);
+	linktos = rpmdsFree(linktos);
 	dirnames = rpmdsFree(dirnames);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);

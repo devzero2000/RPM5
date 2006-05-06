@@ -815,6 +815,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	ret = rpmalAllFileSatisfiesDepend(al, ds, keyp);
 	if (ret != NULL && *ret != NULL)
 	    return ret;
+	ret = _free(ret);
 	/* ... then, look for files "provided" by package. */
     }
 

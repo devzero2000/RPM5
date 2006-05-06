@@ -349,9 +349,6 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
     int nofilter = (flags & 0x2);
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
-    rpmTag tagBT = RPMTAG_BUILDTIME;
-    rpmTagType BTt;
-    int_32 * BTp;
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
@@ -421,11 +418,14 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
-	if (tagBT > 0)
-	    xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
-	ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
+	{   rpmTag tagBT = RPMTAG_BUILDTIME;
+	    rpmTagType BTt;
+	    int_32 * BTp;
+	    if (tagBT > 0)
+		xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
+	    ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
+	}
 /*@=boundsread@*/
-	ds->Color = xcalloc(Count, sizeof(*ds->Color));
 
 	if (tagN == RPMTAG_DIRNAMES) {
 	    /* XXX Dirnames always have trailing '/', trim that here. */
