@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-04 07:35-0400\n"
+"POT-Creation-Date: 2006-05-06 12:05-0400\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -113,7 +113,7 @@ msgid "Common options for all rpm modes and executables:"
 msgstr "Gemensamma flaggor för alla rpm-lägen och binärer:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:134 lib/poptI.c:56
+#: rpmqv.c:134 lib/poptI.c:41
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
@@ -562,7 +562,7 @@ msgstr "Filen behöver inledande \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Matchning inte tillåtet: %s\n"
 
-#: build/files.c:2027 lib/rpminstall.c:374
+#: build/files.c:2027 lib/rpminstall.c:372
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Hittade ingen fil vid matchningen: %s\n"
@@ -1264,17 +1264,17 @@ msgstr "utför inga steg i byggnationen"
 msgid "do not verify build dependencies"
 msgstr "verifiera inte byggberoenden"
 
-#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:349 lib/poptQV.c:412
+#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:334 lib/poptQV.c:412
 #: lib/poptQV.c:421 lib/poptQV.c:463
 msgid "don't verify package digest(s)"
 msgstr "verifiera inte paketkontrollsummor"
 
-#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:351 lib/poptQV.c:415
+#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:336 lib/poptQV.c:415
 #: lib/poptQV.c:423 lib/poptQV.c:466
 msgid "don't verify database header(s) when retrieved"
 msgstr "verifiera inte databashuvuden när de hämtas"
 
-#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:353 lib/poptQV.c:418
+#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:338 lib/poptQV.c:418
 #: lib/poptQV.c:425 lib/poptQV.c:468
 msgid "don't verify package signature(s)"
 msgstr "verifiera inte paketsignatur(er)"
@@ -1463,23 +1463,23 @@ msgstr "(db tillhandahåller)"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1186
+#: lib/depends.c:1189
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1308
+#: lib/depends.c:1311
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1568
+#: lib/depends.c:1571
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1686
+#: lib/depends.c:1689
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1488,21 +1488,21 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "djup, bredd)\n"
 
-#: lib/depends.c:1777
+#: lib/depends.c:1780
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== endast efterföljare (%d byte)\n"
 
-#: lib/depends.c:1850
+#: lib/depends.c:1853
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1881
+#: lib/depends.c:1884
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1886
+#: lib/depends.c:1889
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -1902,65 +1902,65 @@ msgstr "felsök cache-hanteringen av URL:ar"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: flaggtabell felkonfigurerad (%d)\n"
 
-#: lib/poptI.c:84
+#: lib/poptI.c:69
 msgid "exclude paths must begin with a /"
 msgstr "uteslutna sökvägar måste börja med /"
 
-#: lib/poptI.c:98
+#: lib/poptI.c:83
 msgid "Option --relocate needs /old/path=/new/path argument"
 msgstr ""
 
-#: lib/poptI.c:100
+#: lib/poptI.c:85
 msgid "relocations must begin with a /"
 msgstr "omflyttningar måste börja med /"
 
-#: lib/poptI.c:103
+#: lib/poptI.c:88
 msgid "relocations must contain a ="
 msgstr "omflyttningar måste innehålla ett ="
 
-#: lib/poptI.c:106
+#: lib/poptI.c:91
 msgid "relocations must have a / following the ="
 msgstr "omflyttningar måste ha ett / efter ="
 
-#: lib/poptI.c:124
+#: lib/poptI.c:109
 #, fuzzy
 msgid "Option --rbexclude needs transaction id argument(s)"
 msgstr "återställning tar en tid-/datumstämpel som argument"
 
-#: lib/poptI.c:155
+#: lib/poptI.c:140
 #, fuzzy
 msgid "Option --rollback needs a time/date stamp argument"
 msgstr "återställning tar en tid-/datumstämpel som argument"
 
-#: lib/poptI.c:159
+#: lib/poptI.c:144
 #, fuzzy, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/poptI.c:163
+#: lib/poptI.c:148
 msgid "malformed rollback time/date stamp argument"
 msgstr "felformaterat tid-/datumstämpelargument för återställning"
 
-#: lib/poptI.c:170
+#: lib/poptI.c:155
 #, fuzzy
 msgid "arbgoal takes a time/date stamp argument"
 msgstr "återställning tar en tid-/datumstämpel som argument"
 
-#: lib/poptI.c:177
+#: lib/poptI.c:162
 #, fuzzy
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "felformaterat tid-/datumstämpelargument för återställning"
 
-#: lib/poptI.c:233
+#: lib/poptI.c:218
 msgid "add suggested packages to transaction"
 msgstr "lägg till föreslagna paket till transaktion"
 
-#: lib/poptI.c:237
+#: lib/poptI.c:222
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installera alla filer, även konfigurationer som annars kunde hoppats över"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:226
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1968,162 +1968,162 @@ msgstr ""
 "ta bort alla paket som matchar <paket> (normalt ger det ett fel om <paket> "
 "anger flera paket)"
 
-#: lib/poptI.c:246 tools/rpmgraph.c:273
+#: lib/poptI.c:231 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
 msgstr "använda anacondas \"presentationsordning\""
 
-#: lib/poptI.c:251 lib/poptI.c:333
+#: lib/poptI.c:236 lib/poptI.c:318
 msgid "do not execute package scriptlet(s)"
 msgstr "kör inte paketskript"
 
-#: lib/poptI.c:255
+#: lib/poptI.c:240
 msgid "relocate files in non-relocatable package"
 msgstr "relokera filer i ej relokerbart paket"
 
-#: lib/poptI.c:259
+#: lib/poptI.c:244
 msgid "print dependency loops as warning"
 msgstr "skriv beroendecykler som varningar"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:248
 msgid "save erased package files by renaming into sub-directory"
 msgstr "spara raderade paketfiler genom att spara dem i underkatalog"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:251
 msgid "erase (uninstall) package"
 msgstr "radera (avinstallera) paket"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:251
 msgid "<package>+"
 msgstr "<paket>+"
 
-#: lib/poptI.c:269 lib/poptI.c:309
+#: lib/poptI.c:254 lib/poptI.c:294
 msgid "do not install configuration files"
 msgstr "installera inte konfigurationsfiler"
 
-#: lib/poptI.c:272 lib/poptI.c:314
+#: lib/poptI.c:257 lib/poptI.c:299
 msgid "do not install documentation"
 msgstr "installera inte dokumentation"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:259
 msgid "skip files with leading component <path> "
 msgstr "hoppa över filer med inledande <sökväg>"
 
-#: lib/poptI.c:275
+#: lib/poptI.c:260
 msgid "<path>"
 msgstr "<sökväg>"
 
-#: lib/poptI.c:279
+#: lib/poptI.c:264
 msgid "detect file conflicts between packages"
 msgstr "upptäck filkonflikter mellan paket"
 
-#: lib/poptI.c:281
+#: lib/poptI.c:266
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "kortform för --replacepkgs --replacefiles"
 
-#: lib/poptI.c:285
+#: lib/poptI.c:270
 msgid "upgrade package(s) if already installed"
 msgstr "uppgradera paket om redan installerade"
 
-#: lib/poptI.c:286 lib/poptI.c:302 lib/poptI.c:406
+#: lib/poptI.c:271 lib/poptI.c:287 lib/poptI.c:391
 msgid "<packagefile>+"
 msgstr "<paketfil>+"
 
-#: lib/poptI.c:288
+#: lib/poptI.c:273
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "skriv ut brädgårdar allteftersom paketet installeras (bra tillsammans med -v)"
 
-#: lib/poptI.c:291
+#: lib/poptI.c:276
 msgid "don't verify package architecture"
 msgstr "verifiera inte paketarkitektur"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:279
 msgid "don't verify package operating system"
 msgstr "verifiera inte paketets operativsystem"
 
-#: lib/poptI.c:297
+#: lib/poptI.c:282
 msgid "don't check disk space before installing"
 msgstr "kontrollera inte diskutrymme före installation"
 
-#: lib/poptI.c:299
+#: lib/poptI.c:284
 msgid "install documentation"
 msgstr "installera dokumentation"
 
-#: lib/poptI.c:302
+#: lib/poptI.c:287
 msgid "install package(s)"
 msgstr "installera paket"
 
-#: lib/poptI.c:305
+#: lib/poptI.c:290
 msgid "update the database, but do not modify the filesystem"
 msgstr "uppdatera databasen, men ändra inte filsystemet"
 
-#: lib/poptI.c:311
+#: lib/poptI.c:296
 msgid "do not verify package dependencies"
 msgstr "verifiera inte paketberoenden"
 
-#: lib/poptI.c:317 lib/poptI.c:319 lib/poptQV.c:354 lib/poptQV.c:357
+#: lib/poptI.c:302 lib/poptI.c:304 lib/poptQV.c:354 lib/poptQV.c:357
 #: lib/poptQV.c:359
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "verifiera inte paketkontrollsummor"
 
-#: lib/poptI.c:321
+#: lib/poptI.c:306
 msgid "don't install file security contexts"
 msgstr "installera inte filsäkerhetskontexter"
 
-#: lib/poptI.c:325
+#: lib/poptI.c:310
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "flytta inte om paketinstallationen för att tillfredsställa beroenden"
 
-#: lib/poptI.c:330
+#: lib/poptI.c:315
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "föreslå inte lösning(ar) på saknade beroenden"
 
-#: lib/poptI.c:337
+#: lib/poptI.c:322
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "utför inte (eventuellt) %%pre-skript"
 
-#: lib/poptI.c:340
+#: lib/poptI.c:325
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "utför inte (eventuellt) %%post-skript"
 
-#: lib/poptI.c:343
+#: lib/poptI.c:328
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "utför inte (eventuellt) %%preun-skript"
 
-#: lib/poptI.c:346
+#: lib/poptI.c:331
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "utför inte (eventuellt) %%postun-skript"
 
-#: lib/poptI.c:356
+#: lib/poptI.c:341
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "kör inte skript utlösta av detta paket"
 
-#: lib/poptI.c:359
+#: lib/poptI.c:344
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "kör inte %%triggerprein-skript"
 
-#: lib/poptI.c:362
+#: lib/poptI.c:347
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "kör inte %%triggerin-skript"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:350
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "kör inte %%triggerun-skript"
 
-#: lib/poptI.c:368
+#: lib/poptI.c:353
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "kör inte %%triggerpostun-skript"
 
-#: lib/poptI.c:372
+#: lib/poptI.c:357
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2131,66 +2131,66 @@ msgstr ""
 "uppgradera till en gammal version av paketet (--force vid uppgraderingar gör "
 "detta automatiskt)"
 
-#: lib/poptI.c:376
+#: lib/poptI.c:361
 msgid "print percentages as package installs"
 msgstr "skriv procent allt eftersom paketet installeras"
 
-#: lib/poptI.c:378
+#: lib/poptI.c:363
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "flytta paketet till <katalog>, om flyttbart"
 
-#: lib/poptI.c:379
+#: lib/poptI.c:364
 msgid "<dir>"
 msgstr "<kat>"
 
-#: lib/poptI.c:381
+#: lib/poptI.c:366
 msgid "relocate files from path <old> to <new>"
 msgstr "relokera filer från <gammal> till <ny>"
 
-#: lib/poptI.c:382
+#: lib/poptI.c:367
 msgid "<old>=<new>"
 msgstr "<gammal>=<ny>"
 
-#: lib/poptI.c:385
+#: lib/poptI.c:370
 msgid "save erased package files by repackaging"
 msgstr "spara raderade paketfiler genom ompaketering"
 
-#: lib/poptI.c:388
+#: lib/poptI.c:373
 msgid "ignore file conflicts between packages"
 msgstr "ingorera filkonflikter mellan paket"
 
-#: lib/poptI.c:391
+#: lib/poptI.c:376
 msgid "reinstall if the package is already present"
 msgstr "ominstallera när paketet redan är installerat"
 
-#: lib/poptI.c:393
+#: lib/poptI.c:378
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "avinstallera nya, ominstallera gamla, paket tillbaka till <datum>"
 
-#: lib/poptI.c:394 lib/poptI.c:397
+#: lib/poptI.c:379 lib/poptI.c:382
 msgid "<date>"
 msgstr "<datum>"
 
-#: lib/poptI.c:396
+#: lib/poptI.c:381
 #, fuzzy
 msgid "If transaction fails rollback to <date>"
 msgstr "Transaktion misslyckades...rullar tillbaka\n"
 
-#: lib/poptI.c:399
+#: lib/poptI.c:384
 #, fuzzy
 msgid "Exclude Transaction I.D. from rollback"
 msgstr "Transaktion misslyckades...rullar tillbaka\n"
 
-#: lib/poptI.c:400
+#: lib/poptI.c:385
 #, fuzzy
 msgid "<tid>"
 msgstr "<flagga>"
 
-#: lib/poptI.c:402
+#: lib/poptI.c:387
 msgid "don't install, but tell if it would work or not"
 msgstr "installera inte, men tala om ifall det skulle fungera eller inte"
 
-#: lib/poptI.c:405
+#: lib/poptI.c:390
 msgid "upgrade package(s)"
 msgstr "uppgradera paket"
 
@@ -2616,7 +2616,7 @@ msgstr "paketpost nummer: %u\n"
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:691 lib/rpminstall.c:818
+#: lib/query.c:691 lib/rpminstall.c:815
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -2625,7 +2625,7 @@ msgstr "paket %s är inte installerat\n"
 msgid "(added files)"
 msgstr "(lade till filer)"
 
-#: lib/rpmal.c:856
+#: lib/rpmal.c:857
 msgid "(added provide)"
 msgstr "(lade till tillhandahållande)"
 
@@ -2882,8 +2882,8 @@ msgstr "flyttar %s till %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"
 
-#: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:492
-#: lib/rpminstall.c:623 lib/rpminstall.c:1063 lib/rpmts.c:650
+#: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:490
+#: lib/rpminstall.c:621 lib/rpminstall.c:1060 lib/rpmts.c:650
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2895,12 +2895,12 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "okänd tagg: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:655 lib/rpminstall.c:667 lib/rpminstall.c:852
-#: lib/rpminstall.c:1456 lib/transaction.c:1191 tools/rpmgraph.c:197
+#: lib/rpmgi.c:655 lib/rpminstall.c:665 lib/rpminstall.c:849
+#: lib/rpminstall.c:1453 lib/transaction.c:1185 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
 
-#: lib/rpmgi.c:661 lib/rpminstall.c:674 tools/rpmgraph.c:203
+#: lib/rpmgi.c:661 lib/rpminstall.c:672 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "    Föreslagna lösningar:\n"
 
@@ -2928,124 +2928,124 @@ msgstr "Uppgraderar..."
 msgid "Upgrading packages..."
 msgstr "Uppgraderar paket..."
 
-#: lib/rpminstall.c:332 lib/rpminstall.c:796 lib/transaction.c:1164
+#: lib/rpminstall.c:330 lib/rpminstall.c:793 lib/transaction.c:1158
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:421
+#: lib/rpminstall.c:419
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "Lägger till mål: %s\n"
 
-#: lib/rpminstall.c:437
+#: lib/rpminstall.c:435
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hämtar %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:450
+#: lib/rpminstall.c:448
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:454
+#: lib/rpminstall.c:452
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "hoppar över %s - överföring misslyckades - %s\n"
 
-#: lib/rpminstall.c:511 lib/rpminstall.c:913 tools/rpmgraph.c:142
+#: lib/rpminstall.c:509 lib/rpminstall.c:910 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
-#: lib/rpminstall.c:528
+#: lib/rpminstall.c:526
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\tlade till källpaket [%d]\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:551
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paket %s är inte relokerbart\n"
 
-#: lib/rpminstall.c:598
+#: lib/rpminstall.c:596
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\tlade till binärpaket [%d]\n"
 
-#: lib/rpminstall.c:603
+#: lib/rpminstall.c:601
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fel vid läsning från fil %s\n"
 
-#: lib/rpminstall.c:609
+#: lib/rpminstall.c:607
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s behöver en nyare version av RPM\n"
 
-#: lib/rpminstall.c:638
+#: lib/rpminstall.c:636
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: inte ett rpm-paket (eller paketspecifikation): %s\n"
 
-#: lib/rpminstall.c:653
+#: lib/rpminstall.c:651
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "hittade %d käll- och %d binärpaket\n"
 
-#: lib/rpminstall.c:704
+#: lib/rpminstall.c:702
 msgid "installing binary packages\n"
 msgstr "installerar binärpaket\n"
 
-#: lib/rpminstall.c:728
+#: lib/rpminstall.c:726
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kan inte öppna filen %s: %s\n"
 
-#: lib/rpminstall.c:827
+#: lib/rpminstall.c:824
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:897
+#: lib/rpminstall.c:894
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:903
+#: lib/rpminstall.c:900
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpminstall.c:1138
+#: lib/rpminstall.c:1135
 #, fuzzy
 msgid "Missing repackaged package(s) detected:\n"
 msgstr "Rensar upp ompaketerade paket:\n"
 
-#: lib/rpminstall.c:1140
+#: lib/rpminstall.c:1137
 #, fuzzy, c-format
 msgid "    %s[%d]: %s\n"
 msgstr "%s: %s\n"
 
-#: lib/rpminstall.c:1363
+#: lib/rpminstall.c:1360
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1450 lib/transaction.c:1169
+#: lib/rpminstall.c:1447 lib/transaction.c:1163
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1481
+#: lib/rpminstall.c:1478
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Rensar upp ompaketerade paket:\n"
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1488
+#: lib/rpminstall.c:1485
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\tTar bort %s:\n"
@@ -3205,42 +3205,42 @@ msgstr "arkitektur saknas för %s vid %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "okänd flagga \"%s\" vid %s:%d\n"
 
-#: lib/rpmrc.c:1810
+#: lib/rpmrc.c:1811
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Kan inte expandera %s\n"
 
-#: lib/rpmrc.c:1815
+#: lib/rpmrc.c:1816
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Kan inte läsa %s, HOME är för stor.\n"
 
-#: lib/rpmrc.c:1832
+#: lib/rpmrc.c:1833
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kan inte öppna %s för läsning: %s.\n"
 
-#: lib/rpmrc.c:1945
+#: lib/rpmrc.c:1946
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1957
+#: lib/rpmrc.c:1958
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1972
+#: lib/rpmrc.c:1973
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1986
+#: lib/rpmrc.c:1987
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2000
+#: lib/rpmrc.c:2001
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3512,58 +3512,58 @@ msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 msgid "Creating rollback transaction to achieve goal\n"
 msgstr "Skapar automatiskt återrullad transaktion\n"
 
-#: lib/transaction.c:1161
+#: lib/transaction.c:1155
 msgid "Transaction failed...rolling back\n"
 msgstr "Transaktion misslyckades...rullar tillbaka\n"
 
-#: lib/transaction.c:1172
+#: lib/transaction.c:1166
 #, fuzzy, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1178
+#: lib/transaction.c:1172
 #, fuzzy
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr "Kunde inte ordna automatiskt återrullad transaktion!\n"
 
-#: lib/transaction.c:1182
+#: lib/transaction.c:1176
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "skapar katalog %s\n"
 
-#: lib/transaction.c:1203
+#: lib/transaction.c:1197
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "Kunde inte ordna automatiskt återrullad transaktion!\n"
 
-#: lib/transaction.c:1250
+#: lib/transaction.c:1243
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1295
+#: lib/transaction.c:1288
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "tar bort katalog %s\n"
 
-#: lib/transaction.c:1339
+#: lib/transaction.c:1332
 msgid "Getting repackaged header from transaction element\n"
 msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1369
+#: lib/transaction.c:1362
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\tLetar efter %s...\n"
 
-#: lib/transaction.c:1373
+#: lib/transaction.c:1366
 msgid "\tMatches found.\n"
 msgstr "\tTräffar hittade.\n"
 
-#: lib/transaction.c:1377
+#: lib/transaction.c:1370
 msgid "\tNo matches found.\n"
 msgstr "\tInga träffar hittade.\n"
 
-#: lib/transaction.c:1390
+#: lib/transaction.c:1383
 msgid "\tRepackaged package not found!.\n"
 msgstr "\tOmpaketerat paket hittades inte!\n"
 
@@ -3574,109 +3574,109 @@ msgstr "\tOmpaketerat paket hittades inte!\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1411
+#: lib/transaction.c:1404
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "REMOVETID matchar INSTALLTID.\n"
 
-#: lib/transaction.c:1413
+#: lib/transaction.c:1406
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\tNamn:  %s.\n"
 
-#: lib/transaction.c:1436
+#: lib/transaction.c:1429
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\tOmpaketerat paket var %s ...\n"
 
-#: lib/transaction.c:1488
+#: lib/transaction.c:1481
 #, fuzzy, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 "Lägger till installationselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:1491
+#: lib/transaction.c:1484
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "fel vid läsning av pakethuvud\n"
 
-#: lib/transaction.c:1502
+#: lib/transaction.c:1495
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "Tilläggande misslyckades.  Kunde inte läsa pakethuvud.\n"
 
-#: lib/transaction.c:1514 lib/transaction.c:1650
+#: lib/transaction.c:1507 lib/transaction.c:1643
 #, fuzzy, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
 
-#: lib/transaction.c:1515 lib/transaction.c:1651
+#: lib/transaction.c:1508 lib/transaction.c:1644
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1545
+#: lib/transaction.c:1538
 #, fuzzy
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 "Lägger till installationselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:1546 lib/transaction.c:1601
+#: lib/transaction.c:1539 lib/transaction.c:1594
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1554
+#: lib/transaction.c:1547
 msgid "Could not get install element database instance!\n"
 msgstr "Kunde inte hämta databasinstans för installationselement!\n"
 
-#: lib/transaction.c:1566
+#: lib/transaction.c:1559
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "Kunde inte hämta huvud för automatisk återrullningstransaktion!\n"
 
-#: lib/transaction.c:1576
+#: lib/transaction.c:1569
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tLade till ompaketerat pakethuvud: %s.\n"
 
 #. Add the header as a pure erase element, no repackaged package.
-#: lib/transaction.c:1586
+#: lib/transaction.c:1579
 msgid "\tAdded erase element.\n"
 msgstr "\tLade till raderingselement.\n"
 
-#: lib/transaction.c:1593
+#: lib/transaction.c:1586
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 "Kunde inte hämta ompaketerat huvud för automatisk återrullningstransaktion!\n"
 
-#: lib/transaction.c:1600
+#: lib/transaction.c:1593
 #, fuzzy
 msgid "Processing erase element for autorollback...\n"
 msgstr "Lägg till raderingselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:1610
+#: lib/transaction.c:1603
 msgid "\tErase element(s) already added.\n"
 msgstr ""
 
-#: lib/transaction.c:1621
+#: lib/transaction.c:1614
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tLade till ompaketerat paket %s.\n"
 
-#: lib/transaction.c:1625
+#: lib/transaction.c:1618
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 "Kunde inte lägga till raderingselement till automatiskt återrullad "
 "transaktion.\n"
 
-#: lib/transaction.c:1636
+#: lib/transaction.c:1629
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\tInget ompaketerat paket ... inget att göra.\n"
 
-#: lib/transaction.c:1642
+#: lib/transaction.c:1635
 msgid "Failure reading repackaged package!\n"
 msgstr "Misslyckades läsa ompaketerat paket!\n"
 
-#: lib/transaction.c:1781
+#: lib/transaction.c:1774
 #, fuzzy
 msgid "Invalid number of transaction elements.\n"
 msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
@@ -3689,12 +3689,12 @@ msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1835
+#: lib/transaction.c:1828
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "rimlighetskontrollerar %d element\n"
 
-#: lib/transaction.c:1921
+#: lib/transaction.c:1914
 msgid "running pre-transaction scripts\n"
 msgstr "kör skript före transaktion\n"
 
@@ -3706,7 +3706,7 @@ msgstr "kör skript före transaktion\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1996
+#: lib/transaction.c:1989
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "beräknar %d filfingeravtryck\n"
@@ -3714,28 +3714,28 @@ msgstr "beräknar %d filfingeravtryck\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:2077
+#: lib/transaction.c:2070
 msgid "computing file dispositions\n"
 msgstr "beräknar filåtgärder\n"
 
-#: lib/transaction.c:2261
+#: lib/transaction.c:2254
 msgid "Creating auto-rollback transaction\n"
 msgstr "Skapar automatiskt återrullad transaktion\n"
 
-#: lib/transaction.c:2531
+#: lib/transaction.c:2524
 #, fuzzy, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 "Lägger till installationselement till automatisk återrullningstransaktion.\n"
 
-#: lib/transaction.c:2538
+#: lib/transaction.c:2531
 #, fuzzy
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 "Kunde inte lägga till raderingselement till automatiskt återrullad "
 "transaktion.\n"
 
-#: lib/transaction.c:2582
+#: lib/transaction.c:2575
 msgid "running post-transaction scripts\n"
 msgstr "kör skript efter transaktion\n"
 
@@ -4185,12 +4185,12 @@ msgid "Target buffer overflow\n"
 msgstr "Målbuffert översvämmad\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2054 rpmio/macro.c:2060
+#: rpmio/macro.c:2056 rpmio/macro.c:2062
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:2063
+#: rpmio/macro.c:2065
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"

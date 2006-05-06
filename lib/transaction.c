@@ -993,7 +993,7 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rbts,
     rpmts ts;
     rpmtransFlags tsFlags;
     rpmVSFlags ovsflags;
-    struct rpmInstallArguments_s ia;
+    QVA_t ia = memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
     time_t ttid;
     int xx;
 
@@ -1046,21 +1046,15 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rbts,
 /*@=nullpass@*/
 
     /* Create install arguments structure */ 	
-    ia.rbtid      = arbgoal;
-    ia.transFlags = rpmtsFlags(ts);
-    ia.probFilter = ignoreSet;
-    ia.qva_flags  = 0;
-    ia.arbtid = 0;
-    ia.noDeps = 0;
-    ia.incldocs = 0;
-    ia.eraseInterfaceFlags = 0;
-    ia.prefix = NULL;
-    ia.rootdir = NULL;
+    memset(ia, 0, sizeof(*ia));
+    ia->rbtid      = arbgoal;
+    ia->transFlags = rpmtsFlags(ts);
+    ia->probFilter = ignoreSet;
 
     /* Setup the install interface flags.  XXX: This is an utter hack.
      * I haven't quite figured out how to get these from a transaction.
      */
-    ia.installInterfaceFlags = INSTALL_UPGRADE | INSTALL_HASH ;
+    ia->installInterfaceFlags = INSTALL_UPGRADE | INSTALL_HASH ;
 
     /* XXX: HACK 2.  The rollback goal will be without relocations.
      * Don't know what the right thing to do, but a hint for the
@@ -1068,8 +1062,8 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rbts,
      * relocs from CLI.  100% correct would be to iterate over the
      * transaction elements and build a new list of relocations (ahhh!).
      */
-    ia.relocations = NULL;
-    ia.numRelocations = 0;
+    ia->relocations = NULL;
+    ia->numRelocations = 0;
 
     /* Add the rollback tid and the failed transaction tid */
     {
@@ -1079,28 +1073,28 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rbts,
 	if (rbts) transactionCount++;
 
 	/* Allocate space for rollback tid to exclude */
-	ia.rbtidExcludes = xcalloc(transactionCount, sizeof(*ia.rbtidExcludes));
+	ia->rbtidExcludes = xcalloc(transactionCount, sizeof(*ia->rbtidExcludes));
 
 	/* Always add tid of failed transaction, and conditionally add tid
          * of rollback transactions.  Transactions failing during dep
          * check and ordering will not have a rollback transaction.
          */
-    	ia.rbtidExcludes[0] = rpmtsGetTid(failedTransaction);
+    	ia->rbtidExcludes[0] = rpmtsGetTid(failedTransaction);
 	if (rbts)
-	    ia.rbtidExcludes[1] = rpmtsGetTid(rbts);
+	    ia->rbtidExcludes[1] = rpmtsGetTid(rbts);
 
 	/* Setup number of transactions to exclude */
-	ia.numrbtidExcludes = transactionCount;
+	ia->numrbtidExcludes = transactionCount;
     }
 
     /* Segfault here we go... */
-    rc = rpmRollback(ts, &ia, NULL);
+    rc = rpmRollback(ts, ia, NULL);
 
     /* Free arbgoal transaction */
     ts = rpmtsFree(ts);
 
     /* Free tid excludes memory */
-    ia.rbtidExcludes = _free(ia.rbtidExcludes);
+    ia->rbtidExcludes = _free(ia->rbtidExcludes);
 
     return rc;
 }
@@ -1239,8 +1233,7 @@ static rpmRC _rpmtsRollback(rpmts rbts, rpmts failedTransaction,
      *      create the complimentary header.
      */
     if (arbgoal != 0xffffffff) {
-	struct rpmInstallArguments_s *ia =
-		memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
+	QVA_t ia = memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
 	rpmts ts = rpmtsCreate();
 	int_32 rbtidExcludes[2];
 	int xx;

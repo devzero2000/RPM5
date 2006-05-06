@@ -14,23 +14,8 @@ extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@=redecl@*/
 
 /*@unchecked@*/
-struct rpmInstallArguments_s rpmIArgs = {
-    0,			/* transFlags */
-			/* probFilter */
-    (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
-    0,			/* installInterfaceFlags */
-    0,			/* eraseInterfaceFlags */
-    0,			/* qva_flags */
-    0,			/* arbtid */
-    0,			/* rbtid */
-    NULL,		/* rbtidExcludes */
-    0,			/* numrbtidExcludes */
-    0,			/* numRelocations */
-    0,			/* noDeps */
-    0,			/* incldocs */
-    NULL,		/* relocations */
-    NULL,		/* prefix */
-    NULL		/* rootdir */
+struct rpmQVKArguments_s rpmIArgs = {
+    .probFilter = (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
 };
 
 #define	POPT_RELOCATE		-1021
@@ -68,7 +53,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	/*@globals rpmIArgs, stderr, fileSystem @*/
 	/*@modifies rpmIArgs, stderr, fileSystem @*/
 {
-    struct rpmInstallArguments_s * ia = &rpmIArgs;
+    QVA_t ia = &rpmIArgs;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     /*@-branchstate@*/
@@ -374,7 +359,7 @@ struct poptOption rpmInstallPoptTable[] = {
  { "percent", '\0', POPT_BIT_SET,
 	&rpmIArgs.installInterfaceFlags, INSTALL_PERCENT,
 	N_("print percentages as package installs"), NULL},
- { "prefix", '\0', POPT_ARG_STRING, &rpmIArgs.prefix, 0,
+ { "prefix", '\0', POPT_ARG_STRING, &rpmIArgs.qva_prefix, 0,
 	N_("relocate the package to <dir>, if relocatable"),
 	N_("<dir>") },
  { "relocate", '\0', POPT_ARG_STRING, 0, POPT_RELOCATE,

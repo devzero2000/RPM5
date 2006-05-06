@@ -285,9 +285,7 @@ struct rpmEIU {
 
 /** @todo Generalize --freshen policies. */
 /*@-bounds@*/
-int rpmInstall(rpmts ts,
-		struct rpmInstallArguments_s * ia,
-		const char ** fileArgv)
+int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
 {
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
     rpmps ps;
@@ -762,8 +760,7 @@ exit:
 }
 /*@=bounds@*/
 
-int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
-		const char ** argv)
+int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 {
     int count;
     const char ** arg;
@@ -1247,7 +1244,7 @@ exit:
 }
 
 /** @todo Transaction handling, more, needs work. */
-int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
+int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 {
     int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
     unsigned thistid = 0xffffffff;

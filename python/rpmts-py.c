@@ -785,7 +785,7 @@ rpmts_Rollback(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
-    struct rpmInstallArguments_s * ia = alloca(sizeof(*ia));
+    QVA_t ia = memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
     rpmtransFlags transFlags;
     const char ** av = NULL;
     uint_32 rbtid;
@@ -799,7 +799,6 @@ fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
     	return NULL;
 
     Py_BEGIN_ALLOW_THREADS
-    memset(ia, 0, sizeof(*ia));
     ia->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE|VERIFY_HDRCHK);
     ia->transFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL);
     ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
@@ -1097,7 +1096,7 @@ fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
 	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
 	return NULL;
     }
-    pkt = PyString_AsString(blob);
+    pkt = (unsigned char *) PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
     rc = pgpPrtPkts(pkt, pktlen, NULL, 1);
@@ -1134,7 +1133,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
 	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
 	return NULL;
     }
-    pkt = PyString_AsString(blob);
+    pkt = (unsigned char *) PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
     rc = rpmcliImportPubkey(s->ts, pkt, pktlen);

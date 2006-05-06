@@ -42,7 +42,7 @@ static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 }
 
 static int
-rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
+rpmGraph(rpmts ts, QVA_t ia, const char ** fileArgv)
 	/*@*/
 {
     rpmps ps;
@@ -285,7 +285,7 @@ int
 main(int argc, char *const argv[])
 {
     rpmts ts = NULL;
-    struct rpmInstallArguments_s * ia = &rpmIArgs;
+    QVA_t ia = &rpmIArgs;
     poptContext optCon;
     int ec = 0;
 

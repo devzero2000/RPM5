@@ -300,6 +300,26 @@ struct rpmQVKArguments_s {
 		*/
     char qva_char;		/*!< (unused) always ' ' */
     char * targets;		/*!< Target platform(s), comma separated. */
+
+    /* install/erase mode arguments */
+    rpmtransFlags transFlags;
+    rpmprobFilterFlags probFilter;
+    rpmInstallInterfaceFlags installInterfaceFlags;
+    rpmEraseInterfaceFlags eraseInterfaceFlags;
+    uint_32 arbtid;		/*!< from --arbgoal */
+    uint_32 rbtid;		/*!< from --rollback */
+    uint_32 *rbtidExcludes;	/*!< from --rollback */
+    int numrbtidExcludes;	/*!< from --rollback */
+    int numRelocations;
+    int noDeps;
+    int incldocs;
+/*@owned@*/ /*@null@*/
+    rpmRelocation relocations;
+
+    /* database mode arguments */
+    int init;			/*!< from --initdb */
+    int rebuild;		/*!< from --rebuilddb */
+    int verify;			/*!< from --verifydb */
 };
 #endif
 
@@ -573,38 +593,13 @@ int rpmInstallSource(rpmts ts, const char * arg,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
- * Describe database command line requests.
- */
-struct rpmInstallArguments_s {
-    rpmtransFlags transFlags;
-    rpmprobFilterFlags probFilter;
-    rpmInstallInterfaceFlags installInterfaceFlags;
-    rpmEraseInterfaceFlags eraseInterfaceFlags;
-    rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
-    uint_32 arbtid;		/*!< from --arbgoal */
-    uint_32 rbtid;		/*!< from --rollback */
-    uint_32 *rbtidExcludes;	/*!< from --rollback */
-    int numrbtidExcludes;	/*!< from --rollback */
-    int numRelocations;
-    int noDeps;
-    int incldocs;
-/*@owned@*/ /*@null@*/
-    rpmRelocation relocations;
-/*@null@*/
-    const char * prefix;
-/*@observer@*/ /*@null@*/
-    const char * rootdir;
-};
-
-/** \ingroup rpmcli
  * Install/upgrade/freshen binary rpm package.
  * @param ts		transaction set
  * @param ia		mode flags and parameters
  * @param fileArgv	array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
-		/*@null@*/ const char ** fileArgv)
+int rpmInstall(rpmts ts, QVA_t ia, /*@null@*/ const char ** fileArgv)
 	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies ts, ia, rpmcliPackagesTotal, rpmGlobalMacroContext,
@@ -617,8 +612,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
-		/*@null@*/ const char ** argv)
+int rpmErase(rpmts ts, QVA_t ia, /*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, ia, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -725,8 +719,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
  * @param argv		array of arguments (NULL terminated)
  * @return		0 on success
  */
-int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia,
-		/*@null@*/ const char ** argv)
+int rpmRollback(rpmts ts, QVA_t ia, /*@null@*/ const char ** argv)
 	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, ia, rpmcliPackagesTotal, rpmGlobalMacroContext,
@@ -735,7 +728,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia,
 /** \ingroup rpmcli
  */
 /*@unchecked@*/
-extern struct rpmInstallArguments_s rpmIArgs;
+extern struct rpmQVKArguments_s rpmIArgs;
 
 /** \ingroup rpmcli
  */
@@ -746,21 +739,11 @@ extern struct poptOption rpmInstallPoptTable[];
 /* ==================================================================== */
 /** \name RPMDB */
 /*@{*/
-/* --- database modes */
-
-/** \ingroup rpmcli
- * Describe database command line requests.
- */
-struct rpmDatabaseArguments_s {
-    int init;			/*!< from --initdb */
-    int rebuild;		/*!< from --rebuilddb */
-    int verify;			/*!< from --verifydb */
-};
 
 /** \ingroup rpmcli
  */
 /*@unchecked@*/
-extern struct rpmDatabaseArguments_s rpmDBArgs;
+extern struct rpmQVKArguments_s rpmDBArgs;
 
 /** \ingroup rpmcli
  */

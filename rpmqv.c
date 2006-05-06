@@ -189,11 +189,11 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMEIU
-   struct rpmInstallArguments_s * ia = &rpmIArgs;
+   QVA_t ia = &rpmIArgs;
 #endif
 
 #if defined(IAM_RPMDB)
-   struct rpmDatabaseArguments_s * da = &rpmDBArgs;
+   QVA_t da = &rpmDBArgs;
 #endif
 
 #if defined(IAM_RPMK)
@@ -428,16 +428,16 @@ int main(int argc, const char ** argv)
     if (bigMode != MODE_INSTALL && (ia->probFilter & RPMPROB_FILTER_FORCERELOCATE))
 	argerror(_("files may only be relocated during package installation"));
 
-    if (ia->relocations && ia->prefix)
+    if (ia->relocations && ia->qva_prefix)
 	argerror(_("cannot use --prefix with --relocate or --excludepath"));
 
     if (bigMode != MODE_INSTALL && ia->relocations)
 	argerror(_("--relocate and --excludepath may only be used when installing new packages"));
 
-    if (bigMode != MODE_INSTALL && ia->prefix)
+    if (bigMode != MODE_INSTALL && ia->qva_prefix)
 	argerror(_("--prefix may only be used when installing new packages"));
 
-    if (ia->prefix && ia->prefix[0] != '/') 
+    if (ia->qva_prefix && ia->qva_prefix[0] != '/') 
 	argerror(_("arguments to --prefix must begin with a /"));
 
     if (bigMode != MODE_INSTALL && (ia->installInterfaceFlags & INSTALL_HASH))
@@ -769,10 +769,10 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
 	/*@-branchstate@*/
-	if (ia->prefix) {
+	if (ia->qva_prefix) {
 	    ia->relocations = xmalloc(2 * sizeof(*ia->relocations));
 	    ia->relocations[0].oldPath = NULL;   /* special case magic */
-	    ia->relocations[0].newPath = ia->prefix;
+	    ia->relocations[0].newPath = ia->qva_prefix;
 	    ia->relocations[1].oldPath = NULL;
 	    ia->relocations[1].newPath = NULL;
 	} else if (ia->relocations) {

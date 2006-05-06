@@ -16,6 +16,7 @@
 	- absorb lsyck.c (and libsyck.la) into internal lua.
 	- use RPMTAG_FILELINKTOS to detect dangling symlinks st run time.
 	- fix: free dirnames/linktos dependency sets.
+	- consolidate per-mode options into single structure.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

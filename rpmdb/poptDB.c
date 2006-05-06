@@ -9,7 +9,7 @@
 
 #include "debug.h"
 
-struct rpmDatabaseArguments_s rpmDBArgs;
+struct rpmQVKArguments_s rpmDBArgs;
 
 /**
  */
