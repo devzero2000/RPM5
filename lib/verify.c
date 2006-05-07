@@ -541,6 +541,8 @@ qva = Qva;
 int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 {
     const char * arg;
+    rpmtransFlags transFlags = qva->transFlags;
+    rpmtransFlags otransFlags;
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
@@ -571,9 +573,11 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 	sx = rpmsxFree(sx);
     }
 
+    otransFlags = rpmtsSetFlags(ts, transFlags);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     ec = rpmcliArgIter(ts, qva, argv);
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
+    transFlags = rpmtsSetFlags(ts, otransFlags);
 
     if (qva->qva_showPackage == showVerifyPackage)
         qva->qva_showPackage = NULL;

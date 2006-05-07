@@ -59,11 +59,6 @@ static int _db_filter_dups = 0;
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
 
-/*@unchecked@*/
-/*@globstate@*/ /*@null@*/ int * dbiTags = NULL;
-/*@unchecked@*/
-int dbiTagsMax = 0;
-
 /* Bit mask macros. */
 /*@-exporttype@*/
 typedef	unsigned int __pbm_bits;
@@ -150,19 +145,21 @@ static int printable(const void * ptr, size_t len)	/*@*/
 
 /**
  * Return dbi index used for rpm tag.
+ * @param db		rpm database
  * @param rpmtag	rpm header tag
  * @return		dbi index, -1 on error
  */
-static int dbiTagToDbix(int rpmtag)
+static int dbiTagToDbix(rpmdb db, int rpmtag)
 	/*@*/
 {
     int dbix;
 
-    if (dbiTags != NULL)
-    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+    if (db->db_tagn != NULL)
+    for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 /*@-boundsread@*/
-	if (rpmtag == dbiTags[dbix])
-	    return dbix;
+	if (rpmtag != db->db_tagn[dbix])
+	    continue;
+	return dbix;
 /*@=boundsread@*/
     }
     return -1;
@@ -172,26 +169,24 @@ static int dbiTagToDbix(int rpmtag)
  * Initialize database (index, tag) tuple from configuration.
  */
 /*@-exportheader@*/
-void dbiTagsInit(void)
-	/*@globals dbiTags, dbiTagsMax, rpmGlobalMacroContext, h_errno @*/
-	/*@modifies dbiTags, dbiTagsMax, rpmGlobalMacroContext @*/
+static void dbiTagsInit(/*@null@*/int ** dbiTagsP, /*@null@*/int * dbiTagsMaxP)
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies dbiTagsP, dbiTagsMaxP, rpmGlobalMacroContext @*/
 {
 /*@observer@*/
     static const char * const _dbiTagStr_default =
 	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys";
+    int * dbiTags = NULL;
+    int dbiTagsMax = 0;
     char * dbiTagStr = NULL;
     char * o, * oe;
-    int rpmtag;
+    int dbix, rpmtag, bingo;
 
     dbiTagStr = rpmExpand("%{?_dbi_tags}", NULL);
     if (!(dbiTagStr && *dbiTagStr)) {
 	dbiTagStr = _free(dbiTagStr);
 	dbiTagStr = xstrdup(_dbiTagStr_default);
     }
-
-    /* Discard previous values. */
-    dbiTags = _free(dbiTags);
-    dbiTagsMax = 0;
 
     /* Always allocate package index */
     dbiTags = xcalloc(1, sizeof(*dbiTags));
@@ -216,13 +211,30 @@ void dbiTagsInit(void)
 		_("dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"), o);
 	    continue;
 	}
-	if (dbiTagToDbix(rpmtag) >= 0)
+
+	bingo = 0;
+	if (dbiTags != NULL)
+	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+/*@-boundsread@*/
+	    if (rpmtag == dbiTags[dbix]) {
+		bingo = 1;
+		break;
+	    }
+/*@=boundsread@*/
+	}
+	if (bingo)
 	    continue;
 
 	dbiTags = xrealloc(dbiTags, (dbiTagsMax + 1) * sizeof(*dbiTags)); /* XXX memory leak */
 	dbiTags[dbiTagsMax++] = rpmtag;
     }
 
+    if (dbiTagsMaxP != NULL)
+	*dbiTagsMaxP = dbiTagsMax;
+    if (dbiTagsP != NULL)
+	*dbiTagsP = dbiTags;
+    else
+	dbiTags = _free(dbiTags);
     dbiTagStr = _free(dbiTagStr);
 }
 /*@=exportheader@*/
@@ -275,8 +287,8 @@ fprintf(stderr, "==> %s(%p, %s, 0x%x)\n", __FUNCTION__, db, tagName(rpmtag), fla
     if (db == NULL)
 	return NULL;
 
-    dbix = dbiTagToDbix(rpmtag);
-    if (dbix < 0 || dbix >= dbiTagsMax)
+    dbix = dbiTagToDbix(db, rpmtag);
+    if (dbix < 0 || dbix >= db->db_ndbi)
 	return NULL;
 
     /* Is this index already open ? */
@@ -805,13 +817,33 @@ int rpmdbOpenAll(rpmdb db)
 
     if (db == NULL) return -2;
 
-    if (dbiTags != NULL)
-    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+    if (db->db_tagn != NULL)
+    for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	if (db->db_tagn[dbix] < 0)
+	    continue;
 	if (db->_dbi[dbix] != NULL)
 	    continue;
-	(void) dbiOpen(db, dbiTags[dbix], db->db_flags);
+	(void) dbiOpen(db, db->db_tagn[dbix], db->db_flags);
     }
     return rc;
+}
+
+int rpmdbBlockDBI(rpmdb db, int rpmtag)
+{
+    int tagn = (rpmtag >= 0 ? rpmtag : -rpmtag);
+    int dbix;
+
+    if (db == NULL || db->_dbi == NULL)
+	return 0;
+
+    if (db->db_tagn != NULL)
+    for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	if (db->db_tagn[dbix] != tagn)
+	    continue;
+	db->db_tagn[dbix] = rpmtag;
+	return 0;
+    }
+    return 0;
 }
 
 int rpmdbCloseDBI(rpmdb db, int rpmtag)
@@ -819,11 +851,12 @@ int rpmdbCloseDBI(rpmdb db, int rpmtag)
     int dbix;
     int rc = 0;
 
-    if (db == NULL || db->_dbi == NULL || dbiTags == NULL)
+    if (db == NULL || db->_dbi == NULL)
 	return 0;
 
-    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
-	if (dbiTags[dbix] != rpmtag)
+    if (db->db_tagn != NULL)
+    for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	if (db->db_tagn[dbix] != rpmtag)
 	    continue;
 /*@-boundswrite@*/
 	if (db->_dbi[dbix] != NULL) {
@@ -874,7 +907,9 @@ int rpmdbClose(rpmdb db)
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->db_bits = PBM_FREE(db->db_bits);
+    db->db_tagn = _free(db->db_tagn);
     db->_dbi = _free(db->_dbi);
+    db->db_ndbi = 0;
 
 /*@-newreftrans@*/
     prev = &rpmdbRock;
@@ -926,16 +961,16 @@ rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
     const char * epfx = _DB_ERRPFX;
-    static int _initialized = 0;
+    static int oneshot = 0;
 
 /*@-modfilesys@*/ /*@-nullpass@*/
 if (_rpmdb_debug)
 fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, home, mode, perms, flags, db);
 /*@=modfilesys@*/ /*@=nullpass@*/
 
-    if (!_initialized) {
+    if (!oneshot) {
 	_db_filter_dups = rpmExpandNumeric("%{_filterdbdups}");
-	_initialized = 1;
+	oneshot = 1;
     }
 
 /*@-boundswrite@*/
@@ -985,7 +1020,7 @@ fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, h
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     db->db_remove_env = 0;
     db->db_filter_dups = _db_filter_dups;
-    db->db_ndbi = dbiTagsMax;
+    dbiTagsInit(&db->db_tagn, &db->db_ndbi);
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     db->nrefs = 0;
     /*@-globstate@*/
@@ -1008,14 +1043,8 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 {
     rpmdb db;
     int rc, xx;
-    static int _tags_initialized = 0;
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
     int minimal = flags & RPMDB_FLAG_MINIMAL;
-
-    if (!_tags_initialized || dbiTagsMax == 0) {
-	dbiTagsInit();
-	_tags_initialized++;
-    }
 
     /* Insure that _dbapi has one of -1, 1, 2, or 3 */
     if (_dbapi < -1 || _dbapi > 4)
@@ -1043,13 +1072,13 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
     {	int dbix;
 
 	rc = 0;
-	if (dbiTags != NULL)
-	for (dbix = 0; rc == 0 && dbix < dbiTagsMax; dbix++) {
+	if (db->db_tagn != NULL)
+	for (dbix = 0; rc == 0 && dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi;
 	    int rpmtag;
 
 	    /* Filter out temporary databases */
-	    switch ((rpmtag = dbiTags[dbix])) {
+	    switch ((rpmtag = db->db_tagn[dbix])) {
 	    case RPMDBI_AVAILABLE:
 	    case RPMDBI_ADDED:
 	    case RPMDBI_REMOVED:
@@ -2690,8 +2719,8 @@ memset(data, 0, sizeof(*data));
     {	int dbix;
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 
-	if (dbiTags != NULL)
-	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+	if (db->db_tagn != NULL)
+	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi;
 	    const char *av[1];
 	    const char ** rpmvals = NULL;
@@ -2703,7 +2732,7 @@ memset(data, 0, sizeof(*data));
 
 	    dbi = NULL;
 /*@-boundsread@*/
-	    rpmtag = dbiTags[dbix];
+	    rpmtag = db->db_tagn[dbix];
 /*@=boundsread@*/
 
 	    /*@-branchstate@*/
@@ -3073,8 +3102,8 @@ memset(data, 0, sizeof(*data));
 	/* Save the header instance. */
 	(void) headerSetInstance(h, hdrNum);
 	
-	if (dbiTags != NULL)
-	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+	if (db->db_tagn != NULL)
+	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    const char *av[1];
 	    const char **rpmvals = NULL;
 	    rpmTagType rpmtype = 0;
@@ -3088,7 +3117,7 @@ memset(data, 0, sizeof(*data));
 	    dbi = NULL;
 	    requireFlags = NULL;
 /*@-boundsread@*/
-	    rpmtag = dbiTags[dbix];
+	    rpmtag = db->db_tagn[dbix];
 /*@=boundsread@*/
 
 	    switch (rpmtag) {
@@ -3531,7 +3560,8 @@ static int rpmioFileExists(const char * urlfn)
 }
 
 static int rpmdbRemoveDatabase(const char * prefix,
-		const char * dbpath, int _dbapi)
+		const char * dbpath, int _dbapi,
+		const int * dbiTags, int dbiTagsMax)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 { 
@@ -3590,7 +3620,8 @@ static int rpmdbRemoveDatabase(const char * prefix,
 
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
-		const char * newdbpath, /*@unused@*/ int _newdbapi)
+		const char * newdbpath, /*@unused@*/ int _newdbapi,
+		const int * dbiTags, int dbiTagsMax)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -3694,7 +3725,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     if (rc || _olddbapi == _newdbapi)
 	return rc;
 
-    rc = rpmdbRemoveDatabase(prefix, newdbpath, _newdbapi);
+    rc = rpmdbRemoveDatabase(prefix, newdbpath, _newdbapi, dbiTags, dbiTagsMax);
 
 
     /* Remove /etc/rpm/macros.db1 configuration file if db3 rebuilt. */
@@ -3727,6 +3758,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     int rc = 0, xx;
     int _dbapi;
     int _dbapi_rebuild;
+    int * dbiTags = NULL;
+    int dbiTagsMax = 0;
 
     /*@-branchstate@*/
     if (prefix == NULL) prefix = "/";
@@ -3734,6 +3767,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     _dbapi = rpmExpandNumeric("%{_dbapi}");
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
+
+    dbiTagsInit(&dbiTags, &dbiTagsMax);
 
     /*@-nullpass@*/
     tfn = rpmGetPath("%{?_dbpath}", NULL);
@@ -3894,11 +3929,15 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	rpmMessage(RPMMESS_NORMAL, _("failed to rebuild database: original database "
 		"remains in place\n"));
 
-	xx = rpmdbRemoveDatabase(prefix, newdbpath, _dbapi_rebuild);
+	xx = rpmdbRemoveDatabase(prefix, newdbpath, _dbapi_rebuild,
+			dbiTags, dbiTagsMax);
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {
-	if (rpmdbMoveDatabase(prefix, newdbpath, _dbapi_rebuild, dbpath, _dbapi)) {
+	xx = rpmdbMoveDatabase(prefix, newdbpath, _dbapi_rebuild, dbpath, _dbapi,
+			dbiTags, dbiTagsMax);
+
+	if (xx) {
 	    rpmMessage(RPMMESS_ERROR, _("failed to replace old database with new "
 			"database!\n"));
 	    rpmMessage(RPMMESS_ERROR, _("replace files in %s with files from %s "
@@ -3918,6 +3957,7 @@ exit:
     }
     newrootdbpath = _free(newrootdbpath);
     rootdbpath = _free(rootdbpath);
+    dbiTags = _free(dbiTags);
 
     return rc;
 }

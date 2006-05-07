@@ -155,6 +155,28 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 }
 
 /**
+ * Load next key from argv list.
+ * @param gi		generalized iterator
+ * @return		RPMRC_OK on success
+ */
+static rpmRC rpmgiLoadNextKey(rpmgi gi)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
+{
+    rpmRC rpmrc = RPMRC_NOTFOUND;
+    if (gi->argv != NULL && gi->argv[gi->i] != NULL) {
+	gi->keyp = gi->argv[gi->i];
+	gi->keylen = 0;
+	rpmrc = RPMRC_OK;
+    } else {
+	gi->i = -1;
+	gi->keyp = NULL;
+	gi->keylen = 0;
+    }
+    return rpmrc;
+}
+
+/**
  * Read next header from package, lazily expanding manifests as found.
  * @todo An empty file read as manifest truncates argv returning RPMRC_NOTFOUND.
  * @todo Errors, e.g. non-existent path in manifest, will terminate iteration.
@@ -162,7 +184,6 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
  * @param gi		generalized iterator
  * @return		RPMRC_OK on success
  */
-/*@null@*/
 static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
@@ -345,36 +366,41 @@ static rpmRC rpmgiInitFilter(rpmgi gi)
     gi->mi = rpmtsInitIterator(gi->ts, gi->tag, gi->keyp, gi->keylen);
 
 if (_rpmgi_debug < 0)
-fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
+fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, gi->keylen, gi->mi);
 
     if (gi->argv != NULL)
     for (av = (const char **) gi->argv; *av != NULL; av++) {
-	int tag = RPMTAG_NAME;
-	const char * pat;
-	char * a, * ae;
+	switch (gi->tag) {
+	case RPMDBI_PACKAGES:
+	  { int tag = RPMTAG_NAME;
+	    const char * pat;
+	    char * a, * ae;
 
-	pat = a = xstrdup(*av);
-	tag = RPMTAG_NAME;
+	    pat = a = xstrdup(*av);
+	    tag = RPMTAG_NAME;
 
-	/* Parse for "tag=pattern" args. */
+	    /* Parse for "tag=pattern" args. */
 /*@-branchstate@*/
-	if ((ae = strchr(a, '=')) != NULL) {
-	    *ae++ = '\0';
-	    tag = tagValue(a);
-	    if (tag < 0) {
-		rpmError(RPMERR_QUERYINFO, _("unknown tag: \"%s\"\n"), a);
-		res = 1;
+	    if ((ae = strchr(a, '=')) != NULL) {
+		*ae++ = '\0';
+		if (*a != '\0') {	/* XXX HACK: permit '=foo' */
+		    tag = tagValue(a);
+		    if (tag < 0) {
+			rpmError(RPMERR_QUERYINFO, _("unknown tag: \"%s\"\n"), a);
+			res = 1;
+		    }
+		}
+		pat = ae;
 	    }
-	    pat = ae;
-	}
 /*@=branchstate@*/
-
-	if (!res) {
+	    if (!res) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi->argv), *av, tagName(tag), pat);
-	    res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
+		res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
+	    }
+	    a = _free(a);
+	  } break;
 	}
-	a = _free(a);
 
 	if (res == 0)
 	    continue;
@@ -504,6 +530,36 @@ fprintf(stderr, "*** %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
     if (++gi->i >= 0)
     switch (gi->tag) {
     default:
+	if (!gi->active) {
+nextkey:
+	    rpmrc = rpmgiLoadNextKey(gi);
+	    if (rpmrc != RPMRC_OK)
+		goto enditer;
+	    rpmrc = rpmgiInitFilter(gi);
+	    if (rpmrc != RPMRC_OK || gi->mi == NULL) {
+		gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX unnecessary */
+		gi->i++;
+		goto nextkey;
+	    }
+	    rpmrc = RPMRC_NOTFOUND;	/* XXX hack */
+	    gi->active = 1;
+	}
+	if (gi->mi != NULL) {	/* XXX unnecessary */
+	    Header h = rpmdbNextIterator(gi->mi);
+	    if (h != NULL) {
+		if (!(gi->flags & RPMGI_NOHEADER))
+		    gi->h = headerLink(h);
+		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
+		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
+		rpmrc = RPMRC_OK;
+		/* XXX header reference held by iterator, so no headerFree */
+	    }
+	}
+	if (rpmrc != RPMRC_OK) {
+	    gi->mi = rpmdbFreeIterator(gi->mi);
+	    goto nextkey;
+	}
+	break;
     case RPMDBI_PACKAGES:
 	if (!gi->active) {
 	    rpmrc = rpmgiInitFilter(gi);
@@ -640,13 +696,24 @@ enditer:
 	rpmps ps;
 	int i;
 
-	/* XXX database needs close for added package closure check. */
+	/* Block access to indices used for depsolving. */
 	if (!(gi->flags & RPMGI_ERASING)) {
-	    xx = rpmtsCloseDB(ts);
-	    ts->dbmode = -1;	/* XXX disable lazy opens */
+	    ts->goal = TSM_INSTALL;
+	    xx = rpmdbBlockDBI(ts->rdb, -RPMDBI_DEPENDS);
+	    xx = rpmdbBlockDBI(ts->rdb, -RPMTAG_BASENAMES);
+	    xx = rpmdbBlockDBI(ts->rdb, -RPMTAG_PROVIDENAME);
+	} else {
+	    ts->goal = TSM_ERASE;
 	}
 
 	xx = rpmtsCheck(ts);
+
+	/* Permit access to indices used for depsolving. */
+	if (!(gi->flags & RPMGI_ERASING)) {
+	    xx = rpmdbBlockDBI(ts->rdb, +RPMTAG_PROVIDENAME);
+	    xx = rpmdbBlockDBI(ts->rdb, +RPMTAG_BASENAMES);
+	    xx = rpmdbBlockDBI(ts->rdb, +RPMDBI_DEPENDS);
+	}
 
 	/* XXX query/verify will need the glop added to a buffer instead. */
 	ps = rpmtsProblems(ts);

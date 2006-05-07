@@ -429,7 +429,9 @@ struct rpmdb_s {
     int		db_opens;
 /*@only@*/ /*@null@*/
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
+    int *	db_tagn;	/*!< Tag index mappings. */
     int		db_ndbi;	/*!< No. of tag indices. */
+/*@only@*/ /*@null@*/
     dbiIndex * _dbi;		/*!< Tag indices. */
 
     struct rpmop_s db_getops;
@@ -836,17 +838,6 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 	/*@*/;
 
 /** \ingroup rpmdb
- * Tags for which rpmdb indices will be built.
- */
-/*@-exportlocal@*/
-/*@unchecked@*/
-/*@only@*/ /*@null@*/ extern int * dbiTags;
-
-/*@unchecked@*/
-extern int dbiTagsMax;
-/*@=exportlocal@*/
-
-/** \ingroup rpmdb
  * Unreference a database instance.
  * @param db		rpm database
  * @param msg
@@ -914,6 +905,16 @@ int rpmdbInit(/*@null@*/ const char * prefix, int perms)
 int rpmdbVerify(/*@null@*/ const char * prefix)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/**
+ * Block access to a single database index.
+ * @param db		rpm database
+ * @param rpmtag	rpm tag (negative to block)
+ * @return              0 on success
+ */
+int rpmdbBlockDBI(/*@null@*/ rpmdb db, int rpmtag)
+	/*@globals fileSystem @*/
+	/*@modifies db, fileSystem @*/;
 
 /**
  * Close a single database index.

@@ -473,7 +473,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     int _cacheThisRC = 1;
     int rc;
     int xx;
-    int retrying = 0;
+    int retries = 10;
 
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
@@ -698,10 +698,8 @@ retry:
 	    /* depFlags better be 0! */
 
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
-
 	    (void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
-
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		rpmdsNotify(dep, _("(db files)"), rc);
 		mi = rpmdbFreeIterator(mi);
@@ -729,13 +727,13 @@ retry:
      * Search for an unsatisfied dependency.
      */
 /*@-boundsread@*/
-    if (adding && !retrying && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
+    if (adding && retries > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
 	if (ts->solve != NULL) {
 	    xx = (*ts->solve) (ts, dep, ts->solveData);
 	    if (xx == 0)
 		goto exit;
 	    if (xx == -1) {
-		retrying = 1;
+		retries--;
 		rpmalMakeIndex(ts->addedPackages);
 		goto retry;
 	    }

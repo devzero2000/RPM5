@@ -12,9 +12,6 @@ LIBRPMDB_0
     dbiIndexSetCount;
     dbiOpen;
     dbiStatsAccumulator;
-    dbiTags;
-    dbiTagsInit;
-    dbiTagsMax;
     dodigest;
     _fini;
     fpCacheCreate;
@@ -48,6 +45,7 @@ LIBRPMDB_0
     rpmDBArgs;
     rpmdbCheckSignals;
     rpmdbClose;
+    rpmdbBlockDBI;
     rpmdbCloseDBI;
     rpmdbCountPackages;
     rpmdbFindFpList;

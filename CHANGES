@@ -17,6 +17,10 @@
 	- use RPMTAG_FILELINKTOS to detect dangling symlinks st run time.
 	- fix: free dirnames/linktos dependency sets.
 	- consolidate per-mode options into single structure.
+	- make dbiTags per-rpmdb rather than global.
+	- permit rpmgi to iterate over indices.
+	- teach rpmtsSolve() about dirnames/linktos dependencies.
+	- add rpmdbBlockDBI() to disable index access.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

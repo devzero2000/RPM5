@@ -890,7 +890,6 @@ exit:
     rpmFreeFilesystems();
 /*@i@*/	urlFreeCache();
     rpmlogClose();
-    dbiTags = _free(dbiTags);
 
 #ifdef	IAM_RPMQV
     qva->qva_queryFormat = _free(qva->qva_queryFormat);

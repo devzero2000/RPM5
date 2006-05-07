@@ -580,6 +580,10 @@ exit 0
 %changelog
 * Sat May  6 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.10
 - consolidate per-mode options into single structure.
+- make dbiTags per-rpmdb rather than global.
+- permit rpmgi to iterate over indices.
+- teach rpmtsSolve() about dirnames/linktos dependencies.
+- add rpmdbBlockDBI() to disable index access.
 
 * Thu May  4 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.9
 - fix: free dirnames/linktos dependency sets.

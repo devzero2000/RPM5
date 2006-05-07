@@ -554,25 +554,33 @@ static int sugcmp(const void * a, const void * b)
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
     const char * errstr;
-    const char * str;
+    const char * str = NULL;
     const char * qfmt;
     rpmdbMatchIterator mi;
-    Header bh;
-    Header h;
-    size_t bhnamelen;
-    time_t bhtime;
+    Header bh = NULL;
+    Header h = NULL;
+    size_t bhnamelen = 0;
+    time_t bhtime = 0;
     rpmTag rpmtag;
     const char * keyp;
-    size_t keylen;
+    size_t keylen = 0;
     int rc = 1;	/* assume not found */
     int xx;
 
-    /* Make suggestions only for install Requires: */
+    /* Make suggestions only for installing Requires: */
     if (ts->goal != TSM_INSTALL)
 	return rc;
 
-    if (rpmdsTagN(ds) != RPMTAG_REQUIRENAME)
+    switch (rpmdsTagN(ds)) {
+    case RPMTAG_CONFLICTNAME:
+    default:
 	return rc;
+	/*@notreached@*/ break;
+    case RPMTAG_DIRNAMES:	/* XXX perhaps too many wrong answers */
+    case RPMTAG_REQUIRENAME:
+    case RPMTAG_FILELINKTOS:
+	break;
+    }
 
     keyp = rpmdsN(ds);
     if (keyp == NULL)
@@ -585,11 +593,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
     /* Look for a matching Provides: in suggested universe. */
     rpmtag = (*keyp == '/' ? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME);
-    keylen = 0;
     mi = rpmdbInitIterator(ts->sdb, rpmtag, keyp, keylen);
-    bhnamelen = 0;
-    bhtime = 0;
-    bh = NULL;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	const char * hname;
 	size_t hnamelen;
@@ -599,15 +603,25 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	if (rpmtag == RPMTAG_PROVIDENAME && !rpmdsAnyMatchesDep(h, ds, 1))
 	    continue;
 
-	/* XXX Prefer the shortest name if given alternatives. */
 	hname = NULL;
 	hnamelen = 0;
 	if (headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&hname, NULL)) {
 	    if (hname)
 		hnamelen = strlen(hname);
 	}
-	if (bhnamelen > 0 && hnamelen > bhnamelen)
-	    continue;
+
+	/* XXX Prefer the shortest/longest pkg N for basenames/provides resp. */
+	if (bhnamelen > 0)
+	switch (rpmtag) {
+	case RPMTAG_BASENAMES:
+	    if (bhnamelen > hnamelen)
+		continue;
+	    break;
+	case RPMTAG_PROVIDENAME:
+	    if (hnamelen > bhnamelen)
+		continue;
+	    break;
+	}
 
 	/* XXX Prefer the newest build if given alternatives. */
 	htime = 0;
@@ -617,6 +631,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	if (htime <= bhtime)
 	    continue;
 
+	/* Save new "best" candidate. */
 	bh = headerFree(bh);
 	bh = headerLink(h);
 	bhtime = htime;
@@ -628,7 +643,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     if (bh == NULL)
 	goto exit;
 
-    /* Format the suggestion. */
+    /* Format the suggested resolution path. */
     qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
     if (qfmt == NULL || *qfmt == '\0')
 	goto exit;
@@ -636,7 +651,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     bh = headerFree(bh);
     qfmt = _free(qfmt);
     if (str == NULL) {
-	rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
+	rpmError(RPMERR_QFMT, _("incorrect solve path format: %s\n"), errstr);
 	goto exit;
     }
 
@@ -644,7 +659,6 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	FD_t fd;
 	rpmRC rpmrc;
 
-	h = headerFree(h);
 	fd = Fopen(str, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), str,
@@ -660,7 +674,6 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	xx = Fclose(fd);
 	switch (rpmrc) {
 	default:
-	    str = _free(str);
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -669,13 +682,12 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
 	    {
 		rpmMessage(RPMMESS_DEBUG, _("Adding: %s\n"), str);
-		rc = -1;
-		/* XXX str memory leak */
+		rc = -1;	/* XXX restart unsatisfiedDepends() */
 		break;
 	    }
-	    str = _free(str);
 	    break;
 	}
+	str = _free(str);
 	h = headerFree(h);
 	goto exit;
     }
@@ -685,7 +697,10 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     if (ts->suggests != NULL && ts->nsuggests > 0) {
 	if (bsearch(&str, ts->suggests, ts->nsuggests,
 			sizeof(*ts->suggests), sugcmp))
+	{
+	    str = _free(str);
 	    goto exit;
+	}
     }
 
     /* Add a new (unique) suggestion. */

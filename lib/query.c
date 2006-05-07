@@ -674,7 +674,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    return 1;
 	}
 	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
-	/* RPMDBI_PACKAGES */
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO,
@@ -768,6 +767,21 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	rpmtsEmpty(ts);
 	break;
     default:
+      if (giFlags & RPMGI_TSADD) {
+	qva->qva_gi = rpmgiNew(ts, RPMDBI_LABEL, NULL, 0);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
+		(giFlags | (RPMGI_NOGLOB               )));
+	if (qva->qva_gi != NULL && (qva->qva_gi->flags & RPMGI_TSADD))	/* Load the ts with headers. */
+	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
+	    {};
+	if (rpmrc != RPMRC_NOTFOUND)
+	    return 1;	/* XXX should be no. of failures. */
+	qva->qva_source = RPMQV_ALL;
+	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	ec = rpmQueryVerify(qva, ts, NULL);
+	/*@=nullpass@*/
+	rpmtsEmpty(ts);
+      } else {
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
 		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
@@ -778,6 +792,7 @@ assert(path != NULL);
 	    ec += rpmQueryVerify(qva, ts, path);
 	    rpmtsEmpty(ts);
 	}
+      }
 	break;
     }
 
@@ -788,6 +803,8 @@ assert(path != NULL);
 
 int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 {
+    rpmtransFlags transFlags = qva->transFlags;
+    rpmtransFlags otransFlags;
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
@@ -827,9 +844,11 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     }
 #endif
 
+    otransFlags = rpmtsSetFlags(ts, transFlags);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     ec = rpmcliArgIter(ts, qva, argv);
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
+    transFlags = rpmtsSetFlags(ts, otransFlags);
 
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;
