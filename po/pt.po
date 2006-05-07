@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-06 12:05-0400\n"
+"POT-Creation-Date: 2006-05-06 20:29-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1275,20 +1275,20 @@ msgstr "não executar nenhuma etapa da criação"
 msgid "do not verify build dependencies"
 msgstr "não verificar as dependências de compilação"
 
-#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:334 lib/poptQV.c:412
-#: lib/poptQV.c:421 lib/poptQV.c:463
+#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:334 lib/poptQV.c:418
+#: lib/poptQV.c:427 lib/poptQV.c:469
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "não verificar as dependências do pacote"
 
-#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:336 lib/poptQV.c:415
-#: lib/poptQV.c:423 lib/poptQV.c:466
+#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:336 lib/poptQV.c:421
+#: lib/poptQV.c:429 lib/poptQV.c:472
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "não verifica a arquitectura do pacote"
 
-#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:338 lib/poptQV.c:418
-#: lib/poptQV.c:425 lib/poptQV.c:468
+#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:338 lib/poptQV.c:424
+#: lib/poptQV.c:431 lib/poptQV.c:474
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "verificar a assinatura do pacote"
@@ -1465,38 +1465,38 @@ msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 msgid "(soname provides)"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:706
+#: lib/depends.c:704
 #, fuzzy
 msgid "(db files)"
 msgstr "ficheiro db inválido %s\n"
 
-#: lib/depends.c:719
+#: lib/depends.c:717
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:749
+#: lib/depends.c:747
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1189
+#: lib/depends.c:1187
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorar relações entre o nome do pacote [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1311
+#: lib/depends.c:1309
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1571
+#: lib/depends.c:1569
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1689
+#: lib/depends.c:1687
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1504,21 +1504,21 @@ msgid ""
 msgstr ""
 "========== ordenar pacotes (order, #predecessors, #succesors, tree, depth)\n"
 
-#: lib/depends.c:1780
+#: lib/depends.c:1778
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1853
+#: lib/depends.c:1851
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1884
+#: lib/depends.c:1882
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1889
+#: lib/depends.c:1887
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1984,7 +1984,7 @@ msgstr "'rollback' recebe como argumento uma hora/data"
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "argumento hora/data inválido para 'rollback'"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:218 lib/poptQV.c:300 lib/poptQV.c:346
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "pesquisar/verificar o(s) pacote(s) de transacção de instalação"
@@ -2100,8 +2100,8 @@ msgstr "actualiza a base de dados, mas não altera o sistema de ficheiros"
 msgid "do not verify package dependencies"
 msgstr "não verifica as dependências do pacote"
 
-#: lib/poptI.c:302 lib/poptI.c:304 lib/poptQV.c:354 lib/poptQV.c:357
-#: lib/poptQV.c:359
+#: lib/poptI.c:302 lib/poptI.c:304 lib/poptQV.c:360 lib/poptQV.c:363
+#: lib/poptQV.c:365
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "não verificar as dependências do pacote"
@@ -2357,128 +2357,128 @@ msgstr "apresentar a informação básica do ficheiro"
 msgid "list files in package"
 msgstr "listar os ficheiros no pacote"
 
-#: lib/poptQV.c:302 lib/poptQV.c:345
+#: lib/poptQV.c:305 lib/poptQV.c:351
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "ignorar ficheiro %%licence"
 
-#: lib/poptQV.c:305 lib/poptQV.c:348
+#: lib/poptQV.c:308 lib/poptQV.c:354
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "ignorar ficheiros %%ghost"
 
-#: lib/poptQV.c:308
+#: lib/poptQV.c:311
 #, c-format
 msgid "skip %%ghost files"
 msgstr "ignorar ficheiros %%ghost"
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:315
 #, c-format
 msgid "skip %%license files"
 msgstr "ignorar ficheiro %%licence"
 
-#: lib/poptQV.c:315
+#: lib/poptQV.c:318
 #, c-format
 msgid "skip %%readme files"
 msgstr "ignorar ficheiros %%readme"
 
-#: lib/poptQV.c:321
+#: lib/poptQV.c:324
 msgid "use the following query format"
 msgstr "usar o formato de pesquisa seguinte"
 
-#: lib/poptQV.c:323
+#: lib/poptQV.c:326
 msgid "substitute i18n sections into spec file"
 msgstr "substituir as secções i18n no ficheiro spec"
 
-#: lib/poptQV.c:325
+#: lib/poptQV.c:328
 msgid "display the states of the listed files"
 msgstr "mostrar os estados dos ficheiros listados"
 
-#: lib/poptQV.c:327
+#: lib/poptQV.c:330
 #, fuzzy
 msgid "specify target platform"
 msgstr "ignorar a plataforma-alvo"
 
-#: lib/poptQV.c:363
+#: lib/poptQV.c:369
 msgid "don't verify size of files"
 msgstr "não verificar os tamanho dos ficheiros"
 
-#: lib/poptQV.c:366
+#: lib/poptQV.c:372
 msgid "don't verify symlink path of files"
 msgstr "não verificar as ligações simbólicas dos ficheiros"
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:375
 msgid "don't verify owner of files"
 msgstr "não verificar o dono dos ficheiros"
 
-#: lib/poptQV.c:372
+#: lib/poptQV.c:378
 msgid "don't verify group of files"
 msgstr "não verificar o grupo dos ficheiros"
 
-#: lib/poptQV.c:375
+#: lib/poptQV.c:381
 msgid "don't verify modification time of files"
 msgstr "não verificar hora de modificação dos ficheiros"
 
-#: lib/poptQV.c:378 lib/poptQV.c:381
+#: lib/poptQV.c:384 lib/poptQV.c:387
 msgid "don't verify mode of files"
 msgstr "não verificar o modo dos ficheiros"
 
-#: lib/poptQV.c:384
+#: lib/poptQV.c:390
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "não verificar os ficheiros no pacote"
 
-#: lib/poptQV.c:386
+#: lib/poptQV.c:392
 msgid "don't verify files in package"
 msgstr "não verificar os ficheiros no pacote"
 
-#: lib/poptQV.c:389 lib/poptQV.c:392 tools/rpmgraph.c:267
+#: lib/poptQV.c:395 lib/poptQV.c:398 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "não verificar as dependências do pacote"
 
-#: lib/poptQV.c:397 lib/poptQV.c:401 lib/poptQV.c:404 lib/poptQV.c:407
+#: lib/poptQV.c:403 lib/poptQV.c:407 lib/poptQV.c:410 lib/poptQV.c:413
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "não executar o %verifyscript (se existir)"
 
-#: lib/poptQV.c:441
+#: lib/poptQV.c:447
 #, fuzzy
 msgid "sign package(s) (identical to --resign)"
 msgstr "assinar um pacote (retira a assinatura actual)"
 
-#: lib/poptQV.c:443
+#: lib/poptQV.c:449
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "verificar a assinatura do pacote"
 
-#: lib/poptQV.c:445
+#: lib/poptQV.c:451
 #, fuzzy
 msgid "delete package signatures"
 msgstr "verificar a assinatura do pacote"
 
-#: lib/poptQV.c:447
+#: lib/poptQV.c:453
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:449
+#: lib/poptQV.c:455
 #, fuzzy
 msgid "sign package(s) (identical to --addsign)"
 msgstr "assinar um pacote (retira a assinatura actual)"
 
-#: lib/poptQV.c:451
+#: lib/poptQV.c:457
 msgid "generate signature"
 msgstr "gerar a assinatura"
 
-#: lib/poptQV.c:454
+#: lib/poptQV.c:460
 #, fuzzy
 msgid "specify trust metric"
 msgstr "ignorar a plataforma-alvo"
 
-#: lib/poptQV.c:457
+#: lib/poptQV.c:463
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:460
+#: lib/poptQV.c:466
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2567,7 +2567,7 @@ msgstr "%s falhou no ficheiro %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:639
+#: lib/query.c:123
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "formato incorrecto: %s\n"
@@ -2665,12 +2665,12 @@ msgstr "número de pacote inválido: %s\n"
 msgid "package record number: %u\n"
 msgstr "número de registo do pacote: %u\n"
 
-#: lib/query.c:681
+#: lib/query.c:680
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "o registo %u não pôde ser lido\n"
 
-#: lib/query.c:691 lib/rpminstall.c:815
+#: lib/query.c:690 lib/rpminstall.c:815
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
@@ -2942,25 +2942,25 @@ msgid "relocating directory %s to %s\n"
 msgstr "a mudar a directoria %s para %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:490
-#: lib/rpminstall.c:621 lib/rpminstall.c:1060 lib/rpmts.c:650
+#: lib/rpminstall.c:621 lib/rpminstall.c:1060 lib/rpmts.c:664
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
 
-#: lib/rpmgi.c:365
+#: lib/rpmgi.c:389
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "opção desconhecida"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:655 lib/rpminstall.c:665 lib/rpminstall.c:849
+#: lib/rpmgi.c:722 lib/rpminstall.c:665 lib/rpminstall.c:849
 #: lib/rpminstall.c:1453 lib/transaction.c:1185 tools/rpmgraph.c:197
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "dependências falhadas:\n"
 
-#: lib/rpmgi.c:661 lib/rpminstall.c:672 tools/rpmgraph.c:203
+#: lib/rpmgi.c:728 lib/rpminstall.c:672 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3363,25 +3363,30 @@ msgstr "número de pacote inválido: %s\n"
 msgid "cannot open Solve database in %s\n"
 msgstr "não consigo a base de dados do RPM em %s\n"
 
-#: lib/rpmts.c:671
+#: lib/rpmts.c:654
+#, fuzzy, c-format
+msgid "incorrect solve path format: %s\n"
+msgstr "formato incorrecto: %s\n"
+
+#: lib/rpmts.c:684
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "linha: %s\n"
 
-#: lib/rpmts.c:683
+#: lib/rpmts.c:695
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "A obter o %s\n"
 
-#: lib/rpmts.c:1234
+#: lib/rpmts.c:1249
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1236
+#: lib/rpmts.c:1251
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1301
+#: lib/rpmts.c:1316
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "Ficheiro%5d: %07o %s.%s\t %s\n"
@@ -3986,178 +3991,178 @@ msgstr ""
 msgid "verify database files"
 msgstr "verificar ficheiros da base de dados"
 
-#: rpmdb/rpmdb.c:216
+#: rpmdb/rpmdb.c:211
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: nome de opção não reconhecido: \"%s\" ignorado\n"
 
-#: rpmdb/rpmdb.c:308
+#: rpmdb/rpmdb.c:320
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "não consigo abrir o índice de %s usando o db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:328
+#: rpmdb/rpmdb.c:340
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "não consigo abrir o índice do %s\n"
 
-#: rpmdb/rpmdb.c:979
+#: rpmdb/rpmdb.c:1014
 msgid "no dbpath has been set\n"
 msgstr "não foi definido o dbpath\n"
 
-#: rpmdb/rpmdb.c:1260 rpmdb/rpmdb.c:1391 rpmdb/rpmdb.c:1447 rpmdb/rpmdb.c:2436
-#: rpmdb/rpmdb.c:2565 rpmdb/rpmdb.c:3316
+#: rpmdb/rpmdb.c:1289 rpmdb/rpmdb.c:1420 rpmdb/rpmdb.c:1476 rpmdb/rpmdb.c:2465
+#: rpmdb/rpmdb.c:2594 rpmdb/rpmdb.c:3345
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:1659
+#: rpmdb/rpmdb.c:1688
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1669
+#: rpmdb/rpmdb.c:1698
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:2315
+#: rpmdb/rpmdb.c:2344
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2347
+#: rpmdb/rpmdb.c:2376
 #, fuzzy, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada, a ignorar.\n"
 
-#: rpmdb/rpmdb.c:2669
+#: rpmdb/rpmdb.c:2698
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"
 
-#: rpmdb/rpmdb.c:2735
+#: rpmdb/rpmdb.c:2764
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:2843
+#: rpmdb/rpmdb.c:2872
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "a remover o \"%s\" do índice %s.\n"
 
-#: rpmdb/rpmdb.c:2847
+#: rpmdb/rpmdb.c:2876
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "a remover %d registos do índice %s.\n"
 
-#: rpmdb/rpmdb.c:2875
+#: rpmdb/rpmdb.c:2904
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:2896
+#: rpmdb/rpmdb.c:2925
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:2906
+#: rpmdb/rpmdb.c:2935
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "erro(%d) ao remover o registo %s do %s\n"
 
-#: rpmdb/rpmdb.c:3063
+#: rpmdb/rpmdb.c:3092
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erro(%d) ao criar uma nova instância do pacote\n"
 
-#: rpmdb/rpmdb.c:3126
+#: rpmdb/rpmdb.c:3155
 #, fuzzy
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada, a ignorar.\n"
 
-#: rpmdb/rpmdb.c:3291
+#: rpmdb/rpmdb.c:3320
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "a adicionar o \"%s\" ao índice %s.\n"
 
-#: rpmdb/rpmdb.c:3295
+#: rpmdb/rpmdb.c:3324
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "a adicionar %d registos ao índice %s.\n"
 
-#: rpmdb/rpmdb.c:3335
+#: rpmdb/rpmdb.c:3364
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:3706
+#: rpmdb/rpmdb.c:3737
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "a remover o %s depois duma reconstrução bem sucedida do db3.\n"
 
-#: rpmdb/rpmdb.c:3745
+#: rpmdb/rpmdb.c:3780
 msgid "no dbpath has been set"
 msgstr "não foi definido o dbpath"
 
-#: rpmdb/rpmdb.c:3777
+#: rpmdb/rpmdb.c:3812
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "a reconstruir a base de dados %s em %s\n"
 
-#: rpmdb/rpmdb.c:3781
+#: rpmdb/rpmdb.c:3816
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "A base de dados temporária %s já existe\n"
 
-#: rpmdb/rpmdb.c:3787
+#: rpmdb/rpmdb.c:3822
 #, c-format
 msgid "creating directory %s\n"
 msgstr "a criar a directoria %s\n"
 
-#: rpmdb/rpmdb.c:3789
+#: rpmdb/rpmdb.c:3824
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "a criar a directoria %s: %s\n"
 
-#: rpmdb/rpmdb.c:3798
+#: rpmdb/rpmdb.c:3833
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "a abrir a base de dados antiga com a dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3844
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "a abrir a base de dados nova com a dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3840
+#: rpmdb/rpmdb.c:3875
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "o número do registo %u na base de dados está errado -- a ignorar.\n"
 
-#: rpmdb/rpmdb.c:3880
+#: rpmdb/rpmdb.c:3915
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "não consigo adicionar o registo originalmente em %u\n"
 
-#: rpmdb/rpmdb.c:3894
+#: rpmdb/rpmdb.c:3929
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "falhou a reconstrução da base de dados: a base de dados original mantém-se\n"
 
-#: rpmdb/rpmdb.c:3902
+#: rpmdb/rpmdb.c:3941
 msgid "failed to replace old database with new database!\n"
 msgstr "falhou a substituição da base de dados antiga pela nova!\n"
 
-#: rpmdb/rpmdb.c:3904
+#: rpmdb/rpmdb.c:3943
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "substituir os ficheiros em %s por ficheiros de %s a recuperar"
 
-#: rpmdb/rpmdb.c:3914
+#: rpmdb/rpmdb.c:3953
 #, c-format
 msgid "removing directory %s\n"
 msgstr "a remover a directoria %s\n"
 
-#: rpmdb/rpmdb.c:3916
+#: rpmdb/rpmdb.c:3955
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "falhou a remoção da directoria %s: %s\n"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-06 12:05-0400\n"
+"POT-Creation-Date: 2006-05-06 20:29-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1279,18 +1279,18 @@ msgstr "не виконувати жодного етапу збирання"
 msgid "do not verify build dependencies"
 msgstr "не перевіряти залежності перед збиранням"
 
-#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:334 lib/poptQV.c:412
-#: lib/poptQV.c:421 lib/poptQV.c:463
+#: build/poptBT.c:223 lib/poptALL.c:279 lib/poptI.c:334 lib/poptQV.c:418
+#: lib/poptQV.c:427 lib/poptQV.c:469
 msgid "don't verify package digest(s)"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:336 lib/poptQV.c:415
-#: lib/poptQV.c:423 lib/poptQV.c:466
+#: build/poptBT.c:225 lib/poptALL.c:281 lib/poptI.c:336 lib/poptQV.c:421
+#: lib/poptQV.c:429 lib/poptQV.c:472
 msgid "don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки з бази даних"
 
-#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:338 lib/poptQV.c:418
-#: lib/poptQV.c:425 lib/poptQV.c:468
+#: build/poptBT.c:227 lib/poptALL.c:287 lib/poptI.c:338 lib/poptQV.c:424
+#: lib/poptQV.c:431 lib/poptQV.c:474
 msgid "don't verify package signature(s)"
 msgstr "не перевіряти підписи у пакетах"
 
@@ -1465,36 +1465,36 @@ msgstr "(додано залежність)"
 msgid "(soname provides)"
 msgstr "(додано залежність)"
 
-#: lib/depends.c:706
+#: lib/depends.c:704
 msgid "(db files)"
 msgstr "(db файли)"
 
-#: lib/depends.c:719
+#: lib/depends.c:717
 msgid "(db provides)"
 msgstr "(db постачає)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:749
+#: lib/depends.c:747
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1189
+#: lib/depends.c:1187
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ігноруються зв'язки між іменами пакетів [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1311
+#: lib/depends.c:1309
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
 #. Record all relations.
-#: lib/depends.c:1571
+#: lib/depends.c:1569
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1689
+#: lib/depends.c:1687
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1503,21 +1503,21 @@ msgstr ""
 "========== сортування пакетів (порядок, #predecessors, #succesors, дерево, "
 "глибина)\n"
 
-#: lib/depends.c:1780
+#: lib/depends.c:1778
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== лише спадкоємці (%d байт)\n"
 
-#: lib/depends.c:1853
+#: lib/depends.c:1851
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1884
+#: lib/depends.c:1882
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1889
+#: lib/depends.c:1887
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
@@ -1976,7 +1976,7 @@ msgstr "повернення стану потребує аргумент арг
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "неправильний формат часу у аргументі повернення стану"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:218 lib/poptQV.c:300 lib/poptQV.c:346
 msgid "add suggested packages to transaction"
 msgstr "додати запропоновані пакети у транзакцію"
 
@@ -2086,8 +2086,8 @@ msgstr "оновити базу даних, але не модифікувати
 msgid "do not verify package dependencies"
 msgstr "не перевіряти залежності пакету"
 
-#: lib/poptI.c:302 lib/poptI.c:304 lib/poptQV.c:354 lib/poptQV.c:357
-#: lib/poptQV.c:359
+#: lib/poptI.c:302 lib/poptI.c:304 lib/poptQV.c:360 lib/poptQV.c:363
+#: lib/poptQV.c:365
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "не перевіряти контрольну суму пакетів"
@@ -2338,123 +2338,123 @@ msgstr "показати основну інформацію про файл"
 msgid "list files in package"
 msgstr "показати перелік файлів пакету"
 
-#: lib/poptQV.c:302 lib/poptQV.c:345
+#: lib/poptQV.c:305 lib/poptQV.c:351
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:305 lib/poptQV.c:348
+#: lib/poptQV.c:308 lib/poptQV.c:354
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:308
+#: lib/poptQV.c:311
 #, c-format
 msgid "skip %%ghost files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:315
 #, c-format
 msgid "skip %%license files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:315
+#: lib/poptQV.c:318
 #, c-format
 msgid "skip %%readme files"
 msgstr "пропустити файли %%readme"
 
-#: lib/poptQV.c:321
+#: lib/poptQV.c:324
 msgid "use the following query format"
 msgstr "використовувати заданий формат запиту"
 
-#: lib/poptQV.c:323
+#: lib/poptQV.c:326
 msgid "substitute i18n sections into spec file"
 msgstr "замінити розділи i18n у файлі специфікації"
 
-#: lib/poptQV.c:325
+#: lib/poptQV.c:328
 msgid "display the states of the listed files"
 msgstr "показати інформацію про стан файлів з переліку"
 
-#: lib/poptQV.c:327
+#: lib/poptQV.c:330
 #, fuzzy
 msgid "specify target platform"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:363
+#: lib/poptQV.c:369
 msgid "don't verify size of files"
 msgstr "не перевіряти розмір файла"
 
-#: lib/poptQV.c:366
+#: lib/poptQV.c:372
 msgid "don't verify symlink path of files"
 msgstr "не перевіряти шлях символічних посилань"
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:375
 msgid "don't verify owner of files"
 msgstr "не перевіряти власника файлів"
 
-#: lib/poptQV.c:372
+#: lib/poptQV.c:378
 msgid "don't verify group of files"
 msgstr "не перевіряти групи файлів"
 
-#: lib/poptQV.c:375
+#: lib/poptQV.c:381
 msgid "don't verify modification time of files"
 msgstr "не перевіряти час модифікації файлів"
 
-#: lib/poptQV.c:378 lib/poptQV.c:381
+#: lib/poptQV.c:384 lib/poptQV.c:387
 msgid "don't verify mode of files"
 msgstr "не перевіряти права доступу файлів"
 
-#: lib/poptQV.c:384
+#: lib/poptQV.c:390
 msgid "don't verify file security contexts"
 msgstr "не перевіряти контекст безпеки файлів"
 
-#: lib/poptQV.c:386
+#: lib/poptQV.c:392
 msgid "don't verify files in package"
 msgstr "не перевіряти файли пакета"
 
-#: lib/poptQV.c:389 lib/poptQV.c:392 tools/rpmgraph.c:267
+#: lib/poptQV.c:395 lib/poptQV.c:398 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "не перевіряти залежності пакета"
 
-#: lib/poptQV.c:397 lib/poptQV.c:401 lib/poptQV.c:404 lib/poptQV.c:407
+#: lib/poptQV.c:403 lib/poptQV.c:407 lib/poptQV.c:410 lib/poptQV.c:413
 msgid "don't execute verify script(s)"
 msgstr "не виконувати сценарії перевірки"
 
-#: lib/poptQV.c:441
+#: lib/poptQV.c:447
 msgid "sign package(s) (identical to --resign)"
 msgstr "підписати пакет(и) (ідентично до --resign)"
 
-#: lib/poptQV.c:443
+#: lib/poptQV.c:449
 msgid "verify package signature(s)"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:445
+#: lib/poptQV.c:451
 #, fuzzy
 msgid "delete package signatures"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:447
+#: lib/poptQV.c:453
 msgid "import an armored public key"
 msgstr "імпортувати відкритий ключ"
 
-#: lib/poptQV.c:449
+#: lib/poptQV.c:455
 msgid "sign package(s) (identical to --addsign)"
 msgstr "підписати пакет(и) (ідентично до --addsign)"
 
-#: lib/poptQV.c:451
+#: lib/poptQV.c:457
 msgid "generate signature"
 msgstr "створити підпис"
 
-#: lib/poptQV.c:454
+#: lib/poptQV.c:460
 #, fuzzy
 msgid "specify trust metric"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:457
+#: lib/poptQV.c:463
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:460
+#: lib/poptQV.c:466
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2539,7 +2539,7 @@ msgstr "%s помилка на файлі %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s помилка: %s\n"
 
-#: lib/query.c:123 lib/rpmts.c:639
+#: lib/query.c:123
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "неправильний формат: %s\n"
@@ -2637,12 +2637,12 @@ msgstr "неправильний номер пакету: %s\n"
 msgid "package record number: %u\n"
 msgstr "номер елементу пакету: %u\n"
 
-#: lib/query.c:681
+#: lib/query.c:680
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:691 lib/rpminstall.c:815
+#: lib/query.c:690 lib/rpminstall.c:815
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"
@@ -2913,24 +2913,24 @@ msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:490
-#: lib/rpminstall.c:621 lib/rpminstall.c:1060 lib/rpmts.c:650
+#: lib/rpminstall.c:621 lib/rpminstall.c:1060 lib/rpmts.c:664
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpmgi.c:365
+#: lib/rpmgi.c:389
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:655 lib/rpminstall.c:665 lib/rpminstall.c:849
+#: lib/rpmgi.c:722 lib/rpminstall.c:665 lib/rpminstall.c:849
 #: lib/rpminstall.c:1453 lib/transaction.c:1185 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Незадоволені залежності:\n"
 
-#: lib/rpmgi.c:661 lib/rpminstall.c:672 tools/rpmgraph.c:203
+#: lib/rpmgi.c:728 lib/rpminstall.c:672 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "  Запропоновані залежності:\n"
 
@@ -3327,26 +3327,31 @@ msgstr "відсутня дужка ')' у позначці пакету: %s\n"
 msgid "cannot open Solve database in %s\n"
 msgstr "неможливо відкрити базу даних розв'язання залежностей у %s\n"
 
-#: lib/rpmts.c:671
+#: lib/rpmts.c:654
+#, fuzzy, c-format
+msgid "incorrect solve path format: %s\n"
+msgstr "неправильний формат: %s\n"
+
+#: lib/rpmts.c:684
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Додається: %s\n"
 
-#: lib/rpmts.c:683
+#: lib/rpmts.c:695
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Пропонується: %s\n"
 
-#: lib/rpmts.c:1234
+#: lib/rpmts.c:1249
 msgid "mounted filesystems:\n"
 msgstr "змонтовані файлові системи:\n"
 
-#: lib/rpmts.c:1236
+#: lib/rpmts.c:1251
 #, fuzzy
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "   i   пристр розм.бл.   вільн.бл   вільн.inod місце монтув.\n"
 
-#: lib/rpmts.c:1301
+#: lib/rpmts.c:1316
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
@@ -3950,176 +3955,176 @@ msgstr ""
 msgid "verify database files"
 msgstr "перевірити файли бази даних"
 
-#: rpmdb/rpmdb.c:216
+#: rpmdb/rpmdb.c:211
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: не розпізнана назва тегу: \"%s\" проігноровано\n"
 
-#: rpmdb/rpmdb.c:308
+#: rpmdb/rpmdb.c:320
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "неможливо відкрити індекс %s використовуючи db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:328
+#: rpmdb/rpmdb.c:340
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "неможливо відкрити індекс %s\n"
 
-#: rpmdb/rpmdb.c:979
+#: rpmdb/rpmdb.c:1014
 msgid "no dbpath has been set\n"
 msgstr "не встановлено значення dbpath\n"
 
-#: rpmdb/rpmdb.c:1260 rpmdb/rpmdb.c:1391 rpmdb/rpmdb.c:1447 rpmdb/rpmdb.c:2436
-#: rpmdb/rpmdb.c:2565 rpmdb/rpmdb.c:3316
+#: rpmdb/rpmdb.c:1289 rpmdb/rpmdb.c:1420 rpmdb/rpmdb.c:1476 rpmdb/rpmdb.c:2465
+#: rpmdb/rpmdb.c:2594 rpmdb/rpmdb.c:3345
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "помилка(%d) при отриманні \"%s\" елементів з індексу %s index\n"
 
-#: rpmdb/rpmdb.c:1659
+#: rpmdb/rpmdb.c:1688
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: пропускається"
 
-#: rpmdb/rpmdb.c:1669
+#: rpmdb/rpmdb.c:1698
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "помилка(%d) збереження елементу #%d у %s\n"
 
-#: rpmdb/rpmdb.c:2315
+#: rpmdb/rpmdb.c:2344
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: пропускається"
 
-#: rpmdb/rpmdb.c:2347
+#: rpmdb/rpmdb.c:2376
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: отримано пошкоджений заголовок #%u -- пропускається.\n"
 
-#: rpmdb/rpmdb.c:2669
+#: rpmdb/rpmdb.c:2698
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: rpmdb/rpmdb.c:2735
+#: rpmdb/rpmdb.c:2764
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "помилка(%d) позначення елементу заголовка #%d для %s видалення\n"
 
-#: rpmdb/rpmdb.c:2843
+#: rpmdb/rpmdb.c:2872
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "видалення \"%s\" з індексу %s\n"
 
-#: rpmdb/rpmdb.c:2847
+#: rpmdb/rpmdb.c:2876
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "видалення %d елементів з індексу %s\n"
 
-#: rpmdb/rpmdb.c:2875
+#: rpmdb/rpmdb.c:2904
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "помилка(%d) встановлення \"%s\" елементів з індексу %s\n"
 
-#: rpmdb/rpmdb.c:2896
+#: rpmdb/rpmdb.c:2925
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "помилка(%d) збереження елементу \"%s\" у %s\n"
 
-#: rpmdb/rpmdb.c:2906
+#: rpmdb/rpmdb.c:2935
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "помилка(%d) видалення елементу \"%s\" з %s\n"
 
-#: rpmdb/rpmdb.c:3063
+#: rpmdb/rpmdb.c:3092
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "помилка(%d) розподілу пам'яті дял нового екземпляру пакета\n"
 
-#: rpmdb/rpmdb.c:3126
+#: rpmdb/rpmdb.c:3155
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: пропускається"
 
-#: rpmdb/rpmdb.c:3291
+#: rpmdb/rpmdb.c:3320
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "додається \"%s\" до індексу %s.\n"
 
-#: rpmdb/rpmdb.c:3295
+#: rpmdb/rpmdb.c:3324
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "додаються %d елементів до індексу %s.\n"
 
-#: rpmdb/rpmdb.c:3335
+#: rpmdb/rpmdb.c:3364
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "помилка(%d) збереження елементу %s у %s\n"
 
-#: rpmdb/rpmdb.c:3706
+#: rpmdb/rpmdb.c:3737
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "видаляється %s після успішного завершення переіндексації бази у db3.\n"
 
-#: rpmdb/rpmdb.c:3745
+#: rpmdb/rpmdb.c:3780
 msgid "no dbpath has been set"
 msgstr "параметр dbpath не встановлено"
 
-#: rpmdb/rpmdb.c:3777
+#: rpmdb/rpmdb.c:3812
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перебудовується база даних %s у %s\n"
 
-#: rpmdb/rpmdb.c:3781
+#: rpmdb/rpmdb.c:3816
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "тимчасова база даних %s вже існує\n"
 
-#: rpmdb/rpmdb.c:3787
+#: rpmdb/rpmdb.c:3822
 #, c-format
 msgid "creating directory %s\n"
 msgstr "створюється каталог %s\n"
 
-#: rpmdb/rpmdb.c:3789
+#: rpmdb/rpmdb.c:3824
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "створюється каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:3798
+#: rpmdb/rpmdb.c:3833
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "відкривається стара база даних через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3844
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "відкривається база даних через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3840
+#: rpmdb/rpmdb.c:3875
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "заголовок з номером %u у базі даних неправильний -- пропущено.\n"
 
-#: rpmdb/rpmdb.c:3880
+#: rpmdb/rpmdb.c:3915
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "неможливо добавити елемент(спочатку у %u)\n"
 
-#: rpmdb/rpmdb.c:3894
+#: rpmdb/rpmdb.c:3929
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "помилка перебудови бази даних: залишається початкова база даних\n"
 
-#: rpmdb/rpmdb.c:3902
+#: rpmdb/rpmdb.c:3941
 msgid "failed to replace old database with new database!\n"
 msgstr "неможливо замінити стару базу даних з новою базою даних!\n"
 
-#: rpmdb/rpmdb.c:3904
+#: rpmdb/rpmdb.c:3943
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файли у %s замінюються файлами з %s для відновлення"
 
-#: rpmdb/rpmdb.c:3914
+#: rpmdb/rpmdb.c:3953
 #, c-format
 msgid "removing directory %s\n"
 msgstr "видаляється каталог %s\n"
 
-#: rpmdb/rpmdb.c:3916
+#: rpmdb/rpmdb.c:3955
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "помилка видалення каталогу %s: %s\n"
