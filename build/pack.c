@@ -205,9 +205,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
     return 0;
 }
 
-/**
- */
-static int processScriptFiles(Spec spec, Package pkg)
+int processScriptFiles(Spec spec, Package pkg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies pkg->header, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -416,13 +414,7 @@ static int rpmLeadVersion(void)
     return rpmlead_version;
 }
 
-/**
- * Retrofit an explicit Provides: N = E:V-R dependency into package headers.
- * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
- * @param h             header
- */
-static void providePackageNVR(Header h)
-	/*@modifies h @*/
+void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -535,10 +527,6 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		&csa->cpioArchiveSize, 1);
     }
 #endif
-
-    /* Binary packages now have explicit Provides: name = version-release. */
-    if (type == RPMLEAD_BINARY)
-	providePackageNVR(h);
 
     /* Save payload information */
     /*@-branchstate@*/
@@ -874,9 +862,6 @@ int packageBinaries(Spec spec)
 	if (pkg->fileList == NULL)
 	    continue;
 
-	if ((rc = processScriptFiles(spec, pkg)))
-	    return rc;
-	
 	if (spec->cookie) {
 	    (void) headerAddEntry(pkg->header, RPMTAG_COOKIE,
 			   RPM_STRING_TYPE, spec->cookie, 1);
@@ -891,8 +876,6 @@ int packageBinaries(Spec spec)
 		       RPM_STRING_TYPE, buildHost(), 1);
 	(void) headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
-
-	providePackageNVR(pkg->header);
 
     {	const char * optflags = rpmExpand("%{optflags}", NULL);
 	(void) headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,

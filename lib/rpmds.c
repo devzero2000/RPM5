@@ -446,10 +446,15 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	    int i;
 
 	    if (av != NULL)
-	    for (i = 0; i < Count; i++)
-		av[i] = (N[i] != NULL && *N[i] != '\0')
-			? rpmGenPath("/", ds->EVR[ds->Flags[i]], N[i])
-			: xstrdup("");
+	    for (i = 0; i < Count; i++) {
+		if (N[i] == NULL || *N[i] == '\0')
+		    av[i] = xstrdup("");
+		else if (*N[i] == '/')
+		    av[i] = xstrdup(N[i]);
+		else
+		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
+	    }
+
 	    N = ds->N = hfd(ds->N, ds->Nt);
 	    ds->N = rpmdsDupArgv(av, Count);
 	    av = argvFree(av);

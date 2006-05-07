@@ -427,6 +427,25 @@ int addReqProv(/*@unused@*/Spec spec, Header h, rpmTag tagN,
 		int index)
 	/*@modifies h @*/;
 
+/**
+ * Append files (if any) to scriptlet tags.
+ * @param spec		spec file control structure
+ * @param pkg		package control structure
+ * @return		0 on success
+ */
+int processScriptFiles(Spec spec, Package pkg)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies pkg->header, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/**
+ * Retrofit an explicit Provides: N = E:V-R dependency into package headers.
+ * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
+ * @param h             header
+ */
+void providePackageNVR(Header h)
+	/*@modifies h @*/;
+
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.
  * @param h		header

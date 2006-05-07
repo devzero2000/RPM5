@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-06 20:29-0400\n"
+"POT-Creation-Date: 2006-05-07 17:37-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -365,7 +365,7 @@ msgstr "検証のための引数が指定されていません。"
 msgid "no arguments given"
 msgstr "引数が指定されていません。"
 
-#: build/build.c:140 build/pack.c:617
+#: build/build.c:140 build/pack.c:605
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません。\n"
 
@@ -669,132 +669,132 @@ msgstr "cpio_copy で書き込みに失敗: %s\n"
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy で読み込みに失敗: %s\n"
 
-#: build/pack.c:220 build/pack.c:234
+#: build/pack.c:218 build/pack.c:232
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:227
+#: build/pack.c:225
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:241
+#: build/pack.c:239
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:248 build/pack.c:255
+#: build/pack.c:246 build/pack.c:253
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:263
+#: build/pack.c:261
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:278
+#: build/pack.c:276
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "TriggerScript ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:307
+#: build/pack.c:305
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: %s のオープン: %s\n"
 
-#: build/pack.c:317
+#: build/pack.c:315
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:326 build/pack.c:664
+#: build/pack.c:324 build/pack.c:652
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek に失敗しました: %s\n"
 
-#: build/pack.c:358
+#: build/pack.c:356
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s は RPM パッケージではありません\n"
 
-#: build/pack.c:363
+#: build/pack.c:361
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からヘッダの読み込み中\n"
 
-#: build/pack.c:605
+#: build/pack.c:593
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダ領域を作成できません。\n"
 
-#: build/pack.c:624
+#: build/pack.c:612
 msgid "Unable to write temp header\n"
 msgstr "一時ヘッダの書き込みができません。\n"
 
-#: build/pack.c:634
+#: build/pack.c:622
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ\n"
 
-#: build/pack.c:671
+#: build/pack.c:659
 msgid "Unable to write final header\n"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: build/pack.c:691
+#: build/pack.c:679
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の作成中: %d\n"
 
-#: build/pack.c:709
+#: build/pack.c:697
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: build/pack.c:717
+#: build/pack.c:705
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:753 lib/psm.c:1690
+#: build/pack.c:741 lib/psm.c:1690
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:768
+#: build/pack.c:756
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s のオープンに失敗: %s\n"
 
-#: build/pack.c:779
+#: build/pack.c:767
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s からヘッダ読み込みに失敗: %s\n"
 
-#: build/pack.c:793
+#: build/pack.c:781
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s へのヘッダ書き込みに失敗: %s\n"
 
-#: build/pack.c:803
+#: build/pack.c:791
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s から Payload 読み込みに失敗: %s\n"
 
-#: build/pack.c:809
+#: build/pack.c:797
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:846 lib/psm.c:2003
+#: build/pack.c:834 lib/psm.c:2003
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:919
+#: build/pack.c:902
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:936
+#: build/pack.c:919
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1476,18 +1476,18 @@ msgstr ""
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1309
+#: lib/depends.c:1314
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
 #. Record all relations.
-#: lib/depends.c:1569
+#: lib/depends.c:1583
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1687
+#: lib/depends.c:1704
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1496,21 +1496,21 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:1778
+#: lib/depends.c:1795
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:1851
+#: lib/depends.c:1868
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:1882
+#: lib/depends.c:1899
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1887
+#: lib/depends.c:1904
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -2736,89 +2736,89 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:906 lib/rpmds.c:3387
+#: lib/rpmds.c:911 lib/rpmds.c:3392
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:906 lib/rpmds.c:3387
+#: lib/rpmds.c:911 lib/rpmds.c:3392
 msgid "YES"
 msgstr "YES"
 
-#: lib/rpmds.c:1392
+#: lib/rpmds.c:1397
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
 
-#: lib/rpmds.c:1395
+#: lib/rpmds.c:1400
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
 
-#: lib/rpmds.c:1398
+#: lib/rpmds.c:1403
 msgid "package payload can be compressed using bzip2."
 msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
 
-#: lib/rpmds.c:1401
+#: lib/rpmds.c:1406
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "パッケージペイロードファイルが「./」接頭語を持っています。"
 
-#: lib/rpmds.c:1404
+#: lib/rpmds.c:1409
 msgid "package name-version-release is not implicitly provided."
 msgstr "「パッケージ名-バージョン-リリース」が暗黙で提供されません。"
 
-#: lib/rpmds.c:1407
+#: lib/rpmds.c:1412
 msgid "header tags are always sorted after being loaded."
 msgstr "ヘッダータグが読み込まれた後、常にソートされます。"
 
-#: lib/rpmds.c:1410
+#: lib/rpmds.c:1415
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "スクリプトインタプリターがヘッダから引数を使用できます。"
 
-#: lib/rpmds.c:1413
+#: lib/rpmds.c:1418
 msgid "a hardlink file set may be installed without being complete."
 msgstr "ハードリンクファイル群が完全でなくてもインストールできます。"
 
-#: lib/rpmds.c:1416
+#: lib/rpmds.c:1421
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
 
-#: lib/rpmds.c:1420
+#: lib/rpmds.c:1425
 msgid "internal support for lua scripts."
 msgstr "lua スクリプトの内部サポート。"
 
-#: lib/rpmds.c:1424
+#: lib/rpmds.c:1429
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1427
+#: lib/rpmds.c:1432
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1545
+#: lib/rpmds.c:1550
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1579
+#: lib/rpmds.c:1584
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1589
+#: lib/rpmds.c:1594
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3180 lib/rpmds.c:3210 lib/rpmds.c:3222
+#: lib/rpmds.c:3185 lib/rpmds.c:3215 lib/rpmds.c:3227
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3183
+#: lib/rpmds.c:3188
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2827,20 +2827,20 @@ msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3212
+#: lib/rpmds.c:3217
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3224
+#: lib/rpmds.c:3229
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3353
+#: lib/rpmds.c:3358
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2849,13 +2849,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします (\"A\" と同じであると仮定して)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3386
+#: lib/rpmds.c:3391
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3410
+#: lib/rpmds.c:3415
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"

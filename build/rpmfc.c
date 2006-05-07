@@ -217,7 +217,7 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     if (!(s && *s))
 	goto exit;
 
-    /* Parse args buried within expanded exacutable. */
+    /* Parse args buried within expanded executable. */
     pac = 0;
     xx = poptParseArgvString(s, &pac, (const char ***)&pav);
     if (!(xx == 0 && pac > 0 && pav != NULL))
@@ -1279,6 +1279,94 @@ static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
     return rc;
 }
 
+/**
+ */
+/*@unchecked@*/
+static struct DepMsg_s scriptMsgs[] = {
+  { "Requires(pre)",	{ "%{?__scriptlet_requires}", NULL, NULL, NULL },
+	RPMTAG_PREINPROG, RPMTAG_PREIN, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_SCRIPT_PRE, 0 },
+  { "Requires(post)",	{ "%{?__scriptlet_requires}", NULL, NULL, NULL },
+	RPMTAG_POSTINPROG, RPMTAG_POSTIN, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_SCRIPT_POST, 0 },
+  { "Requires(preun)",	{ "%{?__scriptlet_requires}", NULL, NULL, NULL },
+	RPMTAG_PREUNPROG, RPMTAG_PREUN, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_SCRIPT_PREUN, 0 },
+  { "Requires(postun)",	{ "%{?__scriptlet_requires}", NULL, NULL, NULL },
+	RPMTAG_POSTUNPROG, RPMTAG_POSTUN, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_SCRIPT_POSTUN, 0 },
+  { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
+};
+
+/*@unchecked@*/
+static DepMsg_t ScriptMsgs = scriptMsgs;
+
+/**
+ */
+static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+        /*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    StringBuf sb_stdin = newStringBuf();
+    StringBuf sb_stdout = NULL;
+    DepMsg_t dm;
+    int failnonzero = 0;
+    int rc = 0;
+
+    for (dm = ScriptMsgs; dm->msg != NULL; dm++) {
+	int tag, tagflags;
+	char * s;
+	int xx;
+
+	tag = dm->ftag;
+	tagflags = RPMSENSE_FIND_REQUIRES | dm->mask;
+
+	/* Retrieve scriptlet interpreter. */
+	s = NULL;
+	if (!hge(pkg->header, dm->ntag, NULL, (void **)&s, NULL) || s == NULL)
+	    continue;
+	if (strcmp(s, "/bin/sh") && strcmp(s, "/bin/bash"))
+	    continue;
+
+	/* Retrieve scriptlet body. */
+	s = NULL;
+	if (!hge(pkg->header, dm->vtag, NULL, (void **)&s, NULL) || s == NULL)
+	    continue;
+	truncStringBuf(sb_stdin);
+	appendLineStringBuf(sb_stdin, s);
+	stripTrailingBlanksStringBuf(sb_stdin);
+
+/*@-boundswrite@*/
+	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
+/*@=boundswrite@*/
+	if (xx == -1)
+	    continue;
+
+	/* Parse dependencies into header */
+	s = getStringBuf(sb_stdout);
+	if (s != NULL && *s != '\0') {
+	    char * se = s;
+	    /* XXX Convert "executable(/path/to/file)" to "/path/to/file". */
+	    while ((se = strstr(se, "executable(/")) != NULL) {
+		se = stpcpy(se,     "           ");
+		*se = '/';	/* XXX stpcpy truncates the '/' */
+		se = strchr(se, ')');
+		if (se == NULL)
+		    break;
+		*se++ = ' ';
+	    }
+	    rc = parseRCPOT(spec, pkg, s, tag, 0, tagflags);
+	}
+	sb_stdout = freeStringBuf(sb_stdout);
+
+    }
+
+    sb_stdin = freeStringBuf(sb_stdin);
+
+    return rc;
+}
+
 int rpmfcGenerateDepends(const Spec spec, Package pkg)
 {
     rpmfi fi = pkg->cpioList;
@@ -1292,7 +1380,7 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     char buf[BUFSIZ];
     const char * N;
     const char * EVR;
-    int genConfigDeps;
+    int genConfigDeps, internaldeps;
     int c;
     int rc = 0;
     int xx;
@@ -1306,12 +1394,17 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 	return 0;
 
     /* If new-fangled dependency generation is disabled ... */
-    if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
+    internaldeps = rpmExpandNumeric("%{?_use_internal_dependency_generator}");
+    if (internaldeps == 0) {
 	/* ... then generate dependencies using %{__find_requires} et al. */
 	rc = rpmfcGenerateDependsHelper(spec, pkg, fi);
 	printDeps(pkg->header);
 	return rc;
     }
+
+    /* Generate scriptlet Dependencies. */
+    if (internaldeps > 1)
+	xx = rpmfcGenerateScriptletDeps(spec, pkg);
 
     /* Extract absolute file paths in argv format. */
     av = xcalloc(ac+1, sizeof(*av));

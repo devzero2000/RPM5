@@ -12,7 +12,7 @@ case $1 in
     ;;
 -R|--requires)
     while read f ; do
-	/bin/bash --rpm-requires $f
+	bash --rpm-requires $f | grep -v '[`#:]' | sed -e 's,executable(/\(.*\))$,/\1,'
     done | sort -u
     ;;
 esac

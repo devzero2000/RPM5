@@ -2593,8 +2593,14 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;
 
+	/* Finalize package scriptlets before extracting dependencies. */
+	if ((rc = processScriptFiles(spec, pkg)))
+	    res = rc;
+
 	(void) rpmfcGenerateDepends(spec, pkg);
 
+	/* XXX this should be earlier for deps to be entirely sorted. */
+	providePackageNVR(pkg->header);
     }
 
     /* Now we have in fileList list of files from all packages.

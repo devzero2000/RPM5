@@ -1232,6 +1232,11 @@ static void markLoop(/*@special@*/ tsortInfo tsi, rpmte q)
     /*@=branchstate@*/
 }
 
+/*
+ * Return display string a dependency, adding contextual flags marker.
+ * @param f		dependency flags
+ * @return		display string
+ */
 static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 	/*@*/
 {
@@ -1488,6 +1493,15 @@ static void addQ(/*@dependent@*/ rpmte p,
 /*@=mustmod@*/
 /*@=boundswrite@*/
 
+/*@unchecked@*/
+#ifdef	NOTYET
+static uint32_t _autobits = _notpre(_ALL_REQUIRES_MASK);
+#define isAuto(_x)	((_x) & _autobits)
+#else
+static uint32_t _autobits = 0xffffffff;
+#define	isAuto(_x)	(1)
+#endif
+
 /*@-bounds@*/
 int rpmtsOrder(rpmts ts)
 {
@@ -1585,6 +1599,8 @@ int rpmtsOrder(rpmts ts)
 	while (rpmdsNext(requires) >= 0) {
 
 	    Flags = rpmdsFlags(requires);
+	    if (!isAuto(Flags))
+		/*@innercontinue@*/ continue;
 
 	    switch (rpmteType(p)) {
 	    case TR_REMOVED:
@@ -1610,6 +1626,8 @@ int rpmtsOrder(rpmts ts)
 	while (rpmdsNext(requires) >= 0) {
 
 	    Flags = rpmdsFlags(requires);
+	    if (!isAuto(Flags))
+		/*@innercontinue@*/ continue;
 
 	    switch (rpmteType(p)) {
 	    case TR_REMOVED:
@@ -1630,7 +1648,7 @@ int rpmtsOrder(rpmts ts)
 	}
       }
 
-#ifdef	NOTYET	/* XXX too many loops are created to enable (yet). */
+      if (_autobits != 0xffffffff)
       {	const char * Name = rpmteN(p);
 
 	/* Order by requiring parent directories pre-requsites. */
@@ -1653,7 +1671,6 @@ int rpmtsOrder(rpmts ts)
 
 	}
       }
-#endif
 
     }
     pi = rpmtsiFree(pi);

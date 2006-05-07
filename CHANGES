@@ -21,6 +21,7 @@
 	- permit rpmgi to iterate over indices.
 	- teach rpmtsSolve() about dirnames/linktos dependencies.
 	- add rpmdbBlockDBI() to disable index access.
+	- automagically extract scriptlet executable dependencies.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

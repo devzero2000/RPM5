@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-06 20:29-0400\n"
+"POT-Creation-Date: 2006-05-07 17:37-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -361,7 +361,7 @@ msgstr "tarkistukselle ei annettu parametrej‰"
 msgid "no arguments given"
 msgstr "kyselylle ei annettu parametrej‰"
 
-#: build/build.c:140 build/pack.c:617
+#: build/build.c:140 build/pack.c:605
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "En voi avata %s luettavaksi: %s."
@@ -666,136 +666,136 @@ msgstr "luku ep‰onnistui: %s (%d)"
 msgid "cpio_copy read failed: %s\n"
 msgstr "luku ep‰onnistui: %s (%d)"
 
-#: build/pack.c:220 build/pack.c:234
+#: build/pack.c:218 build/pack.c:232
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:227
+#: build/pack.c:225
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:241
+#: build/pack.c:239
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:248 build/pack.c:255
+#: build/pack.c:246 build/pack.c:253
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:263
+#: build/pack.c:261
 #, fuzzy, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:278
+#: build/pack.c:276
 #, fuzzy, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:307
+#: build/pack.c:305
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/pack.c:317
+#: build/pack.c:315
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/pack.c:326 build/pack.c:664
+#: build/pack.c:324 build/pack.c:652
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: build/pack.c:358
+#: build/pack.c:356
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "virhe: %s ei vaikuta RPM paketilta\n"
 
-#: build/pack.c:363
+#: build/pack.c:361
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: build/pack.c:605
+#: build/pack.c:593
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:624
+#: build/pack.c:612
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:634
+#: build/pack.c:622
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:671
+#: build/pack.c:659
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:691
+#: build/pack.c:679
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "generoi PGP-allekirjoitus"
 
-#: build/pack.c:709
+#: build/pack.c:697
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:717
+#: build/pack.c:705
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus ep‰onnistui\n"
 
-#: build/pack.c:753 lib/psm.c:1690
+#: build/pack.c:741 lib/psm.c:1690
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:768
+#: build/pack.c:756
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:779
+#: build/pack.c:767
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:793
+#: build/pack.c:781
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:803
+#: build/pack.c:791
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:809
+#: build/pack.c:797
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:846 lib/psm.c:2003
+#: build/pack.c:834 lib/psm.c:2003
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:919
+#: build/pack.c:902
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:936
+#: build/pack.c:919
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
@@ -1500,38 +1500,38 @@ msgstr ""
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1309
+#: lib/depends.c:1314
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
 #. Record all relations.
-#: lib/depends.c:1569
+#: lib/depends.c:1583
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1687
+#: lib/depends.c:1704
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:1778
+#: lib/depends.c:1795
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1851
+#: lib/depends.c:1868
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1882
+#: lib/depends.c:1899
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1887
+#: lib/depends.c:1904
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2823,85 +2823,85 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:906 lib/rpmds.c:3387
+#: lib/rpmds.c:911 lib/rpmds.c:3392
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:906 lib/rpmds.c:3387
+#: lib/rpmds.c:911 lib/rpmds.c:3392
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1392
+#: lib/rpmds.c:1397
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1395
+#: lib/rpmds.c:1400
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1398
+#: lib/rpmds.c:1403
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1401
+#: lib/rpmds.c:1406
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1404
+#: lib/rpmds.c:1409
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1407
+#: lib/rpmds.c:1412
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1410
+#: lib/rpmds.c:1415
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1413
+#: lib/rpmds.c:1418
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1416
+#: lib/rpmds.c:1421
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1420
+#: lib/rpmds.c:1425
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1424
+#: lib/rpmds.c:1429
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1427
+#: lib/rpmds.c:1432
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1545
+#: lib/rpmds.c:1550
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1579
+#: lib/rpmds.c:1584
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1589
+#: lib/rpmds.c:1594
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3180 lib/rpmds.c:3210 lib/rpmds.c:3222
+#: lib/rpmds.c:3185 lib/rpmds.c:3215 lib/rpmds.c:3227
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3183
+#: lib/rpmds.c:3188
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2909,33 +2909,33 @@ msgid ""
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3212
+#: lib/rpmds.c:3217
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3224
+#: lib/rpmds.c:3229
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3353
+#: lib/rpmds.c:3358
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3386
+#: lib/rpmds.c:3391
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:3410
+#: lib/rpmds.c:3415
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"

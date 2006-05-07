@@ -382,7 +382,7 @@ package or when debugging this package.\
 
 #
 # Use internal dependency generator rather than external helpers?
-%_use_internal_dependency_generator	1
+%_use_internal_dependency_generator	2
 
 #
 # Filter GLIBC_PRIVATE Provides: and Requires:
@@ -1347,6 +1347,7 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
 #%__executable_provides	@RPMCONFIGDIR@/executabledeps.sh --provides
 #%__executable_requires	@RPMCONFIGDIR@/executabledeps.sh --requires
+%__scriptlet_requires	/bin/bash --rpm-requires
 
 # \endverbatim
 #*/
