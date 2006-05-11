@@ -913,8 +913,7 @@ int rpmdbVerify(/*@null@*/ const char * prefix)
  * @return              0 on success
  */
 int rpmdbBlockDBI(/*@null@*/ rpmdb db, int rpmtag)
-	/*@globals fileSystem @*/
-	/*@modifies db, fileSystem @*/;
+	/*@modifies db @*/;
 
 /**
  * Close a single database index.

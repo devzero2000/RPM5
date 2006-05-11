@@ -610,18 +610,10 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 		hnamelen = strlen(hname);
 	}
 
-	/* XXX Prefer the shortest/longest pkg N for basenames/provides resp. */
+	/* XXX Prefer the shortest pkg N for basenames/provides resp. */
 	if (bhnamelen > 0)
-	switch (rpmtag) {
-	case RPMTAG_BASENAMES:
-	    if (bhnamelen > hnamelen)
-		continue;
-	    break;
-	case RPMTAG_PROVIDENAME:
 	    if (hnamelen > bhnamelen)
 		continue;
-	    break;
-	}
 
 	/* XXX Prefer the newest build if given alternatives. */
 	htime = 0;

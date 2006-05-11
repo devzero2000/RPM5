@@ -563,6 +563,7 @@ static int prepFetch(Spec spec)
     if (rpmrc != RPMRC_OK)
 	return -1;
 
+/*@-branchstate@*/
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 
@@ -603,6 +604,7 @@ bottom:
 	Lurlfn = _free(Lurlfn);
 	Rurlfn = _free(Rurlfn);
     }
+/*@=branchstate@*/
 
     return ec;
 }

@@ -810,8 +810,8 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies ts, requires, conflicts, dirnames, rpmGlobalMacroContext,
-		fileSystem, internalState */
+	/*@modifies ts, requires, conflicts, dirnames, linktos,
+		rpmGlobalMacroContext, fileSystem, internalState */
 {
     rpmps ps = rpmtsProblems(ts);
     uint_32 dscolor;

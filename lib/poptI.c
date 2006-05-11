@@ -13,10 +13,12 @@
 extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@=redecl@*/
 
+/*@-fullinitblock@*/
 /*@unchecked@*/
 struct rpmQVKArguments_s rpmIArgs = {
     .probFilter = (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
 };
+/*@=fullinitblock@*/
 
 #define	POPT_RELOCATE		-1021
 #define	POPT_EXCLUDEPATH	-1022

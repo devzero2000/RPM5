@@ -218,7 +218,7 @@ static void dbiTagsInit(/*@null@*/int ** dbiTagsP, /*@null@*/int * dbiTagsMaxP)
 /*@-boundsread@*/
 	    if (rpmtag == dbiTags[dbix]) {
 		bingo = 1;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 /*@=boundsread@*/
 	}
@@ -231,10 +231,12 @@ static void dbiTagsInit(/*@null@*/int ** dbiTagsP, /*@null@*/int * dbiTagsMaxP)
 
     if (dbiTagsMaxP != NULL)
 	*dbiTagsMaxP = dbiTagsMax;
+/*@-branchstate@*/
     if (dbiTagsP != NULL)
 	*dbiTagsP = dbiTags;
     else
 	dbiTags = _free(dbiTags);
+/*@=branchstate@*/
     dbiTagStr = _free(dbiTagStr);
 }
 /*@=exportheader@*/
@@ -293,7 +295,7 @@ fprintf(stderr, "==> %s(%p, %s, 0x%x)\n", __FUNCTION__, db, tagName(rpmtag), fla
 
     /* Is this index already open ? */
 /*@-compdef@*/ /* FIX: db->_dbi may be NULL */
-    if ((dbi = db->_dbi[dbix]) != NULL)
+    if (db->_dbi != NULL && (dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
 /*@=compdef@*/
 
@@ -942,6 +944,7 @@ int rpmdbSync(rpmdb db)
     int rc = 0;
 
     if (db == NULL) return 0;
+    if (db->_dbi != NULL)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	int xx;
 	if (db->_dbi[dbix] == NULL)
@@ -1197,6 +1200,7 @@ int rpmdbVerify(const char * prefix)
 	int xx;
 	rc = rpmdbOpenAll(db);
 
+	if (db->_dbi != NULL)
 	for (dbix = db->db_ndbi; --dbix >= 0; ) {
 	    if (db->_dbi[dbix] == NULL)
 		continue;

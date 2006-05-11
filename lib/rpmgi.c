@@ -160,8 +160,7 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
  * @return		RPMRC_OK on success
  */
 static rpmRC rpmgiLoadNextKey(rpmgi gi)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies gi @*/
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
     if (gi->argv != NULL && gi->argv[gi->i] != NULL) {
@@ -370,9 +369,8 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, gi->keylen, gi->m
 
     if (gi->argv != NULL)
     for (av = (const char **) gi->argv; *av != NULL; av++) {
-	switch (gi->tag) {
-	case RPMDBI_PACKAGES:
-	  { int tag = RPMTAG_NAME;
+	if (gi->tag == RPMDBI_PACKAGES) {
+	    int tag = RPMTAG_NAME;
 	    const char * pat;
 	    char * a, * ae;
 
@@ -399,7 +397,6 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
 		res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
 	    }
 	    a = _free(a);
-	  } break;
 	}
 
 	if (res == 0)

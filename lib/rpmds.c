@@ -452,7 +452,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 		else if (*N[i] == '/')
 		    av[i] = xstrdup(N[i]);
 		else
-		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
+/*@i@*/		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
 	    }
 
 	    N = ds->N = hfd(ds->N, ds->Nt);
@@ -473,9 +473,9 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     /*@=branchstate@*/
 
 exit:
-    /*@-nullstate@*/ /* FIX: ds->Flags may be NULL */
+    /*@-nullstate -usereleased @*/ /* FIX: ds->Flags may be NULL */
     ds = rpmdsLink(ds, (ds ? ds->Type : NULL));
-    /*@=nullstate@*/
+    /*@=nullstate =usereleased @*/
 
 /*@-modobserver@*/
     if (!nofilter)
