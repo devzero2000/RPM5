@@ -432,13 +432,14 @@ union _dbswap {
 static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 	/*@modifies dbi, *setp @*/
 {
-    int _dbbyteswapped = dbiByteSwapped(dbi);
+    int _dbbyteswapped;
     const char * sdbir;
     dbiIndexSet set;
     int i;
 
     if (dbi == NULL || data == NULL || setp == NULL)
 	return -1;
+    _dbbyteswapped = dbiByteSwapped(dbi);
 
     if ((sdbir = data->data) == NULL) {
 	*setp = NULL;
@@ -501,12 +502,13 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 	/*@modifies dbi, *data @*/
 {
-    int _dbbyteswapped = dbiByteSwapped(dbi);
+    int _dbbyteswapped;
     char * tdbir;
     int i;
 
     if (dbi == NULL || data == NULL || set == NULL)
 	return -1;
+    _dbbyteswapped = dbiByteSwapped(dbi);
 
     data->size = set->count * (dbi->dbi_jlen);
     if (data->size == 0) {

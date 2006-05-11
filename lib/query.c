@@ -357,7 +357,7 @@ void rpmDisplayQueryTags(FILE * fp)
 	    /*@observer@*/
 	    static const char * tagtypes[] = {
 		"", "char", "int8", "int16", "int32", "int64",
-		"string", "blob", "argv", "i18nstring"
+		"string", "blob", "argv", "i18nstring", "asn1", "openpgp"
 	    };
 	    fprintf(fp, " %6d", t->val);
 	    if (t->type > RPM_NULL_TYPE && t->type <= RPM_MAX_TYPE)

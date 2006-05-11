@@ -744,9 +744,9 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	bnlen = strlen(bn);
 	ix = rpmfiDX(fi);
 	dn = rpmfiDN(fi);
-	dnlen = strlen(dn);
 	if (dn == NULL)
 	    continue;	/* XXX can't happen */
+	dnlen = strlen(dn);
 
 	drc[ix]++;
 
@@ -1353,7 +1353,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
      * packages for this package.
      */
     name = rpmteN(te);	
-    nb = strlen(_repackage_dir) + strlen(name) + strlen(globStr) + 2;
+    nb = strlen(_repackage_dir) + strlen(name) + strlen(globStr) + sizeof("/.rpm");
     rp = xcalloc(nb, sizeof(*rp));
     xx = snprintf(rp, nb, "%s/%s%s.rpm", _repackage_dir, name, globStr);
     xx2 = _free(_repackage_dir);

@@ -1635,6 +1635,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	defaultMachine(&a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
     }
+    if (ca != NULL)
     for (x = 0; ca[x] != '\0'; x++)
 	ca[x] = xtolower(ca[x]);
 
@@ -1643,6 +1644,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	defaultMachine(NULL, &o);
 	co = (o) ? xstrdup(o) : NULL;
     }
+    if (co != NULL)
     for (x = 0; co[x] != '\0'; x++)
 	co[x] = xtolower(co[x]);
 
