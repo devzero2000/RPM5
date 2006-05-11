@@ -1314,6 +1314,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
     int failnonzero = 0;
     int rc = 0;
 
+/*@-branchstate@*/
     for (dm = ScriptMsgs; dm->msg != NULL; dm++) {
 	int tag, tagflags;
 	char * s;
@@ -1353,7 +1354,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 		*se = '/';	/* XXX stpcpy truncates the '/' */
 		se = strchr(se, ')');
 		if (se == NULL)
-		    break;
+		    /*@innerbreak@*/ break;
 		*se++ = ' ';
 	    }
 	    rc = parseRCPOT(spec, pkg, s, tag, 0, tagflags);
@@ -1361,6 +1362,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	sb_stdout = freeStringBuf(sb_stdout);
 
     }
+/*@=branchstate@*/
 
     sb_stdin = freeStringBuf(sb_stdin);
 

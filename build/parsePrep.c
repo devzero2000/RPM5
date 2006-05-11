@@ -535,6 +535,8 @@ static int doPatchMacro(Spec spec, char *line)
  * Check that all sources/patches exist locally, fetching if necessary.
  */
 static int prepFetch(Spec spec)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *Lmacro, *Lurlfn = NULL;
     const char *Rmacro, *Rurlfn = NULL;
