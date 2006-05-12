@@ -1314,24 +1314,15 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 {
     uint_32 tid;
     uint_32 arbgoal;
-    const char * name;
-    const char * rpname = NULL;
-    const char * _repackage_dir = NULL;
-    const char * globStr = "-*.rpm";
-    char * rp = NULL;		/* Rollback package name */
+    const char * name = rpmteN(te);	
     IDTX rtids = NULL;
     IDT rpIDT;
     int nrids = 0;
-    int nb;			/* Number of bytes */
-    Header h = NULL;
     int rc   = RPMRC_NOTFOUND;	/* Assume we do not find it*/
-    int xx;
-    void * xx2;
 
     rpmMessage(RPMMESS_DEBUG,
 	_("Getting repackaged header from transaction element\n"));
 
-    /* Set header pointer to null if its not already */
     if (hdrp)
 	*hdrp = NULL;
     if (fn)
@@ -1343,39 +1334,24 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
     if (arbgoal > 0 && arbgoal != 0xffffffff && arbgoal < tid)
 	tid = arbgoal;
 
-    /* Need the repackage dir if the user want to
-     * rollback on a failure.
-     */
-    _repackage_dir = rpmExpand("%{?_repackage_dir}", NULL);
-    if (_repackage_dir == NULL) goto exit;
+    /* Find existing replacement rollbacks for this element. */
+    {	const char * rp
+		= rpmGetPath("%{?_repackage_dir}", "/", name, "-*.rpm", NULL);
 
-    /* Build the glob string to find the possible repackaged
-     * packages for this package.
-     */
-    name = rpmteN(te);	
-    nb = strlen(_repackage_dir) + strlen(name) + strlen(globStr) + sizeof("/.rpm");
-    rp = xcalloc(nb, sizeof(*rp));
-    xx = snprintf(rp, nb, "%s/%s%s.rpm", _repackage_dir, name, globStr);
-    xx2 = _free(_repackage_dir);
-
-    /* Get the index of possible repackaged packages */
-    rpmMessage(RPMMESS_DEBUG, _("\tLooking for %s...\n"), rp);
-    rtids = IDTXglob(ts, rp, RPMTAG_REMOVETID, tid);
-    if (rp) rp = _free(rp);
-    if (rtids != NULL) {
-    	rpmMessage(RPMMESS_DEBUG, _("\tMatches found.\n"));
-	rpIDT = rtids->idt;
-	nrids = rtids->nidt;
-    } else {
-    	rpmMessage(RPMMESS_DEBUG, _("\tNo matches found.\n"));
-	goto exit;
+	/* Get the index of possible repackaged packages */
+	rpmMessage(RPMMESS_DEBUG, _("\tLooking for %s...\n"), rp);
+	rtids = IDTXglob(ts, rp, RPMTAG_REMOVETID, tid);
+	rp = _free(rp);
     }
+    if (rtids == NULL)
+	goto exit;
 
-    /* Now walk through index until we find the package (or we have
-     * exhausted the index.
-     */
 /*@-branchstate@*/
+    rpIDT = rtids->idt;
+    nrids = rtids->nidt;
     do {
+	const char * rpname = NULL;
+
 	/* If index is null we have exhausted the list and need to
 	 * get out of here...the repackaged package was not found.
 	 */
@@ -1401,17 +1377,15 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 	 * would be found.
 	 * XXX:  Should Match NAC!
 	 */
-    	rpmMessage(RPMMESS_DEBUG, _("\tREMOVETID matched INSTALLTID.\n"));
 	if (headerGetEntry(rpIDT->h, RPMTAG_NAME, NULL, (void **) &rpname, NULL)) {
     	    rpmMessage(RPMMESS_DEBUG, _("\t\tName:  %s.\n"), rpname);
 	    if (!strcmp(name,rpname)) {
-		/* It matched we have a canidate */
-		h  = headerLink(rpIDT->h);
-		nb = strlen(rpIDT->key) + 1;
-		rp = memset((char *) malloc(nb), 0, nb);
-		rp = strncat(rp, rpIDT->key, nb);
+		if (hdrp != NULL)
+		    *hdrp = headerLink(rpIDT->h);
+		if (fn != NULL)
+		    *fn = xstrdup(rpIDT->key);
 		rc = RPMRC_OK;
-		break;
+		goto exit;
 	    }
 	}
 
@@ -1425,19 +1399,6 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 /*@=branchstate@*/
 
 exit:
-    if (rc != RPMRC_NOTFOUND && h != NULL && hdrp != NULL) {
-    	rpmMessage(RPMMESS_DEBUG, _("\tRepackaged Package was %s...\n"), rp);
-	if (hdrp != NULL)
-	    *hdrp = headerLink(h);
-/*@-branchstate@*/
-	if (fn != NULL)
-	    *fn = rp;
-        else
-	    rp = _free(rp);
-/*@=branchstate@*/
-    }
-    if (h != NULL)
-	h = headerFree(h);
     rtids = IDTXfree(rtids);
     return rc;	
 }
