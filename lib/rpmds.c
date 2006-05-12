@@ -445,15 +445,19 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	    const char ** av = xcalloc(Count+1, sizeof(*av));
 	    int i;
 
-	    if (av != NULL)
 	    for (i = 0; i < Count; i++) {
 		if (N[i] == NULL || *N[i] == '\0')
 		    av[i] = xstrdup("");
 		else if (*N[i] == '/')
 		    av[i] = xstrdup(N[i]);
+		else if (ds->EVR && ds->Flags)
+/*@-nullderef@*/	/* XXX ds->Flags != NULL */
+		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
+/*@=nullderef@*/
 		else
-/*@i@*/		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
+		    av[i] = NULL;
 	    }
+	    av[Count] = NULL;
 
 	    N = ds->N = hfd(ds->N, ds->Nt);
 	    ds->N = rpmdsDupArgv(av, Count);
@@ -473,9 +477,10 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     /*@=branchstate@*/
 
 exit:
-    /*@-nullstate -usereleased @*/ /* FIX: ds->Flags may be NULL */
+/*@-compdef -usereleased@*/	/* FIX: ds->Flags may be NULL */
+    /*@-nullstate@*/ /* FIX: ds->Flags may be NULL */
     ds = rpmdsLink(ds, (ds ? ds->Type : NULL));
-    /*@=nullstate =usereleased @*/
+    /*@=nullstate@*/
 
 /*@-modobserver@*/
     if (!nofilter)
@@ -483,6 +488,7 @@ exit:
 /*@=modobserver@*/
 
     return ds;
+/*@=compdef =usereleased@*/
 }
 
 char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)

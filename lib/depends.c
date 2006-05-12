@@ -1584,9 +1584,9 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
-      if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) != NULL) {
-
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
+
+      if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) != NULL) {
 
 	/* Avoid narcisstic relations. */
 	selected[rpmtsiOc(pi)] = 1;

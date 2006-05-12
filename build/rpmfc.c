@@ -1350,8 +1350,10 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	    char * se = s;
 	    /* XXX Convert "executable(/path/to/file)" to "/path/to/file". */
 	    while ((se = strstr(se, "executable(/")) != NULL) {
+/*@-modobserver@*/	/* FIX: getStringBuf should not be observer */
 		se = stpcpy(se,     "           ");
 		*se = '/';	/* XXX stpcpy truncates the '/' */
+/*@=modobserver@*/
 		se = strchr(se, ')');
 		if (se == NULL)
 		    /*@innerbreak@*/ break;

@@ -373,7 +373,8 @@ fprintf(stderr, "==> %s(%p, %s, 0x%x)\n", __FUNCTION__, db, tagName(rpmtag), fla
 
 exit:
     if (dbi != NULL && rc == 0) {
-	db->_dbi[dbix] = dbi;
+	if (db->_dbi != NULL)
+	    db->_dbi[dbix] = dbi;
 /*@-sizeoftype@*/
 	if (rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
 	    db->db_nbits = 1024;
@@ -821,7 +822,7 @@ int rpmdbOpenAll(rpmdb db)
 
     if (db == NULL) return -2;
 
-    if (db->db_tagn != NULL)
+    if (db->db_tagn != NULL && db->_dbi != NULL)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	if (db->db_tagn[dbix] < 0)
 	    continue;

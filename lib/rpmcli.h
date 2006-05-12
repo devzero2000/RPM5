@@ -286,7 +286,7 @@ struct rpmQVKArguments_s {
     int trust;			/*!< Trust metric when importing pubkeys. */
 /*@observer@*/
     const char * passPhrase;	/*!< Pass phrase. */
-/*@observer@*/ /*@null@*/
+/*@owned@*/ /*@null@*/
     const char * qva_prefix;	/*!< Path to top of install tree. */
     char qva_mode;
 		/*!<

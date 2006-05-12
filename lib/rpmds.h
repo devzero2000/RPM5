@@ -33,11 +33,11 @@ struct rpmds_s {
     const char * DNEVR;		/*!< Formatted dependency string. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
-/*@only@*/
+/*@only@*/ /*@relnull@*/
     const char ** N;		/*!< Name. */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
 /*@only@*/ /*@null@*/
     uint_32 * Color;		/*!< Bit(s) calculated from file color(s). */
