@@ -1,4 +1,4 @@
--I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./lua/include -I./lua/local -I./neon/src -I./file/src -I./popt -I./elfutils/libelf -I/usr/include/beecrypt -I/usr/include/neon -I./zlib -I/usr/lib/gcc-lib/i386-redhat-linux/3.1/include -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD -D__STDC__=1 -DHAVE_DAYLIGHT -DHAVE_NEON_NE_GET_RESPONSE_HEADER
+-I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./lua/include -I./lua/local -I./neon/src -I./file/src -I./popt -I./elfutils/libelf -I/usr/include/beecrypt -I/usr/include/neon -I./zlib -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD -D__STDC__=1 -DHAVE_DAYLIGHT -DHAVE_NEON_NE_GET_RESPONSE_HEADER
 
 #+partial
 +forcehints

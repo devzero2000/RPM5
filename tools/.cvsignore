@@ -10,6 +10,7 @@ dumpdb
 javadeps
 rpmcache
 rpmdeps
+rpmdigest
 rpmfile
 rpmgraph
 rpminject
