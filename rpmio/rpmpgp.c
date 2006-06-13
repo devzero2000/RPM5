@@ -99,7 +99,7 @@ struct pgpValTbl_s pgpSigTypeTbl[] = {
     { PGPSIGTYPE_TEXT,		"Text document signature" },
     { PGPSIGTYPE_STANDALONE,	"Standalone signature" },
     { PGPSIGTYPE_GENERIC_CERT,	"Generic certification of a User ID and Public Key" },
-    { PGPSIGTYPE_PERSONA_CERT,	"Persona certification of a User ID and Public Key" },
+    { PGPSIGTYPE_PERSONA_CERT,	"Personal certification of a User ID and Public Key" },
     { PGPSIGTYPE_CASUAL_CERT,	"Casual certification of a User ID and Public Key" },
     { PGPSIGTYPE_POSITIVE_CERT,	"Positive certification of a User ID and Public Key" },
     { PGPSIGTYPE_SUBKEY_BINDING,"Subkey Binding Signature" },
