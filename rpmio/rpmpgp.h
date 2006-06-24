@@ -24,6 +24,10 @@ typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
 
 /**
  */
+typedef /*@abstract@*/ struct pgpPkt_s * pgpPkt;
+
+/**
+ */
 typedef const struct pgpValTbl_s {
     int val;
 /*@observer@*/ const char * str;
@@ -1188,50 +1192,42 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 
 /**
  * Print/parse an OpenPGP signature packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
 /*@-exportlocal@*/
-int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
+int pgpPrtSig(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP key packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
-int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
+int pgpPrtKey(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Print/parse an OpenPGP userid packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
 /*@-exportlocal@*/
-int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
+int pgpPrtUserID(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP comment packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
 /*@-exportlocal@*/
-int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
+int pgpPrtComment(const pgpPkt pp)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
@@ -1259,6 +1255,16 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
  */
 int pgpExtractPubkeyFingerprint(const char * b64pkt, /*@out@*/ byte * keyid)
 	/*@modifies *keyid @*/;
+
+/**
+ * Return lenth of a OpenPGP packet.
+ * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
+ * @param pleft		OpenPGP packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
+ * @return		packet length, <0 on error.
+ */
+int pgpPktLen(const byte *pkt, unsigned int pleft, pgpPkt pp)
+	/*@modifies pp @*/;
 
 /**
  * Print/parse next OpenPGP packet.

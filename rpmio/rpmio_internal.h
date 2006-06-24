@@ -67,6 +67,8 @@ struct pgpDig_s {
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 
+    byte ** ppkts;
+    int npkts;
     size_t nbytes;		/*!< No. bytes of plain text. */
 
 /*@only@*/ /*@null@*/

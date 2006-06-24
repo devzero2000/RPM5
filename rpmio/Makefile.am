@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c hashtest.c librpmio.vers
+EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c hashtest.c librpmio.vers
 
-EXTRA_PROGRAMS = tax tdigest tdir tfts tget thkp tput tglob tinv tkey tring trpmio tsw dumpasn1 hashtest
+EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn1 hashtest
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
@@ -80,9 +80,6 @@ lint:
 tax_SOURCES = tax.c
 tax_LDADD = librpmio.la
 
-tdigest_SOURCES = tdigest.c
-tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la -lgcrypt
-
 tdir_SOURCES = tdir.c
 tdir_LDFLAGS = @LDFLAGS_STATIC@
 tdir_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
@@ -115,10 +112,6 @@ tinv_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 tkey_SOURCES = tkey.c
 tkey_LDFLAGS = @LDFLAGS_STATIC@
 tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
-
-tring_SOURCES = tring.c
-tring_LDFLAGS = @LDFLAGS_STATIC@
-tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
