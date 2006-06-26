@@ -1229,7 +1229,6 @@ static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,
     byte ** ppkts;
 
     for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
-fprintf(stderr, "*** %s: %p[%d] = %02x %02x %02x %02x\n", __FUNCTION__, p, pleft, p[0], p[1], p[2], p[3]);
 	if (pgpPktLen(p, pleft, pp) < 0)
 	    return -1;
 	len = pp->pktlen;
