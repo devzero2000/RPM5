@@ -5,7 +5,7 @@
 	- add md2, md4, and tiger192 digests.
 	- teach --scripts about pre- and post-transaction scriptlets.
 	- add /usr/bin/rpmdigest.
-	- IPv4/6 and EPSV support by Arkadiusz Miskiewicz <misiek@pld.org.pl>.
+	- IPv4/6 and EPSV support by Arkadiusz Miskiewicz <arekm@pld-linux.org>.
 	- permit autofetch for virgin sources.
 	- add AI_IDN flag to getaddrinfo().
 	- fix: lazy mkdir for local _sourcedir.

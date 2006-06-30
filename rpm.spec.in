@@ -607,7 +607,7 @@ exit 0
 - permit autofetch for virgin sources.
 
 * Sat Apr 15 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.5
-- IPv4/6 and EPSV support by Arkadiusz Miskiewicz <misiek@pld.org.pl>.
+- IPv4/6 and EPSV support by Arkadiusz Miskiewicz <arekm@pld-linux.org>.
 
 * Wed Apr 12 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.4
 - add /usr/bin/rpmdigest.
