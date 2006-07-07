@@ -1461,7 +1461,6 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
  	lua/Makefile
  	syck/Makefile
  	syck/lib/Makefile
- 	syck/tests/Makefile
 	wnh/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
