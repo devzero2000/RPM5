@@ -80,8 +80,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	return 1;
     }
 
-    flags |= RPMVERIFY_CONTEXTS;	/* no disable from package. */
-
     /*
      * Not all attributes of non-regular files can be verified.
      */
@@ -119,33 +117,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
      */
     flags &= ~(omitMask | RPMVERIFY_FAILURES);
 
-    /*
-     * Verify file security context.
-     */
-/*@-branchstate@*/
-    if (selinuxEnabled == 1 && (flags & RPMVERIFY_CONTEXTS)) {
-	security_context_t con;
-
-	rc = lgetfilecon(fn, &con);
-	if (rc == -1)
-	    *res |= (RPMVERIFY_LGETFILECONFAIL|RPMVERIFY_CONTEXTS);
-	else {
-	    rpmsx sx = rpmtsREContext(ts);
-	    const char * fcontext;
-
-	    if (sx != NULL) {
-		/* Get file security context from patterns. */
-		fcontext = rpmsxFContext(sx, fn, fmode);
-		sx = rpmsxFree(sx);
-	    } else {
-		/* Get file security context from package. */
-		fcontext = rpmfiFContext(fi);
-	    }
-	    if (fcontext == NULL || strcmp(fcontext, con))
-		*res |= RPMVERIFY_CONTEXTS;
-	    freecon(con);
-	}
-    }
 /*@=branchstate@*/
 
     if (flags & RPMVERIFY_FDIGEST) {
@@ -346,10 +317,9 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    }
 	} else if (verifyResult || rpmIsVerbose()) {
 	    const char * size, * digest, * link, * mtime, * mode;
-	    const char * group, * user, * rdev, *ctxt;
+	    const char * group, * user, * rdev;
 	    /*@observer@*/ static const char *const aok = ".";
 	    /*@observer@*/ static const char *const unknown = "?";
-	    /*@observer@*/ static const char *const ctxt_ignore = " ";
 
 	    ec = 1;
 
@@ -361,10 +331,6 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 #define	_verifyfile(_RPMVERIFY_F, _C)	\
 	((verifyResult & RPMVERIFY_READFAIL) ? unknown : \
 	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
-#define	_verifyctxt(_RPMVERIFY_F, _C)	\
-	((selinuxEnabled != 1 ? ctxt_ignore : \
-	 (verifyResult & RPMVERIFY_LGETFILECONFAIL) ? unknown : \
-	 (verifyResult & _RPMVERIFY_F) ? _C : aok))
 	
 	    digest = _verifyfile(RPMVERIFY_FDIGEST, "5");
 	    size = _verify(RPMVERIFY_FILESIZE, "S");
@@ -374,15 +340,13 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    user = _verify(RPMVERIFY_USER, "U");
 	    group = _verify(RPMVERIFY_GROUP, "G");
 	    mode = _verify(RPMVERIFY_MODE, "M");
-	    ctxt = _verifyctxt(RPMVERIFY_CONTEXTS, "C");
 
-#undef _verifyctxt
 #undef _verifyfile
 #undef _verifylink
 #undef _verify
 
-	    sprintf(te, "%s%s%s%s%s%s%s%s%s %c %s",
-		size, mode, digest, rdev, link, user, group, mtime, ctxt,
+	    sprintf(te, "%s%s%s%s%s%s%s%s %c %s",
+		size, mode, digest, rdev, link, user, group, mtime,
 			((fflags & RPMFILE_CONFIG)	? 'c' :
 			 (fflags & RPMFILE_DOC)	? 'd' :
 			 (fflags & RPMFILE_GHOST)	? 'g' :
@@ -558,20 +522,6 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
     if (!(qva->qva_flags & VERIFY_HDRCHK))
 	vsflags |= RPMVSF_NOHDRCHK;
     vsflags &= ~RPMVSF_NEEDPAYLOAD;
-
-    /* Initialize security context patterns (if not already done). */
-    if (qva->qva_flags & VERIFY_CONTEXTS) {
-	rpmsx sx = rpmtsREContext(ts);
-	if (sx == NULL) {
-	    arg = rpmGetPath("%{?_verify_file_context_path}", NULL);
-	    if (arg != NULL && *arg != '\0') {
-		sx = rpmsxNew(arg);
-		(void) rpmtsSetREContext(ts, sx);
-	    }
-	    arg = _free(arg);
-	}
-	sx = rpmsxFree(sx);
-    }
 
     otransFlags = rpmtsSetFlags(ts, transFlags);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);

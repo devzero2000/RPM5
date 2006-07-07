@@ -28,6 +28,7 @@
 	- fix: hide dbiFoo() internals from C++'s inability to promote void *.
 	- fix: default _D_EXACT_NAMLEN(d) to strlen((d)->d_name) on non-linux.
 	- debugedit: permit -debuginfo extraction for executables with -O0.
+	- remove SELinux context verification (#193488).
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
