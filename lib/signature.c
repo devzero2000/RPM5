@@ -429,7 +429,6 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 	const char *path;
 	pgpVersion pgpVer;
 
-	(void) close(STDIN_FILENO);
 	(void) dup2(inpipe[0], 3);
 	(void) close(inpipe[1]);
 
@@ -577,7 +576,6 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     if (!(pid = fork())) {
 	const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 
-	(void) close(STDIN_FILENO);
 	(void) dup2(inpipe[0], 3);
 	(void) close(inpipe[1]);
 
