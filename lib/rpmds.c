@@ -1436,6 +1436,9 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(PayloadIsUstar)",		"4.4.4-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be in ustar tar archive format.") },
+    { "rpmlib(FileDigestParameterized)",    "4.4.6-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("file digests can be other than MD5.") },
     { NULL,				NULL, 0,	NULL }
 };
 

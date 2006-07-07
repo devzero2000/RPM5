@@ -1404,9 +1404,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	case PGPHASHALGO_RIPEMD160:
 	case PGPHASHALGO_RIPEMD128:
 	case PGPHASHALGO_CRC32:
-	    /*@switchbreak@*/ break;
 	case PGPHASHALGO_MD2:
 	case PGPHASHALGO_TIGER192:
+	    (void) rpmlibNeedsFeature(h, "FileDigestParameterized", "4.4.6-1");
+	    /*@switchbreak@*/ break;
 	case PGPHASHALGO_HAVAL_5_160:
 	default:
 	    dalgo = PGPHASHALGO_MD5;
