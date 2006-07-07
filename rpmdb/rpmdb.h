@@ -9,7 +9,6 @@
 
 #include <assert.h>
 #include "rpmlib.h"
-#include "rpmsw.h"
 #include "db.h"
 
 /*@-exportlocal@*/
@@ -52,8 +51,9 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
  */
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
+#if defined(_RPMDB_INTERNAL)
+#include "rpmsw.h"
 #if !defined(SWIG)	/* XXX inline dbiFoo() need */
-/* this will break if sizeof(int) != 4 */
 /** \ingroup dbi
  * A single item from an index database (i.e. the "data returned").
  * Note: In rpm-3.0.4 and earlier, this structure was passed by value,
@@ -391,7 +391,6 @@ struct _dbiIndex {
 };
 #endif	/* !defined(SWIG) */
 
-#if defined(_RPMDB_INTERNAL)
 /** \ingroup rpmdb
  * Describes the collection of index databases used by rpm.
  */
@@ -441,7 +440,7 @@ struct rpmdb_s {
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
-#endif	/* !defined(SWIG) */
+#endif	/* defined(_RPMDB_INTERNAL) */
 
 /* for RPM's internal use only */
 
@@ -459,6 +458,7 @@ enum rpmdbFlags {
 extern "C" {
 #endif
 
+#if defined(_RPMDB_INTERNAL)
 /*@-exportlocal@*/
 /** \ingroup db3
  * Return new configured index database handle instance.
@@ -836,6 +836,7 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
  */
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 	/*@*/;
+#endif	/* defined(_RPMDB_INTERNAL) */
 
 /** \ingroup rpmdb
  * Unreference a database instance.

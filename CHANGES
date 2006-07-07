@@ -25,6 +25,7 @@
 	- fix: don't close stdin exec'ing pgp/gpg, harmless warning (#197602).
 	- permit waitpid to be used instead of reaping SIGCHLD (#163151).
 	- add tracking dependency for parameterized file digests.
+	- fix: hide dbiFoo() internals from C++'s inability to promote void *.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
