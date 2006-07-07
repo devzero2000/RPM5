@@ -449,7 +449,8 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
 	/* Block to permit parent time to wait. */
 /*@-bounds@*/
 	xx = close(sq->pipes[1]);
-	xx = read(sq->pipes[0], &yy, sizeof(yy));
+	if (sq->reaper)
+	    xx = read(sq->pipes[0], &yy, sizeof(yy));
 	xx = close(sq->pipes[0]);
 	sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/
