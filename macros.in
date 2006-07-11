@@ -471,6 +471,10 @@ print (t)\
 %_build_binary_file_digest_algo	%{_build_file_digest_algo}
 %_build_source_file_digest_algo	%{_build_file_digest_algo}
 
+#
+# Path to magic file used for file classification.
+%_rpmfc_magic_path	%{prefix}/lib/rpm/magic
+
 #==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.

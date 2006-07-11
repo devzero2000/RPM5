@@ -30,6 +30,7 @@
 	- debugedit: permit -debuginfo extraction for executables with -O0.
 	- remove SELinux context verification (#193488).
 	- perl.req: avoid extracting bogus deps in q{} sections (#198033).
+	- add macro for the path to the magic file used for classification.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

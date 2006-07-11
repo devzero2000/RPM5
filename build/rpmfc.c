@@ -954,12 +954,16 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     int fcolor;
     int xx;
 /*@observer@*/
-    static const char * magicfile = "/usr/lib/rpm/magic";
+    const char * magicfile;
     int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
     magic_t ms = NULL;
 
     if (fc == NULL || argv == NULL)
 	return 0;
+
+    magicfile = rpmExpand("%{?_rpmfc_magic_path}", NULL);
+    if (magicfile == NULL || *magicfile == '\0' || *magicfile == '%')
+	goto exit;
 
     fc->nfiles = argvCount(argv);
 
@@ -1086,6 +1090,9 @@ assert(se != NULL);
 
     if (ms != NULL)
 	magic_close(ms);
+
+exit:
+    magicfile = _free(magicfile);
 
     return 0;
 }
