@@ -79,13 +79,18 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 /* Largest alignment size needed, minus one.
    Usually long double is the worst case.  */
 #ifndef ALIGNBYTES
-#define ALIGNBYTES	(__alignof__ (long double) - 1)
+#if defined __GNUC__ && __GNUC__ >= 2
+# define alignof(TYPE) __alignof__ (TYPE)
+#else
+# define alignof(TYPE) \
+    ((int) &((struct { char dummy1; TYPE dummy2; } *) 0)->dummy2)
+#endif
+#define ALIGNBYTES	(alignof(long double) - 1)
 #endif
 /* Align P to that size.  */
 #ifndef ALIGN
 #define	ALIGN(p)	(((unsigned long int) (p) + ALIGNBYTES) & ~ALIGNBYTES)
 #endif
-
 
 /*@only@*/ /*@null@*/
 static FTSENT *	fts_alloc(FTS * sp, const char * name, int namelen)
@@ -113,12 +118,6 @@ static int      fts_safe_changedir(FTS * sp, FTSENT * p, int fd,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-#ifndef MAX
-#define MAX(a, b)	({ __typeof__ (a) _a = (a); \
-			   __typeof__ (b) _b = (b); \
-			   _a > _b ? _a : _b; })
-#endif
-
 #define	ISDOT(a)	(a[0] == '.' && (!a[1] || (a[1] == '.' && !a[2])))
 
 #define CLR(opt)	(sp->fts_options &= ~(opt))
@@ -140,7 +139,7 @@ Fts_open(char * const * argv, int options,
 	register FTSENT *p, *root;
 	register int nitems;
 	FTSENT *parent, *tmp = NULL;
-	int len;
+	size_t len;
 
 	/* Options check. */
 	if (options & ~FTS_OPTIONMASK) {
@@ -173,7 +172,10 @@ Fts_open(char * const * argv, int options,
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 1024
 #endif
-	if (fts_palloc(sp, MAX(fts_maxarglen(argv), MAXPATHLEN)))
+	len = fts_maxarglen(argv);
+	if (len < MAXPATHLEN)
+	    len = MAXPATHLEN;
+	if (fts_palloc(sp, len))
 		goto mem1;
 
 	/* Allocate/initialize root's parent. */

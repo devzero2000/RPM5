@@ -32,6 +32,7 @@
 	- perl.req: avoid extracting bogus deps in q{} sections (#198033).
 	- add macro for the path to the magic file used for classification.
 	- handle DT_GNU_HASH dependencies.
+	- avoid __typeof__ and __alignof__ usage portably.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
