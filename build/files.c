@@ -1428,7 +1428,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	if (S_ISLNK(flp->fl_mode)) {
 	    int xx = Readlink(flp->diskURL, buf, BUFSIZ);
 	    if (xx >= 0)
-		buf[BUFSIZ] = '\0';
+		buf[xx] = '\0';
 	    if (fl->buildRootURL) {
 		const char * buildRoot;
 		(void) urlPath(fl->buildRootURL, &buildRoot);
