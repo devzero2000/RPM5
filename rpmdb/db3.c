@@ -282,6 +282,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     DB_ENV *dbenv = NULL;
     int eflags;
     int rc;
+    int xx;
 
     if (dbenvp == NULL)
 	return 1;
@@ -317,7 +318,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (dbenv == NULL || rc)
 	goto errxit;
 
-  { int xx;
     /*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
 
  /* 4.1: dbenv->set_app_dispatch(???) */
@@ -428,14 +428,18 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	xx = dbenv->set_shm_key(dbenv, dbi->dbi_shmkey);
 	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
     }
-  }
 
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
     rc = dbenv->open(dbenv, dbhome, eflags, dbi->dbi_perms);
 #else
     rc = dbenv->open(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
 #endif
-    rc = cvtdberr(dbi, "dbenv->open", rc, (rc == EINVAL ? 0 : _debug));
+#if defined(DB_VERSION_MISMATCH)
+    xx = (rc == DB_VERSION_MISMATCH ? 0 : _debug);
+#else
+    xx = (rc == EINVAL ? 0 : _debug);
+#endif
+    rc = cvtdberr(dbi, "dbenv->open", rc, xx);
     if (rc)
 	goto errxit;
 
@@ -1126,11 +1130,11 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    switch (rc) {
 	    default:
 		break;
-	    case 0:
-		rpmdb->db_dbenv = dbenv;
-		rpmdb->db_opens = 1;
-		break;
-	    case EINVAL:	/* Nuke __db* files and retry open once. */
+#if defined(DB_VERSION_MISMATCH) /* Nuke __db* files and retry open once. */
+	    case DB_VERSION_MISMATCH:
+#else
+	    case EINVAL:
+#endif
 		if (getuid() != 0)
 		    break;
 		{   char * filename = alloca(BUFSIZ);
@@ -1151,6 +1155,12 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 		/* XXX db_init EINVAL was masked. */
 		rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
+		if (rc)
+		    break;
+		/*@fallthrough@*/
+	    case 0:
+		rpmdb->db_dbenv = dbenv;
+		rpmdb->db_opens = 1;
 		break;
 	    }
 	} else {

@@ -35,6 +35,7 @@
 	- avoid __typeof__ and __alignof__ usage portably.
 	- fix: explicitly terminate readlink(2) return.
 	- ppc: bogus unhandled relocations in debugedit.c (#199473).
+	- automatically fix and retry dbenv->open() on DB_VERSION_MISMATCH.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
