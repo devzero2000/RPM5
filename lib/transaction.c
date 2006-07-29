@@ -588,12 +588,13 @@ assert(otherFi != NULL);
 		/*@switchbreak@*/ break;
 	    if (rpmfiFState(fi) != RPMFILE_STATE_NORMAL)
 		/*@switchbreak@*/ break;
-	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG))) {
-		fi->actions[i] = FA_ERASE;
+
+	    /* Disposition is assumed to be FA_ERASE. */
+	    fi->actions[i] = FA_ERASE;
+	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG)))
 		/*@switchbreak@*/ break;
-	    }
 		
-	    /* Here is a pre-existing modified config file that needs saving. */
+	    /* Check for pre-existing modified config file that needs saving. */
 	    /* XXX avoid digest on sparse /var/log/lastlog file. */
 	    if (strcmp(fn, "/var/log/lastlog"))
 	    {	int dalgo = 0;
@@ -603,15 +604,12 @@ assert(otherFi != NULL);
 assert(digest != NULL);
 		
 		fdigest = xcalloc(1, dlen);
-		if (!dodigest(dalgo, fn, fdigest, 0, NULL)) {
-		    if (memcmp(digest, fdigest, dlen))
-			fi->actions[i] = FA_BACKUP;
-		    fdigest = _free(fdigest);
-		    /*@switchbreak@*/ break;
-		}
+		/* Save (by renaming) locally modified config files. */
+		if (!dodigest(dalgo, fn, fdigest, 0, NULL)
+		 && memcmp(digest, fdigest, dlen))
+		    fi->actions[i] = FA_BACKUP;
 		fdigest = _free(fdigest);
 	    }
-	    fi->actions[i] = FA_ERASE;
 	    /*@switchbreak@*/ break;
 	}
 /*@=boundswrite@*/
