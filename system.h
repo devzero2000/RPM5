@@ -186,6 +186,10 @@ char *realpath(const char *path, char resolved_path []);
 #define R_OK 4
 #endif
 
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 # define NLENGTH(direct) (strlen((direct)->d_name))
@@ -289,6 +293,10 @@ extern int _tolower(int) __THROW	/*@*/;
 
 #if HAVE_MALLOC_H && !defined(__LCLINT__)
 #include <malloc.h>
+#endif
+
+#if HAVE_LIBGEN_H
+#include <libgen.h>
 #endif
 
 #if WITH_SELINUX

@@ -312,7 +312,7 @@ addlib() {
   l=$1
   shift
   case "$target" in 
-    *-*-solaris*)	LIBS="$LIBS -L$l -R$l $*";;
+    *-*-solaris2.[234567])	LIBS="$LIBS -L$l -R$l $*";;
     *)		LIBS="$LIBS -L$l $*";;
   esac
 }
@@ -399,15 +399,19 @@ fi
 
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then
-	if test "$build" = "mips-sni-sysv4" ; then
-		addlib /usr/ccs/lib -lc
-	fi
-
+    case $build in
+    mips-sni-sysv4)
+	addlib /usr/ccs/lib -lc
 	addlib /usr/ucblib
-	
 	AC_MSG_RESULT(yes)
-else
+	;;
+    *-*-solaris2.*)
+	AC_MSG_RESULT(yes)
+	;;
+    *)
 	AC_MSG_RESULT(no)
+	;;
+    esac
 fi
 
 dnl
@@ -679,6 +683,7 @@ AC_HEADER_TIME
 
 AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
 
+AC_CHECK_HEADERS(signal.h)
 AC_CHECK_HEADERS(sys/ipc.h sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)
 AC_CHECK_HEADERS(sys/mman.h sys/resource.h sys/utsname.h sys/wait.h)
@@ -689,7 +694,9 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
-AC_CHECK_HEADERS(pthread.h)
+
+dnl basename(), confstr() on some platforms
+AC_CHECK_HEADERS(libgen.h)
 
 dnl popt w float/double needs.
 AC_CHECK_HEADERS(float.h)

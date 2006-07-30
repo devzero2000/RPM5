@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.12
+Release: 0.13
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -578,7 +578,14 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Fri Jul  7 2006 Jeff Jonson <jbj@jbj.org> 4.4.7-0.12
+* Thu Jul 13 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.13
+- perl.req: avoid extracting bogus deps in q{} sections (#198033).
+- add macro for the path to the magic file used for classification.
+- handle DT_GNU_HASH dependencies.
+- avoid __typeof__ and __alignof__ usage portably.
+- fix: explicitly terminate readlink(2) return.
+
+* Fri Jul  7 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.12
 - fix: don't close stdin exec'ing pgp/gpg, harmless warning (#197602).
 - permit waitpid to be used instead of reaping SIGCHLD (#163151).
 - add tracking dependency for parameterized file digests.

@@ -37,6 +37,7 @@
 	- ppc: bogus unhandled relocations in debugedit.c (#199473).
 	- automatically fix and retry dbenv->open() on DB_VERSION_MISMATCH.
 	- fix: insure that %config files are removed on erasure.
+	- solaris: portability fiddles.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

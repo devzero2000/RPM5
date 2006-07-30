@@ -473,7 +473,7 @@ print (t)\
 
 #
 # Path to magic file used for file classification.
-%_rpmfc_magic_path	%{prefix}/lib/rpm/magic
+%_rpmfc_magic_path	%{_usr}/lib/rpm/magic
 
 #==============================================================================
 # ---- Database configuration macros.
