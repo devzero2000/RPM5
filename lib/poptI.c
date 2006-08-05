@@ -24,8 +24,8 @@ struct rpmQVKArguments_s rpmIArgs = {
 #define	POPT_EXCLUDEPATH	-1022
 #define	POPT_ROLLBACK		-1023
 #define	POPT_ROLLBACK_EXCLUDE	-1024
-/* -1025 thrugh -1032 are common in rpmcli.h. */
-#define	POPT_AUTOROLLBACK_GOAL	-1033
+/* -1025 thrugh -1033 are common in rpmcli.h. */
+#define	POPT_AUTOROLLBACK_GOAL	-1036
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 

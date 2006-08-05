@@ -43,6 +43,10 @@ extern const char * rpmcliRcfile;
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * rpmcliRootDir;
 
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+extern const char * rpmcliTarget;
+/*@=redecl@*/
+
 /**
  * Initialize most everything needed by an rpm CLI executable context.
  * @param argc			no. of args
@@ -89,6 +93,7 @@ rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
 #define	RPMCLI_POPT_NODIGEST		-1030
 #define	RPMCLI_POPT_NOHDRCHK		-1031
 #define	RPMCLI_POPT_NOCONTEXTS		-1032
+#define	RPMCLI_POPT_TARGETPLATFORM	-1033
 
 /* ==================================================================== */
 /** \name RPMQV */

@@ -94,10 +94,10 @@ extern int _tar_debug;
 extern int noLibio;
 /*@=exportheadervar@*/
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@null@*/
 const char * rpmcliPipeOutput = NULL;
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@null@*/
 const char * rpmcliRcfile = NULL;
 
 /*@unchecked@*/
@@ -105,6 +105,9 @@ const char * rpmcliRootDir = "/";
 
 /*@unchecked@*/
 rpmQueryFlags rpmcliQueryFlags;
+
+/*@unchecked@*/ /*@null@*/
+const char * rpmcliTarget = NULL;
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
@@ -134,12 +137,7 @@ static void printVersion(FILE * fp)
     fprintf(fp, _("RPM version %s\n"), rpmEVR);
 }
 
-/**
- * Make sure that config files have been read.
- * @warning Options like --rcfile and --verbose must precede callers option.
- */
-/*@mayexit@*/
-void rpmcliConfigured(void)
+void rpmcliConfigured()
 	/*@globals rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
 		h_errno, fileSystem, internalState @*/
 	/*@modifies rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
@@ -147,7 +145,7 @@ void rpmcliConfigured(void)
 {
 
     if (rpmcliInitialized < 0)
-	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, NULL);
+	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, rpmcliTarget);
     if (rpmcliInitialized)
 	exit(EXIT_FAILURE);
 }
@@ -223,6 +221,12 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
     case RPMCLI_POPT_NOHDRCHK:
 	rpmcliQueryFlags |= VERIFY_HDRCHK;
 	break;
+
+    case RPMCLI_POPT_TARGETPLATFORM:
+	/* XXX first --target wins, others ignored, for now. */
+	if (rpmcliTarget == NULL)
+	    rpmcliTarget = xstrdup(arg);
+	break;
     }
     /*@=branchstate@*/
 }
@@ -274,6 +278,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
+ { "target", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  RPMCLI_POPT_TARGETPLATFORM,
+        N_("specify target platform"), N_("CPU-VENDOR-OS") },
 
  { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },

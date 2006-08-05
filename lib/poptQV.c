@@ -31,8 +31,7 @@ int specedit = 0;
 #define POPT_HDLIST		-1011
 #define POPT_FTSWALK		-1012
 
-/* -1025 thrugh -1032 are common in rpmcli.h. */
-#define	POPT_TARGETPLATFORM	-1036
+/* -1025 thrugh -1033 are common in rpmcli.h. */
 #define	POPT_TRUST		-1037
 #define	POPT_WHATNEEDS		-1038
 
@@ -251,7 +250,7 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_SCRIPT;
 	break;
 
-    case POPT_TARGETPLATFORM:
+    case RPMCLI_POPT_TARGETPLATFORM:
 	if (qva->targets) {
 	    int len = strlen(qva->targets) + 1 + strlen(arg) + 1;
 	    qva->targets = xrealloc(qva->targets, len);
@@ -321,13 +320,13 @@ struct poptOption rpmQueryPoptTable[] = {
  { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
 	POPT_QUERYFORMAT, NULL, NULL },
  { "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
-	N_("use the following query format"), "QUERYFORMAT" },
+	N_("use the following query format"), N_("QUERYFORMAT") },
  { "specedit", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &specedit, -1,
 	N_("substitute i18n sections into spec file"), NULL },
  { "state", 's', 0, 0, 's',
 	N_("display the states of the listed files"), NULL },
- { "target", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  POPT_TARGETPLATFORM,
-        N_("specify target platform"), "CPU-VENDOR-OS" },
+ { "target", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  RPMCLI_POPT_TARGETPLATFORM,
+        N_("specify target platform"), N_("CPU-VENDOR-OS") },
    POPT_TABLEEND
 };
 

@@ -19,7 +19,7 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_RMSOURCE		-1013
 #define	POPT_RMBUILD		-1014
 #define	POPT_BUILDROOT		-1015
-#define	POPT_TARGETPLATFORM	-1016
+
 #define	POPT_NOBUILD		-1017
 #define	POPT_SHORTCIRCUIT	-1018
 #define	POPT_RMSPEC		-1019
@@ -109,7 +109,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	}
 	rba->buildRootOverride = xstrdup(arg);
 	break;
-    case POPT_TARGETPLATFORM:
+    case RPMCLI_POPT_TARGETPLATFORM:
 	if (rba->targets) {
 	    int len = strlen(rba->targets) + 1 + strlen(arg) + 1;
 	    rba->targets = xrealloc(rba->targets, len);
@@ -236,8 +236,8 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("skip straight to specified stage (only for c,i)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &signIt, POPT_SIGN,
 	N_("generate PGP/GPG signature"), NULL },
- { "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
-	N_("override target platform"), "CPU-VENDOR-OS" },
+ { "target", '\0', POPT_ARG_STRING, 0,  RPMCLI_POPT_TARGETPLATFORM,
+	N_("override target platform"), N_("CPU-VENDOR-OS") },
  { "usecatalog", '\0', POPT_ARGFLAG_DOC_HIDDEN, &useCatalog, POPT_USECATALOG,
 	N_("lookup i18N strings in specfile catalog"), NULL},
 
