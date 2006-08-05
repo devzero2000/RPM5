@@ -38,6 +38,9 @@
 	- automatically fix and retry dbenv->open() on DB_VERSION_MISMATCH.
 	- fix: insure that %config files are removed on erasure.
 	- solaris: portability fiddles.
+	- avoid multiple lstat(2) calls installing %config files.
+	- avoid digest checks on sparse files handling %config dispositions.
+	- fix: missing epoch == 0 for --freshen (#143301).
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
