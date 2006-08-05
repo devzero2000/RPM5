@@ -828,6 +828,16 @@ int rpmdbOpenAll(rpmdb db)
 	    continue;
 	if (db->_dbi[dbix] != NULL)
 	    continue;
+	switch ((db->db_tagn[dbix])) {
+	case RPMDBI_AVAILABLE:
+	case RPMDBI_ADDED:
+	case RPMDBI_REMOVED:
+	case RPMDBI_DEPENDS:
+	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
+	}
 	(void) dbiOpen(db, db->db_tagn[dbix], db->db_flags);
     }
     return rc;
