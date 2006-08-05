@@ -45,7 +45,7 @@
 	- fix: don't open temporary db files before chroot entry (#103852).
 	- spew --usage to stderr, not stdout (#164021).
 	- populate internal copy of struct statvfs with all (linux) fields.
-	- add --target option for all rpm modes.
+	- add --target option for all rpm modes (#127729).
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
