@@ -1282,32 +1282,48 @@ int rpmtsInitDSI(const rpmts ts)
 	dsi->dev = sb.st_dev;
 /* XXX figger out how to get this info for non-statvfs systems. */
 #if STATFS_IN_SYS_STATVFS
+	dsi->f_frsize = sfb.f_frsize;
 	dsi->f_fsid = sfb.f_fsid;
 	dsi->f_flag = sfb.f_flag;
+	dsi->f_favail = sfb.f_favail;
 	dsi->f_namemax = sfb.f_namemax;
+#else
+	dsi->f_fsid = sfb.f_fsid;
+	dsi->f_namemax = sfb.f_namelen;
 #endif
 
-	dsi->bsize = sfb.f_bsize;
+	dsi->f_bsize = sfb.f_bsize;
+	dsi->f_blocks = sfb.f_blocks;
+	dsi->f_bfree = sfb.f_bfree;
+	dsi->f_files = sfb.f_files;
+	dsi->f_ffree = sfb.f_ffree;
+
 	dsi->bneeded = 0;
 	dsi->ineeded = 0;
 #ifdef STATFS_HAS_F_BAVAIL
-	dsi->bavail = sfb.f_bavail;
+	dsi->f_bavail = sfb.f_bavail;
+	if (sfb.f_ffree > 0 && sfb.f_files > 0 && sfb.f_favail > 0)
+	    dsi->f_favail = sfb.f_favail;
+	else	/* XXX who knows what evil lurks here? */
+	    dsi->f_favail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
+				? sfb.f_ffree : -1;
 #else
 /* FIXME: the statfs struct doesn't have a member to tell how many blocks are
  * available for non-superusers.  f_blocks - f_bfree is probably too big, but
  * it's about all we can do.
  */
-	dsi->bavail = sfb.f_blocks - sfb.f_bfree;
-#endif
+	dsi->f_bavail = sfb.f_blocks - sfb.f_bfree;
 	/* XXX Avoid FAT and other file systems that have not inodes. */
-	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
+	dsi->f_favail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
+#endif
+
 #if !defined(ST_RDONLY)
 #define	ST_RDONLY	1
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s %s\n"),
-		i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
-		(signed long) dsi->bavail, (signed long) dsi->iavail,
+		i, (unsigned) dsi->dev, (unsigned) dsi->f_bsize,
+		(signed long) dsi->f_bavail, (signed long) dsi->f_favail,
 		((dsi->f_flag & ST_RDONLY) ? "ro" : "rw"),
 		ts->filesystems[i]);
     }
@@ -1319,19 +1335,19 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 		fileAction action)
 {
     rpmDiskSpaceInfo dsi;
-    uint_32 bneeded;
+    unsigned long long bneeded;
 
     dsi = ts->dsi;
     if (dsi) {
-	while (dsi->bsize && dsi->dev != dev)
+	while (dsi->f_bsize && dsi->dev != dev)
 	    dsi++;
-	if (dsi->bsize == 0)
+	if (dsi->f_bsize == 0)
 	    dsi = NULL;
     }
     if (dsi == NULL)
 	return;
 
-    bneeded = BLOCK_ROUND(fileSize, dsi->bsize);
+    bneeded = BLOCK_ROUND(fileSize, dsi->f_bsize);
 
     switch (action) {
     case FA_BACKUP:
@@ -1348,7 +1364,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
      */
     case FA_CREATE:
 	dsi->bneeded += bneeded;
-	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->bsize);
+	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->f_bsize);
 	/*@switchbreak@*/ break;
 
     case FA_ERASE:
@@ -1361,7 +1377,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
     }
 
     if (fixupSize)
-	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->bsize);
+	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->f_bsize);
 }
 
 void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
@@ -1384,18 +1400,18 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     ps = rpmtsProblems(ts);
     for (i = 0; i < ts->filesystemCount; i++, dsi++) {
 
-	if (dsi->bavail > 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
+	if (dsi->f_bavail > 0 && adj_fs_blocks(dsi->bneeded) > dsi->f_bavail) {
 	    rpmpsAppend(ps, RPMPROB_DISKSPACE,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
- 	   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
+ 	   (adj_fs_blocks(dsi->bneeded) - dsi->f_bavail) * dsi->f_bsize);
 	}
 
-	if (dsi->iavail > 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
+	if (dsi->f_favail > 0 && adj_fs_blocks(dsi->ineeded) > dsi->f_favail) {
 	    rpmpsAppend(ps, RPMPROB_DISKNODES,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
- 	    (adj_fs_blocks(dsi->ineeded) - dsi->iavail));
+ 	    (adj_fs_blocks(dsi->ineeded) - dsi->f_favail));
 	}
 
 	if ((dsi->bneeded || dsi->ineeded) && (dsi->f_flag & ST_RDONLY)) {

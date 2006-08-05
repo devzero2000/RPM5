@@ -112,17 +112,24 @@ extern int _cacheDependsRC;
 typedef	/*@abstract@*/ struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
 /** \ingroup rpmts
+ * An internal copy of (linux) struct statvfs for portability, with extensions.
  */
 struct diskspaceInfo_s {
-    dev_t dev;			/*!< File system device number. */
+    unsigned long f_bsize;	/*!< File system block size. */
+    unsigned long f_frsize;	/*!< File system fragment size. */
+    unsigned long long f_blocks;/*!< File system size (in frsize units). */
+    unsigned long long f_bfree;	/*!< No. of free blocks. */
+    signed long long f_bavail;	/*!< No. of blocks available to non-root. */
+    unsigned long long f_files;	/*!< No. of inodes. */
+    unsigned long long f_ffree;	/*!< No. of free inodes. */
+    signed long long f_favail;	/*!< No. of inodes available to non-root. */
     unsigned long f_fsid;	/*!< File system id. */
     unsigned long f_flag;	/*!< Mount flags. */
     unsigned long f_namemax;	/*!< Maximum filename length. */
-    signed long bneeded;	/*!< No. of blocks needed. */
-    signed long ineeded;	/*!< No. of inodes needed. */
-    int bsize;			/*!< File system block size. */
-    signed long long bavail;	/*!< No. of blocks available. */
-    signed long long iavail;	/*!< No. of inodes available. */
+
+    signed long long bneeded;	/*!< No. of blocks needed. */
+    signed long long ineeded;	/*!< No. of inodes needed. */
+    dev_t dev;			/*!< File system device number. */
 };
 
 /** \ingroup rpmts
@@ -130,8 +137,6 @@ struct diskspaceInfo_s {
  */
 #define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
 
-/* argon thought a shift optimization here was a waste of time...  he's
-   probably right :-( */
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
 /** \ingroup rpmts
