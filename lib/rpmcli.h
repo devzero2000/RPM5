@@ -44,7 +44,7 @@ extern const char * rpmcliRcfile;
 extern const char * rpmcliRootDir;
 
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
-extern const char * rpmcliTarget;
+extern const char * rpmcliTargets;
 /*@=redecl@*/
 
 /**
@@ -304,7 +304,6 @@ struct rpmQVKArguments_s {
 		- 'R'	from --resign
 		*/
     char qva_char;		/*!< (unused) always ' ' */
-    char * targets;		/*!< Target platform(s), comma separated. */
 
     /* install/erase mode arguments */
     rpmtransFlags transFlags;
@@ -501,8 +500,6 @@ struct rpmBuildArguments_s {
     int buildAmount;		/*!< Bit(s) to control operation. */
 /*@null@*/
     const char * buildRootOverride; /*!< from --buildroot */
-/*@null@*/
-    char * targets;		/*!< Target platform(s), comma separated. */
 /*@observer@*/
     const char * passPhrase;	/*!< Pass phrase. */
 /*@only@*/ /*@null@*/

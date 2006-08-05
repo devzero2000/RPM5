@@ -898,7 +898,6 @@ exit:
 #ifdef	IAM_RPMBT
     freeNames();
     ba->buildRootOverride = _free(ba->buildRootOverride);
-    ba->targets = _free(ba->targets);
 #endif
 
 #ifdef	IAM_RPMEIU
@@ -907,6 +906,7 @@ exit:
 	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
     ia->relocations = _free(ia->relocations);
 #endif
+    rpmcliTargets = _free(rpmcliTargets);
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     /*@-noeffect@*/

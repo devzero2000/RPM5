@@ -107,7 +107,7 @@ const char * rpmcliRootDir = "/";
 rpmQueryFlags rpmcliQueryFlags;
 
 /*@unchecked@*/ /*@null@*/
-const char * rpmcliTarget = NULL;
+const char * rpmcliTargets = NULL;
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
@@ -137,15 +137,24 @@ static void printVersion(FILE * fp)
     fprintf(fp, _("RPM version %s\n"), rpmEVR);
 }
 
-void rpmcliConfigured()
+void rpmcliConfigured(void)
 	/*@globals rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
 		h_errno, fileSystem, internalState @*/
 	/*@modifies rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
 
-    if (rpmcliInitialized < 0)
-	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, rpmcliTarget);
+    if (rpmcliInitialized < 0) {
+	char * t = NULL;
+	if (rpmcliTargets != NULL) {
+	    char *te;
+	    t = xstrdup(rpmcliTargets);
+	    if ((te = strchr(t, ',')) != NULL)
+		*te = '\0';
+	}
+	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, t);
+	t = _free(t);
+    }
     if (rpmcliInitialized)
 	exit(EXIT_FAILURE);
 }
@@ -223,9 +232,13 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	break;
 
     case RPMCLI_POPT_TARGETPLATFORM:
-	/* XXX first --target wins, others ignored, for now. */
-	if (rpmcliTarget == NULL)
-	    rpmcliTarget = xstrdup(arg);
+	if (rpmcliTargets == NULL)
+	    rpmcliTargets = xstrdup(arg);
+	else {
+	    size_t nb = strlen(rpmcliTargets) + (sizeof(",")-1) + strlen(arg) + 1;
+	    rpmcliTargets = xrealloc(rpmcliTargets, nb);
+	    (void) stpcpy( stpcpy(rpmcliTargets, ","), arg);
+	}
 	break;
     }
     /*@=branchstate@*/

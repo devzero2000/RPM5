@@ -109,17 +109,6 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	}
 	rba->buildRootOverride = xstrdup(arg);
 	break;
-    case RPMCLI_POPT_TARGETPLATFORM:
-	if (rba->targets) {
-	    int len = strlen(rba->targets) + 1 + strlen(arg) + 1;
-	    rba->targets = xrealloc(rba->targets, len);
-	    strcat(rba->targets, ",");
-	} else {
-	    rba->targets = xmalloc(strlen(arg) + 1);
-	    rba->targets[0] = '\0';
-	}
-	strcat(rba->targets, arg);
-	break;
 
     case RPMCLI_POPT_NODIGEST:
 	rba->qva_flags |= VERIFY_DIGEST;

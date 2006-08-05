@@ -14,7 +14,7 @@
 	- fetch all (even unused) sources/patches at %prep start.
 	- bolt in syck, add to librpmio.
 	- absorb lsyck.c (and libsyck.la) into internal lua.
-	- use RPMTAG_FILELINKTOS to detect dangling symlinks st run time.
+	- use RPMTAG_FILELINKTOS to detect dangling symlinks at run time.
 	- fix: free dirnames/linktos dependency sets.
 	- consolidate per-mode options into single structure.
 	- make dbiTags per-rpmdb rather than global.
@@ -46,6 +46,7 @@
 	- spew --usage to stderr, not stdout (#164021).
 	- populate internal copy of struct statvfs with all (linux) fields.
 	- add --target option for all rpm modes (#127729).
+	- use global rpmcliTargets for build/install modes.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

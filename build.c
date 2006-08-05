@@ -298,7 +298,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 {
     char *t, *te;
     int rc = 0;
-    char * targets = ba->targets;
+    char * targets = rpmcliTargets;
 #define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
     int cleanFlags = ba->buildAmount & buildCleanMask;
     rpmVSFlags vsflags, ovsflags;

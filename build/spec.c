@@ -760,7 +760,7 @@ exit:
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
     int res = 1;
-    char * targets = qva->targets;
+    char * targets = rpmcliTargets;
     char * t;
     char * te;
 

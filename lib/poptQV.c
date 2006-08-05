@@ -250,18 +250,6 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_SCRIPT;
 	break;
 
-    case RPMCLI_POPT_TARGETPLATFORM:
-	if (qva->targets) {
-	    int len = strlen(qva->targets) + 1 + strlen(arg) + 1;
-	    qva->targets = xrealloc(qva->targets, len);
-	    strcat(qva->targets, ",");
-	} else {
-	    qva->targets = xmalloc(strlen(arg) + 1);
-	    qva->targets[0] = '\0';
-	}
-	strcat(qva->targets, arg);
-	break;
-
     /* XXX perhaps POPT_ARG_INT instead of callback. */
     case POPT_TRUST:
     {	char * end = NULL;
