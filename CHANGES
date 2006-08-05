@@ -43,6 +43,7 @@
 	- fix: missing epoch == 0 for --freshen (#143301).
 	- avoid access(2) quirks querying symlinks, lstat(2) instead (#60288).
 	- fix: don't open temporary db files before chroot entry (#103852).
+	- spew --usage to stderr, not stdout (#164021).
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
