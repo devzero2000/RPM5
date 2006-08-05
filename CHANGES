@@ -41,6 +41,7 @@
 	- avoid multiple lstat(2) calls installing %config files.
 	- avoid digest checks on sparse files handling %config dispositions.
 	- fix: missing epoch == 0 for --freshen (#143301).
+	- avoid access(2) quirks querying symlinks, lstat(2) instead (#60288).
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
