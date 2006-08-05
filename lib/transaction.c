@@ -124,6 +124,8 @@ static int handleInstInstalledFiles(const rpmts ts,
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 otecolor, tecolor;
     uint_32 oFColor, FColor;
+    uint_32 oFFlags, FFlags;
+    struct stat sb, *st = &sb;
     const char * altNEVR = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
@@ -164,21 +166,18 @@ static int handleInstInstalledFiles(const rpmts ts,
     ps = rpmtsProblems(ts);
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
-	int isCfgFile;
-	int isGhostFile;
 
 	otherFileNum = shared->otherFileNum;
 	(void) rpmfiSetFX(otherFi, otherFileNum);
+	oFFlags = rpmfiFFlags(otherFi);
 	oFColor = rpmfiFColor(otherFi);
 	oFColor &= tscolor;
 
 	fileNum = shared->pkgFileNum;
 	(void) rpmfiSetFX(fi, fileNum);
+	FFlags = rpmfiFFlags(fi);
 	FColor = rpmfiFColor(fi);
 	FColor &= tscolor;
-
-	isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
-	isGhostFile = ((rpmfiFFlags(otherFi) & RPMFILE_GHOST) && (rpmfiFFlags(fi) & RPMFILE_GHOST));
 
 #ifdef	DYING
 	/* XXX another tedious segfault, assume file state normal. */
@@ -196,8 +195,26 @@ static int handleInstInstalledFiles(const rpmts ts,
 		fi->mapflags |= CPIO_SBIT_CHECK;
 	}
 
-	if (isGhostFile)
+	if (((FFlags | oFFlags) & RPMFILE_GHOST))
 	    continue;
+
+	/* Check for shared %config files that are installed and sparse. */
+	if ((FFlags | oFFlags) & RPMFILE_CONFIG) {
+	    if (!Lstat(rpmfiFN(fi), st)) {
+		if (FFlags & RPMFILE_CONFIG) {
+		    FFlags |= RPMFILE_EXISTS;
+		    if ((512 * st->st_blocks) < st->st_size)
+		 	FFlags |= RPMFILE_SPARSE;
+		    (void) rpmfiSetFFlags(fi, FFlags);
+		}
+		if (oFFlags & RPMFILE_CONFIG) {
+		    oFFlags |= RPMFILE_EXISTS;
+		    if ((512 * st->st_blocks) < st->st_size)
+		 	oFFlags |= RPMFILE_SPARSE;
+		    (void) rpmfiSetFFlags(otherFi, oFFlags);
+		}
+	    }
+	}
 
 	if (rpmfiCompare(otherFi, fi)) {
 	    int rConflicts;
@@ -225,7 +242,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    }
 
 	    /* Save file identifier to mark as state REPLACED. */
-	    if ( !(isCfgFile || XFA_SKIPPING(fi->actions[fileNum])) ) {
+	    if ( !(((FFlags | oFFlags) & RPMFILE_CONFIG) || XFA_SKIPPING(fi->actions[fileNum])) ) {
 		/*@-assignexpose@*/ /* FIX: p->replaced, not fi */
 		if (!shared->isRemoved)
 		    fi->replaced[numReplaced++] = *shared;
@@ -234,7 +251,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	}
 
 	/* Determine config file dispostion, skipping missing files (if any). */
-	if (isCfgFile) {
+	if (((FFlags | oFFlags) & RPMFILE_CONFIG)) {
 	    int skipMissing =
 		((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
 	    fileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
@@ -496,7 +513,7 @@ static void handleOverlappedFiles(const rpmts ts,
 /*@-boundswrite@*/
 	switch (rpmteType(p)) {
 	case TR_ADDED:
-	  { struct stat sb;
+	  { struct stat sb, *st = &sb;
 	    int reportConflicts =
 		!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
 	    int done = 0;
@@ -505,7 +522,7 @@ static void handleOverlappedFiles(const rpmts ts,
 		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
 		    /*@switchbreak@*/ break;
-		if ((FFlags & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
+		if ((FFlags & RPMFILE_CONFIG) && (FFlags & RPMFILE_EXISTS)) {
 		    /* Here is a non-overlapped pre-existing config file. */
 		    fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
@@ -562,7 +579,7 @@ assert(otherFi != NULL);
 	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = rpmfiFSize(otherFi);
 
-	    if ((FFlags & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
+	    if ((FFlags & RPMFILE_CONFIG) && (FFlags & RPMFILE_EXISTS)) {
 		/* Here is an overlapped  pre-existing config file. */
 		fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
@@ -595,8 +612,7 @@ assert(otherFi != NULL);
 		/*@switchbreak@*/ break;
 		
 	    /* Check for pre-existing modified config file that needs saving. */
-	    /* XXX avoid digest on sparse /var/log/lastlog file. */
-	    if (strcmp(fn, "/var/log/lastlog"))
+	    if (!(FFlags & RPMFILE_SPARSE))
 	    {	int dalgo = 0;
 		size_t dlen = 0;
 		const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);

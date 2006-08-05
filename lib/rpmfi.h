@@ -314,7 +314,16 @@ extern const char * rpmfiFN(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
  */
-int_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
+uint_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
+ * Set current file flags in file info set.
+ * @param fi		file info set
+ * @param FFlags	new file flags
+ * @return		previous file flags, 0 on invalid
+ */
+uint_32 rpmfiSetFFlags(/*@null@*/ rpmfi fi, uint_32 FFlags)
 	/*@*/;
 
 /**
@@ -322,7 +331,16 @@ int_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file verify flags, 0 on invalid
  */
-int_32 rpmfiVFlags(/*@null@*/ rpmfi fi)
+uint_32 rpmfiVFlags(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
+ * Set current file verify flags in file info set.
+ * @param fi		file info set
+ * @param VFlags	new file verify flags
+ * @return		previous file verify flags, 0 on invalid
+ */
+uint_32 rpmfiSetVFlags(/*@null@*/ rpmfi fi, uint_32 VFlags)
 	/*@*/;
 
 /**
@@ -339,6 +357,15 @@ int_16 rpmfiFMode(/*@null@*/ rpmfi fi)
  * @return		current file state, 0 on invalid
  */
 rpmfileState rpmfiFState(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
+ * Set current file state in file info set.
+ * @param fi		file info set
+ * @param fstate	new file state
+ * @return		previous file state, 0 on invalid
+ */
+rpmfileState rpmfiSetFState(/*@null@*/ rpmfi fi, rpmfileState fstate)
 	/*@*/;
 
 /**

@@ -152,6 +152,7 @@ LIBRPM_0
     rpmfiFContext;
     rpmfiFDepends;
     rpmfiFFlags;
+    rpmfiSetFFlags;
     rpmfiFGroup;
     rpmfiFInode;
     rpmfiFLink;
@@ -163,6 +164,7 @@ LIBRPM_0
     rpmfiFree;
     rpmfiFSize;
     rpmfiFState;
+    rpmfiSetFState;
     rpmfiFUser;
     rpmfiFX;
     rpmfiInit;
@@ -174,6 +176,7 @@ LIBRPM_0
     rpmfiSetFX;
     rpmfiTypeString;
     rpmfiVFlags;
+    rpmfiSetVFlags;
     rpmFLAGS;
     rpmFreeFilesystems;
     rpmFreeRpmrc;

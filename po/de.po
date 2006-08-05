@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-07 13:18-0400\n"
+"POT-Creation-Date: 2006-07-13 17:27-0400\n"
 "PO-Revision-Date: 2006-02-19 22:53+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2739,96 +2739,96 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:917 lib/rpmds.c:3401
+#: lib/rpmds.c:921 lib/rpmds.c:3422
 msgid "NO "
 msgstr "NEIN "
 
-#: lib/rpmds.c:917 lib/rpmds.c:3401
+#: lib/rpmds.c:921 lib/rpmds.c:3422
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1403
+#: lib/rpmds.c:1407
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, und Obsoletes: unterstützen Versionen."
 
-#: lib/rpmds.c:1406
+#: lib/rpmds.c:1410
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Dateiname(n) als (dirName,baseName,dirIndex)-Tupel gespeichert, nicht als "
 "Pfad."
 
-#: lib/rpmds.c:1409
+#: lib/rpmds.c:1413
 msgid "package payload can be compressed using bzip2."
 msgstr "Paket-Nutzdaten können mit bzip2 komprimiert werden."
 
-#: lib/rpmds.c:1412
+#: lib/rpmds.c:1416
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "Dateien der Paket-Nutzdaten haben \"./\" als Präfix"
 
-#: lib/rpmds.c:1415
+#: lib/rpmds.c:1419
 msgid "package name-version-release is not implicitly provided."
 msgstr "Paket Name-Version-Release wird nicht unbedingt bereitgestellt."
 
-#: lib/rpmds.c:1418
+#: lib/rpmds.c:1422
 msgid "header tags are always sorted after being loaded."
 msgstr "Header-Tags werden immer nach dem Laden sortiert."
 
-#: lib/rpmds.c:1421
+#: lib/rpmds.c:1425
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "Der Skriptlet-Interpreter kann Argumente aus dem Header benutzen."
 
-#: lib/rpmds.c:1424
+#: lib/rpmds.c:1428
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "Eine harte Verlinkung kann auch ohne eine komplette Installation angelegt "
 "werden."
 
-#: lib/rpmds.c:1427
+#: lib/rpmds.c:1431
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "Paket-Skriptlets können während der Installation auf die RPM-Datenbank "
 "zugreifen."
 
-#: lib/rpmds.c:1431
+#: lib/rpmds.c:1435
 msgid "internal support for lua scripts."
 msgstr "Interne Unterstützung für LUA-Skripte"
 
-#: lib/rpmds.c:1435
+#: lib/rpmds.c:1439
 msgid "header tags can be type int_64."
 msgstr "Header-Tags können vom Typ int_64 sein."
 
-#: lib/rpmds.c:1438
+#: lib/rpmds.c:1442
 msgid "package payload can be in ustar tar archive format."
 msgstr "Paket-Nutzdaten können im ustar Tar-Archivformat sein."
 
-#: lib/rpmds.c:1441
+#: lib/rpmds.c:1445
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1559
+#: lib/rpmds.c:1563
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "Zeile %d:%d \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1593
+#: lib/rpmds.c:1597
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr "%s:%d Keinen Vergleichsoperator gefunden.\n"
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1603
+#: lib/rpmds.c:1607
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr "%s:%d Keinen EVR-Vergleichswert gefunden.\n"
 
-#: lib/rpmds.c:3194 lib/rpmds.c:3224 lib/rpmds.c:3236
+#: lib/rpmds.c:3215 lib/rpmds.c:3245 lib/rpmds.c:3257
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "Führe Pipe-Befehl \"%s\" aus\n"
 
-#: lib/rpmds.c:3197
+#: lib/rpmds.c:3218
 #, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2836,14 +2836,14 @@ msgid ""
 msgstr "Zeile %d: \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen: %s\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3226
+#: lib/rpmds.c:3247
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 "\tZeile %d: \"%s\" hat keinen Vergleichsoperator gefunden. Überspringe...\n"
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3238
+#: lib/rpmds.c:3259
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2852,7 +2852,7 @@ msgstr ""
 "\tZeile %d: Keinen EVR-Vergleichswert gefunden.\n"
 " Überspringe..."
 
-#: lib/rpmds.c:3367
+#: lib/rpmds.c:3388
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2862,13 +2862,13 @@ msgstr ""
 "als \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3400
+#: lib/rpmds.c:3421
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3424
+#: lib/rpmds.c:3445
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Paket %s hat unerfüllte %s: %s\n"

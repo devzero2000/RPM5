@@ -524,9 +524,13 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude, internal */
     RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
     RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
-    RPMFILE_POLICY	= (1 << 12)	/*!< from %%policy */
+    RPMFILE_POLICY	= (1 << 12),	/*!< from %%policy */
+    RPMFILE_EXISTS	= (1 << 13),	/*!< did lstat(fn, st) succeed? */
+    RPMFILE_SPARSE	= (1 << 14),	/*!< was ((512*st->st_blocks) < st->st_size) ? */
+    RPMFILE_TYPED	= (1 << 15)	/*!< (unimplemented) from %%spook */
 } rpmfileAttrs;
 
+#define	RPMFILE_SPOOK	(RPMFILE_GHOST|RPMFILE_TYPED)
 #define	RPMFILE_ALL	~(RPMFILE_NONE)
 
 /**

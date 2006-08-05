@@ -152,9 +152,9 @@ const char * rpmfiFN(rpmfi fi)
     return FN;
 }
 
-int_32 rpmfiFFlags(rpmfi fi)
+uint_32 rpmfiFFlags(rpmfi fi)
 {
-    int_32 FFlags = 0;
+    uint_32 FFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -165,9 +165,24 @@ int_32 rpmfiFFlags(rpmfi fi)
     return FFlags;
 }
 
-int_32 rpmfiVFlags(rpmfi fi)
+uint_32 rpmfiSetFFlags(rpmfi fi, uint_32 FFlags)
 {
-    int_32 VFlags = 0;
+    uint_32 oFFlags = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->fflags != NULL && fi->h == NULL) {
+	    oFFlags = fi->fflags[fi->i];
+	    *((uint_32 *)(fi->fflags + fi->i)) = FFlags;
+	}
+/*@=boundsread@*/
+    }
+    return oFFlags;
+}
+
+uint_32 rpmfiVFlags(rpmfi fi)
+{
+    uint_32 VFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -176,6 +191,21 @@ int_32 rpmfiVFlags(rpmfi fi)
 /*@=boundsread@*/
     }
     return VFlags;
+}
+
+uint_32 rpmfiSetVFlags(rpmfi fi, uint_32 VFlags)
+{
+    uint_32 oVFlags = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->vflags != NULL && fi->h == NULL) {
+	    oVFlags = fi->vflags[fi->i];
+	    *((uint_32 *)(fi->vflags + fi->i)) = VFlags;
+	}
+/*@=boundsread@*/
+    }
+    return oVFlags;
 }
 
 int_16 rpmfiFMode(rpmfi fi)
@@ -202,6 +232,20 @@ rpmfileState rpmfiFState(rpmfi fi)
 /*@=boundsread@*/
     }
     return fstate;
+}
+
+rpmfileState rpmfiSetFState(rpmfi fi, rpmfileState fstate)
+{
+    int_32 ofstate = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->fflags != NULL)
+	    ofstate = fi->fstates[fi->i];
+	    fi->fstates[fi->i] = fstate;
+/*@=boundsread@*/
+    }
+    return ofstate;
 }
 
 const unsigned char * rpmfiDigest(rpmfi fi, int * algop, size_t * lenp)
@@ -576,10 +620,10 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     int newFlags = rpmfiFFlags(nfi);
     char buffer[1024];
     fileTypes dbWhat, newWhat, diskWhat;
-    struct stat sb;
+    struct stat sb, *st = &sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
 
-    if (lstat(fn, &sb)) {
+    if (!(newFlags & RPMFILE_EXISTS)) {
 	/*
 	 * The file doesn't exist on the disk. Create it unless the new
 	 * package has marked it as missingok, or allfiles is requested.
@@ -626,8 +670,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	size_t nlen = 0;
 	const unsigned char * ndigest;
 	odigest = rpmfiDigest(ofi, &oalgo, &olen);
-	/* XXX avoid digest on sparse /var/log/lastlog file. */
-	if (strcmp(fn, "/var/log/lastlog"))
+	if (!(newFlags & RPMFILE_SPARSE))
 	if (dodigest(oalgo, fn, buffer, 0, NULL))
 	    return FA_CREATE;	/* assume file has been removed */
 	if (odigest && !memcmp(odigest, buffer, olen))
