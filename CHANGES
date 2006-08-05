@@ -46,7 +46,7 @@
 	- spew --usage to stderr, not stdout (#164021).
 	- populate internal copy of struct statvfs with all (linux) fields.
 	- add --target option for all rpm modes (#127729).
-	- use global rpmcliTargets for build/install modes.
+	- use global rpmcliTargets for build/query modes.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
