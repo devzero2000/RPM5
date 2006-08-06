@@ -1323,6 +1323,7 @@ spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
     char * passPhrase = "";
     char *cookie = NULL;
     int anyarch = 1;
+    int verify = 1;
     int force = 1;
     char * kwlist[] = {"specfile", NULL};
 
@@ -1330,7 +1331,7 @@ spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     if (parseSpec(s->ts, specfile,"/", buildRoot,recursing, passPhrase,
-             cookie, anyarch, force)!=0) {
+             cookie, anyarch, force, verify)!=0) {
              PyErr_SetString(pyrpmError, "can't parse specfile\n");
                      return NULL;
    }

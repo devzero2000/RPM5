@@ -609,7 +609,7 @@ bottom:
     return ec;
 }
 
-int parsePrep(Spec spec)
+int parsePrep(Spec spec, int verify)
 {
     int nextPart, res, rc;
     StringBuf sb;
@@ -629,9 +629,11 @@ int parsePrep(Spec spec)
 	return rc;
 
     /* Check to make sure that all sources/patches are present. */
-    rc = prepFetch(spec);
-    if (rc)
-	return RPMERR_BADSPEC;
+    if (verify) {
+	rc = prepFetch(spec);
+	if (rc)
+	    return RPMERR_BADSPEC;
+    }
     
     sb = newStringBuf();
     

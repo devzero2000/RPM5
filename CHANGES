@@ -47,6 +47,7 @@
 	- populate internal copy of struct statvfs with all (linux) fields.
 	- add --target option for all rpm modes (#127729).
 	- use global rpmcliTargets for build/query modes.
+	- don't verify existence of sources/patches when --specfile querying.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

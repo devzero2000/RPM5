@@ -439,7 +439,7 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 /*@-boundswrite@*/
 int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		const char *buildRootURL, int recursing, const char *passPhrase,
-		char *cookie, int anyarch, int force)
+		char *cookie, int anyarch, int force, int verify)
 {
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -503,7 +503,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    initialPackage = 0;
 	    /*@switchbreak@*/ break;
 	case PART_PREP:
-	    parsePart = parsePrep(spec);
+	    parsePart = parsePrep(spec, verify);
 	    /*@switchbreak@*/ break;
 	case PART_BUILD:
 	case PART_INSTALL:
@@ -571,7 +571,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 #endif
 		spec->BASpecs[index] = NULL;
 		if (parseSpec(ts, specFile, spec->rootURL, buildRootURL, 1,
-				  passPhrase, cookie, anyarch, force)
+				  passPhrase, cookie, anyarch, force, verify)
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;

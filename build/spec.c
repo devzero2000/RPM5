@@ -714,6 +714,7 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
     int recursing = 0;
     char *cookie = NULL;
     int force = 1;
+    int verify = 0;
     char *rcfile = NULL;
     int xx;
 
@@ -726,7 +727,7 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
 /*@-branchstate@*/
     /*@-mods@*/ /* FIX: make spec abstract */
     if (parseSpec(ts, specName, "/", buildRoot, recursing, passPhrase,
-		cookie, anyarch, force)
+		cookie, anyarch, force, verify)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {
 	rpmError(RPMERR_QUERY,

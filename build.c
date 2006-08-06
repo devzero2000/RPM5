@@ -111,6 +111,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     int specut;
     char buf[BUFSIZ];
     Spec spec = NULL;
+    int verify = 1;
     int rc;
 
 #ifndef	DYING
@@ -258,7 +259,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
     if (parseSpec(ts, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
-		cookie, _anyarch(buildAmount), ba->force))
+		cookie, _anyarch(buildAmount), ba->force, verify))
     {
 	rc = 1;
 	goto exit;

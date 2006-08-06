@@ -295,9 +295,10 @@ int parsePreamble(Spec spec, int initialPackage)
 /** \ingroup rpmbuild
  * Parse %%prep section of a spec file.
  * @param spec		spec file control structure
+ * @param verify	verify existence of sources/patches?
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parsePrep(Spec spec)
+int parsePrep(Spec spec, int verify)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->prep, spec->buildSubdir, spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
@@ -502,6 +503,7 @@ int processSourceFiles(Spec spec)
  * @param cookie
  * @param anyarch
  * @param force
+ * @param verify
  * @return
  */
 int parseSpec(rpmts ts, const char * specFile,
@@ -510,7 +512,7 @@ int parseSpec(rpmts ts, const char * specFile,
 		int recursing,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,
-		int anyarch, int force)
+		int anyarch, int force, int verify)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
