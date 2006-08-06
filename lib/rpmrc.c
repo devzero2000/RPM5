@@ -28,6 +28,9 @@ static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/et
 /*@observer@*/ /*@checked@*/
 const char * macrofiles = MACROFILES;
 
+/*@unchecked@*/ /*@null@*/
+static const char * configTarget = NULL;
+
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
@@ -142,19 +145,6 @@ static struct rpmvarValue values[RPMVAR_NUM];
 static int defaultsInitialized = 0;
 
 /* prototypes */
-static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies fd, rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-static void rpmSetVarArch(int var, const char * val,
-		/*@null@*/ const char * arch)
-	/*@globals values, internalState @*/
-	/*@modifies values, internalState @*/;
-
-static void rebuildCompatTables(int type, const char * name)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
-
 static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *canontarget, rpmGlobalMacroContext,
@@ -328,6 +318,15 @@ static void machFindEquivs(machCache cache, machEquivTable table,
     machCacheEntryVisit(cache, table, key, 2);
     return;
     /*@=nullstate@*/
+}
+
+static void rebuildCompatTables(int type, const char * name)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
+{
+    machFindEquivs(&tables[currTables[type]].cache,
+		   &tables[currTables[type]].equiv,
+		   name);
 }
 
 static int addCanon(canonEntry * table, int * tableLen, char * line,
@@ -551,6 +550,45 @@ static void setDefaults(void)
 
 }
 
+static void rpmSetVarArch(int var, const char * val,
+		/*@null@*/ const char * arch)
+	/*@globals values, internalState @*/
+	/*@modifies values, internalState @*/
+{
+    struct rpmvarValue * next = values + var;
+
+    if (next->value) {
+	if (arch) {
+	    while (next->next) {
+		if (next->arch && !strcmp(next->arch, arch)) break;
+		next = next->next;
+	    }
+	} else {
+	    while (next->next) {
+		if (!next->arch) break;
+		next = next->next;
+	    }
+	}
+
+	/*@-nullpass@*/	/* LCL: arch != NULL here. */
+	if (next->arch && arch && !strcmp(next->arch, arch)) {
+	/*@=nullpass@*/
+	    next->value = _free(next->value);
+	    next->arch = _free(next->arch);
+	} else if (next->arch || arch) {
+	    next->next = xmalloc(sizeof(*next->next));
+	    next = next->next;
+	    next->value = NULL;
+	    next->arch = NULL;
+	    next->next = NULL;
+	}
+    }
+
+    next->value = _free(next->value);
+    next->value = xstrdup(val);
+    next->arch = (arch ? xstrdup(arch) : NULL);
+}
+
 /*@-usedef@*/	/*@ FIX: se usage inconsistent, W2DO? */
 static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -761,6 +799,70 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 }
 /*@=usedef@*/
 
+typedef struct cpu_vendor_os_gnu {
+    const char * str;
+    const char * cpu;
+    const char * vendor;
+    const char * os;
+    const char * gnu;
+} * CVOG_t;
+
+/**
+ */
+/*@-bounds@*/
+static int parseCVOG(const char * str, CVOG_t *cvogp)
+	/*@modifies *cvogp @*/
+{
+    CVOG_t cvog = xcalloc(1, sizeof(*cvog));
+    char * p, * pe;
+
+    cvog->str = p = xstrdup(str);
+    pe = p + strlen(p);
+    while (pe-- > p && isspace(*pe))
+	*pe = '\0';
+
+    cvog->cpu = p;
+    cvog->vendor = "unknown";
+    cvog->os = "unknown";
+    cvog->gnu = NULL;
+    while (*p && !(*p == '-' || isspace(*p)))
+	    p++;
+    if (*p != '\0') *p++ = '\0';
+
+    cvog->vendor = p;
+    while (*p && !(*p == '-' || isspace(*p)))
+	p++;
+/*@-branchstate@*/
+    if (*p != '-') {
+	if (*p != '\0') *p++ = '\0';
+	cvog->os = cvog->vendor;
+	cvog->vendor = "unknown";
+    } else {
+	if (*p != '\0') *p++ = '\0';
+
+	cvog->os = p;
+	while (*p && !(*p == '-' || isspace(*p)))
+	    p++;
+	if (*p == '-') {
+	    *p++ = '\0';
+
+	    cvog->gnu = p;
+	    while (*p && !(*p == '-' || isspace(*p)))
+		p++;
+	}
+	if (*p != '\0') *p++ = '\0';
+    }
+/*@=branchstate@*/
+
+    if (cvogp)
+	*cvogp = cvog;
+    else {
+	cvog->str = _free(cvog->str);
+	cvog = _free(cvog);
+    }
+    return 0;
+}
+/*@=bounds@*/
 
 /**
  */
@@ -771,7 +873,7 @@ static int rpmPlatform(const char * platform)
 	/*@modifies nplatpat, platpat,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
+    CVOG_t cvog = NULL;
     char * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
@@ -812,46 +914,15 @@ static int rpmPlatform(const char * platform)
 	    continue;
 	}
 
-	cpu = p;
-	vendor = "unknown";
-	os = "unknown";
-	gnu = NULL;
-	while (*p && !(*p == '-' || isspace(*p)))
-	    p++;
-	if (*p != '\0') *p++ = '\0';
-
-	vendor = p;
-	while (*p && !(*p == '-' || isspace(*p)))
-	    p++;
-/*@-branchstate@*/
-	if (*p != '-') {
-	    if (*p != '\0') *p++ = '\0';
-	    os = vendor;
-	    vendor = "unknown";
-	} else {
-	    if (*p != '\0') *p++ = '\0';
-
-	    os = p;
-	    while (*p && !(*p == '-' || isspace(*p)))
-		p++;
-	    if (*p == '-') {
-		*p++ = '\0';
-
-		gnu = p;
-		while (*p && !(*p == '-' || isspace(*p)))
-		    p++;
-	    }
-	    if (*p != '\0') *p++ = '\0';
+	if (!parseCVOG(p, &cvog) && cvog != NULL) {
+	    addMacro(NULL, "_host_cpu", NULL, cvog->cpu, -1);
+	    addMacro(NULL, "_host_vendor", NULL, cvog->vendor, -1);
+	    addMacro(NULL, "_host_os", NULL, cvog->os, -1);
 	}
-/*@=branchstate@*/
-
-	addMacro(NULL, "_host_cpu", NULL, cpu, -1);
-	addMacro(NULL, "_host_vendor", NULL, vendor, -1);
-	addMacro(NULL, "_host_os", NULL, os, -1);
 
 	platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
 /*@-onlyunqglobaltrans@*/
-	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}", (gnu && *gnu ? "-" : NULL), gnu, NULL);
+	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}", (cvog->gnu && *cvog->gnu ? "-" : NULL), cvog->gnu, NULL);
 	nplatpat++;
 	platpat[nplatpat] = NULL;
 /*@=onlyunqglobaltrans@*/
@@ -861,6 +932,10 @@ static int rpmPlatform(const char * platform)
     rc = (init_platform ? 0 : -1);
 
 exit:
+    if (cvog) {
+	cvog->str = _free(cvog->str);
+	cvog = _free(cvog);
+    }
 /*@-modobserver@*/
     b = _free(b);
 /*@=modobserver@*/
@@ -1088,6 +1163,21 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     int rc;
 
     while (!gotDefaults) {
+	CVOG_t cvog = NULL;
+	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
+	    if (cvog->cpu) {
+		strncpy(un.machine, cvog->cpu, sizeof(un.machine));
+		un.machine[sizeof(un.machine)-1] = '\0';
+	    }
+	    if (cvog->os) {
+		strncpy(un.sysname, cvog->os, sizeof(un.sysname));
+		un.sysname[sizeof(un.sysname)-1] = '\0';
+	    }
+	    cvog->str = _free(cvog->str);
+	    cvog = _free(cvog);
+	    gotDefaults = 1;
+	    break;
+	}
 	if (!rpmPlatform(platform)) {
 	    const char * s;
 	    s = rpmExpand("%{_host_cpu}", NULL);
@@ -1424,42 +1514,6 @@ void rpmSetVar(int var, const char * val)
     values[var].value = (val ? xstrdup(val) : NULL);
 }
 
-static void rpmSetVarArch(int var, const char * val, const char * arch)
-{
-    struct rpmvarValue * next = values + var;
-
-    if (next->value) {
-	if (arch) {
-	    while (next->next) {
-		if (next->arch && !strcmp(next->arch, arch)) break;
-		next = next->next;
-	    }
-	} else {
-	    while (next->next) {
-		if (!next->arch) break;
-		next = next->next;
-	    }
-	}
-
-	/*@-nullpass@*/	/* LCL: arch != NULL here. */
-	if (next->arch && arch && !strcmp(next->arch, arch)) {
-	/*@=nullpass@*/
-	    next->value = _free(next->value);
-	    next->arch = _free(next->arch);
-	} else if (next->arch || arch) {
-	    next->next = xmalloc(sizeof(*next->next));
-	    next = next->next;
-	    next->value = NULL;
-	    next->arch = NULL;
-	    next->next = NULL;
-	}
-    }
-
-    next->value = _free(next->value);
-    next->value = xstrdup(val);
-    next->arch = (arch ? xstrdup(arch) : NULL);
-}
-
 void rpmSetTables(int archTable, int osTable)
 	/*@globals currTables @*/
 	/*@modifies currTables @*/
@@ -1498,12 +1552,8 @@ void rpmSetMachine(const char * arch, const char * os)
 	/*@globals current @*/
 	/*@modifies current @*/
 {
-    const char * host_cpu, * host_os;
-
-    defaultMachine(&host_cpu, &host_os);
-
     if (arch == NULL) {
-	arch = host_cpu;
+	defaultMachine(&arch, NULL);
 	if (tables[currTables[ARCH]].hasTranslate)
 	    arch = lookupInDefaultTable(arch,
 			    tables[currTables[ARCH]].defaults,
@@ -1512,7 +1562,7 @@ void rpmSetMachine(const char * arch, const char * os)
     if (arch == NULL) return;	/* XXX can't happen */
 
     if (os == NULL) {
-	os = host_os;
+	defaultMachine(NULL, &os);
 	if (tables[currTables[OS]].hasTranslate)
 	    os = lookupInDefaultTable(os,
 			    tables[currTables[OS]].defaults,
@@ -1523,34 +1573,17 @@ void rpmSetMachine(const char * arch, const char * os)
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
 	current[ARCH] = _free(current[ARCH]);
 	current[ARCH] = xstrdup(arch);
-	rebuildCompatTables(ARCH, host_cpu);
+	rebuildCompatTables(ARCH, arch);
     }
 
     if (!current[OS] || strcmp(os, current[OS])) {
 	char * t = xstrdup(os);
 	current[OS] = _free(current[OS]);
-	/*
-	 * XXX Capitalizing the 'L' is needed to insure that old
-	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
-	 * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
-	 * XXX A copy of this string is embedded in headers and is
-	 * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->
-	 * XXX to verify correct arch/os from headers.
-	 */
 	if (!strcmp(t, "linux"))
 	    *t = 'L';
 	current[OS] = t;
-	
-	rebuildCompatTables(OS, host_os);
+	rebuildCompatTables(OS, os);
     }
-}
-
-static void rebuildCompatTables(int type, const char * name)
-	/*@*/
-{
-    machFindEquivs(&tables[currTables[type]].cache,
-		   &tables[currTables[type]].equiv,
-		   name);
 }
 
 static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
@@ -1863,6 +1896,8 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 int rpmReadConfigFiles(const char * file, const char * target)
 {
 
+    configTarget = target;
+
     /* Preset target macros */
     /*@-nullstate@*/	/* FIX: target can be NULL */
     rpmRebuildTargetVars(&target, NULL);
@@ -1881,6 +1916,7 @@ int rpmReadConfigFiles(const char * file, const char * target)
 	cpu = _free(cpu);
 	os = _free(os);
     }
+    configTarget = NULL;
 
     /* Force Lua state initialization */
 #ifdef WITH_LUA
