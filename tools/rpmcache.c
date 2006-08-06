@@ -162,30 +162,10 @@ static int ftsCacheUpdate(rpmts ts)
     return rc;
 }
 
-/**
- */
-static int archOkay(/*@null@*/ const char * pkgArch)
-        /*@*/
-{
-    if (pkgArch == NULL) return 0;
-    return (rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch) ? 1 : 0);
-}
-
-/**
- */
-static int osOkay(/*@null@*/ const char * pkgOs)
-        /*@*/
-{
-    if (pkgOs == NULL) return 0;
-    return (rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs) ? 1 : 0);
-}
-
 static int ftsStashLatest(FTSENT * fts, rpmts ts)
 {
     Header h = NULL;
     rpmds add = NULL;
-    const char * arch;
-    const char * os;
     struct stat sb, * st;
     int ec = -1;	/* assume not found */
     int i = 0;
@@ -208,15 +188,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 	    goto exit;
     }
 
-    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &arch, NULL)
-     || !headerGetEntry(h, RPMTAG_OS, NULL, (void **) &os, NULL))
-	goto exit;
-
-    /* Make sure arch and os match this platform. */
-    if (!archOkay(arch) || !osOkay(os)) {
-	ec = 0;
-	goto exit;
-    }
+    /* XXX DIEDIEDIE: check platform compatibility. */
 
     add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
 

@@ -273,12 +273,14 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("<packagefile>+") },
  { "hash", 'h', POPT_BIT_SET, &rpmIArgs.installInterfaceFlags, INSTALL_HASH,
 	N_("print hash marks as package installs (good with -v)"), NULL},
+#ifndef	DIEDIEDIE
  { "ignorearch", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_IGNOREARCH,
 	N_("don't verify package architecture"), NULL},
  { "ignoreos", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_IGNOREOS,
 	N_("don't verify package operating system"), NULL},
+#endif
  { "ignoresize", '\0', POPT_BIT_SET, &rpmIArgs.probFilter,
 	(RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES),
 	N_("don't check disk space before installing"), NULL},

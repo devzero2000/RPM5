@@ -43,22 +43,6 @@ PyObject * pyrpmError;
 
 /**
  */
-static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    char * arch;
-    int score;
-    char * kwlist[] = {"arch", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &arch))
-	return NULL;
-
-    score = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
-
-    return Py_BuildValue("i", score);
-}
-
-/**
- */
 static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
 {
     PyObject * fop = NULL;
@@ -142,9 +126,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
-	NULL },
-
-    { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS|METH_KEYWORDS,

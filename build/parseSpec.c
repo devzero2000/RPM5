@@ -443,9 +443,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 {
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
-#ifdef	DYING
-    const char *saveArch;
-#endif
     Package pkg;
     Spec spec;
     
@@ -559,16 +556,10 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    if (spec->BANames != NULL)
 	    for (x = 0; x < spec->BACount; x++) {
 
-		/* Skip if not arch is not compatible. */
-		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
-		    /*@innercontinue@*/ continue;
-#ifdef	DYING
-		rpmGetMachine(&saveArch, NULL);
-		saveArch = xstrdup(saveArch);
-		rpmSetMachine(spec->BANames[x], NULL);
-#else
+		/* XXX DIEDIEDIE: filter irrelevant platforms here. */
+
+		/* XXX there's more to do than set the macro. */
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
-#endif
 		spec->BASpecs[index] = NULL;
 		if (parseSpec(ts, specFile, spec->rootURL, buildRootURL, 1,
 				  passPhrase, cookie, anyarch, force, verify)
@@ -580,12 +571,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 			return RPMERR_BADSPEC;
 /*@=nullstate@*/
 		}
-#ifdef	DYING
-		rpmSetMachine(saveArch, NULL);
-		saveArch = _free(saveArch);
-#else
+
+		/* XXX there's more to do than delete the macro. */
 		delMacro(NULL, "_target_cpu");
-#endif
 		index++;
 	    }
 

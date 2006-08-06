@@ -49,7 +49,8 @@
 	- use global rpmcliTargets for build/query modes.
 	- don't verify existence of sources/patches when --specfile querying.
 	- set all rpmrc/macro goop from --target (if present).
-	- incorporate latest gcc flags into per-arch defaults.
+	- incorporate latest gcc flags into per-arch rpmrc defaults.
+	- kill off rpmMachineScore() functionality.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

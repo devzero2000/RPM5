@@ -96,8 +96,6 @@ struct rpmte_s {
     const char * arch;		/*!< Architecture hint. */
 /*@only@*/ /*@null@*/
     const char * os;		/*!< Operating system hint. */
-    int archScore;		/*!< (TR_ADDED) Arch score. */
-    int osScore;		/*!< (TR_ADDED) Os score. */
     int isSource;		/*!< (TR_ADDED) source rpm? */
 
     rpmte parent;		/*!< Parent transaction element. */

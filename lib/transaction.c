@@ -72,24 +72,6 @@ extern void * rpmShowProgress(/*@null@*/ const void * arg,
 
 /**
  */
-static int archOkay(/*@null@*/ const char * pkgArch)
-	/*@*/
-{
-    if (pkgArch == NULL) return 0;
-    return (rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch) ? 1 : 0);
-}
-
-/**
- */
-static int osOkay(/*@null@*/ const char * pkgOs)
-	/*@*/
-{
-    if (pkgOs == NULL) return 0;
-    return (rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs) ? 1 : 0);
-}
-
-/**
- */
 static int sharedCmp(const void * one, const void * two)
 	/*@*/
 {
@@ -1793,7 +1775,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* ===============================================
      * For packages being installed:
-     * - verify package arch/os.
      * - verify package epoch:version-release is newer.
      * - count files.
      * For packages being removed:
@@ -1809,23 +1790,11 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 	rpmdbMatchIterator mi;
 	int fc;
 
+	/* XXX DIEDIEDIE: check platform compatibility. */
+
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
-
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH) && !tscolor)
-	    if (!archOkay(rpmteA(p)))
-		rpmpsAppend(ps, RPMPROB_BADARCH,
-			rpmteNEVR(p), rpmteKey(p),
-			rpmteA(p), NULL,
-			NULL, 0);
-
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREOS))
-	    if (!osOkay(rpmteO(p)))
-		rpmpsAppend(ps, RPMPROB_BADOS,
-			rpmteNEVR(p), rpmteKey(p),
-			rpmteO(p), NULL,
-			NULL, 0);
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;

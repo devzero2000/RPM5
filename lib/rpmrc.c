@@ -1533,12 +1533,6 @@ void rpmSetTables(int archTable, int osTable)
     }
 }
 
-int rpmMachineScore(int type, const char * name)
-{
-    machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
-    return (info != NULL ? info->score : 0);
-}
-
 void rpmGetMachine(const char ** arch, const char ** os)
 {
     if (arch)

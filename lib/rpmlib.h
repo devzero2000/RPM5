@@ -683,22 +683,6 @@ void rpmGetOsInfo( /*@null@*/ /*@out@*/ const char ** name,
 	/*@modifies *name, *num @*/;
 
 /** \ingroup rpmrc
- * Return arch/os score of a name.
- * An arch/os score measures the "nearness" of a name to the currently
- * running (or defined) platform arch/os. For example, the score of arch
- * "i586" on an i686 platform is (usually) 2. The arch/os score is used
- * to select one of several otherwise identical packages using the arch/os
- * tags from the header as hints of the intended platform for the package.
- * @todo Rewrite to use RE's against config.guess target platform output.
- *
- * @param type		any of the RPM_MACHTABLE_* constants
- * @param name		name
- * @return		arch score (0 is no match, lower is preferred)
- */
-int rpmMachineScore(int type, const char * name)
-	/*@*/;
-
-/** \ingroup rpmrc
  * Display current rpmrc (and macro) configuration.
  * @param fp		output file handle
  * @return		0 always

@@ -146,22 +146,11 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
-    if (arch != NULL) {
-	p->arch = xstrdup(arch);
-	p->archScore = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
-    } else {
-	p->arch = NULL;
-	p->archScore = 0;
-    }
+    p->arch = (arch != NULL ? xstrdup(arch) : NULL);
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
-    if (os != NULL) {
-	p->os = xstrdup(os);
-	p->osScore = rpmMachineScore(RPM_MACHTABLE_INSTOS, os);
-    } else {
-	p->os = NULL;
-	p->osScore = 0;
-    }
+    p->os = (os != NULL ? xstrdup(os) : NULL);
+
     p->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
 
     nb = strlen(p->NEVR) + 1;
