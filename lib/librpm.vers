@@ -185,7 +185,6 @@ LIBRPM_0
     rpmGetFilesystemList;
     rpmGetFilesystemUsage;
     rpmGetPassPhrase;
-    rpmGetVar;
     _rpmgi_debug;
     rpmgiFree;
     rpmgiHdrPath;
@@ -228,7 +227,6 @@ LIBRPM_0
     rpmRollback;
     rpmSetMachine;
     rpmSetTables;
-    rpmSetVar;
     rpmShowProgress;
     rpmShowRC;
     rpmSignPoptTable;

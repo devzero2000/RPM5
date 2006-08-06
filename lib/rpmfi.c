@@ -1495,9 +1495,8 @@ assert(dalgo == fi->fdigestalgos[i]);
 	}
 
 	/* XXX test for incompatible arch triggering autorelocation is dumb. */
-	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs
-	 && p->archScore == 0)
-	{
+	/* XXX DIEDIEDIE: used to test '... && p->archScore == 0' */
+	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs) {
 
 	    p->relocs =
 		xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));

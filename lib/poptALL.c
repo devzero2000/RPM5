@@ -235,9 +235,11 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	if (rpmcliTargets == NULL)
 	    rpmcliTargets = xstrdup(arg);
 	else {
-	    size_t nb = strlen(rpmcliTargets) + (sizeof(",")-1) + strlen(arg) + 1;
-	    rpmcliTargets = xrealloc(rpmcliTargets, nb);
-	    (void) stpcpy( stpcpy(rpmcliTargets, ","), arg);
+	    char * t = (char *) rpmcliTargets;
+	    size_t nb = strlen(t) + (sizeof(",")-1) + strlen(arg) + 1;
+	    t = xrealloc(t, nb);
+	    (void) stpcpy( stpcpy(t, ","), arg);
+	    rpmcliTargets = t;
 	}
 	break;
     }
@@ -438,8 +440,11 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 /*@=globs =mods@*/
 
-#if defined(ENABLE_NLS) && !defined(__LCLINT__)
+#if defined(ENABLE_NLS)
     (void) setlocale(LC_ALL, "" );
+#ifdef	__LCLINT__
+#define	LOCALEDIR	"/usr/share/locale"
+#endif
     (void) bindtextdomain(PACKAGE, LOCALEDIR);
     (void) textdomain(PACKAGE);
 #endif

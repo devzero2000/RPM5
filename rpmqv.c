@@ -177,6 +177,9 @@ int main(int argc, const char ** argv)
 	/*@modifies __assert_program_name,
 		fileSystem, internalState@*/
 {
+    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
+    const char * optArg;
+
     rpmts ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
 
@@ -206,9 +209,7 @@ int main(int argc, const char ** argv)
 
     int arg;
 
-    const char * optArg;
     pid_t pipeChild = 0;
-    poptContext optCon;
     int ec = 0;
     int status;
     int p[2];
@@ -216,22 +217,9 @@ int main(int argc, const char ** argv)
     int i;
 #endif
 	
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    /*@-noeffect@*/
-    mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-    /*@=noeffect@*/
-#endif
-    setprogname(argv[0]);	/* Retrofit glibc __progname */
-
 #if !defined(__GLIBC__) && !defined(__LCLINT__)
     environ = envp;
 #endif  
-
-    /* XXX glibc churn sanity */
-    if (__progname == NULL) {
-	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
-	else __progname = argv[0];
-    }
 
     /* Set the major mode based on argv[0] */
     /*@-nullpass@*/
@@ -277,45 +265,6 @@ int main(int argc, const char ** argv)
 	break;
     }
 #endif
-
-#if defined(ENABLE_NLS)
-    /* set up the correct locale */
-    (void) setlocale(LC_ALL, "" );
-
-#ifdef	__LCLINT__
-#define	LOCALEDIR	"/usr/share/locale"
-#endif
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
-#endif
-
-    rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
-
-    /* Make a first pass through the arguments, looking for --rcfile */
-    /* We need to handle that before dealing with the rest of the arguments. */
-    /*@-nullpass -temptrans@*/
-    optCon = poptGetContext(__progname, argc, argv, optionsTable, 0);
-    /*@=nullpass =temptrans@*/
-    (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
-    (void) poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
-
-    while ((arg = poptGetNextOpt(optCon)) > 0) {
-	optArg = poptGetOptArg(optCon);
-
-	switch (arg) {
-	default:
-	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
-	    exit(EXIT_FAILURE);
-	}
-    }
-
-    if (arg < -1) {
-	fprintf(stderr, "%s: %s\n", 
-		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
-		poptStrerror(arg));
-	exit(EXIT_FAILURE);
-    }
 
     rpmcliConfigured();
 
@@ -875,7 +824,6 @@ exit:
 
     ts = rpmtsFree(ts);
 
-    optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
@@ -908,11 +856,7 @@ exit:
 #endif
     rpmcliTargets = _free(rpmcliTargets);
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    /*@-noeffect@*/
-    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-    /*@=noeffect@*/
-#endif
+    optCon = rpmcliFini(optCon);
 
     /* XXX don't overflow single byte exit status */
     if (ec > 255) ec = 255;

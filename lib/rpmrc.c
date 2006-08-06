@@ -118,6 +118,11 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
 /* this *must* be kept in alphabetical order */
 /* The order of the flags is archSpecific, required, macroize, localize */
 
+#define	RPMVAR_OPTFLAGS			3
+#define	RPMVAR_INCLUDE			43
+#define	RPMVAR_MACROFILES		49
+
+#define	RPMVAR_NUM			55	/* number of RPMVAR entries */
 /*@unchecked@*/
 static struct rpmOption optionTable[] = {
     { "include",		RPMVAR_INCLUDE,			0, 1,	0, 2 },
@@ -239,26 +244,22 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
     return 0;
 }
 
-static /*@observer@*/ /*@null@*/ machEquivInfo
-machEquivSearch(const machEquivTable table, const char * name)
-	/*@*/
-{
-    int i;
-
-    for (i = 0; i < table->count; i++)
-	if (!xstrcasecmp(table->list[i].name, name))
-	    return table->list + i;
-
-    return NULL;
-}
-
 static void machAddEquiv(machEquivTable table, const char * name,
 			   int distance)
 	/*@modifies table->list, table->count @*/
 {
     machEquivInfo equiv;
 
-    equiv = machEquivSearch(table, name);
+    {	int i;
+	equiv = NULL;
+	for (i = 0; i < table->count; i++) {
+	    if (xstrcasecmp(table->list[i].name, name))
+		continue;
+	    equiv = table->list + i;
+	    break;
+	}
+    }
+
     if (!equiv) {
 	if (table->count)
 	    table->list = xrealloc(table->list, (table->count + 1)
@@ -292,10 +293,13 @@ static void machCacheEntryVisit(machCache cache,
     }
 }
 
-static void machFindEquivs(machCache cache, machEquivTable table,
-		const char * key)
-	/*@modifies cache->cache, table->list, table->count @*/
+static void rebuildCompatTables(int type, const char * name)
+	/*@globals internalState @*/
+	/*@modifies cache->cache, table->list, table->count, internalState @*/
 {
+    machCache cache = &tables[currTables[type]].cache;
+    machEquivTable table = &tables[currTables[type]].equiv;
+    const char * key = name;
     int i;
 
     for (i = 0; i < cache->size; i++)
@@ -318,15 +322,6 @@ static void machFindEquivs(machCache cache, machEquivTable table,
     machCacheEntryVisit(cache, table, key, 2);
     return;
     /*@=nullstate@*/
-}
-
-static void rebuildCompatTables(int type, const char * name)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
-{
-    machFindEquivs(&tables[currTables[type]].cache,
-		   &tables[currTables[type]].equiv,
-		   name);
 }
 
 static int addCanon(canonEntry * table, int * tableLen, char * line,
@@ -448,13 +443,67 @@ const char * lookupInDefaultTable(const char * name,
     return name;
 }
 
+static /*@observer@*/ /*@null@*/
+const char * rpmGetVarArch(int var, /*@null@*/ const char * arch)
+	/*@*/
+{
+    const struct rpmvarValue * next;
+
+    if (arch == NULL) arch = current[ARCH];
+
+    if (arch) {
+	next = &values[var];
+	while (next) {
+	    if (next->arch && !strcmp(next->arch, arch)) return next->value;
+	    next = next->next;
+	}
+    }
+
+    next = values + var;
+    while (next && next->arch) next = next->next;
+
+    return next ? next->value : NULL;
+}
+
+/* this doesn't free the passed pointer! */
+static void freeRpmVar(/*@only@*/ struct rpmvarValue * orig)
+	/*@modifies *orig @*/
+{
+    struct rpmvarValue * next, * var = orig;
+
+    while (var) {
+	next = var->next;
+	var->arch = _free(var->arch);
+	var->value = _free(var->value);
+
+	/*@-branchstate@*/
+	if (var != orig) var = _free(var);
+	/*@=branchstate@*/
+	var = next;
+    }
+}
+
+/** \ingroup rpmrc
+ * Set value of an rpmrc variable.
+ * @deprecated Use rpmDefineMacro() to change appropriate macro instead.
+ */
+static void rpmSetVar(int var, const char * val)
+	/*@globals values @*/
+	/*@modifies values @*/
+{
+    /*@-immediatetrans@*/
+    freeRpmVar(&values[var]);
+    /*@=immediatetrans@*/
+    values[var].value = (val ? xstrdup(val) : NULL);
+}
+
 static void setVarDefault(int var, const char * macroname, const char * val,
 		/*@null@*/ const char * body)
 	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     if (var >= 0) {	/* XXX Dying ... */
-	if (rpmGetVar(var)) return;
+	if (rpmGetVarArch(var, NULL)) return;
 	rpmSetVar(var, val);
     }
     if (body == NULL)
@@ -471,7 +520,7 @@ static void setPathDefault(int var, const char * macroname, const char * subdir)
 	const char * topdir;
 	char * fn;
 
-	if (rpmGetVar(var)) return;
+	if (rpmGetVarArch(var, NULL)) return;
 
 	topdir = rpmGetPath("%{_topdir}", NULL);
 
@@ -1459,61 +1508,6 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     if (os) *os = un.sysname;
 }
 
-static /*@observer@*/ /*@null@*/
-const char * rpmGetVarArch(int var, /*@null@*/ const char * arch)
-	/*@*/
-{
-    const struct rpmvarValue * next;
-
-    if (arch == NULL) arch = current[ARCH];
-
-    if (arch) {
-	next = &values[var];
-	while (next) {
-	    if (next->arch && !strcmp(next->arch, arch)) return next->value;
-	    next = next->next;
-	}
-    }
-
-    next = values + var;
-    while (next && next->arch) next = next->next;
-
-    return next ? next->value : NULL;
-}
-
-const char *rpmGetVar(int var)
-{
-    return rpmGetVarArch(var, NULL);
-}
-
-/* this doesn't free the passed pointer! */
-static void freeRpmVar(/*@only@*/ struct rpmvarValue * orig)
-	/*@modifies *orig @*/
-{
-    struct rpmvarValue * next, * var = orig;
-
-    while (var) {
-	next = var->next;
-	var->arch = _free(var->arch);
-	var->value = _free(var->value);
-
-	/*@-branchstate@*/
-	if (var != orig) var = _free(var);
-	/*@=branchstate@*/
-	var = next;
-    }
-}
-
-void rpmSetVar(int var, const char * val)
-	/*@globals values @*/
-	/*@modifies values @*/
-{
-    /*@-immediatetrans@*/
-    freeRpmVar(&values[var]);
-    /*@=immediatetrans@*/
-    values[var].value = (val ? xstrdup(val) : NULL);
-}
-
 void rpmSetTables(int archTable, int osTable)
 	/*@globals currTables @*/
 	/*@modifies currTables @*/
@@ -1857,7 +1851,7 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 
     {	const char *mfpath;
 	/*@-branchstate@*/
-	if ((mfpath = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
+	if ((mfpath = rpmGetVarArch(RPMVAR_MACROFILES, NULL)) != NULL) {
 	    mfpath = xstrdup(mfpath);
 	    rpmInitMacros(NULL, mfpath);
 	    mfpath = _free(mfpath);
@@ -1947,7 +1941,7 @@ int rpmShowRC(FILE * fp)
 
     fprintf(fp, "\nRPMRC VALUES:\n");
     for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
-	const char *s = rpmGetVar(opt->var);
+	const char *s = rpmGetVarArch(opt->var, NULL);
 	if (s != NULL || rpmIsVerbose())
 	    fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }
