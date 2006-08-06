@@ -135,7 +135,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
-	tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
+	tmpSpecFile = (char *) rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
 #if defined(HAVE_MKSTEMP)
 	(void) close(mkstemp(tmpSpecFile));
 #else
@@ -297,12 +297,14 @@ exit:
 
 int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 {
-    char *t, *te;
+    const char *t, *te;
     int rc = 0;
-    char * targets = rpmcliTargets;
+    const char * targets = rpmcliTargets;
+    char *target;
 #define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
     int cleanFlags = ba->buildAmount & buildCleanMask;
     rpmVSFlags vsflags, ovsflags;
+    int nbuilds = 0;
 
     vsflags = rpmExpandNumeric("%{_vsflags_build}");
     if (ba->qva_flags & VERIFY_DIGEST)
@@ -315,6 +317,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 
     if (targets == NULL) {
 	rc =  buildForTarget(ts, arg, ba);
+	nbuilds++;
 	goto exit;
     }
 
@@ -324,7 +327,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 
     ba->buildAmount &= ~buildCleanMask;
     for (t = targets; *t != '\0'; t = te) {
-	char *target;
+	/* Parse out next target platform. */ 
 	if ((te = strchr(t, ',')) == NULL)
 	    te = t + strlen(t);
 	target = alloca(te-t+1);
@@ -335,23 +338,36 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	else	/* XXX Perform clean-up after last target build. */
 	    ba->buildAmount |= cleanFlags;
 
-	printf(_("Building for target %s\n"), target);
+	rpmMessage(RPMMESS_DEBUG, _("    target platform: %s\n"), target);
 
 	/* Read in configuration for target. */
-	rpmFreeMacros(NULL);
-	rpmFreeRpmrc();
-	(void) rpmReadConfigFiles(rcfile, target);
+	if (t != targets) {
+	    rpmFreeMacros(NULL);
+	    rpmFreeRpmrc();
+	    (void) rpmReadConfigFiles(rcfile, target);
+	}
 	rc = buildForTarget(ts, arg, ba);
+	nbuilds++;
 	if (rc)
 	    break;
     }
 
 exit:
-    vsflags = rpmtsSetVSFlags(ts, ovsflags);
     /* Restore original configuration. */
-    rpmFreeMacros(NULL);
-    rpmFreeRpmrc();
-    (void) rpmReadConfigFiles(rcfile, NULL);
+    if (nbuilds > 1) {
+	t = targets;
+	if ((te = strchr(t, ',')) == NULL)
+	    te = t + strlen(t);
+	target = alloca(te-t+1);
+	strncpy(target, t, (te-t));
+	target[te-t] = '\0';
+	if (*te != '\0')
+	    te++;
+	rpmFreeMacros(NULL);
+	rpmFreeRpmrc();
+	(void) rpmReadConfigFiles(rcfile, target);
+    }
+    vsflags = rpmtsSetVSFlags(ts, ovsflags);
 
     return rc;
 }

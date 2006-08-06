@@ -177,8 +177,7 @@ int main(int argc, const char ** argv)
 	/*@modifies __assert_program_name,
 		fileSystem, internalState@*/
 {
-    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
-    const char * optArg;
+    poptContext optCon = rpmcliInit(argc, (char *const *)argv, optionsTable);
 
     rpmts ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
@@ -206,8 +205,6 @@ int main(int argc, const char ** argv)
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
     char * passPhrase = "";
 #endif
-
-    int arg;
 
     pid_t pipeChild = 0;
     int ec = 0;
@@ -682,8 +679,6 @@ int main(int argc, const char ** argv)
 	    ec = build(ts, pkg, ba, rpmcliRcfile);
 	    if (ec)
 		/*@loopbreak@*/ break;
-	    rpmFreeMacros(NULL);
-	    (void) rpmReadConfigFiles(rpmcliRcfile, NULL);
 	}
     }	break;
 #endif	/* IAM_RPMBT */

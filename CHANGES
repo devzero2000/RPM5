@@ -54,6 +54,7 @@
 	- kill off rpmGet{Arch,Os}Info() and rpmGetMachine().
 	- use rpmcliInit() in main(), trash the duplicated code.
 	- remove rpm{Get,Set}Var from the rpmlib API.
+	- preserve --rcfile/--target options when re-reading goop.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

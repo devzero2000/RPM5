@@ -224,7 +224,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
     
     fe = field;
     for (f = fe; *f != '\0'; f = fe) {
-        struct Source *p;
+	struct Source *p;
 
 	SKIPWHITE(f);
 	if (*f == '\0')
@@ -715,14 +715,7 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
     char *cookie = NULL;
     int force = 1;
     int verify = 0;
-    char *rcfile = NULL;
     int xx;
-
-    /* Setup macro environment for target if specified */
-    if (target != NULL) {
-	rpmFreeMacros(NULL);
-	(void) rpmReadConfigFiles(rcfile, target);
-    }
 
 /*@-branchstate@*/
     /*@-mods@*/ /* FIX: make spec abstract */
@@ -749,6 +742,7 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
 	/* If no target was specified, display all packages.
 	 * Packages with empty file lists are not produced.
 	 */
+	/* XXX DIEDIEDIE: this logic looks flawed. */
 	if (target == NULL || pkg->fileList != NULL) 
 	    xx = qva->qva_showPackage(qva, ts, pkg->header);
     }
@@ -761,38 +755,61 @@ exit:
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
     int res = 1;
-    char * targets = rpmcliTargets;
-    char * t;
-    char * te;
+    const char * targets = rpmcliTargets;
+    char *target;
+    const char * t;
+    const char * te;
+    const char * rcfile = rpmcliRcfile;
+    int nqueries = 0;
 
     if (qva->qva_showPackage == NULL)
 	goto exit;
 
     if (targets == NULL) {
 	res = _specQuery(ts, qva, arg, NULL); 
+	nqueries++;
 	goto exit;
     }
 
     rpmMessage(RPMMESS_DEBUG, 
 	_("Query specfile for platform(s): %s\n"), targets);
     for (t = targets; *t != '\0'; t = te) {
-        char *target;
-       
 	/* Parse out next target platform. */ 
 	if ((te = strchr(t, ',')) == NULL)
-            te = t + strlen(t);
-        target = alloca(te-t+1);
-        strncpy(target, t, (te-t));
-        target[te-t] = '\0';
-        if (*te != '\0')
-            te++;
+	    te = t + strlen(t);
+	target = alloca(te-t+1);
+	strncpy(target, t, (te-t));
+	target[te-t] = '\0';
+	if (*te != '\0')
+	    te++;
 
 	/* Query spec for this target platform. */
 	rpmMessage(RPMMESS_DEBUG, _("    target platform: %s\n"), target);
+	/* Read in configuration for target. */
+	if (t != targets) {
+	    rpmFreeMacros(NULL);
+	    rpmFreeRpmrc();
+	    (void) rpmReadConfigFiles(rcfile, target);
+	}
 	res = _specQuery(ts, qva, arg, target); 
-	if (res == 1) break;	
+	nqueries++;
+	if (res) break;	
     }
     
 exit:
+    /* Restore original configuration. */
+    if (nqueries > 1) {
+	t = targets;
+	if ((te = strchr(t, ',')) == NULL)
+	    te = t + strlen(t);
+	target = alloca(te-t+1);
+	strncpy(target, t, (te-t));
+	target[te-t] = '\0';
+	if (*te != '\0')
+	    te++;
+	rpmFreeMacros(NULL);
+	rpmFreeRpmrc();
+	(void) rpmReadConfigFiles(rcfile, target);
+    }
     return res;
 }
