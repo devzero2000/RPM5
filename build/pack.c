@@ -713,10 +713,9 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	struct rpmlead lead;
 
 	if (Fileno(csa->cpioFdIn) < 0) {
-#ifndef	DYING
-	    rpmGetArchInfo(NULL, &archnum);
-	    rpmGetOsInfo(NULL, &osnum);
-#endif
+	    /* XXX DIEDIEDIE: legacy values were not 0. */
+	    archnum = 0;
+	    osnum = 0;
 	} else if (csa->lead != NULL) {
 	    archnum = csa->lead->archnum;
 	    osnum = csa->lead->osnum;

@@ -51,6 +51,7 @@
 	- set all rpmrc/macro goop from --target (if present).
 	- incorporate latest gcc flags into per-arch rpmrc defaults.
 	- kill off rpmMachineScore() functionality.
+	- remove rpmGet{Arch,Os}Info() and rpmGetMachine().
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

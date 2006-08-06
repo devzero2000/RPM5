@@ -663,26 +663,6 @@ int rpmReadConfigFiles(/*@null@*/ const char * file,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
- * Return current arch name and/or number.
- * @todo Generalize to extract arch component from target_platform macro.
- * @retval name		address of arch name (or NULL)
- * @retval num		address of arch number (or NULL)
- */
-void rpmGetArchInfo( /*@null@*/ /*@out@*/ const char ** name,
-		/*@null@*/ /*@out@*/ int * num)
-	/*@modifies *name, *num @*/;
-
-/** \ingroup rpmrc
- * Return current os name and/or number.
- * @todo Generalize to extract os component from target_platform macro.
- * @retval name		address of os name (or NULL)
- * @retval num		address of os number (or NULL)
- */
-void rpmGetOsInfo( /*@null@*/ /*@out@*/ const char ** name,
-		/*@null@*/ /*@out@*/ int * num)
-	/*@modifies *name, *num @*/;
-
-/** \ingroup rpmrc
  * Display current rpmrc (and macro) configuration.
  * @param fp		output file handle
  * @return		0 always
@@ -715,19 +695,6 @@ void rpmSetTables(int archTable, int osTable)
 void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/** \ingroup rpmrc
- * Return current arch/os names.
- * @deprecated Use rpmExpand on _target_* macros.
- * @todo Eliminate from API.
- *
- * @retval arch		address of arch name (or NULL)
- * @retval os		address of os name (or NULL)
- */
-/*@unused@*/
-void rpmGetMachine( /*@null@*/ /*@out@*/ const char **arch,
-		/*@null@*/ /*@out@*/ const char **os)
-	/*@modifies *arch, *os @*/;
 
 /** \ingroup rpmrc
  * Destroy rpmrc arch/os compatibility tables.

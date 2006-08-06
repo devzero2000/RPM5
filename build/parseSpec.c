@@ -299,13 +299,6 @@ retry:
 	}
     }
     
-#ifdef	DYING
-    arch = NULL;
-    rpmGetArchInfo(&arch, NULL);
-    os = NULL;
-    rpmGetOsInfo(&os, NULL);
-#endif
-
     /* Copy next file line into the spec line buffer */
     if ((rc = copyNextLine(spec, ofi, strip)) != 0) {
 	if (rc == RPMERR_UNMATCHEDIF)
@@ -613,29 +606,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     /* Check for description in each package and add arch and os */
   {
-#ifdef	DYING
-    const char *arch = NULL;
-    const char *os = NULL;
-    char *myos = NULL;
-
-    rpmGetArchInfo(&arch, NULL);
-    rpmGetOsInfo(&os, NULL);
-    /*
-     * XXX Capitalizing the 'L' is needed to insure that old
-     * XXX os-from-uname (e.g. "Linux") is compatible with the new
-     * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
-     * XXX A copy of this string is embedded in headers.
-     */
-    if (!strcmp(os, "linux")) {
-	myos = xstrdup(os);
-	*myos = 'L';
-	os = myos;
-    }
-#else
     const char *platform = rpmExpand("%{_target_platform}", NULL);
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
-#endif
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
@@ -660,13 +633,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     }
 
-#ifdef	DYING
-    myos = _free(myos);
-#else
     platform = _free(platform);
     arch = _free(arch);
     os = _free(os);
-#endif
   }
 
     closeSpec(spec);

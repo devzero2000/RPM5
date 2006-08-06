@@ -1533,15 +1533,6 @@ void rpmSetTables(int archTable, int osTable)
     }
 }
 
-void rpmGetMachine(const char ** arch, const char ** os)
-{
-    if (arch)
-	*arch = current[ARCH];
-
-    if (os)
-	*os = current[OS];
-}
-
 void rpmSetMachine(const char * arch, const char * os)
 	/*@globals current @*/
 	/*@modifies current @*/
@@ -1553,7 +1544,7 @@ void rpmSetMachine(const char * arch, const char * os)
 			    tables[currTables[ARCH]].defaults,
 			    tables[currTables[ARCH]].defaultsLength);
     }
-    if (arch == NULL) return;	/* XXX can't happen */
+assert(arch != NULL);
 
     if (os == NULL) {
 	defaultMachine(NULL, &os);
@@ -1562,7 +1553,7 @@ void rpmSetMachine(const char * arch, const char * os)
 			    tables[currTables[OS]].defaults,
 			    tables[currTables[OS]].defaultsLength);
     }
-    if (os == NULL) return;	/* XXX can't happen */
+assert(os != NULL);
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
 	current[ARCH] = _free(current[ARCH]);
@@ -1603,16 +1594,6 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
     }
 }
 
-void rpmGetArchInfo(const char ** name, int * num)
-{
-    getMachineInfo(ARCH, name, num);
-}
-
-void rpmGetOsInfo(const char ** name, int * num)
-{
-    getMachineInfo(OS, name, num);
-}
-
 static void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
 {
 
@@ -1649,9 +1630,9 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	const char *a = NULL;
 	const char *o = NULL;
 	/* Set build target from rpm arch and os */
-	rpmGetArchInfo(&a, NULL);
+	getMachineInfo(ARCH, &a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
-	rpmGetOsInfo(&o, NULL);
+	getMachineInfo(OS, &o, NULL);
 	co = (o) ? xstrdup(o) : NULL;
     }
     /*@=branchstate@*/

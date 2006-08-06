@@ -1664,18 +1664,15 @@ psm->te->h = headerLink(fi->h);
 		int osnum = -1;
 		struct rpmlead lead;
 
-#ifndef	DYING
-		rpmGetArchInfo(NULL, &archnum);
-		rpmGetOsInfo(NULL, &osnum);
-#endif
-
 		memset(&lead, 0, sizeof(lead));
 		/* XXX Set package version conditioned on noDirTokens. */
 		lead.major = 3;
 		lead.minor = 0;
 		lead.type = RPMLEAD_BINARY;
-		lead.archnum = archnum;
-		lead.osnum = osnum;
+
+		/* XXX DIEDIEDIE: legacy values were not 0. */
+		lead.archnum = 0;
+		lead.osnum = 0;
 		lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
 		strncpy(lead.name, rpmteNEVR(psm->te), sizeof(lead.name));

@@ -230,16 +230,8 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 static int checkForValidArchitectures(Spec spec)
 	/*@*/
 {
-#ifndef	DYING
-    const char *arch = NULL;
-    const char *os = NULL;
-
-    rpmGetArchInfo(&arch, NULL);
-    rpmGetOsInfo(&os, NULL);
-#else
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
-#endif
     
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUDEARCH) == 1) {
