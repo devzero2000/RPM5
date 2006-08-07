@@ -35,10 +35,8 @@ extern MacroContext rpmCLIMacroContext;
  * This is a colon separated list of files. URI's are permitted as well,
  * identified by the token '://', so file paths must not begin with '//'.
  */
-/*@-redecl@*/
 /*@observer@*/ /*@checked@*/
-extern const char * macrofiles;
-/*@=redecl@*/
+extern const char * rpmMacrofiles;
 
 /**
  * Markers for sources of macros added throughout rpm.

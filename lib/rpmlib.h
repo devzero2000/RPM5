@@ -623,6 +623,13 @@ enum rpm_machtable_e {
 #define	RPM_MACHTABLE_COUNT	4	/*!< No. of arch/os tables. */
 
 /** \ingroup rpmrc
+ * The default rpmrc files to be read.
+ * @deprecated The rpmrc files are no longer parsed by default.
+ */
+/*@observer@*/ /*@checked@*/
+extern const char *rpmRcfiles;
+
+/** \ingroup rpmrc
  * Read macro configuration file(s) for a target.
  * @param file		colon separated files to read (NULL uses default)
  * @param target	target platform (NULL uses default)

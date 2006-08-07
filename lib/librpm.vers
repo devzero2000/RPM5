@@ -43,7 +43,6 @@ LIBRPM_0
     IDTXnew;
     IDTXsort;
     _init;
-    macrofiles;
     makeTempFile;
     newFSM;
     newStringBuf;
@@ -219,6 +218,7 @@ LIBRPM_0
     rpmQueryVerify;
     rpmQVKArgs;
     rpmQVSourcePoptTable;
+    rpmRcfiles;
     rpmReadConfigFiles;
     rpmReadHeader;
     rpmReadPackageFile;

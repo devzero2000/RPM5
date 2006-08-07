@@ -40,6 +40,9 @@ typedef	FILE * FD_t;
 
 #else
 
+/*@observer@*/ /*@checked@*/
+const char * rpmMacrofiles = MACROFILES;
+
 #include <rpmio_internal.h>
 #include <rpmmessages.h>
 #include <rpmerr.h>
@@ -2337,7 +2340,7 @@ if (_debug) fprintf(stderr, "*** RGP result %s\n", result);
 
 #if defined(EVAL_MACROS)
 
-char *macrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros:~/.rpmmacros";
+char *rpmMacrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros:~/.rpmmacros";
 
 int
 main(int argc, char *argv[])
@@ -2350,7 +2353,7 @@ main(int argc, char *argv[])
     while ((c = getopt(argc, argv, "f:")) != EOF ) {
 	switch (c) {
 	case 'f':
-	    macrofiles = optarg;
+	    rpmMacrofiles = optarg;
 	    break;
 	case '?':
 	default:
@@ -2363,7 +2366,7 @@ main(int argc, char *argv[])
 	exit(1);
     }
 
-    rpmInitMacros(NULL, macrofiles);
+    rpmInitMacros(NULL, rpmMacrofiles);
     for ( ; optind < argc; optind++) {
 	const char *val;
 
@@ -2379,7 +2382,7 @@ main(int argc, char *argv[])
 
 #else	/* !EVAL_MACROS */
 
-char *macrofiles = "../macros:./testmacros";
+char *rpmMacrofiles = "../macros:./testmacros";
 char *testfile = "./test";
 
 int
@@ -2389,7 +2392,7 @@ main(int argc, char *argv[])
     FILE *fp;
     int x;
 
-    rpmInitMacros(NULL, macrofiles);
+    rpmInitMacros(NULL, rpmMacrofiles);
     rpmDumpMacroTable(NULL, NULL);
 
     if ((fp = fopen(testfile, "r")) != NULL) {

@@ -14,7 +14,7 @@
 #define __power_pc() 0
 #endif
 
-#include <rpmlib.h>
+#include <rpmcli.h>
 #include <rpmmacro.h>
 #include <rpmlua.h>
 #include <rpmds.h>
@@ -22,11 +22,8 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@observer@*/ /*@unchecked@*/
-static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
-
 /*@observer@*/ /*@checked@*/
-const char * macrofiles = MACROFILES;
+const char *rpmRcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
 
 /*@unchecked@*/ /*@null@*/
 static const char * configTarget = NULL;
@@ -545,7 +542,7 @@ static void setPathDefault(int var, const char * macroname, const char * subdir)
 }
 
 /*@observer@*/ /*@unchecked@*/
-static const char * prescriptenviron = "\n\
+static const char * ___build_pre = "\n\
 RPM_SOURCE_DIR=\"%{_sourcedir}\"\n\
 RPM_BUILD_DIR=\"%{_builddir}\"\n\
 RPM_OPT_FLAGS=\"%{optflags}\"\n\
@@ -569,8 +566,9 @@ static void setDefaults(void)
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
     addMacro(NULL, "_var", NULL, "/var", RMIL_DEFAULT);
+    addMacro(NULL, "_prefix", NULL, "%{_usr}", RMIL_DEFAULT);
 
-    addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
+    addMacro(NULL, "___build_pre", NULL, ___build_pre, RMIL_DEFAULT);
 
     setVarDefault(-1,			"_topdir",
 		"/usr/src/rpm",		"%{_usr}/src/rpm");
@@ -585,7 +583,7 @@ static void setDefaults(void)
 	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
 
     setVarDefault(RPMVAR_OPTFLAGS,	"optflags",
-		"-O2",			NULL);
+		"-O2 -g",			NULL);
     setVarDefault(-1,			"sigtype",
 		"none",			NULL);
     setVarDefault(-1,			"_buildshell",
@@ -1664,11 +1662,14 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     addMacro(NULL, "_target", NULL, ct, RMIL_RPMRC);
     delMacro(NULL, "_target_cpu");
     addMacro(NULL, "_target_cpu", NULL, ca, RMIL_RPMRC);
+    delMacro(NULL, "_target_vendor");
+    addMacro(NULL, "_target_vendor", NULL, "unknown", RMIL_RPMRC);
     delMacro(NULL, "_target_os");
     addMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
 /*
  * XXX Make sure that per-arch optflags is initialized correctly.
  */
+  if (rpmcliRcfile != NULL)
   { const char *optflags = rpmGetVarArch(RPMVAR_OPTFLAGS, ca);
     if (optflags != NULL) {
 	delMacro(NULL, "optflags");
@@ -1777,7 +1778,8 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	/*@modifies defaultsInitialized, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    char *myrcfiles, *r, *re;
+    char *myrcfiles = NULL;
+    char *r, *re;
     int rc;
 
     if (!defaultsInitialized) {
@@ -1785,11 +1787,14 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	defaultsInitialized = 1;
     }
 
+#ifdef	DYING
     if (rcfiles == NULL)
-	rcfiles = defrcfiles;
+	rcfiles = rpmRcfiles;
+#endif
 
     /* Read each file in rcfiles. */
     rc = 0;
+    if (rcfiles != NULL)
     for (r = myrcfiles = xstrdup(rcfiles); r && *r != '\0'; r = re) {
 	char fn[4096];
 	FD_t fd;
@@ -1810,7 +1815,7 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	    const char * home = getenv("HOME");
 	    if (home == NULL) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-		if (rcfiles == defrcfiles && myrcfiles != r)
+		if (rcfiles == rpmRcfiles && myrcfiles != r)
 		    continue;
 		rpmError(RPMERR_RPMRC, _("Cannot expand %s\n"), r);
 		rc = 1;
@@ -1832,7 +1837,7 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	fd = Fopen(fn, "r.fpio");
 	if (fd == NULL || Ferror(fd)) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-	    if (rcfiles == defrcfiles && myrcfiles != r)
+	    if (rcfiles == rpmRcfiles && myrcfiles != r)
 		continue;
 	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s.\n"),
 		 fn, Fstrerror(fd));
@@ -1847,12 +1852,16 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
     if (rc)
 	return rc;
 
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    /* Read macro files. */
+    {	const char *mfpath = rpmGetVarArch(RPMVAR_MACROFILES, NULL);
 
-    {	const char *mfpath;
-	/*@-branchstate@*/
-	if ((mfpath = rpmGetVarArch(RPMVAR_MACROFILES, NULL)) != NULL) {
+	if (mfpath == NULL)
+	    mfpath = rpmExpand(rpmMacrofiles, NULL);
+	else
 	    mfpath = xstrdup(mfpath);
+	    
+	/*@-branchstate@*/
+	if (mfpath != NULL) {
 	    rpmInitMacros(NULL, mfpath);
 	    mfpath = _free(mfpath);
 	}
@@ -1921,8 +1930,10 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
-    rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    if (rpmcliRcfile != NULL) {
+	rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
+	rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    }
 
     fprintf(fp, "install arch          : %s\n", current[ARCH]);
     fprintf(fp, "install os            : %s\n", current[OS]);
@@ -1939,13 +1950,27 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
-    fprintf(fp, "\nRPMRC VALUES:\n");
-    for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
-	const char *s = rpmGetVarArch(opt->var, NULL);
-	if (s != NULL || rpmIsVerbose())
-	    fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
+    if (rpmcliRcfile != NULL) {
+	const char *s;
+	fprintf(fp, "\nRPMRC VALUES:\n");
+	s = rpmExpand(rpmcliRcfile, NULL);
+	fprintf(fp, "%-21s : %s\n", "rcfiles", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
+	for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
+	    s = rpmGetVarArch(opt->var, NULL);
+	    if (s != NULL || rpmIsVerbose())
+		fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
+	}
+	fprintf(fp, "\nMACRO DEFINITIONS:\n");
+    } else {
+	const char * s = rpmExpand("%{?optflags}", NULL);
+	fprintf(fp, "%-21s : %s\n", "optflags", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
+	s = rpmExpand(rpmMacrofiles, NULL);
+	fprintf(fp, "\nMACRO DEFINITIONS:\n");
+	fprintf(fp, "%-21s : %s\n", "macrofiles", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
     }
-    fprintf(fp, "\n");
 
     if (rpmIsVerbose()) {
 	xx = rpmdsSysinfo(&ds, NULL);
@@ -1962,18 +1987,18 @@ int rpmShowRC(FILE * fp)
 	}
     }
 
-    fprintf(fp, _("Features provided by rpmlib installer:\n"));
-    xx = rpmdsRpmlib(&ds, NULL);
-    ds = rpmdsInit(ds);
-    while (rpmdsNext(ds) >= 0) {
-	const char * DNEVR = rpmdsDNEVR(ds);
-	if (DNEVR != NULL)
-	    fprintf(fp, "    %s\n", DNEVR+2);
-    }
-    ds = rpmdsFree(ds);
-    fprintf(fp, "\n");
-
     if (rpmIsVerbose()) {
+	fprintf(fp, _("Features provided by rpmlib installer:\n"));
+	xx = rpmdsRpmlib(&ds, NULL);
+	ds = rpmdsInit(ds);
+	while (rpmdsNext(ds) >= 0) {
+	    const char * DNEVR = rpmdsDNEVR(ds);
+	    if (DNEVR != NULL)
+		fprintf(fp, "    %s\n", DNEVR+2);
+	}
+	ds = rpmdsFree(ds);
+	fprintf(fp, "\n");
+
 	xx = rpmdsCpuinfo(&ds, NULL);
 	if (ds != NULL) {
 	    fprintf(fp,

@@ -199,7 +199,7 @@ void init_rpm(void)
     if (m == NULL)
 	return;
 
-    rpmReadConfigFiles(NULL, NULL);
+    rpmReadConfigFiles(rpmRcfiles, NULL);
 
     d = PyModule_GetDict(m);
 

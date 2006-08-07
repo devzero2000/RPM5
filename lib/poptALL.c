@@ -290,7 +290,7 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "eval", 'E', POPT_ARG_STRING, 0, 'E',
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
- { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
+ { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
  { "target", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  RPMCLI_POPT_TARGETPLATFORM,

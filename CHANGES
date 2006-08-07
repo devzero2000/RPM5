@@ -55,6 +55,7 @@
 	- use rpmcliInit() in main(), trash the duplicated code.
 	- remove rpm{Get,Set}Var from the rpmlib API.
 	- preserve --rcfile/--target options when re-reading goop.
+	- don't process rpmrc files unless --rcfile is explicitly given.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

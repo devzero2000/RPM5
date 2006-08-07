@@ -197,6 +197,7 @@ LIBRPMIO_0
     rpmluavSetValue;
     rpmluavSetValueNum;
     rpmluavValueIsNum;
+    rpmMacrofiles;
     rpmsqAction;
     rpmsqCaught;
     _rpmsq_debug;
