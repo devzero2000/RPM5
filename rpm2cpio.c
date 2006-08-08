@@ -4,8 +4,7 @@
 const char *__progname;
 
 #include <rpmlib.h>
-
-#include "depends.c"
+#include <rpmts.h>
 
 #include "debug.h"
 
@@ -16,7 +15,7 @@ int main(int argc, char **argv)
     char * rpmio_flags;
     rpmRC rc;
     FD_t gzdi;
-    
+
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1)
 	fdi = fdDup(STDIN_FILENO);
