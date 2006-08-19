@@ -440,7 +440,6 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/find-req.pl
 %rpmattr	%{__prefix}/lib/rpm/find-requires
 %rpmattr	%{__prefix}/lib/rpm/find-requires.perl
-%rpmattr	%{__prefix}/lib/rpm/get_magic.pl
 %rpmattr	%{__prefix}/lib/rpm/getpo.sh
 %rpmattr	%{__prefix}/lib/rpm/http.req
 %rpmattr	%{__prefix}/lib/rpm/javadeps.sh
@@ -449,8 +448,6 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/magic.mgc
 %rpmattr	%{__prefix}/lib/rpm/magic.mime
 %rpmattr	%{__prefix}/lib/rpm/magic.mime.mgc
-%rpmattr	%{__prefix}/lib/rpm/magic.prov
-%rpmattr	%{__prefix}/lib/rpm/magic.req
 
 %rpmattr	%{__prefix}/lib/rpm/executabledeps.sh
 %rpmattr	%{__prefix}/lib/rpm/libtooldeps.sh
