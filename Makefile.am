@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
+EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	RPM-GPG-KEY RPM-PGP-KEY BETA-GPG-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
