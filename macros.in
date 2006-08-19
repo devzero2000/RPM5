@@ -228,7 +228,7 @@ package or when debugging this package.\
 #	Configurable build root path, same as BuildRoot: in a specfile.
 #	(Note: the configured macro value will override the spec file value).
 #
-#%buildroot
+%buildroot		%{_tmppath}/%{name}-root
 
 #	The sub-directory (relative to %{_builddir}) where sources are compiled.
 #	This macro is set after processing %setup, either explicitly from the

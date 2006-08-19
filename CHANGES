@@ -59,6 +59,8 @@
 	- eliminate unused check-prereqs script (#203182).
 	- eliminate ancient convertrpmrc.sh conversion script.
 	- eliminate unused get_magic.pl, magic.{prov,req}, use libmagic instead.
+	- eliminate "traditional behavior" freshen.sh.
+	- add default value for buildroot macro.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
