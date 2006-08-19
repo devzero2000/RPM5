@@ -430,7 +430,6 @@ exit 0
 %rpmattr	%{__bindir}/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-files
-%rpmattr	%{__prefix}/lib/rpm/check-prereqs
 %rpmattr	%{__prefix}/lib/rpm/config.site
 %rpmattr	%{__prefix}/lib/rpm/cross-build
 %rpmattr	%{__prefix}/lib/rpm/debugedit

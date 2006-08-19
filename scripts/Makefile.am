@@ -6,7 +6,7 @@ EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile brp-redhat \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
-	check-files check-prereqs convertrpmrc.sh cross-build \
+	check-files convertrpmrc.sh cross-build \
 	executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
@@ -30,7 +30,7 @@ config_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile brp-redhat \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
-	check-files check-prereqs convertrpmrc.sh cross-build \
+	check-files convertrpmrc.sh cross-build \
 	executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
