@@ -57,6 +57,7 @@
 	- preserve --rcfile/--target options when re-reading goop.
 	- don't process rpmrc files unless --rcfile is explicitly given.
 	- eliminate unused check-prereqs script (#203182).
+	- eliminate ancient convertrpmrc.sh conversion script.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

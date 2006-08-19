@@ -329,7 +329,6 @@ exit 0
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
 %rpmattr	%{__prefix}/lib/rpm/config.guess
 %rpmattr	%{__prefix}/lib/rpm/config.sub
-%rpmattr	%{__prefix}/lib/rpm/convertrpmrc.sh
 %rpmattr	%{__prefix}/lib/rpm/freshen.sh
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/macros
 %rpmattr	%{__prefix}/lib/rpm/mkinstalldirs
