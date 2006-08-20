@@ -18,16 +18,16 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 
     /*@-branchstate@*/
     if (parsePart == PART_BUILD) {
-	sbp = &(spec->build);
+	sbp = &spec->build;
 	name = "%build";
     } else if (parsePart == PART_INSTALL) {
-	sbp = &(spec->install);
+	sbp = &spec->install;
 	name = "%install";
     } else if (parsePart == PART_CHECK) {
-	sbp = &(spec->check);
+	sbp = &spec->check;
 	name = "%check";
     } else if (parsePart == PART_CLEAN) {
-	sbp = &(spec->clean);
+	sbp = &spec->clean;
 	name = "%clean";
     }
     /*@=branchstate@*/
@@ -40,6 +40,20 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     
     *sbp = newStringBuf();
 
+    /* Make sure the buildroot is removed where needed. */
+    if (parsePart == PART_INSTALL) {
+	const char * s = rpmExpand("%{?buildroot:rm -rf %{buildroot}\n}", NULL);
+	if (s && *s)
+	    appendStringBuf(*sbp, s);
+	s = _free(s);
+    } else if (parsePart == PART_CLEAN) {
+	const char * s = rpmExpand("%{?buildroot:rm -rf %{buildroot}\n}", NULL);
+	if (s && *s)
+	    appendStringBuf(*sbp, s);
+	s = _free(s);
+	sbp = NULL;	/* XXX skip %clean from spec file. */
+    }
+
     /* There are no options to %build, %install, %check, or %clean */
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
 	return PART_NONE;
@@ -47,7 +61,8 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	return rc;
     
     while (! (nextPart = isPart(spec->line))) {
-	appendStringBuf(*sbp, spec->line);
+	if (sbp)
+	    appendStringBuf(*sbp, spec->line);
 	if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
 	    return PART_NONE;
 	if (rc)

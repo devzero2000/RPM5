@@ -498,8 +498,6 @@ int rpmcliVerify(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 struct rpmBuildArguments_s {
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
     int buildAmount;		/*!< Bit(s) to control operation. */
-/*@null@*/
-    const char * buildRootOverride; /*!< from --buildroot */
 /*@observer@*/
     const char * passPhrase;	/*!< Pass phrase. */
 /*@only@*/ /*@null@*/

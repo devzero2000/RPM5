@@ -57,12 +57,12 @@ spec_get_buildroot(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec != NULL && spec->buildRootURL) {
-        return Py_BuildValue("s", spec->buildRootURL);
-    }
-    else {
-        return NULL;
-    }
+    PyObject * result = NULL;
+    const char * buildRootURL = rpmExpand("%{?buildroot}", NULL);
+    if (spec != NULL && *buildRootURL)
+        result = Py_BuildValue("s", buildRootURL);
+    buildRootURL = _free(buildRootURL);
+    return result;
 }
 
 static PyObject * 

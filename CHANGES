@@ -62,6 +62,7 @@
 	- eliminate "traditional behavior" freshen.sh.
 	- add default value for buildroot macro.
 	- permit macros to be marked as readonly (i.e. cannot be redefined).
+	- ignore BuildRoot: and %clean from spec files.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

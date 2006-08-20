@@ -93,8 +93,6 @@ struct Spec_s {
 /*@only@*/
     const char * specFile;	/*!< Name of the spec file. */
 /*@only@*/
-    const char * buildRootURL;
-/*@only@*/
     const char * buildSubdir;
 /*@only@*/
     const char * rootURL;
@@ -130,8 +128,6 @@ struct Spec_s {
 
     int force;
     int anyarch;
-
-    int gotBuildRootURL;
 
 /*@null@*/
     char * passPhrase;

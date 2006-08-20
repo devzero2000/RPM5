@@ -2109,8 +2109,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     /* Init the file list structure */
     memset(&fl, 0, sizeof(fl));
 
-    /* XXX spec->buildRootURL == NULL, then xstrdup("") is returned */
-    fl.buildRootURL = rpmGenPath(spec->rootURL, spec->buildRootURL, NULL);
+    fl.buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 
     if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, (void **)&fl.prefix, NULL))
 	fl.prefix = xstrdup(fl.prefix);

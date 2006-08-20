@@ -105,7 +105,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;
     int buildAmount = ba->buildAmount;
-    const char * buildRootURL = NULL;
     const char * specFile;
     const char * specURL;
     int specut;
@@ -117,11 +116,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 #ifndef	DYING
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 #endif
-
-    /*@-branchstate@*/
-    if (ba->buildRootOverride)
-	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
-    /*@=branchstate@*/
 
     /*@-compmempass@*/ /* FIX: static zcmds heartburn */
     if (ba->buildMode == 't') {
@@ -258,7 +252,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(ts, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
+    if (parseSpec(ts, specURL, ba->rootdir, 0, passPhrase,
 		cookie, _anyarch(buildAmount), ba->force, verify))
     {
 	rc = 1;
@@ -290,7 +284,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 exit:
     spec = freeSpec(spec);
-    buildRootURL = _free(buildRootURL);
     return rc;
 }
 /*@=boundswrite@*/

@@ -455,8 +455,6 @@ Spec newSpec(void)
     spec->sourceHeader = NULL;
     spec->sourceCpioList = NULL;
     
-    spec->gotBuildRootURL = 0;
-    spec->buildRootURL = NULL;
     spec->buildSubdir = NULL;
 
     spec->passPhrase = NULL;
@@ -492,7 +490,6 @@ Spec freeSpec(Spec spec)
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
 
-    spec->buildRootURL = _free(spec->buildRootURL);
     spec->buildSubdir = _free(spec->buildSubdir);
     spec->rootURL = _free(spec->rootURL);
     spec->specFile = _free(spec->specFile);
@@ -709,7 +706,6 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
     Package pkg;
     int res = 1;	/* assume error */
     int anyarch = (target == NULL) ? 1 : 0;
-    char * buildRoot = NULL;
     char * passPhrase = "";
     int recursing = 0;
     char *cookie = NULL;
@@ -719,7 +715,7 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
 
 /*@-branchstate@*/
     /*@-mods@*/ /* FIX: make spec abstract */
-    if (parseSpec(ts, specName, "/", buildRoot, recursing, passPhrase,
+    if (parseSpec(ts, specName, "/", recursing, passPhrase,
 		cookie, anyarch, force, verify)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {

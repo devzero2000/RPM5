@@ -277,11 +277,6 @@ int main(int argc, const char ** argv)
 
     if ((ba->buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
-
-    if (ba->buildRootOverride && bigMode != MODE_BUILD &&
-	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
-	argerror("--buildroot may only be used during package builds");
-    }
 #endif	/* IAM_RPMBT */
     
 #ifdef	IAM_RPMDB
@@ -839,7 +834,6 @@ exit:
 
 #ifdef	IAM_RPMBT
     freeNames();
-    ba->buildRootOverride = _free(ba->buildRootOverride);
 #endif
 
 #ifdef	IAM_RPMEIU

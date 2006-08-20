@@ -461,10 +461,10 @@ extern int noLang;
 static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies spec->macros, spec->st, spec->buildRootURL,
+	/*@modifies spec->macros, spec->st,
 		spec->sources, spec->numSources, spec->noSource,
 		spec->buildRestrictions, spec->BANames, spec->BACount,
-		spec->line, spec->gotBuildRootURL,
+		spec->line,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -546,40 +546,12 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
+    /* XXX silently ignore BuildRoot: */
     case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
-      {	const char * buildRoot = NULL;
-	const char * buildRootURL = spec->buildRootURL;
-
-	/*
-	 * Note: rpmGenPath should guarantee a "canonical" path. That means
-	 * that the following pathologies should be weeded out:
-	 *          //bin//sh
-	 *          //usr//bin/
-	 *          /.././../usr/../bin//./sh
-	 */
-	if (buildRootURL == NULL) {
-	    buildRootURL = rpmGenPath(NULL, "%{?buildroot}", NULL);
-	    if (strcmp(buildRootURL, "/")) {
-		spec->buildRootURL = buildRootURL;
-		macro = NULL;
-	    } else {
-		const char * specURL = field;
-
-		buildRootURL = _free(buildRootURL);
-		(void) urlPath(specURL, (const char **)&field);
-		/*@-branchstate@*/
-		if (*field == '\0') field = "/";
-		/*@=branchstate@*/
-		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
-		spec->buildRootURL = buildRootURL;
-		field = (char *) buildRootURL;
-	    }
-	    spec->gotBuildRootURL = 1;
-	} else {
-	    macro = NULL;
-	}
-	buildRootURL = rpmGenPath(NULL, spec->buildRootURL, NULL);
+	macro = NULL;
+#ifdef	DYING
+	buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 	(void) urlPath(buildRootURL, &buildRoot);
 	/*@-branchstate@*/
 	if (*buildRoot == '\0') buildRoot = "/";
@@ -591,7 +563,8 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    return RPMERR_BADSPEC;
 	}
 	buildRootURL = _free(buildRootURL);
-      }	break;
+#endif
+	break;
     case RPMTAG_VARIANTS:
     case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
@@ -971,11 +944,6 @@ int parsePreamble(Spec spec, int initialPackage)
 
     /* Do some final processing on the header */
     
-    if (!spec->gotBuildRootURL && spec->buildRootURL) {
-	rpmError(RPMERR_BADSPEC, _("Spec file can't use BuildRoot\n"));
-	return RPMERR_BADSPEC;
-    }
-
     /* XXX Skip valid arch check if not building binary package */
     if (!spec->anyarch && checkForValidArchitectures(spec))
 	return RPMERR_BADSPEC;

@@ -285,6 +285,9 @@ rpmbuild alias --with		--define "_with_!#:+     --with-!#:+" \
 rpmbuild alias --without	--define "_without_!#:+  --without-!#:+" \
 	--POPTdesc=$"disable configure <option> for build" \
 	--POPTargs=$"<option>"
+rpmbuild alias --buildroot	--define '.buildroot !#:+' \
+	--POPTdesc=$"override build root" \
+	--POPTargs=$"DIRECTORY"
 #==============================================================================
 rpmd	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \

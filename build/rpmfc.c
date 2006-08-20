@@ -1441,7 +1441,15 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
     fc->tracked = 0;
-    fc->brlen = (spec->buildRootURL ? strlen(spec->buildRootURL) : 0);
+
+    {	const char * buildRootURL;
+	const char * buildRoot;
+	buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
+	(void) urlPath(buildRootURL, &buildRoot);
+	if (buildRoot && !strcmp(buildRoot, "/")) buildRoot = NULL;
+	fc->brlen = (buildRoot ? strlen(buildRoot) : 0);
+	buildRootURL = _free(buildRootURL);
+    }
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {

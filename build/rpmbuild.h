@@ -285,10 +285,9 @@ int parsePreamble(Spec spec, int initialPackage)
 	/*@modifies spec->packages,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->buildSubdir,
-		spec->macros, spec->st, spec->buildRootURL,
+		spec->macros, spec->st,
 		spec->sources, spec->numSources, spec->noSource,
 		spec->buildRestrictions, spec->BANames, spec->BACount,
-		spec->gotBuildRootURL,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -497,7 +496,6 @@ int processSourceFiles(Spec spec)
  * @param ts		transaction set (spec file control in ts->spec)
  * @param specFile
  * @param rootURL
- * @param buildRootURL
  * @param recursing	parse is recursive?
  * @param passPhrase
  * @param cookie
@@ -508,7 +506,6 @@ int processSourceFiles(Spec spec)
  */
 int parseSpec(rpmts ts, const char * specFile,
 		/*@null@*/ const char * rootURL,
-		/*@null@*/ const char * buildRootURL,
 		int recursing,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,

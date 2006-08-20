@@ -431,7 +431,7 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 /*@todo Skip parse recursion if os is not compatible. @*/
 /*@-boundswrite@*/
 int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
-		const char *buildRootURL, int recursing, const char *passPhrase,
+		int recursing, const char *passPhrase,
 		char *cookie, int anyarch, int force, int verify)
 {
     rpmParseState parsePart = PART_PREAMBLE;
@@ -452,22 +452,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     spec->specFile = rpmGetPath(specFile, NULL);
     spec->fileStack = newOpenFileInfo();
     spec->fileStack->fileName = xstrdup(spec->specFile);
-    if (buildRootURL) {
-	const char * buildRoot;
-	(void) urlPath(buildRootURL, &buildRoot);
-	/*@-branchstate@*/
-	if (*buildRoot == '\0') buildRoot = "/";
-	/*@=branchstate@*/
-	if (!strcmp(buildRoot, "/")) {
-            rpmError(RPMERR_BADSPEC,
-                     _("BuildRoot can not be \"/\": %s\n"), buildRootURL);
-            return RPMERR_BADSPEC;
-        }
-	spec->gotBuildRootURL = 1;
-	spec->buildRootURL = xstrdup(buildRootURL);
-	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
-    }
-    addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
+
     spec->recursing = recursing;
     spec->anyarch = anyarch;
     spec->force = force;
@@ -480,6 +465,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	spec->cookie = xstrdup(cookie);
 
     spec->timeCheck = rpmExpandNumeric("%{_timecheck}");
+
+    /* XXX %_docdir should be set somewhere else. */
+    addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
 
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
@@ -554,7 +542,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		/* XXX there's more to do than set the macro. */
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 		spec->BASpecs[index] = NULL;
-		if (parseSpec(ts, specFile, spec->rootURL, buildRootURL, 1,
+		if (parseSpec(ts, specFile, spec->rootURL, 1,
 				  passPhrase, cookie, anyarch, force, verify)
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
