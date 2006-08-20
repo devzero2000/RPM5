@@ -255,7 +255,6 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
 	/*@*/
 {
     MacroEntry key, *ret;
-    struct MacroEntry_s keybuf;
     char namebuf[1024];
 
 /*@-globs@*/
@@ -272,8 +271,7 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
     }
 /*@=branchstate@*/
     
-    key = &keybuf;
-    memset(key, 0, sizeof(*key));
+    key = memset(alloca(sizeof(*key)), 0, sizeof(*key));
     /*@-temptrans -assignexpose@*/
     key->name = (char *)name;
     /*@=temptrans =assignexpose@*/
@@ -640,11 +638,16 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 	/*@modifies mb, rpmGlobalMacroContext @*/
 {
     const char *s = se;
-    char buf[BUFSIZ], *n = buf, *ne = n;
+    char buf[BUFSIZ], *n = buf, *ne;
     char *o = NULL, *oe;
     char *b, *be;
     int c;
     int oc = ')';
+
+    SKIPBLANK(s, c);
+    if (c == '.')		/* XXX readonly macros */
+	*n++ = *s++;
+    ne = n;
 
     /* Copy name */
     COPYNAME(ne, s, c);
@@ -749,6 +752,8 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
     }
 /*@=modfilesys@*/
 
+    if (n != buf)		/* XXX readonly macros */
+	n--;
     addMacro(mb->mc, n, o, b, (level - 1));
 
     return se;
@@ -813,22 +818,26 @@ dumpME(const char * msg, MacroEntry me)
  * @param level		macro recursion level
  */
 static void
-pushMacro(/*@out@*/ MacroEntry * mep,
-		const char * n, /*@null@*/ const char * o,
+pushMacro(/*@out@*/ MacroEntry * mep, const char * n, /*@null@*/ const char * o,
 		/*@null@*/ const char * b, int level)
 	/*@modifies *mep @*/
 {
     MacroEntry prev = (mep && *mep ? *mep : NULL);
     MacroEntry me = (MacroEntry) xmalloc(sizeof(*me));
+    const char *name = n;
+
+    if (*name == '.')		/* XXX readonly macros */
+	name++;
 
     /*@-assignexpose@*/
     me->prev = prev;
     /*@=assignexpose@*/
-    me->name = (prev ? prev->name : xstrdup(n));
+    me->name = (prev ? prev->name : xstrdup(name));
     me->opts = (o ? xstrdup(o) : NULL);
     me->body = xstrdup(b ? b : "");
     me->used = 0;
     me->level = level;
+    me->flags = (name != n);
 /*@-boundswrite@*/
 /*@-branchstate@*/
     if (mep)
@@ -1848,7 +1857,7 @@ expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
     rc = expandMacro(mb);
 
     if (mb->nb == 0)
-	rpmError(RPMERR_BADSPEC, _("Target buffer overflow\n"));
+	rpmError(RPMERR_BADSPEC, _("Macro expansion too big for target buffer\n"));
 
     tbuf[slen] = '\0';	/* XXX just in case */
     strncpy(sbuf, tbuf, (slen - mb->nb + 1));
@@ -1873,6 +1882,12 @@ addMacro(MacroContext mc,
     }
 
     if (mep != NULL) {
+	if (*mep && (*mep)->flags) {
+	    /* XXX avoid error message for %buildroot */
+	    if (strcmp((*mep)->name, "buildroot"))
+		rpmError(RPMERR_BADSPEC, _("Macro '%s' is readonly and cannot be changed.\n"), n);
+	    return;
+	}
 	/* Push macro over previous definition */
 	pushMacro(mep, n, o, b, level);
 

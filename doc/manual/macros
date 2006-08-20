@@ -39,6 +39,9 @@ following shell-like macros are available:
 At the end of invocation of a parameterized macro, the above macros are
 (at the moment, silently) discarded.
 
+If a macro name begins with '.', then later attempts to redefine the
+macro are an error. Note that the '.' is not part of the name itself.
+
 \subsection macros_writing Writing a Macro
 
 Within the body of a macro, there are several constructs that permit
