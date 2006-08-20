@@ -228,33 +228,38 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 /**
  */
 static int checkForValidArchitectures(Spec spec)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
+    int rc = RPMERR_BADSPEC;	/* assume failure. */
     
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUDEARCH) == 1) {
 	rpmError(RPMERR_BADSPEC, _("Architecture is excluded: %s\n"), arch);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUSIVEARCH) == 0) {
 	rpmError(RPMERR_BADSPEC, _("Architecture is not included: %s\n"), arch);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
     if (isMemberInEntry(spec->buildRestrictions,
 			os, RPMTAG_EXCLUDEOS) == 1) {
 	rpmError(RPMERR_BADSPEC, _("OS is excluded: %s\n"), os);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
     if (isMemberInEntry(spec->buildRestrictions,
 			os, RPMTAG_EXCLUSIVEOS) == 0) {
 	rpmError(RPMERR_BADSPEC, _("OS is not included: %s\n"), os);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
-
-    return 0;
+    rc = 0;
+exit:
+    arch = _free(arch);
+    os = _free(os);
+    return rc;
 }
 
 /**
@@ -554,7 +559,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	 *          /.././../usr/../bin//./sh
 	 */
 	if (buildRootURL == NULL) {
-	    buildRootURL = rpmGenPath(NULL, "%{?buildroot:%{buildroot}}", NULL);
+	    buildRootURL = rpmGenPath(NULL, "%{?buildroot}", NULL);
 	    if (strcmp(buildRootURL, "/")) {
 		spec->buildRootURL = buildRootURL;
 		macro = NULL;

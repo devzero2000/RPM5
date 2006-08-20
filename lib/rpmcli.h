@@ -57,7 +57,7 @@ extern const char * rpmcliTargets;
 /*@null@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno, stderr, 
+	/*@globals rpmRcfiles, rpmCLIMacroContext, rpmGlobalMacroContext, h_errno, stderr, 
 		fileSystem, internalState @*/
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext, stderr, 
 		fileSystem, internalState @*/;
@@ -68,8 +68,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
  */
 /*@mayexit@*/
 void rpmcliConfigured(void)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
+	/*@globals rpmRcfiles, rpmCLIMacroContext,
+		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 

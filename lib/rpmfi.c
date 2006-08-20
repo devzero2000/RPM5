@@ -240,9 +240,10 @@ rpmfileState rpmfiSetFState(rpmfi fi, rpmfileState fstate)
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
-	if (fi->fflags != NULL)
+	if (fi->fstates != NULL) {
 	    ofstate = fi->fstates[fi->i];
 	    fi->fstates[fi->i] = fstate;
+	}
 /*@=boundsread@*/
     }
     return ofstate;

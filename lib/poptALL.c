@@ -166,10 +166,10 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
-	/*@globals rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
-		h_errno, fileSystem, internalState @*/
-	/*@modifies rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmRcfiles, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
@@ -235,11 +235,13 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	if (rpmcliTargets == NULL)
 	    rpmcliTargets = xstrdup(arg);
 	else {
+/*@-modobserver @*/
 	    char * t = (char *) rpmcliTargets;
 	    size_t nb = strlen(t) + (sizeof(",")-1) + strlen(arg) + 1;
-	    t = xrealloc(t, nb);
+/*@i@*/	    t = xrealloc(t, nb);
 	    (void) stpcpy( stpcpy(t, ","), arg);
 	    rpmcliTargets = t;
+/*@=modobserver @*/
 	}
 	break;
     }
@@ -440,11 +442,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 /*@=globs =mods@*/
 
-#if defined(ENABLE_NLS)
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
     (void) setlocale(LC_ALL, "" );
-#ifdef	__LCLINT__
-#define	LOCALEDIR	"/usr/share/locale"
-#endif
     (void) bindtextdomain(PACKAGE, LOCALEDIR);
     (void) textdomain(PACKAGE);
 #endif

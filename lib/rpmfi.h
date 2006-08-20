@@ -324,7 +324,7 @@ uint_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
  * @return		previous file flags, 0 on invalid
  */
 uint_32 rpmfiSetFFlags(/*@null@*/ rpmfi fi, uint_32 FFlags)
-	/*@*/;
+	/*@modifies fi @*/;
 
 /**
  * Return current file verify flags from file info set.
@@ -341,7 +341,7 @@ uint_32 rpmfiVFlags(/*@null@*/ rpmfi fi)
  * @return		previous file verify flags, 0 on invalid
  */
 uint_32 rpmfiSetVFlags(/*@null@*/ rpmfi fi, uint_32 VFlags)
-	/*@*/;
+	/*@modifies fi @*/;
 
 /**
  * Return current file mode from file info set.
@@ -366,7 +366,7 @@ rpmfileState rpmfiFState(/*@null@*/ rpmfi fi)
  * @return		previous file state, 0 on invalid
  */
 rpmfileState rpmfiSetFState(/*@null@*/ rpmfi fi, rpmfileState fstate)
-	/*@*/;
+	/*@modifies fi @*/;
 
 /**
  * Return current file (binary) digest from file info set.

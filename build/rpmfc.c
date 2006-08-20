@@ -953,7 +953,6 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     size_t slen;
     int fcolor;
     int xx;
-/*@observer@*/
     const char * magicfile;
     int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
     magic_t ms = NULL;

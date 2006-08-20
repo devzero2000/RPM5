@@ -32,7 +32,7 @@ config_SCRIPTS = \
 	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
-	find-requires.perl freshen.sh getpo.sh http.req \
+	find-requires.perl getpo.sh http.req \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \

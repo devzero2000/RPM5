@@ -702,8 +702,8 @@ printNewSpecfile(Spec spec)
  */
 static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
 		/*@null@*/ const char *target) 
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     Spec spec = NULL;
     Package pkg;

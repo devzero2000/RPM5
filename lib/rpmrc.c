@@ -291,8 +291,8 @@ static void machCacheEntryVisit(machCache cache,
 }
 
 static void rebuildCompatTables(int type, const char * name)
-	/*@globals internalState @*/
-	/*@modifies cache->cache, table->list, table->count, internalState @*/
+	/*@globals tables, internalState @*/
+	/*@modifies tables, internalState @*/
 {
     machCache cache = &tables[currTables[type]].cache;
     machEquivTable table = &tables[currTables[type]].equiv;
@@ -847,10 +847,15 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 /*@=usedef@*/
 
 typedef struct cpu_vendor_os_gnu {
+/*@owned@*/
     const char * str;
+/*@observer@*/
     const char * cpu;
+/*@observer@*/
     const char * vendor;
+/*@observer@*/
     const char * os;
+/*@observer@*/
     const char * gnu;
 } * CVOG_t;
 
@@ -871,7 +876,7 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
     cvog->cpu = p;
     cvog->vendor = "unknown";
     cvog->os = "unknown";
-    cvog->gnu = NULL;
+    cvog->gnu = "";
     while (*p && !(*p == '-' || isspace(*p)))
 	    p++;
     if (*p != '\0') *p++ = '\0';
@@ -969,7 +974,9 @@ static int rpmPlatform(const char * platform)
 
 	platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
 /*@-onlyunqglobaltrans@*/
-	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}", (cvog->gnu && *cvog->gnu ? "-" : NULL), cvog->gnu, NULL);
+	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}",
+		(cvog && *cvog->gnu ? "-" : NULL),
+		(cvog ? cvog->gnu : NULL), NULL);
 	nplatpat++;
 	platpat[nplatpat] = NULL;
 /*@=onlyunqglobaltrans@*/
@@ -1530,7 +1537,7 @@ void rpmSetMachine(const char * arch, const char * os)
 	/*@modifies current @*/
 {
     if (arch == NULL) {
-	defaultMachine(&arch, NULL);
+/*@i@*/	defaultMachine(&arch, NULL);
 	if (tables[currTables[ARCH]].hasTranslate)
 	    arch = lookupInDefaultTable(arch,
 			    tables[currTables[ARCH]].defaults,
@@ -1539,7 +1546,7 @@ void rpmSetMachine(const char * arch, const char * os)
 assert(arch != NULL);
 
     if (os == NULL) {
-	defaultMachine(NULL, &os);
+/*@i@*/	defaultMachine(NULL, &os);
 	if (tables[currTables[OS]].hasTranslate)
 	    os = lookupInDefaultTable(os,
 			    tables[currTables[OS]].defaults,
@@ -1773,8 +1780,9 @@ void rpmFreeRpmrc(void)
  * @return		0 on succes
  */
 static int rpmReadRC(/*@null@*/ const char * rcfiles)
-	/*@globals defaultsInitialized, rpmGlobalMacroContext,
-		rpmCLIMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals defaultsInitialized, rpmRcfiles, rpmMacrofiles,
+		rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
+		fileSystem, internalState @*/
 	/*@modifies defaultsInitialized, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -1872,6 +1880,8 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 }
 
 int rpmReadConfigFiles(const char * file, const char * target)
+	/*@globals configTarget @*/
+	/*@modifies configTarget @*/
 {
 
     configTarget = target;
@@ -1881,7 +1891,9 @@ int rpmReadConfigFiles(const char * file, const char * target)
     rpmRebuildTargetVars(&target, NULL);
 
     /* Read the files */
+/*@-globs@*/
     if (rpmReadRC(file)) return -1;
+/*@=globs@*/
 
     /* Reset target macros */
     rpmRebuildTargetVars(&target, NULL);
@@ -1951,22 +1963,25 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "\n");
 
     if (rpmcliRcfile != NULL) {
-	const char *s;
+	const char * s = rpmExpand(rpmcliRcfile, NULL);
 	fprintf(fp, "\nRPMRC VALUES:\n");
-	s = rpmExpand(rpmcliRcfile, NULL);
 	fprintf(fp, "%-21s : %s\n", "rcfiles", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
+/*@-branchstate@*/
 	for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
 	    s = rpmGetVarArch(opt->var, NULL);
 	    if (s != NULL || rpmIsVerbose())
 		fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
 	}
+/*@=branchstate@*/
 	fprintf(fp, "\nMACRO DEFINITIONS:\n");
     } else {
 	const char * s = rpmExpand("%{?optflags}", NULL);
 	fprintf(fp, "%-21s : %s\n", "optflags", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
+/*@-globs@*/
 	s = rpmExpand(rpmMacrofiles, NULL);
+/*@=globs@*/
 	fprintf(fp, "\nMACRO DEFINITIONS:\n");
 	fprintf(fp, "%-21s : %s\n", "macrofiles", ((s && *s) ? s : "(not set)"));
 	s = _free(s);

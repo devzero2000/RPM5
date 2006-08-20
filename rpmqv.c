@@ -171,11 +171,10 @@ int main(int argc, const char ** argv, /*@unused@*/ char ** envp)
 #else
 int main(int argc, const char ** argv)
 #endif
-	/*@globals __assert_program_name, rpmEVR, RPMVERSION,
+	/*@globals rpmRcfiles, rpmEVR, RPMVERSION,
 		rpmGlobalMacroContext, rpmCLIMacroContext,
 		h_errno, fileSystem, internalState@*/
-	/*@modifies __assert_program_name,
-		fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState@*/
 {
     poptContext optCon = rpmcliInit(argc, (char *const *)argv, optionsTable);
 
@@ -849,7 +848,7 @@ exit:
 	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
     ia->relocations = _free(ia->relocations);
 #endif
-    rpmcliTargets = _free(rpmcliTargets);
+/*@i@*/	rpmcliTargets = _free(rpmcliTargets);
 
     optCon = rpmcliFini(optCon);
 

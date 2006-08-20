@@ -170,8 +170,8 @@ rpmfc rpmfcNew(void)
  */
 /*@-exportlocal@*/
 int rpmfcClassify(rpmfc fc, ARGV_t argv, /*@null@*/ int16_t * fmode)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fc, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 /**

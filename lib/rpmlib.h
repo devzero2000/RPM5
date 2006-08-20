@@ -637,7 +637,8 @@ extern const char *rpmRcfiles;
  */
 int rpmReadConfigFiles(/*@null@*/ const char * file,
 		/*@null@*/ const char * target)
-	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
+	/*@globals rpmRcfiles,
+		rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem, internalState @*/;
