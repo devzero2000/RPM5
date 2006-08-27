@@ -12,7 +12,8 @@
 /* return 1: a is newer than b */
 /*        0: a and b are the same version */
 /*       -1: b is newer than a */
-int rpmvercmp(const char * a, const char * b)
+int _rpmvercmp(const char * a, const char * b)
+	/*@*/
 {
     char oldch1, oldch2;
     char * str1, * str2;
@@ -119,3 +120,5 @@ int rpmvercmp(const char * a, const char * b)
     if (!*one) return -1; else return 1;
 /*@=boundsread@*/
 }
+
+int (*rpmvercmp)(const char *a, const char *b) = _rpmvercmp;

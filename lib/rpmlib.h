@@ -798,6 +798,7 @@ struct rpmRelocation_s {
 
 /**
  * Compare headers to determine which header is "newer".
+ * @deprecated Use rpmdsCompare instead.
  * @param first		1st header
  * @param second	2nd header
  * @return		result of comparison
@@ -996,6 +997,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERPOSTUN \
   )
 
+#if !defined(SWIG)
 /** \ingroup rpmts
  * Segmented string compare for version and/or release.
  *
@@ -1003,12 +1005,13 @@ typedef enum rpmtransFlags_e {
  * @param b		2nd string
  * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
  */
-int rpmvercmp(const char * a, const char * b)
+extern int (*rpmvercmp)(const char *a, const char *b)
+	/*@*/;
+extern int _rpmvercmp(const char *a, const char *b)
 	/*@*/;
 
 /*@}*/
 
-#if !defined(SWIG)
 /**
  * Return tag name from value.
  * @param tag		tag value

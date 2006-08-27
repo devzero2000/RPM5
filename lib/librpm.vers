@@ -369,6 +369,7 @@ LIBRPM_0
     rpmtsUpdateDSI;
     rpmtsVerifyDB;
     rpmtsVSFlags;
+    _rpmvercmp;
     rpmvercmp;
     rpmVerifyFile;
     rpmVerifyPoptTable;

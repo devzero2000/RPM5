@@ -420,7 +420,6 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 /*@=boundswrite@*/
 
     ds = xcalloc(1, sizeof(*ds));
-    ds->h = NULL;
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
@@ -431,7 +430,6 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 /*@-boundswrite@*/
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
 /*@=boundswrite@*/
-    ds->i = 0;
     {	char pre[2];
 /*@-boundsread@*/
 	pre[0] = ds->Type[0];
@@ -475,7 +473,6 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
 	goto exit;
 
     ds = xcalloc(1, sizeof(*ds));
-    ds->h = NULL;
     ds->Type = Type;
     ds->tagN = tagN;
     {	time_t now = time(NULL);
@@ -491,7 +488,6 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     /*@=assignexpose@*/
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
 /*@=boundswrite@*/
-    ds->i = 0;
     {	char t[2];
 /*@-boundsread@*/
 	t[0] = ds->Type[0];
@@ -622,6 +618,17 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote)
 	ds->nopromote = nopromote;
     }
     return onopromote;
+}
+
+void * rpmdsSetEVRcmp(rpmds ds , int (*EVRcmp)(const char *a, const char *b))
+{
+    void * oEVRcmp = NULL;
+
+    if (ds != NULL) {
+	oEVRcmp = ds->EVRcmp;
+	ds->EVRcmp = EVRcmp;
+    }
+    return oEVRcmp;
 }
 
 uint_32 rpmdsColor(const rpmds ds)
@@ -816,6 +823,8 @@ assert(ods->Flags != NULL);
 	? ods->Flags
 	: memcpy(xmalloc(nb), ods->Flags, nb) );
     ds->Ft = ods->Ft;
+    ds->nopromote = ods->nopromote;
+    ds->EVRcmp = ods->EVRcmp;;
 
 /*@-compmempass@*/ /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
@@ -3158,8 +3167,13 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
     char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
+    int (*EVRcmp) (const char *a, const char *b);
     int result;
     int sense;
+
+    /* If EVRcmp is identical, use that, otherwise use default. */
+    EVRcmp = (A->EVRcmp && B->EVRcmp && A->EVRcmp == B->EVRcmp)
+	? A->EVRcmp : rpmvercmp;
 
 /*@-boundsread@*/
     /* Different names don't overlap. */
@@ -3198,7 +3212,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     /* Compare {A,B} [epoch:]version[-release] */
     sense = 0;
     if (aE && *aE && bE && *bE)
-	sense = rpmvercmp(aE, bE);
+	sense = EVRcmp(aE, bE);
     else if (aE && *aE && atol(aE) > 0) {
 	if (!B->nopromote) {
 	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMMESS_WARNING : RPMMESS_DEBUG);
@@ -3211,9 +3225,9 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	sense = -1;
 
     if (sense == 0) {
-	sense = rpmvercmp(aV, bV);
+	sense = EVRcmp(aV, bV);
 	if (sense == 0 && aR && *aR && bR && *bR)
-	    sense = rpmvercmp(aR, bR);
+	    sense = EVRcmp(aR, bR);
     }
 /*@=boundsread@*/
     aEVR = _free(aEVR);

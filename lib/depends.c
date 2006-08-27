@@ -146,6 +146,8 @@ static int rpmHeadersIdentical(Header first, Header second)
 	/*@*/
 {
     const char * one, * two;
+    rpmds A, B;
+    int rc;
 
     if (!headerGetEntry(first, RPMTAG_HDRID, NULL, (void **) &one, NULL))
 	one = NULL;
@@ -159,7 +161,12 @@ static int rpmHeadersIdentical(Header first, Header second)
     if (!one && two)
 	return 0;
     /* XXX Headers w/o digests case devolves to NEVR comparison. */
-    return ((rpmVersionCompare(first, second) == 0) ? 1 : 0);
+    A = rpmdsThis(first, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+    B = rpmdsThis(second, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+    rc = rpmdsCompare(A, B);
+    A = rpmdsFree(A);
+    B = rpmdsFree(B);
+    return rc;
 }
 
 int rpmtsAddInstallElement(rpmts ts, Header h,

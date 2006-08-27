@@ -45,6 +45,8 @@ struct rpmds_s {
     int_32 * Refs;		/*!< No. of file refs. */
 /*@only@*/ /*@null@*/
     int_32 * Result;		/*!< Dependency check result. */
+/*@null@*/
+    int (*EVRcmp) (const char *a, const char *b);	 /* EVR comparison. */
     int_32 BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
@@ -281,6 +283,17 @@ int rpmdsNoPromote(/*@null@*/ const rpmds ds)
  * @return		previous "Don't promote Epoch:" flag
  */
 int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
+	/*@modifies ds @*/;
+
+/**
+ * Set EVR comparison function.
+ * @param ds		dependency set
+ * @param EVRcmp	EVR comparison function (NULL uses default)
+ * @return		previous EVR comparison function
+ */
+/*@null@*/
+void * rpmdsSetEVRcmp(/*@null@*/ rpmds ds,
+		/*@null@*/ int (*EVRcmp)(const char *a, const char *b))
 	/*@modifies ds @*/;
 
 /**

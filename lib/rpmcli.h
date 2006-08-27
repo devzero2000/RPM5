@@ -594,6 +594,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
 
 /** \ingroup rpmcli
  * Install/upgrade/freshen binary rpm package.
+ * @todo Use rpmdsCompare rather than rpmVersionCompare.
  * @param ts		transaction set
  * @param ia		mode flags and parameters
  * @param fileArgv	array of package file names (NULL terminated)
