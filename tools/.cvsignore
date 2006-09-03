@@ -8,10 +8,12 @@ debugedit
 dump
 dumpdb
 javadeps
+rpm2lsb
 rpmcache
 rpmdeps
 rpmdigest
 rpmfile
+rpmgetconf
 rpmgraph
 rpminject
 rpmsort

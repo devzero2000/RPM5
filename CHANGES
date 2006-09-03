@@ -66,6 +66,7 @@
 	- make rpmvercmp a vector, add a (*EVRcmp) vector to rpmds.
 	- open all rpmdb indices before entering chroot (#94250, #173285).
 	- lua: establish CWD == "/" for running of scripts.
+	- add rpm2lsb boilerplate, dumps both package headers in YAML.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

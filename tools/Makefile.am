@@ -18,7 +18,7 @@ INCLUDES = -I. \
 
 EXTRA_DIST =	rpminject.c rpmsort.c rpmxml.c rpmxp.c rpmxp.h hashtab.h
 
-EXTRA_PROGRAMS = debugedit convertdb1 rpmgetconf rpminject rpmsort rpmtool rpmxml
+EXTRA_PROGRAMS = debugedit convertdb1 rpmgetconf rpminject rpmsort rpmtool rpmxml rpm2lsb
 
 LDADD = \
 	$(top_builddir)/lib/librpm.la
@@ -42,6 +42,10 @@ debugedit_LDADD =	@LDFLAGS_STATIC@ \
 	@WITH_POPT_LIB@
 
 javadeps_SOURCES =	javadeps.c
+
+rpm2lsb =		rpm2lsb.c
+rpm2lsb_LDFLAGS =	# $(staticLDFLAGS)
+rpm2lsb_LDADD =		$(LDADD)
 
 rpmcache_SOURCES =	rpmcache.c
 #rpmcache_LDFLAGS =	-L$(libdir) # $(staticLDFLAGS)
