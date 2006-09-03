@@ -64,6 +64,8 @@
 	- permit macros to be marked as readonly (i.e. cannot be redefined).
 	- ignore BuildRoot: and %clean from spec files.
 	- make rpmvercmp a vector, add a (*EVRcmp) vector to rpmds.
+	- open all rpmdb indices before entering chroot (#94250, #173285).
+	- lua: establish CWD == "/" for running of scripts.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

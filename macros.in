@@ -712,6 +712,10 @@ print (t)\
 #	auto-relocated.
 %_autorelocate_dcolor @autorelocate_dcolor@
 
+#	Open all indices before doing chroot(2).
+#
+%_openall_before_chroot	0
+
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-vendor location. The macro is usually defined in
 #	/etc/rpm/macros.solve, installed with the rpmdb-vendor package.

@@ -536,20 +536,24 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 
     xx = headerNVR(h, &n, &v, &r);
 
+    /* Save the current working directory. */
+/*@-nullpass@*/
+    rootFd = open(".", O_RDONLY, 0);
+/*@=nullpass@*/
+
+    /* Get into the chroot. */
     if (!rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
-	xx = chdir("/");
-/*@-nullpass@*/
-	rootFd = open(".", O_RDONLY, 0);
-/*@=nullpass@*/
-	if (rootFd >= 0) {
-	    /*@-superuser -noeffect @*/
-	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
-		xx = chroot(rootDir);
-	    /*@=superuser =noeffect @*/
+	/*@-superuser -noeffect @*/
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
+	    xx = chroot(rootDir);
+	/*@=superuser =noeffect @*/
 	    xx = rpmtsSetChrootDone(ts, 1);
 	}
     }
+
+    /* All lua scripts run with CWD == "/". */
+    xx = chdir("/");
 
     /* Create arg variable */
     rpmluaPushTable(lua, "arg");
@@ -591,15 +595,21 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 
     rpmluaDelVar(lua, "arg");
 
-    if (rootFd >= 0) {
+    /* Get out of chroot. */
+    if (rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
-	xx = fchdir(rootFd);
-	xx = close(rootFd);
 	/*@-superuser -noeffect @*/
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    xx = chroot(".");
 	/*@=superuser =noeffect @*/
-	xx = rpmtsSetChrootDone(ts, 0);
+	    xx = rpmtsSetChrootDone(ts, 0);
+	}
+    }
+
+    /* Reset current working directory. */
+    if (rootFd >= 0) {
+	xx = fchdir(rootFd);
+	xx = close(rootFd);
     }
 
     return rc;

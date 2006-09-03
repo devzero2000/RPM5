@@ -1963,10 +1963,18 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 
     if (!rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
+	static int openall_before_chroot = -1;
+
+	if (openall_before_chroot < 0)
+	    openall_before_chroot = rpmExpandNumeric("%{?_openall_before_chroot}");
+
 	xx = chdir("/");
 	/*@-superuser -noeffect @*/
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
+	    if (openall_before_chroot)
+		xx = rpmdbOpenAll(rpmtsGetRdb(ts));
 	    xx = chroot(rootDir);
+	}
 	/*@=superuser =noeffect @*/
 	(void) rpmtsSetChrootDone(ts, 1);
     }
