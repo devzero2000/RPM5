@@ -1134,7 +1134,7 @@ static int cmpArgvStr(const char *lname, const char ** AV, int AC,
     if (AV != NULL && AC > 0 && B == NULL) {
 	rpmError(RPMERR_OPEN, _("Missing repackaged package(s) detected:\n"));
 	for (i = 0; i < AC && (A = AV[i]) != NULL; i++)
-	    rpmError(RPMERR_OPEN, _("    %s[%d]: %s\n"), lname, i, A);
+	    rpmError(RPMERR_OPEN, "    %s[%d]: %s\n", lname, i, A);
 	return -1;
     }
 
