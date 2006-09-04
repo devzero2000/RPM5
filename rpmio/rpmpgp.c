@@ -955,80 +955,6 @@ int pgpPrtComment(const pgpPkt pp)
     return 0;
 }
 
-int pgpPubkeyFingerprint(const byte * pkt, /*@unused@*/ unsigned int pktlen,
-		byte * keyid)
-{
-    const byte *s = pkt;
-    DIGEST_CTX ctx;
-    byte version;
-    int rc = -1;	/* assume failure. */
-
-    if (pkt[0] != 0x99)
-	return rc;
-    version = pkt[3];
-
-    switch (version) {
-    case 3:
-      {	pgpPktKeyV3 v = (pgpPktKeyV3) (pkt + 3);
-
-	s += sizeof(pkt[0]) + sizeof(pkt[1]) + sizeof(pkt[2]) + sizeof(*v);
-	switch (v->pubkey_algo) {
-	case PGPPUBKEYALGO_RSA:
-	    s += (pgpMpiLen(s) - 8);
-/*@-boundswrite@*/
-	    memmove(keyid, s, 8);
-/*@=boundswrite@*/
-	    rc = 0;
-	    /*@innerbreak@*/ break;
-	default:	/* TODO: md5 of mpi bodies (i.e. no length) */
-	    /*@innerbreak@*/ break;
-	}
-      }	break;
-    case 4:
-      {	pgpPktKeyV4 v = (pgpPktKeyV4) (pkt + 3);
-	byte * SHA1 = NULL;
-	int i;
-
-	s += sizeof(pkt[0]) + sizeof(pkt[1]) + sizeof(pkt[2]) + sizeof(*v);
-	switch (v->pubkey_algo) {
-	case PGPPUBKEYALGO_RSA:
-	    for (i = 0; i < 2; i++)
-		s += pgpMpiLen(s);
-	    /*@innerbreak@*/ break;
-	case PGPPUBKEYALGO_DSA:
-	    for (i = 0; i < 4; i++)
-		s += pgpMpiLen(s);
-	    /*@innerbreak@*/ break;
-	}
-
-	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(ctx, pkt, (s-pkt));
-	(void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 0);
-
-	s = SHA1 + 12;
-/*@-boundswrite@*/
-	memmove(keyid, s, 8);
-/*@=boundswrite@*/
-	rc = 0;
-
-	SHA1 = _free(SHA1);
-      }	break;
-    }
-    return rc;
-}
-
-int pgpExtractPubkeyFingerprint(const char * b64pkt, byte * keyid)
-{
-    const byte * pkt;
-    ssize_t pktlen;
-
-    if (b64decode(b64pkt, (void **)&pkt, &pktlen))
-	return -1;	/* on error */
-    (void) pgpPubkeyFingerprint(pkt, pktlen, keyid);
-    pkt = _free(pkt);
-    return 8;	/* no. of bytes of pubkey signid */
-}
-
 int pgpPktLen(const byte *pkt, unsigned int pleft, pgpPkt pp)
 {
     unsigned int val = *pkt;
@@ -1055,6 +981,73 @@ int pgpPktLen(const byte *pkt, unsigned int pleft, pgpPkt pp)
     pp->h = pkt + 1 + plen;
 
     return pp->pktlen;
+}
+
+int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen, byte * keyid)
+{
+    pgpPkt pp = alloca(sizeof(*pp));
+    int rc = pgpPktLen(pkt, pktlen, pp);
+    const byte *se;
+    int i;
+
+    /* Pubkeys only please. */
+    if (pp->tag != PGPTAG_PUBLIC_KEY)
+	return -1;
+
+    /* Choose the correct keyid. */
+    switch (pp->h[0]) {
+    default:	return -1;
+    case 3:
+      {	pgpPktKeyV3 v = (pgpPktKeyV3) (pp->h);
+	se = (byte *)(v + 1);
+	switch (v->pubkey_algo) {
+	default:	return -1;
+	case PGPPUBKEYALGO_RSA:
+	    se += pgpMpiLen(se);
+	    memmove(keyid, (se-8), 8);
+	}
+      } break;
+    case 4:
+      {	pgpPktKeyV4 v = (pgpPktKeyV4) (pp->h);
+	byte * d = NULL;
+	size_t dlen = 0;
+
+	se = (byte *)(v + 1);
+	switch (v->pubkey_algo) {
+	default:	return -1;
+	case PGPPUBKEYALGO_RSA:
+	    for (i = 0; i < 2; i++)
+		se += pgpMpiLen(se);
+	    break;
+	case PGPPUBKEYALGO_DSA:
+	    for (i = 0; i < 4; i++)
+		se += pgpMpiLen(se);
+	    break;
+	}
+	{   DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	    (void) rpmDigestUpdate(ctx, pkt, (se-pkt));
+	    (void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
+	}
+
+/*@-boundswrite@*/
+	memmove(keyid, (d + (dlen-8)), 8);
+/*@=boundswrite@*/
+	d = _free(d);
+      } break;
+    }
+    return 0;
+}
+
+int pgpExtractPubkeyFingerprint(const char * b64pkt, byte * keyid)
+{
+    const byte * pkt;
+    ssize_t pktlen;
+
+    if (b64decode(b64pkt, (void **)&pkt, &pktlen))
+	return -1;	/* on error */
+    (void) pgpPubkeyFingerprint(pkt, pktlen, keyid);
+    pkt = _free(pkt);
+    return 8;	/* no. of bytes of pubkey signid */
 }
 
 int pgpPrtPkt(const byte *pkt, unsigned int pleft)
