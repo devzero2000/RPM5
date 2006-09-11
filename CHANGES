@@ -68,6 +68,7 @@
 	- lua: establish CWD == "/" for running of scripts.
 	- add rpm2lsb boilerplate, dumps both package headers in YAML.
 	- fix: last 8 bytes of RSA modulus is keyid for V3 pubkeys (#205080).
+	- updated sv.po translations.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

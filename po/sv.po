@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-08-06 14:39-0400\n"
-"PO-Revision-Date: 2005-02-18 22:29+0100\n"
+"PO-Revision-Date: 2006-09-04 11:26+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
-"Language-Team: Swedish <sv@li.org>\n"
+"Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -58,9 +58,9 @@ msgstr "Bygger målplattformar: %s\n"
 
 #. Query spec for this target platform.
 #: build.c:341 build/spec.c:787
-#, fuzzy, c-format
+#, c-format
 msgid "    target platform: %s\n"
-msgstr "Bygger målplattformar: %s\n"
+msgstr "    målplattform: %s\n"
 
 #: rpm2cpio.c:55
 #, c-format
@@ -923,9 +923,9 @@ msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan inte vara \"/\": %s\n"
 
 #: build/parsePreamble.c:598
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
-msgstr "rad %d: Prefix får inte sluta med \"/\": %s\n"
+msgstr "rad %d: Prefix måste börja med \"/\": %s\n"
 
 #: build/parsePreamble.c:606
 #, c-format
@@ -938,9 +938,9 @@ msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "rad %d: Docdir måste börja med \"/\": %s\n"
 
 #: build/parsePreamble.c:632
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s takes an integer value: %s\n"
-msgstr "rad %d: Taggen tar endast ett värde: %s\n"
+msgstr "rad %d: %s tar endast ett heltalsvärde: %s\n"
 
 #: build/parsePreamble.c:672 build/parsePreamble.c:683
 #, c-format
@@ -1041,9 +1041,9 @@ msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch: %s\n"
 
 #: build/parsePrep.c:597
-#, fuzzy, c-format
+#, c-format
 msgid "Fetching %s failed: %s\n"
-msgstr "%s misslyckades: %s\n"
+msgstr "Misslyckades hämta %s: %s\n"
 
 #: build/parsePrep.c:619
 #, c-format
@@ -1051,11 +1051,12 @@ msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
 
 #: build/parseReqs.c:113
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
+"rad %d: Beroende \"%s\" måste börja alfanumeriskt, med \"_\" eller \"/\": %"
+"s\n"
 
 #: build/parseReqs.c:142
 #, c-format
@@ -1301,7 +1302,7 @@ msgstr "åsidosätt målplattform"
 
 #: build/poptBT.c:229 lib/poptALL.c:297 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
-msgstr ""
+msgstr "CPU-TILLVERKARE-OS"
 
 #: build/poptBT.c:231
 msgid "lookup i18N strings in specfile catalog"
@@ -1333,9 +1334,9 @@ msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga av specfil %s misslyckades, kan inte tolka\n"
 
 #: build/spec.c:775
-#, fuzzy, c-format
+#, c-format
 msgid "Query specfile for platform(s): %s\n"
-msgstr "Bygger målplattformar: %s\n"
+msgstr "Fråga specfil om plattform(ar): %s\n"
 
 #: lib/cpio.c:248
 #, c-format
@@ -1363,9 +1364,8 @@ msgid "Missing hard link(s)"
 msgstr "Saknade hårda länkar"
 
 #: lib/cpio.c:277
-#, fuzzy
 msgid "File digest mismatch"
-msgstr "MD5-summan stämmer inte"
+msgstr "Filkontrollsumman stämmer inte"
 
 #: lib/cpio.c:278
 msgid "Internal error"
@@ -1391,9 +1391,9 @@ msgstr "paket %s är redan tillagt, ersätter med %s\n"
 
 #. @-nullptrarith@
 #: lib/depends.c:362
-#, fuzzy, c-format
+#, c-format
 msgid "   upgrade erases %s\n"
-msgstr "inget paket behöver %s\n"
+msgstr "   uppgradering raderar %s\n"
 
 #. @-nullptrarith@
 #: lib/depends.c:430
@@ -1406,43 +1406,36 @@ msgid "(cached)"
 msgstr "(cachad)"
 
 #: lib/depends.c:542
-#, fuzzy
 msgid "(macro probe)"
-msgstr "(rpmrc tillhandahåller)"
+msgstr "(macrotest)"
 
 #: lib/depends.c:561
-#, fuzzy
 msgid "(access probe)"
-msgstr "(rpmrc tillhandahåller)"
+msgstr "(åtkomsttest)"
 
 #: lib/depends.c:574
-#, fuzzy
 msgid "(sysinfo provides)"
-msgstr "(rpmlib tillhandahåller)"
+msgstr "(sysinfo tillhandahåller)"
 
 #: lib/depends.c:595
 msgid "(rpmlib provides)"
 msgstr "(rpmlib tillhandahåller)"
 
 #: lib/depends.c:611
-#, fuzzy
 msgid "(cpuinfo provides)"
-msgstr "(rpmlib tillhandahåller)"
+msgstr "(cpuinfo tillhandahåller)"
 
 #: lib/depends.c:627
-#, fuzzy
 msgid "(getconf provides)"
-msgstr "(rpmlib tillhandahåller)"
+msgstr "(getconf tillhandahåller)"
 
 #: lib/depends.c:643
-#, fuzzy
 msgid "(uname provides)"
-msgstr "(lade till tillhandahållande)"
+msgstr "(uname tillhandahåller)"
 
 #: lib/depends.c:678
-#, fuzzy
 msgid "(soname provides)"
-msgstr "(lade till tillhandahållande)"
+msgstr "(soname tillhandahåller)"
 
 #: lib/depends.c:705
 msgid "(db files)"
@@ -1455,7 +1448,7 @@ msgstr "(db tillhandahåller)"
 #. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:748
 msgid "(hint skipped)"
-msgstr ""
+msgstr "(förslag överhoppat)"
 
 #: lib/depends.c:1188
 #, c-format
@@ -1474,13 +1467,12 @@ msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
 #: lib/depends.c:1705
-#, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
-"djup, bredd)\n"
+"Ldjup, Rbredd)\n"
 
 #: lib/depends.c:1796
 #, c-format
@@ -1519,9 +1511,8 @@ msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
 #: lib/formats.c:578
-#, fuzzy
 msgid "(invalid yaml type)"
-msgstr "(felaktig xml-typ)"
+msgstr "(felaktig yaml-typ)"
 
 #: lib/formats.c:687
 msgid "(not an OpenPGP signature)"
@@ -1607,9 +1598,9 @@ msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s misslyckades: %s\n"
 
 #: lib/fsm.c:2033
-#, fuzzy, c-format
+#, c-format
 msgid " %s: unlink of %s failed: %s\n"
-msgstr "%s unlink av %s misslyckades: %s\n"
+msgstr "%s: unlink av %s misslyckades: %s\n"
 
 #: lib/fsm.c:2056
 #, c-format
@@ -1667,20 +1658,21 @@ msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hvd SHA1: FEL, ej hex\n"
 
 #: lib/package.c:469
-#, fuzzy, c-format
+#, c-format
 msgid "hdr RSA: BAD, not binary\n"
-msgstr "hvd DSA: FEL, ej binär\n"
+msgstr "hvd RSA: FEL, ej binärt\n"
 
 #: lib/package.c:481
 #, c-format
 msgid "hdr DSA: BAD, not binary\n"
-msgstr "hvd DSA: FEL, ej binär\n"
+msgstr "hvd DSA: FEL, ej binärt\n"
 
 #: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
 #: lib/package.c:987
-#, fuzzy, c-format
+#, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-msgstr "endast V3-signaturer kan verifieras, hoppar över V%u-signatur\n"
+msgstr ""
+"endast V3- och V4-signaturer kan verifieras, hoppar över V%u-signatur\n"
 
 #: lib/package.c:673
 #, c-format
@@ -1802,9 +1794,8 @@ msgid "<FILE:...>"
 msgstr "<FIL:...>"
 
 #: lib/poptALL.c:297 lib/poptQV.c:317
-#, fuzzy
 msgid "specify target platform"
-msgstr "åsidosätt målplattform"
+msgstr "ange målplattform"
 
 #: lib/poptALL.c:305 lib/poptALL.c:339
 msgid "disable use of libio(3) API"
@@ -1848,7 +1839,7 @@ msgstr "visa vilken version av rpm som används"
 
 #: lib/poptALL.c:346
 msgid "debug cpio payloads"
-msgstr ""
+msgstr "felsök cpio-laster"
 
 #: lib/poptALL.c:350
 msgid "debug payload file state machine"
@@ -1887,9 +1878,8 @@ msgid "debug rpmio I/O"
 msgstr "felsök rpmio I/O"
 
 #: lib/poptALL.c:396
-#, fuzzy
 msgid "debug tar payloads"
-msgstr "felsök argv-samlingar"
+msgstr "felsök tar-last"
 
 #: lib/poptALL.c:400
 msgid "debug URL cache handling"
@@ -1907,7 +1897,7 @@ msgstr "uteslutna sökvägar måste börja med /"
 
 #: lib/poptI.c:85
 msgid "Option --relocate needs /old/path=/new/path argument"
-msgstr ""
+msgstr "Flaggan --relocate behöver ett argument /gammal/sökväg=/ny/sökväg"
 
 #: lib/poptI.c:87
 msgid "relocations must begin with a /"
@@ -1922,33 +1912,29 @@ msgid "relocations must have a / following the ="
 msgstr "omflyttningar måste ha ett / efter ="
 
 #: lib/poptI.c:111
-#, fuzzy
 msgid "Option --rbexclude needs transaction id argument(s)"
-msgstr "återställning tar en tid-/datumstämpel som argument"
+msgstr "Flaggan --rbexclude behöver transaktionsidargument"
 
 #: lib/poptI.c:142
-#, fuzzy
 msgid "Option --rollback needs a time/date stamp argument"
-msgstr "återställning tar en tid-/datumstämpel som argument"
+msgstr "Flaggan --rollback behöver en tid-/datumstämpel som argument"
 
 #: lib/poptI.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
-msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
+msgstr "Mål för tillbakarullning: %-24.24s (0x%08x)\n"
 
 #: lib/poptI.c:150
 msgid "malformed rollback time/date stamp argument"
 msgstr "felformaterat tid-/datumstämpelargument för återställning"
 
 #: lib/poptI.c:157
-#, fuzzy
 msgid "arbgoal takes a time/date stamp argument"
-msgstr "återställning tar en tid-/datumstämpel som argument"
+msgstr "arbgoal tar en tid-/datumstämpel som argument"
 
 #: lib/poptI.c:164
-#, fuzzy
 msgid "malformed arbgoal time/date stamp argument"
-msgstr "felformaterat tid-/datumstämpelargument för återställning"
+msgstr "felformaterat tid-/datumstämpelargument till arbgoal"
 
 #: lib/poptI.c:220 lib/poptQV.c:287 lib/poptQV.c:333
 msgid "add suggested packages to transaction"
@@ -2062,9 +2048,8 @@ msgstr "verifiera inte paketberoenden"
 
 #: lib/poptI.c:306 lib/poptI.c:308 lib/poptQV.c:347 lib/poptQV.c:350
 #: lib/poptQV.c:352
-#, fuzzy
 msgid "don't verify file digests"
-msgstr "verifiera inte paketkontrollsummor"
+msgstr "verifiera inte filkontrollsummor"
 
 #: lib/poptI.c:310
 msgid "don't install file security contexts"
@@ -2171,19 +2156,16 @@ msgid "<date>"
 msgstr "<datum>"
 
 #: lib/poptI.c:385
-#, fuzzy
 msgid "If transaction fails rollback to <date>"
-msgstr "Transaktion misslyckades...rullar tillbaka\n"
+msgstr "Om transaktion misslyckades rullar tillbaka till <datum>"
 
 #: lib/poptI.c:388
-#, fuzzy
 msgid "Exclude Transaction I.D. from rollback"
-msgstr "Transaktion misslyckades...rullar tillbaka\n"
+msgstr "Uteslut transaktion-ID från tillbakarullning"
 
 #: lib/poptI.c:389
-#, fuzzy
 msgid "<tid>"
-msgstr "<flagga>"
+msgstr "<tid>"
 
 #: lib/poptI.c:391
 msgid "don't install, but tell if it would work or not"
@@ -2266,9 +2248,9 @@ msgid "query/verify the package(s) which require a dependency"
 msgstr "fråga/verifiera paket som behöver ett beroende"
 
 #: lib/poptQV.c:146
-#, fuzzy
 msgid "query/verify the package(s) which require any contained provide"
-msgstr "fråga/verifiera paket som behöver ett beroende"
+msgstr ""
+"fråga/verifiera paket(et/en) som behöver något tillhörande som tillhandahålls"
 
 #: lib/poptQV.c:150
 msgid "query/verify the package(s) which provide a dependency"
@@ -2311,14 +2293,14 @@ msgid "list files in package"
 msgstr "lista filer i paketet"
 
 #: lib/poptQV.c:292 lib/poptQV.c:338
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%config files"
-msgstr "hoppa över %%license-filer"
+msgstr "hoppa över %%config-filer"
 
 #: lib/poptQV.c:295 lib/poptQV.c:341
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%doc files"
-msgstr "hoppa över %%ghost-filer"
+msgstr "hoppa över %%doc-filer"
 
 #: lib/poptQV.c:298
 #, c-format
@@ -2341,7 +2323,7 @@ msgstr "använd följande frågeformat"
 
 #: lib/poptQV.c:311
 msgid "QUERYFORMAT"
-msgstr ""
+msgstr "FRÅGEFORMAT"
 
 #: lib/poptQV.c:313
 msgid "substitute i18n sections into spec file"
@@ -2416,17 +2398,16 @@ msgid "generate signature"
 msgstr "generera signatur"
 
 #: lib/poptQV.c:447
-#, fuzzy
 msgid "specify trust metric"
-msgstr "åsidosätt målplattform"
+msgstr "ange förtroendemått"
 
 #: lib/poptQV.c:450
 msgid "set ultimate trust when importing pubkey(s)"
-msgstr ""
+msgstr "ange fullständigt förtroende när publika nycklar importeras"
 
 #: lib/poptQV.c:453
 msgid "unset ultimate trust when importing pubkey(s)"
-msgstr ""
+msgstr "stäng av fullständigt förtroende när publika nycklar importeras"
 
 #: lib/psm.c:266
 msgid "source package expected, binary found\n"
@@ -2470,9 +2451,9 @@ msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s.%s) skript misslyckades, waitpid(%d) rk %d: %s\n"
 
 #: lib/psm.c:977
-#, fuzzy, c-format
+#, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
-msgstr "%s(%s-%s-%s.%s) skript misslyckades, slutstatus %d\n"
+msgstr "%s(%s-%s-%s.%s) skript misslyckades, signal %d\n"
 
 #: lib/psm.c:981
 #, c-format
@@ -2672,9 +2653,9 @@ msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature misslyckades: %s\n"
 
 #: lib/rpmchecksig.c:602
-#, fuzzy, c-format
+#, c-format
 msgid "%s: import read failed(%d).\n"
-msgstr "%s: importläsning misslyckades.\n"
+msgstr "%s: importläsning misslyckades(%d).\n"
 
 #: lib/rpmchecksig.c:614
 #, c-format
@@ -2697,9 +2678,10 @@ msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen signatur tillgänglig (v1.0 RPM)\n"
 
 #: lib/rpmchecksig.c:863
-#, fuzzy, c-format
+#, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-msgstr "endast V3-signaturer kan verifieras, hoppar över V%u-signatur\n"
+msgstr ""
+"endast V3- eller V4-signaturer kan verifieras, hoppar över V%u-signatur\n"
 
 #: lib/rpmchecksig.c:1029
 msgid "NOT OK"
@@ -2775,52 +2757,53 @@ msgstr "internt stöd för lua-skript."
 
 #: lib/rpmds.c:1256
 msgid "header tags can be type int_64."
-msgstr ""
+msgstr "huvudtaggar kan ha typen int_64."
 
 #: lib/rpmds.c:1259
 msgid "package payload can be in ustar tar archive format."
-msgstr ""
+msgstr "paketlasten kan vara i ustar:s tar-arkivformat."
 
 #: lib/rpmds.c:1262
 msgid "file digests can be other than MD5."
-msgstr ""
+msgstr "filkontrollsummor kan vara annat än MD5."
 
 #: lib/rpmds.c:1380
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
-"rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
+"%s:%d: \"%s\" måste börja alfanumeriskt, med \"_\", \"/\" eller \"%%\".\n"
 
 #. XXX No comparison operator found.
 #: lib/rpmds.c:1414
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
-msgstr ""
+msgstr "%s:%d Det finns ingen jämförelseoperator.\n"
 
 #. XXX No EVR comparison value found.
 #: lib/rpmds.c:1424
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
-msgstr ""
+msgstr "%s:%d Det finns inget EVR-jämförelsevärde.\n"
 
 #: lib/rpmds.c:3032 lib/rpmds.c:3062 lib/rpmds.c:3074
 #, c-format
 msgid "running \"%s\" pipe command\n"
-msgstr ""
+msgstr "kör rörkommandot \"%s\"\n"
 
 #: lib/rpmds.c:3035
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
 "Skipping ...\n"
 msgstr ""
-"rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
+"\trad %d: \"%s\" måste börja alfanumeriskt, med \"_\", \"/\" eller \"%%\". "
+"Hoppar över ...\n"
 
 #. XXX No comparison operator found.
 #: lib/rpmds.c:3064
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
-msgstr ""
+msgstr "\trad %d: \"%s\" har inte någon jämförelseoperator.  Hoppar över ...\n"
 
 #. XXX No EVR comparison value found.
 #: lib/rpmds.c:3076
@@ -2829,6 +2812,8 @@ msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
+"\trad %d: Det finns inget EVR-jämförelsevärde.\n"
+" Hoppar över ..."
 
 #: lib/rpmds.c:3205
 #, c-format
@@ -2931,9 +2916,9 @@ msgid "Upgrading packages..."
 msgstr "Uppgraderar paket..."
 
 #: lib/rpminstall.c:330 lib/rpminstall.c:793 lib/transaction.c:1154
-#, fuzzy, c-format
+#, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
-msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
+msgstr "Mål för automatisk tillbakarullning: %-24.24s (0x%08x)\n"
 
 #: lib/rpminstall.c:419
 #, c-format
@@ -3022,24 +3007,23 @@ msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
 #: lib/rpminstall.c:1135
-#, fuzzy
 msgid "Missing repackaged package(s) detected:\n"
-msgstr "Rensar upp ompaketerade paket:\n"
+msgstr "Saknade ompaketerade paket upptäckta:\n"
 
 #: lib/rpminstall.c:1137
-#, fuzzy, c-format
+#, c-format
 msgid "    %s[%d]: %s\n"
-msgstr "%s: %s\n"
+msgstr "    %s[%d]: %s\n"
 
 #: lib/rpminstall.c:1360
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
-msgstr ""
+msgstr "Exkluderar TID från återrullning: %-24.24s (0x%08x)\n"
 
 #: lib/rpminstall.c:1447 lib/transaction.c:1159
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
+msgstr "Rullar tillbaka paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
 #: lib/rpminstall.c:1478
 msgid "Cleaning up repackaged packages:\n"
@@ -3098,14 +3082,14 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "paket %s (som är nyare än %s) är redan installerat"
 
 #: lib/rpmps.c:246
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
-msgstr "installation av paket %s kräver %ld %cB på filsystemet %s"
+msgstr "installation av paket %s behöver %lu %cB på filsystemet %s"
 
 #: lib/rpmps.c:256
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
-msgstr "installation av paket %s kräver %ld inoder på filsystem %s"
+msgstr "installation av paket %s behöver %lu inoder på filsystem %s"
 
 #: lib/rpmps.c:261
 #, c-format
@@ -3127,9 +3111,9 @@ msgid "%s conflicts with %s%s"
 msgstr "%s står i konflikt med %s%s"
 
 #: lib/rpmps.c:276
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s on %s rdonly filesystem"
-msgstr "installation av paket %s kräver %ld %cB på filsystemet %s"
+msgstr "installation av paket %s på endast läsbart filsystem %s"
 
 #: lib/rpmps.c:281
 #, c-format
@@ -3225,27 +3209,28 @@ msgstr "Kan inte öppna %s för läsning: %s.\n"
 #: lib/rpmrc.c:1953
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
-msgstr ""
+msgstr "Systemkonfiguration tillhandahåller (från /etc/rpm/sysinfo):\n"
 
 #: lib/rpmrc.c:1965
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
-msgstr ""
+msgstr "Funktioner som tillhandahålls av rpmlib-installeraren:\n"
 
 #: lib/rpmrc.c:1980
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
+"Funktioner som tillhandahålls av aktuell cpuinfo (från /proc/cpuinfo):\n"
 
 #: lib/rpmrc.c:1994
 #, c-format
 msgid "Features provided by current getconf:\n"
-msgstr ""
+msgstr "Funktioner som tillhandahålls av aktuell getconf:\n"
 
 #: lib/rpmrc.c:2008
 #, c-format
 msgid "Features provided by current uname:\n"
-msgstr ""
+msgstr "Funktioner som tillhandahålls av aktuell uname:\n"
 
 #: lib/rpmsx.c:374
 #, c-format
@@ -3298,9 +3283,9 @@ msgid "cannot open Solve database in %s\n"
 msgstr "kan inte öppna Solve-databas i %s\n"
 
 #: lib/rpmts.c:646
-#, fuzzy, c-format
+#, c-format
 msgid "incorrect solve path format: %s\n"
-msgstr "fel format: %s\n"
+msgstr "felaktigt format för lösningsväg: %s\n"
 
 #: lib/rpmts.c:676
 #, c-format
@@ -3317,26 +3302,25 @@ msgid "mounted filesystems:\n"
 msgstr "monterade filsystem:\n"
 
 #: lib/rpmts.c:1243
-#, fuzzy
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
-msgstr "    i  enhet bstrl       btillg       itillg monteringspunkt\n"
+msgstr "    i      enhet    bstrl       btillg       itillg monteringspunkt\n"
 
 #: lib/rpmts.c:1324
-#, fuzzy, c-format
+#, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
-msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
+msgstr "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 
 #: lib/signature.c:139
-#, fuzzy, c-format
+#, c-format
 msgid "Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"
 msgstr ""
-"Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
-"d)\n"
+"Förväntad storlek: %12lu = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
+"lu)\n"
 
 #: lib/signature.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "  Actual size: %12lu\n"
-msgstr "  Faktisk storlek: %12d\n"
+msgstr "  Faktisk storlek: %12lu\n"
 
 #: lib/signature.c:187
 #, c-format
@@ -3421,9 +3405,9 @@ msgid "Got %d bytes of PGP sig\n"
 msgstr "Fick %d byte PGP-signatur\n"
 
 #: lib/signature.c:612
-#, fuzzy, c-format
+#, c-format
 msgid "gpg exec failed (%d)\n"
-msgstr "exec misslyckades\n"
+msgstr "körning av gpg misslyckades (%d)\n"
 
 #. GPG failed to write signature
 #. Just in case
@@ -3479,14 +3463,12 @@ msgstr "Huvud "
 
 #. @=branchstate@
 #: lib/signature.c:1294
-#, fuzzy
 msgid " signature: "
-msgstr "V3 DSA-signatur: "
+msgstr "-signatur: "
 
 #: lib/signature.c:1421
-#, fuzzy
 msgid " DSA signature: "
-msgstr "V3 DSA-signatur: "
+msgstr " DSA-signatur: "
 
 #: lib/signature.c:1503
 #, c-format
@@ -3510,47 +3492,45 @@ msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
 
 #: lib/transaction.c:1018
-#, fuzzy, c-format
+#, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
-msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
+msgstr "Rullar tillbaka lyckad transaktion till till %-24.24s (0x%08x).\n"
 
 #: lib/transaction.c:1023
-#, fuzzy
 msgid "Creating rollback transaction to achieve goal\n"
-msgstr "Skapar automatiskt återrullad transaktion\n"
+msgstr "Skapar återrullad transaktion för att uppnå mål\n"
 
 #: lib/transaction.c:1151
 msgid "Transaction failed...rolling back\n"
 msgstr "Transaktion misslyckades...rullar tillbaka\n"
 
 #: lib/transaction.c:1162
-#, fuzzy, c-format
+#, c-format
 msgid "Failed Tran:  %-24.24s(0x%08x)\n"
-msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
+msgstr "Misslyckad tran: %-24.24s(0x%08x)\n"
 
 #: lib/transaction.c:1168
-#, fuzzy
 msgid "Could not resolve semaphore_backout macro!\n"
-msgstr "Kunde inte ordna automatiskt återrullad transaktion!\n"
+msgstr "Kunde inte lösa upp semaphore_backout-makro!\n"
 
 #: lib/transaction.c:1172
-#, fuzzy, c-format
+#, c-format
 msgid "Creating semaphore %s...\n"
-msgstr "skapar katalog %s\n"
+msgstr "Skapar semafor %s...\n"
 
 #: lib/transaction.c:1193
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "Kunde inte ordna automatiskt återrullad transaktion!\n"
 
 #: lib/transaction.c:1239
-#, fuzzy, c-format
+#, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
-msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
+msgstr "Rullar tillbacka lyckade transaktioner till %-24.24s (0x%08x)\n"
 
 #: lib/transaction.c:1284
-#, fuzzy, c-format
+#, c-format
 msgid "Removing semaphore %s...\n"
-msgstr "tar bort katalog %s\n"
+msgstr "Tar bort semafor %s...\n"
 
 #: lib/transaction.c:1320
 msgid "Getting repackaged header from transaction element\n"
@@ -3572,41 +3552,37 @@ msgid "\t\tName:  %s.\n"
 msgstr "\t\tNamn:  %s.\n"
 
 #: lib/transaction.c:1438
-#, fuzzy, c-format
+#, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
-"Lägger till installationselement till automatisk återrullningstransaktion.\n"
+"Bearbetar misslyckat installationselement %s för automatisk återrullning.\n"
 
 #: lib/transaction.c:1441
-#, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
-msgstr "fel vid läsning av pakethuvud\n"
+msgstr "\tFramtvinga tillägg av huvud till rpmdb.\n"
 
 #: lib/transaction.c:1452
-#, fuzzy
 msgid "\tCould not add failed package header to db!\n"
-msgstr "Tilläggande misslyckades.  Kunde inte läsa pakethuvud.\n"
+msgstr "\tKunde inte lägga till misslyckat pakets huvud till db!\n"
 
 #: lib/transaction.c:1464 lib/transaction.c:1600
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown transaction element type!\n"
-msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
+msgstr "%s: Okänd typ av transaktionselement!\n"
 
 #: lib/transaction.c:1465 lib/transaction.c:1601
 #, c-format
 msgid "TYPE:  %d\n"
-msgstr ""
+msgstr "TYP:  %d\n"
 
 #: lib/transaction.c:1495
-#, fuzzy
 msgid "Processing install element for autorollback...\n"
-msgstr ""
-"Lägger till installationselement till automatisk återrullningstransaktion.\n"
+msgstr "Bearbetar installationselement för automatisk återrullning...\n"
 
 #: lib/transaction.c:1496 lib/transaction.c:1551
 #, c-format
 msgid "\tNEVRA: %s\n"
-msgstr ""
+msgstr "\tNEVRA: %s\n"
 
 #: lib/transaction.c:1504
 msgid "Could not get install element database instance!\n"
@@ -3632,13 +3608,12 @@ msgstr ""
 "Kunde inte hämta ompaketerat huvud för automatisk återrullningstransaktion!\n"
 
 #: lib/transaction.c:1550
-#, fuzzy
 msgid "Processing erase element for autorollback...\n"
-msgstr "Lägg till raderingselement till automatisk återrullningstransaktion.\n"
+msgstr "Bearbetar raderingselement för automatisk återrullning...\n"
 
 #: lib/transaction.c:1560
 msgid "\tErase element(s) already added.\n"
-msgstr ""
+msgstr "\tRaderingselement redan tillagt.\n"
 
 #: lib/transaction.c:1571
 #, c-format
@@ -3660,9 +3635,8 @@ msgid "Failure reading repackaged package!\n"
 msgstr "Misslyckades läsa ompaketerat paket!\n"
 
 #: lib/transaction.c:1731
-#, fuzzy
 msgid "Invalid number of transaction elements.\n"
-msgstr "Hämtar ompaketerade huvuden från transaktionselement\n"
+msgstr "Ogiltigt antal transaktionselement.\n"
 
 #. ===============================================
 #. * For packages being installed:
@@ -3705,17 +3679,13 @@ msgid "Creating auto-rollback transaction\n"
 msgstr "Skapar automatiskt återrullad transaktion\n"
 
 #: lib/transaction.c:2468
-#, fuzzy, c-format
+#, c-format
 msgid "Adding %s to autorollback transaction.\n"
-msgstr ""
-"Lägger till installationselement till automatisk återrullningstransaktion.\n"
+msgstr "Lägger till %s till automatisk återrullningstransaktion.\n"
 
 #: lib/transaction.c:2475
-#, fuzzy
 msgid "Could not add transaction element to autorollback!.\n"
-msgstr ""
-"Kunde inte lägga till raderingselement till automatiskt återrullad "
-"transaktion.\n"
+msgstr "Kunde inte lägga transaktionselement automatiskt återrullning.\n"
 
 #: lib/transaction.c:2519
 msgid "running post-transaction scripts\n"
@@ -3727,9 +3697,9 @@ msgid "missing   %c %s"
 msgstr "saknas    %c %s"
 
 #: lib/verify.c:420
-#, fuzzy, c-format
+#, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "Ouppfyllda beroenden för %s: "
+msgstr "Ouppfyllda beroenden för %s:\n"
 
 #: rpmdb/db3.c:161
 #, c-format
@@ -4317,105 +4287,103 @@ msgstr "%s: cacheoperation misslyckades: ec %d.\n"
 
 #: tools/rpmdeps.c:156
 msgid "print cpuinfo(...) dependency set"
-msgstr ""
+msgstr "skriv cpuinfo(...)-beroendemängd"
 
 #: tools/rpmdeps.c:158
 msgid "print rpmlib(...) dependency set"
-msgstr ""
+msgstr "skriv rpmlib(...)-beroendemängd"
 
 #: tools/rpmdeps.c:160
 msgid "print /etc/rpm/sysinfo dependency set"
-msgstr ""
+msgstr "skriv /etc/rpm/sysinfo-beroendemängd"
 
 #: tools/rpmdeps.c:162
 msgid "print getconf(...) dependency set"
-msgstr ""
+msgstr "skriv getconf(...)-beroendemängd"
 
 #: tools/rpmdeps.c:164
 msgid "print soname(...) dependencies for elf files"
-msgstr ""
+msgstr "skriv soname(...)-beroenden för elf-filer"
 
 #: tools/rpmdeps.c:166
 msgid "print soname(...) dependencies from /etc/ld.so.cache"
-msgstr ""
+msgstr "skriv soname(...)-beroenden från /etc/ld.so.cache"
 
 #: tools/rpmdeps.c:168
 msgid "print uname(...) dependency set"
-msgstr ""
+msgstr "skriv uname(...)-beroendemängd"
 
 #: tools/rpmdeps.c:170
-#, fuzzy
 msgid "print dependency set from a command pipe"
-msgstr "skriv beroendecykler som varningar"
+msgstr "skriv beroendemängd från ett kommandorör"
 
 #: tools/rpmdeps.c:173
 msgid "print perl(...) dependency set"
-msgstr ""
+msgstr "skriv perl(...)-beroendemängd"
 
 #: tools/rpmdeps.c:175
 msgid "print python(...) dependency set"
-msgstr ""
+msgstr "skriv python(...)-beroendemängd"
 
 #: tools/rpmdeps.c:177
 msgid "print libtool(...) dependency set"
-msgstr ""
+msgstr "skriv libtool(...)-beroendemängd"
 
 #: tools/rpmdeps.c:179
 msgid "print pkgconfig(...) dependency set"
-msgstr ""
+msgstr "skriv pkgconfig(...)-beroendemängd"
 
 #: tools/rpmdeps.c:182
 msgid "print pubkey(...) dependency set"
-msgstr ""
+msgstr "skriv pubkey(...)-beroendemängd"
 
 #: tools/rpmdeps.c:184
 msgid "print arch(...) dependency set"
-msgstr ""
+msgstr "skriv arch(...)-beroendemängd"
 
 #: tools/rpmdeps.c:186
 msgid "print file(...) dependency set"
-msgstr ""
+msgstr "skriv file(...)-beroendemängd"
 
 #: tools/rpmdeps.c:188
 msgid "print soname(...) dependency set"
-msgstr ""
+msgstr "skriv soname(...)-beroendemängd"
 
 #: tools/rpmdeps.c:190
-#, fuzzy
 msgid "print package(...) dependency set"
-msgstr "verifiera inte paketberoenden"
+msgstr "skriv package(...)-beroendemängd"
 
 #: tools/rpmdeps.c:193
 msgid "print java(...) dependency set"
-msgstr ""
+msgstr "skriv java(...)-beroendemängd"
 
 #: tools/rpmdeps.c:195
 msgid "print php(...) dependency set"
-msgstr ""
+msgstr "skriv php(...)-beroendemängd"
 
 #: tools/rpmdeps.c:197
 msgid "print ruby(...) dependency set"
-msgstr ""
+msgstr "skriv ruby(...)-beroendemängd"
 
 #: tools/rpmdeps.c:199
 msgid "print /var/lib/dpkg Provides: dependency set"
-msgstr ""
+msgstr "skriv /var/lib/dpkg Provides:-beroendemängd"
 
 #: tools/rpmdeps.c:201
 msgid "print /var/lib/dpkg Requires: dependency set"
-msgstr ""
+msgstr "skriv /var/lib/dpkg Requires:-beroendemängd"
 
 #: tools/rpmdeps.c:204
 msgid "print Provides: dependency set"
-msgstr ""
+msgstr "skriv Provides:-beroendemängd"
 
 #: tools/rpmdeps.c:206
 msgid "print Requires: dependency set"
-msgstr ""
+msgstr "skriv Requires:-beroendemängd"
 
 #: tools/rpmdeps.c:208
 msgid "check Requires: against Provides: for dependency closure"
-msgstr ""
+msgstr "kontrollera Requires: mot Provides: för beroendehölje"
 
 #: tools/rpmgraph.c:172
 #, c-format
@@ -4510,157 +4478,3 @@ msgstr "använd databas i KATALOG"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
-
-#~ msgid "Building for target %s\n"
-#~ msgstr "Bygger för målet %s\n"
-
-#~ msgid "Internal error in argument processing (%d) :-(\n"
-#~ msgstr "Internt fel i argumenthantering (%d) :-(\n"
-
-#~ msgid "\tMatches found.\n"
-#~ msgstr "\tTräffar hittade.\n"
-
-#~ msgid "\tNo matches found.\n"
-#~ msgstr "\tInga träffar hittade.\n"
-
-#~ msgid "\tREMOVETID matched INSTALLTID.\n"
-#~ msgstr "REMOVETID matchar INSTALLTID.\n"
-
-#~ msgid "\tRepackaged Package was %s...\n"
-#~ msgstr "\tOmpaketerat paket var %s ...\n"
-
-#~ msgid "Couldn't download nosource %s: %s\n"
-#~ msgstr "Kunde inte hämta nosource %s: %s\n"
-
-#~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
-#~ msgstr "rad %d: Epoch/Serial-fält måste vara numeriskt: %s\n"
-
-#~ msgid "generate headers compatible with rpm4 packaging"
-#~ msgstr "generera huvuden kompatibla med rpm4-paketering"
-
-#~ msgid ""
-#~ "generate package header(s) compatible with (legacy) rpm[23] packaging"
-#~ msgstr "generera pakethuvuden kompatibla med (äldre) rpm[23]-paketering"
-
-#~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
-#~ msgstr "generera huvuden kompatibla med (äldre) rpm[23]-paketering"
-
-#~ msgid "don't verify MD5 digest of files"
-#~ msgstr "verifiera inte MD5-summor för filer"
-
-#~ msgid "(db package)"
-#~ msgstr "(db-paket)"
-
-#, fuzzy
-#~ msgid "Attempting to mark %s as installed in transaction score\n"
-#~ msgstr "Försöker markera %s som installerad på resultattavla(%u).\n"
-
-#, fuzzy
-#~ msgid "Attempting to mark %s as erased.\n"
-#~ msgstr "Försöker markera %s som raderat på resultattavla(0x%x).\n"
-
-#, fuzzy
-#~ msgid "Processing failed erase element %s for autorollback.\n"
-#~ msgstr ""
-#~ "Kunde inte lägga till raderingselement till automatiskt återrullad "
-#~ "transaktion.\n"
-
-#, fuzzy
-#~ msgid "\tForce removing header from rpmdb.\n"
-#~ msgstr "fel vid läsning av pakethuvud\n"
-
-#, fuzzy
-#~ msgid "\tCould not remove failed package header from db!\n"
-#~ msgstr "Tilläggande misslyckades.  Kunde inte läsa pakethuvud.\n"
-
-#, fuzzy
-#~ msgid "Could not acquire transaction score entry for %s\n"
-#~ msgstr "ordna inte transaktionsmängd"
-
-#~ msgid "Creating transaction score board(%p, %p)\n"
-#~ msgstr "Skapar resultattavla för transaktion(%p, %p)\n"
-
-#~ msgid "\tScore board address:  %p\n"
-#~ msgstr "\tResultattavleadress:  %p\n"
-
-#~ msgid "\tAllocating space for %d entries\n"
-#~ msgstr "\tAllokerar utrymme för %d poster\n"
-
-#~ msgid "\tAdding entry for %s to score board.\n"
-#~ msgstr "\tLägger till post för %s till resultattavla.\n"
-
-#~ msgid "\t\tEntry address:  %p\n"
-#~ msgstr "\t\tStartadress:  %p\n"
-
-#~ msgid "\tUpdating entry for %s in score board.\n"
-#~ msgstr "\tUppdaterar post för %s i resultattavla.\n"
-
-#, fuzzy
-#~ msgid "Could not get header for transaction score!\n"
-#~ msgstr "Kunde inte hämta huvud för automatisk återrullningstransaktion!\n"
-
-#~ msgid "Looking in score board(%p) for %s\n"
-#~ msgstr "Letar i resultattavla(%p) efter %s\n"
-
-#~ msgid "\tFound entry at address:  %p\n"
-#~ msgstr "\tHittade post vid adress:  %p\n"
-
-#, fuzzy
-#~ msgid "Could not acquire transaction score!.\n"
-#~ msgstr "ordna inte transaktionsmängd"
-
-#, fuzzy
-#~ msgid "Could not acquire score entry %s!.\n"
-#~ msgstr "Kunde inte öppna PreIn-fil: %s\n"
-
-#, fuzzy
-#~ msgid "XXX Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-#~ msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
-
-#~ msgid "don't verify GPG V3 DSA signature(s)"
-#~ msgstr "verifiera inte GPG V3 DSA-signatur(er)"
-
-#~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-#~ msgstr "verifiera inte PGP V3 RSA/MD5-signatur(er)"
-
-#~ msgid "Unknown system: %s\n"
-#~ msgstr "Okänt system: %s\n"
-
-#~ msgid "Please contact rpm-list@redhat.com\n"
-#~ msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
-
-#~ msgid "\tAdded from install element %s.\n"
-#~ msgstr "\tLade till från installationselement %s.\n"
-
-#~ msgid "\tFound existing upgrade element.\n"
-#~ msgstr "\tHittade ett existerande uppdateringselement.\n"
-
-#~ msgid "\tNot adding erase element for %s.\n"
-#~ msgstr "\tLägger inte till raderingselemtn för %s.\n"
-
-#~ msgid "\tAdded from erase element %s.\n"
-#~ msgstr "\tLade till från raderingselement %s.\n"
-
-#~ msgid "Add failed in rpmpsmStage().\n"
-#~ msgstr "Tilläggande misslyckades i rpmpsmStage().\n"
-
-#~ msgid "Add failed.  Could not get file list.\n"
-#~ msgstr "Tilläggande misslyckades.  Kunde inte hämta fillista.\n"
-
-#~ msgid "Erase failed failed in rpmpsmStage().\n"
-#~ msgstr "Radering misslyckades i rpmpsmStage().\n"
-
-#~ msgid "May free Score board(%p)\n"
-#~ msgstr "Kan frigöra resultattavla(%p)\n"
-
-#~ msgid "\tRefcount is zero...will free\n"
-#~ msgstr "\tReferensräknare är noll...frigör\n"
-
-#~ msgid "disable use of libneon for HTTP"
-#~ msgstr "inaktivera användningen av libneon för HTTP"
-
-#~ msgid "gpg failed\n"
-#~ msgstr "gpg misslyckades\n"
-
-#~ msgid "V3 RSA/MD5 signature: "
-#~ msgstr "V3 RSA/MD5-signatur: "
