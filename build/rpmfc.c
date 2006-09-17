@@ -81,7 +81,7 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
 	(void) close(fromProg[1]);
 
 	if (dir) {
-	    (void) chdir(dir);
+	    (void) Chdir(dir);
 	}
 	
 	rpmMessage(RPMMESS_DEBUG, _("\texecv(%s) pid %d\n"),
@@ -993,9 +993,10 @@ assert(xx != -1);	/* XXX figger a proper return path. */
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
 	int_16 mode = (fmode ? fmode[fc->ix] : 0);
+	int urltype;
 
-	s = argv[fc->ix];
-assert(s != NULL);
+	urltype = urlPath(argv[fc->ix], &s);
+assert(s != NULL && *s == '/');
 	slen = strlen(s);
 
 /*@-branchstate@*/

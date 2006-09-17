@@ -985,11 +985,19 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    {
 		*fileName = s;
 	    } else {
-		/* not in %doc, does not begin with / -- error */
-		rpmError(RPMERR_BADSPEC,
-		    _("File must begin with \"/\": %s\n"), s);
-		fl->processingFailed = 1;
-		res = 1;
+		const char * sfn = NULL;
+		int urltype = urlPath(s, &sfn);
+		switch (urltype) {
+		default: /* relative path, not in %doc and not a URL */
+		    rpmError(RPMERR_BADSPEC,
+			_("File must begin with \"/\": %s\n"), s);
+		    fl->processingFailed = 1;
+		    res = 1;
+		    break;
+		case URL_IS_PATH:
+		    *fileName = s;
+		    break;
+		}
 	    }
 	} else {
 	    *fileName = s;
@@ -1046,8 +1054,12 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
  */
 static int compareFileListRecs(const void * ap, const void * bp)	/*@*/
 {
-    const char *a = ((FileListRec)ap)->fileURL;
-    const char *b = ((FileListRec)bp)->fileURL;
+    const char *aurl = ((FileListRec)ap)->fileURL;
+    const char *a = NULL;
+    const char *burl = ((FileListRec)bp)->fileURL;
+    const char *b = NULL;
+    (void) urlPath(aurl, &a);
+    (void) urlPath(burl, &b);
     return strcmp(a, b);
 }
 
@@ -1106,9 +1118,13 @@ static int checkHardLinks(FileList fl)
 static int dncmp(const void * a, const void * b)
 	/*@*/
 {
-    const char *const * first = a;
-    const char *const * second = b;
-    return strcmp(*first, *second);
+    const char *const * aurlp = a;
+    const char *const * burlp = b;
+    const char * adn = a;
+    const char * bdn = b;
+    (void) urlPath(*aurlp, &adn);
+    (void) urlPath(*burlp, &bdn);
+    return strcmp(adn, bdn);
 }
 /*@=boundsread@*/
 
@@ -1125,6 +1141,7 @@ static void compressFilelist(Header h)
     HRE_t hre = (HRE_t)headerRemoveEntry;
     HFD_t hfd = headerFreeData;
     char ** fileNames;
+    const char * fn;
     const char ** dirNames;
     const char ** baseNames;
     int_32 * dirIndexes;
@@ -1153,7 +1170,8 @@ static void compressFilelist(Header h)
     baseNames = alloca(sizeof(*dirNames) * count);
     dirIndexes = alloca(sizeof(*dirIndexes) * count);
 
-    if (fileNames[0][0] != '/') {
+    (void) urlPath(fileNames[0], &fn);
+    if (fn[0] != '/') {
 	/* HACK. Source RPM, so just do things differently */
 	dirIndex = 0;
 	dirNames[dirIndex] = "";
@@ -1226,6 +1244,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    const char * apath;
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
     int apathlen = 0;
     int dpathlen = 0;
@@ -1310,7 +1329,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	if (flp->flags & RPMFILE_EXCLUDE) continue;
 
 	/* Omit '/' and/or URL prefix, leave room for "./" prefix */
-	apathlen += (strlen(flp->fileURL) - skipLen + (_addDotSlash ? 3 : 1));
+	(void) urlPath(flp->fileURL, &apath);
+	apathlen += (strlen(apath) - skipLen + (_addDotSlash ? 3 : 1));
 
 	/* Leave room for both dirname and basename NUL's */
 	dpathlen += (strlen(flp->diskURL) + 2);
@@ -1568,7 +1588,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
  	/*@=dependenttrans@*/
 	if (_addDotSlash)
 	    a = stpcpy(a, "./");
-	a = stpcpy(a, (flp->fileURL + skipLen));
+	(void) urlPath(flp->fileURL, &apath);
+	a = stpcpy(a, (apath + skipLen));
 	a++;		/* skip apath NUL */
 
 	if (flp->flags & RPMFILE_GHOST) {
@@ -1637,7 +1658,8 @@ static int addFile(FileList fl, const char * diskURL,
 		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    const char *fileURL = diskURL;
+    const char *fn = xstrdup(diskURL);
+    const char *fileURL = fn;
     struct stat statbuf;
     mode_t fileMode;
     uid_t fileUid;
@@ -1658,9 +1680,23 @@ static int addFile(FileList fl, const char * diskURL,
      *
      */
     {	const char *fileName;
-	(void) urlPath(fileURL, &fileName);
-	if (fl->buildRootURL && strcmp(fl->buildRootURL, "/"))
-	    fileURL += strlen(fl->buildRootURL);
+	int urltype = urlPath(fileURL, &fileName);
+	switch (urltype) {
+	case URL_IS_PATH:
+	    fileURL += (fileName - fileURL);
+	    if (fl->buildRootURL && strcmp(fl->buildRootURL, "/")) {
+		size_t nb = strlen(fl->buildRootURL);
+		const char * s = fileURL + nb;
+		char * t = (char *) fileURL;
+		(void) memmove(t, s, nb);
+	    }
+	    fileURL = fn;
+	    break;
+	default:
+	    if (fl->buildRootURL && strcmp(fl->buildRootURL, "/"))
+		fileURL += strlen(fl->buildRootURL);
+	    break;
+	}
     }
 
     /* XXX make sure '/' can be packaged also */
@@ -1746,7 +1782,9 @@ static int addFile(FileList fl, const char * diskURL,
     
     /* S_XXX macro must be consistent with type in find call at check-files script */
     if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
-	appendStringBuf(check_fileList, diskURL);
+	const char * diskfn = NULL;
+	(void) urlPath(diskURL, &diskfn);
+	appendStringBuf(check_fileList, diskfn);
 	appendStringBuf(check_fileList, "\n");
     }
 
@@ -1819,6 +1857,7 @@ static int addFile(FileList fl, const char * diskURL,
 
     fl->fileListRecsUsed++;
     fl->fileCount++;
+    fn = _free(fn);
 
     return 0;
 }

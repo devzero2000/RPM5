@@ -23,6 +23,10 @@ LIBRPMIO_0
     avOpendir;
     avReaddir;
     bzdio;
+    Chdir;
+    Chmod;
+    Chown;
+    Chroot;
     davClose;
     davClosedir;
     _dav_debug;
@@ -83,10 +87,14 @@ LIBRPMIO_0
     gzdio;
     _init;
     isCompressed;
+    Lchown;
     Link;
+    Lseek;
     Lstat;
     max_macro_depth;
     Mkdir;
+    Mkfifo;
+    Mknod;
     noLibio;
     Opendir;
     pgpArmorKeyTbl;
@@ -219,6 +227,7 @@ LIBRPMIO_0
     rpmswNow;
     rpmswSub;
     Stat;
+    Symlink;
     ufdClose;
     ufdCopy;
     ufdGetFile;
@@ -238,6 +247,8 @@ LIBRPMIO_0
     urlSetCallback;
     urlSplit;
     urlStrerror;
+    Utime;
+    Utimes;
     vmefail;
     xstrcasecmp;
     xstrncasecmp;

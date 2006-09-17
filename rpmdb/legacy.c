@@ -290,15 +290,20 @@ void rpmfiBuildFNames(Header h, rpmTag tagN,
     xx = hge(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
 
     size = sizeof(*fileNames) * count;
-    for (i = 0; i < count; i++)
-	size += strlen(baseNames[i]) + strlen(dirNames[dirIndexes[i]]) + 1;
+    for (i = 0; i < count; i++) {
+	const char * dn = NULL;
+	(void) urlPath(dirNames[dirIndexes[i]], &dn);
+	size += strlen(baseNames[i]) + strlen(dn) + 1;
+    }
 
     fileNames = xmalloc(size);
     t = ((char *) fileNames) + (sizeof(*fileNames) * count);
     /*@-branchstate@*/
     for (i = 0; i < count; i++) {
+	const char * dn = NULL;
 	fileNames[i] = t;
-	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
+	(void) urlPath(dirNames[dirIndexes[i]], &dn);
+	t = stpcpy( stpcpy(t, dn), baseNames[i]);
 	*t++ = '\0';
     }
     /*@=branchstate@*/

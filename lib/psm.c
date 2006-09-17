@@ -546,14 +546,14 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	const char *rootDir = rpmtsRootDir(ts);
 	/*@-superuser -noeffect @*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
-	    xx = chroot(rootDir);
+	    xx = Chroot(rootDir);
 	/*@=superuser =noeffect @*/
 	    xx = rpmtsSetChrootDone(ts, 1);
 	}
     }
 
     /* All lua scripts run with CWD == "/". */
-    xx = chdir("/");
+    xx = Chdir("/");
 
     /* Create arg variable */
     rpmluaPushTable(lua, "arg");
@@ -600,7 +600,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	const char *rootDir = rpmtsRootDir(ts);
 	/*@-superuser -noeffect @*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
-	    xx = chroot(".");
+	    xx = Chroot(".");
 	/*@=superuser =noeffect @*/
 	    xx = rpmtsSetChrootDone(ts, 0);
 	}
@@ -925,10 +925,10 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		!(rootDir[0] == '/' && rootDir[1] == '\0'))
 	    {
 		/*@-superuser -noeffect @*/
-		xx = chroot(rootDir);
+		xx = Chroot(rootDir);
 		/*@=superuser =noeffect @*/
 	    }
-	    xx = chdir("/");
+	    xx = Chdir("/");
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"),
 			psm->stepName, sln, n, v, r, a,
 			argv[0], (unsigned)getpid());
@@ -2101,10 +2101,10 @@ psm->te->h = headerFree(psm->te->h);
 		_gr_loaded++;
 	    }
 
-	    xx = chdir("/");
+	    xx = Chdir("/");
 	    /*@-superuser@*/
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
-		rc = chroot(rootDir);
+		rc = Chroot(rootDir);
 	    /*@=superuser@*/
 	    psm->chrootDone = 1;
 	    (void) rpmtsSetChrootDone(ts, 1);
@@ -2117,12 +2117,12 @@ psm->te->h = headerFree(psm->te->h);
 	    const char * currDir = rpmtsCurrDir(ts);
 	    /*@-superuser@*/
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
-		rc = chroot(".");
+		rc = Chroot(".");
 	    /*@=superuser@*/
 	    psm->chrootDone = 0;
 	    (void) rpmtsSetChrootDone(ts, 0);
 	    if (currDir != NULL)	/* XXX can't happen */
-		xx = chdir(currDir);
+		xx = Chdir(currDir);
 	}
 	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */

@@ -138,13 +138,15 @@ const char * rpmfiFN(rpmfi fi)
 
     /*@-branchstate@*/
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	const char *dn;
 	char * t;
 	if (fi->fn == NULL)
 	    fi->fn = xmalloc(fi->fnlen);
 	FN = t = fi->fn;
+	(void) urlPath(fi->dnl[fi->dil[fi->i]], &dn);
 /*@-boundswrite@*/
 	*t = '\0';
-	t = stpcpy(t, fi->dnl[fi->dil[fi->i]]);
+	t = stpcpy(t, dn);
 	t = stpcpy(t, fi->bnl[fi->i]);
 /*@=boundswrite@*/
     }

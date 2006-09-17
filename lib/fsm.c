@@ -175,8 +175,13 @@ static int mapNextIterator(/*@null@*/ void * a)
 static int cpioStrCmp(const void * a, const void * b)
 	/*@*/
 {
-    const char * afn = *(const char **)a;
-    const char * bfn = *(const char **)b;
+    const char * aurl = *(const char **)a;
+    const char * burl = *(const char **)b;
+    const char * afn = NULL;
+    const char * bfn = NULL;
+
+    (void) urlPath(aurl, &afn);
+    (void) urlPath(burl, &bfn);
 
     /* XXX Some 4+ year old rpm packages have basename only in payloads. */
 #ifdef	VERY_OLD_BUGGY_RPM_PACKAGES
@@ -286,6 +291,7 @@ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 	/*@*/
 {
     rpmfi fi = fsmGetFi(fsm);
+    const char * dnl;
     DNLI_t dnli;
     int i, j;
 
@@ -319,12 +325,11 @@ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 	    bnlen = strlen(fi->bnl[i]);
 
 	    for (j = 0; j < fi->dc; j++) {
-		const char * dnl;
 		int jlen;
 
 		if (!dnli->active[j] || j == dil)
 		    /*@innercontinue@*/ continue;
-		dnl = fi->dnl[j];
+		(void) urlPath(fi->dnl[j], &dnl);
 		jlen = strlen(dnl);
 		if (jlen != (dnlen+bnlen+1))
 		    /*@innercontinue@*/ continue;
@@ -352,7 +357,8 @@ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 		    rpmMessage(RPMMESS_DEBUG,
 	_("========== Directories not explicitly included in package:\n"));
 		}
-		rpmMessage(RPMMESS_DEBUG, _("%10d %s\n"), i, fi->dnl[i]);
+		(void) urlPath(fi->dnl[j], &dnl);
+		rpmMessage(RPMMESS_DEBUG, _("%10d %s\n"), i, dnl);
 	    }
 	    if (j)
 		rpmMessage(RPMMESS_DEBUG, "==========\n");
@@ -964,8 +970,12 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 /*@=boundswrite@*/
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
-	fsm->path =
-	    (fi->apath ? fi->apath[fsm->ix] + fi->striplen : fi->bnl[fsm->ix]);
+	if (fi->apath) {
+	    const char * apath = NULL;
+	    (void) urlPath(fi->apath[fsm->ix], &apath);
+	    fsm->path = apath + fi->striplen;
+	} else
+	    fsm->path = fi->bnl[fsm->ix];
     }
 
     rc = fsmNext(fsm, FSM_HWRITE);
@@ -1092,10 +1102,12 @@ static int writeLinkedFile(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/* XXX tar and cpio have to do things differently. */
 	if (fsm->headerWrite == tarHeaderWrite) {
 	    if (firstfile) {
+		const char * apath = NULL;
 		char *t;
+		(void) urlPath(fsm->path, &apath);
 		/* Remove the buildroot prefix. */
-		t = xmalloc(sizeof(".") + strlen(fsm->path + fsm->astriplen));
-		(void) stpcpy( stpcpy(t, "."), fsm->path + fsm->astriplen);
+		t = xmalloc(sizeof(".") + strlen(apath + fsm->astriplen));
+		(void) stpcpy( stpcpy(t, "."), apath + fsm->astriplen);
 		linkpath = t;
 		firstfile = 0;
 	    } else
@@ -1359,7 +1371,8 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	fsm->path = dn;
 
 	/* Assume '/' directory exists, "mkdir -p" for others if non-existent */
-	for (i = 1, te = dn + 1; *te != '\0'; te++, i++) {
+	(void) urlPath(dn, (const char **)&te);
+	for (i = 1, te++; *te != '\0'; te++, i++) {
 	    if (*te != '/')
 		/*@innercontinue@*/ continue;
 
@@ -1508,13 +1521,16 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		(fsm->path ? fsm->path : ""),
 		_fafilter(fsm->action));
     } else {
+	const char * apath = NULL;
+	if (fsm->path)
+	    (void) urlPath(fsm->path, &apath);
 	fsm->stage = stage;
 	if (_fsm_debug || !(stage & FSM_VERBOSE))
 	    rpmMessage(RPMMESS_DEBUG, "%-8s  %06o%3d (%4d,%4d)%12lu %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
 		(int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
-		(fsm->path ? fsm->path + fsm->astriplen : ""),
+		(fsm->path ? apath + fsm->astriplen : ""),
 		_fafilter(fsm->action));
     }
 #undef	_fafilter
@@ -2260,18 +2276,20 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    }
 	break;
     case FSM_LSETFCON:
+      {	const char * fsmpath = NULL;
 	if (fsm->fcontext == NULL || *fsm->fcontext == '\0'
 	 || !strcmp(fsm->fcontext, "<<none>>"))
 	    break;
-	rc = lsetfilecon(fsm->path, (security_context_t)fsm->fcontext);
+	(void) urlPath(fsm->path, &fsmpath);	/* XXX fsm->path */
+	rc = lsetfilecon(fsmpath, (security_context_t)fsm->fcontext);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->path, fsm->fcontext,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : CPIOERR_LSETFCON_FAILED);
-	break;
+      }	break;
     case FSM_CHOWN:
-	rc = chown(fsm->path, st->st_uid, st->st_gid);
+	rc = Chown(fsm->path, st->st_uid, st->st_gid);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		fsm->path, (int)st->st_uid, (int)st->st_gid,
@@ -2280,7 +2298,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	break;
     case FSM_LCHOWN:
 #if ! CHOWN_FOLLOWS_SYMLINK
-	rc = lchown(fsm->path, st->st_uid, st->st_gid);
+	rc = Lchown(fsm->path, st->st_uid, st->st_gid);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		fsm->path, (int)st->st_uid, (int)st->st_gid,
@@ -2289,7 +2307,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 #endif
 	break;
     case FSM_CHMOD:
-	rc = chmod(fsm->path, (st->st_mode & 07777));
+	rc = Chmod(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
@@ -2300,7 +2318,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	{   struct utimbuf stamp;
 	    stamp.actime = st->st_mtime;
 	    stamp.modtime = st->st_mtime;
-	    rc = utime(fsm->path, &stamp);
+	    rc = Utime(fsm->path, &stamp);
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0x%x) %s\n", cur,
 			fsm->path, (unsigned)st->st_mtime,
@@ -2309,7 +2327,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	}
 	break;
     case FSM_SYMLINK:
-	rc = symlink(fsm->lpath, fsm->path);
+	rc = Symlink(fsm->lpath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->lpath, fsm->path, (rc < 0 ? strerror(errno) : ""));
@@ -2323,7 +2341,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
 	break;
     case FSM_MKFIFO:
-	rc = mkfifo(fsm->path, (st->st_mode & 07777));
+	rc = Mkfifo(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
@@ -2332,7 +2350,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	break;
     case FSM_MKNOD:
 	/*@-unrecog -portability @*/ /* FIX: check S_IFIFO or dev != 0 */
-	rc = mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
+	rc = Mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
 	/*@=unrecog =portability @*/
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,

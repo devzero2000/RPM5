@@ -123,6 +123,7 @@ int Chdir (const char * path)
 #ifdef	NOTYET
 	return davChdir(path);
 #else
+	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
 #endif
 	/*@notreached@*/ break;
@@ -134,6 +135,7 @@ int Chdir (const char * path)
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
+	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
 	/*@notreached@*/ break;
     }
@@ -165,6 +167,32 @@ int Rmdir (const char * path)
 	/*@notreached@*/ break;
     }
     return rmdir(path);
+}
+
+int Chroot(const char * path)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Chroot(%s)\n", path);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return chroot(path);
 }
 
 /* XXX rpmdb.c: analogue to rename(2). */
@@ -1292,6 +1320,7 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
+	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
 	/*@notreached@*/ break;
     }
@@ -1321,10 +1350,222 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
+	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
 	/*@notreached@*/ break;
     }
     return lstat(path, st);
+}
+
+int Chown(const char * path, uid_t owner, gid_t group)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Chown(%s,%d,%d)\n", path, (int)owner, (int)group);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return chown(path, owner, group);
+}
+
+int Lchown(const char * path, uid_t owner, gid_t group)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Lchown(%s,%d,%d)\n", path, (int)owner, (int)group);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return lchown(path, owner, group);
+}
+
+int Chmod(const char * path, mode_t mode)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Chmod(%s,%0o)\n", path, (int)mode);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return chmod(path, mode);
+}
+
+int Mkfifo(const char * path, mode_t mode)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Mkfifo(%s,%0o)\n", path, (int)mode);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return mkfifo(path, mode);
+}
+
+int Mknod(const char * path, mode_t mode, dev_t dev)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Mknod(%s,%0o, 0x%x)\n", path, (int)mode, (int)dev);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return mknod(path, mode, dev);
+}
+
+int Utime(const char * path, const struct utimbuf *buf)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Utime(%s,%p)\n", path, buf);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return utime(path, buf);
+}
+
+int Utimes(const char * path, const struct timeval times[2])
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Utimes(%s,%p)\n", path, times);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return utimes(path, times);
+}
+
+int Symlink(const char * oldpath, const char * newpath)
+{
+    const char * opath;
+    int out = urlPath(oldpath, &opath);
+    const char * npath;
+    int nut = urlPath(newpath, &npath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Symlink(%s,%s)\n", oldpath, newpath);
+    switch (out) {
+    case URL_IS_PATH:
+	oldpath = opath;
+	newpath = npath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return symlink(oldpath, newpath);
 }
 
 int Readlink(const char * path, char * buf, size_t bufsiz)
@@ -1352,6 +1593,7 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
+	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
 	/*@notreached@*/ break;
     }
@@ -1368,9 +1610,6 @@ int Access(const char * path, int amode)
 if (_rpmio_debug)
 fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
     switch (ut) {
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1378,7 +1617,11 @@ fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_FTP:		/* XXX TODO: implement. */
     default:
+	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
 	/*@notreached@*/ break;
     }
@@ -1531,4 +1774,11 @@ fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
     if (ISDAVMAGIC(dir))
 	return davClosedir(dir);
     return closedir(dir);
+}
+
+off_t Lseek(int fdno, off_t offset, int whence)
+{
+if (_rpmio_debug)
+fprintf(stderr, "*** Lseek(%d,0x%lx,%d)\n", fdno, (long)offset, whence);
+    return lseek(fdno, offset, whence);
 }

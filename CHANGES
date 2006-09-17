@@ -69,6 +69,9 @@
 	- add rpm2lsb boilerplate, dumps both package headers in YAML.
 	- fix: last 8 bytes of RSA modulus is keyid for V3 pubkeys (#205080).
 	- updated sv.po translations.
+	- permit file:// URL's in binary packages.
+	- rpmio: add Chown/Lchown/Chmod/Mkfifo/Mknod/Utime/Symlink/Chroot stubs.
+	- use rpmio Chdir et al stubs everywhere.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

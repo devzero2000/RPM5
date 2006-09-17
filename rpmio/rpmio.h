@@ -343,6 +343,14 @@ int Rmdir(const char * path)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
+ * chroot(2) clone.
+ * @todo Implement remotely.
+ */
+int Chroot(const char * path)
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
+
+/**
  * rename(2) clone.
  */
 int Rename(const char * oldpath, const char * newpath)
@@ -364,17 +372,6 @@ int Unlink(const char * path)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
- * readlink(2) clone.
- */
-/*@-incondefs@*/
-int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies *buf, errno, fileSystem, internalState @*/
-	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
-	/*@ensures maxRead(buf) <= bufsiz @*/;
-/*@=incondefs@*/
-
-/**
  * stat(2) clone.
  */
 int Stat(const char * path, /*@out@*/ struct stat * st)
@@ -389,7 +386,84 @@ int Lstat(const char * path, /*@out@*/ struct stat * st)
 	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 /**
+ * chown(2) clone.
+ * @todo Implement remotely.
+ */
+int Chown(const char * path, uid_t owner, gid_t group)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * lchown(2) clone.
+ * @todo Implement remotely.
+ */
+int Lchown(const char * path, uid_t owner, gid_t group)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * chmod(2) clone.
+ * @todo Implement remotely.
+ */
+int Chmod(const char * path, mode_t mode)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * mkfifo(3) clone.
+ * @todo Implement remotely.
+ */
+int Mkfifo(const char * path, mode_t mode)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * mknod(3) clone.
+ * @todo Implement remotely.
+ */
+int Mknod(const char * path, mode_t mode, dev_t dev)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * utime(2) clone.
+ * @todo Implement remotely.
+ */
+int Utime(const char * path, const struct utimbuf * buf)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * utimes(2) clone.
+ * @todo Implement remotely.
+ */
+int Utimes(const char * path, const struct timeval * times)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * symlink(3) clone.
+ * @todo Implement remotely.
+ */
+int Symlink(const char * oldpath, const char * newpath)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * readlink(2) clone.
+ * @todo Implement remotely.
+ */
+/*@-incondefs@*/
+int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies *buf, errno, fileSystem, internalState @*/
+	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
+	/*@ensures maxRead(buf) <= bufsiz @*/;
+/*@=incondefs@*/
+
+/**
  * access(2) clone.
+ * @todo Implement remotely.
  */
 int Access(const char * path, int amode)
 	/*@globals errno, fileSystem @*/
@@ -446,6 +520,14 @@ struct dirent * Readdir(DIR * dir)
 int Closedir(/*@only@*/ DIR * dir)
 	/*@globals errno, fileSystem @*/
 	/*@modifies *dir, errno, fileSystem @*/;
+
+/**
+ * lseek(2) clone.
+ * @todo Implement SEEK_HOLE/SEEK_DATA.
+ */
+off_t Lseek(int fdno, off_t offset, int whence)
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /*@}*/
 

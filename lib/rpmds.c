@@ -254,11 +254,14 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 /*@=boundsread@*/
 
 	if (tagN == RPMTAG_DIRNAMES) {
-	    /* XXX Dirnames always have trailing '/', trim that here. */
 	    char * t;
 	    size_t len;
 	    int i;
+	    /* XXX Dirnames always have trailing '/', trim that here. */
 	    for (i = 0; i < Count; i++) {
+		(void) urlPath(N[i], &t);
+		if (t > N[i])
+		    N[i] = t;
 		t = (char *)N[i];
 		len = strlen(t);
 		/* XXX don't truncate if parent is / */

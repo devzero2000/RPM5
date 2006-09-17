@@ -1968,12 +1968,12 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	if (openall_before_chroot < 0)
 	    openall_before_chroot = rpmExpandNumeric("%{?_openall_before_chroot}");
 
-	xx = chdir("/");
+	xx = Chdir("/");
 	/*@-superuser -noeffect @*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    if (openall_before_chroot)
 		xx = rpmdbOpenAll(rpmtsGetRdb(ts));
-	    xx = chroot(rootDir);
+	    xx = Chroot(rootDir);
 	}
 	/*@=superuser =noeffect @*/
 	(void) rpmtsSetChrootDone(ts, 1);
@@ -2155,11 +2155,11 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	const char * currDir = rpmtsCurrDir(ts);
 	/*@-superuser -noeffect @*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
-	    xx = chroot(".");
+	    xx = Chroot(".");
 	/*@=superuser =noeffect @*/
 	(void) rpmtsSetChrootDone(ts, 0);
 	if (currDir != NULL)
-	    xx = chdir(currDir);
+	    xx = Chdir(currDir);
     }
 
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
