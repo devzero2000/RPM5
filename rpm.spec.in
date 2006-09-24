@@ -572,7 +572,7 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sun Sep 17 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.16
+* Sun Sep 24 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.16
 - don't process rpmrc files unless --rcfile is explicitly given.
 - eliminate unused check-prereqs script (#203182).
 - eliminate ancient convertrpmrc.sh conversion script.
@@ -590,6 +590,8 @@ exit 0
 - permit file:// URL's in binary packages.
 - rpmio: add Chown/Lchown/Chmod/Mkfifo/Mknod/Utime/Symlink/Chroot stubs.
 - use rpmio Chdir et al stubs everywhere.
+- fix: permit chdir in lua scripts.
+- maintain HRMIB info in /var/cache/hrmib.
 
 * Sun Aug  6 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.15
 - use global rpmcliTargets for build/query modes.
