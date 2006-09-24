@@ -323,8 +323,8 @@ struct _dbiIndex {
     int	dbi_region_init;
     int	dbi_tas_spins;
 	/* mpool sub-system parameters */
-    int	dbi_mmapsize;	/*!< (10Mb) */
-    int	dbi_cachesize;	/*!< (128Kb) */
+    int	dbi_mmapsize;		/*!< (10Mb) */
+    int	dbi_cachesize;		/*!< (128Kb) */
 	/* lock sub-system parameters */
     unsigned int dbi_lk_max;
     unsigned int dbi_lk_detect;
@@ -383,7 +383,7 @@ struct _dbiIndex {
 /*@only@*//*@null@*/
     DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
 /*@only@*//*@null@*/
-    void * dbi_stats;		/*!< Berkeley db statistics */
+    void * dbi_stats;		/*!< Berkeley DB statistics */
 
 /*@observer@*/
     const struct _dbiVec * dbi_vec;	/*!< private methods */
@@ -396,36 +396,40 @@ struct _dbiIndex {
  */
 struct rpmdb_s {
 /*@owned@*/
-    const char * db_root;/*!< path prefix */
+    const char * db_root;	/*!< rpmdb path prefix */
 /*@owned@*/
-    const char * db_home;/*!< directory path */
+    const char * db_home;	/*!< rpmdb directory path */
     int		db_flags;
-    int		db_mode;	/*!< open mode */
-    int		db_perms;	/*!< open permissions */
+    int		db_mode;	/*!< rpmdb pen mode */
+    int		db_perms;	/*!< rpmdb open permissions */
     int		db_api;		/*!< Berkeley API type */
 /*@owned@*/
-    const char * db_errpfx;
-    int		db_remove_env;
-    int		db_filter_dups;
+    const char * db_errpfx;	/*!< Berkeley DB error msg prefix. */
+
+    int		db_remove_env;	/*!< Discard dbenv on close? */
+    int		db_filter_dups;	/*!< Skip duplicate headers with --rebuilddb? */
+
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
-    void (*db_errcall) (const char *db_errpfx, char *buffer)
+    void (*db_errcall) (const char * db_errpfx, char * buffer)
 	/*@*/;
 /*@shared@*/
-    FILE *	db_errfile;
+    FILE *	db_errfile;	/*!< Berkeley DB stderr clone. */
 /*@only@*/
     void * (*db_malloc) (size_t nbytes)
 	/*@*/;
 /*@only@*/
-    void * (*db_realloc) (/*@only@*//*@null@*/ void * ptr,
-						size_t nbytes)
+    void * (*db_realloc) (/*@only@*//*@null@*/ void * ptr, size_t nbytes)
 	/*@*/;
     void (*db_free) (/*@only@*/ void * ptr)
 	/*@modifies *ptr @*/;
+
+    int	(*db_export) (rpmdb db, Header h, int adding);
+
 /*@only@*/ /*@null@*/
-    unsigned char * db_bits;	/*!< package instance bit mask. */
-    int		db_nbits;	/*!< no. of bits in mask. */
-    rpmdb	db_next;
-    int		db_opens;
+    unsigned char * db_bits;	/*!< Header instance bit mask. */
+    int		db_nbits;	/*!< No. of bits in mask. */
+    rpmdb	db_next;	/*!< Chain of rpmdbOpen'ed rpmdb's. */
+    int		db_opens;	/*!< No. of opens for this rpmdb. */
 /*@only@*/ /*@null@*/
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
     int *	db_tagn;	/*!< Tag index mappings. */
@@ -433,9 +437,9 @@ struct rpmdb_s {
 /*@only@*/ /*@null@*/
     dbiIndex * _dbi;		/*!< Tag indices. */
 
-    struct rpmop_s db_getops;
-    struct rpmop_s db_putops;
-    struct rpmop_s db_delops;
+    struct rpmop_s db_getops;	/*!< dbiGet statistics. */
+    struct rpmop_s db_putops;	/*!< dbiPut statistics. */
+    struct rpmop_s db_delops;	/*!< dbiDel statistics. */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */

@@ -769,6 +769,9 @@ int rpmdbCheckSignals(void)
 
 /**
  * Block all signals, returning previous signal mask.
+ * @param db		rpm database
+ * @retval *oldMask	previous sigset
+ * @return		0 on success
  */
 static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
 	/*@globals fileSystem @*/
@@ -788,6 +791,9 @@ static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
 
 /**
  * Restore signal mask.
+ * @param db		rpm database
+ * @param oldMask	previous sigset
+ * @return		0 on success
  */
 /*@mayexit@*/
 static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
@@ -796,6 +802,73 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
 {
     (void) rpmdbCheckSignals();
     return sigprocmask(SIG_SETMASK, oldMask, NULL);
+}
+
+/**
+ */
+static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
+	/*@*/
+{
+    static const struct headerSprintfExtension_s * hdrfmts = headerDefaultFormats;
+    const char * errstr = "(unkown error)";
+    const char * str;
+
+/*@-modobserver@*/
+    str = headerSprintf(h, qfmt, rpmTagTable, hdrfmts, &errstr);
+/*@=modobserver@*/
+    if (str == NULL)
+	rpmError(RPMERR_QFMT, _("incorrect format: \"%s\": %s\n"), qfmt, errstr);
+    return str;
+}
+
+/**
+ * Write added/removed header info.
+ * @param db		rpm database
+ * @param h		header
+ * @param adding	adding an rpmdb header?
+ * @return		0 on success
+ */
+static int rpmdbExportInfo(rpmdb db, Header h, int adding)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+{
+    const char * fn = NULL;
+    int xx;
+
+    {	const char * fnfmt = rpmGetPath("%{?_hrmib_path}", NULL);
+	if (fnfmt && *fnfmt)
+	    fn = queryHeader(h, fnfmt);
+	fnfmt = _free(fnfmt);
+    }
+
+    if (fn == NULL)
+	goto exit;
+
+    if (adding) {
+	FD_t fd = Fopen(fn, "w.ufdio");
+	int_32 *iidp;
+
+	if (fd) {
+	    xx = Fclose(fd);
+	    fd = NULL;
+	    if (headerGetEntry(h, RPMTAG_INSTALLTID, NULL, (void **)&iidp, NULL)) {
+		struct utimbuf stamp;
+		stamp.actime = *iidp;
+		stamp.modtime = *iidp;
+		if (!Utime(fn, &stamp))
+		    rpmMessage(RPMMESS_DEBUG, "  +++ %s\n", fn);
+	    }
+	}
+    } else {
+	if (!Unlink(fn))
+	    rpmMessage(RPMMESS_DEBUG, "  --- %s\n", fn);
+    }
+
+exit:
+    fn = _free(fn);
+    return 0;
 }
 
 #define	_DB_ROOT	"/"
@@ -1033,6 +1106,22 @@ fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, h
 	db = _free(db);
 	/*@-globstate@*/ return NULL; /*@=globstate@*/
     }
+
+    /* XXX if default "/var/lib/rpm" path, manage %{_hrmib_path} entries too. */
+    {	const char * dbpath = rpmGetPath("%{?_dbpath}", NULL);
+	const char * rootpath = NULL;
+	const char * homepath = NULL;
+
+	(void) urlPath(db->db_root, &rootpath);
+	(void) urlPath(db->db_home, &homepath);
+#define	_VARLIBRPM	"/var/lib/rpm"
+	if (!strcmp(rootpath, "/")
+	 && !strncmp(homepath, _VARLIBRPM, sizeof(_VARLIBRPM)-1))
+	    db->db_export = rpmdbExportInfo;
+	dbpath = _free(dbpath);
+#undef	_VARLIBRPM
+    }
+
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     db->db_remove_env = 0;
     db->db_filter_dups = _db_filter_dups;
@@ -2762,6 +2851,8 @@ memset(data, 0, sizeof(*data));
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
+		if (db->db_export != NULL)
+		    xx = db->db_export(db, h, 0);
 		dbi = dbiOpen(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
@@ -3146,6 +3237,8 @@ memset(data, 0, sizeof(*data));
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
+		if (db->db_export != NULL)
+		    xx = db->db_export(db, h, 1);
 		dbi = dbiOpen(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
