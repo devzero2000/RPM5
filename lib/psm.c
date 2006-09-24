@@ -520,7 +520,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	/*@modifies psm, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
-    int rootFd = -1;
+    int rootFdno = -1;
     const char *n, *v, *r;
     rpmRC rc = RPMRC_OK;
     int i;
@@ -538,7 +538,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 
     /* Save the current working directory. */
 /*@-nullpass@*/
-    rootFd = open(".", O_RDONLY, 0);
+    rootFdno = open(".", O_RDONLY, 0);
 /*@=nullpass@*/
 
     /* Get into the chroot. */
@@ -598,19 +598,17 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     /* Get out of chroot. */
     if (rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
+	xx = fchdir(rootFdno);
 	/*@-superuser -noeffect @*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    xx = Chroot(".");
 	/*@=superuser =noeffect @*/
 	    xx = rpmtsSetChrootDone(ts, 0);
 	}
-    }
+    } else
+	xx = fchdir(rootFdno);
 
-    /* Reset current working directory. */
-    if (rootFd >= 0) {
-	xx = fchdir(rootFd);
-	xx = close(rootFd);
-    }
+    xx = close(rootFdno);
 
     return rc;
 }
