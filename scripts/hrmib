@@ -1,0 +1,19 @@
+#!/bin/sh
+
+mydir=/var/cache/hrmib
+mkdir -p $mydir || exit 1
+rm -f $mydir/*
+
+rpm -qa --qf '%{name}-%{version}-%{release}.%{arch} %{installtime:date}\n' | \
+while read nvra idate ; do
+   case $nvra in
+   gpg-pubkey-*)
+	;;
+   *)
+	touch -d "`echo $idate`" $mydir/$nvra
+	;;
+   esac
+done
+touch $mydir
+ls -alrt $mydir
+
