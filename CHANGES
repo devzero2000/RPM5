@@ -73,7 +73,8 @@
 	- rpmio: add Chown/Lchown/Chmod/Mkfifo/Mknod/Utime/Symlink/Chroot stubs.
 	- use rpmio Chdir et al stubs everywhere.
 	- fix: permit chdir in lua scripts.
-	- maintain HRMIB info in /var/cache/hrmib.
+	- maintain net-snmp HR-MIB info in /var/cache/hrmib.
+	- update to db-4.5.20 internal.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

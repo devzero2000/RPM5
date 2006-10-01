@@ -93,7 +93,7 @@ db.h:
 
 # XXX grrr, force noinst libdb.la for db3.
 $(libdb_la):
-	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.4.la > $(libdb_la)
+	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.5.la > $(libdb_la)
 
 rpmdb_archive_SOURCES =
 rpmdb_archive_LDADD = \
@@ -163,6 +163,7 @@ rpmdb_svc_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_proc.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_svc.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_util.o \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_xdr.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/gen_db_server.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.o \
 	librpmdb.la
