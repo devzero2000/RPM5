@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-10-01 18:58-0400\n"
-"PO-Revision-Date: 2006-09-04 11:26+0200\n"
+"PO-Revision-Date: 2006-10-01 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -162,7 +162,7 @@ msgstr ""
 
 #: rpmqv.c:369
 msgid "files may only be relocated during package installation"
-msgstr "filer kan relokeras endast under paketinstallation"
+msgstr "filer kan flyttas endast under paketinstallation"
 
 #: rpmqv.c:372
 msgid "cannot use --prefix with --relocate or --excludepath"
@@ -1726,7 +1726,7 @@ msgstr "FTS_COMFOLLOW: följ kommandoradssymlänkar"
 
 #: lib/poptALL.c:259
 msgid "FTS_LOGICAL: logical walk"
-msgstr "FTS_LOGICAL: genomlöp logiskt"
+msgstr "FTS_LOGICAL: traversera logiskt"
 
 #: lib/poptALL.c:261
 msgid "FTS_NOCHDIR: don't change directories"
@@ -1738,7 +1738,7 @@ msgstr "FTS_NOSTAT: hämta inte statusinfo"
 
 #: lib/poptALL.c:265
 msgid "FTS_PHYSICAL: physical walk"
-msgstr "FTS_PHYSICAL: genomlöp fysiskt"
+msgstr "FTS_PHYSICAL: traversera fysiskt"
 
 #: lib/poptALL.c:267
 msgid "FTS_SEEDOT: return dot and dot-dot"
@@ -1950,7 +1950,7 @@ msgstr "kör inte paketskript"
 
 #: lib/poptI.c:242
 msgid "relocate files in non-relocatable package"
-msgstr "relokera filer i ej relokerbart paket"
+msgstr "flytta filer i ej relokerbart paket"
 
 #: lib/poptI.c:246
 msgid "print dependency loops as warning"
@@ -2116,7 +2116,7 @@ msgstr "<kat>"
 
 #: lib/poptI.c:370
 msgid "relocate files from path <old> to <new>"
-msgstr "relokera filer från <gammal> till <ny>"
+msgstr "flytta filer från <gammal> till <ny>"
 
 #: lib/poptI.c:371
 msgid "<old>=<new>"
@@ -2144,11 +2144,11 @@ msgstr "<datum>"
 
 #: lib/poptI.c:385
 msgid "If transaction fails rollback to <date>"
-msgstr "Om transaktion misslyckades rullar tillbaka till <datum>"
+msgstr "Rullar tillbaka till <datum> om transaktionen misslyckas"
 
 #: lib/poptI.c:388
 msgid "Exclude Transaction I.D. from rollback"
-msgstr "Uteslut transaktion-ID från tillbakarullning"
+msgstr "Uteslut transaktions-ID från tillbakarullning"
 
 #: lib/poptI.c:389
 msgid "<tid>"
