@@ -34,7 +34,40 @@
 #include <popt.h>
 
 #include <gelf.h>
+
+#if 0		/* XXX compile without dwarf.h */
 #include <dwarf.h>
+#else
+/* some defines taken from the dwarf standard */
+
+#define DW_TAG_compile_unit	0x11
+
+#define DW_AT_name		0x03
+#define DW_AT_stmt_list		0x10
+#define DW_AT_comp_dir		0x1b
+
+#define DW_FORM_addr		0x01
+#define DW_FORM_block2		0x03
+#define DW_FORM_block4		0x04
+#define DW_FORM_data2		0x05
+#define DW_FORM_data4		0x06
+#define DW_FORM_data8		0x07
+#define DW_FORM_string		0x08
+#define DW_FORM_block		0x09
+#define DW_FORM_block1		0x0a
+#define DW_FORM_data1		0x0b
+#define DW_FORM_flag		0x0c
+#define DW_FORM_sdata		0x0d
+#define DW_FORM_strp		0x0e
+#define DW_FORM_udata		0x0f
+#define DW_FORM_ref_addr	0x10
+#define DW_FORM_ref1		0x11
+#define DW_FORM_ref2		0x12
+#define DW_FORM_ref4		0x13
+#define DW_FORM_ref8		0x14
+#define DW_FORM_ref_udata	0x15
+#define DW_FORM_indirect	0x16
+#endif
 
 #include "hashtab.h"
 
