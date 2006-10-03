@@ -861,7 +861,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	}
     }
 
-    if (!stopUninstall) {
+    if (numPackages > 0 && !stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
 
 	/* Drop added/available package indices and dependency sets. */
