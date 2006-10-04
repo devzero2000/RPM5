@@ -572,7 +572,7 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_RPMLIB = (1 << 24),	/*!< rpmlib(feature) dependency. */
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
-    RPMSENSE_PATCHES	= (1 << 27),
+    RPMSENSE_STRONG	= (1 << 27),
     RPMSENSE_CONFIG	= (1 << 28),
     RPMSENSE_PROBE	= (1 << 29),
     RPMSENSE_PACKAGE	= (1 << 30)
