@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.4.5\n"
+"Project-Id-Version: rpm 4.4.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-10-01 18:58-0400\n"
-"PO-Revision-Date: 2006-02-19 22:53+0100\n"
+"PO-Revision-Date: 2006-10-08 15:30+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -941,9 +941,9 @@ msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "Der BuildRoot kann nicht \"/\" sein: %s\n"
 
 #: build/parsePreamble.c:576
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
-msgstr "Zeile %d: Präfixe dürfen nicht mit einem \"/\" enden: %s\n"
+msgstr "Zeile %d: Präfixe müssen mit einem \"/\" beginnen: %s\n"
 
 #: build/parsePreamble.c:584
 #, c-format
@@ -957,9 +957,9 @@ msgstr ""
 "Zeile %d: Das Dokumentationsverzeichnis muss mit einem \"/\" beginnen: %s\n"
 
 #: build/parsePreamble.c:610
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s takes an integer value: %s\n"
-msgstr "Zeile %d: Tag benötigt nur ein Zeichen: %s\n"
+msgstr "Zeile %d: %s benötigt eine Ganzzahl: %s\n"
 
 #: build/parsePreamble.c:650 build/parsePreamble.c:661
 #, c-format
@@ -1056,9 +1056,9 @@ msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "Zeile %d: Ungültiges Argument für %%patch: %s\n"
 
 #: build/parsePrep.c:597
-#, fuzzy, c-format
+#, c-format
 msgid "Fetching %s failed: %s\n"
-msgstr "%s fehlgeschlagen: %s\n"
+msgstr "Herunterladen von %s fehlgeschlagen: %s\n"
 
 #: build/parsePrep.c:619
 #, c-format
@@ -1274,7 +1274,7 @@ msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 #: build/poptBT.c:203 lib/poptALL.c:302 lib/poptI.c:338 lib/poptQV.c:405
 #: lib/poptQV.c:414 lib/poptQV.c:456
 msgid "don't verify package digest(s)"
-msgstr "Paket-Kurzfassung nicht überprüfen"
+msgstr "Paket-Prüfsumme(n) nicht überprüfen"
 
 #: build/poptBT.c:205 lib/poptALL.c:304 lib/poptI.c:340 lib/poptQV.c:408
 #: lib/poptQV.c:416 lib/poptQV.c:459
@@ -1312,7 +1312,7 @@ msgstr "Überschreibe Zielplattform"
 
 #: build/poptBT.c:220 lib/poptALL.c:299 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
-msgstr ""
+msgstr "CPU-VENDOR-OS"
 
 #: build/poptBT.c:222
 msgid "lookup i18N strings in specfile catalog"
@@ -1374,9 +1374,8 @@ msgid "Missing hard link(s)"
 msgstr "Fehlende harte Verlinkung(en)"
 
 #: lib/cpio.c:277
-#, fuzzy
 msgid "File digest mismatch"
-msgstr "MD5-Prüfsumme stimmt nicht"
+msgstr "Datei-Prüfsumme stimmt nicht"
 
 #: lib/cpio.c:278
 msgid "Internal error"
@@ -1522,9 +1521,8 @@ msgid "(invalid xml type)"
 msgstr "(ungültiger XML-Typ)"
 
 #: lib/formats.c:578
-#, fuzzy
 msgid "(invalid yaml type)"
-msgstr "(ungültiger XML-Typ)"
+msgstr "(ungültiger YAML-Typ)"
 
 #: lib/formats.c:687
 msgid "(not an OpenPGP signature)"
@@ -2063,9 +2061,8 @@ msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
 #: lib/poptI.c:306 lib/poptI.c:308 lib/poptQV.c:347 lib/poptQV.c:350
 #: lib/poptQV.c:352
-#, fuzzy
 msgid "don't verify file digests"
-msgstr "Paket-Kurzfassung nicht überprüfen"
+msgstr "Datei-Prüfsummen nicht überprüfen"
 
 #: lib/poptI.c:310
 msgid "don't install file security contexts"
@@ -2265,16 +2262,15 @@ msgstr "Überprüfungsmodus"
 
 #: lib/poptQV.c:144
 msgid "query/verify the package(s) which require a dependency"
-msgstr "Abfrage nach Paketen, die die Fähigkeit benötigen"
+msgstr "Abfrage nach Paketen, die eine Fähigkeit benötigen"
 
 #: lib/poptQV.c:146
-#, fuzzy
 msgid "query/verify the package(s) which require any contained provide"
-msgstr "Abfrage nach Paketen, die die Fähigkeit benötigen"
+msgstr "Abfrage nach Paketen, die jede enthaltene und bereitgestellte Fähigkeit benötigen"
 
 #: lib/poptQV.c:150
 msgid "query/verify the package(s) which provide a dependency"
-msgstr "Abfrage nach Paketen, die die Fähigkeit bereitstellen"
+msgstr "Abfrage nach Paketen, die eine Fähigkeit bereitstellen"
 
 #: lib/poptQV.c:153
 msgid "create transaction set"
@@ -2343,7 +2339,7 @@ msgstr "Folgendes Abfrage-Format benutzen"
 
 #: lib/poptQV.c:311
 msgid "QUERYFORMAT"
-msgstr ""
+msgstr "ABFRAGE-FORMAT"
 
 #: lib/poptQV.c:313
 msgid "substitute i18n sections into spec file"
@@ -2788,7 +2784,7 @@ msgstr "Paket-Nutzdaten können im ustar Tar-Archivformat sein."
 
 #: lib/rpmds.c:1274
 msgid "file digests can be other than MD5."
-msgstr ""
+msgstr "Datei-Prüfsummen können andere als MD5 sein."
 
 #: lib/rpmds.c:1392
 #, c-format
@@ -2932,7 +2928,7 @@ msgstr "Erneutes packen gelöschter Dateien..."
 
 #: lib/rpminstall.c:234
 msgid "Upgrading..."
-msgstr "Aktualisiere..."
+msgstr "Aktualisieren..."
 
 #: lib/rpminstall.c:236
 msgid "Upgrading packages..."
@@ -3030,9 +3026,8 @@ msgid "Installing %s\n"
 msgstr "Installiere %s\n"
 
 #: lib/rpminstall.c:1135
-#, fuzzy
 msgid "Missing repackaged package(s) detected:\n"
-msgstr "Aufräumen bei neu gebauten Paketen:\n"
+msgstr "Fehlende(s) erneut gepackte(s) Paket(e) gefunden:\n"
 
 #: lib/rpminstall.c:1360
 #, c-format
@@ -3046,7 +3041,7 @@ msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
 
 #: lib/rpminstall.c:1478
 msgid "Cleaning up repackaged packages:\n"
-msgstr "Aufräumen bei neu gebauten Paketen:\n"
+msgstr "Aufräumen bei erneut gepackten Paketen:\n"
 
 #. @innercontinue@
 #. XXX can't happen
@@ -3104,14 +3099,14 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "Paket %s (welches neuer als %s ist) ist bereits installiert"
 
 #: lib/rpmps.c:246
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
-msgstr "Installation des Pakets %s benötigt %ld%cB auf dem %s Dateisystem"
+msgstr "Installation des Pakets %s benötigt %lu%cB auf dem %s Dateisystem"
 
 #: lib/rpmps.c:256
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
-msgstr "Installation des Pakets %s benötigt %ld Inodes auf dem %s Dateisystem"
+msgstr "Installation des Pakets %s benötigt %lu Inodes auf dem %s Dateisystem"
 
 #: lib/rpmps.c:261
 #, c-format
@@ -3133,9 +3128,9 @@ msgid "%s conflicts with %s%s"
 msgstr "%s kollidiert mit %s%s"
 
 #: lib/rpmps.c:276
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s on %s rdonly filesystem"
-msgstr "Installation des Pakets %s benötigt %ld%cB auf dem %s Dateisystem"
+msgstr "Installation des Pakets %s auf dem nur als lesbar eingehängten Dateisystem %s"
 
 #: lib/rpmps.c:281
 #, c-format
@@ -3305,9 +3300,9 @@ msgid "cannot open Solve database in %s\n"
 msgstr "Kann Datenbank zum Auflösen in %s nicht öffnen\n"
 
 #: lib/rpmts.c:646
-#, fuzzy, c-format
+#, c-format
 msgid "incorrect solve path format: %s\n"
-msgstr "Ungültiges Format: %s\n"
+msgstr "Ungültiges \"Solve Path\"-Format: %s\n"
 
 #: lib/rpmts.c:676
 #, c-format
@@ -3328,9 +3323,9 @@ msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i       Gerät   B-Größe     B verfügbar  I verf.  Einhängepunkt\n"
 
 #: lib/rpmts.c:1324
-#, fuzzy, c-format
+#, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
-msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgstr "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 
 #: lib/signature.c:139
 #, c-format
@@ -3471,11 +3466,11 @@ msgstr "Header- und Nutzdaten-Größe: "
 
 #: lib/signature.c:1084
 msgid "MD5 digest: "
-msgstr "MD5-Kurzfassung: "
+msgstr "MD5-Prüfsumme: "
 
 #: lib/signature.c:1144
 msgid "Header SHA1 digest: "
-msgstr "SHA1-Kurzfassung des Headers: "
+msgstr "SHA1-Prüfsumme des Headers: "
 
 #: lib/signature.c:1225 lib/signature.c:1415
 msgid "Header "
@@ -3498,7 +3493,7 @@ msgstr "Überprüfe Signatur: UNGÜLTIGE PARAMETER\n"
 #: lib/signature.c:1534
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
-msgstr "Fehlerhafte MD5-Kurzfassung: NICHT UNTERSTÜTZT\n"
+msgstr "Fehlerhafte MD5-Prüfsumme: NICHT UNTERSTÜTZT\n"
 
 #: lib/signature.c:1538
 #, c-format
@@ -3805,7 +3800,7 @@ msgstr "%s hat einen zu großen oder zu kleinen Wert, übersprungen\n"
 #: rpmdb/dbconfig.c:397
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s hat einen zu großen oder zu kleinen Integer-Wert, übersprungen\n"
+msgstr "%s hat eine zu große oder zu kleine Ganzzahl, übersprungen\n"
 
 #: rpmdb/header.c:2825
 msgid "missing { after %"
@@ -3919,9 +3914,9 @@ msgid "cannot open %s index\n"
 msgstr "Kann den %s-Index nicht öffnen\n"
 
 #: rpmdb/rpmdb.c:820
-#, fuzzy, c-format
+#, c-format
 msgid "incorrect format: \"%s\": %s\n"
-msgstr "Ungültiges Format: %s\n"
+msgstr "Ungültiges Format: \"%s\": %s\n"
 
 #: rpmdb/rpmdb.c:1103
 msgid "no dbpath has been set\n"
@@ -4161,12 +4156,12 @@ msgstr "Makro %%%.*s nicht gefunden, überspringe\n"
 
 #: rpmio/macro.c:1860
 msgid "Macro expansion too big for target buffer\n"
-msgstr ""
+msgstr "Makro-Ausdehnung zu groß für den Zielpuffer\n"
 
 #: rpmio/macro.c:1888
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
-msgstr ""
+msgstr "Makro '%s' ist nur lesbar und kann nicht verändert werden.\n"
 
 #. XXX Fstrerror
 #: rpmio/macro.c:2074 rpmio/macro.c:2080
@@ -4458,7 +4453,7 @@ msgstr "Beschreibende Informationen der Pakete anzeigen"
 
 #: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
 msgid "list change logs for this package"
-msgstr "Änderungsinformationen für dieses Paket anzeigen"
+msgstr "Veränderungsprotokoll für dieses Paket anzeigen"
 
 #: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
 msgid "list trigger scriptlets from package(s)"
@@ -4512,59 +4507,3 @@ msgstr "Benutze Datenbank in VERZEICHNIS"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "VERZEICHNIS"
-
-#~ msgid "Spec file can't use BuildRoot\n"
-#~ msgstr "Spec-Datei kann den BuildRoot nicht benutzen\n"
-
-#~ msgid "buildroot already specified, ignoring %s\n"
-#~ msgstr "BuildRoot wurde bereits angegeben, ignoriere %s\n"
-
-#~ msgid "override build root"
-#~ msgstr "Überschreibe BuildRoot"
-
-#, fuzzy
-#~ msgid "    %s[%d]: %s\n"
-#~ msgstr "%s: %s\n"
-
-#~ msgid "Target buffer overflow\n"
-#~ msgstr "Überlauf des Zielpuffers\n"
-
-#~ msgid "Building for target %s\n"
-#~ msgstr "Baue für das Ziel %s\n"
-
-#~ msgid "Internal error in argument processing (%d) :-(\n"
-#~ msgstr "Interner Fehler beim Verarbeiten der Argumente (%d) :-(\n"
-
-#~ msgid "\tMatches found.\n"
-#~ msgstr "\tÜbereinstimmungen gefunden.\n"
-
-#~ msgid "\tNo matches found.\n"
-#~ msgstr "\tKeine Übereinstimmungen gefunden.\n"
-
-#~ msgid "\tREMOVETID matched INSTALLTID.\n"
-#~ msgstr "\tREMOVETID entspricht INSTALLTID.\n"
-
-#~ msgid "\tRepackaged Package was %s...\n"
-#~ msgstr "\tErneut gebautes Paket war %s...\n"
-
-#~ msgid "Couldn't download nosource %s: %s\n"
-#~ msgstr "Konnte NoSource %s nicht herunterladen: %s\n"
-
-#~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
-#~ msgstr "Zeile %d: Das Epochen-Feld muss eine Zahl sein: %s\n"
-
-#~ msgid "generate headers compatible with rpm4 packaging"
-#~ msgstr "Generiere mit RPM4-Paketen kompatible Header"
-
-#~ msgid ""
-#~ "generate package header(s) compatible with (legacy) rpm[23] packaging"
-#~ msgstr ""
-#~ "Generiere Paket-Header, die mit veralteten RPM-Paketen (v2/3) kompatibel "
-#~ "sind"
-
-#~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
-#~ msgstr ""
-#~ "Generiere Header, die mit veralteten RPM-Paketen (v2/3) kompatibel sind"
-
-#~ msgid "don't verify MD5 digest of files"
-#~ msgstr "Keine Überprüfung der MD5-Kurzfassung der Dateien"
