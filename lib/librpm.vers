@@ -310,6 +310,7 @@ LIBRPM_0
     rpmtsCreate;
     rpmtsCurrDir;
     _rpmts_debug;
+    rpmtsDFlags;
     rpmtsDig;
     rpmtsDoARBGoal;
     rpmtsElement;
@@ -345,6 +346,7 @@ LIBRPM_0
     rpmtsSetChrootDone;
     rpmtsSetColor;
     rpmtsSetCurrDir;
+    rpmtsSetDFlags;
     rpmtsSetFlags;
     rpmtsSetNotifyCallback;
     rpmtsSetREContext;
