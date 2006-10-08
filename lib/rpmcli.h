@@ -265,74 +265,6 @@ typedef	int (*QSpecF_t) (rpmts ts, QVA_t qva, const char * arg)
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
- * Describe query/verify/signature command line operation.
- */
-#if !defined(SWIG)
-struct rpmQVKArguments_s {
-    rpmQVSources qva_source;	/*!< Identify CLI arg type. */
-    int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
-    rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
-    rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
-/*@only@*/ /*@null@*/
-    rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
-/*@refccounted@*/ /*@relnull@*/
-    rpmgi qva_gi;		/*!< Generalized iterator on args. */
-    rpmRC qva_rc;		/*!< Current return code. */
-
-/*@null@*/
-    QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
-/*@null@*/
-    QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
-/*@unused@*/
-    int qva_verbose;		/*!< (unused) */
-/*@only@*/ /*@null@*/
-    const char * qva_queryFormat;/*!< Format for headerSprintf(). */
-    int sign;			/*!< Is a passphrase needed? */
-    int trust;			/*!< Trust metric when importing pubkeys. */
-/*@observer@*/
-    const char * passPhrase;	/*!< Pass phrase. */
-/*@owned@*/ /*@null@*/
-    const char * qva_prefix;	/*!< Path to top of install tree. */
-    char qva_mode;
-		/*!<
-		- 'q'	from --query, -q
-		- 'Q'	from --querytags
-		- 'V'	from --verify, -V
-		- 'A'	from --addsign
-		- 'I'	from --import
-		- 'K'	from --checksig, -K
-		- 'R'	from --resign
-		*/
-    char qva_char;		/*!< (unused) always ' ' */
-
-    /* install/erase mode arguments */
-    rpmtransFlags transFlags;
-    rpmprobFilterFlags probFilter;
-    rpmInstallInterfaceFlags installInterfaceFlags;
-    rpmEraseInterfaceFlags eraseInterfaceFlags;
-    uint_32 arbtid;		/*!< from --arbgoal */
-    uint_32 rbtid;		/*!< from --rollback */
-    uint_32 *rbtidExcludes;	/*!< from --rollback */
-    int numrbtidExcludes;	/*!< from --rollback */
-    int numRelocations;
-    int noDeps;
-    int incldocs;
-/*@owned@*/ /*@null@*/
-    rpmRelocation relocations;
-
-    /* database mode arguments */
-    int init;			/*!< from --initdb */
-    int rebuild;		/*!< from --rebuilddb */
-    int verify;			/*!< from --verifydb */
-};
-#endif
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct rpmQVKArguments_s rpmQVKArgs;
-
-/** \ingroup rpmcli
  */
 /*@unchecked@*/
 extern struct poptOption rpmQVSourcePoptTable[];
@@ -489,51 +421,26 @@ int rpmcliVerify(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 
 /*@}*/
 /* ==================================================================== */
-/** \name RPMBT */
-/*@{*/
-
-/** \ingroup rpmcli
- * Describe build command line request.
- */
-struct rpmBuildArguments_s {
-    rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
-    int buildAmount;		/*!< Bit(s) to control operation. */
-/*@observer@*/
-    const char * passPhrase;	/*!< Pass phrase. */
-/*@only@*/ /*@null@*/
-    const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
-    int force;			/*!< from --force */
-    int noBuild;		/*!< from --nobuild */
-    int noDeps;			/*!< from --nodeps */
-    int noLang;			/*!< from --nolang */
-    int shortCircuit;		/*!< from --short-circuit */
-    int sign;			/*!< from --sign */
-    int useCatalog;		/*!< from --usecatalog */
-    char buildMode;		/*!< Build mode (one of "btBC") */
-    char buildChar;		/*!< Build stage (one of "abcilps ") */
-/*@observer@*/ /*@null@*/
-    const char * rootdir;
-};
-
-/** \ingroup rpmcli
- */
-typedef	struct rpmBuildArguments_s *	BTA_t;
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct rpmBuildArguments_s	rpmBTArgs;
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct poptOption		rpmBuildPoptTable[];
-
-/*@}*/
-/* ==================================================================== */
 /** \name RPMEIU */
 /*@{*/
 /* --- install/upgrade/erase modes */
+
+/** \ingroup rpmcli
+ * Bit(s) to control rpmInstall() and rpmErase() operation.
+ */
+typedef enum rpmInstallInterfaceFlags_e {
+    INSTALL_NONE	= 0,
+    INSTALL_PERCENT	= (1 <<  0),	/*!< from --percent */
+    INSTALL_HASH	= (1 <<  1),	/*!< from --hash */
+    INSTALL_NODEPS	= (1 <<  2),	/*!< from --nodeps */
+    INSTALL_NOORDER	= (1 <<  3),	/*!< from --noorder */
+    INSTALL_LABEL	= (1 <<  4),	/*!< from --verbose (notify) */
+    INSTALL_UPGRADE	= (1 <<  5),	/*!< from --upgrade */
+    INSTALL_FRESHEN	= (1 <<  6),	/*!< from --freshen */
+    INSTALL_INSTALL	= (1 <<  7),	/*!< from --install */
+    INSTALL_ERASE	= (1 <<  8),	/*!< from --erase */
+    INSTALL_ALLMATCHES	= (1 <<  9)	/*!< from --allmatches (erase) */
+} rpmInstallInterfaceFlags;
 
 /*@unchecked@*/
 extern int rpmcliPackagesTotal;
@@ -729,22 +636,12 @@ int rpmRollback(rpmts ts, QVA_t ia, /*@null@*/ const char ** argv)
 /** \ingroup rpmcli
  */
 /*@unchecked@*/
-extern struct rpmQVKArguments_s rpmIArgs;
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
 extern struct poptOption rpmInstallPoptTable[];
 
 /*@}*/
 /* ==================================================================== */
 /** \name RPMDB */
 /*@{*/
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct rpmQVKArguments_s rpmDBArgs;
 
 /** \ingroup rpmcli
  */
@@ -804,6 +701,127 @@ int rpmcliSign(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 		fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
+
+/*@}*/
+
+/** \ingroup rpmcli
+ * Command line option information.
+ */
+#if !defined(SWIG)
+struct rpmQVKArguments_s {
+    rpmQVSources qva_source;	/*!< Identify CLI arg type. */
+    int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
+    rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
+    rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
+/*@only@*/ /*@null@*/
+    rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
+/*@refccounted@*/ /*@relnull@*/
+    rpmgi qva_gi;		/*!< Generalized iterator on args. */
+    rpmRC qva_rc;		/*!< Current return code. */
+
+/*@null@*/
+    QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
+/*@null@*/
+    QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
+/*@unused@*/
+    int qva_verbose;		/*!< (unused) */
+/*@only@*/ /*@null@*/
+    const char * qva_queryFormat;/*!< Format for headerSprintf(). */
+    int sign;			/*!< Is a passphrase needed? */
+    int trust;			/*!< Trust metric when importing pubkeys. */
+/*@observer@*/
+    const char * passPhrase;	/*!< Pass phrase. */
+/*@owned@*/ /*@null@*/
+    const char * qva_prefix;	/*!< Path to top of install tree. */
+    char qva_mode;
+		/*!<
+		- 'q'	from --query, -q
+		- 'Q'	from --querytags
+		- 'V'	from --verify, -V
+		- 'A'	from --addsign
+		- 'I'	from --import
+		- 'K'	from --checksig, -K
+		- 'R'	from --resign
+		*/
+    char qva_char;		/*!< (unused) always ' ' */
+
+    /* install/erase mode arguments */
+    rpmdepFlags depFlags;
+    rpmtransFlags transFlags;
+    rpmprobFilterFlags probFilter;
+    rpmInstallInterfaceFlags installInterfaceFlags;
+    uint_32 arbtid;		/*!< from --arbgoal */
+    uint_32 rbtid;		/*!< from --rollback */
+    uint_32 *rbtidExcludes;	/*!< from --rollback */
+    int numrbtidExcludes;	/*!< from --rollback */
+    int numRelocations;
+    int noDeps;
+    int incldocs;
+/*@owned@*/ /*@null@*/
+    rpmRelocation relocations;
+
+    /* database mode arguments */
+    int init;			/*!< from --initdb */
+    int rebuild;		/*!< from --rebuilddb */
+    int verify;			/*!< from --verifydb */
+};
+#endif
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct rpmQVKArguments_s rpmQVKArgs;
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct rpmQVKArguments_s rpmIArgs;
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct rpmQVKArguments_s rpmDBArgs;
+
+/* ==================================================================== */
+/** \name RPMBT */
+/*@{*/
+
+/** \ingroup rpmcli
+ * Describe build command line request.
+ */
+struct rpmBuildArguments_s {
+    rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
+    int buildAmount;		/*!< Bit(s) to control operation. */
+/*@observer@*/
+    const char * passPhrase;	/*!< Pass phrase. */
+/*@only@*/ /*@null@*/
+    const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
+    int force;			/*!< from --force */
+    int noBuild;		/*!< from --nobuild */
+    int noDeps;			/*!< from --nodeps */
+    int noLang;			/*!< from --nolang */
+    int shortCircuit;		/*!< from --short-circuit */
+    int sign;			/*!< from --sign */
+    int useCatalog;		/*!< from --usecatalog */
+    char buildMode;		/*!< Build mode (one of "btBC") */
+    char buildChar;		/*!< Build stage (one of "abcilps ") */
+/*@observer@*/ /*@null@*/
+    const char * rootdir;
+};
+
+/** \ingroup rpmcli
+ */
+typedef	struct rpmBuildArguments_s *	BTA_t;
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct rpmBuildArguments_s	rpmBTArgs;
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct poptOption		rpmBuildPoptTable[];
 
 /*@}*/
 

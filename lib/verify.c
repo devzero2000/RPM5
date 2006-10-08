@@ -34,7 +34,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     rpmVerifyAttrs flags = rpmfiVFlags(fi);
     const char * fn = rpmfiFN(fi);
     const char * rootDir = rpmtsRootDir(ts);
-    int selinuxEnabled = rpmtsSELinuxEnabled(ts);
     struct stat sb;
     int rc;
 
@@ -264,7 +263,6 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, fileSystem, internalState  @*/
 {
-    int selinuxEnabled = rpmtsSELinuxEnabled(ts);
     rpmVerifyAttrs verifyResult = 0;
     /*@-type@*/ /* FIX: union? */
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
@@ -504,9 +502,8 @@ qva = Qva;
 
 int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 {
-    const char * arg;
-    rpmtransFlags transFlags = qva->transFlags;
-    rpmtransFlags otransFlags;
+    rpmdepFlags depFlags = qva->depFlags, odepFlags;
+    rpmtransFlags transFlags = qva->transFlags, otransFlags;
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
@@ -523,11 +520,13 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 	vsflags |= RPMVSF_NOHDRCHK;
     vsflags &= ~RPMVSF_NEEDPAYLOAD;
 
+    odepFlags = rpmtsSetDFlags(ts, depFlags);
     otransFlags = rpmtsSetFlags(ts, transFlags);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     ec = rpmcliArgIter(ts, qva, argv);
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
     transFlags = rpmtsSetFlags(ts, otransFlags);
+    depFlags = rpmtsSetDFlags(ts, odepFlags);
 
     if (qva->qva_showPackage == showVerifyPackage)
         qva->qva_showPackage = NULL;

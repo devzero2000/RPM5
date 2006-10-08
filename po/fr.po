@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:58-0400\n"
+"POT-Creation-Date: 2006-10-08 17:38-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -578,7 +578,7 @@ msgstr "Le fichier non précédé d'un \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Substitution non permise: %s\n"
 
-#: build/files.c:2069 lib/rpminstall.c:372
+#: build/files.c:2069 lib/rpminstall.c:373
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fichier non trouvé par la substitution: %s\n"
@@ -1277,18 +1277,18 @@ msgstr "n'exécuter aucune étape de la construction"
 msgid "do not verify build dependencies"
 msgstr "ne pas vérifier les dépendances de construction"
 
-#: build/poptBT.c:203 lib/poptALL.c:302 lib/poptI.c:338 lib/poptQV.c:405
-#: lib/poptQV.c:414 lib/poptQV.c:456
+#: build/poptBT.c:203 lib/poptALL.c:302 lib/poptI.c:353 lib/poptQV.c:407
+#: lib/poptQV.c:416 lib/poptQV.c:458
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: build/poptBT.c:205 lib/poptALL.c:304 lib/poptI.c:340 lib/poptQV.c:408
-#: lib/poptQV.c:416 lib/poptQV.c:459
+#: build/poptBT.c:205 lib/poptALL.c:304 lib/poptI.c:355 lib/poptQV.c:410
+#: lib/poptQV.c:418 lib/poptQV.c:461
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier l'entête de la base de données à la récupération"
 
-#: build/poptBT.c:207 lib/poptALL.c:310 lib/poptI.c:342 lib/poptQV.c:411
-#: lib/poptQV.c:418 lib/poptQV.c:461
+#: build/poptBT.c:207 lib/poptALL.c:310 lib/poptI.c:357 lib/poptQV.c:413
+#: lib/poptQV.c:420 lib/poptQV.c:463
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la(les) signature(s) du paquetage"
 
@@ -1316,7 +1316,7 @@ msgstr "générer une signature PGP/GPG"
 msgid "override target platform"
 msgstr "surcharger la plate-forme cible"
 
-#: build/poptBT.c:220 lib/poptALL.c:299 lib/poptQV.c:317
+#: build/poptBT.c:220 lib/poptALL.c:299 lib/poptQV.c:318
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1399,102 +1399,102 @@ msgstr "L'entête ne contient pas le fichier archive"
 msgid " failed - "
 msgstr " échec - "
 
-#: lib/depends.c:249
+#: lib/depends.c:250
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "le paquetage %s a déjà été rajouté, replacé par %s\n"
 
-#: lib/depends.c:263
+#: lib/depends.c:264
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "le paquetage %s a déjà été rajouté, replacé par %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:369
+#: lib/depends.c:371
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "aucun paquetage ne requiert %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:437
+#: lib/depends.c:441
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:533
+#: lib/depends.c:538
 msgid "(cached)"
 msgstr "(caché)"
 
-#: lib/depends.c:549
+#: lib/depends.c:554
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(fourni par rpmrc)"
 
-#: lib/depends.c:568
+#: lib/depends.c:573
 #, fuzzy
 msgid "(access probe)"
 msgstr "(fourni par rpmrc)"
 
-#: lib/depends.c:581
+#: lib/depends.c:586
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(fourni par rpmlib)"
 
-#: lib/depends.c:602
+#: lib/depends.c:607
 msgid "(rpmlib provides)"
 msgstr "(fourni par rpmlib)"
 
-#: lib/depends.c:618
+#: lib/depends.c:623
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(fourni par rpmlib)"
 
-#: lib/depends.c:634
+#: lib/depends.c:639
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(fourni par rpmlib)"
 
-#: lib/depends.c:650
+#: lib/depends.c:655
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(fourniture ajoutée)"
 
-#: lib/depends.c:685
+#: lib/depends.c:690
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(fourniture ajoutée)"
 
-#: lib/depends.c:712
+#: lib/depends.c:717
 msgid "(db files)"
 msgstr "(fourni par fichiers db)"
 
-#: lib/depends.c:725
+#: lib/depends.c:730
 msgid "(db provides)"
 msgstr "(fourni par la db)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:755
+#: lib/depends.c:760
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1195
+#: lib/depends.c:1212
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 "ignorer la(les) relation(s) entre les noms de paquetages [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1339
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "on enlève %s \"%s\" des relations de Ttri.\n"
 
 #. Record all relations.
-#: lib/depends.c:1591
+#: lib/depends.c:1608
 msgid "========== recording tsort relations\n"
 msgstr "========== enregistrement des relations de Ttri\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1712
+#: lib/depends.c:1729
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1503,21 +1503,21 @@ msgstr ""
 "========== Ttri des paquetages (ordre, #prédécesseurs, #succeseurs, arbre, "
 "profondeur)\n"
 
-#: lib/depends.c:1803
+#: lib/depends.c:1820
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== successeurs seulement (%d octets)\n"
 
-#: lib/depends.c:1876
+#: lib/depends.c:1893
 msgid "LOOP:\n"
 msgstr "BOUCLE:\n"
 
-#: lib/depends.c:1907
+#: lib/depends.c:1924
 msgid "========== continuing tsort ...\n"
 msgstr "========== continuation du Ttri ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1912
+#: lib/depends.c:1929
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "échec de rpmtsOrder, %d éléments toujours présents\n"
@@ -1834,7 +1834,7 @@ msgstr "Lire <FICHIER:...> au lieu du(des) fichier(s) par défaut"
 msgid "<FILE:...>"
 msgstr "<FICHIER:...>"
 
-#: lib/poptALL.c:299 lib/poptQV.c:317
+#: lib/poptALL.c:299 lib/poptQV.c:318
 #, fuzzy
 msgid "specify target platform"
 msgstr "surcharger la plate-forme cible"
@@ -1987,16 +1987,58 @@ msgstr "le roulement arrière prend comme argument une date"
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "argument date du roulement arrière malformé"
 
-#: lib/poptI.c:220 lib/poptQV.c:287 lib/poptQV.c:333
+#: lib/poptI.c:220 lib/poptQV.c:288 lib/poptQV.c:335
 msgid "add suggested packages to transaction"
 msgstr "rajouter à la transaction les paquetages suggérés"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:223 tools/rpmgraph.c:273
+msgid "use anaconda \"presentation order\""
+msgstr "utiliser la \"présentation\" d'anaconda"
+
+#: lib/poptI.c:226
+msgid "print dependency loops as warning"
+msgstr ""
+
+#: lib/poptI.c:229
+msgid "do not suggest missing dependency resolution(s)"
+msgstr "ne pas suggérer de résolution pour les dépendances manquantes"
+
+#: lib/poptI.c:232
+#, fuzzy
+msgid "do not check added package conflicts"
+msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
+
+#: lib/poptI.c:235
+msgid "ignore added package requires on symlink targets"
+msgstr ""
+
+#: lib/poptI.c:238
+msgid "ignore added package obsoletes"
+msgstr ""
+
+#: lib/poptI.c:241
+#, fuzzy
+msgid "ignore added package requires on file parent directory"
+msgstr ""
+"sauver les fichiers du paquetage désinstallé en les renommant dans un sous-"
+"répertoire"
+
+#: lib/poptI.c:244
+#, fuzzy
+msgid "do not check added package requires"
+msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
+
+#: lib/poptI.c:247
+#, fuzzy
+msgid "ignore added package upgrades"
+msgstr "aucun paquetage ne fournit %s\n"
+
+#: lib/poptI.c:251
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installer tous les fichiers, meme si les configurations disent le contraire"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:255
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -2004,171 +2046,159 @@ msgstr ""
 "retirer tous les paquetages qui correspondent à <paquetage> (normalement on "
 "retourne une erreur si le <paquetage> correspond à plusieurs paquetages"
 
-#: lib/poptI.c:233 tools/rpmgraph.c:273
-msgid "use anaconda \"presentation order\""
-msgstr "utiliser la \"présentation\" d'anaconda"
-
-#: lib/poptI.c:238 lib/poptI.c:322
+#: lib/poptI.c:261 lib/poptI.c:337
 msgid "do not execute package scriptlet(s)"
 msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
 
-#: lib/poptI.c:242
+#: lib/poptI.c:265
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:246
-msgid "print dependency loops as warning"
-msgstr ""
-
-#: lib/poptI.c:250
+#: lib/poptI.c:269
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 "sauver les fichiers du paquetage désinstallé en les renommant dans un sous-"
 "répertoire"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:272
 msgid "erase (uninstall) package"
 msgstr "désinstaller un paquetage"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:272
 msgid "<package>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:256 lib/poptI.c:298
+#: lib/poptI.c:275 lib/poptI.c:317
 msgid "do not install configuration files"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:259 lib/poptI.c:303
+#: lib/poptI.c:278 lib/poptI.c:322
 msgid "do not install documentation"
 msgstr "ne pas installer la documentation"
 
-#: lib/poptI.c:261
+#: lib/poptI.c:280
 msgid "skip files with leading component <path> "
 msgstr "sauter les fichiers commence par le <chemin> indiqué"
 
-#: lib/poptI.c:262
+#: lib/poptI.c:281
 msgid "<path>"
 msgstr "<chemin>"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:285
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:287
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "raccourci pour --replacepkgs --replacefiles"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:291
 msgid "upgrade package(s) if already installed"
 msgstr "met à jour le(s) paquetage(s) déjà installé(s)"
 
-#: lib/poptI.c:273 lib/poptI.c:291 lib/poptI.c:395
+#: lib/poptI.c:292 lib/poptI.c:310 lib/poptI.c:410
 msgid "<packagefile>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:275
+#: lib/poptI.c:294
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "afficher des marqueurs au fur et à mesure que le paquetage s'installe (avec -"
 "v c'est bien(tm))"
 
-#: lib/poptI.c:279
+#: lib/poptI.c:298
 msgid "don't verify package architecture"
 msgstr "ne pas vérifier l'architecture du paquetage"
 
-#: lib/poptI.c:282
+#: lib/poptI.c:301
 msgid "don't verify package operating system"
 msgstr "ne pas vérifier le système d'exploitation du paquetage"
 
-#: lib/poptI.c:286
+#: lib/poptI.c:305
 msgid "don't check disk space before installing"
 msgstr "ne pas vérifier l'espace disque avant l'installation"
 
-#: lib/poptI.c:288
+#: lib/poptI.c:307
 msgid "install documentation"
 msgstr "installer la documentation"
 
-#: lib/poptI.c:291
+#: lib/poptI.c:310
 msgid "install package(s)"
 msgstr "installer le(s) paquetage(s)"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:313
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 "mettre à jour la base données, mais ne pas modifier le système de fichiers"
 
-#: lib/poptI.c:300
+#: lib/poptI.c:319
 msgid "do not verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquetage"
 
-#: lib/poptI.c:306 lib/poptI.c:308 lib/poptQV.c:347 lib/poptQV.c:350
-#: lib/poptQV.c:352
+#: lib/poptI.c:325 lib/poptI.c:327 lib/poptQV.c:349 lib/poptQV.c:352
+#: lib/poptQV.c:354
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:329
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:314
+#: lib/poptI.c:333
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "ne pas ré-arranger l'ordre d'installation des paquetages pour satisfaire les "
 "dépendances"
 
-#: lib/poptI.c:319
-msgid "do not suggest missing dependency resolution(s)"
-msgstr "ne pas suggérer de résolution pour les dépendances manquantes"
-
-#: lib/poptI.c:326
+#: lib/poptI.c:341
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%pre (s'il existe)"
 
-#: lib/poptI.c:329
+#: lib/poptI.c:344
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%post (s'il existe)"
 
-#: lib/poptI.c:332
+#: lib/poptI.c:347
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%preun (s'il existe)"
 
-#: lib/poptI.c:335
+#: lib/poptI.c:350
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%postun (s'il existe)"
 
-#: lib/poptI.c:345
+#: lib/poptI.c:360
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "n'exécuter aucun scriptlet trigger activé par ce paquetage"
 
-#: lib/poptI.c:348
+#: lib/poptI.c:363
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerprein"
 
-#: lib/poptI.c:351
+#: lib/poptI.c:366
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerin"
 
-#: lib/poptI.c:354
+#: lib/poptI.c:369
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerun"
 
-#: lib/poptI.c:357
+#: lib/poptI.c:372
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerpostun"
 
-#: lib/poptI.c:361
+#: lib/poptI.c:376
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2176,67 +2206,67 @@ msgstr ""
 "mettre à jour avec un paquetage plus ancien (une m-à-j avec --force fait ça "
 "automatiquement"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:380
 msgid "print percentages as package installs"
 msgstr "afficher le pourcentage d'installation du paquetage"
 
-#: lib/poptI.c:367
+#: lib/poptI.c:382
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "reloge le paquetage vers <rep>, si relogeable"
 
-#: lib/poptI.c:368
+#: lib/poptI.c:383
 msgid "<dir>"
 msgstr "<rep>"
 
-#: lib/poptI.c:370
+#: lib/poptI.c:385
 msgid "relocate files from path <old> to <new>"
 msgstr "reloge les fichiers du <vieux> chemin vers <nouveau>"
 
-#: lib/poptI.c:371
+#: lib/poptI.c:386
 msgid "<old>=<new>"
 msgstr "<vieux>=<nouveau>"
 
-#: lib/poptI.c:374
+#: lib/poptI.c:389
 msgid "save erased package files by repackaging"
 msgstr ""
 "sauvegarder les fichiers du paquetage désinstallé en les ré-empaquetant"
 
-#: lib/poptI.c:377
+#: lib/poptI.c:392
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:380
+#: lib/poptI.c:395
 msgid "reinstall if the package is already present"
 msgstr "réinstalle si le paquetage est déjà installé"
 
-#: lib/poptI.c:382
+#: lib/poptI.c:397
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 "désinstaller le(s) nouveau(x), ré-installer le(s) vieux paquetages, comme "
 "c'était le cas pour cette <date>"
 
-#: lib/poptI.c:383 lib/poptI.c:386
+#: lib/poptI.c:398 lib/poptI.c:401
 msgid "<date>"
 msgstr "<date>"
 
-#: lib/poptI.c:385
+#: lib/poptI.c:400
 msgid "If transaction fails rollback to <date>"
 msgstr ""
 
-#: lib/poptI.c:388
+#: lib/poptI.c:403
 msgid "Exclude Transaction I.D. from rollback"
 msgstr ""
 
-#: lib/poptI.c:389
+#: lib/poptI.c:404
 #, fuzzy
 msgid "<tid>"
 msgstr "<option>"
 
-#: lib/poptI.c:391
+#: lib/poptI.c:406
 msgid "don't install, but tell if it would work or not"
 msgstr "n'installe pas, mais dit si ça marcherait ou pas"
 
-#: lib/poptI.c:394
+#: lib/poptI.c:409
 msgid "upgrade package(s)"
 msgstr "mises à jour des paquetages"
 
@@ -2370,123 +2400,123 @@ msgstr "débite les informations de base des fichiers"
 msgid "list files in package"
 msgstr "lister les fichiers du paquetage"
 
-#: lib/poptQV.c:292 lib/poptQV.c:338
+#: lib/poptQV.c:293 lib/poptQV.c:340
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "éviter les fichiers %%license"
 
-#: lib/poptQV.c:295 lib/poptQV.c:341
+#: lib/poptQV.c:296 lib/poptQV.c:343
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "éviter les fichiers fantômes %%ghost"
 
-#: lib/poptQV.c:298
+#: lib/poptQV.c:299
 #, c-format
 msgid "skip %%ghost files"
 msgstr "éviter les fichiers fantômes %%ghost"
 
-#: lib/poptQV.c:302
+#: lib/poptQV.c:303
 #, c-format
 msgid "skip %%license files"
 msgstr "éviter les fichiers %%license"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:306
 #, c-format
 msgid "skip %%readme files"
 msgstr "éviter les fichier %%readme"
 
-#: lib/poptQV.c:311
+#: lib/poptQV.c:312
 msgid "use the following query format"
 msgstr "utiliser le format de requête suivant"
 
-#: lib/poptQV.c:311
+#: lib/poptQV.c:312
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:313
+#: lib/poptQV.c:314
 msgid "substitute i18n sections into spec file"
 msgstr "substituer les section i18n dans le fichier spec"
 
-#: lib/poptQV.c:315
+#: lib/poptQV.c:316
 msgid "display the states of the listed files"
 msgstr "affiche la liste des fichiers et leur état"
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:358
 msgid "don't verify size of files"
 msgstr "ne pas vérifier la taille des fichiers"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:361
 msgid "don't verify symlink path of files"
 msgstr "ne pas vérifier le chemin du lien symbolique des fichiers"
 
-#: lib/poptQV.c:362
+#: lib/poptQV.c:364
 msgid "don't verify owner of files"
 msgstr "ne pas vérifier le possesseur des fichiers"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "don't verify group of files"
 msgstr "ne pas vérifier le groupe possesseur des fichiers"
 
-#: lib/poptQV.c:368
+#: lib/poptQV.c:370
 msgid "don't verify modification time of files"
 msgstr "ne pas vérifier les dates de modification des fichiers"
 
-#: lib/poptQV.c:371 lib/poptQV.c:374
+#: lib/poptQV.c:373 lib/poptQV.c:376
 msgid "don't verify mode of files"
 msgstr "ne pas vérifier les permissions des fichiers"
 
-#: lib/poptQV.c:377
+#: lib/poptQV.c:379
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "ne pas vérifier les fichiers du paquetage"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:381
 msgid "don't verify files in package"
 msgstr "ne pas vérifier les fichiers du paquetage"
 
-#: lib/poptQV.c:382 lib/poptQV.c:385 tools/rpmgraph.c:267
+#: lib/poptQV.c:384 lib/poptQV.c:387 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquetage"
 
-#: lib/poptQV.c:390 lib/poptQV.c:394 lib/poptQV.c:397 lib/poptQV.c:400
+#: lib/poptQV.c:392 lib/poptQV.c:396 lib/poptQV.c:399 lib/poptQV.c:402
 msgid "don't execute verify script(s)"
 msgstr "ne pas exécuter le(s) script(s) de vérification"
 
-#: lib/poptQV.c:434
+#: lib/poptQV.c:436
 msgid "sign package(s) (identical to --resign)"
 msgstr "signer le(s) paquetage(s) (identique à --resign)"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:438
 msgid "verify package signature(s)"
 msgstr "vérifier la(les) signature(s) du paquetage"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:440
 #, fuzzy
 msgid "delete package signatures"
 msgstr "vérifier la(les) signature(s) du paquetage"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:442
 msgid "import an armored public key"
 msgstr "importer une clé publique blindé"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:444
 msgid "sign package(s) (identical to --addsign)"
 msgstr "signer le(s) paquetage(s) (identique à --addsign)"
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:446
 msgid "generate signature"
 msgstr "génération de signature"
 
-#: lib/poptQV.c:447
+#: lib/poptQV.c:449
 #, fuzzy
 msgid "specify trust metric"
 msgstr "surcharger la plate-forme cible"
 
-#: lib/poptQV.c:450
+#: lib/poptQV.c:452
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:453
+#: lib/poptQV.c:455
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2674,7 +2704,7 @@ msgstr "numéro d'article de paquetage: %u\n"
 msgid "record %u could not be read\n"
 msgstr "impossible de lire l'article %u\n"
 
-#: lib/query.c:683 lib/rpminstall.c:815
+#: lib/query.c:683 lib/rpminstall.c:817
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "le paquetage %s n'est pas installé\n"
@@ -2957,8 +2987,8 @@ msgstr "relogement de %s vers %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "relogement du répertoire %s vers %s\n"
 
-#: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:490
-#: lib/rpminstall.c:621 lib/rpminstall.c:1060 lib/rpmts.c:656
+#: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:491
+#: lib/rpminstall.c:622 lib/rpminstall.c:1061 lib/rpmts.c:656
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2970,12 +3000,12 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "tag inconnu: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:719 lib/rpminstall.c:665 lib/rpminstall.c:849
-#: lib/rpminstall.c:1453 lib/transaction.c:1181 tools/rpmgraph.c:197
+#: lib/rpmgi.c:719 lib/rpminstall.c:666 lib/rpminstall.c:851
+#: lib/rpminstall.c:1456 lib/transaction.c:1181 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Dépendances requises:\n"
 
-#: lib/rpmgi.c:725 lib/rpminstall.c:672 tools/rpmgraph.c:203
+#: lib/rpmgi.c:725 lib/rpminstall.c:673 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "    Résolutions suggérées:\n"
 
@@ -3003,121 +3033,121 @@ msgstr "Mise à jour..."
 msgid "Upgrading packages..."
 msgstr "Mise à jour des paquetages..."
 
-#: lib/rpminstall.c:330 lib/rpminstall.c:793 lib/transaction.c:1154
+#: lib/rpminstall.c:331 lib/rpminstall.c:795 lib/transaction.c:1154
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
 "Roulement arrière des paquetages (+%d/-%d) jusqu'à %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:419
+#: lib/rpminstall.c:420
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "Nouveau but: %s\n"
 
-#: lib/rpminstall.c:435
+#: lib/rpminstall.c:436
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Récupération de %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:448
+#: lib/rpminstall.c:449
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... en tant que %s\n"
 
-#: lib/rpminstall.c:452
+#: lib/rpminstall.c:453
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s ignoré - échec du téléchargement - %s\n"
 
-#: lib/rpminstall.c:509 lib/rpminstall.c:910 tools/rpmgraph.c:142
+#: lib/rpminstall.c:510 lib/rpminstall.c:911 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ne peut être installé\n"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:527
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "<paquetage source>"
 
-#: lib/rpminstall.c:551
+#: lib/rpminstall.c:552
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "le paquetage %s n'est pas relogeable\n"
 
-#: lib/rpminstall.c:596
+#: lib/rpminstall.c:597
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "installation des paquetages binaires\n"
 
-#: lib/rpminstall.c:601
+#: lib/rpminstall.c:602
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "erreur en lisant %s\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:608
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "le fichier %s demande une version plus récente de RPM\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:637
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: n'est pas un paquetage rpm (ni une list de paquetages): %s\n"
 
-#: lib/rpminstall.c:651
+#: lib/rpminstall.c:652
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d paquetage(s) source(s) et %d paquetage(s) binaire(s) trouvé(s)\n"
 
-#: lib/rpminstall.c:702
+#: lib/rpminstall.c:703
 msgid "installing binary packages\n"
 msgstr "installation des paquetages binaires\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ne peut ouvrir le fichier %s: %s\n"
 
-#: lib/rpminstall.c:824
+#: lib/rpminstall.c:826
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" spécifie plusieurs paquetages\n"
 
-#: lib/rpminstall.c:894
+#: lib/rpminstall.c:895
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "impossible d'ouvrir %s: %s\n"
 
-#: lib/rpminstall.c:900
+#: lib/rpminstall.c:901
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installation de %s\n"
 
-#: lib/rpminstall.c:1135
+#: lib/rpminstall.c:1136
 #, fuzzy
 msgid "Missing repackaged package(s) detected:\n"
 msgstr "erreur dans la lecteur de l'entête du paquetage\n"
 
-#: lib/rpminstall.c:1360
+#: lib/rpminstall.c:1363
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1447 lib/transaction.c:1159
+#: lib/rpminstall.c:1450 lib/transaction.c:1159
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 "Roulement arrière des paquetages (+%d/-%d) jusqu'à %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1478
+#: lib/rpminstall.c:1481
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1485
+#: lib/rpminstall.c:1488
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Récupération de %s\n"
@@ -3792,12 +3822,12 @@ msgstr ""
 msgid "running post-transaction scripts\n"
 msgstr ""
 
-#: lib/verify.c:307
+#: lib/verify.c:305
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "manquant %c %s"
 
-#: lib/verify.c:420
+#: lib/verify.c:418
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "dépendances non satisfaites pour %s: "

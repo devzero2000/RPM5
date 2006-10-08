@@ -938,7 +938,26 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmts
+ * Bit(s) to control rpmtsCheck() and rpmtsOrder() operation.
+ * @todo Move to rpmts.h.
+ */
+typedef enum rpmdepFlags_e {
+    RPMDEPS_FLAG_NONE		= 0,
+    RPMDEPS_FLAG_NOUPGRADE	= (1 <<  0),	/*!< from --noupgrade */
+    RPMDEPS_FLAG_NOREQUIRES	= (1 <<  1),	/*!< from --norequires */
+    RPMDEPS_FLAG_NOCONFLICTS	= (1 <<  2),	/*!< from --noconflicts */
+    RPMDEPS_FLAG_NOOBSOLETES	= (1 <<  3),	/*!< from --noobsoletes */
+    RPMDEPS_FLAG_NOPARENTDIRS	= (1 <<  4),	/*!< from --noparentdirs */
+    RPMDEPS_FLAG_NOLINKTOS	= (1 <<  5),	/*!< from --nolinktos */
+    RPMDEPS_FLAG_ANACONDA	= (1 <<  6),	/*!< from --anaconda */
+    RPMDEPS_FLAG_NOSUGGEST	= (1 <<  7),	/*!< from --nosuggest */
+    RPMDEPS_FLAG_ADDINDEPS	= (1 <<  8),	/*!< from --aid */
+    RPMDEPS_FLAG_DEPLOOPS	= (1 <<  9)	/*!< from --deploops */
+} rpmdepFlags;
+
+/** \ingroup rpmts
  * Bit(s) to control rpmtsRun() operation.
+ * @todo Move to rpmts.h.
  */
 typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NONE		= 0,
@@ -964,7 +983,7 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_UNDO		= (1 << 14),
 /*@=enummemuse@*/
-    RPMTRANS_FLAG_REVERSE	= (1 << 15),
+    /* 15 unused */
 
     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
     RPMTRANS_FLAG_NOPRE		= (1 << 17),	/*!< from --nopre */
@@ -979,12 +998,11 @@ typedef enum rpmtransFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
-    RPMTRANS_FLAG_ANACONDA	= (1 << 26),	/*!< from --anaconda */
+    /* 26 unused */
     RPMTRANS_FLAG_NOFDIGESTS	= (1 << 27),	/*!< from --nofdigests */
-    RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< from --nosuggest */
-    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */
+    /* 28-29 unused */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
-    RPMTRANS_FLAG_DEPLOOPS	= (1 << 31)	/*!< from --deploops */
+    /* 31 unused */
 } rpmtransFlags;
 
 #define	_noTransScripts		\
@@ -1089,38 +1107,6 @@ struct rpmlead {
 /*@unused@*/ char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
 } ;
 
-/* ==================================================================== */
-/** \name RPMEIU */
-/*@{*/
-/* --- install/upgrade/erase modes */
-
-/** \ingroup rpmcli
- * Bit(s) to control rpmInstall() operation.
- * @todo Move to rpmcli.h
- */
-typedef enum rpmInstallInterfaceFlags_e {
-    INSTALL_NONE	= 0,
-    INSTALL_PERCENT	= (1 << 0),	/*!< from --percent */
-    INSTALL_HASH	= (1 << 1),	/*!< from --hash */
-    INSTALL_NODEPS	= (1 << 2),	/*!< from --nodeps */
-    INSTALL_NOORDER	= (1 << 3),	/*!< from --noorder */
-    INSTALL_LABEL	= (1 << 4),	/*!< from --verbose (notify) */
-    INSTALL_UPGRADE	= (1 << 5),	/*!< from --upgrade */
-    INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
-    INSTALL_INSTALL	= (1 << 7),	/*!< from --install */
-    INSTALL_ERASE	= (1 << 8)	/*!< from --erase */
-} rpmInstallInterfaceFlags;
-
-/** \ingroup rpmcli
- * Bit(s) to control rpmErase() operation.
- */
-typedef enum rpmEraseInterfaceFlags_e {
-    UNINSTALL_NONE	= 0,
-    UNINSTALL_NODEPS	= (1 << 0),	/*!< from --nodeps */
-    UNINSTALL_ALLMATCHES= (1 << 1)	/*!< from --allmatches */
-} rpmEraseInterfaceFlags;
-
-/*@}*/
 /* ==================================================================== */
 /** \name RPMK */
 /*@{*/

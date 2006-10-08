@@ -744,7 +744,7 @@ enditer:
 
 	/* XXX Display dependency loops with rpm -qvT. */
 	if (rpmIsVerbose())
-	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_DEPLOOPS));
+	    (void) rpmtsSetDFlags(ts, (rpmtsDFlags(ts) | RPMDEPS_FLAG_DEPLOOPS));
 
 	xx = (*gi->tsOrder) (ts);
 

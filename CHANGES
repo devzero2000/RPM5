@@ -75,6 +75,11 @@
 	- fix: permit chdir in lua scripts.
 	- maintain net-snmp HR-MIB info in /var/cache/hrmib.
 	- update to db-4.5.20 internal.
+	- merge install/erase interface flags.
+	- eliminate RPMTRANS_FLAG_REVERSE.
+	- split rpmtsCheck() and rpmtsOrder() flags from transFlags -> depFlags.
+	- add --noparentdirs and --nolinktos rpmtsCheck() disablers.
+	- add --noupgrade/--norequires/--noconflicts/--noobsoletes disablers.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.

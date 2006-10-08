@@ -1155,12 +1155,34 @@ rpmts_SetFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
 if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_SetFlags(%p) ts %p transFlags %x\n", s, s->ts, transFlags);
+fprintf(stderr, "*** rpmts_SetFlags(%p) ts %p transFlags 0x%x\n", s, s->ts, transFlags);
 
     /* XXX FIXME: value check on flags, or build pure python object 
      * for it, and require an object of that type */
 
     return Py_BuildValue("i", rpmtsSetFlags(s->ts, transFlags));
+}
+
+/**
+ */
+static PyObject *
+rpmts_SetDFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
+	/*@modifies s @*/
+{
+    rpmdepFlags depFlags = 0;
+    char * kwlist[] = {"flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetDFlags", kwlist,
+	    &depFlags))
+	return NULL;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_SetDFlags(%p) ts %p depFlags 0x%x\n", s, s->ts, depFlags);
+
+    /* XXX FIXME: value check on flags, or build pure python object 
+     * for it, and require an object of that type */
+
+    return Py_BuildValue("i", rpmtsSetDFlags(s->ts, depFlags));
 }
 
 /** \ingroup py_c
@@ -1411,6 +1433,9 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
  {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
+ {"setDFlags",	(PyCFunction) rpmts_SetDFlags,	METH_VARARGS|METH_KEYWORDS,
+"ts.setDFlags(depFlags) -> previous depFlags\n\
+- Set control bit(s) for executing ts.check() and ts.order().\n" },
  {"check",	(PyCFunction) rpmts_Check,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"order",	(PyCFunction) rpmts_Order,	METH_NOARGS,

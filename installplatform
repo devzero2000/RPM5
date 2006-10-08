@@ -22,12 +22,12 @@ E_O_F
 RPM="./rpm --rcfile $TEMPRC"
 
 canonarch_sed='s_i.86_i386_;s_pentium[34]_i386_;s_athlon_i386_;s_sparc[^-]*_sparc_;s_alpha[^-]*_alpha_;s_\(powerpc\|ppc\)[^-]*_ppc_'
-arch="`$RPM --eval '%{_arch}'|sed -e "$canonarch_sed"`"
-VENDOR="`$RPM --eval '%{_vendor}'`"
-OS="`$RPM --eval '%{_os}'`"
-RPMRC_GNU="`$RPM --eval '%{_gnu}'`"
-target_platform="`$RPM --eval '%{?_gnu:%undefine _gnu}%{_target_platform}'|sed -e "$canonarch_sed"`"
-target="`$RPM --eval '%{_target}'|sed -e "$canonarch_sed"`"
+arch="`$RPM --eval '%{_arch}' 2>/dev/null |sed -e "$canonarch_sed"`"
+VENDOR="`$RPM --eval '%{_vendor}' 2>/dev/null `"
+OS="`$RPM --eval '%{_os}' 2>/dev/null `"
+RPMRC_GNU="`$RPM --eval '%{_gnu}' 2>/dev/null `"
+target_platform="`$RPM --eval '%{?_gnu:%undefine _gnu}%{_target_platform}' 2>/dev/null |sed -e "$canonarch_sed"`"
+target="`$RPM --eval '%{_target}' 2>/dev/null |sed -e "$canonarch_sed"`"
 
 case "$arch" in
   i[3456]86|pentium[34]|athlon) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_ s_i386_pentium3_ s_i386_pentium4_ s_i386_athlon_' ;;

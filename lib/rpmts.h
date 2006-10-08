@@ -151,7 +151,8 @@ typedef enum tsStage_e {
  * The set of packages to be installed/removed atomically.
  */
 struct rpmts_s {
-    rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
+    rpmdepFlags depFlags;	/*!< Bit(s) to control rpmtsCheck(). */
+    rpmtransFlags transFlags;	/*!< Bit(s) to control rpmtsRun(). */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
     rpmTSType type;		/*!< default, rollback, autorollback */
 
@@ -904,6 +905,23 @@ rpmtransFlags rpmtsFlags(rpmts ts)
  * @return		previous transaction flags
  */
 rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get dependency flags, i.e. bits that control rpmtsCheck() and rpmtsOrder().
+ * @param ts		transaction set
+ * @return		dependency flags
+ */
+rpmdepFlags rpmtsDFlags(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set dependency flags, i.e. bits that control rpmtsCheck() and rpmtsOrder().
+ * @param ts		transaction set
+ * @param depFlags	new dependency flags
+ * @return		previous dependency flags
+ */
+rpmdepFlags rpmtsSetDFlags(rpmts ts, rpmdepFlags depFlags)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

@@ -752,7 +752,7 @@ rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
 
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->ts = rpmtsLink(ts, "rpmtsi");
-    tsi->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
+    tsi->reverse = 0;
     tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tsi->ocsave = tsi->oc;
 /*@-modfilesys@*/

@@ -283,7 +283,8 @@ struct poptOption rpmQueryPoptTable[] = {
  { "list", 'l', 0, 0, 'l',
 	N_("list files in package"), NULL },
 
- { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.transFlags, RPMTRANS_FLAG_ADDINDEPS,
+ { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.depFlags, RPMDEPS_FLAG_ADDINDEPS,
 	N_("add suggested packages to transaction"), NULL },
 
  /* Duplicate file attr flags from packages into command line options. */
@@ -329,7 +330,8 @@ struct poptOption rpmVerifyPoptTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
 
- { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.transFlags, RPMTRANS_FLAG_ADDINDEPS,
+ { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.depFlags, RPMDEPS_FLAG_ADDINDEPS,
 	N_("add suggested packages to transaction"), NULL },
 
  /* Duplicate file attr flags from packages into command line options. */

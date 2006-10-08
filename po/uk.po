@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:58-0400\n"
+"POT-Creation-Date: 2006-10-08 17:38-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -570,7 +570,7 @@ msgstr "Файл повинен починатись з \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Шаблони не дозволяються: %s\n"
 
-#: build/files.c:2069 lib/rpminstall.c:372
+#: build/files.c:2069 lib/rpminstall.c:373
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не знайдено: %s\n"
@@ -1262,18 +1262,18 @@ msgstr "не виконувати жодного етапу збирання"
 msgid "do not verify build dependencies"
 msgstr "не перевіряти залежності перед збиранням"
 
-#: build/poptBT.c:203 lib/poptALL.c:302 lib/poptI.c:338 lib/poptQV.c:405
-#: lib/poptQV.c:414 lib/poptQV.c:456
+#: build/poptBT.c:203 lib/poptALL.c:302 lib/poptI.c:353 lib/poptQV.c:407
+#: lib/poptQV.c:416 lib/poptQV.c:458
 msgid "don't verify package digest(s)"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: build/poptBT.c:205 lib/poptALL.c:304 lib/poptI.c:340 lib/poptQV.c:408
-#: lib/poptQV.c:416 lib/poptQV.c:459
+#: build/poptBT.c:205 lib/poptALL.c:304 lib/poptI.c:355 lib/poptQV.c:410
+#: lib/poptQV.c:418 lib/poptQV.c:461
 msgid "don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки з бази даних"
 
-#: build/poptBT.c:207 lib/poptALL.c:310 lib/poptI.c:342 lib/poptQV.c:411
-#: lib/poptQV.c:418 lib/poptQV.c:461
+#: build/poptBT.c:207 lib/poptALL.c:310 lib/poptI.c:357 lib/poptQV.c:413
+#: lib/poptQV.c:420 lib/poptQV.c:463
 msgid "don't verify package signature(s)"
 msgstr "не перевіряти підписи у пакетах"
 
@@ -1301,7 +1301,7 @@ msgstr "створити PGP/GPG-підпис"
 msgid "override target platform"
 msgstr "перевизначити цільову платформу"
 
-#: build/poptBT.c:220 lib/poptALL.c:299 lib/poptQV.c:317
+#: build/poptBT.c:220 lib/poptALL.c:299 lib/poptQV.c:318
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1381,101 +1381,101 @@ msgstr "У заголовку не вказано файл архіву"
 msgid " failed - "
 msgstr " помилка - "
 
-#: lib/depends.c:249
+#: lib/depends.c:250
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "пакет %s вже добавлений, замінюється на %s\n"
 
-#: lib/depends.c:263
+#: lib/depends.c:264
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакет %s вже добавлений, замінюється на %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:369
+#: lib/depends.c:371
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "жоден пакет не вимагає %s\n"
 
 #. @-nullptrarith@
-#: lib/depends.c:437
+#: lib/depends.c:441
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:533
+#: lib/depends.c:538
 msgid "(cached)"
 msgstr "(кешований)"
 
-#: lib/depends.c:549
+#: lib/depends.c:554
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc постачає)"
 
-#: lib/depends.c:568
+#: lib/depends.c:573
 #, fuzzy
 msgid "(access probe)"
 msgstr "(rpmrc постачає)"
 
-#: lib/depends.c:581
+#: lib/depends.c:586
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:602
+#: lib/depends.c:607
 msgid "(rpmlib provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:618
+#: lib/depends.c:623
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:634
+#: lib/depends.c:639
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:650
+#: lib/depends.c:655
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(додано залежність)"
 
-#: lib/depends.c:685
+#: lib/depends.c:690
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(додано залежність)"
 
-#: lib/depends.c:712
+#: lib/depends.c:717
 msgid "(db files)"
 msgstr "(db файли)"
 
-#: lib/depends.c:725
+#: lib/depends.c:730
 msgid "(db provides)"
 msgstr "(db постачає)"
 
 #. dependency is unsatisfied, but just a hint.
-#: lib/depends.c:755
+#: lib/depends.c:760
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1195
+#: lib/depends.c:1212
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ігноруються зв'язки між іменами пакетів [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1339
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
 #. Record all relations.
-#: lib/depends.c:1591
+#: lib/depends.c:1608
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1712
+#: lib/depends.c:1729
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1484,21 +1484,21 @@ msgstr ""
 "========== сортування пакетів (порядок, #predecessors, #succesors, дерево, "
 "глибина)\n"
 
-#: lib/depends.c:1803
+#: lib/depends.c:1820
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== лише спадкоємці (%d байт)\n"
 
-#: lib/depends.c:1876
+#: lib/depends.c:1893
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1907
+#: lib/depends.c:1924
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1912
+#: lib/depends.c:1929
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
@@ -1812,7 +1812,7 @@ msgstr "використовувати <FILE:...> замість типовог�
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:299 lib/poptQV.c:317
+#: lib/poptALL.c:299 lib/poptQV.c:318
 #, fuzzy
 msgid "specify target platform"
 msgstr "перевизначити цільову платформу"
@@ -1962,16 +1962,56 @@ msgstr "повернення стану потребує аргумент арг
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "неправильний формат часу у аргументі повернення стану"
 
-#: lib/poptI.c:220 lib/poptQV.c:287 lib/poptQV.c:333
+#: lib/poptI.c:220 lib/poptQV.c:288 lib/poptQV.c:335
 msgid "add suggested packages to transaction"
 msgstr "додати запропоновані пакети у транзакцію"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:223 tools/rpmgraph.c:273
+msgid "use anaconda \"presentation order\""
+msgstr "використовувати \"порядок представлення\" як у anaconda"
+
+#: lib/poptI.c:226
+msgid "print dependency loops as warning"
+msgstr ""
+
+#: lib/poptI.c:229
+msgid "do not suggest missing dependency resolution(s)"
+msgstr "не пропонувати розв'язання відсутніх залежностей"
+
+#: lib/poptI.c:232
+#, fuzzy
+msgid "do not check added package conflicts"
+msgstr "не виконувати жодних сценаріїв пакетів"
+
+#: lib/poptI.c:235
+msgid "ignore added package requires on symlink targets"
+msgstr ""
+
+#: lib/poptI.c:238
+msgid "ignore added package obsoletes"
+msgstr ""
+
+#: lib/poptI.c:241
+#, fuzzy
+msgid "ignore added package requires on file parent directory"
+msgstr "зберігати позначені для видалення пакети у підкаталозі"
+
+#: lib/poptI.c:244
+#, fuzzy
+msgid "do not check added package requires"
+msgstr "не виконувати жодних сценаріїв пакетів"
+
+#: lib/poptI.c:247
+#, fuzzy
+msgid "ignore added package upgrades"
+msgstr "жоден пакет не постачає %s\n"
+
+#: lib/poptI.c:251
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "встановити всі файли, навіть конфігураційні, які могли б бути пропущеними"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:255
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1979,162 +2019,150 @@ msgstr ""
 "видалити всі пакети, які відповідають <пакет> (зазвичай, якщо <пакет> вказує "
 "на декілька пакетів - видається помилка)"
 
-#: lib/poptI.c:233 tools/rpmgraph.c:273
-msgid "use anaconda \"presentation order\""
-msgstr "використовувати \"порядок представлення\" як у anaconda"
-
-#: lib/poptI.c:238 lib/poptI.c:322
+#: lib/poptI.c:261 lib/poptI.c:337
 msgid "do not execute package scriptlet(s)"
 msgstr "не виконувати жодних сценаріїв пакетів"
 
-#: lib/poptI.c:242
+#: lib/poptI.c:265
 msgid "relocate files in non-relocatable package"
 msgstr "переміщювати файли у не переміщуваному пакеті"
 
-#: lib/poptI.c:246
-msgid "print dependency loops as warning"
-msgstr ""
-
-#: lib/poptI.c:250
+#: lib/poptI.c:269
 msgid "save erased package files by renaming into sub-directory"
 msgstr "зберігати позначені для видалення пакети у підкаталозі"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:272
 msgid "erase (uninstall) package"
 msgstr "видалити (деінсталювати) пакет"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:272
 msgid "<package>+"
 msgstr "<пакет>+"
 
-#: lib/poptI.c:256 lib/poptI.c:298
+#: lib/poptI.c:275 lib/poptI.c:317
 msgid "do not install configuration files"
 msgstr "не встановлювати конфігураційні файли"
 
-#: lib/poptI.c:259 lib/poptI.c:303
+#: lib/poptI.c:278 lib/poptI.c:322
 msgid "do not install documentation"
 msgstr "не встановлювати документацію"
 
-#: lib/poptI.c:261
+#: lib/poptI.c:280
 msgid "skip files with leading component <path> "
 msgstr "пропускати файли, шлях до яких починається зі <шлях>"
 
-#: lib/poptI.c:262
+#: lib/poptI.c:281
 msgid "<path>"
 msgstr "<шлях>"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:285
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "переміщювати файли у не переміщуваному пакеті"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:287
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "скорочення для --replacepkgs --replacefiles"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:291
 msgid "upgrade package(s) if already installed"
 msgstr "оновити пакет(и) навіть якщо вже встановлений(і)"
 
-#: lib/poptI.c:273 lib/poptI.c:291 lib/poptI.c:395
+#: lib/poptI.c:292 lib/poptI.c:310 lib/poptI.c:410
 msgid "<packagefile>+"
 msgstr "<файл пакету>+"
 
-#: lib/poptI.c:275
+#: lib/poptI.c:294
 msgid "print hash marks as package installs (good with -v)"
 msgstr "виводить символи \"#\" протягом встановлення (корисно з -v)"
 
-#: lib/poptI.c:279
+#: lib/poptI.c:298
 msgid "don't verify package architecture"
 msgstr "не перевіряти архітектуру пакета"
 
-#: lib/poptI.c:282
+#: lib/poptI.c:301
 msgid "don't verify package operating system"
 msgstr "не перевіряти операційну систему пакету"
 
-#: lib/poptI.c:286
+#: lib/poptI.c:305
 msgid "don't check disk space before installing"
 msgstr "не перевіряти перед встановленням простір на диску"
 
-#: lib/poptI.c:288
+#: lib/poptI.c:307
 msgid "install documentation"
 msgstr "встановити документацію"
 
-#: lib/poptI.c:291
+#: lib/poptI.c:310
 msgid "install package(s)"
 msgstr "встановити пакет(и)"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:313
 msgid "update the database, but do not modify the filesystem"
 msgstr "оновити базу даних, але не модифікувати файлову систему"
 
-#: lib/poptI.c:300
+#: lib/poptI.c:319
 msgid "do not verify package dependencies"
 msgstr "не перевіряти залежності пакету"
 
-#: lib/poptI.c:306 lib/poptI.c:308 lib/poptQV.c:347 lib/poptQV.c:350
-#: lib/poptQV.c:352
+#: lib/poptI.c:325 lib/poptI.c:327 lib/poptQV.c:349 lib/poptQV.c:352
+#: lib/poptQV.c:354
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:329
 msgid "don't install file security contexts"
 msgstr "не встановлювати контексти контексти безпеки файлів"
 
-#: lib/poptI.c:314
+#: lib/poptI.c:333
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "не міняти порядок встановлення пакетів для задовольняння залежностей"
 
-#: lib/poptI.c:319
-msgid "do not suggest missing dependency resolution(s)"
-msgstr "не пропонувати розв'язання відсутніх залежностей"
-
-#: lib/poptI.c:326
+#: lib/poptI.c:341
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "не виконувати сценарій %%pre (якщо він є)"
 
-#: lib/poptI.c:329
+#: lib/poptI.c:344
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "не виконувати сценарій %%post (якщо він є)"
 
-#: lib/poptI.c:332
+#: lib/poptI.c:347
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "не виконувати сценарій %%preun (якщо він є)"
 
-#: lib/poptI.c:335
+#: lib/poptI.c:350
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "не виконувати сценарій %%postun (якщо він є)"
 
-#: lib/poptI.c:345
+#: lib/poptI.c:360
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "не виконувати жодного тригер-сценарію для цього пакету"
 
-#: lib/poptI.c:348
+#: lib/poptI.c:363
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerprein"
 
-#: lib/poptI.c:351
+#: lib/poptI.c:366
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerin"
 
-#: lib/poptI.c:354
+#: lib/poptI.c:369
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerun"
 
-#: lib/poptI.c:357
+#: lib/poptI.c:372
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerpostun"
 
-#: lib/poptI.c:361
+#: lib/poptI.c:376
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2142,64 +2170,64 @@ msgstr ""
 "повернутись до попередньої версії пакету (ключ --force при оновленні робить "
 "це автоматично)"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:380
 msgid "print percentages as package installs"
 msgstr "виводити відсоток виконання при встановленні"
 
-#: lib/poptI.c:367
+#: lib/poptI.c:382
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "перемістити пакет у <каталог>, якщо він це дозволяє"
 
-#: lib/poptI.c:368
+#: lib/poptI.c:383
 msgid "<dir>"
 msgstr "<каталог>"
 
-#: lib/poptI.c:370
+#: lib/poptI.c:385
 msgid "relocate files from path <old> to <new>"
 msgstr "перемістити файли з шляху <старий> у <новий>"
 
-#: lib/poptI.c:371
+#: lib/poptI.c:386
 msgid "<old>=<new>"
 msgstr "<старий>=<новий>"
 
-#: lib/poptI.c:374
+#: lib/poptI.c:389
 msgid "save erased package files by repackaging"
 msgstr "зберегти відмічені для видалення файли у новому пакеті"
 
-#: lib/poptI.c:377
+#: lib/poptI.c:392
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:380
+#: lib/poptI.c:395
 msgid "reinstall if the package is already present"
 msgstr "перевстановити, якщо пакет вже встановлений"
 
-#: lib/poptI.c:382
+#: lib/poptI.c:397
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "видалити новий(і) пакет(и), перевстановити старий(і), назад до <дата>"
 
-#: lib/poptI.c:383 lib/poptI.c:386
+#: lib/poptI.c:398 lib/poptI.c:401
 msgid "<date>"
 msgstr "<дата>"
 
-#: lib/poptI.c:385
+#: lib/poptI.c:400
 msgid "If transaction fails rollback to <date>"
 msgstr ""
 
-#: lib/poptI.c:388
+#: lib/poptI.c:403
 msgid "Exclude Transaction I.D. from rollback"
 msgstr ""
 
-#: lib/poptI.c:389
+#: lib/poptI.c:404
 #, fuzzy
 msgid "<tid>"
 msgstr "<параметр>"
 
-#: lib/poptI.c:391
+#: lib/poptI.c:406
 msgid "don't install, but tell if it would work or not"
 msgstr "не встановлювати, лише повідомити чи вдасться встановлення"
 
-#: lib/poptI.c:394
+#: lib/poptI.c:409
 msgid "upgrade package(s)"
 msgstr "оновити пакет(и)"
 
@@ -2324,122 +2352,122 @@ msgstr "показати основну інформацію про файл"
 msgid "list files in package"
 msgstr "показати перелік файлів пакету"
 
-#: lib/poptQV.c:292 lib/poptQV.c:338
+#: lib/poptQV.c:293 lib/poptQV.c:340
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:295 lib/poptQV.c:341
+#: lib/poptQV.c:296 lib/poptQV.c:343
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:298
+#: lib/poptQV.c:299
 #, c-format
 msgid "skip %%ghost files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:302
+#: lib/poptQV.c:303
 #, c-format
 msgid "skip %%license files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:306
 #, c-format
 msgid "skip %%readme files"
 msgstr "пропустити файли %%readme"
 
-#: lib/poptQV.c:311
+#: lib/poptQV.c:312
 msgid "use the following query format"
 msgstr "використовувати заданий формат запиту"
 
-#: lib/poptQV.c:311
+#: lib/poptQV.c:312
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:313
+#: lib/poptQV.c:314
 msgid "substitute i18n sections into spec file"
 msgstr "замінити розділи i18n у файлі специфікації"
 
-#: lib/poptQV.c:315
+#: lib/poptQV.c:316
 msgid "display the states of the listed files"
 msgstr "показати інформацію про стан файлів з переліку"
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:358
 msgid "don't verify size of files"
 msgstr "не перевіряти розмір файла"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:361
 msgid "don't verify symlink path of files"
 msgstr "не перевіряти шлях символічних посилань"
 
-#: lib/poptQV.c:362
+#: lib/poptQV.c:364
 msgid "don't verify owner of files"
 msgstr "не перевіряти власника файлів"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "don't verify group of files"
 msgstr "не перевіряти групи файлів"
 
-#: lib/poptQV.c:368
+#: lib/poptQV.c:370
 msgid "don't verify modification time of files"
 msgstr "не перевіряти час модифікації файлів"
 
-#: lib/poptQV.c:371 lib/poptQV.c:374
+#: lib/poptQV.c:373 lib/poptQV.c:376
 msgid "don't verify mode of files"
 msgstr "не перевіряти права доступу файлів"
 
-#: lib/poptQV.c:377
+#: lib/poptQV.c:379
 msgid "don't verify file security contexts"
 msgstr "не перевіряти контекст безпеки файлів"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:381
 msgid "don't verify files in package"
 msgstr "не перевіряти файли пакета"
 
-#: lib/poptQV.c:382 lib/poptQV.c:385 tools/rpmgraph.c:267
+#: lib/poptQV.c:384 lib/poptQV.c:387 tools/rpmgraph.c:267
 msgid "don't verify package dependencies"
 msgstr "не перевіряти залежності пакета"
 
-#: lib/poptQV.c:390 lib/poptQV.c:394 lib/poptQV.c:397 lib/poptQV.c:400
+#: lib/poptQV.c:392 lib/poptQV.c:396 lib/poptQV.c:399 lib/poptQV.c:402
 msgid "don't execute verify script(s)"
 msgstr "не виконувати сценарії перевірки"
 
-#: lib/poptQV.c:434
+#: lib/poptQV.c:436
 msgid "sign package(s) (identical to --resign)"
 msgstr "підписати пакет(и) (ідентично до --resign)"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:438
 msgid "verify package signature(s)"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:440
 #, fuzzy
 msgid "delete package signatures"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:442
 msgid "import an armored public key"
 msgstr "імпортувати відкритий ключ"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:444
 msgid "sign package(s) (identical to --addsign)"
 msgstr "підписати пакет(и) (ідентично до --addsign)"
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:446
 msgid "generate signature"
 msgstr "створити підпис"
 
-#: lib/poptQV.c:447
+#: lib/poptQV.c:449
 #, fuzzy
 msgid "specify trust metric"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:450
+#: lib/poptQV.c:452
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:453
+#: lib/poptQV.c:455
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2627,7 +2655,7 @@ msgstr "номер елементу пакету: %u\n"
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:683 lib/rpminstall.c:815
+#: lib/query.c:683 lib/rpminstall.c:817
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"
@@ -2901,8 +2929,8 @@ msgstr "переміщується %s у %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
 
-#: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:490
-#: lib/rpminstall.c:621 lib/rpminstall.c:1060 lib/rpmts.c:656
+#: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:491
+#: lib/rpminstall.c:622 lib/rpminstall.c:1061 lib/rpmts.c:656
 #: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2914,12 +2942,12 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:719 lib/rpminstall.c:665 lib/rpminstall.c:849
-#: lib/rpminstall.c:1453 lib/transaction.c:1181 tools/rpmgraph.c:197
+#: lib/rpmgi.c:719 lib/rpminstall.c:666 lib/rpminstall.c:851
+#: lib/rpminstall.c:1456 lib/transaction.c:1181 tools/rpmgraph.c:197
 msgid "Failed dependencies:\n"
 msgstr "Незадоволені залежності:\n"
 
-#: lib/rpmgi.c:725 lib/rpminstall.c:672 tools/rpmgraph.c:203
+#: lib/rpmgi.c:725 lib/rpminstall.c:673 tools/rpmgraph.c:203
 msgid "    Suggested resolutions:\n"
 msgstr "  Запропоновані залежності:\n"
 
@@ -2947,119 +2975,119 @@ msgstr "Оновлення..."
 msgid "Upgrading packages..."
 msgstr "Оновлення пакетів..."
 
-#: lib/rpminstall.c:330 lib/rpminstall.c:793 lib/transaction.c:1154
+#: lib/rpminstall.c:331 lib/rpminstall.c:795 lib/transaction.c:1154
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:419
+#: lib/rpminstall.c:420
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "Додається ціль: %s\n"
 
-#: lib/rpminstall.c:435
+#: lib/rpminstall.c:436
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Завантажується %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:448
+#: lib/rpminstall.c:449
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... як %s\n"
 
-#: lib/rpminstall.c:452
+#: lib/rpminstall.c:453
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s пропускається - помилка передачі - %s\n"
 
-#: lib/rpminstall.c:509 lib/rpminstall.c:910 tools/rpmgraph.c:142
+#: lib/rpminstall.c:510 lib/rpminstall.c:911 tools/rpmgraph.c:142
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не може бути встановлений\n"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:527
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/rpminstall.c:551
+#: lib/rpminstall.c:552
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакет %s не є переміщуваним\n"
 
-#: lib/rpminstall.c:596
+#: lib/rpminstall.c:597
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\tдобавлений двійковий пакет [%d]\n"
 
-#: lib/rpminstall.c:601
+#: lib/rpminstall.c:602
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "помилка читання з файлу %s\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:608
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "файл %s потребує більш нової версії RPM\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:637
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не є rpm пакетом (чи маніфестом пакету): %s\n"
 
-#: lib/rpminstall.c:651
+#: lib/rpminstall.c:652
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "знайдено %d вихідних та %d двійкових пакетів\n"
 
-#: lib/rpminstall.c:702
+#: lib/rpminstall.c:703
 msgid "installing binary packages\n"
 msgstr "встановлюються двійкові пакети\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "неможливо відкрити файл %s: %s\n"
 
-#: lib/rpminstall.c:824
+#: lib/rpminstall.c:826
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" визначає декілька пакетів\n"
 
-#: lib/rpminstall.c:894
+#: lib/rpminstall.c:895
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpminstall.c:900
+#: lib/rpminstall.c:901
 #, c-format
 msgid "Installing %s\n"
 msgstr "Встановлюється %s\n"
 
-#: lib/rpminstall.c:1135
+#: lib/rpminstall.c:1136
 #, fuzzy
 msgid "Missing repackaged package(s) detected:\n"
 msgstr "помилка читання заголовка пакету\n"
 
-#: lib/rpminstall.c:1360
+#: lib/rpminstall.c:1363
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1447 lib/transaction.c:1159
+#: lib/rpminstall.c:1450 lib/transaction.c:1159
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1478
+#: lib/rpminstall.c:1481
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1485
+#: lib/rpminstall.c:1488
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Завантажується %s\n"
@@ -3722,12 +3750,12 @@ msgstr ""
 msgid "running post-transaction scripts\n"
 msgstr ""
 
-#: lib/verify.c:307
+#: lib/verify.c:305
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "відсутній  %c %s"
 
-#: lib/verify.c:420
+#: lib/verify.c:418
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Незадовільні залежності для %s: "

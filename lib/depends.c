@@ -172,6 +172,7 @@ static int rpmHeadersIdentical(Header first, Header second)
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
+    rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 dscolor;
     uint_32 hcolor;
@@ -342,6 +343,7 @@ assert(p != NULL);
 
     /* On upgrade, erase older packages of same color (if any). */
 
+  if (!(depFlags & RPMDEPS_FLAG_NOUPGRADE)) {
     mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 	int lastx;
@@ -371,7 +373,9 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 
     }
     mi = rpmdbFreeIterator(mi);
+  }
 
+  if (!(depFlags & RPMDEPS_FLAG_NOOBSOLETES)) {
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
     if (obsoletes != NULL)
@@ -441,6 +445,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	mi = rpmdbFreeIterator(mi);
     }
     obsoletes = rpmdsFree(obsoletes);
+  }
 
     ec = 0;
 
@@ -735,7 +740,7 @@ retry:
      * Search for an unsatisfied dependency.
      */
 /*@-boundsread@*/
-    if (adding && retries > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
+    if (adding && retries > 0 && !(rpmtsDFlags(ts) & RPMDEPS_FLAG_NOSUGGEST)) {
 	if (ts->solve != NULL) {
 	    xx = (*ts->solve) (ts, dep, ts->solveData);
 	    if (xx == 0)
@@ -1006,6 +1011,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    rpmdepFlags depFlags = rpmtsDFlags(ts);
     int scareMem = 1;
     Header h;
     int ec = 0;
@@ -1014,20 +1020,31 @@ static int checkPackageSet(rpmts ts, const char * dep,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	const char * pkgNEVRA;
-	rpmds requires, conflicts, dirnames, linktos;
+	rpmds requires = NULL;
+	rpmds conflicts = NULL;
+	rpmds dirnames = NULL;
+	rpmds linktos = NULL;
 	int rc;
 
 	pkgNEVRA = hGetNEVRA(h, NULL);
-	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
+	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+	if (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS))
+	    conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+	if (!(depFlags & RPMDEPS_FLAG_NOPARENTDIRS))
+	    dirnames = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
+	if (!(depFlags & RPMDEPS_FLAG_NOLINKTOS))
+	    linktos = rpmdsNew(h, RPMTAG_FILELINKTOS, scareMem);
+
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
-	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
-	dirnames = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
 	(void) rpmdsSetNoPromote(dirnames, _rpmds_nopromote);
-	linktos = rpmdsNew(h, RPMTAG_FILELINKTOS, scareMem);
 	(void) rpmdsSetNoPromote(linktos, _rpmds_nopromote);
-	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dirnames, linktos,
+
+	rc = checkPackageDeps(ts, pkgNEVRA,
+		requires, conflicts, dirnames, linktos,
 		dep, 0, adding);
+
 	linktos = rpmdsFree(linktos);
 	dirnames = rpmdsFree(dirnames);
 	conflicts = rpmdsFree(conflicts);
@@ -1168,8 +1185,8 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
     if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
-	int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
-	int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+	int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
+	int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMMESS_WARNING : RPMMESS_DEBUG;
 	int ac = 0;
 	int i;
@@ -1515,7 +1532,7 @@ int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
     int_32 Flags;
-    int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
+    int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
@@ -1865,7 +1882,7 @@ rescan:
 	    while ((p = q) != NULL && (q = rpmteTSI(p)->tsi_chain) != NULL) {
 		const char * dp;
 		char buf[4096];
-		int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+		int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMMESS_WARNING : RPMMESS_DEBUG;
 ;
 
@@ -1986,6 +2003,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
+    rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
@@ -2013,19 +2031,24 @@ int rpmtsCheck(rpmts ts)
      */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmds provides;
+	rpmds provides, requires, conflicts, dirnames, linktos;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
 	rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
+	requires = (!(depFlags & RPMDEPS_FLAG_NOREQUIRES)
+	    ? rpmteDS(p, RPMTAG_REQUIRENAME) : NULL);
+	conflicts = (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS)
+	    ? rpmteDS(p, RPMTAG_CONFLICTNAME) : NULL);
+	dirnames = (!(depFlags & RPMDEPS_FLAG_NOPARENTDIRS)
+	    ? rpmteDS(p, RPMTAG_DIRNAMES) : NULL);
+	linktos = (!(depFlags & RPMDEPS_FLAG_NOLINKTOS)
+	    ? rpmteDS(p, RPMTAG_FILELINKTOS) : NULL);
+
 	rc = checkPackageDeps(ts, rpmteNEVRA(p),
-			rpmteDS(p, RPMTAG_REQUIRENAME),
-			rpmteDS(p, RPMTAG_CONFLICTNAME),
-			rpmteDS(p, RPMTAG_DIRNAMES),
-			rpmteDS(p, RPMTAG_FILELINKTOS),
-			NULL,
-			tscolor, 1);
+			requires, conflicts, dirnames, linktos,
+			NULL, tscolor, 1);
 	if (rc)
 	    goto exit;
 

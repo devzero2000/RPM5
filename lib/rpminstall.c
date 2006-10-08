@@ -322,6 +322,7 @@ int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
 	sx = rpmsxFree(sx);
     }
     (void) rpmtsSetFlags(ts, ia->transFlags);
+    (void) rpmtsSetDFlags(ts, ia->depFlags);
 
     /* Display and set autorollback goal. */
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
@@ -785,6 +786,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
+    (void) rpmtsSetDFlags(ts, ia->depFlags);
 
     /* Display and set autorollback goal. */
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
@@ -798,7 +800,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
     {	int notifyFlags;
-	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
 			rpmShowProgress, (void *) ((long)notifyFlags));
     }
@@ -820,7 +822,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
-		if (!(count++ == 0 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES))) {
+		if (!(count++ == 0 || (ia->installInterfaceFlags & INSTALL_ALLMATCHES))) {
 		    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 		    numFailed++;
@@ -837,7 +839,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 
     if (numFailed) goto exit;
 
-    if (!(ia->eraseInterfaceFlags & UNINSTALL_NODEPS)) {
+    if (!(ia->installInterfaceFlags & INSTALL_NODEPS)) {
 
 	if (rpmtsCheck(ts)) {
 	    numFailed = numPackages;
@@ -862,7 +864,6 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     }
 
     if (numPackages > 0 && !stopUninstall) {
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
@@ -1264,6 +1265,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     rpmps ps;
     int _unsafe_rollbacks = 0;
     rpmtransFlags transFlags = ia->transFlags;
+    rpmdepFlags depFlags = ia->depFlags;
 
     if (argv != NULL && *argv != NULL) {
 	rc = -1;
@@ -1283,6 +1285,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     (void) rpmtsSetFlags(ts, transFlags);
+    (void) rpmtsSetDFlags(ts, depFlags);
 
     /*  Make the transaction a rollback transaction.  In a rollback
      *  a best effort is what we want 
@@ -1367,6 +1370,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 
 	rpmtsEmpty(ts);
 	(void) rpmtsSetFlags(ts, transFlags);
+	(void) rpmtsSetDFlags(ts, depFlags);
 
 	/* Install the previously erased packages for this transaction. 
 	 * Provided this transaction is not excluded from the rollback.
@@ -1422,7 +1426,6 @@ assert(excluded || ip->done);
 
 		if (!(ia->installInterfaceFlags & ifmask)) {
 		    ia->installInterfaceFlags |= INSTALL_ERASE;
-		    (void) rpmtsSetFlags(ts, (transFlags | RPMTRANS_FLAG_REVERSE));
 		}
 	    }
 
@@ -1497,6 +1500,7 @@ exit:
 
     rpmtsEmpty(ts);
     (void) rpmtsSetFlags(ts, transFlags);
+    (void) rpmtsSetDFlags(ts, depFlags);
 
     return rc;
 }

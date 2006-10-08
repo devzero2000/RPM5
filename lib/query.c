@@ -796,8 +796,8 @@ assert(path != NULL);
 
 int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 {
-    rpmtransFlags transFlags = qva->transFlags;
-    rpmtransFlags otransFlags;
+    rpmdepFlags depFlags = qva->depFlags, odepFlags;
+    rpmtransFlags transFlags = qva->transFlags, otransFlags;
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
@@ -821,11 +821,13 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     if (qva->qva_flags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
 
+    odepFlags = rpmtsSetDFlags(ts, depFlags);
     otransFlags = rpmtsSetFlags(ts, transFlags);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     ec = rpmcliArgIter(ts, qva, argv);
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
     transFlags = rpmtsSetFlags(ts, otransFlags);
+    depFlags = rpmtsSetDFlags(ts, odepFlags);
 
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;

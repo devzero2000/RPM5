@@ -647,7 +647,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	goto exit;
     }
 
-    if (ts->transFlags & RPMTRANS_FLAG_ADDINDEPS) {
+    if (ts->depFlags & RPMDEPS_FLAG_ADDINDEPS) {
 	FD_t fd;
 	rpmRC rpmrc;
 
@@ -1478,6 +1478,21 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
 	ts->transFlags = transFlags;
     }
     return otransFlags;
+}
+
+rpmdepFlags rpmtsDFlags(rpmts ts)
+{
+    return (ts != NULL ? ts->depFlags : 0);
+}
+
+rpmdepFlags rpmtsSetDFlags(rpmts ts, rpmdepFlags depFlags)
+{
+    rpmdepFlags odepFlags = 0;
+    if (ts != NULL) {
+	odepFlags = ts->depFlags;
+	ts->depFlags = depFlags;
+    }
+    return odepFlags;
 }
 
 Spec rpmtsSpec(rpmts ts)
