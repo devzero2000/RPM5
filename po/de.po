@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rpm 4.4.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-10-08 17:38-0400\n"
-"PO-Revision-Date: 2006-10-08 15:30+0200\n"
+"PO-Revision-Date: 2006-10-09 22:33+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1966,32 +1966,28 @@ msgid "do not suggest missing dependency resolution(s)"
 msgstr "Keine Vorschläge für fehlende Abhängigkeitsauflösungen"
 
 #: lib/poptI.c:232
-#, fuzzy
 msgid "do not check added package conflicts"
-msgstr "Keine Paket-Skriptlets ausführen"
+msgstr "Nicht auf Paket-Konflikte prüfen"
 
 #: lib/poptI.c:235
 msgid "ignore added package requires on symlink targets"
-msgstr ""
+msgstr "Paket-Abhängigkeiten auf symbolische Links ignorieren"
 
 #: lib/poptI.c:238
 msgid "ignore added package obsoletes"
-msgstr ""
+msgstr "Als veraltet markierte Pakete ignorieren"
 
 #: lib/poptI.c:241
-#, fuzzy
 msgid "ignore added package requires on file parent directory"
-msgstr "Gelöschte Paket-Dateien durch umbenennen im Unterverzeichnis sichern"
+msgstr "Paket-Abhängigkeiten auf Elternverzeichnisse ignorieren"
 
 #: lib/poptI.c:244
-#, fuzzy
 msgid "do not check added package requires"
-msgstr "Keine Paket-Skriptlets ausführen"
+msgstr "Nicht auf benötigte Pakete prüfen"
 
 #: lib/poptI.c:247
-#, fuzzy
 msgid "ignore added package upgrades"
-msgstr "Kein Paket bietet %s\n"
+msgstr "Paket-Aktualisierungen ignorieren"
 
 #: lib/poptI.c:251
 msgid "install all files, even configurations which might otherwise be skipped"

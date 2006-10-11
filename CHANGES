@@ -1,3 +1,5 @@
+4.4.7 -> 4.4.8:
+
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
 	- use zlib's unrolled crc-32 and adler32, add crc-64, checksums.
@@ -80,6 +82,7 @@
 	- split rpmtsCheck() and rpmtsOrder() flags from transFlags -> depFlags.
 	- add --noparentdirs and --nolinktos rpmtsCheck() disablers.
 	- add --noupgrade/--norequires/--noconflicts/--noobsoletes disablers.
+	- rpm-4.4.7 release.
 
 4.4.5 -> 4.4.6:
 	- start 4.4.6 development.
