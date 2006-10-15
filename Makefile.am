@@ -5,14 +5,13 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 
 EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS INSTALL \
-	RPM-GPG-KEY RPM-PGP-KEY BETA-GPG-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
 	xmlspec/Makefile xmlspec/*.c xmlspec/*.h \
 	xmlspec/examples/*.sh xmlspec/examples/*.lst \
 	xmlspec/examples/*.xmlspec \
 	perl/* \
-	wnh/Makefile.in \
+	wdj/JBJ-GPG-KEY wnh/Makefile.in \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
