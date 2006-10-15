@@ -24,7 +24,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: LGPL
@@ -33,7 +33,7 @@ Conflicts: patch < 2.5
 Prereq: fileutils shadow-utils
 %endif
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
-Requires: popt = 1.10.7
+Requires: popt = 1.10.8
 Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
@@ -152,7 +152,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.10.7
+Version: 1.10.8
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -572,120 +572,5 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Wed Oct 11 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-1
-- release rpm-4.4.7.
-
-* Sun Oct  8 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.17
-- merge install/erase interface flags.
-- eliminate RPMTRANS_FLAG_REVERSE.
-- split rpmtsCheck() and rpmtsOrder() flags from transFlags -> depFlags.
-- add --noparentdirs and --nolinktos rpmtsCheck() disablers.
-- add --noupgrade/--norequires/--noconflicts/--noobsoletes disablers.
-
-* Sun Oct  1 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.16
-- don't process rpmrc files unless --rcfile is explicitly given.
-- eliminate unused check-prereqs script (#203182).
-- eliminate ancient convertrpmrc.sh conversion script.
-- eliminate unused get_magic.pl, magic.{prov,req}, use libmagic instead.
-- eliminate "traditional behavior" freshen.sh.
-- add default value for buildroot macro.
-- permit macros to be marked as readonly (i.e. cannot be redefined).
-- ignore BuildRoot: and %clean from spec files.
-- make rpmvercmp a vector, add a (*EVRcmp) vector to rpmds.
-- open all rpmdb indices before entering chroot (#94250, #173285).
-- lua: establish CWD == "/" for running of scripts.
-- add rpm2lsb boilerplate, dumps both package headers in YAML.
-- fix: last 8 bytes of RSA modulus is keyid for V3 pubkeys (#205080).
-- updated sv.po translations.
-- permit file:// URL's in binary packages.
-- rpmio: add Chown/Lchown/Chmod/Mkfifo/Mknod/Utime/Symlink/Chroot stubs.
-- use rpmio Chdir et al stubs everywhere.
-- fix: permit chdir in lua scripts.
-- maintain net-snmp HR-MIB info in /var/cache/hrmib.
-- update to db-4.5.20 internal.
-
-* Sun Aug  6 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.15
-- use global rpmcliTargets for build/query modes.
-- don't verify existence of sources/patches when --specfile querying.
-- set all rpmrc/macro goop from --target (if present).
-- incorporate latest gcc flags into per-arch rpmrc defaults.
-- kill off rpmMachineScore() functionality.
-- kill off rpmGet{Arch,Os}Info() and rpmGetMachine().
-- use rpmcliInit() in main(), trash the duplicated code.
-- remove rpm{Get,Set}Var from the rpmlib API.
-- preserve --rcfile/--target options when re-reading goop.
-
-* Sat Aug  5 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.14
-- ppc: bogus unhandled relocations in debugedit.c (#199473).
-- automatically fix and retry dbenv->open() on DB_VERSION_MISMATCH.
-- fix: insure that %config files are removed on erasure.
-- solaris: portability fiddles.
-- avoid multiple lstat(2) calls installing %config files.
-- avoid digest checks on sparse files handling %config dispositions.
-- fix: missing epoch == 0 for --freshen (#143301).
-- avoid access(2) quirks querying symlinks, lstat(2) instead (#60288).
-- fix: don't open temporary db files before chroot entry (#103852).
-- spew --usage to stderr, not stdout (#164021).
-- populate internal copy of struct statvfs with all (linux) fields.
-- add --target option for all rpm modes (#127729).
-
-* Thu Jul 13 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.13
-- perl.req: avoid extracting bogus deps in q{} sections (#198033).
-- add macro for the path to the magic file used for classification.
-- handle DT_GNU_HASH dependencies.
-- avoid __typeof__ and __alignof__ usage portably.
-- fix: explicitly terminate readlink(2) return.
-
-* Fri Jul  7 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.12
-- fix: don't close stdin exec'ing pgp/gpg, harmless warning (#197602).
-- permit waitpid to be used instead of reaping SIGCHLD (#163151).
-- add tracking dependency for parameterized file digests.
-- fix: hide dbiFoo() internals from C++'s inability to promote void *.
-- fix: default _D_EXACT_NAMLEN(d) to strlen((d)->d_name) on non-linux.
-- debugedit: permit -debuginfo extraction for executables with -O0.
-- remove SELinux context verification (#193488).
-
-* Sun May  7 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.11
-- automagically extract scriptlet executable dependencies.
-
-* Sat May  6 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.10
-- consolidate per-mode options into single structure.
-- make dbiTags per-rpmdb rather than global.
-- permit rpmgi to iterate over indices.
-- teach rpmtsSolve() about dirnames/linktos dependencies.
-- add rpmdbBlockDBI() to disable index access.
-
-* Thu May  4 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.9
-- fix: free dirnames/linktos dependency sets.
-
-* Fri Apr 28 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.8
-- use RPMTAG_FILELINKTOS to detect dangling symlinks at run time.
-
-* Mon Apr 17 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.7
-- add AI_IDN flag to getaddrinfo().
-- fix: lazy mkdir for local sourcedir before fetching.
-- add _patchdir macro similar to _sourcedir.
-- permit autofetch for patches.
-- fetch all (even unused) sources/patches at %%prep start.
-- bolt in syck, add to librpmio.
-- absorb lsyck.c (and libsyck.la) into internal lua.
-
-* Sun Apr 16 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.6
-- permit autofetch for virgin sources.
-
-* Sat Apr 15 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.5
-- IPv4/6 and EPSV support by Arkadiusz Miskiewicz <arekm@pld-linux.org>.
-
-* Wed Apr 12 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.4
-- add /usr/bin/rpmdigest.
-
-* Tue Apr 11 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.3
-- add md2, md4, and tiger192 digests.
-- teach --scripts about pre- and post-transaction scriptlets.
-
-* Mon Apr 10 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.2
-- fix: build error msg had reversed args.
-
-* Sun Apr  9 2006 Jeff Johnson <jbj@jbj.org> 4.4.7-0.1
-- start 4.4.7 development.
-- use zlib's unrolled crc-32 and adler32, add crc-64, checksums.
+* Sun Oct 15 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.1
+- start rpm-4.4.8 development.

@@ -1,35 +1,5 @@
-
-echo "
-****************************************************************************
-*                                                                          *
-*                   *** WARNING WARNING WARNING ***                        *
-*                                                                          *
-* This is source code from the development branch of rpm-4.4.5.            *
-*                                                                          *
-* If you want the "production" rpm-4.4.4 code, then you should use a       *
-* rpm-4.4.4 src.rpm. Alternatively, if using a CVS checkout, do            *
-* the following:                                                           *
-*                                                                          *
-*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
-*       (no password, just carriage return)                                *
-*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
-*       cd rpm                                                             *
-*                                                                          *
-* Here's the rpm-4_4 branch, latest is rpm-4.4.4:                          *
-*       cvs up -r rpm-4_4                                                  *
-*                                                                          *
-* Here's the rpm-4_3 branch, latest is rpm-4.3.3:                          *
-*       cvs up -r rpm-4_3                                                  *
-*                                                                          *
-* Here's the rpm-4_2 branch, latest is rpm-4.2.3:                          *
-*       cvs up -r rpm-4_2                                                  *
-*                                                                          *
-****************************************************************************
-"
-sleep 10
-
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.4.7, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.4.8, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
@@ -40,9 +10,10 @@ AM_INIT_AUTOMAKE([foreign])
 # Interfaces changed/added/removed:   CURRENT++       REVISION=0
 # Interfaces added:                             AGE++
 # Interfaces removed:                           AGE=0
+#
 AC_SUBST(LT_CURRENT, 4)
 AC_SUBST(LT_REVISION, 4)
-AC_SUBST(LT_AGE, 0)
+AC_SUBST(LT_AGE, 8)
 
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
