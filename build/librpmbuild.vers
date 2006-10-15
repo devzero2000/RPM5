@@ -50,14 +50,6 @@ LIBRPMBUILD_0
     readRPM;
     rpmBTArgs;
     rpmBuildPoptTable;
-    rpmfcApply;
-    rpmfcClassify;
-    rpmfcColoring;
-    rpmfcExec;
-    rpmfcFree;
-    rpmfcGenerateDepends;
-    rpmfcNew;
-    rpmfcPrint;
     rpmlibNeedsFeature;
     rpmspecQuery;
     stashSt;

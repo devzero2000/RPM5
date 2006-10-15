@@ -471,6 +471,8 @@ Spec newSpec(void)
     spec->anyarch = 0;
 
 /*@i@*/	spec->macros = rpmGlobalMacroContext;
+
+    spec->_parseRCPOT = parseRCPOT;	/* XXX hack around backward linkage. */
     
     return spec;
 }

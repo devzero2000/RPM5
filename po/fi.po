@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-15 11:12-0400\n"
+"POT-Creation-Date: 2006-10-15 15:49-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -58,7 +58,7 @@ msgid "Building target platforms: %s\n"
 msgstr ""
 
 #. Query spec for this target platform.
-#: build.c:334 build/spec.c:783
+#: build.c:334 build/spec.c:785
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "    -b<vaihe> <määrittely> "
@@ -110,7 +110,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:117 tools/rpmcache.c:499 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmdeps.c:154
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -1337,17 +1337,17 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/spec.c:639
+#: build/spec.c:641
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: build/spec.c:723
+#: build/spec.c:725
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: build/spec.c:771
+#: build/spec.c:773
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr ""
@@ -1982,7 +1982,7 @@ msgstr ""
 msgid "add suggested packages to transaction"
 msgstr "paketilla ei ole nimeä"
 
-#: lib/poptI.c:223 tools/rpmgraph.c:273
+#: lib/poptI.c:223
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
@@ -2480,7 +2480,7 @@ msgstr "asenna paketti"
 msgid "don't verify files in package"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:384 lib/poptQV.c:387 tools/rpmgraph.c:267
+#: lib/poptQV.c:384 lib/poptQV.c:387
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "älä tarkista paketin riippuvuuksia"
@@ -2955,6 +2955,62 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ssä"
 
+#: lib/rpmfc.c:89
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#. XXX this error message is probably not seen.
+#: lib/rpmfc.c:95
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "En voinut ajaa pgp:tä"
+
+#: lib/rpmfc.c:100
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "En voinut ajaa pgp:tä"
+
+#: lib/rpmfc.c:185
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: lib/rpmfc.c:189
+#, fuzzy, c-format
+msgid "%s failed\n"
+msgstr "pgp epäonnistui"
+
+#: lib/rpmfc.c:193
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
+msgstr "%s:n luonti epäonnistui\n"
+
+#: lib/rpmfc.c:982
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "%s:n avaus ei onnistunut: %s\n"
+
+#: lib/rpmfc.c:990
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "%s:n poisto epäonnistui: %s"
+
+#: lib/rpmfc.c:1048
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: lib/rpmfc.c:1266
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "en voinut avata %s: %s"
+
+#: lib/rpmfc.c:1272 lib/rpmfc.c:1283
+#, fuzzy, c-format
+msgid "Failed to find %s:\n"
+msgstr "%s:n luonti epäonnistui\n"
+
 #: lib/rpmfi.c:635
 #, c-format
 msgid "%s skipped due to missingok flag\n"
@@ -2991,7 +3047,6 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:491
 #: lib/rpminstall.c:622 lib/rpminstall.c:1061 lib/rpmts.c:656
-#: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
@@ -3003,12 +3058,12 @@ msgstr "tuntematon nimiö"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:719 lib/rpminstall.c:666 lib/rpminstall.c:851
-#: lib/rpminstall.c:1456 lib/transaction.c:1181 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1456 lib/transaction.c:1181
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
 
-#: lib/rpmgi.c:725 lib/rpminstall.c:673 tools/rpmgraph.c:203
+#: lib/rpmgi.c:725 lib/rpminstall.c:673
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3065,7 +3120,7 @@ msgstr ""
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "virhe: ohitan %s:n, siirto epäonnistui - %s\n"
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:911 tools/rpmgraph.c:142
+#: lib/rpminstall.c:510 lib/rpminstall.c:911
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "virhe: %s ei voida asentaa\n"
@@ -4411,134 +4466,106 @@ msgstr "virhe: ftpport pitää olla luku\n"
 msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: tools/rpmcache.c:489 tools/rpmgraph.c:269
-#, fuzzy
-msgid "don't verify header+payload signature"
-msgstr "tarkista paketin allekirjoitus"
-
-#: tools/rpmcache.c:492
-msgid "don't update cache database, only print package paths"
-msgstr ""
-
-#: tools/rpmcache.c:495
-msgid "File tree walk options:"
-msgstr ""
-
-#: tools/rpmcache.c:531
-#, c-format
-msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-msgstr ""
-
-#: tools/rpmcache.c:571
-#, fuzzy, c-format
-msgid "%s: cache operation failed: ec %d.\n"
-msgstr "%s: avaus ei onnistunut\n"
-
-#: tools/rpmdeps.c:156
+#: tools/rpmdeps.c:158
 msgid "print cpuinfo(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:158
+#: tools/rpmdeps.c:160
 msgid "print rpmlib(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:160
+#: tools/rpmdeps.c:162
 msgid "print /etc/rpm/sysinfo dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:162
+#: tools/rpmdeps.c:164
 msgid "print getconf(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:164
+#: tools/rpmdeps.c:166
 msgid "print soname(...) dependencies for elf files"
 msgstr ""
 
-#: tools/rpmdeps.c:166
+#: tools/rpmdeps.c:168
 msgid "print soname(...) dependencies from /etc/ld.so.cache"
 msgstr ""
 
-#: tools/rpmdeps.c:168
+#: tools/rpmdeps.c:170
 msgid "print uname(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:170
+#: tools/rpmdeps.c:172
 msgid "print dependency set from a command pipe"
 msgstr ""
 
-#: tools/rpmdeps.c:173
+#: tools/rpmdeps.c:175
 msgid "print perl(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:175
+#: tools/rpmdeps.c:177
 msgid "print python(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:177
+#: tools/rpmdeps.c:179
 msgid "print libtool(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:179
+#: tools/rpmdeps.c:181
 msgid "print pkgconfig(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:182
+#: tools/rpmdeps.c:184
 msgid "print pubkey(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:184
+#: tools/rpmdeps.c:186
 msgid "print arch(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:186
+#: tools/rpmdeps.c:188
 msgid "print file(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:188
+#: tools/rpmdeps.c:190
 msgid "print soname(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:190
+#: tools/rpmdeps.c:192
 #, fuzzy
 msgid "print package(...) dependency set"
 msgstr "listaa paketin riippuvuudet"
 
-#: tools/rpmdeps.c:193
+#: tools/rpmdeps.c:195
 msgid "print java(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:195
+#: tools/rpmdeps.c:197
 msgid "print php(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:197
+#: tools/rpmdeps.c:199
 msgid "print ruby(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:199
+#: tools/rpmdeps.c:201
 msgid "print /var/lib/dpkg Provides: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:201
+#: tools/rpmdeps.c:203
 msgid "print /var/lib/dpkg Requires: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:204
+#: tools/rpmdeps.c:206
 msgid "print Provides: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:206
+#: tools/rpmdeps.c:208
 msgid "print Requires: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:208
+#: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
-
-#: tools/rpmgraph.c:172
-#, fuzzy, c-format
-msgid "%s: read manifest failed: %s\n"
-msgstr "%s: readLead  epäonnistui\n"
 
 #: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
 msgid "list install/erase scriptlets from package(s)"
@@ -4626,6 +4653,18 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "don't verify header+payload signature"
+#~ msgstr "tarkista paketin allekirjoitus"
+
+#, fuzzy
+#~ msgid "%s: cache operation failed: ec %d.\n"
+#~ msgstr "%s: avaus ei onnistunut\n"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: readLead  epäonnistui\n"
 
 #, fuzzy
 #~ msgid "buildroot already specified, ignoring %s\n"
@@ -4723,32 +4762,8 @@ msgstr ""
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "Haen: %s\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "en voinut avata %s: %s"
-
-#, fuzzy
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "%s:n luonti epäonnistui\n"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "vain toinen --prefix tai --relocate voidaan antaa"
-
-#, fuzzy
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "En voinut ajaa pgp:tä"
-
-#, fuzzy
-#~ msgid "Couldn't fork %s: %s\n"
-#~ msgstr "En voinut ajaa pgp:tä"
-
-#, fuzzy
-#~ msgid "%s failed\n"
-#~ msgstr "pgp epäonnistui"
-
-#, fuzzy
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "%s:n luonti epäonnistui\n"
 
 #, fuzzy
 #~ msgid "No signature\n"
@@ -5712,10 +5727,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "rename of %s to %s failed: %s\n"
 #~ msgstr "%s:n nimeäminen %s:ksi epäonnistui: %s"
-
-#, fuzzy
-#~ msgid "removal of %s failed: %s\n"
-#~ msgstr "%s:n poisto epäonnistui: %s"
 
 #, fuzzy
 #~ msgid ""

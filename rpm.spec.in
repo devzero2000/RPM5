@@ -238,6 +238,12 @@ gzip -9n apidocs/man/man*/* || :
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
+  rm -rf .%{__mandir}/man8/rpmcache.8*
+  rm -rf .%{__mandir}/man8/rpmgraph.8*
+  rm -rf .%{__mandir}/ja/man8/rpmcache.8*
+  rm -rf .%{__mandir}/ja/man8/rpmgraph.8*
+  rm -rf .%{__mandir}/pl/man8/rpmcache.8*
+  rm -rf .%{__mandir}/pl/man8/rpmgraph.8*
   rm -rf .%{__mandir}/{fr,ko}
   rm -f .%{__bindir}/rpm{e,i,u}
 %if %{with_python_subpackage}
@@ -309,7 +315,7 @@ exit 0
 %rpmattr	%{__bindir}/rpm2cpio
 %rpmattr	%{__bindir}/gendiff
 %rpmattr	%{__bindir}/rpmdb
-%rpmattr	%{__bindir}/rpmdigest
+#%rpmattr	%{__bindir}/rpmdigest
 #%rpmattr	%{__bindir}/rpm[eiu]
 %rpmattr	%{__bindir}/rpmsign
 %rpmattr	%{__bindir}/rpmquery
@@ -362,7 +368,7 @@ exit 0
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/noarch*
 
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_*
-%rpmattr	%{__prefix}/lib/rpm/rpmfile
+#%rpmattr	%{__prefix}/lib/rpm/rpmfile
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
@@ -429,7 +435,6 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/getpo.sh
 %rpmattr	%{__prefix}/lib/rpm/http.req
 %rpmattr	%{__prefix}/lib/rpm/javadeps.sh
-%rpmattr	%{__prefix}/lib/rpm/javadeps
 %rpmattr	%{__prefix}/lib/rpm/magic
 %rpmattr	%{__prefix}/lib/rpm/magic.mgc
 %rpmattr	%{__prefix}/lib/rpm/magic.mime
@@ -498,21 +503,6 @@ exit 0
 %{__libdir}/librpmbuild.a
 %{__libdir}/librpmbuild.la
 %{__libdir}/librpmbuild.so
-%rpmattr	%{__prefix}/lib/rpm/rpmcache
-%rpmattr	%{__bindir}/rpmgraph
-
-%{__mandir}/man8/rpmcache.8*
-%{__mandir}/man8/rpmgraph.8*
-%lang(ja)	%{__mandir}/ja/man8/rpmcache.8*
-%lang(ja)	%{__mandir}/ja/man8/rpmgraph.8*
-#%lang(ko)	%{__mandir}/ko/man8/rpmcache.8*
-#%lang(ko)	%{__mandir}/ko/man8/rpmgraph.8*
-%lang(pl)	%{__mandir}/pl/man8/rpmcache.8*
-%lang(pl)	%{__mandir}/pl/man8/rpmgraph.8*
-#%lang(ru)	%{__mandir}/ru/man8/rpmcache.8*
-#%lang(ru)	%{__mandir}/ru/man8/rpmgraph.8*
-#%lang(sk)	%{__mandir}/sk/man8/rpmcache.8*
-#%lang(sk)	%{__mandir}/sk/man8/rpmgraph.8*
 
 %files -n popt
 %{__libdir}/libpopt.so.*
@@ -557,4 +547,6 @@ exit 0
 %changelog
 * Sun Oct 15 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.1
 - start rpm-4.4.8 development.
+- remove files that are ancient and historical.
 - start simplifying rpm.spec.in.
+- move rpmfc.[ch] from -lrpmbuild to -lrpmlib.

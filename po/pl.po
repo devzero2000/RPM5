@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-15 11:12-0400\n"
+"POT-Creation-Date: 2006-10-15 15:49-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -66,7 +66,7 @@ msgid "Building target platforms: %s\n"
 msgstr "Budowanie dla platform: %s\n"
 
 #. Query spec for this target platform.
-#: build.c:334 build/spec.c:783
+#: build.c:334 build/spec.c:785
 #, c-format
 msgid "    target platform: %s\n"
 msgstr " platforma docelowa: %s\n"
@@ -118,7 +118,7 @@ msgstr "Opcje budowania z [ <plik spec> | <tarball> | <pakiet ¼ród³owy> ]:"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Opcje instalowania/uaktualniania/usuwania:"
 
-#: rpmqv.c:117 tools/rpmcache.c:499 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmdeps.c:154
 msgid "Common options for all rpm modes and executables:"
 msgstr "Wspólne opcje dla wszystkich trybów i binarek rpm-a:"
 
@@ -1316,17 +1316,17 @@ msgstr "linia %d: b³êdny numer no%s: %d\n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "linia %d: B³êdny numer %s: %s\n"
 
-#: build/spec.c:639
+#: build/spec.c:641
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "nie mo¿na odpytaæ %s: %s\n"
 
-#: build/spec.c:723
+#: build/spec.c:725
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "odpytywanie pliku spec %s nie powiod³o siê, nie mo¿na interpretowaæ\n"
 
-#: build/spec.c:771
+#: build/spec.c:773
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Odpytywanie pliku spec dla platform(y): %s\n"
@@ -1936,7 +1936,7 @@ msgstr "b³êdny argument znacznika czasu/daty dla arbgoal"
 msgid "add suggested packages to transaction"
 msgstr "dodaj sugerowane pakiety do transakcji"
 
-#: lib/poptI.c:223 tools/rpmgraph.c:273
+#: lib/poptI.c:223
 msgid "use anaconda \"presentation order\""
 msgstr "u¿yj porz±dku wy¶wietlania anacondy"
 
@@ -2390,7 +2390,7 @@ msgstr "nie sprawdzaj kontekstów bezpieczeñstwa plików"
 msgid "don't verify files in package"
 msgstr "nie sprawdzaj plików pakietu"
 
-#: lib/poptQV.c:384 lib/poptQV.c:387 tools/rpmgraph.c:267
+#: lib/poptQV.c:384 lib/poptQV.c:387
 msgid "don't verify package dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
@@ -2857,6 +2857,62 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
 
+#: lib/rpmfc.c:89
+#, fuzzy, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
+
+#. XXX this error message is probably not seen.
+#: lib/rpmfc.c:95
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Nie mo¿na uruchomiæ %s: %s\n"
+
+#: lib/rpmfc.c:100
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Nie mo¿na otworzyæ %s: %s\n"
+
+#: lib/rpmfc.c:185
+#, fuzzy, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
+
+#: lib/rpmfc.c:189
+#, fuzzy, c-format
+msgid "%s failed\n"
+msgstr "%s nie powiod³o siê: %s\n"
+
+#: lib/rpmfc.c:193
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
+msgstr "Nie mo¿na zapisaæ danych do %s: %s\n"
+
+#: lib/rpmfc.c:982
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "otwarcie %s nie powiod³o siê: %s\n"
+
+#: lib/rpmfc.c:990
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "%s rmdir %s nie powiod³o siê: %s\n"
+
+#: lib/rpmfc.c:1048
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: lib/rpmfc.c:1266
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "Plik %s: %s\n"
+
+#: lib/rpmfc.c:1272 lib/rpmfc.c:1283
+#, fuzzy, c-format
+msgid "Failed to find %s:\n"
+msgstr "Odczytanie %s nie powiod³o siê: %s.\n"
+
 #: lib/rpmfi.c:635
 #, c-format
 msgid "%s skipped due to missingok flag\n"
@@ -2893,7 +2949,6 @@ msgstr "przesuwanie katalogu %s do %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:491
 #: lib/rpminstall.c:622 lib/rpminstall.c:1061 lib/rpmts.c:656
-#: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê: %s\n"
@@ -2905,11 +2960,11 @@ msgstr "nieznana etykieta: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:719 lib/rpminstall.c:666 lib/rpminstall.c:851
-#: lib/rpminstall.c:1456 lib/transaction.c:1181 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1456 lib/transaction.c:1181
 msgid "Failed dependencies:\n"
 msgstr "Niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpmgi.c:725 lib/rpminstall.c:673 tools/rpmgraph.c:203
+#: lib/rpmgi.c:725 lib/rpminstall.c:673
 msgid "    Suggested resolutions:\n"
 msgstr "    Sugerowane sposoby spe³nienia:\n"
 
@@ -2964,7 +3019,7 @@ msgstr "... jako %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:911 tools/rpmgraph.c:142
+#: lib/rpminstall.c:510 lib/rpminstall.c:911
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
@@ -4293,132 +4348,105 @@ msgstr "port musi byæ liczb±\n"
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê: %s\n"
 
-#: tools/rpmcache.c:489 tools/rpmgraph.c:269
-msgid "don't verify header+payload signature"
-msgstr "nie sprawdzaj sygnatury nag³ówka+danych"
-
-#: tools/rpmcache.c:492
-msgid "don't update cache database, only print package paths"
-msgstr "nie uaktualniaj bazy danych bufora, tylko wypisz ¶cie¿ki pakietu"
-
-#: tools/rpmcache.c:495
-msgid "File tree walk options:"
-msgstr "Opcje przechodzenia po drzewie plików:"
-
-#: tools/rpmcache.c:531
-#, c-format
-msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-msgstr "%s: makro %%{_cache_dbpath} jest b³êdnie skonfigurowane.\n"
-
-#: tools/rpmcache.c:571
-#, c-format
-msgid "%s: cache operation failed: ec %d.\n"
-msgstr "%s: operacja na cache nie powiod³a siê: ec %d.\n"
-
-#: tools/rpmdeps.c:156
+#: tools/rpmdeps.c:158
 msgid "print cpuinfo(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci cpuinfo(...)"
 
-#: tools/rpmdeps.c:158
+#: tools/rpmdeps.c:160
 msgid "print rpmlib(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci rpmlib(...)"
 
-#: tools/rpmdeps.c:160
+#: tools/rpmdeps.c:162
 msgid "print /etc/rpm/sysinfo dependency set"
 msgstr "wypisz zbiór zale¿no¶ci /etc/rpm/sysinfo"
 
-#: tools/rpmdeps.c:162
+#: tools/rpmdeps.c:164
 msgid "print getconf(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci getconf(...)"
 
-#: tools/rpmdeps.c:164
+#: tools/rpmdeps.c:166
 msgid "print soname(...) dependencies for elf files"
 msgstr "wypisz zbiór zale¿no¶ci soname(...) dla plików ELF"
 
-#: tools/rpmdeps.c:166
+#: tools/rpmdeps.c:168
 msgid "print soname(...) dependencies from /etc/ld.so.cache"
 msgstr "wypisz zale¿no¶ci soname(...) z /etc/ld.so.cache"
 
-#: tools/rpmdeps.c:168
+#: tools/rpmdeps.c:170
 msgid "print uname(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci uname(...)"
 
-#: tools/rpmdeps.c:170
+#: tools/rpmdeps.c:172
 msgid "print dependency set from a command pipe"
 msgstr "wypisz zbiór zale¿no¶ci z polecenia potokowego"
 
-#: tools/rpmdeps.c:173
+#: tools/rpmdeps.c:175
 msgid "print perl(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci perl(...)"
 
-#: tools/rpmdeps.c:175
+#: tools/rpmdeps.c:177
 msgid "print python(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci python(...)"
 
-#: tools/rpmdeps.c:177
+#: tools/rpmdeps.c:179
 msgid "print libtool(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci libtool(...)"
 
-#: tools/rpmdeps.c:179
+#: tools/rpmdeps.c:181
 msgid "print pkgconfig(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci pkgconfig(...)"
 
-#: tools/rpmdeps.c:182
+#: tools/rpmdeps.c:184
 msgid "print pubkey(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci pubkey(...)"
 
-#: tools/rpmdeps.c:184
+#: tools/rpmdeps.c:186
 msgid "print arch(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci arch(...)"
 
-#: tools/rpmdeps.c:186
+#: tools/rpmdeps.c:188
 msgid "print file(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci file(...)"
 
-#: tools/rpmdeps.c:188
+#: tools/rpmdeps.c:190
 msgid "print soname(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci soname(...)"
 
-#: tools/rpmdeps.c:190
+#: tools/rpmdeps.c:192
 msgid "print package(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci package(...)"
 
-#: tools/rpmdeps.c:193
+#: tools/rpmdeps.c:195
 msgid "print java(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci java(...)"
 
-#: tools/rpmdeps.c:195
+#: tools/rpmdeps.c:197
 msgid "print php(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci php(...)"
 
-#: tools/rpmdeps.c:197
+#: tools/rpmdeps.c:199
 msgid "print ruby(...) dependency set"
 msgstr "wypisz zbiór zale¿no¶ci ruby(...)"
 
-#: tools/rpmdeps.c:199
+#: tools/rpmdeps.c:201
 msgid "print /var/lib/dpkg Provides: dependency set"
 msgstr "wypisz zbiór zale¿no¶ci Provides: z /var/lib/dpkg"
 
-#: tools/rpmdeps.c:201
+#: tools/rpmdeps.c:203
 msgid "print /var/lib/dpkg Requires: dependency set"
 msgstr "wypisz zbiór zale¿no¶ci Requires: z /var/lib/dpkg"
 
-#: tools/rpmdeps.c:204
+#: tools/rpmdeps.c:206
 msgid "print Provides: dependency set"
 msgstr "wypisz zbiór zale¿no¶ci Provides:"
 
-#: tools/rpmdeps.c:206
+#: tools/rpmdeps.c:208
 msgid "print Requires: dependency set"
 msgstr "wypisz zbiór zale¿no¶ci Requires:"
 
-#: tools/rpmdeps.c:208
+#: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "sprawd¼ Requires: wzglêdem Provides: dla dope³nienia zale¿no¶ci"
-
-#: tools/rpmgraph.c:172
-#, c-format
-msgid "%s: read manifest failed: %s\n"
-msgstr "%s: odczyt \"manifestu\" nie powiód³ siê: %s\n"
 
 #: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
 msgid "list install/erase scriptlets from package(s)"
@@ -4508,6 +4536,24 @@ msgstr "u¿yj bazy danych w KATALOGu"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
+
+#~ msgid "don't verify header+payload signature"
+#~ msgstr "nie sprawdzaj sygnatury nag³ówka+danych"
+
+#~ msgid "don't update cache database, only print package paths"
+#~ msgstr "nie uaktualniaj bazy danych bufora, tylko wypisz ¶cie¿ki pakietu"
+
+#~ msgid "File tree walk options:"
+#~ msgstr "Opcje przechodzenia po drzewie plików:"
+
+#~ msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
+#~ msgstr "%s: makro %%{_cache_dbpath} jest b³êdnie skonfigurowane.\n"
+
+#~ msgid "%s: cache operation failed: ec %d.\n"
+#~ msgstr "%s: operacja na cache nie powiod³a siê: ec %d.\n"
+
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: odczyt \"manifestu\" nie powiód³ siê: %s\n"
 
 #~ msgid "Spec file can't use BuildRoot\n"
 #~ msgstr "Plik spec nie mo¿e u¿ywaæ BuildRoot\n"

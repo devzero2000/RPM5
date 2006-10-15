@@ -1,5 +1,5 @@
-#ifndef _H_SPEC_
-#define _H_SPEC_
+#ifndef _H_RPMSPEC_
+#define _H_RPMSPEC_
 
 /** \ingroup rpmbuild
  * \file build/rpmspec.h
@@ -151,6 +151,9 @@ struct Spec_s {
 
 /*@dependent@*/ /*@null@*/
     MacroContext macros;
+
+    int (*_parseRCPOT) (Spec spec, Package pkg, const char *field, rpmTag tagN,
+               int index, rpmsenseFlags tagflags);
 
 /*@only@*/
     StringBuf prep;		/*!< %prep scriptlet. */

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-15 11:12-0400\n"
+"POT-Creation-Date: 2006-10-15 15:49-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -58,7 +58,7 @@ msgid "Building target platforms: %s\n"
 msgstr "A construir plataformas alvo: %s\n"
 
 #. Query spec for this target platform.
-#: build.c:334 build/spec.c:783
+#: build.c:334 build/spec.c:785
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "A construir plataformas alvo: %s\n"
@@ -111,7 +111,7 @@ msgstr "Opções de criação com [ <fich spec> | <fich tar> | <pacote fonte> ]:"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Opções de Instalação/Actualização/Remoção:"
 
-#: rpmqv.c:117 tools/rpmcache.c:499 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmdeps.c:154
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "Opções comuns para todos os modos do rpm:"
@@ -1323,17 +1323,17 @@ msgstr "linha %d: Número no%s inválido: %d\n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "linha %d: Número %s inválido: %s\n"
 
-#: build/spec.c:639
+#: build/spec.c:641
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "não consigo pesquisar o %s: %s\n"
 
-#: build/spec.c:723
+#: build/spec.c:725
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "a pesquisa do ficheiro spec %s falhou, não consigo analisar\n"
 
-#: build/spec.c:771
+#: build/spec.c:773
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "A construir plataformas alvo: %s\n"
@@ -1975,7 +1975,7 @@ msgstr "argumento hora/data inválido para 'rollback'"
 msgid "add suggested packages to transaction"
 msgstr "pesquisar/verificar o(s) pacote(s) de transacção de instalação"
 
-#: lib/poptI.c:223 tools/rpmgraph.c:273
+#: lib/poptI.c:223
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
@@ -2446,7 +2446,7 @@ msgstr "não verificar os ficheiros no pacote"
 msgid "don't verify files in package"
 msgstr "não verificar os ficheiros no pacote"
 
-#: lib/poptQV.c:384 lib/poptQV.c:387 tools/rpmgraph.c:267
+#: lib/poptQV.c:384 lib/poptQV.c:387
 msgid "don't verify package dependencies"
 msgstr "não verificar as dependências do pacote"
 
@@ -2925,6 +2925,62 @@ msgstr "  %s     A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "o pacote %s tem requisitos não satisfeitos: %s\n"
 
+#: lib/rpmfc.c:89
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#. XXX this error message is probably not seen.
+#: lib/rpmfc.c:95
+#, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Não consegui executar o %s: %s\n"
+
+#: lib/rpmfc.c:100
+#, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Não consegui executar à parte o %s: %s\n"
+
+#: lib/rpmfc.c:185
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: lib/rpmfc.c:189
+#, c-format
+msgid "%s failed\n"
+msgstr "O %s falhou\n"
+
+#: lib/rpmfc.c:193
+#, c-format
+msgid "failed to write all data to %s\n"
+msgstr "não consegui escrever todos os dados em %s\n"
+
+#: lib/rpmfc.c:982
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "o acesso ao %s falhou: %s\n"
+
+#: lib/rpmfc.c:990
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "%s rmdir de %s falhou: %s\n"
+
+#: lib/rpmfc.c:1048
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: lib/rpmfc.c:1266
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "A procurar o %s: (usando o %s)...\n"
+
+#: lib/rpmfc.c:1272 lib/rpmfc.c:1283
+#, c-format
+msgid "Failed to find %s:\n"
+msgstr "Não consegui encontrar o %s:\n"
+
 #: lib/rpmfi.c:635
 #, c-format
 msgid "%s skipped due to missingok flag\n"
@@ -2961,7 +3017,6 @@ msgstr "a mudar a directoria %s para %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:491
 #: lib/rpminstall.c:622 lib/rpminstall.c:1061 lib/rpmts.c:656
-#: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
@@ -2973,12 +3028,12 @@ msgstr "opção desconhecida"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:719 lib/rpminstall.c:666 lib/rpminstall.c:851
-#: lib/rpminstall.c:1456 lib/transaction.c:1181 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1456 lib/transaction.c:1181
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "dependências falhadas:\n"
 
-#: lib/rpmgi.c:725 lib/rpminstall.c:673 tools/rpmgraph.c:203
+#: lib/rpmgi.c:725 lib/rpminstall.c:673
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3036,7 +3091,7 @@ msgstr " ... como %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "a ignorar o %s - a transferência falhou - %s\n"
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:911 tools/rpmgraph.c:142
+#: lib/rpminstall.c:510 lib/rpminstall.c:911
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "o %s não pode ser instalado\n"
@@ -4372,135 +4427,106 @@ msgstr "o porto do URL tem de ser um número\n"
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"
 
-#: tools/rpmcache.c:489 tools/rpmgraph.c:269
-#, fuzzy
-msgid "don't verify header+payload signature"
-msgstr "verificar a assinatura do pacote"
-
-#: tools/rpmcache.c:492
-msgid "don't update cache database, only print package paths"
-msgstr ""
-
-#: tools/rpmcache.c:495
-#, fuzzy
-msgid "File tree walk options:"
-msgstr "Opções de assinatura:"
-
-#: tools/rpmcache.c:531
-#, c-format
-msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-msgstr ""
-
-#: tools/rpmcache.c:571
-#, fuzzy, c-format
-msgid "%s: cache operation failed: ec %d.\n"
-msgstr "%s: o acesso falhou: %s\n"
-
-#: tools/rpmdeps.c:156
+#: tools/rpmdeps.c:158
 msgid "print cpuinfo(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:158
+#: tools/rpmdeps.c:160
 msgid "print rpmlib(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:160
+#: tools/rpmdeps.c:162
 msgid "print /etc/rpm/sysinfo dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:162
+#: tools/rpmdeps.c:164
 msgid "print getconf(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:164
+#: tools/rpmdeps.c:166
 msgid "print soname(...) dependencies for elf files"
 msgstr ""
 
-#: tools/rpmdeps.c:166
+#: tools/rpmdeps.c:168
 msgid "print soname(...) dependencies from /etc/ld.so.cache"
 msgstr ""
 
-#: tools/rpmdeps.c:168
+#: tools/rpmdeps.c:170
 msgid "print uname(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:170
+#: tools/rpmdeps.c:172
 msgid "print dependency set from a command pipe"
 msgstr ""
 
-#: tools/rpmdeps.c:173
+#: tools/rpmdeps.c:175
 msgid "print perl(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:175
+#: tools/rpmdeps.c:177
 msgid "print python(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:177
+#: tools/rpmdeps.c:179
 msgid "print libtool(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:179
+#: tools/rpmdeps.c:181
 msgid "print pkgconfig(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:182
+#: tools/rpmdeps.c:184
 msgid "print pubkey(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:184
+#: tools/rpmdeps.c:186
 msgid "print arch(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:186
+#: tools/rpmdeps.c:188
 msgid "print file(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:188
+#: tools/rpmdeps.c:190
 msgid "print soname(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:190
+#: tools/rpmdeps.c:192
 #, fuzzy
 msgid "print package(...) dependency set"
 msgstr "lista as dependências do pacote"
 
-#: tools/rpmdeps.c:193
+#: tools/rpmdeps.c:195
 msgid "print java(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:195
+#: tools/rpmdeps.c:197
 msgid "print php(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:197
+#: tools/rpmdeps.c:199
 msgid "print ruby(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:199
+#: tools/rpmdeps.c:201
 msgid "print /var/lib/dpkg Provides: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:201
+#: tools/rpmdeps.c:203
 msgid "print /var/lib/dpkg Requires: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:204
+#: tools/rpmdeps.c:206
 msgid "print Provides: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:206
+#: tools/rpmdeps.c:208
 msgid "print Requires: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:208
+#: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
-
-#: tools/rpmgraph.c:172
-#, c-format
-msgid "%s: read manifest failed: %s\n"
-msgstr "%s: a leitura do manifesto falhou: %s\n"
 
 #: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
 msgid "list install/erase scriptlets from package(s)"
@@ -4588,6 +4614,21 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "don't verify header+payload signature"
+#~ msgstr "verificar a assinatura do pacote"
+
+#, fuzzy
+#~ msgid "File tree walk options:"
+#~ msgstr "Opções de assinatura:"
+
+#, fuzzy
+#~ msgid "%s: cache operation failed: ec %d.\n"
+#~ msgstr "%s: o acesso falhou: %s\n"
+
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: a leitura do manifesto falhou: %s\n"
 
 #~ msgid "Spec file can't use BuildRoot\n"
 #~ msgstr "O ficheiro spec não pode usar a BuildRoot\n"
@@ -4709,27 +4750,8 @@ msgstr ""
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "a exclur a directoria 'multilib' %s%s\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "A procurar o %s: (usando o %s)...\n"
-
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "Não consegui encontrar o %s:\n"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "só uma das opções --prefix ou --relocate pode ser usada"
-
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "Não consegui executar o %s: %s\n"
-
-#~ msgid "Couldn't fork %s: %s\n"
-#~ msgstr "Não consegui executar à parte o %s: %s\n"
-
-#~ msgid "%s failed\n"
-#~ msgstr "O %s falhou\n"
-
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "não consegui escrever todos os dados em %s\n"
 
 #~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 #~ msgstr "o valor RPM_STRING_TYPE do dataLength() tem de ser 1.\n"

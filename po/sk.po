@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-15 11:12-0400\n"
+"POT-Creation-Date: 2006-10-15 15:49-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -58,7 +58,7 @@ msgid "Building target platforms: %s\n"
 msgstr "predefinova» cieµovú platformu"
 
 #. Query spec for this target platform.
-#: build.c:334 build/spec.c:783
+#: build.c:334 build/spec.c:785
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "predefinova» cieµovú platformu"
@@ -111,7 +111,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:117 tools/rpmcache.c:499 tools/rpmdeps.c:152 tools/rpmgraph.c:276
+#: rpmqv.c:117 tools/rpmdeps.c:154
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -1344,17 +1344,17 @@ msgstr "riadok %d: Chybné no%s èíslo: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
 
-#: build/spec.c:639
+#: build/spec.c:641
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "zmazanie %s zlyhalo: %s\n"
 
-#: build/spec.c:723
+#: build/spec.c:725
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "otázka na spec-súbor %s zlyhala, nie je mo¾né analyzova»\n"
 
-#: build/spec.c:771
+#: build/spec.c:773
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "predefinova» cieµovú platformu"
@@ -1989,7 +1989,7 @@ msgstr ""
 msgid "add suggested packages to transaction"
 msgstr "opýta» sa v¹etkých balíkov v skupine"
 
-#: lib/poptI.c:223 tools/rpmgraph.c:273
+#: lib/poptI.c:223
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
@@ -2484,7 +2484,7 @@ msgstr "zobrazi» súbory v balíku"
 msgid "don't verify files in package"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/poptQV.c:384 lib/poptQV.c:387 tools/rpmgraph.c:267
+#: lib/poptQV.c:384 lib/poptQV.c:387
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "neoverova» závislosti balíka"
@@ -2960,6 +2960,62 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
+#: lib/rpmfc.c:89
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#. XXX this error message is probably not seen.
+#: lib/rpmfc.c:95
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Nie je mo¾né spusti» %s"
+
+#: lib/rpmfc.c:100
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Nie je mo¾né vytvori» proces %s"
+
+#: lib/rpmfc.c:185
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: lib/rpmfc.c:189
+#, fuzzy, c-format
+msgid "%s failed\n"
+msgstr "%s zlyhalo"
+
+#: lib/rpmfc.c:193
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
+msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
+
+#: lib/rpmfc.c:982
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "otvorenie %s zlyhalo\n"
+
+#: lib/rpmfc.c:990
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "odstránenie %s zlyhalo: %s"
+
+#: lib/rpmfc.c:1048
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: lib/rpmfc.c:1266
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
+
+#: lib/rpmfc.c:1272 lib/rpmfc.c:1283
+#, fuzzy, c-format
+msgid "Failed to find %s:\n"
+msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
+
 #: lib/rpmfi.c:635
 #, c-format
 msgid "%s skipped due to missingok flag\n"
@@ -2996,7 +3052,6 @@ msgstr "presúva sa %s do %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:126 lib/rpminstall.c:491
 #: lib/rpminstall.c:622 lib/rpminstall.c:1061 lib/rpmts.c:656
-#: tools/rpmgraph.c:122 tools/rpmgraph.c:159
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
@@ -3008,12 +3063,12 @@ msgstr "neznámy tag"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:719 lib/rpminstall.c:666 lib/rpminstall.c:851
-#: lib/rpminstall.c:1456 lib/transaction.c:1181 tools/rpmgraph.c:197
+#: lib/rpminstall.c:1456 lib/transaction.c:1181
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
 
-#: lib/rpmgi.c:725 lib/rpminstall.c:673 tools/rpmgraph.c:203
+#: lib/rpmgi.c:725 lib/rpminstall.c:673
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3071,7 +3126,7 @@ msgstr "... ako %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s vynechané - prenos zlyhal - %s\n"
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:911 tools/rpmgraph.c:142
+#: lib/rpminstall.c:510 lib/rpminstall.c:911
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
@@ -4410,135 +4465,106 @@ msgstr "url port musí by» èíslo\n"
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"
 
-#: tools/rpmcache.c:489 tools/rpmgraph.c:269
-#, fuzzy
-msgid "don't verify header+payload signature"
-msgstr "overi» podpis balíka"
-
-#: tools/rpmcache.c:492
-msgid "don't update cache database, only print package paths"
-msgstr ""
-
-#: tools/rpmcache.c:495
-#, fuzzy
-msgid "File tree walk options:"
-msgstr "Veµkos» podpisu:   %d\n"
-
-#: tools/rpmcache.c:531
-#, c-format
-msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-msgstr ""
-
-#: tools/rpmcache.c:571
-#, fuzzy, c-format
-msgid "%s: cache operation failed: ec %d.\n"
-msgstr "%s: otvorenie zlyhalo\n"
-
-#: tools/rpmdeps.c:156
+#: tools/rpmdeps.c:158
 msgid "print cpuinfo(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:158
+#: tools/rpmdeps.c:160
 msgid "print rpmlib(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:160
+#: tools/rpmdeps.c:162
 msgid "print /etc/rpm/sysinfo dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:162
+#: tools/rpmdeps.c:164
 msgid "print getconf(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:164
+#: tools/rpmdeps.c:166
 msgid "print soname(...) dependencies for elf files"
 msgstr ""
 
-#: tools/rpmdeps.c:166
+#: tools/rpmdeps.c:168
 msgid "print soname(...) dependencies from /etc/ld.so.cache"
 msgstr ""
 
-#: tools/rpmdeps.c:168
+#: tools/rpmdeps.c:170
 msgid "print uname(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:170
+#: tools/rpmdeps.c:172
 msgid "print dependency set from a command pipe"
 msgstr ""
 
-#: tools/rpmdeps.c:173
+#: tools/rpmdeps.c:175
 msgid "print perl(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:175
+#: tools/rpmdeps.c:177
 msgid "print python(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:177
+#: tools/rpmdeps.c:179
 msgid "print libtool(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:179
+#: tools/rpmdeps.c:181
 msgid "print pkgconfig(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:182
+#: tools/rpmdeps.c:184
 msgid "print pubkey(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:184
+#: tools/rpmdeps.c:186
 msgid "print arch(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:186
+#: tools/rpmdeps.c:188
 msgid "print file(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:188
+#: tools/rpmdeps.c:190
 msgid "print soname(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:190
+#: tools/rpmdeps.c:192
 #, fuzzy
 msgid "print package(...) dependency set"
 msgstr "zobrazi» závislosti balíka"
 
-#: tools/rpmdeps.c:193
+#: tools/rpmdeps.c:195
 msgid "print java(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:195
+#: tools/rpmdeps.c:197
 msgid "print php(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:197
+#: tools/rpmdeps.c:199
 msgid "print ruby(...) dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:199
+#: tools/rpmdeps.c:201
 msgid "print /var/lib/dpkg Provides: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:201
+#: tools/rpmdeps.c:203
 msgid "print /var/lib/dpkg Requires: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:204
+#: tools/rpmdeps.c:206
 msgid "print Provides: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:206
+#: tools/rpmdeps.c:208
 msgid "print Requires: dependency set"
 msgstr ""
 
-#: tools/rpmdeps.c:208
+#: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
-
-#: tools/rpmgraph.c:172
-#, fuzzy, c-format
-msgid "%s: read manifest failed: %s\n"
-msgstr "%s: readLead zlyhalo\n"
 
 #: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
 msgid "list install/erase scriptlets from package(s)"
@@ -4626,6 +4652,22 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "don't verify header+payload signature"
+#~ msgstr "overi» podpis balíka"
+
+#, fuzzy
+#~ msgid "File tree walk options:"
+#~ msgstr "Veµkos» podpisu:   %d\n"
+
+#, fuzzy
+#~ msgid "%s: cache operation failed: ec %d.\n"
+#~ msgstr "%s: otvorenie zlyhalo\n"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: readLead zlyhalo\n"
 
 #, fuzzy
 #~ msgid "Spec file can't use BuildRoot\n"
@@ -4739,32 +4781,8 @@ msgstr ""
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "vynecháva sa %s\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
-
-#, fuzzy
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "mo¾e by» pou¾itá iba jedna z volieb --prefix a --relocate"
-
-#, fuzzy
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "Nie je mo¾né spusti» %s"
-
-#, fuzzy
-#~ msgid "Couldn't fork %s: %s\n"
-#~ msgstr "Nie je mo¾né vytvori» proces %s"
-
-#, fuzzy
-#~ msgid "%s failed\n"
-#~ msgstr "%s zlyhalo"
-
-#, fuzzy
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
 #, fuzzy
 #~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
@@ -5861,10 +5879,6 @@ msgstr ""
 
 #~ msgid "stopping install as we're running --test\n"
 #~ msgstr "in¹talácia zastavená kvôli re¾imu --test\n"
-
-#, fuzzy
-#~ msgid "removal of %s failed: %s\n"
-#~ msgstr "odstránenie %s zlyhalo: %s"
 
 #~ msgid "will remove files test = %d\n"
 #~ msgstr "budú sa odstraòova» súbory test = %d\n"

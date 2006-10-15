@@ -21,8 +21,8 @@ EXTRA_PROGRAMS =
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	fs.h misc.h rpmcli.h rpmlib.h \
-	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
-	stringbuf.h
+	rpmal.h rpmds.h rpmfc.h rpmfi.h rpmgi.h rpmps.h \
+	rpmsx.h rpmte.h rpmts.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h rpmlock.h signature.h tar.h
 
@@ -37,7 +37,7 @@ librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	manifest.c misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
-	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpmgi.c rpminstall.c \
+	rpmal.c rpmchecksig.c rpmds.c rpmfc.c rpmfi.c rpmgi.c rpminstall.c \
 	rpmlead.c rpmlock.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c stringbuf.c transaction.c \
 	verify.c tar.c

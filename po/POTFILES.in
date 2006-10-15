@@ -39,6 +39,7 @@ lib/query.c
 lib/rpmal.c
 lib/rpmchecksig.c
 lib/rpmds.c
+lib/rpmfc.c
 lib/rpmfi.c
 lib/rpmgi.c
 lib/rpminstall.c
@@ -78,6 +79,4 @@ rpmio/rpmsq.c
 rpmio/rpmsw.c
 rpmio/ugid.c
 rpmio/url.c
-tools/rpmcache.c
 tools/rpmdeps.c
-tools/rpmgraph.c

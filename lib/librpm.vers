@@ -132,6 +132,14 @@ LIBRPM_0
     rpmErase;
     rpmEVR;
     _rpmfc_debug;
+    rpmfcApply;
+    rpmfcClassify;
+    rpmfcColoring;
+    rpmfcExec;
+    rpmfcFree;
+    rpmfcGenerateDepends;
+    rpmfcNew;
+    rpmfcPrint;
     rpmfiBN;
     rpmfiBuildFClasses;
     rpmfiBuildFContexts;

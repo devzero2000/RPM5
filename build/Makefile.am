@@ -21,7 +21,7 @@ INCLUDES = -I. \
 LIBS =
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmbuild.h rpmfc.h rpmfile.h rpmspec.h
+pkginc_HEADERS = rpmbuild.h rpmfile.h rpmspec.h
 noinst_HEADERS = buildio.h
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
@@ -32,7 +32,7 @@ librpmbuild_la_SOURCES = \
 	build.c expression.c files.c misc.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
-	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c
+	parseSpec.c poptBT.c reqprov.c spec.c
 librpmbuild_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
