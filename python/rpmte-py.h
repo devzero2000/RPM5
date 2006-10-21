@@ -23,14 +23,20 @@ typedef struct rpmteObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmte_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 /*@null@*/
 rpmteObject * rpmte_Wrap(rpmte te)
 	/*@*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

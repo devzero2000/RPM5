@@ -35,14 +35,20 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 rpmtsObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

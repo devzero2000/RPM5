@@ -22,14 +22,20 @@ typedef struct rpmfdObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmfd_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 /*@null@*/
 rpmfdObject * rpmfd_Wrap(FD_t fd)
 	/*@*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

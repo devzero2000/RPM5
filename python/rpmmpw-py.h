@@ -31,7 +31,10 @@ extern PyTypeObject mpw_Type;
 #define	MPW_SIZE(_a)	(size_t)((_a)->ob_size < 0 ? -(_a)->ob_size : (_a)->ob_size)
 #define	MPW_DATA(_a)	((_a)->data)
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 mpwObject * mpw_New(int ob_size)
@@ -41,7 +44,10 @@ mpwObject * mpw_New(int ob_size)
  */
 mpwObject * mpw_FromMPW(size_t size, mpw* data, int normalize)
 	/*@*/;
-__END_DECLS
+
+#ifdef __cplusplus      
+}
+#endif
 
 /*@}*/
 

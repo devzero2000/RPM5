@@ -25,7 +25,10 @@ typedef struct rpmdsObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmds_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 /*@null@*/
@@ -56,7 +59,10 @@ rpmdsObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 rpmdsObject * hdr_dsOfHeader(PyObject * s)
 	/*@*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

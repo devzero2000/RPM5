@@ -23,14 +23,20 @@ typedef struct rpmalObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmal_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 /*@null@*/
 rpmalObject * rpmal_Wrap(rpmal al)
 	/*@*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

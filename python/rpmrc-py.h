@@ -26,7 +26,10 @@ struct rpmrcObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmrc_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 /*@null@*/
@@ -49,7 +52,10 @@ PyObject * rpmrc_Create(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 #endif
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

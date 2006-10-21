@@ -26,7 +26,10 @@ typedef struct rpmpsObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmps_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 /*@null@*/
@@ -39,7 +42,10 @@ rpmps psFromPs(rpmpsObject * ps)
 rpmpsObject * rpmps_Wrap(rpmps ps)
 	/*@*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

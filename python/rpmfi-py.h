@@ -25,7 +25,10 @@ typedef struct rpmfiObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmfi_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 /*@null@*/
@@ -45,7 +48,10 @@ rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

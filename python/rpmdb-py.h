@@ -30,7 +30,10 @@ struct rpmdbObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmdb_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef  _LEGACY_BINDINGS_TOO
 /** \ingroup py_c
  */
@@ -48,7 +51,10 @@ PyObject * rebuildDB (PyObject * self, PyObject * args, PyObject * kwds)
 	/*@modifies rpmGlobalMacroContext @*/;
 #endif
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

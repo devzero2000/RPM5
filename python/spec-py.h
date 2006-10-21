@@ -24,7 +24,10 @@ typedef struct specObject_s {
 /*@unchecked@*/
 extern PyTypeObject spec_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup _rpm.spec
  */
 /*@null@*/
@@ -37,7 +40,10 @@ Spec specFromSpec(specObject * spec)
 specObject * spec_Wrap(Spec spec)
 /*@*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif /* H_SPEC_PY */

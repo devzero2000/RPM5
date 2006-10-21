@@ -25,14 +25,20 @@ struct rpmmiObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmmi_Type;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 /*@null@*/
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
 	/*@*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif

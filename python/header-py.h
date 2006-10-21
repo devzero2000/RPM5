@@ -21,7 +21,10 @@ extern PyTypeObject hdr_Type;
  */
 extern PyObject * pyrpmError;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup py_c
  */
 hdrObject * hdr_Wrap(Header h)
@@ -87,7 +90,10 @@ PyObject * rhnLoad(PyObject * self, PyObject * args, PyObject * kwds)
 PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
+
 /*@}*/
 
 #endif
