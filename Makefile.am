@@ -130,14 +130,14 @@ pkgsrcdir = $(prefix)/src/rpm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
-	@rm -f $(DESTDIR)$(libdir)/rpm/rpmt
-	@@LN_S@ rpmb $(DESTDIR)$(libdir)/rpm/rpmt
-	@rm -f $(DESTDIR)$(libdir)/rpm/rpme
-	@@LN_S@ rpmi $(DESTDIR)$(libdir)/rpm/rpme
-	@rm -f $(DESTDIR)$(libdir)/rpm/rpmu
-	@@LN_S@ rpmi $(DESTDIR)$(libdir)/rpm/rpmu
-	@rm -f $(DESTDIR)$(libdir)/rpm/rpmv
-	@@LN_S@ rpmq $(DESTDIR)$(libdir)/rpm/rpmv
+	@rm -f $(DESTDIR)$(pkglibdir)/rpmt
+	@@LN_S@ rpmb $(DESTDIR)$(pkglibdir)/rpmt
+	@rm -f $(DESTDIR)$(pkglibdir)/rpme
+	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpme
+	@rm -f $(DESTDIR)$(pkglibdir)/rpmu
+	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpmu
+	@rm -f $(DESTDIR)$(pkglibdir)/rpmv
+	@@LN_S@ rpmq $(DESTDIR)$(pkglibdir)/rpmv
 	rm -f $(DESTDIR)$(bindir)/rpmbuild
 	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)$(bindir)/rpmbuild
 	rm -f $(DESTDIR)$(bindir)/rpmquery
