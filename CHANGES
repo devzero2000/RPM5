@@ -3,6 +3,7 @@
 	- remove files that are ancient and historical.
 	- start simplifying rpm.spec.in.
 	- move rpmfc.[ch] from -lrpmbuild to -lrpmlib.
+	- solaris: various non-gcc fixes.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
