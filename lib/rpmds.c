@@ -7,6 +7,20 @@
 #include <gelf.h>
 #endif
 
+/*
+ * On Solaris, gelf.h included libelf.h, which #undef'ed the gettext
+ * convenience macro _().  Repair by repeating (from system.h) just
+ * the bits that are needed for _() to function.
+ */
+
+#if defined(__sun)
+#if ENABLE_NLS && !defined(__LCLINT__)
+# define _(Text) gettext (Text)
+#else
+# define _(Text) Text
+#endif /* gettext _() fixup */
+#endif
+
 #if !defined(DT_GNU_HASH)
 #define	DT_GNU_HASH	0x6ffffef5
 #endif
