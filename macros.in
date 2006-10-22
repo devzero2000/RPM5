@@ -687,7 +687,7 @@ print (t)\
 
 # Horowitz Key Protocol server configuration
 #
-%_hkp_keyserver         hkp://sks.keyserver.penguin.de
+%_hkp_keyserver         hkp://subkeys.pgp.net
 %_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=0x
 
 #==============================================================================
