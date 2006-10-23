@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+pkglibdir = @RPMCONFIGDIR@
+
 all:
 
 EXTRA_DIST = *.exp hello-1.0.tar.gz \
