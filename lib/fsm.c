@@ -357,7 +357,7 @@ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 		    rpmMessage(RPMMESS_DEBUG,
 	_("========== Directories not explicitly included in package:\n"));
 		}
-		(void) urlPath(fi->dnl[j], &dnl);
+		(void) urlPath(fi->dnl[i], &dnl);
 		rpmMessage(RPMMESS_DEBUG, _("%10d %s\n"), i, dnl);
 	    }
 	    if (j)
