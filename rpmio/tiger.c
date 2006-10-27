@@ -1,6 +1,8 @@
 #include "system.h"
 
+#if HAVE_STDINT_H
 #include <stdint.h>
+#endif
 
 #include "tiger.h"
 #include "mp.h"
