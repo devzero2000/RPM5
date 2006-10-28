@@ -1329,12 +1329,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
 
-    {	int_32 rtid = 0;
-	if (hge(h, RPMTAG_REMOVETID, NULL, (void **) &rtid, NULL) && rtid > 0)
-	    fi->fsm->repackaged = 1;
-	else
-	    fi->fsm->repackaged = 0;
-    }
+    fi->fsm->repackaged = (headerIsEntry(h, RPMTAG_REMOVETID) ? 1 : 0);
 
     /* 0 means unknown */
     xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
