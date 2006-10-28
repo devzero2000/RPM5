@@ -1972,6 +1972,10 @@ assert(psm->te != NULL);
 		/* Run triggers in other package(s) this package sets off. */
 		rc = rpmpsmNext(psm, PSM_TRIGGERS);
 		if (rc) break;
+
+		/* Run triggers in this package other package(s) set off. */
+		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))

@@ -1218,39 +1218,39 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
     while (!gotDefaults) {
 	CVOG_t cvog = NULL;
+	rc = uname(&un);
+	if (rc < 0) return;
+	if (!rpmPlatform(platform)) {
+	    const char * s;
+	    gotDefaults = 1;
+	    s = rpmExpand("%{?_host_cpu}", NULL);
+	    if (s && *s != '\0') {
+		strncpy(un.machine, s, sizeof(un.machine));
+		un.machine[sizeof(un.machine)-1] = '\0';
+	    }
+	    s = _free(s);
+	    s = rpmExpand("%{?_host_os}", NULL);
+	    if (s && *s != '\0') {
+		strncpy(un.sysname, s, sizeof(un.sysname));
+		un.sysname[sizeof(un.sysname)-1] = '\0';
+	    }
+	    s = _free(s);
+	}
 	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
-	    if (cvog->cpu) {
+	    gotDefaults = 1;
+	    if (cvog->cpu && cvog->cpu[0] != '\0') {
 		strncpy(un.machine, cvog->cpu, sizeof(un.machine));
 		un.machine[sizeof(un.machine)-1] = '\0';
 	    }
-	    if (cvog->os) {
+	    if (cvog->os && cvog->os[0] != '\0') {
 		strncpy(un.sysname, cvog->os, sizeof(un.sysname));
 		un.sysname[sizeof(un.sysname)-1] = '\0';
 	    }
 	    cvog->str = _free(cvog->str);
 	    cvog = _free(cvog);
-	    gotDefaults = 1;
-	    break;
 	}
-	if (!rpmPlatform(platform)) {
-	    const char * s;
-	    s = rpmExpand("%{_host_cpu}", NULL);
-	    if (s) {
-		strncpy(un.machine, s, sizeof(un.machine));
-		un.machine[sizeof(un.machine)-1] = '\0';
-		s = _free(s);
-	    }
-	    s = rpmExpand("%{_host_os}", NULL);
-	    if (s) {
-		strncpy(un.sysname, s, sizeof(un.sysname));
-		un.sysname[sizeof(un.sysname)-1] = '\0';
-		s = _free(s);
-	    }
-	    gotDefaults = 1;
+	if (gotDefaults)
 	    break;
-	}
-	rc = uname(&un);
-	if (rc < 0) return;
 
 #if !defined(__linux__)
 #ifdef SNI
@@ -1553,6 +1553,7 @@ assert(arch != NULL);
 			    tables[currTables[OS]].defaultsLength);
     }
 assert(os != NULL);
+
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
 	current[ARCH] = _free(current[ARCH]);
