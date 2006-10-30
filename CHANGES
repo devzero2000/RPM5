@@ -7,6 +7,7 @@
 	- fix: detecting repackaged assumed sizeof(void *) == sizeof(int_32).
 	- run old->triggerpostun case when erasing (#210626).
 	- fix: invert platform initialize order.
+	- fix: flush query format buffer before listing files (#212833).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
