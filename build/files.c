@@ -1416,19 +1416,22 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	dalgo = (isSrc ? source_file_dalgo : binary_file_dalgo);
 	switch (dalgo) {
-	case PGPHASHALGO_MD5:
 	case PGPHASHALGO_SHA1:
+	case PGPHASHALGO_RIPEMD160:
+	case PGPHASHALGO_MD2:
+	case PGPHASHALGO_TIGER192:
 	case PGPHASHALGO_SHA256:
 	case PGPHASHALGO_SHA384:
 	case PGPHASHALGO_SHA512:
-	case PGPHASHALGO_RIPEMD160:
+	case PGPHASHALGO_MD4:
 	case PGPHASHALGO_RIPEMD128:
 	case PGPHASHALGO_CRC32:
-	case PGPHASHALGO_MD2:
-	case PGPHASHALGO_TIGER192:
+	case PGPHASHALGO_ADLER32:
+	case PGPHASHALGO_CRC64:
 	    (void) rpmlibNeedsFeature(h, "FileDigestParameterized", "4.4.6-1");
 	    /*@switchbreak@*/ break;
-	case PGPHASHALGO_HAVAL_5_160:
+	case PGPHASHALGO_MD5:
+	case PGPHASHALGO_HAVAL_5_160:		/* XXX unimplemented */
 	default:
 	    dalgo = PGPHASHALGO_MD5;
 	    /*@switchbreak@*/ break;
