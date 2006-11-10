@@ -2113,23 +2113,37 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 char * 
 rpmExpand(const char *arg, ...)
 {
-    char buf[BUFSIZ], *p, *pe;
     const char *s;
+    char *t, *te;
+    size_t sn, tn;
+    size_t un = 16 * BUFSIZ;
+
     va_list ap;
 
     if (arg == NULL)
 	return xstrdup("");
 
-    buf[0] = '\0';
-    p = buf;
-    pe = stpcpy(p, arg);
+    t = xmalloc(strlen(arg) + un + 1);
+    *t = '\0';
+    te = stpcpy(t, arg);
 
     va_start(ap, arg);
-    while ((s = va_arg(ap, const char *)) != NULL)
-	pe = stpcpy(pe, s);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	sn = strlen(s);
+	tn = (te - t);
+	t = xrealloc(t, tn + sn + un + 1);
+	te = t + tn;
+	te = stpcpy(te, s);
+    }
     va_end(ap);
-    (void) expandMacros(NULL, NULL, buf, sizeof(buf));
-    return xstrdup(buf);
+
+    *te = '\0';
+    tn = (te - t);
+    (void) expandMacros(NULL, NULL, t, tn + un + 1);
+    t[tn + un] = '\0';
+    t = xrealloc(t, strlen(t) + 1);
+    
+    return t;
 }
 /*@=modfilesys@*/
 

@@ -9,6 +9,7 @@
 	- fix: invert platform initialize order.
 	- fix: flush query format buffer before listing files (#212833).
 	- don't add rpmlib(FileDigestParameterized) dependency if MD5.
+	- resize rpmExpand() buffer instead of using BUFSIZ.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
