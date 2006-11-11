@@ -1021,11 +1021,11 @@ assert(s != NULL && *s == '/');
 	    if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
 		ftype = "Perl5 module source text";
 
-	    /* XXX all files with extension ".jar" are java for now. */
+	    /* XXX all files with extension ".jar" are java archives for now. */
 	    else if (slen >= sizeof(".jar") && !strcmp(s+slen-(sizeof(".jar")-1), ".pm"))
 		ftype = "Java archive file";
 
-	    /* XXX all files with extension ".jar" are java for now. */
+	    /* XXX all files with extension ".class" are java class files for now. */
 	    else if (slen >= sizeof(".class") && !strcmp(s+slen-(sizeof(".class")-1), ".pm"))
 		ftype = "Java class file";
 
