@@ -1274,7 +1274,7 @@ SKIP_FUNCTION_MACROS   = YES
 # is run, you must also specify the path to the tagfile here.
 
 TAGFILES               = \
-			 @top_srcdir/popt/Doxytags
+			 @top_srcdir@/popt/Doxytags
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create 
 # a tag file that is based on the input files it reads.
