@@ -769,32 +769,38 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	/*@requires maxRead(data) >= 0 @*/
 {
     char * val;
-    char buf[10];
-    int anint;
 
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
-	anint = *((int_32 *) data);
-	buf[0] = '\0';
+	int anint = *((int_32 *) data);
+	char *t, *buf;
+
+	t = buf = alloca(32);
+	*t = '\0';
 
 /*@-boundswrite@*/
 #ifdef	NOTYET	/* XXX appending markers breaks :depflags format. */
 	if (anint & RPMSENSE_SCRIPT_PRE)
-	    strcat(buf,"(pre)");
+	    t = stpcpy(t, "(pre)");
 	if (anint & RPMSENSE_SCRIPT_POST)
-	    strcat(buf,"(post)");
+	    t = stpcpy(t, "(post)");
 	if (anint & RPMSENSE_SCRIPT_PREUN)
-	    strcat(buf,"(preun)");
+	    t = stpcpy(t, "(preun)");
 	if (anint & RPMSENSE_SCRIPT_POSTUN)
-	    strcat(buf,"(postun)");
+	    t = stpcpy(t, "(postun)");
 #endif
+	if (anint & RPMSENSE_SENSEMASK)
+	    *t++ = ' ';
 	if (anint & RPMSENSE_LESS)
-	    strcat(buf, "<");
+	    *t++ = '<';
 	if (anint & RPMSENSE_GREATER)
-	    strcat(buf, ">");
+	    *t++ = '>';
 	if (anint & RPMSENSE_EQUAL)
-	    strcat(buf, "=");
+	    *t++ = '=';
+	if (anint & RPMSENSE_SENSEMASK)
+	    *t++ = ' ';
+	*t = '\0';
 /*@=boundswrite@*/
 
 	val = xmalloc(5 + padding);

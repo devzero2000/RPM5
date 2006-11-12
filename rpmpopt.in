@@ -58,17 +58,17 @@ rpm	alias --setugids -q --qf \
 	--POPTdesc=$"set user/group ownership of files in a package"
 
 rpm	alias --conflicts	--qf \
-  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
+  "[%{CONFLICTNAME}%{CONFLICTFLAGS:depflags}%{CONFLICTVERSION}\n]" \
 	--POPTdesc=$"list capabilities this package conflicts with"
 rpm	alias --obsoletes	--qf \
-  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
+  "[%{OBSOLETENAME}%|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags}%{OBSOLETEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list other packages removed by installing this package"
 rpm	alias --provides	--qf \
-  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
+  "[%{PROVIDENAME}%|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags}%{PROVIDEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list capabilities that this package provides"
 
 rpm	alias --requires	--qf \
-  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
+  "[%{REQUIRENAME}%{REQUIREFLAGS:depflags}%{REQUIREVERSION}\n]" \
 	--POPTdesc=$"list capabilities required by package(s)"
 rpm	alias -R --requires
 
@@ -367,17 +367,17 @@ rpmq	alias --scripts --qf '\
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
 rpmq	alias --conflicts	--qf \
-  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
+  "[%{CONFLICTNAME}%{CONFLICTFLAGS:depflags}%{CONFLICTVERSION}\n]" \
 	--POPTdesc=$"list capabilities this package conflicts with"
 rpmq	alias --obsoletes	--qf \
-  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
+  "[%{OBSOLETENAME}%|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags}%{OBSOLETEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list other packages removed by installing this package"
 rpmq	alias --provides	--qf \
-  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
+  "[%{PROVIDENAME}%|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags}%{PROVIDEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list capabilities that this package provides"
 
 rpmq	alias --requires	--qf \
-  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
+  "[%{REQUIRENAME}%{REQUIREFLAGS:depflags}%{REQUIREVERSION}\n]" \
 	--POPTdesc=$"list capabilities required by package(s)"
 rpmq	alias -R --requires
 
@@ -476,17 +476,17 @@ rpmquery	alias --scripts --qf '\
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
 rpmquery	alias --conflicts	--qf \
-  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
+  "[%{CONFLICTNAME}%{CONFLICTFLAGS:depflags}%{CONFLICTVERSION}\n]" \
 	--POPTdesc=$"list capabilities this package conflicts with"
 rpmquery	alias --obsoletes	--qf \
-  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
+  "[%{OBSOLETENAME}%|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags}%{OBSOLETEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list other packages removed by installing this package"
 rpmquery	alias --provides	--qf \
-  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
+  "[%{PROVIDENAME}%|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags}%{PROVIDEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list capabilities that this package provides"
 
 rpmquery	alias --requires	--qf \
-  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
+  "[%{REQUIRENAME}%{REQUIREFLAGS:depflags}%{REQUIREVERSION}\n]" \
 	--POPTdesc=$"list capabilities required by package(s)"
 rpmquery	alias -R --requires
 
