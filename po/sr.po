@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-15 15:49-0400\n"
+"POT-Creation-Date: 2006-11-13 08:14-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -522,89 +522,89 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:1459
+#: build/files.c:1462
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1719
+#: build/files.c:1722
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:1743
+#: build/files.c:1746
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1958
+#: build/files.c:1961
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1964
+#: build/files.c:1967
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: build/files.c:1968 lib/rpmchecksig.c:607
+#: build/files.c:1971 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1975
+#: build/files.c:1978
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: build/files.c:2028
+#: build/files.c:2031
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/files.c:2052
+#: build/files.c:2055
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: build/files.c:2069 lib/rpminstall.c:373
+#: build/files.c:2072 lib/rpminstall.c:373
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:2129
+#: build/files.c:2132
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/files.c:2140 build/pack.c:154
+#: build/files.c:2143 build/pack.c:154
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:2531
+#: build/files.c:2534
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:2543 build/parsePrep.c:50
+#: build/files.c:2546 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2587
+#: build/files.c:2590
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: build/files.c:2604
+#: build/files.c:2607
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2632
+#: build/files.c:2635
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -777,7 +777,7 @@ msgstr "Ne mogu da upi¹em %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:833 lib/psm.c:2003
+#: build/pack.c:833 lib/psm.c:2007
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1513,7 +1513,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:43 lib/formats.c:75 lib/formats.c:110 lib/formats.c:188
-#: lib/formats.c:776
+#: lib/formats.c:774
 msgid "(invalid type)"
 msgstr ""
 
@@ -2599,12 +2599,12 @@ msgstr "neuspelo otvaranje %s: %s\n"
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2011
+#: lib/psm.c:2015
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/psm.c:2014
+#: lib/psm.c:2018
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "PGP omanuo"
@@ -2615,106 +2615,106 @@ msgid "incorrect format: %s\n"
 msgstr "gre¹ka u formatu: %s\n"
 
 #. @-boundswrite@
-#: lib/query.c:170
+#: lib/query.c:191
 msgid "(contains no files)"
 msgstr "(nema datoteka)"
 
-#: lib/query.c:243
+#: lib/query.c:264
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:246
+#: lib/query.c:267
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:249
+#: lib/query.c:270
 #, fuzzy
 msgid "not installed "
 msgstr "paket %s nije instaliran\n"
 
-#: lib/query.c:252
+#: lib/query.c:273
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:255
+#: lib/query.c:276
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:258
+#: lib/query.c:279
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:261
+#: lib/query.c:282
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(nepoznat tip)"
 
-#: lib/query.c:279
+#: lib/query.c:300
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "paket nema imena"
 
-#: lib/query.c:312
+#: lib/query.c:333
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "paket nema imena"
 
-#: lib/query.c:481
+#: lib/query.c:484
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/query.c:490
+#: lib/query.c:493
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:503 lib/query.c:524 lib/query.c:544 lib/query.c:578
+#: lib/query.c:506 lib/query.c:527 lib/query.c:547 lib/query.c:581
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/query.c:513 lib/query.c:530 lib/query.c:554 lib/query.c:583
+#: lib/query.c:516 lib/query.c:533 lib/query.c:557 lib/query.c:586
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:594
+#: lib/query.c:597
 #, c-format
 msgid "no package requires %s\n"
 msgstr "nijedan paket ne zahteva %s\n"
 
-#: lib/query.c:605
+#: lib/query.c:608
 #, c-format
 msgid "no package provides %s\n"
 msgstr "nijedan paket ne obezbeðuje %s\n"
 
-#: lib/query.c:638
+#: lib/query.c:641
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/query.c:641
+#: lib/query.c:644
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/query.c:666
+#: lib/query.c:669
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:669
+#: lib/query.c:672
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:673
+#: lib/query.c:676
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:683 lib/rpminstall.c:817
+#: lib/query.c:686 lib/rpminstall.c:817
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -2828,89 +2828,89 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:748 lib/rpmds.c:3256
+#: lib/rpmds.c:762 lib/rpmds.c:3270
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:748 lib/rpmds.c:3256
+#: lib/rpmds.c:762 lib/rpmds.c:3270
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1236
+#: lib/rpmds.c:1250
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1239
+#: lib/rpmds.c:1253
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1242
+#: lib/rpmds.c:1256
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1245
+#: lib/rpmds.c:1259
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1248
+#: lib/rpmds.c:1262
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1265
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1254
+#: lib/rpmds.c:1268
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1257
+#: lib/rpmds.c:1271
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1260
+#: lib/rpmds.c:1274
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1264
+#: lib/rpmds.c:1278
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1268
+#: lib/rpmds.c:1282
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1271
+#: lib/rpmds.c:1285
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1274
+#: lib/rpmds.c:1288
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1392
+#: lib/rpmds.c:1406
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1426
+#: lib/rpmds.c:1440
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1436
+#: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3044 lib/rpmds.c:3074 lib/rpmds.c:3086
+#: lib/rpmds.c:3058 lib/rpmds.c:3088 lib/rpmds.c:3100
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3047
+#: lib/rpmds.c:3061
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2918,33 +2918,33 @@ msgid ""
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3076
+#: lib/rpmds.c:3090
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3088
+#: lib/rpmds.c:3102
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3222
+#: lib/rpmds.c:3236
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3255
+#: lib/rpmds.c:3269
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:3279
+#: lib/rpmds.c:3293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s nije naveden u %s"
@@ -3300,103 +3300,103 @@ msgstr "nedostaje drugo ':' na %s:%d"
 msgid "missing architecture name at %s:%d\n"
 msgstr "nedostaje ime arhitekture na %s:%d"
 
-#: lib/rpmrc.c:346
+#: lib/rpmrc.c:359
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Nepotpuna linija podataka na %s:%d"
 
-#: lib/rpmrc.c:351
+#: lib/rpmrc.c:364
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Premnogo argumenata u liniji podataka na %s:%d"
 
-#: lib/rpmrc.c:359
+#: lib/rpmrc.c:372
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Lo¹ broj arhitekture/oper.sist.: %s (%s:%d)"
 
-#: lib/rpmrc.c:396
+#: lib/rpmrc.c:409
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Nepotpuna podrazumevana linija na %s:%d"
 
-#: lib/rpmrc.c:401
+#: lib/rpmrc.c:414
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Premnogo argumenata u podrazumevanoj liniji na %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:661
+#: lib/rpmrc.c:674
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/rpmrc.c:699
+#: lib/rpmrc.c:712
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "nedostaje ':' na %s:%d"
 
-#: lib/rpmrc.c:716 lib/rpmrc.c:779
+#: lib/rpmrc.c:729 lib/rpmrc.c:792
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "nedostaje argument za %s na %s:%d"
 
-#: lib/rpmrc.c:733 lib/rpmrc.c:755
+#: lib/rpmrc.c:746 lib/rpmrc.c:768
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpmrc.c:742
+#: lib/rpmrc.c:755
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpmrc.c:771
+#: lib/rpmrc.c:784
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "nedostaje arhitektura za %s na %s:%d"
 
-#: lib/rpmrc.c:838
+#: lib/rpmrc.c:851
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "lo¹a opcija '%s' na %s:%d"
 
-#: lib/rpmrc.c:1828
+#: lib/rpmrc.c:1867
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpmrc.c:1833
+#: lib/rpmrc.c:1872
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1850
+#: lib/rpmrc.c:1889
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
-#: lib/rpmrc.c:1993
+#: lib/rpmrc.c:2032
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2006
+#: lib/rpmrc.c:2045
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2020
+#: lib/rpmrc.c:2059
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2034
+#: lib/rpmrc.c:2073
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2048
+#: lib/rpmrc.c:2087
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3900,60 +3900,60 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/db3.c:824
+#: rpmdb/db3.c:897
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/db3.c:893
+#: rpmdb/db3.c:966
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/db3.c:1036
+#: rpmdb/db3.c:1109
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1173
+#: rpmdb/db3.c:1246
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/db3.c:1415
+#: rpmdb/db3.c:1488
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
 
-#: rpmdb/db3.c:1417
+#: rpmdb/db3.c:1490
 msgid "exclusive"
 msgstr "ekskluzivno"
 
-#: rpmdb/db3.c:1417
+#: rpmdb/db3.c:1490
 msgid "shared"
 msgstr "deljeno"
 
-#: rpmdb/db3.c:1421
+#: rpmdb/db3.c:1494
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/dbconfig.c:339
+#: rpmdb/dbconfig.c:570
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:379
+#: rpmdb/dbconfig.c:610
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:388
+#: rpmdb/dbconfig.c:619
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:397
+#: rpmdb/dbconfig.c:628
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""

@@ -9,9 +9,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.4.5\n"
+"Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-08 17:38-0400\n"
+"POT-Creation-Date: 2006-11-13 08:14-0500\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -525,82 +525,82 @@ msgstr "Nie mo¿na mieszaæ specjalnego %%doc z innymi formami: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Plik podany dwukrotnie: %s\n"
 
-#: build/files.c:1459
+#: build/files.c:1462
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Dowi±zanie symboliczne wskazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1719
+#: build/files.c:1722
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Plik nie zgadza siê z prefiksem (%s): %s\n"
 
-#: build/files.c:1743
+#: build/files.c:1746
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Nie znaleziono pliku: %s\n"
 
-#: build/files.c:1958
+#: build/files.c:1961
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: nie mo¿na za³adowaæ nieznanego tagu (%d).\n"
 
-#: build/files.c:1964
+#: build/files.c:1967
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:1968 lib/rpmchecksig.c:607
+#: build/files.c:1971 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:1975
+#: build/files.c:1978
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: odczyt polityki *.te nie powiód³ siê.\n"
 
-#: build/files.c:2028
+#: build/files.c:2031
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:2052
+#: build/files.c:2055
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob niedozwolony: %s\n"
 
-#: build/files.c:2069 lib/rpminstall.c:373
+#: build/files.c:2072 lib/rpminstall.c:373
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:2129
+#: build/files.c:2132
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:2140 build/pack.c:154
+#: build/files.c:2143 build/pack.c:154
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
 
-#: build/files.c:2531
+#: build/files.c:2534
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2543 build/parsePrep.c:50
+#: build/files.c:2546 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:2587
+#: build/files.c:2590
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2604
+#: build/files.c:2607
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -609,7 +609,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2632
+#: build/files.c:2635
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s-%s-%s\n"
@@ -778,7 +778,7 @@ msgstr "Nie mo¿na odczytaæ danych z %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ danych do %s: %s\n"
 
-#: build/pack.c:833 lib/psm.c:2003
+#: build/pack.c:833 lib/psm.c:2007
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -1487,7 +1487,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
 
 #: lib/formats.c:43 lib/formats.c:75 lib/formats.c:110 lib/formats.c:188
-#: lib/formats.c:776
+#: lib/formats.c:774
 msgid "(invalid type)"
 msgstr "(b³êdny typ)"
 
@@ -2499,12 +2499,12 @@ msgstr "rozpakowanie archiwum nie powiod³o siê%s%s: %s\n"
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:2011
+#: lib/psm.c:2015
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s nie powiód³ siê na pliku %s: %s\n"
 
-#: lib/psm.c:2014
+#: lib/psm.c:2018
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê: %s\n"
@@ -2515,103 +2515,103 @@ msgid "incorrect format: %s\n"
 msgstr "b³êdny format: %s\n"
 
 #. @-boundswrite@
-#: lib/query.c:170
+#: lib/query.c:191
 msgid "(contains no files)"
 msgstr "(nie zawiera plików)"
 
-#: lib/query.c:243
+#: lib/query.c:264
 msgid "normal        "
 msgstr "normalny      "
 
-#: lib/query.c:246
+#: lib/query.c:267
 msgid "replaced      "
 msgstr "zast±piony    "
 
-#: lib/query.c:249
+#: lib/query.c:270
 msgid "not installed "
 msgstr "niezainstalowany"
 
-#: lib/query.c:252
+#: lib/query.c:273
 msgid "net shared    "
 msgstr "udostêpniony w sieci"
 
-#: lib/query.c:255
+#: lib/query.c:276
 msgid "wrong color   "
 msgstr "z³y kolor     "
 
-#: lib/query.c:258
+#: lib/query.c:279
 msgid "(no state)    "
 msgstr "(brak statusu)"
 
-#: lib/query.c:261
+#: lib/query.c:282
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(nieznany %3d)"
 
-#: lib/query.c:279
+#: lib/query.c:300
 msgid "package has not file owner/group lists\n"
 msgstr "pakiet nie ma list w³a¶cicieli/grup plików\n"
 
-#: lib/query.c:312
+#: lib/query.c:333
 msgid "package has neither file owner or id lists\n"
 msgstr "pakiet nie ma list w³a¶cicieli ani id plików\n"
 
-#: lib/query.c:481
+#: lib/query.c:484
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:490
+#: lib/query.c:493
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:503 lib/query.c:524 lib/query.c:544 lib/query.c:578
+#: lib/query.c:506 lib/query.c:527 lib/query.c:547 lib/query.c:581
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "b³êdne sformu³owanie %s: %s\n"
 
-#: lib/query.c:513 lib/query.c:530 lib/query.c:554 lib/query.c:583
+#: lib/query.c:516 lib/query.c:533 lib/query.c:557 lib/query.c:586
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¿aden pakiet nie pasuje do %s: %s\n"
 
-#: lib/query.c:594
+#: lib/query.c:597
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:605
+#: lib/query.c:608
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:638
+#: lib/query.c:641
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:641
+#: lib/query.c:644
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:666
+#: lib/query.c:669
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:669
+#: lib/query.c:672
 #, c-format
 msgid "package record number: %u\n"
 msgstr "numer rekordu pakietu: %u\n"
 
-#: lib/query.c:673
+#: lib/query.c:676
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:683 lib/rpminstall.c:817
+#: lib/query.c:686 lib/rpminstall.c:817
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2723,90 +2723,90 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:748 lib/rpmds.c:3256
+#: lib/rpmds.c:762 lib/rpmds.c:3270
 msgid "NO "
 msgstr "NIE "
 
-#: lib/rpmds.c:748 lib/rpmds.c:3256
+#: lib/rpmds.c:762 lib/rpmds.c:3270
 msgid "YES"
 msgstr "TAK"
 
-#: lib/rpmds.c:1236
+#: lib/rpmds.c:1250
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "Zale¿no¶ci PreReq:, Provides: oraz Obsoletes: obs³uguj± wersje."
 
-#: lib/rpmds.c:1239
+#: lib/rpmds.c:1253
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "nazwy plików zapisano jako (dirName,baseName,dirIndex) a nie jako ¶cie¿ki."
 
-#: lib/rpmds.c:1242
+#: lib/rpmds.c:1256
 msgid "package payload can be compressed using bzip2."
 msgstr "dane pakietu mog± byæ skompresowane bzipem2."
 
-#: lib/rpmds.c:1245
+#: lib/rpmds.c:1259
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "pliki danych pakietu maj± prefix \"./\"."
 
-#: lib/rpmds.c:1248
+#: lib/rpmds.c:1262
 msgid "package name-version-release is not implicitly provided."
 msgstr "pakiet name-version-release nie jest udostêpniany domy¶lnie."
 
-#: lib/rpmds.c:1251
+#: lib/rpmds.c:1265
 msgid "header tags are always sorted after being loaded."
 msgstr "etykiety nag³ówka s± zawsze sortowane po wczytaniu."
 
-#: lib/rpmds.c:1254
+#: lib/rpmds.c:1268
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "interpreter skryptów mo¿e u¿ywaæ argumentów z nag³ówka."
 
-#: lib/rpmds.c:1257
+#: lib/rpmds.c:1271
 msgid "a hardlink file set may be installed without being complete."
 msgstr "plik z dowi±zaniem sta³ym mo¿e byæ zainstalowany bez kompletu."
 
-#: lib/rpmds.c:1260
+#: lib/rpmds.c:1274
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "skrypty pakietu mog± odwo³ywaæ siê do bazy rpm-a przy instalacji."
 
-#: lib/rpmds.c:1264
+#: lib/rpmds.c:1278
 msgid "internal support for lua scripts."
 msgstr "wewnêtrzna obs³uga dla skryptów lua."
 
-#: lib/rpmds.c:1268
+#: lib/rpmds.c:1282
 msgid "header tags can be type int_64."
 msgstr "znaczniki nag³ówka mog± byæ typu int_64."
 
-#: lib/rpmds.c:1271
+#: lib/rpmds.c:1285
 msgid "package payload can be in ustar tar archive format."
 msgstr "dane pakietu mog± byæ w formacie archiwum tara ustar."
 
-#: lib/rpmds.c:1274
+#: lib/rpmds.c:1288
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1392
+#: lib/rpmds.c:1406
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "%s:%d \"%s\" musi zaczynaæ siê liter±, cyfr±, '_', '/' lub '%%'.\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:1426
+#: lib/rpmds.c:1440
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr "%s:%d Brak operatora porównania.\n"
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:1436
+#: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr "%s:%d Nie znaleziono warto¶ci do porównania EVR.\n"
 
-#: lib/rpmds.c:3044 lib/rpmds.c:3074 lib/rpmds.c:3086
+#: lib/rpmds.c:3058 lib/rpmds.c:3088 lib/rpmds.c:3100
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "uruchamianie polecenia potokowego \"%s\"\n"
 
-#: lib/rpmds.c:3047
+#: lib/rpmds.c:3061
 #, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2816,13 +2816,13 @@ msgstr ""
 "Pomijanie...\n"
 
 #. XXX No comparison operator found.
-#: lib/rpmds.c:3076
+#: lib/rpmds.c:3090
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr "\tlinia %d: \"%s\" nie ma operatora porównania. Pomijanie...\n"
 
 #. XXX No EVR comparison value found.
-#: lib/rpmds.c:3088
+#: lib/rpmds.c:3102
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2831,7 +2831,7 @@ msgstr ""
 "\tlinia %d: Brak warto¶ci porównania EVR.\n"
 " Pomijanie..."
 
-#: lib/rpmds.c:3222
+#: lib/rpmds.c:3236
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2840,13 +2840,13 @@ msgstr ""
 "Zale¿no¶æ \"B\" wymaga epoch (przyjêto epoch takie samo jak \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3255
+#: lib/rpmds.c:3269
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:3279
+#: lib/rpmds.c:3293
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
@@ -3142,103 +3142,103 @@ msgstr "brak drugiego ':' w %s:%d\n"
 msgid "missing architecture name at %s:%d\n"
 msgstr "brak nazwy architektury w %s:%d\n"
 
-#: lib/rpmrc.c:346
+#: lib/rpmrc.c:359
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Niekompletna linia danych w %s:%d\n"
 
-#: lib/rpmrc.c:351
+#: lib/rpmrc.c:364
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Zbyt wiele argumentów w linii danych w %s:%d\n"
 
-#: lib/rpmrc.c:359
+#: lib/rpmrc.c:372
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "B³êdny numer architektury/systemu: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:396
+#: lib/rpmrc.c:409
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Niekompletna domy¶lna linia w %s:%d\n"
 
-#: lib/rpmrc.c:401
+#: lib/rpmrc.c:414
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Zbyt wiele argumentów w linii domy¶lnej w %s:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:661
+#: lib/rpmrc.c:674
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Odczytanie %s nie powiod³o siê: %s.\n"
 
-#: lib/rpmrc.c:699
+#: lib/rpmrc.c:712
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "brak ':' (napotkano 0x%02x) w %s:%d\n"
 
-#: lib/rpmrc.c:716 lib/rpmrc.c:779
+#: lib/rpmrc.c:729 lib/rpmrc.c:792
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "brak argumentu dla %s w %s:%d\n"
 
-#: lib/rpmrc.c:733 lib/rpmrc.c:755
+#: lib/rpmrc.c:746 lib/rpmrc.c:768
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "rozwiniêcie %s: nie powiod³o siê w %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:742
+#: lib/rpmrc.c:755
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nie mo¿na otworzyæ %s w %s:%d: %s\n"
 
-#: lib/rpmrc.c:771
+#: lib/rpmrc.c:784
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "brak architektury dla %s w %s:%d\n"
 
-#: lib/rpmrc.c:838
+#: lib/rpmrc.c:851
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "b³êdna opcja '%s' w %s:%d\n"
 
-#: lib/rpmrc.c:1828
+#: lib/rpmrc.c:1867
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie mo¿na rozwin±æ %s\n"
 
-#: lib/rpmrc.c:1833
+#: lib/rpmrc.c:1872
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Nie mo¿na odczytaæ %s, HOME jest zbyt du¿e.\n"
 
-#: lib/rpmrc.c:1850
+#: lib/rpmrc.c:1889
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s.\n"
 
-#: lib/rpmrc.c:1993
+#: lib/rpmrc.c:2032
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr "Skonfigurowane zasoby systemu (z /etc/rpm/sysinfo):\n"
 
-#: lib/rpmrc.c:2006
+#: lib/rpmrc.c:2045
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Cechy dostarczane przez instalator rpmlib:\n"
 
-#: lib/rpmrc.c:2020
+#: lib/rpmrc.c:2059
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr "Cechy dostarczane przez bie¿±ce cpuinfo (z /proc/cpuinfo):\n"
 
-#: lib/rpmrc.c:2034
+#: lib/rpmrc.c:2073
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Cechy dostarczane przez bie¿±cy getconf:\n"
 
-#: lib/rpmrc.c:2048
+#: lib/rpmrc.c:2087
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "Cechy dostarczane przez bie¿±ce uname:\n"
@@ -3740,62 +3740,62 @@ msgstr "usuniêto    ¶rodowisko db %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "otwieranie  ¶rodowiska db %s/%s %s\n"
 
-#: rpmdb/db3.c:824
+#: rpmdb/db3.c:897
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "zamkniêto   indeks db     %s/%s\n"
 
-#: rpmdb/db3.c:893
+#: rpmdb/db3.c:966
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "sprawdzono  indeks db     %s/%s\n"
 
-#: rpmdb/db3.c:1036
+#: rpmdb/db3.c:1109
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 "znaleziono wy³±czne muteksy posix(%d), dodanie DB_PRIVATE, u¿ycie blokady "
 "fcntl\n"
 
-#: rpmdb/db3.c:1173
+#: rpmdb/db3.c:1246
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otwieranie  indeksu db    %s/%s %s w trybie 0x%x\n"
 
-#: rpmdb/db3.c:1415
+#: rpmdb/db3.c:1488
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie mo¿na uzyskaæ %s blokady na %s/%s\n"
 
-#: rpmdb/db3.c:1417
+#: rpmdb/db3.c:1490
 msgid "exclusive"
 msgstr "wy³±cznej"
 
-#: rpmdb/db3.c:1417
+#: rpmdb/db3.c:1490
 msgid "shared"
 msgstr "dzielonej"
 
-#: rpmdb/db3.c:1421
+#: rpmdb/db3.c:1494
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "zablokowano indeks db    %s/%s\n"
 
-#: rpmdb/dbconfig.c:339
+#: rpmdb/dbconfig.c:570
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "nierozpoznana opcja db: \"%s\" zignorowana.\n"
 
-#: rpmdb/dbconfig.c:379
+#: rpmdb/dbconfig.c:610
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s ma b³êdn± warto¶æ liczbow±, pominiêto\n"
 
-#: rpmdb/dbconfig.c:388
+#: rpmdb/dbconfig.c:619
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 
-#: rpmdb/dbconfig.c:397
+#: rpmdb/dbconfig.c:628
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
