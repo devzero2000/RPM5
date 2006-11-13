@@ -49,13 +49,27 @@ struct poptOption rdbOptions[] = {
  { "xa_create",	0,POPT_BIT_SET,	&db3dbi.dbi_cflags, DB_XA_CREATE,
 	NULL, NULL },
 
+/* DB_ENV->open and DB->open */
+#if defined(DB_AUTO_COMMIT) && defined(NOTYET)
+ { "auto_commit", 0,POPT_BIT_SET, &db3dbi.dbi_oeflags, DB_AUTO_COMMIT,
+	NULL, NULL },
+#endif
  { "create",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_CREATE,
+	NULL, NULL },
+#if defined(DB_MULTIVERSION) && defined(NOTYET)
+ { "multiversion", 0,POPT_BIT_SET, &db3dbi.dbi_oeflags, DB_MULTIVERSION,
+	NULL, NULL },
+#endif
+ { "nommap",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_NOMMAP,
 	NULL, NULL },
  { "thread",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_THREAD,
 	NULL, NULL },
 
  { "force",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_FORCE,
 	NULL, NULL },
+
+/* DB_ENV->set_flags */
+/* DB_ENV->get_flags */
  { "cdb",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_CDB,
 	NULL, NULL },
  { "lock",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_LOCK,
@@ -64,14 +78,27 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "mpool",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_MPOOL,
 	NULL, NULL },
+#if defined(DB_INIT_REP) && defined(NOTYET)
+ { "replicate", 0,POPT_BIT_SET, &db3dbi.dbi_eflags, DB_INIT_REP,
+	NULL, NULL },
+#endif
  { "txn",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_TXN,
 	NULL, NULL },
+
  { "joinenv",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_JOINENV,
+	NULL, NULL },
+ { "lockdown",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_LOCKDOWN,
+	NULL, NULL },
+ { "private",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_PRIVATE,
 	NULL, NULL },
  { "recover",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_RECOVER,
 	NULL, NULL },
  { "recover_fatal", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_RECOVER_FATAL,
 	NULL, NULL },
+#if defined(DB_REGISTER) && defined(NOTYET)
+ { "register", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_REGISTER,
+	NULL, NULL },
+#endif
  { "shared",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_SYSTEM_MEM,
 	NULL, NULL },
  { "txn_nosync", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_TXN_NOSYNC,
@@ -80,26 +107,77 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "use_environ", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_USE_ENVIRON,
 	NULL, NULL },
- { "lockdown",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_LOCKDOWN,
-	NULL, NULL },
- { "private",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_PRIVATE,
-	NULL, NULL },
 
  { "txn_sync",	0,POPT_BIT_SET,	&db3dbi.dbi_tflags, DB_TXN_SYNC,
 	NULL, NULL },
  { "txn_nowait",0,POPT_BIT_SET,	&db3dbi.dbi_tflags, DB_TXN_NOWAIT,
 	NULL, NULL },
 
+#if defined(NOTYET)
+DB_AUTO_COMMIT
+DB_CDB_ALLDB
+DB_DIRECT_DB
+DB_DIRECT_LOG
+DB_DSYNC_DB
+DB_DSYNC_LOG
+DB_LOG_AUTOREMOVE
+DB_LOG_BUFFER_FULL	???
+DB_LOG_INMEMORY
+DB_NOLOCKING
+DB_MULTIVERSION
+DB_NOMMAP
+DB_NOPANIC
+DB_OVERWRITE
+DB_PANIC_ENVIRONMENT
+DB_REGION_INIT
+DB_TIME_NOTGRANTED
+DB_TXN_NOSYNC
+DB_TXN_SNAPSHOT
+DB_WRITE_NOSYNC
+DB_YIELDCPU
+#endif
+
+/* DB->set_flags */
+/* DB->get_flags */
+#if defined(NOTYET)
+DB_CHKSUM
+DB_ENCRYPT
+DB_TXN_NOT_DURABLE
+
+DB_DUP		BTREE HASH
+DB_DUPSORT	BTREE HASH
+DB_RECNUM	BTREE
+DB_REVSPLITOFF	BTREE
+
+DB_INORDER	QUEUE
+DB_RENUMBER	RECNO
+DB_SNAPSHOT	RECNO
+#endif
+
+/* DB->open */
  { "excl",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_EXCL,
-	NULL, NULL },
- { "nommap",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_NOMMAP,
-	NULL, NULL },
- { "rdonly",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_RDONLY,
-	NULL, NULL },
- { "truncate",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_TRUNCATE,
 	NULL, NULL },
  { "fcntl_locking",0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_FCNTL_LOCKING,
 	NULL, NULL },
+#if defined(DB_NO_AUTO_COMMIT) && defined(NOTYET)
+ { "noautocommit", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_NO_AUTO_COMMIT,
+	NULL, NULL },
+#endif
+ { "rdonly",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_RDONLY,
+	NULL, NULL },
+#if defined(DB_RDWRMASTER) && defined(NOTYET)
+ { "rdwrmaster", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_RDWRMASTER,
+	NULL, NULL },
+#endif
+#if defined(NOTYET)
+DB_READ_UNCOMITTED
+#endif
+ { "truncate",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_TRUNCATE,
+	NULL, NULL },
+#if defined(DB_WRITEOPEN) && defined(NOTYET)
+ { "writeopen", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_WRITEOPEN,
+	NULL, NULL },
+#endif
 
  { "btree",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_BTREE,
 	NULL, NULL },
@@ -157,13 +235,20 @@ struct poptOption rdbOptions[] = {
  { "debug",	0,POPT_ARG_NONE,	&db3dbi.dbi_debug, 0,
 	NULL, NULL },
 
+/* XXX set_alloc */
  { "cachesize",	0,POPT_ARG_INT,		&db3dbi.dbi_cachesize, 0,
 	NULL, NULL },
+/* XXX set_dup_compare */
+/* XXX set_encrypt */
  { "errpfx",	0,POPT_ARG_STRING,	&db3dbi.dbi_errpfx, 0,
 	NULL, NULL },
- { "region_init", 0,POPT_ARG_VAL,	&db3dbi.dbi_region_init, 1,
+/* XXX set_feedback */
+ { "lorder",	0,POPT_ARG_INT,		&db3dbi.dbi_lorder, 0,
 	NULL, NULL },
- { "tas_spins",	0,POPT_ARG_INT,		&db3dbi.dbi_tas_spins, 0,
+ { "pagesize",	0,POPT_ARG_INT,		&db3dbi.dbi_pagesize, 0,
+	NULL, NULL },
+
+ { "region_init", 0,POPT_ARG_VAL,	&db3dbi.dbi_region_init, 1,
 	NULL, NULL },
 
 #if defined(DB_VERB_CHKPOINT)
@@ -174,46 +259,192 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "recovery",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_RECOVERY,
 	NULL, NULL },
+#if defined(DB_VERB_REGISTER)
+ { "register",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_REGISTER,
+	NULL, NULL },
+#endif
+#if defined(DB_VERB_REPLICATION)
+ { "replication", 0,POPT_BIT_SET, &db3dbi.dbi_verbose, DB_VERB_REPLICATION,
+	NULL, NULL },
+#endif
  { "waitsfor",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_WAITSFOR,
 	NULL, NULL },
  { "verbose",	0,POPT_ARG_VAL,		&db3dbi.dbi_verbose, -1,
 	NULL, NULL },
 
+/* ==== Locking: */
+/* DB_ENV->lock_detect */
+/* DB_ENV->set_lk_detect */
+/* DB_ENV->get_lk_detect */
+ { "lk_default",0,POPT_ARG_VAL,		&db3dbi.dbi_lk_detect, DB_LOCK_DEFAULT,
+	NULL, NULL },
+ { "lk_expire",	0,POPT_ARG_VAL,		&db3dbi.dbi_lk_detect, DB_LOCK_EXPIRE,
+	NULL, NULL },
+#if defined(DB_LOCK_MAXLOCKS)
+ { "lk_maxlocks", 0,POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_MAXLOCKS,
+	NULL, NULL },
+#endif
+#if defined(DB_LOCK_MAXWRITE)
+ { "lk_maxwrite", 0,POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_MAXWRITE,
+	NULL, NULL },
+#endif
+#if defined(DB_LOCK_MINLOCKS)
+ { "lk_minlocks", 0,POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_MINLOCKS,
+	NULL, NULL },
+#endif
+#if defined(DB_LOCK_MINWRITE)
+ { "lk_minwrite", 0,POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_MINWRITE,
+	NULL, NULL },
+#endif
  { "lk_oldest",	0,POPT_ARG_VAL,		&db3dbi.dbi_lk_detect, DB_LOCK_OLDEST,
 	NULL, NULL },
  { "lk_random",	0,POPT_ARG_VAL,		&db3dbi.dbi_lk_detect, DB_LOCK_RANDOM,
 	NULL, NULL },
  { "lk_youngest",0, POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_YOUNGEST,
 	NULL, NULL },
-/* XXX lk_conflicts matrix */
- { "lk_max",	0,POPT_ARG_INT,		&db3dbi.dbi_lk_max, 0,
+
+/* DB_ENV->lock_get */
+/* XXX DB_ENV->set_lk_conflicts */
+/* XXX DB_ENV->get_lk_conflicts */
+#if defined(NOTYET)
+DB_LOCK_NOWAIT	/* flags */
+
+DB_LOCK_READ	/* mode(s) */
+DB_LOCK_WRITE
+DB_LOCK_IWRITE
+DB_LOCK_IREAD
+DB_LOCK_IWR
+#endif
+
+/* XXX DB_ENV->set_lk_max_lockers */
+/* XXX DB_ENV->get_lk_max_lockers */
+ { "lk_max_lockers", 0,POPT_ARG_INT,	&db3dbi.dbi_lk_max_lockers, 0,
+	NULL, NULL },
+/* XXX DB_ENV->set_lk_max_locks */
+/* XXX DB_ENV->get_lk_max_locks */
+ { "lk_max_locks", 0,POPT_ARG_INT,	&db3dbi.dbi_lk_max_locks, 0,
+	NULL, NULL },
+/* XXX DB_ENV->set_lk_max_objects */
+/* XXX DB_ENV->get_lk_max_objects */
+ { "lk_max_objects", 0,POPT_ARG_INT,	&db3dbi.dbi_lk_max_objects, 0,
 	NULL, NULL },
 
+/* XXX DB_ENV->set_timeout */
+/* XXX DB_ENV->get_timeout */
+
+/* ==== Logging: */
+/* XXX DB_ENV->set_lg_bsize */
+/* XXX DB_ENV->get_lg_bsize */
  { "lg_bsize",	0,POPT_ARG_INT,		&db3dbi.dbi_lg_bsize, 0,
 	NULL, NULL },
+/* XXX DB_ENV->set_lg_dir */
+/* XXX DB_ENV->get_lg_dir */
+ { "lg_dir",	0,POPT_ARG_STRING,	&db3dbi.dbi_lg_dir, 0,
+	NULL, NULL },
+/* XXX DB_ENV->set_lg_filemode */
+/* XXX DB_ENV->get_lg_filemode */
+ { "lg_filemode", 0,POPT_ARG_INT,	&db3dbi.dbi_lg_filemode, 0,
+	NULL, NULL },
+/* XXX DB_ENV->set_lg_max */
+/* XXX DB_ENV->get_lg_max */
  { "lg_max",	0,POPT_ARG_INT,		&db3dbi.dbi_lg_max, 0,
 	NULL, NULL },
-
-/* XXX tx_recover */
- { "tx_max",	0,POPT_ARG_INT,		&db3dbi.dbi_tx_max, 0,
+/* XXX DB_ENV->set_lg_regionmax */
+/* XXX DB_ENV->get_lg_regionmax */
+ { "lg_regionmax", 0,POPT_ARG_INT,	&db3dbi.dbi_lg_regionmax, 0,
 	NULL, NULL },
 
- { "lorder",	0,POPT_ARG_INT,		&db3dbi.dbi_lorder, 0,
+/* ==== Memory pool: */
+ { "mp_size",	0,POPT_ARG_INT,		&db3dbi.dbi_cachesize, 0,
 	NULL, NULL },
-
+/* XXX DB_ENV->set_mp_max_openfd */
+/* XXX DB_ENV->set_mp_max_write */
  { "mmapsize", 0,POPT_ARG_INT,		&db3dbi.dbi_mmapsize, 0,
 	NULL, NULL },
  { "mp_mmapsize", 0,POPT_ARG_INT,	&db3dbi.dbi_mmapsize, 0,
 	NULL, NULL },
- { "mp_size",	0,POPT_ARG_INT,		&db3dbi.dbi_cachesize, 0,
+/* XXX DB_MPOOLFILE->set_clear_len */
+/* XXX DB_MPOOLFILE->set_fileid */
+/* XXX DB_MPOOLFILE->set_ftype */
+/* XXX DB_MPOOLFILE->set_lsn_offset */
+/* XXX DB_MPOOLFILE->set_maxsize */
+/* XXX DB_MPOOLFILE->set_pgcookie */
+/* XXX DB_MPOOLFILE->set_priority */
+
+/* ==== Mutexes: */
+#if defined(NOTYET)
+DB_MUTEX_PROCESS_ONLY	mutex_alloc
+DB_MUTEX_SELF_BLOCK	mutex_alloc
+DB_STAT_CLEAR		mutex_stat*
+#endif
+/* XXX DB_ENV->mutex_set_align */
+/* XXX DB_ENV->mutex_get_align */
+ { "mutex_align", 0,POPT_ARG_INT,	&db3dbi.dbi_mutex_align, 0,
 	NULL, NULL },
- { "pagesize",	0,POPT_ARG_INT,		&db3dbi.dbi_pagesize, 0,
+/* XXX DB_ENV->mutex_set_increment */
+/* XXX DB_ENV->mutex_get_increment */
+ { "mutex_increment", 0,POPT_ARG_INT,	&db3dbi.dbi_mutex_increment, 0,
+	NULL, NULL },
+/* XXX DB_ENV->mutex_set_max */
+/* XXX DB_ENV->mutex_get_max */
+ { "mutex_max", 0,POPT_ARG_INT,		&db3dbi.dbi_mutex_max, 0,
+	NULL, NULL },
+/* XXX DB_ENV->mutex_set_tas_spins */
+/* XXX DB_ENV->mutex_get_tas_spins */
+ { "mutex_tas_spins",	0,POPT_ARG_INT,	&db3dbi.dbi_mutex_tas_spins, 0,
 	NULL, NULL },
 
-/* XXX bt_minkey */
-/* XXX bt_compare */
-/* XXX bt_dup_compare */
-/* XXX bt_prefix */
+/* ==== Replication: */
+/* XXX DB_ENV->rep_set_config */
+/* XXX DB_ENV->rep_set_limit */
+/* XXX DB_ENV->rep_set_nsites */
+/* XXX DB_ENV->rep_set_priority */
+/* XXX DB_ENV->rep_set_timeout */
+/* XXX DB_ENV->rep_set_transport */
+
+/* ==== Sequences: */
+/* XXX DB_SEQUENCE->set_cachesize */
+/* XXX DB_SEQUENCE->get_cachesize */
+ { "seq_cachesize",	0,POPT_ARG_INT,	&db3dbi.dbi_seq_cachesize, 0,
+	NULL, NULL },
+/* XXX DB_SEQUENCE->set_flags */
+/* XXX DB_SEQUENCE->get_flags */
+#if defined(DB_SEQ_DEC)
+ { "seq_dec",	0,POPT_BIT_SET,		&db3dbi.dbi_seq_flags, DB_SEQ_DEC,
+	NULL, NULL },
+#endif
+#if defined(DB_SEQ_INC)
+ { "seq_inc",	0,POPT_BIT_SET,		&db3dbi.dbi_seq_flags, DB_SEQ_INC,
+	NULL, NULL },
+#endif
+#if defined(DB_SEQ_WRAP)
+ { "seq_wrap",	0,POPT_BIT_SET,		&db3dbi.dbi_seq_flags, DB_SEQ_WRAP,
+	NULL, NULL },
+#endif
+/* XXX DB_SEQUENCE->set_range */
+/* XXX DB_SEQUENCE->get_range */
+#if defined(NOTYET)		/* needs signed 64bit type */
+ { "seq_min",	0,POPT_ARG_INT,	&db3dbi.dbi_seq_min, 0,
+	NULL, NULL },
+ { "seq_max",	0,POPT_ARG_INT,	&db3dbi.dbi_seq_max, 0,
+	NULL, NULL },
+#endif
+
+/* ==== Transactions: */
+/* XXX DB_ENV->txn_checkpoint */
+/* XXX DB_ENV->txn_recover */
+/* XXX DB_ENV->txn_stat */
+/* XXX DB_ENV->set_timeout */
+/* XXX DB_ENV->get_timeout */
+ { "tx_max",	0,POPT_ARG_INT,		&db3dbi.dbi_tx_max, 0,
+	NULL, NULL },
+/* XXX DB_ENV->set_tx_timestamp */
+
+/* XXX set_append_recno */
+/* XXX set_bt_compare */
+/* XXX set_bt_dup_compare */
+/* XXX set_bt_minkey */
+/* XXX set_bt_prefix */
  { "bt_dup",	0,POPT_BIT_SET,	&db3dbi.dbi_bt_flags, DB_DUP,
 	NULL, NULL },
  { "bt_dupsort",0,POPT_BIT_SET,	&db3dbi.dbi_bt_flags, DB_DUPSORT,

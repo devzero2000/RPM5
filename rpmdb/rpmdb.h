@@ -321,18 +321,39 @@ struct _dbiIndex {
     const char * dbi_errpfx;
     int	dbi_verbose;
     int	dbi_region_init;
-    int	dbi_tas_spins;
+	/* locking sub-system parameters */
+    unsigned int dbi_lk_max_lockers;
+    unsigned int dbi_lk_max_locks;
+    unsigned int dbi_lk_max_objects;
+    unsigned int dbi_lk_detect;
+/*@unused@*/
+    int dbi_lk_nmodes;
+/*@unused@*/
+    unsigned char * dbi_lk_conflicts;
+	/* logging sub-system parameters */
+    unsigned int dbi_lg_bsize;
+/*@unused@*/
+    const char * dbi_lg_dir;
+/*@unused@*/
+    unsigned int dbi_lg_filemode;
+    unsigned int dbi_lg_max;
+    unsigned int dbi_lg_regionmax;
 	/* mpool sub-system parameters */
     int	dbi_mmapsize;		/*!< (10Mb) */
     int	dbi_cachesize;		/*!< (128Kb) */
-	/* lock sub-system parameters */
-    unsigned int dbi_lk_max;
-    unsigned int dbi_lk_detect;
-/*@unused@*/ int dbi_lk_nmodes;
-/*@unused@*/ unsigned char * dbi_lk_conflicts;
-	/* log sub-system parameters */
-    unsigned int dbi_lg_max;
-    unsigned int dbi_lg_bsize;
+	/* mutex sub-system parameters */
+    unsigned int dbi_mutex_align;
+    unsigned int dbi_mutex_increment;
+    unsigned int dbi_mutex_max;
+    unsigned int dbi_mutex_tas_spins;
+	/* replication sub-system parameters */
+	/* sequences sub-system parameters */
+    unsigned int dbi_seq_cachesize;
+    unsigned int dbi_seq_flags;
+#if 0	/* needs signed 64 bit type */
+    int64_t dbi_seq_min;
+    int64_t dbi_seq_max;
+#endif
 	/* transaction sub-system parameters */
     unsigned int dbi_tx_max;
 #if 0
