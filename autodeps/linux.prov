@@ -1,5 +1,8 @@
 #!/bin/bash
 
+OBJDUMP="${OBJDUMP:-objdump}"
+usrlibrpm="${usrlibrpm:-/usr/lib/rpm}"
+
 # This script reads filenames from STDIN and outputs any relevant provides
 # information that needs to be included in the package.
 
@@ -20,14 +23,14 @@ esac
 #
 # --- Library sonames and weak symbol versions (from glibc).
 for f in $solist; do
-    soname=$(objdump -p $f | awk '/SONAME/ {print $2}')
+    soname=$($OBJDUMP -p $f | awk '/SONAME/ {print $2}')
 
     lib64=`if file -L $f 2>/dev/null | \
 	grep "ELF 64-bit" >/dev/null; then echo "$mark64"; fi`
     if [ "$soname" != "" ]; then
 	if [ ! -L $f ]; then
 	    echo $soname$lib64
-	    objdump -p $f | awk '
+	    $OBJDUMP -p $f | awk '
 		BEGIN { START=0 ; }
 		/Version definitions:/ { START=1; }
 		/^[0-9]/ && (START==1) { print $4; }
@@ -45,17 +48,17 @@ done | sort -u
 
 #
 # --- Perl modules.
-[ -x /usr/lib/rpm/perl.prov ] &&
-    echo $filelist | tr '[:blank:]' \\n | grep '\.pm$' | /usr/lib/rpm/perl.prov | sort -u
+[ -x "$usrlibrpm/perl.prov" ] &&
+    echo $filelist | tr '[:blank:]' \\n | grep '\.pm$' | "$usrlibrpm/perl.prov" | sort -u
 
 #
 # --- Python modules.
-[ -x /usr/lib/rpm/python.prov -a -n "$pythonlist" ] &&
-    echo $pythonlist | tr '[:blank:]' \\n | /usr/lib/rpm/python.prov | sort -u
+[ -x "$usrlibrpm/python.prov" -a -n "$pythonlist" ] &&
+    echo $pythonlist | tr '[:blank:]' \\n | "$usrlibrpm/python.prov" | sort -u
 
 #
 # --- Tcl modules.
-[ -x /usr/lib/rpm/tcl.prov -a -n "$tcllist" ] &&
-    echo $tcllist | tr '[:blank:]' \\n | /usr/lib/rpm/tcl.prov | sort -u
+[ -x "$usrlibrpm/tcl.prov" -a -n "$tcllist" ] &&
+    echo $tcllist | tr '[:blank:]' \\n | "$usrlibrpm/tcl.prov" | sort -u
 
 exit 0

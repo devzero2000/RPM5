@@ -1,5 +1,8 @@
 #!/bin/bash
 
+OBJDUMP="${OBJDUMP:-objdump}"
+usrlibrpm="${usrlibrpm:-/usr/lib/rpm}"
+
 #
 # Auto-generate requirements for executables (both ELF and a.out) and library
 # sonames, script interpreters, and perl modules.
@@ -94,7 +97,7 @@ for f in $liblist $exelist ; do
     [ -r $f ] || continue
     lib64=`if file -L $f 2>/dev/null | \
 	grep "ELF 64-bit" >/dev/null; then echo "$mark64"; fi`
-    objdump -p $f | awk 'BEGIN { START=0; LIBNAME=""; needed='$needed'; }
+    $OBJDUMP -p $f | awk 'BEGIN { START=0; LIBNAME=""; needed='$needed'; }
 	/^$/ { START=0; }
 	/^Dynamic Section:$/ { START=1; }
 	(START==1) && /NEEDED/ {
@@ -110,7 +113,7 @@ for f in $liblist $exelist ; do
 	    sub(/:/, "", $3);
 	    LIBNAME=$3;
 	}
-	(START==2) && (LIBNAME!="") && ($4!="") && (($4~/^GLIBC_*/) || ($4~/^GCC_*/)) {
+	(START==2) && (LIBNAME!="") && ($4!="") {
 	    print LIBNAME "(" $4 ")'$lib64'";
 	}
     '
@@ -118,17 +121,17 @@ done | sort -u
 
 #
 # --- Perl modules.
-[ -x /usr/lib/rpm/perl.req -a -n "$perllist" ] && \
-    echo $perllist | tr '[:blank:]' \\n | /usr/lib/rpm/perl.req | sort -u
+[ -x "$usrlibrpm/perl.req" -a -n "$perllist" ] && \
+    echo $perllist | tr '[:blank:]' \\n | "$usrlibrpm/perl.req" | sort -u
 
 #
 # --- Python modules.
-[ -x /usr/lib/rpm/python.req -a -n "$pythonlist" ] && \
-    echo $pythonlist | tr '[:blank:]' \\n | /usr/lib/rpm/python.req | sort -u
+[ -x "$usrlibrpm/python.req" -a -n "$pythonlist" ] && \
+    echo $pythonlist | tr '[:blank:]' \\n | "$usrlibrpm/python.req" | sort -u
 
 #
 # --- Tcl modules.
-[ -x /usr/lib/rpm/tcl.req -a -n "$tcllist" ] && \
-    echo $tcllist | tr '[:blank:]' \\n | /usr/lib/rpm/tcl.req | sort -u
+[ -x "$usrlibrpm/tcl.req" -a -n "$tcllist" ] && \
+    echo $tcllist | tr '[:blank:]' \\n | "$usrlibrpm/tcl.req" | sort -u
 
 exit 0
