@@ -12,6 +12,7 @@
 	- resize rpmExpand() buffer instead of using BUFSIZ.
 	- remove extraneous :depflags white space in non-versioned dependencies.
 	- add parameters from db-4.5.20.
+	- permit multiple identically named packages with --install (#171970).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
