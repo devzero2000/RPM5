@@ -216,6 +216,7 @@ struct poptOption rpmInstallPoptTable[] = {
 	installArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
+#if 0
  { "aid", '\0', POPT_BIT_SET, &rpmIArgs.depFlags, RPMDEPS_FLAG_ADDINDEPS,
 	N_("add suggested packages to transaction"), NULL },
  { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
@@ -245,6 +246,7 @@ struct poptOption rpmInstallPoptTable[] = {
  { "noupgrade", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.depFlags, RPMDEPS_FLAG_NOUPGRADE,
 	N_("ignore added package upgrades"), NULL},
+#endif
 
  { "allfiles", '\0', POPT_BIT_SET,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ALLFILES,

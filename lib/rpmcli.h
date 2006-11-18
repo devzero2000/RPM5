@@ -34,6 +34,12 @@ extern int ftsOpts;
 /*@unchecked@*/
 extern struct poptOption		rpmcliFtsPoptTable[];
 
+/*@unchecked@*/
+extern int depFlags;
+
+/*@unchecked@*/
+extern struct poptOption		rpmcliDepFlagsPoptTable[];
+
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * rpmcliPipeOutput;
 

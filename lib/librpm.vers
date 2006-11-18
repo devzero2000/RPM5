@@ -6,6 +6,7 @@ LIBRPM_0
     _cacheDependsRC;
     cpioStrerror;
     currentDirectory;
+    depFlags;
     doputenv;
     dosetenv;
     fileActionString;
@@ -64,6 +65,7 @@ LIBRPM_0
     rpmcliAllPoptTable;
     rpmcliArgIter;
     rpmcliConfigured;
+    rpmcliDepFlagsPoptTable;
     rpmcliFini;
     rpmcliFtsPoptTable;
     rpmcliHashesCurrent;
@@ -189,8 +191,11 @@ LIBRPM_0
     rpmFreeFilesystems;
     rpmFreeRpmrc;
     rpmFreeSignature;
+    rpmGetArchInfo;
     rpmGetFilesystemList;
     rpmGetFilesystemUsage;
+    rpmGetMachine;
+    rpmGetOsInfo;
     rpmGetPassPhrase;
     _rpmgi_debug;
     rpmgiFree;
@@ -207,6 +212,7 @@ LIBRPM_0
     rpmInstallSource;
     rpmInstallSourcePackage;
     rpmLookupSignatureType;
+    rpmMachineScore;
     rpmMkdirPath;
     rpmNAME;
     rpmNewSignature;

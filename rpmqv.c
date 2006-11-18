@@ -84,6 +84,15 @@ static struct poptOption optionsTable[] = {
         N_("Source options (with --query or --verify):"),
         NULL },
 #endif
+#endif	/* IAM_RPMQV */
+
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliDepFlagsPoptTable, 0,
+        N_("Dependency check/order options:"),
+        NULL },
+#endif	/* IAM_RPMQV */
+
+#ifdef	IAM_RPMQV
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
         N_("File tree walk options (with --ftswalk):"),
         NULL },
@@ -679,6 +688,7 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
+	ia->depFlags = depFlags;
 	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 
 	if (!poptPeekArg(optCon)) {
@@ -696,6 +706,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
+	ia->depFlags = depFlags;
 	if (!ia->incldocs) {
 	    if (ia->transFlags & RPMTRANS_FLAG_NODOCS) {
 		;
@@ -742,6 +753,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
 	    argerror(_("no arguments given for query"));
 
+	qva->depFlags = depFlags;
 	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
 	qva->qva_specQuery = NULL;
@@ -750,6 +762,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_VERIFY:
     {	rpmVerifyFlags verifyFlags = VERIFY_ALL;
 
+	qva->depFlags = depFlags;
 	verifyFlags &= ~qva->qva_flags;
 	qva->qva_flags = (rpmQueryFlags) verifyFlags;
 

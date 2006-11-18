@@ -17,6 +17,7 @@
 	- ignore Fopen and fopen(3) extensions if not glibc-2.3.3 or later.
 	- attempt mmap'd Fopen's for hdlist queries.
 	- add %_query_hdlist_path for rpm -qH.
+	- fix: refactor depflags options, re-add to query/verify modes.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

@@ -272,6 +272,43 @@ struct poptOption rpmcliFtsPoptTable[] = {
    POPT_TABLEEND
 };
 
+/*@unchecked@*/
+int depFlags;
+
+/*@unchecked@*/
+struct poptOption rpmcliDepFlagsPoptTable[] = {
+ { "aid", '\0', POPT_BIT_SET, &depFlags, RPMDEPS_FLAG_ADDINDEPS,
+	N_("add suggested packages to transaction"), NULL },
+ { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&depFlags, RPMDEPS_FLAG_ANACONDA|RPMDEPS_FLAG_DEPLOOPS,
+	N_("use anaconda \"presentation order\""), NULL},
+ { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&depFlags, RPMDEPS_FLAG_DEPLOOPS,
+	N_("print dependency loops as warning"), NULL},
+ { "nosuggest", '\0', POPT_BIT_SET,
+	&depFlags, RPMDEPS_FLAG_NOSUGGEST,
+	N_("do not suggest missing dependency resolution(s)"), NULL},
+ { "noconflicts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&depFlags, RPMDEPS_FLAG_NOCONFLICTS,
+	N_("do not check added package conflicts"), NULL},
+ { "nolinktos", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&depFlags, RPMDEPS_FLAG_NOLINKTOS,
+	N_("ignore added package requires on symlink targets"), NULL},
+ { "noobsoletes", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&depFlags, RPMDEPS_FLAG_NOOBSOLETES,
+	N_("ignore added package obsoletes"), NULL},
+ { "noparentdirs", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&depFlags, RPMDEPS_FLAG_NOPARENTDIRS,
+	N_("ignore added package requires on file parent directory"), NULL},
+ { "norequires", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&depFlags, RPMDEPS_FLAG_NOREQUIRES,
+	N_("do not check added package requires"), NULL},
+ { "noupgrade", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&depFlags, RPMDEPS_FLAG_NOUPGRADE,
+	N_("ignore added package upgrades"), NULL},
+   POPT_TABLEEND
+};
+
 /*@-bitwisesigned -compmempass @*/
 /*@unchecked@*/
 struct poptOption rpmcliAllPoptTable[] = {
