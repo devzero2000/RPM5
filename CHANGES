@@ -13,6 +13,10 @@
 	- remove extraneous :depflags white space in non-versioned dependencies.
 	- add parameters from db-4.5.20.
 	- permit multiple identically named packages with --install (#171970).
+	- query: don't attempt manifest open on non-existent files (#215712).
+	- ignore Fopen and fopen(3) extensions if not glibc-2.3.3 or later.
+	- attempt mmap'd Fopen's for hdlist queries.
+	- add %_query_hdlist_path for rpm -qH.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

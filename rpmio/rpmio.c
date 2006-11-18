@@ -3027,14 +3027,17 @@ static inline void cvtfmode (const char *m,
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case 'x':	/* glibc: open file exclusively. */
+	    flags |= O_EXCL;
+	    /*@fallthrough@*/
 	case 'm':	/* glibc: mmap'd reads */
 	case 'c':	/* glibc: no cancel */
-	case 'b':
+#if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ >= 3
 	    if (--nstdio > 0) *stdio++ = c;
+#endif
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
-	case 'x':
-	    flags |= O_EXCL;
+	case 'b':
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;

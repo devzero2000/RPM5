@@ -814,12 +814,6 @@ print (t)\
 	%{nil}
 
 #
-# Default headerSprintf() output format string for rpm -qa
-#
-# XXX	Note: escaped %% for use in headerSprintf()
-%_query_all_fmt		%%{name}-%%{version}-%%{release}.%%{arch}
-
-#
 # Default path used for serializing transactions with a  fcntl lock.
 #
 # The original, FHS clompliant, path was /var/lock/run/transaction,
@@ -835,6 +829,18 @@ print (t)\
 # support issues, because users typically do "rm -f /var/lib/rpm/__db*",
 # which will clean up the fcntl lock.
 #%_rpmlock_path	%{_dbpath}/__db.000
+
+#==============================================================================
+# ---- Query macros.
+#
+# Default headerSprintf() output format string for rpm -qa
+#
+# XXX	Note: escaped %% for use in headerSprintf()
+%_query_all_fmt		%%{name}-%%{version}-%%{release}.%%{arch}
+
+#
+# Path for rpm -qH (default is /usr/share/comps/%{_arch}/hdlist)
+%_query_hdlist_path	%{_datadir}/comps/%{_arch}/hdlist
 
 #==============================================================================
 # ---- Run-time probe dependency macros.

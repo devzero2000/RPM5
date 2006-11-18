@@ -204,6 +204,8 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 
 	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
 	    break;
+	if (errno == ENOENT)
+	    break;
 
 	/* Not a header, so try for a manifest. */
 	gi->argv[gi->i] = NULL;		/* Mark the insertion point */
@@ -506,6 +508,9 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     return gi;
 }
 
+/*@observer@*/ /*@unchecked@*/
+static const char * _query_hdlist_path  = "/usr/share/comps/%{_arch}/hdlist";
+
 rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 {
     char hnum[32];
@@ -615,9 +620,14 @@ nextkey:
     }	break;
     case RPMDBI_HDLIST:
 	if (!gi->active) {
-	    const char * path = "/usr/share/comps/%{_arch}/hdlist";
-	    gi->fd = rpmgiOpen(path, "r.ufdio");
+	    const char * path = rpmExpand("%{?_query_hdlist_path}", NULL);
+	    if (path == NULL || *path == '\0') {
+		path = _free(path);
+		path = rpmExpand(_query_hdlist_path, NULL);
+	    }
+	    gi->fd = rpmgiOpen(path, "rm.ufdio");
 	    gi->active = 1;
+	    path = _free(path);
 	}
 	if (gi->fd != NULL) {
 	    Header h = headerRead(gi->fd, HEADER_MAGIC_YES);
