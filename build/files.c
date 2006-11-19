@@ -1528,7 +1528,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     fi->bnl = _free(fi->bnl);
     if (!scareMem) fi->dil = _free(fi->dil);
 
-    fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen);
+    /* XXX Insure at least 1 byte is always allocated. */
+    fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen + 1);
     d = (char *)(fi->dnl + fi->fc);
     *d = '\0';
 
@@ -1539,7 +1540,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	: (int *)(fi->bnl + fi->fc);
 /*@=dependenttrans@*/
 
-    fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen);
+    /* XXX Insure at least 1 byte is always allocated. */
+    fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen + 1);
     a = (char *)(fi->apath + fi->fc);
     *a = '\0';
 

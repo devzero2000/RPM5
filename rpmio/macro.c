@@ -1856,11 +1856,11 @@ expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
 
     rc = expandMacro(mb);
 
+    tbuf[slen] = '\0';
     if (mb->nb == 0)
 	rpmError(RPMERR_BADSPEC, _("Macro expansion too big for target buffer\n"));
-
-    tbuf[slen] = '\0';	/* XXX just in case */
-    strncpy(sbuf, tbuf, (slen - mb->nb + 1));
+    else
+	strncpy(sbuf, tbuf, (slen - mb->nb + 1));
 
     return rc;
 }
