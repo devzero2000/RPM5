@@ -450,7 +450,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/rpmdeps
 
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
-%rpmattr	%{__prefix}/lib/rpm/trpm
+%rpmattr	%{__prefix}/lib/rpm/symclash.*
 %rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
