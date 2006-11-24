@@ -15,7 +15,7 @@ EXTRA_DIST = \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
+	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl* macros.python* \
 	macros.php* find-*.php find-php-*
@@ -37,5 +37,5 @@ config_SCRIPTS = \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
+	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh
