@@ -65,6 +65,11 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define _STAT_VER		0
 #   define __fxstat64(_stat_ver, _fd, _sbp)	fstat((_fd), (_sbp))
 #endif
+#if defined(__FreeBSD__)
+#   define __errno_location()  (&errno)
+#   define stat64              stat
+#   define __fxstat64(_stat_ver, _fd, _sbp)    fstat((_fd), (_sbp))
+#endif
 #include "system.h"
 #include "fts.h"
 #include "rpmio.h"

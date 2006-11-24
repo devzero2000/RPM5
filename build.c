@@ -201,7 +201,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	   directory for this run */
 
 	if (*arg != '/') {
-	    (void)getcwd(buf, BUFSIZ);
+	    if (getcwd(buf, BUFSIZ) == NULL) strcpy(buf, ".");
 	    strcat(buf, "/");
 	    strcat(buf, arg);
 	} else 
@@ -220,7 +220,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     specut = urlPath(specURL, &specFile);
     if (*specFile != '/') {
 	char *s = alloca(BUFSIZ);
-	(void)getcwd(s, BUFSIZ);
+	if (getcwd(buf, BUFSIZ) == NULL) strcpy(buf, ".");
 	strcat(s, "/");
 	strcat(s, arg);
 	specURL = s;

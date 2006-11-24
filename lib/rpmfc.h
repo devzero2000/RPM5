@@ -93,6 +93,7 @@ struct rpmfc_s {
     StringBuf sb_java;	/*!< concatenated list of java colored files. */
     StringBuf sb_perl;	/*!< concatenated list of perl colored files. */
     StringBuf sb_python;/*!< concatenated list of python colored files. */
+    StringBuf sb_php;	/*!< concatenated list of php colored files. */
 
 };
 

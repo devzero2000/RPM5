@@ -452,6 +452,8 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
   { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
 
+  { "PHP script text",		RPMFC_PHP|RPMFC_INCLUDE },
+
   /* XXX "a /usr/bin/python -t script text executable" */
   /* XXX "python 2.3 byte-compiled" */
   { " /usr/bin/python",		RPMFC_PYTHON|RPMFC_INCLUDE },
@@ -632,6 +634,7 @@ rpmfc rpmfcFree(rpmfc fc)
 	fc->sb_java = freeStringBuf(fc->sb_java);
 	fc->sb_perl = freeStringBuf(fc->sb_perl);
 	fc->sb_python = freeStringBuf(fc->sb_python);
+	fc->sb_php = freeStringBuf(fc->sb_php);
 
     }
     fc = _free(fc);
@@ -720,6 +723,8 @@ static int rpmfcSCRIPT(rpmfc fc)
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
 	else if (!strncmp(bn, "python", sizeof("python")-1))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
+	else if (!strncmp(bn, "php", sizeof("php")-1))
+	    fc->fcolor->vals[fc->ix] |= RPMFC_PHP;
 
 	break;
     }
@@ -760,6 +765,11 @@ static int rpmfcSCRIPT(rpmfc fc)
 #endif
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "executable");
+    } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_PHP) {
+	xx = rpmfcHelper(fc, 'P', "php");
+	if (is_executable)
+	    xx = rpmfcHelper(fc, 'R', "php");
     }
 
     return 0;
@@ -837,7 +847,7 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP) },
     { NULL, 0 }
 };
 
@@ -1017,25 +1027,33 @@ assert(s != NULL && *s == '/');
 	case S_IFLNK:
 	case S_IFREG:
 	default:
+
+#define	_suffix(_s, _x) \
+    (slen >= sizeof(_x) && !strcmp((_s)+slen-(sizeof(_x)-1), (_x)))
+
 	    /* XXX all files with extension ".pm" are perl modules for now. */
-	    if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
+	    if (_suffix(s, ".pm"))
 		ftype = "Perl5 module source text";
 
 	    /* XXX all files with extension ".jar" are java archives for now. */
-	    else if (slen >= sizeof(".jar") && !strcmp(s+slen-(sizeof(".jar")-1), ".jar"))
+	    else if (_suffix(s, ".jar"))
 		ftype = "Java archive file";
 
 	    /* XXX all files with extension ".class" are java class files for now. */
-	    else if (slen >= sizeof(".class") && !strcmp(s+slen-(sizeof(".class")-1), ".class"))
+	    else if (_suffix(s, ".class"))
 		ftype = "Java class file";
 
 	    /* XXX all files with extension ".la" are libtool for now. */
-	    else if (slen >= sizeof(".la") && !strcmp(s+slen-(sizeof(".la")-1), ".la"))
+	    else if (_suffix(s, ".la"))
 		ftype = "libtool library file";
 
 	    /* XXX all files with extension ".pc" are pkgconfig for now. */
-	    else if (slen >= sizeof(".pc") && !strcmp(s+slen-(sizeof(".pc")-1), ".pc"))
+	    else if (_suffix(s, ".pc"))
 		ftype = "pkgconfig file";
+
+	    /* XXX all files with extension ".php" are pkgconfig for now. */
+	    else if (_suffix(s, ".php"))
+		ftype = "PHP script text";
 
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
@@ -1147,7 +1165,7 @@ static struct DepMsg_s depMsgs[] = {
 	_notpre(RPMSENSE_SCRIPT_POSTUN), 0 },
   { "Requires",		{ "%{?__find_requires}", NULL, NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
-	RPMSENSE_PREREQ, RPMSENSE_PREREQ },
+	RPMSENSE_FIND_REQUIRES|RPMSENSE_TRIGGERIN|RPMSENSE_TRIGGERUN|RPMSENSE_TRIGGERPOSTUN|RPMSENSE_TRIGGERPREIN, 0 },
   { "Conflicts",	{ "%{?__find_conflicts}", NULL, NULL, NULL },
 	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
 	0, -1 },

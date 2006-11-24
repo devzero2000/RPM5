@@ -22,6 +22,14 @@
 	- re-add symbols removed in rpm-4.4.7 for now.
 	- add symclash.sh/symclash.py.
 	- fix: classification by suffix broken by cut-n-paste.
+	- fix: assume "." if getcwd returns NULL when building.
+	- don't fail if/when unsetting non-existent envvars in scriptlets.
+	- add ~/etc/.rpmmacros to rpmrc macrofiles: configgery.
+	- add /usr/src/examples and %{_examplesdir} to docdirs.
+	- add php classification (phpdeps.sh is still missing).
+	- FreeBSD portability fiddles.
+	- don't read .rpmnew/.rpmorig/.rpmsave or *~ macro files.
+	- change "python(abi)"  criteria to be more precise/robust.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
