@@ -21,6 +21,7 @@
 	- fix: illegal accesses seen when expanding into a 1 byte buffer.
 	- re-add symbols removed in rpm-4.4.7 for now.
 	- add symclash.sh/symclash.py.
+	- fix: classification by suffix broken by cut-n-paste.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

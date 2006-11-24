@@ -1022,19 +1022,19 @@ assert(s != NULL && *s == '/');
 		ftype = "Perl5 module source text";
 
 	    /* XXX all files with extension ".jar" are java archives for now. */
-	    else if (slen >= sizeof(".jar") && !strcmp(s+slen-(sizeof(".jar")-1), ".pm"))
+	    else if (slen >= sizeof(".jar") && !strcmp(s+slen-(sizeof(".jar")-1), ".jar"))
 		ftype = "Java archive file";
 
 	    /* XXX all files with extension ".class" are java class files for now. */
-	    else if (slen >= sizeof(".class") && !strcmp(s+slen-(sizeof(".class")-1), ".pm"))
+	    else if (slen >= sizeof(".class") && !strcmp(s+slen-(sizeof(".class")-1), ".class"))
 		ftype = "Java class file";
 
 	    /* XXX all files with extension ".la" are libtool for now. */
-	    else if (slen >= sizeof(".la") && !strcmp(s+slen-(sizeof(".la")-1), ".pm"))
+	    else if (slen >= sizeof(".la") && !strcmp(s+slen-(sizeof(".la")-1), ".la"))
 		ftype = "libtool library file";
 
 	    /* XXX all files with extension ".pc" are pkgconfig for now. */
-	    else if (slen >= sizeof(".pc") && !strcmp(s+slen-(sizeof(".pc")-1), ".pm"))
+	    else if (slen >= sizeof(".pc") && !strcmp(s+slen-(sizeof(".pc")-1), ".pc"))
 		ftype = "pkgconfig file";
 
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
