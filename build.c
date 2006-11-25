@@ -220,7 +220,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     specut = urlPath(specURL, &specFile);
     if (*specFile != '/') {
 	char *s = alloca(BUFSIZ);
-	if (getcwd(buf, BUFSIZ) == NULL) strcpy(buf, ".");
+	if (getcwd(s, BUFSIZ) == NULL) strcpy(s, ".");
 	strcat(s, "/");
 	strcat(s, arg);
 	specURL = s;
