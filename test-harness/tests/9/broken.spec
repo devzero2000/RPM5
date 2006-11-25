@@ -11,11 +11,10 @@ Requires:	works
 You wanted something more...fine!!!
 
 %post
-echo "Failing in post!"
 exit 1
 
 %preun
-[ -f /tmp/broken_ran_in_arb ] && rm /tmp/broken_ran_in_arb
+rm -f /tmp/broken_ran_in_arb
 touch /tmp/broken_ran_in_arb
 
 %files

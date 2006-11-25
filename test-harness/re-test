@@ -26,6 +26,7 @@ do
 	i=$(($i + 1))
 	for TEST in $TESTS
 	do
+		rm -rf rpdir/*
 		./test --useCache $TEST > $LOG 2>&1
 		if [ $? != 0 ] 
 		then
@@ -34,5 +35,6 @@ do
 			exit 1
 		fi
 		echo "Pass $i Test #${TEST}..."
+		sleep 4
 	done	
 done

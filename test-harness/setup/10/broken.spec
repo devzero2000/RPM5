@@ -4,7 +4,7 @@ Version:	1
 Release:	1
 Group: 		System Environment/Base
 License:	GPL
-BuildRoot:	/tmp/%{name}-%{release}-%{version}
+BuildRoot:	%_tmppath/%NVR
 
 %description
 It just works.  What more do you want?
@@ -15,22 +15,18 @@ exit 0
 
 %pre
 rm -f /tmp/%{name}_ran_pre_in_rollback
-echo "Running %{name}-%{version}-%{release} post..."
 touch /tmp/%{name}_ran_pre_in_rollback
 exit 0
 
 %post
 rm -f /tmp/%{name}_ran_post_in_rollback
-echo "Running %{name}-%{version}-%{release} post..."
 touch /tmp/%{name}_ran_post_in_rollback
 exit 0
 
 %preun
-echo "Running %{name}-%{version}-%{release} preun..."
 exit 0
 
 %postun
-echo "Running %{name}-%{version}-%{release} postun..."
 exit 1
 
 %files

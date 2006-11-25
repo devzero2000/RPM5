@@ -7,7 +7,7 @@ Release:	1
 Group: 		Who/Cares
 License:	GPL
 
-BuildRoot:  /tmp/%{name}-%{version}-%{release}
+BuildRoot:	%_tmppath/%NVR
 
 %description
 Test of modifiying a config file.
@@ -21,6 +21,7 @@ EOF
 
 %post 
 echo "Horrors" >> "%{my_file}"
+exit 0
 
 %files 
 %attr(0700, root, root) %config %{my_file}

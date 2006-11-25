@@ -216,7 +216,8 @@ build_rpms() {
 
 		#
 		# Build the rpm
-		$RPMBUILD -ba --clean --rcfile "${RPM_RC_FILE}" $s
+		pwd
+		$RPMBUILD -ba --clean $s
 		if [ $? != 0 ]
 		then
 			echo "Could not build $filename..."
@@ -435,7 +436,7 @@ run_rb_upgrade_install_test() {
 	#
 	# Now install the set of RPMS.  We assume that this transaction
 	# should succeed.
-	echo "**** RUNNING CMD ****"
+	echo "**** RUNNING CMD #1 ****"
 	echo $RPM -Uv${VERBOSE}h \
 		--repackage \
 		--define \'${DBPATH_OPT}\' \
@@ -453,7 +454,7 @@ run_rb_upgrade_install_test() {
 
 	#
 	# Now rollback the transaction
-	echo "**** RUNNING CMD ****"
+	echo "**** RUNNING CMD #2 ****"
 	echo $RPM -Uv${VERBOSE}h \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
@@ -466,8 +467,10 @@ run_rb_upgrade_install_test() {
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
 		--rollback "${rb_goal}"
+	rc=$?
+#	sleep 2
 	
-	return $?
+	return $rc
 }
 
 run_rb_multitran_test() {
@@ -493,7 +496,7 @@ run_rb_multitran_test() {
 
 		#
 		# Install/Upgrade this transaction
-		echo "**** RUNNING CMD ****"
+		echo "**** RUNNING CMD #3 ****"
 		echo $RPM -Uv${VERBOSE}h \
 			--repackage \
 			--define \'${DBPATH_OPT}\' \
@@ -516,7 +519,7 @@ run_rb_multitran_test() {
 
 	#
 	# Now rollback the transaction
-	echo "**** RUNNING CMD ****"
+	echo "**** RUNNING CMD #4 ****"
 	echo $RPM -Uv${VERBOSE}h \
 		--define \'${DBPATH_OPT}\' \
 		--define \'_repackage_dir ${RPDIR}\' \
@@ -529,6 +532,7 @@ run_rb_multitran_test() {
 		--define "${TMPPATH_OPT}" \
 		--rollback "${rb_goal}"
 	rc=$?
+#	sleep 2
 
 	return $rc
 }
@@ -561,7 +565,7 @@ run_arb_test() {
 }
 
 run_arb_upgrade_install_test() {
-	echo "**** RUNNING CMD ****"
+	echo "**** RUNNING CMD #5 ****"
 	echo $RPM -Uv${VERBOSE}h \
 		--repackage \
 		--define \'${DBPATH_OPT}\' \
@@ -577,7 +581,9 @@ run_arb_upgrade_install_test() {
 		--define "_rollback_transaction_on_failure 1" \
 		--define "${TMPPATH_OPT}" \
 		$RPMS
-	return $?
+	rc=$?
+#	sleep 2
+	return $rc
 }
 
 run_arb_multitran_test() {
@@ -606,7 +612,7 @@ run_arb_multitran_test() {
 
 		#
 		# Install/Upgrade this transaction
-		echo "**** RUNNING CMD ****"
+		echo "**** RUNNING CMD #6 ****"
 		echo $RPM -Uv${VERBOSE}h \
 			--repackage \
 			--arbgoal \'${arbgoal}\' \
@@ -634,7 +640,7 @@ run_arb_multitran_test() {
 }
 
 run_arb_erase_test() {
-	echo "**** RUNNING CMD ****"
+	echo "**** RUNNING CMD #7 ****"
 	echo $RPM -ev${VERBOSE} \
 		--repackage \
 		--define \'${DBPATH_OPT}\' \
@@ -680,7 +686,7 @@ run_standard_test() {
 }
 
 run_standard_upgrade_install_test() {
-	echo "**** RUNNING CMD ****"
+	echo "**** RUNNING CMD #8 ****"
 	echo $RPM -Uv${VERBOSE}h \
 		--repackage \
 		--define "${DBPATH_OPT}" \
@@ -714,7 +720,7 @@ run_standard_multitran_test() {
 
 		#
 		# Install/Upgrade this transaction
-		echo "**** RUNNING CMD ****"
+		echo "**** RUNNING CMD #9 ****"
 		echo $RPM -Uv${VERBOSE}h \
 			--repackage \
 			--define \'${DBPATH_OPT}\' \
@@ -734,7 +740,7 @@ run_standard_multitran_test() {
 }
 
 run_standard_erase_test() {
-	echo "**** RUNNING CMD ****"
+	echo "**** RUNNING CMD #10 ****"
 	echo $RPM -ev${VERBOSE} \
 		--repackage \
 		--define "${DBPATH_OPT}" \
@@ -828,6 +834,7 @@ setup_test() {
 			echo "*** TEST SETUP FAILED ***"
 			return 1
 		fi
+#		sleep 2
 	fi
 
 

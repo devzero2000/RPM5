@@ -5,8 +5,7 @@ Version:	1
 Release:	2
 Group: 		Does/It/Matter
 License:	GPL
-
-BuildRoot:  /tmp/%{name}-%{version}-%{release}
+BuildRoot:	%_tmppath/%NVR
 
 %description
 A test

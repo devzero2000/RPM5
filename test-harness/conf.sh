@@ -15,14 +15,11 @@ TEST_CACHE_DIR="${TESTDIR}/cache"
 #
 # Set this to 1 if you want to use an uninstalled just built
 # rpm. 
-USE_BUILD_RPM=1
+USE_BUILD_RPM=0
 
 #
 # Path to rpm build directory
 BUILD_DIR=$(cd ..; pwd)
-#BUILD_DIR=/home/rpm/rh9/build
-#BUILD_DIR=/home/rpm/4.2.3/build
-#BUILD_DIR=/home/rootwork/rpm/4.2/build.orig.dev/rpm-4.2
 
 #
 # Where built rpms go...
@@ -33,11 +30,30 @@ RPM_MACROS="
 %_builddir       %{_topdir}
 %_rpmdir         ${RPM_DIR}
 %_srcrpmdir      %{_topdir}/rpms
+%_tmppath	${TESTDIR}/tmp
+%NVR		%{name}-%{version}-%{release}
+%NVRA		%{name}-%{version}-%{release}.%{_target_cpu}
+%buildroot	%{_tmppath}/%{NVR}
+
+%pre	%%pre\\
+  echo \"--- pre(%NVRA)	arg \$1 ...\"\\
+%nil
+%post	%%post\\
+  echo \"--- post(%NVRA)	arg \$1 ...\"\\
+%nil
+%preun	%%preun\\
+  echo \"--- preun(%NVRA)	arg \$1 ...\"\\
+%nil
+%postun	%%postun\\
+  echo \"--- postun(%NVRA)	arg \$1 ...\"\\
+%nil
+
+%semaphore_backout	/tmp/semaphore_backout
+%_rollback_transaction_on_failure	1
 "
 RPM_MACRO_FILE="${TESTDIR}/test.macros"
 RPM_RC_FILE="${TESTDIR}/test.rpmrc"
-RPM_MACRO_PATH="$(rpm --showrc | grep ^macrofiles | cut -f2- -d:):${RPM_MACRO_FILE}"
-RPM_MACRO_PATH="$(echo $RPM_MACRO_PATH | sed -e 's/^[   ]*//')"
+RPM_MACRO_PATH="/usr/lib/rpm/macros:${RPM_MACRO_FILE}"
 
 #
 # Electric Fence Config
@@ -66,7 +82,7 @@ MYQUERY="${TESTDIR}/myquery"
 
 #
 # What to build rpms with
-RPMBUILD=/usr/bin/rpmbuild
+RPMBUILD="/usr/bin/rpmbuild --rcfile ${RPM_RC_FILE}"
 
 #
 # Where is the rpmdb_stat command.
@@ -89,12 +105,12 @@ TMPPATH_OPT="_tmppath ${TMPDIR}"
 ########################
 if [ "${USE_BUILD_RPM}" = "1" ]
 then
-	RPM=${BUILD_DIR}/rpm
+	RPM="${BUILD_DIR}/rpm --rcfile ${RPM_RC_FILE}"
 	RPMDB="${BUILD_DIR}/rpmd"
 	RPMDB_STAT="${BUILD_DIR}/rpmdb/rpmdb_stat"
 	RPM_BINARY=${BUILD_DIR}/.libs/lt-rpm
 else
-	RPM="${REALRPM}"
+	RPM="${REALRPM} --rcfile ${RPM_RC_FILE}"
 	RPM_BINARY="${REALRPM}"
 	RPMDB="${REALRPM}"
 fi
@@ -159,6 +175,7 @@ done
 # I have locks and things are not right in the universe.
 check_locks() {
 	local locks
+	[ -f ${DB}/__db.001 ] || return 0
 	pushd ${DB} > /dev/null 2>&1
 
 

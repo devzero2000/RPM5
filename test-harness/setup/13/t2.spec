@@ -5,13 +5,12 @@ Version:	1
 Release:	1
 Group: 		System Environment/Base
 License:	GPL
-BuildRoot:	/tmp/%{name}-%{version}-%{release}
+BuildRoot:	%_tmppath/%NVR
 
 %description
 It just works.  What more do you want?
 
 %install
-
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/tmp
 
@@ -20,7 +19,7 @@ We need test packages with files, as if things are not
 done right in the rollback transaction this little file
 can/has caused a segfault.
 
-%{name}-%{version}-%{release}
+%NVR
 EOF
 exit 0
 

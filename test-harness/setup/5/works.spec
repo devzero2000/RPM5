@@ -14,7 +14,6 @@ It just works.  What more do you want?
 
 %pre
 rm -f /tmp/rollback_pre_sema_exist
-echo "pre:  %{name}-%{version}-%{release}:"
 echo "	Looking for %{semaphore_backout}..."
 if [ -f "%{semaphore_backout}" ]   
 then 
@@ -26,7 +25,6 @@ exit 0
 
 %post
 rm -f /tmp/rollback_post_sema_exist
-echo "post:  %{name}-%{version}-%{release}:"
 echo "	Looking for %{semaphore_backout}..."
 if [ -f "%{semaphore_backout}" ]
 then

@@ -6,7 +6,7 @@ Group: 		BROKEN/STUFF
 License:	GPL
 
 Requires:	t1
-BuildRoot:	/tmp/%{name}-%{verison}-%{release}
+BuildRoot:	%_tmppath/%NVR
 
 %description
 So very broken.

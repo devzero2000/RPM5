@@ -7,7 +7,7 @@ Release:	1
 Group: 		Who/Cares
 License:	GPL
 
-BuildRoot:  /tmp/%{name}-%{version}-%{release}
+BuildRoot:	%_tmppath/%NVR
 
 %description
 Test of modifiying a config file.

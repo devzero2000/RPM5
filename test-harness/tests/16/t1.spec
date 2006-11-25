@@ -6,7 +6,7 @@ Release:	2
 Group: 		Does/It/Matter
 License:	GPL
 
-BuildRoot:  /tmp/%{name}-%{version}-%{release}
+BuildRoot:	%_tmppath/%NVR
 
 %description
 A test
@@ -20,6 +20,7 @@ EOF
 
 %post 
 echo "Horrors" >> %{my_file}
+echo 0
 
 %files 
 %attr(0700, root, root) %{my_file}

@@ -4,7 +4,7 @@ Version:	1
 Release:	2
 Group: 		System Environment/Base
 License:	GPL
-BuildRoot:	/tmp/works-1-2
+BuildRoot:	%_tmppath/%NVR
 
 
 %description
@@ -17,35 +17,27 @@ We need test packages with files, as if things are not
 done right in the rollback transaction this little file
 can/has caused a segfault.
 
-This is the new improved %{name}-%{version}-%{release}
+This is the new improved %NVR
 EOF
 
 exit 0
 
 %pre
-i=$1
-echo "%{name}-%{version}-%{release}($i): Running pre..."
-echo ${i} > /tmp/%{name}-%{version}-%{release}_pre_icount
+echo $1 > /tmp/%{NVR}_pre_icount
 exit 0
                                                                                 
 %post
-i=$1
-echo "%{name}-%{version}-%{release}($i): Running post..."
-echo ${i} > /tmp/%{name}-%{version}-%{release}_post_icount
+echo $1 > /tmp/%{NVR}_post_icount
 exit 0
                                                                                 
 %preun
-i=$1
-echo "%{name}-%{version}-%{release}($i): Running preun..."
-echo ${i} > /tmp/%{name}-%{version}-%{release}_preun_icount
+echo $1 > /tmp/%{NVR}_preun_icount
 rm -f /tmp/works_erases_in_arb
 touch /tmp/works_erases_in_arb
 exit 0
                                                                                 
 %postun
-i=$1
-echo "%{name}-%{version}-%{release}($i): Running postun..."
-echo ${i} > /tmp/%{name}-%{version}-%{release}_postun_icount
+echo $1 > /tmp/%{NVR}_postun_icount
 exit 0
 
 %files

@@ -5,7 +5,7 @@ Version:	1
 Release:	2
 Group: 		System Environment/Base
 License:	GPL
-BuildRoot:	/tmp/%{name}-%{version}-%{release}
+BuildRoot:	%_tmppath/%NVR
 
 %description
 It just works.  What more do you want?
@@ -20,7 +20,7 @@ We need test packages with files, as if things are not
 done right in the rollback transaction this little file
 can/has caused a segfault.
 
-%{name}-%{version}-%{release}
+%NVR
 EOF
 exit 0
 
