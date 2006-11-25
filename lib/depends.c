@@ -205,7 +205,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
     /* XXX Always add source headers. */
     isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0) ;
-    if (isSource) {
+    if (isSource || !upgrade) {
 	oc = ts->orderCount;
 	goto addheader;
     }
