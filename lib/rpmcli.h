@@ -763,6 +763,7 @@ struct rpmQVKArguments_s {
     int numRelocations;
     int noDeps;
     int incldocs;
+    int no_rollback_links;
 /*@owned@*/ /*@null@*/
     rpmRelocation relocations;
 

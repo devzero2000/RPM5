@@ -1193,13 +1193,18 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 
 	    /*
 	     * Link data may be missing and can have multiple entries.
-	     * Try hdrid, pkgid, finally NEVRA, argv vs. str compares.
 	     */
-	    bingo = cmpArgvStr("Hdrid", flinkHdrid, hn, (p ? p->hdrid : NULL));
-	    if (!bingo)
-		bingo = cmpArgvStr("Pkgid", flinkPkgid, pn, (p ? p->pkgid : NULL));
+	    /* XXX Until link tags are reliably populated, check in the order
+	     * 	NEVRA -> hdrid -> pkgid
+	     * because NEVRA is easier to debug (hdrid/pkgid are more precise.)
+	    */
+	    bingo = 0;
 	    if (!bingo)
 		bingo = cmpArgvStr("NEVRA", flinkNEVRA, nn, (p ? p->NEVRA : NULL));
+	    if (!bingo)
+		bingo = cmpArgvStr("Hdrid", flinkHdrid, hn, (p ? p->hdrid : NULL));
+	    if (!bingo)
+		bingo = cmpArgvStr("Pkgid", flinkPkgid, pn, (p ? p->pkgid : NULL));
 	    flinkPkgid = headerFreeData(flinkPkgid, pt);
 	    flinkHdrid = headerFreeData(flinkHdrid, ht);
 	    flinkNEVRA = headerFreeData(flinkNEVRA, nt);
@@ -1261,7 +1266,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     int vsflags, ovsflags;
     int numAdded;
     int numRemoved;
-    int excluded;
+    int excluded = 0;	/* Assume no excluded rollbacks. */
     rpmps ps;
     int _unsafe_rollbacks = 0;
     rpmtransFlags transFlags = ia->transFlags;
@@ -1350,7 +1355,6 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	    break;
 
 	/* Make sure this tid is not excluded */
-	excluded = 0;	/* Assume its not */
 	if (ia->rbtidExcludes != NULL && ia->numrbtidExcludes > 0)
 	{
 	    uint_32 *excludedTID;
@@ -1417,7 +1421,8 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 
 	/* Check that all erasures have been re-added. */
 	while (ip != NULL && ip->val.u32 == thistid) {
-assert(excluded || ip->done);
+/* XXX Prevent incomplete rollback transactions. */
+assert(excluded || ip->done || ia->no_rollback_links);
 	    if (!excluded) {
 		numRemoved++;
 
@@ -1476,6 +1481,8 @@ assert(excluded || ip->done);
 	    goto exit;
 
 	/* Clean up after successful rollback. */
+	/* XXX Reset excluded flag after successful (multi-package) rollback. */
+	excluded = 0;
 	if (rtids && !rpmIsDebug()) {
 	    int i;
 	    rpmMessage(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));

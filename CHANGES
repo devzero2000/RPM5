@@ -30,6 +30,12 @@
 	- FreeBSD portability fiddles.
 	- don't read .rpmnew/.rpmorig/.rpmsave or *~ macro files.
 	- change "python(abi)"  criteria to be more precise/robust.
+	- rollback: force rollback and transaction id's to be identical.
+	- rollback: change exclude scoping to accomodate multi-pkg transactions.
+	- rollback: check NEVRA before hdrid/pkgid links, simpler debug.
+	- rollback: no rollbacks attempted unless repackaging.
+	- rollback: add ia->no_rollback_links to handle check/order failures.
+	- rollback: simplify rpmtsDoARBGoal for check/order failures only.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

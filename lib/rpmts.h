@@ -333,17 +333,11 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
- * Function to perform autorollback goal.  Today is called automatically
- * from rpmtsCheck(), rpmtsOrder() and rpmtsRun().  May change to be a 
- * programmer decision.
- *
+ * Function to perform autorollback goal from rpmtsCheck() and rpmtsOrder().
  * @param failedTransaction	Failed transaction.
- * @param rbts			rollback transaction (can be NULL).
- * @param ignoreSet		Problems to ignore.
  * @return			RPMRC_OK, or RPMRC_FAIL
  */
-rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rbts,
-    rpmprobFilterFlags ignoreSet)
+rpmRC rpmtsDoARBGoal(rpmts failedTransaction)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/;
 

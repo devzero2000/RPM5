@@ -975,122 +975,62 @@ static rpmts _rpmtsCleanupAutorollback(/*@killref@*/ rpmts rbts)
 }
 
 /**
- * Function to perform autorollback goal
+ * Function to achieve autorollback goal from rpmtsCheck() and rpmtsOrder().
  * @param failedTransaction	Failed transaction.
- * @param rbts			rollback transaction (can be NULL)
- * @param ignoreSet		Problems to ignore
  * @return 			RPMRC_OK, or RPMRC_FAIL
  */
-rpmRC rpmtsDoARBGoal(rpmts failedTransaction, rpmts rbts,
-	rpmprobFilterFlags ignoreSet)
+rpmRC rpmtsDoARBGoal(rpmts failedTransaction)
 {
     rpmRC rc = 0;
-    uint_32 arbgoal;
-    rpmts ts;
-    rpmtransFlags tsFlags;
-    rpmVSFlags ovsflags;
+    uint_32 arbgoal = rpmtsARBGoal(failedTransaction);
     QVA_t ia = memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
+    int_32 rbtidExcludes[2];
     time_t ttid;
     int xx;
 
-    /* Seg fault avoidage */
-    if (!failedTransaction) {
-	rpmMessage(RPMMESS_ERROR,
-	    "rpmtsDoARBGoal(): must specify transaction!\n");
-	return RPMRC_FAIL;
-    }
-
-    /* Won't rollback rollback transactions */
+    /* Don't attempt rollback's of rollback transactions */
     if ((rpmtsType(failedTransaction) & RPMTRANS_TYPE_ROLLBACK) ||
 	(rpmtsType(failedTransaction) & RPMTRANS_TYPE_AUTOROLLBACK))
 	return RPMRC_OK;
 
-    /* See if an autorollback goal was specified */
-    arbgoal   = rpmtsARBGoal(failedTransaction);
-    if (arbgoal == 0xffffffff) {
-	rpmMessage(RPMMESS_DEBUG,
-	    "Autorollback goal not set...nothing to do.\n");
+    /* Don't attempt rollbacks if no goal is set. */
+    if (arbgoal == 0xffffffff)
 	return RPMRC_OK;
-    }
 
     ttid = (time_t)arbgoal;
     rpmMessage(RPMMESS_NORMAL,
 	_("Rolling back successful transactions to %-24.24s (0x%08x).\n"),
 	ctime(&ttid), arbgoal);
 
-    /* Create transaction for rpmRollback() */
-    rpmMessage(RPMMESS_DEBUG,
-	_("Creating rollback transaction to achieve goal\n"));
-    ts = rpmtsCreate();
-
-    /* Set the verify signature flags to that of rollback transaction */
-    ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(failedTransaction));
-
-    /* Set transaction flags to be the same as the rollback transaction */
-    tsFlags = rpmtsFlags(failedTransaction);
-    tsFlags = rpmtsSetFlags(ts, tsFlags);
-
-    /* Set root dir to be the same as the rollback transaction */
-    rpmtsSetRootDir(ts, rpmtsRootDir(failedTransaction));
-
-    /* Setup the notify of the call back to be the same as the rollback
-     * transaction
-     */
-/*@-nullpass@*/
-    xx = rpmtsSetNotifyCallback(ts, failedTransaction->notify,
-	failedTransaction->notifyData);
-/*@=nullpass@*/
-
     /* Create install arguments structure */ 	
-    memset(ia, 0, sizeof(*ia));
-    ia->rbtid      = arbgoal;
-    ia->transFlags = rpmtsFlags(ts);
-    ia->probFilter = ignoreSet;
-
-    /* Setup the install interface flags.  XXX: This is an utter hack.
-     * I haven't quite figured out how to get these from a transaction.
-     */
+    ia->rbtid = arbgoal;
+    /* transFlags/depFlags from failedTransaction, (re-)set in rpmRollback(). */
+    ia->transFlags = rpmtsFlags(failedTransaction);
+    ia->depFlags = rpmtsDFlags(failedTransaction);
+    /* XXX probFilter is normally set in main(). */
+    ia->probFilter = RPMPROB_FILTER_NONE;
+    /* XXX installInterfaceFlags is normally set in main(). */
     ia->installInterfaceFlags = INSTALL_UPGRADE | INSTALL_HASH ;
 
-    /* XXX: HACK 2.  The rollback goal will be without relocations.
-     * Don't know what the right thing to do, but a hint for the
-     * next I look at this code, is that the te's all have the same
-     * relocs from CLI.  100% correct would be to iterate over the
-     * transaction elements and build a new list of relocations (ahhh!).
-     */
-    ia->relocations = NULL;
-    ia->numRelocations = 0;
-
     /* Add the rollback tid and the failed transaction tid */
-    {
-	int transactionCount = 1;
+    memset(rbtidExcludes, 0, sizeof(rbtidExcludes));
+    ia->rbtidExcludes = rbtidExcludes;
 
-	/* Add space for rollback transaction if given */
-	if (rbts) transactionCount++;
+    /* rpmtsCheck and rpmtsOrder failures do not have links. */
+    ia->no_rollback_links = 1;
 
-	/* Allocate space for rollback tid to exclude */
-	ia->rbtidExcludes = xcalloc(transactionCount, sizeof(*ia->rbtidExcludes));
+    /* Rollback transactions to the autorollback goal. */
+    {	rpmts ts = rpmtsCreate();
 
-	/* Always add tid of failed transaction, and conditionally add tid
-         * of rollback transactions.  Transactions failing during dep
-         * check and ordering will not have a rollback transaction.
-         */
-    	ia->rbtidExcludes[0] = rpmtsGetTid(failedTransaction);
-	if (rbts)
-	    ia->rbtidExcludes[1] = rpmtsGetTid(rbts);
-
-	/* Setup number of transactions to exclude */
-	ia->numrbtidExcludes = transactionCount;
+ 	/* XXX root dir and notify callback are normally set in main(). */
+	 rpmtsSetRootDir(ts, rpmtsRootDir(failedTransaction));
+/*@-nullpass@*/
+	xx = rpmtsSetNotifyCallback(ts, failedTransaction->notify,
+		failedTransaction->notifyData);
+/*@=nullpass@*/
+	rc = rpmRollback(ts, ia, NULL);
+	ts = rpmtsFree(ts);
     }
-
-    /* Segfault here we go... */
-    rc = rpmRollback(ts, ia, NULL);
-
-    /* Free arbgoal transaction */
-    ts = rpmtsFree(ts);
-
-    /* Free tid excludes memory */
-    ia->rbtidExcludes = _free(ia->rbtidExcludes);
 
     return rc;
 }
@@ -1159,7 +1099,7 @@ static rpmRC _rpmtsRollback(rpmts rbts, rpmts failedTransaction,
 	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 	    numAdded, numRemoved, ctime(&ttid), tid);
     ttid = (time_t)failedtid;
-    rpmMessage(RPMMESS_DEBUG, _("Failed Tran:  %-24.24s(0x%08x)\n"), ctime(&ttid), failedtid);
+    rpmMessage(RPMMESS_DEBUG, _("Failed transaction:  %-24.24s(0x%08x)\n"), ctime(&ttid), failedtid);
 
     /* Create the backout_server semaphore */
     rollback_semaphore = rpmExpand("%{?semaphore_backout}", NULL);
@@ -1260,7 +1200,6 @@ static rpmRC _rpmtsRollback(rpmts rbts, rpmts failedTransaction,
 	/* XXX rpmtsRun(rbts) above has changed the tid, exclude the new tid. */
 	memset(rbtidExcludes, 0, sizeof(rbtidExcludes));
 	ia->rbtidExcludes = rbtidExcludes;
-	ia->rbtidExcludes[ia->numrbtidExcludes++] = rpmtsGetTid(rbts);
 
 	/* Setup the install interface flags.  XXX: This is an utter hack.
 	 * I haven't quite figured out how to get these from a transaction.
@@ -1695,52 +1634,45 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     int numAdded;
     int numRemoved;
     rpmts rbts = NULL;
-    int rollbackOnFailure = 0;
+    int rollbackFailures = 0;
     void * lock = NULL;
     int xx;
 
     /* XXX programmer error segfault avoidance. */
-    if (rpmtsNElements(ts) <= 0)
+    if (rpmtsNElements(ts) <= 0) {
+	rpmMessage(RPMMESS_ERROR,
+	    _("Invalid number of transaction elements.\n"));
 	return -1;
+    }
 
-    /* See if we need to rollback on failure */
-    rollbackOnFailure = rpmExpandNumeric(
-	"%{?_rollback_transaction_on_failure}");
+    rollbackFailures = rpmExpandNumeric("%{?_rollback_transaction_on_failure}");
+    /* Don't rollback unless repackaging. */
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
+	rollbackFailures = 0;
+    /* Don't rollback if testing. */
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
+	rollbackFailures = 0;
+
     if (rpmtsType(ts) & (RPMTRANS_TYPE_ROLLBACK | RPMTRANS_TYPE_AUTOROLLBACK))
-	rollbackOnFailure = 0;
+	rollbackFailures = 0;
 
     /* If we are in test mode, there is no need to rollback on
      * failure, nor acquire the transaction lock.
      */
 /*@-branchstate@*/
-    /* If we are in test mode, then there's no need for transaction lock. */
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) {
-	rollbackOnFailure = 0;
-    } else {
+    /* Don't acquire the transaction lock if testing. */
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
 	lock = rpmtsAcquireLock(ts);
-    }
 /*@=branchstate@*/
 
-    /* XXX: programmer error segfault avoidance. */
-    /* XXX: Is this really an error case? Maybe less than zero elements
-     *      but equal to zero is just a null transaction.  Nothing to
-     *      do but not really a problem.
-     */
-    if (rpmtsNElements(ts) <= 0) {
-	rpmMessage(RPMMESS_ERROR,
-	    _("Invalid number of transaction elements.\n"));
-#ifdef	NOTYET
-	if (rollbackOnFailure)
-	    (void) rpmtsDoARBGoal(ts, NULL, ignoreSet);
-#endif
-	return -1;
-    }
-
+    /* --noscripts implies no scripts or triggers, duh. */
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
+    /* --notriggers implies no triggers, duh. */
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
 
+    /* --justdb implies no scripts or triggers, duh. */
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
 
@@ -1766,6 +1698,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     (void) rpmtsSetChrootDone(ts, 0);
 
+    /* XXX rpmtsCreate() sets the transaction id, but apps may not honor. */
     {	int_32 tid = (int_32) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
@@ -2198,14 +2131,17 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
      * if an error occurs, then we need to create a
      * a rollback transaction.
      */
-     if (rollbackOnFailure) {
+     if (rollbackFailures) {
 	rpmtransFlags tsFlags;
 	rpmVSFlags ovsflags;
 	rpmVSFlags vsflags;
 
 	rpmMessage(RPMMESS_DEBUG, _("Creating auto-rollback transaction\n"));
 
+	/* Duplicate settings into the rolback transaction. */
 	rbts = rpmtsCreate();
+	/* Insure that the rollback and the transaction have the same id. */
+	(void) rpmtsSetTid(rbts, rpmtsGetTid(ts));
 
 	/* Set the verify signature flags:
 	 * 	- can't verify digests on repackaged packages.  Other than
@@ -2261,7 +2197,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	    }
 	    xx = rpmtsSetNotifyCallback(rbts, notify, notifyData);
 	}
-
      }
 
     /* ===============================================
@@ -2467,7 +2402,7 @@ assert(psm != NULL);
 	/* Add the transaction element to the autorollback transaction unless
 	 * its is an install whose fd was not returned from the notify
 	 */
-	if (rollbackOnFailure && !(rpmteType(p) == TR_ADDED && !gotfd)) {
+	if (rollbackFailures && !(rpmteType(p) == TR_ADDED && !gotfd)) {
 	    rpmRC rc;
 	    int failed = ourrc ? 1 : 0;
 
@@ -2485,7 +2420,7 @@ assert(psm != NULL);
 		/* We don't want to run the autorollback if we could not add
 		 * transaction element that did not fail.
 		 */
-		if (!failed) rollbackOnFailure = 0;
+		if (!failed) rollbackFailures = 0;
 	    }
 	}
 
@@ -2510,18 +2445,18 @@ assert(psm != NULL);
 	/* If we received an error, lets break out and rollback, provided
 	 * autorollback is enabled.
 	 */
-	if (ourrc && rollbackOnFailure) break;
+	if (ourrc && rollbackFailures) break;
     }
 /*@=nullpass@*/
     /*@=branchstate@*/
     pi = rpmtsiFree(pi);
 
     /* If we should rollback this transaction on failure, lets do it. */
-    if (ourrc && rollbackOnFailure)
+    if (ourrc && rollbackFailures)
 	xx = _rpmtsRollback(rbts, ts, ignoreSet);
 
     /* If we created a rollback transaction lets get rid of it */
-    if (rollbackOnFailure && rbts != NULL)
+    if (rollbackFailures && rbts != NULL)
         rbts = _rpmtsCleanupAutorollback(rbts);
 
     rpmMessage(RPMMESS_DEBUG, _("running post-transaction scripts\n"));
