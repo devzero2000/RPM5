@@ -23,7 +23,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: @VERSION@
-Release: 0.2
+Release: 0.3
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
 License: LGPL
@@ -545,6 +545,32 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sat Nov 25 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.3
+- permit multiple identically named packages with --install (#171970).
+- query: don't attempt manifest open on non-existent files (#215712).
+- ignore Fopen and fopen(3) extensions if not glibc-2.3.3 or later.
+- attempt mmap'd Fopen's for hdlist queries.
+- add %_query_hdlist_path for rpm -qH.
+- fix: refactor depflags options, re-add to query/verify modes.
+- fix: illegal accesses seen when expanding into a 1 byte buffer.
+- re-add symbols removed in rpm-4.4.7 for now. 
+- add symclash.sh/symclash.py.
+- fix: classification by suffix broken by cut-n-paste.
+- fix: assume "." if getcwd returns NULL when building.
+- don't fail if/when unsetting non-existent envvars in scriptlets.
+- add ~/etc/.rpmmacros to rpmrc macrofiles: configgery.
+- add /usr/src/examples and %{_examplesdir} to docdirs.
+- add php classification (phpdeps.sh is still missing).
+- FreeBSD portability fiddles. 
+- don't read .rpmnew/.rpmorig/.rpmsave or *~ macro files.
+- change "python(abi)"  criteria to be more precise/robust.
+- rollback: force rollback and transaction id's to be identical.
+- rollback: change exclude scoping to accomodate multi-pkg transactions.
+- rollback: check NEVRA before hdrid/pkgid links, simpler debug.
+- rollback: no rollbacks attempted unless repackaging.
+- rollback: add ia->no_rollback_links to handle check/order failures.
+- rollback: simplify rpmtsDoARBGoal for check/order failures only.
+
 * Mon Nov 13 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.2
 - solaris: various non-gcc fixes.
 - fix: detecting repackaged assumed sizeof(void *) == sizeof(int_32).
