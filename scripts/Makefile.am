@@ -31,11 +31,11 @@ config_SCRIPTS = \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
-	cpanflute cpanflute2 Specfile.pm find-provides.perl \
+	find-provides.perl \
 	find-requires.perl getpo.sh http.req \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
-	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
+	rpmdb_loadcvt \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
+	symclash.py symclash.sh tgpg u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh
