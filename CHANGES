@@ -37,6 +37,7 @@
 	- rollback: add ia->no_rollback_links to handle check/order failures.
 	- rollback: simplify rpmtsDoARBGoal for check/order failures only.
 	- display arch in file conflicts.
+	- make peace with autoconf-2.60 and automake-1.10.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
