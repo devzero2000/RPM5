@@ -185,6 +185,14 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
         /*@*/;
 
 /**
+ * Escape isspace(3) characters in string.
+ * @param s		string
+ * @return		escaped string
+ */
+const char * rpmgiEscapeSpaces(const char * s)
+	/*@*/;
+
+/**
  * Load iterator args.
  * @param gi		generalized iterator
  * @param argv		arg list

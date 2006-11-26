@@ -38,6 +38,7 @@
 	- rollback: simplify rpmtsDoARBGoal for check/order failures only.
 	- display arch in file conflicts.
 	- make peace with autoconf-2.60 and automake-1.10.
+	- handle spaces in file path arguments correctly (#217258);
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

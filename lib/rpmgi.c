@@ -308,6 +308,30 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
     return rpmrc;
 }
 
+const char * rpmgiEscapeSpaces(const char * s)
+{
+    const char * se;
+    const char * t;
+    char * te;
+    size_t nb = 0;
+
+    for (se = s; *se; se++) {
+	if (isspace(*se))
+	    nb++;
+	nb++;
+    }
+    nb++;
+
+    t = te = xmalloc(nb);
+    for (se = s; *se; se++) {
+	if (isspace(*se))
+	    *te++ = '\\';
+	*te++ = *se;
+    }
+    *te = '\0';
+    return t;
+}
+
 /**
  * Append globbed arg list to iterator.
  * @param gi		generalized iterator
@@ -340,12 +364,14 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
 
     if (argv != NULL)
     while ((arg = *argv++) != NULL) {
+	const char * t = rpmgiEscapeSpaces(arg);
 	ARGV_t av = NULL;
 
-	xx = rpmGlob(arg, &ac, &av);
+	xx = rpmGlob(t, &ac, &av);
 	xx = argvAppend(&gi->argv, av);
 	gi->argc += ac;
 	av = argvFree(av);
+	t = _free(t);
 	ac = 0;
     }
     return rpmrc;
@@ -417,7 +443,7 @@ rpmgi XrpmgiUnlink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
     if (gi == NULL) return NULL;
 
 if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p -- %d %s at %s:%u\n", gi, gi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> gi %p -- %d %s(%s) at %s:%u\n", gi, gi->nrefs, msg, tagName(gi->tag), fn, ln);
 
     gi->nrefs--;
     return NULL;
@@ -429,7 +455,7 @@ rpmgi XrpmgiLink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
     gi->nrefs++;
 
 if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p ++ %d %s at %s:%u\n", gi, gi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> gi %p ++ %d %s(%s) at %s:%u\n", gi, gi->nrefs, msg, tagName(gi->tag), fn, ln);
 
     /*@-refcounttrans@*/ return gi; /*@=refcounttrans@*/
 }

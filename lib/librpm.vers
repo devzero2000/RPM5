@@ -198,6 +198,7 @@ LIBRPM_0
     rpmGetOsInfo;
     rpmGetPassPhrase;
     _rpmgi_debug;
+    rpmgiEscapeSpaces;
     rpmgiFree;
     rpmgiHdrPath;
     rpmgiHeader;

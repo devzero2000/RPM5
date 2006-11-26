@@ -15,7 +15,8 @@
 #include "rpmts.h"
 
 #include "manifest.h"
-#include "misc.h"	/* XXX for rpmGlob() */
+#include "misc.h"		/* XXX rpmGlob() */
+#include "rpmgi.h"		/* XXX rpmgiEscapeSpaces */
 #include "debug.h"
 
 /*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
@@ -294,6 +295,7 @@ int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
+    const char *fn;
     rpmVSFlags vsflags, ovsflags, tvsflags;
     int ac = 0;
     int rc;
@@ -312,7 +314,7 @@ int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
     if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
 	rpmsx sx = rpmtsREContext(ts);
 	if (sx == NULL) {
-	    const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	    fn = rpmGetPath("%{?_install_file_context_path}", NULL);
 	    if (fn != NULL && *fn != '\0') {
 		sx = rpmsxNew(fn);
 		(void) rpmtsSetREContext(ts, sx);
@@ -368,7 +370,9 @@ int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
     /*@=temptrans@*/
 	av = _free(av);	ac = 0;
-	rc = rpmGlob(*eiu->fnp, &ac, &av);
+	fn = rpmgiEscapeSpaces(*eiu->fnp);
+	rc = rpmGlob(fn, &ac, &av);
+	fn = _free(fn);
 	if (rc || ac == 0) {
 	    rpmError(RPMERR_OPEN, _("File not found by glob: %s\n"), *eiu->fnp);
 	    continue;
@@ -1041,13 +1045,16 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
     int_32 * tidp;
     FD_t fd;
     const char ** av = NULL;
+    const char * fn;
     int ac = 0;
     rpmRC rpmrc;
     int xx;
     int i;
 
     av = NULL;	ac = 0;
-    xx = rpmGlob(globstr, &ac, &av);
+    fn = rpmgiEscapeSpaces(globstr);
+    xx = rpmGlob(fn, &ac, &av);
+    fn = _free(fn);
 
 /*@-branchstate@*/
     if (xx == 0)
