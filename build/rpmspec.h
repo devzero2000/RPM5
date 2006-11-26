@@ -258,9 +258,9 @@ struct OpenFileInfo * newOpenFileInfo(void)
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
- * @param h
- * @param tag
- * @param lang
+ * @param h		header
+ * @param tag		tag
+ * @param lang		locale
  */
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	/*@modifies spec->st @*/;
@@ -268,8 +268,8 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
  * @param pkg		package control
- * @param field
- * @param tag
+ * @param field		field to parse
+ * @param tag		tag
  */
 int addSource(Spec spec, Package pkg, const char * field, int tag)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
@@ -280,8 +280,8 @@ int addSource(Spec spec, Package pkg, const char * field, int tag)
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
- * @param field
- * @param tag
+ * @param field		field to parse
+ * @param tag		tag
  */
 int parseNoSource(Spec spec, const char * field, int tag)
 	/*@modifies nothing @*/;

@@ -2653,6 +2653,7 @@ static int myTagValue(headerTagTableEntry tbl, const char * name)
 }
 
 /**
+ * Search extensions and tags for a name.
  * @param hsa		headerSprintf args
  * @param token		parsed fields
  * @param name		name to find
@@ -2723,6 +2724,7 @@ bingo:
 
 /* forward ref */
 /**
+ * Parse a headerSprintf expression.
  * @param hsa		headerSprintf args
  * @param token
  * @param str
@@ -2735,6 +2737,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 	/*@requires maxSet(endPtr) >= 0 @*/;
 
 /**
+ * Parse a headerSprintf term.
  * @param hsa		headerSprintf args
  * @param str
  * @retval *formatPtr
@@ -3097,10 +3100,10 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 /**
  * Call a header extension only once, saving results.
  * @param hsa		headerSprintf args
- * @param fn
- * @retval *typeptr
- * @retval *data
- * @retval *countptr
+ * @param fn		function
+ * @retval *typeptr	extension type
+ * @retval *data	extension data
+ * @retval *countptr	extension size
  * @retval ec		extension cache
  * @return		0 on success, 1 on failure
  */
@@ -3127,9 +3130,10 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 }
 
 /**
+ * Format a single item value.
  * @param hsa		headerSprintf args
- * @param tag
- * @param element
+ * @param tag		tag
+ * @param element	element index
  * @return		end of formatted string (NULL on error)
  */
 /*@observer@*/ /*@null@*/
@@ -3350,9 +3354,10 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 }
 
 /**
+ * Format a single headerSprintf item.
  * @param hsa		headerSprintf args
- * @param token
- * @param element
+ * @param token		item to format
+ * @param element	element index
  * @return		end of formatted string (NULL on error)
  */
 /*@observer@*/
@@ -3713,6 +3718,7 @@ exit:
 }
 
 /**
+ * Return octal formatted data.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
@@ -3749,6 +3755,7 @@ static char * octalFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * Return hex formatted data.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
@@ -3785,6 +3792,14 @@ static char * hexFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * Return strftime formatted data.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @param strftimeFormat strftime(3) format
+ * @return		formatted string
  */
 static char * realDateFormat(int_32 type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element,
@@ -3820,6 +3835,7 @@ static char * realDateFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * Return date formatted data.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
@@ -3836,6 +3852,7 @@ static char * dateFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * Return day formatted data.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
@@ -3852,6 +3869,7 @@ static char * dayFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * Return shell escape formatted data.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string

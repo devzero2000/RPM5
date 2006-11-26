@@ -219,8 +219,8 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 #endif
 
 /**
- * @param s
- * @param delim
+ * @param s		string
+ * @param delim		token delimiters
  */
 /*@-boundswrite@*/
 /*@null@*/
@@ -895,8 +895,8 @@ VFA_t virtualFileAttributes[] = {
 
 /**
  * Parse simple attributes (e.g. %dir) from file manifest.
- * @param spec
- * @param pkg
+ * @param spec		spec file control structure
+ * @param pkg		package control structure
  * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @retval *fileName	file name
@@ -1925,7 +1925,7 @@ static int recurseDir(FileList fl, const char * diskURL)
 
 /**
  * Add a pubkey/policy/icon to a binary package.
- * @param pkg
+ * @param pkg		package control structure
  * @param fl		package file tree walk data
  * @param fileURL	path to file, relative is builddir, absolute buildroot.
  * @param tag		tag to add
@@ -2006,7 +2006,7 @@ exit:
 
 /**
  * Add a file to a binary package.
- * @param pkg
+ * @param pkg		package control structure
  * @param fl		package file tree walk data
  * @param fileURL
  * @return		0 on success
