@@ -93,17 +93,17 @@ typedef /*@abstract@*/ void * alKey;
 typedef /*@abstract@*/ int alNum;
 /*@=mutrep@*/
 
-/** \ingroup rpmts rpmds 
+/** \ingroup rpmds 
  * Dependency tag sets from a header, so that a header can be discarded early.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
 
-/** \ingroup rpmts rpmfi
+/** \ingroup rpmfi
  * File info tag sets from a header, so that a header can be discarded early.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
 
-/** \ingroup rpmts rpmte
+/** \ingroup rpmte
  * An element of a transaction set, i.e. a TR_ADDED or TR_REMOVED package.
  */
 typedef /*@abstract@*/ struct rpmte_s * rpmte;
@@ -118,7 +118,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
  */
 typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 
-/** \ingroup rpmcli rpmgi
+/** \ingroup rpmgi
  * Generalized iterator.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmgi_s * rpmgi;
