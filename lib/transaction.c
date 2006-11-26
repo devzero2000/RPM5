@@ -88,13 +88,14 @@ static int sharedCmp(const void * one, const void * two)
 
 /**
  * @param ts		transaction set
- * @param p
+ * @param p		current transaction element
  * @param fi		file info set
- * @param shared
- * @param sharedCount
+ * @param shared	shared file info
+ * @param sharedCount	no. of shared elements
  * @param reportConflicts
+ *
+ * XXX only ts->{probs,rpmdb} modified
  */
-/* XXX only ts->{probs,rpmdb} modified */
 /*@-bounds@*/
 static int handleInstInstalledFiles(const rpmts ts,
 		rpmte p, rpmfi fi,
@@ -108,7 +109,7 @@ static int handleInstInstalledFiles(const rpmts ts,
     uint_32 oFColor, FColor;
     uint_32 oFFlags, FFlags;
     struct stat sb, *st = &sb;
-    const char * altNEVR = NULL;
+    const char * altNEVRA = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
     rpmps ps;
@@ -121,7 +122,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    altNEVR = hGetNEVR(h, NULL);
+	    altNEVRA = hGetNEVRA(h, NULL);
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
@@ -217,9 +218,9 @@ static int handleInstInstalledFiles(const rpmts ts,
 
 	    if (rConflicts) {
 		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
-			rpmteNEVR(p), rpmteKey(p),
+			rpmteNEVRA(p), rpmteKey(p),
 			rpmfiDN(fi), rpmfiBN(fi),
-			altNEVR,
+			altNEVRA,
 			0);
 	    }
 
@@ -243,7 +244,7 @@ static int handleInstInstalledFiles(const rpmts ts,
     }
     ps = rpmpsFree(ps);
 
-    altNEVR = _free(altNEVR);
+    altNEVRA = _free(altNEVRA);
     otherFi = rpmfiFree(otherFi);
 
     fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */

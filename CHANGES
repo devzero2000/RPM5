@@ -36,6 +36,7 @@
 	- rollback: no rollbacks attempted unless repackaging.
 	- rollback: add ia->no_rollback_links to handle check/order failures.
 	- rollback: simplify rpmtsDoARBGoal for check/order failures only.
+	- display arch in file conflicts.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
