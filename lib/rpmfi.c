@@ -270,19 +270,6 @@ const unsigned char * rpmfiDigest(rpmfi fi, int * algop, size_t * lenp)
     return digest;
 }
 
-const unsigned char * rpmfiMD5(rpmfi fi)
-{
-    unsigned char * digest = NULL;
-
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
-	if (fi->digests != NULL)
-	    digest = fi->digests + (fi->digestlen * fi->i);
-/*@=boundsread@*/
-    }
-    return digest;
-}
-
 const char * rpmfiFLink(rpmfi fi)
 {
     const char * flink = NULL;

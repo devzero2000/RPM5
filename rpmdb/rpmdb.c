@@ -2830,6 +2830,7 @@ memset(data, 0, sizeof(*data));
 	    dbiIndex dbi;
 	    const char *av[1];
 	    const char ** rpmvals = NULL;
+	    byte * bin = NULL;
 	    rpmTagType rpmtype = 0;
 	    int rpmcnt = 0;
 	    int rpmtag;
@@ -2902,11 +2903,11 @@ if (dbiByteSwapped(dbi) == 1)
 	    for (i = 0; i < rpmcnt; i++) {
 		dbiIndexSet set;
 		int stringvalued;
-		byte bin[32];
 
+		bin = _free(bin);
 		switch (dbi->dbi_rpmtag) {
-		case RPMTAG_FILEMD5S:
-		    /* Filter out empty MD5 strings. */
+		case RPMTAG_FILEDIGESTS:
+		    /* Filter out empty file digests. */
 		    if (!(rpmvals[i] && *rpmvals[i] != '\0'))
 			/*@innercontinue@*/ continue;
 		    /*@switchbreak@*/ break;
@@ -2944,21 +2945,24 @@ if (dbiByteSwapped(dbi) == 1)
 		case RPM_STRING_ARRAY_TYPE:
 		    /* Convert from hex to binary. */
 /*@-boundsread@*/
-		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
-			const char * s;
+		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
+			const char * s = rpmvals[i];
+			size_t dlen = strlen(s);
 			byte * t;
-
-			s = rpmvals[i];
-			t = bin;
-			for (j = 0; j < 16; j++, t++, s += 2)
+assert((dlen & 1) == 0);
+			dlen /= 2;
+			bin = t = xcalloc(1, dlen);
+			for (j = 0; j < dlen; j++, t++, s += 2)
 			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
 			key->data = bin;
-			key->size = 16;
+			key->size = dlen;
 			/*@switchbreak@*/ break;
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			int nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
+			int nbin;
+			bin = xcalloc(1, 32);
+			nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
 			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
 			key->data = bin;
@@ -3061,6 +3065,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		rpmvals = hfd(rpmvals, rpmtype);
 	    rpmtype = 0;
 	    rpmcnt = 0;
+	    bin = _free(bin);
 	}
 
 	rec = _free(rec);
@@ -3214,6 +3219,7 @@ memset(data, 0, sizeof(*data));
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    const char *av[1];
 	    const char **rpmvals = NULL;
+	    byte * bin = NULL;
 	    rpmTagType rpmtype = 0;
 	    int rpmcnt = 0;
 	    int rpmtag;
@@ -3326,9 +3332,9 @@ data->size = 0;
 	    for (i = 0; i < rpmcnt; i++) {
 		dbiIndexSet set;
 		int stringvalued;
-		byte bin[32];
 		byte * t;
 
+		bin = _free(bin);
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
 		 * included the tagNum only for files.
@@ -3394,20 +3400,24 @@ data->size = 0;
 		case RPM_STRING_ARRAY_TYPE:
 		    /* Convert from hex to binary. */
 /*@-boundsread@*/
-		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
-			const char * s;
-
-			s = rpmvals[i];
-			t = bin;
-			for (j = 0; j < 16; j++, t++, s += 2)
+		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
+			const char * s = rpmvals[i];
+			size_t dlen = strlen(s);
+			byte * t;
+assert((dlen & 1) == 0);
+			dlen /= 2;
+			bin = t = xcalloc(1, dlen);
+			for (j = 0; j < dlen; j++, t++, s += 2)
 			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
 			key->data = bin;
-			key->size = 16;
+			key->size = dlen;
 			/*@switchbreak@*/ break;
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			int nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
+			int nbin;
+			bin = xcalloc(1, 32);
+			nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
 			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
 			key->data = bin;
@@ -3495,6 +3505,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	/*@=observertrans@*/
 	    rpmtype = 0;
 	    rpmcnt = 0;
+	    bin = _free(bin);
 	}
 	/*@=nullpass =nullptrarith =nullderef @*/
 

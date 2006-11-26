@@ -230,13 +230,18 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	}
 	/*@=globs@*/
 
-	val = t = xmalloc(nt + padding + 1);
-
+	val = t = xcalloc(1, nt + padding + 1);
 	*t = '\0';
-	if ((enc = b64encode(data, ns)) != NULL) {
+
+    /* XXX b64encode accesses uninitialized memory. */
+    { 	unsigned char * _data = xcalloc(1, ns+1);
+	memcpy(_data, data, ns);
+	if ((enc = b64encode(_data, ns)) != NULL) {
 	    t = stpcpy(t, enc);
 	    enc = _free(enc);
 	}
+	_data = _free(_data);
+    }
 /*@=boundswrite@*/
     }
 

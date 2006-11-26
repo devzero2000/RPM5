@@ -102,6 +102,7 @@ const char * xstrtolocale(const char *str)
 	locisutf8 = 0;
     if (locisutf8 == strisutf8) {
 	wstr = _free(wstr);
+	cc = _free(cc);		/* XXX memory leak plugged. */
 	return str;
     }
     str = _free(str);

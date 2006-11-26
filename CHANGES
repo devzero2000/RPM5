@@ -39,6 +39,9 @@
 	- display arch in file conflicts.
 	- make peace with autoconf-2.60 and automake-1.10.
 	- handle spaces in file path arguments correctly (#217258);
+	- permit variable length file digests in rpmdb.
+	- check all header strings to resize buffer CVE-2006-5466 (#212833).
+	- plug some minor memory leaks.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

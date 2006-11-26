@@ -1283,6 +1283,7 @@ int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
     }
 
     if (dig != NULL) {
+	dig->ppkts = _free(dig->ppkts);		/* XXX memory leak plugged. */
 	dig->ppkts = ppkts;
 	dig->npkts = npkts;
     } else

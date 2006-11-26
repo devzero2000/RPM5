@@ -382,16 +382,6 @@ extern const unsigned char * rpmfiDigest(/*@null@*/ rpmfi fi,
 	/*@modifies *algop, *lenp @*/;
 
 /**
- * Return current file (binary) md5 digest from file info set.
- * @deprecated Use rpmfiDigest instead.
- * @param fi		file info set
- * @return		current file md5 digest, NULL on invalid
- */
-/*@observer@*/ /*@null@*/
-extern const unsigned char * rpmfiMD5(/*@null@*/ rpmfi fi)
-	/*@*/;
-
-/**
  * Return current file linkto (i.e. symlink(2) target) from file info set.
  * @param fi		file info set
  * @return		current file linkto, NULL on invalid

@@ -150,12 +150,14 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
     int scareMem = 0;
     rpmfi fi = NULL;
+    size_t tb = 2 * BUFSIZ;
+    size_t sb;
     char * t, * te;
     char * prefix = NULL;
     int rc = 0;		/* XXX FIXME: need real return code */
     int i;
 
-    te = t = xmalloc(BUFSIZ);
+    te = t = xmalloc(tb);
 /*@-boundswrite@*/
     *te = '\0';
 /*@=boundswrite@*/
@@ -164,12 +166,13 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	const char * str = queryHeader(h, qva->qva_queryFormat);
 	/*@-branchstate@*/
 	if (str) {
-	    size_t tb = (te - t);
-	    size_t sb = strlen(str);
+	    size_t tx = (te - t);
 
-	    if (sb >= (BUFSIZ - tb)) {
-		t = xrealloc(t, BUFSIZ+sb);
-		te = t + tb;
+	    sb = strlen(str);
+	    if (sb) {
+		tb += sb;
+		t = xrealloc(t, tb);
+		te = t + tx;
 	    }
 /*@-boundswrite@*/
 	    /*@-usereleased@*/
@@ -203,7 +206,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	rpmfileState fstate;
 	size_t fsize;
 	const char * fn;
-	char fmd5[32+1];
+	const char * fdigest;
 	const char * fuser;
 	const char * fgroup;
 	const char * flink;
@@ -218,11 +221,14 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fn = rpmfiFN(fi);
 /*@-bounds@*/
 	{   static char hex[] = "0123456789abcdef";
-	    const unsigned char * s = rpmfiMD5(fi);
-	    char * p = fmd5;
+	    int dalgo = 0;
+	    size_t dlen = 0;
+	    const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
+	    char * p;
 	    int j;
-	    for (j = 0; j < 16; j++) {
-		unsigned k = *s++;
+	    fdigest = p = xcalloc(1, ((2 * dlen) + 1));
+	    for (j = 0; j < dlen; j++) {
+		unsigned k = *digest++;
 		*p++ = hex[ (k >> 4) & 0xf ];
 		*p++ = hex[ (k     ) & 0xf ];
 	    }
@@ -253,6 +259,15 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	/* If not querying %ghost, skip ghost files. */
 	if ((qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
 	    continue;
+
+	/* Insure space for header derived data */
+	sb = strlen(fn) + strlen(fdigest) + strlen(fuser) + strlen(fgroup) + strlen(flink);
+	if ((sb + BUFSIZ) > tb) {
+	    size_t tx = (te - t);
+	    tb += sb + BUFSIZ;
+	    t = xrealloc(t, tb);
+	    te = t + tx;
+	}
 
 /*@-boundswrite@*/
 	if (!rpmIsVerbose() && prefix)
@@ -287,7 +302,8 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 /*@=boundswrite@*/
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
-	    sprintf(te, "%s %d %d %s 0%o ", fn, (int)fsize, fmtime, fmd5, fmode);
+	    sprintf(te, "%s %d %d %s 0%o ",
+				fn, (int)fsize, fmtime, fdigest, fmode);
 	    te += strlen(te);
 
 	    if (fuser && fgroup) {
@@ -334,6 +350,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    }
 	}
 	flushBuffer(&t, &te, 0);
+	fdigest = _free(fdigest);
     }
 	    
     rc = 0;
@@ -538,21 +555,24 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	break;
 
     case RPMQV_FILEID:
-    {	unsigned char MD5[16];
-	unsigned char * t;
+    {	unsigned char * t;
+	unsigned char * digest;
+	size_t dlen;
 
-	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
+	/* Insure even no. of digits and at least 8 digits. */
+	for (dlen = 0, s = arg; *s && isxdigit(*s); s++, dlen++)
 	    {};
-	if (i != 32) {
+	if ((dlen & 1) || dlen < 8) {
 	    rpmError(RPMERR_QUERY, _("malformed %s: %s\n"), "fileid", arg);
 	    return 1;
 	}
 
-	MD5[0] = '\0';
-        for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
+	dlen /= 2;
+	digest = memset(alloca(dlen), 0, dlen);
+        for (t = digest, s = arg; *s; t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, MD5, sizeof(MD5));
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, digest, dlen);
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"fileid", arg);
