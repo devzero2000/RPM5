@@ -237,7 +237,7 @@ gzip -9n apidocs/man/man*/* || :
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
-  rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
+  rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
   rm -rf .%{__mandir}/man8/rpmcache.8*
   rm -rf .%{__mandir}/man8/rpmgraph.8*
   rm -rf .%{__mandir}/ja/man8/rpmcache.8*
