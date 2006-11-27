@@ -13,6 +13,7 @@ EXTRA_DIST = \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
+	php.prov php.req \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
@@ -35,6 +36,7 @@ config_SCRIPTS = \
 	find-requires.perl getpo.sh http.req \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
+	php.prov php.req \
 	rpmdb_loadcvt \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	symclash.py symclash.sh tgpg u_pkg.sh \
