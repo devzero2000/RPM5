@@ -1329,6 +1329,18 @@ BuildRequires: python %{-d:python-devel} \
 PreReq: python >= %{python_version}, python < %{maxver}
 
 #------------------------------------------------------------------------
+# php(...) configuration.
+#
+# Path to scripts to autogenerate php package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
+#%__php_provides	@RPMCONFIGDIR@/phpdeps.sh --provides
+#%__php_requires	@RPMCONFIGDIR@/phpdeps.sh --requires
+#%__php_provides		@RPMCONFIGDIR@/php.prov
+#%__php_requires		@RPMCONFIGDIR@/php.req
+
+#------------------------------------------------------------------------
 # java(...) configuration.
 #
 # Path to scripts to autogenerate java package dependencies,
