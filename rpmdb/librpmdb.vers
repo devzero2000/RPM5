@@ -2,6 +2,8 @@ LIBRPMDB_0
 {
   global:
     _rpmdb_debug;
+    _rsegfault;
+    _wsegfault;
     db3dbi;
     db3Free;
     db3New;

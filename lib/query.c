@@ -420,6 +420,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	    continue;
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
+RSEGFAULT;
 	if (qva->qva_source == RPMQV_DBOFFSET)
 	    break;
     }

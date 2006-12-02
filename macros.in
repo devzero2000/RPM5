@@ -565,8 +565,8 @@ print (t)\
 #				mp_mmapsize=8Mb mp_size=512Kb
 
 # Use a CDB database model for concurrent access.
-# XXX Add "private" here for legacy interoperation transiting to glibc+nptl.
-%__dbi_cdb			create cdb mpool mp_mmapsize=16Mb mp_size=1Mb
+%__dbi_cdb			create cdb mpool mp_mmapsize=16Mb mp_size=1Mb \
+				thread_count=64
 
 %__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_cdb}
 

@@ -16,6 +16,11 @@
 extern int _rpmdb_debug;
 /*@=exportlocal@*/
 
+extern int _rsegfault;
+#define	RSEGFAULT	{ if (_rsegfault > 0) assert(--_rsegfault); }
+extern int _wsegfault;
+#define	WSEGFAULT	{ if (_wsegfault > 0) assert(--_wsegfault); }
+
 #ifdef	NOTYET
 /** \ingroup rpmdb
  * Database of headers and tag value indices.
@@ -321,6 +326,7 @@ struct _dbiIndex {
     const char * dbi_errpfx;
     int	dbi_verbose;
     int	dbi_region_init;
+    unsigned int dbi_thread_count;
 	/* locking sub-system parameters */
     unsigned int dbi_lk_max_lockers;
     unsigned int dbi_lk_max_locks;
@@ -609,6 +615,7 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
     (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
     (void) rpmswExit(sw, data->size);
+WSEGFAULT;
     return rc;
 }
 
@@ -633,6 +640,7 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
     (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
     (void) rpmswExit(sw, data->size);
+RSEGFAULT;
     return rc;
 }
 
@@ -682,6 +690,7 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
     (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
     (void) rpmswExit(sw, data->size);
+WSEGFAULT;
     return rc;
 }
 

@@ -251,6 +251,9 @@ DB_READ_UNCOMITTED
  { "region_init", 0,POPT_ARG_VAL,	&db3dbi.dbi_region_init, 1,
 	NULL, NULL },
 
+ { "thread_count", 0,POPT_ARG_INT,	&db3dbi.dbi_thread_count, 0,
+	NULL, NULL },
+
 #if defined(DB_VERB_CHKPOINT)
  { "chkpoint",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_CHKPOINT,
 	NULL, NULL },

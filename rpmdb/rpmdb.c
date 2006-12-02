@@ -51,6 +51,12 @@ extern void regfree (/*@only@*/ regex_t *preg)
 int _rpmdb_debug = 0;
 
 /*@unchecked@*/
+int _rsegfault = 0;
+
+/*@unchecked@*/
+int _wsegfault = 0;
+
+/*@unchecked@*/
 static int _rebuildinprogress = 0;
 /*@unchecked@*/
 static int _db_filter_dups = 0;
@@ -1168,9 +1174,9 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 
     (void) rpmsqEnable(SIGHUP,	NULL);
     (void) rpmsqEnable(SIGINT,	NULL);
-    (void) rpmsqEnable(SIGTERM,NULL);
-    (void) rpmsqEnable(SIGQUIT,NULL);
-    (void) rpmsqEnable(SIGPIPE,NULL);
+    (void) rpmsqEnable(SIGTERM,	NULL);
+    (void) rpmsqEnable(SIGQUIT,	NULL);
+    (void) rpmsqEnable(SIGPIPE,	NULL);
 
     db->db_api = _dbapi;
 
@@ -3332,7 +3338,6 @@ data->size = 0;
 	    for (i = 0; i < rpmcnt; i++) {
 		dbiIndexSet set;
 		int stringvalued;
-		byte * t;
 
 		bin = _free(bin);
 		/*

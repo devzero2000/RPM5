@@ -22,6 +22,12 @@ const char *__progname;
 /*@unchecked@*/
 static int _debug = 0;
 
+/*@unchecked@*/
+extern int _rsegfault;
+
+/*@unchecked@*/
+extern int _wsegfault;
+
 /*@-exportheadervar@*/
 /*@unchecked@*/
 extern int _rpmds_nopromote;
@@ -319,6 +325,10 @@ struct poptOption rpmcliAllPoptTable[] = {
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
         NULL, NULL },
+ { "rsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,
+	&_rsegfault, 0, NULL, NULL },
+ { "wsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,
+	&_wsegfault, 0, NULL, NULL },
 
  { "predefine", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PREDEFINE,
 	N_("predefine MACRO with value EXPR"),

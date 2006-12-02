@@ -269,6 +269,32 @@ static int db3_pthread_nptl(void)
 #endif
 #endif
 
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
+/**
+ * Is process/thread still alive?
+ * @param dbenv		db environment
+ * @param pid		process id
+ * @param tid		thread id
+ * @param flags		0 or DB_MUTEX_PROCESS_ONLY
+ * @return		
+ */
+static int db3is_alive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid,
+		u_int32_t flags)
+	/*@*/
+{
+    int is_alive = 1;	/* assume all processes are alive */
+
+    switch (flags) {
+    case DB_MUTEX_PROCESS_ONLY:
+    case 0:
+    default:
+	is_alive = (!(kill(pid, 0) < 0 && errno == ESRCH));
+	break;
+    }
+    return is_alive;
+}
+#endif
+
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
@@ -502,6 +528,16 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
     }
 
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
+    /* XXX capture dbenv->falchk output on stderr. */
+    dbenv->set_msgfile(dbenv, rpmdb->db_errfile);
+    /* XXX must be at least 8, and __db* files need nuking to instantiate. */
+    if (dbi->dbi_thread_count >= 8) {
+	xx = dbenv->set_thread_count(dbenv, dbi->dbi_thread_count);
+	xx = cvtdberr(dbi, "dbenv->set_thread_count", xx, _debug);
+    }
+#endif
+
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
     rc = dbenv->open(dbenv, dbhome, eflags, dbi->dbi_perms);
 #else
@@ -515,6 +551,21 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     rc = cvtdberr(dbi, "dbenv->open", rc, xx);
     if (rc)
 	goto errxit;
+
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
+    if (dbi->dbi_thread_count >= 8) {
+	/* XXX Set pid/tid is_alive probe. */
+	xx = dbenv->set_isalive(dbenv, db3is_alive);
+	xx = cvtdberr(dbi, "dbenv->set_isalive", xx, _debug);
+	/* XXX Clean out stale shared read locks. */
+	xx = dbenv->failchk(dbenv, 0);
+	xx = cvtdberr(dbi, "dbenv->failchk", xx, _debug);
+	if (xx == DB_RUNRECOVERY) {
+	    rc = xx;
+	    goto errxit;
+	}
+    }
+#endif
 
 /*@-boundswrite@*/
     *dbenvp = dbenv;
