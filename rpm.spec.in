@@ -23,7 +23,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: @VERSION@
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
 License: LGPL
@@ -545,6 +545,23 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Dec  3 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.4
+- display arch in file conflicts.
+- make peace with autoconf-2.60 and automake-1.10.
+- handle spaces in file path arguments correctly (#217258);
+- permit variable length file digests in rpmdb.
+- check all header strings to resize buffer CVE-2006-5466 (#212833).
+- plug some minor memory leaks.
+- add php(...) extractors from PLD.
+- add robustness to posix shared mutexes.
+- discard stale read locks when opening an rpmdb environment.
+- popt: add POP_ARGFLAG_RANDOM using random(3) for a random value.
+- add --{r,w}segfault options to randomly interrupt rpm execution.
+- add rpmdbVerifyAllDBI() to separate open from verification.
+- do db->verify detect and dbenv->remove repair w stale write locks.
+- add multiversion and other config arcana from db-4.5.20.
+- display errors as "db4" not "db3", only the cognoscenti need dbi_api.
+
 * Sat Nov 25 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.3
 - permit multiple identically named packages with --install (#171970).
 - query: don't attempt manifest open on non-existent files (#215712).

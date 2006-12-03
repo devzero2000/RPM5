@@ -50,13 +50,13 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
 
 /* DB_ENV->open and DB->open */
-#if defined(DB_AUTO_COMMIT) && defined(NOTYET)
+#if defined(DB_AUTO_COMMIT)
  { "auto_commit", 0,POPT_BIT_SET, &db3dbi.dbi_oeflags, DB_AUTO_COMMIT,
 	NULL, NULL },
 #endif
  { "create",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_CREATE,
 	NULL, NULL },
-#if defined(DB_MULTIVERSION) && defined(NOTYET)
+#if defined(DB_MULTIVERSION)
  { "multiversion", 0,POPT_BIT_SET, &db3dbi.dbi_oeflags, DB_MULTIVERSION,
 	NULL, NULL },
 #endif
@@ -78,15 +78,17 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "mpool",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_MPOOL,
 	NULL, NULL },
-#if defined(DB_INIT_REP) && defined(NOTYET)
- { "replicate", 0,POPT_BIT_SET, &db3dbi.dbi_eflags, DB_INIT_REP,
+#if defined(DB_INIT_REP)
+ { "rep", 0,POPT_BIT_SET, &db3dbi.dbi_eflags, DB_INIT_REP,
 	NULL, NULL },
 #endif
  { "txn",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_TXN,
 	NULL, NULL },
 
+#ifdef	DYING	/* XXX compatibly defined to 0 in db-4.5.20 */
  { "joinenv",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_JOINENV,
 	NULL, NULL },
+#endif
  { "lockdown",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_LOCKDOWN,
 	NULL, NULL },
  { "private",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_PRIVATE,
@@ -95,7 +97,7 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "recover_fatal", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_RECOVER_FATAL,
 	NULL, NULL },
-#if defined(DB_REGISTER) && defined(NOTYET)
+#if defined(DB_REGISTER)
  { "register", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_REGISTER,
 	NULL, NULL },
 #endif
@@ -174,7 +176,7 @@ DB_READ_UNCOMITTED
 #endif
  { "truncate",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_TRUNCATE,
 	NULL, NULL },
-#if defined(DB_WRITEOPEN) && defined(NOTYET)
+#if defined(DB_WRITEOPEN)
  { "writeopen", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_WRITEOPEN,
 	NULL, NULL },
 #endif

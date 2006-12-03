@@ -435,6 +435,7 @@ struct rpmdb_s {
 
     int		db_remove_env;	/*!< Discard dbenv on close? */
     int		db_filter_dups;	/*!< Skip duplicate headers with --rebuilddb? */
+    int		db_verifying;
 
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
     void (*db_errcall) (const char * db_errpfx, char * buffer)
@@ -933,7 +934,16 @@ int rpmdbInit(/*@null@*/ const char * prefix, int perms)
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
- * Verify database components.
+ * Verify all database components.
+ * @param db		rpm database
+ * @return		0 on success
+ */
+int rpmdbVerifyAllDBI(rpmdb db)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/** \ingroup rpmdb
+ * Open and verify all database components.
  * @param prefix	path to top of install tree
  * @return		0 on success
  */

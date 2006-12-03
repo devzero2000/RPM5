@@ -1291,15 +1291,9 @@ int rpmdbInit (const char * prefix, int perms)
     return rc;
 }
 
-int rpmdbVerify(const char * prefix)
+int rpmdbVerifyAllDBI(rpmdb db)
 {
-    rpmdb db = NULL;
-    int _dbapi = rpmExpandNumeric("%{_dbapi}");
     int rc = 0;
-
-/*@-boundswrite@*/
-    rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
-/*@=boundswrite@*/
 
     if (db != NULL) {
 	int dbix;
@@ -1323,6 +1317,17 @@ int rpmdbVerify(const char * prefix)
 	if (xx && rc == 0) rc = xx;
 	db = NULL;
     }
+    return rc;
+}
+
+int rpmdbVerify(const char * prefix)
+{
+    rpmdb db = NULL;
+    int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    int rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
+
+    if (!rc && db != NULL)
+	rc = rpmdbVerifyAllDBI(db);
     return rc;
 }
 

@@ -44,9 +44,13 @@
 	- plug some minor memory leaks.
 	- add php(...) extractors from PLD.
 	- add robustness to posix shared mutexes.
-	- discard stale locks when opening an rpmdb environment.
+	- discard stale read locks when opening an rpmdb environment.
 	- popt: add POP_ARGFLAG_RANDOM using random(3) for a random value.
 	- add --{r,w}segfault options to randomly interrupt rpm execution.
+	- add rpmdbVerifyAllDBI() to separate open from verification.
+	- do db->verify detect and dbenv->remove repair w stale write locks.
+	- add multiversion and other config arcana from db-4.5.20.
+	- display errors as "db4" not "db3", only the cognoscenti need dbi_api.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

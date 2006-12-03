@@ -82,7 +82,7 @@ static const char * bfstring(unsigned int x, const char * xbf)
 {
     const char * s = xbf;
     static char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-    static char buf[256];
+    static char buf[BUFSIZ];
     char * t, * te;
     unsigned radix;
     unsigned c, i, k;
@@ -128,20 +128,21 @@ static const char * bfstring(unsigned int x, const char * xbf)
     return buf;
 }
 
+/* XXX checked with db-4.5.20 */
 static const char * dbtFlags =
 	"\20\1APPMALLOC\2ISSET\3MALLOC\4PARTIAL\5REALLOC\6USERMEM\7DUPOK";
 
 static const char * dbenvOpenFlags =
-	"\20\1CREATE\2NO_EXCEPTIONS\3FORCE\4NOMMAP\5RDONLY\6RECOVER\7THREAD\10TXN_NOSYNC\11USE_ENVIRON\12USE_ENVIRON_ROOT\13CDB\14LOCK\15LOG\16MPOOL\17TXN\20JOINENV\21LOCKDOWN\22PRIVATE\23RECOVER_FATAL\24SYSTEM_MEM";
+	"\20\1CREATE\2DURABLE_UNKNOWN\3FORCE\4MULTIVERSION\5NOMMAP\6RDONLY\7RECOVER\10THREAD\11TRUNCATE\12TXN_NOSYNC\13TXN_NOT_DURABLEi\14TXN_WRITE_NOSYNC\15USE_ENVIRON\16USE_ENVIRON_ROOT\17CDB\20LOCK\21LOG\22MPOOL\23REP\24TXN\25LOCKDOWN\26PRIVATE\27RECOVER_FATAL\30REGISTER\31SYSTEM_MEM";
 
 static const char * dbOpenFlags =
-	"\20\1CREATE\2NO_EXCEPTIONS\3FORCE\4NOMMAP\5RDONLY\6RECOVER\7THREAD\10TXN_NOSYNC\11USE_ENVIRON\12USE_ENVIRON_ROOT\13EXCL\14FCNTL_LOCKING\15RDWRMASTER\16TRUNCATE\17EXTENT\20APPLY_LOGREG";
+	"\20\1CREATE\2DURABLE_UNKNOWN\3FORCE\4MULTIVERSION\5NOMMAP\6RDONLY\7RECOVER\10THREAD\11TRUNCATE\12TXN_NOSYNC\13TXN_NOT_DURABLEi\14TXN_WRITE_NOSYNC\15USE_ENVIRON\16USE_ENVIRON_ROOT\17EXCL\20FCNTL_LOCKING\21NO_AUTO_COMMIT\22RDWRMASTER\23WRITEOPEN";
 
 static const char * dbenvSetFlags =
-	"\20\1CREATE\2NO_EXCEPTIONS\3FORCE\4NOMMAP\5RDONLY\6RECOVER\7THREAD\10TXN_NOSYNC\11USE_ENVIRON\12USE_ENVIRON_ROOT\13CDB_ALLDB\14NOLOCKING\15NOPANIC\16PANIC_ENV\17REGION_INIT\20YIELDCPU";
+	"\20\1CREATE\2DURABLE_UNKNOWN\3FORCE\4MULTIVERSION\5NOMMAP\6RDONLY\7RECOVER\10THREAD\11TRUNCATE\12TXN_NOSYNC\13TXN_NOT_DURABLEi\14TXN_WRITE_NOSYNC\15USE_ENVIRON\16USE_ENVIRON_ROOT\17CDB_ALLDB\20DIRECT_DB\21DIRECT_LOG\22DSYNC_DB\23DSYNC_LOG\24LOG_AUTOREMOVE\25LOG_INMEMORY\26NOLOCKING\27NOPANIC\30OVERWRITE\31PANIC_ENV\36REGION_INIT\37TIME_NOTGRANTED\40YIELDCPU";
 
 static const char * dbSetFlags =
-	"\20\1DUP\2DUPSORT\3RECNUM\4RENUMBER\5REVSPLITOFF\6SNAPSHOT";
+	"\20\1CREATE\2DURABLE_UNKNOWN\3FORCE\4MULTIVERSION\5NOMMAP\6RDONLY\7RECOVER\10THREAD\11TRUNCATE\12TXN_NOSYNC\13TXN_NOT_DURABLEi\14TXN_WRITE_NOSYNC\15USE_ENVIRON\16USE_ENVIRON_ROOT\17CHKSUM\20DUP\21DUPSORT\22ENCRYPT\23INORDER\24RECNUM\25RENUMBER\26REVSPLITOFF\27SNAPSHOT";
 
 static const char * dbiModeFlags =
 	"\20\1WRONLY\2RDWR\7CREAT\10EXCL\11NOCTTY\12TRUNC\13APPEND\14NONBLOCK\15SYNC\16ASYNC\17DIRECT\20LARGEFILE\21DIRECTORY\22NOFOLLOW";
@@ -159,10 +160,10 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	if (msg)
 	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
-		dbi->dbi_api, rc, msg, db_strerror(error));
+		DB_VERSION_MAJOR, rc, msg, db_strerror(error));
 	else
 	    rpmError(RPMERR_DBERR, _("db%d error(%d): %s\n"),
-		dbi->dbi_api, rc, db_strerror(error));
+		DB_VERSION_MAJOR, rc, db_strerror(error));
 	/*@=moduncon@*/
     }
 
@@ -196,17 +197,19 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	xx = db_env_create(&dbenv, 0);
 	/*@=moduncon@*/
-	xx = cvtdberr(dbi, "db_env_create", xx, _debug);
+	if (!xx && dbenv != NULL) {
+	    xx = cvtdberr(dbi, "db_env_create", xx, _debug);
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
-	xx = dbenv->remove(dbenv, dbhome, 0);
+	    xx = dbenv->remove(dbenv, dbhome, DB_FORCE);
 #else
-	xx = dbenv->remove(dbenv, dbhome, NULL, 0);
+	    xx = dbenv->remove(dbenv, dbhome, NULL, 0);
 #endif
-	xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
+	    xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
 
-	if (dbfile)
-	    rpmMessage(RPMMESS_DEBUG, _("removed  db environment %s/%s\n"),
+	    if (dbfile)
+		rpmMessage(RPMMESS_DEBUG, _("removed  db environment %s/%s\n"),
 			dbhome, dbfile);
+	}
 
     }
     return rc;
@@ -320,6 +323,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     /*@=assignexpose@*/
 
     eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
+    /* Try to join, rather than create, the environment. */
+    /* XXX DB_JOINENV is defined to 0 in db-4.5.20 */
     if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
 
     if (dbfile)
@@ -553,7 +558,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	goto errxit;
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
-    if (dbi->dbi_thread_count >= 8) {
+    if (!rpmdb->db_verifying && dbi->dbi_thread_count >= 8) {
 	/* XXX Set pid/tid is_alive probe. */
 	xx = dbenv->set_isalive(dbenv, db3is_alive);
 	xx = cvtdberr(dbi, "dbenv->set_isalive", xx, _debug);
@@ -575,7 +580,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
 errxit:
     if (dbenv) {
-	int xx;
 	xx = dbenv->close(dbenv, 0);
 	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
     }
@@ -962,6 +966,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
     if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
 	DB_ENV * dbenv = NULL;
+	int eflags;
 
 	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	rc = db_env_create(&dbenv, 0);
@@ -996,8 +1001,8 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	    if (rc) goto exit;
 	}
 	    
-	rc = dbenv->open(dbenv, dbhome,
-            DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0);
+	eflags = DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON;
+	rc = dbenv->open(dbenv, dbhome, eflags, 0);
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 
@@ -1254,6 +1259,31 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    switch (rc) {
 	    default:
 		break;
+
+	    case DB_RUNRECOVERY:
+		rpmError(RPMERR_DBERR, _("Runnning db->verify ...\n"));
+		rpmdb = rpmdbLink(rpmdb, "DB_RUNRECOVERY");
+		rpmdb->db_remove_env = 1;
+		rpmdb->db_verifying = 1;
+		xx = rpmdbVerifyAllDBI(rpmdb);
+		xx = cvtdberr(dbi, "db->verify", xx, _debug);
+		/*@fallthrough@*/
+		rpmdb->db_remove_env = 0;
+		rpmdb->db_verifying = 0;
+
+		dbi->dbi_oeflags |= DB_CREATE;
+		dbi->dbi_eflags &= ~DB_JOINENV;
+		rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
+		/* XXX db_init EINVAL was masked. */
+		rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
+		if (rc)
+		    break;
+
+assert(dbenv);
+		rpmdb->db_dbenv = dbenv;
+		rpmdb->db_opens = 1;
+		break;
+
 #if defined(DB_VERSION_MISMATCH) /* Nuke __db* files and retry open once. */
 	    case DB_VERSION_MISMATCH:
 #else
@@ -1271,7 +1301,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			if (Stat(filename, &st)
 			  && (errno == ENOENT || errno == EINVAL))
 			    continue;
-			xx = unlink(filename);
+			xx = Unlink(filename);
 		    }
 		}
 		dbi->dbi_oeflags |= DB_CREATE;
@@ -1283,11 +1313,13 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    break;
 		/*@fallthrough@*/
 	    case 0:
+assert(dbenv);
 		rpmdb->db_dbenv = dbenv;
 		rpmdb->db_opens = 1;
 		break;
 	    }
 	} else {
+assert(rpmdb && rpmdb->db_dbenv);
 	    dbenv = rpmdb->db_dbenv;
 	    rpmdb->db_opens++;
 	}
