@@ -1590,7 +1590,7 @@ msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, kein Kontext.\n"
 #: lib/fsm.c:1420
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
-msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, Kontext.\n"
+msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, Kontext %s.\n"
 
 #: lib/fsm.c:1729
 #, c-format
@@ -2118,12 +2118,12 @@ msgstr "%%post-Skriptlet nicht ausführen (wenn vorhanden)"
 #: lib/poptI.c:349
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
-msgstr "%preun-Skriptlet nicht ausführen (wenn vorhanden)"
+msgstr "%%preun-Skriptlet nicht ausführen (wenn vorhanden)"
 
 #: lib/poptI.c:352
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
-msgstr "%postun-Skriptlet nicht ausführen (wenn vorhanden)"
+msgstr "%%postun-Skriptlet nicht ausführen (wenn vorhanden)"
 
 #: lib/poptI.c:362
 msgid "do not execute any scriptlet(s) triggered by this package"
@@ -2820,7 +2820,7 @@ msgstr "Datei-Prüfsummen können andere als MD5 sein."
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
-"Zeile %d:%d \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen: %s\n"
+"Zeile %s:%d \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen:\n"
 
 #. XXX No comparison operator found.
 #: lib/rpmds.c:1440
@@ -2844,7 +2844,7 @@ msgstr "Führe Pipe-Befehl \"%s\" aus\n"
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
 "Skipping ...\n"
-msgstr "Zeile %d: \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen: %s\n"
+msgstr "Zeile %d: \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen:\n"
 
 #. XXX No comparison operator found.
 #: lib/rpmds.c:3090
@@ -3508,7 +3508,7 @@ msgstr "%d Byte der PGP-Signatur erhalten\n"
 #: lib/signature.c:612
 #, c-format
 msgid "gpg exec failed (%d)\n"
-msgstr "GPG fehlgeschlagen\n"
+msgstr "GPG fehlgeschlagen (%d)\n"
 
 #. GPG failed to write signature
 #. Just in case
@@ -3812,12 +3812,12 @@ msgstr "db%d-Fehler (%d): %s\n"
 #: rpmdb/db3.c:191
 #, c-format
 msgid "closed   db environment %s/%s\n"
-msgstr "Closed   DB-Umgebung    %s/%s %s\n"
+msgstr "Closed   DB-Umgebung    %s/%s\n"
 
 #: rpmdb/db3.c:210
 #, c-format
 msgid "removed  db environment %s/%s\n"
-msgstr "Removed  DB-Umgebung    %s/%s %s\n"
+msgstr "Removed  DB-Umgebung    %s/%s\n"
 
 #: rpmdb/db3.c:331
 #, c-format
@@ -4040,7 +4040,7 @@ msgstr "%s: Kann den Header bei 0x%x nicht lesen\n"
 #: rpmdb/rpmdb.c:2884
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
-msgstr "Fehler(%d) beim Markieren des Header-Eintrags #%d zur Entfernung\n"
+msgstr "Fehler(%d) beim Markieren des Header-Eintrags #%d zur Entfernung %s\n"
 
 #: rpmdb/rpmdb.c:2995
 #, c-format

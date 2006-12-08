@@ -7,6 +7,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
+	@WITH_NEON_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
@@ -44,6 +45,6 @@ debugedit_LDADD =	@LDFLAGS_STATIC@ \
 
 rpmdeps_SOURCES =	rpmdeps.c
 rpmdeps_LDFLAGS =	$(staticLDFLAGS)
-rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
+rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la @WITH_NEON_LIB@
 
 $(PROGRAMS): $(LDADD)

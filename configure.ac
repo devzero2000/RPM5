@@ -2,7 +2,7 @@ AC_PREREQ(2.57)
 AC_INIT(rpm, 4.4.8, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([foreign])
 
@@ -637,7 +637,7 @@ dnl AmigaOS and IXEmul have a fork() dummy
 	;;
   esac
 
-AM_GNU_GETTEXT
+AM_GNU_GETTEXT([external])
 dnl TVM:
 dnl horrible *temporary* hack to make sure that if we found gettext() in
 dnl -lintl that we add -lintl *back* to $LIBS.

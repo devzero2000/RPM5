@@ -47,7 +47,7 @@ librpm_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAG
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
 	-lresolv \
-	@INTLLIBS@
+	@LTLIBINTL@
 
 if HAVE_LD_VERSION_SCRIPT
 librpm_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpm.vers
