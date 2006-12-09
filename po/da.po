@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-03 13:24-0500\n"
+"Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
+"POT-Creation-Date: 2006-12-09 13:13-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -26,7 +26,6 @@ msgstr "Kan ikke åbne spec-fil %s: %s\n"
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Kunne ikke åbne tar-videreførsel: %m\n"
 
-#. Give up
 #: build.c:164
 #, c-format
 msgid "Failed to read spec file from %s\n"
@@ -52,13 +51,11 @@ msgstr "Filen %s er ikke en regulær fil.\n"
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Filen %s synes ikke at være en spec-fil.\n"
 
-#. parse up the build operators
 #: build.c:319
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Opbygger mål-platforme: %s\n"
 
-#. Query spec for this target platform.
 #: build.c:334 build/spec.c:785
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
@@ -121,7 +118,6 @@ msgstr ""
 msgid "Common options for all rpm modes and executables:"
 msgstr "Fælles tilvalg for alle rpm-tilstande:"
 
-#. @-modfilesys -globs @
 #: rpmqv.c:143 lib/poptI.c:43
 #, fuzzy, c-format
 msgid "%s: %s\n"
@@ -362,7 +358,6 @@ msgstr "Kunne ikke åbne midlertidig fil.\n"
 msgid "Executing(%s): %s\n"
 msgstr "Udfører(%s): %s\n"
 
-#. @=boundsread@
 #: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
@@ -482,7 +477,6 @@ msgstr "Ugyldig dirmode-spec: %s(%s)\n"
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Anormal locale-længde: \"%.*s\" i %%lang(%s)\n"
 
-#. @innercontinue@
 #: build/files.c:799
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
@@ -498,7 +492,6 @@ msgstr "Træfningsgrænse for %%docdir\n"
 msgid "Only one arg for %%docdir\n"
 msgstr "Kun et parameter for %%docdir\n"
 
-#. We already got a file -- error
 #: build/files.c:971
 #, c-format
 msgid "Two files on one line: %s\n"
@@ -916,7 +909,6 @@ msgstr "linie %d: Ugyldigt tilvalg %s: %s\n"
 msgid "line %d: Malformed tag: %s\n"
 msgstr "linie %d: Forkert udformet mærke: %s\n"
 
-#. Empty field
 #: build/parsePreamble.c:497
 #, c-format
 msgid "line %d: Empty tag: %s\n"
@@ -1109,7 +1101,6 @@ msgstr "linie %d: Fejl ved tolkning af %%description: %s\n"
 msgid "line %d: %s\n"
 msgstr "linie %d: %s\n"
 
-#. XXX Fstrerror
 #: build/parseSpec.c:254
 #, c-format
 msgid "Unable to open %s: %s\n"
@@ -1390,13 +1381,11 @@ msgstr "pakken %s er allerede installeret"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakken %s er allerede installeret"
 
-#. @-nullptrarith@
 #: lib/depends.c:371
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:441
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
@@ -1456,7 +1445,6 @@ msgstr "ugyldig db-fil %s\n"
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db tilfører)\n"
 
-#. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:760
 msgid "(hint skipped)"
 msgstr ""
@@ -1471,12 +1459,10 @@ msgstr ""
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
-#. Record all relations.
 #: lib/depends.c:1608
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
-#. T4. Scan for zeroes.
 #: lib/depends.c:1729
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1496,7 +1482,6 @@ msgstr "LØKKE:\n"
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
-#. Return no. of packages that could not be ordered.
 #: lib/depends.c:1929
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
@@ -1952,7 +1937,6 @@ msgstr ""
 msgid "debug URL cache handling"
 msgstr "aflus URL-bufferhåndtering"
 
-#. @-nullpass@
 #: lib/poptALL.c:519
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -2591,7 +2575,6 @@ msgstr "%s mislykkedes\n"
 msgid "incorrect format: %s\n"
 msgstr "ugyldigt format: %s\n"
 
-#. @-boundswrite@
 #: lib/query.c:194
 msgid "(contains no files)"
 msgstr "(indeholder ingen filer)"
@@ -2871,13 +2854,11 @@ msgstr ""
 "linie %d: Afhængigheds-symbol skal starte med alfanumerisk, '_' eller '/': %"
 "s\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:1440
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
@@ -2897,13 +2878,11 @@ msgstr ""
 "linie %d: Afhængigheds-symbol skal starte med alfanumerisk, '_' eller '/': %"
 "s\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:3090
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:3102
 #, c-format
 msgid ""
@@ -2925,7 +2904,6 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#. @=branchstate@
 #: lib/rpmds.c:3293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
@@ -2936,7 +2914,6 @@ msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 msgid "\texecv(%s) pid %d\n"
 msgstr ""
 
-#. XXX this error message is probably not seen.
 #: lib/rpmfc.c:95
 #, c-format
 msgid "Couldn't exec %s: %s\n"
@@ -3032,7 +3009,6 @@ msgstr "åbning af %s mislykkedes %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "ukendt mærke"
 
-#. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:755 lib/rpminstall.c:670 lib/rpminstall.c:855
 #: lib/rpminstall.c:1468 lib/transaction.c:1122
 #, fuzzy
@@ -3085,8 +3061,6 @@ msgstr "Finder %s: (benytter %s)...\n"
 msgid "Retrieving %s\n"
 msgstr "Modtager %s\n"
 
-#. XXX undefined %{name}/%{version}/%{release} here
-#. XXX %{_tmpdir} does not exist
 #: lib/rpminstall.c:453
 #, c-format
 msgid " ... as %s\n"
@@ -3180,8 +3154,6 @@ msgstr ""
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#. @innercontinue@
-#. XXX can't happen
 #: lib/rpminstall.c:1502
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
@@ -3192,7 +3164,16 @@ msgstr "Modtager %s\n"
 msgid "read failed: %s (%d)\n"
 msgstr "læsning mislykkedes: %s (%d)\n"
 
-#. @observer@
+#: lib/rpmlock.c:144 lib/rpmlock.c:153
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "kan ikke opnå %s lås på %s/%s\n"
+
+#: lib/rpmlock.c:149
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr ""
+
 #: lib/rpmps.c:201
 msgid "different"
 msgstr ""
@@ -3308,7 +3289,6 @@ msgstr "Ufuldstændig standardlinie ved %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "For mange parametre i standardlinie ved %s:%d\n"
 
-#. XXX Feof(fd)
 #: lib/rpmrc.c:674
 #, c-format
 msgid "Failed to read %s: %s.\n"
@@ -3525,7 +3505,6 @@ msgstr ""
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Signaturstørrelse: %d\n"
 
-#. @=boundsread@
 #: lib/signature.c:468 lib/signature.c:595 lib/signature.c:904
 #: lib/signature.c:943
 #, fuzzy, c-format
@@ -3536,8 +3515,6 @@ msgstr "Kunne ikke udføre %s: %s\n"
 msgid "pgp failed\n"
 msgstr "pgp fejlede\n"
 
-#. PGP failed to write signature
-#. Just in case
 #: lib/signature.c:491
 msgid "pgp failed to write signature\n"
 msgstr "pgp kunne ikke skrive signatur\n"
@@ -3547,7 +3524,6 @@ msgstr "pgp kunne ikke skrive signatur\n"
 msgid "PGP sig size: %d\n"
 msgstr "PGP-signaturstørrelse: %d\n"
 
-#. @=boundswrite@
 #: lib/signature.c:515 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "kunne ikke læse signaturen\n"
@@ -3562,8 +3538,6 @@ msgstr "Fik %d byte af PGP-signatur\n"
 msgid "gpg exec failed (%d)\n"
 msgstr "eksekvering mislykkedes\n"
 
-#. GPG failed to write signature
-#. Just in case
 #: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunne ikke skrive signaturen\n"
@@ -3578,11 +3552,6 @@ msgstr "GPG-signaturstørrelse: %d\n"
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fik %d byte GPG-signatur\n"
 
-#. @notreached@
-#. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3616,7 +3585,6 @@ msgstr "verificér ikke filerne i pakke"
 msgid "Header "
 msgstr ""
 
-#. @=branchstate@
 #: lib/signature.c:1294
 #, fuzzy
 msgid " signature: "
@@ -3642,7 +3610,6 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signaturfyld : %d\n"
 
-#. @innercontinue@
 #: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
@@ -3691,7 +3658,6 @@ msgstr "fjerner kataloget %s\n"
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
-#. Get the index of possible repackaged packages
 #: lib/transaction.c:1278
 #, c-format
 msgid "\tLooking for %s...\n"
@@ -3754,7 +3720,6 @@ msgstr ""
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "<kildepakke>"
 
-#. Add the header as a pure erase element, no repackaged package.
 #: lib/transaction.c:1476
 msgid "\tAdded erase element.\n"
 msgstr ""
@@ -3793,13 +3758,6 @@ msgstr "fejl ved læsning af hovedet på pakke\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#. ===============================================
-#. * For packages being installed:
-#. * - verify package epoch:version-release is newer.
-#. * - count files.
-#. * For packages being removed:
-#. * - count files.
-#.
 #: lib/transaction.c:1718
 #, c-format
 msgid "sanity checking %d elements\n"
@@ -3810,22 +3768,11 @@ msgstr ""
 msgid "running pre-transaction scripts\n"
 msgstr "kører præinstallations-skript (hvis det findes)\n"
 
-#. ===============================================
-#. * Initialize transaction element file info for package:
-#.
-#.
-#. * FIXME?: we'd be better off assembling one very large file list and
-#. * calling fpLookupList only once. I'm not sure that the speedup is
-#. * worth the trouble though.
-#.
 #: lib/transaction.c:1867
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
 
-#. ===============================================
-#. * Compute file disposition for each package in transaction set.
-#.
 #: lib/transaction.c:1956
 msgid "computing file dispositions\n"
 msgstr ""
@@ -4001,7 +3948,6 @@ msgstr "{ forventet efter : i udtryk"
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
-#. @=modobserver =observertrans@
 #: rpmdb/header.c:3182
 msgid "(index out of range)"
 msgstr ""
@@ -4224,12 +4170,26 @@ msgstr "fjerner kataloget %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
 
+#: rpmdb/sqlite.c:664
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:824
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "lukket  db-fil    %s\n"
+
+#: rpmdb/sqlite.c:925
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
+
 #: rpmio/macro.c:240
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktiv %d tom %d\n"
 
-#. XXX just in case
 #: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
@@ -4309,7 +4269,6 @@ msgstr ""
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#. XXX Fstrerror
 #: rpmio/macro.c:2087 rpmio/macro.c:2093
 #, c-format
 msgid "File %s: %s\n"
@@ -4319,6 +4278,24 @@ msgstr "Fil %s: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
+
+#: rpmio/rpmdav.c:629
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:631
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:633
+#, fuzzy
+msgid "Server Error"
+msgstr "I/O-fejl for server"
+
+#: rpmio/rpmdav.c:635
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(ingen fejl)"
 
 #: rpmio/rpmio.c:716
 msgid "Success"
@@ -4381,21 +4358,42 @@ msgstr "logger på %s som %s, adgangskode %s\n"
 msgid "(no error)"
 msgstr "(ingen fejl)"
 
-#. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatal fejl: "
 
-#. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "fejl: "
 
-#. !< RPMLOG_ERR
 #: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "advarsel: "
+
+#: rpmio/rpmlua.c:486
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:504
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "- understøttes ikke for strenge\n"
+
+#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Fwrite mislykkedes: %s\n"
+
+#: rpmio/rpmlua.c:523
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "ugyldigt pakkenummer: %s\n"
+
+#: rpmio/rpmlua.c:676
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s mislykkedes\n"
 
 #: rpmio/rpmmalloc.c:15
 #, c-format
@@ -4535,93 +4533,6 @@ msgstr ""
 
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
-msgstr ""
-
-#: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
-msgid "list install/erase scriptlets from package(s)"
-msgstr ""
-
-#: ../rpmpopt:38
-msgid "set permissions of files in a package"
-msgstr ""
-
-#: ../rpmpopt:43
-msgid "set user/group ownership of files in a package"
-msgstr ""
-
-#: ../rpmpopt:47 ../rpmpopt:294 ../rpmpopt:367
-msgid "list capabilities this package conflicts with"
-msgstr ""
-
-#: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
-msgid "list other packages removed by installing this package"
-msgstr ""
-
-#: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
-msgid "list capabilities that this package provides"
-msgstr ""
-
-#: ../rpmpopt:57 ../rpmpopt:304 ../rpmpopt:377
-msgid "list capabilities required by package(s)"
-msgstr ""
-
-#: ../rpmpopt:71 ../rpmpopt:318 ../rpmpopt:390
-msgid "list descriptive information from package(s)"
-msgstr ""
-
-#: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
-msgid "list change logs for this package"
-msgstr ""
-
-#: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
-msgid "list trigger scriptlets from package(s)"
-msgstr ""
-
-#: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
-msgid "list package(s) by install time, most recent first"
-msgstr ""
-
-#: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
-msgid "list all files from each package"
-msgstr ""
-
-#: ../rpmpopt:90 ../rpmpopt:93
-msgid ""
-"find package name that contains a provided capability (needs rpmdb-redhat "
-"package installed)"
-msgstr ""
-
-#: ../rpmpopt:103
-msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr ""
-
-#: ../rpmpopt:104
-msgid "<policy>"
-msgstr ""
-
-#: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
-msgid "enable configure <option> for build"
-msgstr ""
-
-#: ../rpmpopt:180 ../rpmpopt:183 ../rpmpopt:195 ../rpmpopt:198 ../rpmpopt:210
-#: ../rpmpopt:213
-msgid "<option>"
-msgstr ""
-
-#: ../rpmpopt:182 ../rpmpopt:197 ../rpmpopt:212
-msgid "disable configure <option> for build"
-msgstr ""
-
-#: ../rpmpopt:186 ../rpmpopt:201 ../rpmpopt:216 ../rpmpopt:224 ../rpmpopt:232
-#: ../rpmpopt:240 ../rpmpopt:248 ../rpmpopt:256 ../rpmpopt:264 ../rpmpopt:337
-#: ../rpmpopt:409 ../rpmpopt:417
-msgid "use database in DIRECTORY"
-msgstr ""
-
-#: ../rpmpopt:187 ../rpmpopt:202 ../rpmpopt:217 ../rpmpopt:225 ../rpmpopt:233
-#: ../rpmpopt:241 ../rpmpopt:249 ../rpmpopt:257 ../rpmpopt:265 ../rpmpopt:338
-#: ../rpmpopt:410 ../rpmpopt:418
-msgid "DIRECTORY"
 msgstr ""
 
 #, fuzzy
@@ -5446,9 +5357,6 @@ msgstr ""
 #~ msgstr ""
 #~ "pakken har hverken en liste over gruppenavne eller id (det burde ikke "
 #~ "kunne ske)\n"
-
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "lukket  db-fil    %s\n"
 
 #~ msgid "removed db file        %s\n"
 #~ msgstr "fjernet db-fil    %s\n"

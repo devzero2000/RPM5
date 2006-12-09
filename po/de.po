@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.7\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-03 13:24-0500\n"
+"Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
+"POT-Creation-Date: 2006-12-09 13:13-0500\n"
 "PO-Revision-Date: 2006-10-09 22:33+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -29,7 +29,6 @@ msgstr "Die Spec-Datei %s kann nicht geöffnet werden: %s\n"
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Die Tar-Pipe konnte nicht geöffnet werden: %m\n"
 
-#. Give up
 #: build.c:164
 #, c-format
 msgid "Failed to read spec file from %s\n"
@@ -55,13 +54,11 @@ msgstr "Die Datei %s ist keine normale Datei.\n"
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Die Datei %s scheint keine Spec-Datei zu sein.\n"
 
-#. parse up the build operators
 #: build.c:319
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Baue für die Zielplattform(en): %s\n"
 
-#. Query spec for this target platform.
 #: build.c:334 build/spec.c:785
 #, c-format
 msgid "    target platform: %s\n"
@@ -123,7 +120,6 @@ msgstr "Installations-/Aktualisierungs-/Deinstallationsoptionen:"
 msgid "Common options for all rpm modes and executables:"
 msgstr "Gemeinsame Optionen für alle RPM-Modi und Ausführungen:"
 
-#. @-modfilesys -globs @
 #: rpmqv.c:143 lib/poptI.c:43
 #, c-format
 msgid "%s: %s\n"
@@ -378,7 +374,6 @@ msgstr "Kann temporäre Datei nicht öffnen.\n"
 msgid "Executing(%s): %s\n"
 msgstr "Ausführung(%s): %s\n"
 
-#. @=boundsread@
 #: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
@@ -498,7 +493,6 @@ msgstr "Ungültige Verzeichnisberechtigungen: %s(%s)\n"
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Ungewöhnliche Länge der Lokalisierung \"%.*s\" in %%lang(%s)\n"
 
-#. @innercontinue@
 #: build/files.c:799
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
@@ -514,7 +508,6 @@ msgstr "Grenze für %%docdir erreicht\n"
 msgid "Only one arg for %%docdir\n"
 msgstr "Nur ein Argument für %%docdir\n"
 
-#. We already got a file -- error
 #: build/files.c:971
 #, c-format
 msgid "Two files on one line: %s\n"
@@ -928,7 +921,6 @@ msgstr "Zeile %d: Tag benötigt nur ein Zeichen: %s\n"
 msgid "line %d: Malformed tag: %s\n"
 msgstr "Zeile %d: Missgebildeter Tag: %s\n"
 
-#. Empty field
 #: build/parsePreamble.c:497
 #, c-format
 msgid "line %d: Empty tag: %s\n"
@@ -1122,7 +1114,6 @@ msgstr "Zeite %d: Nicht unterstütztes internes Skript: %s\n"
 msgid "line %d: %s\n"
 msgstr "Zeile %d: %s\n"
 
-#. XXX Fstrerror
 #: build/parseSpec.c:254
 #, c-format
 msgid "Unable to open %s: %s\n"
@@ -1403,13 +1394,11 @@ msgstr "Paket %s wurde bereits hinzugefügt, überspringe %s\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "Paket %s würde bereits hinzugefügt, ersetze es durch %s\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:371
 #, c-format
 msgid "   upgrade erases %s\n"
 msgstr "   Upgrade deinstalliert %s\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:441
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
@@ -1459,7 +1448,6 @@ msgstr "(Datenbank-Dateien)"
 msgid "(db provides)"
 msgstr "(Datenbank bietet an)"
 
-#. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:760
 msgid "(hint skipped)"
 msgstr "(Hinweis übersprungen)"
@@ -1474,12 +1462,10 @@ msgstr "Ignoriere Paketnamensrelation(en) [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "Entferne %s \"%s\" von tsort-Relationen.\n"
 
-#. Record all relations.
 #: lib/depends.c:1608
 msgid "========== recording tsort relations\n"
 msgstr "========== zeichne tsort-Relationen auf\n"
 
-#. T4. Scan for zeroes.
 #: lib/depends.c:1729
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1501,7 +1487,6 @@ msgstr "SCHLEIFE:\n"
 msgid "========== continuing tsort ...\n"
 msgstr "========== setze tsort fort...\n"
 
-#. Return no. of packages that could not be ordered.
 #: lib/depends.c:1929
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
@@ -1942,7 +1927,6 @@ msgstr "Debugge Tar-Nutzdaten"
 msgid "debug URL cache handling"
 msgstr "Debugge Zwischenspeicher-Verwaltung der URLs"
 
-#. @-nullpass@
 #: lib/poptALL.c:519
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -2541,7 +2525,6 @@ msgstr "%s fehlgeschlagen: %s\n"
 msgid "incorrect format: %s\n"
 msgstr "Ungültiges Format: %s\n"
 
-#. @-boundswrite@
 #: lib/query.c:194
 msgid "(contains no files)"
 msgstr "(enthält keine Dateien)"
@@ -2819,16 +2802,13 @@ msgstr "Datei-Prüfsummen können andere als MD5 sein."
 #: lib/rpmds.c:1406
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
-msgstr ""
-"Zeile %s:%d \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen:\n"
+msgstr "Zeile %s:%d \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen:\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:1440
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr "%s:%d Keinen Vergleichsoperator gefunden.\n"
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
@@ -2846,14 +2826,12 @@ msgid ""
 "Skipping ...\n"
 msgstr "Zeile %d: \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen:\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:3090
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 "\tZeile %d: \"%s\" hat keinen Vergleichsoperator gefunden. Überspringe...\n"
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:3102
 #, c-format
 msgid ""
@@ -2878,7 +2856,6 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#. @=branchstate@
 #: lib/rpmds.c:3293
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
@@ -2889,7 +2866,6 @@ msgstr "Paket %s hat unerfüllte %s: %s\n"
 msgid "\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s), PID %d\n"
 
-#. XXX this error message is probably not seen.
 #: lib/rpmfc.c:95
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
@@ -2985,7 +2961,6 @@ msgstr "Öffnen von %s fehlgeschlagen: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "Unbekannter Tag: \"%s\"\n"
 
-#. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:755 lib/rpminstall.c:670 lib/rpminstall.c:855
 #: lib/rpminstall.c:1468 lib/transaction.c:1122
 msgid "Failed dependencies:\n"
@@ -3034,8 +3009,6 @@ msgstr "Füge Ziel hinzu: %s\n"
 msgid "Retrieving %s\n"
 msgstr "Empfange %s\n"
 
-#. XXX undefined %{name}/%{version}/%{release} here
-#. XXX %{_tmpdir} does not exist
 #: lib/rpminstall.c:453
 #, c-format
 msgid " ... as %s\n"
@@ -3128,8 +3101,6 @@ msgstr "Rollback-Pakete (+%d/-%d) bis %-24.24s (0x%08x):\n"
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Aufräumen bei erneut gepackten Paketen:\n"
 
-#. @innercontinue@
-#. XXX can't happen
 #: lib/rpminstall.c:1502
 #, c-format
 msgid "\tRemoving %s:\n"
@@ -3140,7 +3111,16 @@ msgstr "\tEntferne %s:\n"
 msgid "read failed: %s (%d)\n"
 msgstr "Lesen fehlgeschlagen: %s (%d)\n"
 
-#. @observer@
+#: lib/rpmlock.c:144 lib/rpmlock.c:153
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "Erstelle Transaktionsset"
+
+#: lib/rpmlock.c:149
+#, fuzzy, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr "Erstelle Rollback-Transaktion, um das Ziel zu erreichen\n"
+
 #: lib/rpmps.c:201
 msgid "different"
 msgstr "unterschiedlich"
@@ -3258,7 +3238,6 @@ msgstr "Unvollständige Standardzeile bei %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Zu viele Argumente in der Standardzeile bei %s:%d\n"
 
-#. XXX Feof(fd)
 #: lib/rpmrc.c:674
 #, c-format
 msgid "Failed to read %s: %s.\n"
@@ -3473,7 +3452,6 @@ msgstr "sigh sigSize(%d): UNGÜLTIG, fstat(2) fehlgeschlagen\n"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Signatur: size(%d)+pad(%d)\n"
 
-#. @=boundsread@
 #: lib/signature.c:468 lib/signature.c:595 lib/signature.c:904
 #: lib/signature.c:943
 #, c-format
@@ -3484,8 +3462,6 @@ msgstr "Konnte %s nicht ausführen: %s\n"
 msgid "pgp failed\n"
 msgstr "PGP fehlgeschlagen\n"
 
-#. PGP failed to write signature
-#. Just in case
 #: lib/signature.c:491
 msgid "pgp failed to write signature\n"
 msgstr "PGP konnte die Signatur nicht schreiben\n"
@@ -3495,7 +3471,6 @@ msgstr "PGP konnte die Signatur nicht schreiben\n"
 msgid "PGP sig size: %d\n"
 msgstr "PGP-Signaturgröße: %d\n"
 
-#. @=boundswrite@
 #: lib/signature.c:515 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "Konnte die Signatur nicht lesen\n"
@@ -3510,8 +3485,6 @@ msgstr "%d Byte der PGP-Signatur erhalten\n"
 msgid "gpg exec failed (%d)\n"
 msgstr "GPG fehlgeschlagen (%d)\n"
 
-#. GPG failed to write signature
-#. Just in case
 #: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "GPG konnte die Signatur nicht schreiben\n"
@@ -3526,11 +3499,6 @@ msgstr "GPG-Signaturgröße: %d\n"
 msgid "Got %d bytes of GPG sig\n"
 msgstr "%d Byte der GPG-Signatur erhalten\n"
 
-#. @notreached@
-#. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3562,7 +3530,6 @@ msgstr "SHA1-Prüfsumme des Headers: "
 msgid "Header "
 msgstr "Header "
 
-#. @=branchstate@
 #: lib/signature.c:1294
 msgid " signature: "
 msgstr " Signatur: "
@@ -3586,7 +3553,6 @@ msgstr "Fehlerhafte MD5-Prüfsumme: NICHT UNTERSTÜTZT\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: UNBEKANNT (%d)\n"
 
-#. @innercontinue@
 #: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
@@ -3633,7 +3599,6 @@ msgstr "Entferne Semaphore %s...\n"
 msgid "Getting repackaged header from transaction element\n"
 msgstr "Hole erneut gepackten Header des Transaktionselements\n"
 
-#. Get the index of possible repackaged packages
 #: lib/transaction.c:1278
 #, c-format
 msgid "\tLooking for %s...\n"
@@ -3696,7 +3661,6 @@ msgstr "Keine Header der Transaktion für das Auto-Rollback!\n"
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tErneut gepackten Paket-Header hinzugefügt: %s.\n"
 
-#. Add the header as a pure erase element, no repackaged package.
 #: lib/transaction.c:1476
 msgid "\tAdded erase element.\n"
 msgstr "\tDeinstallationselement hinzugefügt.\n"
@@ -3736,13 +3700,6 @@ msgstr "Fehler beim Lesen des erneut gepackten Pakets!\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ungültige Anzahl an Transaktionselementen.\n"
 
-#. ===============================================
-#. * For packages being installed:
-#. * - verify package epoch:version-release is newer.
-#. * - count files.
-#. * For packages being removed:
-#. * - count files.
-#.
 #: lib/transaction.c:1718
 #, c-format
 msgid "sanity checking %d elements\n"
@@ -3752,22 +3709,11 @@ msgstr "Gesundheitsprüfung von %d Elementen\n"
 msgid "running pre-transaction scripts\n"
 msgstr "Führe Pre-Transaktionsskripte aus\n"
 
-#. ===============================================
-#. * Initialize transaction element file info for package:
-#.
-#.
-#. * FIXME?: we'd be better off assembling one very large file list and
-#. * calling fpLookupList only once. I'm not sure that the speedup is
-#. * worth the trouble though.
-#.
 #: lib/transaction.c:1867
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "Berechne %d Datei-Fingerabdrücke\n"
 
-#. ===============================================
-#. * Compute file disposition for each package in transaction set.
-#.
 #: lib/transaction.c:1956
 msgid "computing file dispositions\n"
 msgstr "Berechne Dateianordnungen\n"
@@ -3944,7 +3890,6 @@ msgstr "{ nach dem : im Ausdruck erwartet"
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
-#. @=modobserver =observertrans@
 #: rpmdb/header.c:3182
 msgid "(index out of range)"
 msgstr "(Index außerhalb des Bereichs)"
@@ -4164,12 +4109,26 @@ msgstr "Entferne Verzeichnis %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "Entfernen des Verzeichnisses %s fehlgeschlagen: %s\n"
 
+#: rpmdb/sqlite.c:664
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:824
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "Closed   DB-Index       %s/%s\n"
+
+#: rpmdb/sqlite.c:925
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "Öffne    DB-Index       %s/%s %s Mode=0x%x\n"
+
 #: rpmio/macro.c:240
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktiv %d  leer %d\n"
 
-#. XXX just in case
 #: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
@@ -4249,7 +4208,6 @@ msgstr "Makro-Ausdehnung zu groß für den Zielpuffer\n"
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makro '%s' ist nur lesbar und kann nicht verändert werden.\n"
 
-#. XXX Fstrerror
 #: rpmio/macro.c:2087 rpmio/macro.c:2093
 #, c-format
 msgid "File %s: %s\n"
@@ -4259,6 +4217,24 @@ msgstr "Datei %s: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datei %s ist kleiner als %u Byte\n"
+
+#: rpmio/rpmdav.c:629
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:631
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:633
+#, fuzzy
+msgid "Server Error"
+msgstr "Ein-/Ausgabe-Fehler des Servers"
+
+#: rpmio/rpmdav.c:635
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(kein Fehler)"
 
 #: rpmio/rpmio.c:716
 msgid "Success"
@@ -4321,21 +4297,42 @@ msgstr "Login auf %s als %s, Passwort %s\n"
 msgid "(no error)"
 msgstr "(kein Fehler)"
 
-#. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "Schwerwiegender Fehler: "
 
-#. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "Fehler: "
 
-#. !< RPMLOG_ERR
 #: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "Warnung: "
+
+#: rpmio/rpmlua.c:486
+#, fuzzy, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr "Alter Syntax wird nicht mehr unterstützt: %s\n"
+
+#: rpmio/rpmlua.c:504
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "Alter Syntax wird nicht mehr unterstützt: %s\n"
+
+#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Fwrite fehlgeschlagen: %s\n"
+
+#: rpmio/rpmlua.c:523
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "Ungültige Paket-Nummer: %s\n"
+
+#: rpmio/rpmlua.c:676
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s fehlgeschlagen: %s\n"
 
 #: rpmio/rpmmalloc.c:15
 #, c-format
@@ -4478,97 +4475,70 @@ msgstr ""
 "Überprüfe der Abhängigkeiten von \"Requires:\" und \"Provides:\" "
 "gegeneinander"
 
-#: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
-msgid "list install/erase scriptlets from package(s)"
-msgstr "Installations-/Deinstallations-Skriptlets der Pakete auflisten"
+#~ msgid "list install/erase scriptlets from package(s)"
+#~ msgstr "Installations-/Deinstallations-Skriptlets der Pakete auflisten"
 
-#: ../rpmpopt:38
-msgid "set permissions of files in a package"
-msgstr "Berechtigungen von Dateien in einem Paket setzen"
+#~ msgid "set permissions of files in a package"
+#~ msgstr "Berechtigungen von Dateien in einem Paket setzen"
 
-#: ../rpmpopt:43
-msgid "set user/group ownership of files in a package"
-msgstr "Benutzer-/Gruppen-Eigentümer von Dateien in einem Paket setzen"
+#~ msgid "set user/group ownership of files in a package"
+#~ msgstr "Benutzer-/Gruppen-Eigentümer von Dateien in einem Paket setzen"
 
-#: ../rpmpopt:47 ../rpmpopt:294 ../rpmpopt:367
-msgid "list capabilities this package conflicts with"
-msgstr "Kapazitäten, die mit diesem Paket kollidieren, auflisten"
+#~ msgid "list capabilities this package conflicts with"
+#~ msgstr "Kapazitäten, die mit diesem Paket kollidieren, auflisten"
 
-#: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
-msgid "list other packages removed by installing this package"
-msgstr "Pakete, die beim Installieren dieses Pakets entfernt werden, anzeigen"
+#~ msgid "list other packages removed by installing this package"
+#~ msgstr ""
+#~ "Pakete, die beim Installieren dieses Pakets entfernt werden, anzeigen"
 
-#: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
-msgid "list capabilities that this package provides"
-msgstr "Kapazitäten, die dieses Paket bietet, anzeigen"
+#~ msgid "list capabilities that this package provides"
+#~ msgstr "Kapazitäten, die dieses Paket bietet, anzeigen"
 
-#: ../rpmpopt:57 ../rpmpopt:304 ../rpmpopt:377
-msgid "list capabilities required by package(s)"
-msgstr "Kapazitäten, die von Paketen benötigt werden, anzeigen"
+#~ msgid "list capabilities required by package(s)"
+#~ msgstr "Kapazitäten, die von Paketen benötigt werden, anzeigen"
 
-#: ../rpmpopt:71 ../rpmpopt:318 ../rpmpopt:390
-msgid "list descriptive information from package(s)"
-msgstr "Beschreibende Informationen der Pakete anzeigen"
+#~ msgid "list descriptive information from package(s)"
+#~ msgstr "Beschreibende Informationen der Pakete anzeigen"
 
-#: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
-msgid "list change logs for this package"
-msgstr "Veränderungsprotokoll für dieses Paket anzeigen"
+#~ msgid "list change logs for this package"
+#~ msgstr "Veränderungsprotokoll für dieses Paket anzeigen"
 
-#: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
-msgid "list trigger scriptlets from package(s)"
-msgstr "Trigger-Skriptlets der Pakete anzeigen"
+#~ msgid "list trigger scriptlets from package(s)"
+#~ msgstr "Trigger-Skriptlets der Pakete anzeigen"
 
-#: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
-msgid "list package(s) by install time, most recent first"
-msgstr "Paket(e) nach dem Installationsdatum auflisten, die neuesten zuerst"
+#~ msgid "list package(s) by install time, most recent first"
+#~ msgstr "Paket(e) nach dem Installationsdatum auflisten, die neuesten zuerst"
 
-#: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
-msgid "list all files from each package"
-msgstr "Alle Dateien von jedem Paket auflisten"
+#~ msgid "list all files from each package"
+#~ msgstr "Alle Dateien von jedem Paket auflisten"
 
-#: ../rpmpopt:90 ../rpmpopt:93
-msgid ""
-"find package name that contains a provided capability (needs rpmdb-redhat "
-"package installed)"
-msgstr ""
-"Paket-Namen finden, der eine Kapazität anbietet (benötigt das Paket rpmdb-"
-"redhat/rpmdb-fedora)"
+#~ msgid ""
+#~ "find package name that contains a provided capability (needs rpmdb-redhat "
+#~ "package installed)"
+#~ msgstr ""
+#~ "Paket-Namen finden, der eine Kapazität anbietet (benötigt das Paket rpmdb-"
+#~ "redhat/rpmdb-fedora)"
 
-#: ../rpmpopt:103
-msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr "Setzt eine BuildRoot <Richtlinie> (z.B. compress man pages)"
+#~ msgid "set buildroot <policy> (e.g. compress man pages)"
+#~ msgstr "Setzt eine BuildRoot <Richtlinie> (z.B. compress man pages)"
 
-#: ../rpmpopt:104
-msgid "<policy>"
-msgstr "<Richtlinie>"
+#~ msgid "<policy>"
+#~ msgstr "<Richtlinie>"
 
-#: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
-msgid "enable configure <option> for build"
-msgstr "Aktiviert <Option> beim RPM-Bauen"
+#~ msgid "enable configure <option> for build"
+#~ msgstr "Aktiviert <Option> beim RPM-Bauen"
 
-#: ../rpmpopt:180 ../rpmpopt:183 ../rpmpopt:195 ../rpmpopt:198 ../rpmpopt:210
-#: ../rpmpopt:213
-msgid "<option>"
-msgstr "<Option>"
+#~ msgid "<option>"
+#~ msgstr "<Option>"
 
-#: ../rpmpopt:182 ../rpmpopt:197 ../rpmpopt:212
-msgid "disable configure <option> for build"
-msgstr "Deaktiviert <Option> beim RPM-Bauen"
+#~ msgid "disable configure <option> for build"
+#~ msgstr "Deaktiviert <Option> beim RPM-Bauen"
 
-#: ../rpmpopt:186 ../rpmpopt:201 ../rpmpopt:216 ../rpmpopt:224 ../rpmpopt:232
-#: ../rpmpopt:240 ../rpmpopt:248 ../rpmpopt:256 ../rpmpopt:264 ../rpmpopt:337
-#: ../rpmpopt:409 ../rpmpopt:417
-msgid "use database in DIRECTORY"
-msgstr "Benutze Datenbank in VERZEICHNIS"
+#~ msgid "use database in DIRECTORY"
+#~ msgstr "Benutze Datenbank in VERZEICHNIS"
 
-#: ../rpmpopt:187 ../rpmpopt:202 ../rpmpopt:217 ../rpmpopt:225 ../rpmpopt:233
-#: ../rpmpopt:241 ../rpmpopt:249 ../rpmpopt:257 ../rpmpopt:265 ../rpmpopt:338
-#: ../rpmpopt:410 ../rpmpopt:418
-msgid "DIRECTORY"
-msgstr "VERZEICHNIS"
-
-#~ msgid "Creating rollback transaction to achieve goal\n"
-#~ msgstr "Erstelle Rollback-Transaktion, um das Ziel zu erreichen\n"
+#~ msgid "DIRECTORY"
+#~ msgstr "VERZEICHNIS"
 
 #~ msgid "don't verify header+payload signature"
 #~ msgstr "Keine Überprüfung der Header- und Nutzdaten-Signatur"

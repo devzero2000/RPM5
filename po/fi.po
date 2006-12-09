@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-03 13:24-0500\n"
+"Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
+"POT-Creation-Date: 2006-12-09 13:13-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -25,7 +25,6 @@ msgstr "En voi avata %s luettavaksi: %s."
 msgid "Failed to open tar pipe: %m\n"
 msgstr "%s:n avaus epäonnistui\n"
 
-#. Give up
 #: build.c:164
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
@@ -51,13 +50,11 @@ msgstr "%s ei vaikuta RPM-paketilta\n"
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s ei vaikuta RPM-paketilta\n"
 
-#. parse up the build operators
 #: build.c:319
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#. Query spec for this target platform.
 #: build.c:334 build/spec.c:785
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
@@ -118,7 +115,6 @@ msgstr ""
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
-#. @-modfilesys -globs @
 #: rpmqv.c:143 lib/poptI.c:43
 #, fuzzy, c-format
 msgid "%s: %s\n"
@@ -371,7 +367,6 @@ msgstr "En voi avata %s luettavaksi: %s."
 msgid "Executing(%s): %s\n"
 msgstr "Haen: %s\n"
 
-#. @=boundsread@
 #: build/build.c:243
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s\n"
@@ -493,7 +488,6 @@ msgstr "En voi lukea %s: %s."
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#. @innercontinue@
 #: build/files.c:799
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
@@ -509,7 +503,6 @@ msgstr ""
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
-#. We already got a file -- error
 #: build/files.c:971
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
@@ -925,7 +918,6 @@ msgstr "en voinut avata %s: %s"
 msgid "line %d: Malformed tag: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#. Empty field
 #: build/parsePreamble.c:497
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
@@ -1116,7 +1108,6 @@ msgstr "paketti %s ei ole %s:ssä"
 msgid "line %d: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#. XXX Fstrerror
 #: build/parseSpec.c:254
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
@@ -1411,13 +1402,11 @@ msgstr "paketti %s ei ole asennettu\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:371
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "mikään pakettie ei tarvitse %s:a\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:441
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
@@ -1474,7 +1463,6 @@ msgstr "en voinut avata %s: %s"
 msgid "(db provides)"
 msgstr ""
 
-#. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:760
 msgid "(hint skipped)"
 msgstr ""
@@ -1489,12 +1477,10 @@ msgstr ""
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#. Record all relations.
 #: lib/depends.c:1608
 msgid "========== recording tsort relations\n"
 msgstr ""
 
-#. T4. Scan for zeroes.
 #: lib/depends.c:1729
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1514,7 +1500,6 @@ msgstr ""
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#. Return no. of packages that could not be ordered.
 #: lib/depends.c:1929
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
@@ -1971,7 +1956,6 @@ msgstr ""
 msgid "debug URL cache handling"
 msgstr ""
 
-#. @-nullpass@
 #: lib/poptALL.c:519
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -2624,7 +2608,6 @@ msgstr "pgp epäonnistui"
 msgid "incorrect format: %s\n"
 msgstr "virhe formaatissa: %s\n"
 
-#. @-boundswrite@
 #: lib/query.c:194
 msgid "(contains no files)"
 msgstr "(ei tiedostoja)"
@@ -2903,13 +2886,11 @@ msgstr ""
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "siirtojen pitää alkaa /-merkillä"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:1440
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
@@ -2927,13 +2908,11 @@ msgid ""
 "Skipping ...\n"
 msgstr "siirtojen pitää alkaa /-merkillä"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:3090
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:3102
 #, c-format
 msgid ""
@@ -2953,7 +2932,6 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#. @=branchstate@
 #: lib/rpmds.c:3293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
@@ -2964,7 +2942,6 @@ msgstr "paketti %s ei ole %s:ssä"
 msgid "\texecv(%s) pid %d\n"
 msgstr ""
 
-#. XXX this error message is probably not seen.
 #: lib/rpmfc.c:95
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
@@ -3060,7 +3037,6 @@ msgstr "%s:n avaus ei onnistunut: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "tuntematon nimiö"
 
-#. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:755 lib/rpminstall.c:670 lib/rpminstall.c:855
 #: lib/rpminstall.c:1468 lib/transaction.c:1122
 #, fuzzy
@@ -3112,8 +3088,6 @@ msgstr "en voinut avata %s: %s"
 msgid "Retrieving %s\n"
 msgstr "Haen: %s\n"
 
-#. XXX undefined %{name}/%{version}/%{release} here
-#. XXX %{_tmpdir} does not exist
 #: lib/rpminstall.c:453
 #, c-format
 msgid " ... as %s\n"
@@ -3208,8 +3182,6 @@ msgstr ""
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#. @innercontinue@
-#. XXX can't happen
 #: lib/rpminstall.c:1502
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
@@ -3220,7 +3192,16 @@ msgstr "Haen: %s\n"
 msgid "read failed: %s (%d)\n"
 msgstr "luku epäonnistui: %s (%d)"
 
-#. @observer@
+#: lib/rpmlock.c:144 lib/rpmlock.c:153
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "en voi saada %s lukitusta tietokantaan"
+
+#: lib/rpmlock.c:149
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr ""
+
 #: lib/rpmps.c:201
 msgid "different"
 msgstr ""
@@ -3335,7 +3316,6 @@ msgstr "Epätäydellinen oletusrivi, %s:%d"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "liian monta parametriä oletusrivillä %s:%d"
 
-#. XXX Feof(fd)
 #: lib/rpmrc.c:674
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
@@ -3549,7 +3529,6 @@ msgstr ""
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#. @=boundsread@
 #: lib/signature.c:468 lib/signature.c:595 lib/signature.c:904
 #: lib/signature.c:943
 #, fuzzy, c-format
@@ -3561,8 +3540,6 @@ msgstr "En voinut ajaa pgp:tä"
 msgid "pgp failed\n"
 msgstr "pgp epäonnistui"
 
-#. PGP failed to write signature
-#. Just in case
 #: lib/signature.c:491
 #, fuzzy
 msgid "pgp failed to write signature\n"
@@ -3573,7 +3550,6 @@ msgstr "pgp ei voinut kirjoittaa allekirjoitusta"
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#. @=boundswrite@
 #: lib/signature.c:515 lib/signature.c:643
 #, fuzzy
 msgid "unable to read the signature\n"
@@ -3589,8 +3565,6 @@ msgstr ""
 msgid "gpg exec failed (%d)\n"
 msgstr "%s: avaus ei onnistunut\n"
 
-#. GPG failed to write signature
-#. Just in case
 #: lib/signature.c:619
 #, fuzzy
 msgid "gpg failed to write signature\n"
@@ -3606,11 +3580,6 @@ msgstr ""
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#. @notreached@
-#. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3643,7 +3612,6 @@ msgstr "asenna paketti"
 msgid "Header "
 msgstr ""
 
-#. @=branchstate@
 #: lib/signature.c:1294
 #, fuzzy
 msgid " signature: "
@@ -3669,7 +3637,6 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#. @innercontinue@
 #: lib/transaction.c:894
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
@@ -3716,7 +3683,6 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
-#. Get the index of possible repackaged packages
 #: lib/transaction.c:1278
 #, c-format
 msgid "\tLooking for %s...\n"
@@ -3779,7 +3745,6 @@ msgstr ""
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "kysele kaikki paketit"
 
-#. Add the header as a pure erase element, no repackaged package.
 #: lib/transaction.c:1476
 msgid "\tAdded erase element.\n"
 msgstr ""
@@ -3818,13 +3783,6 @@ msgstr "virhe etsittäessä pakettia %s\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#. ===============================================
-#. * For packages being installed:
-#. * - verify package epoch:version-release is newer.
-#. * - count files.
-#. * For packages being removed:
-#. * - count files.
-#.
 #: lib/transaction.c:1718
 #, c-format
 msgid "sanity checking %d elements\n"
@@ -3834,22 +3792,11 @@ msgstr ""
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
-#. ===============================================
-#. * Initialize transaction element file info for package:
-#.
-#.
-#. * FIXME?: we'd be better off assembling one very large file list and
-#. * calling fpLookupList only once. I'm not sure that the speedup is
-#. * worth the trouble though.
-#.
 #: lib/transaction.c:1867
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
 
-#. ===============================================
-#. * Compute file disposition for each package in transaction set.
-#.
 #: lib/transaction.c:1956
 msgid "computing file dispositions\n"
 msgstr ""
@@ -4026,7 +3973,6 @@ msgstr "odotin '{' ':'-merkin jälkeen ilmauksessa "
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 
-#. @=modobserver =observertrans@
 #: rpmdb/header.c:3182
 msgid "(index out of range)"
 msgstr ""
@@ -4247,12 +4193,26 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
+#: rpmdb/sqlite.c:664
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:824
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#: rpmdb/sqlite.c:925
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
 #: rpmio/macro.c:240
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
-#. XXX just in case
 #: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
@@ -4332,7 +4292,6 @@ msgstr ""
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#. XXX Fstrerror
 #: rpmio/macro.c:2087 rpmio/macro.c:2093
 #, fuzzy, c-format
 msgid "File %s: %s\n"
@@ -4342,6 +4301,24 @@ msgstr "en voinut avata %s: %s"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
+
+#: rpmio/rpmdav.c:629
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:631
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:633
+#, fuzzy
+msgid "Server Error"
+msgstr "FTP:n IO-virhe"
+
+#: rpmio/rpmdav.c:635
+#, fuzzy
+msgid "Unknown Error"
+msgstr "virhe: "
 
 #: rpmio/rpmio.c:716
 msgid "Success"
@@ -4414,21 +4391,42 @@ msgstr ""
 msgid "(no error)"
 msgstr "virhe: "
 
-#. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "vakava virhe: "
 
-#. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "virhe: "
 
-#. !< RPMLOG_ERR
 #: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "varoitus: "
+
+#: rpmio/rpmlua.c:486
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:504
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "virheellinen paketin numero: %s\n"
+
+#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: readLead  epäonnistui\n"
+
+#: rpmio/rpmlua.c:523
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "virheellinen paketin numero: %s\n"
+
+#: rpmio/rpmlua.c:676
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "pgp epäonnistui"
 
 #: rpmio/rpmmalloc.c:15
 #, c-format
@@ -4569,93 +4567,6 @@ msgstr ""
 
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
-msgstr ""
-
-#: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
-msgid "list install/erase scriptlets from package(s)"
-msgstr ""
-
-#: ../rpmpopt:38
-msgid "set permissions of files in a package"
-msgstr ""
-
-#: ../rpmpopt:43
-msgid "set user/group ownership of files in a package"
-msgstr ""
-
-#: ../rpmpopt:47 ../rpmpopt:294 ../rpmpopt:367
-msgid "list capabilities this package conflicts with"
-msgstr ""
-
-#: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
-msgid "list other packages removed by installing this package"
-msgstr ""
-
-#: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
-msgid "list capabilities that this package provides"
-msgstr ""
-
-#: ../rpmpopt:57 ../rpmpopt:304 ../rpmpopt:377
-msgid "list capabilities required by package(s)"
-msgstr ""
-
-#: ../rpmpopt:71 ../rpmpopt:318 ../rpmpopt:390
-msgid "list descriptive information from package(s)"
-msgstr ""
-
-#: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
-msgid "list change logs for this package"
-msgstr ""
-
-#: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
-msgid "list trigger scriptlets from package(s)"
-msgstr ""
-
-#: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
-msgid "list package(s) by install time, most recent first"
-msgstr ""
-
-#: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
-msgid "list all files from each package"
-msgstr ""
-
-#: ../rpmpopt:90 ../rpmpopt:93
-msgid ""
-"find package name that contains a provided capability (needs rpmdb-redhat "
-"package installed)"
-msgstr ""
-
-#: ../rpmpopt:103
-msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr ""
-
-#: ../rpmpopt:104
-msgid "<policy>"
-msgstr ""
-
-#: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
-msgid "enable configure <option> for build"
-msgstr ""
-
-#: ../rpmpopt:180 ../rpmpopt:183 ../rpmpopt:195 ../rpmpopt:198 ../rpmpopt:210
-#: ../rpmpopt:213
-msgid "<option>"
-msgstr ""
-
-#: ../rpmpopt:182 ../rpmpopt:197 ../rpmpopt:212
-msgid "disable configure <option> for build"
-msgstr ""
-
-#: ../rpmpopt:186 ../rpmpopt:201 ../rpmpopt:216 ../rpmpopt:224 ../rpmpopt:232
-#: ../rpmpopt:240 ../rpmpopt:248 ../rpmpopt:256 ../rpmpopt:264 ../rpmpopt:337
-#: ../rpmpopt:409 ../rpmpopt:417
-msgid "use database in DIRECTORY"
-msgstr ""
-
-#: ../rpmpopt:187 ../rpmpopt:202 ../rpmpopt:217 ../rpmpopt:225 ../rpmpopt:233
-#: ../rpmpopt:241 ../rpmpopt:249 ../rpmpopt:257 ../rpmpopt:265 ../rpmpopt:338
-#: ../rpmpopt:410 ../rpmpopt:418
-msgid "DIRECTORY"
 msgstr ""
 
 #, fuzzy

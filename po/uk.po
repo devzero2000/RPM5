@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-03 13:24-0500\n"
+"Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
+"POT-Creation-Date: 2006-12-09 13:13-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -28,7 +28,6 @@ msgstr "Неможливо відкрити файл специфікацій: %
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Помилка при відкриванні каналу до tar файлу: %m\n"
 
-#. Give up
 #: build.c:164
 #, c-format
 msgid "Failed to read spec file from %s\n"
@@ -54,13 +53,11 @@ msgstr "Файл %s не є звичайним файлом.\n"
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Файл %s не схожий на файл специфікацій.\n"
 
-#. parse up the build operators
 #: build.c:319
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Цільова платформа: %s\n"
 
-#. Query spec for this target platform.
 #: build.c:334 build/spec.c:785
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
@@ -124,7 +121,6 @@ msgstr "Параметри встановлення/оновлення/вида�
 msgid "Common options for all rpm modes and executables:"
 msgstr "Загальні параметри для всіх режимів та компонентів rpm:"
 
-#. @-modfilesys -globs @
 #: rpmqv.c:143 lib/poptI.c:43
 #, c-format
 msgid "%s: %s\n"
@@ -372,7 +368,6 @@ msgstr "Неможливо відкрити тимчасовий файл.\n"
 msgid "Executing(%s): %s\n"
 msgstr "Виконується(%s): %s\n"
 
-#. @=boundsread@
 #: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
@@ -492,7 +487,6 @@ msgstr "Неправильні права на каталог: %s(%s)\n"
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Незвичайна довжина локалізації: \"%.*s\" у %%lang(%s)\n"
 
-#. @innercontinue@
 #: build/files.c:799
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
@@ -508,7 +502,6 @@ msgstr "Перевищено межу на %%docdir\n"
 msgid "Only one arg for %%docdir\n"
 msgstr "Лише один аргумент до %%docdir\n"
 
-#. We already got a file -- error
 #: build/files.c:971
 #, c-format
 msgid "Two files on one line: %s\n"
@@ -922,7 +915,6 @@ msgstr "рядок %d: Етикетка потребує лише одного �
 msgid "line %d: Malformed tag: %s\n"
 msgstr "рядок %d: Неправильний тег: %s\n"
 
-#. Empty field
 #: build/parsePreamble.c:497
 #, c-format
 msgid "line %d: Empty tag: %s\n"
@@ -1115,7 +1107,6 @@ msgstr "рядок %d: Помилка аналізу %%description: %s\n"
 msgid "line %d: %s\n"
 msgstr "рядок %d: %s\n"
 
-#. XXX Fstrerror
 #: build/parseSpec.c:254
 #, c-format
 msgid "Unable to open %s: %s\n"
@@ -1395,13 +1386,11 @@ msgstr "пакет %s вже добавлений, замінюється на %
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакет %s вже добавлений, замінюється на %s\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:371
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "жоден пакет не вимагає %s\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:441
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
@@ -1458,7 +1447,6 @@ msgstr "(db файли)"
 msgid "(db provides)"
 msgstr "(db постачає)"
 
-#. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:760
 msgid "(hint skipped)"
 msgstr ""
@@ -1473,12 +1461,10 @@ msgstr "ігноруються зв'язки між іменами пакеті�
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
-#. Record all relations.
 #: lib/depends.c:1608
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
-#. T4. Scan for zeroes.
 #: lib/depends.c:1729
 #, fuzzy
 msgid ""
@@ -1501,7 +1487,6 @@ msgstr "ЦИКЛ:\n"
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
-#. Return no. of packages that could not be ordered.
 #: lib/depends.c:1929
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
@@ -1955,7 +1940,6 @@ msgstr ""
 msgid "debug URL cache handling"
 msgstr "налагодження обробки URL кешу"
 
-#. @-nullpass@
 #: lib/poptALL.c:519
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -2561,7 +2545,6 @@ msgstr "%s помилка: %s\n"
 msgid "incorrect format: %s\n"
 msgstr "неправильний формат: %s\n"
 
-#. @-boundswrite@
 #: lib/query.c:194
 msgid "(contains no files)"
 msgstr "(не містить файлів)"
@@ -2838,13 +2821,11 @@ msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:1440
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
@@ -2864,13 +2845,11 @@ msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:3090
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:3102
 #, c-format
 msgid ""
@@ -2893,7 +2872,6 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#. @=branchstate@
 #: lib/rpmds.c:3293
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
@@ -2904,7 +2882,6 @@ msgstr "пакет %s має незадоволені %s: %s\n"
 msgid "\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 
-#. XXX this error message is probably not seen.
 #: lib/rpmfc.c:95
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
@@ -3000,7 +2977,6 @@ msgstr "неможливо відкрити %s: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
-#. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:755 lib/rpminstall.c:670 lib/rpminstall.c:855
 #: lib/rpminstall.c:1468 lib/transaction.c:1122
 msgid "Failed dependencies:\n"
@@ -3049,8 +3025,6 @@ msgstr "Додається ціль: %s\n"
 msgid "Retrieving %s\n"
 msgstr "Завантажується %s\n"
 
-#. XXX undefined %{name}/%{version}/%{release} here
-#. XXX %{_tmpdir} does not exist
 #: lib/rpminstall.c:453
 #, c-format
 msgid " ... as %s\n"
@@ -3144,8 +3118,6 @@ msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%0
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#. @innercontinue@
-#. XXX can't happen
 #: lib/rpminstall.c:1502
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
@@ -3156,7 +3128,16 @@ msgstr "Завантажується %s\n"
 msgid "read failed: %s (%d)\n"
 msgstr "помилка читання: %s (%d)\n"
 
-#. @observer@
+#: lib/rpmlock.c:144 lib/rpmlock.c:153
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "неможливо отримати %s блокування на %s/%s\n"
+
+#: lib/rpmlock.c:149
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr ""
+
 #: lib/rpmps.c:201
 msgid "different"
 msgstr "різних"
@@ -3271,7 +3252,6 @@ msgstr "Неповний рядок даних у %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Надто багато аргументів у типовому рядку %s:%d\n"
 
-#. XXX Feof(fd)
 #: lib/rpmrc.c:674
 #, c-format
 msgid "Failed to read %s: %s.\n"
@@ -3488,7 +3468,6 @@ msgstr "неправильний розмір загол.підпису(%d): з�
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Підпис: розмір(%d)+наповнювач(%d)\n"
 
-#. @=boundsread@
 #: lib/signature.c:468 lib/signature.c:595 lib/signature.c:904
 #: lib/signature.c:943
 #, c-format
@@ -3499,8 +3478,6 @@ msgstr "Неможливо виконати %s: %s\n"
 msgid "pgp failed\n"
 msgstr "помилка pgp\n"
 
-#. PGP failed to write signature
-#. Just in case
 #: lib/signature.c:491
 msgid "pgp failed to write signature\n"
 msgstr "pgp не вдається записати підпис\n"
@@ -3510,7 +3487,6 @@ msgstr "pgp не вдається записати підпис\n"
 msgid "PGP sig size: %d\n"
 msgstr "Розмір PGP підпису: %d\n"
 
-#. @=boundswrite@
 #: lib/signature.c:515 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "неможливо прочитати підпис\n"
@@ -3525,8 +3501,6 @@ msgstr "Отримано %d байт PGP підпису\n"
 msgid "gpg exec failed (%d)\n"
 msgstr "помилка запуску\n"
 
-#. GPG failed to write signature
-#. Just in case
 #: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "gpg не вдається записати підпис\n"
@@ -3541,11 +3515,6 @@ msgstr "Розмір GPG підпису: %d\n"
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Розмір GPG підпису: %d\n"
 
-#. @notreached@
-#. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3577,7 +3546,6 @@ msgstr "SHA1 контрольна сума заголовка: "
 msgid "Header "
 msgstr "Заголовок "
 
-#. @=branchstate@
 #: lib/signature.c:1294
 #, fuzzy
 msgid " signature: "
@@ -3603,7 +3571,6 @@ msgstr "Неправильна контрольна сума MD5: НЕ ПІДТ�
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Підпис: НЕВІДОМИЙ (%d)\n"
 
-#. @innercontinue@
 #: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
@@ -3650,7 +3617,6 @@ msgstr "видаляється каталог %s\n"
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
-#. Get the index of possible repackaged packages
 #: lib/transaction.c:1278
 #, c-format
 msgid "\tLooking for %s...\n"
@@ -3713,7 +3679,6 @@ msgstr ""
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#. Add the header as a pure erase element, no repackaged package.
 #: lib/transaction.c:1476
 msgid "\tAdded erase element.\n"
 msgstr ""
@@ -3752,13 +3717,6 @@ msgstr "помилка читання заголовка пакету\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#. ===============================================
-#. * For packages being installed:
-#. * - verify package epoch:version-release is newer.
-#. * - count files.
-#. * For packages being removed:
-#. * - count files.
-#.
 #: lib/transaction.c:1718
 #, c-format
 msgid "sanity checking %d elements\n"
@@ -3768,22 +3726,11 @@ msgstr "перевірка правильності %d елементів\n"
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
-#. ===============================================
-#. * Initialize transaction element file info for package:
-#.
-#.
-#. * FIXME?: we'd be better off assembling one very large file list and
-#. * calling fpLookupList only once. I'm not sure that the speedup is
-#. * worth the trouble though.
-#.
 #: lib/transaction.c:1867
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "обчислюються відбитки %d файлів\n"
 
-#. ===============================================
-#. * Compute file disposition for each package in transaction set.
-#.
 #: lib/transaction.c:1956
 msgid "computing file dispositions\n"
 msgstr "обчислюється розташування файлів\n"
@@ -3961,7 +3908,6 @@ msgstr "у виразі після \":\" очікувалась \"{\""
 msgid "| expected at end of expression"
 msgstr "наприкінці виразу очікувався символ \"|\""
 
-#. @=modobserver =observertrans@
 #: rpmdb/header.c:3182
 msgid "(index out of range)"
 msgstr "(індекси поза межами)"
@@ -4180,12 +4126,26 @@ msgstr "видаляється каталог %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "помилка видалення каталогу %s: %s\n"
 
+#: rpmdb/sqlite.c:664
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:824
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "закрито     індекс бази даних   %s/%s\n"
+
+#: rpmdb/sqlite.c:925
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "відкрито    індекс бази даних  %s/%s %s режим=0x%x\n"
+
 #: rpmio/macro.c:240
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "===================== активних %d порожніх %d\n"
 
-#. XXX just in case
 #: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
@@ -4265,7 +4225,6 @@ msgstr ""
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#. XXX Fstrerror
 #: rpmio/macro.c:2087 rpmio/macro.c:2093
 #, c-format
 msgid "File %s: %s\n"
@@ -4275,6 +4234,24 @@ msgstr "Файл %s: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Довжина файла %s менше за %u байт\n"
+
+#: rpmio/rpmdav.c:629
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:631
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:633
+#, fuzzy
+msgid "Server Error"
+msgstr "Помилка вводу/виводу сервера"
+
+#: rpmio/rpmdav.c:635
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(помилки немає)"
 
 #: rpmio/rpmio.c:716
 msgid "Success"
@@ -4337,21 +4314,42 @@ msgstr "триває реєстрація у %s як %s, пароль %s\n"
 msgid "(no error)"
 msgstr "(помилки немає)"
 
-#. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "фатальна помилка: "
 
-#. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "помилка: "
 
-#. !< RPMLOG_ERR
 #: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "попередження: "
+
+#: rpmio/rpmlua.c:486
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:504
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "- не підтримується для рядків\n"
+
+#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: помилка у Fwrite: %s\n"
+
+#: rpmio/rpmlua.c:523
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "неправильний номер пакету: %s\n"
+
+#: rpmio/rpmlua.c:676
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s помилка: %s\n"
 
 #: rpmio/rpmmalloc.c:15
 #, c-format
@@ -4493,95 +4491,71 @@ msgstr ""
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
 
-#: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
-msgid "list install/erase scriptlets from package(s)"
-msgstr "показати сценарії встановлення/видалення"
+#~ msgid "list install/erase scriptlets from package(s)"
+#~ msgstr "показати сценарії встановлення/видалення"
 
-#: ../rpmpopt:38
-msgid "set permissions of files in a package"
-msgstr "встановити права на файли пакета"
+#~ msgid "set permissions of files in a package"
+#~ msgstr "встановити права на файли пакета"
 
-#: ../rpmpopt:43
-msgid "set user/group ownership of files in a package"
-msgstr "встановити власника/групу на файли пакета"
+#~ msgid "set user/group ownership of files in a package"
+#~ msgstr "встановити власника/групу на файли пакета"
 
-#: ../rpmpopt:47 ../rpmpopt:294 ../rpmpopt:367
-msgid "list capabilities this package conflicts with"
-msgstr "вивести перелік залежностей, з якими конфліктує цей пакет"
+#~ msgid "list capabilities this package conflicts with"
+#~ msgstr "вивести перелік залежностей, з якими конфліктує цей пакет"
 
-#: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
-msgid "list other packages removed by installing this package"
-msgstr ""
-"вивести перелік пакетів, які було видалено при встановленні цього пакету"
+#~ msgid "list other packages removed by installing this package"
+#~ msgstr ""
+#~ "вивести перелік пакетів, які було видалено при встановленні цього пакету"
 
-#: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
-msgid "list capabilities that this package provides"
-msgstr "вивести залежності, які постачає цей пакет"
+#~ msgid "list capabilities that this package provides"
+#~ msgstr "вивести залежності, які постачає цей пакет"
 
-#: ../rpmpopt:57 ../rpmpopt:304 ../rpmpopt:377
-msgid "list capabilities required by package(s)"
-msgstr "вивести залежності, які потребує цей пакет"
+#~ msgid "list capabilities required by package(s)"
+#~ msgstr "вивести залежності, які потребує цей пакет"
 
-#: ../rpmpopt:71 ../rpmpopt:318 ../rpmpopt:390
-msgid "list descriptive information from package(s)"
-msgstr "вивести опис пакета(ів)"
+#~ msgid "list descriptive information from package(s)"
+#~ msgstr "вивести опис пакета(ів)"
 
-#: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
-msgid "list change logs for this package"
-msgstr "вивести журнал змін пакета"
+#~ msgid "list change logs for this package"
+#~ msgstr "вивести журнал змін пакета"
 
-#: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
-msgid "list trigger scriptlets from package(s)"
-msgstr "вивести сценарії тригерів пакета(ів)"
+#~ msgid "list trigger scriptlets from package(s)"
+#~ msgstr "вивести сценарії тригерів пакета(ів)"
 
-#: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
-msgid "list package(s) by install time, most recent first"
-msgstr "вивести пакети, сортувати за часом, починати зі встановлених останніми"
+#~ msgid "list package(s) by install time, most recent first"
+#~ msgstr ""
+#~ "вивести пакети, сортувати за часом, починати зі встановлених останніми"
 
-#: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
-msgid "list all files from each package"
-msgstr "вивести всі файли кожного пакета"
+#~ msgid "list all files from each package"
+#~ msgstr "вивести всі файли кожного пакета"
 
-#: ../rpmpopt:90 ../rpmpopt:93
-msgid ""
-"find package name that contains a provided capability (needs rpmdb-redhat "
-"package installed)"
-msgstr ""
-"знайти пакет, який постачає дану залежність (потребує встановлення пакету "
-"rpmdb-redhat)"
+#~ msgid ""
+#~ "find package name that contains a provided capability (needs rpmdb-redhat "
+#~ "package installed)"
+#~ msgstr ""
+#~ "знайти пакет, який постачає дану залежність (потребує встановлення пакету "
+#~ "rpmdb-redhat)"
 
-#: ../rpmpopt:103
-msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr "встановити правило для buildroot(наприклад: compress man pages)"
+#~ msgid "set buildroot <policy> (e.g. compress man pages)"
+#~ msgstr "встановити правило для buildroot(наприклад: compress man pages)"
 
-#: ../rpmpopt:104
-msgid "<policy>"
-msgstr "<правило>"
+#~ msgid "<policy>"
+#~ msgstr "<правило>"
 
-#: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
-msgid "enable configure <option> for build"
-msgstr "ввімкнути configure параметр <параметр> при збиранні"
+#~ msgid "enable configure <option> for build"
+#~ msgstr "ввімкнути configure параметр <параметр> при збиранні"
 
-#: ../rpmpopt:180 ../rpmpopt:183 ../rpmpopt:195 ../rpmpopt:198 ../rpmpopt:210
-#: ../rpmpopt:213
-msgid "<option>"
-msgstr "<параметр>"
+#~ msgid "<option>"
+#~ msgstr "<параметр>"
 
-#: ../rpmpopt:182 ../rpmpopt:197 ../rpmpopt:212
-msgid "disable configure <option> for build"
-msgstr "вимкнути configure параметр <параметр> при збиранні"
+#~ msgid "disable configure <option> for build"
+#~ msgstr "вимкнути configure параметр <параметр> при збиранні"
 
-#: ../rpmpopt:186 ../rpmpopt:201 ../rpmpopt:216 ../rpmpopt:224 ../rpmpopt:232
-#: ../rpmpopt:240 ../rpmpopt:248 ../rpmpopt:256 ../rpmpopt:264 ../rpmpopt:337
-#: ../rpmpopt:409 ../rpmpopt:417
-msgid "use database in DIRECTORY"
-msgstr "використовувати базу даних з КАТАЛОГУ"
+#~ msgid "use database in DIRECTORY"
+#~ msgstr "використовувати базу даних з КАТАЛОГУ"
 
-#: ../rpmpopt:187 ../rpmpopt:202 ../rpmpopt:217 ../rpmpopt:225 ../rpmpopt:233
-#: ../rpmpopt:241 ../rpmpopt:249 ../rpmpopt:257 ../rpmpopt:265 ../rpmpopt:338
-#: ../rpmpopt:410 ../rpmpopt:418
-msgid "DIRECTORY"
-msgstr "КАТАЛОГ"
+#~ msgid "DIRECTORY"
+#~ msgstr "КАТАЛОГ"
 
 #~ msgid "don't verify header+payload signature"
 #~ msgstr "не перевіряти підпис заголовка та вмісту"

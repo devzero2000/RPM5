@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-03 13:24-0500\n"
+"Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
+"POT-Creation-Date: 2006-12-09 13:13-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -26,7 +26,6 @@ msgstr "%s spec dosyasý açýlamadý: %s\n"
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar veriyolu açýlamadý: %m\n"
 
-#. Give up
 #: build.c:164
 #, c-format
 msgid "Failed to read spec file from %s\n"
@@ -52,13 +51,11 @@ msgstr "%s bir normal bir dosya deðil.\n"
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s bir spec dosyasý gibi görünmüyor.\n"
 
-#. parse up the build operators
 #: build.c:319
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Hedef platformlar derleniyor: %s\n"
 
-#. Query spec for this target platform.
 #: build.c:334 build/spec.c:785
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
@@ -122,7 +119,6 @@ msgstr "Kurma/Güncelleme/Kaldýrma seçenekleri:"
 msgid "Common options for all rpm modes and executables:"
 msgstr "Tüm rpm kipleri için ortak seçenekler:"
 
-#. @-modfilesys -globs @
 #: rpmqv.c:143 lib/poptI.c:43
 #, c-format
 msgid "%s: %s\n"
@@ -372,7 +368,6 @@ msgstr "Geçici dosya açýlamadý.\n"
 msgid "Executing(%s): %s\n"
 msgstr "%s icra ediliyor: %s\n"
 
-#. @=boundsread@
 #: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
@@ -492,7 +487,6 @@ msgstr "dirmode spec hatalý: %s(%s)\n"
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "yerel uzunluðu hatalý: \"%.*s\" (%%lang(%s))\n"
 
-#. @innercontinue@
 #: build/files.c:799
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
@@ -508,7 +502,6 @@ msgstr "%%docdir için hit sýnýrý\n"
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir için sadece tek argüman\n"
 
-#. We already got a file -- error
 #: build/files.c:971
 #, c-format
 msgid "Two files on one line: %s\n"
@@ -924,7 +917,6 @@ msgstr "satýr %d: Etiket sadece tek dizgecik alýr: %s\n"
 msgid "line %d: Malformed tag: %s\n"
 msgstr "satýr %d: Etiket bozuk: %s\n"
 
-#. Empty field
 #: build/parsePreamble.c:497
 #, c-format
 msgid "line %d: Empty tag: %s\n"
@@ -1117,7 +1109,6 @@ msgstr "satýr %d: %%description ayrýþtýrýlýrken hata: %s \n"
 msgid "line %d: %s\n"
 msgstr "satýr %d: %s\n"
 
-#. XXX Fstrerror
 #: build/parseSpec.c:254
 #, c-format
 msgid "Unable to open %s: %s\n"
@@ -1406,13 +1397,11 @@ msgstr "%s zaten kurulu"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s zaten kurulu"
 
-#. @-nullptrarith@
 #: lib/depends.c:371
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "%s gerektiren paket yok\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:441
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
@@ -1472,7 +1461,6 @@ msgstr "db dosyasý %s hatalý\n"
 msgid "(db provides)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:760
 msgid "(hint skipped)"
 msgstr ""
@@ -1487,12 +1475,10 @@ msgstr ""
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
-#. Record all relations.
 #: lib/depends.c:1608
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
-#. T4. Scan for zeroes.
 #: lib/depends.c:1729
 #, fuzzy
 msgid ""
@@ -1514,7 +1500,6 @@ msgstr "ÇEVRÝM:\n"
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
-#. Return no. of packages that could not be ordered.
 #: lib/depends.c:1929
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
@@ -1977,7 +1962,6 @@ msgstr ""
 msgid "debug URL cache handling"
 msgstr "URL arabellek kullanýmý hata kontrolu"
 
-#. @-nullpass@
 #: lib/poptALL.c:519
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -2605,7 +2589,6 @@ msgstr "%s baþarýsýz\n"
 msgid "incorrect format: %s\n"
 msgstr "biçem yanlýþ: %s\n"
 
-#. @-boundswrite@
 #: lib/query.c:194
 msgid "(contains no files)"
 msgstr "(hiç dosya içermiyor)"
@@ -2884,13 +2867,11 @@ msgstr ""
 "satýr %d: Baðýmlýlýk kýsaltmalarý bir alfanümerik, '_' veya '/' ile "
 "baþlamalý: %s\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:1440
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
@@ -2910,13 +2891,11 @@ msgstr ""
 "satýr %d: Baðýmlýlýk kýsaltmalarý bir alfanümerik, '_' veya '/' ile "
 "baþlamalý: %s\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:3090
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:3102
 #, c-format
 msgid ""
@@ -2938,7 +2917,6 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#. @=branchstate@
 #: lib/rpmds.c:3293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
@@ -2949,7 +2927,6 @@ msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 msgid "\texecv(%s) pid %d\n"
 msgstr ""
 
-#. XXX this error message is probably not seen.
 #: lib/rpmfc.c:95
 #, c-format
 msgid "Couldn't exec %s: %s\n"
@@ -3045,7 +3022,6 @@ msgstr "%s açýlamadý: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "bilinmeyen etiket"
 
-#. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:755 lib/rpminstall.c:670 lib/rpminstall.c:855
 #: lib/rpminstall.c:1468 lib/transaction.c:1122
 #, fuzzy
@@ -3098,8 +3074,6 @@ msgstr "%s aranýyor: (%s kullanarak)...\n"
 msgid "Retrieving %s\n"
 msgstr "%s alýnýyor\n"
 
-#. XXX undefined %{name}/%{version}/%{release} here
-#. XXX %{_tmpdir} does not exist
 #: lib/rpminstall.c:453
 #, c-format
 msgid " ... as %s\n"
@@ -3193,8 +3167,6 @@ msgstr ""
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#. @innercontinue@
-#. XXX can't happen
 #: lib/rpminstall.c:1502
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
@@ -3205,7 +3177,16 @@ msgstr "%s alýnýyor\n"
 msgid "read failed: %s (%d)\n"
 msgstr "okuma baþarýsýz: %s (%d)\n"
 
-#. @observer@
+#: lib/rpmlock.c:144 lib/rpmlock.c:153
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "%s kilit  %s/%s'den alýnamadý\n"
+
+#: lib/rpmlock.c:149
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr ""
+
 #: lib/rpmps.c:201
 msgid "different"
 msgstr ""
@@ -3320,7 +3301,6 @@ msgstr "%s:%d - öntanýmlý satýr tamamlanmamýþ\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "%s:%d - öntanýmlý satýrda çok fazla argüman\n"
 
-#. XXX Feof(fd)
 #: lib/rpmrc.c:674
 #, c-format
 msgid "Failed to read %s: %s.\n"
@@ -3535,7 +3515,6 @@ msgstr ""
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
 
-#. @=boundsread@
 #: lib/signature.c:468 lib/signature.c:595 lib/signature.c:904
 #: lib/signature.c:943
 #, fuzzy, c-format
@@ -3546,8 +3525,6 @@ msgstr "%s icra edilemedi: %s\n"
 msgid "pgp failed\n"
 msgstr "pgp hata verdi\n"
 
-#. PGP failed to write signature
-#. Just in case
 #: lib/signature.c:491
 msgid "pgp failed to write signature\n"
 msgstr "pgp imzasýnýn yazýlmasý baþarýsýz\n"
@@ -3557,7 +3534,6 @@ msgstr "pgp imzasýnýn yazýlmasý baþarýsýz\n"
 msgid "PGP sig size: %d\n"
 msgstr "PGP imza uzunluðu: %d\n"
 
-#. @=boundswrite@
 #: lib/signature.c:515 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "imza okunamadý\n"
@@ -3572,8 +3548,6 @@ msgstr "GPG imzasýnýn %d baytý alýndý\n"
 msgid "gpg exec failed (%d)\n"
 msgstr "icra baþarýsýz\n"
 
-#. GPG failed to write signature
-#. Just in case
 #: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "imzanýn yazýlmasý sýrasýnda gpg hata verdi\n"
@@ -3588,11 +3562,6 @@ msgstr "GPG imza uzunluðu: %d\n"
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG imzasýnýn %d baytý alýndý\n"
 
-#. @notreached@
-#. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3626,7 +3595,6 @@ msgstr "Baþlýk SHA1 özümlemesi doðrulanmaz"
 msgid "Header "
 msgstr ""
 
-#. @=branchstate@
 #: lib/signature.c:1294
 #, fuzzy
 msgid " signature: "
@@ -3652,7 +3620,6 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
 
-#. @innercontinue@
 #: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
@@ -3699,7 +3666,6 @@ msgstr "%s dizini siliniyor\n"
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
-#. Get the index of possible repackaged packages
 #: lib/transaction.c:1278
 #, c-format
 msgid "\tLooking for %s...\n"
@@ -3762,7 +3728,6 @@ msgstr ""
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "<kaynak paketi>"
 
-#. Add the header as a pure erase element, no repackaged package.
 #: lib/transaction.c:1476
 msgid "\tAdded erase element.\n"
 msgstr ""
@@ -3801,13 +3766,6 @@ msgstr "paketten baþlýk okunmasý sýrasýnda hata oluþtu\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#. ===============================================
-#. * For packages being installed:
-#. * - verify package epoch:version-release is newer.
-#. * - count files.
-#. * For packages being removed:
-#. * - count files.
-#.
 #: lib/transaction.c:1718
 #, c-format
 msgid "sanity checking %d elements\n"
@@ -3817,22 +3775,11 @@ msgstr ""
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
-#. ===============================================
-#. * Initialize transaction element file info for package:
-#.
-#.
-#. * FIXME?: we'd be better off assembling one very large file list and
-#. * calling fpLookupList only once. I'm not sure that the speedup is
-#. * worth the trouble though.
-#.
 #: lib/transaction.c:1867
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
 
-#. ===============================================
-#. * Compute file disposition for each package in transaction set.
-#.
 #: lib/transaction.c:1956
 msgid "computing file dispositions\n"
 msgstr ""
@@ -4007,7 +3954,6 @@ msgstr "ifade içersinde : den sonra { gerekli"
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
-#. @=modobserver =observertrans@
 #: rpmdb/header.c:3182
 msgid "(index out of range)"
 msgstr ""
@@ -4228,12 +4174,26 @@ msgstr "%s dizini siliniyor\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s dizininin silinmesi baþarýsýz: %s\n"
 
+#: rpmdb/sqlite.c:664
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:824
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "kapanan db dosyasý     %s\n"
+
+#: rpmdb/sqlite.c:925
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
+
 #: rpmio/macro.c:240
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d etkin %d boþ\n"
 
-#. XXX just in case
 #: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
@@ -4313,7 +4273,6 @@ msgstr ""
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#. XXX Fstrerror
 #: rpmio/macro.c:2087 rpmio/macro.c:2093
 #, c-format
 msgid "File %s: %s\n"
@@ -4323,6 +4282,24 @@ msgstr "%s dosyasý: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
+
+#: rpmio/rpmdav.c:629
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:631
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:633
+#, fuzzy
+msgid "Server Error"
+msgstr "Sunucu G/Ç hatasý"
+
+#: rpmio/rpmdav.c:635
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(hata yok)"
 
 #: rpmio/rpmio.c:716
 msgid "Success"
@@ -4385,21 +4362,42 @@ msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"
 msgid "(no error)"
 msgstr "(hata yok)"
 
-#. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "ölümcül hata: "
 
-#. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "hata: "
 
-#. !< RPMLOG_ERR
 #: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "uyarý: "
+
+#: rpmio/rpmlua.c:486
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:504
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "- dizgelerde desteklenmez\n"
+
+#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Fwrite baþarýsýz: %s\n"
+
+#: rpmio/rpmlua.c:523
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "geçersiz paket numarasý: %s\n"
+
+#: rpmio/rpmlua.c:676
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s baþarýsýz\n"
 
 #: rpmio/rpmmalloc.c:15
 #, c-format
@@ -4539,93 +4537,6 @@ msgstr ""
 
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
-msgstr ""
-
-#: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
-msgid "list install/erase scriptlets from package(s)"
-msgstr ""
-
-#: ../rpmpopt:38
-msgid "set permissions of files in a package"
-msgstr ""
-
-#: ../rpmpopt:43
-msgid "set user/group ownership of files in a package"
-msgstr ""
-
-#: ../rpmpopt:47 ../rpmpopt:294 ../rpmpopt:367
-msgid "list capabilities this package conflicts with"
-msgstr ""
-
-#: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
-msgid "list other packages removed by installing this package"
-msgstr ""
-
-#: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
-msgid "list capabilities that this package provides"
-msgstr ""
-
-#: ../rpmpopt:57 ../rpmpopt:304 ../rpmpopt:377
-msgid "list capabilities required by package(s)"
-msgstr ""
-
-#: ../rpmpopt:71 ../rpmpopt:318 ../rpmpopt:390
-msgid "list descriptive information from package(s)"
-msgstr ""
-
-#: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
-msgid "list change logs for this package"
-msgstr ""
-
-#: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
-msgid "list trigger scriptlets from package(s)"
-msgstr ""
-
-#: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
-msgid "list package(s) by install time, most recent first"
-msgstr ""
-
-#: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
-msgid "list all files from each package"
-msgstr ""
-
-#: ../rpmpopt:90 ../rpmpopt:93
-msgid ""
-"find package name that contains a provided capability (needs rpmdb-redhat "
-"package installed)"
-msgstr ""
-
-#: ../rpmpopt:103
-msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr ""
-
-#: ../rpmpopt:104
-msgid "<policy>"
-msgstr ""
-
-#: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
-msgid "enable configure <option> for build"
-msgstr ""
-
-#: ../rpmpopt:180 ../rpmpopt:183 ../rpmpopt:195 ../rpmpopt:198 ../rpmpopt:210
-#: ../rpmpopt:213
-msgid "<option>"
-msgstr ""
-
-#: ../rpmpopt:182 ../rpmpopt:197 ../rpmpopt:212
-msgid "disable configure <option> for build"
-msgstr ""
-
-#: ../rpmpopt:186 ../rpmpopt:201 ../rpmpopt:216 ../rpmpopt:224 ../rpmpopt:232
-#: ../rpmpopt:240 ../rpmpopt:248 ../rpmpopt:256 ../rpmpopt:264 ../rpmpopt:337
-#: ../rpmpopt:409 ../rpmpopt:417
-msgid "use database in DIRECTORY"
-msgstr ""
-
-#: ../rpmpopt:187 ../rpmpopt:202 ../rpmpopt:217 ../rpmpopt:225 ../rpmpopt:233
-#: ../rpmpopt:241 ../rpmpopt:249 ../rpmpopt:257 ../rpmpopt:265 ../rpmpopt:338
-#: ../rpmpopt:410 ../rpmpopt:418
-msgid "DIRECTORY"
 msgstr ""
 
 #, fuzzy
@@ -5462,9 +5373,6 @@ msgstr ""
 
 #~ msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
 #~ msgstr "%d(0x%08x) göreli konumunda kopan zincir yeniden baðlanýyor.\n"
-
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "kapanan db dosyasý     %s\n"
 
 #~ msgid "removed db file        %s\n"
 #~ msgstr "silinen db dosyasý     %s\n"

@@ -12,8 +12,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-03 13:24-0500\n"
+"Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
+"POT-Creation-Date: 2006-12-09 13:13-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -36,7 +36,6 @@ msgstr "spec ファイル %s をオープンできません: %s\n"
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar パイプのオープンに失敗しました: %m\n"
 
-#. Give up
 #: build.c:164
 #, c-format
 msgid "Failed to read spec file from %s\n"
@@ -62,13 +61,11 @@ msgstr "%s は通常ファイルではありません。\n"
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は spec ファイルではないようです。\n"
 
-#. parse up the build operators
 #: build.c:319
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
 
-#. Query spec for this target platform.
 #: build.c:334 build/spec.c:785
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
@@ -129,7 +126,6 @@ msgstr "インストール/アップグレード/アンインストールオプション:"
 msgid "Common options for all rpm modes and executables:"
 msgstr "全モード・コマンドで共通のオプション:"
 
-#. @-modfilesys -globs @
 #: rpmqv.c:143 lib/poptI.c:43
 #, c-format
 msgid "%s: %s\n"
@@ -374,7 +370,6 @@ msgstr "一時ファイルをオープンできません。\n"
 msgid "Executing(%s): %s\n"
 msgstr "実行中(%s): %s\n"
 
-#. @=boundsread@
 #: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
@@ -494,7 +489,6 @@ msgstr "不正なディレクトリモード指定: %s(%s)\n"
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "異常なロケール長: \"%.*s (%%lang(%s))\"\n"
 
-#. @innercontinue@
 #: build/files.c:799
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
@@ -510,7 +504,6 @@ msgstr "%%docdir の限界に達しました。\n"
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir の引数は 1 つのみです\n"
 
-#. We already got a file -- error
 #: build/files.c:971
 #, c-format
 msgid "Two files on one line: %s\n"
@@ -924,7 +917,6 @@ msgstr "%d 行目: タグはトークンを 1つしかとりません: %s\n"
 msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 行目: 不完全な形のタグ: %s\n"
 
-#. Empty field
 #: build/parsePreamble.c:497
 #, c-format
 msgid "line %d: Empty tag: %s\n"
@@ -1116,7 +1108,6 @@ msgstr "%d 行目: 未サポートの内部スクリプト: %s\n"
 msgid "line %d: %s\n"
 msgstr "%d 行目: %s\n"
 
-#. XXX Fstrerror
 #: build/parseSpec.c:254
 #, c-format
 msgid "Unable to open %s: %s\n"
@@ -1388,13 +1379,11 @@ msgstr "パッケージ %s は既に追加されています。%s を飛ばします。\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "パッケージ %s は既に追加されています。 %s と置換します。\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:371
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "%s を必要とするパッケージは存在しません。\n"
 
-#. @-nullptrarith@
 #: lib/depends.c:441
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
@@ -1451,7 +1440,6 @@ msgstr "(files データベース)"
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#. dependency is unsatisfied, but just a hint.
 #: lib/depends.c:760
 msgid "(hint skipped)"
 msgstr ""
@@ -1466,12 +1454,10 @@ msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#. Record all relations.
 #: lib/depends.c:1608
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
-#. T4. Scan for zeroes.
 #: lib/depends.c:1729
 #, fuzzy
 msgid ""
@@ -1494,7 +1480,6 @@ msgstr "ループ:\n"
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
-#. Return no. of packages that could not be ordered.
 #: lib/depends.c:1929
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
@@ -1944,7 +1929,6 @@ msgstr "argv 収集のデバッグ"
 msgid "debug URL cache handling"
 msgstr "URL キャッシュハンドリングのデバッグ"
 
-#. @-nullpass@
 #: lib/poptALL.c:519
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -2545,7 +2529,6 @@ msgstr "%s: 失敗: %s\n"
 msgid "incorrect format: %s\n"
 msgstr "不正なフォーマット: %s\n"
 
-#. @-boundswrite@
 #: lib/query.c:194
 msgid "(contains no files)"
 msgstr "(ファイルが含まれていません)"
@@ -2822,13 +2805,11 @@ msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:1440
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:1450
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
@@ -2847,13 +2828,11 @@ msgid ""
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
-#. XXX No comparison operator found.
 #: lib/rpmds.c:3090
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#. XXX No EVR comparison value found.
 #: lib/rpmds.c:3102
 #, c-format
 msgid ""
@@ -2875,7 +2854,6 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#. @=branchstate@
 #: lib/rpmds.c:3293
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
@@ -2886,7 +2864,6 @@ msgstr "パッケージ %s は %s を満たしません: %s\n"
 msgid "\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 
-#. XXX this error message is probably not seen.
 #: lib/rpmfc.c:95
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
@@ -2982,7 +2959,6 @@ msgstr "%s のオープンに失敗: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明なタグ: \"%s\"\n"
 
-#. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:755 lib/rpminstall.c:670 lib/rpminstall.c:855
 #: lib/rpminstall.c:1468 lib/transaction.c:1122
 msgid "Failed dependencies:\n"
@@ -3031,8 +3007,6 @@ msgstr "目標を追加: %s\n"
 msgid "Retrieving %s\n"
 msgstr "%s を取得中\n"
 
-#. XXX undefined %{name}/%{version}/%{release} here
-#. XXX %{_tmpdir} does not exist
 #: lib/rpminstall.c:453
 #, c-format
 msgid " ... as %s\n"
@@ -3127,8 +3101,6 @@ msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 msgid "Cleaning up repackaged packages:\n"
 msgstr "再パッケージされたパッケージを削除中:\n"
 
-#. @innercontinue@
-#. XXX can't happen
 #: lib/rpminstall.c:1502
 #, c-format
 msgid "\tRemoving %s:\n"
@@ -3139,7 +3111,16 @@ msgstr "\t%s を削除中:\n"
 msgid "read failed: %s (%d)\n"
 msgstr "読み込みの失敗: %s (%d)\n"
 
-#. @observer@
+#: lib/rpmlock.c:144 lib/rpmlock.c:153
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "トランザクションセットの作成"
+
+#: lib/rpmlock.c:149
+#, fuzzy, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr "トランザクションスコアボードを作成中(%p, %p)\n"
+
 #: lib/rpmps.c:201
 msgid "different"
 msgstr "異なる"
@@ -3262,7 +3243,6 @@ msgstr "%s:%d で不完全なデフォルト行\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "%s:%d でデフォルト行に引数が多すぎます\n"
 
-#. XXX Feof(fd)
 #: lib/rpmrc.c:674
 #, c-format
 msgid "Failed to read %s: %s.\n"
@@ -3476,7 +3456,6 @@ msgstr "署名のサイズ(%d): 不正、fstat(2) に失敗しました。\n"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名: size(%d)+pad(%d)\n"
 
-#. @=boundsread@
 #: lib/signature.c:468 lib/signature.c:595 lib/signature.c:904
 #: lib/signature.c:943
 #, c-format
@@ -3487,8 +3466,6 @@ msgstr "%s を実行できませんでした: %s\n"
 msgid "pgp failed\n"
 msgstr "pgp 失敗\n"
 
-#. PGP failed to write signature
-#. Just in case
 #: lib/signature.c:491
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました。\n"
@@ -3498,7 +3475,6 @@ msgstr "pgp が署名を書き込むのに失敗しました。\n"
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %d\n"
 
-#. @=boundswrite@
 #: lib/signature.c:515 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "署名を読み込めませんでした。\n"
@@ -3513,8 +3489,6 @@ msgstr "PGP 署名の %d バイトを取得\n"
 msgid "gpg exec failed (%d)\n"
 msgstr "実行失敗\n"
 
-#. GPG failed to write signature
-#. Just in case
 #: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました。\n"
@@ -3529,11 +3503,6 @@ msgstr "GPG 署名サイズ: %d\n"
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
-#. @notreached@
-#. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
 #: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
@@ -3565,7 +3534,6 @@ msgstr "ヘッダ SHA1 ダイジェスト: "
 msgid "Header "
 msgstr "ヘッダ "
 
-#. @=branchstate@
 #: lib/signature.c:1294
 #, fuzzy
 msgid " signature: "
@@ -3591,7 +3559,6 @@ msgstr "MD5 ダイジェストが破損: サポートされていません。\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名: 未知(%d)\n"
 
-#. @innercontinue@
 #: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
@@ -3639,7 +3606,6 @@ msgstr "ディレクトリの削除: %s\n"
 msgid "Getting repackaged header from transaction element\n"
 msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
 
-#. Get the index of possible repackaged packages
 #: lib/transaction.c:1278
 #, c-format
 msgid "\tLooking for %s...\n"
@@ -3700,7 +3666,6 @@ msgstr "自動ロールバックトランザクションのヘッダを取得できませんでした。\n"
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\t再パッケージされたパッケージヘッダを追加しました: %s.\n"
 
-#. Add the header as a pure erase element, no repackaged package.
 #: lib/transaction.c:1476
 msgid "\tAdded erase element.\n"
 msgstr "\t削除要素を追加しました。\n"
@@ -3741,13 +3706,6 @@ msgstr "再パッケージされたパッケージの読み込みに失敗しました!\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
 
-#. ===============================================
-#. * For packages being installed:
-#. * - verify package epoch:version-release is newer.
-#. * - count files.
-#. * For packages being removed:
-#. * - count files.
-#.
 #: lib/transaction.c:1718
 #, c-format
 msgid "sanity checking %d elements\n"
@@ -3757,22 +3715,11 @@ msgstr "%d 個の要素の健全性チェック中\n"
 msgid "running pre-transaction scripts\n"
 msgstr "トランザクション前のスクリプトを実行中\n"
 
-#. ===============================================
-#. * Initialize transaction element file info for package:
-#.
-#.
-#. * FIXME?: we'd be better off assembling one very large file list and
-#. * calling fpLookupList only once. I'm not sure that the speedup is
-#. * worth the trouble though.
-#.
 #: lib/transaction.c:1867
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "%d ファイルの指紋を計算しています。\n"
 
-#. ===============================================
-#. * Compute file disposition for each package in transaction set.
-#.
 #: lib/transaction.c:1956
 msgid "computing file dispositions\n"
 msgstr "ファイルの性質を計算しています。\n"
@@ -3949,7 +3896,6 @@ msgstr "式中で : の後に { が期待されます。"
 msgid "| expected at end of expression"
 msgstr "式の終わりに | が期待されます。"
 
-#. @=modobserver =observertrans@
 #: rpmdb/header.c:3182
 msgid "(index out of range)"
 msgstr "(インデックスが範囲外)"
@@ -4170,12 +4116,26 @@ msgstr "ディレクトリの削除: %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
 
+#: rpmdb/sqlite.c:664
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:824
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "データベースインデックス %s/%s を閉じました\n"
+
+#: rpmdb/sqlite.c:925
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "データベースインデックス %s/%s をオープンします %s (mode=0x%x)\n"
+
 #: rpmio/macro.c:240
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 有効 %d 空 %d\n"
 
-#. XXX just in case
 #: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
@@ -4255,7 +4215,6 @@ msgstr ""
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#. XXX Fstrerror
 #: rpmio/macro.c:2087 rpmio/macro.c:2093
 #, c-format
 msgid "File %s: %s\n"
@@ -4265,6 +4224,24 @@ msgstr "ファイル %s: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
+
+#: rpmio/rpmdav.c:629
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:631
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:633
+#, fuzzy
+msgid "Server Error"
+msgstr "サーバ I/O エラーです。"
+
+#: rpmio/rpmdav.c:635
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(エラーなし)"
 
 #: rpmio/rpmio.c:716
 msgid "Success"
@@ -4327,21 +4304,42 @@ msgstr "%s に %s (パスワード %s) でログイン中\n"
 msgid "(no error)"
 msgstr "(エラーなし)"
 
-#. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "致命的なエラー: "
 
-#. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "エラー: "
 
-#. !< RPMLOG_ERR
 #: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "警告: "
+
+#: rpmio/rpmlua.c:486
+#, fuzzy, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr "旧来の構文はサポートされません: %s\n"
+
+#: rpmio/rpmlua.c:504
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "旧来の構文はサポートされません: %s\n"
+
+#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Fwrite に失敗しました: %s\n"
+
+#: rpmio/rpmlua.c:523
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "無効なパッケージ番号: %s\n"
+
+#: rpmio/rpmlua.c:676
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s: 失敗: %s\n"
 
 #: rpmio/rpmmalloc.c:15
 #, c-format
@@ -4484,95 +4482,71 @@ msgstr ""
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
 
-#: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
-msgid "list install/erase scriptlets from package(s)"
-msgstr "パッケージに含まれるインストール/削除スクリプトを表示します。"
+#~ msgid "list install/erase scriptlets from package(s)"
+#~ msgstr "パッケージに含まれるインストール/削除スクリプトを表示します。"
 
-#: ../rpmpopt:38
-msgid "set permissions of files in a package"
-msgstr "パッケージ中のファイルのパーミッションを設定します。"
+#~ msgid "set permissions of files in a package"
+#~ msgstr "パッケージ中のファイルのパーミッションを設定します。"
 
-#: ../rpmpopt:43
-msgid "set user/group ownership of files in a package"
-msgstr "パッケージ中のファイルのユーザ/グループ所有者権を設定します。"
+#~ msgid "set user/group ownership of files in a package"
+#~ msgstr "パッケージ中のファイルのユーザ/グループ所有者権を設定します。"
 
-#: ../rpmpopt:47 ../rpmpopt:294 ../rpmpopt:367
-msgid "list capabilities this package conflicts with"
-msgstr "このパッケージと競合する機能を表示します。"
+#~ msgid "list capabilities this package conflicts with"
+#~ msgstr "このパッケージと競合する機能を表示します。"
 
-#: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
-msgid "list other packages removed by installing this package"
-msgstr ""
-"このパッケージをインストールすることにより削除されるパッケージを表示します。"
+#~ msgid "list other packages removed by installing this package"
+#~ msgstr ""
+#~ "このパッケージをインストールすることにより削除されるパッケージを表示しま"
+#~ "す。"
 
-#: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
-msgid "list capabilities that this package provides"
-msgstr "このパッケージが提供する機能を表示します。"
+#~ msgid "list capabilities that this package provides"
+#~ msgstr "このパッケージが提供する機能を表示します。"
 
-#: ../rpmpopt:57 ../rpmpopt:304 ../rpmpopt:377
-msgid "list capabilities required by package(s)"
-msgstr "パッケージに必要な機能を表示します。"
+#~ msgid "list capabilities required by package(s)"
+#~ msgstr "パッケージに必要な機能を表示します。"
 
-#: ../rpmpopt:71 ../rpmpopt:318 ../rpmpopt:390
-msgid "list descriptive information from package(s)"
-msgstr "パッケージの情報を表示します。"
+#~ msgid "list descriptive information from package(s)"
+#~ msgstr "パッケージの情報を表示します。"
 
-#: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
-msgid "list change logs for this package"
-msgstr "このパッケージの変更ログを一覧表示します。"
+#~ msgid "list change logs for this package"
+#~ msgstr "このパッケージの変更ログを一覧表示します。"
 
-#: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
-msgid "list trigger scriptlets from package(s)"
-msgstr "パッケージに含まれるトリガースクリプトを表示します。"
+#~ msgid "list trigger scriptlets from package(s)"
+#~ msgstr "パッケージに含まれるトリガースクリプトを表示します。"
 
-#: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
-msgid "list package(s) by install time, most recent first"
-msgstr "インストール時刻が新しいものから順にパッケージを表示します。"
+#~ msgid "list package(s) by install time, most recent first"
+#~ msgstr "インストール時刻が新しいものから順にパッケージを表示します。"
 
-#: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
-msgid "list all files from each package"
-msgstr "パッケージ中の全ファイルを列挙します。"
+#~ msgid "list all files from each package"
+#~ msgstr "パッケージ中の全ファイルを列挙します。"
 
-#: ../rpmpopt:90 ../rpmpopt:93
-msgid ""
-"find package name that contains a provided capability (needs rpmdb-redhat "
-"package installed)"
-msgstr ""
-"指定された機能を含むパッケージ名を検索します (rpmdb-redhat パッケージがインス"
-"トールされている必要があります)"
+#~ msgid ""
+#~ "find package name that contains a provided capability (needs rpmdb-redhat "
+#~ "package installed)"
+#~ msgstr ""
+#~ "指定された機能を含むパッケージ名を検索します (rpmdb-redhat パッケージがイ"
+#~ "ンストールされている必要があります)"
 
-#: ../rpmpopt:103
-msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr "buildroot <policy>設定 (例えば man ページの圧縮)"
+#~ msgid "set buildroot <policy> (e.g. compress man pages)"
+#~ msgstr "buildroot <policy>設定 (例えば man ページの圧縮)"
 
-#: ../rpmpopt:104
-msgid "<policy>"
-msgstr "<policy>"
+#~ msgid "<policy>"
+#~ msgstr "<policy>"
 
-#: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
-msgid "enable configure <option> for build"
-msgstr "ビルドのための設定 <option> を有効にします。"
+#~ msgid "enable configure <option> for build"
+#~ msgstr "ビルドのための設定 <option> を有効にします。"
 
-#: ../rpmpopt:180 ../rpmpopt:183 ../rpmpopt:195 ../rpmpopt:198 ../rpmpopt:210
-#: ../rpmpopt:213
-msgid "<option>"
-msgstr "<option>"
+#~ msgid "<option>"
+#~ msgstr "<option>"
 
-#: ../rpmpopt:182 ../rpmpopt:197 ../rpmpopt:212
-msgid "disable configure <option> for build"
-msgstr "ビルドのための設定 <option> を無効にします。"
+#~ msgid "disable configure <option> for build"
+#~ msgstr "ビルドのための設定 <option> を無効にします。"
 
-#: ../rpmpopt:186 ../rpmpopt:201 ../rpmpopt:216 ../rpmpopt:224 ../rpmpopt:232
-#: ../rpmpopt:240 ../rpmpopt:248 ../rpmpopt:256 ../rpmpopt:264 ../rpmpopt:337
-#: ../rpmpopt:409 ../rpmpopt:417
-msgid "use database in DIRECTORY"
-msgstr "DIRECTORY のデータベースを使用"
+#~ msgid "use database in DIRECTORY"
+#~ msgstr "DIRECTORY のデータベースを使用"
 
-#: ../rpmpopt:187 ../rpmpopt:202 ../rpmpopt:217 ../rpmpopt:225 ../rpmpopt:233
-#: ../rpmpopt:241 ../rpmpopt:249 ../rpmpopt:257 ../rpmpopt:265 ../rpmpopt:338
-#: ../rpmpopt:410 ../rpmpopt:418
-msgid "DIRECTORY"
-msgstr "DIRECTORY"
+#~ msgid "DIRECTORY"
+#~ msgstr "DIRECTORY"
 
 #~ msgid "Creating rollback transaction to achieve goal\n"
 #~ msgstr ""
@@ -4680,9 +4654,6 @@ msgstr "DIRECTORY"
 #, fuzzy
 #~ msgid "Could not acquire transaction score entry for %s\n"
 #~ msgstr "%s のトランザクションスコアのエントリーを取得できませんでした。\n"
-
-#~ msgid "Creating transaction score board(%p, %p)\n"
-#~ msgstr "トランザクションスコアボードを作成中(%p, %p)\n"
 
 #~ msgid "\tScore board address:  %p\n"
 #~ msgstr "\tスコアボードのアドレス:  %p\n"

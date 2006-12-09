@@ -23,7 +23,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: @VERSION@
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
 License: LGPL
@@ -445,6 +445,8 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/perldeps.pl
 %rpmattr	%{__prefix}/lib/rpm/perl.prov
 %rpmattr	%{__prefix}/lib/rpm/perl.req
+%rpmattr	%{__prefix}/lib/rpm/php.prov
+%rpmattr	%{__prefix}/lib/rpm/php.req
 %rpmattr	%{__prefix}/lib/rpm/pkgconfigdeps.sh
 %rpmattr	%{__prefix}/lib/rpm/pythondeps.sh
 %rpmattr	%{__prefix}/lib/rpm/rpmdeps
@@ -545,6 +547,11 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sat Dec  9 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.5
+- make peace with gettext-0.16.
+- make peace with python-2.5.
+- python: toy methods for rpmsqCaught and rpmdbCheckSignals.
+
 * Sun Dec  3 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.4
 - display arch in file conflicts.
 - make peace with autoconf-2.60 and automake-1.10.
