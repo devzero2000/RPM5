@@ -1274,11 +1274,12 @@ static inline unsigned char nibble(char c)
     if (hge((_h), (_tag), NULL, (void **) &(_data), NULL)) \
 	_data = xstrdup(_data)
 
-rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int flags)
 {
+    HFD_t hfd = headerFreeData;
+    int scareMem = (flags & 0x1);
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
-    HFD_t hfd = headerFreeData;
     rpmte p;
     rpmfi fi = NULL;
     const char * Type;
@@ -1289,6 +1290,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     int xx;
     int i;
 
+assert(scareMem == 0);		/* XXX always allocate memory */
     if (tagN == RPMTAG_BASENAMES) {
 	Type = "Files";
     } else {

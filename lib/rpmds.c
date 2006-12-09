@@ -196,6 +196,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
     rpmTagType Nt;
     int_32 Count;
 
+assert(scareMem == 0);		/* XXX always allocate memory */
     if (tagN == RPMTAG_PROVIDENAME) {
 	Type = "Provides";
 	tagEVR = RPMTAG_PROVIDEVERSION;

@@ -54,6 +54,7 @@
 	- make peace with gettext-0.16.
 	- make peace with python-2.5.
 	- python: toy methods for rpmsqCaught and rpmdbCheckSignals.
+	- always use scareMem = 0, add assertions to prevent abuse.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

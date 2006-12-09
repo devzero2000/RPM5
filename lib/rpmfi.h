@@ -545,15 +545,14 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 
 /**
  * Create and load a file info set.
- * @deprecated Only scareMem = 0 will be permitted.
  * @param ts		transaction set (NULL skips path relocation)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
- * @param scareMem	Use pointers to refcounted header memory?
+ * @param flags		scareMem(0x1), nofilter(0x2)
  * @return		new file info set
  */
 /*@null@*/
-rpmfi rpmfiNew(/*@null@*/ const rpmts ts, Header h, rpmTag tagN, int scareMem)
+rpmfi rpmfiNew(/*@null@*/ const rpmts ts, Header h, rpmTag tagN, int flags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
 

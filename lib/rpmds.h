@@ -130,8 +130,6 @@ rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
 	/*@modifies ds@*/;
 /**
  * Create and load a dependency set.
- * @deprecated Only scareMem = 0 will be permitted.
- * @deprecated Only nofilter = 0 will be permitted.
  * @param h		header
  * @param tagN		type of dependency
  * @param flags		scareMem(0x1), nofilter(0x2)

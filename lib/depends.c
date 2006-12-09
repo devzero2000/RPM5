@@ -1012,7 +1012,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmdepFlags depFlags = rpmtsDFlags(ts);
-    int scareMem = 1;
+    int scareMem = 0;
     Header h;
     int ec = 0;
 

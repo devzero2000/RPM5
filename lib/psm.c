@@ -86,7 +86,8 @@ int rpmVersionCompare(Header first, Header second)
  */
 /*@observer@*/ /*@unchecked@*/
 static struct tagMacro {
-/*@observer@*/ /*@null@*/ const char *	macroname; /*!< Macro name to define. */
+/*@observer@*/ /*@null@*/
+    const char *macroname;	/*!< Macro name to define. */
     rpmTag	tag;		/*!< Header tag to use for value. */
 } tagMacros[] = {
     { "name",		RPMTAG_NAME },
@@ -228,7 +229,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		const char ** specFilePtr, const char ** cookie)
 {
-    int scareMem = 1;
+    int scareMem = 0;
     rpmfi fi = NULL;
     const char * _sourcedir = NULL;
     const char * _specdir = NULL;
@@ -1073,7 +1074,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int scareMem = 1;
+    int scareMem = 0;
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
@@ -1227,6 +1228,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     int numTriggerIndices;
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
+    size_t nb;
 
     if (fi->h == NULL)	return rc;	/* XXX can't happen */
 
@@ -1237,8 +1239,8 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	)
 	return rc;
 
-    triggersRun = alloca(sizeof(*triggersRun) * numTriggerIndices);
-    memset(triggersRun, 0, sizeof(*triggersRun) * numTriggerIndices);
+    nb = sizeof(*triggersRun) * numTriggerIndices;
+    triggersRun = memset(alloca(nb), 0, nb);
 
     {	Header sourceH = NULL;
 	int i;
@@ -1264,7 +1266,8 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     return rc;
 }
 
-/*@observer@*/ static const char * pkgStageString(pkgStage a)
+/*@observer@*/
+static const char * pkgStageString(pkgStage a)
 	/*@*/
 {
     switch(a) {
