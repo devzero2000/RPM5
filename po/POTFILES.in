@@ -90,7 +90,7 @@ rpmio/rpmsw.c
 rpmio/sha224.c
 rpmio/strcasecmp.c
 rpmio/strtolocale.c
-rpmio/tiger.c.c
+rpmio/tiger.c
 rpmio/ugid.c
 rpmio/url.c
 tools/rpmdeps.c
