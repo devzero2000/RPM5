@@ -26,7 +26,7 @@ case $1 in
 	case "$possible" in
 	*.la)
 	    for dep in `grep '^dependency_libs='"$possible" 2> /dev/null | \
-			sed -e "s,^dependency_libs='(.*)',\1,g"`
+			sed -e "s,^dependency_libs='\(.*\)',\1,g"`
 	    do
 		case "$dep" in
 		/*.la)
