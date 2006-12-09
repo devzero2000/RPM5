@@ -57,6 +57,26 @@ static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", score);
 }
 
+extern sigset_t rpmsqCaught;
+/**
+ */
+static PyObject * sqCaught(PyObject * self, PyObject * args)
+{
+    if (!PyArg_ParseTuple(args, ":sqCaught")) return NULL;
+
+    return Py_BuildValue("i", rpmsqCaught);
+}
+
+/**
+ */
+static PyObject * checkSignals(PyObject * self, PyObject * args)
+{
+    if (!PyArg_ParseTuple(args, ":checkSignals")) return NULL;
+    rpmdbCheckSignals();
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 /**
  */
 static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
@@ -145,6 +165,11 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
 
     { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+
+    { "sqCaught", (PyCFunction) sqCaught, METH_VARARGS,
+	NULL },
+    { "checkSignals", (PyCFunction) checkSignals, METH_VARARGS,
 	NULL },
 
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS|METH_KEYWORDS,
