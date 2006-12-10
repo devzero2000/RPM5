@@ -222,7 +222,7 @@ main(int argc, char *const argv[])
     rpmfc fc = NULL;
     rpmds P = NULL;
     rpmds R = NULL;
-    rpmPRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
+    rpmPRCO PRCO = rpmdsNewPRCO(NULL);
 const char * closure_name = "for";
     FILE * fp = NULL;
     int flags = 0;
@@ -238,9 +238,6 @@ char buf[BUFSIZ];
     else
 	progname = argv[0];
 /*@=modobserver@*/
-
-    PRCO->Pdsp = &P;
-    PRCO->Rdsp = &R;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
@@ -309,6 +306,8 @@ rpmfcPrint(buf, fc, NULL);
     case RPMDEP_RPMDSLDCONFIG:
 	closure_name = "soname(...)";
 	xx = rpmdsLdconfig(PRCO, NULL);
+	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
+	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), __FUNCTION__);
 	break;
     case RPMDEP_RPMDSUNAME:
 	closure_name = "uname(...)";
@@ -364,8 +363,8 @@ fprintf(stderr, "\n*** Gathering rpmdb file Requires: using\n\t%s\n", _rpmdb_fil
 	break;
     case RPMDEP_RPMDSSONAME:
 	closure_name = "soname(...)";
-	PRCO->Rdsp = NULL;
 	xx = rpmdsLdconfig(PRCO, NULL);
+	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
 if (print_closure || rpmIsVerbose()) {
 fprintf(stderr, "\n*** Gathering rpmdb soname Requires: using\n\t%s\n", _rpmdb_soname_requires);
 	xx = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _rpmdb_soname_requires);
@@ -436,6 +435,7 @@ fprintf(stderr, "\n*** Checking %s Requires(%d): against Provides(%d): closure:\
     fc = rpmfcFree(fc);
     P = rpmdsFree(P);
     R = rpmdsFree(R);
+    PRCO = rpmdsFreePRCO(PRCO);
 
     ec = 0;
 

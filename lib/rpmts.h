@@ -173,7 +173,7 @@ struct rpmts_s {
 /*@observer@*/ /*@null@*/
     rpmCallbackData notifyData;	/*!< Callback private data. */
 
-    struct rpmPRCO_s PRCO;	/*!< Current transaction dependencies. */
+    rpmPRCO PRCO;		/*!< Current transaction dependencies. */
 
 /*@refcounted@*/ /*@null@*/
     rpmps probs;		/*!< Current problems in transaction. */
@@ -809,6 +809,15 @@ pgpDigParams rpmtsPubkey(const rpmts ts)
  */
 /*@null@*/
 rpmdb rpmtsGetRdb(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get transaction set dependencies.
+ * @param ts		transaction set
+ * @return		transaction set dependencies.
+ */
+/*@null@*/
+rpmPRCO rpmtsPRCO(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts

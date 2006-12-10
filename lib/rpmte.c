@@ -24,13 +24,7 @@ int _rpmte_debug = 0;
 
 void rpmteCleanDS(rpmte te)
 {
-    te->this = rpmdsFree(te->this);
-    te->provides = rpmdsFree(te->provides);
-    te->requires = rpmdsFree(te->requires);
-    te->conflicts = rpmdsFree(te->conflicts);
-    te->obsoletes = rpmdsFree(te->obsoletes);
-    te->dirnames = rpmdsFree(te->dirnames);
-    te->linktos = rpmdsFree(te->linktos);
+    te->PRCO = rpmdsFreePRCO(te->PRCO);
 }
 
 /**
@@ -207,14 +201,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     p->pkgFileSize = 0;
 
-    p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
-    p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-    p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
-    p->triggers = NULL;	/* XXX NOTYET */
-    p->dirnames = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
-    p->linktos = rpmdsNew(h, RPMTAG_FILELINKTOS, scareMem);
+    p->PRCO = rpmdsNewPRCO(h);
 
     savep = rpmtsSetRelocateElement(ts, p);
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
@@ -539,28 +526,7 @@ fnpyKey rpmteKey(rpmte te)
 
 rpmds rpmteDS(rpmte te, rpmTag tag)
 {
-    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
-    if (te == NULL)
-	return NULL;
-
-    if (tag == RPMTAG_NAME)
-	return te->this;
-    if (tag == RPMTAG_PROVIDENAME)
-	return te->provides;
-    if (tag == RPMTAG_REQUIRENAME)
-	return te->requires;
-    if (tag == RPMTAG_CONFLICTNAME)
-	return te->conflicts;
-    if (tag == RPMTAG_OBSOLETENAME)
-	return te->obsoletes;
-    if (tag == RPMTAG_TRIGGERNAME)
-	return te->triggers;
-    if (tag == RPMTAG_DIRNAMES)
-	return te->dirnames;
-    if (tag == RPMTAG_FILELINKTOS)
-	return te->linktos;
-    return NULL;
-    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
+    return (te != NULL ? rpmdsFromPRCO(te->PRCO, tag) : NULL);
 }
 
 rpmfi rpmteFI(rpmte te, rpmTag tag)

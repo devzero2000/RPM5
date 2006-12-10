@@ -24,7 +24,7 @@ extern int _rpmds_nopromote;
 
 #if defined(_RPMDS_INTERNAL)
 /** \ingroup rpmds
- * A package dependency set.
+ * A dependency set.
  */
 struct rpmds_s {
 /*@observer@*/
@@ -60,11 +60,10 @@ struct rpmds_s {
 };
 #endif	/* _RPMDS_INTERNAL */
 
-/**
- * Container to carry provides/requires/conflicts/obsoletes dependencies.
+#if defined(_RPMPRCO_INTERNAL)
+/** \ingroup rpmds
+ * Container for provides/requires/conflicts/obsoletes dependency set(s).
  */
-typedef struct rpmPRCO_s * rpmPRCO;
-#if !defined(SWIG)
 struct rpmPRCO_s {
 /*@dependent@*/ /*@null@*/
     rpmds * Pdsp;		/*!< Provides: collector. */
@@ -74,8 +73,30 @@ struct rpmPRCO_s {
     rpmds * Cdsp;		/*!< Conflicts: collector. */
 /*@dependent@*/ /*@null@*/
     rpmds * Odsp;		/*!< Obsoletes: collector. */
+/*@dependent@*/ /*@null@*/
+    rpmds * Tdsp;		/*!< Triggers collector. */
+/*@dependent@*/ /*@null@*/
+    rpmds * Ddsp;		/*!< Dirnames collector. */
+/*@dependent@*/ /*@null@*/
+    rpmds * Ldsp;		/*!< Linktos collector. */
+/*@refcounted@*/ /*@null@*/
+    rpmds this;		/*!< N = EVR */
+/*@refcounted@*/ /*@null@*/
+    rpmds P;		/*!< Provides: */
+/*@refcounted@*/ /*@null@*/
+    rpmds R;		/*!< Requires: */
+/*@refcounted@*/ /*@null@*/
+    rpmds C;		/*!< Conflicts: */
+/*@refcounted@*/ /*@null@*/
+    rpmds O;		/*!< Obsoletes: */
+/*@refcounted@*/ /*@null@*/
+    rpmds T;		/*!< Triggers */
+/*@refcounted@*/ /*@null@*/
+    rpmds D;		/*!< Dirnames */
+/*@refcounted@*/ /*@null@*/
+    rpmds L;		/*!< Linktos */
 };
-#endif
+#endif	/* _RPMPRCO_INTERNAL */
 
 #ifdef __cplusplus
 extern "C" {
@@ -127,7 +148,7 @@ rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
  */
 /*@null@*/
 rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
-	/*@modifies ds@*/;
+	/*@modifies ds @*/;
 /**
  * Create and load a dependency set.
  * @param h		header
@@ -452,6 +473,32 @@ int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * path)
  */
 int rpmdsMergePRCO(void * context, rpmds ds)
 	/*@modifies context, ds @*/;
+
+/**
+ * Free dependency set(s) container.
+ * @param PRCO		dependency set(s) container
+ * @return		NULL
+ */
+/*@null@*/
+rpmPRCO rpmdsFreePRCO(/*@only@*/ /*@null@*/ rpmPRCO PRCO)
+	/*@modifies PRCO @*/;
+
+/**
+ * Create dependency set(s) container.
+ * @param h		header
+ * @return		0 on success
+ */
+rpmPRCO rpmdsNewPRCO(/*@null@*/ Header h)
+	/*@*/;
+
+/**
+ * Retrieve a dependency set from container.
+ * @param PRCO		dependency set(s) container
+ * @return		dependency set (or NULL)
+ */
+/*@null@*/
+rpmds rpmdsFromPRCO(/*@null@*/ rpmPRCO PRCO, rpmTag tag)
+	/*@*/;
 
 /**
  * Extract ELF dependencies from a file.

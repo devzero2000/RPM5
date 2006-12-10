@@ -2332,6 +2332,7 @@ assert(psm != NULL);
 		    fileAction * actions = fi->actions;
 		    int mapflags = fi->mapflags;
 		    rpmte savep;
+		    int scareMem = 1;	/* XXX WTF? must be 1 here. */
 
 		    fi->fstates = NULL;
 		    fi->actions = NULL;
@@ -2340,7 +2341,7 @@ assert(psm != NULL);
 /*@=nullstate@*/
 
 		    savep = rpmtsSetRelocateElement(ts, p);
-		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, scareMem);
 		    (void) rpmtsSetRelocateElement(ts, savep);
 
 		    if (fi != NULL) {	/* XXX can't happen */

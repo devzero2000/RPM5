@@ -108,22 +108,8 @@ struct rpmte_s {
 /*@owned@*/
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
-/*@refcounted@*/ /*@null@*/
-    rpmds this;			/*!< This package's provided NEVR. */
-/*@refcounted@*/ /*@null@*/
-    rpmds provides;		/*!< Provides: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds requires;		/*!< Requires: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds conflicts;		/*!< Conflicts: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds obsoletes;		/*!< Obsoletes: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds triggers;		/*!< Triggers: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds dirnames;		/*!< Dirnames: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds linktos;		/*!< Filelinktos: dependencies. */
+    rpmPRCO PRCO;		/*!< Current dependencies. */
+
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 

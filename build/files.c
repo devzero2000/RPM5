@@ -25,6 +25,7 @@
 
 #include "rpmsx.h"
 
+
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 

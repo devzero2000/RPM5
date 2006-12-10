@@ -452,14 +452,15 @@ static PyObject *
 rpmds_Ldconfig(rpmdsObject * s)
 	/*@*/
 {
-    rpmPRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
+    rpmPRCO PRCO = rpmdsNewPRCO(NULL);
     rpmds P = NULL;
     int xx;
 
-    PRCO->Pdsp = &P;
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsLdconfig(PRCO, NULL);
 
+    P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
+    PRCO = rpmdsFreePRCO(PRCO);
     return (PyObject *) rpmds_Wrap( P );
 }
 

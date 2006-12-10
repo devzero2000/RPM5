@@ -98,6 +98,11 @@ typedef /*@abstract@*/ int alNum;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
 
+/** \ingroup rpmds 
+ * Container for commonly extracted dependency set(s).
+ */
+typedef struct rpmPRCO_s * rpmPRCO;
+
 /** \ingroup rpmfi
  * File info tag sets from a header, so that a header can be discarded early.
  */

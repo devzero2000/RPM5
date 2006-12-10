@@ -660,7 +660,7 @@ retry:
 
     if (!strncmp(Name, "soname(", sizeof("soname(")-1)) {
 	rpmds sonameP = NULL;
-	rpmPRCO PRCO = memset(alloca(sizeof(*PRCO)), 0, sizeof(*PRCO));
+	rpmPRCO PRCO = rpmdsNewPRCO(NULL);
 	char * fn = strcpy(alloca(strlen(Name)+1), Name);
 	int flags = 0;	/* XXX RPMELF_FLAG_SKIPREQUIRES? */
 	rpmds ds;
@@ -674,8 +674,8 @@ retry:
 	fn[strlen(fn)-1] = '\0';
 
 	/* Extract ELF Provides: from /path/to/DSO. */
-	PRCO->Pdsp = &sonameP;
 	xx = rpmdsELF(fn, flags, rpmdsMergePRCO, PRCO);
+	sonameP = rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME);
 	if (!(xx == 0 && sonameP != NULL))
 	    goto unsatisfied;
 
@@ -683,7 +683,7 @@ retry:
 	ds = rpmdsSingle(rpmdsTagN(dep), rpmdsEVR(dep), "", rpmdsFlags(dep));
 	xx = rpmdsSearch(sonameP, ds);
 	ds = rpmdsFree(ds);
-	sonameP = rpmdsFree(sonameP);
+	PRCO = rpmdsFreePRCO(PRCO);
 
 	/* Was the dependency satisfied? */
 	if (xx >= 0) {

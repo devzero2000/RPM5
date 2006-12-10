@@ -30,6 +30,7 @@
 #include <rpmmacro.h>
 
 #define	_RPMDS_INTERNAL
+#define	_RPMPRCO_INTERNAL
 #include <rpmds.h>
 
 #include <argv.h>
@@ -2502,8 +2503,90 @@ fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsT
     case RPMTAG_OBSOLETENAME:
 	rc = rpmdsMerge(PRCO->Odsp, ds);
 	break;
+    case RPMTAG_TRIGGERNAME:
+	rc = rpmdsMerge(PRCO->Tdsp, ds);
+	break;
+    case RPMTAG_DIRNAMES:
+	rc = rpmdsMerge(PRCO->Ddsp, ds);
+	break;
+    case RPMTAG_FILELINKTOS:
+	rc = rpmdsMerge(PRCO->Ldsp, ds);
+	break;
     }
     return rc;
+}
+
+rpmPRCO rpmdsFreePRCO(rpmPRCO PRCO)
+{
+    if (PRCO) {
+	PRCO->this = rpmdsFree(PRCO->this);
+	PRCO->P = rpmdsFree(PRCO->P);
+	PRCO->R = rpmdsFree(PRCO->R);
+	PRCO->C = rpmdsFree(PRCO->C);
+	PRCO->O = rpmdsFree(PRCO->O);
+	PRCO->T = rpmdsFree(PRCO->T);
+	PRCO->D = rpmdsFree(PRCO->D);
+	PRCO->L = rpmdsFree(PRCO->L);
+	PRCO->Pdsp = NULL;
+	PRCO->Rdsp = NULL;
+	PRCO->Cdsp = NULL;
+	PRCO->Odsp = NULL;
+	PRCO->Tdsp = NULL;
+	PRCO->Ddsp = NULL;
+	PRCO->Ldsp = NULL;
+	PRCO = _free(PRCO);
+    }
+    return NULL;
+}
+
+rpmPRCO rpmdsNewPRCO(Header h)
+{
+    rpmPRCO PRCO = xcalloc(1, sizeof(*PRCO));
+
+    if (h) {
+	int scareMem = 0;
+	PRCO->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+	PRCO->P = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
+	PRCO->R = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+	PRCO->C = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+	PRCO->O = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+	PRCO->T = rpmdsNew(h, RPMTAG_TRIGGERNAME, scareMem);
+	PRCO->D = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
+	PRCO->L = rpmdsNew(h, RPMTAG_FILELINKTOS, scareMem);
+    }
+    PRCO->Pdsp =  &PRCO->P;
+    PRCO->Rdsp =  &PRCO->R;
+    PRCO->Cdsp =  &PRCO->C;
+    PRCO->Odsp =  &PRCO->O;
+    PRCO->Tdsp =  &PRCO->T;
+    PRCO->Ddsp =  &PRCO->D;
+    PRCO->Ldsp =  &PRCO->L;
+    return PRCO;
+}
+
+rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tag)
+{
+    if (PRCO == NULL)
+	return NULL;
+    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
+    if (tag == RPMTAG_NAME)
+	return PRCO->this;
+    if (tag == RPMTAG_PROVIDENAME)
+	return *PRCO->Pdsp;
+    if (tag == RPMTAG_REQUIRENAME)
+	return *PRCO->Rdsp;
+    if (tag == RPMTAG_CONFLICTNAME)
+	return *PRCO->Cdsp;
+    if (tag == RPMTAG_OBSOLETENAME)
+	return *PRCO->Odsp;
+    if (tag == RPMTAG_TRIGGERNAME)
+	return *PRCO->Tdsp;
+    if (tag == RPMTAG_DIRNAMES)
+	return *PRCO->Ddsp;
+    if (tag == RPMTAG_FILELINKTOS)
+	return *PRCO->Ldsp;
+    return NULL;
+    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
 /**
@@ -2862,7 +2945,7 @@ int rpmdsLdconfig(rpmPRCO PRCO, const char * fn)
 /*@=branchstate@*/
 
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** %s(%p, %s) P %p R %p C %p O %p\n", __FUNCTION__, PRCO, fn, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp);
+fprintf(stderr, "*** %s(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n", __FUNCTION__, PRCO, fn, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp, PRCO->Tdsp, PRCO->Ddsp, PRCO->Ldsp);
 
     fp = popen(_ldconfig_cmd, "r");
     if (fp == NULL)

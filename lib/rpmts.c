@@ -810,6 +810,8 @@ void rpmtsEmpty(rpmts ts)
     rpmtsClean(ts);
 /*@=nullstate@*/
 
+    ts->PRCO = rpmdsFreePRCO(ts->PRCO);
+
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 /*@-type -unqualifiedtrans @*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
@@ -1228,6 +1230,11 @@ rpmdb rpmtsGetRdb(rpmts ts)
 /*@=compdef =refcounttrans =usereleased @*/
 }
 
+rpmPRCO rpmtsPRCO(rpmts ts)
+{
+    return (ts != NULL ? ts->PRCO : NULL);
+}
+
 int rpmtsInitDSI(const rpmts ts)
 {
     rpmDiskSpaceInfo dsi;
@@ -1580,6 +1587,9 @@ rpmts rpmtsCreate(void)
     ts->solveData = NULL;
     ts->nsuggests = 0;
     ts->suggests = NULL;
+
+    ts->PRCO = rpmdsNewPRCO(NULL);
+
     ts->sdb = NULL;
     ts->sdbmode = O_RDONLY;
 

@@ -99,6 +99,8 @@ LIBRPM_0
     rpmdsFind;
     rpmdsFlags;
     rpmdsFree;
+    rpmdsFreePRCO;
+    rpmdsFromPRCO;
     rpmdsGetconf;
     rpmdsInit;
     rpmdsIx;
@@ -108,6 +110,7 @@ LIBRPM_0
     rpmdsN;
     rpmdsNew;
     rpmdsNewDNEVR;
+    rpmdsNewPRCO;
     rpmdsNext;
     _rpmds_nopromote;
     rpmdsNoPromote;
@@ -349,6 +352,7 @@ LIBRPM_0
     rpmtsOpenDB;
     rpmtsOpenSDB;
     rpmtsOrder;
+    rpmtsPRCO;
     rpmtsProblems;
     rpmtsPubkey;
     rpmtsRebuildDB;
