@@ -65,9 +65,10 @@ static int useCatalog = 0;
  */
 /*@-boundswrite@*/
 static void buildArgCallback( /*@unused@*/ poptContext con,
-	/*@unused@*/ enum poptCallbackReason reason,
-	const struct poptOption * opt, const char * arg,
-	/*@unused@*/ const void * data)
+		/*@unused@*/ enum poptCallbackReason reason,
+		const struct poptOption * opt,
+		/*@unused@*/ const char * arg,
+		/*@unused@*/ const void * data)
 {
     BTA_t rba = &rpmBTArgs;
 

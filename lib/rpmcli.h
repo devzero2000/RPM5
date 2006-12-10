@@ -35,7 +35,7 @@ extern int ftsOpts;
 extern struct poptOption		rpmcliFtsPoptTable[];
 
 /*@unchecked@*/
-extern int depFlags;
+extern int global_depFlags;
 
 /*@unchecked@*/
 extern struct poptOption		rpmcliDepFlagsPoptTable[];

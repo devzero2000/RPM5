@@ -2140,6 +2140,7 @@ rpmExpand(const char *arg, ...)
     *t = '\0';
     te = stpcpy(t, arg);
 
+/*@-branchstate@*/
     va_start(ap, arg);
     while ((s = va_arg(ap, const char *)) != NULL) {
 	sn = strlen(s);
@@ -2149,6 +2150,7 @@ rpmExpand(const char *arg, ...)
 	te = stpcpy(te, s);
     }
     va_end(ap);
+/*@=branchstate@*/
 
     *te = '\0';
     tn = (te - t);

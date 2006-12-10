@@ -173,6 +173,7 @@ struct rpmts_s {
 /*@observer@*/ /*@null@*/
     rpmCallbackData notifyData;	/*!< Callback private data. */
 
+/*@null@*/
     rpmPRCO PRCO;		/*!< Current transaction dependencies. */
 
 /*@refcounted@*/ /*@null@*/
@@ -1014,8 +1015,8 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies rpmGlobalMacroContext, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Add package to be installed to transaction set.

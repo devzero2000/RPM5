@@ -1674,7 +1674,7 @@ int rpmtsOrder(rpmts ts)
       }
 
       if (_autobits != 0xffffffff)
-      {	const char * Name = rpmteN(p);
+      {
 
 	/* Order by requiring parent directories pre-requsites. */
 	requires = rpmdsInit(rpmteDS(p, RPMTAG_DIRNAMES));

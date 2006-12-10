@@ -81,7 +81,7 @@ int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint  * fpList,
 	/*@modifies db, *matchList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
-/* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
+/* Be carefull with the memory... assert(*fullName == '/' || !scareMem) */
 
 /**
  * Create finger print cache.
@@ -105,11 +105,11 @@ fingerPrintCache fpCacheFree(/*@only@*/ fingerPrintCache cache)
  * @param cache		pointer to fingerprint cache
  * @param dirName	leading directory name of file path
  * @param baseName	base name of file path
- * @param scareMemory
+ * @param scareMem
  * @return pointer to the finger print associated with a file path.
  */
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
-			const char * baseName, int scareMemory)
+			const char * baseName, int scareMem)
 	/*@modifies cache @*/;
 
 /**
@@ -133,16 +133,16 @@ int fpEqual(const void * key1, const void * key2)
 
 /**
  * Return finger prints of an array of file paths.
- * @warning: scareMemory is assumed!
+ * @warning: scareMem is assumed!
  * @param cache		pointer to fingerprint cache
  * @param dirNames	directory names
  * @param baseNames	file base names
  * @param dirIndexes	index into dirNames for each baseNames
  * @param fileCount	number of file entries
- * @retval fpList	pointer to array of finger prints
+ * @retval *fpList	array of finger prints
  */
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const int * dirIndexes, 
+		  const char ** baseNames, const uint_32 * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
 	/*@modifies cache, *fpList @*/;
 

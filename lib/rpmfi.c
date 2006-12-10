@@ -374,11 +374,11 @@ const char * rpmfiFContext(rpmfi fi)
     return fcontext;
 }
 
-int_32 rpmfiFDepends(rpmfi fi, const int_32 ** fddictp)
+int_32 rpmfiFDepends(rpmfi fi, const uint_32 ** fddictp)
 {
     int fddictx = -1;
     int fddictn = 0;
-    const int_32 * fddict = NULL;
+    const uint_32 * fddict = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -610,7 +610,6 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     int newFlags = rpmfiFFlags(nfi);
     char buffer[1024];
     fileTypes dbWhat, newWhat, diskWhat;
-    struct stat sb, *st = &sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
 
     if (!(newFlags & RPMFILE_EXISTS)) {
@@ -627,7 +626,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	}
     }
 
-    diskWhat = whatis((int_16)sb.st_mode);
+    diskWhat = whatis(0);	/* XXX 0 will return REG */
     dbWhat = whatis(rpmfiFMode(ofi));
     newWhat = whatis(rpmfiFMode(nfi));
 
@@ -1830,7 +1829,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
     char deptype = 'R';
     char mydt;
     const char * DNEVR;
-    const int_32 * ddict;
+    const uint_32 * ddict;
     unsigned ix;
     int ndx;
 

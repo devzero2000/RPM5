@@ -6,7 +6,6 @@ LIBRPM_0
     _cacheDependsRC;
     cpioStrerror;
     currentDirectory;
-    depFlags;
     doputenv;
     dosetenv;
     fileActionString;
@@ -30,6 +29,7 @@ LIBRPM_0
     get_date;
     getStringBuf;
     giFlags;
+    global_depFlags;
     headerCheck;
     headerMergeLegacySigs;
     headerRegenSigHeader;

@@ -127,7 +127,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 /**
  */
 static void flushBuffer(char ** tp, char ** tep, int nonewline)
-	/*@ modifies *tp, *tep @*/
+	/*@modifies *tp, **tp, *tep, **tep @*/
 {
     char *t, *te;
 
@@ -261,13 +261,20 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    continue;
 
 	/* Insure space for header derived data */
-	sb = strlen(fn) + strlen(fdigest) + strlen(fuser) + strlen(fgroup) + strlen(flink);
+	sb = 0;
+	if (fn)		sb += strlen(fn);
+	if (fdigest)	sb += strlen(fdigest);
+	if (fuser)	sb += strlen(fuser);
+	if (fgroup)	sb += strlen(fgroup);
+	if (flink)	sb += strlen(flink);
+/*@-branchstate@*/
 	if ((sb + BUFSIZ) > tb) {
 	    size_t tx = (te - t);
 	    tb += sb + BUFSIZ;
 	    t = xrealloc(t, tb);
 	    te = t + tx;
 	}
+/*@=branchstate@*/
 
 /*@-boundswrite@*/
 	if (!rpmIsVerbose() && prefix)
@@ -650,6 +657,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    curDir = _free(curDir);
 	} else
 	    fn = xstrdup(arg);
+assert(fn != NULL);
 	(void) rpmCleanPath(fn);
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);

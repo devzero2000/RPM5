@@ -16,10 +16,18 @@
 extern int _rpmdb_debug;
 /*@=exportlocal@*/
 
+/*@unchecked@*/
 extern int _rsegfault;
-#define	RSEGFAULT	{ if (_rsegfault > 0) assert(--_rsegfault); }
+/*@unchecked@*/
 extern int _wsegfault;
+
+#if defined(__LCLINT__)
+#define	RSEGFAULT
+#define	WSEGFAULT
+#else
+#define	RSEGFAULT	{ if (_rsegfault > 0) assert(--_rsegfault); }
 #define	WSEGFAULT	{ if (_wsegfault > 0) assert(--_wsegfault); }
+#endif
 
 #ifdef	NOTYET
 /** \ingroup rpmdb
@@ -500,8 +508,8 @@ extern "C" {
  */
 /*@unused@*/ /*@only@*/ /*@null@*/
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup db3
  * Destroy index database handle instance.
@@ -843,7 +851,8 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
  * @param set	set of index database items
  * @return	NULL always
  */
-/*@null@*/ dbiIndexSet dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set)
+/*@null@*/
+dbiIndexSet dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set)
 	/*@modifies set @*/;
 
 /** \ingroup dbi
@@ -939,8 +948,8 @@ int rpmdbInit(/*@null@*/ const char * prefix, int perms)
  * @return		0 on success
  */
 int rpmdbVerifyAllDBI(rpmdb db)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Open and verify all database components.

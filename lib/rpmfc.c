@@ -52,7 +52,7 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
 static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
                         const char * writePtr, int writeBytesLeft,
                         int failNonZero)
-        /*@globals fileSystem, internalState@*/
+        /*@globals h_errno, fileSystem, internalState@*/
         /*@modifies fileSystem, internalState@*/
 {
     pid_t child, reaped;

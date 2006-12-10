@@ -3,6 +3,7 @@
  */
 
 #include "system.h"
+#include "rpmcli.h"	/* IDTX prototypes */
 #include <rpmlib.h>
 
 #include <rpmmacro.h>	/* XXX for rpmExpand */
@@ -31,13 +32,6 @@
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 
 #include "debug.h"
-
-/*
- * This is needed for the IDTX definitions.  I think probably those need
- * to be moved into a different source file (idtx.{c,h}), but that is up
- * to Jeff Johnson.
- */
-#include "rpmcli.h"
 
 /*@access Header @*/		/* XXX ts->notify arg1 is void ptr */
 /*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
@@ -496,8 +490,7 @@ static void handleOverlappedFiles(const rpmts ts,
 /*@-boundswrite@*/
 	switch (rpmteType(p)) {
 	case TR_ADDED:
-	  { struct stat sb, *st = &sb;
-	    int reportConflicts =
+	  { int reportConflicts =
 		!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
 	    int done = 0;
 
@@ -985,7 +978,7 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction)
     rpmRC rc = 0;
     uint_32 arbgoal = rpmtsARBGoal(failedTransaction);
     QVA_t ia = memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
-    int_32 rbtidExcludes[2];
+    uint_32 rbtidExcludes[2];
     time_t ttid;
     int xx;
 
@@ -1029,7 +1022,9 @@ rpmRC rpmtsDoARBGoal(rpmts failedTransaction)
 	xx = rpmtsSetNotifyCallback(ts, failedTransaction->notify,
 		failedTransaction->notifyData);
 /*@=nullpass@*/
+/*@-compmempass@*/
 	rc = rpmRollback(ts, ia, NULL);
+/*@=compmempass@*/
 	ts = rpmtsFree(ts);
     }
 
@@ -1172,7 +1167,7 @@ static rpmRC _rpmtsRollback(rpmts rbts, rpmts failedTransaction,
     if (arbgoal != 0xffffffff) {
 	QVA_t ia = memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
 	rpmts ts = rpmtsCreate();
-	int_32 rbtidExcludes[2];
+	uint_32 rbtidExcludes[2];
 	int xx;
 
 	ttid = (time_t)arbgoal;

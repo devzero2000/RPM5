@@ -1005,6 +1005,7 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen, byte * keyid)
 	case PGPPUBKEYALGO_RSA:
 	    se += pgpMpiLen(se);
 	    memmove(keyid, (se-8), 8);
+	    /*@innerbreak@*/ break;
 	}
       } break;
     case 4:
@@ -1018,11 +1019,11 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen, byte * keyid)
 	case PGPPUBKEYALGO_RSA:
 	    for (i = 0; i < 2; i++)
 		se += pgpMpiLen(se);
-	    break;
+	    /*@innerbreak@*/ break;
 	case PGPPUBKEYALGO_DSA:
 	    for (i = 0; i < 4; i++)
 		se += pgpMpiLen(se);
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	{   DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(ctx, pkt, (se-pkt));
@@ -1241,10 +1242,12 @@ static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,
 	ppkts[npkts++] = (byte *) p;
     }
 
+/*@-branchstate@*/
     if (pppkts != NULL)
 	*pppkts = ppkts;
    else
 	ppkts = _free(ppkts);
+/*@=branchstate@*/
 
     if (pnpkts != NULL)
 	*pnpkts = npkts;
@@ -1282,12 +1285,14 @@ int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
 	len = pgpPrtPkt(ppkts[i], pp->pktlen);
     }
 
+/*@-branchstate@*/
     if (dig != NULL) {
 	dig->ppkts = _free(dig->ppkts);		/* XXX memory leak plugged. */
 	dig->ppkts = ppkts;
 	dig->npkts = npkts;
     } else
 	ppkts = _free(ppkts);
+/*@=branchstate@*/
 
     return 0;
 }

@@ -917,7 +917,6 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
 	}
 	if (*p != '\0') *p++ = '\0';
     }
-/*@=branchstate@*/
 
     if (cvogp)
 	*cvogp = cvog;
@@ -925,6 +924,7 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
 	cvog->str = _free(cvog->str);
 	cvog = _free(cvog);
     }
+/*@=branchstate@*/
     return 0;
 }
 /*@=bounds@*/
@@ -1551,6 +1551,7 @@ int rpmMachineScore(int type, const char * name)
     return (info != NULL ? info->score : 0);
 }
 
+/*@-modnomods@*/
 void rpmGetMachine(const char ** arch, const char ** os)
 {
     if (arch)
@@ -1559,6 +1560,7 @@ void rpmGetMachine(const char ** arch, const char ** os)
     if (os)
 	*os = current[OS];
 }
+/*@=modnomods@*/
 
 void rpmSetMachine(const char * arch, const char * os)
 	/*@globals current @*/

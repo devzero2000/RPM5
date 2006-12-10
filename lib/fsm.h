@@ -193,7 +193,7 @@ struct fsm_s {
 /*@shared@*/ /*@relnull@*/
     const char * fdigest;	/*!< Hex digest (usually MD5, NULL disables). */
 /*@shared@*/ /*@relnull@*/
-    const char * digest;	/*!< Bin digest (usually MD5, NULL disables). */
+    const unsigned char * digest;/*!< Bin digest (usually MD5, NULL disables). */
 /*@dependent@*/ /*@observer@*/ /*@null@*/
     const char * fcontext;	/*!< File security context (NULL disables). */
     

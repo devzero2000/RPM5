@@ -108,6 +108,7 @@ struct rpmte_s {
 /*@owned@*/
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
+/*@null@*/
     rpmPRCO PRCO;		/*!< Current dependencies. */
 
 /*@refcounted@*/ /*@null@*/

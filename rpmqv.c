@@ -688,7 +688,7 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
-	ia->depFlags = depFlags;
+	ia->depFlags = global_depFlags;
 	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 
 	if (!poptPeekArg(optCon)) {
@@ -706,7 +706,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
-	ia->depFlags = depFlags;
+	ia->depFlags = global_depFlags;
 	if (!ia->incldocs) {
 	    if (ia->transFlags & RPMTRANS_FLAG_NODOCS) {
 		;
@@ -753,7 +753,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
 	    argerror(_("no arguments given for query"));
 
-	qva->depFlags = depFlags;
+	qva->depFlags = global_depFlags;
 	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
 	qva->qva_specQuery = NULL;
@@ -762,7 +762,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_VERIFY:
     {	rpmVerifyFlags verifyFlags = VERIFY_ALL;
 
-	qva->depFlags = depFlags;
+	qva->depFlags = global_depFlags;
 	verifyFlags &= ~qva->qva_flags;
 	qva->qva_flags = (rpmQueryFlags) verifyFlags;
 

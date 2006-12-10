@@ -347,8 +347,8 @@ int Rmdir(const char * path)
  * @todo Implement remotely.
  */
 int Chroot(const char * path)
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
  * rename(2) clone.
@@ -390,7 +390,7 @@ int Lstat(const char * path, /*@out@*/ struct stat * st)
  * @todo Implement remotely.
  */
 int Chown(const char * path, uid_t owner, gid_t group)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -398,7 +398,7 @@ int Chown(const char * path, uid_t owner, gid_t group)
  * @todo Implement remotely.
  */
 int Lchown(const char * path, uid_t owner, gid_t group)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -406,7 +406,7 @@ int Lchown(const char * path, uid_t owner, gid_t group)
  * @todo Implement remotely.
  */
 int Chmod(const char * path, mode_t mode)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -414,7 +414,7 @@ int Chmod(const char * path, mode_t mode)
  * @todo Implement remotely.
  */
 int Mkfifo(const char * path, mode_t mode)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -422,7 +422,7 @@ int Mkfifo(const char * path, mode_t mode)
  * @todo Implement remotely.
  */
 int Mknod(const char * path, mode_t mode, dev_t dev)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -430,7 +430,7 @@ int Mknod(const char * path, mode_t mode, dev_t dev)
  * @todo Implement remotely.
  */
 int Utime(const char * path, const struct utimbuf * buf)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -438,7 +438,7 @@ int Utime(const char * path, const struct utimbuf * buf)
  * @todo Implement remotely.
  */
 int Utimes(const char * path, const struct timeval * times)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -446,7 +446,7 @@ int Utimes(const char * path, const struct timeval * times)
  * @todo Implement remotely.
  */
 int Symlink(const char * oldpath, const char * newpath)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**

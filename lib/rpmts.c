@@ -1232,7 +1232,9 @@ rpmdb rpmtsGetRdb(rpmts ts)
 
 rpmPRCO rpmtsPRCO(rpmts ts)
 {
+/*@-compdef -retexpose -usereleased @*/
     return (ts != NULL ? ts->PRCO : NULL);
+/*@=compdef =retexpose =usereleased @*/
 }
 
 int rpmtsInitDSI(const rpmts ts)

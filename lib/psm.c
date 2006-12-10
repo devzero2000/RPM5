@@ -517,7 +517,7 @@ static pid_t psmWait(rpmpsm psm)
 static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 		   int progArgc, const char **progArgv,
 		   const char *script, int arg1, int arg2)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
@@ -1671,9 +1671,7 @@ psm->te->h = headerLink(fi->h);
 	    /*@=nullstate@*/
 
 	    /* Write the lead section into the package. */
-	    {	int archnum = -1;
-		int osnum = -1;
-		struct rpmlead lead;
+	    {	struct rpmlead lead;
 
 		memset(&lead, 0, sizeof(lead));
 		/* XXX Set package version conditioned on noDirTokens. */

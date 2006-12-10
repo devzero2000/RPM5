@@ -192,7 +192,9 @@ fprintf(stderr, "*** Chroot(%s)\n", path);
 	return -2;
 	/*@notreached@*/ break;
     }
+/*@-superuser@*/
     return chroot(path);
+/*@=superuser@*/
 }
 
 /* XXX rpmdb.c: analogue to rename(2). */
@@ -1484,7 +1486,9 @@ fprintf(stderr, "*** Mknod(%s,%0o, 0x%x)\n", path, (int)mode, (int)dev);
 	return -2;
 	/*@notreached@*/ break;
     }
+/*@-portability@*/
     return mknod(path, mode, dev);
+/*@=portability@*/
 }
 
 int Utime(const char * path, const struct utimbuf *buf)

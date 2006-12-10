@@ -65,19 +65,19 @@ struct rpmds_s {
  * Container for provides/requires/conflicts/obsoletes dependency set(s).
  */
 struct rpmPRCO_s {
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     rpmds * Pdsp;		/*!< Provides: collector. */
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     rpmds * Rdsp;		/*!< Requires: collector. */
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     rpmds * Cdsp;		/*!< Conflicts: collector. */
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     rpmds * Odsp;		/*!< Obsoletes: collector. */
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     rpmds * Tdsp;		/*!< Triggers collector. */
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     rpmds * Ddsp;		/*!< Dirnames collector. */
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     rpmds * Ldsp;		/*!< Linktos collector. */
 /*@refcounted@*/ /*@null@*/
     rpmds this;		/*!< N = EVR */
@@ -489,7 +489,8 @@ rpmPRCO rpmdsFreePRCO(/*@only@*/ /*@null@*/ rpmPRCO PRCO)
  * @return		0 on success
  */
 rpmPRCO rpmdsNewPRCO(/*@null@*/ Header h)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Retrieve a dependency set from container.

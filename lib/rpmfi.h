@@ -459,7 +459,7 @@ extern const char * rpmfiFContext(/*@null@*/ rpmfi fi)
  * @return		no. of file depends entries, 0 on invalid
  */
 int_32 rpmfiFDepends(/*@null@*/ rpmfi fi,
-		/*@out@*/ /*@null@*/ const int_32 ** fddictp)
+		/*@out@*/ /*@null@*/ const uint_32 ** fddictp)
 	/*@modifies *fddictp @*/;
 
 /**

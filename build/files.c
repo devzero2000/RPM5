@@ -994,10 +994,10 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 			_("File must begin with \"/\": %s\n"), s);
 		    fl->processingFailed = 1;
 		    res = 1;
-		    break;
+		    /*@switchbreak@*/ break;
 		case URL_IS_PATH:
 		    *fileName = s;
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	} else {
@@ -1119,10 +1119,10 @@ static int checkHardLinks(FileList fl)
 static int dncmp(const void * a, const void * b)
 	/*@*/
 {
-    const char *const * aurlp = a;
-    const char *const * burlp = b;
-    const char * adn = a;
-    const char * bdn = b;
+    const char ** aurlp = a;
+    const char ** burlp = b;
+    const char * adn;
+    const char * bdn;
     (void) urlPath(*aurlp, &adn);
     (void) urlPath(*burlp, &bdn);
     return strcmp(adn, bdn);
@@ -1685,6 +1685,7 @@ static int addFile(FileList fl, const char * diskURL,
      *  myftw			path			stat
      *
      */
+/*@-branchstate@*/
     {	const char *fileName;
 	int urltype = urlPath(fileURL, &fileName);
 	switch (urltype) {
@@ -1704,6 +1705,7 @@ static int addFile(FileList fl, const char * diskURL,
 	    break;
 	}
     }
+/*@=branchstate@*/
 
     /* XXX make sure '/' can be packaged also */
     /*@-branchstate@*/

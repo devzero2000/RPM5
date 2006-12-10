@@ -811,9 +811,14 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
 }
 
 /**
+ * Return header query string.
+ * @warning Only default header extensions are available here.
+ * @param h		header
+ * @param qfmt		header sprintf format
+ * @return		header query string
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
-	/*@*/
+	/*@globals headerDefaultFormats @*/
 {
     static const struct headerSprintfExtension_s * hdrfmts = headerDefaultFormats;
     const char * errstr = "(unkown error)";
@@ -834,8 +839,8 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
  * @param adding	adding an rpmdb header?
  * @return		0 on success
  */
-static int rpmdbExportInfo(rpmdb db, Header h, int adding)
-	/*@globals rpmGlobalMacroContext, h_errno,
+static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
+	/*@globals headerDefaultFormats, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -843,11 +848,13 @@ static int rpmdbExportInfo(rpmdb db, Header h, int adding)
     const char * fn = NULL;
     int xx;
 
+/*@-branchstate@*/
     {	const char * fnfmt = rpmGetPath("%{?_hrmib_path}", NULL);
 	if (fnfmt && *fnfmt)
 	    fn = queryHeader(h, fnfmt);
 	fnfmt = _free(fnfmt);
     }
+/*@=branchstate@*/
 
     if (fn == NULL)
 	goto exit;
@@ -856,7 +863,7 @@ static int rpmdbExportInfo(rpmdb db, Header h, int adding)
 	FD_t fd = Fopen(fn, "w.ufdio");
 	int_32 *iidp;
 
-	if (fd) {
+	if (fd != NULL) {
 	    xx = Fclose(fd);
 	    fd = NULL;
 	    if (headerGetEntry(h, RPMTAG_INSTALLTID, NULL, (void **)&iidp, NULL)) {
@@ -3340,6 +3347,7 @@ data->size = 0;
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
+/*@-branchstate@*/
 	    for (i = 0; i < rpmcnt; i++) {
 		dbiIndexSet set;
 		int stringvalued;
@@ -3381,7 +3389,6 @@ data->size = 0;
 
 		/* Identify value pointer and length. */
 		stringvalued = 0;
-/*@-branchstate@*/
 		switch (rpmtype) {
 /*@-sizeoftype@*/
 		case RPM_CHAR_TYPE:
@@ -3442,7 +3449,6 @@ assert((dlen & 1) == 0);
 		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
 		}
-/*@=branchstate@*/
 
 		if (!printed) {
 		    if (rpmcnt == 1 && stringvalued) {
@@ -3501,6 +3507,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		data->size = 0;
 		set = dbiFreeIndexSet(set);
 	    }
+/*@=branchstate@*/
 
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    dbcursor = NULL;
@@ -3584,8 +3591,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	const char ** baseNames;
 	const char ** fullBaseNames;
 	rpmTagType bnt, dnt;
-	int_32 * dirIndexes;
-	int_32 * fullDirIndexes;
+	uint_32 * dirIndexes;
+	uint_32 * fullDirIndexes;
 	fingerPrint * fps;
 	dbiIndexItem im;
 	int start;
