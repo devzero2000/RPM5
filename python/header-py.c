@@ -708,7 +708,7 @@ long tagNumFromPyObject (PyObject *item)
 
     if (PyInt_Check(item)) {
 	return PyInt_AsLong(item);
-    } else if (PyString_Check(item)) {
+    } else if (PyString_Check(item) || PyUnicode_Check(item)) {
 	str = PyString_AsString(item);
 	for (i = 0; i < rpmTagTableSize; i++)
 	    if (!xstrcasecmp(rpmTagTable[i].name + 7, str)) break;
@@ -798,7 +798,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
         ext = PyCObject_AsVoidPtr(item);
     else
 	tag = tagNumFromPyObject (item);
-    if (tag == -1 && PyString_Check(item)) {
+    if (tag == -1 && (PyString_Check(item) || PyUnicode_Check(item))) {
 	/* if we still don't have the tag, go looking for the header
 	   extensions */
 	str = PyString_AsString(item);

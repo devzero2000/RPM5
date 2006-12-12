@@ -471,7 +471,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:AddErase", kwlist, &o))
         return NULL;
 
-    if (PyString_Check(o)) {
+    if (PyString_Check(o) || PyUnicode_Check(o)) {
 	char * name = PyString_AsString(o);
 
 	mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
@@ -990,7 +990,7 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 	Py_INCREF(Py_None);
 	return Py_None;
     }
-    if (!PyString_Check(blob)) {
+    if (!(PyString_Check(blob) || PyUnicode_Check(blob))) {
 	PyErr_SetString(pyrpmError, "hdrCheck takes a string of octets");
 	return result;
     }
@@ -1092,7 +1092,7 @@ fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
 	Py_INCREF(Py_None);
 	return Py_None;
     }
-    if (!PyString_Check(blob)) {
+    if (!(PyString_Check(blob) || PyUnicode_Check(blob))) {
 	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
 	return NULL;
     }
@@ -1129,7 +1129,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
 	Py_INCREF(Py_None);
 	return Py_None;
     }
-    if (!PyString_Check(blob)) {
+    if (!(PyString_Check(blob) || PyUnicode_Check(blob))) {
 	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
 	return NULL;
     }
@@ -1392,7 +1392,7 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 
     if (Key) {
 /*@-branchstate@*/
-	if (PyString_Check(Key)) {
+	if (PyString_Check(Key) || PyUnicode_Check(Key)) {
 	    key = PyString_AsString(Key);
 	    len = PyString_Size(Key);
 	} else if (PyInt_Check(Key)) {
