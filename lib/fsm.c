@@ -2067,6 +2067,8 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		fsm->opath = fsm->path;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
 		rc = fsmNext(fsm, FSM_RENAME);
+		if (rc)
+			xx = Unlink(fsm->opath);
 		if (!rc && fsm->nsuffix) {
 		    const char * opath = fsmFsPath(fsm, st, NULL, NULL);
 		    rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"),
@@ -2192,7 +2194,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		rc = fsmUNSAFE(fsm, FSM_READLINK);
 		errno = saveerrno;
 		if (rc) break;
-		if (!strcmp(fsm->opath, fsm->rdbuf))	return 0;
+		if (!strcmp(fsm->lpath, fsm->rdbuf))	return 0;
 	    }
 	} else if (S_ISFIFO(st->st_mode)) {
 	    if (S_ISFIFO(ost->st_mode))		return 0;

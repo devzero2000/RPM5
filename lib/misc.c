@@ -220,6 +220,8 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 
 errxit:
     tempfn = _free(tempfn);
+    if (fnptr)
+	*fnptr = NULL;
     /*@-usereleased@*/
     if (fd != NULL) (void) Fclose(fd);
     /*@=usereleased@*/

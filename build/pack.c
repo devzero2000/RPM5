@@ -600,6 +600,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      * Write the header+archive into a temp file so that the size of
      * archive (after compression) can be added to the header.
      */
+    sigtarget = NULL;
     if (makeTempFile(NULL, &sigtarget, &fd)) {
 	rc = RPMERR_CREATE;
 	rpmError(RPMERR_CREATE, _("Unable to open temp file.\n"));

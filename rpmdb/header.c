@@ -597,6 +597,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	}
 
 	dl += ie.length;
+	if (dataEnd && dataStart + dl > dataEnd) return -1;
 	tl += tdel;
 	ieprev = ie;	/* structure assignment */
 
