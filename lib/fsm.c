@@ -2068,8 +2068,8 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
 		rc = fsmNext(fsm, FSM_RENAME);
 		if (rc)
-			xx = Unlink(fsm->opath);
-		if (!rc && fsm->nsuffix) {
+			(void) Unlink(fsm->opath);
+		else if (fsm->nsuffix) {
 		    const char * opath = fsmFsPath(fsm, st, NULL, NULL);
 		    rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"),
 				(opath ? opath : ""),
