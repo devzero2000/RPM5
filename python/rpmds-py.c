@@ -426,13 +426,16 @@ static PyObject *
 rpmds_Sysinfo(rpmdsObject * s)
 	/*@*/
 {
-    rpmds ds = NULL;
+    rpmPRCO PRCO = rpmdsNewPRCO(NULL);
+    rpmds P = NULL;
     int xx;
 
     /* XXX check return code, permit arg (NULL uses system default). */
-    xx = rpmdsSysinfo(&ds, NULL);
+    xx = rpmdsSysinfo(PRCO, NULL);
+    P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
+    PRCO = rpmdsFreePRCO(PRCO);
 
-    return (PyObject *) rpmds_Wrap( ds );
+    return (PyObject *) rpmds_Wrap( P );
 }
 
 static PyObject *

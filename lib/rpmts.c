@@ -1575,6 +1575,7 @@ int rpmtsSetNotifyCallback(rpmts ts,
 rpmts rpmtsCreate(void)
 {
     rpmts ts;
+    int xx;
 
     ts = xcalloc(1, sizeof(*ts));
     memset(&ts->ops, 0, sizeof(ts->ops));
@@ -1591,6 +1592,11 @@ rpmts rpmtsCreate(void)
     ts->suggests = NULL;
 
     ts->PRCO = rpmdsNewPRCO(NULL);
+    {	const char * fn = rpmGetPath("%{?_rpmds_sysinfo_path}", NULL);
+	if (fn && *fn != '\0' && !rpmioAccess(fn, NULL, R_OK))
+	   xx = rpmdsSysinfo(ts->PRCO, NULL);
+	fn = _free(fn);
+    }
 
     ts->sdb = NULL;
     ts->sdbmode = O_RDONLY;

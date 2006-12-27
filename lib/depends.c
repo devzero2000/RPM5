@@ -576,16 +576,15 @@ retry:
 
     /* Search system configured provides. */
     if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
-	static rpmds sysinfoP = NULL;
-	static int oneshot = -1;
-
-	if (oneshot)
-	    oneshot = rpmdsSysinfo(&sysinfoP, NULL);
-	if (sysinfoP != NULL) {
-	    if (rpmdsSearch(sysinfoP, dep) >= 0) {
-		rpmdsNotify(dep, _("(sysinfo provides)"), rc);
-		goto exit;
-	    }
+#ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */
+	rpmTag tagN = (Name[0] == '/' ? RPMTAG_DIRNAMES : RPMTAG_PROVIDENAME);
+#else
+	rpmTag tagN = RPMTAG_PROVIDENAME;
+#endif
+	rpmds P = rpmdsFromPRCO(ts->PRCO, tagN);
+	if (rpmdsSearch(P, dep) >= 0) {
+	    rpmdsNotify(dep, _("(sysinfo provides)"), rc);
+	    goto exit;
 	}
     }
 
@@ -740,7 +739,7 @@ retry:
      * Search for an unsatisfied dependency.
      */
 /*@-boundsread@*/
-    if (adding && retries > 0 && !(rpmtsDFlags(ts) & RPMDEPS_FLAG_NOSUGGEST)) {
+    if (adding == 1 && retries > 0 && !(rpmtsDFlags(ts) & RPMDEPS_FLAG_NOSUGGEST)) {
 	if (ts->solve != NULL) {
 	    xx = (*ts->solve) (ts, dep, ts->solveData);
 	    if (xx == 0)
@@ -2086,14 +2085,6 @@ int rpmtsCheck(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 
-#if defined(DYING) || defined(__LCLINT__)
-	/* XXX all packages now have Provides: name = version-release */
-	/* Erasing: check name against requiredby matches. */
-	rc = checkDependentPackages(ts, rpmteN(p));
-	if (rc)
-		goto exit;
-#endif
-
 	rc = 0;
 	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
 	provides = rpmdsInit(provides);
@@ -2129,6 +2120,22 @@ int rpmtsCheck(rpmts ts)
 	    goto exit;
     }
     pi = rpmtsiFree(pi);
+
+    /*
+     * Make sure transaction dependencies are satisfied.
+     */
+    {	const char * tsNEVRA = "transaction dependencies";
+	rpmds R = rpmdsFromPRCO(ts->PRCO, RPMTAG_REQUIRENAME);
+	rpmds C = rpmdsFromPRCO(ts->PRCO, RPMTAG_CONFLICTNAME);
+	rpmds D = NULL;
+	rpmds L = NULL;
+	const char * dep = NULL;
+	int tscolor = 0;
+	int adding = 2;
+	rc = checkPackageDeps(ts, tsNEVRA, R, C, D, L, dep, tscolor, adding);
+	if (rc)
+	    goto exit;
+    }
 
     rc = 0;
 

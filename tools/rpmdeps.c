@@ -292,7 +292,9 @@ rpmfcPrint(buf, fc, NULL);
 	xx = rpmdsRpmlib(&P, NULL);
 	break;
     case RPMDEP_RPMDSSYSINFO:
-	xx = rpmdsSysinfo(&P, NULL);
+	xx = rpmdsSysinfo(PRCO, NULL);
+	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
+	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), __FUNCTION__);
 	break;
     case RPMDEP_RPMDSGETCONF:
 	closure_name = "getconf(...)";
@@ -302,6 +304,8 @@ rpmfcPrint(buf, fc, NULL);
 	closure_name = "soname(...)";
 	for (i = 0; i < ac; i++)
 	    xx = rpmdsELF(av[i], flags, rpmdsMergePRCO, PRCO);
+	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
+	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), __FUNCTION__);
 	break;
     case RPMDEP_RPMDSLDCONFIG:
 	closure_name = "soname(...)";

@@ -444,14 +444,14 @@ int rpmdsRpmlib(rpmds * dsp, /*@null@*/ void * tblp)
 	/*@modifies *dsp @*/;
 
 /**
- * Load sysinfo provides into a dependency set.
- * @retval *dsp		(loaded) depedency set
+ * Load sysinfo dependencies into a dependency set.
+ * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
  * @param fn		path to file (NULL uses /etc/rpm/sysinfo)
  * @return		0 on success
  */
-int rpmdsSysinfo(rpmds * dsp, /*@null@*/ const char * fn)
+int rpmdsSysinfo(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
+	/*@modifies PRCO, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/;
 
 /**

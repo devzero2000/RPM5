@@ -979,7 +979,7 @@ int rpmdsSearch(rpmds ds, rpmds ods)
     int i, l, u;
 
     if (ds == NULL || ods == NULL)
-	return 0;
+	return -1;
 
     /* Binary search to find the [l,u) subset that contains N */
     i = -1;
@@ -1348,13 +1348,17 @@ static struct cmpop {
     { NULL, 0 },
 };
 
-#define	_ETC_RPM_SYSINFO	"/etc/rpm/sysinfo"
-/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
-static const char *_sysinfo_path = NULL;
-
-int rpmdsSysinfo(rpmds *dsp, const char * fn)
-	/*@globals _sysinfo_path @*/
-	/*@modifies _sysinfo_path @*/
+/**
+ * Merge contents of a sysinfo tag file into sysinfo dependencies.
+ * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
+ * @param fn		path to file
+ * @param tagN		dependency set tag
+ * @return		0 on success
+ */
+static int rpmdsSysinfoFile(rpmPRCO PRCO, const char * fn, int tagN)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
@@ -1368,24 +1372,11 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
     int ln;
     int xx;
 
-/*@-modobserver@*/
-    if (_sysinfo_path == NULL) {
-	_sysinfo_path = rpmExpand("%{?_rpmds_sysinfo_path}", NULL);
-	/* XXX may need to validate path existence somewhen. */
-	if (!(_sysinfo_path != NULL && *_sysinfo_path == '/')) {
-/*@-observertrans @*/
-	    _sysinfo_path = _free(_sysinfo_path);
-/*@=observertrans @*/
-	    _sysinfo_path = xstrdup(_ETC_RPM_SYSINFO);
-	}
-    }
-/*@=modobserver@*/
+    /* XXX for now, collect Dirnames/Filelinktos in Providename */
+    if (tagN == RPMTAG_DIRNAMES || tagN == RPMTAG_FILELINKTOS)
+	tagN = RPMTAG_PROVIDENAME;
 
-/*@-branchstate@*/
-    if (fn == NULL)
-	fn = _sysinfo_path;
-/*@=branchstate@*/
-
+assert(fn != NULL);
     fd = Fopen(fn, "r.fpio");
     if (fd == NULL || Ferror(fd))
 	goto exit;
@@ -1402,6 +1393,13 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
 	/* ltrim on line. */
 	while (*f && _isspace(*f))
 	    f++;
+
+	/* XXX skip YAML "- " markup */
+	if (f[0] == '-' && _isspace(f[1])) {
+	    f += sizeof("- ")-1;
+	    while (*f && _isspace(*f))
+		f++;
+	}
 
 	/* skip empty lines and comments */
 	if (*f == '\0' || *f == '#')
@@ -1478,15 +1476,90 @@ int rpmdsSysinfo(rpmds *dsp, const char * fn)
 	    EVR = "";
 	Flags |= RPMSENSE_PROBE;
 /*@=branchstate@*/
-	ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR , Flags);
-	xx = rpmdsMerge(dsp, ds);
+	ds = rpmdsSingle(tagN, N, EVR , Flags);
+	xx = rpmdsMergePRCO(PRCO, ds);
 	ds = rpmdsFree(ds);
     }
+    rc = 0;
 
 exit:
 /*@-branchstate@*/
     if (fd != NULL) (void) Fclose(fd);
 /*@=branchstate@*/
+    return rc;
+}
+
+#define	_ETC_RPM_SYSINFO	"/etc/rpm/sysinfo"
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char *_sysinfo_path = NULL;
+
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+static const char *_sysinfo_tags[] = {
+    "Providename",
+    "Requirename",
+    "Conflictname",
+    "Obsoletename",
+    "Dirnames",
+    "Filelinktos",
+    NULL
+};
+
+int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
+	/*@globals _sysinfo_path @*/
+	/*@modifies _sysinfo_path @*/
+{
+    struct stat * st = memset(alloca(sizeof(*st)), 0, sizeof(*st));
+    int rc = -1;
+    int xx;
+
+/*@-modobserver@*/
+    if (_sysinfo_path == NULL) {
+	_sysinfo_path = rpmExpand("%{?_rpmds_sysinfo_path}", NULL);
+	/* XXX may need to validate path existence somewhen. */
+	if (!(_sysinfo_path != NULL && *_sysinfo_path == '/')) {
+/*@-observertrans @*/
+	    _sysinfo_path = _free(_sysinfo_path);
+/*@=observertrans @*/
+	    _sysinfo_path = xstrdup(_ETC_RPM_SYSINFO);
+	}
+    }
+/*@=modobserver@*/
+
+/*@-branchstate@*/
+    if (fn == NULL)
+	fn = _sysinfo_path;
+/*@=branchstate@*/
+
+    if (fn == NULL)
+	goto exit;
+
+    xx = Stat(fn, st);
+    if (xx < 0)
+	goto exit;
+
+    if (S_ISDIR(st->st_mode)) {
+	const char *dn = fn;
+	const char **av;
+	int tagN;
+	for (av = _sysinfo_tags; av && *av; av++) {
+	    tagN = tagValue(*av);
+	    if (tagN < 0)
+		continue;
+	    fn = rpmGetPath(dn, "/", *av, NULL);
+	    st = memset(st, 0, sizeof(*st));
+	    xx = Stat(fn, st);
+	    if (xx == 0 && S_ISREG(st->st_mode))
+		rc = rpmdsSysinfoFile(PRCO, fn, tagN);
+	    fn = _free(fn);
+	    if (rc)
+		break;
+	}
+    } else
+    /* XXX for now, collect Dirnames/Filelinktos in Providename */
+    if (S_ISREG(st->st_mode))
+	rc = rpmdsSysinfoFile(PRCO, fn, RPMTAG_PROVIDENAME);
+
+exit:
     return rc;
 }
 

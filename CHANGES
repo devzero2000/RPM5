@@ -59,6 +59,8 @@
 	- fix: http error path was missing a reference on a url (#220392).
 	- solaris: permit using native libelf.
 	- solaris: first stab at probe dependencies through /usr/bin/crle.
+	- generalize sysinfo to read multiple tag files from directory.
+	- create (and check) per-transaction Requires:/Conflicts: dependencies.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
