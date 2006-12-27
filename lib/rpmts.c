@@ -810,8 +810,6 @@ void rpmtsEmpty(rpmts ts)
     rpmtsClean(ts);
 /*@=nullstate@*/
 
-    ts->PRCO = rpmdsFreePRCO(ts->PRCO);
-
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 /*@-type -unqualifiedtrans @*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
@@ -878,6 +876,8 @@ rpmts rpmtsFree(rpmts ts)
 /*@-nullstate@*/	/* FIX: partial annotations */
     rpmtsEmpty(ts);
 /*@=nullstate@*/
+
+    ts->PRCO = rpmdsFreePRCO(ts->PRCO);
 
     (void) rpmtsCloseDB(ts);
 
