@@ -342,7 +342,7 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
- { "target", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  RPMCLI_POPT_TARGETPLATFORM,
+ { "target", '\0', POPT_ARG_STRING, 0,  RPMCLI_POPT_TARGETPLATFORM,
         N_("specify target platform"), N_("CPU-VENDOR-OS") },
 
  { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
