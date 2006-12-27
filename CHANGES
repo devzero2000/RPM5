@@ -57,6 +57,8 @@
 	- use rpmPRCO container transaction element dependency sets.
 	- multiple fixes from <pixel@mandriva.com>.
 	- fix: http error path was missing a reference on a url (#220392).
+	- solaris: permit using native libelf.
+	- solaris: first stab at probe dependencies through /usr/bin/crle.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

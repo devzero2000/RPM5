@@ -4,9 +4,17 @@
 #include "system.h"
 
 #if HAVE_GELF_H
-#include <gelf.h>
+#if LIBELF_H_LFS_CONFLICT
+/* Some implementations of libelf.h/gelf.h are incompatible with
+ * the Large File API.
+ */
+# undef _LARGEFILE64_SOURCE
+# undef _LARGEFILE_SOURCE
+# undef _FILE_OFFSET_BITS
+# define _FILE_OFFSET_BITS 32
 #endif
 
+#include <gelf.h>
 /*
  * On Solaris, gelf.h included libelf.h, which #undef'ed the gettext
  * convenience macro _().  Repair by repeating (from system.h) just
@@ -275,7 +283,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	    int i;
 	    /* XXX Dirnames always have trailing '/', trim that here. */
 	    for (i = 0; i < Count; i++) {
-		(void) urlPath(N[i], &t);
+		(void) urlPath(N[i], (const char **)&t);
 		if (t > N[i])
 		    N[i] = t;
 		t = (char *)N[i];
@@ -2601,7 +2609,7 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 	/*@modifies t @*/
 {
     *t = '\0';
-#if !defined(__alpha__)
+#if !defined(__alpha__) && ( !defined(__sun) && !defined(__unix) )
     if (isElf64) {
 	if (s[strlen(s)-1] != ')')
 	(void) stpcpy( stpcpy(t, s), "()(64bit)");
@@ -3024,6 +3032,224 @@ fprintf(stderr, "*** %s(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n", __FUNCTIO
 
 exit:
     if (fp != NULL) (void) pclose(fp);
+    return rc;
+}
+
+#if HAVE_LIBELF && !HAVE_GELF_GETVERNAUX
+/* We have gelf.h and libelf, but we don't have some of the
+ * helper functions gelf_getvernaux(), gelf_getverneed(), etc.
+ * Provide our own simple versions here.
+ */
+
+static GElf_Verdef *gelf_getverdef(Elf_Data *data, int offset,
+                   GElf_Verdef *dst)
+{
+	return (GElf_Verdef *) ((char *) data->d_buf + offset);
+}
+
+static GElf_Verdaux *gelf_getverdaux(Elf_Data *data, int offset,
+                    GElf_Verdaux *dst)
+{
+	return (GElf_Verdaux *) ((char *) data->d_buf + offset);
+}
+
+static GElf_Verneed *gelf_getverneed(Elf_Data *data, int offset,
+                    GElf_Verneed *dst)
+{
+	return (GElf_Verneed *) ((char *) data->d_buf + offset);
+}
+
+static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
+                    GElf_Vernaux *dst)
+{
+	return (GElf_Vernaux *) ((char *) data->d_buf + offset);
+}
+
+/* Most non-Linux systems won't have SHT_GNU_verdef or SHT_GNU_verneed,
+ * but they might have something mostly-equivalent.  Solaris has
+ * SHT_SUNW_{verdef,verneed}
+ */
+#if !defined(SHT_GNU_verdef) && defined(__sun) && defined(SHT_SUNW_verdef)
+# define SHT_GNU_verdef SHT_SUNW_verdef
+# define SHT_GNU_verneed SHT_SUNW_verneed
+#endif
+
+#endif /* HAVE_LIBELF && !HAVE_GELF_GETVERNAUX */
+#endif /* HAVE_GELF_H */
+
+
+#define	_RLD_SEARCH_PATH	"/lib:/usr/lib"
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char * _rld_search_path = NULL;
+
+/* search a colon-separated list of directories for shared objects */
+int rpmdsRldpath(rpmPRCO PRCO, const char * rldp)
+	/*@globals _rld_search_path @*/
+	/*@modifies _rld_search_path @*/
+{
+    char buf[BUFSIZ];
+    const char *N, *EVR;
+    int_32 Flags = 0;
+    rpmds ds;
+    const char * f;
+    const char * g;
+    int rc = -1;
+    int xx;
+    glob_t  gl;
+    char ** gp;
+
+    if (PRCO == NULL)
+	return -1;
+
+/*@-modobserver@*/
+    if (_rld_search_path == NULL) {
+	_rld_search_path = rpmExpand("%{?_rpmds_rld_search_path}", NULL);
+	/* XXX may need to validate path existence somewhen. */
+	if (!(_rld_search_path != NULL && *_rld_search_path == '/')) {
+/*@-observertrans @*/
+	    _rld_search_path = _free(_rld_search_path);
+/*@=observertrans @*/
+	    _rld_search_path = xstrdup(_RLD_SEARCH_PATH);
+	}
+    }
+/*@=modobserver@*/
+
+/*@-branchstate@*/
+    if (rldp == NULL)
+	rldp = _rld_search_path;
+/*@=branchstate@*/
+
+if (_rpmds_debug > 0)
+fprintf(stderr, "*** %s(%p, %s) P %p R %p C %p O %p\n", __FUNCTION__, PRCO, rldp, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp);
+
+    f = rldp;
+    /* move through the path, splitting on : */
+    while (f) {
+	EVR = NULL;
+	g = strchr(f, ':');
+	if (g == NULL) {
+	    strcpy(buf, f);
+	    /* this is the last element, no more :'s */
+	    f = NULL;
+	} else {
+	    /* copy this chunk to buf */
+	    strncpy(buf, f, g - f + 1);
+	    buf[g-f] = '\0';
+
+	    /* get ready for next time through */
+	    f = g + 1;
+	}
+
+	if ( !(strlen(buf) > 0 && buf[0] == '/') )
+	    continue;
+
+	/* XXX: danger, buffer len */
+	/* XXX: *.so.* should be configurable via a macro */
+	strcat(buf, "/*.so.*");
+
+if (_rpmds_debug > 0)
+fprintf(stderr, "*** %s(%p, %s) globbing %s\n", __FUNCTION__, PRCO, rldp, buf);
+
+	xx = glob(buf, 0, NULL, &gl);
+	if (xx)		/* glob error, probably GLOB_NOMATCH */
+	    continue;
+
+if (_rpmds_debug > 0)
+fprintf(stderr, "*** %s(%p, %s) glob matched %d files\n", __FUNCTION__, PRCO, rldp, gl.gl_pathc);
+
+	gp = gl.gl_pathv;
+	/* examine each match */
+	while (gp && *gp) {
+	    const char *DSOfn;
+	    /* XXX: should probably verify that we matched a file */
+	    DSOfn = *gp;
+	    gp++;
+	    if (EVR == NULL)
+		EVR = "";
+
+	    /* N needs to be basename of DSOfn */
+	    N = DSOfn + strlen(DSOfn);
+	    while (N > DSOfn && *N != '/')
+		--N;
+
+	    Flags |= RPMSENSE_PROBE;
+	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
+	    xx = rpmdsMerge(PRCO->Pdsp, ds);
+	    ds = rpmdsFree(ds);
+
+	    xx = rpmdsELF(DSOfn, 0, rpmdsMergePRCO, PRCO);
+	}
+	globfree(&gl);
+    }
+    rc = 0;
+
+    return rc;
+}
+
+#define	_SOLARIS_CRLE	"/usr/sbin/crle"
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+static const char * _crle_cmd = NULL;
+
+int rpmdsCrle(rpmPRCO PRCO, const char * fn)
+	/*@globals _crle_cmd @*/
+	/*@modifies _crle_cmd @*/
+{
+    char buf[BUFSIZ];
+    char * f;
+    char * g, * ge;
+    FILE * fp = NULL;
+    int rc = -1;	/* assume failure */
+    int xx;
+    int found_dlp = 0;
+
+    if (PRCO == NULL)
+	return -1;
+
+/*@-modobserver@*/
+    if (_crle_cmd == NULL) {
+	_crle_cmd = rpmExpand("%{?_rpmds_crle_cmd}", NULL);
+	if (!(_crle_cmd != NULL && *_crle_cmd == '/')) {
+/*@-observertrans @*/
+	    _crle_cmd = _free(_crle_cmd);
+/*@=observertrans @*/
+	    _crle_cmd = xstrdup(_SOLARIS_CRLE);
+	}
+    }
+
+    /* XXX: we rely on _crle_cmd including the -64 arg, if ELF64 */
+    fp = popen(_crle_cmd, "r");
+    if (fp == NULL)
+	return rc;
+
+    /* 
+     * we want the first line that contains "(ELF):"
+     * we cannot search for "Default Library Path (ELF):" because that
+     * changes in non-C locales.
+     */
+    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+	if (found_dlp)	/* XXX read all data? */
+	    continue;
+
+	g = strstr(f, "(ELF):");
+	if (g == NULL)
+	    continue;
+
+	found_dlp = 1;
+	f = g + (sizeof("(ELF):")-1);
+	while (_isspace(*f))
+	    f++;
+
+	/* rtrim path */
+	ge = f + strlen(f);
+	while (--ge > f && _isspace(*ge))
+	    *ge = '\0';
+    }
+    xx = pclose(fp);
+
+    /* we have the loader path, let rpmdsRldpath() do the work */
+    if (found_dlp)
+	rc = rpmdsRldpath(PRCO, f);
+
     return rc;
 }
 

@@ -528,6 +528,31 @@ int rpmdsLdconfig(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
+ * Given a colon-separated list of directories, search each of those
+ * directories for (ELF or ELF64) shared objects, and load the provided
+ * shared objects into a dependency set.
+ * @todo Add dependency colors, and attach to file.
+ * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
+ * @param rldp		:-sep string of dirs (NULL uses /lib:/usr/lib)
+ * @return		0 on success
+ */
+int rpmdsRldpath(rpmPRCO PRCO, /*@null@*/ const char * rldp)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/**
+ * Use Solaris' crle(1) command to find the ELF (or ELF64) loader path.
+ * calls rpmdsRldpath once it has the loader path.
+ * @todo Add dependency colors, and attach to file.
+ * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
+ * @param fn		unused.
+ * @return		0 on success
+ */
+int rpmdsCrle(rpmPRCO PRCO, /*@null@*/ const char * fn)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/**
  * Load uname(2) provides into a dependency set.
  * @retval *dsp		(loaded) depedency set
  * @param un		utsname struct (NULL calls uname(2))

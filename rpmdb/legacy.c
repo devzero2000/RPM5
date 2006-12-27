@@ -5,7 +5,15 @@
 #include "system.h"
 
 #if HAVE_GELF_H
-
+#if LIBELF_H_LFS_CONFLICT
+/* some gelf.h/libelf.h implementations (Solaris) are
+ * incompatible with the Large File API
+ */
+# undef _LARGEFILE64_SOURCE
+# undef _LARGEFILE_SOURCE
+# undef _FILE_OFFSET_BITS
+# define _FILE_OFFSET_BITS 32
+#endif
 #include <gelf.h>
 
 #if !defined(DT_GNU_PRELINKED)

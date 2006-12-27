@@ -858,6 +858,18 @@ print (t)\
 %_rpmds_ldconfig_cmd	/sbin/ldconfig -p
 %_rpmds_ldconfig_cache	/etc/ld.so.cache
 
+# A colon-separated list of directories which should match the rld's
+# (runtime loader) list of directories it searches for shared objects.
+# Only used on platforms that don't have a configurable loader search
+# path via ldconfig, crle, or something similar. 
+%_rpmds_rld_search_path	/lib:/usr/lib
+
+#
+# Full path and arguments to Solaris' command to list what directories
+# the runtime loader searches.  Needs to include `-64' for LP64 Solaris
+# systems.
+%_rpmds_crle_cmd		/usr/bin/crle
+
 #
 %_rpmds_getconf_path	/
 
