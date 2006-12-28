@@ -249,6 +249,9 @@ dnl XXX Watchout for square brackets fed to m4.
 AC_SUBST(__ID_U)
 
 AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
+AC_PATH_PROG(__INSTALL_INFO, install-info, /sbin/install-info, $MYPATH)
+AC_PATH_PROG(__LDCONFIG, ldconfig, /sbin/ldconfig, $MYPATH)
+AC_PATH_PROG(__LUA, lua, /usr/bin/lua, $MYPATH)
 AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
 AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
 AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
@@ -266,12 +269,16 @@ AC_MSG_CHECKING(old version of patch)
 
 AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
 AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
+AC_PATH_PROG(__PHP, php, /usr/bin/php, $MYPATH)
 AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
+AC_PATH_PROG(__SH, sh, /bin/sh, $MYPATH)
 AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
 AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
+AC_PATH_PROG(__TCLSH, tclsh, /usr/bin/tclsh, $MYPATH)
+AC_PATH_PROG(__XAR, xar, /usr/bin/xar, $MYPATH)
 
 AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
 AC_PATH_PROG(__NM, nm, /usr/bin/nm, $MYPATH)
@@ -1507,6 +1514,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
  	lua/Makefile
  	syck/Makefile
  	syck/lib/Makefile
+	wdj/Makefile
 	wnh/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in

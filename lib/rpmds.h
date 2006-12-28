@@ -31,6 +31,8 @@ struct rpmds_s {
     const char * Type;		/*!< Tag name. */
 /*@only@*/ /*@null@*/
     const char * DNEVR;		/*!< Formatted dependency string. */
+/*@only@*/ /*@null@*/
+    const char * _N;		/*!< Macro expanded Name. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
 /*@only@*/ /*@relnull@*/
@@ -162,14 +164,23 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
+ * Return N string, expanded if necessary.
+ * @param ds		dependency set
+ * @return		new N string (malloc'ed)
+ */
+/*@only@*/
+char * rpmdsNewN(rpmds ds)
+	/*@modifies ds @*/;
+
+/**
  * Return new formatted dependency string.
  * @param dspfx		formatted dependency string prefix
  * @param ds		dependency set
  * @return		new formatted dependency (malloc'ed)
  */
 /*@only@*/
-char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
-	/*@*/;
+char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
+	/*@modifies ds @*/;
 
 /**
  * Create, load and initialize a dependency for this header. 
@@ -234,8 +245,8 @@ extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
  * @return		current dependency name, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-extern const char * rpmdsN(/*@null@*/ const rpmds ds)
-	/*@*/;
+extern const char * rpmdsN(/*@null@*/ rpmds ds)
+	/*@modifies ds @*/;
 
 /**
  * Return current dependency epoch-version-release.

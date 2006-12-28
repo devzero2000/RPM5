@@ -47,6 +47,9 @@
 %__gzip			@GZIPBIN@
 %__id			@__ID@
 %__install		@__INSTALL@
+%__install_info		@__INSTALL_INFO@
+%__ldconfig		@__LDCONFIG@
+%__lua			@__LUA@
 %__ln_s			@LN_S@
 %__make			@__MAKE@
 %__mkdir		@__MKDIR@
@@ -55,12 +58,16 @@
 %__patch		@__PATCH@
 %__perl			@__PERL@
 %__pgp			@PGPBIN@
+%__php			@__PHP@
 %__python		@__PYTHON@
 %__rm			@__RM@
 %__rsh			@__RSH@
 %__sed			@__SED@
+%__sh			@__SH@
 %__ssh			@__SSH@
 %__tar			@__TAR@
+%__tclsh		@__TCLSH@
+%__xar			@__XAR@
 %__unzip		@UNZIPBIN@
 
 #==============================================================================

@@ -211,6 +211,8 @@ int parseScript(Spec spec, int parsePart)
 		    rc = RPMERR_BADSPEC;
 		    goto exit;
 		}
+	    } else if (prog[0] == '%') {
+		/* XXX check well-formed macro? */
 	    } else if (prog[0] != '/') {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: script program must begin "

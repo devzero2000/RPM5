@@ -482,6 +482,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     DBT * data = alloca(sizeof(*data));
     rpmdbMatchIterator mi;
     const char * Name;
+    int_32 Flags;
     Header h;
     int _cacheThisRC = 1;
     int rc;
@@ -490,6 +491,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
+    Flags = rpmdsFlags(dep);
 
     /*
      * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
@@ -549,7 +551,7 @@ retry:
 	xx = rpmExpandNumeric(Name);
 	/* XXX how should macro values be mapped? */
 	rc = (xx ? 0 : 1);
-	if (rpmdsFlags(dep) & RPMSENSE_MISSINGOK)
+	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
 	rpmdsNotify(dep, _("(macro probe)"), rc);
 	goto exit;
@@ -568,7 +570,7 @@ retry:
 	))
     {
 	rc = rpmioAccess(Name, NULL, X_OK);
-	if (rpmdsFlags(dep) & RPMSENSE_MISSINGOK)
+	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
 	rpmdsNotify(dep, _("(access probe)"), rc);
 	goto exit;
@@ -679,7 +681,7 @@ retry:
 	    goto unsatisfied;
 
 	/* Search using the original {EVR,"",Flags} from the dep set. */
-	ds = rpmdsSingle(rpmdsTagN(dep), rpmdsEVR(dep), "", rpmdsFlags(dep));
+	ds = rpmdsSingle(rpmdsTagN(dep), rpmdsEVR(dep), "", Flags);
 	xx = rpmdsSearch(sonameP, ds);
 	ds = rpmdsFree(ds);
 	PRCO = rpmdsFreePRCO(PRCO);
@@ -754,7 +756,7 @@ retry:
 /*@=boundsread@*/
 
 unsatisfied:
-    if (rpmdsFlags(dep) & RPMSENSE_MISSINGOK) {
+    if (Flags & RPMSENSE_MISSINGOK) {
 	rc = 0;	/* dependency is unsatisfied, but just a hint. */
 	rpmdsNotify(dep, _("(hint skipped)"), rc);
     } else {

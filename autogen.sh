@@ -62,6 +62,12 @@ fi
 #    (echo "--- sqlite"; cd sqlite; sh ./autogen.sh --disable-tcl "$@")
 #fi
 
+for d in wdj wnh yaml; do
+    [ -d $d ] && continue
+    mkdir -p $d
+    touch $d/Makefile.in
+done
+
 echo "--- rpm"
 $libtoolize --copy --force
 aclocal

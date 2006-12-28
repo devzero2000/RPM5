@@ -61,6 +61,7 @@
 	- solaris: first stab at probe dependencies through /usr/bin/crle.
 	- generalize sysinfo to read multiple tag files from directory.
 	- create (and check) per-transaction Requires:/Conflicts: dependencies.
+	- permit macros for scriptlet interpreters and dependencies.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

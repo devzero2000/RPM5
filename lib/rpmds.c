@@ -147,6 +147,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     /*@=branchstate@*/
 
     ds->DNEVR = _free(ds->DNEVR);
+    ds->_N = _free(ds->_N);
     ds->Color = _free(ds->Color);
     ds->Refs = _free(ds->Refs);
     ds->Result = _free(ds->Result);
@@ -339,15 +340,24 @@ exit:
 /*@=compdef =usereleased@*/
 }
 
-char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
+char * rpmdsNewN(rpmds ds)
 {
-    char * tbuf, * t;
-    size_t nb;
+    const char * Name = ds->N[ds->i];
+    int_32 Flags = rpmdsFlags(ds);
+    if (Name[0] == '%' && (Flags & RPMSENSE_INTERP))
+	Name = ds->_N = rpmExpand(Name, NULL);
+    return Name;
+}
 
-    nb = 0;
+char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
+{
+    const char * Name = rpmdsNewN(ds);
+    char * tbuf, * t;
+    size_t nb = 0;
+
     if (dspfx)	nb += strlen(dspfx) + 1;
 /*@-boundsread@*/
-    if (ds->N[ds->i])	nb += strlen(ds->N[ds->i]);
+    if (Name)	nb += strlen(Name);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (nb)	nb++;
@@ -368,8 +378,8 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 	t = stpcpy(t, dspfx);
 	*t++ = ' ';
     }
-    if (ds->N[ds->i])
-	t = stpcpy(t, ds->N[ds->i]);
+    if (Name)
+	t = stpcpy(t, Name);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (t != tbuf)	*t++ = ' ';
@@ -567,8 +577,7 @@ const char * rpmdsN(const rpmds ds)
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 /*@-boundsread@*/
-	if (ds->N != NULL)
-	    N = ds->N[ds->i];
+	N = (ds->_N ? ds->_N : rpmdsNewN(ds));
 /*@=boundsread@*/
     }
     return N;
@@ -783,6 +792,7 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 	    char t[2];
 	    i = ds->i;
 	    ds->DNEVR = _free(ds->DNEVR);
+	    ds->_N = _free(ds->_N);
 	    t[0] = ((ds->Type != NULL) ? ds->Type[0] : '\0');
 	    t[1] = '\0';
 	    /*@-nullstate@*/

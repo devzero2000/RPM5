@@ -1023,6 +1023,7 @@ static rpmRC runInstScript(rpmpsm psm)
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     void ** progArgv;
     int progArgc;
+    const char * argv0 = NULL;
     const char ** argv;
     rpmTagType ptt, stt;
     const char * script;
@@ -1047,11 +1048,15 @@ static rpmRC runInstScript(rpmpsm psm)
     }
     /*@=branchstate@*/
 
+    if (*argv[0] == '%')
+	argv[0] = argv0 = rpmExpand(argv[0], NULL);
+
     if (fi->h != NULL)	/* XXX can't happen */
     rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), progArgc, argv,
 		script, psm->scriptArg, -1);
 
 exit:
+    argv0 = _free(argv0);
     progArgv = hfd(progArgv, ptt);
     script = hfd(script, stt);
     return rc;

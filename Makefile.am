@@ -11,7 +11,7 @@ EXTRA_DIST = config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader GROUPS INSTAL
 	xmlspec/examples/*.sh xmlspec/examples/*.lst \
 	xmlspec/examples/*.xmlspec \
 	perl/* \
-	wdj/JBJ-GPG-KEY wnh/Makefile.in \
+	wdj/JBJ-GPG-KEY wdj/Makefile.in wnh/Makefile.in \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
