@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2006-12-27 15:59-0500\n"
+"POT-Creation-Date: 2006-12-28 16:01-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -745,7 +745,7 @@ msgstr "Неможливо перезавантажити заголовок п�
 msgid "Could not open %s: %s\n"
 msgstr "Не вдається відкрити %s: %s\n"
 
-#: build/pack.c:741 lib/psm.c:1691
+#: build/pack.c:741 lib/psm.c:1696
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не вдається записати пакет: %s\n"
@@ -775,7 +775,7 @@ msgstr "Неможливо прочитати вміст з %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Неможливо записати вміст з %s: %s\n"
 
-#: build/pack.c:834 lib/psm.c:2008
+#: build/pack.c:834 lib/psm.c:2013
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
@@ -830,17 +830,17 @@ msgstr "відсутній опис у %%changelog\n"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "рядок %d: Помилка аналізу %%description: %s\n"
 
-#: build/parseDescription.c:60 build/parseFiles.c:56 build/parseScript.c:229
+#: build/parseDescription.c:60 build/parseFiles.c:56 build/parseScript.c:231
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "рядок %d: Неправильний параметр %s: %s\n"
 
-#: build/parseDescription.c:71 build/parseFiles.c:70 build/parseScript.c:243
+#: build/parseDescription.c:71 build/parseFiles.c:70 build/parseScript.c:245
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "рядок %d: Надто багато імен: %s\n"
 
-#: build/parseDescription.c:79 build/parseFiles.c:79 build/parseScript.c:252
+#: build/parseDescription.c:79 build/parseFiles.c:79 build/parseScript.c:254
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "рядок %d: Пакет не існує: %s\n"
@@ -1077,7 +1077,7 @@ msgstr "рядок %d: Потрібна версія: %s\n"
 msgid "line %d: triggers must have --: %s\n"
 msgstr "рядок %d: тригери повинні містити --: %s\n"
 
-#: build/parseScript.c:197 build/parseScript.c:268
+#: build/parseScript.c:197 build/parseScript.c:270
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "рядок %d: помилка аналізу %s: %s\n"
@@ -1087,17 +1087,17 @@ msgstr "рядок %d: помилка аналізу %s: %s\n"
 msgid "line %d: internal script must end with '>': %s\n"
 msgstr "рядок %d: програми в сценаріях повинні починатись з '/': %s\n"
 
-#: build/parseScript.c:216
+#: build/parseScript.c:218
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "рядок %d: програми в сценаріях повинні починатись з '/': %s\n"
 
-#: build/parseScript.c:260
+#: build/parseScript.c:262
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr "рядок %d: Другий %s\n"
 
-#: build/parseScript.c:306
+#: build/parseScript.c:308
 #, fuzzy, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "рядок %d: Помилка аналізу %%description: %s\n"
@@ -1396,76 +1396,76 @@ msgstr "жоден пакет не вимагає %s\n"
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:538
+#: lib/depends.c:540
 msgid "(cached)"
 msgstr "(кешований)"
 
-#: lib/depends.c:554
+#: lib/depends.c:556
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc постачає)"
 
-#: lib/depends.c:573
+#: lib/depends.c:575
 #, fuzzy
 msgid "(access probe)"
 msgstr "(rpmrc постачає)"
 
-#: lib/depends.c:586
+#: lib/depends.c:588
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:606
+#: lib/depends.c:608
 msgid "(rpmlib provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:622
+#: lib/depends.c:624
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:638
+#: lib/depends.c:640
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib постачає)"
 
-#: lib/depends.c:654
+#: lib/depends.c:656
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(додано залежність)"
 
-#: lib/depends.c:689
+#: lib/depends.c:691
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(додано залежність)"
 
-#: lib/depends.c:716
+#: lib/depends.c:718
 msgid "(db files)"
 msgstr "(db файли)"
 
-#: lib/depends.c:729
+#: lib/depends.c:731
 msgid "(db provides)"
 msgstr "(db постачає)"
 
-#: lib/depends.c:759
+#: lib/depends.c:761
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1211
+#: lib/depends.c:1213
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ігноруються зв'язки між іменами пакетів [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1338
+#: lib/depends.c:1340
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
-#: lib/depends.c:1607
+#: lib/depends.c:1609
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
-#: lib/depends.c:1728
+#: lib/depends.c:1730
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1474,20 +1474,20 @@ msgstr ""
 "========== сортування пакетів (порядок, #predecessors, #succesors, дерево, "
 "глибина)\n"
 
-#: lib/depends.c:1819
+#: lib/depends.c:1821
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== лише спадкоємці (%d байт)\n"
 
-#: lib/depends.c:1892
+#: lib/depends.c:1894
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1923
+#: lib/depends.c:1925
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
-#: lib/depends.c:1928
+#: lib/depends.c:1930
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
@@ -2507,35 +2507,35 @@ msgstr "%s(%s-%s-%s) помилка сценарію, код завершенн�
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) помилка сценарію, код завершення %d\n"
 
-#: lib/psm.c:1431
+#: lib/psm.c:1436
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s містить %d файлів, результат перевірки: %d\n"
 
-#: lib/psm.c:1592
+#: lib/psm.c:1597
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s помилка сценарію, (%d), пропущено %s\n"
 
-#: lib/psm.c:1703
+#: lib/psm.c:1708
 msgid "Unable to reload signature header\n"
 msgstr "Неможливо перезавантажити заголовок підпису\n"
 
-#: lib/psm.c:1803
+#: lib/psm.c:1808
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "помилка розпаковування архіву%s%s: %s\n"
 
-#: lib/psm.c:1804
+#: lib/psm.c:1809
 msgid " on file "
 msgstr " на файлі "
 
-#: lib/psm.c:2016
+#: lib/psm.c:2021
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s помилка на файлі %s: %s\n"
 
-#: lib/psm.c:2019
+#: lib/psm.c:2024
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s помилка: %s\n"
@@ -2753,90 +2753,90 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:772 lib/rpmds.c:3655
+#: lib/rpmds.c:781 lib/rpmds.c:3665
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:772 lib/rpmds.c:3655
+#: lib/rpmds.c:781 lib/rpmds.c:3665
 msgid "YES"
 msgstr "ТАК"
 
-#: lib/rpmds.c:1262
+#: lib/rpmds.c:1272
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, та Obsoletes: залежності підтримують версії."
 
-#: lib/rpmds.c:1265
+#: lib/rpmds.c:1275
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "імена файлу(ів) зберігаються у форматі (dirName,baseName,dirIndex)"
 
-#: lib/rpmds.c:1268
+#: lib/rpmds.c:1278
 msgid "package payload can be compressed using bzip2."
 msgstr "вміст пакету може бути стиснений програмою bzip2."
 
-#: lib/rpmds.c:1271
+#: lib/rpmds.c:1281
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "для файлу(ів) вмісту пакета використовується префікс \"./\""
 
-#: lib/rpmds.c:1274
+#: lib/rpmds.c:1284
 msgid "package name-version-release is not implicitly provided."
 msgstr "назва-версія-випуск не надається автоматично."
 
-#: lib/rpmds.c:1277
+#: lib/rpmds.c:1287
 msgid "header tags are always sorted after being loaded."
 msgstr "ярлики тегів завжди сортуються після завантаження."
 
-#: lib/rpmds.c:1280
+#: lib/rpmds.c:1290
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "інтерпретатор сценаріїв може користуватись аргументами з заголовка."
 
-#: lib/rpmds.c:1283
+#: lib/rpmds.c:1293
 msgid "a hardlink file set may be installed without being complete."
 msgstr "набір жорстких посилань може встановитись частково."
 
-#: lib/rpmds.c:1286
+#: lib/rpmds.c:1296
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "сценарії пакета при встановленні можуть мати доступ до бази даних rpm."
 
-#: lib/rpmds.c:1290
+#: lib/rpmds.c:1300
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- не підтримується для рядків\n"
 
-#: lib/rpmds.c:1294
+#: lib/rpmds.c:1304
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1297
+#: lib/rpmds.c:1307
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1300
+#: lib/rpmds.c:1310
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1416
+#: lib/rpmds.c:1426
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1460
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1460
+#: lib/rpmds.c:1470
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3443 lib/rpmds.c:3473 lib/rpmds.c:3485
+#: lib/rpmds.c:3453 lib/rpmds.c:3483 lib/rpmds.c:3495
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3446
+#: lib/rpmds.c:3456
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2845,19 +2845,19 @@ msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#: lib/rpmds.c:3475
+#: lib/rpmds.c:3485
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3487
+#: lib/rpmds.c:3497
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3621
+#: lib/rpmds.c:3631
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2867,12 +2867,12 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3654
+#: lib/rpmds.c:3664
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:3678
+#: lib/rpmds.c:3688
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
@@ -2972,17 +2972,17 @@ msgstr "переміщується каталог %s у %s\n"
 msgid "open of %s failed: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpmgi.c:415
+#: lib/rpmgi.c:418
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
-#: lib/rpmgi.c:755 lib/rpminstall.c:670 lib/rpminstall.c:855
+#: lib/rpmgi.c:759 lib/rpminstall.c:670 lib/rpminstall.c:855
 #: lib/rpminstall.c:1468 lib/transaction.c:1117
 msgid "Failed dependencies:\n"
 msgstr "Незадоволені залежності:\n"
 
-#: lib/rpmgi.c:761 lib/rpminstall.c:677
+#: lib/rpmgi.c:765 lib/rpminstall.c:677
 msgid "    Suggested resolutions:\n"
 msgstr "  Запропоновані залежності:\n"
 
