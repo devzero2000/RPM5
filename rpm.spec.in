@@ -550,6 +550,8 @@ exit 0
 * Thu Dec 28 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.7
 - permit macros for scriptlet interpreters and dependencies.
 - rpmgi: add (*walkPathFilter) for rpmcache use.
+- permit "/X\ Y" in %_topdir use in scripts (#220449).
+- fix: rpmInstallSourcePackage() still needs scareMem=1.
 
 * Wed Dec 27 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.6
 - use rpmPRCO container transaction element dependency sets.

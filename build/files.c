@@ -1028,11 +1028,11 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 
 	    if (! fl->passedSpecialDoc) {
 		pkg->specialDoc = newStringBuf();
-		appendStringBuf(pkg->specialDoc, "DOCDIR=$RPM_BUILD_ROOT");
+		appendStringBuf(pkg->specialDoc, "DOCDIR=\"$RPM_BUILD_ROOT\"");
 		appendLineStringBuf(pkg->specialDoc, buf);
 		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, "rm -rf $DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, MKDIR_P " $DOCDIR");
+		appendLineStringBuf(pkg->specialDoc, "rm -rf \"$DOCDIR\"");
+		appendLineStringBuf(pkg->specialDoc, MKDIR_P " \"$DOCDIR\"");
 
 		/*@-temptrans@*/
 		*fileName = buf;
@@ -1043,7 +1043,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 
 	    appendStringBuf(pkg->specialDoc, "cp -pr ");
 	    appendStringBuf(pkg->specialDoc, specialDocBuf);
-	    appendLineStringBuf(pkg->specialDoc, " $DOCDIR");
+	    appendLineStringBuf(pkg->specialDoc, " \"$DOCDIR\"");
 	}
     }
 

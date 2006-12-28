@@ -63,6 +63,8 @@
 	- create (and check) per-transaction Requires:/Conflicts: dependencies.
 	- permit macros for scriptlet interpreters and dependencies.
 	- rpmgi: add (*walkPathFilter) for rpmcache use.
+	- permit "/X\ Y" in %_topdir use in scripts (#220449).
+	- fix: rpmInstallSourcePackage() still needs scareMem=1.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

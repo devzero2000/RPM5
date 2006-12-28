@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2006-12-28 16:01-0500\n"
+"POT-Creation-Date: 2006-12-28 18:24-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -999,56 +999,56 @@ msgstr "(nije broj)"
 msgid "No source number %d\n"
 msgstr "(nije broj)"
 
-#: build/parsePrep.c:291
+#: build/parsePrep.c:293
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:306
+#: build/parsePrep.c:308
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:324
+#: build/parsePrep.c:326
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:466
+#: build/parsePrep.c:468
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:475
+#: build/parsePrep.c:477
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:487
+#: build/parsePrep.c:489
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:494
+#: build/parsePrep.c:496
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:501
+#: build/parsePrep.c:503
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:505
+#: build/parsePrep.c:507
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:597
+#: build/parsePrep.c:599
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "PGP omanuo"
 
-#: build/parsePrep.c:619
+#: build/parsePrep.c:621
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""

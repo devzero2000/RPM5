@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2006-12-28 16:01-0500\n"
+"POT-Creation-Date: 2006-12-28 18:24-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1008,56 +1008,56 @@ msgstr "Pas de numéro de patch %d\n"
 msgid "No source number %d\n"
 msgstr "Pas de numéro de source %d\n"
 
-#: build/parsePrep.c:291
+#: build/parsePrep.c:293
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Erreur d'analyse syntaxique du %%setup: %s\n"
 
-#: build/parsePrep.c:306
+#: build/parsePrep.c:308
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "ligne %d: mauvais argument à %%setup: %s\n"
 
-#: build/parsePrep.c:324
+#: build/parsePrep.c:326
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "ligne %d: mauvaise option à %%setup %s: %s\n"
 
-#: build/parsePrep.c:466
+#: build/parsePrep.c:468
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "ligne %d: %%patch -b a besoin d'un argument: %s\n"
 
-#: build/parsePrep.c:475
+#: build/parsePrep.c:477
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "ligne %d: %%patch -z a besoin d'un argument: %s\n"
 
-#: build/parsePrep.c:487
+#: build/parsePrep.c:489
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "ligne %d: %%patch -p a besoin d'un argument: %s\n"
 
-#: build/parsePrep.c:494
+#: build/parsePrep.c:496
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "ligne %d: mauvais argument à %%patch: %s\n"
 
-#: build/parsePrep.c:501
+#: build/parsePrep.c:503
 msgid "Too many patches!\n"
 msgstr "Trop de patchs !!!\n"
 
-#: build/parsePrep.c:505
+#: build/parsePrep.c:507
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "ligne %d: mauvais argument a %%patch: %s\n"
 
-#: build/parsePrep.c:597
+#: build/parsePrep.c:599
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "échec %s: %s\n"
 
-#: build/parsePrep.c:619
+#: build/parsePrep.c:621
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "ligne %d: deuxième %%prep\n"

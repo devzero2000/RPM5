@@ -133,7 +133,7 @@ static int checkOwners(const char * urlfn)
 
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"%s -d < %s | patch -p%d %s -s\n"
+		"%s -d < '%s' | patch -p%d %s -s\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
@@ -145,7 +145,7 @@ static int checkOwners(const char * urlfn)
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"patch -p%d %s -s < %s", c, (const char *) basename(fn),
+		"patch -p%d %s -s < '%s'", c, (const char *) basename(fn),
 		strip, args, fn);
     }
 
@@ -237,7 +237,9 @@ static int checkOwners(const char * urlfn)
 	t = stpcpy(buf, zipper);
 	zipper = _free(zipper);
 	*t++ = ' ';
+	*t++ = '\'';
 	t = stpcpy(t, fn);
+	*t++ = '\'';
 	if (needtar)
 	    t = stpcpy( stpcpy( stpcpy(t, " | tar "), taropts), " -");
 	t = stpcpy(t,
@@ -350,20 +352,20 @@ static int doSetupMacro(Spec spec, char *line)
 	const char *buildDir;
 
 	(void) urlPath(buildDirURL, &buildDir);
-	sprintf(buf, "cd %s", buildDir);
+	sprintf(buf, "cd '%s'", buildDir);
 	appendLineStringBuf(spec->prep, buf);
 	buildDirURL = _free(buildDirURL);
     }
     
     /* delete any old sources */
     if (!leaveDirs) {
-	sprintf(buf, "rm -rf %s", spec->buildSubdir);
+	sprintf(buf, "rm -rf '%s'", spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
     }
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	sprintf(buf, MKDIR_P " %s\ncd %s",
+	sprintf(buf, MKDIR_P " '%s'\ncd '%s'",
 		spec->buildSubdir, spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
     }
@@ -380,7 +382,7 @@ static int doSetupMacro(Spec spec, char *line)
     before = freeStringBuf(before);
 
     if (!createDir) {
-	sprintf(buf, "cd %s", spec->buildSubdir);
+	sprintf(buf, "cd '%s'", spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
     }
 
