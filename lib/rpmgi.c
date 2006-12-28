@@ -288,7 +288,10 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 
     if (gi->ftsp != NULL)
     while ((gi->fts = Fts_read(gi->ftsp)) != NULL) {
-	rpmrc = rpmgiWalkPathFilter(gi);
+	if (gi->walkPathFilter)
+	    rpmrc = (*gi->walkPathFilter) (gi);
+	else
+	    rpmrc = rpmgiWalkPathFilter(gi);
 	if (rpmrc == RPMRC_OK)
 	    break;
     }
@@ -528,6 +531,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->ftsOpts = 0;
     gi->ftsp = NULL;
     gi->fts = NULL;
+    gi->walkPathFilter = NULL;
 
     gi = rpmgiLink(gi, __FUNCTION__);
 

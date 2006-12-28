@@ -62,6 +62,7 @@
 	- generalize sysinfo to read multiple tag files from directory.
 	- create (and check) per-transaction Requires:/Conflicts: dependencies.
 	- permit macros for scriptlet interpreters and dependencies.
+	- rpmgi: add (*walkPathFilter) for rpmcache use.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

@@ -73,6 +73,8 @@ struct rpmgi_s {
     FTS * ftsp;
 /*@relnull@*/
     FTSENT * fts;
+/*@null@*/
+    rpmRC (*walkPathFilter) (rpmgi gi);
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
