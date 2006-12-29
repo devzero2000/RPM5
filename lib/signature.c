@@ -70,10 +70,10 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 {
     /* Actually this should support having more then one pgp version. */
     /* At the moment only one version is possible since we only       */
-    /* have one %_pgpbin and one %_pgp_path.                          */
+    /* have one %__pgp and one %_pgp_path.                          */
 
     static pgpVersion saved_pgp_version = PGP_UNKNOWN;
-    const char *pgpbin = rpmGetPath("%{?_pgpbin}", NULL);
+    const char *pgpbin = rpmGetPath("%{?__pgp}", NULL);
 
     if (saved_pgp_version == PGP_UNKNOWN) {
 	char *pgpvbin;

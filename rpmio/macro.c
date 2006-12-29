@@ -1166,16 +1166,19 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	switch(compressed) {
 	default:
 	case 0:	/* COMPRESSED_NOT */
-	    sprintf(be, "%%_cat %s", b);
+	    sprintf(be, "%%__cat %s", b);
 	    break;
 	case 1:	/* COMPRESSED_OTHER */
-	    sprintf(be, "%%_gzip -dc %s", b);
+	    sprintf(be, "%%__gzip -dc %s", b);
 	    break;
 	case 2:	/* COMPRESSED_BZIP2 */
-	    sprintf(be, "%%_bzip2 %s", b);
+	    sprintf(be, "%%__bzip2 -dc %s", b);
 	    break;
 	case 3:	/* COMPRESSED_ZIP */
-	    sprintf(be, "%%_unzip %s", b);
+	    sprintf(be, "%%__unzip -qq %s", b);
+	    break;
+	case 4:	/* COMPRESSED_LZOP */
+	    sprintf(be, "%%__lzop %s", b);
 	    break;
 	}
 	b = be;
@@ -2108,6 +2111,9 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
 	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
 	*compressed = COMPRESSED_ZIP;
+    } else if ((magic[0] == 0x89) && (magic[1] == 'L') &&
+	 (magic[2] == 'Z') && (magic[3] == 'O')) {	/* lzop */
+	*compressed = COMPRESSED_LZOP;
     } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
 	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
 	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */

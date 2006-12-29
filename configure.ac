@@ -223,7 +223,7 @@ fi
 dnl
 dnl Find some common programs
 dnl
-AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
+AC_PATH_PROG(__BZIP2, bzip2, /usr/bin/bzip2, $MYPATH)
 AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
 AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
 AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
@@ -233,8 +233,8 @@ AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
 AC_PATH_PROG(__FILE, file, /usr/bin/file, $MYPATH)
 AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
 AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
-AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
-AC_PATH_PROG(UNZIPBIN, unzip, /usr/bin/unzip, $MYPATH)
+AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
+AC_PATH_PROG(__UNZIP, unzip, /usr/bin/unzip, $MYPATH)
 
 AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
 AC_MSG_CHECKING(checking whether id supports -u)
@@ -252,6 +252,7 @@ AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
 AC_PATH_PROG(__INSTALL_INFO, install-info, /sbin/install-info, $MYPATH)
 AC_PATH_PROG(__LDCONFIG, ldconfig, /sbin/ldconfig, $MYPATH)
 AC_PATH_PROG(__LUA, lua, /usr/bin/lua, $MYPATH)
+AC_PATH_PROG(__LZOP, lzop, /usr/bin/lzop, $MYPATH)
 AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
 AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
 AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
@@ -268,7 +269,7 @@ AC_MSG_CHECKING(old version of patch)
     fi
 
 AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
-AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
+AC_PATH_PROG(__PGP, pgp, /usr/bin/pgp, $MYPATH)
 AC_PATH_PROG(__PHP, php, /usr/bin/php, $MYPATH)
 AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)

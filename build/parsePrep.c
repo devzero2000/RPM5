@@ -16,10 +16,10 @@
     static int leaveDirs, skipDefaultAction;
 /*@unchecked@*/
     static int createDir, quietly;
-/*@unchecked@*/
-/*@observer@*/ /*@null@*/ static const char * dirName = NULL;
-/*@unchecked@*/
-/*@observer@*/ static struct poptOption optionsTable[] = {
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+    static const char * dirName = NULL;
+/*@unchecked@*/ /*@observer@*/
+    static struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
 	    { NULL, 'c', 0, &createDir, 0,		NULL, NULL},
@@ -65,7 +65,8 @@ static int checkOwners(const char * urlfn)
  * @return		expanded %patch macro (NULL on error)
  */
 /*@-boundswrite@*/
-/*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
+/*@observer@*/
+static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -127,9 +128,22 @@ static int checkOwners(const char * urlfn)
     }
 
     if (compressed) {
-	const char *zipper = rpmGetPath(
-	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
-	    NULL);
+	const char *zipper;
+
+	switch (compressed) {
+	case COMPRESSED_NOT:	/* XXX can't happen */
+	case COMPRESSED_OTHER:
+	case COMPRESSED_ZIP:	/* XXX wrong */
+	    zipper = "%{__gzip}";
+	    break;
+	case COMPRESSED_BZIP2:
+	    zipper = "%{__bzip2}";
+	    break;
+	case COMPRESSED_LZOP:
+	    zipper = "%{__lzop}";
+	    break;
+	}
+	zipper = rpmGetPath(zipper, NULL);
 
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
@@ -162,7 +176,8 @@ static int checkOwners(const char * urlfn)
  * @return		expanded %setup macro (NULL on error)
  */
 /*@-boundswrite@*/
-/*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
+/*@observer@*/
+static const char *doUntar(Spec spec, int c, int quietly)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -219,16 +234,19 @@ static int checkOwners(const char * urlfn)
 	switch (compressed) {
 	case COMPRESSED_NOT:	/* XXX can't happen */
 	case COMPRESSED_OTHER:
-	    t = "%{_gzipbin} -dc";
+	    t = "%{__gzip} -dc";
 	    break;
 	case COMPRESSED_BZIP2:
-	    t = "%{_bzip2bin} -dc";
+	    t = "%{__bzip2} -dc";
+	    break;
+	case COMPRESSED_LZOP:
+	    t = "%{__lzop} -dc";
 	    break;
 	case COMPRESSED_ZIP:
 	    if (rpmIsVerbose() && !quietly)
-		t = "%{_unzipbin}";
+		t = "%{__unzip}";
 	    else
-		t = "%{_unzipbin} -qq";
+		t = "%{__unzip} -qq";
 	    needtar = 0;
 	    break;
 	}

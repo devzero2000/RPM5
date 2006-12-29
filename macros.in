@@ -34,7 +34,7 @@
 # ---- Generally useful path macros.
 #
 %__awk			@AWK@
-%__bzip2		@BZIP2BIN@
+%__bzip2		@__BZIP2@
 %__cat			@__CAT@
 %__chgrp		@__CHGRP@
 %__chmod		@__CHMOD@
@@ -44,20 +44,22 @@
 %__file			@__FILE@
 %__gpg			@__GPG@
 %__grep			@__GREP@
-%__gzip			@GZIPBIN@
+%__gzip			@__GZIP@
 %__id			@__ID@
 %__install		@__INSTALL@
 %__install_info		@__INSTALL_INFO@
 %__ldconfig		@__LDCONFIG@
 %__lua			@__LUA@
 %__ln_s			@LN_S@
+%__lzop			@__LZOP@
 %__make			@__MAKE@
+%make			%{__make}
 %__mkdir		@__MKDIR@
 %__mkdir_p		@MKDIR_P@
 %__mv			@__MV@
 %__patch		@__PATCH@
 %__perl			@__PERL@
-%__pgp			@PGPBIN@
+%__pgp			@__PGP@
 %__php			@__PHP@
 %__python		@__PYTHON@
 %__rm			@__RM@
@@ -68,7 +70,7 @@
 %__tar			@__TAR@
 %__tclsh		@__TCLSH@
 %__xar			@__XAR@
-%__unzip		@UNZIPBIN@
+%__unzip		@__UNZIP@
 
 #==============================================================================
 # ---- Build system path macros.
@@ -155,9 +157,6 @@
 #	The interpreter used for build scriptlets.
 %_buildshell		/bin/sh
 
-#	The path to the bzip2 executable (legacy, use %{__bzip2} instead).
-%_bzip2bin		%{__bzip2}
-
 #	The location of the rpm database file(s).
 %_dbpath		%{_var}/lib/rpm
 
@@ -190,9 +189,6 @@ package or when debugging this package.\
 
 %_defaultdocdir		%{_usr}/doc
 
-#	The path to the gzip executable (legacy, use %{__gzip} instead).
-%_gzipbin		%{__gzip}
-
 #	The path to the pgp executable (legacy, use %{__pgp} instead).
 %_pgpbin		%{__pgp}
 
@@ -220,12 +216,10 @@ package or when debugging this package.\
 
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
+%tmpdir			%{_tmppath}
 
 #	Path to top of build area.
 %_topdir		%{_usrsrc}/rpm
-
-#	The path to the unzip executable (legacy, use %{__unzip} instead).
-%_unzipbin		%{__unzip}
 
 #==============================================================================
 # ---- Optional rpmrc macros.
