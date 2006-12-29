@@ -918,9 +918,10 @@ int pgpPrtUserID(const pgpPkt pp)
 	fprintf(stderr, " \"%.*s\"", (int)pp->hlen, (const char *)pp->h);
     pgpPrtNL();
     if (_digp) {
-	char * t;
-	_digp->userid = t = memcpy(xmalloc(pp->hlen+1), pp->h, pp->hlen);
+	char * t = memcpy(xmalloc(pp->hlen+1), pp->h, pp->hlen);
 	t[pp->hlen] = '\0';
+	_digp->userid = _free(_digp->userid);
+	_digp->userid = t;
     }
     return 0;
 }

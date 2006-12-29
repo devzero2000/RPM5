@@ -7,6 +7,8 @@
 const char *__progname;
 
 #include <rpmcli.h>
+#include <rpmlua.h>		/* XXX rpmluaFree() */
+#include <fs.h>			/* XXX rpmFreeFilesystems() */
 #include <fts.h>
 
 #include "debug.h"
@@ -455,6 +457,19 @@ struct poptOption rpmcliAllPoptTable[] = {
 poptContext
 rpmcliFini(poptContext optCon)
 {
+    /* keeps memory leak checkers quiet */
+    rpmFreeMacros(NULL);
+/*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
+    rpmFreeRpmrc();
+    (void) rpmluaFree(NULL);
+    rpmFreeFilesystems();
+/*@i@*/	urlFreeCache();
+    rpmlogClose();
+/*@i@*/	rpmcliTargets = _free(rpmcliTargets);
+
+    rpmTags->byName = _free(rpmTags->byName);
+    rpmTags->byValue = _free(rpmTags->byValue);
+
     optCon = poptFreeContext(optCon);
 
 #if HAVE_MCHECK_H && HAVE_MTRACE

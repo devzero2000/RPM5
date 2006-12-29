@@ -826,20 +826,10 @@ exit:
 
     ts = rpmtsFree(ts);
 
-    rpmFreeMacros(NULL);
-/*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
-    rpmFreeRpmrc();
-    (void) rpmluaFree(NULL);
-
     if (pipeChild) {
 	(void) fclose(stdout);
 	(void) waitpid(pipeChild, &status, 0);
     }
-
-    /* keeps memory leak checkers quiet */
-    rpmFreeFilesystems();
-/*@i@*/	urlFreeCache();
-    rpmlogClose();
 
 #ifdef	IAM_RPMQV
     qva->qva_queryFormat = _free(qva->qva_queryFormat);
@@ -855,7 +845,6 @@ exit:
 	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
     ia->relocations = _free(ia->relocations);
 #endif
-/*@i@*/	rpmcliTargets = _free(rpmcliTargets);
 
     optCon = rpmcliFini(optCon);
 

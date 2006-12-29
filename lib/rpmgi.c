@@ -303,9 +303,12 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 	    if (gi->fts != NULL)	/* XXX can't happen */
 		h = rpmgiReadHeader(gi, gi->fts->fts_path);
 	}
-	if (h != NULL)
+	if (h != NULL) {
 	    gi->h = headerLink(h);
-	h = headerFree(h);
+	    h = headerFree(h);
+	    if (gi->stash != NULL)
+		(void) (*gi->stash) (gi, gi->h);
+	}
     }
 
     return rpmrc;
