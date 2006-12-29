@@ -24,7 +24,7 @@ pkginc_HEADERS = \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	rpmsq.h rpmsw.h ugid.h
 noinst_HEADERS = md2.h md4.h rmd128.h rmd160.h tiger.h \
-	rpmio_internal.h rpmlua.h rpmhook.h
+	LzmaDecode.h rpmio_internal.h rpmlua.h rpmhook.h
 
 BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
 
@@ -36,7 +36,8 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c md2.c md4.c rmd128.c rmd160.c tiger.c \
 	rpmdav.c rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c strtolocale.c \
-	stubs.c url.c ugid.c
+	stubs.c url.c ugid.c \
+	LzmaDecode.c
 librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \

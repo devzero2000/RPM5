@@ -574,6 +574,11 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    /* Add prereq on rpm version that understands bzip2 payloads */
 	    (void) rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
 	}
+	if (s[1] == 'l' && s[2] == 'z') {
+	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
+		"lzma", 1);
+	    (void) rpmlibNeedsFeature(h, "PayloadIsLzma", "4.4.6-1");
+	}
 	strcpy(buf, rpmio_flags);
 	buf[s - rpmio_flags] = '\0';
 	(void) headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf+1, 1);

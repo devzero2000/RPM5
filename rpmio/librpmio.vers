@@ -91,6 +91,7 @@ LIBRPMIO_0
     Link;
     Lseek;
     Lstat;
+    lzdio;
     max_macro_depth;
     Mkdir;
     Mkfifo;

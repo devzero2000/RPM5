@@ -68,6 +68,7 @@
 	- rpmgi: add (*stash) for rpmcache use.
 	- move more memory cleanup to rpmcliFini().
 	- automagic unpacking of *.lzo sources/patches using lzop.
+	- include the PLD .lzdio patch to support lzma payload compression.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
