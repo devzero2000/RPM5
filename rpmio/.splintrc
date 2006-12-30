@@ -12,8 +12,15 @@
 +strict			# lclint level
 
 # --- in progress
-+bounds
+#+bounds
 -bufferoverflowhigh
+-shiftimplementation
+-shiftnegative
+
+-forempty
+-looploopbreak
+-nullptrarith
+-shadow
 
 # --- +partial artifacts
 -declundef

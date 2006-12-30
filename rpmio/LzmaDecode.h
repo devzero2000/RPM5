@@ -86,7 +86,8 @@ typedef struct _CLzmaProperties
   #endif
 }CLzmaProperties;
 
-int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsData, int size);
+int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsData, int size)
+	/*@modifies propsRes @*/;
 
 #define LzmaGetNumProbs(Properties) (LZMA_BASE_SIZE + (LZMA_LIT_SIZE << ((Properties)->lc + (Properties)->lp)))
 
@@ -98,7 +99,9 @@ typedef struct _CLzmaDecoderState
   CProb *Probs;
 
   #ifdef _LZMA_IN_CB
+/*@relnull@*/
   const unsigned char *Buffer;
+/*@relnull@*/
   const unsigned char *BufferLim;
   #endif
 
@@ -126,6 +129,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
     #else
     const unsigned char *inStream, SizeT inSize, SizeT *inSizeProcessed,
     #endif
-    unsigned char *outStream, SizeT outSize, SizeT *outSizeProcessed);
+    unsigned char *outStream, SizeT outSize, SizeT *outSizeProcessed)
+	/*@modifies vs, outStream, *outSizeProcessed @*/;
 
 #endif

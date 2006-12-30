@@ -2767,12 +2767,15 @@ FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 /*@=moduncon@*/
 #endif	/* HAVE_BZLIB_H */
 
+/* =============================================================== */
+/* Support for LZMA library.
+ */
 #include "LzmaDecode.h"
 
 #define kInBufferSize (1 << 15)
-typedef struct _CBuffer
-{
+typedef struct _CBuffer {
   ILzmaInCallback InCallback;
+/*@dependent@*/
   FILE *File;
   unsigned char Buffer[kInBufferSize];
 } CBuffer;
@@ -2782,26 +2785,34 @@ typedef struct lzfile {
     CLzmaDecoderState state;  /* it's about 24-80 bytes structure, if int is 32-bit */
     unsigned char properties[LZMA_PROPERTIES_SIZE];
 
-//    FILE *file;
+#if 0
+    FILE *file;
+#endif
     int pid;
 } LZFILE;
 
 static size_t MyReadFile(FILE *file, void *data, size_t size)
+	/*@globals fileSystem @*/
+	/*@modifies *file, *data, fileSystem @*/
 { 
     if (size == 0) return 0;
     return fread(data, 1, size, file); 
 }
 
 static int MyReadFileAndCheck(FILE *file, void *data, size_t size)
+	/*@globals fileSystem @*/
+	/*@modifies *file, *data, fileSystem @*/
 {
     return (MyReadFile(file, data, size) == size);
 }
 
 static int LzmaReadCompressed(void *object, const unsigned char **buffer, SizeT *size)
+	/*@globals fileSystem @*/
+	/*@modifies *buffer, *size, fileSystem @*/
 {
-    CBuffer *b = (CBuffer *)object;
+    CBuffer *b = object;
     *buffer = b->Buffer;
-    *size = (SizeT)MyReadFile(b->File, b->Buffer, kInBufferSize);
+    *size = MyReadFile(b->File, b->Buffer, kInBufferSize);
     return LZMA_RESULT_OK;
 }
 
@@ -2826,33 +2837,34 @@ static inline /*@dependent@*/ void * lzdFileno(FD_t fd)
 }
 
 static FD_t lzdWriteOpen(int fdno, int fopen)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     int pid;
     int p[2];
+    int xx;
 
     if (fdno < 0) return NULL;
     if (pipe(p) < 0) {
-        close(fdno);
+        xx = close(fdno);
         return NULL;
     }
     pid = fork();
     if (pid < 0) {
-        close(fdno);
+        xx = close(fdno);
         return NULL;
     }
     if (pid) {
         FD_t fd;
-        LZFILE *lzfile;
+        LZFILE * lzfile = xcalloc(1, sizeof(*lzfile));
 
-        close(fdno);
-        close(p[0]);
-        lzfile = calloc(1, sizeof(*lzfile));
-        if (lzfile == NULL) return NULL;
-        lzfile->g_InBuffer.File = fdopen(p[1], "wb");
+        xx = close(fdno);
+        xx = close(p[0]);
         lzfile->pid = pid;
+        lzfile->g_InBuffer.File = fdopen(p[1], "wb");
         if (lzfile->g_InBuffer.File == NULL) {
-            close(p[1]);
-            free(lzfile);
+            xx = close(p[1]);
+            lzfile = _free(lzfile);
             return NULL;
         }
         fd = fdNew("open (lzdOpen write)");
@@ -2862,48 +2874,49 @@ static FD_t lzdWriteOpen(int fdno, int fopen)
     } else {
         int i;
         /* lzma */
-        close(p[1]);
-        dup2(p[0], 0);
-        dup2(fdno, 1);
-        for (i = 3; i < 1024; i++) close(i);
-        if (execl("/usr/bin/lzma", "lzma", "e", "-si", "-so", NULL)) {
+        xx = close(p[1]);
+        xx = dup2(p[0], 0);
+        xx = dup2(fdno, 1);
+        for (i = 3; i < 1024; i++)
+	    xx = close(i);
+        if (execl("/usr/bin/lzma", "lzma", "e", "-si", "-so", NULL))
             _exit(1);
-	    }
     }
     return NULL; /* warning */
 }
 
 static FD_t lzdReadOpen(int fdno, int fopen)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     LZFILE *lzfile;
     unsigned char ff[8];
     FD_t fd;
+    size_t nb;
 
     if (fdno < 0) return NULL;
-    lzfile = calloc(1, sizeof(*lzfile));
+    lzfile = xcalloc(1, sizeof(*lzfile));
     if (lzfile == NULL) return NULL;
     lzfile->g_InBuffer.File = fdopen(fdno, "rb");
     if (lzfile->g_InBuffer.File == NULL) goto error2;
 
-    if (!MyReadFileAndCheck(lzfile->g_InBuffer.File, lzfile->properties, sizeof(lzfile->properties))) {
-error:
-        fclose(lzfile->g_InBuffer.File);
-error2:
-        free(lzfile);
-        return NULL;
-    }
+    if (!MyReadFileAndCheck(lzfile->g_InBuffer.File, lzfile->properties, sizeof(lzfile->properties)))
+            goto error;
+
+    memset(ff, 0, sizeof(ff));
     if (!MyReadFileAndCheck(lzfile->g_InBuffer.File, ff, 8)) goto error;
     if (LzmaDecodeProperties(&lzfile->state.Properties, lzfile->properties, LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK)
         goto error;
-    lzfile->state.Probs = (CProb *)malloc(LzmaGetNumProbs(&lzfile->state.Properties) * sizeof(CProb));
+    nb = LzmaGetNumProbs(&lzfile->state.Properties) * sizeof(*lzfile->state.Probs);
+    lzfile->state.Probs = xmalloc(nb);
     if (lzfile->state.Probs == NULL) goto error;
 
     if (lzfile->state.Properties.DictionarySize == 0)
         lzfile->state.Dictionary = 0;
     else {
-        lzfile->state.Dictionary = (unsigned char *)malloc(lzfile->state.Properties.DictionarySize);
+        lzfile->state.Dictionary = xmalloc(lzfile->state.Properties.DictionarySize);
         if (lzfile->state.Dictionary == NULL) {
-            free(lzfile->state.Probs);
+            lzfile->state.Probs = _free(lzfile->state.Probs);
             goto error;
         }
     }
@@ -2914,12 +2927,18 @@ error2:
     if (fopen) fdPop(fd);
     fdPush(fd, lzdio, lzfile, -1);
     return fdLink(fd, "lzdOpen");
+
+error:
+    (void) fclose(lzfile->g_InBuffer.File);
+error2:
+    lzfile = _free(lzfile);
+    return NULL;
 }
 
 /*@-globuse@*/
 static /*@null@*/ FD_t lzdOpen(const char * path, const char * mode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     if (mode == NULL)
         return NULL;
@@ -2974,7 +2993,7 @@ static int lzdFlush(FD_t fd)
 /*@-mustmod@*/		/* LCL: *buf is modified */
 static ssize_t lzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies *buf, fileSystem, internalState @*/
+	/*@modifies buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     LZFILE *lzfile;
@@ -2985,9 +3004,9 @@ static ssize_t lzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     lzfile = lzdFileno(fd);
     fdstat_enter(fd, FDSTAT_READ);
     if (lzfile->g_InBuffer.File)
-	/*@-compdef@*/
+/*@-compdef@*/
 	res = LzmaDecode(&lzfile->state, &lzfile->g_InBuffer.InCallback, buf, count, &rc);
-	/*@=compdef@*/
+/*@=compdef@*/
     if (res) {
 	if (lzfile)
 	    fd->errcookie = "Lzma: decoding error";
@@ -3042,22 +3061,21 @@ static int lzdClose( /*@only@*/ void * cookie)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    LZFILE *lzfile;
+    LZFILE * lzfile = lzdFileno(fd);
     int rc;
-
-    lzfile = lzdFileno(fd);
 
     if (lzfile == NULL) return -2;
     fdstat_enter(fd, FDSTAT_CLOSE);
-    /*@-noeffectuncon@*/ /* FIX: check rc */
-    fclose(lzfile->g_InBuffer.File);
-    if (lzfile->pid) wait4(lzfile->pid, NULL, 0, NULL);
+/*@-noeffectuncon@*/ /* FIX: check rc */
+    rc = fclose(lzfile->g_InBuffer.File);
+    if (lzfile->pid)
+	rc = wait4(lzfile->pid, NULL, 0, NULL);
     else { /* reading */
-        free(lzfile->state.Probs);
-        if (lzfile->state.Dictionary) free(lzfile->state.Dictionary);
+        lzfile->state.Probs = _free(lzfile->state.Probs);
+        lzfile->state.Dictionary = _free(lzfile->state.Dictionary);
     }
-    free(lzfile);
-    /*@=noeffectuncon@*/
+    lzfile = _free(lzfile);
+/*@=noeffectuncon@*/
     rc = 0;	/* XXX FIXME */
 
     /* XXX TODO: preserve fd if errors */

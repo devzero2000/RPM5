@@ -274,8 +274,8 @@ int Fclose( /*@killref@*/ FD_t fd)
 /**
  */
 /*@null@*/ FD_t	Fdopen(FD_t ofd, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies ofd, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ofd, fileSystem, internalState @*/;
 
 /**
  * fopen(3) clone.

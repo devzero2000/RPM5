@@ -169,7 +169,8 @@ typedef enum rpmCompressedMagic_e {
     COMPRESSED_OTHER		= 1,	/*!< gzip can handle */
     COMPRESSED_BZIP2		= 2,	/*!< bzip2 can handle */
     COMPRESSED_ZIP		= 3,	/*!< unzip can handle */
-    COMPRESSED_LZOP		= 4	/*!< lzop can handle */
+    COMPRESSED_LZOP		= 4,	/*!< lzop can handle */
+    COMPRESSED_LZMA		= 5	/*!< lzmash can handle */
 } rpmCompressedMagic;
 
 /**

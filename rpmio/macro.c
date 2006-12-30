@@ -2080,7 +2080,7 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     FD_t fd;
     ssize_t nb;
     int rc = -1;
-    unsigned char magic[4];
+    unsigned char magic[13];
 
     *compressed = COMPRESSED_NOT;
 
@@ -2106,22 +2106,28 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 
     rc = 0;
 
-    if ((magic[0] == 'B') && (magic[1] == 'Z')) {
+    if (magic[0] == 'B' && magic[1] == 'Z')
 	*compressed = COMPRESSED_BZIP2;
-    } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
-	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
+    else
+    if (magic[0] == 0120 && magic[1] == 0113
+     &&	magic[2] == 0003 && magic[3] == 0004)	/* pkzip */
 	*compressed = COMPRESSED_ZIP;
-    } else if ((magic[0] == 0x89) && (magic[1] == 'L') &&
-	 (magic[2] == 'Z') && (magic[3] == 'O')) {	/* lzop */
+    else
+    if (magic[0] == 0x89 && magic[1] == 'L'
+     &&	magic[2] == 'Z' && magic[3] == 'O')	/* lzop */
 	*compressed = COMPRESSED_LZOP;
-    } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
-	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
-	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */
-	((magic[0] == 0037) && (magic[1] == 0240)) ||	/* SCO lzh */
-	((magic[0] == 0037) && (magic[1] == 0235))	/* compress */
-	) {
+    else
+    /* XXX Ick, LZMA has no magic. See http://lkml.org/lkml/2005/6/13/285 */
+    if (magic[ 9] == 0x00 && magic[10] == 0x00 &&
+	magic[11] == 0x00 && magic[12] == 0x00)	/* lzmash */
+	*compressed = COMPRESSED_LZMA;
+    else
+    if ((magic[0] == 0037 && magic[1] == 0213)	/* gzip */
+     ||	(magic[0] == 0037 && magic[1] == 0236)	/* old gzip */
+     ||	(magic[0] == 0037 && magic[1] == 0036)	/* pack */
+     ||	(magic[0] == 0037 && magic[1] == 0240)	/* SCO lzh */
+     ||	(magic[0] == 0037 && magic[1] == 0235))	/* compress */
 	*compressed = COMPRESSED_OTHER;
-    }
 
     return rc;
 }
