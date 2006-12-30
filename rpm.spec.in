@@ -23,7 +23,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: @VERSION@
-Release: 0.7
+Release: 0.8
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
 License: LGPL
@@ -547,6 +547,13 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Dec 29 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.8
+- rpmgi: add (*stash) for rpmcache use.
+- move more memory cleanup to rpmcliFini().
+- automagic unpacking of *.lzo sources/patches using lzop.
+- include the PLD .lzdio patch to support lzma payload compression.
+- automagic unpacking of *.lzma sources/patches using lzma.
+
 * Thu Dec 28 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.7
 - permit macros for scriptlet interpreters and dependencies.
 - rpmgi: add (*walkPathFilter) for rpmcache use.

@@ -5,7 +5,7 @@
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
-# should be added to /etc/rpm/macros, while per-user configuration should
+# should be added to %{_etcrpm}/macros, while per-user configuration should
 # be added to ~/.rpmmacros.
 #
 #==============================================================================
@@ -29,11 +29,14 @@
 %_usr			@prefix@
 %_usrsrc		%{_usr}/src
 %_var			@varprefix@
+%_usrlibrpm		@RPMCONFIGDIR@
+%_etcrpm		@SYSCONFIGDIR@
 
 #==============================================================================
 # ---- Generally useful path macros.
 #
 %__awk			@AWK@
+%__bash			@__BASH@
 %__bzip2		@__BZIP2@
 %__cat			@__CAT@
 %__chgrp		@__CHGRP@
@@ -41,10 +44,16 @@
 %__chown		@__CHOWN@
 %__cp			@__CP@
 %__cpio			@__CPIO@
+%__curl			@__CURL@
+%__cvs			@__CVS@
+%__diff			@__DIFF@
+%__ditto		@__DITTO@
 %__file			@__FILE@
+%__find			@__FIND@
 %__gpg			@__GPG@
 %__grep			@__GREP@
 %__gzip			@__GZIP@
+%__hg			@__HG@
 %__id			@__ID@
 %__install		@__INSTALL@
 %__install_info		@__INSTALL_INFO@
@@ -60,6 +69,7 @@
 %__mkdir_p		@MKDIR_P@
 %__mv			@__MV@
 %__patch		@__PATCH@
+%__pax			@__PAX@
 %__perl			@__PERL@
 %__pgp			@__PGP@
 %__php			@__PHP@
@@ -69,10 +79,12 @@
 %__sed			@__SED@
 %__sh			@__SH@
 %__ssh			@__SSH@
+%__svn			@__SVN@
 %__tar			@__TAR@
 %__tclsh		@__TCLSH@
-%__xar			@__XAR@
 %__unzip		@__UNZIP@
+%__wget			@__WGET@
+%__xar			@__XAR@
 
 #==============================================================================
 # ---- Build system path macros.
@@ -169,7 +181,7 @@
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
 %__debug_install_post   \
-   @RPMCONFIGDIR@/find-debuginfo.sh %{_builddir}/%{?buildsubdir}\
+   %{_usrlibrpm}/find-debuginfo.sh %{_builddir}/%{?buildsubdir}\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -370,7 +382,7 @@ package or when debugging this package.\
 # Returns list of unpackaged files, i.e. files in $RPM_BUILD_ROOT not packaged.
 #
 # Note: Disable (by commenting out) for legacy compatibility.
-%__check_files         @RPMCONFIGDIR@/check-files %{buildroot}
+%__check_files         %{_usrlibrpm}/check-files %{buildroot}
 
 #
 # Should unpackaged files in a build root terminate a build?
@@ -433,17 +445,17 @@ print (t)\
 # Path to scripts to autogenerate package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is zero.
-#%__find_provides	@RPMCONFIGDIR@/rpmdeps --provides
-#%__find_requires	@RPMCONFIGDIR@/rpmdeps --requires
-%__find_provides	@RPMCONFIGDIR@/find-provides
-%__find_requires	@RPMCONFIGDIR@/find-requires
+#%__find_provides	%{_usrlibrpm}/rpmdeps --provides
+#%__find_requires	%{_usrlibrpm}/rpmdeps --requires
+%__find_provides	%{_usrlibrpm}/find-provides
+%__find_requires	%{_usrlibrpm}/find-requires
 #%__find_conflicts	???
 #%__find_obsoletes	???
 
 #
 # fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
 # These macros are necessary only for legacy compatibility, and have moved
-# to per-platform macro configuration (i.e. @RPMCONFIGDIR@/<arch>-<os>/macros)
+# to per-platform macro configuration (i.e. %{_usrlibrpm}/arch>-<os>/macros)
 #
 # Note: These are no longer enabled by default.
 #%__id_u		@__ID_U@
@@ -679,7 +691,7 @@ print (t)\
 
 #
 # XXX rpm-4.1 verifies prelinked libraries using a prelink undo helper.
-#	Normally this macro is defined in /etc/rpm/macros.prelink, installed
+#	Normally this macro is defined in %{_etcrpm}/macros.prelink, installed
 #	with the prelink package. If the macro is undefined, then prelinked
 #	shared libraries contents are MD5 digest verified (as usual), rather
 #	than MD5 verifying the output of the prelink undo helper.
@@ -728,7 +740,7 @@ print (t)\
 
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-vendor location. The macro is usually defined in
-#	/etc/rpm/macros.solve, installed with the rpmdb-vendor package.
+#	%{_etcrpm}/macros.solve, installed with the rpmdb-vendor package.
 #%_solve_dbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/rpm
 
 #	The path to the dependency universe packages. This should
@@ -737,7 +749,7 @@ print (t)\
 
 #	The output binary package file name template used when suggesting
 #	binary packages that solve a dependency. The macro is usually defined
-#	in /etc/rpm/macros.solve, installed with the rpmdb-vendor package.
+#	in %{_etcrpm}/macros.solve, installed with the rpmdb-vendor package.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
 #%_solve_name_fmt	%{?_solve_pkgsdir}%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
@@ -856,7 +868,7 @@ print (t)\
 %_rpmds_cpuinfo_path	/proc/cpuinfo
 
 #
-%_rpmds_sysinfo_path	/etc/rpm/sysinfo
+%_rpmds_sysinfo_path	%{_etcrpm}/sysinfo
 
 #
 %_rpmds_ldconfig_cmd	/sbin/ldconfig -p
@@ -878,7 +890,7 @@ print (t)\
 %_rpmds_getconf_path	/
 
 #
-%_rpmds_perldeps_cmd	/usr/bin/find /usr/lib/perl5 | /usr/lib/rpm/perl.prov
+%_rpmds_perldeps_cmd	%{__find} %{_libdir}/perl5 | %{_usrlibrpm}/perl.prov
 
 #==============================================================================
 # ---- Cache configuration macros.
@@ -888,14 +900,22 @@ print (t)\
 #	Note: These values were specific to my machine, and most certainly
 #	are incorrect for any other machine. The macros are
 #	included here only to document the macro names and usage.
-%_bhpath        file://localhost/mnt/dist
-%_bhcoll        @(7.3|7.2|7.1|7.1sbe|7.1k|7.0|7.01j|7.0j|7.0sbe|7.0tc|6.2|6.2ha|6.2ee|6.1|6.0|5.2|5.1|5.0)
-%_bhN           @(SRPMS|i386|alpha|sparc|s390|ia64)
-%_bhVR          @(RedHat|Fedora)
-%_bhA           RPMS
+#%_bhpath        file://localhost/mnt/dist
+#%_bhcoll        @(7.3|7.2|7.1|7.1sbe|7.1k|7.0|7.01j|7.0j|7.0sbe|7.0tc|6.2|6.2ha|6.2ee|6.1|6.0|5.2|5.1|5.0)
+#%_bhN           @(SRPMS|i386|alpha|sparc|s390|ia64)
+#%_bhVR          @(RedHat|Fedora)
+#%_bhA           RPMS
+
+#
+# A configuration to build an rpmdb from yum package
+%_bhpath        file://localhost/var/cache/yum
+%_bhcoll        @(updates)
+%_bhN           @(packages)
+%_bhVR          %{nil}
+%_bhA           %{nil}
 
 #	The cache database directory.
-%_cache_dbpath		/var/spool/up2date/cache
+%_cache_dbpath		/var/cache/yum/rpmdb
 
 #==============================================================================
 # ---- per-platform macros.
@@ -1106,6 +1126,7 @@ print (t)\
 %_oldincludedir		/usr/include
 %_infodir		%{_prefix}/info
 %_mandir		%{_prefix}/man
+%_localedir		%{_datadir}/locale
 
 #==============================================================================
 # ---- config.guess platform macros.
@@ -1260,7 +1281,7 @@ done \
 # ...
 # %files -f %{name}.lang
 #
-%find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
+%find_lang	%{_usrlibrpm}/find-lang.sh %{buildroot}
 
 #------------------------------------------------------------------------
 # lua macros
@@ -1280,11 +1301,11 @@ end\
 # Path to scripts to autogenerate perl package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-#%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
-#%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
-%__perl_provides	@RPMCONFIGDIR@/perl.prov
-%__perl_requires	@RPMCONFIGDIR@/perl.req
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+#%__perl_provides	%{_usrlibrpm}/perldeps.pl --provides
+#%__perl_requires	%{_usrlibrpm}/perldeps.pl --requires
+%__perl_provides	%{_usrlibrpm}/perl.prov
+%__perl_requires	%{_usrlibrpm}/perl.req
 
 # Useful macros for building *.rpm perl packages.
 #	(from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
@@ -1325,9 +1346,9 @@ end\
 # Path to scripts to autogenerate python package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-%__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
-%__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+%__python_provides	%{_usrlibrpm}/pythondeps.sh --provides
+%__python_requires	%{_usrlibrpm}/pythondeps.sh --requires
 
 # Useful macros for building *.rpm python packages (for python > 1.6).
 #
@@ -1350,11 +1371,11 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # Path to scripts to autogenerate php package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-#%__php_provides	@RPMCONFIGDIR@/phpdeps.sh --provides
-#%__php_requires	@RPMCONFIGDIR@/phpdeps.sh --requires
-#%__php_provides		@RPMCONFIGDIR@/php.prov
-#%__php_requires		@RPMCONFIGDIR@/php.req
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+#%__php_provides	%{_usrlibrpm}/phpdeps.sh --provides
+#%__php_requires	%{_usrlibrpm}/phpdeps.sh --requires
+#%__php_provides		%{_usrlibrpm}/php.prov
+#%__php_requires		%{_usrlibrpm}/php.req
 
 #------------------------------------------------------------------------
 # java(...) configuration.
@@ -1362,9 +1383,9 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # Path to scripts to autogenerate java package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-%__java_provides	@RPMCONFIGDIR@/javadeps.sh --provides
-%__java_requires	@RPMCONFIGDIR@/javadeps.sh --requires
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+%__java_provides	%{_usrlibrpm}/javadeps.sh --provides
+%__java_requires	%{_usrlibrpm}/javadeps.sh --requires
 
 #------------------------------------------------------------------------
 # libtool(...) configuration.
@@ -1372,9 +1393,9 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # Path to scripts to autogenerate libtool package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-%__libtool_provides	@RPMCONFIGDIR@/libtooldeps.sh --provides %{buildroot}
-%__libtool_requires	@RPMCONFIGDIR@/libtooldeps.sh --requires %{buildroot}
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+%__libtool_provides	%{_usrlibrpm}/libtooldeps.sh --provides %{buildroot}
+%__libtool_requires	%{_usrlibrpm}/libtooldeps.sh --requires %{buildroot}
 
 #------------------------------------------------------------------------
 # pkgconfig(...) configuration.
@@ -1382,9 +1403,9 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # Path to scripts to autogenerate pkgconfig package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-%__pkgconfig_provides	@RPMCONFIGDIR@/pkgconfigdeps.sh --provides
-%__pkgconfig_requires	@RPMCONFIGDIR@/pkgconfigdeps.sh --requires
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+%__pkgconfig_provides	%{_usrlibrpm}/pkgconfigdeps.sh --provides
+%__pkgconfig_requires	%{_usrlibrpm}/pkgconfigdeps.sh --requires
 
 #------------------------------------------------------------------------
 # executable(...) configuration.
@@ -1392,9 +1413,9 @@ PreReq: python >= %{python_version}, python < %{maxver}
 # Path to scripts to autogenerate executable(foo) script dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-#%__executable_provides	@RPMCONFIGDIR@/executabledeps.sh --provides
-#%__executable_requires	@RPMCONFIGDIR@/executabledeps.sh --requires
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+#%__executable_provides	%{_usrlibrpm}/executabledeps.sh --provides
+#%__executable_requires	%{_usrlibrpm}/executabledeps.sh --requires
 %__scriptlet_requires	/bin/bash --rpm-requires
 
 # \endverbatim

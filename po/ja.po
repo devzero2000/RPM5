@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2006-12-28 18:24-0500\n"
+"POT-Creation-Date: 2006-12-29 21:57-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -81,7 +81,7 @@ msgstr "引数は RPM パッケージではありません。\n"
 msgid "error reading header from package\n"
 msgstr "パッケージのヘッダ読み込み中にエラー\n"
 
-#: rpm2cpio.c:81
+#: rpm2cpio.c:83
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "ペイロードを再オープンできません: %s\n"
@@ -131,7 +131,7 @@ msgstr "全モード・コマンドで共通のオプション:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:151 lib/poptALL.c:143
+#: rpmqv.c:151 lib/poptALL.c:145
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
@@ -361,7 +361,7 @@ msgstr "検証のための引数が指定されていません。"
 msgid "no arguments given"
 msgstr "引数が指定されていません。"
 
-#: build/build.c:140 build/pack.c:606
+#: build/build.c:140 build/pack.c:611
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません。\n"
 
@@ -702,7 +702,7 @@ msgstr "readRPM: %s のオープン: %s\n"
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:324 build/pack.c:653
+#: build/pack.c:324 build/pack.c:658
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek に失敗しました: %s\n"
@@ -717,77 +717,77 @@ msgstr "readRPM: %s は RPM パッケージではありません\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からヘッダの読み込み中\n"
 
-#: build/pack.c:593
+#: build/pack.c:598
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダ領域を作成できません。\n"
 
-#: build/pack.c:613
+#: build/pack.c:618
 msgid "Unable to write temp header\n"
 msgstr "一時ヘッダの書き込みができません。\n"
 
-#: build/pack.c:623
+#: build/pack.c:628
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ\n"
 
-#: build/pack.c:660
+#: build/pack.c:665
 msgid "Unable to write final header\n"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: build/pack.c:680
+#: build/pack.c:685
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の作成中: %d\n"
 
-#: build/pack.c:698
+#: build/pack.c:703
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: build/pack.c:706
+#: build/pack.c:711
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:741 lib/psm.c:1696
+#: build/pack.c:746 lib/psm.c:1696
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:756
+#: build/pack.c:761
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s のオープンに失敗: %s\n"
 
-#: build/pack.c:767
+#: build/pack.c:772
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s からヘッダ読み込みに失敗: %s\n"
 
-#: build/pack.c:781
+#: build/pack.c:786
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s へのヘッダ書き込みに失敗: %s\n"
 
-#: build/pack.c:791
+#: build/pack.c:796
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s から Payload 読み込みに失敗: %s\n"
 
-#: build/pack.c:797
+#: build/pack.c:802
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:834 lib/psm.c:2013
+#: build/pack.c:839 lib/psm.c:2013
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:902
+#: build/pack.c:907
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:919
+#: build/pack.c:924
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -992,66 +992,66 @@ msgstr "%d 行目: 不明なタグ: %s\n"
 msgid "Bad source: %s: %s\n"
 msgstr "不正なソース: %s: %s\n"
 
-#: build/parsePrep.c:101
+#: build/parsePrep.c:102
 #, c-format
 msgid "No patch number %d\n"
 msgstr "パッチ番号 %d はありません\n"
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:201
 #, c-format
 msgid "No source number %d\n"
 msgstr "ソース番号 %d はありません\n"
 
-#: build/parsePrep.c:293
+#: build/parsePrep.c:317
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup の構文解析エラー: %s\n"
 
-#: build/parsePrep.c:308
+#: build/parsePrep.c:332
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 行目: %%setup への不正な引数: %s\n"
 
-#: build/parsePrep.c:326
+#: build/parsePrep.c:350
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 行目: 不正な %%setup オプション %s: %s\n"
 
-#: build/parsePrep.c:468
+#: build/parsePrep.c:492
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 行目: %%patch -b には引数が必要です: %s\n"
 
-#: build/parsePrep.c:477
+#: build/parsePrep.c:501
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 行目: %%patch -z には引数が必要です: %s\n"
 
-#: build/parsePrep.c:489
+#: build/parsePrep.c:513
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p には引数が必要です: %s\n"
 
-#: build/parsePrep.c:496
+#: build/parsePrep.c:520
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p への不正な引数: %s\n"
 
-#: build/parsePrep.c:503
+#: build/parsePrep.c:527
 msgid "Too many patches!\n"
 msgstr "パッチが多すぎます!\n"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:531
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 行目: %%patch への不正な引数: %s\n"
 
-#: build/parsePrep.c:599
+#: build/parsePrep.c:623
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
 
-#: build/parsePrep.c:621
+#: build/parsePrep.c:645
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 行目: 2番目の %%prep\n"
@@ -1250,17 +1250,17 @@ msgstr "ビルドのどの段階も実行しない"
 msgid "do not verify build dependencies"
 msgstr "ビルド依存性を検証しない"
 
-#: build/poptBT.c:204 lib/poptALL.c:349 lib/poptI.c:355 lib/poptQV.c:407
+#: build/poptBT.c:204 lib/poptALL.c:351 lib/poptI.c:355 lib/poptQV.c:407
 #: lib/poptQV.c:416 lib/poptQV.c:458
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:206 lib/poptALL.c:351 lib/poptI.c:357 lib/poptQV.c:410
+#: build/poptBT.c:206 lib/poptALL.c:353 lib/poptI.c:357 lib/poptQV.c:410
 #: lib/poptQV.c:418 lib/poptQV.c:461
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:208 lib/poptALL.c:357 lib/poptI.c:359 lib/poptQV.c:413
+#: build/poptBT.c:208 lib/poptALL.c:359 lib/poptI.c:359 lib/poptQV.c:413
 #: lib/poptQV.c:420 lib/poptQV.c:463
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
@@ -1289,7 +1289,7 @@ msgstr "PGP/GPG 署名を生成します。"
 msgid "override target platform"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: build/poptBT.c:221 lib/poptALL.c:346 lib/poptQV.c:318
+#: build/poptBT.c:221 lib/poptALL.c:348 lib/poptQV.c:318
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1731,205 +1731,205 @@ msgstr "%s: headerRead に失敗しました: %s"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/poptALL.c:263
+#: lib/poptALL.c:265
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: コマンドラインのシンボリックリンクを追いかけます"
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:267
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: 論理探索"
 
-#: lib/poptALL.c:267
+#: lib/poptALL.c:269
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: ディレクトリを変更しません。"
 
-#: lib/poptALL.c:269
+#: lib/poptALL.c:271
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: ステータス情報を取得しません。"
 
-#: lib/poptALL.c:271
+#: lib/poptALL.c:273
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: 物理探索"
 
-#: lib/poptALL.c:273
+#: lib/poptALL.c:275
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: ドット(.)とドットドット(..)を返します。"
 
-#: lib/poptALL.c:275
+#: lib/poptALL.c:277
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: 他のファイルシステムを探索しません。"
 
-#: lib/poptALL.c:277
+#: lib/poptALL.c:279
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: 修正された情報を返します。"
 
-#: lib/poptALL.c:287 lib/poptI.c:221 lib/poptQV.c:288 lib/poptQV.c:335
+#: lib/poptALL.c:289 lib/poptI.c:221 lib/poptQV.c:288 lib/poptQV.c:335
 msgid "add suggested packages to transaction"
 msgstr "トランザクションに提案パッケージを追加します。"
 
-#: lib/poptALL.c:290 lib/poptI.c:224
+#: lib/poptALL.c:292 lib/poptI.c:224
 msgid "use anaconda \"presentation order\""
 msgstr "anaconda の \"presentation order\" を使う"
 
-#: lib/poptALL.c:293 lib/poptI.c:227
+#: lib/poptALL.c:295 lib/poptI.c:227
 msgid "print dependency loops as warning"
 msgstr "依存のループを警告として表示します。"
 
-#: lib/poptALL.c:296 lib/poptI.c:230
+#: lib/poptALL.c:298 lib/poptI.c:230
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "不足する依存関係の解決を提案しません。"
 
-#: lib/poptALL.c:299 lib/poptI.c:233
+#: lib/poptALL.c:301 lib/poptI.c:233
 #, fuzzy
 msgid "do not check added package conflicts"
 msgstr "パッケージ指定のスクリプトを実行しません。"
 
-#: lib/poptALL.c:302 lib/poptI.c:236
+#: lib/poptALL.c:304 lib/poptI.c:236
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:305 lib/poptI.c:239
+#: lib/poptALL.c:307 lib/poptI.c:239
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:308 lib/poptI.c:242
+#: lib/poptALL.c:310 lib/poptI.c:242
 #, fuzzy
 msgid "ignore added package requires on file parent directory"
 msgstr "削除されたパッケージを、サブディレクトリに名前を変えて保存します。"
 
-#: lib/poptALL.c:311 lib/poptI.c:245
+#: lib/poptALL.c:313 lib/poptI.c:245
 #, fuzzy
 msgid "do not check added package requires"
 msgstr "パッケージ指定のスクリプトを実行しません。"
 
-#: lib/poptALL.c:314 lib/poptI.c:248
+#: lib/poptALL.c:316 lib/poptI.c:248
 #, fuzzy
 msgid "ignore added package upgrades"
 msgstr "%s を提供するパッケージは存在しません。\n"
 
-#: lib/poptALL.c:334
+#: lib/poptALL.c:336
 msgid "predefine MACRO with value EXPR"
 msgstr "値 EXPR を持つマクロを予め定義します。"
 
-#: lib/poptALL.c:335 lib/poptALL.c:338
+#: lib/poptALL.c:337 lib/poptALL.c:340
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:337
+#: lib/poptALL.c:339
 msgid "define MACRO with value EXPR"
 msgstr "値 EXPR を持つ MACRO を定義します。"
 
-#: lib/poptALL.c:340
+#: lib/poptALL.c:342
 msgid "print macro expansion of EXPR"
 msgstr "EXPR のマクロを展開した結果を表示します。"
 
-#: lib/poptALL.c:341
+#: lib/poptALL.c:343
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:343 lib/poptALL.c:364 lib/poptALL.c:368
+#: lib/poptALL.c:345 lib/poptALL.c:366 lib/poptALL.c:370
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
 
-#: lib/poptALL.c:344 lib/poptALL.c:365 lib/poptALL.c:369
+#: lib/poptALL.c:346 lib/poptALL.c:367 lib/poptALL.c:371
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:346 lib/poptQV.c:318
+#: lib/poptALL.c:348 lib/poptQV.c:318
 #, fuzzy
 msgid "specify target platform"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: lib/poptALL.c:354 lib/poptALL.c:388
+#: lib/poptALL.c:356 lib/poptALL.c:390
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API の使用を無効にします。"
 
-#: lib/poptALL.c:360
+#: lib/poptALL.c:362
 msgid "send stdout to CMD"
 msgstr "標準出力を CMD に送信します。"
 
-#: lib/poptALL.c:361
+#: lib/poptALL.c:363
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:372
+#: lib/poptALL.c:374
 msgid "use ROOT as top level directory"
 msgstr "ROOT をトップディレクトリとして使用します。"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:375
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:376
+#: lib/poptALL.c:378
 msgid "display known query tags"
 msgstr "全問い合わせタグを表示します。"
 
-#: lib/poptALL.c:378
+#: lib/poptALL.c:380
 msgid "display final rpmrc and macro configuration"
 msgstr "最終的な rpmrc とマクロの設定を表示します。"
 
-#: lib/poptALL.c:380
+#: lib/poptALL.c:382
 msgid "provide less detailed output"
 msgstr "詳細でない出力を提供します。"
 
-#: lib/poptALL.c:382
+#: lib/poptALL.c:384
 msgid "provide more detailed output"
 msgstr "より詳細な出力を提供します。"
 
-#: lib/poptALL.c:384
+#: lib/poptALL.c:386
 msgid "print the version of rpm being used"
 msgstr "使用している rpm のバージョンを表示します。"
 
-#: lib/poptALL.c:395
+#: lib/poptALL.c:397
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:399
+#: lib/poptALL.c:401
 msgid "debug payload file state machine"
 msgstr "ペイロードのファイル状態マシンのデバッグ"
 
-#: lib/poptALL.c:401
+#: lib/poptALL.c:403
 msgid "use threads for file state machine"
 msgstr "ファイル状態マシンにスレッドを利用する"
 
-#: lib/poptALL.c:403
+#: lib/poptALL.c:405
 msgid "debug FTP/HTTP data stream"
 msgstr "FTP/HTTP プロトコルデータストリームのデバッグ"
 
-#: lib/poptALL.c:405
+#: lib/poptALL.c:407
 msgid "debug argv collections"
 msgstr "argv 収集のデバッグ"
 
-#: lib/poptALL.c:407
+#: lib/poptALL.c:409
 msgid "debug WebDAV data stream"
 msgstr "WebDAV プロトコルデータストリームのデバッグ"
 
-#: lib/poptALL.c:412
+#: lib/poptALL.c:414
 msgid "debug option/argument processing"
 msgstr "オプション/引数処理中のデバッグ"
 
-#: lib/poptALL.c:417
+#: lib/poptALL.c:419
 msgid "debug package state machine"
 msgstr "パッケージ状態マシンのデバッグ"
 
-#: lib/poptALL.c:419
+#: lib/poptALL.c:421
 msgid "use threads for package state machine"
 msgstr "パッケージ状態マシンにスレッドを利用する"
 
-#: lib/poptALL.c:433
+#: lib/poptALL.c:435
 msgid "debug rpmio I/O"
 msgstr "rpmio 入出力のデバッグ"
 
-#: lib/poptALL.c:445
+#: lib/poptALL.c:447
 #, fuzzy
 msgid "debug tar payloads"
 msgstr "argv 収集のデバッグ"
 
-#: lib/poptALL.c:449
+#: lib/poptALL.c:451
 msgid "debug URL cache handling"
 msgstr "URL キャッシュハンドリングのデバッグ"
 
-#: lib/poptALL.c:519
+#: lib/poptALL.c:534
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: オプションテーブルの設定が正しくありません (%d)\n"
@@ -2736,11 +2736,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:781 lib/rpmds.c:3665
+#: lib/rpmds.c:781 lib/rpmds.c:3668
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:781 lib/rpmds.c:3665
+#: lib/rpmds.c:781 lib/rpmds.c:3668
 msgid "YES"
 msgstr "YES"
 
@@ -2796,31 +2796,36 @@ msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
 #: lib/rpmds.c:1310
+#, fuzzy
+msgid "package payload can be compressed using lzma."
+msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
+
+#: lib/rpmds.c:1313
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1426
+#: lib/rpmds.c:1429
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
-#: lib/rpmds.c:1460
+#: lib/rpmds.c:1463
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1470
+#: lib/rpmds.c:1473
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3453 lib/rpmds.c:3483 lib/rpmds.c:3495
+#: lib/rpmds.c:3456 lib/rpmds.c:3486 lib/rpmds.c:3498
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3456
+#: lib/rpmds.c:3459
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2828,19 +2833,19 @@ msgid ""
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
-#: lib/rpmds.c:3485
+#: lib/rpmds.c:3488
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3497
+#: lib/rpmds.c:3500
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3631
+#: lib/rpmds.c:3634
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2849,12 +2854,12 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします (\"A\" と同じであると仮定して)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3664
+#: lib/rpmds.c:3667
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:3688
+#: lib/rpmds.c:3691
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"
@@ -2954,17 +2959,17 @@ msgstr "ディレクトリ %s を %s に再配置しています\n"
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/rpmgi.c:418
+#: lib/rpmgi.c:421
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明なタグ: \"%s\"\n"
 
-#: lib/rpmgi.c:759 lib/rpminstall.c:670 lib/rpminstall.c:855
+#: lib/rpmgi.c:762 lib/rpminstall.c:670 lib/rpminstall.c:855
 #: lib/rpminstall.c:1468 lib/transaction.c:1117
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpmgi.c:765 lib/rpminstall.c:677
+#: lib/rpmgi.c:768 lib/rpminstall.c:677
 msgid "    Suggested resolutions:\n"
 msgstr "    解決の提案:\n"
 
@@ -4186,41 +4191,41 @@ msgstr "マクロ %%%s (%s) はレベル %d 未満で使用されませんでした。\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
-#: rpmio/macro.c:1236
+#: rpmio/macro.c:1239
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ (%d) が最大値 (%d) より大きくなっています。\n"
 
-#: rpmio/macro.c:1309 rpmio/macro.c:1326
+#: rpmio/macro.c:1312 rpmio/macro.c:1329
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1367
+#: rpmio/macro.c:1370
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
 
-#: rpmio/macro.c:1524
+#: rpmio/macro.c:1527
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません。スキップします。\n"
 
-#: rpmio/macro.c:1861
+#: rpmio/macro.c:1864
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:1888
+#: rpmio/macro.c:1891
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2087 rpmio/macro.c:2093
+#: rpmio/macro.c:2090 rpmio/macro.c:2096
 #, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: rpmio/macro.c:2096
+#: rpmio/macro.c:2099
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
@@ -4243,59 +4248,59 @@ msgstr "サーバ I/O エラーです。"
 msgid "Unknown Error"
 msgstr "(エラーなし)"
 
-#: rpmio/rpmio.c:716
+#: rpmio/rpmio.c:719
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:739
+#: rpmio/rpmio.c:742
 msgid "Bad server response"
 msgstr "サーバからの不正な応答。"
 
-#: rpmio/rpmio.c:741
+#: rpmio/rpmio.c:744
 msgid "Server I/O error"
 msgstr "サーバ I/O エラーです。"
 
-#: rpmio/rpmio.c:743
+#: rpmio/rpmio.c:746
 msgid "Server timeout"
 msgstr "サーバがタイムアウトしました。"
 
-#: rpmio/rpmio.c:745
+#: rpmio/rpmio.c:748
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません。"
 
-#: rpmio/rpmio.c:747
+#: rpmio/rpmio.c:750
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません。"
 
-#: rpmio/rpmio.c:749
+#: rpmio/rpmio.c:752
 msgid "Failed to connect to server"
 msgstr "サーバとの接続に失敗しました。"
 
-#: rpmio/rpmio.c:751
+#: rpmio/rpmio.c:754
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータ接続確立に失敗しました。"
 
-#: rpmio/rpmio.c:753
+#: rpmio/rpmio.c:756
 msgid "I/O error to local file"
 msgstr "ローカルファイルの I/O エラーです。"
 
-#: rpmio/rpmio.c:755
+#: rpmio/rpmio.c:758
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバを passive モードに設定できませんでした。"
 
-#: rpmio/rpmio.c:757
+#: rpmio/rpmio.c:760
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません。"
 
-#: rpmio/rpmio.c:759
+#: rpmio/rpmio.c:762
 msgid "Abort in progress"
 msgstr "処理中の中断"
 
-#: rpmio/rpmio.c:763
+#: rpmio/rpmio.c:766
 msgid "Unknown or unexpected error"
 msgstr "不明または予期せぬエラー"
 
-#: rpmio/rpmio.c:1616
+#: rpmio/rpmio.c:1619
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s に %s (パスワード %s) でログイン中\n"
