@@ -220,6 +220,7 @@ static int getFilesystemList(void)
 		rpmFreeFilesystems();
 		return 1;
 		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case EACCES:	/* XXX fuse fs #220991 */
 	    case ESTALE:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;

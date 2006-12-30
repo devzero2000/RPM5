@@ -70,6 +70,7 @@
 	- automagic unpacking of *.lzo sources/patches using lzop.
 	- include the PLD .lzdio patch to support lzma payload compression.
 	- automagic unpacking of *.lzma sources/patches using lzma.
+	- skip EACCESS returns from stat(2) on mount points (#220991).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
