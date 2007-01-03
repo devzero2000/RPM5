@@ -71,7 +71,8 @@
 	- include the PLD .lzdio patch to support lzma payload compression.
 	- automagic unpacking of *.lzma sources/patches using lzma.
 	- skip EACCESS returns from stat(2) on mount points (#220991).
-	- permit files with glob characters in *.rpm packages (#147383).
+	- permit files with glob characters in *.rpm packages (#142771,#147383).
+	- gendiff: permit $DIFF override, add -p to default diff. (#146981).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
