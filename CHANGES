@@ -75,6 +75,7 @@
 	- gendiff: permit $DIFF override, add -p to default diff. (#146981).
 	- rpmio: use HEAD for servers that don't support PROPFIND (#206066).
 	- rpmio: add RPMURL_SERVER_* server capability flags.
+	- fix: report "not installed" for pkg.bogusarch (#124016).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
