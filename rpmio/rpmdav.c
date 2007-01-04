@@ -69,17 +69,28 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 }
 
 /* =============================================================== */
-static int davFree(urlinfo u)
+int davFree(urlinfo u)
 	/*@globals internalState @*/
 	/*@modifies u, internalState @*/
 {
-    if (u != NULL && u->sess != NULL) {
-	u->capabilities = _free(u->capabilities);
-	if (u->lockstore != NULL)
-	    ne_lockstore_destroy(u->lockstore);
-	u->lockstore = NULL;
-	ne_session_destroy(u->sess);
-	u->sess = NULL;
+    if (u != NULL) {
+	if (u->sess != NULL) {
+	    ne_session_destroy(u->sess);
+	    u->sess = NULL;
+	}
+	switch (u->urltype) {
+	default:
+	    /*@notreached@*/ break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
+	case URL_IS_HKP:
+	    u->capabilities = _free(u->capabilities);
+	    if (u->lockstore != NULL)
+		ne_lockstore_destroy(u->lockstore);
+	    u->lockstore = NULL;
+	    ne_sock_exit();
+	    break;
+	}
     }
     return 0;
 }
@@ -308,12 +319,14 @@ static int davConnect(urlinfo u)
 if (_dav_debug)
 fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
 		   u->host, u->port, rc, ne_get_error(u->sess));
-	u = urlLink(u, __FUNCTION__);	/* XXX error exit refcount adjustment */
 	break;
     }
 
     /* HACK: sensitive to error returns? */
     u->httpVersion = (ne_version_pre_http11(u->sess) ? 0 : 1);
+
+    if (rc != NE_OK)
+	u = urlLink(u, __FUNCTION__);	/* XXX error exit refcount adjustment */
 
     return rc;
 }
@@ -512,15 +525,8 @@ static void *fetch_create_context(const char *uri, /*@null@*/ struct stat *st)
     ctx = ne_calloc(sizeof(*ctx));
     ctx->uri = xstrdup(uri);
     ctx->u = urlLink(u, __FUNCTION__);
-    if ((ctx->st = st) != NULL) {
+    if ((ctx->st = st) != NULL)
 	memset(ctx->st, 0, sizeof(*ctx->st));
-	st->st_mode = S_IFREG;
-	st->st_blksize = 4 * 1024;	/* HACK correct for linux ext */
-	st->st_size = -1;
-	st->st_atime = -1;
-	st->st_mtime = -1;
-	st->st_ctime = -1;
-    }
     return ctx;
 }
 
@@ -803,6 +809,7 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 	current = fetch_destroy_item(current);
     }
     ctx->resrock = NULL;	/* HACK: avoid leaving stack reference. */
+    /* HACK realloc to truncate modes/sizes/mtimes */
 
     return rc;
 }
@@ -814,6 +821,13 @@ static int davHEAD(urlinfo u, struct stat *st)
     const char *htag;
     const char *value;
     int rc;
+
+    st->st_mode = S_IFREG;
+    st->st_blksize = 4 * 1024;	/* HACK correct for linux ext */
+    st->st_size = -1;
+    st->st_atime = -1;
+    st->st_mtime = -1;
+    st->st_ctime = -1;
 
     req = ne_request_create(u->sess, "HEAD", u->url);
 
@@ -894,8 +908,7 @@ fprintf(stderr, "*** Fetch from %s:%d failed:\n\t%s\n",
     }
 
 exit:
-    if (rc)
-	xx = davFree(u);
+    xx = davFree(u);
     return rc;
 }
 
@@ -1397,9 +1410,11 @@ fprintf(stderr, "==> %s fetch_create_context ctx %p\n", __FUNCTION__, ctx);
 	goto exit;
     }
 
-    st->st_mode = (ctx->modes ? ctx->modes[0] : st->st_mode);
+    if (st->st_mode == 0)
+	st->st_mode = (ctx->ac > 1 ? S_IFDIR : S_IFREG);
     st->st_size = (ctx->sizes ? ctx->sizes[0] : st->st_size);
     st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
+    st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     if (S_ISDIR(st->st_mode)) {
 	st->st_nlink = 2;
 	st->st_mode |= 0755;
@@ -1412,9 +1427,10 @@ fprintf(stderr, "==> %s fetch_create_context ctx %p\n", __FUNCTION__, ctx);
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
     if (st->st_ino == 0)
 	st->st_ino = dav_st_ino++;
+
+exit:
 if (_dav_debug < 0)
 fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
-exit:
     ctx = fetch_destroy_context(ctx);
     return rc;
 }
@@ -1441,9 +1457,11 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	goto exit;
     }
 
-    st->st_mode = ctx->modes[0];
-    st->st_size = ctx->sizes[0];
-    st->st_mtime = ctx->mtimes[0];
+    if (st->st_mode == 0)
+	st->st_mode = (ctx->ac > 1 ? S_IFDIR : S_IFREG);
+    st->st_size = (ctx->sizes ? ctx->sizes[0] : st->st_size);
+    st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
+    st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     if (S_ISDIR(st->st_mode)) {
 	st->st_nlink = 2;
 	st->st_mode |= 0755;
