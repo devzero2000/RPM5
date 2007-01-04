@@ -1048,7 +1048,7 @@ static rpmRC runInstScript(rpmpsm psm)
     }
     /*@=branchstate@*/
 
-    if (*argv[0] == '%')
+    if (argv && argv[0] && argv[0][0] == '%')
 	argv[0] = argv0 = rpmExpand(argv[0], NULL);
 
     if (fi->h != NULL)	/* XXX can't happen */

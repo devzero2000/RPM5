@@ -40,7 +40,9 @@ rpm	alias --scripts --qf '\
 %|POSTTRANSPROG?{ (using %{POSTTRANSPROG})}|:\n%{POSTTRANS}\n}:\
 {%|POSTTRANSPROG?{posttransinstall program: %{POSTTRANSPROG}\n}|}|\
 \
-%|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
+%|VERIFYSCRIPT?{verify scriptlet\
+%|VERIFYSCRIPTPROG?{ (using %{VERIFYSCRIPTPROG})}|:\n%{VERIFYSCRIPT}\n}:\
+{%|VERIFYSCRIPTPROG?{verifyscript program: %{VERIFYSCRIPTPROG}\n}|}|\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
@@ -362,7 +364,9 @@ rpmq	alias --scripts --qf '\
 %|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
 \
-%|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
+%|VERIFYSCRIPT?{verify scriptlet\
+%|VERIFYSCRIPTPROG?{ (using %{VERIFYSCRIPTPROG})}|:\n%{VERIFYSCRIPT}\n}:\
+{%|VERIFYSCRIPTPROG?{verifyscript program: %{VERIFYSCRIPTPROG}\n}|}|\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
@@ -471,7 +475,9 @@ rpmquery	alias --scripts --qf '\
 %|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
 \
-%|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
+%|VERIFYSCRIPT?{verify scriptlet\
+%|VERIFYSCRIPTPROG?{ (using %{VERIFYSCRIPTPROG})}|:\n%{VERIFYSCRIPT}\n}:\
+{%|VERIFYSCRIPTPROG?{verifyscript program: %{VERIFYSCRIPTPROG}\n}|}|\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
