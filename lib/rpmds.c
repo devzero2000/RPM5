@@ -1554,6 +1554,7 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	const char *dn = fn;
 	const char **av;
 	int tagN;
+	rc = 0;		/* assume success */
 	for (av = _sysinfo_tags; av && *av; av++) {
 	    tagN = tagValue(*av);
 	    if (tagN < 0)
