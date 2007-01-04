@@ -89,7 +89,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->data = NULL;
     u->bufAlloced = 0;
     u->buf = NULL;
-    u->httpHasRange = 1;
+    u->allow = RPMURL_SERVER_HASRANGE;
     u->httpVersion = 0;
     u->nrefs = 0;
     u->magic = URLMAGIC;

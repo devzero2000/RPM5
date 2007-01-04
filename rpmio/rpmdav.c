@@ -279,10 +279,24 @@ static int davConnect(urlinfo u)
     /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
     /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
+    /* XXX [hdr] Allow: GET,HEAD,POST,OPTIONS,TRACE */
     rc = ne_options(u->sess, path, u->capabilities);
     switch (rc) {
     case NE_OK:
-	break;
+    {	ne_server_capabilities *cap = u->capabilities;
+	if (cap->dav_class1)
+	    u->allow |= RPMURL_SERVER_HASDAVCLASS1;
+	else
+	    u->allow &= ~RPMURL_SERVER_HASDAVCLASS1;
+	if (cap->dav_class2)
+	    u->allow |= RPMURL_SERVER_HASDAVCLASS2;
+	else
+	    u->allow &= ~RPMURL_SERVER_HASDAVCLASS2;
+	if (cap->dav_executable)
+	    u->allow |= RPMURL_SERVER_HASDAVEXEC;
+	else
+	    u->allow &= ~RPMURL_SERVER_HASDAVEXEC;
+    }	break;
     case NE_ERROR:
 	/* HACK: "301 Moved Permanently" on empty subdir. */
 	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
@@ -454,6 +468,8 @@ struct fetch_context_s {
     int ac;
     int nalloced;
     ARGV_t av;
+/*@null@*/ /*@shared@*/
+    struct stat *st;
     mode_t * modes;
     size_t * sizes;
     time_t * mtimes;
@@ -481,7 +497,7 @@ static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s 
 }
 
 /*@null@*/
-static void *fetch_create_context(const char *uri)
+static void *fetch_create_context(const char *uri, /*@null@*/ struct stat *st)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
@@ -496,6 +512,15 @@ static void *fetch_create_context(const char *uri)
     ctx = ne_calloc(sizeof(*ctx));
     ctx->uri = xstrdup(uri);
     ctx->u = urlLink(u, __FUNCTION__);
+    if ((ctx->st = st) != NULL) {
+	memset(ctx->st, 0, sizeof(*ctx->st));
+	st->st_mode = S_IFREG;
+	st->st_blksize = 4 * 1024;	/* HACK correct for linux ext */
+	st->st_size = -1;
+	st->st_atime = -1;
+	st->st_mtime = -1;
+	st->st_ctime = -1;
+    }
     return ctx;
 }
 
@@ -698,7 +723,7 @@ static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
     (void) urlPath(u->url, &path);
     pfh = ne_propfind_create(u->sess, ctx->uri, depth);
 
-    /* HACK: need to set u->httpHasRange here. */
+    /* HACK: need to set RPMURL_SERVER_HASRANGE in u->allow here. */
 
     ctx->resrock = resrock;
     ctx->include_target = include_target;
@@ -782,6 +807,56 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
     return rc;
 }
 
+/* HACK this should be rewritten to use davReq/davResp w callbacks. */
+static int davHEAD(urlinfo u, struct stat *st) 
+{
+    ne_request *req;
+    const char *htag;
+    const char *value;
+    int rc;
+
+    req = ne_request_create(u->sess, "HEAD", u->url);
+
+    rc = ne_request_dispatch(req);
+    switch (rc) {
+    default:
+	goto exit;
+	/*@notreached@*/
+    case NE_OK:
+	if (ne_get_status(req)->klass != 2) {
+	    rc = NE_ERROR;
+	    goto exit;
+	}
+	break;
+    }
+
+#ifdef	NOTYET
+    htag = "ETag";
+    value = ne_get_response_header(req, htag); 
+    if (value) {
+	/* inode-size-mtime */
+    }
+#endif
+
+    htag = "Content-Length";
+    value = ne_get_response_header(req, htag); 
+    if (value) {
+	st->st_size = strtoll(value, NULL, 10);
+	st->st_blocks = (st->st_size + 511)/512;
+    }
+
+    htag = "Last-Modified";
+    value = ne_get_response_header(req, htag); 
+    if (value) {
+	st->st_mtime = ne_httpdate_parse(value);
+	st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
+    }
+
+exit:
+    ne_request_destroy(req);
+    return rc;
+}
+
 static int davNLST(struct fetch_context_s * ctx)
 	/*@globals internalState @*/
 	/*@modifies ctx, internalState @*/
@@ -794,11 +869,19 @@ static int davNLST(struct fetch_context_s * ctx)
     if (rc || u == NULL)
 	goto exit;
 
-    rc = davFetch(u, ctx);
+/* HACK do PROPFIND through davFetch iff enabled, otherwise HEAD Content-length/ETag/Last-Modified */
+    if (u->allow & RPMURL_SERVER_HASDAV)
+	   rc = davFetch(u, ctx);	/* use PROPFIND to get contentLength */
+    else
+	   rc = davHEAD(u, ctx->st);	/* use HEAD to get contentLength */
+
     switch (rc) {
     case NE_OK:
         break;
     case NE_ERROR:
+	/* HACK: "405 Method Not Allowed" for PROPFIND on non-DAV servers. */
+	/* XXX #206066 OPTIONS is ok, but PROPFIND from Stat() fails. */
+	/* rpm -qp --rpmiodebug --davdebug http://people.freedesktop.org/~sandmann/metacity-2.16.0-2.fc6/i386/metacity-2.16.0-2.fc6.i386.rpm */
 	/* HACK: "301 Moved Permanently" on empty subdir. */
 	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
 	    break;
@@ -863,9 +946,9 @@ static void davAcceptRanges(void * userdata, /*@null@*/ const char * value)
 if (_dav_debug < 0)
 fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, value);
     if (!strcmp(value, "bytes"))
-	u->httpHasRange = 1;
+	u->allow |= RPMURL_SERVER_HASRANGE;
     if (!strcmp(value, "none"))
-	u->httpHasRange = 0;
+	u->allow &= ~RPMURL_SERVER_HASRANGE;
 }
 /*@=mustmod@*/
 
@@ -1302,8 +1385,9 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
     int rc = -1;
 
 /* HACK: neon really wants collections with trailing '/' */
-    ctx = fetch_create_context(path);
+    ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
+fprintf(stderr, "==> %s fetch_create_context ctx %p\n", __FUNCTION__, ctx);
 /* HACK: errno = ??? */
 	goto exit;
     }
@@ -1313,10 +1397,9 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 	goto exit;
     }
 
-    memset(st, 0, sizeof(*st));
-    st->st_mode = ctx->modes[0];
-    st->st_size = ctx->sizes[0];
-    st->st_mtime = ctx->mtimes[0];
+    st->st_mode = (ctx->modes ? ctx->modes[0] : st->st_mode);
+    st->st_size = (ctx->sizes ? ctx->sizes[0] : st->st_size);
+    st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
     if (S_ISDIR(st->st_mode)) {
 	st->st_nlink = 2;
 	st->st_mode |= 0755;
@@ -1347,7 +1430,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
     int rc = -1;
 
 /* HACK: neon really wants collections with trailing '/' */
-    ctx = fetch_create_context(path);
+    ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
 /* HACK: errno = ??? */
 	goto exit;
@@ -1358,7 +1441,6 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	goto exit;
     }
 
-    memset(st, 0, sizeof(*st));
     st->st_mode = ctx->modes[0];
     st->st_size = ctx->sizes[0];
     st->st_mtime = ctx->mtimes[0];
@@ -1617,7 +1699,7 @@ if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     /* Load DAV collection into argv. */
-    ctx = fetch_create_context(path);
+    ctx = fetch_create_context(path, NULL);
     if (ctx == NULL) {
 /* HACK: errno = ??? */
 	return NULL;

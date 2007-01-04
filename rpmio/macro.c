@@ -1703,7 +1703,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     const char * old_ctype = NULL;
     const char * t;
 #endif
-	size_t maxb, nb;
+    size_t maxb, nb;
     int i, j;
     int rc;
 

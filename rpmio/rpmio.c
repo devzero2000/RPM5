@@ -1040,13 +1040,13 @@ fprintf(stderr, "<- %s\n", s);
 #endif
 		    if (!strncmp(s, "Accept-Ranges:", ne)) {
 			if (!strcmp(e, "bytes"))
-			    u->httpHasRange = 1;
+			    u->allow |= RPMURL_SERVER_HASRANGE;
 			if (!strcmp(e, "none"))
-			    u->httpHasRange = 0;
+			    u->allow &= ~RPMURL_SERVER_HASRANGE;
 		    } else
 		    if (!strncmp(s, "Content-Length:", ne)) {
 			if (strchr("0123456789", *e))
-			    ctrl->contentLength = atoi(e);
+			    ctrl->contentLength = atol(e);
 		    } else
 		    if (!strncmp(s, "Connection:", ne)) {
 			if (!strcmp(e, "close"))

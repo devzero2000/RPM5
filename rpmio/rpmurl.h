@@ -75,7 +75,13 @@ typedef enum {
     char * buf;			/*!< I/O buffer */
     int openError;		/*!< Type of open failure */
     int httpVersion;
-    int httpHasRange;
+    int allow;
+#define	RPMURL_SERVER_HASRANGE		( 1 << 0)
+#define	RPMURL_SERVER_HASDAVCLASS1	( 1 << 1)
+#define	RPMURL_SERVER_HASDAVCLASS2	( 1 << 2)
+#define	RPMURL_SERVER_HASDAVEXEC	( 1 << 3)
+
+#define	RPMURL_SERVER_HASDAV	(RPMURL_SERVER_HASDAVCLASS1|RPMURL_SERVER_HASDAVCLASS2|RPMURL_SERVER_HASDAVEXEC)
     int magic;
 };
 
