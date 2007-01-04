@@ -1640,13 +1640,17 @@ fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
 int Glob_pattern_p (const char * pattern, int quote)
 {
     const char *p;
+    int ut = urlPath(pattern, &p);
     int open = 0;
     char c;
 
-    (void) urlPath(pattern, &p);
     while ((c = *p++) != '\0')
 	switch (c) {
 	case '?':
+	    /* Don't treat '?' as a glob char in HTTP URL's */
+	    if (ut == URL_IS_HTTPS || ut == URL_IS_HTTP || ut == URL_IS_HKP)
+		continue;
+	    /*@fallthrough@*/
 	case '*':
 	    return (1);
 	case '\\':
