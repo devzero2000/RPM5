@@ -2327,7 +2327,7 @@ assert(psm != NULL);
 		    fileAction * actions = fi->actions;
 		    int mapflags = fi->mapflags;
 		    rpmte savep;
-		    int scareMem = 1;	/* XXX WTF? must be 1 here. */
+		    int scareMem = 1;	/* XXX rpmpsmStage needs fi->h */
 
 		    fi->fstates = NULL;
 		    fi->actions = NULL;

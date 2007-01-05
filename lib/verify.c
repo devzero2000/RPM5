@@ -455,7 +455,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 #if defined(__x86_64__)
 static QVA_t Qva;
 #endif
-    int scareMem = 0;	/* XXX only rpmVerifyScript needs now */
+    int scareMem = 1;	/* XXX rpmpsmStage needs fi->h */
     rpmfi fi = NULL;
     int ec = 0;
     int rc;

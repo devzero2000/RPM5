@@ -229,7 +229,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		const char ** specFilePtr, const char ** cookie)
 {
-    int scareMem = 1;	/* XXX must be 1 */
+    int scareMem = 1;	/* XXX fi->h is needed */
     rpmfi fi = NULL;
     const char * _sourcedir = NULL;
     const char * _specdir = NULL;
@@ -287,9 +287,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-/*@-nullpass@*/		/* FIX fi->h may be null */
+assert(fi->h);
     fi->te->h = headerLink(fi->h);
-/*@=nullpass@*/
     fi->te->fd = fdLink(fd, "installSourcePackage");
     hge = fi->hge;
     hfd = fi->hfd;
@@ -1021,7 +1020,7 @@ static rpmRC runInstScript(rpmpsm psm)
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    void ** progArgv;
+    void ** progArgv = NULL;
     int progArgc;
     const char * argv0 = NULL;
     const char ** argv;
@@ -1030,10 +1029,7 @@ static rpmRC runInstScript(rpmpsm psm)
     rpmRC rc = RPMRC_OK;
     int xx;
 
-    /*
-     * headerGetEntry() sets the data pointer to NULL if the entry does
-     * not exist.
-     */
+assert(fi->h != NULL);
     xx = hge(fi->h, psm->scriptTag, &stt, (void **) &script, NULL);
     xx = hge(fi->h, psm->progTag, &ptt, (void **) &progArgv, &progArgc);
     if (progArgv == NULL && script == NULL)
@@ -1048,7 +1044,7 @@ static rpmRC runInstScript(rpmpsm psm)
     }
     /*@=branchstate@*/
 
-    if (argv && argv[0] && argv[0][0] == '%')
+    if (argv[0][0] == '%')
 	argv[0] = argv0 = rpmExpand(argv[0], NULL);
 
     if (fi->h != NULL)	/* XXX can't happen */
