@@ -80,6 +80,9 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define __fchdir	fchdir
 #endif
 
+#if !defined(USHRT_MAX)
+#define	USHRT_MAX	65535
+#endif
 
 /* Largest alignment size needed, minus one.
    Usually long double is the worst case.  */
