@@ -79,6 +79,7 @@
 	- don't treat '?' as a glob character in http URI's (#143885).
 	- rewrite macroized interpreter test to avoid %verifyscript segfault.
 	- display the verifyscript interpreter with --scripts.
+	- load/unload NEVRAO macros while creating binary sub-packages.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

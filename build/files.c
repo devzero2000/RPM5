@@ -2638,6 +2638,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if (pkg->fileList == NULL)
 	    continue;
 
+	(void) headerMacrosLoad(pkg->header);
+
 	(void) headerNVR(pkg->header, &n, &v, &r);
 	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s-%s-%s\n"), n, v, r);
 		   
@@ -2652,6 +2654,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 
 	/* XXX this should be earlier for deps to be entirely sorted. */
 	providePackageNVR(pkg->header);
+
+	(void) headerMacrosUnload(pkg->header);
     }
 
     /* Now we have in fileList list of files from all packages.

@@ -30,6 +30,8 @@ LIBRPMDB_0
     headerDump;
     headerGetLangs;
     headerGetRawEntry;
+    headerMacrosLoad;
+    headerMacrosUnload;
     headerNEVRA;
     headerNVR;
     htAddEntry;

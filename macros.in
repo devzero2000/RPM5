@@ -1394,8 +1394,8 @@ PreReq: python >= %{python_version}, python < %{maxver}
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
-%__libtool_provides	%{_usrlibrpm}/libtooldeps.sh --provides %{buildroot}
-%__libtool_requires	%{_usrlibrpm}/libtooldeps.sh --requires %{buildroot}
+%__libtool_provides	%{_usrlibrpm}/libtooldeps.sh --provides %{buildroot} %{name}
+%__libtool_requires	%{_usrlibrpm}/libtooldeps.sh --requires %{buildroot} %{name}
 
 #------------------------------------------------------------------------
 # pkgconfig(...) configuration.

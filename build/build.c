@@ -330,6 +330,15 @@ int buildSpec(rpmts ts, Spec spec, int what, int test)
 	    (rc = processSourceFiles(spec)))
 		goto exit;
 
+	/* XXX Reset buildroot to its expansion to insure invariant. */
+	{   const char *buildroot = rpmExpand("%{?buildroot}", NULL);
+	    if (buildroot && *buildroot) {
+		   (void) delMacro(NULL, "buildroot");
+		   (void) addMacro(NULL, ".buildroot", NULL, buildroot, -1);
+	    }
+	    buildroot = _free(buildroot);
+	}
+
 	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
 	    (what & RPMBUILD_FILECHECK)) &&
 	    (rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL, test)))

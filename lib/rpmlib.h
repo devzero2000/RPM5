@@ -128,6 +128,24 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmgi_s * rpmgi;
 
+/**
+ * Define per-header macros.
+ * @param h		header
+ * @return		0 always
+ */
+int headerMacrosLoad(Header h)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
+
+/**
+ * Define per-header macros.
+ * @param h		header
+ * @return		0 always
+ */
+int headerMacrosUnload(Header h)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
+
 /** \ingroup header
  * Return name, version, release strings from header.
  * @param h		header
