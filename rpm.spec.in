@@ -23,7 +23,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: @VERSION@
-Release: 0.8
+Release: 0.9
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
 License: LGPL
@@ -547,6 +547,18 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Jan  7 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.9
+- skip EACCESS returns from stat(2) on mount points (#220991).
+- permit files with glob characters in *.rpm packages (#142771,#147383).
+- gendiff: permit $DIFF override, add -p to default diff. (#146981).
+- rpmio: use HEAD for servers that don't support PROPFIND (#206066).
+- rpmio: add RPMURL_SERVER_* server capability flags.
+- fix: report "not installed" for pkg.bogusarch (#124016).
+- don't treat '?' as a glob character in http URI's (#143885).
+- rewrite macroized interpreter test to avoid %verifyscript segfault.
+- display the verifyscript interpreter with --scripts.
+- load/unload NEVRAO macros while creating binary sub-packages.
+
 * Fri Dec 29 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.8
 - rpmgi: add (*stash) for rpmcache use.
 - move more memory cleanup to rpmcliFini().

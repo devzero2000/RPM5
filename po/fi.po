@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2006-12-29 21:57-0500\n"
+"POT-Creation-Date: 2007-01-07 11:20-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -377,7 +377,7 @@ msgstr "%s:n avaus ei onnistunut: %s\n"
 msgid "Bad exit status from %s (%s)\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/build.c:363
+#: build/build.c:372
 msgid ""
 "\n"
 "\n"
@@ -605,7 +605,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: build/files.c:2642
+#: build/files.c:2644
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"
@@ -748,7 +748,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus ep‰onnistui\n"
 
-#: build/pack.c:746 lib/psm.c:1696
+#: build/pack.c:746 lib/psm.c:1627
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
@@ -778,7 +778,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:839 lib/psm.c:2013
+#: build/pack.c:839 lib/psm.c:1944
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1543,22 +1543,22 @@ msgstr "%s:n luonti ep‰onnistui\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr ""
 
-#: lib/fs.c:115 lib/fs.c:218 lib/fs.c:341
+#: lib/fs.c:115 lib/fs.c:218 lib/fs.c:342
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fs.c:160 rpmio/url.c:560
+#: lib/fs.c:160 rpmio/url.c:556
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fs.c:239
+#: lib/fs.c:240
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fs.c:364
+#: lib/fs.c:365
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr ""
@@ -2520,85 +2520,85 @@ msgstr ""
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/psm.c:267
+#: lib/psm.c:202
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:382
+#: lib/psm.c:316
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/psm.c:498
+#: lib/psm.c:432
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
 
-#: lib/psm.c:690
+#: lib/psm.c:624
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "‰l‰ suorita mit‰‰n vaiheita"
 
-#: lib/psm.c:711
+#: lib/psm.c:645
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:719
+#: lib/psm.c:653
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:931
+#: lib/psm.c:865
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:979
+#: lib/psm.c:913
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
 
-#: lib/psm.c:986
+#: lib/psm.c:920
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "skriptin ajo ep‰onnistui"
 
-#: lib/psm.c:990
+#: lib/psm.c:924
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "skriptin ajo ep‰onnistui"
 
-#: lib/psm.c:1436
+#: lib/psm.c:1367
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/psm.c:1597
+#: lib/psm.c:1528
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1708
+#: lib/psm.c:1639
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: lib/psm.c:1808
+#: lib/psm.c:1739
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/psm.c:1809
+#: lib/psm.c:1740
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2021
+#: lib/psm.c:1952
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/psm.c:2024
+#: lib/psm.c:1955
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp ep‰onnistui"
@@ -2652,62 +2652,62 @@ msgstr "paketilla ei ole nime‰"
 msgid "package has neither file owner or id lists\n"
 msgstr "paketilla ei ole nime‰"
 
-#: lib/query.c:509
+#: lib/query.c:507
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/query.c:518
+#: lib/query.c:516
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:531 lib/query.c:552 lib/query.c:574 lib/query.c:609
+#: lib/query.c:529 lib/query.c:550 lib/query.c:572 lib/query.c:607
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: lib/query.c:541 lib/query.c:558 lib/query.c:585 lib/query.c:614
+#: lib/query.c:539 lib/query.c:556 lib/query.c:583 lib/query.c:612
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:625
+#: lib/query.c:623
 #, c-format
 msgid "no package requires %s\n"
 msgstr "mik‰‰n pakettie ei tarvitse %s:a\n"
 
-#: lib/query.c:636
+#: lib/query.c:634
 #, c-format
 msgid "no package provides %s\n"
 msgstr "mik‰‰n paketti ei tarjoa %s:a\n"
 
-#: lib/query.c:670
+#: lib/query.c:668
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/query.c:673
+#: lib/query.c:671
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/query.c:698
+#: lib/query.c:696
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:699
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:705
+#: lib/query.c:703
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:715 lib/rpminstall.c:821
+#: lib/query.c:714 lib/rpminstall.c:821
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -2821,11 +2821,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:781 lib/rpmds.c:3668
+#: lib/rpmds.c:781 lib/rpmds.c:3669
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:781 lib/rpmds.c:3668
+#: lib/rpmds.c:781 lib/rpmds.c:3669
 msgid "YES"
 msgstr ""
 
@@ -2900,43 +2900,43 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3456 lib/rpmds.c:3486 lib/rpmds.c:3498
+#: lib/rpmds.c:3457 lib/rpmds.c:3487 lib/rpmds.c:3499
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3459
+#: lib/rpmds.c:3460
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
 "Skipping ...\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: lib/rpmds.c:3488
+#: lib/rpmds.c:3489
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3500
+#: lib/rpmds.c:3501
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3634
+#: lib/rpmds.c:3635
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3667
+#: lib/rpmds.c:3668
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:3691
+#: lib/rpmds.c:3692
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
@@ -4306,20 +4306,20 @@ msgstr "en voinut avata %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmdav.c:630
+#: rpmio/rpmdav.c:661
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:632
+#: rpmio/rpmdav.c:663
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:634
+#: rpmio/rpmdav.c:665
 #, fuzzy
 msgid "Server Error"
 msgstr "FTP:n IO-virhe"
 
-#: rpmio/rpmdav.c:636
+#: rpmio/rpmdav.c:667
 #, fuzzy
 msgid "Unknown Error"
 msgstr "virhe: "
@@ -4447,27 +4447,27 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:178
+#: rpmio/url.c:174
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:274
+#: rpmio/url.c:270
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "%s@%s:n salasana: "
 
-#: rpmio/url.c:303 rpmio/url.c:329
+#: rpmio/url.c:299 rpmio/url.c:325
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "virhe: ftpport pit‰‰ olla luku\n"
 
-#: rpmio/url.c:508
+#: rpmio/url.c:504
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "virhe: ftpport pit‰‰ olla luku\n"
 
-#: rpmio/url.c:580
+#: rpmio/url.c:576
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti ep‰onnistui\n"

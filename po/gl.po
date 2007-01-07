@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2006-12-29 21:57-0500\n"
+"POT-Creation-Date: 2007-01-07 11:20-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -356,7 +356,7 @@ msgstr ""
 msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:363
+#: build/build.c:372
 msgid ""
 "\n"
 "\n"
@@ -579,7 +579,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: build/files.c:2642
+#: build/files.c:2644
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -718,7 +718,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:746 lib/psm.c:1696
+#: build/pack.c:746 lib/psm.c:1627
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -748,7 +748,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:839 lib/psm.c:2013
+#: build/pack.c:839 lib/psm.c:1944
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1479,22 +1479,22 @@ msgstr ""
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr ""
 
-#: lib/fs.c:115 lib/fs.c:218 lib/fs.c:341
+#: lib/fs.c:115 lib/fs.c:218 lib/fs.c:342
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr ""
 
-#: lib/fs.c:160 rpmio/url.c:560
+#: lib/fs.c:160 rpmio/url.c:556
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
 
-#: lib/fs.c:239
+#: lib/fs.c:240
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr ""
 
-#: lib/fs.c:364
+#: lib/fs.c:365
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr ""
@@ -2375,83 +2375,83 @@ msgstr ""
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/psm.c:267
+#: lib/psm.c:202
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:382
+#: lib/psm.c:316
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:498
+#: lib/psm.c:432
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
 
-#: lib/psm.c:690
+#: lib/psm.c:624
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr ""
 
-#: lib/psm.c:711
+#: lib/psm.c:645
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:719
+#: lib/psm.c:653
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:931
+#: lib/psm.c:865
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:979
+#: lib/psm.c:913
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/psm.c:986
+#: lib/psm.c:920
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr ""
 
-#: lib/psm.c:990
+#: lib/psm.c:924
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1436
+#: lib/psm.c:1367
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1597
+#: lib/psm.c:1528
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1708
+#: lib/psm.c:1639
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:1808
+#: lib/psm.c:1739
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1809
+#: lib/psm.c:1740
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2021
+#: lib/psm.c:1952
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2024
+#: lib/psm.c:1955
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2502,62 +2502,62 @@ msgstr ""
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:509
+#: lib/query.c:507
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:518
+#: lib/query.c:516
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:531 lib/query.c:552 lib/query.c:574 lib/query.c:609
+#: lib/query.c:529 lib/query.c:550 lib/query.c:572 lib/query.c:607
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr ""
 
-#: lib/query.c:541 lib/query.c:558 lib/query.c:585 lib/query.c:614
+#: lib/query.c:539 lib/query.c:556 lib/query.c:583 lib/query.c:612
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr ""
 
-#: lib/query.c:625
+#: lib/query.c:623
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:636
+#: lib/query.c:634
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:670
+#: lib/query.c:668
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:673
+#: lib/query.c:671
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:698
+#: lib/query.c:696
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:701
+#: lib/query.c:699
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:705
+#: lib/query.c:703
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:715 lib/rpminstall.c:821
+#: lib/query.c:714 lib/rpminstall.c:821
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2668,11 +2668,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:781 lib/rpmds.c:3668
+#: lib/rpmds.c:781 lib/rpmds.c:3669
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:781 lib/rpmds.c:3668
+#: lib/rpmds.c:781 lib/rpmds.c:3669
 msgid "YES"
 msgstr ""
 
@@ -2747,43 +2747,43 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3456 lib/rpmds.c:3486 lib/rpmds.c:3498
+#: lib/rpmds.c:3457 lib/rpmds.c:3487 lib/rpmds.c:3499
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3459
+#: lib/rpmds.c:3460
 #, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
 "Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3488
+#: lib/rpmds.c:3489
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3500
+#: lib/rpmds.c:3501
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3634
+#: lib/rpmds.c:3635
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3667
+#: lib/rpmds.c:3668
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:3691
+#: lib/rpmds.c:3692
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -4131,19 +4131,19 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmdav.c:630
+#: rpmio/rpmdav.c:661
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:632
+#: rpmio/rpmdav.c:663
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:634
+#: rpmio/rpmdav.c:665
 msgid "Server Error"
 msgstr ""
 
-#: rpmio/rpmdav.c:636
+#: rpmio/rpmdav.c:667
 msgid "Unknown Error"
 msgstr ""
 
@@ -4260,26 +4260,26 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:178
+#: rpmio/url.c:174
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:274
+#: rpmio/url.c:270
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: rpmio/url.c:303 rpmio/url.c:329
+#: rpmio/url.c:299 rpmio/url.c:325
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:508
+#: rpmio/url.c:504
 msgid "url port must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:580
+#: rpmio/url.c:576
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""
