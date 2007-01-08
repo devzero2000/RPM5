@@ -85,8 +85,6 @@ LIBRPMIO_0
     Glob_pattern_p;
     gnameToGid;
     gzdio;
-    hashEqualityString;
-    hashFunctionString;
     htAddEntry;
     htCreate;
     htFree;

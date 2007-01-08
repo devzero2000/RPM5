@@ -69,14 +69,13 @@ hashBucket findEntry(hashTable ht, const void * key)
     return b;
 }
 
-int hashEqualityString(const void * key1, const void * key2)
-{
-    const char *k1 = (const char *)key1;
-    const char *k2 = (const char *)key2;
-    return strcmp(k1, k2);
-}
-
-unsigned int hashFunctionString(const void * string)
+/**
+ * Return hash value of a string
+ * @param string	string on which to calculate hash value
+ * @return		hash value
+ */
+static unsigned int hashFunctionString(const void * string)
+	/*@*/
 {
     char xorValue = 0;
     char sum = 0;
@@ -95,6 +94,20 @@ unsigned int hashFunctionString(const void * string)
     return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
 }
 
+/**
+ * Compare two hash table entries for equality.
+ * @param key1          entry 1
+ * @param key2          entry 2
+ * @return		0 if entries are equal
+ */
+static int hashEqualityString(const void * key1, const void * key2)
+	/*@*/
+{
+    const char *k1 = (const char *)key1;
+    const char *k2 = (const char *)key2;
+    return strcmp(k1, k2);
+}
+
 hashTable htCreate(int numBuckets, int keySize, int freeData,
 		hashFunctionType fn, hashEqualityType eq)
 {
@@ -106,8 +119,8 @@ hashTable htCreate(int numBuckets, int keySize, int freeData,
     ht->keySize = keySize;
     ht->freeData = freeData;
     /*@-assignexpose@*/
-    ht->fn = fn;
-    ht->eq = eq;
+    ht->fn = (fn != NULL ? fn : hashFunctionString);
+    ht->eq = (eq != NULL ? eq : hashEqualityString);
     /*@=assignexpose@*/
 
     return ht;

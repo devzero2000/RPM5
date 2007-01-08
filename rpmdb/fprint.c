@@ -15,8 +15,7 @@ fingerPrintCache fpCacheCreate(int sizeHint)
     fingerPrintCache fpc;
 
     fpc = xmalloc(sizeof(*fpc));
-    fpc->ht = htCreate(sizeHint * 2, 0, 1, hashFunctionString,
-		       hashEqualityString);
+    fpc->ht = htCreate(sizeHint * 2, 0, 1, NULL, NULL);
     return fpc;
 }
 

@@ -51,10 +51,12 @@ struct fingerPrint_s {
     const char * baseName;	/*!< file base name */
 };
 
-/** */
+/**
+ */
 #define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
 
-/** */
+/**
+*/
 #define FP_EQUAL(a, b) ( \
 	FP_ENTRY_EQUAL((a).entry, (b).entry) && \
 	!strcmp((a).baseName, (b).baseName) && ( \

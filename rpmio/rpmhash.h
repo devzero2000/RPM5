@@ -15,21 +15,11 @@ extern "C" {
 #endif
 
 /**
- */
-typedef unsigned int (*hashFunctionType) (const void * string)
-	/*@*/;
-
-/**
- */
-typedef int (*hashEqualityType) (const void * key1, const void * key2)
-	/*@*/;
-
-/**
  * Return hash value of a string
  * @param string	string on which to calculate hash value
  * @return		hash value
  */
-unsigned int hashFunctionString(const void * string)
+typedef unsigned int (*hashFunctionType) (const void * string)
 	/*@*/;
 
 /**
@@ -38,7 +28,7 @@ unsigned int hashFunctionString(const void * string)
  * @param key2          entry 2
  * @return		0 if entries are equal
  */
-int hashEqualityString(const void * key1, const void * key2)
+typedef int (*hashEqualityType) (const void * key1, const void * key2)
 	/*@*/;
 
 /**
@@ -48,12 +38,12 @@ int hashEqualityString(const void * key1, const void * key2)
  * @param numBuckets    number of hash buckets
  * @param keySize       size of key (0 if unknown)
  * @param freeData      Should data be freed when table is destroyed?
- * @param fn            function to generate hash value for key
- * @param eq            function to compare hash keys for equality
+ * @param fn            function to generate hash key (NULL for default)
+ * @param eq            function to compare keys for equality (NULL for default)
  * @return		pointer to initialized hash table
  */
 hashTable htCreate(int numBuckets, int keySize, int freeData,
-		hashFunctionType fn, hashEqualityType eq)
+		/*@null@*/ hashFunctionType fn, /*@null@*/ hashEqualityType eq)
 	/*@*/; 
 
 /**
