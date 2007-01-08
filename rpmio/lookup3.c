@@ -33,10 +33,8 @@ mixing with 12*3 instructions on 3 integers than you can with 3 instructions
 on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 -------------------------------------------------------------------------------
 */
-#define SELF_TEST 1
 
 #include "system.h"
-
 #include "debug.h"
 
 /*@unchecked@*/
@@ -717,7 +715,7 @@ uint32_t hashbig( const void *key, size_t length, uint32_t initval)
 }
 
 
-#ifdef SELF_TEST
+#if defined(SELFTEST)
 
 /* used for timings */
 static void driver1(void)
@@ -917,4 +915,4 @@ int main(int argc, char ** argv)
   return 1;
 }
 
-#endif  /* SELF_TEST */
+#endif  /* SELFTEST */

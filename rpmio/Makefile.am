@@ -126,8 +126,9 @@ dumpasn1_SOURCES = dumpasn1.c
 hashtest_SOURCES = hashtest.c
 hashtest_LDADD = librpmio.la
 
-lookup_SOURCES = lookup3.c
-lookup_LDADD = librpmio.la
+lookup3_SOURCES = lookup3.c
+lookup3_CFLAGS	= $(CFLAGS) -DSELFTEST
+lookup3_LDADD = librpmio.la
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
