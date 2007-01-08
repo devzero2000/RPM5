@@ -312,10 +312,14 @@ static int davConnect(urlinfo u)
 	/* HACK: "301 Moved Permanently" on empty subdir. */
 	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
 	    break;
-	/*@fallthrough@*/
-    case NE_CONNECT:
+	errno = EIO;		/* HACK: more precise errno. */
+	goto bottom;
     case NE_LOOKUP:
+	errno = ENOENT;		/* HACK: errno same as non-existent path. */
+	goto bottom;
+    case NE_CONNECT:		/* HACK: errno set already? */
     default:
+bottom:
 if (_dav_debug)
 fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
 		   u->host, u->port, rc, ne_get_error(u->sess));
@@ -324,9 +328,6 @@ fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
 
     /* HACK: sensitive to error returns? */
     u->httpVersion = (ne_version_pre_http11(u->sess) ? 0 : 1);
-
-    if (rc != NE_OK)
-	u = urlLink(u, __FUNCTION__);	/* XXX error exit refcount adjustment */
 
     return rc;
 }
@@ -406,7 +407,7 @@ static int davInit(const char * url, urlinfo * uret)
 
 exit:
 /*@-boundswrite@*/
-    if (rc == 0 && uret != NULL)
+    if (uret != NULL)
 	*uret = urlLink(u, __FUNCTION__);
 /*@=boundswrite@*/
     u = urlFree(u, "urlSplit (davInit)");
