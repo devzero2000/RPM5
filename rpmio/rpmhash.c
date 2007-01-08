@@ -4,8 +4,7 @@
  */
 
 #include "system.h"
-#include <rpmlib.h>
-#include "rpmhash.h"
+#include <rpmhash.h>
 #include "debug.h"
 
 typedef /*@owned@*/ const void * voidptr;
@@ -31,6 +30,18 @@ struct hashTable_s {
     hashFunctionType fn;		/*!< generate hash value for key */
     hashEqualityType eq;		/*!< compare hash keys for equality */
 };
+
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param p		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void *
+_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
+{
+    if (p != NULL)	free((void *)p);
+    return NULL;
+}
 
 /**
  * Find entry in hash table.

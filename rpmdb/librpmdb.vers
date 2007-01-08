@@ -22,8 +22,6 @@ LIBRPMDB_0
     fpHashFunction;
     fpLookup;
     fpLookupList;
-    hashEqualityString;
-    hashFunctionString;
     _hdr_debug;
     hdrVec;
     headerDefaultFormats;
@@ -34,11 +32,6 @@ LIBRPMDB_0
     headerMacrosUnload;
     headerNEVRA;
     headerNVR;
-    htAddEntry;
-    htCreate;
-    htFree;
-    htGetEntry;
-    htHasEntry;
     _init;
     mergesort;
     prDbiOpenFlags;

@@ -25,7 +25,7 @@ tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h rpmhash.h
+pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
 pkgbindir = @RPMCONFIGDIR@
@@ -49,7 +49,7 @@ usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
-	poptDB.c rpmhash.c rpmdb.c \
+	poptDB.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) \
 	$(top_builddir)/rpmio/librpmio.la \
