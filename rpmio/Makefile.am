@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c hashtest.c librpmio.vers
+EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c hashtest.c lookup3.c librpmio.vers
 
-EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn1 hashtest
+EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn1 hashtest lookup3
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
@@ -125,6 +125,9 @@ dumpasn1_SOURCES = dumpasn1.c
 
 hashtest_SOURCES = hashtest.c
 hashtest_LDADD = librpmio.la
+
+lookup_SOURCES = lookup3.c
+lookup_LDADD = librpmio.la
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
