@@ -614,6 +614,8 @@ static int prepFetch(Spec spec)
 
 	Rurlfn = rpmGetPath(Rmacro, sp->source, NULL);
 	if (Rurlfn == NULL || *Rurlfn == '%' || !strcmp(Lurlfn, Rurlfn)) {
+	    rpmError(RPMERR_BADFILENAME, _("file %s missing: %s\n"),
+		Lurlfn, strerror(errno));
 	    ec++;
 	    goto bottom;
 	}
