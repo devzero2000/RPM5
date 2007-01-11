@@ -82,6 +82,7 @@
 	- load/unload NEVRAO macros while creating binary sub-packages.
 	- move rmphash.[ch] into librpmio.
 	- fix: add error message on non-existent sources/patches.
+	- resuscitate build against external -lmagic.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

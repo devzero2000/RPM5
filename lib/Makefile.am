@@ -9,6 +9,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
+	@WITH_MAGIC_INCLUDE@ \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
