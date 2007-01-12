@@ -3,7 +3,7 @@
  * lookup3.c, by Bob Jenkins, May 2006, Public Domain.
  * 
  * These are functions for producing 32-bit hashes for hash table lookup.
- * jlu32w(), jlu32l(), jlu32pair(), jlu32b(), _JLU3_MIX(), and _JLU3_FINAL() 
+ * jlu32w(), jlu32l(), jlu32lpair(), jlu32b(), _JLU3_MIX(), and _JLU3_FINAL() 
  * are externally useful functions.  Routines to test the hash are included 
  * if SELF_TEST is defined.  You can use this free for any purpose.  It's in
  * the public domain.  It has no warranty.
@@ -11,9 +11,9 @@
  * You probably want to use jlu32l().  jlu32l() and jlu32b()
  * hash byte arrays.  jlu32l() is is faster than jlu32b() on
  * little-endian machines.  Intel and AMD are little-endian machines.
- * On second thought, you probably want jlu32pair(), which is identical to
+ * On second thought, you probably want jlu32lpair(), which is identical to
  * jlu32l() except it returns two 32-bit hashes for the price of one.  
- * You could implement jlu32b2() if you wanted but I haven't bothered here.
+ * You could implement jlu32bpair() if you wanted but I haven't bothered here.
  * 
  * If you want to find a hash of, say, exactly 7 integers, do
  *   a = i1;  b = i2;  c = i3;
@@ -37,6 +37,13 @@
 #include "system.h"
 #include "debug.h"
 
+#if defined(_JLU3_SELFTEST)
+# define _JLU3_jlu32w		1
+# define _JLU3_jlu32l		1
+# define _JLU3_jlu32lpair	1
+# define _JLU3_jlu32b		1
+#endif
+
 /*@unchecked@*/
 static union _dbswap {
     uint32_t ui;
@@ -48,15 +55,6 @@ static union _dbswap {
 #ifndef ROTL32
 # define ROTL32(x, s) (((x) << (s)) | ((x) >> (32 - (s))))
 #endif
-
-uint32_t jlu32w(uint32_t h, const uint32_t *k, size_t size)
-	/*@*/;
-uint32_t jlu32l(uint32_t h, const void *key, size_t size)
-	/*@*/;
-void jlu32pair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
-	/*@modifies *pc, *pb@*/;
-uint32_t jlu32b(uint32_t h, const void *key, size_t size)
-	/*@*/;
 
 /* NOTE: The _size parameter should be in bytes. */
 #define	_JLU3_INIT(_h, _size)	(0xdeadbeef + ((uint32_t)(_size)) + (_h))
@@ -151,6 +149,9 @@ uint32_t jlu32b(uint32_t h, const void *key, size_t size)
   c ^= b; c -= ROTL32(b,24); \
 }
 
+#if defined(_JLU3_jlu32w)
+uint32_t jlu32w(uint32_t h, /*@null@*/ const uint32_t *k, size_t size)
+	/*@*/;
 /* -------------------------------------------------------------------- */
 /**
  *  This works on all machines.  To be useful, it requires
@@ -175,6 +176,9 @@ uint32_t jlu32w(uint32_t h, const uint32_t *k, size_t size)
     uint32_t b = a;
     uint32_t c = a;
 
+    if (k == NULL)
+	goto exit;
+
     /*----------------------------------------------- handle most of the key */
     while (size > 3) {
 	a += k[0];
@@ -196,10 +200,14 @@ uint32_t jlu32w(uint32_t h, const uint32_t *k, size_t size)
 	break;
     }
     /*---------------------------------------------------- report the result */
+exit:
     return c;
 }
+#endif	/* defined(_JLU3_jlu32w) */
 
-
+#if defined(_JLU3_jlu32l)
+uint32_t jlu32l(uint32_t h, const void *key, size_t size)
+	/*@*/;
 /* -------------------------------------------------------------------- */
 /*
  * jlu32l() -- hash a variable-length key into a 32-bit value
@@ -217,7 +225,7 @@ uint32_t jlu32w(uint32_t h, const uint32_t *k, size_t size)
  * In which case, the hash table should have hashsize(10) elements.
  * 
  * If you are hashing n strings (uint8_t **)k, do it like this:
- *   for (i=0, h=0; i<n; ++i) h = jlu32l( k[i], len[i], h);
+ *   for (i=0, h=0; i<n; ++i) h = jlu32l(h, k[i], len[i]);
  * 
  * By Bob Jenkins, 2006.  bob_jenkins@burtleburtle.net.  You may use this
  * code any way you wish, private, educational, or commercial.  It's free.
@@ -231,13 +239,15 @@ uint32_t jlu32w(uint32_t h, const uint32_t *k, size_t size)
  * @return		the lookup3 hash
  */
 /* -------------------------------------------------------------------- */
-
 uint32_t jlu32l(uint32_t h, const void *key, size_t size)
 {
     union { const void *ptr; size_t i; } u;
     uint32_t a = _JLU3_INIT(h, size);
     uint32_t b = a;
     uint32_t c = a;
+
+    if (key == NULL)
+	goto exit;
 
     u.ptr = key;
     if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
@@ -415,10 +425,14 @@ uint32_t jlu32l(uint32_t h, const void *key, size_t size)
 exit:
     return c;
 }
+#endif	/* defined(_JLU3_jlu32l) */
 
-
+#if defined(_JLU3_jlu32lpair)
+void jlu32lpair(/*@null@*/ const void *key, size_t size,
+		uint32_t *pc, uint32_t *pb)
+	/*@modifies *pc, *pb@*/;
 /**
- * jlu32pair: return 2 32-bit hash values.
+ * jlu32lpair: return 2 32-bit hash values.
  *
  * This is identical to jlu32l(), except it returns two 32-bit hash
  * values instead of just one.  This is good enough for hash table
@@ -433,12 +447,15 @@ exit:
  * @retval *pc,		IN: primary initval, OUT: primary hash
  * *retval *pb		IN: secondary initval, OUT: secondary hash
  */
-void jlu32pair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
+void jlu32lpair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
 {
     union { const void *ptr; size_t i; } u;
     uint32_t a = _JLU3_INIT(*pc, size);
     uint32_t b = a;
     uint32_t c = a;
+
+    if (key == NULL)
+	goto exit;
 
     c += *pb;	/* Add the secondary hash. */
 
@@ -619,9 +636,11 @@ exit:
     *pb = b;
     return;
 }
+#endif	/* defined(_JLU3_jlu32lpair) */
 
-
-
+#if defined(_JLU3_jlu32b)
+uint32_t jlu32b(uint32_t h, /*@null@*/ const void *key, size_t size)
+	/*@*/;
 /*
  * jlu32b():
  * This is the same as jlu32w() on big-endian machines.  It is different
@@ -639,6 +658,9 @@ uint32_t jlu32b(uint32_t h, const void *key, size_t size)
     uint32_t a = _JLU3_INIT(h, size);
     uint32_t b = a;
     uint32_t c = a;
+
+    if (key == NULL)
+	return h;
 
     u.ptr = key;
     if (HASH_BIG_ENDIAN && ((u.i & 0x3) == 0)) {
@@ -753,9 +775,9 @@ uint32_t jlu32b(uint32_t h, const void *key, size_t size)
 exit:
     return c;
 }
+#endif	/* defined(_JLU3_jlu32b) */
 
-
-#if defined(SELFTEST)
+#if defined(_JLU3_SELFTEST)
 
 /* used for timings */
 static void driver1(void)
@@ -946,4 +968,4 @@ int main(int argc, char ** argv)
     return 1;
 }
 
-#endif  /* SELFTEST */
+#endif  /* _JLU3_SELFTEST */

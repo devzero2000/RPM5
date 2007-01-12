@@ -127,7 +127,7 @@ hashtest_SOURCES = hashtest.c
 hashtest_LDADD = librpmio.la
 
 lookup3_SOURCES = lookup3.c
-lookup3_CFLAGS	= $(CFLAGS) -DSELFTEST
+lookup3_CFLAGS	= $(CFLAGS) -D_JLU3_SELFTEST
 lookup3_LDADD = librpmio.la
 
 tficl.o: tficl.c

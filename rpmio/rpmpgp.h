@@ -301,6 +301,7 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_CRC32		= 106,	/*!< (private) CRC-32 */
     PGPHASHALGO_ADLER32		= 107,	/*!< (private) ADLER-32 */
     PGPHASHALGO_CRC64		= 108,	/*!< (private) CRC-64 */
+    PGPHASHALGO_JLU32		= 109,	/*!< (private) Jenkins lookup3.c */
 
 } pgpHashAlgo;
 

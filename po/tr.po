@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-07 11:20-0500\n"
+"POT-Creation-Date: 2007-01-12 14:52-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1046,12 +1046,17 @@ msgstr "Yamalar çok fazla!\n"
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "satýr %d: %%patch argüman hatasý: %s\n"
 
-#: build/parsePrep.c:623
+#: build/parsePrep.c:617
+#, fuzzy, c-format
+msgid "file %s missing: %s\n"
+msgstr "dosya %s: %s\n"
+
+#: build/parsePrep.c:625
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s baþarýsýz\n"
 
-#: build/parsePrep.c:645
+#: build/parsePrep.c:647
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "satýr %d: %%prep saniye\n"
@@ -4287,20 +4292,20 @@ msgstr "%s dosyasý: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
 
-#: rpmio/rpmdav.c:661
+#: rpmio/rpmdav.c:662
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:663
+#: rpmio/rpmdav.c:664
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:665
+#: rpmio/rpmdav.c:666
 #, fuzzy
 msgid "Server Error"
 msgstr "Sunucu G/Ç hatasý"
 
-#: rpmio/rpmdav.c:667
+#: rpmio/rpmdav.c:668
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(hata yok)"

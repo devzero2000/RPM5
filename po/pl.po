@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-07 11:20-0500\n"
+"POT-Creation-Date: 2007-01-12 14:52-0500\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1044,12 +1044,17 @@ msgstr "Zbyt wiele ³at!\n"
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch: %s\n"
 
-#: build/parsePrep.c:623
+#: build/parsePrep.c:617
+#, fuzzy, c-format
+msgid "file %s missing: %s\n"
+msgstr "plik %s: %s\n"
+
+#: build/parsePrep.c:625
 #, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "Pobieranie %s nie powiod³o siê: %s\n"
 
-#: build/parsePrep.c:645
+#: build/parsePrep.c:647
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
@@ -4194,20 +4199,20 @@ msgstr "Plik %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
 
-#: rpmio/rpmdav.c:661
+#: rpmio/rpmdav.c:662
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:663
+#: rpmio/rpmdav.c:664
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:665
+#: rpmio/rpmdav.c:666
 #, fuzzy
 msgid "Server Error"
 msgstr "B³±d we/wy serwera"
 
-#: rpmio/rpmdav.c:667
+#: rpmio/rpmdav.c:668
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(brak b³êdu)"

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-07 11:20-0500\n"
+"POT-Creation-Date: 2007-01-12 14:52-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1157,12 +1157,18 @@ msgstr ""
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/parsePrep.c:623
+# , c-format
+#: build/parsePrep.c:617
+#, fuzzy, c-format
+msgid "file %s missing: %s\n"
+msgstr "No consegui ler o arquivo spec de %s\n"
+
+#: build/parsePrep.c:625
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: build/parsePrep.c:645
+#: build/parsePrep.c:647
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -4551,19 +4557,19 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmdav.c:661
+#: rpmio/rpmdav.c:662
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:663
+#: rpmio/rpmdav.c:664
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:665
+#: rpmio/rpmdav.c:666
 msgid "Server Error"
 msgstr ""
 
-#: rpmio/rpmdav.c:667
+#: rpmio/rpmdav.c:668
 msgid "Unknown Error"
 msgstr ""
 

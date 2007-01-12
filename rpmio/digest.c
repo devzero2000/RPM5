@@ -64,6 +64,10 @@ static uint32_t crc32(uint32_t crc, const byte * data, size_t size)
 /*@=shadow@*/
 #endif
 
+/* Include Bob Jenkins lookup3 hash */
+#define	_JLU3_jlu32l
+#include "lookup3.c"
+
 /**
  */
 typedef struct {
@@ -448,6 +452,22 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	    mp->update = (void *) adler32;
 	    mp->combine = (void *) adler32_combine;
 #endif
+/*@=type @*/
+	    ctx->paramlen = sizeof(*mp);
+	    ctx->param = mp;
+	}
+/*@-type@*/
+	ctx->Reset = (void *) sum32Reset;
+	ctx->Update = (void *) sum32Update;
+	ctx->Digest = (void *) sum32Digest;
+/*@=type@*/
+	break;
+    case PGPHASHALGO_JLU32:
+	ctx->digestlen = 32/8;
+	ctx->datalen = 8;
+	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
+/*@-type @*/
+	    mp->update = (void *) jlu32l;
 /*@=type @*/
 	    ctx->paramlen = sizeof(*mp);
 	    ctx->param = mp;

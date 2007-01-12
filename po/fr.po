@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-07 11:20-0500\n"
+"POT-Creation-Date: 2007-01-12 14:52-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1052,12 +1052,17 @@ msgstr "Trop de patchs !!!\n"
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "ligne %d: mauvais argument a %%patch: %s\n"
 
-#: build/parsePrep.c:623
+#: build/parsePrep.c:617
+#, fuzzy, c-format
+msgid "file %s missing: %s\n"
+msgstr "fichier %s: %s\n"
+
+#: build/parsePrep.c:625
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "échec %s: %s\n"
 
-#: build/parsePrep.c:645
+#: build/parsePrep.c:647
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "ligne %d: deuxième %%prep\n"
@@ -4317,20 +4322,20 @@ msgstr "Fichier %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Le fichier %s est plus petit que %u octets\n"
 
-#: rpmio/rpmdav.c:661
+#: rpmio/rpmdav.c:662
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:663
+#: rpmio/rpmdav.c:664
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:665
+#: rpmio/rpmdav.c:666
 #, fuzzy
 msgid "Server Error"
 msgstr "Erreur d'E/S avec le serveur"
 
-#: rpmio/rpmdav.c:667
+#: rpmio/rpmdav.c:668
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(pas d'erreur)"

@@ -628,8 +628,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/legacy.h \
                          @top_srcdir@/rpmdb/merge.c \
                          @top_srcdir@/rpmdb/poptDB.c \
-                         @top_srcdir@/rpmdb/rpmhash.c \
-                         @top_srcdir@/rpmdb/rpmhash.h \
                          @top_srcdir@/rpmdb/rpmdb.c \
                          @top_srcdir@/rpmdb/rpmdb.h \
                          @top_srcdir@/rpmdb/tagname.c \
@@ -639,10 +637,13 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/digest.c \
                          @top_srcdir@/rpmio/fts.c \
                          @top_srcdir@/rpmio/fts.h \
+                         @top_srcdir@/rpmio/lookup3.c \
                          @top_srcdir@/rpmio/macro.c \
                          @top_srcdir@/rpmio/rpmlog.c \
                          @top_srcdir@/rpmio/rpmlog.h \
                          @top_srcdir@/rpmio/rpmerr.h \
+                         @top_srcdir@/rpmio/rpmhash.c \
+                         @top_srcdir@/rpmio/rpmhash.h \
                          @top_srcdir@/rpmio/rpmio.c \
                          @top_srcdir@/rpmio/rpmio.h \
                          @top_srcdir@/rpmio/rpmio_internal.h \

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-07 11:20-0500\n"
+"POT-Creation-Date: 2007-01-12 14:52-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1041,12 +1041,17 @@ msgstr "Demasiadas 'patches'!\n"
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linha %d: Argumento inválido para o %%patch: %s\n"
 
-#: build/parsePrep.c:623
+#: build/parsePrep.c:617
+#, fuzzy, c-format
+msgid "file %s missing: %s\n"
+msgstr "ficheiro %s: %s\n"
+
+#: build/parsePrep.c:625
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s falhou: %s\n"
 
-#: build/parsePrep.c:645
+#: build/parsePrep.c:647
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linha %d: segundo %%prep\n"
@@ -4278,20 +4283,20 @@ msgstr "Ficheiro %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"
 
-#: rpmio/rpmdav.c:661
+#: rpmio/rpmdav.c:662
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:663
+#: rpmio/rpmdav.c:664
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:665
+#: rpmio/rpmdav.c:666
 #, fuzzy
 msgid "Server Error"
 msgstr "Erro de E/S do servidor"
 
-#: rpmio/rpmdav.c:667
+#: rpmio/rpmdav.c:668
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(nenhum erro)"
