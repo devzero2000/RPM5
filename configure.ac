@@ -741,6 +741,9 @@ AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
 
+dnl Some solaris build env needs.
+AC_CHECK_HEADERS(limits.h)
+
 dnl basename(), confstr() on some platforms
 AC_CHECK_HEADERS(libgen.h)
 
