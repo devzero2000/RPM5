@@ -211,12 +211,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
-    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_GREATER));
+    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	rpmds this;
 
-	/* XXX Only added packages need be checked for dupes. */
+	/* XXX Only added packages need be checked for dupes here. */
 	if (rpmteType(p) == TR_REMOVED)
 	    continue;
 
@@ -228,6 +228,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    const char * parch;
 	    const char * pos;
 
+	    /* DIEDIEDIE: arch aliases are not handled correctly by strcmp. */
 	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
 		continue;
 	    if (os == NULL || (pos = rpmteO(p)) == NULL)
@@ -240,7 +241,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if ((this = rpmteDS(p, RPMTAG_NAME)) == NULL)
 	    continue;	/* XXX can't happen */
 
-	/* If newer NEVR was previously added, then skip adding older. */
+	/* If newer NEVRAO already added, then skip adding older. */
 	rc = rpmdsCompare(newChk, this);
 	if (rc != 0) {
 	    const char * pkgNEVR = rpmdsDNEVR(this);
@@ -254,7 +255,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    break;
 	}
 
-	/* If older NEVR was previously added, then replace old with new. */
+	/* If older NEVRAO already added, then replace old with new. */
 	rc = rpmdsCompare(oldChk, this);
 	if (rc != 0) {
 	    const char * pkgNEVR = rpmdsDNEVR(this);
@@ -268,12 +269,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    pkgKey = rpmteAddedKey(p);
 	    break;
 	}
+
+	/* OK, binary *.rpm with identical NEVRAO. Check relocations? Nah ... */
+	ec = 1;
+	break;
     }
     pi = rpmtsiFree(pi);
     oldChk = rpmdsFree(oldChk);
     newChk = rpmdsFree(newChk);
 
-    /* If newer NEVR was already added, exit now. */
+    /* If newer (or same) NEVRAO was already added, exit now. */
     if (ec)
 	goto exit;
 

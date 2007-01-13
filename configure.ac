@@ -1397,7 +1397,7 @@ dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
 autorelocate_dcolor='0'
 case "${build_cpu}" in
-*86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
+*86)		RPMCANONCOLOR=3; RPMCANONARCH=i386 ;;
 ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
 amd64*)		RPMCANONCOLOR=3; RPMCANONARCH=amd64 ;;
 x86_64*)	RPMCANONCOLOR=3; RPMCANONARCH=x86_64 ;;

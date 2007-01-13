@@ -600,13 +600,12 @@ if (fileURL[0] == '=') {
 	case 0:
 	    rpmMessage(RPMMESS_DEBUG, _("\tadded binary package [%d]\n"),
 			eiu->numRPMS);
+	    eiu->numRPMS++;
 	    /*@switchbreak@*/ break;
 	case 1:
-	    rpmMessage(RPMMESS_ERROR,
-			    _("error reading from file %s\n"), *eiu->fnp);
-	    eiu->numFailed++;
-	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    rpmMessage(RPMMESS_WARNING,
+			    _("package file %s was skipped\n"), *eiu->fnp);
+	    /*@switchbreak@*/ break;
 	case 2:
 	    rpmMessage(RPMMESS_ERROR,
 			    _("file %s requires a newer version of RPM\n"),
@@ -616,7 +615,6 @@ if (fileURL[0] == '=') {
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-	eiu->numRPMS++;
 	continue;
 
 maybe_manifest:

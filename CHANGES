@@ -85,6 +85,7 @@
 	- resuscitate build against external -lmagic.
 	- add lookup3.c hash (http://www.burtleburtle.net/bob/c/lookup3.c).
 	- popt: mark POPT_AUTO{HELP,ALIAS} strings for translation (#102254).
+	- treat duplicate *.rpm added consistently as warning (#180996).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
