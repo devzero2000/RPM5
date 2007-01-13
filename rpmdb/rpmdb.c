@@ -885,7 +885,7 @@ exit:
 }
 
 #define	_DB_ROOT	"/"
-#define	_DB_HOME	"%{_dbpath}"
+#define	_DB_HOME	"%{?_dbpath}"
 #define	_DB_FLAGS	0
 #define _DB_MODE	0
 #define _DB_PERMS	0644
@@ -1052,6 +1052,57 @@ int rpmdbSync(rpmdb db)
     return rc;
 }
 
+/**
+ * Return macro expanded absolute path to rpmdb.
+ * @param uri		desired path
+ * @return		macro expanded absolute path
+ */
+static const char * rpmdbURIPath(const char *uri)
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies rpmGlobalMacroContext @*/
+{
+    const char * s = rpmGetPath(uri, NULL);
+    const char * fn = NULL;
+    urltype ut = urlPath(s, &fn);
+
+    switch (ut) {
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	fn = s;
+	s = NULL;
+	break;
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
+    case URL_IS_HKP:
+    case URL_IS_DASH:
+    default:
+	/* HACK: strip the URI prefix for these schemes. */
+	fn = rpmGetPath(fn, NULL);
+	break;
+    }
+
+    /* Convert relative to absolute paths. */
+    if (ut != URL_IS_PATH)	/* XXX permit file:///... URI's */
+    if (fn && *fn && *fn != '/') {
+	char dn[PATH_MAX];
+	char *t;
+	dn[0] = '\0';
+	if ((t = realpath(".", dn)) != NULL) {
+	    t += strlen(dn);
+	    if (t > dn && t[-1] != '/')
+		*t++ = '/';
+	    t = stpncpy(t, fn, (sizeof(dn) - (t - dn)));
+	    *t = '\0';
+	    fn = _free(fn);
+	    fn = rpmGetPath(dn, NULL);
+	}
+    }
+
+    s = _free(s);
+    return fn;
+}
+
 /*@-exportheader@*/
 /*@-mods@*/	/* FIX: dbTemplate structure assignment */
 /*@only@*/ /*@null@*/
@@ -1089,30 +1140,10 @@ fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, h
     if (perms >= 0)	db->db_perms = perms;
     if (flags >= 0)	db->db_flags = flags;
 
-/*@-nullpass@*/
-    /* HACK: no URL's for root prefixed dbpath yet. */
-    if (root && *root) {
-	const char * rootpath = NULL;
-	urltype ut = urlPath(root, &rootpath);
-	switch (ut) {
-	case URL_IS_PATH:
-	case URL_IS_UNKNOWN:
-	    db->db_root = rpmGetPath(root, NULL);
-	    break;
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	case URL_IS_HKP:
-	case URL_IS_DASH:
-	default:
-	    db->db_root = rpmGetPath(_DB_ROOT, NULL);
-	    break;
-	}
-    } else
-	db->db_root = rpmGetPath(_DB_ROOT, NULL);
-    db->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
-/*@=nullpass@*/
-    if (!(db->db_home && db->db_home[0] != '%')) {
+    db->db_root = rpmdbURIPath( (root && *root ? root : _DB_ROOT) );
+    db->db_home = rpmdbURIPath( (home && *home ? home : _DB_HOME) );
+
+    if (!(db->db_home && db->db_home[0])) {
 	rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
 	db->db_root = _free(db->db_root);
 	db->db_home = _free(db->db_home);
