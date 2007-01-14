@@ -23,7 +23,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: @VERSION@
-Release: 0.9
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
 License: LGPL
@@ -547,6 +547,19 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Jan 14 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.10
+- move rmphash.[ch] into librpmio.
+- fix: add error message on non-existent sources/patches.
+- resuscitate build against external -lmagic.
+- add lookup3.c hash (http://www.burtleburtle.net/bob/c/lookup3.c).
+- popt: mark POPT_AUTO{HELP,ALIAS} strings for translation (#102254).
+- treat duplicate *.rpm added consistently as warning (#180996).
+- permit relative paths for --dbpath (#21703).
+- strip trailing '/' to permit --root -D'_rpmdb_dbpath /path' (#90033).
+- add SHA-224, RIPEMD-{256,320} digests.
+- change hashFunctionType to accommodate crc-32, adler-32, and jlu-32.
+- add SALSA-{10,20} with CBC chaining to create 512 bit digest.
+
 * Sun Jan  7 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.9
 - skip EACCESS returns from stat(2) on mount points (#220991).
 - permit files with glob characters in *.rpm packages (#142771,#147383).

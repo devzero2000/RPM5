@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-12 14:52-0500\n"
+"POT-Creation-Date: 2007-01-14 15:23-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -1343,108 +1343,108 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:250
+#: lib/depends.c:251
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:264
+#: lib/depends.c:265
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:371
+#: lib/depends.c:376
 #, c-format
 msgid "   upgrade erases %s\n"
 msgstr ""
 
-#: lib/depends.c:441
+#: lib/depends.c:446
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:540
+#: lib/depends.c:545
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:556
+#: lib/depends.c:561
 msgid "(macro probe)"
 msgstr ""
 
-#: lib/depends.c:575
+#: lib/depends.c:580
 msgid "(access probe)"
 msgstr ""
 
-#: lib/depends.c:588
+#: lib/depends.c:593
 msgid "(sysinfo provides)"
 msgstr ""
 
-#: lib/depends.c:608
+#: lib/depends.c:613
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:624
+#: lib/depends.c:629
 msgid "(cpuinfo provides)"
 msgstr ""
 
-#: lib/depends.c:640
+#: lib/depends.c:645
 msgid "(getconf provides)"
 msgstr ""
 
-#: lib/depends.c:656
+#: lib/depends.c:661
 msgid "(uname provides)"
 msgstr ""
 
-#: lib/depends.c:691
+#: lib/depends.c:696
 msgid "(soname provides)"
 msgstr ""
 
-#: lib/depends.c:718
+#: lib/depends.c:723
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:731
+#: lib/depends.c:736
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:761
+#: lib/depends.c:766
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1213
+#: lib/depends.c:1218
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1340
+#: lib/depends.c:1345
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
-#: lib/depends.c:1609
+#: lib/depends.c:1614
 msgid "========== recording tsort relations\n"
 msgstr ""
 
-#: lib/depends.c:1730
+#: lib/depends.c:1735
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:1821
+#: lib/depends.c:1826
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1894
+#: lib/depends.c:1899
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1925
+#: lib/depends.c:1930
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/depends.c:1930
+#: lib/depends.c:1935
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2562,7 +2562,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:714 lib/rpminstall.c:821
+#: lib/query.c:714 lib/rpminstall.c:819
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2883,7 +2883,7 @@ msgid "relocating directory %s to %s\n"
 msgstr ""
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:127 lib/rpminstall.c:495
-#: lib/rpminstall.c:626 lib/rpminstall.c:1068 lib/rpmts.c:656
+#: lib/rpminstall.c:624 lib/rpminstall.c:1066 lib/rpmts.c:656
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -2893,12 +2893,12 @@ msgstr ""
 msgid "unknown tag: \"%s\"\n"
 msgstr ""
 
-#: lib/rpmgi.c:762 lib/rpminstall.c:670 lib/rpminstall.c:855
-#: lib/rpminstall.c:1468 lib/transaction.c:1117
+#: lib/rpmgi.c:762 lib/rpminstall.c:668 lib/rpminstall.c:853
+#: lib/rpminstall.c:1466 lib/transaction.c:1117
 msgid "Failed dependencies:\n"
 msgstr ""
 
-#: lib/rpmgi.c:768 lib/rpminstall.c:677
+#: lib/rpmgi.c:768 lib/rpminstall.c:675
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -2926,7 +2926,7 @@ msgstr ""
 msgid "Upgrading packages..."
 msgstr ""
 
-#: lib/rpminstall.c:333 lib/rpminstall.c:799 lib/transaction.c:1090
+#: lib/rpminstall.c:333 lib/rpminstall.c:797 lib/transaction.c:1090
 #, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr ""
@@ -2951,7 +2951,7 @@ msgstr ""
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:514 lib/rpminstall.c:915
+#: lib/rpminstall.c:514 lib/rpminstall.c:913
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -2971,69 +2971,69 @@ msgstr ""
 msgid "\tadded binary package [%d]\n"
 msgstr ""
 
-#: lib/rpminstall.c:606
+#: lib/rpminstall.c:607
 #, c-format
-msgid "error reading from file %s\n"
+msgid "package file %s was skipped\n"
 msgstr ""
 
-#: lib/rpminstall.c:612
+#: lib/rpminstall.c:611
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:639
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:654
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:707
+#: lib/rpminstall.c:705
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:729
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:830
+#: lib/rpminstall.c:828
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:899
+#: lib/rpminstall.c:897
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:905
+#: lib/rpminstall.c:903
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1143
+#: lib/rpminstall.c:1141
 msgid "Missing repackaged package(s) detected:\n"
 msgstr ""
 
-#: lib/rpminstall.c:1374
+#: lib/rpminstall.c:1372
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1462 lib/transaction.c:1095
+#: lib/rpminstall.c:1460 lib/transaction.c:1095
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1495
+#: lib/rpminstall.c:1493
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#: lib/rpminstall.c:1502
+#: lib/rpminstall.c:1500
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr ""
@@ -3868,161 +3868,161 @@ msgstr ""
 msgid "incorrect format: \"%s\": %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1116
+#: rpmdb/rpmdb.c:1147
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1413 rpmdb/rpmdb.c:1544 rpmdb/rpmdb.c:1600 rpmdb/rpmdb.c:2589
-#: rpmdb/rpmdb.c:2718 rpmdb/rpmdb.c:3481
+#: rpmdb/rpmdb.c:1444 rpmdb/rpmdb.c:1575 rpmdb/rpmdb.c:1631 rpmdb/rpmdb.c:2620
+#: rpmdb/rpmdb.c:2749 rpmdb/rpmdb.c:3512
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1812
+#: rpmdb/rpmdb.c:1843
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1822
+#: rpmdb/rpmdb.c:1853
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2468
+#: rpmdb/rpmdb.c:2499
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2500
+#: rpmdb/rpmdb.c:2531
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2822
+#: rpmdb/rpmdb.c:2853
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2891
+#: rpmdb/rpmdb.c:2922
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3002
+#: rpmdb/rpmdb.c:3033
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3006
+#: rpmdb/rpmdb.c:3037
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3034
+#: rpmdb/rpmdb.c:3065
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3055
+#: rpmdb/rpmdb.c:3086
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3065
+#: rpmdb/rpmdb.c:3096
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3223
+#: rpmdb/rpmdb.c:3254
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3289
+#: rpmdb/rpmdb.c:3320
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3456
+#: rpmdb/rpmdb.c:3487
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3460
+#: rpmdb/rpmdb.c:3491
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3500
+#: rpmdb/rpmdb.c:3531
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3875
+#: rpmdb/rpmdb.c:3906
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3918
-msgid "no dbpath has been set"
-msgstr ""
-
 #: rpmdb/rpmdb.c:3950
-#, c-format
-msgid "rebuilding database %s into %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3954
-#, c-format
-msgid "temporary database %s already exists\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3960
-#, c-format
-msgid "creating directory %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3962
-#, c-format
-msgid "creating directory %s: %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3971
-#, c-format
-msgid "opening old database with dbapi %d\n"
+msgid "no dbpath has been set"
 msgstr ""
 
 #: rpmdb/rpmdb.c:3982
 #, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:3986
+#, c-format
+msgid "temporary database %s already exists\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:3992
+#, c-format
+msgid "creating directory %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:3994
+#, c-format
+msgid "creating directory %s: %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:4003
+#, c-format
+msgid "opening old database with dbapi %d\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:4014
+#, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4013
+#: rpmdb/rpmdb.c:4045
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4053
+#: rpmdb/rpmdb.c:4085
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4067
+#: rpmdb/rpmdb.c:4099
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4079
+#: rpmdb/rpmdb.c:4111
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4081
+#: rpmdb/rpmdb.c:4113
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4091
+#: rpmdb/rpmdb.c:4123
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4093
+#: rpmdb/rpmdb.c:4125
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
