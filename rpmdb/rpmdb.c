@@ -3933,6 +3933,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     /*@-branchstate@*/
     if (prefix == NULL) prefix = "/";
     /*@=branchstate@*/
+    prefix = rpmGetPath(prefix, NULL);	/* strip trailing '/' */
 
     _dbapi = rpmExpandNumeric("%{_dbapi}");
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
@@ -3981,7 +3982,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
 	rootdbpath, newrootdbpath);
 
-    if (!access(newrootdbpath, F_OK)) {
+    if (!Access(newrootdbpath, F_OK)) {
 	rpmError(RPMERR_MKDIR, _("temporary database %s already exists\n"),
 	      newrootdbpath);
 	rc = 1;
@@ -4127,6 +4128,7 @@ exit:
     newrootdbpath = _free(newrootdbpath);
     rootdbpath = _free(rootdbpath);
     dbiTags = _free(dbiTags);
+    prefix = _free(prefix);
 
     return rc;
 }
