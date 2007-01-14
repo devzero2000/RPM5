@@ -1,5 +1,5 @@
 /**
- * \file rpmdb/rpmhash.c
+ * \file rpmio/rpmhash.c
  * Hash table implemenation
  */
 
