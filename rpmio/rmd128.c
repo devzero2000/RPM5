@@ -146,8 +146,8 @@ void rmd128Process(rmd128Param* mp)
 	t = 16;
 	while (t--)
 	{
-		register uint32_t temp = swapu32(*w);
-		*(w++) = temp;
+		register uint32_t temp = swapu32(*X);
+		*(X++) = temp;
 	}
 	X = mp->data;
 	#endif

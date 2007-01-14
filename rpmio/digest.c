@@ -10,11 +10,13 @@
 
 #include "md2.h"
 #include "md4.h"
+#include "sha224.h"
 #include "rmd128.h"
 #include "rmd160.h"
 #include "rmd256.h"
 #include "rmd320.h"
-#include "sha224.h"
+#include "salsa10.h"
+#include "salsa20.h"
 #include "tiger.h"
 
 #include "debug.h"
@@ -421,6 +423,34 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Digest = (void *) rmd320Digest;
 /*@=type@*/
 	break;
+    case PGPHASHALGO_SALSA10:
+	ctx->name = "SALSA-10";
+	ctx->digestsize = 512/8;
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(salsa10Param);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+/*@-type@*/
+	ctx->Reset = (void *) salsa10Reset;
+	ctx->Update = (void *) salsa10Update;
+	ctx->Digest = (void *) salsa10Digest;
+/*@=type@*/
+	break;
+    case PGPHASHALGO_SALSA20:
+	ctx->name = "SALSA-20";
+	ctx->digestsize = 512/8;
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(salsa20Param);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+/*@-type@*/
+	ctx->Reset = (void *) salsa20Reset;
+	ctx->Update = (void *) salsa20Update;
+	ctx->Digest = (void *) salsa20Digest;
+/*@=type@*/
+	break;
     case PGPHASHALGO_TIGER192:
 	ctx->name = "TIGER-192";
 	ctx->digestsize = 192/8;
@@ -698,6 +728,10 @@ struct poptOption rpmDigestPoptTable[] = {
  { "sha384",'\0', POPT_ARG_VAL, &rpmDigestHashAlgo, PGPHASHALGO_SHA384,
 	NULL, NULL },
  { "sha512",'\0', POPT_ARG_VAL, &rpmDigestHashAlgo, PGPHASHALGO_SHA512,
+	NULL, NULL },
+ { "salsa10",'\0', POPT_ARG_VAL, &rpmDigestHashAlgo, PGPHASHALGO_SALSA10,
+	NULL, NULL },
+ { "salsa20",'\0', POPT_ARG_VAL, &rpmDigestHashAlgo, PGPHASHALGO_SALSA20,
 	NULL, NULL },
  { "rmd128",'\0', POPT_ARG_VAL,	&rpmDigestHashAlgo, PGPHASHALGO_RIPEMD128,
 	NULL, NULL },
