@@ -88,6 +88,8 @@
 	- treat duplicate *.rpm added consistently as warning (#180996).
 	- permit relative paths for --dbpath (#21703).
 	- strip trailing '/' to permit --root -D'_rpmdb_dbpath /path' (#90033).
+	- add SHA-224, RIPEMD-{256,320} digests.
+	- change hashFunctionType to accommodate crc-32, adler-32, and jlu-32.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

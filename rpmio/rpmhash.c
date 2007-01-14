@@ -53,11 +53,11 @@ static /*@shared@*/ /*@null@*/
 hashBucket findEntry(hashTable ht, const void * key)
 	/*@*/
 {
-    unsigned int hash;
+    uint32_t hash = 0;
     hashBucket b;
 
     /*@-modunconnomods@*/
-    hash = ht->fn(key) % ht->numBuckets;
+    hash = ht->fn(hash, key, 0) % ht->numBuckets;
 /*@-boundsread@*/
     b = ht->buckets[hash];
 /*@=boundsread@*/
@@ -70,28 +70,32 @@ hashBucket findEntry(hashTable ht, const void * key)
 }
 
 /**
- * Return hash value of a string
- * @param string	string on which to calculate hash value
+ * Return hash value of a string.
+ * @param h		hash initial value
+ * @param data		data on which to calculate hash value
+ * @param size		size of data in bytes
  * @return		hash value
  */
-static unsigned int hashFunctionString(const void * string)
+static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
 	/*@*/
 {
-    char xorValue = 0;
-    char sum = 0;
-    short len;
+    const char * chp = data;
+    unsigned char sum = 0;
+    unsigned char xor = 0;
     int i;
-    const char * chp = string;
 
-    len = strlen(string);
+    if (size == 0)
+	size = strlen(chp);
 /*@-boundsread@*/
-    for (i = 0; i < len; i++, chp++) {
-	xorValue ^= *chp;
+    for (i = 0; i < size; i++, chp++) {
+	xor ^= *chp;
 	sum += *chp;
     }
 /*@=boundsread@*/
 
-    return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
+    h += ((size << 16) + (sum << 8) + xor);
+
+    return h;
 }
 
 /**
@@ -129,10 +133,10 @@ hashTable htCreate(int numBuckets, int keySize, int freeData,
 /*@-boundswrite@*/
 void htAddEntry(hashTable ht, const void * key, const void * data)
 {
-    unsigned int hash;
+    uint32_t hash = 0;
     hashBucket b;
 
-    hash = ht->fn(key) % ht->numBuckets;
+    hash = ht->fn(hash, key, 0) % ht->numBuckets;
     b = ht->buckets[hash];
 
     while (b && b->key && ht->eq(b->key, key))

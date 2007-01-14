@@ -117,10 +117,12 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
 /**
  * Return hash value for a finger print.
  * Hash based on dev and inode only!
- * @param key		pointer to finger print entry
- * @return hash value
+ * @param h		hash initial value
+ * @param *data		finger print entry
+ * @param size		size of fingerprint entry
+ * @return		hash value
  */
-unsigned int fpHashFunction(const void * key)
+uint32_t fpHashFunction(uint32_t h, const void * data, size_t size)
 	/*@*/;
 
 /**

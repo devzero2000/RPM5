@@ -191,15 +191,12 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
     return doLookup(cache, dirName, baseName, scareMem);
 }
 
-unsigned int fpHashFunction(const void * key)
+uint32_t fpHashFunction(uint32_t hash, const void * data, size_t size)
 {
-    const fingerPrint * fp = key;
-    unsigned int hash = 0;
-    char ch;
-    const char * chptr;
+    const fingerPrint * fp = data;
+    const char * chptr = fp->baseName;
+    unsigned char ch = 0;
 
-    ch = 0;
-    chptr = fp->baseName;
 /*@-boundsread@*/
     while (*chptr != '\0') ch ^= *chptr++;
 /*@=boundsread@*/

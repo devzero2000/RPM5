@@ -1,11 +1,9 @@
 /********************************************************************\
  *
- *      FILE:     rmd128.h
+ *      FILE:     rmd160.h
  *
  *      CONTENTS: Header file for a sample C-implementation of the
- *                RIPEMD-128 hash-function. This function is a
- *                plug-in substitute for RIPEMD. A 160-bit hash
- *                result is obtained using RIPEMD-160.
+ *                RIPEMD-160 hash-function. 
  *      TARGET:   any computer with an ANSI C compiler
  *
  *      AUTHOR:   Antoon Bosselaers, ESAT-COSIC
@@ -41,24 +39,24 @@
  *
 \********************************************************************/
 
-/*!\file rmd128.h
- * \brief RIPEMD-128 hash function.
- * \ingroup HASH_m HASH_rmd128_m 
+/*!\file rmd320.h
+ * \brief RIPEMD-320 hash function.
+ * \ingroup HASH_m HASH_rmd320_m 
  */
 
-#ifndef  _RMD128_H
-#define  _RMD128_H
+#ifndef  _RMD320_H
+#define  _RMD320_H
 
 #include "beecrypt.h"
 
-/*!\brief Holds all the parameters necessary for the RIPEMD-128 algorithm.
- * \ingroup HASH_rmd128_h
+/*!\brief Holds all the parameters necessary for the RIPEMD-320 algorithm.
+ * \ingroup HASH_rmd320_h
  */
 typedef struct
 {
 	/*!\var h
 	 */
-	uint32_t h[4];
+	uint32_t h[10];
 	/*!\var data
 	 */
 	uint32_t data[16];
@@ -78,39 +76,39 @@ typedef struct
      *  copied before it is processed.
      */
 	uint32_t offset;
-} rmd128Param;
+} rmd320Param;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*!\var rmd128
- * \brief Holds the full API description of the RIPEMD-128 algorithm.
+/*!\var rmd320
+ * \brief Holds the full API description of the RIPEMD-320 algorithm.
  */
 /*@unchecked@*/ /*@observer@*/
-extern BEECRYPTAPI const hashFunction rmd128;
+extern BEECRYPTAPI const hashFunction rmd320;
 
-/*!\fn int rmd128Reset(rmd128Param* mp)
+/*!\fn int rmd320Reset(rmd320Param* mp)
  * \brief This function resets the parameter block so that it's ready for a
  *  new hash.
  * \param mp The hash function's parameter block.
  * \retval 0 on success.
  */
 BEECRYPTAPI
-void rmd128Process(rmd128Param* mp)
+void rmd320Process(rmd320Param* mp)
 	/*@modifies mp @*/;
 
-/*!\fn int rmd128Reset(rmd128Param* mp)
+/*!\fn int rmd320Reset(rmd320Param* mp)
  * \brief This function resets the parameter block so that it's ready for a
  *  new hash.
  * \param mp The hash function's parameter block.
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int rmd128Reset   (rmd128Param* mp)
+int rmd320Reset   (rmd320Param* mp)
 	/*@modifies mp @*/;
 
-/*!\fn int rmd128Update(rmd128Param* mp, const byte* data, size_t size)
+/*!\fn int rmd320Update(rmd320Param* mp, const byte* data, size_t size)
  * \brief This function should be used to pass successive blocks of data
  *  to be hashed.
  * \param mp The hash function's parameter block.
@@ -119,10 +117,10 @@ int rmd128Reset   (rmd128Param* mp)
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int rmd128Update  (rmd128Param* mp, const byte* data, size_t size)
+int rmd320Update  (rmd320Param* mp, const byte* data, size_t size)
 	/*@modifies mp @*/;
 
-/*!\fn int rmd128Digest(rmd128Param* mp, byte* digest)
+/*!\fn int rmd320Digest(rmd320Param* mp, byte* digest)
  * \brief This function finishes the current hash computation and copies
  *  the digest value into \a digest.
  * \param mp The hash function's parameter block.
@@ -130,7 +128,7 @@ int rmd128Update  (rmd128Param* mp, const byte* data, size_t size)
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int rmd128Digest  (rmd128Param* mp, byte* digest)
+int rmd320Digest  (rmd320Param* mp, byte* digest)
 	/*@modifies mp, digest @*/;
 
 #ifdef __cplusplus

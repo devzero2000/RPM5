@@ -15,11 +15,13 @@ extern "C" {
 #endif
 
 /**
- * Return hash value of a string
- * @param string	string on which to calculate hash value
+ * Return hash value.
+ * @param h		hash initial value
+ * @param data		data on which to calculate hash value
+ * @param size		size of data in bytes
  * @return		hash value
  */
-typedef unsigned int (*hashFunctionType) (const void * string)
+typedef uint32_t (*hashFunctionType) (uint32_t h, const void * data, size_t size)
 	/*@*/;
 
 /**
