@@ -156,7 +156,7 @@ void rmd256Process(rmd256Param* mp)
 	#endif
 
 	aa = mp->h[0]; bb = mp->h[1]; cc = mp->h[2]; dd = mp->h[3];
-	aaa = mp->h[0]; bbb = mp->h[1]; ccc = mp->h[2]; ddd = mp->h[3];
+	aaa = mp->h[4]; bbb = mp->h[5]; ccc = mp->h[6]; ddd = mp->h[7];
 
 	/* round 1 */
 	FF(aa, bb, cc, dd, X[ 0], 11);
