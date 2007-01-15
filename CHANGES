@@ -91,6 +91,8 @@
 	- add SHA-224, RIPEMD-{256,320} digests.
 	- change hashFunctionType to accommodate crc-32, adler-32, and jlu-32.
 	- add SALSA-{10,20} with CBC chaining to create 512 bit digest.
+	- build and install rpmdb_hotbackup.
+	- vet db-4.5.10 symbols being re-exported through -lrpmdb.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

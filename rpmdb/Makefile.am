@@ -30,9 +30,9 @@ noinst_HEADERS = fprint.h header_internal.h legacy.h
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = \
-	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump rpmdb_load \
-	rpmdb_printlog rpmdb_recover rpmdb_svc rpmdb_stat rpmdb_upgrade \
-	rpmdb_verify 
+	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump \
+	rpmdb_hotbackup rpmdb_load rpmdb_printlog rpmdb_recover \
+	rpmdb_svc rpmdb_stat rpmdb_upgrade rpmdb_verify 
 
 mylibs = librpmdb.la
 
@@ -119,6 +119,12 @@ rpmdb_dump_SOURCES =
 rpmdb_dump_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_dump.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
+	librpmdb.la
+
+rpmdb_hotbackup_SOURCES =
+rpmdb_hotbackup_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_hotbackup.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
