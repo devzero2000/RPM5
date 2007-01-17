@@ -212,15 +212,18 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	break;
     case POPT_SHOWVERSION:
 	printVersion(stdout);
+	rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case POPT_SHOWRC:
 	rpmcliConfigured();
 	(void) rpmShowRC(stdout);
+	rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case POPT_QUERYTAGS:
 	rpmDisplayQueryTags(stdout);
+	rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
 #if defined(POPT_RCFILE)
