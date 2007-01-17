@@ -47,6 +47,8 @@ LIBRPM_0
     makeTempFile;
     newFSM;
     newStringBuf;
+    nplatpat;
+    platpat;
     _print_pkts;
     _psm_debug;
     _psm_threads;
@@ -221,6 +223,7 @@ LIBRPM_0
     rpmNAME;
     rpmNewSignature;
     rpmPermsString;
+    rpmPlatform;
     rpmProblemString;
     rpmpsAppend;
     rpmpsCreate;

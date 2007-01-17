@@ -706,6 +706,22 @@ void rpmGetOsInfo( /*@null@*/ /*@out@*/ const char ** name,
 int rpmMachineScore(int type, const char * name)
 	/*@*/;
 
+/*@only@*/ /*@null@*/ /*@unchecked@*/
+extern const char ** platpat;
+/*@unchecked@*/
+extern int nplatpat;
+
+/**
+ * Read and configure /etc/rpm/platform patterns.
+ * @param		path to platform patterns
+ * @return		0 on success
+ */
+int rpmPlatform(const char * platform)
+	/*@globals nplatpat, platpat,
+		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+        /*@modifies nplatpat, platpat,
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
+
 /** \ingroup rpmrc
  * Display current rpmrc (and macro) configuration.
  * @param fp		output file handle

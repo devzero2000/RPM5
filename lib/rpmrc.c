@@ -31,9 +31,9 @@ static const char * configTarget = NULL;
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
-static const char ** platpat = NULL;
+const char ** platpat = NULL;
 /*@unchecked@*/
-static int nplatpat = 0;
+int nplatpat = 0;
 
 typedef /*@owned@*/ const char * cptr_t;
 
@@ -929,10 +929,8 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
 }
 /*@=bounds@*/
 
-/**
- */
 /*@-bounds@*/
-static int rpmPlatform(const char * platform)
+int rpmPlatform(const char * platform)
 	/*@globals nplatpat, platpat,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies nplatpat, platpat,
