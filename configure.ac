@@ -1369,9 +1369,11 @@ fi
 
 dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
 MARK64=
-case "${target_cpu}" in
-x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
-esac
+if ! echo "${libdir}" | grep -q '64$' ; then
+    case "${target_cpu}" in
+    x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
+    esac
+fi
 AC_SUBST(MARK64)
 
 # For some systems we know that we have ld_version scripts.
