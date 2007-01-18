@@ -8,7 +8,8 @@
  */
 
 #include <assert.h>
-#include "rpmlib.h"
+#include <rpmlib.h>
+#include <mire.h>
 #include "db.h"
 
 /*@-exportlocal@*/
@@ -40,16 +41,6 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
  */
 typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 #endif
-
-/**
- * Tag value pattern match mode.
- */
-typedef enum rpmMireMode_e {
-    RPMMIRE_DEFAULT	= 0,	/*!< regex with \., .* and ^...$ added */
-    RPMMIRE_STRCMP	= 1,	/*!< strings  using strcmp(3) */
-    RPMMIRE_REGEX	= 2,	/*!< regex(7) patterns through regcomp(3) */
-    RPMMIRE_GLOB	= 3	/*!< glob(7) patterns through fnmatch(3) */
-} rpmMireMode;
 
 /**
  */

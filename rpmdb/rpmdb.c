@@ -8,26 +8,6 @@
 
 #include <sys/file.h>
 
-#ifndef	DYING	/* XXX already in "system.h" */
-/*@-noparams@*/
-#include <fnmatch.h>
-/*@=noparams@*/
-#if defined(__LCLINT__)
-/*@-declundef -exportheader -redecl @*/ /* LCL: missing annotation */
-extern int fnmatch (const char *__pattern, const char *__name, int __flags)
-	/*@*/;
-/*@=declundef =exportheader =redecl @*/
-#endif
-#endif
-
-#include <regex.h>
-#if defined(__LCLINT__)
-/*@-declundef -exportheader @*/ /* LCL: missing modifies (only is bogus) */
-extern void regfree (/*@only@*/ regex_t *preg)
-	/*@modifies *preg @*/;
-/*@=declundef =exportheader @*/
-#endif
-
 #include <rpmio.h>
 #include <rpmpgp.h>
 #include <rpmurl.h>
@@ -35,6 +15,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 #include <rpmsq.h>
 
 #define	_RPMDB_INTERNAL
+#define	_MIRE_INTERNAL
 #include "rpmdb.h"
 #include "fprint.h"
 #include "legacy.h"
@@ -673,19 +654,6 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
     }
     return set;
 }
-
-typedef struct miRE_s {
-    rpmTag		tag;		/*!< header tag */
-    rpmMireMode		mode;		/*!< pattern match mode */
-/*@only@*/
-    const char *	pattern;	/*!< pattern string */
-    int			notmatch;	/*!< like "grep -v" */
-/*@only@*/
-    regex_t *		preg;		/*!< regex compiled pattern buffer */
-    int			cflags;		/*!< regcomp(3) flags */
-    int			eflags;		/*!< regexec(3) flags */
-    int			fnflags;	/*!< fnmatch(3) flags */
-} * miRE;
 
 struct _rpmdbMatchIterator {
 /*@dependent@*/ /*@null@*/
@@ -1898,16 +1866,8 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_dbc = NULL;
 
     if (mi->mi_re != NULL)
-    for (i = 0; i < mi->mi_nre; i++) {
-	miRE mire = mi->mi_re + i;
-	mire->pattern = _free(mire->pattern);
-	if (mire->preg != NULL) {
-	    regfree(mire->preg);
-	    /*@+voidabstract -usereleased @*/ /* LCL: regfree has bogus only */
-	    mire->preg = _free(mire->preg);
-	    /*@=voidabstract =usereleased @*/
-	}
-    }
+    for (i = 0; i < mi->mi_nre; i++)
+	xx = mireClean(mi->mi_re + i);
     mi->mi_re = _free(mi->mi_re);
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
@@ -1931,49 +1891,6 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi) {
 
 int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
     return (mi && mi->mi_set ?  mi->mi_set->count : 0);
-}
-
-/**
- * Return pattern match.
- * @param mire		match iterator regex
- * @param val		value to match
- * @return		0 if pattern matches, >0 on nomatch, <0 on error
- */
-static int miregexec(miRE mire, const char * val)
-	/*@*/
-{
-    int rc = 0;
-
-    switch (mire->mode) {
-    case RPMMIRE_STRCMP:
-	rc = strcmp(mire->pattern, val);
-	if (rc) rc = 1;
-	break;
-    case RPMMIRE_DEFAULT:
-    case RPMMIRE_REGEX:
-/*@-boundswrite@*/
-	rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
-/*@=boundswrite@*/
-	if (rc && rc != REG_NOMATCH) {
-	    char msg[256];
-	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
-	    msg[sizeof(msg)-1] = '\0';
-	    rpmError(RPMERR_REGEXEC, "%s: regexec failed: %s\n",
-			mire->pattern, msg);
-	    rc = -1;
-	}
-	break;
-    case RPMMIRE_GLOB:
-	rc = fnmatch(mire->pattern, val, mire->fnflags);
-	if (rc && rc != FNM_NOMATCH)
-	    rc = -1;
-	break;
-    default:
-	rc = -1;
-	break;
-    }
-
-    return rc;
 }
 
 /**
@@ -2092,13 +2009,10 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 		rpmMireMode mode, const char * pattern)
 {
     static rpmMireMode defmode = (rpmMireMode)-1;
+    miRE nmire = NULL;
     miRE mire = NULL;
     const char * allpat = NULL;
     int notmatch = 0;
-    regex_t * preg = NULL;
-    int cflags = 0;
-    int eflags = 0;
-    int fnflags = 0;
     int rc = 0;
 
 /*@-boundsread@*/
@@ -2128,71 +2042,39 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
     }
 /*@=boundsread@*/
 
+    nmire = mireNew(mode, tag);
 /*@-boundswrite@*/
-    allpat = mireDup(tag, &mode, pattern);
+    allpat = mireDup(nmire->tag, &nmire->mode, pattern);
 /*@=boundswrite@*/
 
-    if (mode == RPMMIRE_DEFAULT)
-	mode = defmode;
+    if (nmire->mode == RPMMIRE_DEFAULT)
+	nmire->mode = defmode;
 
-    /*@-branchstate@*/
-    switch (mode) {
-    case RPMMIRE_DEFAULT:
-    case RPMMIRE_STRCMP:
-	break;
-    case RPMMIRE_REGEX:
-	/*@-type@*/
-	preg = xcalloc(1, sizeof(*preg));
-	/*@=type@*/
-	cflags = (REG_EXTENDED | REG_NOSUB);
-	rc = regcomp(preg, allpat, cflags);
-	if (rc) {
-	    char msg[256];
-	    (void) regerror(rc, preg, msg, sizeof(msg)-1);
-	    msg[sizeof(msg)-1] = '\0';
-	    rpmError(RPMERR_REGCOMP, "%s: regcomp failed: %s\n", allpat, msg);
-	}
-	break;
-    case RPMMIRE_GLOB:
-	fnflags = FNM_PATHNAME | FNM_PERIOD;
-	break;
-    default:
-	rc = -1;
-	break;
-    }
-    /*@=branchstate@*/
-
-    if (rc) {
-	/*@=kepttrans@*/	/* FIX: mire has kept values */
-	allpat = _free(allpat);
-	if (preg) {
-	    regfree(preg);
-	    /*@+voidabstract -usereleased @*/ /* LCL: regfree has bogus only */
-	    preg = _free(preg);
-	    /*@=voidabstract =usereleased @*/
-	}
-	/*@=kepttrans@*/
-	return rc;
-    }
+    rc = mireRegcomp(nmire, allpat);
+    if (rc)
+	goto exit;
 
     mi->mi_re = xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
     mire = mi->mi_re + mi->mi_nre;
     mi->mi_nre++;
     
-    mire->tag = tag;
-    mire->mode = mode;
-    mire->pattern = allpat;
+    mire->mode = nmire->mode;
+    mire->pattern = nmire->pattern;	nmire->pattern = NULL;
+    mire->preg = nmire->preg;		nmire->preg = NULL;
+    mire->cflags = nmire->cflags;
+    mire->eflags = nmire->eflags;
+    mire->fnflags = nmire->fnflags;
+    mire->tag = nmire->tag;
     mire->notmatch = notmatch;
-    mire->preg = preg;
-    mire->cflags = cflags;
-    mire->eflags = eflags;
-    mire->fnflags = fnflags;
 
 /*@-boundsread@*/
     if (mi->mi_nre > 1)
 	qsort(mi->mi_re, mi->mi_nre, sizeof(*mi->mi_re), mireCmp);
 /*@=boundsread@*/
 
+exit:
+    allpat = _free(allpat);
+    nmire = mireFree(nmire);
     return rc;
 }
 
@@ -2254,31 +2136,31 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    case RPM_CHAR_TYPE:
 	    case RPM_INT8_TYPE:
 		sprintf(numbuf, "%d", (int) *u.i8p);
-		rc = miregexec(mire, numbuf);
+		rc = mireRegexec(mire, numbuf);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		/*@switchbreak@*/ break;
 	    case RPM_INT16_TYPE:
 		sprintf(numbuf, "%d", (int) *u.i16p);
-		rc = miregexec(mire, numbuf);
+		rc = mireRegexec(mire, numbuf);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		/*@switchbreak@*/ break;
 	    case RPM_INT32_TYPE:
 		sprintf(numbuf, "%d", (int) *u.i32p);
-		rc = miregexec(mire, numbuf);
+		rc = mireRegexec(mire, numbuf);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		/*@switchbreak@*/ break;
 	    case RPM_STRING_TYPE:
-		rc = miregexec(mire, u.str);
+		rc = mireRegexec(mire, u.str);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		/*@switchbreak@*/ break;
 	    case RPM_I18NSTRING_TYPE:
 	    case RPM_STRING_ARRAY_TYPE:
 		for (j = 0; j < c; j++) {
-		    rc = miregexec(mire, u.argv[j]);
+		    rc = mireRegexec(mire, u.argv[j]);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch)) {
 			anymatch++;
 			/*@innerbreak@*/ break;

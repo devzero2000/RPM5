@@ -10,6 +10,7 @@ const char *__progname;
 #include <rpmlua.h>		/* XXX rpmluaFree() */
 #include <fs.h>			/* XXX rpmFreeFilesystems() */
 #include <fts.h>
+#include <mire.h>
 
 #include "debug.h"
 
@@ -48,6 +49,9 @@ extern int _fsm_threads;
 
 /*@unchecked@*/
 extern int _hdr_debug;
+
+/*@unchecked@*/
+extern int _mire_debug;
 
 /*@unchecked@*/
 extern int _print_pkts;
@@ -411,6 +415,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
 	N_("debug WebDAV data stream"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
+	NULL, NULL},
+ { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
 	NULL, NULL},
 #ifdef	DYING
  { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,

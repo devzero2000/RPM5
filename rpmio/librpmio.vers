@@ -98,6 +98,12 @@ LIBRPMIO_0
     Lstat;
     lzdio;
     max_macro_depth;
+    _mire_debug;
+    mireClean;
+    mireFree;
+    mireNew;
+    mireRegexec;
+    mireRegcomp;
     Mkdir;
     Mkfifo;
     Mknod;

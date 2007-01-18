@@ -20,7 +20,7 @@ INCLUDES = -I. \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	argv.h fts.h rpmdav.h rpmhash.h \
+	argv.h fts.h mire.h rpmdav.h rpmhash.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	rpmsq.h rpmsw.h ugid.h
 noinst_HEADERS = \
@@ -35,7 +35,7 @@ LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	argv.c digest.c fts.c macro.c \
+	argv.c digest.c fts.c macro.c mire.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
