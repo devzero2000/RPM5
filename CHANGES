@@ -98,6 +98,7 @@
 	- refactor miRE pattern matching into librpmio.
 	- fix: don't set MARK64 if libdir already ends in 64 (#205939).
 	- convert '-' to '_' within --define macro names (#124995).
+	- fix: fts_close double free traversing an active tree (#222089).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
