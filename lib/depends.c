@@ -211,7 +211,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
-    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
+    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_GREATER));
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	rpmds this;
@@ -231,9 +231,17 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    /* DIEDIEDIE: arch aliases are not handled correctly by strcmp. */
 	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
 		continue;
+	    /* XXX hackery for i[3456]86 matching. */
+	    if (arch[0] == 'i' && arch[2] == '8' && arch[3] == '6') {
+		if (arch[0] != parch[0]) continue;
+		if (arch[2] != parch[2]) continue;
+		if (arch[3] != parch[3]) continue;
+	    } else if (strcmp(arch, parch))
+		continue;
 	    if (os == NULL || (pos = rpmteO(p)) == NULL)
 		continue;
-	    if (strcmp(arch, parch) || strcmp(os, pos))
+
+	    if (strcmp(os, pos))
 		continue;
 	}
 
@@ -269,10 +277,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    pkgKey = rpmteAddedKey(p);
 	    break;
 	}
-
-	/* OK, binary *.rpm with identical NEVRAO. Check relocations? Nah ... */
-	ec = 1;
-	break;
     }
     pi = rpmtsiFree(pi);
     oldChk = rpmdsFree(oldChk);
