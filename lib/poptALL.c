@@ -198,15 +198,25 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
 	break;
     case 'D':
+    {	char *s, *t;
+	/* XXX Convert '-' in macro name to underscore, skip leading %. */
+	s = t = xstrdup(arg);
+	while (*t && !xisspace(*t)) {
+	    if (*t == '-') *t = '_';
+	    t++;
+	}
+	t = s;
+	if (*t == '%') t++;
 	/* XXX Predefine macro if not initialized yet. */
 	if (rpmcliInitialized < 0)
-	    (void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
+	    (void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
 	rpmcliConfigured();
 /*@-type@*/
-	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
-	(void) rpmDefineMacro(rpmCLIMacroContext, arg, RMIL_CMDLINE);
+	(void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
+	(void) rpmDefineMacro(rpmCLIMacroContext, t, RMIL_CMDLINE);
 /*@=type@*/
-	break;
+	s = _free(s);
+    }	break;
     case 'E':
 	rpmcliConfigured();
 	{   const char *val = rpmExpand(arg, NULL);
