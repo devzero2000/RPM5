@@ -473,7 +473,8 @@ void rpmteNewTSI(rpmte te)
 
 alKey rpmteAddedKey(rpmte te)
 {
-    return (te != NULL ? te->u.addedKey : RPMAL_NOMATCH);
+    /* XXX Because of the te->u.* union, the rpmteType(te) test is needed. */
+    return (te != NULL && te->type == TR_ADDED ? te->u.addedKey : RPMAL_NOMATCH);
 }
 
 alKey rpmteSetAddedKey(rpmte te, alKey npkgKey)
