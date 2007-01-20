@@ -107,7 +107,7 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
-    FD_t fd = rpmgiOpen(path, "r.ufdio");
+    FD_t fd = rpmgiOpen(path, "r");
     rpmRC rpmrc = RPMRC_FAIL;
 
     if (fd != NULL) {
@@ -128,7 +128,7 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
-    FD_t fd = rpmgiOpen(path, "r.ufdio");
+    FD_t fd = rpmgiOpen(path, "r");
     Header h = NULL;
 
     if (fd != NULL) {
@@ -658,7 +658,7 @@ nextkey:
 		path = _free(path);
 		path = rpmExpand(_query_hdlist_path, NULL);
 	    }
-	    gi->fd = rpmgiOpen(path, "rm.ufdio");
+	    gi->fd = rpmgiOpen(path, "rm");
 	    gi->active = 1;
 	    path = _free(path);
 	}

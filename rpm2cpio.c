@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     if (argc == 1)
 	fdi = fdDup(STDIN_FILENO);
     else
-	fdi = Fopen(argv[1], "r.ufdio");
+	fdi = Fopen(argv[1], "r");
 
     if (Ferror(fdi)) {
 	fprintf(stderr, "%s: %s: %s\n", argv[0],

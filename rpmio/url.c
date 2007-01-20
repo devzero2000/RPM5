@@ -551,7 +551,7 @@ int urlGetFile(const char * url, const char * dest)
     if (*sfuPath == '\0')
 	return FTPERR_UNKNOWN;
 	
-    sfd = Fopen(url, "r.ufdio");
+    sfd = Fopen(url, "r");
     if (sfd == NULL || Ferror(sfd)) {
 	rpmMessage(RPMMESS_DEBUG, _("failed to open %s: %s\n"), url, Fstrerror(sfd));
 	rc = FTPERR_UNKNOWN;
@@ -569,7 +569,7 @@ int urlGetFile(const char * url, const char * dest)
 	return FTPERR_UNKNOWN;
 
     /* XXX this can fail if directory in path does not exist. */
-    tfd = Fopen(dest, "w.ufdio");
+    tfd = Fopen(dest, "w");
 if (_url_debug)
 fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : NULL), dest);
     if (tfd == NULL || Ferror(tfd)) {

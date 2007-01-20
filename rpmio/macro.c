@@ -2084,7 +2084,7 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 
     *compressed = COMPRESSED_NOT;
 
-    fd = Fopen(file, "r.ufdio");
+    fd = Fopen(file, "r");
     if (fd == NULL || Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmError(RPMERR_BADSPEC, _("File %s: %s\n"), file, Fstrerror(fd));

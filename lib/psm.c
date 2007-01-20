@@ -1479,7 +1479,7 @@ psm->te->h = headerLink(fi->h);
 					pkgbn);
 		pkgbn = _free(pkgbn);
 		(void) urlPath(psm->pkgURL, &psm->pkgfn);
-		psm->fd = Fopen(psm->pkgfn, "w.ufdio");
+		psm->fd = Fopen(psm->pkgfn, "w");
 		if (psm->fd == NULL || Ferror(psm->fd)) {
 		    rc = RPMRC_FAIL;
 		    break;

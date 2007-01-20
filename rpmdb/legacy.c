@@ -217,7 +217,7 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
     case URL_IS_DASH:
     default:
 	/* Either use the pipe to prelink -y or open the URL. */
-	fd = (pid != 0) ? fdDup(fdno) : Fopen(fn, "r.ufdio");
+	fd = (pid != 0) ? fdDup(fdno) : Fopen(fn, "r");
 	(void) close(fdno);
 	if (fd == NULL || Ferror(fd)) {
 	    rc = 1;

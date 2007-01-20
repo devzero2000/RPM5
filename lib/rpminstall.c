@@ -121,7 +121,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
 /*@=boundsread@*/
-	fd = Fopen(filename, "r.ufdio");
+	fd = Fopen(filename, "r");
 	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
@@ -490,7 +490,7 @@ if (fileURL[0] == '=') {
 	(void) urlPath(*eiu->fnp, &fileName);
 
 	/* Try to read the header from a package file. */
-	eiu->fd = Fopen(*eiu->fnp, "r.ufdio");
+	eiu->fd = Fopen(*eiu->fnp, "r");
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
 			Fstrerror(eiu->fd));
@@ -724,7 +724,7 @@ maybe_manifest:
 	if (eiu->sourceURL != NULL)
 	for (i = 0; i < eiu->numSRPMS; i++) {
 	    if (eiu->sourceURL[i] == NULL) continue;
-	    eiu->fd = Fopen(eiu->sourceURL[i], "r.ufdio");
+	    eiu->fd = Fopen(eiu->sourceURL[i], "r");
 	    if (eiu->fd == NULL || Ferror(eiu->fd)) {
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
 			   eiu->sourceURL[i], Fstrerror(eiu->fd));
@@ -892,7 +892,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
     int rc;
 
 
-    fd = Fopen(arg, "r.ufdio");
+    fd = Fopen(arg, "r");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
@@ -1061,7 +1061,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	int_32 count;
 	int isSource;
 
-	fd = Fopen(av[i], "r.ufdio");
+	fd = Fopen(av[i], "r");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), av[i],
 	    		Fstrerror(fd));

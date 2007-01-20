@@ -66,7 +66,7 @@ static int isSpecFile(const char * specfile)
     int count;
     int checking;
 
-    fd = Fopen(specfile, "r.ufdio");
+    fd = Fopen(specfile, "r");
     if (fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_OPEN, _("Unable to open spec file %s: %s\n"),
 		specfile, Fstrerror(fd));

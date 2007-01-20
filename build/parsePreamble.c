@@ -368,7 +368,7 @@ static int readIcon(Header h, const char * file)
     /* XXX use rpmGenPath(rootdir, "%{_sourcedir}/", file) for icon path. */
     fn = rpmGetPath("%{_sourcedir}/", file, NULL);
 
-    fd = Fopen(fn, "r.ufdio");
+    fd = Fopen(fn, "r");
     if (fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_BADSPEC, _("Unable to open icon %s: %s\n"),
 		fn, Fstrerror(fd));

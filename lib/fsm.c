@@ -2474,7 +2474,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	break;
 
     case FSM_ROPEN:
-	fsm->rfd = Fopen(fsm->path, "r.ufdio");
+	fsm->rfd = Fopen(fsm->path, "r");
 	if (fsm->rfd == NULL || Ferror(fsm->rfd)) {
 	    if (fsm->rfd != NULL)	(void) fsmNext(fsm, FSM_RCLOSE);
 	    fsm->rfd = NULL;
@@ -2507,7 +2507,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	fsm->rfd = NULL;
 	break;
     case FSM_WOPEN:
-	fsm->wfd = Fopen(fsm->path, "w.ufdio");
+	fsm->wfd = Fopen(fsm->path, "w");
 	if (fsm->wfd == NULL || Ferror(fsm->wfd)) {
 	    if (fsm->wfd != NULL)	(void) fsmNext(fsm, FSM_WCLOSE);
 	    fsm->wfd = NULL;

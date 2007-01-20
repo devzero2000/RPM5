@@ -110,7 +110,7 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies fdhead, fdtail @*/
 {
     char * path;
-    char * mode = "r.ufdio";
+    char * mode = "r";
     FDlist *node;
     char * kwlist[] = {"path", "mode", NULL};
 
@@ -207,7 +207,7 @@ static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
 	/*@modifies s @*/
 {
     char * path;
-    char * mode = "r.ufdio";
+    char * mode = "r";
     char * kwlist[] = {"path", "mode", NULL};
 
 if (_rpmfd_debug)
