@@ -372,7 +372,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->nfps = 0;
     memset(fd->fps, 0, sizeof(fd->fps));
 
-    fd->fps[0].io = fdio;
+    fd->fps[0].io = ufdio;
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
 
