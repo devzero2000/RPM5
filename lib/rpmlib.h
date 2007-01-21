@@ -724,8 +724,8 @@ extern int nplatpat;
  * @param mi_nre	no. of patterns
  * @return		platform score (0 is no match, lower is preferred)
  */
-int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
-	/*@*/;
+int rpmPlatformScore(const char * platform, /*@null@*/ void * mi_re, int mi_nre)
+	/*@modifies mi_re @*/;
 
 /** \ingroup rpmrc
  * Display current rpmrc (and macro) configuration.
@@ -766,8 +766,8 @@ void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os)
  * @todo Eliminate from API.
  */
 void rpmFreeRpmrc(void)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
+	/*@globals platpat, nplatpat, internalState @*/
+	/*@modifies platpat, nplatpat, internalState @*/;
 
 /*@}*/
 /* ==================================================================== */

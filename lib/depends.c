@@ -1057,6 +1057,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmdepFlags depFlags = rpmtsDFlags(ts);
+    uint_32 tscolor = rpmtsColor(ts);
     int scareMem = 0;
     Header h;
     int ec = 0;
@@ -1088,7 +1089,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 
 	rc = checkPackageDeps(ts, pkgNEVRA,
 		requires, conflicts, dirnames, linktos,
-		dep, 0, adding);
+		dep, tscolor, adding);
 
 	linktos = rpmdsFree(linktos);
 	dirnames = rpmdsFree(dirnames);
@@ -1345,7 +1346,8 @@ static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(rpmte q, rpmte p,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps, int msglvl)
-	/*@modifies q, p, *nzaps @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies q, p, *nzaps, rpmGlobalMacroContext @*/
 {
     rpmds requires;
     tsortInfo tsi_prev;
@@ -1613,7 +1615,7 @@ int rpmtsOrder(rpmts ts)
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	alKey pkgKey;
 	fnpyKey key;
-	int tscolor = 0x3;
+	uint_32 tscolor = rpmtsColor(ts);
 	pkgKey = RPMAL_NOMATCH;
 /*@-abstract@*/
 	key = (fnpyKey) p;
@@ -2176,8 +2178,8 @@ int rpmtsCheck(rpmts ts)
 	rpmds D = NULL;
 	rpmds L = NULL;
 	const char * dep = NULL;
-	int tscolor = 0;
 	int adding = 2;
+	tscolor = 0;	/* XXX no coloring for transaction dependencies. */
 	rc = checkPackageDeps(ts, tsNEVRA, R, C, D, L, dep, tscolor, adding);
 	if (rc)
 	    goto exit;

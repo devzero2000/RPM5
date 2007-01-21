@@ -222,7 +222,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-assert(fi->h);
+assert(fi->h != NULL);
     fi->te->h = headerLink(fi->h);
     fi->te->fd = fdLink(fd, "installSourcePackage");
     hge = fi->hge;

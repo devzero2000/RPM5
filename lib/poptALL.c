@@ -22,6 +22,9 @@ const char *__progname;
 #define POPT_RCFILE		-995
 #endif
 
+/*@access headerTagIndices @*/		/* XXX rpmcliFini */
+/*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
+
 /*@unchecked@*/
 static int _debug = 0;
 
@@ -174,13 +177,13 @@ void rpmcliConfigured(void)
 /**
  */
 /*@-bounds@*/
-static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
+static void rpmcliAllArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
 	/*@globals rpmRcfiles, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+	/*@modifies con, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 
@@ -226,18 +229,18 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	break;
     case POPT_SHOWVERSION:
 	printVersion(stdout);
-	rpmcliFini(con);
+	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case POPT_SHOWRC:
 	rpmcliConfigured();
 	(void) rpmShowRC(stdout);
-	rpmcliFini(con);
+	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case POPT_QUERYTAGS:
 	rpmDisplayQueryTags(stdout);
-	rpmcliFini(con);
+	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
 #if defined(POPT_RCFILE)

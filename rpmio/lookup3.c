@@ -413,7 +413,7 @@ uint32_t jlu32l(uint32_t h, const void *key, size_t size)
 	case  4:	a += ((uint32_t)k[3])<<24;	/*@fallthrough@*/
 	case  3:	a += ((uint32_t)k[2])<<16;	/*@fallthrough@*/
 	case  2:	a += ((uint32_t)k[1])<<8;	/*@fallthrough@*/
-	case  1:	a += k[0];			/*@fallthrough@*/
+	case  1:	a += k[0];
 	    break;
 	case  0:
 	    goto exit;

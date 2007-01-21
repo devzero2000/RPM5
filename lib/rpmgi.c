@@ -306,8 +306,10 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 	if (h != NULL) {
 	    gi->h = headerLink(h);
 	    h = headerFree(h);
+/*@-noeffectuncon@*/
 	    if (gi->stash != NULL)
 		(void) (*gi->stash) (gi, gi->h);
+/*@=noeffectuncon@*/
 	}
     }
 

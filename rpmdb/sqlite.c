@@ -141,10 +141,10 @@ fprintf(stderr, "sql:chroot(%s)\n", dbi->dbi_root);
     }
 
     sqlCwd = currDir;
+/*@-globs@*/
     xx = Chdir("/");
-/*@-superuser@*/
+/*@=globs@*/
     xx = Chroot(dbi->dbi_root);
-/*@=superuser@*/
 assert(xx == 0);
     sqlInRoot=1;
 }
@@ -167,7 +167,9 @@ fprintf(stderr, "sql:chroot(.)\n");
 /*@=superuser@*/
 assert(xx == 0);
     if (sqlCwd != NULL) {
+/*@-globs@*/
 	xx = Chdir(sqlCwd);
+/*@=globs@*/
 	sqlCwd = _free(sqlCwd);
     }
 

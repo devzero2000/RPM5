@@ -305,6 +305,7 @@ static int sum64Digest(sum64Param* mp, byte* data)
  * MD5/SHA1 digest private data.
  */
 struct DIGEST_CTX_s {
+/*@observer@*/
     const char * name;		/*!< Digest name. */
     size_t paramsize;		/*!< No. bytes of digest parameters. */
     size_t datasize;		/*!< No. bytes in block of plaintext data. */

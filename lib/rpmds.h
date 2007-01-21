@@ -168,9 +168,9 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
  * @param ds		dependency set
  * @return		new N string (malloc'ed)
  */
-/*@only@*/
-char * rpmdsNewN(rpmds ds)
-	/*@modifies ds @*/;
+const char * rpmdsNewN(rpmds ds)
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies ds, rpmGlobalMacroContext @*/;
 
 /**
  * Return new formatted dependency string.
@@ -178,9 +178,9 @@ char * rpmdsNewN(rpmds ds)
  * @param ds		dependency set
  * @return		new formatted dependency (malloc'ed)
  */
-/*@only@*/
 char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
-	/*@modifies ds @*/;
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies ds, rpmGlobalMacroContext @*/;
 
 /**
  * Create, load and initialize a dependency for this header. 
@@ -246,7 +246,8 @@ extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmdsN(/*@null@*/ rpmds ds)
-	/*@modifies ds @*/;
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@*/;
 
 /**
  * Return current dependency epoch-version-release.

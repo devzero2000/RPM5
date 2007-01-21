@@ -810,7 +810,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	/*@globals headerDefaultFormats, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, h_errno,
+	/*@modifies rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     const char * fn = NULL;
@@ -1033,6 +1033,7 @@ static const char * rpmdbURIPath(const char *uri)
     const char * fn = NULL;
     urltype ut = urlPath(s, &fn);
 
+/*@-branchstate@*/
     switch (ut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
@@ -1049,6 +1050,7 @@ static const char * rpmdbURIPath(const char *uri)
 	fn = rpmGetPath(fn, NULL);
 	break;
     }
+/*@=branchstate@*/
 
     /* Convert relative to absolute paths. */
     if (ut != URL_IS_PATH)	/* XXX permit file:///... URI's */
@@ -1068,6 +1070,7 @@ static const char * rpmdbURIPath(const char *uri)
     }
 
     s = _free(s);
+assert(fn != NULL);
     return fn;
 }
 
@@ -2084,7 +2087,7 @@ exit:
  * @return		1 if header should be skipped
  */
 static int mireSkip (const rpmdbMatchIterator mi)
-	/*@*/
+	/*@modifies mi->mi_re @*/
 {
     HGE_t hge = (HGE_t) headerGetEntryMinMemory;
     HFD_t hfd = (HFD_t) headerFreeData;

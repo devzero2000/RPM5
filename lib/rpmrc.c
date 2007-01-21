@@ -960,12 +960,14 @@ static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
 /*@null@*/
 static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 		miRE * mi_rep, int * mi_nrep)
-	/*@modifies *mirep, *nrep @*/
+	/*@modifies *mi_rep, *mi_nrep @*/
 {
     miRE mire;
 
-    (*mi_rep) = xrealloc((*mi_rep), ((*mi_nrep) + 1) * sizeof(**mi_rep));
-    mire = (*mi_rep) + (*mi_nrep);
+    mire = (*mi_rep);
+    mire = xrealloc(mire, ((*mi_nrep) + 1) * sizeof(*mire));
+    (*mi_rep) = mire;
+    mire += (*mi_nrep);
     (*mi_nrep)++;
     memset(mire, 0, sizeof(*mire));
     mire->mode = mode;
@@ -989,7 +991,7 @@ static int rpmPlatform(const char * platform)
     char * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
-    miRE mi_re = NULL, mire;
+    miRE mi_re = NULL;
     int mi_nre = 0;
     char * p, * pe;
     int rc;
@@ -1800,10 +1802,8 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 }
 
 void rpmFreeRpmrc(void)
-	/*@globals current, tables, values, defaultsInitialized,
-		platpat, nplatpat @*/
-	/*@modifies current, tables, values, defaultsInitialized,
-		platpat, nplatpat @*/
+	/*@globals current, tables, values, defaultsInitialized @*/
+	/*@modifies current, tables, values, defaultsInitialized @*/
 {
     int i, j, k;
 
@@ -2081,7 +2081,9 @@ int rpmShowRC(FILE * fp)
     }
 
     if (rpmIsVerbose()) {
-	xx = rpmdsSysinfo(&ds, NULL);
+	rpmPRCO PRCO = rpmdsNewPRCO(NULL);
+	xx = rpmdsSysinfo(PRCO, NULL);
+	ds = rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME);
 	if (ds != NULL) {
 	    fprintf(fp, _("Configured system provides (from /etc/rpm/sysinfo):\n"));
 	    ds = rpmdsInit(ds);
@@ -2093,6 +2095,7 @@ int rpmShowRC(FILE * fp)
 	    ds = rpmdsFree(ds);
 	    fprintf(fp, "\n");
 	}
+	PRCO = rpmdsFreePRCO(PRCO);
     }
 
     if (rpmIsVerbose()) {

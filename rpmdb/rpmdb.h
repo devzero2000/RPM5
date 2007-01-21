@@ -421,7 +421,7 @@ struct _dbiIndex {
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
     const char * db_root;	/*!< rpmdb path prefix */
 /*@owned@*/
     const char * db_home;	/*!< rpmdb directory path */

@@ -340,14 +340,18 @@ exit:
 /*@=compdef =usereleased@*/
 }
 
-char * rpmdsNewN(rpmds ds)
+/*@-mods@*/ /* FIX: correct annotations for ds->_N shadow */
+const char * rpmdsNewN(rpmds ds)
 {
     const char * Name = ds->N[ds->i];
     int_32 Flags = rpmdsFlags(ds);
     if (Name[0] == '%' && (Flags & RPMSENSE_INTERP))
 	Name = ds->_N = rpmExpand(Name, NULL);
+/*@-usereleased -compdef@*/ /* FIX: correct annotations for ds->_N shadow */
     return Name;
+/*@-usereleased -compdef@*/
 }
+/*@=mods@*/
 
 char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 {
@@ -473,7 +477,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 /*@=boundsread@*/
 	pre[1] = '\0';
 	/*@-nullstate@*/ /* LCL: ds->Type may be NULL ??? */
-	ds->DNEVR = rpmdsNewDNEVR(pre, ds);
+/*@i@*/	ds->DNEVR = rpmdsNewDNEVR(pre, ds);
 	/*@=nullstate@*/
     }
 
@@ -530,7 +534,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
 	t[0] = ds->Type[0];
 /*@=boundsread@*/
 	t[1] = '\0';
-	ds->DNEVR = rpmdsNewDNEVR(t, ds);
+/*@i@*/	ds->DNEVR = rpmdsNewDNEVR(t, ds);
     }
 
 exit:
@@ -576,9 +580,9 @@ const char * rpmdsN(const rpmds ds)
     const char * N = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
+/*@-boundsread -mods @*/
 	N = (ds->_N ? ds->_N : rpmdsNewN(ds));
-/*@=boundsread@*/
+/*@=boundsread =mods @*/
     }
     return N;
 }
@@ -796,7 +800,7 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 	    t[0] = ((ds->Type != NULL) ? ds->Type[0] : '\0');
 	    t[1] = '\0';
 	    /*@-nullstate@*/
-	    ds->DNEVR = rpmdsNewDNEVR(t, ds);
+	   /*@i@*/ ds->DNEVR = rpmdsNewDNEVR(t, ds);
 	    /*@=nullstate@*/
 
 	} else
@@ -1369,9 +1373,8 @@ static struct cmpop {
  * @return		0 on success
  */
 static int rpmdsSysinfoFile(rpmPRCO PRCO, const char * fn, int tagN)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies PRCO, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
@@ -1506,7 +1509,7 @@ exit:
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 static const char *_sysinfo_path = NULL;
 
-/*@unchecked@*/ /*@observer@*/ /*@null@*/
+/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 static const char *_sysinfo_tags[] = {
     "Providename",
     "Requirename",
@@ -1555,6 +1558,7 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	const char **av;
 	int tagN;
 	rc = 0;		/* assume success */
+/*@-branchstate@*/
 	for (av = _sysinfo_tags; av && *av; av++) {
 	    tagN = tagValue(*av);
 	    if (tagN < 0)
@@ -1568,6 +1572,7 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	    if (rc)
 		break;
 	}
+/*@=branchstate@*/
     } else
     /* XXX for now, collect Dirnames/Filelinktos in Providename */
     if (S_ISREG(st->st_mode))
@@ -3246,6 +3251,7 @@ fprintf(stderr, "*** %s(%p, %s) glob matched %d files\n", __FUNCTION__, PRCO, rl
 
 	gp = gl.gl_pathv;
 	/* examine each match */
+/*@-branchstate@*/
 	while (gp && *gp) {
 	    const char *DSOfn;
 	    /* XXX: should probably verify that we matched a file */
@@ -3266,7 +3272,10 @@ fprintf(stderr, "*** %s(%p, %s) glob matched %d files\n", __FUNCTION__, PRCO, rl
 
 	    xx = rpmdsELF(DSOfn, 0, rpmdsMergePRCO, PRCO);
 	}
+/*@=branchstate@*/
+/*@-immediatetrans@*/
 	globfree(&gl);
+/*@=immediatetrans@*/
     }
     rc = 0;
 
@@ -3277,7 +3286,7 @@ fprintf(stderr, "*** %s(%p, %s) glob matched %d files\n", __FUNCTION__, PRCO, rl
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 static const char * _crle_cmd = NULL;
 
-int rpmdsCrle(rpmPRCO PRCO, const char * fn)
+int rpmdsCrle(rpmPRCO PRCO, /*@unused@*/ const char * fn)
 	/*@globals _crle_cmd @*/
 	/*@modifies _crle_cmd @*/
 {

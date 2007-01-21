@@ -3074,7 +3074,9 @@ static int lzdClose( /*@only@*/ void * cookie)
         lzfile->state.Probs = _free(lzfile->state.Probs);
         lzfile->state.Dictionary = _free(lzfile->state.Dictionary);
     }
+/*@-dependenttrans@*/
     lzfile = _free(lzfile);
+/*@=dependenttrans@*/
 /*@=noeffectuncon@*/
     rc = 0;	/* XXX FIXME */
 

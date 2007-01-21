@@ -30,7 +30,6 @@ extern MacroContext rpmGlobalMacroContext;
 
 /*@checked@*/
 extern MacroContext rpmCLIMacroContext;
-/*@=redecl@*/
 
 /** \ingroup rpmrc
  * List of macro files to read when configuring rpm.
@@ -39,6 +38,7 @@ extern MacroContext rpmCLIMacroContext;
  */
 /*@observer@*/ /*@checked@*/
 extern const char * rpmMacrofiles;
+/*@=redecl@*/
 
 /**
  * Markers for sources of macros added throughout rpm.

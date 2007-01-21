@@ -86,7 +86,10 @@ void rpmcliConfigured(void)
  */
 poptContext
 rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
-	/*@modifies optCon @*/;
+	/*@globals rpmTags, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies optCon, rpmTags, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Common/global popt tokens used for command line option tables.

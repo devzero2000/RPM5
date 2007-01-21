@@ -150,7 +150,7 @@ static const char * dbiModeFlags =
 
 
 /*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
-static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
+static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg, int error, int printit)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -281,7 +281,7 @@ static int db3_pthread_nptl(void)
  * @param flags		0 or DB_MUTEX_PROCESS_ONLY
  * @return		
  */
-static int db3is_alive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid,
+static int db3is_alive(/*@unused@*/ DB_ENV *dbenv, pid_t pid, /*@unused@*/ db_threadid_t tid,
 		u_int32_t flags)
 	/*@*/
 {
@@ -535,7 +535,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
     /* XXX capture dbenv->falchk output on stderr. */
+/*@-noeffectuncon@*/
     dbenv->set_msgfile(dbenv, rpmdb->db_errfile);
+/*@=noeffectuncon@*/
     /* XXX must be at least 8, and __db* files need nuking to instantiate. */
     if (dbi->dbi_thread_count >= 8) {
 	xx = dbenv->set_thread_count(dbenv, dbi->dbi_thread_count);
@@ -1252,6 +1254,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (oflags & DB_RDONLY)
 	dbi->dbi_verify_on_close = 0;
 
+/*@-branchstate@*/
     if (dbi->dbi_use_dbenv) {
 	/*@-mods@*/
 	if (rpmdb->db_dbenv == NULL) {
@@ -1267,7 +1270,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		rpmdb->db_verifying = 1;
 		xx = rpmdbVerifyAllDBI(rpmdb);
 		xx = cvtdberr(dbi, "db->verify", xx, _debug);
-		/*@fallthrough@*/
 		rpmdb->db_remove_env = 0;
 		rpmdb->db_verifying = 0;
 
@@ -1325,6 +1327,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 	}
 	/*@=mods@*/
     }
+/*@=branchstate@*/
 
     rpmMessage(RPMMESS_DEBUG, _("opening  db index       %s/%s %s mode=0x%x\n"),
 		dbhome, (dbfile ? dbfile : tagName(dbi->dbi_rpmtag)),
