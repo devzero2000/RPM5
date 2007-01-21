@@ -102,6 +102,7 @@
 	- use ".ufdio" as rpmio default, remove ".ufdio" markers.
 	- add rpmPlatformScore to check for upgrade pkg platform affinity.
 	- refactor the W_OK check out of rpmMkdirPath.
+	- push/pop expanded %buildroot before/after per-subpkg macro define(s).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

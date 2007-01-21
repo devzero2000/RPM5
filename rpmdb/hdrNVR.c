@@ -40,6 +40,13 @@ int headerMacrosLoad(Header h)
     int_32 type;
     int xx;
 
+    /* XXX pre-expand %{buildroot} (if any) */
+    {   const char *buildroot = rpmExpand("%{?buildroot}", NULL);
+	if (buildroot && *buildroot) 
+	    (void) addMacro(NULL, "..buildroot", NULL, buildroot, -1);
+	buildroot = _free(buildroot);
+    }          
+
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	xx = headerGetEntryMinMemory(h, tagm->tag, &type, (hPTR_t *) &body.ptr, NULL);
 	if (!xx)
@@ -106,6 +113,14 @@ int headerMacrosUnload(Header h)
 	    /*@switchbreak@*/ break;
 	}
     }
+
+    /* XXX restore previous %{buildroot} (if any) */
+    {   const char *buildroot = rpmExpand("%{?buildroot}", NULL);
+	if (buildroot && *buildroot) 
+	    (void) delMacro(NULL, "buildroot");
+	buildroot = _free(buildroot);
+    }          
+
     return 0;
 }
 

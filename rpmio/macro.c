@@ -646,7 +646,9 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 
     SKIPBLANK(s, c);
     if (c == '.')		/* XXX readonly macros */
-	*n++ = *s++;
+	*n++ = c = *s++;
+    if (c == '.')		/* XXX readonly macros */
+	*n++ = c = *s++;
     ne = n;
 
     /* Copy name */
@@ -754,6 +756,8 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 
     if (n != buf)		/* XXX readonly macros */
 	n--;
+    if (n != buf)		/* XXX readonly macros */
+	n--;
     addMacro(mb->mc, n, o, b, (level - 1));
 
     return se;
@@ -826,6 +830,8 @@ pushMacro(/*@out@*/ MacroEntry * mep, const char * n, /*@null@*/ const char * o,
     MacroEntry me = (MacroEntry) xmalloc(sizeof(*me));
     const char *name = n;
 
+    if (*name == '.')		/* XXX readonly macros */
+	name++;
     if (*name == '.')		/* XXX readonly macros */
 	name++;
 
@@ -1885,7 +1891,8 @@ addMacro(MacroContext mc,
     }
 
     if (mep != NULL) {
-	if (*mep && (*mep)->flags) {
+	/* XXX permit "..foo" to be pushed over ".foo" */
+	if (*mep && (*mep)->flags && !(n[0] == '.' && n[1] == '.')) {
 	    /* XXX avoid error message for %buildroot */
 	    if (strcmp((*mep)->name, "buildroot"))
 		rpmError(RPMERR_BADSPEC, _("Macro '%s' is readonly and cannot be changed.\n"), n);
