@@ -1517,6 +1517,7 @@ fprintf(stderr, "*** Utime(%s,%p)\n", path, buf);
     return utime(path, buf);
 }
 
+/*@-fixedformalarray@*/
 int Utimes(const char * path, const struct timeval times[2])
 {
     const char * lpath;
@@ -1542,6 +1543,7 @@ fprintf(stderr, "*** Utimes(%s,%p)\n", path, times);
     }
     return utimes(path, times);
 }
+/*@=fixedformalarray@*/
 
 int Symlink(const char * oldpath, const char * newpath)
 {

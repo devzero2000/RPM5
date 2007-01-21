@@ -72,6 +72,7 @@ extern "C" {
 /*!\var sha224
  * \brief Holds the full API description of the SHA-224 algorithm.
  */
+/*@unchecked@*/ /*@observer@*/
 extern BEECRYPTAPI const hashFunction sha224;
 
 /*!\fn void sha224Process(sha224Param* sp)
@@ -80,7 +81,8 @@ extern BEECRYPTAPI const hashFunction sha224;
  * \param sp The hash function's parameter block.
  */
 BEECRYPTAPI
-void sha224Process(sha224Param* sp);
+void sha224Process(sha224Param* sp)
+	/*@modifies sp @*/;
 
 /*!\fn int sha224Reset(sha224Param* sp)
  * \brief This function resets the parameter block so that it's ready for a
@@ -89,7 +91,8 @@ void sha224Process(sha224Param* sp);
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int  sha224Reset  (sha224Param* sp);
+int  sha224Reset  (sha224Param* sp)
+	/*@modifies sp @*/;
 
 /*!\fn int sha224Update(sha224Param* sp, const byte* data, size_t size)
  * \brief This function should be used to pass successive blocks of data
@@ -100,7 +103,8 @@ int  sha224Reset  (sha224Param* sp);
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int  sha224Update (sha224Param* sp, const byte* data, size_t size);
+int  sha224Update (sha224Param* sp, const byte* data, size_t size)
+	/*@modifies sp @*/;
 
 /*!\fn int sha224Digest(sha224Param* sp, byte* digest)
  * \brief This function finishes the current hash computation and copies
@@ -110,7 +114,8 @@ int  sha224Update (sha224Param* sp, const byte* data, size_t size);
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int  sha224Digest (sha224Param* sp, byte* digest);
+int  sha224Digest (sha224Param* sp, byte* digest)
+	/*@modifies sp, digest @*/;
 
 #ifdef __cplusplus
 }

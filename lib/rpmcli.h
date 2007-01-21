@@ -86,7 +86,7 @@ void rpmcliConfigured(void)
  */
 poptContext
 rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
-	/*@globals rpmTags, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmTags, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies optCon, rpmTags, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;

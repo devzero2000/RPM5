@@ -400,7 +400,7 @@ static dbiIndexItem dbiIndexNewItem(unsigned int hdrNum, unsigned int tagNum)
 }
 
 union _dbswap {
-    unsigned int ui;
+    uint32_t ui;
     unsigned char uc[4];
 };
 

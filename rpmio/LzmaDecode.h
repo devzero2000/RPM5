@@ -71,10 +71,10 @@ typedef struct _ILzmaInCallback
 } ILzmaInCallback;
 #endif
 
-#define LZMA_BASE_SIZE 1846
-#define LZMA_LIT_SIZE 768
+#define LZMA_BASE_SIZE 1846U
+#define LZMA_LIT_SIZE 768U
 
-#define LZMA_PROPERTIES_SIZE 5
+#define LZMA_PROPERTIES_SIZE 5U
 
 typedef struct _CLzmaProperties
 {

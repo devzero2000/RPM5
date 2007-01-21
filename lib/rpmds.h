@@ -246,7 +246,6 @@ extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmdsN(/*@null@*/ rpmds ds)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@*/;
 
 /**

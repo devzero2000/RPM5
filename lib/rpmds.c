@@ -580,9 +580,9 @@ const char * rpmdsN(const rpmds ds)
     const char * N = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread -mods @*/
+/*@-boundsread -globs -mods @*/	/* FIX: correct annotations for ds->_N shadow */
 	N = (ds->_N ? ds->_N : rpmdsNewN(ds));
-/*@=boundsread =mods @*/
+/*@=boundsread =globs =mods @*/
     }
     return N;
 }
@@ -1493,8 +1493,10 @@ assert(fn != NULL);
 	Flags |= RPMSENSE_PROBE;
 /*@=branchstate@*/
 	ds = rpmdsSingle(tagN, N, EVR , Flags);
-	xx = rpmdsMergePRCO(PRCO, ds);
-	ds = rpmdsFree(ds);
+	if (ds) {	/* XXX can't happen */
+	    xx = rpmdsMergePRCO(PRCO, ds);
+	    ds = rpmdsFree(ds);
+	}
     }
     rc = 0;
 

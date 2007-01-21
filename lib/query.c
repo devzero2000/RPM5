@@ -239,6 +239,8 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fgroup = rpmfiFGroup(fi);
 	flink = rpmfiFLink(fi);
 	fnlink = rpmfiFNlink(fi);
+assert(fn != NULL);
+assert(fdigest != NULL);
 
 	/* If querying only docs, skip non-doc files. */
 	if ((qva->qva_flags & QUERY_FOR_DOCS) && !(fflags & RPMFILE_DOC))

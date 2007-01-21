@@ -817,6 +817,7 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 
 /* HACK this should be rewritten to use davReq/davResp w callbacks. */
 static int davHEAD(urlinfo u, struct stat *st) 
+	/*@modifies *st @*/
 {
     ne_request *req;
     const char *htag;

@@ -50,9 +50,9 @@ typedef enum rpmMireMode_e {
  */
 struct miRE_s {
     rpmMireMode	mode;		/*!< pattern match mode */
-/*@only@*/
+/*@only@*/ /*@relnull@*/
     const char *pattern;	/*!< pattern string */
-/*@only@*/
+/*@only@*/ /*@relnull@*/
     regex_t *preg;		/*!< regex compiled pattern buffer */
     int	fnflags;	/*!< fnmatch(3) flags (0 uses FNM_PATHNAME|FNM_PERIOD)*/
     int	cflags;		/*!< regcomp(3) flags (0 uses REG_EXTENDED|REG_NOSUB) */

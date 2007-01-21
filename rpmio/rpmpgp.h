@@ -1266,10 +1266,10 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, /*@out@*/ byte * keyid)
  * Return lenth of a OpenPGP packet.
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pleft		OpenPGP packet length (no. of bytes)
- * @param pp		packet tag/ptr/len
+ * @retval pp		packet tag/ptr/len
  * @return		packet length, <0 on error.
  */
-int pgpPktLen(const byte *pkt, unsigned int pleft, pgpPkt pp)
+int pgpPktLen(const byte *pkt, unsigned int pleft, /*@out@*/ pgpPkt pp)
 	/*@modifies pp @*/;
 
 /**

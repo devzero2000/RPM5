@@ -465,7 +465,7 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
  */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies spec->macros,
+	/*@modifies spec->macros, *spec->packages,
 		spec->packages->cpioList, spec->packages->fileList,
 		spec->packages->specialDoc, spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -526,7 +526,7 @@ int buildSpec(rpmts ts, Spec spec, int what, int test)
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
 		spec->sourceRpmName, spec->sourcePkgId,
 		spec->macros, spec->BASpecs,
-		spec->buildRestrictions, spec->BANames,
+		spec->buildRestrictions, spec->BANames, *spec->packages,
 		spec->packages->cpioList, spec->packages->fileList,
 		spec->packages->specialDoc, spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

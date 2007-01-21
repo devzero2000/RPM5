@@ -188,11 +188,13 @@ Fts_open(char * const * argv, int options,
 		goto mem1;
 
 	/* Allocate/initialize root's parent. */
+/*@-branchstate@*/
 	if (*argv != NULL) {
 		if ((parent = fts_alloc(sp, "", 0)) == NULL)
 			goto mem2;
 		parent->fts_level = FTS_ROOTPARENTLEVEL;
 	}
+/*@=branchstate@*/
 
 	/* Allocate/initialize root(s). */
 	for (root = NULL, nitems = 0; *argv != NULL; ++argv, ++nitems) {

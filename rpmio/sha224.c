@@ -42,17 +42,23 @@
  * \{
  */
 
+/*@unchecked@*/ /*@observer@*/
 static const uint32_t hinit[8] = {
 	0xc1059ed8U, 0x367cd507U, 0x3070dd17U, 0xf70e5939U, 0xffc00b31U, 0x68581511U, 0x64f98fa7U, 0xbefa4fa4U
 
 };
 
+/*@-sizeoftype@*/
+/*@unchecked@*/ /*@observer@*/
 const hashFunction sha224 = { "SHA-224", sizeof(sha224Param), 64, 28, (hashFunctionReset) sha224Reset, (hashFunctionUpdate) sha224Update, (hashFunctionDigest) sha224Digest };
+/*@=sizeoftype@*/
 
 int sha224Reset(register sha224Param* sp)
 {
 	int rc = sha256Reset((sha256Param*)sp);
+/*@-sizeoftype@*/
 	memcpy(sp->h, hinit, 8 * sizeof(uint32_t));
+/*@=sizeoftype@*/
 	return rc;
 }
 
@@ -61,16 +67,22 @@ int sha224Update(register sha224Param* sp, const byte* data, size_t size)
 	return sha256Update((sha256Param*)sp, data, size);
 }
 
+/*@-protoparammatch@*/
 int sha224Digest(register sha224Param* sp, byte* data)
 {
 	byte _sha256digest[32];
-	int rc = sha256Digest((sha256Param*)sp, _sha256digest);
+	int rc;
 
+	_sha256digest[0] = 0;
+	rc = sha256Digest((sha256Param*)sp, _sha256digest);
 	if (rc == 0)
 	    memcpy(data, _sha256digest, 32-4);
+/*@-sizeoftype@*/
 	memcpy(sp->h, hinit, 8 * sizeof(uint32_t));
+/*@=sizeoftype@*/
 	return rc;
 }
+/*@=protoparammatch@*/
 
 /*!\}
  */

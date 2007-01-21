@@ -1,3 +1,5 @@
+/*@-shiftimplementation@*/
+/*@-shiftnegative@*/
 /*
   LzmaDecode.c
   LZMA Decoder (optimized for Speed version)
@@ -130,8 +132,10 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsDa
   if (prop0 >= (9 * 5 * 5))
     return LZMA_RESULT_DATA_ERROR;
   {
-    for (propsRes->pb = 0; prop0 >= (9 * 5); propsRes->pb++, prop0 -= (9 * 5));
-    for (propsRes->lp = 0; prop0 >= 9; propsRes->lp++, prop0 -= 9);
+    for (propsRes->pb = 0; prop0 >= (9 * 5); propsRes->pb++, prop0 -= (9 * 5))
+	{};
+    for (propsRes->lp = 0; prop0 >= 9; propsRes->lp++, prop0 -= 9)
+	{};
     propsRes->lc = prop0;
     /*
     unsigned char remainder = (unsigned char)(prop0 / 9);
@@ -143,10 +147,10 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsDa
 
   #ifdef _LZMA_OUT_READ
   {
-    int i;
+    unsigned int i;
     propsRes->DictionarySize = 0;
     for (i = 0; i < 4; i++)
-      propsRes->DictionarySize += (UInt32)(propsData[1 + i]) << (i * 8);
+      propsRes->DictionarySize += (UInt32)(propsData[1 + i]) << (i * 8U);
     if (propsRes->DictionarySize == 0)
       propsRes->DictionarySize = 1;
   }
@@ -586,3 +590,5 @@ int LzmaDecode(CLzmaDecoderState *vs,
   *outSizeProcessed = nowPos;
   return LZMA_RESULT_OK;
 }
+/*@=shiftnegative@*/
+/*@=shiftimplementation@*/

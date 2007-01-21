@@ -979,7 +979,9 @@ int pgpPktLen(const byte *pkt, unsigned int pleft, pgpPkt pp)
     if (pleft > 0 && pp->pktlen > pleft)
 	return -1;
 
+/*@-assignexpose@*/
     pp->h = pkt + 1 + plen;
+/*@=assignexpose@*/
 
     return pp->pktlen;
 }
@@ -1277,7 +1279,7 @@ int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
     } else
 	_digp = NULL;
 
-    if (pgpGrabPkts(pkts, pktlen, &ppkts, &npkts))
+    if (pgpGrabPkts(pkts, pktlen, &ppkts, &npkts) || ppkts == NULL)
 	return -1;
 
     if (ppkts != NULL)

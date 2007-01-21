@@ -1865,7 +1865,7 @@ static int addFile(FileList fl, const char * diskURL,
 
     fl->fileListRecsUsed++;
     fl->fileCount++;
-    fn = _free(fn);
+/*@i@*/ fn = _free(fn);
 
     return 0;
 }
