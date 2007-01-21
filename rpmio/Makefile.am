@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c hashtest.c lookup3.c librpmio.vers
+EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c librpmio.vers
 
-EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn1 hashtest lookup3
+EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn1 lookup3
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
@@ -126,9 +126,6 @@ tsw_SOURCES = tsw.c
 tsw_LDFLAGS = librpmio.la
 
 dumpasn1_SOURCES = dumpasn1.c
-
-hashtest_SOURCES = hashtest.c
-hashtest_LDADD = librpmio.la
 
 lookup3_SOURCES = lookup3.c
 lookup3_CFLAGS	= $(CFLAGS) -D_JLU3_SELFTEST

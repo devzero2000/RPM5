@@ -23,7 +23,7 @@ Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: @VERSION@
-Release: 0.10
+Release: 0.11
 Group: System Environment/Base
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
 License: LGPL
@@ -547,6 +547,20 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Jan 21 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.11
+- build and install rpmdb_hotbackup.
+- vet db-4.5.10 symbols being re-exported through -lrpmdb.
+- add rpmPlatform to rescusitate platform scoring.
+- popt: free option defaults with --help (#119782).
+- refactor miRE pattern matching into librpmio.
+- fix: don't set MARK64 if libdir already ends in 64 (#205939).
+- convert '-' to '_' within --define macro names (#124995).
+- fix: fts_close double free traversing an active tree (#222089).
+- use ".ufdio" as rpmio default, remove ".ufdio" markers.
+- add rpmPlatformScore to check for upgrade pkg platform affinity.
+- refactor the W_OK check out of rpmMkdirPath.
+- push/pop expanded %buildroot before/after per-subpkg macro define(s).
+
 * Sun Jan 14 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.10
 - move rmphash.[ch] into librpmio.
 - fix: add error message on non-existent sources/patches.
