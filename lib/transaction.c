@@ -1719,8 +1719,6 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 	rpmdbMatchIterator mi;
 	int fc;
 
-	/* XXX DIEDIEDIE: check platform compatibility. */
-
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);

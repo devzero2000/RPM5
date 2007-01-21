@@ -100,6 +100,7 @@
 	- convert '-' to '_' within --define macro names (#124995).
 	- fix: fts_close double free traversing an active tree (#222089).
 	- use ".ufdio" as rpmio default, remove ".ufdio" markers.
+	- add rpmPlatformScore to check for upgrade pkg platform affinity.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

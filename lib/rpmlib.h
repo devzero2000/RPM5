@@ -639,7 +639,7 @@ typedef	enum rpmsenseFlags_e {
 
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.
- * @todo Eliminate from API.
+ * @deprecated Eliminate from API.
  */
 enum rpm_machtable_e {
     RPM_MACHTABLE_INSTARCH	= 0,	/*!< Install platform architecture. */
@@ -671,6 +671,7 @@ int rpmReadConfigFiles(/*@null@*/ const char * file,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
+ * @deprecated Expand %{_host_cpu}/%{_target_cpu} for the canonical/current cpu.
  * Return current arch name and/or number.
  * @todo Generalize to extract arch component from target_platform macro.
  * @retval name		address of arch name (or NULL)
@@ -681,6 +682,7 @@ void rpmGetArchInfo( /*@null@*/ /*@out@*/ const char ** name,
 	/*@modifies *name, *num @*/;
 
 /** \ingroup rpmrc
+ * @deprecated Expand %{_host_os}/%{_target_os} for the canonical/current os.
  * Return current os name and/or number.
  * @todo Generalize to extract os component from target_platform macro.
  * @retval name		address of os name (or NULL)
@@ -691,13 +693,13 @@ void rpmGetOsInfo( /*@null@*/ /*@out@*/ const char ** name,
 	/*@modifies *name, *num @*/;
 
 /** \ingroup rpmrc
+ * @deprecated Use rpmPlatformScore instead.
  * Return arch/os score of a name.
  * An arch/os score measures the "nearness" of a name to the currently
  * running (or defined) platform arch/os. For example, the score of arch
  * "i586" on an i686 platform is (usually) 2. The arch/os score is used
  * to select one of several otherwise identical packages using the arch/os
  * tags from the header as hints of the intended platform for the package.
- * @todo Rewrite to use RE's against config.guess target platform output.
  *
  * @param type		any of the RPM_MACHTABLE_* constants
  * @param name		name
@@ -707,20 +709,23 @@ int rpmMachineScore(int type, const char * name)
 	/*@*/;
 
 /*@only@*/ /*@null@*/ /*@unchecked@*/
-extern const char ** platpat;
+extern void * platpat;
 /*@unchecked@*/
 extern int nplatpat;
 
-/**
- * Read and configure /etc/rpm/platform patterns.
- * @param		path to platform patterns
- * @return		0 on success
+/** \ingroup rpmrc
+ * Return score of a platform string.
+ * A platform score measures the "nearness" of a platform string wrto
+ * configured platform patterns. The returned score is the line number
+ * of the 1st pattern in /etc/rpm/platform that matches the input string.
+ *
+ * @param platform	cpu-vendor-os platform string
+ * @param mi_re		pattern array (NULL uses /etc/rpm/platform patterns)
+ * @param mi_nre	no. of patterns
+ * @return		platform score (0 is no match, lower is preferred)
  */
-int rpmPlatform(const char * platform)
-	/*@globals nplatpat, platpat,
-		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-        /*@modifies nplatpat, platpat,
-		rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
+	/*@*/;
 
 /** \ingroup rpmrc
  * Display current rpmrc (and macro) configuration.

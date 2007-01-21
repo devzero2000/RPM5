@@ -204,18 +204,11 @@ const char * rpmProblemString(const rpmProblem prob)
     int rc;
 
     switch (prob->type) {
-#ifndef	DIEDIEDIE
-    case RPMPROB_BADARCH:
+    case RPMPROB_BADPLATFORM:
 	rc = snprintf(buf, nb,
-		_("package %s is intended for a %s architecture"),
+		_("package %s is intended for a %s platform"),
 		pkgNEVR, str1);
 	break;
-    case RPMPROB_BADOS:
-	rc = snprintf(buf, nb,
-		_("package %s is intended for a %s operating system"),
-		pkgNEVR, str1);
-	break;
-#endif
     case RPMPROB_PKG_INSTALLED:
 	rc = snprintf(buf, nb,
 		_("package %s is already installed"),

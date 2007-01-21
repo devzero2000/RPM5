@@ -6,8 +6,6 @@
 #include <setjmp.h>
 #endif
 
-#include <ctype.h>	/* XXX for /etc/rpm/platform contents */
-
 #if HAVE_SYS_SYSTEMCFG_H
 #include <sys/systemcfg.h>
 #else
@@ -18,6 +16,9 @@
 #include <rpmmacro.h>
 #include <rpmlua.h>
 #include <rpmds.h>
+
+#define _MIRE_INTERNAL
+#include <mire.h>
 
 #include "misc.h"
 #include "debug.h"
@@ -31,7 +32,7 @@ static const char * configTarget = NULL;
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
-const char ** platpat = NULL;
+void * platpat = NULL;
 /*@unchecked@*/
 int nplatpat = 0;
 
@@ -929,8 +930,56 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
 }
 /*@=bounds@*/
 
+/**
+ * Destroy platform patterns.
+ * @param mire		platform pattern array
+ * @param nre		no of patterns in array
+ * @return		NULL always 
+ */
+/*@null@*/
+static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
+	/*@modifies mire@*/
+{
+    if (mire != NULL) {
+	int i;
+	for (i = 0; i < nre; i++)
+	    (void) mireClean(mire + i);
+	mire = _free(mire);
+    }
+    return NULL;
+}
+
+/**
+ * Append pattern to array.
+ * @param mode		type of pattern match
+ * @param tag		identifier (like an rpmTag)
+ * @param pattern	pattern to compile
+ * @retval *mi_rep	platform pattern array
+ * @retval *mi_nrep	no. of patterns in array
+ */
+/*@null@*/
+static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
+		miRE * mi_rep, int * mi_nrep)
+	/*@modifies *mirep, *nrep @*/
+{
+    miRE mire;
+
+    (*mi_rep) = xrealloc((*mi_rep), ((*mi_nrep) + 1) * sizeof(**mi_rep));
+    mire = (*mi_rep) + (*mi_nrep);
+    (*mi_nrep)++;
+    memset(mire, 0, sizeof(*mire));
+    mire->mode = mode;
+    mire->tag = tag;
+    return mireRegcomp(mire, pattern);
+}
+
+/**
+ * Read and configure /etc/rpm/platform patterns.
+ * @param		path to platform patterns
+ * @return		0 on success
+ */
 /*@-bounds@*/
-int rpmPlatform(const char * platform)
+static int rpmPlatform(const char * platform)
 	/*@globals nplatpat, platpat,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies nplatpat, platpat,
@@ -940,8 +989,11 @@ int rpmPlatform(const char * platform)
     char * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
+    miRE mi_re = NULL, mire;
+    int mi_nre = 0;
     char * p, * pe;
     int rc;
+    int xx;
 
     rc = rpmioSlurp(platform, &b, &blen);
 
@@ -956,24 +1008,17 @@ int rpmPlatform(const char * platform)
 	if (pe)
 	    *pe++ = '\0';
 
-	while (*p && isspace(*p))
+	while (*p && xisspace(*p))
 	    p++;
 	if (*p == '\0' || *p == '#')
 	    continue;
 
 	if (init_platform) {
 	    char * t = p + strlen(p);
-
-	    while (--t > p && isspace(*t))
+	    while (--t > p && xisspace(*t))
 		*t = '\0';
-	    if (t > p) {
-		platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
-/*@-onlyunqglobaltrans@*/
-		platpat[nplatpat] = xstrdup(p);
-		nplatpat++;
-		platpat[nplatpat] = NULL;
-/*@=onlyunqglobaltrans@*/
-	    }
+	    if (t > p)
+		xx = mireAppend(RPMMIRE_REGEX, 0, p, &mi_re, &mi_nre);
 	    continue;
 	}
 
@@ -983,14 +1028,11 @@ int rpmPlatform(const char * platform)
 	    addMacro(NULL, "_host_os", NULL, cvog->os, -1);
 	}
 
-	platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
-/*@-onlyunqglobaltrans@*/
-	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}",
+	p = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}",
 		(cvog && *cvog->gnu ? "-" : NULL),
 		(cvog ? cvog->gnu : NULL), NULL);
-	nplatpat++;
-	platpat[nplatpat] = NULL;
-/*@=onlyunqglobaltrans@*/
+	xx = mireAppend(RPMMIRE_STRCMP, 0, p, &mi_re, &mi_nre);
+	p = _free(p);
 	
 	init_platform++;
     }
@@ -1004,10 +1046,32 @@ exit:
 /*@-modobserver@*/
     b = _free(b);
 /*@=modobserver@*/
+    if (rc == 0) {
+	platpat = mireFreeAll(platpat, nplatpat);
+	platpat = mi_re;
+	nplatpat = mi_nre;
+    }
     return rc;
 }
 /*@=bounds@*/
 
+int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
+{
+    miRE mire;
+    int i;
+
+    if (mi_re == NULL) {
+	mi_re = platpat;
+	mi_nre = nplatpat;
+    }
+
+    if ((mire = mi_re) != NULL)
+    for (i = 0; i < mi_nre; i++) {
+	if (!mireRegexec(mire + i, platform))
+	    return (i + 1);
+    }
+    return 0;
+}
 
 #	if defined(__linux__) && defined(__i386__)
 #include <setjmp.h>
@@ -1743,12 +1807,7 @@ void rpmFreeRpmrc(void)
 {
     int i, j, k;
 
-/*@-onlyunqglobaltrans -unqualifiedtrans @*/
-    if (platpat)
-    for (i = 0; i < nplatpat; i++)
-	platpat[i] = _free(platpat[i]);
-    platpat = _free(platpat);
-/*@-onlyunqglobaltrans =unqualifiedtrans @*/
+    platpat = mireFreeAll(platpat, nplatpat);
     nplatpat = 0;
 
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
@@ -1833,11 +1892,6 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	setDefaults();
 	defaultsInitialized = 1;
     }
-
-#ifdef	DYING
-    if (rcfiles == NULL)
-	rcfiles = rpmRcfiles;
-#endif
 
     /* Read each file in rcfiles. */
     rc = 0;

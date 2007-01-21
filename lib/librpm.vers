@@ -223,7 +223,7 @@ LIBRPM_0
     rpmNAME;
     rpmNewSignature;
     rpmPermsString;
-    rpmPlatform;
+    rpmPlatformScore;
     rpmProblemString;
     rpmpsAppend;
     rpmpsCreate;

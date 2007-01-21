@@ -193,23 +193,59 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int rc;
     int oc;
 
+    hcolor = hGetColor(h);
+    pkgKey = RPMAL_NOMATCH;
+
     /*
-     * Check for previously added versions with the same name and arch/os.
+     * Always add source headers.
+     */
+    isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0) ;
+    if (isSource) {
+	oc = ts->orderCount;
+	goto addheader;
+    }
+
+    /*
+     * Check platform affinity of binary packages.
      */
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
-    hcolor = hGetColor(h);
-    pkgKey = RPMAL_NOMATCH;
+    if (nplatpat > 1) {
+	const char * platform = NULL;
 
-    /* XXX Always add source headers. */
-    isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0) ;
-    if (isSource || !upgrade) {
+	if (hge(h, RPMTAG_PLATFORM, NULL, (void **)&platform, NULL))
+	    platform = xstrdup(platform);
+	else
+	    platform = rpmExpand(arch, "-unknown-", os, NULL);
+
+	rc = rpmPlatformScore(platform, platpat, nplatpat);
+	if (rc <= 0) {
+	    const char * pkgNEVR = hGetNEVRA(h, NULL);
+	    rpmps ps = rpmtsProblems(ts);
+	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, pkgNEVR, key,
+                        platform, NULL, NULL, 0);
+	    ps = rpmpsFree(ps);
+	    pkgNEVR = _free(pkgNEVR);
+	    ec = 1;
+	}
+	platform = _free(platform);
+	if (ec)
+	    goto exit;
+    }
+
+    /*
+     * Always install compatible binary packages.
+     */
+    if (!upgrade) {
 	oc = ts->orderCount;
 	goto addheader;
     }
 
+    /*
+     * Check that upgrade package is uniquely newer, replace older if necessary.
+     */
     oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
     newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_GREATER));
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
@@ -220,7 +256,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if (rpmteType(p) == TR_REMOVED)
 	    continue;
 
-	/* XXX Never check source headers. */
+	/* XXX Never check source header NEVRAO. */
 	if (rpmteIsSource(p))
 	    continue;
 
@@ -228,10 +264,9 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    const char * parch;
 	    const char * pos;
 
-	    /* DIEDIEDIE: arch aliases are not handled correctly by strcmp. */
 	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
 		continue;
-	    /* XXX hackery for i[3456]86 matching. */
+	    /* XXX hackery for i[3456]86 alias matching. */
 	    if (arch[0] == 'i' && arch[2] == '8' && arch[3] == '6') {
 		if (arch[0] != parch[0]) continue;
 		if (arch[2] != parch[2]) continue;

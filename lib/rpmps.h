@@ -25,10 +25,8 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmps_s * rpmps;
  * Enumerate transaction set problem types.
  */
 typedef enum rpmProblemType_e {
-#ifndef	DIEDIEDIE
-    RPMPROB_BADARCH,	/*!< package ... is for a different architecture */
-    RPMPROB_BADOS,	/*!< package ... is for a different operating system */
-#endif
+    RPMPROB_BADARCH,	/*!< (unused) package ... is for a different architecture */
+    RPMPROB_BADOS,	/*!< (unused) package ... is for a different operating system */
     RPMPROB_PKG_INSTALLED, /*!< package ... is already installed */
     RPMPROB_BADRELOCATE,/*!< path ... is not relocatable for package ... */
     RPMPROB_REQUIRES,	/*!< package ... has unsatisfied Requires: ... */
@@ -39,7 +37,8 @@ typedef enum rpmProblemType_e {
     RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ... filesystem */
     RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ... filesystem */
     RPMPROB_RDONLY,	/*!< installing package ... on ... rdonly filesystem */
-    RPMPROB_BADPRETRANS	/*!< (unimplemented) */
+    RPMPROB_BADPRETRANS,/*!< (unimplemented) */
+    RPMPROB_BADPLATFORM /*!< package ... is for a different platform */
  } rpmProblemType;
 
 /**
