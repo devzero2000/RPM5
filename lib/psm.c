@@ -278,10 +278,22 @@ assert(fi->h != NULL);
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
+    if (Access(_sourcedir, W_OK)) {
+	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"),
+		"_sourcedir", _sourcedir);
+	rpmrc = RPMRC_FAIL;
+	goto exit;
+    }
 
     _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
     rpmrc = rpmMkdirPath(_specdir, "specdir");
     if (rpmrc) {
+	rpmrc = RPMRC_FAIL;
+	goto exit;
+    }
+    if (Access(_specdir, W_OK)) {
+	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"),
+		"_specdir", _specdir);
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }

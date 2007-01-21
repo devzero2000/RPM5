@@ -42,10 +42,6 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	    return RPMRC_FAIL;
 	}
     }
-    if ((rc = Access(dpath, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"), dname, dpath);
-	return RPMRC_FAIL;
-    }
     return RPMRC_OK;
 }
 
