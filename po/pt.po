@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-21 14:25-0500\n"
+"POT-Creation-Date: 2007-01-21 15:41-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -4263,17 +4263,17 @@ msgstr "A macro %%%.*s não foi encontrada, por isso foi ignorada\n"
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:1898
+#: rpmio/macro.c:1904
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2097 rpmio/macro.c:2103
+#: rpmio/macro.c:2103 rpmio/macro.c:2109
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Ficheiro %s: %s\n"
 
-#: rpmio/macro.c:2106
+#: rpmio/macro.c:2112
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"

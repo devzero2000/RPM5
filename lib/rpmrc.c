@@ -977,7 +977,7 @@ static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 
 /**
  * Read and configure /etc/rpm/platform patterns.
- * @param		path to platform patterns
+ * @param platform	path to platform patterns
  * @return		0 on success
  */
 /*@-bounds@*/

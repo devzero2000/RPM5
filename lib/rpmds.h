@@ -506,10 +506,11 @@ rpmPRCO rpmdsNewPRCO(/*@null@*/ Header h)
 /**
  * Retrieve a dependency set from container.
  * @param PRCO		dependency set(s) container
+ * @param tagN		type of dependency set
  * @return		dependency set (or NULL)
  */
 /*@null@*/
-rpmds rpmdsFromPRCO(/*@null@*/ rpmPRCO PRCO, rpmTag tag)
+rpmds rpmdsFromPRCO(/*@null@*/ rpmPRCO PRCO, rpmTag tagN)
 	/*@*/;
 
 /**

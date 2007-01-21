@@ -2668,26 +2668,26 @@ rpmPRCO rpmdsNewPRCO(Header h)
     return PRCO;
 }
 
-rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tag)
+rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tagN)
 {
     if (PRCO == NULL)
 	return NULL;
     /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
-    if (tag == RPMTAG_NAME)
+    if (tagN == RPMTAG_NAME)
 	return PRCO->this;
-    if (tag == RPMTAG_PROVIDENAME)
+    if (tagN == RPMTAG_PROVIDENAME)
 	return *PRCO->Pdsp;
-    if (tag == RPMTAG_REQUIRENAME)
+    if (tagN == RPMTAG_REQUIRENAME)
 	return *PRCO->Rdsp;
-    if (tag == RPMTAG_CONFLICTNAME)
+    if (tagN == RPMTAG_CONFLICTNAME)
 	return *PRCO->Cdsp;
-    if (tag == RPMTAG_OBSOLETENAME)
+    if (tagN == RPMTAG_OBSOLETENAME)
 	return *PRCO->Odsp;
-    if (tag == RPMTAG_TRIGGERNAME)
+    if (tagN == RPMTAG_TRIGGERNAME)
 	return *PRCO->Tdsp;
-    if (tag == RPMTAG_DIRNAMES)
+    if (tagN == RPMTAG_DIRNAMES)
 	return *PRCO->Ddsp;
-    if (tag == RPMTAG_FILELINKTOS)
+    if (tagN == RPMTAG_FILELINKTOS)
 	return *PRCO->Ldsp;
     return NULL;
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/

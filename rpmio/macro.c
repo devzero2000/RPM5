@@ -1879,11 +1879,17 @@ addMacro(MacroContext mc,
 	const char * n, const char * o, const char * b, int level)
 {
     MacroEntry * mep;
+    const char * name = n;
+
+    if (*name == '.')		/* XXX readonly macros */
+	name++;
+    if (*name == '.')		/* XXX readonly macros */
+	name++;
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
     /* If new name, expand macro table */
-    if ((mep = findEntry(mc, n, 0)) == NULL) {
+    if ((mep = findEntry(mc, name, 0)) == NULL) {
 	if (mc->firstFree == mc->macrosAllocated)
 	    expandMacroTable(mc);
 	if (mc->macroTable != NULL)
