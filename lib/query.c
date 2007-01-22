@@ -441,8 +441,13 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
     Header h;
     int ec = 1;
 
+    qva->qva_showFAIL = qva->qva_showOK = 0;
     while ((h = rpmdbNextIterator(qva->qva_mi)) != NULL) {
 	ec = qva->qva_showPackage(qva, ts, h);
+	if (ec)
+	    qva->qva_showFAIL++;
+	else
+	    qva->qva_showOK++;
 	if (qva->qva_source == RPMQV_DBOFFSET)
 	    break;
     }
@@ -711,9 +716,17 @@ assert(fn != NULL);
     case RPMQV_PACKAGE:
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
-	res = (qva->qva_mi != NULL ? rpmcliShowMatches(qva, ts) : 1);
-	if (res)
+	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
+	    res = 1;
+	} else {
+	    res = rpmcliShowMatches(qva, ts);
+	    /* detect foo.bogusarch empty iterations. */
+	    if (qva->qva_showOK == 0 && qva->qva_showFAIL == 0) {
+		rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
+		res = 1;
+	    }
+	}
 	break;
     }
     /*@=branchstate@*/

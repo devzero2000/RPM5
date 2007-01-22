@@ -730,6 +730,8 @@ struct rpmQVKArguments_s {
 
 /*@null@*/
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
+    int qva_showOK;		/*!< No. of successes. */
+    int qva_showFAIL;		/*!< No. of failures. */
 /*@null@*/
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
 /*@unused@*/

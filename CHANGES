@@ -103,6 +103,7 @@
 	- add rpmPlatformScore to check for upgrade pkg platform affinity.
 	- refactor the W_OK check out of rpmMkdirPath.
 	- push/pop expanded %buildroot before/after per-subpkg macro define(s).
+	- fix: query foo.bogusarch for #124016 needs to be done differently.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
