@@ -41,11 +41,16 @@ int headerMacrosLoad(Header h)
     int xx;
 
     /* XXX pre-expand %{buildroot} (if any) */
-    {   const char *buildroot = rpmExpand("%{?buildroot}", NULL);
-	if (buildroot && *buildroot) 
-	    (void) addMacro(NULL, "..buildroot", NULL, buildroot, -1);
-	buildroot = _free(buildroot);
-    }          
+    {   const char *s = rpmExpand("%{?buildroot}", NULL);
+	if (s && *s) 
+	    (void) addMacro(NULL, "..buildroot", NULL, s, -1);
+	s = _free(s);
+    }
+    {   const char *s = rpmExpand("%{?_builddir}", NULL);
+	if (s && *s) 
+	    (void) addMacro(NULL, ".._builddir", NULL, s, -1);
+	s = _free(s);
+    }
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	xx = headerGetEntryMinMemory(h, tagm->tag, &type, (hPTR_t *) &body.ptr, NULL);
@@ -115,11 +120,16 @@ int headerMacrosUnload(Header h)
     }
 
     /* XXX restore previous %{buildroot} (if any) */
-    {   const char *buildroot = rpmExpand("%{?buildroot}", NULL);
-	if (buildroot && *buildroot) 
+    {   const char *s = rpmExpand("%{?_builddir}", NULL);
+	if (s && *s) 
+	    (void) delMacro(NULL, "_builddir");
+	s = _free(s);
+    }
+    {   const char *s = rpmExpand("%{?buildroot}", NULL);
+	if (s && *s) 
 	    (void) delMacro(NULL, "buildroot");
-	buildroot = _free(buildroot);
-    }          
+	s = _free(s);
+    }
 
     return 0;
 }
