@@ -1125,7 +1125,7 @@ int rpmtsSetREContext(rpmts ts, rpmsx sx)
 
 int_32 rpmtsGetTid(rpmts ts)
 {
-    int_32 tid = 0;
+    int_32 tid = -1;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	tid = ts->tid;
     }
@@ -1134,7 +1134,7 @@ int_32 rpmtsGetTid(rpmts ts)
 
 int_32 rpmtsSetTid(rpmts ts, int_32 tid)
 {
-    int_32 otid = 0;
+    int_32 otid = -1;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	otid = ts->tid;
 	ts->tid = tid;

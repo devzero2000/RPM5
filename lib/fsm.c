@@ -613,7 +613,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 
     memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
     if (fsm->goal == FSM_PKGINSTALL) {
-	if (ts && rpmtsGetTid(ts) > 0)
+	if (ts && rpmtsGetTid(ts) != -1)
 	    sprintf(fsm->sufbuf, ";%08x", (unsigned)rpmtsGetTid(ts));
     }
 
@@ -1955,8 +1955,10 @@ assert(fsm->lpath != NULL);
 	if (fsm->postpone)
 	    break;
 	if (fsm->goal == FSM_PKGINSTALL) {
-	    (void) fsmNext(fsm,
-		(S_ISDIR(st->st_mode) ? FSM_RMDIR : FSM_UNLINK));
+	    /* XXX only erase if temp fn w suffix is in use */
+	    if (fsm->sufbuf[0] != '\0')
+		(void) fsmNext(fsm,
+		    (S_ISDIR(st->st_mode) ? FSM_RMDIR : FSM_UNLINK));
 
 #ifdef	NOTYET	/* XXX remove only dirs just created, not all. */
 	    if (fsm->dnlx)

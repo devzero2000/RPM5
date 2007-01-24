@@ -104,6 +104,7 @@
 	- refactor the W_OK check out of rpmMkdirPath.
 	- push/pop expanded %buildroot before/after per-subpkg macro define(s).
 	- fix: query foo.bogusarch for #124016 needs to be done differently.
+	- fix: don't unlink non-temp file in FSM_UNDO (#223931).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
