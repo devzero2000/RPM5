@@ -34,9 +34,10 @@ AC_MINIX
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_c_compiler_gnu" = yes; then
-    CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    CFLAGS="$CFLAGS -fpie -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    LDFLAGS="-pie"
 fi
-export CFLAGS
+export CFLAGS LDFLAGS
 
 AC_PROG_GCC_TRADITIONAL
 AC_SYS_LARGEFILE
