@@ -79,6 +79,7 @@ int mireClean(miRE mire)
  * @param mire		pattern container
  * @return		NULL always
  */
+/*@null@*/
 miRE mireFree(/*@only@*/ miRE mire)
 	/*@modifies mire @*/;
 
