@@ -778,10 +778,10 @@ const char *urlStrerror(const char *url)
     case URL_IS_FTP:
     {	urlinfo u;
 /* XXX This only works for httpReq/ftpLogin/ftpReq failures */
-	if (urlSplit(url, &u) == 0) {
+	if (urlSplit(url, &u) == 0)
 	    retstr = ftpStrerror(u->openError);
-	} else
-	    retstr = "Malformed URL";
+	else
+	    retstr = _("Malformed URL");
     }	break;
     default:
 	retstr = strerror(errno);
@@ -3734,9 +3734,9 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 /*@=bounds@*/
 
 
-#define	_PATH	"/usr/kerberos/sbin:/usr/kerberos/bin:/usr/lib/ccache/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin:~//bin"
+#define	_PATH	"/usr/kerberos/sbin:/usr/kerberos/bin:/usr/lib/ccache/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin:~/bin"
 /*@unchecked@*/ /*@observer@*/
-static const char * _path = _PATH;
+static const char *_path = _PATH;
 
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
