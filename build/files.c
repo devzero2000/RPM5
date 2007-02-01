@@ -2650,7 +2650,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if ((rc = processScriptFiles(spec, pkg)))
 	    res = rc;
 
-	(void) rpmfcGenerateDepends(spec, pkg);
+	if ((rc = rpmfcGenerateDepends(spec, pkg)))
+	    res = rc;
 
 	/* XXX this should be earlier for deps to be entirely sorted. */
 	providePackageNVR(pkg->header);

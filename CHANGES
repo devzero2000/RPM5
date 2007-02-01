@@ -106,6 +106,7 @@
 	- fix: query foo.bogusarch for #124016 needs to be done differently.
 	- fix: don't unlink non-temp file in FSM_UNDO (#223931).
 	- compile with -fpie instead of -fPIC -DPIC, link with -pie.
+	- fix: check for failing dependency scripts (#226751).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
