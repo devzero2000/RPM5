@@ -13,6 +13,7 @@ LIBRPMIO_0
     argvCount;
     argvData;
     argvFree;
+    argvJoin;
     argvPrint;
     argvSearch;
     argvSort;
