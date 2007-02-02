@@ -204,4 +204,29 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
     return 0;
 /*@=nullstate@*/
 }
+
+char * argvJoin(ARGV_t argv)
+{
+    size_t nb = 0;
+    int argc;
+    char *t, *te;
+
+    for (argc = 0; argv[argc] != NULL; argc++) {
+	if (argc != 0)
+	    nb++;
+	nb += strlen(argv[argc]);
+    }
+    nb++;
+
+    te = t = xmalloc(nb);
+    *te = '\0';
+    for (argc = 0; argv[argc] != NULL; argc++) {
+	if (argc != 0)
+	    *te++ = ' ';
+	te = stpcpy(te, argv[argc]);
+    }
+    *te = '\0';
+    return t;
+}
+
 /*@=bounds@*/

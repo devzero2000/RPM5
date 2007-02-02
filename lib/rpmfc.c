@@ -186,7 +186,11 @@ top:
         (unsigned)child, (unsigned)reaped, status);
 
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	rpmError(RPMERR_EXEC, _("%s failed\n"), argv[0]);
+	const char *cmd = argvJoin(argv);
+	int rc = (WIFEXITED(status) ? WEXITSTATUS(status) : -1);
+
+	rpmError(RPMERR_EXEC, _("Command \"%s\" failed, exit(%d)\n"), cmd, rc);
+	cmd = _free(cmd);
 	return NULL;
     }
     if (writeBytesLeft) {

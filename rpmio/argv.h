@@ -152,6 +152,15 @@ int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 	/*@modifies *argvp @*/;
 
+/**
+ * Concatenate an argv array into a string.
+ * @param argv		argv array
+ * @return		concatenated string
+ */
+/*@only@*/
+char * argvJoin(ARGV_t argv)
+	/*@*/;
+
 #ifdef __cplusplus
 }
 #endif
