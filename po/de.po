@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.7\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-21 15:41-0500\n"
+"POT-Creation-Date: 2007-02-03 14:32-0500\n"
 "PO-Revision-Date: 2006-10-09 22:33+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1587,27 +1587,27 @@ msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, Kontext %s.\n"
 msgid "archive file %s was not found in header file list\n"
 msgstr "Archiv-Datei %s wurde nicht in der Header-Dateiliste gefunden\n"
 
-#: lib/fsm.c:1879 lib/fsm.c:2001
+#: lib/fsm.c:1879 lib/fsm.c:2003
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s als %s gesichert\n"
 
-#: lib/fsm.c:2028
+#: lib/fsm.c:2030
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir von %s fehlgeschlagen: Verzeichnis ist nicht leer\n"
 
-#: lib/fsm.c:2034
+#: lib/fsm.c:2036
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:2049
+#: lib/fsm.c:2051
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:2074
+#: lib/fsm.c:2076
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s als %s erstellt\n"
@@ -2571,62 +2571,62 @@ msgstr "Paket hat keine Eigentümer-/Gruppen-Liste\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "Paket weder Eigentümer- noch ID-Liste\n"
 
-#: lib/query.c:509
+#: lib/query.c:514
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s enthält keine Pakete\n"
 
-#: lib/query.c:518
+#: lib/query.c:523
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "Keine Paket-Trigger %s\n"
 
-#: lib/query.c:531 lib/query.c:552 lib/query.c:574 lib/query.c:609
+#: lib/query.c:536 lib/query.c:557 lib/query.c:579 lib/query.c:614
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "Missgebildet: %s: %s\n"
 
-#: lib/query.c:541 lib/query.c:558 lib/query.c:585 lib/query.c:614
+#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "Kein Paket stimmt mit %s überein: %s\n"
 
-#: lib/query.c:625
+#: lib/query.c:630
 #, c-format
 msgid "no package requires %s\n"
 msgstr "Kein Paket benötigt %s\n"
 
-#: lib/query.c:636
+#: lib/query.c:641
 #, c-format
 msgid "no package provides %s\n"
 msgstr "Kein Paket bietet %s\n"
 
-#: lib/query.c:670
+#: lib/query.c:675
 #, c-format
 msgid "file %s: %s\n"
 msgstr "Datei %s: %s\n"
 
-#: lib/query.c:673
+#: lib/query.c:678
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "Die Datei %s gehört zu keinem Paket\n"
 
-#: lib/query.c:698
+#: lib/query.c:703
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "Ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:706
 #, c-format
 msgid "package record number: %u\n"
 msgstr "Nummer des Paket-Eintrags: %u\n"
 
-#: lib/query.c:705
+#: lib/query.c:710
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "Eintrag %u konnte nicht gelesen werden\n"
 
-#: lib/query.c:716 lib/rpminstall.c:819
+#: lib/query.c:720 lib/query.c:726 lib/rpminstall.c:819
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Das Paket %s ist nicht installiert\n"
@@ -2891,37 +2891,37 @@ msgstr "Konnte %s nicht öffnen: %s\n"
 msgid "\twaitpid(%d) rc %d status %x\n"
 msgstr "%s: waitpid(%d), rc %d, Status %x, %u.%03u Sekunden\n"
 
-#: lib/rpmfc.c:189
-#, fuzzy, c-format
-msgid "%s failed\n"
-msgstr "%s fehlgeschlagen: %s\n"
+#: lib/rpmfc.c:192
+#, c-format
+msgid "Command \"%s\" failed, exit(%d)\n"
+msgstr ""
 
-#: lib/rpmfc.c:193
+#: lib/rpmfc.c:197
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "Konnte Nutzdaten nicht nach %s schreiben: %s\n"
 
-#: lib/rpmfc.c:992
+#: lib/rpmfc.c:996
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/rpmfc.c:1000
+#: lib/rpmfc.c:1004
 #, fuzzy, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s rmdir von %s fehlgeschlagen: %s\n"
 
-#: lib/rpmfc.c:1066
+#: lib/rpmfc.c:1070
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1284
+#: lib/rpmfc.c:1288
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Datei %s: %s\n"
 
-#: lib/rpmfc.c:1290 lib/rpmfc.c:1301
+#: lib/rpmfc.c:1294 lib/rpmfc.c:1305
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Fehlgeschlagenes Lesen von %s: %s.\n"
@@ -4293,6 +4293,11 @@ msgstr "Abbruch wird durchgeführt"
 msgid "Unknown or unexpected error"
 msgstr "Unbekannter oder unerwarteter Fehler"
 
+#: rpmio/rpmio.c:784
+#, fuzzy
+msgid "Malformed URL"
+msgstr "Missgebildet: %s: %s\n"
+
 #: rpmio/rpmio.c:1619
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
@@ -4314,27 +4319,27 @@ msgstr "Fehler: "
 msgid "warning: "
 msgstr "Warnung: "
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:498
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "Alter Syntax wird nicht mehr unterstützt: %s\n"
 
-#: rpmio/rpmlua.c:504
+#: rpmio/rpmlua.c:516
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "Alter Syntax wird nicht mehr unterstützt: %s\n"
 
-#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#: rpmio/rpmlua.c:521 rpmio/rpmlua.c:540
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: Fwrite fehlgeschlagen: %s\n"
 
-#: rpmio/rpmlua.c:523
+#: rpmio/rpmlua.c:535
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "Ungültige Paket-Nummer: %s\n"
 
-#: rpmio/rpmlua.c:676
+#: rpmio/rpmlua.c:688
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s fehlgeschlagen: %s\n"
@@ -4479,6 +4484,10 @@ msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
 "Überprüfe der Abhängigkeiten von \"Requires:\" und \"Provides:\" "
 "gegeneinander"
+
+#, fuzzy
+#~ msgid "%s failed\n"
+#~ msgstr "%s fehlgeschlagen: %s\n"
 
 #~ msgid "package %s is intended for a %s operating system"
 #~ msgstr "Das Paket %s ist für das Betriebssystem %s vorgesehen"

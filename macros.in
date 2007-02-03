@@ -1,4 +1,4 @@
-#/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
+#/*! \page config_macros Default configuration: @USRLIBRPM@/macros
 # \verbatim
 #
 # $Id$
@@ -29,7 +29,7 @@
 %_usr			@prefix@
 %_usrsrc		%{_usr}/src
 %_var			@varprefix@
-%_usrlibrpm		@RPMCONFIGDIR@
+%_usrlibrpm		@USRLIBRPM@
 %_etcrpm		@SYSCONFIGDIR@
 
 #==============================================================================

@@ -5,7 +5,7 @@
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
 # Autogenerate shell script dependencies.
-#%%define __executable_requires	@RPMCONFIGDIR@/executabledeps.sh --requires
+#%%define __executable_requires	@USRLIBRPM@/executabledeps.sh --requires
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -14,17 +14,14 @@
 %{?!_lib: %define _lib lib}
 %{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
-%define __bindir	%{__prefix}/bin
-%define __includedir	%{__prefix}/include
-%define __libdir	%{__prefix}/%{_lib}
-%define __mandir	%{__prefix}%{__share}/man
+%define	_pkglibdir	@USRLIBRPM@
 
 Summary: The RPM package management system.
 Name: rpm
-%define version @VERSION@
 Version: @VERSION@
 Release: 0.11
 Group: System Environment/Base
+URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
 License: LGPL
 %ifos linux
@@ -238,22 +235,22 @@ gzip -9n apidocs/man/man*/* || :
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
-  rm -rf .%{__mandir}/man8/rpmcache.8*
-  rm -rf .%{__mandir}/man8/rpmgraph.8*
-  rm -rf .%{__mandir}/ja/man8/rpmcache.8*
-  rm -rf .%{__mandir}/ja/man8/rpmgraph.8*
-  rm -rf .%{__mandir}/pl/man8/rpmcache.8*
-  rm -rf .%{__mandir}/pl/man8/rpmgraph.8*
-  rm -rf .%{__mandir}/{fr,ko}
-  rm -f .%{__bindir}/rpm{e,i,u}
+  rm -rf .%{_mandir}/man8/rpmcache.8*
+  rm -rf .%{_mandir}/man8/rpmgraph.8*
+  rm -rf .%{_mandir}/ja/man8/rpmcache.8*
+  rm -rf .%{_mandir}/ja/man8/rpmgraph.8*
+  rm -rf .%{_mandir}/pl/man8/rpmcache.8*
+  rm -rf .%{_mandir}/pl/man8/rpmgraph.8*
+  rm -rf .%{_mandir}/{fr,ko}
+  rm -f .%{_bindir}/rpm{e,i,u}
 %if %{with_python_subpackage}
-  rm -f .%{__libdir}/python%{with_python_version}/site-packages/*.{a,la}
-  rm -f .%{__libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
+  rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
+  rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
 %endif
 %if %{with_perl_subpackage}
-  find .%{__libdir}/perl5 -type f -a \( -name perllocal.pod -o -name .packlist \
+  find .%{_libdir}/perl5 -type f -a \( -name perllocal.pod -o -name .packlist \
     -o \( -name '*.bs' -a -empty \) \) -exec rm -f {} ';'
-  find .%{__libdir}/perl5 -type d -depth -exec rmdir {} 2>/dev/null ';'
+  find .%{_libdir}/perl5 -type d -depth -exec rmdir {} 2>/dev/null ';'
 %endif
 }
 
@@ -312,14 +309,14 @@ exit 0
 %rpmdbattr	/var/lib/rpm/*
 %endif
 
-%rpmattr	%{__bindir}/rpm2cpio
-%rpmattr	%{__bindir}/gendiff
-%rpmattr	%{__bindir}/rpmdb
-#%rpmattr	%{__bindir}/rpmdigest
-#%rpmattr	%{__bindir}/rpm[eiu]
-%rpmattr	%{__bindir}/rpmsign
-%rpmattr	%{__bindir}/rpmquery
-%rpmattr	%{__bindir}/rpmverify
+%rpmattr	%{_bindir}/rpm2cpio
+%rpmattr	%{_bindir}/gendiff
+%rpmattr	%{_bindir}/rpmdb
+#%rpmattr	%{_bindir}/rpmdigest
+#%rpmattr	%{_bindir}/rpm[eiu]
+%rpmattr	%{_bindir}/rpmsign
+%rpmattr	%{_bindir}/rpmquery
+%rpmattr	%{_bindir}/rpmverify
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
 %rpmattr	%{__prefix}/lib/rpm/config.guess
@@ -392,23 +389,23 @@ exit 0
 %lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
 %lang(uk)	%{__prefix}/*/locale/uk/LC_MESSAGES/rpm.mo
 
-%{__mandir}/man8/rpm.8*
-%{__mandir}/man8/rpm2cpio.8*
-%lang(ja)	%{__mandir}/ja/man8/rpm.8*
-%lang(ja)	%{__mandir}/ja/man8/rpm2cpio.8*
-#%lang(ko)	%{__mandir}/ko/man8/rpm.8*
-#%lang(ko)	%{__mandir}/ko/man8/rpm2cpio.8*
-%lang(pl)	%{__mandir}/pl/man8/rpm.8*
-%lang(pl)	%{__mandir}/pl/man8/rpm2cpio.8*
-%lang(ru)	%{__mandir}/ru/man8/rpm.8*
-%lang(ru)	%{__mandir}/ru/man8/rpm2cpio.8*
-%lang(sk)	%{__mandir}/sk/man8/rpm.8*
+%{_mandir}/man8/rpm.8*
+%{_mandir}/man8/rpm2cpio.8*
+%lang(ja)	%{_mandir}/ja/man8/rpm.8*
+%lang(ja)	%{_mandir}/ja/man8/rpm2cpio.8*
+#%lang(ko)	%{_mandir}/ko/man8/rpm.8*
+#%lang(ko)	%{_mandir}/ko/man8/rpm2cpio.8*
+%lang(pl)	%{_mandir}/pl/man8/rpm.8*
+%lang(pl)	%{_mandir}/pl/man8/rpm2cpio.8*
+%lang(ru)	%{_mandir}/ru/man8/rpm.8*
+%lang(ru)	%{_mandir}/ru/man8/rpm2cpio.8*
+%lang(sk)	%{_mandir}/sk/man8/rpm.8*
 
 %files libs
-%{__libdir}/librpm-4.4.so
-%{__libdir}/librpmdb-4.4.so
-%{__libdir}/librpmio-4.4.so
-%{__libdir}/librpmbuild-4.4.so
+%{_libdir}/librpm-4.4.so
+%{_libdir}/librpmdb-4.4.so
+%{_libdir}/librpmio-4.4.so
+%{_libdir}/librpmbuild-4.4.so
 
 %files build
 %dir %{__prefix}/src/rpm
@@ -418,7 +415,7 @@ exit 0
 %dir %{__prefix}/src/rpm/SRPMS
 %dir %{__prefix}/src/rpm/RPMS
 %{__prefix}/src/rpm/RPMS/*
-%rpmattr	%{__bindir}/rpmbuild
+%rpmattr	%{_bindir}/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-files
 %rpmattr	%{__prefix}/lib/rpm/config.site
@@ -457,58 +454,58 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
-%{__mandir}/man1/gendiff.1*
-%{__mandir}/man8/rpmbuild.8*
-%{__mandir}/man8/rpmdeps.8*
-#%lang(ja)	%{__mandir}/ja/man1/gendiff.1*
-%lang(ja)	%{__mandir}/ja/man8/rpmbuild.8*
-#%lang(ja)	%{__mandir}/ja/man8/rpmdeps.8*
-#%lang(ko)	%{__mandir}/ko/man1/gendiff.1*
-#%lang(ko)	%{__mandir}/ko/man8/rpmbuild.8*
-#%lang(ko)	%{__mandir}/ko/man8/rpmdeps.8*
-%lang(pl)	%{__mandir}/pl/man1/gendiff.1*
-%lang(pl)	%{__mandir}/pl/man8/rpmbuild.8*
-%lang(pl)	%{__mandir}/pl/man8/rpmdeps.8*
-#%lang(ru)	%{__mandir}/ru/man1/gendiff.1*
-#%lang(ru)	%{__mandir}/ru/man8/rpmbuild.8*
-#%lang(ru)	%{__mandir}/ru/man8/rpmdeps.8*
-#%lang(sk)	%{__mandir}/sk/man1/gendiff.1*
-#%lang(sk)	%{__mandir}/sk/man8/rpmbuild.8*
-#%lang(sk)	%{__mandir}/sk/man8/rpmdeps.8*
+%{_mandir}/man1/gendiff.1*
+%{_mandir}/man8/rpmbuild.8*
+%{_mandir}/man8/rpmdeps.8*
+#%lang(ja)	%{_mandir}/ja/man1/gendiff.1*
+%lang(ja)	%{_mandir}/ja/man8/rpmbuild.8*
+#%lang(ja)	%{_mandir}/ja/man8/rpmdeps.8*
+#%lang(ko)	%{_mandir}/ko/man1/gendiff.1*
+#%lang(ko)	%{_mandir}/ko/man8/rpmbuild.8*
+#%lang(ko)	%{_mandir}/ko/man8/rpmdeps.8*
+%lang(pl)	%{_mandir}/pl/man1/gendiff.1*
+%lang(pl)	%{_mandir}/pl/man8/rpmbuild.8*
+%lang(pl)	%{_mandir}/pl/man8/rpmdeps.8*
+#%lang(ru)	%{_mandir}/ru/man1/gendiff.1*
+#%lang(ru)	%{_mandir}/ru/man8/rpmbuild.8*
+#%lang(ru)	%{_mandir}/ru/man8/rpmdeps.8*
+#%lang(sk)	%{_mandir}/sk/man1/gendiff.1*
+#%lang(sk)	%{_mandir}/sk/man8/rpmbuild.8*
+#%lang(sk)	%{_mandir}/sk/man8/rpmdeps.8*
 
 %if %{with_python_subpackage}
 %files python
-%{__libdir}/python%{with_python_version}/site-packages/rpm
+%{_libdir}/python%{with_python_version}/site-packages/rpm
 %endif
 
 %if %{with_perl_subpackage}
 %files perl
-%{__libdir}/perl5/site_perl/*/*/auto/RPM
-%{__libdir}/perl5/site_perl/*/*/RPM.*
-%{__mandir}/man3/RPM.*
+%{_libdir}/perl5/site_perl/*/*/auto/RPM
+%{_libdir}/perl5/site_perl/*/*/RPM.*
+%{_mandir}/man3/RPM.*
 %endif
 
 %files devel
 %if %{with_apidocs}
 %doc @WITH_APIDOCS_TARGET@
 %endif
-%{__includedir}/rpm
-%{__libdir}/librpm.a
-%{__libdir}/librpm.la
-%{__libdir}/librpm.so
-%{__libdir}/librpmdb.a
-%{__libdir}/librpmdb.la
-%{__libdir}/librpmdb.so
-%{__libdir}/librpmio.a
-%{__libdir}/librpmio.la
-%{__libdir}/librpmio.so
-%{__libdir}/librpmbuild.a
-%{__libdir}/librpmbuild.la
-%{__libdir}/librpmbuild.so
+%{_includedir}/rpm
+%{_libdir}/librpm.a
+%{_libdir}/librpm.la
+%{_libdir}/librpm.so
+%{_libdir}/librpmdb.a
+%{_libdir}/librpmdb.la
+%{_libdir}/librpmdb.so
+%{_libdir}/librpmio.a
+%{_libdir}/librpmio.la
+%{_libdir}/librpmio.so
+%{_libdir}/librpmbuild.a
+%{_libdir}/librpmbuild.la
+%{_libdir}/librpmbuild.so
 
 %files -n popt
-%{__libdir}/libpopt.so.*
-%{__mandir}/man3/popt.3*
+%{_libdir}/libpopt.so.*
+%{_mandir}/man3/popt.3*
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/popt.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/popt.mo
 %lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/popt.mo
@@ -541,10 +538,10 @@ exit 0
 %lang(zh_TW)	%{__prefix}/*/locale/zh_TW/LC_MESSAGES/popt.mo
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort.
-%{__libdir}/libpopt.a
-%{__libdir}/libpopt.la
-%{__libdir}/libpopt.so
-%{__includedir}/popt.h
+%{_libdir}/libpopt.a
+%{_libdir}/libpopt.la
+%{_libdir}/libpopt.so
+%{_includedir}/popt.h
 
 %changelog
 * Sun Jan 21 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.11

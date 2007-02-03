@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-21 15:41-0500\n"
+"POT-Creation-Date: 2007-02-03 14:32-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1721,29 +1721,29 @@ msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:1879 lib/fsm.c:2001
+#: lib/fsm.c:1879 lib/fsm.c:2003
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/fsm.c:2028
+#: lib/fsm.c:2030
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/fsm.c:2034
+#: lib/fsm.c:2036
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/fsm.c:2049
+#: lib/fsm.c:2051
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: lib/fsm.c:2074
+#: lib/fsm.c:2076
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -2791,63 +2791,63 @@ msgstr "no foi passado pacote para instalao"
 msgid "package has neither file owner or id lists\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/query.c:509
+#: lib/query.c:514
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:518
+#: lib/query.c:523
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "no foram passados pacotes para assinatura"
 
 # , c-format
-#: lib/query.c:531 lib/query.c:552 lib/query.c:574 lib/query.c:609
+#: lib/query.c:536 lib/query.c:557 lib/query.c:579 lib/query.c:614
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/query.c:541 lib/query.c:558 lib/query.c:585 lib/query.c:614
+#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "no foram passados pacotes para assinatura"
 
-#: lib/query.c:625
+#: lib/query.c:630
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:636
+#: lib/query.c:641
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:670
+#: lib/query.c:675
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:673
+#: lib/query.c:678
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:698
+#: lib/query.c:703
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:701
+#: lib/query.c:706
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:705
+#: lib/query.c:710
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:716 lib/rpminstall.c:819
+#: lib/query.c:720 lib/query.c:726 lib/rpminstall.c:819
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "no foi passado pacote para instalao"
@@ -3110,40 +3110,40 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 msgid "\twaitpid(%d) rc %d status %x\n"
 msgstr ""
 
-#: lib/rpmfc.c:189
-#, fuzzy, c-format
-msgid "%s failed\n"
-msgstr "Construo falhou.\n"
+#: lib/rpmfc.c:192
+#, c-format
+msgid "Command \"%s\" failed, exit(%d)\n"
+msgstr ""
 
 # , c-format
-#: lib/rpmfc.c:193
+#: lib/rpmfc.c:197
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "No consegui abrir o pipe tar: %s\n"
 
-#: lib/rpmfc.c:992
+#: lib/rpmfc.c:996
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/rpmfc.c:1000
+#: lib/rpmfc.c:1004
 #, fuzzy, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/rpmfc.c:1066
+#: lib/rpmfc.c:1070
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmfc.c:1284
+#: lib/rpmfc.c:1288
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: lib/rpmfc.c:1290 lib/rpmfc.c:1301
+#: lib/rpmfc.c:1294 lib/rpmfc.c:1305
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "No consegui abrir o pipe tar: %s\n"
@@ -4620,6 +4620,12 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
+# , c-format
+#: rpmio/rpmio.c:784
+#, fuzzy
+msgid "Malformed URL"
+msgstr "No consegui ler o arquivo spec de %s\n"
+
 #: rpmio/rpmio.c:1619
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
@@ -4641,28 +4647,28 @@ msgstr ""
 msgid "warning: "
 msgstr ""
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:498
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:504
+#: rpmio/rpmlua.c:516
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr ""
 
 # , c-format
-#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#: rpmio/rpmlua.c:521 rpmio/rpmlua.c:540
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmio/rpmlua.c:523
+#: rpmio/rpmlua.c:535
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:676
+#: rpmio/rpmlua.c:688
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "Construo falhou.\n"
@@ -4807,6 +4813,10 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#, fuzzy
+#~ msgid "%s failed\n"
+#~ msgstr "Construo falhou.\n"
 
 #, fuzzy
 #~ msgid "package %s is intended for a %s operating system"

@@ -1,7 +1,7 @@
-#/*! \page config_rpmpopt Default configuration: @RPMCONFIGDIR@/rpmpopt-@VERSION@
+#/*! \page config_rpmpopt Default configuration: @USRLIBRPM@/rpmpopt-@VERSION@
 # \verbatim
 #
-# @RPMCONFIGDIR@/@configure_input@
+# @USRLIBRPM@/@configure_input@
 # $Id$
 #
 # This file *should not be modified*. Local customizations
@@ -164,7 +164,7 @@ rpm     alias --flink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}
 rpm alias --i18ndomains --define '_i18ndomains !#:+'
 
 # Build policies enabled from command line. Last policy applies.
-rpm alias --buildpolicy --define '__os_install_post @RPMCONFIGDIR@/brp-!#:+' \
+rpm alias --buildpolicy --define '__os_install_post @USRLIBRPM@/brp-!#:+' \
 	--POPTdesc=$"set buildroot <policy> (e.g. compress man pages)" \
 	--POPTargs=$"<policy>"
 

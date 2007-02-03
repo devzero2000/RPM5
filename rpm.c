@@ -688,7 +688,7 @@ int main(int argc, const char ** argv)
     optCon = poptGetContext("rpm", argc, argv, optionsTable, 0);
     poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
     poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
+    poptSetExecPath(optCon, USRLIBRPM, 1);
 
     /* reading rcfile early makes it easy to override */
     /* XXX only --rcfile (and --showrc) need this pre-parse */

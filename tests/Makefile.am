@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-pkglibdir = @RPMCONFIGDIR@
+pkglibdir = @USRLIBRPM@
 
 EXTRA_DIST =
 SUBDIRS = hello-test

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-21 15:41-0500\n"
+"POT-Creation-Date: 2007-02-03 14:32-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1543,27 +1543,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1879 lib/fsm.c:2001
+#: lib/fsm.c:1879 lib/fsm.c:2003
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:2028
+#: lib/fsm.c:2030
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:2034
+#: lib/fsm.c:2036
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:2049
+#: lib/fsm.c:2051
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:2074
+#: lib/fsm.c:2076
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2512,62 +2512,62 @@ msgstr ""
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:509
+#: lib/query.c:514
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:518
+#: lib/query.c:523
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:531 lib/query.c:552 lib/query.c:574 lib/query.c:609
+#: lib/query.c:536 lib/query.c:557 lib/query.c:579 lib/query.c:614
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr ""
 
-#: lib/query.c:541 lib/query.c:558 lib/query.c:585 lib/query.c:614
+#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr ""
 
-#: lib/query.c:625
+#: lib/query.c:630
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:636
+#: lib/query.c:641
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:670
+#: lib/query.c:675
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:673
+#: lib/query.c:678
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:698
+#: lib/query.c:703
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:701
+#: lib/query.c:706
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:705
+#: lib/query.c:710
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:716 lib/rpminstall.c:819
+#: lib/query.c:720 lib/query.c:726 lib/rpminstall.c:819
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2818,37 +2818,37 @@ msgstr ""
 msgid "\twaitpid(%d) rc %d status %x\n"
 msgstr ""
 
-#: lib/rpmfc.c:189
+#: lib/rpmfc.c:192
 #, c-format
-msgid "%s failed\n"
+msgid "Command \"%s\" failed, exit(%d)\n"
 msgstr ""
 
-#: lib/rpmfc.c:193
+#: lib/rpmfc.c:197
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:992
+#: lib/rpmfc.c:996
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1000
+#: lib/rpmfc.c:1004
 #, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1066
+#: lib/rpmfc.c:1070
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1284
+#: lib/rpmfc.c:1288
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1290 lib/rpmfc.c:1301
+#: lib/rpmfc.c:1294 lib/rpmfc.c:1305
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
@@ -4204,6 +4204,10 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
+#: rpmio/rpmio.c:784
+msgid "Malformed URL"
+msgstr ""
+
 #: rpmio/rpmio.c:1619
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
@@ -4225,27 +4229,27 @@ msgstr ""
 msgid "warning: "
 msgstr ""
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:498
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:504
+#: rpmio/rpmlua.c:516
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#: rpmio/rpmlua.c:521 rpmio/rpmlua.c:540
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:523
+#: rpmio/rpmlua.c:535
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:676
+#: rpmio/rpmlua.c:688
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr ""

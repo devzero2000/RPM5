@@ -46,7 +46,7 @@ rpmbin_PROGRAMS = rpm
 bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
 
-pkglibdir =		@RPMCONFIGDIR@
+pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
 pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \

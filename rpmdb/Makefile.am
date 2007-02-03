@@ -28,7 +28,7 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
-pkgbindir = @RPMCONFIGDIR@
+pkgbindir = @USRLIBRPM@
 pkgbin_PROGRAMS = \
 	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump \
 	rpmdb_hotbackup rpmdb_load rpmdb_printlog rpmdb_recover \

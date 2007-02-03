@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-01-21 15:41-0500\n"
+"POT-Creation-Date: 2007-02-03 14:32-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1588,27 +1588,27 @@ msgstr "каталог %s створений з правами %04o, конте�
 msgid "archive file %s was not found in header file list\n"
 msgstr "файл архіву %s не знайдено у списку файлів заголовка\n"
 
-#: lib/fsm.c:1879 lib/fsm.c:2001
+#: lib/fsm.c:1879 lib/fsm.c:2003
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s збережено як %s\n"
 
-#: lib/fsm.c:2028
+#: lib/fsm.c:2030
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s неможливо видалити %s: Каталог не порожній\n"
 
-#: lib/fsm.c:2034
+#: lib/fsm.c:2036
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s помилка видалення каталогу %s: %s\n"
 
-#: lib/fsm.c:2049
+#: lib/fsm.c:2051
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s неможливо видалити %s: %s\n"
 
-#: lib/fsm.c:2074
+#: lib/fsm.c:2076
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s створений як %s\n"
@@ -2592,62 +2592,62 @@ msgid "package has neither file owner or id lists\n"
 msgstr ""
 "пакет не містить ані власників файлів, ані ідентифікаторів їх списків\n"
 
-#: lib/query.c:509
+#: lib/query.c:514
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "група %s не містить ніяких пакетів\n"
 
-#: lib/query.c:518
+#: lib/query.c:523
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "жоден пакет не підпадає під тригер %s\n"
 
-#: lib/query.c:531 lib/query.c:552 lib/query.c:574 lib/query.c:609
+#: lib/query.c:536 lib/query.c:557 lib/query.c:579 lib/query.c:614
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "неправильний %s: %s\n"
 
-#: lib/query.c:541 lib/query.c:558 lib/query.c:585 lib/query.c:614
+#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "жоден пакет не відповідає %s: %s\n"
 
-#: lib/query.c:625
+#: lib/query.c:630
 #, c-format
 msgid "no package requires %s\n"
 msgstr "жоден пакет не вимагає %s\n"
 
-#: lib/query.c:636
+#: lib/query.c:641
 #, c-format
 msgid "no package provides %s\n"
 msgstr "жоден пакет не постачає %s\n"
 
-#: lib/query.c:670
+#: lib/query.c:675
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:673
+#: lib/query.c:678
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не належить жодному пакету\n"
 
-#: lib/query.c:698
+#: lib/query.c:703
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неправильний номер пакету: %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:706
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер елементу пакету: %u\n"
 
-#: lib/query.c:705
+#: lib/query.c:710
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:716 lib/rpminstall.c:819
+#: lib/query.c:720 lib/query.c:726 lib/rpminstall.c:819
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"
@@ -2907,37 +2907,37 @@ msgstr "Не вдається відкрити %s: %s\n"
 msgid "\twaitpid(%d) rc %d status %x\n"
 msgstr "%s: waitpid(%d) код результату %d стан %x секунд %u.%03u\n"
 
-#: lib/rpmfc.c:189
-#, fuzzy, c-format
-msgid "%s failed\n"
-msgstr "%s помилка: %s\n"
+#: lib/rpmfc.c:192
+#, c-format
+msgid "Command \"%s\" failed, exit(%d)\n"
+msgstr ""
 
-#: lib/rpmfc.c:193
+#: lib/rpmfc.c:197
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "Неможливо записати вміст з %s: %s\n"
 
-#: lib/rpmfc.c:992
+#: lib/rpmfc.c:996
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpmfc.c:1000
+#: lib/rpmfc.c:1004
 #, fuzzy, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s помилка видалення каталогу %s: %s\n"
 
-#: lib/rpmfc.c:1066
+#: lib/rpmfc.c:1070
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1284
+#: lib/rpmfc.c:1288
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: lib/rpmfc.c:1290 lib/rpmfc.c:1301
+#: lib/rpmfc.c:1294 lib/rpmfc.c:1305
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Неможливо прочитати %s: %s.\n"
@@ -4310,6 +4310,11 @@ msgstr "Триває відміна"
 msgid "Unknown or unexpected error"
 msgstr "Невідома або неочікувана помилка"
 
+#: rpmio/rpmio.c:784
+#, fuzzy
+msgid "Malformed URL"
+msgstr "неправильний %s: %s\n"
+
 #: rpmio/rpmio.c:1619
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
@@ -4331,27 +4336,27 @@ msgstr "помилка: "
 msgid "warning: "
 msgstr "попередження: "
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:498
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:504
+#: rpmio/rpmlua.c:516
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "- не підтримується для рядків\n"
 
-#: rpmio/rpmlua.c:509 rpmio/rpmlua.c:528
+#: rpmio/rpmlua.c:521 rpmio/rpmlua.c:540
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: помилка у Fwrite: %s\n"
 
-#: rpmio/rpmlua.c:523
+#: rpmio/rpmlua.c:535
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "неправильний номер пакету: %s\n"
 
-#: rpmio/rpmlua.c:676
+#: rpmio/rpmlua.c:688
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s помилка: %s\n"
@@ -4495,6 +4500,10 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#, fuzzy
+#~ msgid "%s failed\n"
+#~ msgstr "%s помилка: %s\n"
 
 #~ msgid "package %s is intended for a %s operating system"
 #~ msgstr "пакет %s призначений для %s операційних систем"

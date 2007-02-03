@@ -107,6 +107,8 @@
 	- fix: don't unlink non-temp file in FSM_UNDO (#223931).
 	- compile with -fpie instead of -fPIC -DPIC, link with -pie.
 	- fix: check for failing dependency scripts (#226751).
+	- lua: expand %{_usrlibrpm} to locate lua configuration files.
+	- change RPMCONFIGDIR to USRLIBRPM everywhere.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

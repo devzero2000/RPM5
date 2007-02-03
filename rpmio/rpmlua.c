@@ -51,7 +51,6 @@ rpmlua rpmluaNew()
 {
     rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
     lua_State *L = lua_open();
-    struct stat st;
     /*@-readonlytrans@*/
     /*@observer@*/ /*@unchecked@*/
     static const luaL_reg lualibs[] = {
@@ -77,15 +76,28 @@ rpmlua rpmluaNew()
 /*@=noeffectuncon@*/
 	lua_settop(L, 0);
     }
-    lua_pushliteral(L, "LUA_PATH");
-    lua_pushstring(L, RPMCONFIGDIR "/lua/?.lua");
+#define	_LUADOTDIR	"%{?_usrlibrpm}%{!?_usrlibrpm:" USRLIBRPM "}"
+    {	const char * _lua_path = rpmGetPath(_LUADOTDIR, "/lua/?.lua", NULL);
+	if (_lua_path != NULL) {
+	    lua_pushliteral(L, "LUA_PATH");
+	    lua_pushstring(L, _lua_path);
+	    free(_lua_path);
+	}
+    }
     lua_rawset(L, LUA_GLOBALSINDEX);
     lua_pushliteral(L, "print");
     lua_pushcfunction(L, rpm_print);
     lua_rawset(L, LUA_GLOBALSINDEX);
     rpmluaSetData(lua, "lua", lua);
-    if (stat(RPMCONFIGDIR "/init.lua", &st) != -1)
-	(void)rpmluaRunScriptFile(lua, RPMCONFIGDIR "/init.lua");
+    {	const char * _lua_init = rpmGetPath(_LUADOTDIR, "/init.lua", NULL);
+	if (_lua_init != NULL) {
+	    struct stat st;
+	    if (Stat(_lua_init, &st) != -1)
+		(void)rpmluaRunScriptFile(lua, _lua_init);
+	    free(_lua_init);
+	}
+    }
+#undef	_LUADOTDIR
     return lua;
 }
 

@@ -1458,40 +1458,40 @@ AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
 AC_SUBST(LOCALEDIR)
 LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
 AC_SUBST(LIBDIR)
-RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
-AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
+USRLIBRPM="`echo ${usrprefix}/lib/rpm`"
+AC_DEFINE_UNQUOTED(USRLIBRPM, "$USRLIBRPM",
 	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
-AC_SUBST(RPMCONFIGDIR)
+AC_SUBST(USRLIBRPM)
 
 SYSCONFIGDIR="`echo /etc/rpm`"
 AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
 	[Full path to rpm system configuration directory (usually /etc/rpm)])
 AC_SUBST(SYSCONFIGDIR)
 
-MACROFILES="${RPMCONFIGDIR}/macros:${RPMCONFIGDIR}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
+MACROFILES="${USRLIBRPM}/macros:${USRLIBRPM}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
 	[Colon separated paths of macro files to read.])
 AC_SUBST(MACROFILES)
 
-LIBRPMRC_FILENAME="${RPMCONFIGDIR}/rpmrc"
+LIBRPMRC_FILENAME="${USRLIBRPM}/rpmrc"
 AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME",
 	[Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc)])
 AC_SUBST(LIBRPMRC_FILENAME)
 
-VENDORRPMRC_FILENAME="${RPMCONFIGDIR}/${RPMCANONVENDOR}/rpmrc"
+VENDORRPMRC_FILENAME="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc"
 AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
        [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
 AC_SUBST(VENDORRPMRC_FILENAME)
 
-LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt-${VERSION}"
+LIBRPMALIAS_FILENAME="${USRLIBRPM}/rpmpopt-${VERSION}"
 AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",
 	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
 AC_SUBST(LIBRPMALIAS_FILENAME)
-FINDREQUIRES="${RPMCONFIGDIR}/find-requires"
+FINDREQUIRES="${USRLIBRPM}/find-requires"
 AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES",
 	[Full path to find-requires script (usually /usr/lib/rpm/find-requires)])
 AC_SUBST(FINDREQUIRES)
-FINDPROVIDES="${RPMCONFIGDIR}/find-provides"
+FINDPROVIDES="${USRLIBRPM}/find-provides"
 AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
 	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
 AC_SUBST(FINDPROVIDES)
