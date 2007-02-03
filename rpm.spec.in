@@ -4,8 +4,10 @@
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
+%{!?_usrlibrpm:%define _usrlibrpm @USRLIBRPM@}
+
 # Autogenerate shell script dependencies.
-#%%define __executable_requires	@USRLIBRPM@/executabledeps.sh --requires
+#%%define __executable_requires	%{_usrlibrpm}/executabledeps.sh --requires
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -14,12 +16,11 @@
 %{?!_lib: %define _lib lib}
 %{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
-%define	_pkglibdir	@USRLIBRPM@
 
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.11
+Release: 0.12
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -176,13 +177,13 @@ WITH_PERL="--without-perl"
 
 %ifos linux
 CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
-./configure --prefix=%{__prefix} --sysconfdir=/etc \
+./configure --prefix=%{_prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
 	$WITH_PYTHON $WITH_PERL --enable-posixmutexes --without-javaglue
 %else
-export CPPFLAGS=-I%{__prefix}/include 
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON $WITH_PERL \
+export CPPFLAGS=-I%{_prefix}/include 
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} $WITH_PYTHON $WITH_PERL \
 	--without-javaglue
 %endif
 
@@ -234,7 +235,7 @@ gzip -9n apidocs/man/man*/* || :
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
-  rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
+  rm -f .%{_usrlibrpm}/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
   rm -rf .%{_mandir}/man8/rpmcache.8*
   rm -rf .%{_mandir}/man8/rpmgraph.8*
   rm -rf .%{_mandir}/ja/man8/rpmcache.8*
@@ -318,54 +319,54 @@ exit 0
 %rpmattr	%{_bindir}/rpmquery
 %rpmattr	%{_bindir}/rpmverify
 
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
-%rpmattr	%{__prefix}/lib/rpm/config.guess
-%rpmattr	%{__prefix}/lib/rpm/config.sub
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/macros
-%rpmattr	%{__prefix}/lib/rpm/mkinstalldirs
-%rpmattr	%{__prefix}/lib/rpm/rpm.*
-%rpmattr	%{__prefix}/lib/rpm/rpm2cpio.sh
-%rpmattr	%{__prefix}/lib/rpm/rpm[deiukqv]
-%rpmattr	%{__prefix}/lib/rpm/tgpg
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
+%rpmattr	%{_usrlibrpm}/config.guess
+%rpmattr	%{_usrlibrpm}/config.sub
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/macros
+%rpmattr	%{_usrlibrpm}/mkinstalldirs
+%rpmattr	%{_usrlibrpm}/rpm.*
+%rpmattr	%{_usrlibrpm}/rpm2cpio.sh
+%rpmattr	%{_usrlibrpm}/rpm[deiukqv]
+%rpmattr	%{_usrlibrpm}/tgpg
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmpopt*
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmrc
 
 %ifarch i386 i486 i586 i686 athlon pentium3 pentium4
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/i[3456]86*
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/athlon*
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/pentium*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/athlon*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/pentium*
 %endif
 %ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/alpha*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/alpha*
 %endif
 %ifarch sparc sparcv8 sparcv9 sparc64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/sparc*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/sparc*
 %endif
 %ifarch ia64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/ia64*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ia64*
 %endif
 %ifarch powerpc ppc ppciseries ppcpseries ppcmac ppc64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/ppc*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ppc*
 %endif
 %ifarch s390 s390x
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/s390*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/s390*
 %endif
 %ifarch armv3l armv4b armv4l
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/armv[34][lb]*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[34][lb]*
 %endif
 %ifarch armv5teb armv5tel
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/armv[345]*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[345]*
 %endif
 %ifarch mips mipsel
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/mips*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/mips*
 %endif
 %ifarch x86_64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/x86_64*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
 %endif
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/noarch*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
-%rpmattr	%{__prefix}/lib/rpm/rpmdb_*
-#%rpmattr	%{__prefix}/lib/rpm/rpmfile
+%rpmattr	%{_usrlibrpm}/rpmdb_*
+#%rpmattr	%{_usrlibrpm}/rpmfile
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
@@ -416,43 +417,43 @@ exit 0
 %dir %{__prefix}/src/rpm/RPMS
 %{__prefix}/src/rpm/RPMS/*
 %rpmattr	%{_bindir}/rpmbuild
-%rpmattr	%{__prefix}/lib/rpm/brp-*
-%rpmattr	%{__prefix}/lib/rpm/check-files
-%rpmattr	%{__prefix}/lib/rpm/config.site
-%rpmattr	%{__prefix}/lib/rpm/cross-build
-%rpmattr	%{__prefix}/lib/rpm/debugedit
-%rpmattr	%{__prefix}/lib/rpm/find-debuginfo.sh
-%rpmattr	%{__prefix}/lib/rpm/find-lang.sh
-%rpmattr	%{__prefix}/lib/rpm/find-prov.pl
-%rpmattr	%{__prefix}/lib/rpm/find-provides
-%rpmattr	%{__prefix}/lib/rpm/find-provides.perl
-%rpmattr	%{__prefix}/lib/rpm/find-req.pl
-%rpmattr	%{__prefix}/lib/rpm/find-requires
-%rpmattr	%{__prefix}/lib/rpm/find-requires.perl
-%rpmattr	%{__prefix}/lib/rpm/getpo.sh
-%rpmattr	%{__prefix}/lib/rpm/http.req
-%rpmattr	%{__prefix}/lib/rpm/javadeps.sh
-%rpmattr	%{__prefix}/lib/rpm/magic
-%rpmattr	%{__prefix}/lib/rpm/magic.mgc
-%rpmattr	%{__prefix}/lib/rpm/magic.mime
-%rpmattr	%{__prefix}/lib/rpm/magic.mime.mgc
+%rpmattr	%{_usrlibrpm}/brp-*
+%rpmattr	%{_usrlibrpm}/check-files
+%rpmattr	%{_usrlibrpm}/config.site
+%rpmattr	%{_usrlibrpm}/cross-build
+%rpmattr	%{_usrlibrpm}/debugedit
+%rpmattr	%{_usrlibrpm}/find-debuginfo.sh
+%rpmattr	%{_usrlibrpm}/find-lang.sh
+%rpmattr	%{_usrlibrpm}/find-prov.pl
+%rpmattr	%{_usrlibrpm}/find-provides
+%rpmattr	%{_usrlibrpm}/find-provides.perl
+%rpmattr	%{_usrlibrpm}/find-req.pl
+%rpmattr	%{_usrlibrpm}/find-requires
+%rpmattr	%{_usrlibrpm}/find-requires.perl
+%rpmattr	%{_usrlibrpm}/getpo.sh
+%rpmattr	%{_usrlibrpm}/http.req
+%rpmattr	%{_usrlibrpm}/javadeps.sh
+%rpmattr	%{_usrlibrpm}/magic
+%rpmattr	%{_usrlibrpm}/magic.mgc
+%rpmattr	%{_usrlibrpm}/magic.mime
+%rpmattr	%{_usrlibrpm}/magic.mime.mgc
 
-%rpmattr	%{__prefix}/lib/rpm/executabledeps.sh
-%rpmattr	%{__prefix}/lib/rpm/libtooldeps.sh
-%rpmattr	%{__prefix}/lib/rpm/perldeps.pl
-%rpmattr	%{__prefix}/lib/rpm/perl.prov
-%rpmattr	%{__prefix}/lib/rpm/perl.req
-%rpmattr	%{__prefix}/lib/rpm/php.prov
-%rpmattr	%{__prefix}/lib/rpm/php.req
-%rpmattr	%{__prefix}/lib/rpm/pkgconfigdeps.sh
-%rpmattr	%{__prefix}/lib/rpm/pythondeps.sh
-%rpmattr	%{__prefix}/lib/rpm/rpmdeps
+%rpmattr	%{_usrlibrpm}/executabledeps.sh
+%rpmattr	%{_usrlibrpm}/libtooldeps.sh
+%rpmattr	%{_usrlibrpm}/perldeps.pl
+%rpmattr	%{_usrlibrpm}/perl.prov
+%rpmattr	%{_usrlibrpm}/perl.req
+%rpmattr	%{_usrlibrpm}/php.prov
+%rpmattr	%{_usrlibrpm}/php.req
+%rpmattr	%{_usrlibrpm}/pkgconfigdeps.sh
+%rpmattr	%{_usrlibrpm}/pythondeps.sh
+%rpmattr	%{_usrlibrpm}/rpmdeps
 
-%rpmattr	%{__prefix}/lib/rpm/rpm[bt]
-%rpmattr	%{__prefix}/lib/rpm/symclash.*
-%rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
-%rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
-%rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
+%rpmattr	%{_usrlibrpm}/rpm[bt]
+%rpmattr	%{_usrlibrpm}/symclash.*
+%rpmattr	%{_usrlibrpm}/u_pkg.sh
+%rpmattr	%{_usrlibrpm}/vpkg-provides.sh
+%rpmattr	%{_usrlibrpm}/vpkg-provides2.sh
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -544,6 +545,14 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Sat Feb  3 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.12
+- fix: query foo.bogusarch for #124016 needs to be done differently.
+- fix: don't unlink non-temp file in FSM_UNDO (#223931).
+- compile with -fpie instead of -fPIC -DPIC, link with -pie.
+- fix: check for failing dependency scripts (#226751).
+- lua: expand %%{_usrlibrpm} to locate lua configuration files.
+- change RPMCONFIGDIR to USRLIBRPM everywhere.
+
 * Sun Jan 21 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.11
 - build and install rpmdb_hotbackup.
 - vet db-4.5.10 symbols being re-exported through -lrpmdb.
