@@ -109,6 +109,7 @@
 	- fix: check for failing dependency scripts (#226751).
 	- lua: expand %{_usrlibrpm} to locate lua configuration files.
 	- change RPMCONFIGDIR to USRLIBRPM everywhere.
+	- fix: inherit _target_cpu macro rather than setting to "unknown".
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

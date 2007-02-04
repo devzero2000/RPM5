@@ -1774,8 +1774,6 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     addMacro(NULL, "_target", NULL, ct, RMIL_RPMRC);
     delMacro(NULL, "_target_cpu");
     addMacro(NULL, "_target_cpu", NULL, ca, RMIL_RPMRC);
-    delMacro(NULL, "_target_vendor");
-    addMacro(NULL, "_target_vendor", NULL, "unknown", RMIL_RPMRC);
     delMacro(NULL, "_target_os");
     addMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
 /*
