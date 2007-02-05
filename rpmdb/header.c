@@ -3366,6 +3366,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 	/*@modifies hsa @*/
 {
+    char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
     int i, j;
     int numElements;
@@ -3485,8 +3486,13 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
 	    if (isxml) {
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
-
-assert(tagN != NULL);	/* XXX splats pick up old or unknown tags. */
+		/* XXX display "Tag_0x01234567" for unknown tags. */
+		if (tagN == NULL) {
+		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
+				spft->u.tag.tag);
+		    numbuf[sizeof(numbuf)-1] = '\0';
+		    tagN = numbuf;
+		}
 		need = sizeof("  <rpmTag name=\"\">\n") - 1;
 		if (tagN != NULL)
 		    need += strlen(tagN);
@@ -3501,8 +3507,13 @@ assert(tagN != NULL);	/* XXX splats pick up old or unknown tags. */
 	    }
 	    if (isyaml) {
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
-
-assert(tagN != NULL);	/* XXX splats pick up old or unknown tags. */
+		/* XXX display "Tag_0x01234567" for unknown tags. */
+		if (tagN == NULL) {
+		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
+				spft->u.tag.tag);
+		    numbuf[sizeof(numbuf)-1] = '\0';
+		    tagN = numbuf;
+		}
 		need = sizeof("  : ") - 1;
 		if (tagN != NULL)
 		    need += strlen(tagN);

@@ -110,6 +110,7 @@
 	- lua: expand %{_usrlibrpm} to locate lua configuration files.
 	- change RPMCONFIGDIR to USRLIBRPM everywhere.
 	- fix: inherit _target_cpu macro rather than setting to "unknown".
+	- format unkown tag names as "Tag_0x01234567" w --xml/--yaml (#227333).
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
