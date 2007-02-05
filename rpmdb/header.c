@@ -2611,10 +2611,12 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
  * @todo bsearch on sorted value table.
  * @param tbl		tag table
  * @param val		tag value to find
+ * @retval *typep	tag type (or NULL)
  * @return		tag name, NULL on not found
  */
 /*@observer@*/ /*@null@*/
-static const char * myTagName(headerTagTableEntry tbl, int val)
+static const char * myTagName(headerTagTableEntry tbl, int val,
+		/*@null@*/ int *typep)
 	/*@*/
 {
     static char name[128];
@@ -2633,6 +2635,8 @@ static const char * myTagName(headerTagTableEntry tbl, int val)
     while (*s != '\0')
 	*t++ = xtolower(*s++);
     *t = '\0';
+    if (typep)
+	*typep = tbl->type;
     return name;
 }
 
@@ -3485,7 +3489,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		!strcmp(spft->u.tag.type, "yaml"));
 
 	    if (isxml) {
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
+		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag, NULL);
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
@@ -3493,40 +3497,38 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		}
-		need = sizeof("  <rpmTag name=\"\">\n") - 1;
-		if (tagN != NULL)
-		    need += strlen(tagN);
+		need = sizeof("  <rpmTag name=\"\">\n") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		te = stpcpy(te, "  <rpmTag name=\"");
-		if (tagN != NULL)
-		    te = stpcpy(te, tagN);
-		te = stpcpy(te, "\">\n");
+		te = stpcpy( stpcpy( stpcpy(te, "  <rpmTag name=\""), tagN), "\">\n");
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);
 	    }
 	    if (isyaml) {
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
+		int tagT = -1;
+		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag, &tagT);
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
 				spft->u.tag.tag);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
+		    tagT = numElements > 1
+			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
 		}
-		need = sizeof("  : ") - 1;
-		if (tagN != NULL)
-		    need += strlen(tagN);
-		if (numElements > 1)
-		    need += sizeof("\n") - 1;
+		need = sizeof("  :     ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		te = stpcpy(te, "  ");
-		if (tagN != NULL)
-		    te = stpcpy(te, tagN);
-		te = stpcpy(te, ": ");
-		if (numElements > 1)
-		    te = stpcpy(te, "\n");
+		*te++ = ' ';
+		*te++ = ' ';
+		te = stpcpy(te, tagN);
+		*te++ = ':';
+		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+			? '\n' : ' ');
+		/* XXX Dirnames: in srpms need "    " indent */
+		if (numElements == 1 && spft->u.tag.tag == 1118)
+		    te = stpcpy(te, "    ");
+		*te = '\0';
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);
 	    }
