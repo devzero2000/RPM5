@@ -1354,8 +1354,13 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 		continue;
 	    armortype = t;
 
-	    t = te - (sizeof("-----\n")-1);
-	    if (!TOKEQ(t, "-----\n"))
+	    t = strchr(t, '\n');
+	    if (t == NULL)
+		continue;
+	    if (t[-1] == '\r')
+		--t;
+	    t -= (sizeof("-----")-1);
+	    if (!TOKEQ(t, "-----"))
 		continue;
 	    *t = '\0';
 	    pstate++;
@@ -1365,7 +1370,7 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 	    rc = pgpValTok(pgpArmorKeyTbl, t, te);
 	    if (rc >= 0)
 		continue;
-	    if (*t != '\n') {
+	    if (!(*t == '\n' || *t == '\r')) {
 		pstate = 0;
 		continue;
 	    }
