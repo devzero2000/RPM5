@@ -28,7 +28,7 @@ noinst_HEADERS = \
 	salsa10.h salsa20.h tiger.h \
 	LzmaDecode.h rpmio_internal.h rpmlua.h rpmhook.h
 
-BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
+BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECRYPT_SUBDIR@/listobjs)
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
