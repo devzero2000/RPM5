@@ -27,7 +27,8 @@ enum FCOLOR_e {
     RPMFC_BLACK			= 0,
     RPMFC_ELF32			= (1 <<  0),
     RPMFC_ELF64			= (1 <<  1),
-#define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64)
+    RPMFC_ELFMIPSN32		= (1 <<  2),
+#define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64|RPMFC_ELFMIPSN32)
 
     RPMFC_PKGCONFIG		= (1 <<  4),
     RPMFC_LIBTOOL		= (1 <<  5),

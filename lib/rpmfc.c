@@ -441,6 +441,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { " not stripped",		RPMFC_NOTSTRIPPED },
   { " archive",			RPMFC_ARCHIVE },
 
+  { "MIPS, N32 MIPS32",		RPMFC_ELFMIPSN32|RPMFC_INCLUDE },
   { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },
   { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
 
