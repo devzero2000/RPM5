@@ -115,6 +115,7 @@
 	- handle \r\n as well as \n line termination with armored pubkeys.
 	- use _target_vendor instead of _vendor.
 	- add _build_platform and _host_platform macros.
+	- restore -fPIC -DPIC for libraries, -fpie -pie for executables only.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.
