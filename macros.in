@@ -928,7 +928,10 @@ print (t)\
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_gnu			-gnu
-%_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}%{?_gnu}
+
+%_host_platform		%{_host_cpu}-%{_host_vendor}-%{_host_os}%{?_gnu}
+%_build_platform	%{_build_cpu}-%{_build_vendor}-%{_build_os}%{?_gnu}
+%_target_platform	%{_target_cpu}-%{_target_vendor}-%{_target_os}%{?_gnu}
 
 #
 # Define a generic value for optflags. Normally overridden by per-target macros.
