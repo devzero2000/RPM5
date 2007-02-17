@@ -118,6 +118,7 @@
 	- restore -fPIC -DPIC for libraries, -fpie -pie for executables only.
 	- assign mips n32 elf32 as color 4.
 	- emit Requires: pkgconfig automagically for pkgs that contain *.pc.
+	- don't create .rpmnew for symlinks.
 
 4.4.6 -> 4.4.7:
 	- start 4.4.7 development.

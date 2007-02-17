@@ -610,9 +610,10 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     int newFlags = rpmfiFFlags(nfi);
     char buffer[1024];
     fileTypes dbWhat, newWhat, diskWhat;
+    struct stat sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
 
-    if (!(newFlags & RPMFILE_EXISTS)) {
+    if (lstat(fn, &sb)) {
 	/*
 	 * The file doesn't exist on the disk. Create it unless the new
 	 * package has marked it as missingok, or allfiles is requested.
@@ -626,7 +627,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	}
     }
 
-    diskWhat = whatis(0);	/* XXX 0 will return REG */
+    diskWhat = whatis((int_16)sb.st_mode);
     dbWhat = whatis(rpmfiFMode(ofi));
     newWhat = whatis(rpmfiFMode(nfi));
 
