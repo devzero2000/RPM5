@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.12
+Release: 1
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -545,6 +545,21 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Mon Feb 19 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-1
+- fix: inherit _target_cpu macro rather than setting to "unknown".
+- format unkown tag names as "Tag_0x01234567" w --xml/--yaml (#227333).
+- yaml: display Dirnames: in SRPM's correctly. 
+- handle \r\n as well as \n line termination with armored pubkeys.
+- use _target_vendor instead of _vendor.
+- add _build_platform and _host_platform macros.
+- restore -fPIC -DPIC for libraries, -fpie -pie for executables only.
+- assign mips n32 elf32 as color 4.
+- emit Requires: pkgconfig automagically for pkgs that contain *.pc.
+- don't create .rpmnew for symlinks.
+- check digest/readlink iff db and fs file type is same (#194246).
+- update de.po.
+- release 4.4.8.
+
 * Sat Feb  3 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.12
 - fix: query foo.bogusarch for #124016 needs to be done differently.
 - fix: don't unlink non-temp file in FSM_UNDO (#223931).
