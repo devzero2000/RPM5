@@ -608,7 +608,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 {
     const char * fn = rpmfiFN(nfi);
     int newFlags = rpmfiFFlags(nfi);
-    char buffer[1024];
+    char buffer[1024+1];
     fileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
@@ -679,6 +679,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	if (diskWhat == LINK) {
 	    if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 		return FA_CREATE;	/* assume file has been removed */
+	    buffer[sizeof(buffer)-1] = '\0';
 	    if (oFLink && !strcmp(oFLink, buffer))
 		return FA_CREATE;	/* unmodified config file, replace. */
 	}
