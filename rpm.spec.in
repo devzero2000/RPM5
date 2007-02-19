@@ -558,6 +558,7 @@ exit 0
 - don't create .rpmnew for symlinks.
 - check digest/readlink iff db and fs file type is same (#194246).
 - update de.po.
+- permit build against neon-0.24.7 API.
 - release 4.4.8.
 
 * Sat Feb  3 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.12

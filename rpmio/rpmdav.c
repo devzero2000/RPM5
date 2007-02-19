@@ -821,7 +821,7 @@ static int davHEAD(urlinfo u, struct stat *st)
 {
     ne_request *req;
     const char *htag;
-    const char *value;
+    const char *value = NULL;
     int rc;
 
     st->st_mode = S_IFREG;
@@ -855,14 +855,18 @@ static int davHEAD(urlinfo u, struct stat *st)
 #endif
 
     htag = "Content-Length";
+#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     value = ne_get_response_header(req, htag); 
+#endif
     if (value) {
 	st->st_size = strtoll(value, NULL, 10);
 	st->st_blocks = (st->st_size + 511)/512;
     }
 
     htag = "Last-Modified";
+#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     value = ne_get_response_header(req, htag); 
+#endif
     if (value) {
 	st->st_mtime = ne_httpdate_parse(value);
 	st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */

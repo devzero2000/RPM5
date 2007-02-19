@@ -120,7 +120,8 @@
 	- emit Requires: pkgconfig automagically for pkgs that contain *.pc.
 	- don't create .rpmnew for symlinks.
 	- check digest/readlink iff db and fs file type is same (#194246).
-	- update de.po.
+	- hupdate de.po.
+	- permit build against neon-0.24.7 API.
 	- release 4.4.8.
 
 4.4.6 -> 4.4.7:
