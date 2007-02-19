@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-03 14:32-0500\n"
+"POT-Creation-Date: 2007-02-19 16:45-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -407,38 +407,38 @@ msgstr "chyba pri analýze výrazu"
 msgid "unmatched (\n"
 msgstr "nepárová ("
 
-#: build/expression.c:382
+#: build/expression.c:384
 #, fuzzy
 msgid "- only on numbers\n"
 msgstr "- ibe pre èísla"
 
-#: build/expression.c:398
+#: build/expression.c:400
 #, fuzzy
 msgid "! only on numbers\n"
 msgstr "! iba pre èísla"
 
-#: build/expression.c:446 build/expression.c:501 build/expression.c:566
-#: build/expression.c:663
+#: build/expression.c:448 build/expression.c:503 build/expression.c:568
+#: build/expression.c:665
 #, fuzzy
 msgid "types must match\n"
 msgstr "typy sa musia zhodova»"
 
-#: build/expression.c:459
+#: build/expression.c:461
 #, fuzzy
 msgid "* / not suported for strings\n"
 msgstr "* / nie sú podporované pre re»azce"
 
-#: build/expression.c:517
+#: build/expression.c:519
 #, fuzzy
 msgid "- not suported for strings\n"
 msgstr "- nie je podporované pre re»azce"
 
-#: build/expression.c:676
+#: build/expression.c:678
 #, fuzzy
 msgid "&& and || not suported for strings\n"
 msgstr "&& a || nie sú podporované pre re»azce"
 
-#: build/expression.c:710 build/expression.c:759
+#: build/expression.c:712 build/expression.c:761
 #, fuzzy
 msgid "syntax error in expression\n"
 msgstr "chyba syntaxe vo výraze"
@@ -2981,61 +2981,61 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: lib/rpmfc.c:996
+#: lib/rpmfc.c:997
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
 
-#: lib/rpmfc.c:1004
+#: lib/rpmfc.c:1005
 #, fuzzy, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "odstránenie %s zlyhalo: %s"
 
-#: lib/rpmfc.c:1070
+#: lib/rpmfc.c:1071
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1288
+#: lib/rpmfc.c:1289
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: lib/rpmfc.c:1294 lib/rpmfc.c:1305
+#: lib/rpmfc.c:1295 lib/rpmfc.c:1306
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: lib/rpmfi.c:621
+#: lib/rpmfi.c:622
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
 
-#: lib/rpmfi.c:868
+#: lib/rpmfi.c:874
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:872
+#: lib/rpmfi.c:878
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je vynechaný: %s"
 
-#: lib/rpmfi.c:875
+#: lib/rpmfi.c:881
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/rpmfi.c:1009
+#: lib/rpmfi.c:1015
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "vynecháva sa %s\n"
 
-#: lib/rpmfi.c:1019
+#: lib/rpmfi.c:1025
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/rpmfi.c:1111
+#: lib/rpmfi.c:1117
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "presúva sa %s do %s\n"
@@ -3360,42 +3360,42 @@ msgstr "chýbajúca architektúra pre %s na %s:%d"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "chybná voµba '%s' na %s:%d"
 
-#: lib/rpmrc.c:1921
+#: lib/rpmrc.c:1919
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie je mo¾né expandova» %s"
 
-#: lib/rpmrc.c:1926
+#: lib/rpmrc.c:1924
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1943
+#: lib/rpmrc.c:1941
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
 
-#: lib/rpmrc.c:2088
+#: lib/rpmrc.c:2086
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2102
+#: lib/rpmrc.c:2100
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2116
+#: lib/rpmrc.c:2114
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2130
+#: lib/rpmrc.c:2128
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2144
+#: lib/rpmrc.c:2142
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3927,80 +3927,80 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2829
+#: rpmdb/header.c:2833
 msgid "missing { after %"
 msgstr "chýbajúce { po %"
 
-#: rpmdb/header.c:2859
+#: rpmdb/header.c:2863
 msgid "missing } after %{"
 msgstr "chýbajúce } po %{"
 
-#: rpmdb/header.c:2875
+#: rpmdb/header.c:2879
 msgid "empty tag format"
 msgstr "prázdny tag formát"
 
-#: rpmdb/header.c:2887
+#: rpmdb/header.c:2891
 msgid "empty tag name"
 msgstr "prázdne meno tagu"
 
-#: rpmdb/header.c:2896
+#: rpmdb/header.c:2900
 msgid "unknown tag"
 msgstr "neznámy tag"
 
-#: rpmdb/header.c:2923
+#: rpmdb/header.c:2927
 msgid "] expected at end of array"
 msgstr "] oèakávané na konci poµa"
 
-#: rpmdb/header.c:2936
+#: rpmdb/header.c:2940
 msgid "unexpected ]"
 msgstr "neoèakávané ]"
 
-#: rpmdb/header.c:2949
+#: rpmdb/header.c:2953
 msgid "unexpected }"
 msgstr "neoèakávané }"
 
-#: rpmdb/header.c:3013
+#: rpmdb/header.c:3017
 msgid "? expected in expression"
 msgstr "? oèakávané vo výraze"
 
-#: rpmdb/header.c:3020
+#: rpmdb/header.c:3024
 msgid "{ expected after ? in expression"
 msgstr "{ oèakávané po ? vo výraze"
 
-#: rpmdb/header.c:3032 rpmdb/header.c:3072
+#: rpmdb/header.c:3036 rpmdb/header.c:3076
 msgid "} expected in expression"
 msgstr "} oèakávané vo výraze"
 
-#: rpmdb/header.c:3040
+#: rpmdb/header.c:3044
 msgid ": expected following ? subexpression"
 msgstr ": oèakávané po ? podvýraze"
 
-#: rpmdb/header.c:3058
+#: rpmdb/header.c:3062
 msgid "{ expected after : in expression"
 msgstr "{ oèakávané po : vo výraze"
 
-#: rpmdb/header.c:3080
+#: rpmdb/header.c:3084
 msgid "| expected at end of expression"
 msgstr "| oèakávené na konci výrazu"
 
-#: rpmdb/header.c:3183
+#: rpmdb/header.c:3187
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3451
+#: rpmdb/header.c:3456
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3753 rpmdb/header.c:3790 rpmdb/header.c:3813
+#: rpmdb/header.c:3766 rpmdb/header.c:3803 rpmdb/header.c:3826
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
-#: rpmdb/header.c:3852
+#: rpmdb/header.c:3865
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3869
+#: rpmdb/header.c:3882
 msgid "%a %b %d %Y"
 msgstr ""
 

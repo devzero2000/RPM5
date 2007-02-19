@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-03 14:32-0500\n"
+"POT-Creation-Date: 2007-02-19 16:45-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -397,32 +397,32 @@ msgstr "표현식에서 오류가 발생했습니다\n"
 msgid "unmatched (\n"
 msgstr "'(' 가 일치하지 않습니다\n"
 
-#: build/expression.c:382
+#: build/expression.c:384
 msgid "- only on numbers\n"
 msgstr "'-' 는 숫자에만 사용합니다\n"
 
-#: build/expression.c:398
+#: build/expression.c:400
 msgid "! only on numbers\n"
 msgstr "'!' 는 숫자에만 사용합니다\n"
 
-#: build/expression.c:446 build/expression.c:501 build/expression.c:566
-#: build/expression.c:663
+#: build/expression.c:448 build/expression.c:503 build/expression.c:568
+#: build/expression.c:665
 msgid "types must match\n"
 msgstr "유형은 반드시 일치해야 합니다\n"
 
-#: build/expression.c:459
+#: build/expression.c:461
 msgid "* / not suported for strings\n"
 msgstr "'* /' 는 문자열에서 사용할 수 없습니다\n"
 
-#: build/expression.c:517
+#: build/expression.c:519
 msgid "- not suported for strings\n"
 msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
 
-#: build/expression.c:676
+#: build/expression.c:678
 msgid "&& and || not suported for strings\n"
 msgstr "'&&' 와 '||' 는 문자열에서 사용할 수 없습니다\n"
 
-#: build/expression.c:710 build/expression.c:759
+#: build/expression.c:712 build/expression.c:761
 msgid "syntax error in expression\n"
 msgstr "표현식에서 구문 오류가 발생했습니다\n"
 
@@ -2935,61 +2935,61 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr "%s에 모든 자료를 기록하는데 실패했습니다\n"
 
-#: lib/rpmfc.c:996
+#: lib/rpmfc.c:997
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
 
-#: lib/rpmfc.c:1004
+#: lib/rpmfc.c:1005
 #, fuzzy, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: lib/rpmfc.c:1070
+#: lib/rpmfc.c:1071
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1288
+#: lib/rpmfc.c:1289
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
 
-#: lib/rpmfc.c:1294 lib/rpmfc.c:1305
+#: lib/rpmfc.c:1295 lib/rpmfc.c:1306
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s(을)를 찾는데 실패함:\n"
 
-#: lib/rpmfi.c:621
+#: lib/rpmfi.c:622
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "missingok 플래그로 인해 %s(을)를 생략합니다\n"
 
-#: lib/rpmfi.c:868
+#: lib/rpmfi.c:874
 msgid "========== relocations\n"
 msgstr "========== 재배치\n"
 
-#: lib/rpmfi.c:872
+#: lib/rpmfi.c:878
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 제외  %s\n"
 
-#: lib/rpmfi.c:875
+#: lib/rpmfi.c:881
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 재배치 %s -> %s\n"
 
-#: lib/rpmfi.c:1009
+#: lib/rpmfi.c:1015
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s(을)를 제외시킵니다\n"
 
-#: lib/rpmfi.c:1019
+#: lib/rpmfi.c:1025
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s(을)를 %s(으)로 재배치 합니다\n"
 
-#: lib/rpmfi.c:1111
+#: lib/rpmfi.c:1117
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
@@ -3322,42 +3322,42 @@ msgstr "%2$s에 %1$s(을)를 위한 아키텍쳐가 없음:%3$d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "%2$s에 잘못된 '%1$s' 옵션:%3$d\n"
 
-#: lib/rpmrc.c:1921
+#: lib/rpmrc.c:1919
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s(을)를 확장(expand)할 수 없습니다\n"
 
-#: lib/rpmrc.c:1926
+#: lib/rpmrc.c:1924
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s(을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 
-#: lib/rpmrc.c:1943
+#: lib/rpmrc.c:1941
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
-#: lib/rpmrc.c:2088
+#: lib/rpmrc.c:2086
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2102
+#: lib/rpmrc.c:2100
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2116
+#: lib/rpmrc.c:2114
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2130
+#: lib/rpmrc.c:2128
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2144
+#: lib/rpmrc.c:2142
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3883,80 +3883,80 @@ msgstr "%s(은)는 너무 크거나 너무 적은 정수(long) 값입니다, 생략합니다\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
 
-#: rpmdb/header.c:2829
+#: rpmdb/header.c:2833
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 가 없습니다"
 
-#: rpmdb/header.c:2859
+#: rpmdb/header.c:2863
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 가 없습니다"
 
-#: rpmdb/header.c:2875
+#: rpmdb/header.c:2879
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
-#: rpmdb/header.c:2887
+#: rpmdb/header.c:2891
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
-#: rpmdb/header.c:2896
+#: rpmdb/header.c:2900
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
-#: rpmdb/header.c:2923
+#: rpmdb/header.c:2927
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 와야합니다"
 
-#: rpmdb/header.c:2936
+#: rpmdb/header.c:2940
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 있습니다"
 
-#: rpmdb/header.c:2949
+#: rpmdb/header.c:2953
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 있습니다"
 
-#: rpmdb/header.c:3013
+#: rpmdb/header.c:3017
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 와야합니다"
 
-#: rpmdb/header.c:3020
+#: rpmdb/header.c:3024
 msgid "{ expected after ? in expression"
 msgstr "표현식의 '?' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/header.c:3032 rpmdb/header.c:3072
+#: rpmdb/header.c:3036 rpmdb/header.c:3076
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 와야합니다"
 
-#: rpmdb/header.c:3040
+#: rpmdb/header.c:3044
 msgid ": expected following ? subexpression"
 msgstr "'?' 하부표현식(subexpression) 뒤에 ':' 이 와야합니다"
 
-#: rpmdb/header.c:3058
+#: rpmdb/header.c:3062
 msgid "{ expected after : in expression"
 msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/header.c:3080
+#: rpmdb/header.c:3084
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 
-#: rpmdb/header.c:3183
+#: rpmdb/header.c:3187
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3451
+#: rpmdb/header.c:3456
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3753 rpmdb/header.c:3790 rpmdb/header.c:3813
+#: rpmdb/header.c:3766 rpmdb/header.c:3803 rpmdb/header.c:3826
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
-#: rpmdb/header.c:3852
+#: rpmdb/header.c:3865
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3869
+#: rpmdb/header.c:3882
 msgid "%a %b %d %Y"
 msgstr ""
 
