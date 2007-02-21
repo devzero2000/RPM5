@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -59,21 +59,6 @@ msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr "인수 값으로 RPM 패키지가 지정되어야 합니다\n"
-
-#: rpm2cpio.c:59
-#, c-format
-msgid "error reading header from package\n"
-msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
-
-#: rpm2cpio.c:83
-#, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "payload를 다시 열 수 없음: %s\n"
 
 #: rpmqv.c:77
 msgid "Query options (with -q or --query):"
@@ -4535,6 +4520,15 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "argument is not an RPM package\n"
+#~ msgstr "인수 값으로 RPM 패키지가 지정되어야 합니다\n"
+
+#~ msgid "error reading header from package\n"
+#~ msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
+
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "payload를 다시 열 수 없음: %s\n"
 
 #~ msgid "%s failed\n"
 #~ msgstr "%s(이)가 실패했습니다\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -59,21 +59,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "    -b<vaihe> <määrittely> "
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr ""
-
-#: rpm2cpio.c:59
-#, fuzzy, c-format
-msgid "error reading header from package\n"
-msgstr "virhe etsittäessä pakettia %s\n"
-
-#: rpm2cpio.c:83
-#, fuzzy, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "en voinut avata tiedostoa %s: "
 
 #: rpmqv.c:77
 msgid "Query options (with -q or --query):"
@@ -4577,6 +4562,14 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#, fuzzy
+#~ msgid "error reading header from package\n"
+#~ msgstr "virhe etsittäessä pakettia %s\n"
+
+#, fuzzy
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "en voinut avata tiedostoa %s: "
 
 #, fuzzy
 #~ msgid "%s failed\n"

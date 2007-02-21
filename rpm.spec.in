@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 1
+Release: 0.1
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -143,7 +143,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.10.8
+Version: 1.10.9
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -325,7 +325,6 @@ exit 0
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/macros
 %rpmattr	%{_usrlibrpm}/mkinstalldirs
 %rpmattr	%{_usrlibrpm}/rpm.*
-%rpmattr	%{_usrlibrpm}/rpm2cpio.sh
 %rpmattr	%{_usrlibrpm}/rpm[deiukqv]
 %rpmattr	%{_usrlibrpm}/tgpg
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmpopt*
@@ -545,152 +544,6 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
-* Mon Feb 19 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-1
-- fix: inherit _target_cpu macro rather than setting to "unknown".
-- format unkown tag names as "Tag_0x01234567" w --xml/--yaml (#227333).
-- yaml: display Dirnames: in SRPM's correctly. 
-- handle \r\n as well as \n line termination with armored pubkeys.
-- use _target_vendor instead of _vendor.
-- add _build_platform and _host_platform macros.
-- restore -fPIC -DPIC for libraries, -fpie -pie for executables only.
-- assign mips n32 elf32 as color 4.
-- emit Requires: pkgconfig automagically for pkgs that contain *.pc.
-- don't create .rpmnew for symlinks.
-- check digest/readlink iff db and fs file type is same (#194246).
-- update de.po.
-- permit build against neon-0.24.7 API.
-- release 4.4.8.
-
-* Sat Feb  3 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.12
-- fix: query foo.bogusarch for #124016 needs to be done differently.
-- fix: don't unlink non-temp file in FSM_UNDO (#223931).
-- compile with -fpie instead of -fPIC -DPIC, link with -pie.
-- fix: check for failing dependency scripts (#226751).
-- lua: expand %%{_usrlibrpm} to locate lua configuration files.
-- change RPMCONFIGDIR to USRLIBRPM everywhere.
-
-* Sun Jan 21 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.11
-- build and install rpmdb_hotbackup.
-- vet db-4.5.10 symbols being re-exported through -lrpmdb.
-- add rpmPlatform to rescusitate platform scoring.
-- popt: free option defaults with --help (#119782).
-- refactor miRE pattern matching into librpmio.
-- fix: don't set MARK64 if libdir already ends in 64 (#205939).
-- convert '-' to '_' within --define macro names (#124995).
-- fix: fts_close double free traversing an active tree (#222089).
-- use ".ufdio" as rpmio default, remove ".ufdio" markers.
-- add rpmPlatformScore to check for upgrade pkg platform affinity.
-- refactor the W_OK check out of rpmMkdirPath.
-- push/pop expanded %buildroot before/after per-subpkg macro define(s).
-
-* Sun Jan 14 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.10
-- move rmphash.[ch] into librpmio.
-- fix: add error message on non-existent sources/patches.
-- resuscitate build against external -lmagic.
-- add lookup3.c hash (http://www.burtleburtle.net/bob/c/lookup3.c).
-- popt: mark POPT_AUTO{HELP,ALIAS} strings for translation (#102254).
-- treat duplicate *.rpm added consistently as warning (#180996).
-- permit relative paths for --dbpath (#21703).
-- strip trailing '/' to permit --root -D'_rpmdb_dbpath /path' (#90033).
-- add SHA-224, RIPEMD-{256,320} digests.
-- change hashFunctionType to accommodate crc-32, adler-32, and jlu-32.
-- add SALSA-{10,20} with CBC chaining to create 512 bit digest.
-
-* Sun Jan  7 2007 Jeff Johnson <jbj@jbj.org> 4.4.8-0.9
-- skip EACCESS returns from stat(2) on mount points (#220991).
-- permit files with glob characters in *.rpm packages (#142771,#147383).
-- gendiff: permit $DIFF override, add -p to default diff. (#146981).
-- rpmio: use HEAD for servers that don't support PROPFIND (#206066).
-- rpmio: add RPMURL_SERVER_* server capability flags.
-- fix: report "not installed" for pkg.bogusarch (#124016).
-- don't treat '?' as a glob character in http URI's (#143885).
-- rewrite macroized interpreter test to avoid %verifyscript segfault.
-- display the verifyscript interpreter with --scripts.
-- load/unload NEVRAO macros while creating binary sub-packages.
-
-* Fri Dec 29 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.8
-- rpmgi: add (*stash) for rpmcache use.
-- move more memory cleanup to rpmcliFini().
-- automagic unpacking of *.lzo sources/patches using lzop.
-- include the PLD .lzdio patch to support lzma payload compression.
-- automagic unpacking of *.lzma sources/patches using lzma.
-
-* Thu Dec 28 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.7
-- permit macros for scriptlet interpreters and dependencies.
-- rpmgi: add (*walkPathFilter) for rpmcache use.
-- permit "/X\ Y" in %_topdir use in scripts (#220449).
-- fix: rpmInstallSourcePackage() still needs scareMem=1.
-
-* Wed Dec 27 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.6
-- use rpmPRCO container transaction element dependency sets.
-- multiple fixes from <pixel@mandriva.com>.
-- fix: http error path was missing a reference on a url (#220392).
-- solaris: permit using native libelf.
-- solaris: first stab at probe dependencies through /usr/bin/crle.
-- generalize sysinfo to read multiple tag files from directory.
-- create (and check) per-transaction Requires:/Conflicts: dependencies.
-
-* Sat Dec  9 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.5
-- make peace with gettext-0.16.
-- make peace with python-2.5.
-- python: toy methods for rpmsqCaught and rpmdbCheckSignals.
-
-* Sun Dec  3 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.4
-- display arch in file conflicts.
-- make peace with autoconf-2.60 and automake-1.10.
-- handle spaces in file path arguments correctly (#217258);
-- permit variable length file digests in rpmdb.
-- check all header strings to resize buffer CVE-2006-5466 (#212833).
-- plug some minor memory leaks.
-- add php(...) extractors from PLD.
-- add robustness to posix shared mutexes.
-- discard stale read locks when opening an rpmdb environment.
-- popt: add POP_ARGFLAG_RANDOM using random(3) for a random value.
-- add --{r,w}segfault options to randomly interrupt rpm execution.
-- add rpmdbVerifyAllDBI() to separate open from verification.
-- do db->verify detect and dbenv->remove repair w stale write locks.
-- add multiversion and other config arcana from db-4.5.20.
-- display errors as "db4" not "db3", only the cognoscenti need dbi_api.
-
-* Sat Nov 25 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.3
-- permit multiple identically named packages with --install (#171970).
-- query: don't attempt manifest open on non-existent files (#215712).
-- ignore Fopen and fopen(3) extensions if not glibc-2.3.3 or later.
-- attempt mmap'd Fopen's for hdlist queries.
-- add %_query_hdlist_path for rpm -qH.
-- fix: refactor depflags options, re-add to query/verify modes.
-- fix: illegal accesses seen when expanding into a 1 byte buffer.
-- re-add symbols removed in rpm-4.4.7 for now. 
-- add symclash.sh/symclash.py.
-- fix: classification by suffix broken by cut-n-paste.
-- fix: assume "." if getcwd returns NULL when building.
-- don't fail if/when unsetting non-existent envvars in scriptlets.
-- add ~/etc/.rpmmacros to rpmrc macrofiles: configgery.
-- add /usr/src/examples and %{_examplesdir} to docdirs.
-- add php classification (phpdeps.sh is still missing).
-- FreeBSD portability fiddles. 
-- don't read .rpmnew/.rpmorig/.rpmsave or *~ macro files.
-- change "python(abi)"  criteria to be more precise/robust.
-- rollback: force rollback and transaction id's to be identical.
-- rollback: change exclude scoping to accomodate multi-pkg transactions.
-- rollback: check NEVRA before hdrid/pkgid links, simpler debug.
-- rollback: no rollbacks attempted unless repackaging.
-- rollback: add ia->no_rollback_links to handle check/order failures.
-- rollback: simplify rpmtsDoARBGoal for check/order failures only.
-
-* Mon Nov 13 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.2
-- solaris: various non-gcc fixes.
-- fix: detecting repackaged assumed sizeof(void *) == sizeof(int_32).
-- run old->triggerpostun case when erasing (#210626).
-- fix: invert platform initialize order.
-- fix: flush query format buffer before listing files (#212833).
-- don't add rpmlib(FileDigestParameterized) dependency if MD5.
-- resize rpmExpand() buffer instead of using BUFSIZ.
-- remove extraneous :depflags white space in non-versioned dependencies.
-- add parameters from db-4.5.20.
-
-* Sun Oct 15 2006 Jeff Johnson <jbj@jbj.org> 4.4.8-0.1
-- start rpm-4.4.8 development.
-- remove files that are ancient and historical.
-- start simplifying rpm.spec.in.
-- move rpmfc.[ch] from -lrpmbuild to -lrpmlib.
+* Tue Feb 20 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.1
+- start rpm-4.4.9 devel.
+- replace rpm2cpio with a shell script (#229422).

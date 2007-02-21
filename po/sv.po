@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 2006-10-01 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -58,21 +58,6 @@ msgstr "Bygger målplattformar: %s\n"
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    målplattform: %s\n"
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr "argumentet är inte ett RPM-paket\n"
-
-#: rpm2cpio.c:59
-#, c-format
-msgid "error reading header from package\n"
-msgstr "fel vid läsning av pakethuvud\n"
-
-#: rpm2cpio.c:83
-#, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "kan inte återöppna lasten: %s\n"
 
 #: rpmqv.c:77
 msgid "Query options (with -q or --query):"
@@ -4449,6 +4434,15 @@ msgstr "skriv Requires:-beroendemängd"
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "kontrollera Requires: mot Provides: för beroendehölje"
+
+#~ msgid "argument is not an RPM package\n"
+#~ msgstr "argumentet är inte ett RPM-paket\n"
+
+#~ msgid "error reading header from package\n"
+#~ msgstr "fel vid läsning av pakethuvud\n"
+
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "kan inte återöppna lasten: %s\n"
 
 #, fuzzy
 #~ msgid "%s failed\n"

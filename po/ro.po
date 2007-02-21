@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -57,21 +57,6 @@ msgstr ""
 #: build.c:334 build/spec.c:785
 #, c-format
 msgid "    target platform: %s\n"
-msgstr ""
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr ""
-
-#: rpm2cpio.c:59
-#, c-format
-msgid "error reading header from package\n"
-msgstr ""
-
-#: rpm2cpio.c:83
-#, c-format
-msgid "cannot re-open payload: %s\n"
 msgstr ""
 
 #: rpmqv.c:77

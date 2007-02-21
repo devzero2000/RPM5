@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 2007-02-17 21:00+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -63,21 +63,6 @@ msgstr "Baue für die Zielplattform(en): %s\n"
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    Zielplattform(en): %s\n"
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr "Argument ist kein RPM-Paket\n"
-
-#: rpm2cpio.c:59
-#, c-format
-msgid "error reading header from package\n"
-msgstr "Fehler beim Lesen des Paket-Headers\n"
-
-#: rpm2cpio.c:83
-#, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "Kann Nutzdaten nicht erneut öffnen: %s\n"
 
 #: rpmqv.c:77
 msgid "Query options (with -q or --query):"
@@ -4480,3 +4465,12 @@ msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
 "Überprüfe der Abhängigkeiten von \"Requires:\" und \"Provides:\" "
 "gegeneinander"
+
+#~ msgid "argument is not an RPM package\n"
+#~ msgstr "Argument ist kein RPM-Paket\n"
+
+#~ msgid "error reading header from package\n"
+#~ msgstr "Fehler beim Lesen des Paket-Headers\n"
+
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "Kann Nutzdaten nicht erneut öffnen: %s\n"

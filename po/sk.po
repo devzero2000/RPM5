@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -59,21 +59,6 @@ msgstr "predefinova» cieµovú platformu"
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "predefinova» cieµovú platformu"
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr "argument nie je RPM balík\n"
-
-#: rpm2cpio.c:59
-#, c-format
-msgid "error reading header from package\n"
-msgstr "chyba pri èítaní hlavièky balíka\n"
-
-#: rpm2cpio.c:83
-#, fuzzy, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "nie je mo¾né otvori» súbor %s\n"
 
 #: rpmqv.c:77
 msgid "Query options (with -q or --query):"
@@ -4576,6 +4561,16 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "argument is not an RPM package\n"
+#~ msgstr "argument nie je RPM balík\n"
+
+#~ msgid "error reading header from package\n"
+#~ msgstr "chyba pri èítaní hlavièky balíka\n"
+
+#, fuzzy
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "nie je mo¾né otvori» súbor %s\n"
 
 #, fuzzy
 #~ msgid "%s failed\n"

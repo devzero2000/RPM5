@@ -13,9 +13,9 @@ EXTRA_DIST = \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
-	php.prov php.req \
+	php.prov php.req rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
-	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
+	rpm.daily rpm.log rpm.xinetd \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl* macros.python* \
@@ -24,6 +24,8 @@ EXTRA_DIST = \
 installprefix = $(DESTDIR)
 
 all:
+
+bin_SCRIPTS = rpm2cpio
 
 configdir = ${prefix}/lib/rpm
 config_SCRIPTS = \
@@ -38,6 +40,6 @@ config_SCRIPTS = \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req \
 	rpmdb_loadcvt \
-	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
+	rpm.daily rpm.log rpm.xinetd \
 	symclash.py symclash.sh tgpg u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh

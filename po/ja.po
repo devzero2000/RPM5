@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -70,21 +70,6 @@ msgstr "ビルド対象プラットフォーム: %s\n"
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr "引数は RPM パッケージではありません。\n"
-
-#: rpm2cpio.c:59
-#, c-format
-msgid "error reading header from package\n"
-msgstr "パッケージのヘッダ読み込み中にエラー\n"
-
-#: rpm2cpio.c:83
-#, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "ペイロードを再オープンできません: %s\n"
 
 #: rpmqv.c:77
 msgid "Query options (with -q or --query):"
@@ -4491,6 +4476,15 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "argument is not an RPM package\n"
+#~ msgstr "引数は RPM パッケージではありません。\n"
+
+#~ msgid "error reading header from package\n"
+#~ msgstr "パッケージのヘッダ読み込み中にエラー\n"
+
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "ペイロードを再オープンできません: %s\n"
 
 #, fuzzy
 #~ msgid "%s failed\n"

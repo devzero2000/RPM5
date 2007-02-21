@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -59,21 +59,6 @@ msgstr "A construir plataformas alvo: %s\n"
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "A construir plataformas alvo: %s\n"
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr "o argumento não é um pacote RPM\n"
-
-#: rpm2cpio.c:59
-#, c-format
-msgid "error reading header from package\n"
-msgstr "erro ao ler o cabeçalho do pacote\n"
-
-#: rpm2cpio.c:83
-#, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "não consigo aceder de novo ao conteúdo: %s\n"
 
 #: rpmqv.c:77
 msgid "Query options (with -q or --query):"
@@ -4538,6 +4523,15 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "argument is not an RPM package\n"
+#~ msgstr "o argumento não é um pacote RPM\n"
+
+#~ msgid "error reading header from package\n"
+#~ msgstr "erro ao ler o cabeçalho do pacote\n"
+
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "não consigo aceder de novo ao conteúdo: %s\n"
 
 #~ msgid "%s failed\n"
 #~ msgstr "O %s falhou\n"

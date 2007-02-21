@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.4.8, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.4.9, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])

@@ -43,7 +43,6 @@ myLDADD = \
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
-bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
 
 pkglibdir =		@USRLIBRPM@
@@ -96,10 +95,6 @@ rpmq_LDFLAGS =		$(myLDFLAGS) # $(staticLDFLAGS)
 rpmq_LDADD =		rpmq.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmq.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -fpie -DIAM_RPMQV -o $@ -c $<
-
-rpm2cpio_SOURCES =	$(top_srcdir)/rpm2cpio.c
-rpm2cpio_LDFLAGS =	$(myLDFLAGS) $(staticLDFLAGS)
-rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
 $(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 

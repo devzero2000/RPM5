@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-19 16:45-0500\n"
+"POT-Creation-Date: 2007-02-20 22:21-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -67,21 +67,6 @@ msgstr "Construction pour plate-formes cibles: %s\n"
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "Construction pour plate-formes cibles: %s\n"
-
-#: rpm2cpio.c:54
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr "l'argument n'est pas un paquetage RPM\n"
-
-#: rpm2cpio.c:59
-#, c-format
-msgid "error reading header from package\n"
-msgstr "erreur dans la lecteur de l'entête du paquetage\n"
-
-#: rpm2cpio.c:83
-#, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "Impossible de ré-ouvrir la charge utile: %s\n"
 
 #: rpmqv.c:77
 msgid "Query options (with -q or --query):"
@@ -4577,6 +4562,15 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "argument is not an RPM package\n"
+#~ msgstr "l'argument n'est pas un paquetage RPM\n"
+
+#~ msgid "error reading header from package\n"
+#~ msgstr "erreur dans la lecteur de l'entête du paquetage\n"
+
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "Impossible de ré-ouvrir la charge utile: %s\n"
 
 #, fuzzy
 #~ msgid "%s failed\n"
