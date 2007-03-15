@@ -483,7 +483,9 @@ rpmcliFini(poptContext optCon)
     rpmFreeMacros(NULL);
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
+#ifdef	WITH_LUA
     (void) rpmluaFree(NULL);
+#endif
     rpmFreeFilesystems();
 /*@i@*/	urlFreeCache();
     rpmlogClose();
