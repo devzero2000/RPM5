@@ -28,6 +28,7 @@
 # define _(Text) Text
 #endif /* gettext _() fixup */
 #endif
+#endif /* HAVE_GELF_H */
 
 #if !defined(DT_GNU_HASH)
 #define	DT_GNU_HASH	0x6ffffef5
@@ -3169,7 +3170,6 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #endif
 
 #endif /* HAVE_LIBELF && !HAVE_GELF_GETVERNAUX */
-#endif /* HAVE_GELF_H */
 
 
 #define	_RLD_SEARCH_PATH	"/lib:/usr/lib"
