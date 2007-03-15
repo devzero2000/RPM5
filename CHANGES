@@ -1,6 +1,7 @@
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
 	- replace rpm2cpio with a shell script (#229422).
+	- debugedit: canonicalize_path was broken (#232222).
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
