@@ -43,6 +43,7 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     /* Make sure the buildroot is removed where needed. */
     if (parsePart == PART_INSTALL) {
 	const char * s = rpmExpand("%{?buildroot:rm -rf '%{buildroot}'\n}", NULL);
+	const char * s = rpmExpand("%{?__spec_clean_body}%{!?__spec_clean_body:%{?buildroot:rm -rf '%{buildroot}'\n}}\n", NULL);
 	if (s && *s)
 	    appendStringBuf(*sbp, s);
 	s = _free(s);

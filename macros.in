@@ -1024,7 +1024,8 @@ print (t)\
 %__spec_install_shell	%{___build_shell}
 %__spec_install_args	%{___build_args}
 %__spec_install_cmd	%{___build_cmd}
-%__spec_install_pre	%{___build_pre}
+%__spec_install_pre	%{___build_pre}\
+%{?buildroot:%{__rm} -rf '%{buildroot}'}
 %__spec_install_body	%{___build_body}
 %__spec_install_post\
 %{?__debug_package:%{__debug_install_post}}\
@@ -1071,9 +1072,10 @@ print (t)\
 %__spec_clean_args	%{___build_args}
 %__spec_clean_cmd	%{___build_cmd}
 %__spec_clean_pre	%{___build_pre}
-%__spec_clean_body	%{___build_body}
-%__spec_clean_post	%{___build_post}
-%__spec_clean_template	#!%{__spec_clean_shell}\
+%__spec_clean_body	%{__rm} -rf '%{buildroot}'\
+%{nil}
+%__spec_clean_post	%{nil}
+%__spec_clean_template	#!%{__spec_clean_cmd}\
 %{__spec_clean_pre}\
 %{nil}
 
