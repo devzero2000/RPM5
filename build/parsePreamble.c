@@ -35,6 +35,7 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_VARIANTS,
     RPMTAG_XMAJOR,
     RPMTAG_XMINOR,
+    RPMTAG_REPOTAG,
     0
 };
 
@@ -513,6 +514,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_URL:
     case RPMTAG_RHNPLATFORM:
     case RPMTAG_DISTTAG:
+    case RPMTAG_REPOTAG:
     case RPMTAG_CVSID:
 	SINGLE_TOKEN_ONLY;
 	/* These macros are for backward compatibility */
@@ -786,6 +788,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_VARIANTS,		0, 0, 0, "variant"},
     {RPMTAG_XMAJOR,		0, 0, 0, "xmajor"},
     {RPMTAG_XMINOR,		0, 0, 0, "xminor"},
+    {RPMTAG_REPOTAG,		0, 0, 0, "repotag"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0, 0}
     /*@=nullassign@*/

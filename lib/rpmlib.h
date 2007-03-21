@@ -478,6 +478,7 @@ typedef enum rpmTag_e {
     RPMTAG_VARIANTS		= 1178, /*!< s[] */
     RPMTAG_XMAJOR		= 1179, /*!< i */
     RPMTAG_XMINOR		= 1180, /*!< i */
+    RPMTAG_REPOTAG		= 1181,	/* s */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
