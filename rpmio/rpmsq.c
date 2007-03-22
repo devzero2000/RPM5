@@ -211,13 +211,15 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 	    sq->child = 0;
 	    sq->reaped = 0;
 	    sq->status = 0;
+	   /* ==> Set to 1 to catch SIGCHLD, set to 0 to use waitpid(2).  */
 	    sq->reaper = 1;
 /*@-bounds@*/
 	    sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/
 
 	    sq->id = ME();
-	    ret = pthread_mutex_init(&sq->mutex, NULL);
+	    if (sq->reaper)
+		ret = pthread_mutex_init(&sq->mutex, NULL);
 	    insque(elem, (prev != NULL ? prev : rpmsqQueue));
 	    ret = sigrelse(SIGCHLD);
 	}
@@ -239,10 +241,10 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 	ret = sighold (SIGCHLD);
 	if (ret == 0) {
 	    remque(elem);
-	   
-	    /* Unlock the mutex and then destroy it */ 
-	    if((ret = pthread_mutex_unlock(&sq->mutex)) == 0)
-		ret = pthread_mutex_destroy(&sq->mutex);
+	    if (sq->reaper) {
+		if((ret = pthread_mutex_unlock(&sq->mutex)) == 0)
+		    ret = pthread_mutex_destroy(&sq->mutex);
+	    }
 
 	    sq->id = NULL;
 /*@-bounds@*/
@@ -251,7 +253,6 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 	    sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/
 #ifdef	NOTYET	/* rpmpsmWait debugging message needs */
-	    sq->reaper = 1;
 	    sq->status = 0;
 	    sq->reaped = 0;
 	    sq->child = 0;
@@ -324,11 +325,6 @@ void rpmsqAction(int signum,
 		    sq->reaped = reaped;
 		    sq->status = status;
 
-		    /* Unlock the mutex.  The waiter will then be able to 
-		     * aquire the lock.  
-		     *
-		     * XXX: jbj, wtd, if this fails? 
-		     */
 		    ret = pthread_mutex_unlock(&sq->mutex); 
 
 		    /*@innerbreak@*/ break;
@@ -402,7 +398,6 @@ pid_t rpmsqFork(rpmsq sq)
 {
     pid_t pid;
     int xx;
-    int nothreads = 0;   /* XXX: Shouldn't this be a global? */
 
     if (sq->reaper) {
 	xx = rpmsqInsert(sq, NULL);
@@ -417,13 +412,7 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
 
     xx = sighold(SIGCHLD);
 
-    /* 
-     * Initialize the cond var mutex.   We have to aquire the lock we 
-     * use for the condition before we fork.  Otherwise it is possible for
-     * the child to exit, we get sigchild and the sig handler to send 
-     * the condition signal before we are waiting on the condition.
-     */
-    if (!nothreads) {
+    if (sq->reaper) {
 	if(pthread_mutex_lock(&sq->mutex)) {
 	    /* Yack we did not get the lock, lets just give up */
 /*@-bounds@*/
@@ -490,6 +479,7 @@ static int rpmsqWaitUnregister(rpmsq sq)
     int ret = 0;
     int xx;
 
+assert(sq->reaper);
     /* Protect sq->reaped from handler changes. */
     ret = sighold(SIGCHLD);
 
