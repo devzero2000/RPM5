@@ -676,11 +676,11 @@ WITH_SQLITE3_INCLUDE=
 WITH_SQLITE3_LIB=
 
 AC_CHECK_HEADER([sqlite3.h], [
-  AC_CHECK_LIB(sqlite3, sqlite3_open, [
+  AC_CHECK_LIB(sqlite, sqlite3_open, [
     AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
     WITH_SQLITE3_SUBDIR=
     WITH_SQLITE3_INCLUDE=
-    WITH_SQLITE3_LIB="-lsqlite3"
+    WITH_SQLITE3_LIB="-lsqlite"
     DBLIBSRCS="$DBLIBSRCS sqlite.c"
   ])
 ],[
