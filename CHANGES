@@ -5,6 +5,7 @@
 	- permit clean scriptlet element overrides.
 	- add RPMTAG_REPOTAG.
 	- non-linux: avoid all mutexes if waitpid is used for reaping.
+	- use pipe(2) for SIGCHLD receipt signalling.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

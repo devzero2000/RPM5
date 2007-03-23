@@ -218,8 +218,6 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 /*@=bounds@*/
 
 	    sq->id = ME();
-	    if (sq->reaper)
-		ret = pthread_mutex_init(&sq->mutex, NULL);
 	    insque(elem, (prev != NULL ? prev : rpmsqQueue));
 	    ret = sigrelse(SIGCHLD);
 	}
@@ -241,11 +239,6 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 	ret = sighold (SIGCHLD);
 	if (ret == 0) {
 	    remque(elem);
-	    if (sq->reaper) {
-		if((ret = pthread_mutex_unlock(&sq->mutex)) == 0)
-		    ret = pthread_mutex_destroy(&sq->mutex);
-	    }
-
 	    sq->id = NULL;
 /*@-bounds@*/
 	    if (sq->pipes[1] > 0)	ret = close(sq->pipes[1]);
@@ -325,7 +318,7 @@ void rpmsqAction(int signum,
 		    sq->reaped = reaped;
 		    sq->status = status;
 
-		    ret = pthread_mutex_unlock(&sq->mutex); 
+		    ret = close(sq->pipes[1]);	sq->pipes[1] = -1;
 
 		    /*@innerbreak@*/ break;
 		}
@@ -412,18 +405,6 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
 
     xx = sighold(SIGCHLD);
 
-    if (sq->reaper) {
-	if(pthread_mutex_lock(&sq->mutex)) {
-	    /* Yack we did not get the lock, lets just give up */
-/*@-bounds@*/
-	    xx = close(sq->pipes[0]);
-	    xx = close(sq->pipes[1]);
-	    sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
-	    goto out;
-	}
-    }
-
     pid = fork();
     if (pid < (pid_t) 0) {		/* fork failed.  */
 /*@-bounds@*/
@@ -489,8 +470,10 @@ assert(sq->reaper);
 	xx = close(sq->pipes[0]);
     if (sq->pipes[1] >= 0)
 	xx = close(sq->pipes[1]);
-    sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/
+
+    /* Re-initialize the pipe to receive SIGCHLD receipt confirmation. */
+    xx = pipe(sq->pipes);
 
     /* Put a stopwatch on the time spent waiting to measure performance gain. */
     (void) rpmswEnter(&sq->op, -1);
@@ -504,12 +487,12 @@ assert(sq->reaper);
 	else {
 	    xx = sigrelse(SIGCHLD);
 	    
-	    /* 
-	     * We start of before the fork with this mutex locked;
-	     * The only one that unlocks this the signal handler.
-	     * So if we get the lock the child has been reaped.
-	     */
-	    ret = pthread_mutex_lock(&sq->mutex);
+	    /* Signal handler does close(sq->pipes[1]) triggering 0b EOF read */
+	    if (read(sq->pipes[0], &xx, sizeof(xx)) == 0) {
+		xx = close(sq->pipes[0]);	sq->pipes[0] = -1;
+		ret = 1;
+	    }
+
 	    xx = sighold(SIGCHLD);
 	}
     }
