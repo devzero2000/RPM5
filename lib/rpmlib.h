@@ -545,7 +545,7 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_ICON	= (1 <<  2),	/*!< from %%donotuse. */
     RPMFILE_MISSINGOK	= (1 <<  3),	/*!< from %%config(missingok) */
     RPMFILE_NOREPLACE	= (1 <<  4),	/*!< from %%config(noreplace) */
-    RPMFILE_SPECFILE	= (1 <<  5),	/*!< @todo (unnecessary) marks 1st file in srpm. */
+    RPMFILE_SPECFILE	= (1 <<  5),	/*!< the specfile (srpm only). */
     RPMFILE_GHOST	= (1 <<  6),	/*!< from %%ghost */
     RPMFILE_LICENSE	= (1 <<  7),	/*!< from %%license */
     RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
@@ -555,7 +555,9 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_POLICY	= (1 << 12),	/*!< from %%policy */
     RPMFILE_EXISTS	= (1 << 13),	/*!< did lstat(fn, st) succeed? */
     RPMFILE_SPARSE	= (1 << 14),	/*!< was ((512*st->st_blocks) < st->st_size) ? */
-    RPMFILE_TYPED	= (1 << 15)	/*!< (unimplemented) from %%spook */
+    RPMFILE_TYPED	= (1 << 15),	/*!< (unimplemented) from %%spook */
+    RPMFILE_SOURCE	= (1 << 16),	/*!< from SourceN: (srpm only). */
+    RPMFILE_PATCH	= (1 << 17)	/*!< from PatchN: (srpm only). */
 } rpmfileAttrs;
 
 #define	RPMFILE_SPOOK	(RPMFILE_GHOST|RPMFILE_TYPED)

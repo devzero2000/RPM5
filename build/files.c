@@ -2458,25 +2458,25 @@ int processSourceFiles(Spec spec)
     appendLineStringBuf(sourceFiles, spec->specFile);
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
-	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
+	if (srcPtr->flags & RPMFILE_SOURCE) {
 	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
 				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
-	    if (srcPtr->flags & RPMBUILD_ISNO) {
+	    if (srcPtr->flags & RPMFILE_GHOST) {
 		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOSOURCE,
 				       RPM_INT32_TYPE, &srcPtr->num, 1);
 	    }
 	}
-	if (srcPtr->flags & RPMBUILD_ISPATCH) {
+	if (srcPtr->flags & RPMFILE_PATCH) {
 	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_PATCH,
 				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
-	    if (srcPtr->flags & RPMBUILD_ISNO) {
+	    if (srcPtr->flags & RPMFILE_GHOST) {
 		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOPATCH,
 				       RPM_INT32_TYPE, &srcPtr->num, 1);
 	    }
 	}
 
       {	const char * sfn;
-	sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
+	sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	appendLineStringBuf(sourceFiles, sfn);
 	sfn = _free(sfn);
@@ -2486,7 +2486,7 @@ int processSourceFiles(Spec spec)
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
 	    const char * sfn;
-	    sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
+	    sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	    appendLineStringBuf(sourceFiles, sfn);
 	    sfn = _free(sfn);

@@ -215,10 +215,10 @@ int parseNoSource(Spec spec, const char * field, int tag)
     int num, flag;
 
     if (tag == RPMTAG_NOSOURCE) {
-	flag = RPMBUILD_ISSOURCE;
+	flag = RPMFILE_SOURCE;
 	name = "source";
     } else {
-	flag = RPMBUILD_ISPATCH;
+	flag = RPMFILE_PATCH;
 	name = "patch";
     }
     
@@ -245,7 +245,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
 	    return RPMERR_BADSPEC;
 	}
 
-	p->flags |= RPMBUILD_ISNO;
+	p->flags |= RPMFILE_GHOST;
 
     }
 
@@ -268,17 +268,18 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     /*@-branchstate@*/
     switch (tag) {
       case RPMTAG_SOURCE:
-	flag = RPMBUILD_ISSOURCE;
+	flag = RPMFILE_SOURCE;
 	name = "source";
-	fieldp = spec->line + 6;
+	fieldp = spec->line + (sizeof("Source")-1);
 	break;
       case RPMTAG_PATCH:
-	flag = RPMBUILD_ISPATCH;
+	flag = RPMFILE_PATCH;
 	name = "patch";
-	fieldp = spec->line + 5;
+	fieldp = spec->line + (sizeof("Patch")-1);
 	break;
       case RPMTAG_ICON:
-	flag = RPMBUILD_ISICON;
+	flag = RPMFILE_ICON;
+	name = "icon";
 	fieldp = NULL;
 	break;
     }
@@ -338,10 +339,10 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 	/*@=nullpass@*/
 
 	sprintf(buf, "%s%d",
-		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
+		(flag & RPMFILE_PATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, body, RMIL_SPEC);
 	sprintf(buf, "%sURL%d",
-		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
+		(flag & RPMFILE_PATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
 	body = _free(body);
     }

@@ -7,6 +7,7 @@
 	- non-linux: avoid all mutexes if waitpid is used for reaping.
 	- use pipe(2) for SIGCHLD receipt signalling.
 	- python: teach labelCompare that missing epoch is same as 0 (#227860).
+	- add source rpm file attributes, eliminate RPMBUILD_ISFOO.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

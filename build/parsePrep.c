@@ -94,7 +94,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     }
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
-	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
+	if ((sp->flags & RPMFILE_PATCH) && (sp->num == c)) {
 	    break;
 	}
     }
@@ -193,7 +193,7 @@ static const char *doUntar(Spec spec, int c, int quietly)
     int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
-	if ((sp->flags & RPMBUILD_ISSOURCE) && (sp->num == c)) {
+	if ((sp->flags & RPMFILE_SOURCE) && (sp->num == c)) {
 	    break;
 	}
     }
@@ -593,11 +593,11 @@ static int prepFetch(Spec spec)
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 
-	if (sp->flags & RPMBUILD_ISSOURCE) {
+	if (sp->flags & RPMFILE_SOURCE) {
 	    Rmacro = "%{_Rsourcedir}/";
 	    Lmacro = "%{_sourcedir}/";
 	} else
-	if (sp->flags & RPMBUILD_ISPATCH) {
+	if (sp->flags & RPMFILE_PATCH) {
 	    Rmacro = "%{_Rpatchdir}/";
 	    Lmacro = "%{_patchdir}/";
 	} else

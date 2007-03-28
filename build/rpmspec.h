@@ -14,27 +14,29 @@ typedef struct Package_s * Package;
  */
 struct TriggerFileEntry {
     int index;
-/*@only@*/ char * fileName;
-/*@only@*/ char * script;
-/*@only@*/ char * prog;
-/*@owned@*/ struct TriggerFileEntry * next;
+/*@only@*/
+    char * fileName;
+/*@only@*/
+    char * script;
+/*@only@*/
+    char * prog;
+/*@owned@*/
+    struct TriggerFileEntry * next;
 };
-
-#define RPMBUILD_ISSOURCE	(1 << 0)
-#define RPMBUILD_ISPATCH	(1 << 1)
-#define RPMBUILD_ISICON		(1 << 2)
-#define RPMBUILD_ISNO		(1 << 3)
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
 /** \ingroup rpmbuild
  */
 struct Source {
-/*@owned@*/ char * fullSource;
-/*@dependent@*/ char * source;     /* Pointer into fullSource */
+/*@owned@*/
+    const char * fullSource;
+/*@dependent@*/
+    const char * source;	/* Pointer into fullSource */
     int flags;
     int num;
-/*@owned@*/ struct Source * next;
+/*@owned@*/
+    struct Source * next;
 };
 
 /** \ingroup rpmbuild
@@ -50,7 +52,8 @@ typedef struct ReadLevelEntry {
 /** \ingroup rpmbuild
  */
 typedef struct OpenFileInfo {
-/*@only@*/ const char * fileName;
+/*@only@*/
+    const char * fileName;
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
@@ -66,14 +69,17 @@ typedef struct spectag_s {
     int t_tag;
     int t_startx;
     int t_nlines;
-/*@only@*/ const char * t_lang;
-/*@only@*/ const char * t_msgid;
+/*@only@*/
+    const char * t_lang;
+/*@only@*/
+    const char * t_msgid;
 } * spectag;
 
 /** \ingroup rpmbuild
  */
 typedef struct spectags_s {
-/*@owned@*/ spectag st_t;
+/*@owned@*/
+    spectag st_t;
     int st_nalloc;
     int st_ntags;
 } * spectags;
@@ -81,7 +87,8 @@ typedef struct spectags_s {
 /** \ingroup rpmbuild
  */
 typedef struct speclines_s {
-/*@only@*/ char **sl_lines;
+/*@only@*/
+    char **sl_lines;
     int sl_nalloc;
     int sl_nlines;
 } * speclines;
