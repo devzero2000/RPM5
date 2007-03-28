@@ -2379,7 +2379,6 @@ void initSourceHeader(Spec spec)
     int_32 tag, type, count;
     const void * ptr;
 
-    spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
     for (hi = headerInitIterator(spec->packages->header);
@@ -2413,18 +2412,6 @@ void initSourceHeader(Spec spec)
 	    /* do not copy */
 	    /*@switchbreak@*/ break;
 	}
-    }
-    hi = headerFreeIterator(hi);
-    /*@=branchstate@*/
-
-    /* Add the build restrictions */
-    /*@-branchstate@*/
-    for (hi = headerInitIterator(spec->buildRestrictions);
-	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData(ptr, type))
-    {
-	if (ptr)
-	    (void) headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
     }
     hi = headerFreeIterator(hi);
     /*@=branchstate@*/

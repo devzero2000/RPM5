@@ -236,23 +236,19 @@ static int checkForValidArchitectures(Spec spec)
     const char *os = rpmExpand("%{_target_os}", NULL);
     int rc = RPMERR_BADSPEC;	/* assume failure. */
     
-    if (isMemberInEntry(spec->buildRestrictions,
-			arch, RPMTAG_EXCLUDEARCH) == 1) {
+    if (isMemberInEntry(spec->sourceHeader, arch, RPMTAG_EXCLUDEARCH) == 1) {
 	rpmError(RPMERR_BADSPEC, _("Architecture is excluded: %s\n"), arch);
 	goto exit;
     }
-    if (isMemberInEntry(spec->buildRestrictions,
-			arch, RPMTAG_EXCLUSIVEARCH) == 0) {
+    if (isMemberInEntry(spec->sourceHeader, arch, RPMTAG_EXCLUSIVEARCH) == 0) {
 	rpmError(RPMERR_BADSPEC, _("Architecture is not included: %s\n"), arch);
 	goto exit;
     }
-    if (isMemberInEntry(spec->buildRestrictions,
-			os, RPMTAG_EXCLUDEOS) == 1) {
+    if (isMemberInEntry(spec->sourceHeader, os, RPMTAG_EXCLUDEOS) == 1) {
 	rpmError(RPMERR_BADSPEC, _("OS is excluded: %s\n"), os);
 	goto exit;
     }
-    if (isMemberInEntry(spec->buildRestrictions,
-			os, RPMTAG_EXCLUSIVEOS) == 0) {
+    if (isMemberInEntry(spec->sourceHeader, os, RPMTAG_EXCLUSIVEOS) == 0) {
 	rpmError(RPMERR_BADSPEC, _("OS is not included: %s\n"), os);
 	goto exit;
     }
@@ -464,7 +460,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->macros, spec->st,
 		spec->sources, spec->numSources, spec->noSource,
-		spec->buildRestrictions, spec->BANames, spec->BACount,
+		spec->sourceHeader, spec->BANames, spec->BACount,
 		spec->line,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -694,7 +690,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_EXCLUSIVEARCH:
     case RPMTAG_EXCLUDEOS:
     case RPMTAG_EXCLUSIVEOS:
-	addOrAppendListEntry(spec->buildRestrictions, tag, field);
+	addOrAppendListEntry(spec->sourceHeader, tag, field);
 	break;
     case RPMTAG_BUILDARCHS:
 	if ((rc = poptParseArgvString(field,

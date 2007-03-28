@@ -287,7 +287,7 @@ int parsePreamble(Spec spec, int initialPackage)
 		spec->buildSubdir,
 		spec->macros, spec->st,
 		spec->sources, spec->numSources, spec->noSource,
-		spec->buildRestrictions, spec->BANames, spec->BACount,
+		spec->sourceHeader, spec->BANames, spec->BACount,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -476,7 +476,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
  */
 void initSourceHeader(Spec spec)
 	/*@modifies spec->sourceHeader,
-		spec->buildRestrictions, spec->BANames,
+		spec->BANames,
 		spec->packages->header @*/;
 
 /** \ingroup rpmbuild
@@ -487,7 +487,7 @@ void initSourceHeader(Spec spec)
 int processSourceFiles(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList,
-		spec->buildRestrictions, spec->BANames,
+		spec->BANames,
 		spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -526,7 +526,7 @@ int buildSpec(rpmts ts, Spec spec, int what, int test)
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
 		spec->sourceRpmName, spec->sourcePkgId,
 		spec->macros, spec->BASpecs,
-		spec->buildRestrictions, spec->BANames, *spec->packages,
+		spec->BANames, *spec->packages,
 		spec->packages->cpioList, spec->packages->fileList,
 		spec->packages->specialDoc, spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

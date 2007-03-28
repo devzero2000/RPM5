@@ -453,7 +453,7 @@ Spec newSpec(void)
 
     spec->sourceRpmName = NULL;
     spec->sourcePkgId = NULL;
-    spec->sourceHeader = NULL;
+    spec->sourceHeader = headerNew();
     spec->sourceCpioList = NULL;
     
     spec->buildSubdir = NULL;
@@ -462,7 +462,6 @@ Spec newSpec(void)
     spec->timeCheck = 0;
     spec->cookie = NULL;
 
-    spec->buildRestrictions = headerNew();
     spec->BANames = NULL;
     spec->BACount = 0;
     spec->recursing = 0;
@@ -530,8 +529,6 @@ Spec freeSpec(Spec spec)
 	fi = rpmfiFree(fi);
     }
     
-    spec->buildRestrictions = headerFree(spec->buildRestrictions);
-
     if (!spec->recursing) {
 /*@-boundswrite@*/
 	if (spec->BASpecs != NULL)

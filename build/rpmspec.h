@@ -124,8 +124,6 @@ struct Spec_s {
 /*@owned@*/
     struct ReadLevelEntry * readStack;
 
-/*@refcounted@*/
-    Header buildRestrictions;
 /*@owned@*/ /*@null@*/
     Spec * BASpecs;
 /*@only@*/ /*@null@*/
