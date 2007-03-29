@@ -129,7 +129,8 @@ typedef enum rpmQVSources_e {
     RPMQV_TID,		/*!< ... from install transaction id (time stamp). */
     RPMQV_HDLIST,	/*!< ... from system hdlist. */
     RPMQV_FTSWALK,	/*!< ... from fts(3) walk. */
-    RPMQV_WHATNEEDS	/*!< ... from requires using contained provides. */
+    RPMQV_WHATNEEDS,	/*!< ... from requires using contained provides. */
+    RPMQV_SPECSRPM	/*!< ... srpm from spec file parse (query only). */
 } rpmQVSources;
 
 /** \ingroup rpmcli

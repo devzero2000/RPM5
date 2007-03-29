@@ -2373,11 +2373,14 @@ exit:
 }
 /*@=boundswrite@*/
 
-void initSourceHeader(Spec spec)
+int initSourceHeader(Spec spec, StringBuf *sfp)
 {
     HeaderIterator hi;
     int_32 tag, type, count;
     const void * ptr;
+    StringBuf sourceFiles;
+    struct Source *srcPtr;
+    Package pkg;
 
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
@@ -2421,27 +2424,13 @@ void initSourceHeader(Spec spec)
 		       RPM_STRING_ARRAY_TYPE,
 		       spec->BANames, spec->BACount);
     }
-}
 
-int processSourceFiles(Spec spec)
-{
-    struct Source *srcPtr;
-    StringBuf sourceFiles;
-    int x, isSpec = 1;
-    struct FileList_s fl;
-    char *s, **files, **fp;
-    Package pkg;
+    if (sfp != NULL && *sfp != NULL)
+	sourceFiles = *sfp;
+    else
+	sourceFiles = newStringBuf();
 
-    sourceFiles = newStringBuf();
-
-    /* XXX
-     * XXX This is where the source header for noarch packages needs
-     * XXX to be initialized.
-     */
-    if (spec->sourceHeader == NULL)
-	initSourceHeader(spec);
-
-    /* Construct the file list and source entries */
+    /* Construct the source/patch tag entries */
     appendLineStringBuf(sourceFiles, spec->specFile);
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
@@ -2480,6 +2469,24 @@ int processSourceFiles(Spec spec)
 	}
     }
 
+    if (sfp == NULL)
+	sourceFiles = freeStringBuf(sourceFiles);
+
+    return 0;
+}
+
+int processSourceFiles(Spec spec)
+{
+    StringBuf *sfp = NULL;
+    int x, isSpec = 1;
+    struct FileList_s fl;
+    char *s, **files, **fp;
+    int xx;
+
+    *sfp = newStringBuf();
+    xx = initSourceHeader(spec, sfp);
+
+    /* Construct the SRPM file list. */
     spec->sourceCpioList = NULL;
 
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
@@ -2489,7 +2496,7 @@ int processSourceFiles(Spec spec)
     fl.prefix = NULL;
     fl.buildRootURL = NULL;
 
-    s = getStringBuf(sourceFiles);
+    s = getStringBuf(*sfp);
     files = splitString(s, strlen(s), '\n');
 
     /* The first source file is the spec file */
@@ -2553,7 +2560,7 @@ int processSourceFiles(Spec spec)
 			spec->sourceHeader, 1);
     }
 
-    sourceFiles = freeStringBuf(sourceFiles);
+    *sfp = freeStringBuf(*sfp);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     return fl.processingFailed;
 }

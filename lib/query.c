@@ -502,6 +502,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	res = rpmgiShowMatches(qva, ts);
 	break;
 
+    case RPMQV_SPECSRPM:
     case RPMQV_SPECFILE:
 	res = ((qva->qva_specQuery != NULL)
 		? qva->qva_specQuery(ts, qva, arg) : 1);

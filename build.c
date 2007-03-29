@@ -111,6 +111,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     char buf[BUFSIZ];
     Spec spec = NULL;
     int verify = 1;
+    int xx;
     int rc;
 
 #ifndef	DYING
@@ -265,7 +266,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     }
 
     /* Assemble source header from parsed components */
-    initSourceHeader(spec);
+    xx = initSourceHeader(spec, NULL);
 
     /* Check build prerequisites */
     if (!ba->noDeps && checkSpec(ts, spec->sourceHeader)) {

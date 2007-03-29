@@ -9,6 +9,8 @@
 	- python: teach labelCompare that missing epoch is same as 0 (#227860).
 	- add source rpm file attributes, eliminate RPMBUILD_ISFOO.
 	- populate sourceHeader with build restrictions early instead.
+	- add --specsrpm to permit querying parsed source rpm header.
+	- populate sourceHeader with source/patch tags for query (#227513).
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

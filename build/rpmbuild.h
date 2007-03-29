@@ -473,10 +473,12 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 /** \ingroup rpmbuild
  * Create and initialize header for source package.
  * @param spec		spec file control structure
+ * @retval *sfp		srpm file list (may be NULL)
+ * @return		0 always
  */
-void initSourceHeader(Spec spec)
+int initSourceHeader(Spec spec, /*@null@*/ StringBuf *sfp)
 	/*@modifies spec->sourceHeader,
-		spec->BANames,
+		spec->BANames, *sfp,
 		spec->packages->header @*/;
 
 /** \ingroup rpmbuild

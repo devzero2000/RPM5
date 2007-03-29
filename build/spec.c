@@ -733,14 +733,22 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
 	goto exit;
     }
 
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-    {
-	/* If no target was specified, display all packages.
-	 * Packages with empty file lists are not produced.
-	 */
-	/* XXX DIEDIEDIE: this logic looks flawed. */
-	if (target == NULL || pkg->fileList != NULL) 
-	    xx = qva->qva_showPackage(qva, ts, pkg->header);
+    switch (qva->qva_source) {
+    case RPMQV_SPECSRPM:
+	xx = initSourceHeader(spec, NULL);
+	xx = qva->qva_showPackage(qva, ts, spec->sourceHeader);
+	break;
+    default:
+    case RPMQV_SPECFILE:
+	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	    /* If no target was specified, display all packages.
+	     * Packages with empty file lists are not produced.
+	     */
+	    /* XXX DIEDIEDIE: this logic looks flawed. */
+	    if (target == NULL || pkg->fileList != NULL) 
+		xx = qva->qva_showPackage(qva, ts, pkg->header);
+	}
+	break;
     }
 
 exit:

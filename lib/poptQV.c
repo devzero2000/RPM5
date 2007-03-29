@@ -34,6 +34,7 @@ int specedit = 0;
 /* -1025 thrugh -1033 are common in rpmcli.h. */
 #define	POPT_TRUST		-1037
 #define	POPT_WHATNEEDS		-1038
+#define	POPT_SPECSRPM		-1039
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
@@ -89,6 +90,11 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 	qva->qva_source |= RPMQV_SPECFILE;
 	qva->qva_sourceCount++;
 	break;
+/* XXX SPECSRPM is not verify sources */
+    case POPT_SPECSRPM:
+	qva->qva_source |= RPMQV_SPECSRPM;
+	qva->qva_sourceCount++;
+	break;
     case POPT_QUERYBYNUMBER:
 	qva->qva_source |= RPMQV_DBOFFSET; 
 	qva->qva_sourceCount++;
@@ -134,6 +140,8 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify a header instance"), "HDRNUM" },
  { "specfile", '\0', 0, 0, POPT_SPECFILE,
 	N_("query a spec file"), N_("<spec>") },
+ { "specsrpm", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_SPECSRPM,
+	N_("query source metadata from spec file parse"), N_("<spec>") },
  { "tid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYTID,
 	N_("query/verify package(s) from install transaction"), "TID" },
  { "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
