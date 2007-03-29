@@ -357,7 +357,7 @@ fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (int)(die - al->dirs), die, die->d
 		if (i < die->numFiles) {
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
+fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, (unsigned) ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
 /*@=modfilesys@*/
 
 /*@-bounds@*/

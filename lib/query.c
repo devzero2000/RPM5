@@ -610,8 +610,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 		mybase = 16;
 	    }
 	}
-	iid = strtoul(myarg, &end, mybase);
-	if ((*end) || (end == arg) || (iid == ULONG_MAX)) {
+	iid = (unsigned) strtoul(myarg, &end, mybase);
+	if ((*end) || (end == arg) || (iid == UINT_MAX)) {
 	    rpmError(RPMERR_QUERY, _("malformed %s: %s\n"), "tid", arg);
 	    return 1;
 	}
@@ -699,8 +699,8 @@ assert(fn != NULL);
 		mybase = 16;
 	    }
 	}
-	recOffset = strtoul(myarg, &end, mybase);
-	if ((*end) || (end == arg) || (recOffset == ULONG_MAX)) {
+	recOffset = (unsigned) strtoul(myarg, &end, mybase);
+	if ((*end) || (end == arg) || (recOffset == UINT_MAX)) {
 	    rpmError(RPMERR_QUERYINFO, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
