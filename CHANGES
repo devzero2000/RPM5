@@ -11,6 +11,7 @@
 	- populate sourceHeader with build restrictions early instead.
 	- add --specsrpm to permit querying parsed source rpm header.
 	- populate sourceHeader with source/patch tags for query (#227513).
+	- make sure srpm header is initialized exactly once while refactoring.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

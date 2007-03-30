@@ -2382,6 +2382,11 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     struct Source *srcPtr;
     Package pkg;
 
+    if (spec->sourceHdrInit)
+	return 0;
+
+    spec->sourceHdrInit = 1;
+
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
     for (hi = headerInitIterator(spec->packages->header);
@@ -2477,27 +2482,26 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 
 int processSourceFiles(Spec spec)
 {
-    StringBuf *sfp = NULL;
+    StringBuf sourceFiles, *sfp = &sourceFiles;
     int x, isSpec = 1;
     struct FileList_s fl;
-    char *s, **files, **fp;
-    int xx;
+    char **files, **fp;
+    int rc;
 
     *sfp = newStringBuf();
-    xx = initSourceHeader(spec, sfp);
+    x = initSourceHeader(spec, sfp);
 
     /* Construct the SRPM file list. */
-    spec->sourceCpioList = NULL;
-
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
-    fl.processingFailed = 0;
+    rc = fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
     fl.totalFileSize = 0;
     fl.prefix = NULL;
     fl.buildRootURL = NULL;
 
-    s = getStringBuf(*sfp);
-    files = splitString(s, strlen(s), '\n');
+    {	const char *s = getStringBuf(*sfp);
+	files = splitString(s, strlen(s), '\n');
+    }
 
     /* The first source file is the spec file */
     x = 0;
@@ -2534,7 +2538,7 @@ int processSourceFiles(Spec spec)
 	if (Stat(diskURL, &flp->fl_st)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad file: %s: %s\n"),
 		diskURL, strerror(errno));
-	    fl.processingFailed = 1;
+	    rc = fl.processingFailed = 1;
 	}
 
 	flp->uname = getUname(flp->fl_uid);
@@ -2545,7 +2549,7 @@ int processSourceFiles(Spec spec)
 	
 	if (! (flp->uname && flp->gname)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskURL);
-	    fl.processingFailed = 1;
+	    rc = fl.processingFailed = 1;
 	}
 
 	isSpec = 0;
@@ -2554,15 +2558,16 @@ int processSourceFiles(Spec spec)
     fl.fileListRecsUsed = x;
     freeSplitString(files);
 
-    if (! fl.processingFailed) {
-	if (spec->sourceHeader != NULL)
-	    genCpioListAndHeader(&fl, &spec->sourceCpioList,
-			spec->sourceHeader, 1);
-    }
+    if (rc)
+	goto exit;
 
+    spec->sourceCpioList = NULL;
+    genCpioListAndHeader(&fl, &spec->sourceCpioList, spec->sourceHeader, 1);
+
+exit:
     *sfp = freeStringBuf(*sfp);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
-    return fl.processingFailed;
+    return rc;
 }
 
 /**

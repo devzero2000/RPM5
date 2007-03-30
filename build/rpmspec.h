@@ -153,6 +153,7 @@ struct Spec_s {
     Header sourceHeader;
 /*@refcounted@*/
     rpmfi sourceCpioList;
+    int sourceHdrInit;
 
 /*@dependent@*/ /*@null@*/
     MacroContext macros;
