@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-20 22:21-0500\n"
+"POT-Creation-Date: 2007-03-31 14:50-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -23,42 +23,42 @@ msgstr "Незадовільні залежності при збиранні:\n
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Неможливо відкрити файл специфікацій: %s: %s\n"
 
-#: build.c:145 build.c:157
+#: build.c:146 build.c:158
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Помилка при відкриванні каналу до tar файлу: %m\n"
 
-#: build.c:164
+#: build.c:165
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Неможливо прочитати файл специфікацій з %s\n"
 
-#: build.c:192
+#: build.c:193
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Неможливо перейменувати %s у %s: %m\n"
 
-#: build.c:232
+#: build.c:233
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "помилка отримання інформації про %s: %m\n"
 
-#: build.c:237
+#: build.c:238
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Файл %s не є звичайним файлом.\n"
 
-#: build.c:246
+#: build.c:247
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Файл %s не схожий на файл специфікацій.\n"
 
-#: build.c:319
+#: build.c:320
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Цільова платформа: %s\n"
 
-#: build.c:334 build/spec.c:785
+#: build.c:335 build/spec.c:786
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "Цільова платформа: %s\n"
@@ -344,26 +344,26 @@ msgstr "не вказані аргументи перевірки"
 msgid "no arguments given"
 msgstr "не вказані аргументи"
 
-#: build/build.c:140 build/pack.c:611
+#: build/build.c:138 build/pack.c:611
 msgid "Unable to open temp file.\n"
 msgstr "Неможливо відкрити тимчасовий файл.\n"
 
-#: build/build.c:233
+#: build/build.c:231
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Виконується(%s): %s\n"
 
-#: build/build.c:243
+#: build/build.c:241
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Виконання %s завершилось аварійно (%s): %s\n"
 
-#: build/build.c:252
+#: build/build.c:250
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Неправильний код завершення %s (%s)\n"
 
-#: build/build.c:363
+#: build/build.c:361
 msgid ""
 "\n"
 "\n"
@@ -567,22 +567,22 @@ msgstr "Неможливо відкрити %%files файл %s: %s\n"
 msgid "line: %s\n"
 msgstr "рядок: %s\n"
 
-#: build/files.c:2541
+#: build/files.c:2533
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неправильний файл: %s: %s\n"
 
-#: build/files.c:2553 build/parsePrep.c:50
+#: build/files.c:2545 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неправильний власник/група: %s\n"
 
-#: build/files.c:2597
+#: build/files.c:2590
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Перевірка не упакованих файлів: %s\n"
 
-#: build/files.c:2614
+#: build/files.c:2607
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -591,7 +591,7 @@ msgstr ""
 "Знайдено встановлені (але не упаковані) файли:\n"
 "%s"
 
-#: build/files.c:2644
+#: build/files.c:2637
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обробка файлу: %s-%s-%s\n"
@@ -845,17 +845,17 @@ msgstr "рядок %d: Помилка аналізу %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "рядок %d: Другий список %%files\n"
 
-#: build/parsePreamble.c:240
+#: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Архітектуру виключено: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Архітектуру не включено: %s\n"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:251
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "ОС виключена: %s\n"
@@ -875,97 +875,111 @@ msgstr "Поле %s повинно бути присутнім у пакеті: 
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Дубльовані %s елементи у пакеті: %s\n"
 
-#: build/parsePreamble.c:373
+#: build/parsePreamble.c:376
+msgid "No icon file in sources\n"
+msgstr ""
+
+#: build/parsePreamble.c:393
+#, fuzzy, c-format
+msgid "Invalid icon URL: %s\n"
+msgstr "Неправильна лексема %s: %s\n"
+
+#: build/parsePreamble.c:400
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Неможливо відкрити піктограму %s: %s\n"
 
-#: build/parsePreamble.c:391
+#: build/parsePreamble.c:409
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Неможливо прочитати піктограму %s: %s\n"
 
-#: build/parsePreamble.c:404
+#: build/parsePreamble.c:414
+#, c-format
+msgid "Icon %s is too big (max. %d bytes)\n"
+msgstr ""
+
+#: build/parsePreamble.c:424
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Невідомий тип піктограми: %s\n"
 
-#: build/parsePreamble.c:449
+#: build/parsePreamble.c:472
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "рядок %d: Етикетка потребує лише одного аргументу: %s\n"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:512
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "рядок %d: Неправильний тег: %s\n"
 
-#: build/parsePreamble.c:497
+#: build/parsePreamble.c:520
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "рядок %d: Порожній тег: %s\n"
 
-#: build/parsePreamble.c:521 build/parsePreamble.c:528
+#: build/parsePreamble.c:545 build/parsePreamble.c:552
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "рядок %d: Неправильний символ '-' у %s: %s\n"
 
-#: build/parsePreamble.c:561
+#: build/parsePreamble.c:585
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot не може бути \"/\": %s\n"
 
-#: build/parsePreamble.c:576
+#: build/parsePreamble.c:601
 #, fuzzy, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "рядок %d: Префікс не може закінчуватись на \"/\": %s\n"
 
-#: build/parsePreamble.c:584
+#: build/parsePreamble.c:609
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "рядок %d: Префікс не може закінчуватись на \"/\": %s\n"
 
-#: build/parsePreamble.c:596
+#: build/parsePreamble.c:621
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "рядок %d: Docdir повинен починатись з '/': %s\n"
 
-#: build/parsePreamble.c:610
+#: build/parsePreamble.c:635
 #, fuzzy, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "рядок %d: Етикетка потребує лише одного аргументу: %s\n"
 
-#: build/parsePreamble.c:650 build/parsePreamble.c:661
+#: build/parsePreamble.c:677 build/parsePreamble.c:688
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "рядок %d: Неправильне число %s: визначає: %s\n"
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:730
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "рядок %d: Невідомий формат BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:711
+#: build/parsePreamble.c:739
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Внутрішня помилка: Неправильний тег %d\n"
 
-#: build/parsePreamble.c:822
+#: build/parsePreamble.c:842
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:891
+#: build/parsePreamble.c:911
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Неправильна специфікація пакету: %s\n"
 
-#: build/parsePreamble.c:897
+#: build/parsePreamble.c:917
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Пакет вже існує: %s\n"
 
-#: build/parsePreamble.c:926
+#: build/parsePreamble.c:946
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "рядок %d: Невідомий тег: %s\n"
@@ -975,71 +989,71 @@ msgstr "рядок %d: Невідомий тег: %s\n"
 msgid "Bad source: %s: %s\n"
 msgstr "Неправильний вихідний файл: %s: %s\n"
 
-#: build/parsePrep.c:102
+#: build/parsePrep.c:101
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Відсутня латка з номером %d\n"
 
-#: build/parsePrep.c:201
+#: build/parsePrep.c:200
 #, c-format
 msgid "No source number %d\n"
 msgstr "Відсутній файл вихідного коду %d\n"
 
-#: build/parsePrep.c:317
+#: build/parsePrep.c:316
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Помилка аналізу %%setup: %s\n"
 
-#: build/parsePrep.c:332
+#: build/parsePrep.c:331
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "рядок %d: неправильний аргумент для %%setup: %s\n"
 
-#: build/parsePrep.c:350
+#: build/parsePrep.c:349
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "рядок %d: Неправильний параметр %s: %s\n"
 
-#: build/parsePrep.c:492
+#: build/parsePrep.c:491
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "рядок %d: Для %%patch -b потрібен аргумент: %s\n"
 
-#: build/parsePrep.c:501
+#: build/parsePrep.c:500
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "рядок %d: Для %%patch -z потрібен аргумент: %s\n"
 
-#: build/parsePrep.c:513
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "рядок %d: Для %%patch -p потрібен аргумент: %s\n"
 
-#: build/parsePrep.c:520
+#: build/parsePrep.c:519
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "рядок %d: неправильний аргумент для %%patch -p: %s\n"
 
-#: build/parsePrep.c:527
+#: build/parsePrep.c:526
 msgid "Too many patches!\n"
 msgstr "Надто багато латок!\n"
 
-#: build/parsePrep.c:531
+#: build/parsePrep.c:530
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "рядок %d: неправильний аргумент для %%patch: %s\n"
 
-#: build/parsePrep.c:617
+#: build/parsePrep.c:629
 #, fuzzy, c-format
 msgid "file %s missing: %s\n"
 msgstr "файл %s: %s\n"
 
-#: build/parsePrep.c:625
+#: build/parsePrep.c:637
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s помилка: %s\n"
 
-#: build/parsePrep.c:647
+#: build/parsePrep.c:659
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "рядок %d: другий %%prep\n"
@@ -1247,18 +1261,18 @@ msgstr "не виконувати жодного етапу збирання"
 msgid "do not verify build dependencies"
 msgstr "не перевіряти залежності перед збиранням"
 
-#: build/poptBT.c:204 lib/poptALL.c:371 lib/poptI.c:355 lib/poptQV.c:407
-#: lib/poptQV.c:416 lib/poptQV.c:458
+#: build/poptBT.c:204 lib/poptALL.c:371 lib/poptI.c:355 lib/poptQV.c:415
+#: lib/poptQV.c:424 lib/poptQV.c:466
 msgid "don't verify package digest(s)"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: build/poptBT.c:206 lib/poptALL.c:373 lib/poptI.c:357 lib/poptQV.c:410
-#: lib/poptQV.c:418 lib/poptQV.c:461
+#: build/poptBT.c:206 lib/poptALL.c:373 lib/poptI.c:357 lib/poptQV.c:418
+#: lib/poptQV.c:426 lib/poptQV.c:469
 msgid "don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки з бази даних"
 
-#: build/poptBT.c:208 lib/poptALL.c:379 lib/poptI.c:359 lib/poptQV.c:413
-#: lib/poptQV.c:420 lib/poptQV.c:463
+#: build/poptBT.c:208 lib/poptALL.c:379 lib/poptI.c:359 lib/poptQV.c:421
+#: lib/poptQV.c:428 lib/poptQV.c:471
 msgid "don't verify package signature(s)"
 msgstr "не перевіряти підписи у пакетах"
 
@@ -1286,7 +1300,7 @@ msgstr "створити PGP/GPG-підпис"
 msgid "override target platform"
 msgstr "перевизначити цільову платформу"
 
-#: build/poptBT.c:221 lib/poptALL.c:368 lib/poptQV.c:318
+#: build/poptBT.c:221 lib/poptALL.c:368 lib/poptQV.c:326
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1294,32 +1308,32 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr "змінити i18N рядки у каталозі файла специфікації"
 
-#: build/spec.c:237
+#: build/spec.c:235
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "рядок %d: Неправильний номер: %s\n"
 
-#: build/spec.c:243
+#: build/spec.c:241
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "рядок %d: Неправильний no%s номер: %d\n"
 
-#: build/spec.c:306
+#: build/spec.c:310
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "рядок %d: Неправильний %s номер: %s\n"
 
-#: build/spec.c:641
+#: build/spec.c:634
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "неможливо запитати %s: %s\n"
 
-#: build/spec.c:725
+#: build/spec.c:718
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запит до файла специфікації %s не вдався, помилка аналізу\n"
 
-#: build/spec.c:773
+#: build/spec.c:774
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Цільова платформа: %s\n"
@@ -1758,7 +1772,7 @@ msgstr "не переходити меж файлових систем"
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "повернути інформацію про whiteout"
 
-#: lib/poptALL.c:309 lib/poptI.c:221 lib/poptQV.c:288 lib/poptQV.c:335
+#: lib/poptALL.c:309 lib/poptI.c:221 lib/poptQV.c:296 lib/poptQV.c:343
 msgid "add suggested packages to transaction"
 msgstr "додати запропоновані пакети у транзакцію"
 
@@ -1830,7 +1844,7 @@ msgstr "використовувати <FILE:...> замість типовог�
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:368 lib/poptQV.c:318
+#: lib/poptALL.c:368 lib/poptQV.c:326
 #, fuzzy
 msgid "specify target platform"
 msgstr "перевизначити цільову платформу"
@@ -1925,7 +1939,7 @@ msgstr ""
 msgid "debug URL cache handling"
 msgstr "налагодження обробки URL кешу"
 
-#: lib/poptALL.c:556
+#: lib/poptALL.c:558
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: неправильно налаштована таблиця параметрів (%d)\n"
@@ -2077,8 +2091,8 @@ msgstr "оновити базу даних, але не модифікувати
 msgid "do not verify package dependencies"
 msgstr "не перевіряти залежності пакету"
 
-#: lib/poptI.c:327 lib/poptI.c:329 lib/poptQV.c:349 lib/poptQV.c:352
-#: lib/poptQV.c:354
+#: lib/poptI.c:327 lib/poptI.c:329 lib/poptQV.c:357 lib/poptQV.c:360
+#: lib/poptQV.c:362
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "не перевіряти контрольну суму пакетів"
@@ -2204,243 +2218,248 @@ msgstr "не встановлювати, лише повідомити чи вд
 msgid "upgrade package(s)"
 msgstr "оновити пакет(и)"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:115
 msgid "query/verify all packages"
 msgstr "запитати/перевірити всі пакети"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:117
 msgid "rpm checksig mode"
 msgstr "режим перевірки підпису"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:119
 msgid "query/verify package(s) owning file"
 msgstr "запитати/перевірити пакет, якому належить файл"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:121
 msgid "query/verify package(s) in group"
 msgstr "запитати/перевірити пакети у групі"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:123
 msgid "query/verify a package file"
 msgstr "запитати/перевірити файл пакету"
 
-#: lib/poptQV.c:120
+#: lib/poptQV.c:126
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "запитати/перевірити пакети з транзакції встановлення"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:128
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
 msgstr "запитати/перевірити пакети з транзакції встановлення"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:131
 msgid "query/verify package(s) with package identifier"
 msgstr "запитати/перевірити пакет(и) за ідентифікатором пакета"
 
-#: lib/poptQV.c:127
+#: lib/poptQV.c:133
 msgid "query/verify package(s) with header identifier"
 msgstr "запитати/перевірити пакет(и) за ідентифікатором заголовка"
 
-#: lib/poptQV.c:129
+#: lib/poptQV.c:135
 msgid "query/verify package(s) with file identifier"
 msgstr "запитати/перевірити пакет за ідентифікатором файлу"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:138
 msgid "rpm query mode"
 msgstr "режим запиту rpm"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:140
 msgid "query/verify a header instance"
 msgstr "запитати/перевірити заголовок"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:142
 msgid "query a spec file"
 msgstr "запитати файл специфікації"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:142 lib/poptQV.c:144
 msgid "<spec>"
 msgstr "<специфікації>"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:144
+#, fuzzy
+msgid "query source metadata from spec file parse"
+msgstr "зібрати лише вихідний пакет з <файл специфікації>"
+
+#: lib/poptQV.c:146
 msgid "query/verify package(s) from install transaction"
 msgstr "запитати/перевірити пакети з транзакції встановлення"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:148
 msgid "query the package(s) triggered by the package"
 msgstr "запитати/перевірити пакет(и) з тригер-сценаріями на пакет"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:150
 msgid "rpm verify mode"
 msgstr "режим перевірки rpm"
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:152
 msgid "query/verify the package(s) which require a dependency"
 msgstr "запитати/перевірити пакети, які потребують залежність"
 
-#: lib/poptQV.c:146
+#: lib/poptQV.c:154
 #, fuzzy
 msgid "query/verify the package(s) which require any contained provide"
 msgstr "запитати/перевірити пакети, які потребують залежність"
 
-#: lib/poptQV.c:150
+#: lib/poptQV.c:158
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "запитати/перевірити пакети, які постачають залежність"
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:161
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:155
+#: lib/poptQV.c:163
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:157
+#: lib/poptQV.c:165
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "не вказані аргументи"
 
-#: lib/poptQV.c:159
+#: lib/poptQV.c:167
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:161
+#: lib/poptQV.c:169
 #, fuzzy
 msgid "do not read headers"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: lib/poptQV.c:276
+#: lib/poptQV.c:284
 msgid "list all configuration files"
 msgstr "показати перелік усіх конфігураційних файлів"
 
-#: lib/poptQV.c:278
+#: lib/poptQV.c:286
 msgid "list all documentation files"
 msgstr "показати всі файли документації"
 
-#: lib/poptQV.c:280
+#: lib/poptQV.c:288
 msgid "dump basic file information"
 msgstr "показати основну інформацію про файл"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:292
 msgid "list files in package"
 msgstr "показати перелік файлів пакету"
 
-#: lib/poptQV.c:293 lib/poptQV.c:340
+#: lib/poptQV.c:301 lib/poptQV.c:348
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:296 lib/poptQV.c:343
+#: lib/poptQV.c:304 lib/poptQV.c:351
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:307
 #, c-format
 msgid "skip %%ghost files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:311
 #, c-format
 msgid "skip %%license files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:306
+#: lib/poptQV.c:314
 #, c-format
 msgid "skip %%readme files"
 msgstr "пропустити файли %%readme"
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:320
 msgid "use the following query format"
 msgstr "використовувати заданий формат запиту"
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:320
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:322
 msgid "substitute i18n sections into spec file"
 msgstr "замінити розділи i18n у файлі специфікації"
 
-#: lib/poptQV.c:316
+#: lib/poptQV.c:324
 msgid "display the states of the listed files"
 msgstr "показати інформацію про стан файлів з переліку"
 
-#: lib/poptQV.c:358
+#: lib/poptQV.c:366
 msgid "don't verify size of files"
 msgstr "не перевіряти розмір файла"
 
-#: lib/poptQV.c:361
+#: lib/poptQV.c:369
 msgid "don't verify symlink path of files"
 msgstr "не перевіряти шлях символічних посилань"
 
-#: lib/poptQV.c:364
+#: lib/poptQV.c:372
 msgid "don't verify owner of files"
 msgstr "не перевіряти власника файлів"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:375
 msgid "don't verify group of files"
 msgstr "не перевіряти групи файлів"
 
-#: lib/poptQV.c:370
+#: lib/poptQV.c:378
 msgid "don't verify modification time of files"
 msgstr "не перевіряти час модифікації файлів"
 
-#: lib/poptQV.c:373 lib/poptQV.c:376
+#: lib/poptQV.c:381 lib/poptQV.c:384
 msgid "don't verify mode of files"
 msgstr "не перевіряти права доступу файлів"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:387
 msgid "don't verify file security contexts"
 msgstr "не перевіряти контекст безпеки файлів"
 
-#: lib/poptQV.c:381
+#: lib/poptQV.c:389
 msgid "don't verify files in package"
 msgstr "не перевіряти файли пакета"
 
-#: lib/poptQV.c:384 lib/poptQV.c:387
+#: lib/poptQV.c:392 lib/poptQV.c:395
 msgid "don't verify package dependencies"
 msgstr "не перевіряти залежності пакета"
 
-#: lib/poptQV.c:392 lib/poptQV.c:396 lib/poptQV.c:399 lib/poptQV.c:402
+#: lib/poptQV.c:400 lib/poptQV.c:404 lib/poptQV.c:407 lib/poptQV.c:410
 msgid "don't execute verify script(s)"
 msgstr "не виконувати сценарії перевірки"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:444
 msgid "sign package(s) (identical to --resign)"
 msgstr "підписати пакет(и) (ідентично до --resign)"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:446
 msgid "verify package signature(s)"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:448
 #, fuzzy
 msgid "delete package signatures"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:450
 msgid "import an armored public key"
 msgstr "імпортувати відкритий ключ"
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:452
 msgid "sign package(s) (identical to --addsign)"
 msgstr "підписати пакет(и) (ідентично до --addsign)"
 
-#: lib/poptQV.c:446
+#: lib/poptQV.c:454
 msgid "generate signature"
 msgstr "створити підпис"
 
-#: lib/poptQV.c:449
+#: lib/poptQV.c:457
 #, fuzzy
 msgid "specify trust metric"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:452
+#: lib/poptQV.c:460
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:455
+#: lib/poptQV.c:463
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2577,62 +2596,62 @@ msgid "package has neither file owner or id lists\n"
 msgstr ""
 "пакет не містить ані власників файлів, ані ідентифікаторів їх списків\n"
 
-#: lib/query.c:514
+#: lib/query.c:515
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "група %s не містить ніяких пакетів\n"
 
-#: lib/query.c:523
+#: lib/query.c:524
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "жоден пакет не підпадає під тригер %s\n"
 
-#: lib/query.c:536 lib/query.c:557 lib/query.c:579 lib/query.c:614
+#: lib/query.c:537 lib/query.c:558 lib/query.c:580 lib/query.c:615
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "неправильний %s: %s\n"
 
-#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
+#: lib/query.c:547 lib/query.c:564 lib/query.c:591 lib/query.c:620
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "жоден пакет не відповідає %s: %s\n"
 
-#: lib/query.c:630
+#: lib/query.c:631
 #, c-format
 msgid "no package requires %s\n"
 msgstr "жоден пакет не вимагає %s\n"
 
-#: lib/query.c:641
+#: lib/query.c:642
 #, c-format
 msgid "no package provides %s\n"
 msgstr "жоден пакет не постачає %s\n"
 
-#: lib/query.c:675
+#: lib/query.c:676
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:678
+#: lib/query.c:679
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не належить жодному пакету\n"
 
-#: lib/query.c:703
+#: lib/query.c:704
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неправильний номер пакету: %s\n"
 
-#: lib/query.c:706
+#: lib/query.c:707
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер елементу пакету: %u\n"
 
-#: lib/query.c:710
+#: lib/query.c:711
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:720 lib/query.c:726 lib/rpminstall.c:819
+#: lib/query.c:721 lib/query.c:727 lib/rpminstall.c:819
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"
@@ -2743,85 +2762,85 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:785 lib/rpmds.c:3680
+#: lib/rpmds.c:786 lib/rpmds.c:3680
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:785 lib/rpmds.c:3680
+#: lib/rpmds.c:786 lib/rpmds.c:3680
 msgid "YES"
 msgstr "ТАК"
 
-#: lib/rpmds.c:1276
+#: lib/rpmds.c:1277
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, та Obsoletes: залежності підтримують версії."
 
-#: lib/rpmds.c:1279
+#: lib/rpmds.c:1280
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "імена файлу(ів) зберігаються у форматі (dirName,baseName,dirIndex)"
 
-#: lib/rpmds.c:1282
+#: lib/rpmds.c:1283
 msgid "package payload can be compressed using bzip2."
 msgstr "вміст пакету може бути стиснений програмою bzip2."
 
-#: lib/rpmds.c:1285
+#: lib/rpmds.c:1286
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "для файлу(ів) вмісту пакета використовується префікс \"./\""
 
-#: lib/rpmds.c:1288
+#: lib/rpmds.c:1289
 msgid "package name-version-release is not implicitly provided."
 msgstr "назва-версія-випуск не надається автоматично."
 
-#: lib/rpmds.c:1291
+#: lib/rpmds.c:1292
 msgid "header tags are always sorted after being loaded."
 msgstr "ярлики тегів завжди сортуються після завантаження."
 
-#: lib/rpmds.c:1294
+#: lib/rpmds.c:1295
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "інтерпретатор сценаріїв може користуватись аргументами з заголовка."
 
-#: lib/rpmds.c:1297
+#: lib/rpmds.c:1298
 msgid "a hardlink file set may be installed without being complete."
 msgstr "набір жорстких посилань може встановитись частково."
 
-#: lib/rpmds.c:1300
+#: lib/rpmds.c:1301
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "сценарії пакета при встановленні можуть мати доступ до бази даних rpm."
 
-#: lib/rpmds.c:1304
+#: lib/rpmds.c:1305
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- не підтримується для рядків\n"
 
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1309
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1311
+#: lib/rpmds.c:1312
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1314
+#: lib/rpmds.c:1315
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "вміст пакету може бути стиснений програмою bzip2."
 
-#: lib/rpmds.c:1317
+#: lib/rpmds.c:1318
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1432
+#: lib/rpmds.c:1433
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#: lib/rpmds.c:1466
+#: lib/rpmds.c:1467
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1476
+#: lib/rpmds.c:1477
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
@@ -3906,16 +3925,16 @@ msgstr "(індекси поза межами)"
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використовується з масивом іншого розміру"
 
-#: rpmdb/header.c:3766 rpmdb/header.c:3803 rpmdb/header.c:3826
+#: rpmdb/header.c:3770 rpmdb/header.c:3807 rpmdb/header.c:3830
 msgid "(not a number)"
 msgstr "(не число)"
 
-#: rpmdb/header.c:3865
+#: rpmdb/header.c:3869
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3882
+#: rpmdb/header.c:3886
 msgid "%a %b %d %Y"
 msgstr "%a, %d %b %Y"
 

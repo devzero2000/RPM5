@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-02-20 22:21-0500\n"
+"POT-Creation-Date: 2007-03-31 14:50-0400\n"
 "PO-Revision-Date: 2007-02-17 21:00+0100\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -24,42 +24,42 @@ msgstr "Fehlgeschlagene Paket-Abhängigkeiten:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Die Spec-Datei %s kann nicht geöffnet werden: %s\n"
 
-#: build.c:145 build.c:157
+#: build.c:146 build.c:158
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Die Tar-Pipe konnte nicht geöffnet werden: %m\n"
 
-#: build.c:164
+#: build.c:165
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Konnte Spec-Datei von %s nicht lesen\n"
 
-#: build.c:192
+#: build.c:193
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Konnte %s nicht in %s umbenennen: %m\n"
 
-#: build.c:232
+#: build.c:233
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "Aufruf von stat für %s nicht möglich: %m\n"
 
-#: build.c:237
+#: build.c:238
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Die Datei %s ist keine normale Datei.\n"
 
-#: build.c:246
+#: build.c:247
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Die Datei %s scheint keine Spec-Datei zu sein.\n"
 
-#: build.c:319
+#: build.c:320
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Baue für die Zielplattform(en): %s\n"
 
-#: build.c:334 build/spec.c:785
+#: build.c:335 build/spec.c:786
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    Zielplattform(en): %s\n"
@@ -350,26 +350,26 @@ msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 msgid "no arguments given"
 msgstr "Es wurden keine Argumente angegeben"
 
-#: build/build.c:140 build/pack.c:611
+#: build/build.c:138 build/pack.c:611
 msgid "Unable to open temp file.\n"
 msgstr "Kann temporäre Datei nicht öffnen.\n"
 
-#: build/build.c:233
+#: build/build.c:231
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Ausführung(%s): %s\n"
 
-#: build/build.c:243
+#: build/build.c:241
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Ausführung von %s fehlgeschlagen (%s): %s\n"
 
-#: build/build.c:252
+#: build/build.c:250
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Fehler-Status beim Beenden von %s (%s)\n"
 
-#: build/build.c:363
+#: build/build.c:361
 msgid ""
 "\n"
 "\n"
@@ -573,22 +573,22 @@ msgstr "Datei %s aus %%files konnte nicht geöffnet: %s\n"
 msgid "line: %s\n"
 msgstr "Zeile: %s\n"
 
-#: build/files.c:2541
+#: build/files.c:2533
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ungültige Datei: %s: %s\n"
 
-#: build/files.c:2553 build/parsePrep.c:50
+#: build/files.c:2545 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ungültiger Eigentümer/Gruppe: %s\n"
 
-#: build/files.c:2597
+#: build/files.c:2590
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Prüfe auf nicht gepackte Datei(en): %s\n"
 
-#: build/files.c:2614
+#: build/files.c:2607
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -597,7 +597,7 @@ msgstr ""
 "Installierte (aber nicht gepackte) Datei(en) gefunden:\n"
 "%s"
 
-#: build/files.c:2644
+#: build/files.c:2637
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Verarbeite Paket: %s-%s-%s\n"
@@ -851,17 +851,17 @@ msgstr "Zeile %d: Fehler beim Parsen von %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "Zeile %d: Zweite %%files-Liste\n"
 
-#: build/parsePreamble.c:240
+#: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektur ist ausgeschlossen: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektur ist nicht einbezogen: %s\n"
 
-#: build/parsePreamble.c:250
+#: build/parsePreamble.c:251
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Betriebssystem ist ausgeschlossen: %s\n"
@@ -881,98 +881,112 @@ msgstr "%s-Feld muss im Paket vorhanden sein: %s\n"
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Doppelte %s-Einträge im Paket: %s\n"
 
-#: build/parsePreamble.c:373
+#: build/parsePreamble.c:376
+msgid "No icon file in sources\n"
+msgstr ""
+
+#: build/parsePreamble.c:393
+#, fuzzy, c-format
+msgid "Invalid icon URL: %s\n"
+msgstr "Ungültiges %s Zeichen: %s\n"
+
+#: build/parsePreamble.c:400
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kann Icon %s nicht öffnen: %s\n"
 
-#: build/parsePreamble.c:391
+#: build/parsePreamble.c:409
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kann Icon %s nicht lesen: %s\n"
 
-#: build/parsePreamble.c:404
+#: build/parsePreamble.c:414
+#, c-format
+msgid "Icon %s is too big (max. %d bytes)\n"
+msgstr ""
+
+#: build/parsePreamble.c:424
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Unbekannter Icon-Typ: %s\n"
 
-#: build/parsePreamble.c:449
+#: build/parsePreamble.c:472
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "Zeile %d: Tag benötigt nur ein Zeichen: %s\n"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:512
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "Zeile %d: Missgebildeter Tag: %s\n"
 
-#: build/parsePreamble.c:497
+#: build/parsePreamble.c:520
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "Zeile %d: Leerer Tag: %s\n"
 
-#: build/parsePreamble.c:521 build/parsePreamble.c:528
+#: build/parsePreamble.c:545 build/parsePreamble.c:552
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "Zeile %d: Ungültiges Zeichen '-' in %s: %s\n"
 
-#: build/parsePreamble.c:561
+#: build/parsePreamble.c:585
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "Der BuildRoot kann nicht \"/\" sein: %s\n"
 
-#: build/parsePreamble.c:576
+#: build/parsePreamble.c:601
 #, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "Zeile %d: Präfixe müssen mit einem \"/\" beginnen: %s\n"
 
-#: build/parsePreamble.c:584
+#: build/parsePreamble.c:609
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "Zeile %d: Präfixe dürfen nicht mit einem \"/\" enden: %s\n"
 
-#: build/parsePreamble.c:596
+#: build/parsePreamble.c:621
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 "Zeile %d: Das Dokumentationsverzeichnis muss mit einem \"/\" beginnen: %s\n"
 
-#: build/parsePreamble.c:610
+#: build/parsePreamble.c:635
 #, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "Zeile %d: %s benötigt eine Ganzzahl: %s\n"
 
-#: build/parsePreamble.c:650 build/parsePreamble.c:661
+#: build/parsePreamble.c:677 build/parsePreamble.c:688
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "Zeile %d: Ungültig %s: Kennzeichner: %s\n"
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:730
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "Zeile %d: Ungültiges BuildArchitecture-Format: %s\n"
 
-#: build/parsePreamble.c:711
+#: build/parsePreamble.c:739
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interner Fehler: Falscher Tag %d\n"
 
-#: build/parsePreamble.c:822
+#: build/parsePreamble.c:842
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "Alter Syntax wird nicht mehr unterstützt: %s\n"
 
-#: build/parsePreamble.c:891
+#: build/parsePreamble.c:911
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ungültige Paket-Spezifikation: %s\n"
 
-#: build/parsePreamble.c:897
+#: build/parsePreamble.c:917
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket ist bereits vorhanden: %s\n"
 
-#: build/parsePreamble.c:926
+#: build/parsePreamble.c:946
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "Zeile %d: Unbekannter Tag: %s\n"
@@ -982,71 +996,71 @@ msgstr "Zeile %d: Unbekannter Tag: %s\n"
 msgid "Bad source: %s: %s\n"
 msgstr "Ungültige Source: %s: %s\n"
 
-#: build/parsePrep.c:102
+#: build/parsePrep.c:101
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Keine Patch-Nummer %d\n"
 
-#: build/parsePrep.c:201
+#: build/parsePrep.c:200
 #, c-format
 msgid "No source number %d\n"
 msgstr "Keine Source-Nummer %d\n"
 
-#: build/parsePrep.c:317
+#: build/parsePrep.c:316
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fehler beim Parsen von %%setup: %s\n"
 
-#: build/parsePrep.c:332
+#: build/parsePrep.c:331
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "Zeile %d: Ungültiges Argument für %%setup: %s\n"
 
-#: build/parsePrep.c:350
+#: build/parsePrep.c:349
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "Zeile %d: Ungültige %%setup-Option %s: %s\n"
 
-#: build/parsePrep.c:492
+#: build/parsePrep.c:491
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "Zeile %d: Benötige Argument für %%patch -b: %s\n"
 
-#: build/parsePrep.c:501
+#: build/parsePrep.c:500
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "Zeile %d: Benötige Argument für %%patch -z: %s\n"
 
-#: build/parsePrep.c:513
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "Zeile %d: Benötige Argument für %%patch -p: %s\n"
 
-#: build/parsePrep.c:520
+#: build/parsePrep.c:519
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "Zeile %d: Ungültiges Argument für %%patch -p: %s\n"
 
-#: build/parsePrep.c:527
+#: build/parsePrep.c:526
 msgid "Too many patches!\n"
 msgstr "Zu viele Patches!\n"
 
-#: build/parsePrep.c:531
+#: build/parsePrep.c:530
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "Zeile %d: Ungültiges Argument für %%patch: %s\n"
 
-#: build/parsePrep.c:617
+#: build/parsePrep.c:629
 #, c-format
 msgid "file %s missing: %s\n"
 msgstr "Datei %s fehlt: %s\n"
 
-#: build/parsePrep.c:625
+#: build/parsePrep.c:637
 #, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "Herunterladen von %s fehlgeschlagen: %s\n"
 
-#: build/parsePrep.c:647
+#: build/parsePrep.c:659
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "Zeile %d: Zweites %%prep\n"
@@ -1256,18 +1270,18 @@ msgstr "Keine der Phasen des Erstellungsvorganges ausführen"
 msgid "do not verify build dependencies"
 msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
-#: build/poptBT.c:204 lib/poptALL.c:371 lib/poptI.c:355 lib/poptQV.c:407
-#: lib/poptQV.c:416 lib/poptQV.c:458
+#: build/poptBT.c:204 lib/poptALL.c:371 lib/poptI.c:355 lib/poptQV.c:415
+#: lib/poptQV.c:424 lib/poptQV.c:466
 msgid "don't verify package digest(s)"
 msgstr "Paket-Prüfsumme(n) nicht überprüfen"
 
-#: build/poptBT.c:206 lib/poptALL.c:373 lib/poptI.c:357 lib/poptQV.c:410
-#: lib/poptQV.c:418 lib/poptQV.c:461
+#: build/poptBT.c:206 lib/poptALL.c:373 lib/poptI.c:357 lib/poptQV.c:418
+#: lib/poptQV.c:426 lib/poptQV.c:469
 msgid "don't verify database header(s) when retrieved"
 msgstr "Datenbank-Header beim Abrufen nicht überprüfen"
 
-#: build/poptBT.c:208 lib/poptALL.c:379 lib/poptI.c:359 lib/poptQV.c:413
-#: lib/poptQV.c:420 lib/poptQV.c:463
+#: build/poptBT.c:208 lib/poptALL.c:379 lib/poptI.c:359 lib/poptQV.c:421
+#: lib/poptQV.c:428 lib/poptQV.c:471
 msgid "don't verify package signature(s)"
 msgstr "Paket-Signatur(en) nicht überprüfen"
 
@@ -1295,7 +1309,7 @@ msgstr "Erstelle PGP-/GPG-Signatur"
 msgid "override target platform"
 msgstr "Überschreibe Zielplattform"
 
-#: build/poptBT.c:221 lib/poptALL.c:368 lib/poptQV.c:318
+#: build/poptBT.c:221 lib/poptALL.c:368 lib/poptQV.c:326
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-VENDOR-OS"
 
@@ -1303,32 +1317,32 @@ msgstr "CPU-VENDOR-OS"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "i18n-Übersetzungen im Spec-Datei-Katalog nachschlagen"
 
-#: build/spec.c:237
+#: build/spec.c:235
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "Zeile %d: Ungültige Nummer: %s\n"
 
-#: build/spec.c:243
+#: build/spec.c:241
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "Zeile %d: Ungültige No%s-Nummer: %d\n"
 
-#: build/spec.c:306
+#: build/spec.c:310
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "Zeile %d: Ungültige %s Nummer: %s\n"
 
-#: build/spec.c:641
+#: build/spec.c:634
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s kann nicht abgefragt werden: %s\n"
 
-#: build/spec.c:725
+#: build/spec.c:718
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "Abfragen der Spec-Datei %s fehlgeschlagen, kann nicht geparst werden\n"
 
-#: build/spec.c:773
+#: build/spec.c:774
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Abfragen der Spec-Datei für die Zielplattform(en): %s\n"
@@ -1752,7 +1766,7 @@ msgstr "FTS_XDEV: Geräte nicht kreuzen"
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: Liefere Whiteout-Information"
 
-#: lib/poptALL.c:309 lib/poptI.c:221 lib/poptQV.c:288 lib/poptQV.c:335
+#: lib/poptALL.c:309 lib/poptI.c:221 lib/poptQV.c:296 lib/poptQV.c:343
 msgid "add suggested packages to transaction"
 msgstr "Füge vorgeschlagene Pakete zur Transaktion hinzu"
 
@@ -1820,7 +1834,7 @@ msgstr "lese <DATEI:...> anstatt der Standard-Datei(en)"
 msgid "<FILE:...>"
 msgstr "<DATEI:...>"
 
-#: lib/poptALL.c:368 lib/poptQV.c:318
+#: lib/poptALL.c:368 lib/poptQV.c:326
 msgid "specify target platform"
 msgstr "Zielplattform bestimmen"
 
@@ -1912,7 +1926,7 @@ msgstr "Debugge Tar-Nutzdaten"
 msgid "debug URL cache handling"
 msgstr "Debugge Zwischenspeicher-Verwaltung der URLs"
 
-#: lib/poptALL.c:556
+#: lib/poptALL.c:558
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: Optionstabelle ist falsch konfiguriert (%d)\n"
@@ -2060,8 +2074,8 @@ msgstr "Aktualisiere die Datenbank, aber verändere nichts im Dateisystem"
 msgid "do not verify package dependencies"
 msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
-#: lib/poptI.c:327 lib/poptI.c:329 lib/poptQV.c:349 lib/poptQV.c:352
-#: lib/poptQV.c:354
+#: lib/poptI.c:327 lib/poptI.c:329 lib/poptQV.c:357 lib/poptQV.c:360
+#: lib/poptQV.c:362
 msgid "don't verify file digests"
 msgstr "Datei-Prüfsummen nicht überprüfen"
 
@@ -2189,238 +2203,243 @@ msgstr "Nicht installieren - nur anzeigen, ob es funktionieren würde"
 msgid "upgrade package(s)"
 msgstr "Paket(e) aktualisieren"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:115
 msgid "query/verify all packages"
 msgstr "Abfrage aller Pakete"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:117
 msgid "rpm checksig mode"
 msgstr "Abfrage-Modus der Signatur"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:119
 msgid "query/verify package(s) owning file"
 msgstr "Abfragen/überprüfen eines Pakets, das die Datei besitzt"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:121
 msgid "query/verify package(s) in group"
 msgstr "Abfragen/überprüfen eines Pakets einer Gruppe"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:123
 msgid "query/verify a package file"
 msgstr "Abfragen/überprüfen einer Paket-Datei"
 
-#: lib/poptQV.c:120
+#: lib/poptQV.c:126
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "Abfragen/überprüfen von mit Durchlaufen des Dateibaumes von OBEN"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:128
 msgid "query/verify package(s) from system HDLIST"
 msgstr "Abfragen/überprüfen von Paketen der System-HDLIST"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:131
 msgid "query/verify package(s) with package identifier"
 msgstr "Abfragen/überprüfen von Paketen mit der Paket-Kennung"
 
-#: lib/poptQV.c:127
+#: lib/poptQV.c:133
 msgid "query/verify package(s) with header identifier"
 msgstr "Abfragen/überprüfen von Paketen mit Header-Kennung"
 
-#: lib/poptQV.c:129
+#: lib/poptQV.c:135
 msgid "query/verify package(s) with file identifier"
 msgstr "Abfragen/überprüfen von Paketen mit Datei-Kennung"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:138
 msgid "rpm query mode"
 msgstr "Abfrage-Modus"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:140
 msgid "query/verify a header instance"
 msgstr "Abfragen/überprüfen einer Header-Instanz"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:142
 msgid "query a spec file"
 msgstr "Abfragen einer Spec-Datei"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:142 lib/poptQV.c:144
 msgid "<spec>"
 msgstr "<Spec-Datei>"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:144
+#, fuzzy
+msgid "query source metadata from spec file parse"
+msgstr "Baue nur ein Source-Paket von <Spec-Datei>"
+
+#: lib/poptQV.c:146
 msgid "query/verify package(s) from install transaction"
 msgstr "Abfragen/überprüfen von Paketen einer Installation"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:148
 msgid "query the package(s) triggered by the package"
 msgstr "Abfragen eines Pakets gesteuert vom Paket"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:150
 msgid "rpm verify mode"
 msgstr "Überprüfungsmodus"
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:152
 msgid "query/verify the package(s) which require a dependency"
 msgstr "Abfrage nach Paketen, die eine Fähigkeit benötigen"
 
-#: lib/poptQV.c:146
+#: lib/poptQV.c:154
 msgid "query/verify the package(s) which require any contained provide"
 msgstr ""
 "Abfrage nach Paketen, die jede enthaltene und bereitgestellte Fähigkeit "
 "benötigen"
 
-#: lib/poptQV.c:150
+#: lib/poptQV.c:158
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "Abfrage nach Paketen, die eine Fähigkeit bereitstellen"
 
-#: lib/poptQV.c:153
+#: lib/poptQV.c:161
 msgid "create transaction set"
 msgstr "Erstelle Transaktionsset"
 
-#: lib/poptQV.c:155
+#: lib/poptQV.c:163
 msgid "do not order transaction set"
 msgstr "Keine Sortierung des Transaktionssets"
 
-#: lib/poptQV.c:157
+#: lib/poptQV.c:165
 msgid "do not glob arguments"
 msgstr "\"Globbe\" nicht nach Argumenten"
 
-#: lib/poptQV.c:159
+#: lib/poptQV.c:167
 msgid "do not process non-package files as manifests"
 msgstr "Dateien nicht als Paket-Liste verarbeiten"
 
-#: lib/poptQV.c:161
+#: lib/poptQV.c:169
 msgid "do not read headers"
 msgstr "Header nicht lesen"
 
-#: lib/poptQV.c:276
+#: lib/poptQV.c:284
 msgid "list all configuration files"
 msgstr "Alle Konfigurationsdateien anzeigen"
 
-#: lib/poptQV.c:278
+#: lib/poptQV.c:286
 msgid "list all documentation files"
 msgstr "Alle Dokumentationsdateien anzeigen"
 
-#: lib/poptQV.c:280
+#: lib/poptQV.c:288
 msgid "dump basic file information"
 msgstr "Grundlegende Datei-Informationen auflisten"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:292
 msgid "list files in package"
 msgstr "Alle Dateien im Paket auflisten"
 
-#: lib/poptQV.c:293 lib/poptQV.c:340
+#: lib/poptQV.c:301 lib/poptQV.c:348
 #, c-format
 msgid "skip %%config files"
 msgstr "Überspringe %%config-Dateien"
 
-#: lib/poptQV.c:296 lib/poptQV.c:343
+#: lib/poptQV.c:304 lib/poptQV.c:351
 #, c-format
 msgid "skip %%doc files"
 msgstr "Überspringe %%doc-Dateien"
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:307
 #, c-format
 msgid "skip %%ghost files"
 msgstr "Überspringe %%ghost-Dateien"
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:311
 #, c-format
 msgid "skip %%license files"
 msgstr "Überspringe %%license-Dateien"
 
-#: lib/poptQV.c:306
+#: lib/poptQV.c:314
 #, c-format
 msgid "skip %%readme files"
 msgstr "Überspringe %%readme-Dateien"
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:320
 msgid "use the following query format"
 msgstr "Folgendes Abfrage-Format benutzen"
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:320
 msgid "QUERYFORMAT"
 msgstr "ABFRAGE-FORMAT"
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:322
 msgid "substitute i18n sections into spec file"
 msgstr "Austauschen von i18n-Abschnitten in der Spec-Datei"
 
-#: lib/poptQV.c:316
+#: lib/poptQV.c:324
 msgid "display the states of the listed files"
 msgstr "Anzeigen der Zustände der aufgelisteten Dateien"
 
-#: lib/poptQV.c:358
+#: lib/poptQV.c:366
 msgid "don't verify size of files"
 msgstr "Keine Größenüberprüfung der Dateien"
 
-#: lib/poptQV.c:361
+#: lib/poptQV.c:369
 msgid "don't verify symlink path of files"
 msgstr "Keine Überprüfung der symbolischen Links der Dateien"
 
-#: lib/poptQV.c:364
+#: lib/poptQV.c:372
 msgid "don't verify owner of files"
 msgstr "Keine Überprüfung der Eigentümer der Dateien"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:375
 msgid "don't verify group of files"
 msgstr "Keine Überprüfung der Gruppen der Dateien"
 
-#: lib/poptQV.c:370
+#: lib/poptQV.c:378
 msgid "don't verify modification time of files"
 msgstr "Keine Überprüfung der letzten Bearbeitungszeit der Dateien"
 
-#: lib/poptQV.c:373 lib/poptQV.c:376
+#: lib/poptQV.c:381 lib/poptQV.c:384
 msgid "don't verify mode of files"
 msgstr "Keine Überprüfung der Berechtigungen der Dateien"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:387
 msgid "don't verify file security contexts"
 msgstr "Keine Überprüfung des Sicherheitskontexts"
 
-#: lib/poptQV.c:381
+#: lib/poptQV.c:389
 msgid "don't verify files in package"
 msgstr "Keine Überprüfung der Dateien im Paket"
 
-#: lib/poptQV.c:384 lib/poptQV.c:387
+#: lib/poptQV.c:392 lib/poptQV.c:395
 msgid "don't verify package dependencies"
 msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
-#: lib/poptQV.c:392 lib/poptQV.c:396 lib/poptQV.c:399 lib/poptQV.c:402
+#: lib/poptQV.c:400 lib/poptQV.c:404 lib/poptQV.c:407 lib/poptQV.c:410
 msgid "don't execute verify script(s)"
 msgstr "Kein(e) Überprüfungsskript(e) ausführen"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:444
 msgid "sign package(s) (identical to --resign)"
 msgstr "Signiere Paket(e) (identisch mit --resign)"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:446
 msgid "verify package signature(s)"
 msgstr "Überprüfe Paket-Signatur(en)"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:448
 msgid "delete package signatures"
 msgstr "Lösche Paket-Signatur(en)"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:450
 msgid "import an armored public key"
 msgstr "Importiere einen gepanzerten öffentlichen Schlüssel"
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:452
 msgid "sign package(s) (identical to --addsign)"
 msgstr "Signiere Paket(e) (identisch mit --addsign)"
 
-#: lib/poptQV.c:446
+#: lib/poptQV.c:454
 msgid "generate signature"
 msgstr "Erzeuge Signatur"
 
-#: lib/poptQV.c:449
+#: lib/poptQV.c:457
 msgid "specify trust metric"
 msgstr "Vertrauensbereich festlegen"
 
-#: lib/poptQV.c:452
+#: lib/poptQV.c:460
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr "Importierten Schlüsseln wird absolut vertraut"
 
-#: lib/poptQV.c:455
+#: lib/poptQV.c:463
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr "Importierten Schlüsseln wird nicht vertraut"
 
@@ -2556,62 +2575,62 @@ msgstr "Paket hat keine Eigentümer-/Gruppen-Liste\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "Paket weder Eigentümer- noch ID-Liste\n"
 
-#: lib/query.c:514
+#: lib/query.c:515
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s enthält keine Pakete\n"
 
-#: lib/query.c:523
+#: lib/query.c:524
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "Keine Paket-Trigger %s\n"
 
-#: lib/query.c:536 lib/query.c:557 lib/query.c:579 lib/query.c:614
+#: lib/query.c:537 lib/query.c:558 lib/query.c:580 lib/query.c:615
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "Missgebildet: %s: %s\n"
 
-#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
+#: lib/query.c:547 lib/query.c:564 lib/query.c:591 lib/query.c:620
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "Kein Paket stimmt mit %s überein: %s\n"
 
-#: lib/query.c:630
+#: lib/query.c:631
 #, c-format
 msgid "no package requires %s\n"
 msgstr "Kein Paket benötigt %s\n"
 
-#: lib/query.c:641
+#: lib/query.c:642
 #, c-format
 msgid "no package provides %s\n"
 msgstr "Kein Paket bietet %s\n"
 
-#: lib/query.c:675
+#: lib/query.c:676
 #, c-format
 msgid "file %s: %s\n"
 msgstr "Datei %s: %s\n"
 
-#: lib/query.c:678
+#: lib/query.c:679
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "Die Datei %s gehört zu keinem Paket\n"
 
-#: lib/query.c:703
+#: lib/query.c:704
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "Ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:706
+#: lib/query.c:707
 #, c-format
 msgid "package record number: %u\n"
 msgstr "Nummer des Paket-Eintrags: %u\n"
 
-#: lib/query.c:710
+#: lib/query.c:711
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "Eintrag %u konnte nicht gelesen werden\n"
 
-#: lib/query.c:720 lib/query.c:726 lib/rpminstall.c:819
+#: lib/query.c:721 lib/query.c:727 lib/rpminstall.c:819
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Das Paket %s ist nicht installiert\n"
@@ -2723,87 +2742,87 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:785 lib/rpmds.c:3680
+#: lib/rpmds.c:786 lib/rpmds.c:3680
 msgid "NO "
 msgstr "NEIN "
 
-#: lib/rpmds.c:785 lib/rpmds.c:3680
+#: lib/rpmds.c:786 lib/rpmds.c:3680
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1276
+#: lib/rpmds.c:1277
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, und Obsoletes: unterstützen Versionen."
 
-#: lib/rpmds.c:1279
+#: lib/rpmds.c:1280
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Dateiname(n) als (dirName,baseName,dirIndex)-Tupel gespeichert, nicht als "
 "Pfad."
 
-#: lib/rpmds.c:1282
+#: lib/rpmds.c:1283
 msgid "package payload can be compressed using bzip2."
 msgstr "Paket-Nutzdaten können mit bzip2 komprimiert werden."
 
-#: lib/rpmds.c:1285
+#: lib/rpmds.c:1286
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "Dateien der Paket-Nutzdaten haben \"./\" als Präfix"
 
-#: lib/rpmds.c:1288
+#: lib/rpmds.c:1289
 msgid "package name-version-release is not implicitly provided."
 msgstr "Paket Name-Version-Release wird nicht unbedingt bereitgestellt."
 
-#: lib/rpmds.c:1291
+#: lib/rpmds.c:1292
 msgid "header tags are always sorted after being loaded."
 msgstr "Header-Tags werden immer nach dem Laden sortiert."
 
-#: lib/rpmds.c:1294
+#: lib/rpmds.c:1295
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "Der Skriptlet-Interpreter kann Argumente aus dem Header benutzen."
 
-#: lib/rpmds.c:1297
+#: lib/rpmds.c:1298
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "Eine harte Verlinkung kann auch ohne eine komplette Installation angelegt "
 "werden."
 
-#: lib/rpmds.c:1300
+#: lib/rpmds.c:1301
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "Paket-Skriptlets können während der Installation auf die RPM-Datenbank "
 "zugreifen."
 
-#: lib/rpmds.c:1304
+#: lib/rpmds.c:1305
 msgid "internal support for lua scripts."
 msgstr "Interne Unterstützung für LUA-Skripte"
 
-#: lib/rpmds.c:1308
+#: lib/rpmds.c:1309
 msgid "header tags can be type int_64."
 msgstr "Header-Tags können vom Typ int_64 sein."
 
-#: lib/rpmds.c:1311
+#: lib/rpmds.c:1312
 msgid "package payload can be in ustar tar archive format."
 msgstr "Paket-Nutzdaten können im ustar Tar-Archivformat sein."
 
-#: lib/rpmds.c:1314
+#: lib/rpmds.c:1315
 msgid "package payload can be compressed using lzma."
 msgstr "Paket-Nutzdaten können mit lzma komprimiert werden."
 
-#: lib/rpmds.c:1317
+#: lib/rpmds.c:1318
 msgid "file digests can be other than MD5."
 msgstr "Datei-Prüfsummen können andere als MD5 sein."
 
-#: lib/rpmds.c:1432
+#: lib/rpmds.c:1433
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "Zeile %s:%d \"%s\" muss alphanumerisch, mit '_' oder '/' beginnen:\n"
 
-#: lib/rpmds.c:1466
+#: lib/rpmds.c:1467
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr "%s:%d Keinen Vergleichsoperator gefunden.\n"
 
-#: lib/rpmds.c:1476
+#: lib/rpmds.c:1477
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr "%s:%d Keinen EVR-Vergleichswert gefunden.\n"
@@ -3887,16 +3906,16 @@ msgstr "(Index außerhalb des Bereichs)"
 msgid "array iterator used with different sized arrays"
 msgstr "Zählvariable wird mit ungleich großem Array benutzt"
 
-#: rpmdb/header.c:3766 rpmdb/header.c:3803 rpmdb/header.c:3826
+#: rpmdb/header.c:3770 rpmdb/header.c:3807 rpmdb/header.c:3830
 msgid "(not a number)"
 msgstr "(keine Nummer)"
 
-#: rpmdb/header.c:3865
+#: rpmdb/header.c:3869
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3882
+#: rpmdb/header.c:3886
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
