@@ -2382,13 +2382,9 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     struct Source *srcPtr;
     Package pkg;
 
-    if (spec->sourceHdrInit)
-	return 0;
-
-    spec->sourceHdrInit = 1;
-
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
+    if (!spec->sourceHdrInit)
     for (hi = headerInitIterator(spec->packages->header);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
@@ -2424,7 +2420,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     hi = headerFreeIterator(hi);
     /*@=branchstate@*/
 
-    if (spec->BANames && spec->BACount > 0) {
+    if (!spec->sourceHdrInit && spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
 		       RPM_STRING_ARRAY_TYPE,
 		       spec->BANames, spec->BACount);
@@ -2439,6 +2435,16 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     appendLineStringBuf(sourceFiles, spec->specFile);
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
+      {	const char * sfn;
+	sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
+		"%{_sourcedir}/", srcPtr->source, NULL);
+	appendLineStringBuf(sourceFiles, sfn);
+	sfn = _free(sfn);
+      }
+
+	if (spec->sourceHdrInit)
+	    continue;
+
 	if (srcPtr->flags & RPMFILE_SOURCE) {
 	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
 				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
@@ -2456,12 +2462,6 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	    }
 	}
 
-      {	const char * sfn;
-	sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
-		"%{_sourcedir}/", srcPtr->source, NULL);
-	appendLineStringBuf(sourceFiles, sfn);
-	sfn = _free(sfn);
-      }
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
@@ -2476,6 +2476,8 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 
     if (sfp == NULL)
 	sourceFiles = freeStringBuf(sourceFiles);
+
+    spec->sourceHdrInit = 1;
 
     return 0;
 }

@@ -350,10 +350,10 @@ typedef enum rpmTag_e {
     RPMTAG_DEFAULTPREFIX	= 1056, /*!< internal - deprecated */
     RPMTAG_BUILDROOT		= 1057, /*!< internal */
     RPMTAG_INSTALLPREFIX	= 1058, /*!< internal - deprecated */
-    RPMTAG_EXCLUDEARCH		= 1059,
-    RPMTAG_EXCLUDEOS		= 1060,
-    RPMTAG_EXCLUSIVEARCH	= 1061,
-    RPMTAG_EXCLUSIVEOS		= 1062,
+    RPMTAG_EXCLUDEARCH		= 1059, /*!< s[] */
+    RPMTAG_EXCLUDEOS		= 1060, /*!< s[] */
+    RPMTAG_EXCLUSIVEARCH	= 1061, /*!< s[] */
+    RPMTAG_EXCLUSIVEOS		= 1062, /*!< s[] */
     RPMTAG_AUTOREQPROV		= 1063, /*!< internal */
     RPMTAG_RPMVERSION		= 1064,	/* s */
     RPMTAG_TRIGGERSCRIPTS	= 1065,	/* s[] */

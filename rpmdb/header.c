@@ -3516,7 +3516,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    tagT = numElements > 1
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
 		}
-		need = sizeof("  :     ") + strlen(tagN);
+		need = sizeof("  :     - ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
 		*te++ = ' ';
@@ -3526,8 +3526,12 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 			? '\n' : ' ');
 		/* XXX Dirnames: in srpms need "    " indent */
-		if (numElements == 1 && spft->u.tag.tag == 1118)
+		if (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+		 && numElements == 1) {
 		    te = stpcpy(te, "    ");
+		    if (spft->u.tag.tag != 1118)
+			te = stpcpy(te, "- ");
+		}
 		*te = '\0';
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);
