@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -544,6 +544,21 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Sat Mar 31 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.2
+- debugedit: canonicalize_path was broken (#232222).
+- permit clean scriptlet element overrides.
+- add RPMTAG_REPOTAG.
+- non-linux: avoid all mutexes if waitpid is used for reaping.
+- use pipe(2) for SIGCHLD receipt signalling.
+- python: teach labelCompare that missing epoch is same as 0 (#227860).
+- add source rpm file attributes, eliminate RPMBUILD_ISFOO.
+- populate sourceHeader with build restrictions early instead.
+- add --specsrpm to permit querying parsed source rpm header.
+- populate sourceHeader with source/patch tags for query (#227513).
+- make sure srpm header is initialized exactly once while refactoring.
+- add Keywords: and BuildPlatforms: syntax.
+- perform an RPMTAG_ICON tracheotomy.
+
 * Tue Feb 20 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.1
 - start rpm-4.4.9 devel.
 - replace rpm2cpio with a shell script (#229422).
