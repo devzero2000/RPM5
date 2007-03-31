@@ -187,9 +187,6 @@ struct Package_s {
 /*@refcounted@*/
     rpmfi cpioList;
 
-/*@owned@*/
-    struct Source * icon;
-
     int autoReq;
     int autoProv;
 

@@ -23,30 +23,28 @@ static void doRmSource(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
-    struct Source *p;
-    Package pkg;
+    struct Source *sp;
     int rc;
     
 #if 0
     rc = Unlink(spec->specFile);
 #endif
 
-    for (p = spec->sources; p != NULL; p = p->next) {
-	if (! (p->flags & RPMFILE_GHOST)) {
-	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	    rc = Unlink(fn);
-	    fn = _free(fn);
-	}
-    }
-
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	for (p = pkg->icon; p != NULL; p = p->next) {
-	    if (! (p->flags & RPMFILE_GHOST)) {
-		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-		rc = Unlink(fn);
-		fn = _free(fn);
-	    }
-	}
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
+	const char *dn, *fn;
+	if (sp->flags & RPMFILE_GHOST)
+	    continue;
+	if (sp->flags & RPMFILE_SOURCE)
+	    dn = "%{_sourcedir}/";
+	else if (sp->flags & RPMFILE_PATCH)
+	    dn = "%{_patchdir}/";
+	else if (sp->flags & RPMFILE_ICON)
+	    dn = "%{_icondir}/";
+	else
+	    continue;
+	fn = rpmGenPath(NULL, dn, sp->source);
+	rc = Unlink(fn);
+	fn = _free(fn);
     }
 }
 

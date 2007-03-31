@@ -94,16 +94,15 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     }
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
-	if ((sp->flags & RPMFILE_PATCH) && (sp->num == c)) {
+	if ((sp->flags & RPMFILE_PATCH) && (sp->num == c))
 	    break;
-	}
     }
     if (sp == NULL) {
 	rpmError(RPMERR_BADSPEC, _("No patch number %d\n"), c);
 	return NULL;
     }
 
-    Lurlfn = rpmGetPath("%{_patchdir}/", sp->source, NULL);
+    Lurlfn = rpmGenPath(NULL, "%{_patchdir}/", sp->source);
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
@@ -206,7 +205,7 @@ static const char *doUntar(Spec spec, int c, int quietly)
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
     /*@=internalglobs@*/
 
-    Lurlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    Lurlfn = rpmGenPath(NULL, "%{_sourcedir}/", sp->source);
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
@@ -558,7 +557,7 @@ static int doPatchMacro(Spec spec, char *line)
 /*@=boundswrite@*/
 
 /**
- * Check that all sources/patches exist locally, fetching if necessary.
+ * Check that all sources/patches/icons exist locally, fetching if necessary.
  */
 static int prepFetch(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -589,6 +588,15 @@ static int prepFetch(Spec spec)
     if (rpmrc != RPMRC_OK)
 	return -1;
 
+    /* XXX insure that %{_icondir} exists */
+    rpmrc = RPMRC_OK;
+    Lurlfn = rpmGenPath(NULL, "%{?_icondir}", NULL);
+    if (Lurlfn != NULL && *Lurlfn != '\0')
+	rpmrc = rpmMkdirPath(Lurlfn, "_icondir");
+    Lurlfn = _free(Lurlfn);
+    if (rpmrc != RPMRC_OK)
+	return -1;
+
 /*@-branchstate@*/
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
@@ -601,9 +609,13 @@ static int prepFetch(Spec spec)
 	    Rmacro = "%{_Rpatchdir}/";
 	    Lmacro = "%{_patchdir}/";
 	} else
+	if (sp->flags & RPMFILE_ICON) {
+	    Rmacro = "%{_Ricondir}/";
+	    Lmacro = "%{_icondir}/";
+	} else
 	    continue;
 
-	Lurlfn = rpmGetPath(Lmacro, sp->source, NULL);
+	Lurlfn = rpmGenPath(NULL, Lmacro, sp->source);
 	rc = Lstat(Lurlfn, &st);
 	if (rc == 0)
 	    goto bottom;
@@ -612,7 +624,7 @@ static int prepFetch(Spec spec)
 	    goto bottom;
 	}
 
-	Rurlfn = rpmGetPath(Rmacro, sp->source, NULL);
+	Rurlfn = rpmGenPath(NULL, Rmacro, sp->source);
 	if (Rurlfn == NULL || *Rurlfn == '%' || !strcmp(Lurlfn, Rurlfn)) {
 	    rpmError(RPMERR_BADFILENAME, _("file %s missing: %s\n"),
 		Lurlfn, strerror(errno));

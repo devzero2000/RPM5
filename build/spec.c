@@ -115,7 +115,6 @@ Package newPackage(Spec spec)
 
     p->header = headerNew();
     p->ds = NULL;
-    p->icon = NULL;
 
     p->autoProv = 1;
     p->autoReq = 1;
@@ -175,7 +174,6 @@ Package freePackage(Package pkg)
     }
 
     pkg->specialDoc = freeStringBuf(pkg->specialDoc);
-    pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
 
     pkg = _free(pkg);
@@ -258,7 +256,8 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 {
     struct Source *p;
     int flag = 0;
-    char *name = NULL;
+    const char *name = NULL;
+    const char *mdir = NULL;
     char *nump;
     const char *fieldp = NULL;
     char buf[BUFSIZ];
@@ -267,47 +266,50 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     buf[0] = '\0';
     /*@-branchstate@*/
     switch (tag) {
-      case RPMTAG_SOURCE:
+    case RPMTAG_SOURCE:
 	flag = RPMFILE_SOURCE;
 	name = "source";
+	mdir = "%{_sourcedir}/";
 	fieldp = spec->line + (sizeof("Source")-1);
 	break;
-      case RPMTAG_PATCH:
+    case RPMTAG_PATCH:
 	flag = RPMFILE_PATCH;
 	name = "patch";
+	mdir = "%{_patchdir}/";
 	fieldp = spec->line + (sizeof("Patch")-1);
 	break;
-      case RPMTAG_ICON:
+    case RPMTAG_ICON:
 	flag = RPMFILE_ICON;
 	name = "icon";
+	mdir = "%{_icondir}/";
 	fieldp = NULL;
 	break;
+    default:
+assert(0);
+	/*@notreached@*/ break;
     }
     /*@=branchstate@*/
 
     /* Get the number */
-    if (tag != RPMTAG_ICON) {
+    if (fieldp != NULL) {
 	/* We already know that a ':' exists, and that there */
 	/* are no spaces before it.                          */
 	/* This also now allows for spaces and tabs between  */
 	/* the number and the ':'                            */
 
 	nump = buf;
-	while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t')) {
+	while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t'))
 	    *nump++ = *fieldp++;
-	}
 	*nump = '\0';
 
 	nump = buf;
 	SKIPSPACE(nump);
-	if (nump == NULL || *nump == '\0') {
+	if (nump == NULL || *nump == '\0')
 	    num = 0;
-	} else {
-	    if (parseNum(buf, &num)) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Bad %s number: %s\n"),
+	else if (parseNum(buf, &num)) {
+	    rpmError(RPMERR_BADSPEC, _("line %d: Bad %s number: %s\n"),
 			 spec->lineNum, name, spec->line);
-		return RPMERR_BADSPEC;
-	    }
+	    return RPMERR_BADSPEC;
 	}
     }
 
@@ -317,26 +319,19 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     p->fullSource = xstrdup(field);
     p->flags = flag;
     p->source = strrchr(p->fullSource, '/');
-    if (p->source) {
+    if (p->source)
 	p->source++;
-    } else {
+    else
 	p->source = p->fullSource;
-    }
 
-    if (tag != RPMTAG_ICON) {
-	p->next = spec->sources;
-	spec->sources = p;
-    } else {
-	p->next = pkg->icon;
-	pkg->icon = p;
-    }
+    p->next = spec->sources;
+    spec->sources = p;
 
     spec->numSources++;
 
+    /* XXX FIXME: need to add ICON* macros. */
     if (tag != RPMTAG_ICON) {
-	/*@-nullpass@*/		/* LCL: varargs needs null annotate. */
-	const char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	/*@=nullpass@*/
+	const char *body = rpmGenPath(NULL, mdir, p->source);
 
 	sprintf(buf, "%s%d",
 		(flag & RPMFILE_PATCH) ? "PATCH" : "SOURCE", num);

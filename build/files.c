@@ -2380,11 +2380,10 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     const void * ptr;
     StringBuf sourceFiles;
     struct Source *srcPtr;
-    Package pkg;
 
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
-    if (!spec->sourceHdrInit)
+  if (!spec->sourceHdrInit) {
     for (hi = headerInitIterator(spec->packages->header);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
@@ -2408,6 +2407,9 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	case RPMTAG_CHANGELOGNAME:
 	case RPMTAG_CHANGELOGTEXT:
 	case RPMTAG_URL:
+	case RPMTAG_ICON:
+	case RPMTAG_GIF:
+	case RPMTAG_XPM:
 	case HEADER_I18NTABLE:
 	    if (ptr)
 		(void)headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
@@ -2420,11 +2422,12 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     hi = headerFreeIterator(hi);
     /*@=branchstate@*/
 
-    if (!spec->sourceHdrInit && spec->BANames && spec->BACount > 0) {
+    if (spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
 		       RPM_STRING_ARRAY_TYPE,
 		       spec->BANames, spec->BACount);
     }
+  }
 
     if (sfp != NULL && *sfp != NULL)
 	sourceFiles = *sfp;
@@ -2460,17 +2463,6 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOPATCH,
 				       RPM_INT32_TYPE, &srcPtr->num, 1);
 	    }
-	}
-
-    }
-
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
-	    const char * sfn;
-	    sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
-		"%{_sourcedir}/", srcPtr->source, NULL);
-	    appendLineStringBuf(sourceFiles, sfn);
-	    sfn = _free(sfn);
 	}
     }
 
