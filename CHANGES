@@ -14,6 +14,7 @@
 	- make sure srpm header is initialized exactly once while refactoring.
 	- add Keywords: and BuildPlatforms: syntax.
 	- perform an RPMTAG_ICON tracheotomy.
+	- perl: extract dependencies from *.pm iff on /usr/lib* (#234691).
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

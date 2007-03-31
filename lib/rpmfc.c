@@ -738,10 +738,12 @@ static int rpmfcSCRIPT(rpmfc fc)
     (void) fclose(fp);
 
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
-	if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
-	    xx = rpmfcHelper(fc, 'P', "perl");
-	if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
-	    xx = rpmfcHelper(fc, 'R', "perl");
+	if (!strncmp(fn, "/usr/lib", sizeof("/usr/lib")-1)) {
+	    if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
+		xx = rpmfcHelper(fc, 'P', "perl");
+	    if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
+		xx = rpmfcHelper(fc, 'R', "perl");
+	}
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
 	xx = rpmfcHelper(fc, 'P', "python");
