@@ -1,0 +1,29 @@
+%_dbi_tags      Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys
+
+%_dbi_config_Dirnames		%{_dbi_btconfig}
+%_dbi_config_Requireversion	%{_dbi_btconfig}
+%_dbi_config_Provideversion	%{_dbi_btconfig}
+%_dbi_config_Installtid		%{_dbi_btconfig}
+%_dbi_config_Removetid		%{_dbi_btconfig}
+
+%_dbi_config_Basenames		%{_dbi_htconfig}
+%_dbi_config_Conflictname	%{_dbi_htconfig}
+%_dbi_config_Filedigests	%{_dbi_htconfig}
+%_dbi_config_Group		%{_dbi_htconfig}
+%_dbi_config_Name		%{_dbi_htconfig}
+%_dbi_config_Packagecolor	%{_dbi_htconfig}
+%_dbi_config_Providename	%{_dbi_htconfig}
+%_dbi_config_Pubkeys		%{_dbi_htconfig}
+%_dbi_config_Requirename	%{_dbi_htconfig}
+%_dbi_config_Sha1header		%{_dbi_htconfig}
+%_dbi_config_Sigmd5		%{_dbi_htconfig}
+%_dbi_config_Triggername	%{_dbi_htconfig}
+
+# "Packages" should have shared/exclusive fcntl(2) lock using "lockdbfd".
+%_dbi_config_Packages		%{_dbi_htconfig} lockdbfd
+
+# "Depends" is a per-transaction cache of known dependency resolutions.
+%_dbi_config_Depends		%{_dbi_htconfig} temporary private
+
+# The default database configuration to use
+%_dbi_config    %{_dbi_htconfig}
