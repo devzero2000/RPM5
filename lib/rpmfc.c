@@ -738,7 +738,7 @@ static int rpmfcSCRIPT(rpmfc fc)
     (void) fclose(fp);
 
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
-	if (!strncmp(fn, "/usr/lib", sizeof("/usr/lib")-1)) {
+	if (strncmp(fn, "/usr/share/doc/", sizeof("/usr/share/doc/")-1)) {
 	    if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
 		xx = rpmfcHelper(fc, 'P', "perl");
 	    if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))

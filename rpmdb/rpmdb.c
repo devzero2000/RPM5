@@ -3022,9 +3022,11 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t) headerGetEntryMinMemory;
+    HAE_t hae = (HAE_t) headerAddEntry;
     HFD_t hfd = headerFreeData;
     sigset_t signalMask;
+    uint32_t hcolor = 0;
     const char ** baseNames;
     rpmTagType bnt;
     int count = 0;
@@ -3051,7 +3053,13 @@ memset(data, 0, sizeof(*data));
     if (iid != 0 && iid != -1) {
 	int_32 tid = iid;
 	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
-	   xx = headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
+	   xx = hae(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
+    }
+
+    /* Add the package color if not present. */
+    if (!hge(h, RPMTAG_PACKAGECOLOR, &bnt, (void **) &hcolor, &count)) {
+	hcolor = hGetColor(h);
+	xx = hae(h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE, &hcolor, 1);
     }
 
     /*

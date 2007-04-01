@@ -15,6 +15,9 @@
 	- add Keywords: and BuildPlatforms: syntax.
 	- perform an RPMTAG_ICON tracheotomy.
 	- perl: extract dependencies from *.pm iff on /usr/lib* (#234691).
+	- refactor header subroutines out of -lrpmlib into -lrpmdb.
+	- add RPMTAG_PACKAGECOLOR at install time, retrofit on --rebuilddb.
+	- add Packagecolor index to handle multilib scriptlet instance counts.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

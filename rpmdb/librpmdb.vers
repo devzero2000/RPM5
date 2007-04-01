@@ -32,6 +32,9 @@ LIBRPMDB_0
     headerMacrosUnload;
     headerNEVRA;
     headerNVR;
+    hGetColor;
+    hGetNEVR;
+    hGetNEVRA;
     _init;
     mergesort;
     prDbiOpenFlags;

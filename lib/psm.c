@@ -1834,6 +1834,7 @@ assert(psm->te != NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
+	    uint_32 tecolor = rpmteColor(psm->te);
 	    int_32 installTime = (int_32) time(NULL);
 	    int fc = rpmfiFC(fi);
 	    const char * origin;
@@ -1849,6 +1850,9 @@ assert(psm->te != NULL);
 
 	    xx = hae(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
 				&tscolor, 1);
+
+	    xx = hae(fi->h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE,
+				&tecolor, 1);
 
 	    /* Add the header's origin (i.e. URL) */
 	    origin = headerGetOrigin(fi->h);

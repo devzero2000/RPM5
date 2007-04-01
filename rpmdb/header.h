@@ -817,6 +817,84 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 #include "hdrinline.h"
 #endif
 
+/**
+ * Define per-header macros.
+ * @param h		header
+ * @return		0 always
+ */
+int headerMacrosLoad(Header h)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
+
+/**
+ * Define per-header macros.
+ * @param h		header
+ * @return		0 always
+ */
+int headerMacrosUnload(Header h)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
+
+/** \ingroup header
+ * Return name, version, release strings from header.
+ * @param h		header
+ * @retval *np		name pointer (or NULL)
+ * @retval *vp		version pointer (or NULL)
+ * @retval *rp		release pointer (or NULL)
+ * @return		0 always
+ */
+int headerNVR(Header h,
+		/*@null@*/ /*@out@*/ const char ** np,
+		/*@null@*/ /*@out@*/ const char ** vp,
+		/*@null@*/ /*@out@*/ const char ** rp)
+	/*@modifies *np, *vp, *rp @*/;
+
+/** \ingroup header
+ * Return name, epoch, version, release, arch strings from header.
+ * @param h		header
+ * @retval *np		name pointer (or NULL)
+ * @retval *ep		epoch pointer (or NULL)
+ * @retval *vp		version pointer (or NULL)
+ * @retval *rp		release pointer (or NULL)
+ * @retval *ap		arch pointer (or NULL)
+ * @return		0 always
+ */
+int headerNEVRA(Header h,
+		/*@null@*/ /*@out@*/ const char ** np,
+		/*@null@*/ /*@out@*/ /*@unused@*/ const char ** ep,
+		/*@null@*/ /*@out@*/ const char ** vp,
+		/*@null@*/ /*@out@*/ const char ** rp,
+		/*@null@*/ /*@out@*/ const char ** ap)
+	/*@modifies *np, *vp, *rp, *ap @*/;
+
+/**
+ * Return (malloc'd) header name-version-release string.
+ * @param h		header
+ * @retval np		name tag value
+ * @return		name-version-release string
+ */
+/*@only@*/
+char * hGetNEVR(Header h, /*@null@*/ /*@out@*/ const char ** np )
+	/*@modifies *np @*/;
+
+/**
+ * Return (malloc'd) header name-version-release.arch string.
+ * @param h		header
+ * @retval np		name tag value
+ * @return		name-version-release string
+ */
+/*@only@*/
+char * hGetNEVRA(Header h, /*@null@*/ /*@out@*/ const char ** np )
+	/*@modifies *np @*/;
+
+/**
+ * Return header color.
+ * @param h		header
+ * @return		header color
+ */
+uint_32 hGetColor(Header h)
+	/*@modifies h @*/;
+
 #ifdef __cplusplus
 }
 #endif

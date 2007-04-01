@@ -1050,34 +1050,6 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/**
- * Return (malloc'd) header name-version-release string.
- * @param h		header
- * @retval np		name tag value
- * @return		name-version-release string
- */
-/*@only@*/
-char * hGetNEVR(Header h, /*@null@*/ /*@out@*/ const char ** np )
-	/*@modifies *np @*/;
-
-/**
- * Return (malloc'd) header name-version-release.arch string.
- * @param h		header
- * @retval np		name tag value
- * @return		name-version-release string
- */
-/*@only@*/
-char * hGetNEVRA(Header h, /*@null@*/ /*@out@*/ const char ** np )
-	/*@modifies *np @*/;
-
-/**
- * Return header color.
- * @param h		header
- * @return		header color
- */
-uint_32 hGetColor(Header h)
-	/*@modifies h @*/;
-
 #ifdef __cplusplus
 }
 #endif

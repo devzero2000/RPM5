@@ -34,9 +34,6 @@ LIBRPM_0
     headerMergeLegacySigs;
     headerRegenSigHeader;
     headerVerifyInfo;
-    hGetColor;
-    hGetNEVR;
-    hGetNEVRA;
     IDTXfree;
     IDTXglob;
     IDTXgrow;

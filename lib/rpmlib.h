@@ -128,56 +128,6 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmgi_s * rpmgi;
 
-/**
- * Define per-header macros.
- * @param h		header
- * @return		0 always
- */
-int headerMacrosLoad(Header h)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
-
-/**
- * Define per-header macros.
- * @param h		header
- * @return		0 always
- */
-int headerMacrosUnload(Header h)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
-
-/** \ingroup header
- * Return name, version, release strings from header.
- * @param h		header
- * @retval *np		name pointer (or NULL)
- * @retval *vp		version pointer (or NULL)
- * @retval *rp		release pointer (or NULL)
- * @return		0 always
- */
-int headerNVR(Header h,
-		/*@null@*/ /*@out@*/ const char ** np,
-		/*@null@*/ /*@out@*/ const char ** vp,
-		/*@null@*/ /*@out@*/ const char ** rp)
-	/*@modifies *np, *vp, *rp @*/;
-
-/** \ingroup header
- * Return name, epoch, version, release, arch strings from header.
- * @param h		header
- * @retval *np		name pointer (or NULL)
- * @retval *ep		epoch pointer (or NULL)
- * @retval *vp		version pointer (or NULL)
- * @retval *rp		release pointer (or NULL)
- * @retval *ap		arch pointer (or NULL)
- * @return		0 always
- */
-int headerNEVRA(Header h,
-		/*@null@*/ /*@out@*/ const char ** np,
-		/*@null@*/ /*@out@*/ /*@unused@*/ const char ** ep,
-		/*@null@*/ /*@out@*/ const char ** vp,
-		/*@null@*/ /*@out@*/ const char ** rp,
-		/*@null@*/ /*@out@*/ const char ** ap)
-	/*@modifies *np, *vp, *rp, *ap @*/;
-
 /** \ingroup header
  * Translate and merge legacy signature tags into header.
  * @todo Remove headerSort() through headerInitIterator() modifies sig.
@@ -481,6 +431,7 @@ typedef enum rpmTag_e {
     RPMTAG_REPOTAG		= 1181,	/* s */
     RPMTAG_KEYWORDS		= 1182,	/* s[] */
     RPMTAG_BUILDPLATFORMS	= 1183,	/* s[] */
+    RPMTAG_PACKAGECOLOR		= 1184, /* i */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
