@@ -1952,6 +1952,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 /*@-nullpass@*/
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	dbiIndexSet * matches;
+	unsigned int exclude;
 	int knownBad;
 	int fc;
 
@@ -1969,7 +1970,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(fc, sizeof(*matches));
-	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
+	exclude = (rpmteType(p) == TR_REMOVED ? fi->record : 0);
+	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc, exclude)) {
 	    ps = rpmpsFree(ps);
 	    lock = rpmtsFreeLock(lock);
 	    return 1;	/* XXX WTFO? */

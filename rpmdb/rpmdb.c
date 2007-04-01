@@ -42,6 +42,13 @@ static int _rebuildinprogress = 0;
 /*@unchecked@*/
 static int _db_filter_dups = 0;
 
+
+/* Use a path uniquifier in the upper 16 bits of tagNum? */
+/* XXX Note: one cannot just choose a value, rpmdb tagNum's need fixing too */
+#define	_DB_TAGGED_FILE_INDICES	1
+/*@unchecked@*/
+static int _db_tagged_file_indices = _DB_TAGGED_FILE_INDICES;
+
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
@@ -1341,6 +1348,23 @@ int rpmdbVerify(const char * prefix)
 }
 
 /**
+ * Return a tagnum with hash on the (directory) path in upper 16 bits.
+ * @param s		(directory) path
+ * @return		tagnum with (directory) path hash
+ */
+static inline unsigned taghash(const char *s)
+{
+    unsigned int r = 0;
+    int c;
+    while ((c = *(const unsigned char *)s++) != 0) {
+	/* XXX Excluding the '/' character may cause hash collisions. */
+	if (c != '/')
+	    r += (r << 3) + c;
+    }
+    return ((r & 0x7fff) | 0x8000) << 16;
+}
+
+/**
  * Find file matches in database.
  * @param db		rpm database
  * @param filespec
@@ -1418,6 +1442,13 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 if (rc == 0)
 (void) dbt2set(dbi, data, &allMatches);
+
+	/* strip off directory tags */
+	if (_db_tagged_file_indices && allMatches != NULL)
+	for (i = 0; i < allMatches->count; i++) {
+	    if (allMatches->recs[i].tagNum & 0x80000000)
+		allMatches->recs[i].tagNum &= 0x0000ffff;
+	}
 
 	xx = dbiCclose(dbi, dbcursor, 0);
 	dbcursor = NULL;
@@ -2466,7 +2497,8 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 }
 
 /*@-bounds@*/ /* LCL: segfault */
-static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
+static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum,
+		unsigned int exclude, unsigned int tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -2477,7 +2509,7 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
     dbiIndexSet set;
     int rc;
     int xx;
-    int i;
+    int i, j;
 
     if (mi == NULL)
 	return 1;
@@ -2513,6 +2545,31 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
 
     set = NULL;
     (void) dbt2set(dbi, data, &set);
+
+    /* prune the set against exclude and tag */
+    for (i = j = 0; i < set->count; i++) {
+	if (exclude && set->recs[i].hdrNum == exclude)
+	    continue;
+	if (_db_tagged_file_indices && set->recs[i].tagNum & 0x80000000) {
+	    /* tagged entry */
+	    if ((set->recs[i].tagNum & 0xffff0000) != tag)
+		continue;
+	    set->recs[i].tagNum &= 0x0000ffff;
+	}
+	if (i > j)
+	    set->recs[j] = set->recs[i];
+	j++;
+    }
+    if (j == 0) {
+#ifdef	SQLITE_HACK
+	xx = dbiCclose(dbi, dbcursor, 0);
+	dbcursor = NULL;
+#endif
+	set = dbiFreeIndexSet(set);
+	return DB_NOTFOUND;
+    }
+    set->count = j;
+
     for (i = 0; i < set->count; i++)
 	set->recs[i].fpNum = fpNum;
 
@@ -3029,6 +3086,9 @@ DBT * data = alloca(sizeof(*data));
     uint32_t hcolor = 0;
     const char ** baseNames;
     rpmTagType bnt;
+    const char ** dirNames;
+    int_32 * dirIndexes;
+    rpmTagType dit, dnt;
     int count = 0;
     dbiIndex dbi;
     int dbix;
@@ -3069,6 +3129,8 @@ memset(data, 0, sizeof(*data));
      */
 
     xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count);
+    xx = hge(h, RPMTAG_DIRINDEXES, &dit, (void **) &dirIndexes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
 
     (void) blockSignals(db, &signalMask);
 
@@ -3283,6 +3345,11 @@ data->size = 0;
 		 */
 		rec->tagNum = i;
 		switch (dbi->dbi_rpmtag) {
+		case RPMTAG_BASENAMES:
+		    /* tag index entry with directory hash */
+		    if (_db_tagged_file_indices && i < 0x010000)
+			rec->tagNum |= taghash(dirNames[dirIndexes[i]]);
+		    /*@switchbreak@*/ break;
 		case RPMTAG_PUBKEYS:
 		    /*@switchbreak@*/ break;
 		case RPMTAG_FILEMD5S:
@@ -3455,6 +3522,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 exit:
     (void) unblockSignals(db, &signalMask);
+    dirIndexes = hfd(dirIndexes, dit);
+    dirNames = hfd(dirNames, dnt);
 
     return ret;
 }
@@ -3462,7 +3531,7 @@ exit:
 /* XXX transaction.c */
 /*@-compmempass@*/
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
-		    int numItems)
+		    int numItems, unsigned int exclude)
 {
 DBT * key;
 DBT * data;
@@ -3484,6 +3553,7 @@ data = &mi->mi_data;
 
     /* Gather all installed headers with matching basename's. */
     for (i = 0; i < numItems; i++) {
+	   unsigned int tag;
 
 /*@-boundswrite@*/
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
@@ -3495,7 +3565,8 @@ key->data = (void *) fpList[i].baseName;
 key->size = strlen((char *)key->data);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
-	xx = rpmdbGrowIterator(mi, i);
+	tag = (_db_tagged_file_indices ? taghash(fpList[i].entry->dirName) : 0);
+	xx = rpmdbGrowIterator(mi, i, exclude, tag);
 
     }
 

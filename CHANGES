@@ -19,6 +19,9 @@
 	- add RPMTAG_PACKAGECOLOR at install time, retrofit on --rebuilddb.
 	- add Packagecolor index to handle multilib scriptlet instance counts.
 	- convert indices with ordering properties from DB_HASH to DB_BTREE.
+	- add findfplistexclude.diff patch from <mls@suse.de> (#140055).
+	- add taggedfileindex.diff patch from <mls@suse.de> (#103204).
+	- rework above 2 patches to be runtime, not compile time, configgerable.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

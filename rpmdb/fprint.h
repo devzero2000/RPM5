@@ -75,10 +75,12 @@ extern "C" {
  * @param fpList	fingerprint array
  * @retval matchList	returned fingerprint matches
  * @param numItems	number of fingerprint items
+ * @param exclude	excluded header instance (0 to disable)
  * @return		0 always
  */
 int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint  * fpList,
-		/*@out@*/ dbiIndexSet * matchList, int numItems)
+		/*@out@*/ dbiIndexSet * matchList, int numItems,
+		unsigned int exclude)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, *matchList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
