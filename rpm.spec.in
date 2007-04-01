@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.2
+Release: 0.3
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -544,6 +544,16 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Sun Apr  1 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.3
+- perl: extract dependencies from *.pm iff on /usr/lib* (#234691).
+- refactor header subroutines out of -lrpmlib into -lrpmdb.
+- add RPMTAG_PACKAGECOLOR at install time, retrofit on --rebuilddb.
+- add Packagecolor index to handle multilib scriptlet instance counts.
+- convert indices with ordering properties from DB_HASH to DB_BTREE.
+- add findfplistexclude.diff patch from <mls@suse.de> (#140055).
+- add taggedfileindex.diff patch from <mls@suse.de> (#103204).
+- rework above 2 patches to be runtime, not compile time, configgerable.
+
 * Sat Mar 31 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.2
 - debugedit: canonicalize_path was broken (#232222).
 - permit clean scriptlet element overrides.

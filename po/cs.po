@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-03-31 14:50-0400\n"
+"POT-Creation-Date: 2007-04-01 15:34-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -757,7 +757,7 @@ msgstr "Nemohu pøeèíst payload z %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nemohu zapsat payload do %s: %s\n"
 
-#: build/pack.c:839 lib/psm.c:1956
+#: build/pack.c:839 lib/psm.c:1960
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapsáno: %s\n"
@@ -2563,12 +2563,12 @@ msgstr "rozbalování archívu selhalo %s%s: %s\n"
 msgid " on file "
 msgstr " na souboru "
 
-#: lib/psm.c:1964
+#: lib/psm.c:1968
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nemohu otevøít %s: %s\n"
 
-#: lib/psm.c:1967
+#: lib/psm.c:1971
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s selhalo\n"
@@ -2946,27 +2946,27 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr "Nemohu zapsat v¹echna data do %s\n"
 
-#: lib/rpmfc.c:997
+#: lib/rpmfc.c:999
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
 
-#: lib/rpmfc.c:1005
+#: lib/rpmfc.c:1007
 #, fuzzy, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s rmdir %s selhal: %s\n"
 
-#: lib/rpmfc.c:1071
+#: lib/rpmfc.c:1073
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1289
+#: lib/rpmfc.c:1291
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: lib/rpmfc.c:1295 lib/rpmfc.c:1306
+#: lib/rpmfc.c:1297 lib/rpmfc.c:1308
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Selhalo vyhledání %s:\n"
@@ -3007,7 +3007,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:127 lib/rpminstall.c:495
-#: lib/rpminstall.c:624 lib/rpminstall.c:1066 lib/rpmts.c:656
+#: lib/rpminstall.c:624 lib/rpminstall.c:1066 lib/rpmts.c:587
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
@@ -3391,56 +3391,56 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:194
+#: lib/rpmts.c:125
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: lib/rpmts.c:290
+#: lib/rpmts.c:221
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/rpmts.c:308
+#: lib/rpmts.c:239
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Chybí '(' v %s %s\n"
 
-#: lib/rpmts.c:316
+#: lib/rpmts.c:247
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/rpmts.c:527
+#: lib/rpmts.c:458
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: lib/rpmts.c:646
+#: lib/rpmts.c:577
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "nesprávný formát: %s\n"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:607
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "øádek: %s\n"
 
-#: lib/rpmts.c:687
+#: lib/rpmts.c:618
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "RPM verze %s\n"
 
-#: lib/rpmts.c:1250
+#: lib/rpmts.c:1181
 #, fuzzy
 msgid "mounted filesystems:\n"
 msgstr "získávám seznam pøipojených systémù souborù\n"
 
-#: lib/rpmts.c:1252
+#: lib/rpmts.c:1183
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1333
+#: lib/rpmts.c:1264
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "Soubor %4d: %07o %s.%s\t %s\n"
@@ -3778,20 +3778,20 @@ msgstr ""
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2133
+#: lib/transaction.c:2135
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2406
+#: lib/transaction.c:2408
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2413
+#: lib/transaction.c:2415
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2457
+#: lib/transaction.c:2459
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -3987,181 +3987,181 @@ msgstr ""
 msgid "verify database files"
 msgstr "zkontrolovat databázové soubory"
 
-#: rpmdb/rpmdb.c:198
+#: rpmdb/rpmdb.c:205
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:309
+#: rpmdb/rpmdb.c:316
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: rpmdb/rpmdb.c:329
+#: rpmdb/rpmdb.c:336
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: rpmdb/rpmdb.c:799
+#: rpmdb/rpmdb.c:806
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "nesprávný formát: %s\n"
 
-#: rpmdb/rpmdb.c:1118
+#: rpmdb/rpmdb.c:1125
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1415 rpmdb/rpmdb.c:1546 rpmdb/rpmdb.c:1602 rpmdb/rpmdb.c:2505
-#: rpmdb/rpmdb.c:2634 rpmdb/rpmdb.c:3397
+#: rpmdb/rpmdb.c:1439 rpmdb/rpmdb.c:1577 rpmdb/rpmdb.c:1633 rpmdb/rpmdb.c:2537
+#: rpmdb/rpmdb.c:2691 rpmdb/rpmdb.c:3472
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1814
+#: rpmdb/rpmdb.c:1845
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1824
+#: rpmdb/rpmdb.c:1855
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: rpmdb/rpmdb.c:2384
+#: rpmdb/rpmdb.c:2415
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2416
+#: rpmdb/rpmdb.c:2447
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2738
+#: rpmdb/rpmdb.c:2795
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2807
+#: rpmdb/rpmdb.c:2864
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: rpmdb/rpmdb.c:2918
+#: rpmdb/rpmdb.c:2975
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
-#: rpmdb/rpmdb.c:2922
+#: rpmdb/rpmdb.c:2979
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
-#: rpmdb/rpmdb.c:2950
+#: rpmdb/rpmdb.c:3007
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: rpmdb/rpmdb.c:2971
+#: rpmdb/rpmdb.c:3028
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: rpmdb/rpmdb.c:2981
+#: rpmdb/rpmdb.c:3038
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: rpmdb/rpmdb.c:3139
+#: rpmdb/rpmdb.c:3209
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3205
+#: rpmdb/rpmdb.c:3275
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:3447
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3376
+#: rpmdb/rpmdb.c:3451
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3416
+#: rpmdb/rpmdb.c:3491
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3791
+#: rpmdb/rpmdb.c:3870
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3835
+#: rpmdb/rpmdb.c:3914
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3867
+#: rpmdb/rpmdb.c:3946
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu vytvoøit databázi z existující databáze"
 
-#: rpmdb/rpmdb.c:3871
+#: rpmdb/rpmdb.c:3950
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3877
+#: rpmdb/rpmdb.c:3956
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: rpmdb/rpmdb.c:3879
+#: rpmdb/rpmdb.c:3958
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#: rpmdb/rpmdb.c:3888
+#: rpmdb/rpmdb.c:3967
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3899
+#: rpmdb/rpmdb.c:3978
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3930
+#: rpmdb/rpmdb.c:4009
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3970
+#: rpmdb/rpmdb.c:4049
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3984
+#: rpmdb/rpmdb.c:4063
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3996
+#: rpmdb/rpmdb.c:4075
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3998
+#: rpmdb/rpmdb.c:4077
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4008
+#: rpmdb/rpmdb.c:4087
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4010
+#: rpmdb/rpmdb.c:4089
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Nelze pøejmenovat %s na %s: %m\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-03-31 14:50-0400\n"
+"POT-Creation-Date: 2007-04-01 15:34-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -733,7 +733,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:839 lib/psm.c:1956
+#: build/pack.c:839 lib/psm.c:1960
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2454,12 +2454,12 @@ msgstr ""
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1964
+#: lib/psm.c:1968
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1967
+#: lib/psm.c:1971
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2826,27 +2826,27 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:997
+#: lib/rpmfc.c:999
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1005
+#: lib/rpmfc.c:1007
 #, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1071
+#: lib/rpmfc.c:1073
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1289
+#: lib/rpmfc.c:1291
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1295 lib/rpmfc.c:1306
+#: lib/rpmfc.c:1297 lib/rpmfc.c:1308
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
@@ -2886,7 +2886,7 @@ msgid "relocating directory %s to %s\n"
 msgstr ""
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:127 lib/rpminstall.c:495
-#: lib/rpminstall.c:624 lib/rpminstall.c:1066 lib/rpmts.c:656
+#: lib/rpminstall.c:624 lib/rpminstall.c:1066 lib/rpmts.c:587
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -3264,55 +3264,55 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:194
+#: lib/rpmts.c:125
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:290
+#: lib/rpmts.c:221
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:308
+#: lib/rpmts.c:239
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:316
+#: lib/rpmts.c:247
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:527
+#: lib/rpmts.c:458
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:646
+#: lib/rpmts.c:577
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:607
 #, c-format
 msgid "Adding: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:687
+#: lib/rpmts.c:618
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1250
+#: lib/rpmts.c:1181
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1252
+#: lib/rpmts.c:1183
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1333
+#: lib/rpmts.c:1264
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr ""
@@ -3638,20 +3638,20 @@ msgstr ""
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:2133
+#: lib/transaction.c:2135
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2406
+#: lib/transaction.c:2408
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2413
+#: lib/transaction.c:2415
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2457
+#: lib/transaction.c:2459
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -3846,181 +3846,181 @@ msgstr ""
 msgid "verify database files"
 msgstr ""
 
-#: rpmdb/rpmdb.c:198
+#: rpmdb/rpmdb.c:205
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:309
+#: rpmdb/rpmdb.c:316
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:329
+#: rpmdb/rpmdb.c:336
 #, c-format
 msgid "cannot open %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:799
+#: rpmdb/rpmdb.c:806
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1118
+#: rpmdb/rpmdb.c:1125
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1415 rpmdb/rpmdb.c:1546 rpmdb/rpmdb.c:1602 rpmdb/rpmdb.c:2505
-#: rpmdb/rpmdb.c:2634 rpmdb/rpmdb.c:3397
+#: rpmdb/rpmdb.c:1439 rpmdb/rpmdb.c:1577 rpmdb/rpmdb.c:1633 rpmdb/rpmdb.c:2537
+#: rpmdb/rpmdb.c:2691 rpmdb/rpmdb.c:3472
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1814
+#: rpmdb/rpmdb.c:1845
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1824
+#: rpmdb/rpmdb.c:1855
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2384
+#: rpmdb/rpmdb.c:2415
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2416
+#: rpmdb/rpmdb.c:2447
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2738
+#: rpmdb/rpmdb.c:2795
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2807
+#: rpmdb/rpmdb.c:2864
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2918
+#: rpmdb/rpmdb.c:2975
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2922
+#: rpmdb/rpmdb.c:2979
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2950
+#: rpmdb/rpmdb.c:3007
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2971
+#: rpmdb/rpmdb.c:3028
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2981
+#: rpmdb/rpmdb.c:3038
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3139
+#: rpmdb/rpmdb.c:3209
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3205
+#: rpmdb/rpmdb.c:3275
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:3447
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3376
+#: rpmdb/rpmdb.c:3451
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3416
+#: rpmdb/rpmdb.c:3491
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3791
+#: rpmdb/rpmdb.c:3870
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3835
+#: rpmdb/rpmdb.c:3914
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3867
+#: rpmdb/rpmdb.c:3946
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3871
+#: rpmdb/rpmdb.c:3950
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3877
+#: rpmdb/rpmdb.c:3956
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3879
+#: rpmdb/rpmdb.c:3958
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3888
+#: rpmdb/rpmdb.c:3967
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3899
+#: rpmdb/rpmdb.c:3978
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3930
+#: rpmdb/rpmdb.c:4009
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3970
+#: rpmdb/rpmdb.c:4049
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3984
+#: rpmdb/rpmdb.c:4063
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3996
+#: rpmdb/rpmdb.c:4075
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3998
+#: rpmdb/rpmdb.c:4077
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4008
+#: rpmdb/rpmdb.c:4087
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4010
+#: rpmdb/rpmdb.c:4089
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

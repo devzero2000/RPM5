@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-03-31 14:50-0400\n"
+"POT-Creation-Date: 2007-04-01 15:34-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -762,7 +762,7 @@ msgstr "%s から Payload 読み込みに失敗: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:839 lib/psm.c:1956
+#: build/pack.c:839 lib/psm.c:1960
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
@@ -2523,12 +2523,12 @@ msgstr "アーカイブの伸長に失敗%s%s: %s\n"
 msgid " on file "
 msgstr ": ファイル "
 
-#: lib/psm.c:1964
+#: lib/psm.c:1968
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s: ファイル %s で失敗: %s\n"
 
-#: lib/psm.c:1967
+#: lib/psm.c:1971
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
@@ -2903,27 +2903,27 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: lib/rpmfc.c:997
+#: lib/rpmfc.c:999
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/rpmfc.c:1005
+#: lib/rpmfc.c:1007
 #, fuzzy, c-format
 msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/rpmfc.c:1071
+#: lib/rpmfc.c:1073
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1289
+#: lib/rpmfc.c:1291
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/rpmfc.c:1295 lib/rpmfc.c:1306
+#: lib/rpmfc.c:1297 lib/rpmfc.c:1308
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s の読み込みに失敗: %s。\n"
@@ -2963,7 +2963,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:127 lib/rpminstall.c:495
-#: lib/rpminstall.c:624 lib/rpminstall.c:1066 lib/rpmts.c:656
+#: lib/rpminstall.c:624 lib/rpminstall.c:1066 lib/rpmts.c:587
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -3352,55 +3352,55 @@ msgstr "%s:  不正なタイプ指定 %s (%d 行目)\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s: 不正なコンテキスト %s (%d 行目)\n"
 
-#: lib/rpmts.c:194
+#: lib/rpmts.c:125
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s にある Package データベースをオープンできません。\n"
 
-#: lib/rpmts.c:290
+#: lib/rpmts.c:221
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "パッケージラベル中に余分な「(」があります: %s\n"
 
-#: lib/rpmts.c:308
+#: lib/rpmts.c:239
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "パッケージラベル中に「(」がありません: %s\n"
 
-#: lib/rpmts.c:316
+#: lib/rpmts.c:247
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "パッケージラベル中に「)」がありません: %s\n"
 
-#: lib/rpmts.c:527
+#: lib/rpmts.c:458
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s にある Solve データベースをオープンできません。\n"
 
-#: lib/rpmts.c:646
+#: lib/rpmts.c:577
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "不正なフォーマット: %s\n"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:607
 #, c-format
 msgid "Adding: %s\n"
 msgstr "追加中: %s\n"
 
-#: lib/rpmts.c:687
+#: lib/rpmts.c:618
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "提案中: %s\n"
 
-#: lib/rpmts.c:1250
+#: lib/rpmts.c:1181
 msgid "mounted filesystems:\n"
 msgstr "マウント済みファイルシステム:\n"
 
-#: lib/rpmts.c:1252
+#: lib/rpmts.c:1183
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        dev    bsize       bavail       iavail mount point\n"
 
-#: lib/rpmts.c:1333
+#: lib/rpmts.c:1264
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
@@ -3733,20 +3733,20 @@ msgstr "%d ファイルの指紋を計算しています。\n"
 msgid "computing file dispositions\n"
 msgstr "ファイルの性質を計算しています。\n"
 
-#: lib/transaction.c:2133
+#: lib/transaction.c:2135
 msgid "Creating auto-rollback transaction\n"
 msgstr "自動ロールバックトランザクションを作成しています。\n"
 
-#: lib/transaction.c:2406
+#: lib/transaction.c:2408
 #, fuzzy, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr "自動ロールバックトランザクションに %s を追加しました。\n"
 
-#: lib/transaction.c:2413
+#: lib/transaction.c:2415
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr "自動ロールバックにトランザクション要素を追加できませんでした。\n"
 
-#: lib/transaction.c:2457
+#: lib/transaction.c:2459
 msgid "running post-transaction scripts\n"
 msgstr "トランザクション後のスクリプトを実行中\n"
 
@@ -3945,182 +3945,182 @@ msgstr ""
 msgid "verify database files"
 msgstr "データベースの検証を行います。"
 
-#: rpmdb/rpmdb.c:198
+#: rpmdb/rpmdb.c:205
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: 不明なタグ名: \"%s\" は無視します\n"
 
-#: rpmdb/rpmdb.c:309
+#: rpmdb/rpmdb.c:316
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s インデックスを db%d でオープンできません - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:329
+#: rpmdb/rpmdb.c:336
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "%s インデックスをオープンできません。\n"
 
-#: rpmdb/rpmdb.c:799
+#: rpmdb/rpmdb.c:806
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "不正なフォーマット: %s\n"
 
-#: rpmdb/rpmdb.c:1118
+#: rpmdb/rpmdb.c:1125
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
-#: rpmdb/rpmdb.c:1415 rpmdb/rpmdb.c:1546 rpmdb/rpmdb.c:1602 rpmdb/rpmdb.c:2505
-#: rpmdb/rpmdb.c:2634 rpmdb/rpmdb.c:3397
+#: rpmdb/rpmdb.c:1439 rpmdb/rpmdb.c:1577 rpmdb/rpmdb.c:1633 rpmdb/rpmdb.c:2537
+#: rpmdb/rpmdb.c:2691 rpmdb/rpmdb.c:3472
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
 
-#: rpmdb/rpmdb.c:1814
+#: rpmdb/rpmdb.c:1845
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: スキップします。"
 
-#: rpmdb/rpmdb.c:1824
+#: rpmdb/rpmdb.c:1855
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:2384
+#: rpmdb/rpmdb.c:2415
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: スキップします。"
 
-#: rpmdb/rpmdb.c:2416
+#: rpmdb/rpmdb.c:2447
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
-#: rpmdb/rpmdb.c:2738
+#: rpmdb/rpmdb.c:2795
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダを読むことができません (0x%x)\n"
 
-#: rpmdb/rpmdb.c:2807
+#: rpmdb/rpmdb.c:2864
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "エラー(%d) - ヘッダ #%d レコードに %s の削除を設定時\n"
 
-#: rpmdb/rpmdb.c:2918
+#: rpmdb/rpmdb.c:2975
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "\"%s\" を %s インデックスから削除します。\n"
 
-#: rpmdb/rpmdb.c:2922
+#: rpmdb/rpmdb.c:2979
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%d エントリを %s インデックスから削除します。\n"
 
-#: rpmdb/rpmdb.c:2950
+#: rpmdb/rpmdb.c:3007
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - \"%s\" のレコード設定時 (%s インデックスから)\n"
 
-#: rpmdb/rpmdb.c:2971
+#: rpmdb/rpmdb.c:3028
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:2981
+#: rpmdb/rpmdb.c:3038
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s から削除時\n"
 
-#: rpmdb/rpmdb.c:3139
+#: rpmdb/rpmdb.c:3209
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当て時\n"
 
-#: rpmdb/rpmdb.c:3205
+#: rpmdb/rpmdb.c:3275
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: スキップします。"
 
-#: rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:3447
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "\"%s\" を %s インデックスに追加します。\n"
 
-#: rpmdb/rpmdb.c:3376
+#: rpmdb/rpmdb.c:3451
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%d エントリを %s インデックスに追加します。\n"
 
-#: rpmdb/rpmdb.c:3416
+#: rpmdb/rpmdb.c:3491
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "エラー(%d) - レコード %s を %s にストア時\n"
 
-#: rpmdb/rpmdb.c:3791
+#: rpmdb/rpmdb.c:3870
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3 再構築が成功した後で %s を削除します。\n"
 
-#: rpmdb/rpmdb.c:3835
+#: rpmdb/rpmdb.c:3914
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません。"
 
-#: rpmdb/rpmdb.c:3867
+#: rpmdb/rpmdb.c:3946
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "データベース %s を %s として再構築しています。\n"
 
-#: rpmdb/rpmdb.c:3871
+#: rpmdb/rpmdb.c:3950
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s は既に存在しています。\n"
 
-#: rpmdb/rpmdb.c:3877
+#: rpmdb/rpmdb.c:3956
 #, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3879
+#: rpmdb/rpmdb.c:3958
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s: %s\n"
 
-#: rpmdb/rpmdb.c:3888
+#: rpmdb/rpmdb.c:3967
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースを dbapi %d でオープンしています。\n"
 
-#: rpmdb/rpmdb.c:3899
+#: rpmdb/rpmdb.c:3978
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースを dbapi %d でオープンしています。\n"
 
-#: rpmdb/rpmdb.c:3930
+#: rpmdb/rpmdb.c:4009
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/rpmdb.c:3970
+#: rpmdb/rpmdb.c:4049
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "元々 %u にあったレコードを追加できません。\n"
 
-#: rpmdb/rpmdb.c:3984
+#: rpmdb/rpmdb.c:4063
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
 
-#: rpmdb/rpmdb.c:3996
+#: rpmdb/rpmdb.c:4075
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:3998
+#: rpmdb/rpmdb.c:4077
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "復元するには %s 内のファイルを %s 内のファイルで置き換えて下さい"
 
-#: rpmdb/rpmdb.c:4008
+#: rpmdb/rpmdb.c:4087
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの削除: %s\n"
 
-#: rpmdb/rpmdb.c:4010
+#: rpmdb/rpmdb.c:4089
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
