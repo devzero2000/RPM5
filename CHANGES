@@ -22,6 +22,7 @@
 	- add findfplistexclude.diff patch from <mls@suse.de> (#140055).
 	- add taggedfileindex.diff patch from <mls@suse.de> (#103204).
 	- rework above 2 patches to be runtime, not compile time, configgerable.
+	- open existing rpmdb indices with either DB_BTREE or DB_HASH.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

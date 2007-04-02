@@ -1071,6 +1071,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     DB_TXN * txnid = NULL;
 #endif
+    DBTYPE dbi_type = DB_UNKNOWN;
     u_int32_t oflags;
     int _printit;
 
@@ -1224,7 +1225,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DB->open.
      */
-    if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
+    if (oflags & DB_CREATE) {
 	/* dbhome is writable, and DB->open flags may conflict. */
 	const char * dbfn = (dbfile ? dbfile : tagName(dbi->dbi_rpmtag));
 	/*@-mods@*/
@@ -1234,6 +1235,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	if (access(dbf, F_OK) == -1) {
 	    /* File does not exist, DB->open might create ... */
 	    oflags &= ~DB_RDONLY;
+	    dbi_type = dbi->dbi_type;
 	} else {
 	    /* File exists, DB->open need not create ... */
 	    oflags &= ~DB_CREATE;
@@ -1500,16 +1502,15 @@ assert(rpmdb && rpmdb->db_dbenv);
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
 		rc = db->open(db, txnid, dbpath, dbsubfile,
-		    dbi->dbi_type, oflags, dbi->dbi_perms);
+		    dbi_type, oflags, dbi->dbi_perms);
 #else
 		rc = db->open(db, dbpath, dbsubfile,
-		    dbi->dbi_type, oflags, dbi->dbi_perms);
+		    dbi_type, oflags, dbi->dbi_perms);
 #endif
 
-		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
+		if (rc == 0 && dbi_type == DB_UNKNOWN) {
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
  || (DB_VERSION_MAJOR == 4)
-		    DBTYPE dbi_type = DB_UNKNOWN;
 		    xx = db->get_type(db, &dbi_type);
 		    if (xx == 0)
 			dbi->dbi_type = dbi_type;
