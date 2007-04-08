@@ -1246,7 +1246,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * apath;
-    int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
+    int _addDotSlash = !isSrc;
     int apathlen = 0;
     int dpathlen = 0;
     int skipLen = 0;
@@ -1504,14 +1504,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
 
-    if (_addDotSlash)
-	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
-
-    {
-	compressFilelist(h);
-	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
-    }
+    compressFilelist(h);
 
   { int scareMem = 0;
     rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */

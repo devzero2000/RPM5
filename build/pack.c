@@ -564,17 +564,14 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 			payload_format, 1);
 	}
 
+	/* XXX addition to header is too late to be displayed/sorted. */
 	if (s[1] == 'g' && s[2] == 'z')
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"gzip", 1);
-	if (s[1] == 'b' && s[2] == 'z') {
+	else if (s[1] == 'b' && s[2] == 'z')
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"bzip2", 1);
-	    /* XXX addition to header is too late to be displayed/sorted. */
-	    /* Add prereq on rpm version that understands bzip2 payloads */
-	    (void) rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
-	}
-	if (s[1] == 'l' && s[2] == 'z') {
+	else if (s[1] == 'l' && s[2] == 'z') {
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"lzma", 1);
 	    (void) rpmlibNeedsFeature(h, "PayloadIsLzma", "4.4.6-1");
