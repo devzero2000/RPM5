@@ -375,11 +375,11 @@ typedef enum rpmTag_e {
 /*@-enummemuse@*/
     RPMTAG_SHA1RHN		= 1130, /* internal - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_RHNPLATFORM		= 1131,	/* s */
+    RPMTAG_RHNPLATFORM		= 1131,	/* s deprecated */
     RPMTAG_PLATFORM		= 1132,	/* s */
-    RPMTAG_PATCHESNAME		= 1133, /* placeholder (SuSE) */
-    RPMTAG_PATCHESFLAGS		= 1134, /* placeholder (SuSE) */
-    RPMTAG_PATCHESVERSION	= 1135, /* placeholder (SuSE) */
+    RPMTAG_PATCHESNAME		= 1133, /* s[] deprecated placeholder (SuSE) */
+    RPMTAG_PATCHESFLAGS		= 1134, /* i[] deprecated placeholder (SuSE) */
+    RPMTAG_PATCHESVERSION	= 1135, /* s[] deprecated placeholder (SuSE) */
     RPMTAG_CACHECTIME		= 1136,	/* i */
     RPMTAG_CACHEPKGPATH		= 1137,	/* s */
     RPMTAG_CACHEPKGSIZE		= 1138,	/* i */
@@ -503,7 +503,7 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_LICENSE	= (1 <<  7),	/*!< from %%license */
     RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
     RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude, internal */
-    RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
+    RPMFILE_UNPATCHED	= (1 << 10),	/*!< (deprecated) placeholder (SuSE) */
     RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
     RPMFILE_POLICY	= (1 << 12),	/*!< from %%policy */
     RPMFILE_EXISTS	= (1 << 13),	/*!< did lstat(fn, st) succeed? */
@@ -551,7 +551,7 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_RPMLIB = (1 << 24),	/*!< rpmlib(feature) dependency. */
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
-    RPMSENSE_STRONG	= (1 << 27),
+    RPMSENSE_STRONG	= (1 << 27),	/*!< placeholder SuSE */
     RPMSENSE_CONFIG	= (1 << 28),
     RPMSENSE_PROBE	= (1 << 29),
     RPMSENSE_PACKAGE	= (1 << 30)

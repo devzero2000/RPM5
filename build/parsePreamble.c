@@ -31,7 +31,6 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
     RPMTAG_PREFIXES,
-    RPMTAG_RHNPLATFORM,
     RPMTAG_DISTTAG,
     RPMTAG_CVSID,
     RPMTAG_VARIANTS,
@@ -534,7 +533,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
     case RPMTAG_URL:
-    case RPMTAG_RHNPLATFORM:
     case RPMTAG_DISTTAG:
     case RPMTAG_REPOTAG:
     case RPMTAG_CVSID:
@@ -802,7 +800,6 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
     {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
     {RPMTAG_DOCDIR,		0, 0, "docdir"},
-    {RPMTAG_RHNPLATFORM,	0, 1, "rhnplatform"},
     {RPMTAG_DISTTAG,		0, 0, "disttag"},
     {RPMTAG_CVSID,		0, 0, "cvsid"},
     {RPMTAG_SVNID,		0, 0, "svnid"},
