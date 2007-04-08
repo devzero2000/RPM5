@@ -499,57 +499,6 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
 
 /**
  */
-static PyObject * rhnUnload(hdrObject * s)
-	/*@*/
-{
-    int len;
-    char * uh;
-    PyObject * rc;
-    Header h;
-
-    h = headerLink(s->h);
-
-    /* Legacy headers are forced into immutable region. */
-    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	Header nh = headerReload(h, RPMTAG_HEADERIMMUTABLE);
-	/* XXX Another unload/load cycle to "seal" the immutable region. */
-	uh = headerUnload(nh);
-	headerFree(nh);
-	h = headerLoad(uh);
-	headerAllocated(h);
-    }
-
-    /* All headers have SHA1 digest, compute and add if necessary. */
-    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)) {
-	int_32 uht, uhc;
-	const char * digest;
-        size_t digestlen;
-        DIGEST_CTX ctx;
-
-	headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, (void **)&uh, &uhc);
-
-	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-        rpmDigestUpdate(ctx, uh, uhc);
-        rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
-
-	headerAddEntry(h, RPMTAG_SHA1RHN, RPM_STRING_TYPE, digest, 1);
-
-	uh = headerFreeData(uh, uht);
-	digest = _free(digest);
-    }
-
-    len = headerSizeof(h, 0);
-    uh = headerUnload(h);
-    headerFree(h);
-
-    rc = PyString_FromStringAndSize(uh, len);
-    uh = _free(uh);
-
-    return rc;
-}
-
-/**
- */
 static PyObject * hdrGetOrigin(hdrObject * s)
 	/*@*/
 {
@@ -633,8 +582,6 @@ static struct PyMethodDef hdr_methods[] = {
     {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
 	NULL },
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
-	NULL },
-    {"rhnUnload",	(PyCFunction) rhnUnload,	METH_NOARGS,
 	NULL },
     {"getorigin",	(PyCFunction) hdrGetOrigin,	METH_NOARGS,
 	NULL },
@@ -1084,51 +1031,6 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
     h = headerFree(h);	/* XXX ref held by hdr */
 
     return (PyObject *) hdr;
-}
-
-/**
- */
-PyObject * rhnLoad(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    char * obj, * copy=NULL;
-    Header h;
-    int len;
-    char * kwlist[] = {"headers", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &obj, &len))
-	return NULL;
-
-    /* malloc is needed to avoid surprises from data swab in headerLoad(). */
-    copy = malloc(len);
-    if (copy == NULL) {
-	PyErr_SetString(pyrpmError, "out of memory");
-	return NULL;
-    }
-    memcpy (copy, obj, len);
-
-    h = headerLoad(copy);
-    if (!h) {
-	PyErr_SetString(pyrpmError, "bad header");
-	return NULL;
-    }
-    headerAllocated(h);
-
-    /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
-    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	PyErr_SetString(pyrpmError, "bad header, not immutable");
-	headerFree(h);
-	return NULL;
-    }
-
-    /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
-    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)
-    &&  !headerIsEntry(h, RPMTAG_SHA1RHN)) {
-	PyErr_SetString(pyrpmError, "bad header, no digest");
-	headerFree(h);
-	return NULL;
-    }
-
-    return (PyObject *) hdr_Wrap(h);
 }
 
 /**
