@@ -24,7 +24,7 @@
 	- rework above 2 patches to be runtime, not compile time, configgerable.
 	- open existing rpmdb indices with either DB_BTREE or DB_HASH.
 	- don't add RPMTAG_RHNPLATFORM to packages and headers.
-	- stop adding ancient rrpmlib(...) tracking dependencies to headers.
+	- stop adding ancient rpmlib(...) tracking dependencies to headers.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
