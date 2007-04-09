@@ -1225,7 +1225,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DB->open.
      */
-    if (oflags & DB_CREATE) {
+    if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
 	/* dbhome is writable, and DB->open flags may conflict. */
 	const char * dbfn = (dbfile ? dbfile : tagName(dbi->dbi_rpmtag));
 	/*@-mods@*/
@@ -1235,7 +1235,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	if (access(dbf, F_OK) == -1) {
 	    /* File does not exist, DB->open might create ... */
 	    oflags &= ~DB_RDONLY;
-	    dbi_type = dbi->dbi_type;
 	} else {
 	    /* File exists, DB->open need not create ... */
 	    oflags &= ~DB_CREATE;
@@ -1249,6 +1248,12 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	}
 	dbf = _free(dbf);
     }
+
+    /*
+     * Set db type if creating.
+     */
+    if (oflags & DB_CREATE)
+	dbi_type = dbi->dbi_type;
 
     /*
      * Turn off verify-on-close if opening read-only.
