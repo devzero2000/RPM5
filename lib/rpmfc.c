@@ -1058,7 +1058,7 @@ assert(s != NULL && *s == '/');
 	    else if (_suffix(s, ".pc"))
 		ftype = "pkgconfig file";
 
-	    /* XXX all files with extension ".php" are pkgconfig for now. */
+	    /* XXX all files with extension ".php" are PHP for now. */
 	    else if (_suffix(s, ".php"))
 		ftype = "PHP script text";
 
