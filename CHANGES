@@ -27,6 +27,8 @@
 	- stop adding ancient rpmlib(...) tracking dependencies to headers.
 	- python: eliminate rhnLoad/rhnUnload methods.
 	- fix: change dbi_type from DB_UNKNOWN iff DB_CREATE is set.
+	- add %%{load:/path/to/macros} to read macros from a file during parse.
+	- fix: initialize file verify flags for %doc (#235353).
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
