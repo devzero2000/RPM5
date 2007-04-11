@@ -1383,6 +1383,16 @@ expandMacro(MacroBuf mb)
 		printMacro(mb, s, se);
 
 	/* Expand builtin macros */
+	if (STREQ("load", f, fn)) {
+		if (g != NULL) {
+		    char * mfn = strncpy(alloca(gn + 1), g, gn);
+		    int xx;
+		    mfn[gn] = '\0';
+		    xx = rpmLoadMacroFile(NULL, mfn);
+		}
+		s = se;
+		continue;
+	}
 	if (STREQ("global", f, fn)) {
 		s = doDefine(mb, se, RMIL_GLOBAL, 1);
 		continue;
