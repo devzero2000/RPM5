@@ -3172,6 +3172,7 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #endif /* HAVE_LIBELF && !HAVE_GELF_GETVERNAUX */
 
 
+#if defined(__sun)
 #define	_RLD_SEARCH_PATH	"/lib:/usr/lib"
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 static const char * _rld_search_path = NULL;
@@ -3350,6 +3351,7 @@ int rpmdsCrle(rpmPRCO PRCO, /*@unused@*/ const char * fn)
 
     return rc;
 }
+#endif
 
 int rpmdsUname(rpmds *dsp, const struct utsname * un)
 {

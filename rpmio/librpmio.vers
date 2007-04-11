@@ -79,10 +79,8 @@ LIBRPMIO_0
     Fwrite;
     gidToGname;
     Glob;
-    glob64;
     Glob_error;
     Globfree;
-    globfree64;
     Glob_pattern_p;
     gnameToGid;
     gzdio;

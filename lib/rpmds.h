@@ -539,6 +539,7 @@ int rpmdsLdconfig(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
+#if defined(__sun)
 /**
  * Given a colon-separated list of directories, search each of those
  * directories for (ELF or ELF64) shared objects, and load the provided
@@ -563,6 +564,7 @@ int rpmdsRldpath(rpmPRCO PRCO, /*@null@*/ const char * rldp)
 int rpmdsCrle(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
+#endif
 
 /**
  * Load uname(2) provides into a dependency set.
