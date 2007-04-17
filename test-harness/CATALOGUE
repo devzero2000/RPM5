@@ -70,3 +70,6 @@ TEST #	TYPE	COMMENTS
                 Should rollback fine.  As of this writting this test case
                 it will not but will fail with an unknown file type cpio
                 error.
+24		RB		Install test-1-1, then roll it back.  This is a simple test
+				of rolling back an install.  This began in rpm 4.4.5.
+

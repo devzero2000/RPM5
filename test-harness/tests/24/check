@@ -1,0 +1,8 @@
+#
+# Do I handle comments
+NOTINSTALLED test-1-1
+
+FILE /tmp/test-1-1_pre_icount          1
+FILE /tmp/test-1-1_post_icount         1
+FILE /tmp/test-1-1_preun_icount        0
+FILE /tmp/test-1-1_postun_icount       0
