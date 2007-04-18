@@ -430,12 +430,17 @@ run_rb_upgrade_install_test() {
 	#
 	# Get the time so we can set the time to rollback to.  This is used
 	# by regular rollback tests.
+	sleep 1
 	rb_goal=$(date "+%m/%d/%Y %H:%M:%S")
 	sleep 2
 
 	#
 	# Now install the set of RPMS.  We assume that this transaction
 	# should succeed.
+	#
+	# NOTE: we may not have rpms to install (could just be done in setup).
+	if [ ! -z "${RPMS}" ]
+	then
 	echo "**** RUNNING CMD #1 ****"
 	echo $RPM -Uv${VERBOSE}h \
 		--repackage \
@@ -450,6 +455,7 @@ run_rb_upgrade_install_test() {
 		--define "_repackage_dir ${RPDIR}" \
 		--define "${TMPPATH_OPT}" \
 		$RPMS
+	fi
 	sleep 4			# Make sure we have seperate TID's
 
 	#
@@ -818,7 +824,7 @@ setup_test() {
 
 	#
 	# See if we need to install any rpms for upgrade testing...
-	if [ -d "${SETUP_DIR}" ]
+	if [ -d "${SETUP_DIR}" -a ! -z "${RPMS_SETUP}" ]
 	then
 		$RPM -Uv${VERBOSE}h \
 			--repackage \
