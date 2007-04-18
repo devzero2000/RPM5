@@ -809,7 +809,7 @@ setup_test() {
 
 	#
 	# See if we need to install any rpms for upgrade testing...
-	if [ -d "${SETUP_DIR}" && ! -z "${RPMS_SETUP}" ]
+	if [ -d "${SETUP_DIR}" -a ! -z "${RPMS_SETUP}" ]
 	then
 		$RPM -Uv${VERBOSE}h \
 			--force \
