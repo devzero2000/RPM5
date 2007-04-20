@@ -30,6 +30,7 @@
 	- add %%{load:/path/to/macros} to read macros from a file during parse.
 	- fix: initialize file verify flags for %doc (#235353).
 	- solaris: add #ifdef _sun so librpmio needn't export glob/globfree.
+	- fix: --verify displays mis-leading dependency checks (#223642).
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

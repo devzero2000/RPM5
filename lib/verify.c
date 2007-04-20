@@ -382,6 +382,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    int instance = headerGetInstance(h);
     rpmps ps;
     int numProblems;
     int rc = 0;		/* assume no problems */
@@ -389,7 +390,10 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     int i;
 
     rpmtsEmpty(ts);
-    (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
+    if (instance > 0)
+	(void) rpmtsAddEraseElement(ts, h, instance);
+    else
+	(void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     xx = rpmtsCheck(ts);
     ps = rpmtsProblems(ts);
