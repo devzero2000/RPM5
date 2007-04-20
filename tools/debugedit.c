@@ -404,9 +404,10 @@ canonicalize_path (const char *s, char *d)
 
       if (s[0] == '.' && (s[1] == 0 || IS_DIR_SEPARATOR (s[1])))
 	{
-	  s ++;
-	  if (!*s && d > droot)
-	    d--;
+	  s++;
+	  if (*s)
+	    while (IS_DIR_SEPARATOR (*s))
+	      ++s;
 	}
 
       else if (s[0] == '.' && s[1] == '.'
@@ -434,8 +435,6 @@ canonicalize_path (const char *s, char *d)
 		  if (*s)
 		    while (IS_DIR_SEPARATOR (*s))
 		      s++;
-		  else if (d > droot)
-		    d--;
 		}
 	    }
 	  else
@@ -444,7 +443,6 @@ canonicalize_path (const char *s, char *d)
 	      *d++ = *s++;
 	    }
 	}
-
       else
 	{
 	  while (*s && ! IS_DIR_SEPARATOR (*s))
