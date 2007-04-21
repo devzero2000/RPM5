@@ -32,6 +32,7 @@
 	- solaris: add #ifdef _sun so librpmio needn't export glob/globfree.
 	- fix: --verify displays mis-leading dependency checks (#223642).
 	- debugedit: canonicalize_path was broken again (#232222).
+	- popt: convert gnome UTF-8 to current encoding with --help (#178413).
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
