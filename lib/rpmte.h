@@ -583,6 +583,8 @@ void rpmteColorDS(rpmte te, rpmTag tag)
 int rpmteChain(rpmte p, rpmte q, Header oh, /*@null@*/ const char * msg)
 	/*@modifies p, q, oh @*/;
 
+#define	RPMTE_CHAIN_END	"CHAIN END"	/*!< End of chain marker. */
+
 /**
  * Return transaction element index.
  * @param tsi		transaction element iterator

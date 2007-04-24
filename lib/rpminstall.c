@@ -1193,6 +1193,13 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    int bingo;
 
 	    xx = hge(ip->h, RPMTAG_BLINKPKGID, &pt, (void **)&flinkPkgid, &pn);
+
+	    /* XXX Always erase packages at beginning of upgrade chain. */
+	    if (pn == 1 && flinkPkgid[0] != NULL && !strcmp(flinkPkgid[0], RPMTE_CHAIN_END)) {
+		flinkPkgid = headerFreeData(flinkPkgid, pt);
+		goto erase;
+	    }
+
 	    xx = hge(ip->h, RPMTAG_BLINKHDRID, &ht, (void **)&flinkHdrid, &hn);
 	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, &nt, (void **)&flinkNEVRA, &nn);
 
@@ -1223,6 +1230,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 		goto bottom;
 	}
 
+erase:
 	rpmMessage(RPMMESS_DEBUG, "\t--- erase h#%u\n", ip->instance);
 
 	rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
@@ -1271,7 +1279,6 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     int vsflags, ovsflags;
     int numAdded;
     int numRemoved;
-    int excluded = 0;	/* Assume no excluded rollbacks. */
     rpmps ps;
     int _unsafe_rollbacks = 0;
     rpmtransFlags transFlags = ia->transFlags;
@@ -1359,10 +1366,11 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	if (_unsafe_rollbacks && thistid <= _unsafe_rollbacks)
 	    break;
 
-	/* Make sure this tid is not excluded */
+	/* Is this transaction excluded from the rollback? */
 	if (ia->rbtidExcludes != NULL && ia->numrbtidExcludes > 0)
 	{
 	    uint_32 *excludedTID;
+	    int excluded = 0;
 	    for(excludedTID = ia->rbtidExcludes; 
 		excludedTID < ia->rbtidExcludes + ia->numrbtidExcludes;
 		excludedTID++) {
@@ -1375,6 +1383,27 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 		    /*@innerbreak@*/ break;	
 		}
 	    }	
+	    if (excluded) {
+		/* Iterate over repackaged packages */
+		while (rp != NULL && rp->val.u32 == thistid) {
+		    /* Go to the next repackaged package */
+		    nrids--;
+		    if (nrids > 0)
+			rp++;
+		    else
+			rp = NULL;
+		}
+		/* Iterate over installed packages */
+		while (ip != NULL && ip->val.u32 == thistid) {
+		    /* Go to the next header in the rpmdb */
+		    niids--;
+		    if (niids > 0)
+			ip++;
+		    else
+			ip = NULL;
+		}
+		continue;		/* with next transaction */
+	    }
 	}
 
 	rpmtsEmpty(ts);
@@ -1382,10 +1411,9 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	(void) rpmtsSetDFlags(ts, depFlags);
 
 	/* Install the previously erased packages for this transaction. 
-	 * Provided this transaction is not excluded from the rollback.
 	 */
 	while (rp != NULL && rp->val.u32 == thistid) {
-	    if (!excluded && !rp->done) {
+	    if (!rp->done) {
 		rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
 			(rp->key ? rp->key : "???"));
 
@@ -1426,17 +1454,18 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 
 	/* Check that all erasures have been re-added. */
 	while (ip != NULL && ip->val.u32 == thistid) {
+#ifdef	NOTNOW
 /* XXX Prevent incomplete rollback transactions. */
-assert(excluded || ip->done || ia->no_rollback_links);
-	    if (!excluded) {
+assert(ip->done || ia->no_rollback_links);
+#endif
+	    if (!(ip->done || ia->no_rollback_links)) {
 		numRemoved++;
 
 		if (_unsafe_rollbacks)
 		    rpmcliPackagesTotal++;
 
-		if (!(ia->installInterfaceFlags & ifmask)) {
+		if (!(ia->installInterfaceFlags & ifmask))
 		    ia->installInterfaceFlags |= INSTALL_ERASE;
-		}
 	    }
 
 	    /* Go to the next header in the rpmdb */
@@ -1446,10 +1475,6 @@ assert(excluded || ip->done || ia->no_rollback_links);
 	    else
 		ip = NULL;
 	}
-
-	/* If this transaction is excluded then continue */
-	if (excluded)
-	    continue;
 
 	/* Anything to do? */
 	if (rpmcliPackagesTotal <= 0)
@@ -1479,15 +1504,14 @@ assert(excluded || ip->done || ia->no_rollback_links);
 
 	rc = rpmtsRun(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
 	ps = rpmtsProblems(ts);
-	if (rc > 0 && rpmpsNumProblems(ps) > 0)
-	    rpmpsPrint(stderr, ps);
-	ps = rpmpsFree(ps);
-	if (rc)
+	if (rc > 0 && rpmpsNumProblems(ps) > 0) {
+	    rpmpsPrint(NULL, ps);
+	    ps = rpmpsFree(ps);
 	    goto exit;
+	}
+	ps = rpmpsFree(ps);
 
-	/* Clean up after successful rollback. */
-	/* XXX Reset excluded flag after successful (multi-package) rollback. */
-	excluded = 0;
+	/* Remove repackaged packages after successful reinstall. */
 	if (rtids && !rpmIsDebug()) {
 	    int i;
 	    rpmMessage(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
@@ -1502,7 +1526,6 @@ assert(excluded || ip->done || ia->no_rollback_links);
 		}
 	    }
 	}
-
 
     } while (1);
 

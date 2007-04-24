@@ -1834,6 +1834,7 @@ assert(psm->te != NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
+	    static const char * chain_end = RPMTE_CHAIN_END;
 	    uint_32 tecolor = rpmteColor(psm->te);
 	    int_32 installTime = (int_32) time(NULL);
 	    int fc = rpmfiFC(fi);
@@ -1860,6 +1861,7 @@ assert(psm->te != NULL);
 		xx = hae(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
 				origin, 1);
 	
+	    /* Add back links to upgrade chain. */
 assert(psm->te != NULL);
 	    ac = argvCount(psm->te->blink.NEVRA);
 	    if (ac > 0)
@@ -1869,6 +1871,9 @@ assert(psm->te != NULL);
 	    if (ac > 0)
 		xx = hae(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
 				argvData(psm->te->blink.Pkgid), ac);
+	    else	/* XXX Add a marker for end-of-chain. */
+		xx = hae(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
+				&chain_end, 1);
 	    ac = argvCount(psm->te->blink.Hdrid);
 	    if (ac > 0)
 		xx = hae(fi->h, RPMTAG_BLINKHDRID, RPM_STRING_ARRAY_TYPE,
