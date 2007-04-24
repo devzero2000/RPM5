@@ -550,11 +550,11 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 #else
     rc = dbenv->open(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
 #endif
+    xx = _debug;
 #if defined(DB_VERSION_MISMATCH)
-    xx = (rc == DB_VERSION_MISMATCH ? 0 : _debug);
-#else
-    xx = (rc == EINVAL ? 0 : _debug);
+    if (rc == DB_VERSION_MISMATCH) xx = 0;
 #endif
+    if (rc == EINVAL) xx = 0;
     rc = cvtdberr(dbi, "dbenv->open", rc, xx);
     if (rc)
 	goto errxit;
@@ -1295,9 +1295,8 @@ assert(dbenv);
 
 #if defined(DB_VERSION_MISMATCH) /* Nuke __db* files and retry open once. */
 	    case DB_VERSION_MISMATCH:
-#else
-	    case EINVAL:
 #endif
+	    case EINVAL:
 		if (getuid() != 0)
 		    break;
 		{   char * filename = alloca(BUFSIZ);
