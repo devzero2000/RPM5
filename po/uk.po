@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-04-01 15:34-0400\n"
+"POT-Creation-Date: 2007-04-24 11:56-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -344,7 +344,7 @@ msgstr "не вказані аргументи перевірки"
 msgid "no arguments given"
 msgstr "не вказані аргументи"
 
-#: build/build.c:138 build/pack.c:611
+#: build/build.c:138 build/pack.c:608
 msgid "Unable to open temp file.\n"
 msgstr "Неможливо відкрити тимчасовий файл.\n"
 
@@ -512,77 +512,77 @@ msgstr "Файл вказано двічі: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символічне посилання вказує на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1727
+#: build/files.c:1720
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не відповідає префіксу (%s): %s\n"
 
-#: build/files.c:1751
+#: build/files.c:1744
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не існує: %s\n"
 
-#: build/files.c:1966
+#: build/files.c:1959
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: не вдається завантажити невідомий тег (%d).\n"
 
-#: build/files.c:1972
+#: build/files.c:1965
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: неможливо зчитати публічний ключ.\n"
 
-#: build/files.c:1976 lib/rpmchecksig.c:607
+#: build/files.c:1969 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: це не публічний ключ у текстовому вигляді.\n"
 
-#: build/files.c:1983
+#: build/files.c:1976
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: не вдається зчитати *.te політику.\n"
 
-#: build/files.c:2036
+#: build/files.c:2029
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл повинен починатись з \"/\": %s\n"
 
-#: build/files.c:2060
+#: build/files.c:2053
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Шаблони не дозволяються: %s\n"
 
-#: build/files.c:2077 lib/rpminstall.c:377
+#: build/files.c:2070 lib/rpminstall.c:377
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не знайдено: %s\n"
 
-#: build/files.c:2137
+#: build/files.c:2130
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Неможливо відкрити %%files файл %s: %s\n"
 
-#: build/files.c:2148 build/pack.c:154
+#: build/files.c:2141 build/pack.c:154
 #, c-format
 msgid "line: %s\n"
 msgstr "рядок: %s\n"
 
-#: build/files.c:2533
+#: build/files.c:2526
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неправильний файл: %s: %s\n"
 
-#: build/files.c:2545 build/parsePrep.c:50
+#: build/files.c:2538 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неправильний власник/група: %s\n"
 
-#: build/files.c:2590
+#: build/files.c:2583
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Перевірка не упакованих файлів: %s\n"
 
-#: build/files.c:2607
+#: build/files.c:2600
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -591,7 +591,7 @@ msgstr ""
 "Знайдено встановлені (але не упаковані) файли:\n"
 "%s"
 
-#: build/files.c:2637
+#: build/files.c:2630
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обробка файлу: %s-%s-%s\n"
@@ -685,7 +685,7 @@ msgstr "readRPM: відкривання %s: %s\n"
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: читання %s: %s\n"
 
-#: build/pack.c:324 build/pack.c:658
+#: build/pack.c:324 build/pack.c:655
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: помилка Fseek: %s\n"
@@ -700,77 +700,77 @@ msgstr "readRPM: %s - не є RPM пакетом\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читається заголовок з %s\n"
 
-#: build/pack.c:598
+#: build/pack.c:595
 msgid "Unable to create immutable header region.\n"
 msgstr "Неможливо помістити заголовок в незмінну область пам'яті.\n"
 
-#: build/pack.c:618
+#: build/pack.c:615
 msgid "Unable to write temp header\n"
 msgstr "Неможливо записати тимчасовий заголовок\n"
 
-#: build/pack.c:628
+#: build/pack.c:625
 msgid "Bad CSA data\n"
 msgstr "Неправильні дані CSA\n"
 
-#: build/pack.c:665
+#: build/pack.c:662
 msgid "Unable to write final header\n"
 msgstr "Неможливо записати остаточний заголовок\n"
 
-#: build/pack.c:685
+#: build/pack.c:682
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Створюється підпис: %d\n"
 
-#: build/pack.c:703
+#: build/pack.c:700
 msgid "Unable to reload signature header.\n"
 msgstr "Неможливо перезавантажити заголовок підпису.\n"
 
-#: build/pack.c:711
+#: build/pack.c:708
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Не вдається відкрити %s: %s\n"
 
-#: build/pack.c:746 lib/psm.c:1639
+#: build/pack.c:743 lib/psm.c:1639
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не вдається записати пакет: %s\n"
 
-#: build/pack.c:761
+#: build/pack.c:758
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Не вдається відкрити ціль підпису %s: %s\n"
 
-#: build/pack.c:772
+#: build/pack.c:769
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Неможливо прочитати заголовок з %s: %s\n"
 
-#: build/pack.c:786
+#: build/pack.c:783
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Неможливо записати заголовок у %s: %s\n"
 
-#: build/pack.c:796
+#: build/pack.c:793
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Неможливо прочитати вміст з %s: %s\n"
 
-#: build/pack.c:802
+#: build/pack.c:799
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Неможливо записати вміст з %s: %s\n"
 
-#: build/pack.c:839 lib/psm.c:1960
+#: build/pack.c:836 lib/psm.c:1965
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
 
-#: build/pack.c:907
+#: build/pack.c:904
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Неможливо створити назву файла для пакету %s: %s\n"
 
-#: build/pack.c:924
+#: build/pack.c:921
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "неможливо створити %s: %s\n"
@@ -845,141 +845,141 @@ msgstr "рядок %d: Помилка аналізу %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "рядок %d: Другий список %%files\n"
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:242
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Архітектуру виключено: %s\n"
 
-#: build/parsePreamble.c:247
+#: build/parsePreamble.c:246
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Архітектуру не включено: %s\n"
 
-#: build/parsePreamble.c:251
+#: build/parsePreamble.c:250
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "ОС виключена: %s\n"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:254
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "ОС не включено: %s\n"
 
-#: build/parsePreamble.c:281
+#: build/parsePreamble.c:280
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Поле %s повинно бути присутнім у пакеті: %s\n"
 
-#: build/parsePreamble.c:310
+#: build/parsePreamble.c:309
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Дубльовані %s елементи у пакеті: %s\n"
 
-#: build/parsePreamble.c:376
+#: build/parsePreamble.c:375
 msgid "No icon file in sources\n"
 msgstr ""
 
-#: build/parsePreamble.c:393
+#: build/parsePreamble.c:392
 #, fuzzy, c-format
 msgid "Invalid icon URL: %s\n"
 msgstr "Неправильна лексема %s: %s\n"
 
-#: build/parsePreamble.c:400
+#: build/parsePreamble.c:399
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Неможливо відкрити піктограму %s: %s\n"
 
-#: build/parsePreamble.c:409
+#: build/parsePreamble.c:408
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Неможливо прочитати піктограму %s: %s\n"
 
-#: build/parsePreamble.c:414
+#: build/parsePreamble.c:413
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
 msgstr ""
 
-#: build/parsePreamble.c:424
+#: build/parsePreamble.c:423
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Невідомий тип піктограми: %s\n"
 
-#: build/parsePreamble.c:472
+#: build/parsePreamble.c:471
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "рядок %d: Етикетка потребує лише одного аргументу: %s\n"
 
-#: build/parsePreamble.c:512
+#: build/parsePreamble.c:511
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "рядок %d: Неправильний тег: %s\n"
 
-#: build/parsePreamble.c:520
+#: build/parsePreamble.c:519
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "рядок %d: Порожній тег: %s\n"
 
-#: build/parsePreamble.c:545 build/parsePreamble.c:552
+#: build/parsePreamble.c:543 build/parsePreamble.c:550
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "рядок %d: Неправильний символ '-' у %s: %s\n"
 
-#: build/parsePreamble.c:585
+#: build/parsePreamble.c:583
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot не може бути \"/\": %s\n"
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:599
 #, fuzzy, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "рядок %d: Префікс не може закінчуватись на \"/\": %s\n"
 
-#: build/parsePreamble.c:609
+#: build/parsePreamble.c:607
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "рядок %d: Префікс не може закінчуватись на \"/\": %s\n"
 
-#: build/parsePreamble.c:621
+#: build/parsePreamble.c:619
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "рядок %d: Docdir повинен починатись з '/': %s\n"
 
-#: build/parsePreamble.c:635
+#: build/parsePreamble.c:633
 #, fuzzy, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "рядок %d: Етикетка потребує лише одного аргументу: %s\n"
 
-#: build/parsePreamble.c:677 build/parsePreamble.c:688
+#: build/parsePreamble.c:675 build/parsePreamble.c:686
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "рядок %d: Неправильне число %s: визначає: %s\n"
 
-#: build/parsePreamble.c:730
+#: build/parsePreamble.c:728
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "рядок %d: Невідомий формат BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:739
+#: build/parsePreamble.c:737
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Внутрішня помилка: Неправильний тег %d\n"
 
-#: build/parsePreamble.c:842
+#: build/parsePreamble.c:839
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:911
+#: build/parsePreamble.c:908
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Неправильна специфікація пакету: %s\n"
 
-#: build/parsePreamble.c:917
+#: build/parsePreamble.c:914
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Пакет вже існує: %s\n"
 
-#: build/parsePreamble.c:946
+#: build/parsePreamble.c:943
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "рядок %d: Невідомий тег: %s\n"
@@ -1071,7 +1071,7 @@ msgstr ""
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "рядок %d: Версії в іменах файлів не допускаються: %s\n"
 
-#: build/parseReqs.c:173
+#: build/parseReqs.c:161
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "рядок %d: Потрібна версія: %s\n"
@@ -2539,12 +2539,12 @@ msgstr "помилка розпаковування архіву%s%s: %s\n"
 msgid " on file "
 msgstr " на файлі "
 
-#: lib/psm.c:1968
+#: lib/psm.c:1973
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s помилка на файлі %s: %s\n"
 
-#: lib/psm.c:1971
+#: lib/psm.c:1976
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s помилка: %s\n"
@@ -2762,11 +2762,11 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:786 lib/rpmds.c:3680
+#: lib/rpmds.c:786 lib/rpmds.c:3682
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:786 lib/rpmds.c:3680
+#: lib/rpmds.c:786 lib/rpmds.c:3682
 msgid "YES"
 msgstr "ТАК"
 
@@ -2845,12 +2845,12 @@ msgstr ""
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3468 lib/rpmds.c:3498 lib/rpmds.c:3510
+#: lib/rpmds.c:3470 lib/rpmds.c:3500 lib/rpmds.c:3512
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3471
+#: lib/rpmds.c:3473
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2859,19 +2859,19 @@ msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#: lib/rpmds.c:3500
+#: lib/rpmds.c:3502
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3512
+#: lib/rpmds.c:3514
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3646
+#: lib/rpmds.c:3648
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2881,12 +2881,12 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3679
+#: lib/rpmds.c:3681
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:3703
+#: lib/rpmds.c:3705
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
@@ -2992,7 +2992,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
 #: lib/rpmgi.c:764 lib/rpminstall.c:668 lib/rpminstall.c:853
-#: lib/rpminstall.c:1466 lib/transaction.c:1117
+#: lib/rpminstall.c:1489 lib/transaction.c:1117
 msgid "Failed dependencies:\n"
 msgstr "Незадоволені залежності:\n"
 
@@ -3118,21 +3118,21 @@ msgstr "Встановлюється %s\n"
 msgid "Missing repackaged package(s) detected:\n"
 msgstr "помилка читання заголовка пакету\n"
 
-#: lib/rpminstall.c:1372
+#: lib/rpminstall.c:1380
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpminstall.c:1460 lib/transaction.c:1095
+#: lib/rpminstall.c:1483 lib/transaction.c:1095
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1493
+#: lib/rpminstall.c:1515
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#: lib/rpminstall.c:1500
+#: lib/rpminstall.c:1522
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Завантажується %s\n"
@@ -3766,7 +3766,7 @@ msgstr ""
 msgid "missing   %c %s"
 msgstr "відсутній  %c %s"
 
-#: lib/verify.c:418
+#: lib/verify.c:422
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Незадовільні залежності для %s: "
@@ -3806,36 +3806,36 @@ msgstr "закрито     індекс бази даних   %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "перевірено  індекс бази даних   %s/%s\n"
 
-#: rpmdb/db3.c:1167
+#: rpmdb/db3.c:1168
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 "знайдено не спільні posix блокування(%d), додається DB_PRIVATE, "
 "використовується блокування fcntl\n"
 
-#: rpmdb/db3.c:1267
+#: rpmdb/db3.c:1274
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1332
+#: rpmdb/db3.c:1339
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "відкрито    індекс бази даних  %s/%s %s режим=0x%x\n"
 
-#: rpmdb/db3.c:1574
+#: rpmdb/db3.c:1580
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "неможливо отримати %s блокування на %s/%s\n"
 
-#: rpmdb/db3.c:1576
+#: rpmdb/db3.c:1582
 msgid "exclusive"
 msgstr "ексклюзивне"
 
-#: rpmdb/db3.c:1576
+#: rpmdb/db3.c:1582
 msgid "shared"
 msgstr "спільне"
 
-#: rpmdb/db3.c:1580
+#: rpmdb/db3.c:1586
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблоковано індекс бази даних  %s/%s\n"
@@ -4220,26 +4220,26 @@ msgstr "Незавершена %c: %s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Незрозумілий макрос після %%\n"
 
-#: rpmio/macro.c:1533
+#: rpmio/macro.c:1543
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Макрос %%%.*s не існує, пропущено\n"
 
-#: rpmio/macro.c:1870
+#: rpmio/macro.c:1880
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:1904
+#: rpmio/macro.c:1914
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2103 rpmio/macro.c:2109
+#: rpmio/macro.c:2113 rpmio/macro.c:2119
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: rpmio/macro.c:2112
+#: rpmio/macro.c:2122
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Довжина файла %s менше за %u байт\n"

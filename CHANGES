@@ -36,6 +36,7 @@
 	- popt: fix compilation on x86_64 from previous patch.
 	- rollback: add explicit upgrade pkgid chain marker.
 	- rollback: convert assertion to a test.
+	- rollback: create rpmrollback.c, refactoring out of rpminstall.c.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

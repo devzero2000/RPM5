@@ -46,6 +46,7 @@ lib/rpmlead.c
 lib/rpmlock.c
 lib/rpmps.c
 lib/rpmrc.c
+lib/rpmrollback.c
 lib/rpmsx.c
 lib/rpmte.c
 lib/rpmts.c

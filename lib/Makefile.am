@@ -38,7 +38,8 @@ librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	manifest.c misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
-	rpmal.c rpmchecksig.c rpmds.c rpmfc.c rpmfi.c rpmgi.c rpminstall.c \
+	rpmal.c rpmchecksig.c rpmds.c rpmfc.c rpmfi.c rpmgi.c \
+	rpminstall.c rpmrollback.c \
 	rpmlead.c rpmlock.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c stringbuf.c transaction.c \
 	verify.c tar.c
