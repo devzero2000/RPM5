@@ -103,6 +103,12 @@ TMPPATH_OPT="_tmppath ${TMPDIR}"
 ########################
 # End of configuration #
 ########################
+#
+# Get absolute paths:
+BUILD_DIR=$(cd $BUILD_DIR; pwd)
+
+#
+# Change things based on us using a build rpm or a production one:
 if [ "${USE_BUILD_RPM}" = "1" ]
 then
 	RPM="${BUILD_DIR}/rpm --rcfile ${RPM_RC_FILE}"

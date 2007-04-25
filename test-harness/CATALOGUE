@@ -32,7 +32,7 @@ TEST #	TYPE	COMMENTS
 13		ARB		Install t1-1-1 and t2-1-1.   t1 depends on t2.  t1 also has
 				a trigger on t2.  Then upgrade t1.  Nothing is broken
 				only cheking trigger instance counts.
-14 		ARB		Install t1-1-1 and t2-1-1.   t1 depends on t2.  t1 also has
+14 		I		Install t1-1-1 and t2-1-1.   t2 depends on t21  t1 also has
 				a trigger on t2.  Then upgrade to t1-1-2 and t2-1-2.  Nothing is
 				broken only cheking trigger instance counts.  This by the way
 				tests a sucessfull upgrade with multiple te's.
@@ -73,3 +73,7 @@ TEST #	TYPE	COMMENTS
 24		RB		Install test-1-1, then roll it back.  This is a simple test
 				of rolling back an install.  This began in rpm 4.4.5.
 
+25 		I		Install t1-1-1 and t2-1-1.   t1 depends on t2.  t1 also has
+				a trigger on t2.  Then upgrade to t1-1-2 and t2-1-2.  Nothing is
+				broken only cheking trigger instance counts.  This by the way
+				tests a sucessfull upgrade with multiple te's.

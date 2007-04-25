@@ -7,6 +7,12 @@ Group: 		System Environment/Base
 License:	GPL
 BuildRoot:	%_tmppath/%NVR
 
+#
+# I'm making this requirement so that I can ensure the order 
+# that the triggers will fire.  t1->t2 produces different instance
+# counts than t2->t1.
+Requires: t1
+
 %description
 It just works.  What more do you want?
 

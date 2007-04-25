@@ -215,9 +215,14 @@ build_rpms() {
 		echo "${nvr}" >> "${ERASE_LIST_PATH}"
 
 		#
+		# Build a build root:
+		[ -e buildroot ] && rm -rf buildroot
+		mkdir -p buildroot
+
+		#
 		# Build the rpm
 		pwd
-		$RPMBUILD -ba --clean $s
+		$RPMBUILD -ba --clean --buildroot $(pwd)/buildroot $s
 		if [ $? != 0 ]
 		then
 			echo "Could not build $filename..."

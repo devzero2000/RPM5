@@ -7,7 +7,6 @@ Group: 		System Environment/Base
 License:	GPL
 BuildRoot:	%_tmppath/%NVR
 
-Requires: t2 
 %description
 It just works.  What more do you want?
 

@@ -1,8 +1,8 @@
 Summary:	The rpm that simply works.
-Name: 		t1
+Name: 		t2
 Epoch:		0
 Version:	1
-Release:	1
+Release:	2
 Group: 		System Environment/Base
 License:	GPL
 BuildRoot:	%_tmppath/%NVR
@@ -11,6 +11,7 @@ BuildRoot:	%_tmppath/%NVR
 It just works.  What more do you want?
 
 %install
+
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/tmp
 
@@ -21,12 +22,6 @@ can/has caused a segfault.
 
 %NVR
 EOF
-exit 0
-
-%triggerin -- t2
-echo "--- triggerin %{NVR})	arg1 $1 arg2 $2"
-echo $1 > /tmp/%{NVR}_trigger_myicount
-echo $2 > /tmp/%{NVR}_trigger_ticount
 exit 0
 
 %files
