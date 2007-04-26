@@ -24,7 +24,6 @@ EOF
 exit 0
 
 %triggerin -- t2
-echo "--- triggerin %{NVR})	arg1 $1 arg2 $2"
 echo $1 > /tmp/%{NVR}_trigger_myicount
 echo $2 > /tmp/%{NVR}_trigger_ticount
 exit 0
