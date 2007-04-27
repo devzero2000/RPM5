@@ -362,6 +362,52 @@ exit:
     return rc;
 }
 
+int rpmrbCheck(rpmts ts)
+{
+    rpmps ps;
+    int rc;
+
+    rc = rpmtsCheck(ts);
+    ps = rpmtsProblems(ts);
+    if (rc != 0 && rpmpsNumProblems(ps) > 0) {
+	rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	rpmpsPrint(NULL, ps);
+    }
+    ps = rpmpsFree(ps);
+
+    return rc;
+}
+
+int rpmrbOrder(rpmts ts)
+{
+    rpmps ps;
+    int rc;
+
+    rc = rpmtsOrder(ts);
+    ps = rpmtsProblems(ts);
+    if (rc != 0 && rpmpsNumProblems(ps) > 0) {
+	rpmpsPrint(NULL, ps);
+    }
+    ps = rpmpsFree(ps);
+
+    return rc;
+}
+
+int rpmrbRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+{
+    rpmps ps;
+    int rc;
+
+    rc = rpmtsRun(ts, okProbs, ignoreSet);
+    ps = rpmtsProblems(ts);
+    if (rc > 0 && rpmpsNumProblems(ps) > 0) {
+	rpmpsPrint(NULL, ps);
+    }
+    ps = rpmpsFree(ps);
+
+    return rc;
+}
+
 /** @todo Transaction handling, more, needs work. */
 int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 {
@@ -379,7 +425,6 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     int vsflags, ovsflags;
     int numAdded;
     int numRemoved;
-    rpmps ps;
     int _unsafe_rollbacks = 0;
     rpmtransFlags transFlags = ia->transFlags;
     rpmdepFlags depFlags = ia->depFlags;
@@ -585,31 +630,22 @@ assert(ip->done || ia->no_rollback_links);
 		_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 			numAdded, numRemoved, ctime(&tid), tid);
 
-	rc = rpmtsCheck(ts);
-	ps = rpmtsProblems(ts);
-	if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
-	    rpmpsPrint(NULL, ps);
-	    ps = rpmpsFree(ps);
+	rc = (ia->rbCheck ? (*ia->rbCheck) (ts) : 0);
+	if (rc != 0)
 	    goto exit;
-	}
-	ps = rpmpsFree(ps);
 
-	rc = rpmtsOrder(ts);
+	rc = (ia->rbOrder ? (*ia->rbOrder) (ts) : 0);
 	if (rc != 0)
 	    goto exit;
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
 
-	rc = rpmtsRun(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
-	ps = rpmtsProblems(ts);
-	if (rc > 0 && rpmpsNumProblems(ps) > 0) {
-	    rpmpsPrint(NULL, ps);
-	    ps = rpmpsFree(ps);
+	rc = (ia->rbRun
+	    ? (*ia->rbRun)(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE))
+	    : 0);
+	if (rc != 0)
 	    goto exit;
-	}
-	ps = rpmpsFree(ps);
 
 	/* Remove repackaged packages after successful reinstall. */
 	if (rtids && !rpmIsDebug()) {

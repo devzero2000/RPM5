@@ -236,6 +236,9 @@ LIBRPM_0
     rpmQueryVerify;
     rpmQVKArgs;
     rpmQVSourcePoptTable;
+    rpmrbCheck;
+    rpmrbOrder;
+    rpmrbRun;
     rpmRcfiles;
     rpmReadConfigFiles;
     rpmReadHeader;

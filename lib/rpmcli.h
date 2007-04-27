@@ -8,6 +8,7 @@
 #include "rpmlib.h"
 #include "rpmurl.h"
 #include "rpmmacro.h"
+#include "rpmps.h"
 #include "argv.h"
 
 /** \ingroup rpmcli
@@ -777,6 +778,11 @@ struct rpmQVKArguments_s {
     int init;			/*!< from --initdb */
     int rebuild;		/*!< from --rebuilddb */
     int verify;			/*!< from --verifydb */
+
+    /* rollback vectors */
+    int (*rbCheck) (rpmts ts);
+    int (*rbOrder) (rpmts ts);
+    int (*rbRun) (rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet);
 };
 #endif
 

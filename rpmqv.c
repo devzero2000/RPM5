@@ -696,6 +696,9 @@ int main(int argc, const char ** argv)
 		argerror(_("no packages given for erase"));
 ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+ia->rbCheck = rpmrbCheck;
+ia->rbOrder = rpmrbOrder;
+ia->rbRun = rpmrbRun;
 	    ec += rpmRollback(ts, ia, NULL);
 	} else {
 	    ec += rpmErase(ts, ia, (const char **) poptGetArgs(optCon));
@@ -737,6 +740,9 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 		argerror(_("no packages given for install"));
 ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+ia->rbCheck = rpmrbCheck;
+ia->rbOrder = rpmrbOrder;
+ia->rbRun = rpmrbRun;
 /*@i@*/	    ec += rpmRollback(ts, ia, NULL);
 	} else {
 	    /*@-compdef -compmempass@*/ /* FIX: ia->relocations[0].newPath undefined */

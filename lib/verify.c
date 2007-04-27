@@ -5,12 +5,12 @@
 
 #include "system.h"
 
+#define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
 #include <rpmcli.h>
 
 #include "psm.h"
 #include "rpmfi.h"
 
-#define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
 #include "rpmts.h"
 
 #include "legacy.h"	/* XXX dodigest(), uidToUname(), gnameToGid */

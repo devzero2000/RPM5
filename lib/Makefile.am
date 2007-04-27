@@ -17,7 +17,7 @@ INCLUDES = -I. \
 
 EXTRA_DIST = getdate.y librpm.vers
 
-EXTRA_PROGRAMS = trb
+EXTRA_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -90,9 +90,6 @@ BUILT_SOURCES = getdate.c # rpmlib.lcd
 
 rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
-
-trb_SOURCES =	trb.c
-trb_LDFLAGS =   librpm.la
 
 .PHONY:	sources
 sources:
