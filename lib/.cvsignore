@@ -7,13 +7,4 @@ getdate.c
 *.la
 *.lcd
 *.lo
-tcpu
-tdpkg
-tds
-telf
-tgetconf
-tgi
-tld
-tpath
-tpl
-tsys
+trb
