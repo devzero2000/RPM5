@@ -37,6 +37,7 @@
 	- rollback: add explicit upgrade pkgid chain marker.
 	- rollback: convert assertion to a test.
 	- rollback: create rpmrollback.c, refactoring out of rpminstall.c.
+	- multilib: _prefer_color macro to choose elf32/elf64 files (#235757).
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

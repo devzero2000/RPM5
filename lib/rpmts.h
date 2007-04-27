@@ -243,6 +243,7 @@ struct rpmts_s {
     int_32 tid;			/*!< Transaction id. */
 
     uint_32 color;		/*!< Transaction color bits. */
+    uint_32 prefcolor;		/*!< Preferred file color. */
 
     rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
 
@@ -972,6 +973,14 @@ rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
  * @return		color bits
  */
 uint_32 rpmtsColor(rpmts ts)
+	/*@*/;
+
+/**
+ * Retrieve prefered file color
+ * @param ts		transaction set
+ * @return		color bits
+ */
+uint_32 rpmtsPrefColor(rpmts ts)
 	/*@*/;
 
 /**
