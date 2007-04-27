@@ -70,6 +70,7 @@ int _rpmvercmp(const char * a, const char * b)
 
 	/* this cannot happen, as we previously tested to make sure that */
 	/* the first string has a non-null segment */
+assert(str1 > one);
 	if (one == str1) return -1;	/* arbitrary */
 
 	/* take care of the case where the two version segments are */
@@ -88,8 +89,10 @@ int _rpmvercmp(const char * a, const char * b)
 	    while (*two == '0') two++;
 
 	    /* whichever number has more digits wins */
-	    if (strlen(one) > strlen(two)) return 1;
-	    if (strlen(two) > strlen(one)) return -1;
+assert((str1 - one) == strlen(one));
+assert((str2 - two) == strlen(two));
+	    if ((str1 - one) > (str2 - two)) return 1;
+	    if ((str2 - two) > (str1 - one)) return -1;
 	}
 
 	/* strcmp will return which one is greater - even if the two */
