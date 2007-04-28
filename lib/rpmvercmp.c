@@ -4,15 +4,76 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpmio.h>
 
 #include "debug.h"
+
+#if !defined(MAX)
+#define MAX(x, y) ( ((x)>(y))?(x):(y) )
+#endif
+
+/* XXX Force digits to beat alphas. See bugzilla #50977. */
+static int invert_digits_alphas_comparison = -1;
+
+static int ___rpmvercmp(const char * a, const char * b)
+	/*@*/
+{
+    const char * ae, * be;
+    int rc = 0;
+
+    /* Compare version strings segment by segment. */
+    for (; *a && *b && rc == 0; a = ae, b = be) {
+
+	/* Skip leading non-alpha, non-digit characters. */
+	while (*a && !xisalnum(*a)) a++;
+	while (*b && !xisalnum(*b)) b++;
+
+	/* Digit string comparison? */
+	if (xisdigit(*a) || xisdigit(*b)) {
+	    /* Discard leading zeroes. */
+	    while (*a == '0') a++;
+	    while (*b == '0') b++;
+
+	    /* Find end of digit strings. */
+	    for (ae = a; xisdigit(*ae); ae++);
+	    for (be = b; xisdigit(*be); be++);
+
+	    /* Calculate digit comparison return code. */
+	    if (a == ae && b == be)
+		rc = 0;
+	    else if (a == ae || b == be)
+		rc = (*b - *a) * invert_digits_alphas_comparison;
+	    else {
+		rc = (ae - a) - (be - b);
+		if (!rc)
+		    rc = strncmp(a, b, (ae - a));
+	    }
+	} else {
+	    /* Find end of alpha strings. */
+	    for (ae = a; xisalpha(*ae); ae++);
+	    for (be = b; xisalpha(*be); be++);
+
+	    /* Calculate alpha comparison return code. */
+	    rc = strncmp(a, b, MAX((ae - a), (be - b)));
+	}
+    }
+
+    /* Longer string wins. */
+    if (!rc)
+	rc = (*a - *b);
+
+    /* Force strict -1, 0, 1 return. */
+    rc = (rc > 0 ? 1
+	: rc < 0 ? -1
+	: 0);
+    return rc;
+}
 
 /* compare alpha and numeric segments of two versions */
 /* return 1: a is newer than b */
 /*        0: a and b are the same version */
 /*       -1: b is newer than a */
-int _rpmvercmp(const char * a, const char * b)
+static int __rpmvercmp(const char * a, const char * b)
 	/*@*/
 {
     char oldch1, oldch2;
@@ -122,6 +183,15 @@ assert((str2 - two) == strlen(two));
     /* whichever version still has characters left over wins */
     if (!*one) return -1; else return 1;
 /*@=boundsread@*/
+}
+
+int _rpmvercmp(const char * a, const char * b)
+{
+    int Orc = __rpmvercmp(a, b);
+    int Nrc = ___rpmvercmp(a, b);
+if (Nrc != Orc) fprintf(stderr, "==> %s(%s,%s) N %d O %d\n", __FUNCTION__, a, b, Nrc, Orc);
+assert(Nrc == Orc);
+    return Orc;
 }
 
 int (*rpmvercmp)(const char *a, const char *b) = _rpmvercmp;
