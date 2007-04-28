@@ -22,7 +22,21 @@ extern int _rpmds_debug;
 extern int _rpmds_nopromote;
 /*@=exportlocal@*/
 
+typedef	struct EVR_s * EVR_t;
+
 #if defined(_RPMDS_INTERNAL)
+/** \ingroup rpmds
+ * An EVR parsing container.
+ */
+struct EVR_s {
+/*@observer@*/ /*@null@*/
+    const char * E;		/*!< Epoch */
+/*@observer@*/ /*@null@*/
+    const char * V;		/*!< Version */
+/*@observer@*/ /*@null@*/
+    const char * R;		/*!< Release */
+};
+
 /** \ingroup rpmds
  * A dependency set.
  */
@@ -31,14 +45,18 @@ struct rpmds_s {
     const char * Type;		/*!< Tag name. */
 /*@only@*/ /*@null@*/
     const char * DNEVR;		/*!< Formatted dependency string. */
-/*@only@*/ /*@null@*/
+/*@owned@*/ /*@null@*/
     const char * _N;		/*!< Macro expanded Name. */
+/*@dependent@*/ /*@null@*/
+    const char * _A;		/*!< Arch (from Name.Arch suffix). */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
 /*@only@*/ /*@relnull@*/
     const char ** N;		/*!< Name. */
 /*@only@*/ /*@relnull@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
+/*@only@*/ /*@null@*/
+    const char * A;		/*!< Arch (from containing package). */
 /*@only@*/ /*@relnull@*/
     int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
 /*@only@*/ /*@null@*/
@@ -48,6 +66,7 @@ struct rpmds_s {
 /*@only@*/ /*@null@*/
     int_32 * Result;		/*!< Dependency check result. */
 /*@null@*/
+    int (*EVRparse) (const char *evrstr, EVR_t evr);	 /* EVR parsing. */
     int (*EVRcmp) (const char *a, const char *b);	 /* EVR comparison. */
     int_32 BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
@@ -274,6 +293,15 @@ rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
+ * Return current dependency arch.
+ * @param ds		dependency set
+ * @return		current dependency arch, NULL on invalid
+ */
+/*@observer@*/ /*@relnull@*/
+extern const char * rpmdsA(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
  * Return dependency build time.
  * @param ds		dependency set
  * @return		dependency build time, 0 on invalid
@@ -313,6 +341,17 @@ int rpmdsNoPromote(/*@null@*/ const rpmds ds)
  * @return		previous "Don't promote Epoch:" flag
  */
 int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
+	/*@modifies ds @*/;
+
+/**
+ * Set EVR parsing function.
+ * @param ds		dependency set
+ * @param EVRparse	EVR parsing function (NULL uses default)
+ * @return		previous EVR parsing function
+ */
+/*@null@*/
+void * rpmdsSetEVRparse(/*@null@*/ rpmds ds,
+		/*@null@*/ int (*EVRparse)(const char *everstr, EVR_t evr))
 	/*@modifies ds @*/;
 
 /**

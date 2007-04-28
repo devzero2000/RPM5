@@ -149,6 +149,8 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 
     ds->DNEVR = _free(ds->DNEVR);
     ds->_N = _free(ds->_N);
+    ds->_A = NULL;	/* XXX TODO: parse Name.Arch */
+    ds->A = _free(ds->A);
     ds->Color = _free(ds->Color);
     ds->Refs = _free(ds->Refs);
     ds->Result = _free(ds->Result);
@@ -270,9 +272,16 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
+	{   rpmTag tagA = RPMTAG_ARCH;
+	    rpmTagType At;
+	    const char * A = NULL;
+	    if (tagA > 0)
+		xx = hge(h, tagA, &At, (void **) &A, NULL);
+	    ds->A = (xx && A != NULL ? xstrdup(A) : NULL);
+	}
 	{   rpmTag tagBT = RPMTAG_BUILDTIME;
 	    rpmTagType BTt;
-	    int_32 * BTp;
+	    int_32 * BTp = NULL;
 	    if (tagBT > 0)
 		xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
 	    ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
@@ -348,6 +357,7 @@ const char * rpmdsNewN(rpmds ds)
     int_32 Flags = rpmdsFlags(ds);
     if (Name[0] == '%' && (Flags & RPMSENSE_INTERP))
 	Name = ds->_N = rpmExpand(Name, NULL);
+    ds->_A = NULL;	/* XXX TODO: parse Name.Arch */
 /*@-usereleased -compdef@*/ /* FIX: correct annotations for ds->_N shadow */
     return Name;
 /*@-usereleased -compdef@*/
@@ -472,6 +482,20 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 /*@-boundswrite@*/
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
 /*@=boundswrite@*/
+	{   rpmTag tagA = RPMTAG_ARCH;
+	    rpmTagType At;
+	    const char * A = NULL;
+	    if (tagA > 0)
+		xx = hge(h, tagA, &At, (void **) &A, NULL);
+	    ds->A = (xx && A != NULL ? xstrdup(A) : NULL);
+	}
+	{   rpmTag tagBT = RPMTAG_BUILDTIME;
+	    rpmTagType BTt;
+	    int_32 * BTp = NULL;
+	    if (tagBT > 0)
+		xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
+	    ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
+	}
     {	char pre[2];
 /*@-boundsread@*/
 	pre[0] = ds->Type[0];
@@ -517,6 +541,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
     ds->tagN = tagN;
+    ds->A = NULL;
     {	time_t now = time(NULL);
 	ds->BT = now;
     }
@@ -623,6 +648,15 @@ rpmTag rpmdsTagN(const rpmds ds)
     return tagN;
 }
 
+const char * rpmdsA(const rpmds ds)
+{
+    const char * A = NULL;
+
+    if (ds != NULL)
+	A = ds->A;
+    return A;
+}
+
 time_t rpmdsBT(const rpmds ds)
 {
     time_t BT = 0;
@@ -661,7 +695,19 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote)
     return onopromote;
 }
 
-void * rpmdsSetEVRcmp(rpmds ds , int (*EVRcmp)(const char *a, const char *b))
+void * rpmdsSetEVRparse(rpmds ds,
+	int (*EVRparse)(const char *evrstr, EVR_t evr))
+{
+    void * oEVRparse = NULL;
+
+    if (ds != NULL) {
+/*@i@*/	oEVRparse = ds->EVRparse;
+/*@i@*/	ds->EVRparse = EVRparse;
+    }
+    return oEVRparse;
+}
+
+void * rpmdsSetEVRcmp(rpmds ds, int (*EVRcmp)(const char *a, const char *b))
 {
     void * oEVRcmp = NULL;
 
@@ -798,6 +844,7 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 	    i = ds->i;
 	    ds->DNEVR = _free(ds->DNEVR);
 	    ds->_N = _free(ds->_N);
+	    ds->_A = NULL;	/* XXX TODO: parse Name.Arch */
 	    t[0] = ((ds->Type != NULL) ? ds->Type[0] : '\0');
 	    t[1] = '\0';
 	    /*@-nullstate@*/
@@ -3562,7 +3609,12 @@ void parseEVR(char * evr,
     char *s, *se;
 
     s = evr;
+#ifndef	NOTYET
     while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
+#else
+    if ((se = strchr(s, ':')) != NULL)
+	s = se;
+#endif
     se = strrchr(s, '-');		/* se points to version terminator */
 
     if (*s == ':') {

@@ -41,6 +41,8 @@
 	- rollback: add (*rbCheck), (*rbOrder), (*rbRun) vectors.
 	- strip rpmvercmp down to bare metallic C code.
 	- treat all printable non-digits except '.' as alpha comparisons.
+	- rpmds: add data elements and methods to handle Name.Arch compounds.
+	- rpmds: add opaque EVR parsing vector and container.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
