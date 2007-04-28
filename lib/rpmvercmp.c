@@ -15,6 +15,19 @@
 /* XXX Force digits to beat alphas. See bugzilla #50977. */
 static int invert_digits_alphas_comparison = -1;
 
+/* XXX Punctuation characters that are not treated as alphas */
+static const char * rpmnotalpha = ".";
+
+static inline int xisrpmalpha(int c)
+{
+    int rc = xisalpha(c);
+    if (!rc)
+	rc = xispunct(c);
+    if (rc && rpmnotalpha && *rpmnotalpha)
+	rc = (strchr(rpmnotalpha, c) == NULL);
+    return rc;
+}
+
 static int ___rpmvercmp(const char * a, const char * b)
 	/*@*/
 {
@@ -25,8 +38,8 @@ static int ___rpmvercmp(const char * a, const char * b)
     for (; *a && *b && rc == 0; a = ae, b = be) {
 
 	/* Skip leading non-alpha, non-digit characters. */
-	while (*a && !xisalnum(*a)) a++;
-	while (*b && !xisalnum(*b)) b++;
+	while (*a && !(xisdigit(*a) || xisrpmalpha(*a))) a++;
+	while (*b && !(xisdigit(*b) || xisrpmalpha(*b))) b++;
 
 	/* Digit string comparison? */
 	if (xisdigit(*a) || xisdigit(*b)) {
@@ -50,8 +63,8 @@ static int ___rpmvercmp(const char * a, const char * b)
 	    }
 	} else {
 	    /* Find end of alpha strings. */
-	    for (ae = a; xisalpha(*ae); ae++);
-	    for (be = b; xisalpha(*be); be++);
+	    for (ae = a; xisrpmalpha(*ae); ae++);
+	    for (be = b; xisrpmalpha(*be); be++);
 
 	    /* Calculate alpha comparison return code. */
 	    rc = strncmp(a, b, MAX((ae - a), (be - b)));

@@ -784,6 +784,21 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 /*@unused@*/ static inline int xisspace(int c) /*@*/ {
     return (xisblank(c) || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
+/*@unused@*/ static inline int xiscntrl(int c) /*@*/ {
+    return (c < ' ');
+}
+/*@unused@*/ static inline int xisascii(int c) /*@*/ {
+    return ((c & 0x80) != 0x80);
+}
+/*@unused@*/ static inline int xisprint(int c) /*@*/ {
+    return (c >= ' ' && xisascii(c));
+}
+/*@unused@*/ static inline int xisgraph(int c) /*@*/ {
+    return (c > ' ' && xisascii(c));
+}
+/*@unused@*/ static inline int xispunct(int c) /*@*/ {
+    return (xisgraph(c) && !xisalnum(c));
+}
 
 /*@unused@*/ static inline int xtolower(int c) /*@*/ {
     return ((xisupper(c)) ? (c | ('a' - 'A')) : c);

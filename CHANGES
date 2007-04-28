@@ -40,6 +40,7 @@
 	- multilib: _prefer_color macro to choose elf32/elf64 files (#235757).
 	- rollback: add (*rbCheck), (*rbOrder), (*rbRun) vectors.
 	- strip rpmvercmp down to bare metallic C code.
+	- treat all printable non-digits except '.' as alpha comparisons.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
