@@ -569,6 +569,7 @@ exit 0
 - rpmds: use the parsing vector and container.
 - rpmds: expose methods to parse and compare EVR ala rpm.
 - rpmds: add methods to compare EVR ala dpkg.
+- fix: rpmEVRparser was not terminating epoch correctly.
 
 * Sun Apr  1 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.3
 - perl: extract dependencies from *.pm iff on /usr/lib* (#234691).

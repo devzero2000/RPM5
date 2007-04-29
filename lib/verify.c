@@ -390,9 +390,11 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     int i;
 
     rpmtsEmpty(ts);
+#ifdef	NOTYET
     if (instance > 0)
 	(void) rpmtsAddEraseElement(ts, h, instance);
     else
+#endif
 	(void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     xx = rpmtsCheck(ts);

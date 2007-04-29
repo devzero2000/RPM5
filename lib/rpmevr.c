@@ -23,7 +23,7 @@ static int _invert_digits_alphas_comparison = -1;
 
 /* XXX Punctuation characters that are not treated as alphas */
 /*@unchecked@*/
-static const char * _rpmnotalpha = ".";
+static const char * _rpmnotalpha = ".:-";
 
 /**
  * Return rpm's analogue of xisalpha.
@@ -100,14 +100,13 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     char *s = xstrdup(evrstr);
     char *se;
 
-    evr->str = s;
-    while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
-    se = strrchr(s, '-');		/* se points to version terminator */
+    evr->str = se = s;
+    while (*se && xisdigit(*se)) se++;	/* s points to epoch terminator */
 
-    if (*s == ':') {
-	evr->E = evrstr;
-	*s++ = '\0';
-	evr->V = s;
+    if (*se == ':') {
+	evr->E = s;
+	*se++ = '\0';
+	evr->V = se;
 /*@-branchstate@*/
 	if (*evr->E == '\0') evr->E = "0";
 /*@=branchstate@*/
@@ -117,6 +116,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->V = evrstr;
 	evr->Elong = 0;
     }
+    se = strrchr(se, '-');		/* se points to version terminator */
     if (se) {
 	*se++ = '\0';
 	evr->R = se;
