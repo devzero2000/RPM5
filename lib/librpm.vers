@@ -8,6 +8,9 @@ LIBRPM_0
     currentDirectory;
     doputenv;
     dosetenv;
+    dpkgEVRcmp;
+    dpkgEVRcompare;
+    dpkgEVRparse;
     fileActionString;
     fileStageString;
     _fini;
@@ -135,6 +138,9 @@ LIBRPM_0
     _rpmds_unspecified_epoch_noise;
     rpmErase;
     rpmEVR;
+    rpmEVRcmp;
+    rpmEVRcompare;
+    rpmEVRparse;
     _rpmfc_debug;
     rpmfcApply;
     rpmfcClassify;

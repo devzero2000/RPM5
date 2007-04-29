@@ -44,6 +44,8 @@
 	- rpmds: add data elements and methods to handle Name.Arch compounds.
 	- rpmds: add opaque EVR parsing vector and container.
 	- rpmds: use the parsing vector and container.
+	- rpmds: expose methods to parse and compare EVR ala rpm.
+	- rpmds: add methods to compare EVR ala dpkg.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

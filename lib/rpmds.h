@@ -6,6 +6,7 @@
  * Structure(s) used for dependency tag sets.
  */
 
+#include "rpmevr.h"
 #include "rpmps.h"
 
 /**
@@ -22,23 +23,7 @@ extern int _rpmds_debug;
 extern int _rpmds_nopromote;
 /*@=exportlocal@*/
 
-typedef	struct EVR_s * EVR_t;
-
 #if defined(_RPMDS_INTERNAL)
-/** \ingroup rpmds
- * An EVR parsing container.
- */
-struct EVR_s {
-    const char * str;		/*!< EVR storage */
-/*@observer@*/ /*@null@*/
-    const char * E;		/*!< Epoch */
-    unsigned long Elong;
-/*@observer@*/ /*@null@*/
-    const char * V;		/*!< Version */
-/*@observer@*/ /*@null@*/
-    const char * R;		/*!< Release */
-};
-
 /** \ingroup rpmds
  * A dependency set.
  */

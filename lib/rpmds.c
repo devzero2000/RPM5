@@ -39,6 +39,7 @@
 #include <rpmmacro.h>
 
 #define	_RPMDS_INTERNAL
+#define	_RPMEVR_INTERNAL
 #define	_RPMPRCO_INTERNAL
 #include <rpmds.h>
 
@@ -3588,43 +3589,6 @@ exit:
     return rc;
 }
 
-/**
- * Split EVR string into epoch, version, and release components.
- * @param evrstr	[epoch:]version[-release] string
- * @retval *evr		parse results
- * @return		0 always
- */
-static
-int parseEVR(const char * evrstr, EVR_t evr)
-	/*@modifies evrstr, evr @*/
-{
-    char *s = xstrdup(evrstr);
-    char *se;
-
-    evr->str = s;
-    while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
-    se = strrchr(s, '-');		/* se points to version terminator */
-
-    if (*s == ':') {
-	evr->E = evrstr;
-	*s++ = '\0';
-	evr->V = s;
-/*@-branchstate@*/
-	if (*evr->E == '\0') evr->E = "0";
-/*@=branchstate@*/
-    } else {
-	evr->E = NULL;	/* XXX disable epoch compare if missing */
-	evr->V = evrstr;
-    }
-    if (se) {
-	*se++ = '\0';
-	evr->R = se;
-    } else {
-	evr->R = NULL;
-    }
-    return 0;
-}
-
 int rpmdsCompare(const rpmds A, const rpmds B)
 {
     const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
@@ -3668,8 +3632,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
     /* Both AEVR and BEVR exist. */
 /*@-boundswrite@*/
-    xx = (A->EVRparse ? A->EVRparse : parseEVR) (A->EVR[A->i], a);
-    xx = (B->EVRparse ? B->EVRparse : parseEVR) (B->EVR[B->i], b);
+    xx = (A->EVRparse ? A->EVRparse : rpmEVRparse) (A->EVR[A->i], a);
+    xx = (B->EVRparse ? B->EVRparse : rpmEVRparse) (B->EVR[B->i], b);
 /*@=boundswrite@*/
 
     /* Compare {A,B} [epoch:]version[-release] */

@@ -1056,9 +1056,8 @@ typedef enum rpmtransFlags_e {
   )
 
 #if !defined(SWIG)
-/** \ingroup rpmts
- * Segmented string compare for version and/or release.
- *
+/** \ingroup rpmds
+ * Segmented string compare.
  * @param a		1st string
  * @param b		2nd string
  * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"

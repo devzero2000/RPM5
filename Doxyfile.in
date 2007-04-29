@@ -544,8 +544,12 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmal.h \
                          @top_srcdir@/lib/rpmchecksig.c \
                          @top_srcdir@/lib/rpmcli.h \
+                         @top_srcdir@/lib/rpmdpkg.c \
+                         @top_srcdir@/lib/rpmdpkg.h \
                          @top_srcdir@/lib/rpmds.c \
                          @top_srcdir@/lib/rpmds.h \
+                         @top_srcdir@/lib/rpmevr.c \
+                         @top_srcdir@/lib/rpmevr.h \
                          @top_srcdir@/lib/rpmfc.c \
                          @top_srcdir@/lib/rpmfc.h \
                          @top_srcdir@/lib/rpmfi.c \

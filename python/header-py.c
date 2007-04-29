@@ -12,6 +12,8 @@
 #include "header_internal.h"
 
 #include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
+#define	_RPMEVR_INTERNAL
+#include "rpmevr.h"
 
 #include "header-py.h"
 #include "rpmds-py.h"
@@ -1271,36 +1273,20 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", hdr_compare(h1, h2));
 }
 
-/**
- */
-static int compare_values(const char *str1, const char *str2)
-{
-    if (!str1 && !str2)
-	return 0;
-    else if (str1 && !str2)
-	return 1;
-    else if (!str1 && str2)
-	return -1;
-    return rpmvercmp(str1, str2);
-}
-
 PyObject * labelCompare (PyObject * self, PyObject * args)
 {
-    char *v1, *r1, *e1, *v2, *r2, *e2;
+    EVR_t A = memset(alloca(sizeof(*A)), 0, sizeof(*A));
+    EVR_t B = memset(alloca(sizeof(*B)), 0, sizeof(*B));
     int rc;
 
     if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			&e1, &v1, &r1, &e2, &v2, &r2))
+			&A->E, &A->V, &A->R, &B->E, &B->V, &B->R))
 	return NULL;
 
-    if (e1 == NULL)	e1 = "0";
-    if (e2 == NULL)	e2 = "0";
+    if (A->E == NULL)	A->E = "0";
+    if (B->E == NULL)	B->E = "0";
 
-    rc = compare_values(e1, e2);
-    if (!rc) {
-	rc = compare_values(v1, v2);
-	if (!rc)
-	    rc = compare_values(r1, r2);
-    }
+    rc = rpmEVRcompare(A, B);
+
     return Py_BuildValue("i", rc);
 }
