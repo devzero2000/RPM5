@@ -29,8 +29,10 @@ typedef	struct EVR_s * EVR_t;
  * An EVR parsing container.
  */
 struct EVR_s {
+    const char * str;		/*!< EVR storage */
 /*@observer@*/ /*@null@*/
     const char * E;		/*!< Epoch */
+    unsigned long Elong;
 /*@observer@*/ /*@null@*/
     const char * V;		/*!< Version */
 /*@observer@*/ /*@null@*/

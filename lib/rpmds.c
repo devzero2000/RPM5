@@ -3589,68 +3589,52 @@ exit:
 }
 
 /**
- * Split EVR into epoch, version, and release components.
- * @param evr		[epoch:]version[-release] string
- * @retval *ep		pointer to epoch
- * @retval *vp		pointer to version
- * @retval *rp		pointer to release
+ * Split EVR string into epoch, version, and release components.
+ * @param evrstr	[epoch:]version[-release] string
+ * @retval *evr		parse results
+ * @return		0 always
  */
 static
-void parseEVR(char * evr,
-		/*@exposed@*/ /*@out@*/ const char ** ep,
-		/*@exposed@*/ /*@out@*/ const char ** vp,
-		/*@exposed@*/ /*@out@*/ const char ** rp)
-	/*@modifies *ep, *vp, *rp @*/
-	/*@requires maxSet(ep) >= 0 /\ maxSet(vp) >= 0 /\ maxSet(rp) >= 0 @*/
+int parseEVR(const char * evrstr, EVR_t evr)
+	/*@modifies evrstr, evr @*/
 {
-    const char *epoch;
-    const char *version;		/* assume only version is present */
-    const char *release;
-    char *s, *se;
+    char *s = xstrdup(evrstr);
+    char *se;
 
-    s = evr;
-#ifndef	NOTYET
+    evr->str = s;
     while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
-#else
-    if ((se = strchr(s, ':')) != NULL)
-	s = se;
-#endif
     se = strrchr(s, '-');		/* se points to version terminator */
 
     if (*s == ':') {
-	epoch = evr;
+	evr->E = evrstr;
 	*s++ = '\0';
-	version = s;
-	/*@-branchstate@*/
-	if (*epoch == '\0') epoch = "0";
-	/*@=branchstate@*/
+	evr->V = s;
+/*@-branchstate@*/
+	if (*evr->E == '\0') evr->E = "0";
+/*@=branchstate@*/
     } else {
-	epoch = NULL;	/* XXX disable epoch compare if missing */
-	version = evr;
+	evr->E = NULL;	/* XXX disable epoch compare if missing */
+	evr->V = evrstr;
     }
     if (se) {
-/*@-boundswrite@*/
 	*se++ = '\0';
-/*@=boundswrite@*/
-	release = se;
+	evr->R = se;
     } else {
-	release = NULL;
+	evr->R = NULL;
     }
-
-    if (ep) *ep = epoch;
-    if (vp) *vp = version;
-    if (rp) *rp = release;
+    return 0;
 }
 
 int rpmdsCompare(const rpmds A, const rpmds B)
 {
     const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
     const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
-    char *aEVR, *bEVR;
-    const char *aE, *aV, *aR, *bE, *bV, *bR;
+    EVR_t a = memset(alloca(sizeof(*a)), 0, sizeof(*a));
+    EVR_t b = memset(alloca(sizeof(*a)), 0, sizeof(*a));
     int (*EVRcmp) (const char *a, const char *b);
     int result;
     int sense;
+    int xx;
 
     /* If EVRcmp is identical, use that, otherwise use default. */
     EVRcmp = (A->EVRcmp && B->EVRcmp && A->EVRcmp == B->EVRcmp)
@@ -3684,17 +3668,15 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
     /* Both AEVR and BEVR exist. */
 /*@-boundswrite@*/
-    aEVR = xstrdup(A->EVR[A->i]);
-    parseEVR(aEVR, &aE, &aV, &aR);
-    bEVR = xstrdup(B->EVR[B->i]);
-    parseEVR(bEVR, &bE, &bV, &bR);
+    xx = (A->EVRparse ? A->EVRparse : parseEVR) (A->EVR[A->i], a);
+    xx = (B->EVRparse ? B->EVRparse : parseEVR) (B->EVR[B->i], b);
 /*@=boundswrite@*/
 
     /* Compare {A,B} [epoch:]version[-release] */
     sense = 0;
-    if (aE && *aE && bE && *bE)
-/*@i@*/	sense = EVRcmp(aE, bE);
-    else if (aE && *aE && atol(aE) > 0) {
+    if (a->E && *a->E && b->E && *b->E)
+/*@i@*/	sense = EVRcmp(a->E, b->E);
+    else if (a->E && *a->E && atol(a->E) > 0) {
 	if (!B->nopromote) {
 	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMMESS_WARNING : RPMMESS_DEBUG);
 	    rpmMessage(lvl, _("The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n\tA = \"%s\"\tB = \"%s\"\n"),
@@ -3702,17 +3684,17 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	    sense = 0;
 	} else
 	    sense = 1;
-    } else if (bE && *bE && atol(bE) > 0)
+    } else if (b->E && *b->E && atol(b->E) > 0)
 	sense = -1;
 
     if (sense == 0) {
-/*@i@*/	sense = EVRcmp(aV, bV);
-	if (sense == 0 && aR && *aR && bR && *bR)
-/*@i@*/	    sense = EVRcmp(aR, bR);
+/*@i@*/	sense = EVRcmp(a->V, b->V);
+	if (sense == 0 && a->R && *a->R && b->R && *b->R)
+/*@i@*/	    sense = EVRcmp(a->R, b->R);
     }
 /*@=boundsread@*/
-    aEVR = _free(aEVR);
-    bEVR = _free(bEVR);
+    a->str = _free(a->str);
+    b->str = _free(b->str);
 
     /* Detect overlap of {A,B} range. */
     result = 0;

@@ -43,6 +43,7 @@
 	- treat all printable non-digits except '.' as alpha comparisons.
 	- rpmds: add data elements and methods to handle Name.Arch compounds.
 	- rpmds: add opaque EVR parsing vector and container.
+	- rpmds: use the parsing vector and container.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
