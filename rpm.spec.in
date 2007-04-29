@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -544,6 +544,32 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Sun Apr 29 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.4
+- open existing rpmdb indices with either DB_BTREE or DB_HASH.
+- don't add RPMTAG_RHNPLATFORM to packages and headers.
+- stop adding ancient rpmlib(...) tracking dependencies to headers.
+- python: eliminate rhnLoad/rhnUnload methods.
+- fix: change dbi_type from DB_UNKNOWN iff DB_CREATE is set.
+- add %%{load:/path/to/macros} to read macros from a file during parse.
+- fix: initialize file verify flags for %doc (#235353).
+- solaris: add #ifdef _sun so librpmio needn't export glob/globfree.
+- fix: --verify displays mis-leading dependency checks (#223642).
+- debugedit: canonicalize_path was broken again (#232222).
+- popt: convert gnome UTF-8 to current encoding with --help (#178413).
+- popt: fix compilation on x86_64 from previous patch.
+- rollback: add explicit upgrade pkgid chain marker.
+- rollback: convert assertion to a test.
+- rollback: create rpmrollback.c, refactoring out of rpminstall.c.
+- multilib: _prefer_color macro to choose elf32/elf64 files (#235757).
+- rollback: add (*rbCheck), (*rbOrder), (*rbRun) vectors.
+- strip rpmvercmp down to bare metallic C code.
+- treat all printable non-digits except '.' as alpha comparisons.
+- rpmds: add data elements and methods to handle Name.Arch compounds.
+- rpmds: add opaque EVR parsing vector and container.
+- rpmds: use the parsing vector and container.
+- rpmds: expose methods to parse and compare EVR ala rpm.
+- rpmds: add methods to compare EVR ala dpkg.
+
 * Sun Apr  1 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.3
 - perl: extract dependencies from *.pm iff on /usr/lib* (#234691).
 - refactor header subroutines out of -lrpmlib into -lrpmdb.

@@ -37,7 +37,9 @@ lib/psm.c
 lib/query.c
 lib/rpmal.c
 lib/rpmchecksig.c
+lib/rpmdpkg.c
 lib/rpmds.c
+lib/rpmevr.c
 lib/rpmfc.c
 lib/rpmfi.c
 lib/rpmgi.c

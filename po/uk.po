@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-04-24 11:56-0400\n"
+"POT-Creation-Date: 2007-04-29 15:06-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -328,19 +328,19 @@ msgstr "не вказані tar-файли для збирання"
 msgid "no packages given for erase"
 msgstr "не вказані пакети для видалення"
 
-#: rpmqv.c:737
+#: rpmqv.c:740
 msgid "no packages given for install"
 msgstr "не вказані пакети для встановлення"
 
-#: rpmqv.c:754
+#: rpmqv.c:760
 msgid "no arguments given for query"
 msgstr "не вказані аргументи запиту"
 
-#: rpmqv.c:771
+#: rpmqv.c:777
 msgid "no arguments given for verify"
 msgstr "не вказані аргументи перевірки"
 
-#: rpmqv.c:786
+#: rpmqv.c:792
 msgid "no arguments given"
 msgstr "не вказані аргументи"
 
@@ -502,87 +502,92 @@ msgstr "Файл повинен починатись з \"/\": %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Не можна змішувати специфікацію %%doc з іншими формами: %s\n"
 
-#: build/files.c:1289
+#: build/files.c:1029
+#, c-format
+msgid "illegal _docdir_fmt: %s\n"
+msgstr ""
+
+#: build/files.c:1300
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл вказано двічі: %s\n"
 
-#: build/files.c:1463
+#: build/files.c:1474
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символічне посилання вказує на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1720
+#: build/files.c:1731
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не відповідає префіксу (%s): %s\n"
 
-#: build/files.c:1744
+#: build/files.c:1755
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не існує: %s\n"
 
-#: build/files.c:1959
+#: build/files.c:1970
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: не вдається завантажити невідомий тег (%d).\n"
 
-#: build/files.c:1965
+#: build/files.c:1976
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: неможливо зчитати публічний ключ.\n"
 
-#: build/files.c:1969 lib/rpmchecksig.c:607
+#: build/files.c:1980 lib/rpmchecksig.c:612
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: це не публічний ключ у текстовому вигляді.\n"
 
-#: build/files.c:1976
+#: build/files.c:1987
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: не вдається зчитати *.te політику.\n"
 
-#: build/files.c:2029
+#: build/files.c:2040
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл повинен починатись з \"/\": %s\n"
 
-#: build/files.c:2053
+#: build/files.c:2064
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Шаблони не дозволяються: %s\n"
 
-#: build/files.c:2070 lib/rpminstall.c:377
+#: build/files.c:2081 lib/rpminstall.c:374
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не знайдено: %s\n"
 
-#: build/files.c:2130
+#: build/files.c:2141
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Неможливо відкрити %%files файл %s: %s\n"
 
-#: build/files.c:2141 build/pack.c:154
+#: build/files.c:2152 build/pack.c:154
 #, c-format
 msgid "line: %s\n"
 msgstr "рядок: %s\n"
 
-#: build/files.c:2526
+#: build/files.c:2537
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неправильний файл: %s: %s\n"
 
-#: build/files.c:2538 build/parsePrep.c:50
+#: build/files.c:2549 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неправильний власник/група: %s\n"
 
-#: build/files.c:2583
+#: build/files.c:2594
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Перевірка не упакованих файлів: %s\n"
 
-#: build/files.c:2600
+#: build/files.c:2611
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -591,7 +596,7 @@ msgstr ""
 "Знайдено встановлені (але не упаковані) файли:\n"
 "%s"
 
-#: build/files.c:2630
+#: build/files.c:2641
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обробка файлу: %s-%s-%s\n"
@@ -1712,12 +1717,12 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "ця версія RPM підтримує лише RPM пакети зі старшою версією <= 4\n"
 
-#: lib/package.c:820 lib/rpmchecksig.c:229 lib/rpmchecksig.c:766
+#: lib/package.c:820 lib/rpmchecksig.c:234 lib/rpmchecksig.c:771
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: помилка у rpmReadSignature: %s"
 
-#: lib/package.c:827 lib/rpmchecksig.c:236 lib/rpmchecksig.c:774
+#: lib/package.c:827 lib/rpmchecksig.c:241 lib/rpmchecksig.c:779
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Підпис не доступний\n"
@@ -1727,7 +1732,7 @@ msgstr "%s: Підпис не доступний\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: помилка у headerRead: %s"
 
-#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
+#: lib/package.c:1002 lib/rpmchecksig.c:116 lib/rpmchecksig.c:687
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: помилка у Fread: %s\n"
@@ -2651,7 +2656,7 @@ msgstr "номер елементу пакету: %u\n"
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:721 lib/query.c:727 lib/rpminstall.c:819
+#: lib/query.c:721 lib/query.c:727 lib/rpminstall.c:816
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"
@@ -2678,179 +2683,184 @@ msgstr "помилка у makeTempFile\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: помилка у Fwrite: %s\n"
 
-#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:748
+#: lib/rpmchecksig.c:120
+#, fuzzy, c-format
+msgid "%s: Fflush failed: %s\n"
+msgstr "%s: помилка Fseek: %s\n"
+
+#: lib/rpmchecksig.c:214 lib/rpmchecksig.c:753
 #, c-format
 msgid "%s: not an rpm package\n"
 msgstr "%s: не є rpm пакетом\n"
 
-#: lib/rpmchecksig.c:214
+#: lib/rpmchecksig.c:219
 #, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: Пакети версії 1 підписувати неможливо\n"
 
-#: lib/rpmchecksig.c:218
+#: lib/rpmchecksig.c:223
 #, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: Пакети версії 2 перепідписувати неможливо\n"
 
-#: lib/rpmchecksig.c:338
+#: lib/rpmchecksig.c:343
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: вже підписаний ключем ID %s, пропущено\n"
 
-#: lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:373
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: помилка writeLead: %s\n"
 
-#: lib/rpmchecksig.c:374
+#: lib/rpmchecksig.c:379
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: помилка rpmWriteSignature: %s\n"
 
-#: lib/rpmchecksig.c:602
+#: lib/rpmchecksig.c:607
 #, fuzzy, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: помилка читання при імпортуванні.\n"
 
-#: lib/rpmchecksig.c:614
+#: lib/rpmchecksig.c:619
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: помилка імпортування.\n"
 
-#: lib/rpmchecksig.c:650
+#: lib/rpmchecksig.c:655
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: помилка headerRead\n"
 
-#: lib/rpmchecksig.c:664
+#: lib/rpmchecksig.c:669
 #, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: помилка headerGetEntry\n"
 
-#: lib/rpmchecksig.c:754
+#: lib/rpmchecksig.c:759
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Немає підпису (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:863
+#: lib/rpmchecksig.c:868
 #, fuzzy, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 msgstr "можна перевіряти лише підписи версії 3, підпис версії %u пропущений\n"
 
-#: lib/rpmchecksig.c:1029
+#: lib/rpmchecksig.c:1034
 msgid "NOT OK"
 msgstr "НЕ ГАРАЗД"
 
-#: lib/rpmchecksig.c:1030 lib/rpmchecksig.c:1044
+#: lib/rpmchecksig.c:1035 lib/rpmchecksig.c:1049
 msgid " (MISSING KEYS:"
 msgstr " (ВІДСУТНІ КЛЮЧІ:"
 
-#: lib/rpmchecksig.c:1032 lib/rpmchecksig.c:1046
+#: lib/rpmchecksig.c:1037 lib/rpmchecksig.c:1051
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1033 lib/rpmchecksig.c:1047
+#: lib/rpmchecksig.c:1038 lib/rpmchecksig.c:1052
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕМАЄ ДОВІРИ КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:1035 lib/rpmchecksig.c:1049
+#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1043
+#: lib/rpmchecksig.c:1048
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:786 lib/rpmds.c:3682
+#: lib/rpmds.c:833 lib/rpmds.c:3680
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:786 lib/rpmds.c:3682
+#: lib/rpmds.c:833 lib/rpmds.c:3680
 msgid "YES"
 msgstr "ТАК"
 
-#: lib/rpmds.c:1277
+#: lib/rpmds.c:1325
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, та Obsoletes: залежності підтримують версії."
 
-#: lib/rpmds.c:1280
+#: lib/rpmds.c:1328
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "імена файлу(ів) зберігаються у форматі (dirName,baseName,dirIndex)"
 
-#: lib/rpmds.c:1283
+#: lib/rpmds.c:1331
 msgid "package payload can be compressed using bzip2."
 msgstr "вміст пакету може бути стиснений програмою bzip2."
 
-#: lib/rpmds.c:1286
+#: lib/rpmds.c:1334
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "для файлу(ів) вмісту пакета використовується префікс \"./\""
 
-#: lib/rpmds.c:1289
+#: lib/rpmds.c:1337
 msgid "package name-version-release is not implicitly provided."
 msgstr "назва-версія-випуск не надається автоматично."
 
-#: lib/rpmds.c:1292
+#: lib/rpmds.c:1340
 msgid "header tags are always sorted after being loaded."
 msgstr "ярлики тегів завжди сортуються після завантаження."
 
-#: lib/rpmds.c:1295
+#: lib/rpmds.c:1343
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "інтерпретатор сценаріїв може користуватись аргументами з заголовка."
 
-#: lib/rpmds.c:1298
+#: lib/rpmds.c:1346
 msgid "a hardlink file set may be installed without being complete."
 msgstr "набір жорстких посилань може встановитись частково."
 
-#: lib/rpmds.c:1301
+#: lib/rpmds.c:1349
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "сценарії пакета при встановленні можуть мати доступ до бази даних rpm."
 
-#: lib/rpmds.c:1305
+#: lib/rpmds.c:1353
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- не підтримується для рядків\n"
 
-#: lib/rpmds.c:1309
+#: lib/rpmds.c:1357
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1312
+#: lib/rpmds.c:1360
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1315
+#: lib/rpmds.c:1363
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "вміст пакету може бути стиснений програмою bzip2."
 
-#: lib/rpmds.c:1318
+#: lib/rpmds.c:1366
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1433
+#: lib/rpmds.c:1481
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#: lib/rpmds.c:1467
+#: lib/rpmds.c:1515
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1477
+#: lib/rpmds.c:1525
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3470 lib/rpmds.c:3500 lib/rpmds.c:3512
+#: lib/rpmds.c:3518 lib/rpmds.c:3548 lib/rpmds.c:3560
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3473
+#: lib/rpmds.c:3521
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2859,19 +2869,19 @@ msgstr ""
 "рядок %d: Лексеми залежностей повинні починатись з букви, цифри, '_' або "
 "'/': %s\n"
 
-#: lib/rpmds.c:3502
+#: lib/rpmds.c:3550
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3514
+#: lib/rpmds.c:3562
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3648
+#: lib/rpmds.c:3646
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2881,12 +2891,12 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3681
+#: lib/rpmds.c:3679
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:3705
+#: lib/rpmds.c:3703
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
@@ -2980,8 +2990,8 @@ msgstr "переміщується %s у %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
 
-#: lib/rpmgi.c:91 lib/rpminstall.c:127 lib/rpminstall.c:495
-#: lib/rpminstall.c:624 lib/rpminstall.c:1066 lib/rpmts.c:587
+#: lib/rpmgi.c:91 lib/rpminstall.c:124 lib/rpminstall.c:492
+#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:587
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
@@ -2991,151 +3001,127 @@ msgstr "неможливо відкрити %s: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
-#: lib/rpmgi.c:764 lib/rpminstall.c:668 lib/rpminstall.c:853
-#: lib/rpminstall.c:1489 lib/transaction.c:1117
+#: lib/rpmgi.c:764 lib/rpminstall.c:665 lib/rpminstall.c:850
+#: lib/rpmrollback.c:373 lib/transaction.c:1119
 msgid "Failed dependencies:\n"
 msgstr "Незадоволені залежності:\n"
 
-#: lib/rpmgi.c:770 lib/rpminstall.c:675
+#: lib/rpmgi.c:770 lib/rpminstall.c:672
 msgid "    Suggested resolutions:\n"
 msgstr "  Запропоновані залежності:\n"
 
-#: lib/rpminstall.c:194
+#: lib/rpminstall.c:191
 msgid "Preparing..."
 msgstr "Підготовка..."
 
-#: lib/rpminstall.c:196
+#: lib/rpminstall.c:193
 msgid "Preparing packages for installation..."
 msgstr "Підготовка пакетів до встановлення..."
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:211
 msgid "Repackaging..."
 msgstr "Перепакування..."
 
-#: lib/rpminstall.c:216
+#: lib/rpminstall.c:213
 msgid "Repackaging erased files..."
 msgstr "Перепакування файлів відмічених до видалення..."
 
-#: lib/rpminstall.c:235
+#: lib/rpminstall.c:232
 msgid "Upgrading..."
 msgstr "Оновлення..."
 
-#: lib/rpminstall.c:237
+#: lib/rpminstall.c:234
 msgid "Upgrading packages..."
 msgstr "Оновлення пакетів..."
 
-#: lib/rpminstall.c:333 lib/rpminstall.c:797 lib/transaction.c:1090
+#: lib/rpminstall.c:330 lib/rpminstall.c:794 lib/transaction.c:1092
 #, fuzzy, c-format
 msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:424
+#: lib/rpminstall.c:421
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "Додається ціль: %s\n"
 
-#: lib/rpminstall.c:440
+#: lib/rpminstall.c:437
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Завантажується %s\n"
 
-#: lib/rpminstall.c:453
+#: lib/rpminstall.c:450
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... як %s\n"
 
-#: lib/rpminstall.c:457
+#: lib/rpminstall.c:454
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s пропускається - помилка передачі - %s\n"
 
-#: lib/rpminstall.c:514 lib/rpminstall.c:913
+#: lib/rpminstall.c:511 lib/rpminstall.c:910
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не може бути встановлений\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:528
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/rpminstall.c:556
+#: lib/rpminstall.c:553
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакет %s не є переміщуваним\n"
 
-#: lib/rpminstall.c:601
+#: lib/rpminstall.c:598
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\tдобавлений двійковий пакет [%d]\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:604
 #, fuzzy, c-format
 msgid "package file %s was skipped\n"
 msgstr "пакет %s має незадоволені %s: %s\n"
 
-#: lib/rpminstall.c:611
+#: lib/rpminstall.c:608
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "файл %s потребує більш нової версії RPM\n"
 
-#: lib/rpminstall.c:639
+#: lib/rpminstall.c:636
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не є rpm пакетом (чи маніфестом пакету): %s\n"
 
-#: lib/rpminstall.c:654
+#: lib/rpminstall.c:651
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "знайдено %d вихідних та %d двійкових пакетів\n"
 
-#: lib/rpminstall.c:705
+#: lib/rpminstall.c:702
 msgid "installing binary packages\n"
 msgstr "встановлюються двійкові пакети\n"
 
-#: lib/rpminstall.c:729
+#: lib/rpminstall.c:726
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "неможливо відкрити файл %s: %s\n"
 
-#: lib/rpminstall.c:828
+#: lib/rpminstall.c:825
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" визначає декілька пакетів\n"
 
-#: lib/rpminstall.c:897
+#: lib/rpminstall.c:894
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpminstall.c:903
+#: lib/rpminstall.c:900
 #, c-format
 msgid "Installing %s\n"
 msgstr "Встановлюється %s\n"
-
-#: lib/rpminstall.c:1141
-#, fuzzy
-msgid "Missing repackaged package(s) detected:\n"
-msgstr "помилка читання заголовка пакету\n"
-
-#: lib/rpminstall.c:1380
-#, c-format
-msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
-msgstr ""
-
-#: lib/rpminstall.c:1483 lib/transaction.c:1095
-#, c-format
-msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
-
-#: lib/rpminstall.c:1515
-msgid "Cleaning up repackaged packages:\n"
-msgstr ""
-
-#: lib/rpminstall.c:1522
-#, fuzzy, c-format
-msgid "\tRemoving %s:\n"
-msgstr "Завантажується %s\n"
 
 #: lib/rpmlead.c:56
 #, c-format
@@ -3336,6 +3322,30 @@ msgstr ""
 msgid "Features provided by current uname:\n"
 msgstr ""
 
+#: lib/rpmrollback.c:241
+#, fuzzy
+msgid "Missing repackaged package(s) detected:\n"
+msgstr "помилка читання заголовка пакету\n"
+
+#: lib/rpmrollback.c:525
+#, c-format
+msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
+msgstr ""
+
+#: lib/rpmrollback.c:630 lib/transaction.c:1097
+#, c-format
+msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
+
+#: lib/rpmrollback.c:653
+msgid "Cleaning up repackaged packages:\n"
+msgstr ""
+
+#: lib/rpmrollback.c:660
+#, fuzzy, c-format
+msgid "\tRemoving %s:\n"
+msgstr "Завантажується %s\n"
+
 #: lib/rpmsx.c:374
 #, c-format
 msgid "%s:  no newline on line number %d (only read %s)\n"
@@ -3477,8 +3487,8 @@ msgstr "неправильний розмір загол.підпису(%d): з�
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Підпис: розмір(%d)+наповнювач(%d)\n"
 
-#: lib/signature.c:468 lib/signature.c:595 lib/signature.c:904
-#: lib/signature.c:943
+#: lib/signature.c:468 lib/signature.c:596 lib/signature.c:905
+#: lib/signature.c:944
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Неможливо виконати %s: %s\n"
@@ -3496,7 +3506,7 @@ msgstr "pgp не вдається записати підпис\n"
 msgid "PGP sig size: %d\n"
 msgstr "Розмір PGP підпису: %d\n"
 
-#: lib/signature.c:515 lib/signature.c:643
+#: lib/signature.c:515 lib/signature.c:644
 msgid "unable to read the signature\n"
 msgstr "неможливо прочитати підпис\n"
 
@@ -3505,259 +3515,259 @@ msgstr "неможливо прочитати підпис\n"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Отримано %d байт PGP підпису\n"
 
-#: lib/signature.c:612
+#: lib/signature.c:613
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "помилка запуску\n"
 
-#: lib/signature.c:619
+#: lib/signature.c:620
 msgid "gpg failed to write signature\n"
 msgstr "gpg не вдається записати підпис\n"
 
-#: lib/signature.c:625
+#: lib/signature.c:626
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Розмір GPG підпису: %d\n"
 
-#: lib/signature.c:648
+#: lib/signature.c:649
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Розмір GPG підпису: %d\n"
 
-#: lib/signature.c:948 lib/signature.c:1001
+#: lib/signature.c:949 lib/signature.c:1002
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Неправильний елемент %%_signature у файлі макросів\n"
 
-#: lib/signature.c:981
+#: lib/signature.c:982
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "У файлі макросів необхідно встановити значення\"%%_gpg_name\"\n"
 
-#: lib/signature.c:995
+#: lib/signature.c:996
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "У файлі макросів необхідно встановити значення\"%%_pgp_name\"\n"
 
-#: lib/signature.c:1043
+#: lib/signature.c:1044
 msgid "Header+Payload size: "
 msgstr "Розмір заголовок+вміст: "
 
-#: lib/signature.c:1084
+#: lib/signature.c:1085
 msgid "MD5 digest: "
 msgstr "Контрольна сума MD5: "
 
-#: lib/signature.c:1144
+#: lib/signature.c:1145
 msgid "Header SHA1 digest: "
 msgstr "SHA1 контрольна сума заголовка: "
 
-#: lib/signature.c:1225 lib/signature.c:1415
+#: lib/signature.c:1226 lib/signature.c:1416
 msgid "Header "
 msgstr "Заголовок "
 
-#: lib/signature.c:1294
+#: lib/signature.c:1295
 #, fuzzy
 msgid " signature: "
 msgstr "Підпис V3 DSA: "
 
-#: lib/signature.c:1421
+#: lib/signature.c:1422
 #, fuzzy
 msgid " DSA signature: "
 msgstr "Підпис V3 DSA: "
 
-#: lib/signature.c:1503
+#: lib/signature.c:1504
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Перевірка підпису: НЕПРАВИЛЬНІ ПАРАМЕТРИ\n"
 
-#: lib/signature.c:1534
+#: lib/signature.c:1535
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Неправильна контрольна сума MD5: НЕ ПІДТРИМУЄТЬСЯ\n"
 
-#: lib/signature.c:1538
+#: lib/signature.c:1539
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Підпис: НЕВІДОМИЙ (%d)\n"
 
-#: lib/transaction.c:887
+#: lib/transaction.c:889
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "виключення каталогу %s\n"
 
-#: lib/transaction.c:996
+#: lib/transaction.c:998
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1087
+#: lib/transaction.c:1089
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1098
+#: lib/transaction.c:1100
 #, fuzzy, c-format
 msgid "Failed transaction:  %-24.24s(0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1104
+#: lib/transaction.c:1106
 msgid "Could not resolve semaphore_backout macro!\n"
 msgstr ""
 
-#: lib/transaction.c:1108
+#: lib/transaction.c:1110
 #, fuzzy, c-format
 msgid "Creating semaphore %s...\n"
 msgstr "створюється каталог %s\n"
 
-#: lib/transaction.c:1129
+#: lib/transaction.c:1131
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1175
+#: lib/transaction.c:1177
 #, fuzzy, c-format
 msgid "Rolling back successful transactions to %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1219
+#: lib/transaction.c:1221
 #, fuzzy, c-format
 msgid "Removing semaphore %s...\n"
 msgstr "видаляється каталог %s\n"
 
-#: lib/transaction.c:1255
+#: lib/transaction.c:1257
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
-#: lib/transaction.c:1273
+#: lib/transaction.c:1275
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1290
+#: lib/transaction.c:1292
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "очікувався пакет з вихідним кодом, але знайдено двійковий\n"
 
-#: lib/transaction.c:1312
+#: lib/transaction.c:1314
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1373
+#: lib/transaction.c:1375
 #, c-format
 msgid "Processing failed install element %s for autorollback.\n"
 msgstr ""
 
-#: lib/transaction.c:1376
+#: lib/transaction.c:1378
 #, fuzzy
 msgid "\tForce adding header to rpmdb.\n"
 msgstr "помилка читання заголовка пакету\n"
 
-#: lib/transaction.c:1387
+#: lib/transaction.c:1389
 #, fuzzy
 msgid "\tCould not add failed package header to db!\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/transaction.c:1399 lib/transaction.c:1535
+#: lib/transaction.c:1401 lib/transaction.c:1537
 #, c-format
 msgid "%s: Unknown transaction element type!\n"
 msgstr ""
 
-#: lib/transaction.c:1400 lib/transaction.c:1536
+#: lib/transaction.c:1402 lib/transaction.c:1538
 #, c-format
 msgid "TYPE:  %d\n"
 msgstr ""
 
-#: lib/transaction.c:1430
+#: lib/transaction.c:1432
 msgid "Processing install element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1431 lib/transaction.c:1486
+#: lib/transaction.c:1433 lib/transaction.c:1488
 #, c-format
 msgid "\tNEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1439
+#: lib/transaction.c:1441
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1451
+#: lib/transaction.c:1453
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1461
+#: lib/transaction.c:1463
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/transaction.c:1471
+#: lib/transaction.c:1473
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1478
+#: lib/transaction.c:1480
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1485
+#: lib/transaction.c:1487
 msgid "Processing erase element for autorollback...\n"
 msgstr ""
 
-#: lib/transaction.c:1495
+#: lib/transaction.c:1497
 msgid "\tErase element(s) already added.\n"
 msgstr ""
 
-#: lib/transaction.c:1506
+#: lib/transaction.c:1508
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tдобавлено пакет вихідного коду [%d]\n"
 
-#: lib/transaction.c:1510
+#: lib/transaction.c:1512
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1521
+#: lib/transaction.c:1523
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1527
+#: lib/transaction.c:1529
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "помилка читання заголовка пакету\n"
 
-#: lib/transaction.c:1640
+#: lib/transaction.c:1642
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/transaction.c:1713
+#: lib/transaction.c:1715
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "перевірка правильності %d елементів\n"
 
-#: lib/transaction.c:1785
+#: lib/transaction.c:1787
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
-#: lib/transaction.c:1860
+#: lib/transaction.c:1862
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "обчислюються відбитки %d файлів\n"
 
-#: lib/transaction.c:1949
+#: lib/transaction.c:1951
 msgid "computing file dispositions\n"
 msgstr "обчислюється розташування файлів\n"
 
-#: lib/transaction.c:2135
+#: lib/transaction.c:2137
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2408
+#: lib/transaction.c:2410
 #, c-format
 msgid "Adding %s to autorollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:2415
+#: lib/transaction.c:2417
 msgid "Could not add transaction element to autorollback!.\n"
 msgstr ""
 
-#: lib/transaction.c:2459
+#: lib/transaction.c:2461
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -3817,25 +3827,25 @@ msgstr ""
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1339
+#: rpmdb/db3.c:1338
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "відкрито    індекс бази даних  %s/%s %s режим=0x%x\n"
 
-#: rpmdb/db3.c:1580
+#: rpmdb/db3.c:1579
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "неможливо отримати %s блокування на %s/%s\n"
 
-#: rpmdb/db3.c:1582
+#: rpmdb/db3.c:1581
 msgid "exclusive"
 msgstr "ексклюзивне"
 
-#: rpmdb/db3.c:1582
+#: rpmdb/db3.c:1581
 msgid "shared"
 msgstr "спільне"
 
-#: rpmdb/db3.c:1586
+#: rpmdb/db3.c:1585
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблоковано індекс бази даних  %s/%s\n"
@@ -3976,161 +3986,161 @@ msgstr "неможливо відкрити індекс %s\n"
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "неправильний формат: %s\n"
 
-#: rpmdb/rpmdb.c:1125
+#: rpmdb/rpmdb.c:1127
 msgid "no dbpath has been set\n"
 msgstr "не встановлено значення dbpath\n"
 
-#: rpmdb/rpmdb.c:1439 rpmdb/rpmdb.c:1577 rpmdb/rpmdb.c:1633 rpmdb/rpmdb.c:2537
-#: rpmdb/rpmdb.c:2691 rpmdb/rpmdb.c:3472
+#: rpmdb/rpmdb.c:1441 rpmdb/rpmdb.c:1579 rpmdb/rpmdb.c:1635 rpmdb/rpmdb.c:2539
+#: rpmdb/rpmdb.c:2693 rpmdb/rpmdb.c:3474
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "помилка(%d) при отриманні \"%s\" елементів з індексу %s index\n"
 
-#: rpmdb/rpmdb.c:1845
+#: rpmdb/rpmdb.c:1847
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: пропускається"
 
-#: rpmdb/rpmdb.c:1855
+#: rpmdb/rpmdb.c:1857
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "помилка(%d) збереження елементу #%d у %s\n"
 
-#: rpmdb/rpmdb.c:2415
+#: rpmdb/rpmdb.c:2417
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: пропускається"
 
-#: rpmdb/rpmdb.c:2447
+#: rpmdb/rpmdb.c:2449
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: отримано пошкоджений заголовок #%u -- пропускається.\n"
 
-#: rpmdb/rpmdb.c:2795
+#: rpmdb/rpmdb.c:2797
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: rpmdb/rpmdb.c:2864
+#: rpmdb/rpmdb.c:2866
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "помилка(%d) позначення елементу заголовка #%d для %s видалення\n"
 
-#: rpmdb/rpmdb.c:2975
+#: rpmdb/rpmdb.c:2977
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "видалення \"%s\" з індексу %s\n"
 
-#: rpmdb/rpmdb.c:2979
+#: rpmdb/rpmdb.c:2981
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "видалення %d елементів з індексу %s\n"
 
-#: rpmdb/rpmdb.c:3007
+#: rpmdb/rpmdb.c:3009
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "помилка(%d) встановлення \"%s\" елементів з індексу %s\n"
 
-#: rpmdb/rpmdb.c:3028
+#: rpmdb/rpmdb.c:3030
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "помилка(%d) збереження елементу \"%s\" у %s\n"
 
-#: rpmdb/rpmdb.c:3038
+#: rpmdb/rpmdb.c:3040
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "помилка(%d) видалення елементу \"%s\" з %s\n"
 
-#: rpmdb/rpmdb.c:3209
+#: rpmdb/rpmdb.c:3211
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "помилка(%d) розподілу пам'яті дял нового екземпляру пакета\n"
 
-#: rpmdb/rpmdb.c:3275
+#: rpmdb/rpmdb.c:3277
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: пропускається"
 
-#: rpmdb/rpmdb.c:3447
+#: rpmdb/rpmdb.c:3449
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "додається \"%s\" до індексу %s.\n"
 
-#: rpmdb/rpmdb.c:3451
+#: rpmdb/rpmdb.c:3453
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "додаються %d елементів до індексу %s.\n"
 
-#: rpmdb/rpmdb.c:3491
+#: rpmdb/rpmdb.c:3493
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "помилка(%d) збереження елементу %s у %s\n"
 
-#: rpmdb/rpmdb.c:3870
+#: rpmdb/rpmdb.c:3872
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "видаляється %s після успішного завершення переіндексації бази у db3.\n"
 
-#: rpmdb/rpmdb.c:3914
+#: rpmdb/rpmdb.c:3916
 msgid "no dbpath has been set"
 msgstr "параметр dbpath не встановлено"
 
-#: rpmdb/rpmdb.c:3946
+#: rpmdb/rpmdb.c:3948
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перебудовується база даних %s у %s\n"
 
-#: rpmdb/rpmdb.c:3950
+#: rpmdb/rpmdb.c:3952
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "тимчасова база даних %s вже існує\n"
 
-#: rpmdb/rpmdb.c:3956
+#: rpmdb/rpmdb.c:3958
 #, c-format
 msgid "creating directory %s\n"
 msgstr "створюється каталог %s\n"
 
-#: rpmdb/rpmdb.c:3958
+#: rpmdb/rpmdb.c:3960
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "створюється каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:3967
+#: rpmdb/rpmdb.c:3969
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "відкривається стара база даних через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3978
+#: rpmdb/rpmdb.c:3980
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "відкривається база даних через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:4009
+#: rpmdb/rpmdb.c:4011
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "заголовок з номером %u у базі даних неправильний -- пропущено.\n"
 
-#: rpmdb/rpmdb.c:4049
+#: rpmdb/rpmdb.c:4051
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "неможливо добавити елемент(спочатку у %u)\n"
 
-#: rpmdb/rpmdb.c:4063
+#: rpmdb/rpmdb.c:4065
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "помилка перебудови бази даних: залишається початкова база даних\n"
 
-#: rpmdb/rpmdb.c:4075
+#: rpmdb/rpmdb.c:4077
 msgid "failed to replace old database with new database!\n"
 msgstr "неможливо замінити стару базу даних з новою базою даних!\n"
 
-#: rpmdb/rpmdb.c:4077
+#: rpmdb/rpmdb.c:4079
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файли у %s замінюються файлами з %s для відновлення"
 
-#: rpmdb/rpmdb.c:4087
+#: rpmdb/rpmdb.c:4089
 #, c-format
 msgid "removing directory %s\n"
 msgstr "видаляється каталог %s\n"
 
-#: rpmdb/rpmdb.c:4089
+#: rpmdb/rpmdb.c:4091
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "помилка видалення каталогу %s: %s\n"
