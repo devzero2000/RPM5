@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-04-29 15:06-0400\n"
+"POT-Creation-Date: 2007-04-29 17:01-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -3835,7 +3835,7 @@ msgstr ""
 msgid "missing   %c %s"
 msgstr "nedostaje { posle %"
 
-#: lib/verify.c:422
+#: lib/verify.c:424
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-04-29 15:06-0400\n"
+"POT-Creation-Date: 2007-04-29 17:01-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -3731,7 +3731,7 @@ msgstr "uruchamianie skryptów po-transakcyjnych\n"
 msgid "missing   %c %s"
 msgstr "brak      %c %s"
 
-#: lib/verify.c:422
+#: lib/verify.c:424
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Niespe³nione zale¿no¶ci dla %s:\n"
