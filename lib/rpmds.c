@@ -1078,7 +1078,7 @@ int rpmdsSearch(rpmds ds, rpmds ods)
     i = -1;
     if (l < u) {
 	int save = rpmdsSetIx(ds, l-1);
-	while (rpmdsNext(ds) < u) {
+	while ((l = rpmdsNext(ds)) >= 0 && (l < u)) {
 	    if ((i = rpmdsCompare(ods, ds)) != 0)
 		break;
 	}
