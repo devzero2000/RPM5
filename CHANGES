@@ -48,6 +48,7 @@
 	- rpmds: add methods to compare EVR ala dpkg.
 	- fix: rpmEVRparser was not terminating epoch correctly.
 	- fix: rpmdsSearch() end-of-loop test incorrect at end-of-array.
+	- fix: use dgettext, not gettext, everywhere.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
