@@ -38,7 +38,8 @@ typedef enum rpmProblemType_e {
     RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ... filesystem */
     RPMPROB_RDONLY,	/*!< installing package ... on ... rdonly filesystem */
     RPMPROB_BADPRETRANS,/*!< (unimplemented) */
-    RPMPROB_BADPLATFORM /*!< package ... is for a different platform */
+    RPMPROB_BADPLATFORM,/*!< package ... is for a different platform */
+    RPMPROB_NOREPACKAGE /*!< re-packaged package ... is missing */
  } rpmProblemType;
 
 /**

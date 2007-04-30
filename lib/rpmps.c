@@ -214,6 +214,11 @@ const char * rpmProblemString(const rpmProblem prob)
 		_("package %s is already installed"),
 		pkgNEVR);
 	break;
+    case RPMPROB_NOREPACKAGE:
+	rc = snprintf(buf, nb,
+		_("re-packaged package with %s: %s is missing"),
+		str1, altNEVR);
+	break;
     case RPMPROB_BADRELOCATE:
 	rc = snprintf(buf, nb,
 		_("path %s in package %s is not relocatable"),
