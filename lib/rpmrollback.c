@@ -224,13 +224,14 @@ bottom:
 
 /**
  * Search for string B in argv array AV.
+ * @param ts		transaction set
  * @param lname		type of link
  * @param AV		argv array
  * @param AC		no. of args
  * @param B		string
  * @return		1 if found, 0 not found, -1 error
  */
-static int cmpArgvStr(const char *lname, const char ** AV, int AC,
+static int cmpArgvStr(rpmts ts, const char *lname, const char ** AV, int AC,
 		/*@null@*/ const char * B)
 	/*@*/
 {
@@ -238,10 +239,19 @@ static int cmpArgvStr(const char *lname, const char ** AV, int AC,
     int i;
 
     if (AV != NULL && AC > 0 && B == NULL) {
-	rpmError(RPMERR_OPEN, _("Missing repackaged package(s) detected:\n"));
-	for (i = 0; i < AC && (A = AV[i]) != NULL; i++)
-	    rpmError(RPMERR_OPEN, "    %s[%d]: %s\n", lname, i, A);
-	return -1;
+      if (!strcmp(lname, "NEVRA")) {
+	rpmps ps = rpmtsProblems(ts);
+	for (i = 0; i < AC && (A = AV[i]) != NULL; i++) {
+fprintf(stderr, "==> %s(%p) missing %s[%d]: %s\n", __FUNCTION__, ts, lname, i, A);
+	    rpmpsAppend(ps, RPMPROB_NOREPACKAGE,
+			NULL, NULL,	/* NEVRA, key */
+			lname, NULL,	/* dn, bn */
+			A,		/* altNEVRA */
+			0);
+	}
+	ps = rpmpsFree(ps);
+      }
+	return 0;
     }
 
     if (AV != NULL && B != NULL)
@@ -275,6 +285,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
     int rc = 0;
     int xx;
 
+fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, ts);
     /* Erase the previously installed packages for this transaction. 
      * Provided this transaction is not excluded from the rollback.
      */
@@ -312,11 +323,11 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    */
 	    bingo = 0;
 	    if (!bingo)
-		bingo = cmpArgvStr("NEVRA", flinkNEVRA, nn, (p ? p->NEVRA : NULL));
+		bingo = cmpArgvStr(ts, "NEVRA", flinkNEVRA, nn, (p ? p->NEVRA : NULL));
 	    if (!bingo)
-		bingo = cmpArgvStr("Hdrid", flinkHdrid, hn, (p ? p->hdrid : NULL));
+		bingo = cmpArgvStr(ts, "Hdrid", flinkHdrid, hn, (p ? p->hdrid : NULL));
 	    if (!bingo)
-		bingo = cmpArgvStr("Pkgid", flinkPkgid, pn, (p ? p->pkgid : NULL));
+		bingo = cmpArgvStr(ts, "Pkgid", flinkPkgid, pn, (p ? p->pkgid : NULL));
 	    flinkPkgid = headerFreeData(flinkPkgid, pt);
 	    flinkHdrid = headerFreeData(flinkHdrid, ht);
 	    flinkNEVRA = headerFreeData(flinkNEVRA, nt);
@@ -362,50 +373,33 @@ exit:
     return rc;
 }
 
-int rpmrbCheck(rpmts ts)
+static int rpmrbProblems(rpmts ts, /*@null@*/ const char * msg, int rc)
 {
-    rpmps ps;
-    int rc;
+    rpmps ps = rpmtsProblems(ts);
 
-    rc = rpmtsCheck(ts);
-    ps = rpmtsProblems(ts);
     if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	if (msg)
+	    rpmMessage(RPMMESS_ERROR, "%s:\n", msg);
 	rpmpsPrint(NULL, ps);
     }
     ps = rpmpsFree(ps);
-
     return rc;
+}
+
+int rpmrbCheck(rpmts ts)
+{
+    return rpmrbProblems(ts, N_("Failed dependencies"), rpmtsCheck(ts));
 }
 
 int rpmrbOrder(rpmts ts)
 {
-    rpmps ps;
-    int rc;
-
-    rc = rpmtsOrder(ts);
-    ps = rpmtsProblems(ts);
-    if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	rpmpsPrint(NULL, ps);
-    }
-    ps = rpmpsFree(ps);
-
-    return rc;
+    return rpmrbProblems(ts, N_("Ordering problems"), rpmtsOrder(ts));
 }
 
 int rpmrbRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
-    rpmps ps;
-    int rc;
-
-    rc = rpmtsRun(ts, okProbs, ignoreSet);
-    ps = rpmtsProblems(ts);
-    if (rc > 0 && rpmpsNumProblems(ps) > 0) {
-	rpmpsPrint(NULL, ps);
-    }
-    ps = rpmpsFree(ps);
-
-    return rc;
+    return rpmrbProblems(ts, N_("Rollback problems"),
+			rpmtsRun(ts, okProbs, ignoreSet));
 }
 
 /** @todo Transaction handling, more, needs work. */
@@ -554,6 +548,8 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	rpmtsEmpty(ts);
 	(void) rpmtsSetFlags(ts, transFlags);
 	(void) rpmtsSetDFlags(ts, depFlags);
+	ts->probs = rpmpsFree(ts->probs);
+	ts->probs = rpmpsCreate();
 
 	/* Install the previously erased packages for this transaction. 
 	 */
@@ -620,6 +616,9 @@ assert(ip->done || ia->no_rollback_links);
 	    else
 		ip = NULL;
 	}
+
+	/* Print any rollback transaction problems */
+	(void) rpmrbProblems(ts, N_("Missing re-packaged package(s)"), 1);
 
 	/* Anything to do? */
 	if (rpmcliPackagesTotal <= 0)
