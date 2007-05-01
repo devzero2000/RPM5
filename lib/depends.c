@@ -1520,7 +1520,8 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
 /*@-mustmod@*/
 static void addQ(/*@dependent@*/ rpmte p,
 		/*@in@*/ /*@out@*/ rpmte * qp,
-		/*@in@*/ /*@out@*/ rpmte * rp)
+		/*@in@*/ /*@out@*/ rpmte * rp,
+		uint_32 prefcolor)
 	/*@modifies p, *qp, *rp @*/
 {
     rpmte q, qprev;
@@ -1540,6 +1541,10 @@ static void addQ(/*@dependent@*/ rpmte p,
 	 q != NULL;
 	 qprev = q, q = rpmteTSI(q)->tsi_suc)
     {
+	/* XXX Insure preferred color first. */
+	if (rpmteColor(p) != prefcolor && rpmteColor(p) != rpmteColor(q))
+	    continue;
+
 	/* XXX Insure removed after added. */
 	if (rpmteType(p) == TR_REMOVED && rpmteType(p) != rpmteType(q))
 	    continue;
@@ -1580,6 +1585,7 @@ int rpmtsOrder(rpmts ts)
     rpmds requires;
     int_32 Flags;
     int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
+    uint_32 prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
@@ -1789,7 +1795,7 @@ rescan:
 	if (rpmteTSI(p)->tsi_count != 0)
 	    continue;
 	rpmteTSI(p)->tsi_suc = NULL;
-	addQ(p, &q, &r);
+	addQ(p, &q, &r, prefcolor);
 	qlen++;
     }
     pi = rpmtsiFree(pi);
@@ -1854,7 +1860,7 @@ rescan:
 		/* XXX TODO: add control bit. */
 		rpmteTSI(p)->tsi_suc = NULL;
 /*@-nullstate@*/	/* XXX FIX: rpmteTSI(q)->tsi_suc can be NULL. */
-		addQ(p, &rpmteTSI(q)->tsi_suc, &r);
+		addQ(p, &rpmteTSI(q)->tsi_suc, &r, prefcolor);
 /*@=nullstate@*/
 		qlen++;
 	    }
