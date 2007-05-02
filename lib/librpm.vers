@@ -137,6 +137,7 @@ LIBRPM_0
     rpmdsUname;
     _rpmds_unspecified_epoch_noise;
     rpmErase;
+    _rpmevr_debug;
     rpmEVR;
     rpmEVRcmp;
     rpmEVRcompare;
@@ -225,6 +226,9 @@ LIBRPM_0
     rpmMkdirPath;
     rpmNAME;
     rpmNewSignature;
+    _rpmns_debug;
+    rpmnsClassify;
+    rpmnsParse;
     rpmPermsString;
     rpmPlatformScore;
     rpmProblemString;
