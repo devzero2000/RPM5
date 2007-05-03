@@ -24,7 +24,9 @@ typedef enum nsType_e {
     RPMNS_TYPE_PATH	=  (1 << 1),	/*!< /bin */
     RPMNS_TYPE_SONAME	=  (1 << 2),	/*!< libc.so.6 */
     RPMNS_TYPE_MACRO	=  (1 << 3),	/*!< %{foo} */
-    RPMNS_TYPE_COMPOUND	=  (1 << 4),	/*!< foo.arch */
+    RPMNS_TYPE_ARCH	=  (1 << 4),	/*!< foo.arch */
+    RPMNS_TYPE_VERSION	=  (1 << 5),	/*!< foo-1.2.3-bar */
+    RPMNS_TYPE_COMPOUND	=  (1 << 6),	/*!< foo.bar */
     RPMNS_TYPE_NAMESPACE=  (1 << 8)	/*!< foo(bar) */
 } nsType;
 
@@ -47,6 +49,14 @@ struct rpmns_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \ingroup rpmds
+ * Is string a known arch suffix?
+ * @param str		string
+ * @return		1 if a known arch, 0 otherwise
+ */
+int rpmnsArch(const char * str)
+	/*@*/;
 
 /** \ingroup rpmds
  * Classify a string as a dependency type.

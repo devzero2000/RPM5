@@ -15,6 +15,7 @@
 #include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmlock.h"
+#include "rpmns.h"
 
 #define	_RPMTE_INTERNAL		/* XXX te->h */
 #include "rpmte.h"
@@ -153,41 +154,6 @@ int rpmtsVerifyDB(rpmts ts)
     return rpmdbVerify(ts->rootDir);
 }
 
-/*@-boundsread@*/
-static int isArch(const char * arch)
-	/*@*/
-{
-    const char ** av;
-/*@-nullassign@*/
-    /*@observer@*/
-    static const char *arches[] = {
-	"i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4", "x86_64", "amd64", "ia32e",
-	"alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
-	"sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv8", "sparcv9",
-	"sparc64", "sun4u",
-	"mips", "mipsel", "IP",
-	"ppc", "ppciseries", "ppcpseries",
-	"ppc64", "ppc64iseries", "ppc64pseries",
-	"m68k",
-	"rs6000",
-	"ia64",
-	"armv3l", "armv4b", "armv4l",
-	"armv5teb", "armv5tel",
-	"s390", "i370", "s390x",
-	"sh", "xtensa",
-	"noarch",
-	NULL,
-    };
-/*@=nullassign@*/
-
-    for (av = arches; *av != NULL; av++) {
-	if (!strcmp(arch, *av))
-	    return 1;
-    }
-    return 0;
-}
-/*@=boundsread@*/
-
 /*@-compdef@*/ /* keyp might no be defined. */
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
@@ -251,7 +217,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	t = (char *) keyp;
 	t = strrchr(t, '.');
 	/* Is this a valid ".arch" suffix? */
-	if (t != NULL && isArch(t+1)) {
+	if (t != NULL && rpmnsArch(t+1)) {
 	   *t++ = '\0';
 	   arch = t;
 	}
