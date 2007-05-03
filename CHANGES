@@ -51,6 +51,7 @@
 	- fix: use dgettext, not gettext, everywhere.
 	- fix: install preferred color packages first (#214737, #220348).
 	- rpmns: create rpmns.c/rpmns.h.
+	- fix: there are no leading zeros in the digit string "0".
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

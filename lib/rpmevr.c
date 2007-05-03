@@ -56,17 +56,15 @@ int rpmEVRcmp(const char * a, const char * b)
 	/* Digit string comparison? */
 	if (xisdigit(*a) || xisdigit(*b)) {
 	    /* Discard leading zeroes. */
-	    while (*a == '0') a++;
-	    while (*b == '0') b++;
+	    while (a[0] == '0' && xisdigit(a[1])) a++;
+	    while (b[0] == '0' && xisdigit(b[1])) b++;
 
 	    /* Find end of digit strings. */
 	    for (ae = a; xisdigit(*ae); ae++);
 	    for (be = b; xisdigit(*be); be++);
 
 	    /* Calculate digit comparison return code. */
-	    if (a == ae && b == be)
-		rc = 0;
-	    else if (a == ae || b == be)
+	    if (a == ae || b == be)
 		rc = (*b - *a) * _invert_digits_alphas_comparison;
 	    else {
 		rc = (ae - a) - (be - b);
@@ -101,7 +99,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     char *se;
 
     evr->str = se = s;
-    while (*se && xisdigit(*se)) se++;	/* s points to epoch terminator */
+    while (*se && xisdigit(*se)) se++;	/* se points to epoch terminator */
 
     if (*se == ':') {
 	evr->E = s;
@@ -113,7 +111,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->Elong = strtoul(evr->E, NULL, 10);
     } else {
 	evr->E = NULL;	/* XXX disable epoch compare if missing */
-	evr->V = evrstr;
+	evr->V = s;
 	evr->Elong = 0;
     }
     se = strrchr(se, '-');		/* se points to version terminator */
