@@ -55,6 +55,9 @@ nsType rpmnsClassify(const char * str)
 	return RPMNS_TYPE_PATH;
     if (*str == '%')
 	return RPMNS_TYPE_MACRO;
+    s = str + strlen(str);
+    if ((s - str) > 3 && s[-3] == '.' && s[-2] == 's' && s[-1] == 'o')
+	return RPMNS_TYPE_SONAME;
     for (s = str; *s; s++) {
 	if (s[0] == '(' || s[strlen(s)-1] == ')')
 	    return RPMNS_TYPE_NAMESPACE;
