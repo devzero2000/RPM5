@@ -23,14 +23,22 @@ typedef	/*@abstract@*/ struct rpmns_s * rpmns;
  */
 typedef enum nsType_e {
     RPMNS_TYPE_UNKNOWN	=  0,
-    RPMNS_TYPE_STRING	=  (1 << 0),	/*!< unclassified string */
-    RPMNS_TYPE_PATH	=  (1 << 1),	/*!< /bin */
-    RPMNS_TYPE_SONAME	=  (1 << 2),	/*!< libc.so.6 */
-    RPMNS_TYPE_MACRO	=  (1 << 3),	/*!< %{foo} */
-    RPMNS_TYPE_ARCH	=  (1 << 4),	/*!< foo.arch */
-    RPMNS_TYPE_VERSION	=  (1 << 5),	/*!< foo-1.2.3-bar */
-    RPMNS_TYPE_COMPOUND	=  (1 << 6),	/*!< foo.bar */
-    RPMNS_TYPE_NAMESPACE=  (1 << 8)	/*!< foo(bar) */
+    RPMNS_TYPE_STRING	=  (1 <<  0),	/*!< unclassified string */
+    RPMNS_TYPE_PATH	=  (1 <<  1),	/*!< /bin */
+    RPMNS_TYPE_DSO	=  (1 <<  2),	/*!< libc.so.6 */
+    RPMNS_TYPE_MACRO	=  (1 <<  3),	/*!< %{foo} */
+    RPMNS_TYPE_ARCH	=  (1 <<  4),	/*!< foo.arch */
+    RPMNS_TYPE_VERSION	=  (1 <<  5),	/*!< foo-1.2.3-bar */
+    RPMNS_TYPE_COMPOUND	=  (1 <<  6),	/*!< foo.bar */
+	/* 7 unused */
+    RPMNS_TYPE_NAMESPACE=  (1 <<  8),	/*!< foo(bar) */
+    RPMNS_TYPE_RPMLIB	=  (1 <<  9),	/*!< rpmlib(bar) */
+    RPMNS_TYPE_CPUINFO	=  (1 << 10),	/*!< cpuinfo(bar) */
+    RPMNS_TYPE_GETCONF	=  (1 << 11),	/*!< getconf(bar) */
+    RPMNS_TYPE_UNAME	=  (1 << 12),	/*!< uname(bar) */
+    RPMNS_TYPE_SONAME	=  (1 << 13),	/*!< soname(bar) */
+    RPMNS_TYPE_ACCESS	=  (1 << 14),	/*!< exists(bar) */
+    RPMNS_TYPE_TAG	=  (1 << 15),	/*!< Tag(bar) */
 } nsType;
 
 #if defined(_RPMNS_INTERNAL)
@@ -38,7 +46,7 @@ typedef enum nsType_e {
  * An NS parsing container.
  */
 struct rpmns_s {
-    const char * str;		/*!< NS storage */
+    const char * str;		/*!< string storage */
     nsType Type;		/*!< Type */
 /*@observer@*/ /*@null@*/
     const char * NS;		/*!< Namespace */
@@ -56,9 +64,17 @@ extern "C" {
 /** \ingroup rpmds
  * Is string a known arch suffix?
  * @param str		string
- * @return		1 if a known arch, 0 otherwise
+ * @return		RPMNS_TYPE_ARCH if known arch, else RPMNS_TYPE_UNKNOWN
  */
-int rpmnsArch(const char * str)
+nsType rpmnsArch(const char * str)
+	/*@*/;
+
+/** \ingroup rpmds
+ * Is string a known probe namespace?
+ * @param str		string
+ * @return		nsType if known probe, else RPMNS_TYPE_UNKNOWN
+ */
+nsType rpmnsProbe(const char * str)
 	/*@*/;
 
 /** \ingroup rpmds

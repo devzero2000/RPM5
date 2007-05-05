@@ -33,19 +33,79 @@ static const char *rpmnsArches[] = {
     "armv5teb", "armv5tel",
     "s390", "i370", "s390x",
     "sh", "xtensa",
-    "noarch",
+    "noarch", "fat",
     NULL,
 };
 /*@=nullassign@*/
 
-int rpmnsArch(const char * str)
+nsType rpmnsArch(const char * str)
 {
     const char ** av;
     for (av = rpmnsArches; *av != NULL; av++) {
 	if (!strcmp(str, *av))
-	    return 1;
+	    return RPMNS_TYPE_ARCH;
     }
-    return 0;
+    return RPMNS_TYPE_UNKNOWN;
+}
+
+/*@unchecked@*/ /*@observer@*/
+static struct _rpmnsProbes_s {
+/*@observer@*/ /*@relnull@*/
+    const char * NS;
+    nsType Type;
+} rpmnsProbes[] = {
+    { "rpmlib",		RPMNS_TYPE_RPMLIB },
+    { "cpuinfo",	RPMNS_TYPE_CPUINFO },
+    { "getconf",	RPMNS_TYPE_GETCONF },
+    { "uname",		RPMNS_TYPE_UNAME },
+    { "soname",		RPMNS_TYPE_SONAME },
+    { "exists",		RPMNS_TYPE_ACCESS },
+    { "executable",	RPMNS_TYPE_ACCESS },
+    { "readable",	RPMNS_TYPE_ACCESS },
+    { "writable",	RPMNS_TYPE_ACCESS },
+    { "RWX",		RPMNS_TYPE_ACCESS },
+    { "RWx",		RPMNS_TYPE_ACCESS },
+    { "RW_",		RPMNS_TYPE_ACCESS },
+    { "RwX",		RPMNS_TYPE_ACCESS },
+    { "Rwx",		RPMNS_TYPE_ACCESS },
+    { "Rw_",		RPMNS_TYPE_ACCESS },
+    { "R_X",		RPMNS_TYPE_ACCESS },
+    { "R_x",		RPMNS_TYPE_ACCESS },
+    { "R__",		RPMNS_TYPE_ACCESS },
+    { "rWX",		RPMNS_TYPE_ACCESS },
+    { "rWx",		RPMNS_TYPE_ACCESS },
+    { "rW_",		RPMNS_TYPE_ACCESS },
+    { "rwX",		RPMNS_TYPE_ACCESS },
+    { "rwx",		RPMNS_TYPE_ACCESS },
+    { "rw_",		RPMNS_TYPE_ACCESS },
+    { "r_X",		RPMNS_TYPE_ACCESS },
+    { "r_x",		RPMNS_TYPE_ACCESS },
+    { "r__",		RPMNS_TYPE_ACCESS },
+    { "_WX",		RPMNS_TYPE_ACCESS },
+    { "_Wx",		RPMNS_TYPE_ACCESS },
+    { "_W_",		RPMNS_TYPE_ACCESS },
+    { "_wX",		RPMNS_TYPE_ACCESS },
+    { "_wx",		RPMNS_TYPE_ACCESS },
+    { "_w_",		RPMNS_TYPE_ACCESS },
+    { "__X",		RPMNS_TYPE_ACCESS },
+    { "__x",		RPMNS_TYPE_ACCESS },
+    { "___",		RPMNS_TYPE_ACCESS },
+    { NULL, 0 }
+};
+
+nsType rpmnsProbe(const char * str)
+{
+    const struct _rpmnsProbes_s * av;
+    size_t sn = strlen(str);
+    size_t nb;
+
+    if (sn >= 5 && str[sn-1] == ')')
+    for (av = rpmnsProbes; av->NS != NULL; av++) {
+	nb = strlen(av->NS);
+	if (sn > nb && str[nb] == '(' && !strncmp(str, av->NS, nb))
+	    return av->Type;
+    }
+    return RPMNS_TYPE_UNKNOWN;
 }
 
 /*@=boundsread@*/
@@ -60,12 +120,17 @@ nsType rpmnsClassify(const char * str)
 	return RPMNS_TYPE_MACRO;
     s = str + strlen(str);
     if ((s - str) > 3 && s[-3] == '.' && s[-2] == 's' && s[-1] == 'o')
-	return RPMNS_TYPE_SONAME;
+	return RPMNS_TYPE_DSO;
+    Type = rpmnsProbe(str);
+#ifdef	NOTYET
+    if (Type != RPMNS_TYPE_UNKNOWN)
+	return Type;
+#endif
     for (s = str; *s; s++) {
 	if (s[0] == '(' || s[strlen(s)-1] == ')')
 	    return RPMNS_TYPE_NAMESPACE;
 	if (s[0] == '.' && s[1] == 's' && s[2] == 'o')
-	    return RPMNS_TYPE_SONAME;
+	    return RPMNS_TYPE_DSO;
 	if (s[0] == '.' && xisdigit(s[-1]) && xisdigit(s[1]))
 	    return RPMNS_TYPE_VERSION;
 	if (_rpmns_N_at_A && _rpmns_N_at_A[0]) {
@@ -83,15 +148,35 @@ int rpmnsParse(const char * str, rpmns ns)
     char *t;
     ns->str = t = xstrdup(str);
     ns->Type = rpmnsClassify(ns->str);
-    ns->NS = NULL;
-    ns->N = ns->str;
-    ns->A = NULL;
-    if (ns->Type == RPMNS_TYPE_ARCH) {
-	t = strrchr(t, _rpmns_N_at_A[0]);
-	if (t) {
+    switch (ns->Type) {
+    case RPMNS_TYPE_ARCH:
+	ns->NS = NULL;
+	ns->N = ns->str;
+	if ((t = strrchr(t, _rpmns_N_at_A[0])) != NULL)
 	    *t++ = '\0';
-	    ns->A = t;
-	}
+	ns->A = t;
+	break;
+#ifdef	NOTYET
+    case RPMNS_TYPE_NAMESPACE:
+    case RPMNS_TYPE_RPMLIB:
+    case RPMNS_TYPE_CPUINFO:
+    case RPMNS_TYPE_GETCONF:
+    case RPMNS_TYPE_UNAME:
+    case RPMNS_TYPE_SONAME:
+    case RPMNS_TYPE_ACCESS:
+	ns->NS = ns->str;
+	if ((t = strrchr(t, '(')) != NULL)
+	    *t++ = '\0';
+	ns->N = t;
+	t[strlen(t)-1] = '\0';
+	ns->A = NULL;
+	break;
+#endif
+    default:
+	ns->NS = NULL;
+	ns->N = ns->str;
+	ns->A = NULL;
+	break;
     }
     return 0;
 }
