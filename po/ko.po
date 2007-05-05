@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-04-29 17:01-0400\n"
+"POT-Creation-Date: 2007-05-05 11:06-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1457,11 +1457,11 @@ msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
-#: lib/depends.c:1655
+#: lib/depends.c:1661
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
-#: lib/depends.c:1776
+#: lib/depends.c:1782
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1470,20 +1470,20 @@ msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 트리, 깊이"
 "[depth])\n"
 
-#: lib/depends.c:1867
+#: lib/depends.c:1873
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 후임자만 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1940
+#: lib/depends.c:1946
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1971
+#: lib/depends.c:1977
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
-#: lib/depends.c:1976
+#: lib/depends.c:1982
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2792,94 +2792,94 @@ msgstr ")"
 msgid "OK"
 msgstr "확인"
 
-#: lib/rpmds.c:833 lib/rpmds.c:3680
+#: lib/rpmds.c:846 lib/rpmds.c:3718
 msgid "NO "
 msgstr "아니오"
 
-#: lib/rpmds.c:833 lib/rpmds.c:3680
+#: lib/rpmds.c:846 lib/rpmds.c:3718
 msgid "YES"
 msgstr "예"
 
-#: lib/rpmds.c:1325
+#: lib/rpmds.c:1338
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1328
+#: lib/rpmds.c:1341
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1331
+#: lib/rpmds.c:1344
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1334
+#: lib/rpmds.c:1347
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1337
+#: lib/rpmds.c:1350
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1340
+#: lib/rpmds.c:1353
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1343
+#: lib/rpmds.c:1356
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1346
+#: lib/rpmds.c:1359
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1349
+#: lib/rpmds.c:1362
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1353
+#: lib/rpmds.c:1366
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
 
-#: lib/rpmds.c:1357
+#: lib/rpmds.c:1370
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1360
+#: lib/rpmds.c:1373
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1363
+#: lib/rpmds.c:1376
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:1366
+#: lib/rpmds.c:1379
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1481
+#: lib/rpmds.c:1494
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "%d 번째 행: 의존성 토큰(token)은 반드시 '문자-숫자 조합', '_' 또는 '/' 로 시"
 "작해야 합니다: %s\n"
 
-#: lib/rpmds.c:1515
+#: lib/rpmds.c:1528
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1525
+#: lib/rpmds.c:1538
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3518 lib/rpmds.c:3548 lib/rpmds.c:3560
+#: lib/rpmds.c:3531 lib/rpmds.c:3561 lib/rpmds.c:3573
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3521
+#: lib/rpmds.c:3534
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2888,19 +2888,19 @@ msgstr ""
 "%d 번째 행: 의존성 토큰(token)은 반드시 '문자-숫자 조합', '_' 또는 '/' 로 시"
 "작해야 합니다: %s\n"
 
-#: lib/rpmds.c:3550
+#: lib/rpmds.c:3563
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3562
+#: lib/rpmds.c:3575
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3646
+#: lib/rpmds.c:3684
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2909,12 +2909,12 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:3679
+#: lib/rpmds.c:3717
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:3703
+#: lib/rpmds.c:3741
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"
@@ -3009,7 +3009,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:124 lib/rpminstall.c:492
-#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:587
+#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:553
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
@@ -3020,7 +3020,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "알 수 없는 태그 입니다"
 
 #: lib/rpmgi.c:764 lib/rpminstall.c:665 lib/rpminstall.c:850
-#: lib/rpmrollback.c:373 lib/transaction.c:1119
+#: lib/transaction.c:1119
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
@@ -3176,67 +3176,72 @@ msgstr "%s 패키지는 이미 설치되어 있습니다"
 
 #: lib/rpmps.c:219
 #, fuzzy, c-format
+msgid "re-packaged package with %s: %s is missing"
+msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
+
+#: lib/rpmps.c:224
+#, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
-#: lib/rpmps.c:224
+#: lib/rpmps.c:229
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%2$s(와)과 %3$s의 설치 과정에서 %1$s 파일이 서로 충돌합니다"
 
-#: lib/rpmps.c:229
+#: lib/rpmps.c:234
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%2$s에서 설치되는 %1$s 파일은 %3$s 패키지의 파일과 충돌합니다"
 
-#: lib/rpmps.c:234
+#: lib/rpmps.c:239
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
-#: lib/rpmps.c:239
+#: lib/rpmps.c:244
 #, fuzzy, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
 "니다"
 
-#: lib/rpmps.c:249
+#: lib/rpmps.c:254
 #, fuzzy, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld의 아이노드(inode)"
 "가 필요합니다"
 
-#: lib/rpmps.c:254
+#: lib/rpmps.c:259
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 "%s 패키지의 선(pre)-트랜잭션 시스템콜(syscall): %s(이)가 실패했습니다: %s"
 
-#: lib/rpmps.c:258
+#: lib/rpmps.c:263
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
 
-#: lib/rpmps.c:260 lib/rpmps.c:265
+#: lib/rpmps.c:265 lib/rpmps.c:270
 #, fuzzy
 msgid "(installed) "
 msgstr "설치되어 있지 않음  "
 
-#: lib/rpmps.c:263
+#: lib/rpmps.c:268
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " %s-%s-%s (와)과 충돌합니다\n"
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:274
 #, fuzzy, c-format
 msgid "installing package %s on %s rdonly filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
 "니다"
 
-#: lib/rpmps.c:274
+#: lib/rpmps.c:279
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3352,26 +3357,39 @@ msgstr ""
 msgid "Features provided by current uname:\n"
 msgstr ""
 
-#: lib/rpmrollback.c:241
+#: lib/rpmrollback.c:391
 #, fuzzy
-msgid "Missing repackaged package(s) detected:\n"
-msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
+msgid "Failed dependencies"
+msgstr "의존성 문제로 인해 실패함:\n"
 
-#: lib/rpmrollback.c:525
+#: lib/rpmrollback.c:396
+msgid "Ordering problems"
+msgstr ""
+
+#: lib/rpmrollback.c:401
+msgid "Rollback problems"
+msgstr ""
+
+#: lib/rpmrollback.c:519
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpmrollback.c:630 lib/transaction.c:1097
+#: lib/rpmrollback.c:621
+#, fuzzy
+msgid "Missing re-packaged package(s)"
+msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
+
+#: lib/rpmrollback.c:629 lib/transaction.c:1097
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpmrollback.c:653
+#: lib/rpmrollback.c:652
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#: lib/rpmrollback.c:660
+#: lib/rpmrollback.c:659
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "%s(을)를 복구합니다\n"
@@ -3401,55 +3419,55 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:125
+#: lib/rpmts.c:126
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:221
+#: lib/rpmts.c:187
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:239
+#: lib/rpmts.c:205
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "%s %s에 '(' 가 없습니다\n"
 
-#: lib/rpmts.c:247
+#: lib/rpmts.c:213
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:458
+#: lib/rpmts.c:424
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s의 rpm 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:577
+#: lib/rpmts.c:543
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
 
-#: lib/rpmts.c:607
+#: lib/rpmts.c:573
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "행: %s\n"
 
-#: lib/rpmts.c:618
+#: lib/rpmts.c:584
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
-#: lib/rpmts.c:1181
+#: lib/rpmts.c:1147
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1183
+#: lib/rpmts.c:1149
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1264
+#: lib/rpmts.c:1230
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "파일%5d: %07o %s.%s\t %s\n"
@@ -4605,10 +4623,6 @@ msgstr ""
 
 #~ msgid "Internal error in argument processing (%d) :-(\n"
 #~ msgstr "인수 처리과정 (%d) 도중 내부 오류가 발생했습니다 :-(\n"
-
-#, fuzzy
-#~ msgid "\tRepackaged Package was %s...\n"
-#~ msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
 
 #~ msgid "Couldn't download nosource %s: %s\n"
 #~ msgstr "nosource %s(을)를 다운로드할 수 없음: %s\n"

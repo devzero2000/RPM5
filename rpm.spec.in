@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -544,6 +544,15 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Sat May  5 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.5
+- fix: rpmdsSearch() end-of-loop test incorrect at end-of-array.
+- fix: use dgettext, not gettext, everywhere.
+- fix: install preferred color packages first (#214737, #220348).
+- rpmns: create rpmns.c/rpmns.h.
+- fix: there are no leading zeros in the digit string "0".
+- rpmns: refactor .arch suffix table from rpmts.c -> rpmns.c.
+- rpmns: support for Requires: name.arch (#235755).
+
 * Sun Apr 29 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.4
 - open existing rpmdb indices with either DB_BTREE or DB_HASH.
 - don't add RPMTAG_RHNPLATFORM to packages and headers.

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-04-29 17:01-0400\n"
+"POT-Creation-Date: 2007-05-05 11:06-0400\n"
 "PO-Revision-Date: 2006-10-01 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -1448,11 +1448,11 @@ msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
-#: lib/depends.c:1655
+#: lib/depends.c:1661
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
-#: lib/depends.c:1776
+#: lib/depends.c:1782
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
@@ -1460,20 +1460,20 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "Ldjup, Rbredd)\n"
 
-#: lib/depends.c:1867
+#: lib/depends.c:1873
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== endast efterföljare (%d byte)\n"
 
-#: lib/depends.c:1940
+#: lib/depends.c:1946
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1971
+#: lib/depends.c:1977
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
-#: lib/depends.c:1976
+#: lib/depends.c:1982
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -2728,93 +2728,93 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:833 lib/rpmds.c:3680
+#: lib/rpmds.c:846 lib/rpmds.c:3718
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:833 lib/rpmds.c:3680
+#: lib/rpmds.c:846 lib/rpmds.c:3718
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1325
+#: lib/rpmds.c:1338
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, and Obsoletes:-beroenden stödjer versioner."
 
-#: lib/rpmds.c:1328
+#: lib/rpmds.c:1341
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "filnamn lagrade som (katNamn,basNam,katIndex)-tupel, inte som sökväg."
 
-#: lib/rpmds.c:1331
+#: lib/rpmds.c:1344
 msgid "package payload can be compressed using bzip2."
 msgstr "paketlasten kan komprimeras med bzip2."
 
-#: lib/rpmds.c:1334
+#: lib/rpmds.c:1347
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "paketlastfiler har \"./\"-prefix."
 
-#: lib/rpmds.c:1337
+#: lib/rpmds.c:1350
 msgid "package name-version-release is not implicitly provided."
 msgstr "paketets namn-version-utgåva tillhandahålls inte implicit."
 
-#: lib/rpmds.c:1340
+#: lib/rpmds.c:1353
 msgid "header tags are always sorted after being loaded."
 msgstr "huvudtaggar sorteras alltid efter att ha lästs in."
 
-#: lib/rpmds.c:1343
+#: lib/rpmds.c:1356
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "skriptinterpretatorn kan använda argument från huvudet."
 
-#: lib/rpmds.c:1346
+#: lib/rpmds.c:1359
 msgid "a hardlink file set may be installed without being complete."
 msgstr "en hårdlänkad filuppsättning får installeras utan att vara komplett."
 
-#: lib/rpmds.c:1349
+#: lib/rpmds.c:1362
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "paketskript kan komma åt rpm-databasen under installation."
 
-#: lib/rpmds.c:1353
+#: lib/rpmds.c:1366
 msgid "internal support for lua scripts."
 msgstr "internt stöd för lua-skript."
 
-#: lib/rpmds.c:1357
+#: lib/rpmds.c:1370
 msgid "header tags can be type int_64."
 msgstr "huvudtaggar kan ha typen int_64."
 
-#: lib/rpmds.c:1360
+#: lib/rpmds.c:1373
 msgid "package payload can be in ustar tar archive format."
 msgstr "paketlasten kan vara i ustar:s tar-arkivformat."
 
-#: lib/rpmds.c:1363
+#: lib/rpmds.c:1376
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "paketlasten kan komprimeras med bzip2."
 
-#: lib/rpmds.c:1366
+#: lib/rpmds.c:1379
 msgid "file digests can be other than MD5."
 msgstr "filkontrollsummor kan vara annat än MD5."
 
-#: lib/rpmds.c:1481
+#: lib/rpmds.c:1494
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "%s:%d: \"%s\" måste börja alfanumeriskt, med \"_\", \"/\" eller \"%%\".\n"
 
-#: lib/rpmds.c:1515
+#: lib/rpmds.c:1528
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr "%s:%d Det finns ingen jämförelseoperator.\n"
 
-#: lib/rpmds.c:1525
+#: lib/rpmds.c:1538
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr "%s:%d Det finns inget EVR-jämförelsevärde.\n"
 
-#: lib/rpmds.c:3518 lib/rpmds.c:3548 lib/rpmds.c:3560
+#: lib/rpmds.c:3531 lib/rpmds.c:3561 lib/rpmds.c:3573
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "kör rörkommandot \"%s\"\n"
 
-#: lib/rpmds.c:3521
+#: lib/rpmds.c:3534
 #, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2823,12 +2823,12 @@ msgstr ""
 "\trad %d: \"%s\" måste börja alfanumeriskt, med \"_\", \"/\" eller \"%%\". "
 "Hoppar över ...\n"
 
-#: lib/rpmds.c:3550
+#: lib/rpmds.c:3563
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr "\trad %d: \"%s\" har inte någon jämförelseoperator.  Hoppar över ...\n"
 
-#: lib/rpmds.c:3562
+#: lib/rpmds.c:3575
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2837,7 +2837,7 @@ msgstr ""
 "\trad %d: Det finns inget EVR-jämförelsevärde.\n"
 " Hoppar över ..."
 
-#: lib/rpmds.c:3646
+#: lib/rpmds.c:3684
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2846,12 +2846,12 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3679
+#: lib/rpmds.c:3717
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:3703
+#: lib/rpmds.c:3741
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"
@@ -2946,7 +2946,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:124 lib/rpminstall.c:492
-#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:587
+#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:553
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
@@ -2957,7 +2957,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "okänd tagg: \"%s\"\n"
 
 #: lib/rpmgi.c:764 lib/rpminstall.c:665 lib/rpminstall.c:850
-#: lib/rpmrollback.c:373 lib/transaction.c:1119
+#: lib/transaction.c:1119
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
 
@@ -3108,60 +3108,65 @@ msgid "package %s is already installed"
 msgstr "paket %s är redan installerat"
 
 #: lib/rpmps.c:219
+#, fuzzy, c-format
+msgid "re-packaged package with %s: %s is missing"
+msgstr "\tLade till ompaketerat pakethuvud: %s.\n"
+
+#: lib/rpmps.c:224
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "sökväg %s i paket %s är inte relokerbar"
 
-#: lib/rpmps.c:224
+#: lib/rpmps.c:229
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "fil %s är en konflikt mellan installationsförsök av %s och %s"
 
-#: lib/rpmps.c:229
+#: lib/rpmps.c:234
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "fil %s från installation av %s står i konflikt med filen från paket %s"
 
-#: lib/rpmps.c:234
+#: lib/rpmps.c:239
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paket %s (som är nyare än %s) är redan installerat"
 
-#: lib/rpmps.c:239
+#: lib/rpmps.c:244
 #, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr "installation av paket %s behöver %lu %cB på filsystemet %s"
 
-#: lib/rpmps.c:249
+#: lib/rpmps.c:254
 #, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr "installation av paket %s behöver %lu inoder på filsystem %s"
 
-#: lib/rpmps.c:254
+#: lib/rpmps.c:259
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "paket %s systemanrop före transaktion: %s misslyckades: %s"
 
-#: lib/rpmps.c:258
+#: lib/rpmps.c:263
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s behövs av %s%s"
 
-#: lib/rpmps.c:260 lib/rpmps.c:265
+#: lib/rpmps.c:265 lib/rpmps.c:270
 msgid "(installed) "
 msgstr "(installerat) "
 
-#: lib/rpmps.c:263
+#: lib/rpmps.c:268
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s står i konflikt med %s%s"
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:274
 #, c-format
 msgid "installing package %s on %s rdonly filesystem"
 msgstr "installation av paket %s på endast läsbart filsystem %s"
 
-#: lib/rpmps.c:274
+#: lib/rpmps.c:279
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
@@ -3277,25 +3282,39 @@ msgstr "Funktioner som tillhandahålls av aktuell getconf:\n"
 msgid "Features provided by current uname:\n"
 msgstr "Funktioner som tillhandahålls av aktuell uname:\n"
 
-#: lib/rpmrollback.c:241
-msgid "Missing repackaged package(s) detected:\n"
-msgstr "Saknade ompaketerade paket upptäckta:\n"
+#: lib/rpmrollback.c:391
+#, fuzzy
+msgid "Failed dependencies"
+msgstr "Ouppfyllda beroenden:\n"
 
-#: lib/rpmrollback.c:525
+#: lib/rpmrollback.c:396
+msgid "Ordering problems"
+msgstr ""
+
+#: lib/rpmrollback.c:401
+msgid "Rollback problems"
+msgstr ""
+
+#: lib/rpmrollback.c:519
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "Exkluderar TID från återrullning: %-24.24s (0x%08x)\n"
 
-#: lib/rpmrollback.c:630 lib/transaction.c:1097
+#: lib/rpmrollback.c:621
+#, fuzzy
+msgid "Missing re-packaged package(s)"
+msgstr "Saknade ompaketerade paket upptäckta:\n"
+
+#: lib/rpmrollback.c:629 lib/transaction.c:1097
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Rullar tillbaka paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/rpmrollback.c:653
+#: lib/rpmrollback.c:652
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Rensar upp ompaketerade paket:\n"
 
-#: lib/rpmrollback.c:660
+#: lib/rpmrollback.c:659
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\tTar bort %s:\n"
@@ -3325,55 +3344,55 @@ msgstr "%s:  ogiltig typspecificerare %s på rad nummer %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  ogiltigt sammanhang %s på rad nummer %d\n"
 
-#: lib/rpmts.c:125
+#: lib/rpmts.c:126
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/rpmts.c:221
+#: lib/rpmts.c:187
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "överflödigt \"(\" i paketetikett: %s\n"
 
-#: lib/rpmts.c:239
+#: lib/rpmts.c:205
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "\"(\" saknas i etikett: %s\n"
 
-#: lib/rpmts.c:247
+#: lib/rpmts.c:213
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "\")\" saknas i paketetikett: %s\n"
 
-#: lib/rpmts.c:458
+#: lib/rpmts.c:424
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "kan inte öppna Solve-databas i %s\n"
 
-#: lib/rpmts.c:577
+#: lib/rpmts.c:543
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "felaktigt format för lösningsväg: %s\n"
 
-#: lib/rpmts.c:607
+#: lib/rpmts.c:573
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Lägger till: %s\n"
 
-#: lib/rpmts.c:618
+#: lib/rpmts.c:584
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Föreslår %s\n"
 
-#: lib/rpmts.c:1181
+#: lib/rpmts.c:1147
 msgid "mounted filesystems:\n"
 msgstr "monterade filsystem:\n"
 
-#: lib/rpmts.c:1183
+#: lib/rpmts.c:1149
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i      enhet    bstrl       btillg       itillg monteringspunkt\n"
 
-#: lib/rpmts.c:1264
+#: lib/rpmts.c:1230
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s %s\n"

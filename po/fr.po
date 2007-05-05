@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-04-29 17:01-0400\n"
+"POT-Creation-Date: 2007-05-05 11:06-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1489,11 +1489,11 @@ msgstr ""
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "on enlève %s \"%s\" des relations de Ttri.\n"
 
-#: lib/depends.c:1655
+#: lib/depends.c:1661
 msgid "========== recording tsort relations\n"
 msgstr "========== enregistrement des relations de Ttri\n"
 
-#: lib/depends.c:1776
+#: lib/depends.c:1782
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1502,20 +1502,20 @@ msgstr ""
 "========== Ttri des paquetages (ordre, #prédécesseurs, #succeseurs, arbre, "
 "profondeur)\n"
 
-#: lib/depends.c:1867
+#: lib/depends.c:1873
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== successeurs seulement (%d octets)\n"
 
-#: lib/depends.c:1940
+#: lib/depends.c:1946
 msgid "LOOP:\n"
 msgstr "BOUCLE:\n"
 
-#: lib/depends.c:1971
+#: lib/depends.c:1977
 msgid "========== continuing tsort ...\n"
 msgstr "========== continuation du Ttri ...\n"
 
-#: lib/depends.c:1976
+#: lib/depends.c:1982
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "échec de rpmtsOrder, %d éléments toujours présents\n"
@@ -2821,104 +2821,104 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:833 lib/rpmds.c:3680
+#: lib/rpmds.c:846 lib/rpmds.c:3718
 msgid "NO "
 msgstr "NON"
 
-#: lib/rpmds.c:833 lib/rpmds.c:3680
+#: lib/rpmds.c:846 lib/rpmds.c:3718
 msgid "YES"
 msgstr "OUI"
 
-#: lib/rpmds.c:1325
+#: lib/rpmds.c:1338
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "Les dépendances de type PreReq:, Provides: et Obsoletes: supportent les "
 "versions."
 
-#: lib/rpmds.c:1328
+#: lib/rpmds.c:1341
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Le(s) nom(s) de fichier sont stockés en tant que triplets (NomRep,NomFich,"
 "IndexRep), pas en tant que chemin."
 
-#: lib/rpmds.c:1331
+#: lib/rpmds.c:1344
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "La charge utile du paquetage est compressée avec bzip2."
 
-#: lib/rpmds.c:1334
+#: lib/rpmds.c:1347
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 "le(s) fichier(s) de la charge utile du paquetage ont \"./\" comme préfixe."
 
-#: lib/rpmds.c:1337
+#: lib/rpmds.c:1350
 msgid "package name-version-release is not implicitly provided."
 msgstr "le nom-version-révision du paquetage n'est pas implicitement fourni."
 
-#: lib/rpmds.c:1340
+#: lib/rpmds.c:1353
 msgid "header tags are always sorted after being loaded."
 msgstr "les tags d'entête sont toujours triés après avoir été chargés."
 
-#: lib/rpmds.c:1343
+#: lib/rpmds.c:1356
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 "l'interprète du scriptlet peut utiliser des arguments à partir des entêtes."
 
-#: lib/rpmds.c:1346
+#: lib/rpmds.c:1359
 msgid "a hardlink file set may be installed without being complete."
 msgstr "un lien en dur pourrait être installé sans être complet."
 
-#: lib/rpmds.c:1349
+#: lib/rpmds.c:1362
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "les scriptlets du paquetage pourrait accéder à la base de données rpm "
 "pendant l'installation."
 
-#: lib/rpmds.c:1353
+#: lib/rpmds.c:1366
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- non supporté sur des chaînes de caractères\n"
 
-#: lib/rpmds.c:1357
+#: lib/rpmds.c:1370
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1360
+#: lib/rpmds.c:1373
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1363
+#: lib/rpmds.c:1376
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "La charge utile du paquetage est compressée avec bzip2."
 
-#: lib/rpmds.c:1366
+#: lib/rpmds.c:1379
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1481
+#: lib/rpmds.c:1494
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr ""
 "ligne %d: le lexème de dépendance doit commencer par un alphanumérique, '_' "
 "ou '/': %s\n"
 
-#: lib/rpmds.c:1515
+#: lib/rpmds.c:1528
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr ""
 
-#: lib/rpmds.c:1525
+#: lib/rpmds.c:1538
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr ""
 
-#: lib/rpmds.c:3518 lib/rpmds.c:3548 lib/rpmds.c:3560
+#: lib/rpmds.c:3531 lib/rpmds.c:3561 lib/rpmds.c:3573
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3521
+#: lib/rpmds.c:3534
 #, fuzzy, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2927,19 +2927,19 @@ msgstr ""
 "ligne %d: le lexème de dépendance doit commencer par un alphanumérique, '_' "
 "ou '/': %s\n"
 
-#: lib/rpmds.c:3550
+#: lib/rpmds.c:3563
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3562
+#: lib/rpmds.c:3575
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3646
+#: lib/rpmds.c:3684
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2949,12 +2949,12 @@ msgstr ""
 "pour \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3679
+#: lib/rpmds.c:3717
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:3703
+#: lib/rpmds.c:3741
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "le paquetage %s a un(e) %s non-satisfaites: %s\n"
@@ -3049,7 +3049,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "relogement du répertoire %s vers %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:124 lib/rpminstall.c:492
-#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:587
+#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:553
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "échec de l'ouverture de %s: %s\n"
@@ -3060,7 +3060,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "tag inconnu: \"%s\"\n"
 
 #: lib/rpmgi.c:764 lib/rpminstall.c:665 lib/rpminstall.c:850
-#: lib/rpmrollback.c:373 lib/transaction.c:1119
+#: lib/transaction.c:1119
 msgid "Failed dependencies:\n"
 msgstr "Dépendances requises:\n"
 
@@ -3213,68 +3213,73 @@ msgstr "paquetage %s déjà installé"
 
 #: lib/rpmps.c:219
 #, fuzzy, c-format
+msgid "re-packaged package with %s: %s is missing"
+msgstr "aucun paquetage ne correspond à %s: %s\n"
+
+#: lib/rpmps.c:224
+#, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "le chemin %s du paquetage %s n'est pas relogeable"
 
-#: lib/rpmps.c:224
+#: lib/rpmps.c:229
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "le fichier %s entre en conflit avec les tentatives d'installation de %s et %s"
 
-#: lib/rpmps.c:229
+#: lib/rpmps.c:234
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "le fichier %s de l'installation de %s entre en conflit avec le fichier du "
 "paquetage %s"
 
-#: lib/rpmps.c:234
+#: lib/rpmps.c:239
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "le paquetage %s (plus récent que %s) est déjà installé"
 
-#: lib/rpmps.c:239
+#: lib/rpmps.c:244
 #, fuzzy, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 "installer le paquetage %s nécessite %ld%co sur le système de fichiers %s"
 
-#: lib/rpmps.c:249
+#: lib/rpmps.c:254
 #, fuzzy, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 "installer le paquetage %s nécessite %ld i-noeuds sur le système de fichiers %"
 "s"
 
-#: lib/rpmps.c:254
+#: lib/rpmps.c:259
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 "échec du(des) appel(s) système(s) de la pré-transaction du paquetage %s: %s: "
 "%s"
 
-#: lib/rpmps.c:258
+#: lib/rpmps.c:263
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s est nécessaire pour %s%s"
 
-#: lib/rpmps.c:260 lib/rpmps.c:265
+#: lib/rpmps.c:265 lib/rpmps.c:270
 msgid "(installed) "
 msgstr "(déjà installé) "
 
-#: lib/rpmps.c:263
+#: lib/rpmps.c:268
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s entre en conflit avec %s%s"
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:274
 #, fuzzy, c-format
 msgid "installing package %s on %s rdonly filesystem"
 msgstr ""
 "installer le paquetage %s nécessite %ld%co sur le système de fichiers %s"
 
-#: lib/rpmps.c:274
+#: lib/rpmps.c:279
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "erreur %d inconnue rencontrée en manipulant le paquetage %s"
@@ -3389,27 +3394,40 @@ msgstr ""
 msgid "Features provided by current uname:\n"
 msgstr ""
 
-#: lib/rpmrollback.c:241
+#: lib/rpmrollback.c:391
 #, fuzzy
-msgid "Missing repackaged package(s) detected:\n"
-msgstr "erreur dans la lecteur de l'entête du paquetage\n"
+msgid "Failed dependencies"
+msgstr "Dépendances requises:\n"
 
-#: lib/rpmrollback.c:525
+#: lib/rpmrollback.c:396
+msgid "Ordering problems"
+msgstr ""
+
+#: lib/rpmrollback.c:401
+msgid "Rollback problems"
+msgstr ""
+
+#: lib/rpmrollback.c:519
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpmrollback.c:630 lib/transaction.c:1097
+#: lib/rpmrollback.c:621
+#, fuzzy
+msgid "Missing re-packaged package(s)"
+msgstr "erreur dans la lecteur de l'entête du paquetage\n"
+
+#: lib/rpmrollback.c:629 lib/transaction.c:1097
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 "Roulement arrière des paquetages (+%d/-%d) jusqu'à %-24.24s (0x%08x):\n"
 
-#: lib/rpmrollback.c:653
+#: lib/rpmrollback.c:652
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#: lib/rpmrollback.c:660
+#: lib/rpmrollback.c:659
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Récupération de %s\n"
@@ -3439,55 +3457,55 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:125
+#: lib/rpmts.c:126
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "impossible d'ouvrir la base de données Package dans %s\n"
 
-#: lib/rpmts.c:221
+#: lib/rpmts.c:187
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "'(' supplémentaire dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:239
+#: lib/rpmts.c:205
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "'(' manquante dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:247
+#: lib/rpmts.c:213
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "')' manquante dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:458
+#: lib/rpmts.c:424
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "Impossible d'ouvrir la base de données Solve dans %s\n"
 
-#: lib/rpmts.c:577
+#: lib/rpmts.c:543
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "format incorrect: %s\n"
 
-#: lib/rpmts.c:607
+#: lib/rpmts.c:573
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Ajout de: %s\n"
 
-#: lib/rpmts.c:618
+#: lib/rpmts.c:584
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Suggestion: %s\n"
 
-#: lib/rpmts.c:1181
+#: lib/rpmts.c:1147
 msgid "mounted filesystems:\n"
 msgstr "systèmes de fichiers montés:\n"
 
-#: lib/rpmts.c:1183
+#: lib/rpmts.c:1149
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1264
+#: lib/rpmts.c:1230
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
@@ -4721,10 +4739,6 @@ msgstr ""
 
 #~ msgid "Internal error in argument processing (%d) :-(\n"
 #~ msgstr "Erreur interne au traitement de l'argument (%d) :-(\n"
-
-#, fuzzy
-#~ msgid "\tRepackaged Package was %s...\n"
-#~ msgstr "aucun paquetage ne correspond à %s: %s\n"
 
 #~ msgid "Couldn't download nosource %s: %s\n"
 #~ msgstr "Impossible de télécharger la non-source %s: %s\n"

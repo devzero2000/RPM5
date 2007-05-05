@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-04-29 17:01-0400\n"
+"POT-Creation-Date: 2007-05-05 11:06-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1454,11 +1454,11 @@ msgstr "ignoruj relacje nazw pakietów [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie %s \"%s\" z relacji tsort.\n"
 
-#: lib/depends.c:1655
+#: lib/depends.c:1661
 msgid "========== recording tsort relations\n"
 msgstr "========== zapisywanie relacji tsort\n"
 
-#: lib/depends.c:1776
+#: lib/depends.c:1782
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
@@ -1466,20 +1466,20 @@ msgstr ""
 "========== tsortowanie pakietów (kolejno¶æ, #poprzedników, #nastêpników, "
 "drzewo, g³êboko¶æ, Rbreadth)\n"
 
-#: lib/depends.c:1867
+#: lib/depends.c:1873
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== tylko nastêpniki (%d bajtów)\n"
 
-#: lib/depends.c:1940
+#: lib/depends.c:1946
 msgid "LOOP:\n"
 msgstr "PÊTLA:\n"
 
-#: lib/depends.c:1971
+#: lib/depends.c:1977
 msgid "========== continuing tsort ...\n"
 msgstr "========== kontynuowanie tsort ...\n"
 
-#: lib/depends.c:1976
+#: lib/depends.c:1982
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
@@ -2729,93 +2729,93 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:833 lib/rpmds.c:3680
+#: lib/rpmds.c:846 lib/rpmds.c:3718
 msgid "NO "
 msgstr "NIE "
 
-#: lib/rpmds.c:833 lib/rpmds.c:3680
+#: lib/rpmds.c:846 lib/rpmds.c:3718
 msgid "YES"
 msgstr "TAK"
 
-#: lib/rpmds.c:1325
+#: lib/rpmds.c:1338
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "Zale¿no¶ci PreReq:, Provides: oraz Obsoletes: obs³uguj± wersje."
 
-#: lib/rpmds.c:1328
+#: lib/rpmds.c:1341
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "nazwy plików zapisano jako (dirName,baseName,dirIndex) a nie jako ¶cie¿ki."
 
-#: lib/rpmds.c:1331
+#: lib/rpmds.c:1344
 msgid "package payload can be compressed using bzip2."
 msgstr "dane pakietu mog± byæ skompresowane bzipem2."
 
-#: lib/rpmds.c:1334
+#: lib/rpmds.c:1347
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "pliki danych pakietu maj± prefix \"./\"."
 
-#: lib/rpmds.c:1337
+#: lib/rpmds.c:1350
 msgid "package name-version-release is not implicitly provided."
 msgstr "pakiet name-version-release nie jest udostêpniany domy¶lnie."
 
-#: lib/rpmds.c:1340
+#: lib/rpmds.c:1353
 msgid "header tags are always sorted after being loaded."
 msgstr "etykiety nag³ówka s± zawsze sortowane po wczytaniu."
 
-#: lib/rpmds.c:1343
+#: lib/rpmds.c:1356
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "interpreter skryptów mo¿e u¿ywaæ argumentów z nag³ówka."
 
-#: lib/rpmds.c:1346
+#: lib/rpmds.c:1359
 msgid "a hardlink file set may be installed without being complete."
 msgstr "plik z dowi±zaniem sta³ym mo¿e byæ zainstalowany bez kompletu."
 
-#: lib/rpmds.c:1349
+#: lib/rpmds.c:1362
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "skrypty pakietu mog± odwo³ywaæ siê do bazy rpm-a przy instalacji."
 
-#: lib/rpmds.c:1353
+#: lib/rpmds.c:1366
 msgid "internal support for lua scripts."
 msgstr "wewnêtrzna obs³uga dla skryptów lua."
 
-#: lib/rpmds.c:1357
+#: lib/rpmds.c:1370
 msgid "header tags can be type int_64."
 msgstr "znaczniki nag³ówka mog± byæ typu int_64."
 
-#: lib/rpmds.c:1360
+#: lib/rpmds.c:1373
 msgid "package payload can be in ustar tar archive format."
 msgstr "dane pakietu mog± byæ w formacie archiwum tara ustar."
 
-#: lib/rpmds.c:1363
+#: lib/rpmds.c:1376
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "dane pakietu mog± byæ skompresowane bzipem2."
 
-#: lib/rpmds.c:1366
+#: lib/rpmds.c:1379
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1481
+#: lib/rpmds.c:1494
 #, c-format
 msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
 msgstr "%s:%d \"%s\" musi zaczynaæ siê liter±, cyfr±, '_', '/' lub '%%'.\n"
 
-#: lib/rpmds.c:1515
+#: lib/rpmds.c:1528
 #, c-format
 msgid "%s:%d No comparison operator found.\n"
 msgstr "%s:%d Brak operatora porównania.\n"
 
-#: lib/rpmds.c:1525
+#: lib/rpmds.c:1538
 #, c-format
 msgid "%s:%d No EVR comparison value found.\n"
 msgstr "%s:%d Nie znaleziono warto¶ci do porównania EVR.\n"
 
-#: lib/rpmds.c:3518 lib/rpmds.c:3548 lib/rpmds.c:3560
+#: lib/rpmds.c:3531 lib/rpmds.c:3561 lib/rpmds.c:3573
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "uruchamianie polecenia potokowego \"%s\"\n"
 
-#: lib/rpmds.c:3521
+#: lib/rpmds.c:3534
 #, c-format
 msgid ""
 "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
@@ -2824,12 +2824,12 @@ msgstr ""
 "\tlinia %d: \"%s\" musi zaczynaæ siê liter±, cyfr±, '_', '/' lub '%%'. "
 "Pomijanie...\n"
 
-#: lib/rpmds.c:3550
+#: lib/rpmds.c:3563
 #, c-format
 msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
 msgstr "\tlinia %d: \"%s\" nie ma operatora porównania. Pomijanie...\n"
 
-#: lib/rpmds.c:3562
+#: lib/rpmds.c:3575
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2838,7 +2838,7 @@ msgstr ""
 "\tlinia %d: Brak warto¶ci porównania EVR.\n"
 " Pomijanie..."
 
-#: lib/rpmds.c:3646
+#: lib/rpmds.c:3684
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2847,12 +2847,12 @@ msgstr ""
 "Zale¿no¶æ \"B\" wymaga epoch (przyjêto epoch takie samo jak \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3679
+#: lib/rpmds.c:3717
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:3703
+#: lib/rpmds.c:3741
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
@@ -2947,7 +2947,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie katalogu %s do %s\n"
 
 #: lib/rpmgi.c:91 lib/rpminstall.c:124 lib/rpminstall.c:492
-#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:587
+#: lib/rpminstall.c:621 lib/rpmrollback.c:166 lib/rpmts.c:553
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê: %s\n"
@@ -2958,7 +2958,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "nieznana etykieta: \"%s\"\n"
 
 #: lib/rpmgi.c:764 lib/rpminstall.c:665 lib/rpminstall.c:850
-#: lib/rpmrollback.c:373 lib/transaction.c:1119
+#: lib/transaction.c:1119
 msgid "Failed dependencies:\n"
 msgstr "Niespe³nione zale¿no¶ci:\n"
 
@@ -3109,61 +3109,66 @@ msgid "package %s is already installed"
 msgstr "pakiet %s jest ju¿ zainstalowany"
 
 #: lib/rpmps.c:219
+#, fuzzy, c-format
+msgid "re-packaged package with %s: %s is missing"
+msgstr "\tPrzepakowany Pakiet %s...\n"
+
+#: lib/rpmps.c:224
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "¶cie¿ka %s w pakiecie %s nie jest przesuwalna"
 
-#: lib/rpmps.c:224
+#: lib/rpmps.c:229
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "plik %s jest w konflikcie miêdzy instalowanymi pakietami %s i %s"
 
-#: lib/rpmps.c:229
+#: lib/rpmps.c:234
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "plik %s z instalacji %s jest w konflikcie z plikiem z pakietu %s"
 
-#: lib/rpmps.c:234
+#: lib/rpmps.c:239
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "pakiet %s (nowszy ni¿ %s) jest ju¿ zainstalowany"
 
-#: lib/rpmps.c:239
+#: lib/rpmps.c:244
 #, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr "instalacja pakietu %s wymaga %lu%cB w systemie plików %s"
 
-#: lib/rpmps.c:249
+#: lib/rpmps.c:254
 #, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr "instalacja pakietu %s wymaga %lu i-wêz³ów w systemie plików %s"
 
-#: lib/rpmps.c:254
+#: lib/rpmps.c:259
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 "przed-transakcyjne wywo³anie systemowe pakietu %s: %s nie powiod³o siê: %s"
 
-#: lib/rpmps.c:258
+#: lib/rpmps.c:263
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s jest wymagany przez %s%s"
 
-#: lib/rpmps.c:260 lib/rpmps.c:265
+#: lib/rpmps.c:265 lib/rpmps.c:270
 msgid "(installed) "
 msgstr "(zainstalowany) "
 
-#: lib/rpmps.c:263
+#: lib/rpmps.c:268
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s jest w konflikcie z %s%s"
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:274
 #, c-format
 msgid "installing package %s on %s rdonly filesystem"
 msgstr "instalacja pakietu %s w systemie plików %s tylko do odczytu"
 
-#: lib/rpmps.c:274
+#: lib/rpmps.c:279
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s"
@@ -3278,25 +3283,39 @@ msgstr "Cechy dostarczane przez bie¿±cy getconf:\n"
 msgid "Features provided by current uname:\n"
 msgstr "Cechy dostarczane przez bie¿±ce uname:\n"
 
-#: lib/rpmrollback.c:241
-msgid "Missing repackaged package(s) detected:\n"
-msgstr "Wykryto brakuj±ce przepakowane pakiety:\n"
+#: lib/rpmrollback.c:391
+#, fuzzy
+msgid "Failed dependencies"
+msgstr "Niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpmrollback.c:525
+#: lib/rpmrollback.c:396
+msgid "Ordering problems"
+msgstr ""
+
+#: lib/rpmrollback.c:401
+msgid "Rollback problems"
+msgstr ""
+
+#: lib/rpmrollback.c:519
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "Wy³±czanie TID z wycofania: %-24.24s (0x%08x)\n"
 
-#: lib/rpmrollback.c:630 lib/transaction.c:1097
+#: lib/rpmrollback.c:621
+#, fuzzy
+msgid "Missing re-packaged package(s)"
+msgstr "Wykryto brakuj±ce przepakowane pakiety:\n"
+
+#: lib/rpmrollback.c:629 lib/transaction.c:1097
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Wycofanie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
 
-#: lib/rpmrollback.c:653
+#: lib/rpmrollback.c:652
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Czyszczenie przepakowanych pakietów:\n"
 
-#: lib/rpmrollback.c:660
+#: lib/rpmrollback.c:659
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\tUsuwanie %s\n"
@@ -3328,55 +3347,55 @@ msgstr "%s:  b³êdne okre¶lenie typu %s w linii numer %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  nieprawid³owy kontekst %s w lini numer %d\n"
 
-#: lib/rpmts.c:125
+#: lib/rpmts.c:126
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Packages w %s\n"
 
-#: lib/rpmts.c:221
+#: lib/rpmts.c:187
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "dodatkowe '(' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:239
+#: lib/rpmts.c:205
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "brak '(' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:247
+#: lib/rpmts.c:213
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "brak ')' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:458
+#: lib/rpmts.c:424
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Solve w %s\n"
 
-#: lib/rpmts.c:577
+#: lib/rpmts.c:543
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "niepoprawny format ¶cie¿ki rozwik³ania: %s\n"
 
-#: lib/rpmts.c:607
+#: lib/rpmts.c:573
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Dodawane: %s\n"
 
-#: lib/rpmts.c:618
+#: lib/rpmts.c:584
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Sugerowane: %s\n"
 
-#: lib/rpmts.c:1181
+#: lib/rpmts.c:1147
 msgid "mounted filesystems:\n"
 msgstr "podmontowane systemy plików:\n"
 
-#: lib/rpmts.c:1183
+#: lib/rpmts.c:1149
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        urz    bloków  bl.wolnych    i.wolnych punkt montowania\n"
 
-#: lib/rpmts.c:1264
+#: lib/rpmts.c:1230
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s %s\n"
@@ -4598,9 +4617,6 @@ msgstr "sprawd¼ Requires: wzglêdem Provides: dla dope³nienia zale¿no¶ci"
 
 #~ msgid "\tREMOVETID matched INSTALLTID.\n"
 #~ msgstr "\tREMOVETID dopasowano do INSTALLTID.\n"
-
-#~ msgid "\tRepackaged Package was %s...\n"
-#~ msgstr "\tPrzepakowany Pakiet %s...\n"
 
 #~ msgid "Couldn't download nosource %s: %s\n"
 #~ msgstr "Nie mo¿na ¶ci±gn±æ pliku nosource %s: %s\n"
