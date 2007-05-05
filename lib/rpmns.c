@@ -13,6 +13,9 @@
 /*@unchecked@*/
 int _rpmns_debug = 0;
 
+/*@unchecked@*/
+const char *_rpmns_N_at_A = ".";
+
 /*@-nullassign@*/
 /*@observer@*/
 static const char *rpmnsArches[] = {
@@ -65,8 +68,10 @@ nsType rpmnsClassify(const char * str)
 	    return RPMNS_TYPE_SONAME;
 	if (s[0] == '.' && xisdigit(s[-1]) && xisdigit(s[1]))
 	    return RPMNS_TYPE_VERSION;
-	if (s[0] == '.' && rpmnsArch(s+1))
-	    return RPMNS_TYPE_ARCH;
+	if (_rpmns_N_at_A && _rpmns_N_at_A[0]) {
+	    if (s[0] == _rpmns_N_at_A[0] && rpmnsArch(s+1))
+		return RPMNS_TYPE_ARCH;
+	}
 	if (s[0] == '.')
 	    return RPMNS_TYPE_COMPOUND;
     }
@@ -82,7 +87,7 @@ int rpmnsParse(const char * str, rpmns ns)
     ns->N = ns->str;
     ns->A = NULL;
     if (ns->Type == RPMNS_TYPE_ARCH) {
-	t = strrchr(t, '.');
+	t = strrchr(t, _rpmns_N_at_A[0]);
 	if (t) {
 	    *t++ = '\0';
 	    ns->A = t;

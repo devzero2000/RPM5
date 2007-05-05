@@ -7,6 +7,8 @@
  */
 
 #include "rpmevr.h"
+#define	_RPMNS_INTERNAL
+#include "rpmns.h"
 #include "rpmps.h"
 
 /**
@@ -32,18 +34,12 @@ struct rpmds_s {
     const char * Type;		/*!< Tag name. */
 /*@only@*/ /*@null@*/
     const char * DNEVR;		/*!< Formatted dependency string. */
-/*@owned@*/ /*@null@*/
-    const char * _N;		/*!< Macro expanded Name. */
-/*@dependent@*/ /*@null@*/
-    const char * _A;		/*!< Arch (from Name.Arch suffix). */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
 /*@only@*/ /*@relnull@*/
     const char ** N;		/*!< Name. */
 /*@only@*/ /*@relnull@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
-/*@only@*/ /*@null@*/
-    const char * A;		/*!< Arch (from containing package). */
 /*@only@*/ /*@relnull@*/
     int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
 /*@only@*/ /*@null@*/
@@ -55,6 +51,9 @@ struct rpmds_s {
 /*@null@*/
     int (*EVRparse) (const char *evrstr, EVR_t evr);	 /* EVR parsing. */
     int (*EVRcmp) (const char *a, const char *b);	 /* EVR comparison. */
+    struct rpmns_s ns;		/*!< Name (split). */
+/*@only@*/ /*@null@*/
+    const char * A;		/*!< Arch (from containing package). */
     int_32 BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */

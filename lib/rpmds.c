@@ -149,8 +149,8 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     /*@=branchstate@*/
 
     ds->DNEVR = _free(ds->DNEVR);
-    ds->_N = _free(ds->_N);
-    ds->_A = NULL;	/* XXX TODO: parse Name.Arch */
+    ds->ns.str = _free(ds->ns.str);
+    memset(&ds->ns, 0, sizeof(ds->ns));
     ds->A = _free(ds->A);
     ds->Color = _free(ds->Color);
     ds->Refs = _free(ds->Refs);
@@ -351,15 +351,21 @@ exit:
 /*@=compdef =usereleased@*/
 }
 
-/*@-mods@*/ /* FIX: correct annotations for ds->_N shadow */
+/*@-mods@*/ /* FIX: correct annotations for ds->ns shadow */
 const char * rpmdsNewN(rpmds ds)
 {
-    const char * Name = ds->N[ds->i];
+    rpmns ns = &ds->ns;
+    const char * Name = ds->N[ds->i];;
     int_32 Flags = rpmdsFlags(ds);
+    int xx;
+
+    memset(ns, 0, sizeof(*ns));
     if (Name[0] == '%' && (Flags & RPMSENSE_INTERP))
-	Name = ds->_N = rpmExpand(Name, NULL);
-    ds->_A = NULL;	/* XXX TODO: parse Name.Arch */
-/*@-usereleased -compdef@*/ /* FIX: correct annotations for ds->_N shadow */
+	ns->N = ns->str = rpmExpand(Name, NULL);
+    else
+	xx = rpmnsParse(Name, ns);
+    Name = ns->N;
+/*@-usereleased -compdef@*/ /* FIX: correct annotations for ds->ns shadow */
     return Name;
 /*@-usereleased -compdef@*/
 }
@@ -368,12 +374,15 @@ const char * rpmdsNewN(rpmds ds)
 char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 {
     const char * Name = rpmdsNewN(ds);
+    const char * Arch = ds->ns.A;
     char * tbuf, * t;
     size_t nb = 0;
 
     if (dspfx)	nb += strlen(dspfx) + 1;
 /*@-boundsread@*/
     if (Name)	nb += strlen(Name);
+    if (_rpmns_N_at_A && _rpmns_N_at_A[0])	nb += sizeof(_rpmns_N_at_A[0]);
+    if (Arch)	nb += strlen(Arch);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (nb)	nb++;
@@ -396,6 +405,10 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     }
     if (Name)
 	t = stpcpy(t, Name);
+    if (_rpmns_N_at_A && _rpmns_N_at_A[0])
+	*t++ = _rpmns_N_at_A[0];
+    if (Arch)
+	t = stpcpy(t, Arch);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (t != tbuf)	*t++ = ' ';
@@ -607,8 +620,8 @@ const char * rpmdsN(const rpmds ds)
     const char * N = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread -globs -mods @*/	/* FIX: correct annotations for ds->_N shadow */
-	N = (ds->_N ? ds->_N : rpmdsNewN(ds));
+/*@-boundsread -globs -mods @*/	/* FIX: correct annotations for ds->ns shadow */
+	N = (ds->ns.N ? ds->ns.N : rpmdsNewN(ds));
 /*@=boundsread =globs =mods @*/
     }
     return N;
@@ -844,8 +857,8 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 	    char t[2];
 	    i = ds->i;
 	    ds->DNEVR = _free(ds->DNEVR);
-	    ds->_N = _free(ds->_N);
-	    ds->_A = NULL;	/* XXX TODO: parse Name.Arch */
+	    ds->ns.str = _free(ds->ns.str);
+	    memset(&ds->ns, 0, sizeof(ds->ns));
 	    t[0] = ((ds->Type != NULL) ? ds->Type[0] : '\0');
 	    t[1] = '\0';
 	    /*@-nullstate@*/
@@ -3589,6 +3602,31 @@ exit:
     return rc;
 }
 
+static int rpmdsNAcmp(rpmds A, rpmds B)
+	/*@*/
+{
+    const char * AN = A->ns.N;
+    const char * AA = A->ns.A;
+    const char * BN = B->ns.N;
+    const char * BA = B->ns.A;
+    int rc;
+
+    if (!AA && !BA) {
+	rc = strcmp(AN, BN);
+    } else if (AA && !BA) {
+	rc = strncmp(AN, BN, (AA - AN)) || BN[AA - AN];
+	if (!rc)
+	    rc = strcmp(AA, B->A);
+    } else if (!AA && BA) {
+	rc = strncmp(AN, BN, (BA - BN)) || AN[BA - BN];
+	if (!rc)
+	    rc = strcmp(BA, A->A);
+    } else {
+	rc = strcmp(AN, BN);
+    }
+    return rc;
+}
+
 int rpmdsCompare(const rpmds A, const rpmds B)
 {
     const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
@@ -3600,13 +3638,9 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     int sense;
     int xx;
 
-    /* If EVRcmp is identical, use that, otherwise use default. */
-    EVRcmp = (A->EVRcmp && B->EVRcmp && A->EVRcmp == B->EVRcmp)
-	? A->EVRcmp : rpmvercmp;
-
 /*@-boundsread@*/
-    /* Different names don't overlap. */
-    if (strcmp(A->N[A->i], B->N[B->i])) {
+    /* Different names (and/or name.arch's) don't overlap. */
+    if (rpmdsNAcmp(A, B)) {
 	result = 0;
 	goto exit;
     }
@@ -3635,6 +3669,10 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     xx = (A->EVRparse ? A->EVRparse : rpmEVRparse) (A->EVR[A->i], a);
     xx = (B->EVRparse ? B->EVRparse : rpmEVRparse) (B->EVR[B->i], b);
 /*@=boundswrite@*/
+
+    /* If EVRcmp is identical, use that, otherwise use default. */
+    EVRcmp = (A->EVRcmp && B->EVRcmp && A->EVRcmp == B->EVRcmp)
+	? A->EVRcmp : rpmvercmp;
 
     /* Compare {A,B} [epoch:]version[-release] */
     sense = 0;
@@ -3723,10 +3761,17 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     if (req->EVR == NULL || req->Flags == NULL)
 	return 1;
 
+    switch(req->ns.Type) {
+    default:
 /*@-boundsread@*/
-    if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
-	return 1;
+	/* Primary key retrieve satisfes an existence compare. */
+	if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
+	    return 1;
 /*@=boundsread@*/
+	/*@fallthrough@*/
+    case RPMNS_TYPE_ARCH:
+	break;
+    }
 
     /* Get provides information from header */
     provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem));
@@ -3745,22 +3790,12 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 	goto exit;
     }
 
+    /* If any provide matches the require, we're done. */
     result = 0;
     if (provides != NULL)
-    while (rpmdsNext(provides) >= 0) {
-
-	/* Filter out provides that came along for the ride. */
-/*@-boundsread@*/
-	if (strcmp(provides->N[provides->i], req->N[req->i]))
-	    continue;
-/*@=boundsread@*/
-
-	result = rpmdsCompare(provides, req);
-
-	/* If this provide matches the require, we're done. */
-	if (result)
+    while (rpmdsNext(provides) >= 0)
+	if ((result = rpmdsCompare(provides, req)))
 	    break;
-    }
 
 exit:
     provides = rpmdsFree(provides);

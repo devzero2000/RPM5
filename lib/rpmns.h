@@ -13,6 +13,9 @@
 extern int _rpmns_debug;
 /*@=exportlocal@*/
 
+/*@unchecked@*/
+extern const char *_rpmns_N_at_A;
+
 typedef	/*@abstract@*/ struct rpmns_s * rpmns;
 
 /**
