@@ -644,6 +644,79 @@ retry:
 	goto exit;
     }
 
+    /* Evaluate mtab lookup and diskspace probe dependencies. */
+    if (NSType == RPMNS_TYPE_MOUNTED) {
+	const char ** fs = NULL;
+	int nfs = 0;
+	int i = 0;
+
+	xx = rpmtsInitDSI(ts);
+	fs = ts->filesystems;
+	nfs = ts->filesystemCount;
+
+	if (fs != NULL)
+	for (i = 0; i < nfs; i++) {
+	    if (!strcmp(fs[i], Name))
+		break;
+	}
+	rc = (i < nfs ? 0 : 1);
+	rpmdsNotify(dep, _("(mtab probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_DISKSPACE) {
+	size_t nb = strlen(Name);
+	rpmDiskSpaceInfo dsi = NULL;
+	const char ** fs = NULL;
+	size_t fslen = 0, longest = 0;
+	int nfs = 0;
+	int i = 0;
+
+	xx = rpmtsInitDSI(ts);
+	fs = ts->filesystems;
+	nfs = ts->filesystemCount;
+
+	if (fs != NULL)
+	for (i = 0; i < nfs; i++) {
+	    fslen = strlen(fs[i]);
+	    if (fslen > nb)
+		continue;
+	    if (strncmp(fs[i], Name, fslen))
+		continue;
+	    if (Name[fslen] != '/' && Name[fslen] != '\0')
+		continue;
+	    if (fslen < longest)
+		continue;
+	    longest = fslen;
+	    dsi = ts->dsi + i;
+	}
+	if (dsi == NULL)
+	    rc = 1;	/* no mounted paths !?! */
+	else {
+	    char * end = NULL;
+	    long long needed = strtoll(rpmdsEVR(dep), &end, 0);
+
+	    if (end && *end) {
+		if (strchr("Gg", end[0]) && strchr("Bb", end[1]) && !end[2])
+		    needed *= 1024 * 1024 * 1024;
+		if (strchr("Mm", end[0]) && strchr("Bb", end[1]) && !end[2])
+		    needed *= 1024 * 1024;
+		if (strchr("Kk", end[0]) && strchr("Bb", end[1]) && !end[2])
+		    needed *= 1024;
+	    } else
+		needed *= 1024 * 1024;	/* XXX assume Mb if no units given */
+
+	    needed = BLOCK_ROUND(needed, dsi->f_bsize);
+	    xx = (dsi->f_bavail - needed);
+	    if ((Flags & RPMSENSE_LESS) && xx < 0) rc = 0;
+	    else if ((Flags & RPMSENSE_GREATER) && xx > 0) rc = 0;
+	    else if ((Flags & RPMSENSE_EQUAL) && xx == 0) rc = 0;
+	    else rc = 1;
+	}
+	rpmdsNotify(dep, _("(diskspace probe)"), rc);
+	goto exit;
+    }
+
     /* Search system configured provides. */
     if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
 #ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */

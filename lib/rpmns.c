@@ -62,6 +62,8 @@ static struct _rpmnsProbes_s {
     { "soname",		RPMNS_TYPE_SONAME },
     { "user",		RPMNS_TYPE_USER },
     { "group",		RPMNS_TYPE_GROUP },
+    { "mounted",	RPMNS_TYPE_MOUNTED },
+    { "diskspace",	RPMNS_TYPE_DISKSPACE },
     { "exists",		RPMNS_TYPE_ACCESS },
     { "executable",	RPMNS_TYPE_ACCESS },
     { "readable",	RPMNS_TYPE_ACCESS },
@@ -163,6 +165,10 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_UNAME:
     case RPMNS_TYPE_SONAME:
     case RPMNS_TYPE_ACCESS:
+    case RPMNS_TYPE_USER:
+    case RPMNS_TYPE_GROUP:
+    case RPMNS_TYPE_MOUNTED:
+    case RPMNS_TYPE_DISKSPACE:
 	ns->NS = ns->str;
 	if ((t = strrchr(t, '(')) != NULL)
 	    *t++ = '\0';

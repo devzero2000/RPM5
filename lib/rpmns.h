@@ -41,6 +41,8 @@ typedef enum nsType_e {
     RPMNS_TYPE_TAG	=  (1 << 15),	/*!< Tag(bar) */
     RPMNS_TYPE_USER	=  (1 << 16),	/*!< user(bar) */
     RPMNS_TYPE_GROUP	=  (1 << 17),	/*!< group(bar) */
+    RPMNS_TYPE_MOUNTED	=  (1 << 18),	/*!< mounted(/path) */
+    RPMNS_TYPE_DISKSPACE=  (1 << 19),	/*!< diskspace(/path) */
 } nsType;
 
 #if defined(_RPMNS_INTERNAL)

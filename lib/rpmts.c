@@ -1143,6 +1143,8 @@ int rpmtsInitDSI(const rpmts ts)
 
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
 	return 0;
+    if (ts->filesystems != NULL)
+	return 0;
 
     rpmMessage(RPMMESS_DEBUG, _("mounted filesystems:\n"));
     rpmMessage(RPMMESS_DEBUG,
