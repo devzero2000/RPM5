@@ -122,10 +122,8 @@ nsType rpmnsClassify(const char * str)
     if ((s - str) > 3 && s[-3] == '.' && s[-2] == 's' && s[-1] == 'o')
 	return RPMNS_TYPE_DSO;
     Type = rpmnsProbe(str);
-#ifdef	NOTYET
     if (Type != RPMNS_TYPE_UNKNOWN)
 	return Type;
-#endif
     for (s = str; *s; s++) {
 	if (s[0] == '(' || s[strlen(s)-1] == ')')
 	    return RPMNS_TYPE_NAMESPACE;
@@ -156,8 +154,6 @@ int rpmnsParse(const char * str, rpmns ns)
 	    *t++ = '\0';
 	ns->A = t;
 	break;
-#ifdef	NOTYET
-    case RPMNS_TYPE_NAMESPACE:
     case RPMNS_TYPE_RPMLIB:
     case RPMNS_TYPE_CPUINFO:
     case RPMNS_TYPE_GETCONF:
@@ -171,7 +167,7 @@ int rpmnsParse(const char * str, rpmns ns)
 	t[strlen(t)-1] = '\0';
 	ns->A = NULL;
 	break;
-#endif
+    case RPMNS_TYPE_NAMESPACE:
     default:
 	ns->NS = NULL;
 	ns->N = ns->str;

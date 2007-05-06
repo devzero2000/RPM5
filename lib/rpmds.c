@@ -373,16 +373,21 @@ const char * rpmdsNewN(rpmds ds)
 
 char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 {
-    const char * Name = rpmdsNewN(ds);
-    const char * Arch = ds->ns.A;
+    const char * N = rpmdsNewN(ds);
+    const char * NS = ds->ns.NS;
+    const char * A = ds->ns.A;
     char * tbuf, * t;
     size_t nb = 0;
 
     if (dspfx)	nb += strlen(dspfx) + 1;
 /*@-boundsread@*/
-    if (Name)	nb += strlen(Name);
-    if (_rpmns_N_at_A && _rpmns_N_at_A[0])	nb += sizeof(_rpmns_N_at_A[0]);
-    if (Arch)	nb += strlen(Arch);
+    if (NS)	nb += strlen(NS) + sizeof("()") - 1;
+    if (N)	nb += strlen(N);
+    if (A) {
+	if (_rpmns_N_at_A && _rpmns_N_at_A[0])
+	    nb += sizeof(_rpmns_N_at_A[0]);
+	nb += strlen(A);
+    }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (nb)	nb++;
@@ -403,12 +408,18 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	t = stpcpy(t, dspfx);
 	*t++ = ' ';
     }
-    if (Name)
-	t = stpcpy(t, Name);
-    if (_rpmns_N_at_A && _rpmns_N_at_A[0])
-	*t++ = _rpmns_N_at_A[0];
-    if (Arch)
-	t = stpcpy(t, Arch);
+    if (NS)
+	t = stpcpy( stpcpy(t, NS), "(");
+    if (N)
+	t = stpcpy(t, N);
+    if (NS)
+	t = stpcpy(t, ")");
+    if (A) {
+	if (_rpmns_N_at_A && _rpmns_N_at_A[0])
+	    *t++ = _rpmns_N_at_A[0];
+	t = stpcpy(t, A);
+    }
+
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (t != tbuf)	*t++ = ' ';
@@ -687,6 +698,14 @@ time_t rpmdsSetBT(const rpmds ds, time_t BT)
 	ds->BT = BT;
     }
     return oBT;
+}
+
+nsType rpmdsNSType(const rpmds ds)
+{
+    nsType NSType = RPMNS_TYPE_UNKNOWN;
+    if (ds != NULL)
+	NSType = ds->ns.Type;
+    return NSType;
 }
 
 int rpmdsNoPromote(const rpmds ds)

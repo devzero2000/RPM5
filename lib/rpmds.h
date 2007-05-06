@@ -305,6 +305,14 @@ time_t rpmdsSetBT(/*@null@*/ const rpmds ds, time_t BT)
 	/*@modifies ds @*/;
 
 /**
+ * Return dependency class type.
+ * @param ds		dependency set
+ * @return		dependency class type
+ */
+nsType rpmdsNSType(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
  * Return current "Don't promote Epoch:" flag.
  *
  * This flag controls for Epoch: promotion when a dependency set is

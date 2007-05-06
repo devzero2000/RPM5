@@ -525,6 +525,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     DBT * key = alloca(sizeof(*key));
     DBT * data = alloca(sizeof(*data));
     rpmdbMatchIterator mi;
+    nsType NSType;
     const char * Name;
     int_32 Flags;
     Header h;
@@ -536,6 +537,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
     Flags = rpmdsFlags(dep);
+    NSType = rpmdsNSType(dep);
 
     /*
      * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
@@ -602,7 +604,7 @@ retry:
     }
 
     /* Evaluate access(2) probe dependencies. */
-    if (strlen(Name) > 5 && Name[strlen(Name)-1] == ')'
+    if (NSType == RPMNS_TYPE_ACCESS || (strlen(Name) > 5 && Name[strlen(Name)-1] == ')'
      && (	(  strchr("Rr_", Name[0]) != NULL
 		&& strchr("Ww_", Name[1]) != NULL
 		&& strchr("Xx_", Name[2]) != NULL
@@ -611,7 +613,7 @@ retry:
 	  ||	!strncmp(Name, "executable(", sizeof("executable(")-1)
 	  ||	!strncmp(Name, "readable(", sizeof("readable(")-1)
 	  ||	!strncmp(Name, "writable(", sizeof("writable(")-1)
-	))
+	)))
     {
 	rc = rpmioAccess(Name, NULL, X_OK);
 	if (Flags & RPMSENSE_MISSINGOK)
@@ -639,7 +641,7 @@ retry:
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
      * Check those dependencies now.
      */
-    if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
+    if (NSType == RPMNS_TYPE_RPMLIB || !strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
 	static rpmds rpmlibP = NULL;
 	static int oneshot = -1;
 
@@ -655,7 +657,7 @@ retry:
 	goto unsatisfied;
     }
 
-    if (!strncmp(Name, "cpuinfo(", sizeof("cpuinfo(")-1)) {
+    if (NSType == RPMNS_TYPE_CPUINFO || !strncmp(Name, "cpuinfo(", sizeof("cpuinfo(")-1)) {
 	static rpmds cpuinfoP = NULL;
 	static int oneshot = -1;
 
@@ -671,7 +673,7 @@ retry:
 	goto unsatisfied;
     }
 
-    if (!strncmp(Name, "getconf(", sizeof("getconf(")-1)) {
+    if (NSType == RPMNS_TYPE_GETCONF || !strncmp(Name, "getconf(", sizeof("getconf(")-1)) {
 	static rpmds getconfP = NULL;
 	static int oneshot = -1;
 
@@ -687,7 +689,7 @@ retry:
 	goto unsatisfied;
     }
 
-    if (!strncmp(Name, "uname(", sizeof("uname(")-1)) {
+    if (NSType == RPMNS_TYPE_UNAME || !strncmp(Name, "uname(", sizeof("uname(")-1)) {
 	static rpmds unameP = NULL;
 	static int oneshot = -1;
 
@@ -703,7 +705,7 @@ retry:
 	goto unsatisfied;
     }
 
-    if (!strncmp(Name, "soname(", sizeof("soname(")-1)) {
+    if (NSType == RPMNS_TYPE_SONAME || !strncmp(Name, "soname(", sizeof("soname(")-1)) {
 	rpmds sonameP = NULL;
 	rpmPRCO PRCO = rpmdsNewPRCO(NULL);
 	char * fn = strcpy(alloca(strlen(Name)+1), Name);

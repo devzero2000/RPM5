@@ -54,6 +54,7 @@
 	- fix: there are no leading zeros in the digit string "0".
 	- rpmns: refactor .arch suffix table from rpmts.c -> rpmns.c.
 	- rpmns: support for Requires: name.arch (#235755).
+	- rpmns: parse namespace(...) probe markers.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
