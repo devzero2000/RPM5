@@ -593,9 +593,8 @@ retry:
     rc = 0;	/* assume dependency is satisfied */
 
     /* Expand macro probe dependencies. */
-    if (Name[0] == '%' && Name[1] == '{' && Name[strlen(Name)-1] == '}') {
+    if (NSType == RPMNS_TYPE_FUNCTION) {
 	xx = rpmExpandNumeric(Name);
-	/* XXX how should macro values be mapped? */
 	rc = (xx ? 0 : 1);
 	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
@@ -604,17 +603,7 @@ retry:
     }
 
     /* Evaluate access(2) probe dependencies. */
-    if (NSType == RPMNS_TYPE_ACCESS || (strlen(Name) > 5 && Name[strlen(Name)-1] == ')'
-     && (	(  strchr("Rr_", Name[0]) != NULL
-		&& strchr("Ww_", Name[1]) != NULL
-		&& strchr("Xx_", Name[2]) != NULL
-		&& Name[3] == '(')
-	  ||	!strncmp(Name, "exists(", sizeof("exists(")-1)
-	  ||	!strncmp(Name, "executable(", sizeof("executable(")-1)
-	  ||	!strncmp(Name, "readable(", sizeof("readable(")-1)
-	  ||	!strncmp(Name, "writable(", sizeof("writable(")-1)
-	)))
-    {
+    if (NSType == RPMNS_TYPE_ACCESS) {
 	rc = rpmioAccess(Name, NULL, X_OK);
 	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
@@ -641,7 +630,7 @@ retry:
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
      * Check those dependencies now.
      */
-    if (NSType == RPMNS_TYPE_RPMLIB || !strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
+    if (NSType == RPMNS_TYPE_RPMLIB) {
 	static rpmds rpmlibP = NULL;
 	static int oneshot = -1;
 
@@ -657,7 +646,7 @@ retry:
 	goto unsatisfied;
     }
 
-    if (NSType == RPMNS_TYPE_CPUINFO || !strncmp(Name, "cpuinfo(", sizeof("cpuinfo(")-1)) {
+    if (NSType == RPMNS_TYPE_CPUINFO) {
 	static rpmds cpuinfoP = NULL;
 	static int oneshot = -1;
 
@@ -673,7 +662,7 @@ retry:
 	goto unsatisfied;
     }
 
-    if (NSType == RPMNS_TYPE_GETCONF || !strncmp(Name, "getconf(", sizeof("getconf(")-1)) {
+    if (NSType == RPMNS_TYPE_GETCONF) {
 	static rpmds getconfP = NULL;
 	static int oneshot = -1;
 
@@ -689,7 +678,7 @@ retry:
 	goto unsatisfied;
     }
 
-    if (NSType == RPMNS_TYPE_UNAME || !strncmp(Name, "uname(", sizeof("uname(")-1)) {
+    if (NSType == RPMNS_TYPE_UNAME) {
 	static rpmds unameP = NULL;
 	static int oneshot = -1;
 
@@ -705,15 +694,12 @@ retry:
 	goto unsatisfied;
     }
 
-    if (NSType == RPMNS_TYPE_SONAME || !strncmp(Name, "soname(", sizeof("soname(")-1)) {
+    if (NSType == RPMNS_TYPE_SONAME) {
 	rpmds sonameP = NULL;
 	rpmPRCO PRCO = rpmdsNewPRCO(NULL);
 	char * fn = strcpy(alloca(strlen(Name)+1), Name);
 	int flags = 0;	/* XXX RPMELF_FLAG_SKIPREQUIRES? */
 	rpmds ds;
-
-	/* Strip the soname(/path/to/dso) wrapper. */
-	fn += sizeof("soname(")-1;
 
 	/* XXX Only absolute paths for now. */
 	if (*fn != '/')

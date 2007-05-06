@@ -26,7 +26,7 @@ typedef enum nsType_e {
     RPMNS_TYPE_STRING	=  (1 <<  0),	/*!< unclassified string */
     RPMNS_TYPE_PATH	=  (1 <<  1),	/*!< /bin */
     RPMNS_TYPE_DSO	=  (1 <<  2),	/*!< libc.so.6 */
-    RPMNS_TYPE_MACRO	=  (1 <<  3),	/*!< %{foo} */
+    RPMNS_TYPE_FUNCTION	=  (1 <<  3),	/*!< %{foo} */
     RPMNS_TYPE_ARCH	=  (1 <<  4),	/*!< foo.arch */
     RPMNS_TYPE_VERSION	=  (1 <<  5),	/*!< foo-1.2.3-bar */
     RPMNS_TYPE_COMPOUND	=  (1 <<  6),	/*!< foo.bar */

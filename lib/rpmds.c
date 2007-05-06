@@ -356,17 +356,13 @@ const char * rpmdsNewN(rpmds ds)
 {
     rpmns ns = &ds->ns;
     const char * Name = ds->N[ds->i];;
-    int_32 Flags = rpmdsFlags(ds);
     int xx;
 
     memset(ns, 0, sizeof(*ns));
-    if (Name[0] == '%' && (Flags & RPMSENSE_INTERP))
-	ns->N = ns->str = rpmExpand(Name, NULL);
-    else
-	xx = rpmnsParse(Name, ns);
-    Name = ns->N;
+    xx = rpmnsParse(Name, ns);
+
 /*@-usereleased -compdef@*/ /* FIX: correct annotations for ds->ns shadow */
-    return Name;
+    return ns->N;
 /*@-usereleased -compdef@*/
 }
 /*@=mods@*/

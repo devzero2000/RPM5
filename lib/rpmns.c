@@ -116,9 +116,9 @@ nsType rpmnsClassify(const char * str)
 
     if (*str == '/')
 	return RPMNS_TYPE_PATH;
-    if (*str == '%')
-	return RPMNS_TYPE_MACRO;
     s = str + strlen(str);
+    if (str[0] == '%' && str[1] == '{' && s[-1] == '}')
+	return RPMNS_TYPE_FUNCTION;
     if ((s - str) > 3 && s[-3] == '.' && s[-2] == 's' && s[-1] == 'o')
 	return RPMNS_TYPE_DSO;
     Type = rpmnsProbe(str);
@@ -144,7 +144,7 @@ nsType rpmnsClassify(const char * str)
 int rpmnsParse(const char * str, rpmns ns)
 {
     char *t;
-    ns->str = t = xstrdup(str);
+    ns->str = t = rpmExpand(str, NULL);
     ns->Type = rpmnsClassify(ns->str);
     switch (ns->Type) {
     case RPMNS_TYPE_ARCH:
