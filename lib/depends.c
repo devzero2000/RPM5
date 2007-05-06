@@ -7,6 +7,7 @@
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
+#include <ugid.h>		/* XXX user()/group() probes */
 
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
 #include "rpmdb.h"
@@ -598,7 +599,39 @@ retry:
 	rc = (xx ? 0 : 1);
 	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
-	rpmdsNotify(dep, _("(macro probe)"), rc);
+	rpmdsNotify(dep, _("(function probe)"), rc);
+	goto exit;
+    }
+
+    /* Evaluate user/group lookup probes. */
+    if (NSType == RPMNS_TYPE_USER) {
+	const char *s;
+	uid_t uid = 0;
+	for (s = Name; *s && xisdigit(*s); s++);
+
+	if (*s)
+	    xx = unameToUid(Name, &uid);
+	else {
+	    uid = strtol(Name, NULL, 10);
+	    xx = (uidToUname(uid) ? 0 : -1);
+	}
+	rc = (xx >= 0 ? 0 : 1);
+	rpmdsNotify(dep, _("(user lookup)"), rc);
+	goto exit;
+    }
+    if (NSType == RPMNS_TYPE_GROUP) {
+	const char *s;
+	gid_t gid = 0;
+	for (s = Name; *s && xisdigit(*s); s++);
+
+	if (*s)
+	    xx = gnameToGid(Name, &gid);
+	else {
+	    gid = strtol(Name, NULL, 10);
+	    xx = (gidToGname(gid) ? 0 : -1);
+	}
+	rc = (xx >= 0 ? 0 : 1);
+	rpmdsNotify(dep, _("(group lookup)"), rc);
 	goto exit;
     }
 

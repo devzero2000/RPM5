@@ -4,6 +4,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmmacro.h>
 
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
@@ -59,6 +60,8 @@ static struct _rpmnsProbes_s {
     { "getconf",	RPMNS_TYPE_GETCONF },
     { "uname",		RPMNS_TYPE_UNAME },
     { "soname",		RPMNS_TYPE_SONAME },
+    { "user",		RPMNS_TYPE_USER },
+    { "group",		RPMNS_TYPE_GROUP },
     { "exists",		RPMNS_TYPE_ACCESS },
     { "executable",	RPMNS_TYPE_ACCESS },
     { "readable",	RPMNS_TYPE_ACCESS },

@@ -39,6 +39,8 @@ typedef enum nsType_e {
     RPMNS_TYPE_SONAME	=  (1 << 13),	/*!< soname(bar) */
     RPMNS_TYPE_ACCESS	=  (1 << 14),	/*!< exists(bar) */
     RPMNS_TYPE_TAG	=  (1 << 15),	/*!< Tag(bar) */
+    RPMNS_TYPE_USER	=  (1 << 16),	/*!< user(bar) */
+    RPMNS_TYPE_GROUP	=  (1 << 17),	/*!< group(bar) */
 } nsType;
 
 #if defined(_RPMNS_INTERNAL)
