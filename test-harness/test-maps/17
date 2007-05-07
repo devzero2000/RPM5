@@ -1,0 +1,29 @@
+                                           DB                RP
+T1:
+	Install works-1-1                      works-1-1
+------- BEGIN -----------   
+T2:
+	Install works-1-2                      works-1-2---------works-1-1
+	Install broken-1-1                     broken-1-1
+	Erase   works-1-1
+T3:
+	Install works-2-0                      works-2-0---------works-1-2--\ 
+                                           works-1-1--------------------/
+	Install broken-1-2                     broken-1-2--------broken-1-1 
+       <<< FAIL %pre >>> 
+
+RB PARTIAL:
+	Install works-1-2                      works-1-2---------works-1-1
+	Install broken-1-1                     broken-1-1
+	Erase   works-2-0
+    Erase   broken-1-2 
+RB:
+	Install works-1-1                      works-1-1
+	Erase   works-1-2
+	Erase   broken-1-1
+
+RESULT:
+
+    works-1-1
+
+works 1-2 needs fblinks wiped when re-installed.

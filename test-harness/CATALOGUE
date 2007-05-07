@@ -77,3 +77,14 @@ TEST #	TYPE	COMMENTS
 				a trigger on t2.  Then upgrade to t1-1-2 and t2-1-2.  Nothing is
 				broken only cheking trigger instance counts.  This by the way
 				tests a sucessfull upgrade with multiple te's.
+26		ARB		
+				Install works-1-1 for setup.  Next upgrade to works-1-2.  
+                Finally upgrade to works-2-0, but fail in %pre.
+27		ARB
+				Install works-1-1 for setup.  Next upgrade to works-1-2.  
+                Finally upgrade to works-2-0, but fail in %post.
+28		ARB     Test 17, but we fail in %post of broken-1-2.
+29		RB		Test 25, but we don't fail installing works-2-0, and just 
+				manually rollback.
+30		RB		Test 17, but we don't fail installing broken-1-2, and just
+				manually rollback.
