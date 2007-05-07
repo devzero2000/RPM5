@@ -683,7 +683,7 @@ retry:
 		continue;
 	    if (strncmp(fs[i], Name, fslen))
 		continue;
-	    if (Name[fslen] != '/' && Name[fslen] != '\0')
+	    if (fslen > 1 && Name[fslen] != '/' && Name[fslen] != '\0')
 		continue;
 	    if (fslen < longest)
 		continue;
