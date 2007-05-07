@@ -176,7 +176,15 @@ int rpmnsParse(const char * str, rpmns ns)
 	t[strlen(t)-1] = '\0';
 	ns->A = NULL;
 	break;
+    case RPMNS_TYPE_UNKNOWN:
+    case RPMNS_TYPE_STRING:
+    case RPMNS_TYPE_PATH:
+    case RPMNS_TYPE_DSO:
+    case RPMNS_TYPE_FUNCTION:
+    case RPMNS_TYPE_VERSION:
+    case RPMNS_TYPE_COMPOUND:
     case RPMNS_TYPE_NAMESPACE:
+    case RPMNS_TYPE_TAG:
     default:
 	ns->NS = NULL;
 	ns->N = ns->str;
