@@ -11,6 +11,7 @@
 #include "rpmds.h"		/* XXX ts->suggests, +foo -foo =foo args */
 #endif
 
+#include "rpmte.h"		/* XXX rpmtsPrint() */
 #define	_RPMTS_INTERNAL		/* XXX ts->goal, ts->suggests */
 #include "rpmts.h"
 

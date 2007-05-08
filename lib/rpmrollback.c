@@ -422,6 +422,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     int _unsafe_rollbacks = 0;
     rpmtransFlags transFlags = ia->transFlags;
     rpmdepFlags depFlags = ia->depFlags;
+    int xx;
 
     if (argv != NULL && *argv != NULL) {
 	rc = -1;
@@ -627,7 +628,7 @@ assert(ip->done || ia->no_rollback_links);
 	tid = (time_t)thistid;
 	rpmMessage(RPMMESS_NORMAL,
 		_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
-			numAdded, numRemoved, ctime(&tid), tid);
+			numAdded, numRemoved, ctime(&tid), thistid);
 
 	rc = (ia->rbCheck ? (*ia->rbCheck) (ts) : 0);
 	if (rc != 0)
@@ -639,6 +640,9 @@ assert(ip->done || ia->no_rollback_links);
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
+
+	/* Print the transaction set. */
+	xx = rpmtsPrint(ts, stdout);
 
 	rc = (ia->rbRun
 	    ? (*ia->rbRun)(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE))

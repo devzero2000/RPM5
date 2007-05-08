@@ -58,6 +58,7 @@
 	- rpmns: macro expand all dependency names.
 	- rpmns: add user/group lookup probes.
 	- rpmns: add mounted/diskspace lookup probes.
+	- rollback: rewrite and simplify.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

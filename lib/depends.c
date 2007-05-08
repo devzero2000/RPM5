@@ -2077,7 +2077,7 @@ rescan:
 			loopcheck);
 
 	/* Do autorollback goal since we could not sort this transaction properly. */
-	(void) rpmtsDoARBGoal(ts);
+	(void) rpmtsRollback(ts, RPMPROB_FILTER_NONE, 0, NULL);
 
 	return loopcheck;
     }
@@ -2303,7 +2303,7 @@ exit:
      /* On failed dependencies, perform the autorollback goal (if any). */
     {	rpmps ps = rpmtsProblems(ts);
 	if (rc || rpmpsNumProblems(ps) > 0)
-	    (void) rpmtsDoARBGoal(ts);
+	    (void) rpmtsRollback(ts, RPMPROB_FILTER_NONE, 0, NULL);
 	ps = rpmpsFree(ps);
     }
 

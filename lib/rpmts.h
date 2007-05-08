@@ -343,14 +343,18 @@ int rpmrbRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/**
- * Function to perform autorollback goal from rpmtsCheck() and rpmtsOrder().
- * @param failedTransaction	Failed transaction.
- * @return			RPMRC_OK, or RPMRC_FAIL
+/** \ingroup rpmts
+ * Rollback a failed transaction.
+ * @param rbts		failed transaction set
+ * @param ignoreSet     problems to ignore
+ * @param running       partial transaction?
+ * @param rbte		failed transaction element
+ * @return		RPMRC_OK, or RPMRC_FAIL
  */
-rpmRC rpmtsDoARBGoal(rpmts failedTransaction)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/;
+rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet,
+		int running, rpmte rbte)
+    /*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+    /*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Unreference a transaction instance.
@@ -1067,6 +1071,38 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+#if !defined(SWIG)
+#if defined(_RPMTS_INTERNAL)
+/**
+ * Print current transaction set contents.
+ * @param ts		transaction set
+ * @param fp		file handle (NULL uses stderr)
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int rpmtsPrint(/*@null@*/ rpmts ts, /*@null@*/ FILE * fp)
+	/*@globals fileSystem @*/
+	/*@modifies ts, *fp, fileSystem @*/
+{
+    int tid = rpmtsGetTid(ts);
+    time_t ttid = tid;
+    rpmtsi tsi;
+    rpmte te;
+
+    if (fp == NULL)
+	fp = stderr;
+
+    fprintf(fp, _("=== Transaction at %-24.24s (0x%08x):\n"), ctime(&ttid),tid);
+    tsi = rpmtsiInit(ts);
+    while ((te = rpmtsiNext(tsi, 0)) != NULL)
+        fprintf(fp, "t%s> %s\n", (rpmteType(te) == TR_ADDED ? "I" : "E"),
+		rpmteNEVRA(te));
+    tsi = rpmtsiFree(tsi);
+    return 0;
+}
+#endif	/* defined(_RPMTS_INTERNAL) */
+#endif	/* !defined(SWIG) */
 
 #ifdef __cplusplus
 }

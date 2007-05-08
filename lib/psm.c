@@ -1334,6 +1334,68 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
     return rpmpsmLink(psm, msg);
 }
 
+/**
+ * Add per-transaction data to install header.
+ * @param ts		transaction set
+ * @param te		transaction element
+ * @param fi		file info set
+ * @return		0 always
+ */
+static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
+	/*@modifies fi @*/
+{
+    static const char * chain_end = RPMTE_CHAIN_END;
+    uint_32 tscolor = rpmtsColor(ts);
+    uint_32 tecolor = rpmteColor(te);
+    int_32 installTime = (int_32) time(NULL);
+    int fc = rpmfiFC(fi);
+    const char * origin;
+    int ac;
+    int xx;
+
+assert(fi->h);
+    if (fi->fstates != NULL && fc > 0)
+	xx = headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
+				fi->fstates, fc);
+
+    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
+			&installTime, 1);
+
+    xx = headerAddEntry(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
+			&tscolor, 1);
+
+    /* XXX FIXME: add preferred color at install. */
+
+    xx = headerAddEntry(fi->h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE,
+				&tecolor, 1);
+
+    /* Add the header's origin (i.e. URL) */
+    origin = headerGetOrigin(fi->h);
+    if (origin != NULL)
+	xx = headerAddEntry(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
+				origin, 1);
+
+    /* Add backward links to header upgrade chain. */
+    ac = argvCount(te->blink.NEVRA);
+    if (ac > 0)
+	xx = headerAddEntry(fi->h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+			argvData(te->blink.NEVRA), ac);
+    
+    ac = argvCount(te->blink.Pkgid);
+    if (ac > 0) 
+	xx = headerAddEntry(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
+			argvData(te->blink.Pkgid), ac);
+    else     /* XXX Add an explicit chain terminator on 1st install. */
+	xx = headerAddEntry(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
+			&chain_end, 1);
+    ac = argvCount(te->blink.Hdrid);
+    if (ac > 0)
+	xx = headerAddEntry(fi->h, RPMTAG_BLINKHDRID, RPM_STRING_ARRAY_TYPE,
+			argvData(te->blink.Hdrid), ac);
+
+    return 0;
+}
+
 static void * rpmpsmThread(void * arg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies arg, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1403,6 +1465,9 @@ assert(psm->te != NULL);
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int fc = rpmfiFC(fi);
 	    const char * hdrid;
+
+	    /* Add per-transaction data to install header. */
+	    xx = populateInstallHeader(ts, psm->te, fi);
 
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
@@ -1834,54 +1899,10 @@ assert(psm->te != NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    static const char * chain_end = RPMTE_CHAIN_END;
-	    uint_32 tecolor = rpmteColor(psm->te);
-	    int_32 installTime = (int_32) time(NULL);
-	    int fc = rpmfiFC(fi);
-	    const char * origin;
-	    int ac;
-
-	    if (fi->h == NULL) break;	/* XXX can't happen */
-	    if (fi->fstates != NULL && fc > 0)
-		xx = hae(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
-				fi->fstates, fc);
-
-	    xx = hae(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
-				&installTime, 1);
-
-	    xx = hae(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
-				&tscolor, 1);
-
-	    xx = hae(fi->h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE,
-				&tecolor, 1);
-
-	    /* Add the header's origin (i.e. URL) */
-	    origin = headerGetOrigin(fi->h);
-	    if (origin != NULL)
-		xx = hae(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
-				origin, 1);
-	
-	    /* Add back links to upgrade chain. */
-assert(psm->te != NULL);
-	    ac = argvCount(psm->te->blink.NEVRA);
-	    if (ac > 0)
-		xx = hae(fi->h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->blink.NEVRA), ac);
-	    ac = argvCount(psm->te->blink.Pkgid);
-	    if (ac > 0)
-		xx = hae(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->blink.Pkgid), ac);
-	    else	/* XXX Add a marker for end-of-chain. */
-		xx = hae(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
-				&chain_end, 1);
-	    ac = argvCount(psm->te->blink.Hdrid);
-	    if (ac > 0)
-		xx = hae(fi->h, RPMTAG_BLINKHDRID, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->blink.Hdrid), ac);
 
 	    /*
-	     * If this package has already been installed, remove it from
-	     * the database before adding the new one.
+	     * If this header has already been installed, remove it from
+	     * the database before adding the new header.
 	     */
 	    if (fi->record && !(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
 		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
@@ -2175,7 +2196,6 @@ assert(psm->te != NULL);
 	break;
     case PSM_RPMDB_REMOVE:
     {	
-
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
@@ -2184,6 +2204,9 @@ assert(psm->te != NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 
 	if (rc != RPMRC_OK) break;
+
+	/* Forget the offset of a successfully removed header. */
+	psm->te->u.removed.dboffset = 0;
 
     }	break;
 
