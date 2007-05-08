@@ -621,6 +621,9 @@ static int prepFetch(Spec spec)
 	    goto bottom;
 	if (errno != ENOENT) {
 	    ec++;
+	    rpmError(RPMERR_BADFILENAME, _("Missing %s%d %s: %s\n"),
+		((sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch"),
+		sp->num, sp->source, strerror(ENOENT));
 	    goto bottom;
 	}
 
