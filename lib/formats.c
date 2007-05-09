@@ -1367,7 +1367,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	const char * msgid;
 
 	{   const char * tn = tagName(tag);
-	    const char * n;
+	    const char * n = NULL;
 	    char * mk;
 	    size_t nb = sizeof("()");
 	    int xx = headerNVR(h, &n, NULL, NULL);
