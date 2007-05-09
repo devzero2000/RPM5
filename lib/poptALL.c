@@ -347,10 +347,13 @@ struct poptOption rpmcliAllPoptTable[] = {
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
         NULL, NULL },
+
+#if defined(POPT_ARGFLAG_RANDOM)
  { "rsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,
 	&_rsegfault, 0, NULL, NULL },
  { "wsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,
 	&_wsegfault, 0, NULL, NULL },
+#endif
 
  { "predefine", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PREDEFINE,
 	N_("predefine MACRO with value EXPR"),
