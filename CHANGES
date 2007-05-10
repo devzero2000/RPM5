@@ -61,6 +61,7 @@
 	- rollback: rewrite and simplify.
 	- yaml: expose embedded syck parser in rpmio.
 	- fix: don't segfault on header without RPMTAG_NAME (#239557).
+	- upgrade to file-4.20 internal.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
