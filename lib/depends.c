@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include "rpmio_internal.h"	/* XXX PGPHASHALGO_MD5 */
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
@@ -714,6 +715,34 @@ retry:
 	    else rc = 1;
 	}
 	rpmdsNotify(dep, _("(diskspace probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_DIGEST) {
+	const char * EVR = rpmdsEVR(dep);
+	FD_t fd = Fopen(Name, "r");
+
+	rc = 1;		/* XXX assume failure */
+	if (fd && !Ferror(fd)) {
+	    pgpHashAlgo digestHashAlgo = PGPHASHALGO_MD5;
+	    DIGEST_CTX ctx = rpmDigestInit(digestHashAlgo, RPMDIGEST_NONE);
+	    const char * digest = NULL;
+	    size_t digestlen = 0;
+	    int asAscii = 1;
+	    size_t nbuf = 8 * BUFSIZ;
+	    char * buf = alloca(nbuf);
+	    size_t nb;
+
+	    while ((nb = Fread(buf, sizeof(buf[0]), nbuf, fd)) > 0)
+		rpmDigestUpdate(ctx, buf, nb);
+	    Fclose(fd);	fd = NULL;
+	    rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
+
+	    xx = (EVR && *EVR && digest && *digest) ? strcmp(EVR, digest) : -1;
+	    /* XXX only equality makes sense for digest compares */
+	    if ((Flags & RPMSENSE_EQUAL) && xx == 0) rc = 0;
+	}
+	rpmdsNotify(dep, _("(digest probe)"), rc);
 	goto exit;
     }
 
@@ -2076,8 +2105,10 @@ rescan:
 	rpmMessage(RPMMESS_ERROR, _("rpmtsOrder failed, %d elements remain\n"),
 			loopcheck);
 
+#ifdef	NOTYET
 	/* Do autorollback goal since we could not sort this transaction properly. */
 	(void) rpmtsRollback(ts, RPMPROB_FILTER_NONE, 0, NULL);
+#endif
 
 	return loopcheck;
     }
@@ -2300,12 +2331,14 @@ exit:
 	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
     /*@=branchstate@*/
 
+#ifdef	NOTYET
      /* On failed dependencies, perform the autorollback goal (if any). */
     {	rpmps ps = rpmtsProblems(ts);
 	if (rc || rpmpsNumProblems(ps) > 0)
 	    (void) rpmtsRollback(ts, RPMPROB_FILTER_NONE, 0, NULL);
 	ps = rpmpsFree(ps);
     }
+#endif
 
     return rc;
 }

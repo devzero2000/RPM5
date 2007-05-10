@@ -63,6 +63,7 @@
 	- fix: don't segfault on header without RPMTAG_NAME (#239557).
 	- upgrade to file-4.20 internal.
 	- rollback: re-add blink's and installtid's to repackaged headers.
+	- rpmns: add digest probe.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
