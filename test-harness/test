@@ -435,9 +435,7 @@ run_rb_upgrade_install_test() {
 	#
 	# Get the time so we can set the time to rollback to.  This is used
 	# by regular rollback tests.
-	sleep 1
 	rb_goal=$(date "+%m/%d/%Y %H:%M:%S")
-	sleep 2
 
 	#
 	# Now install the set of RPMS.  We assume that this transaction
@@ -461,7 +459,7 @@ run_rb_upgrade_install_test() {
 		--define "${TMPPATH_OPT}" \
 		$RPMS
 	fi
-	sleep 4			# Make sure we have seperate TID's
+	sleep 1			# Make sure we have seperate TID's
 
 	#
 	# Now rollback the transaction
@@ -479,7 +477,6 @@ run_rb_upgrade_install_test() {
 		--define "${TMPPATH_OPT}" \
 		--rollback "${rb_goal}"
 	rc=$?
-#	sleep 2
 	
 	return $rc
 }
@@ -493,7 +490,6 @@ run_rb_multitran_test() {
 	# Get the time so we can set the time to rollback to.  This is used
 	# by regular rollback tests.
 	rb_goal=$(date "+%m/%d/%Y %H:%M:%S")
-	sleep 2
 
 	for tran in $(seq 0 9)
 	do
@@ -543,7 +539,6 @@ run_rb_multitran_test() {
 		--define "${TMPPATH_OPT}" \
 		--rollback "${rb_goal}"
 	rc=$?
-#	sleep 2
 
 	return $rc
 }
@@ -593,7 +588,6 @@ run_arb_upgrade_install_test() {
 		--define "${TMPPATH_OPT}" \
 		$RPMS
 	rc=$?
-#	sleep 2
 	return $rc
 }
 
@@ -601,11 +595,6 @@ run_arb_multitran_test() {
 	local arbgoal
 	local rc=0
 	local tran
-
-	#
-	# Sleep a couple of seconds to allow for the clock to give us
-	# a new TID
-	sleep 2
 
 	#
 	# Record date
@@ -845,7 +834,6 @@ setup_test() {
 			echo "*** TEST SETUP FAILED ***"
 			return 1
 		fi
-#		sleep 2
 	fi
 
 
@@ -862,6 +850,11 @@ setup_test() {
 	# trying to test an install not an upgrade.
 	echo "INFO:  Cleaning repackage dir:  ${RPDIR}"
 	rm "${RPDIR}/"*.rpm 2> /dev/null
+
+	#
+	# Sleep for at least one second and that should prevent setup packages 
+	# TIDS matching the rollback tid:
+	sleep 1
 
 	return 0
 }

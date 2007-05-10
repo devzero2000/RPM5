@@ -7,7 +7,7 @@ T2:
 	Erase   works-1-1
 T3:
 	Install works-2-0                      works-2-0---------works-1-2--\ 
-      <<< FAIL %pre >>>                    works-1-1--/
+      <<< FAIL %pre >>>                                      works-1-1--/
 RB PARTIAL:
 	Install works-1-2                      works-1-2---------works-1-1
 	Erase   works-2-0
@@ -19,4 +19,3 @@ RESULT:
 
     works-1-1
 
-works 1-2 needs fblinks wiped when re-installed.
