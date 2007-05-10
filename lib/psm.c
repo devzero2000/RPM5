@@ -1335,7 +1335,122 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 }
 
 /**
- * Add per-transaction data to install header.
+ * Load a transaction id from a header.
+ * @param h		header
+ * @param tag		tag to load
+ * @return		tag value (0 on failure)
+ */
+static uint_32 hLoadTID(Header h, int_32 tag)
+	/*@modifies th @*/
+{
+    uint_32 val = 0;
+    int_32 typ = 0;
+    void * ptr = NULL;
+    int_32 cnt = 0;
+
+    if (headerGetEntry(h, tag, &typ, &ptr, &cnt)
+     && typ == RPM_INT32_TYPE && ptr != NULL && cnt == 1)
+	val = *(uint_32 *)ptr;
+    ptr = headerFreeData(ptr, typ);
+    return val;
+}
+
+/**
+ * Copy a tag from a source to a target header.
+ * @param sh		source header
+ * @param th		target header
+ * @param tag		tag to copy
+ * @return		0 always
+ */
+static int hCopyTag(Header sh, Header th, int_32 tag)
+	/*@modifies th @*/
+{
+    int_32 typ = 0;
+    void * ptr = NULL;
+    int_32 cnt = 0;
+    int xx;
+
+    if (headerGetEntry(sh, tag, &typ, &ptr, &cnt) && cnt > 0)
+	xx = headerAddEntry(th, tag, typ, ptr, cnt);
+    ptr = headerFreeData(ptr, typ);
+    return 0;
+}
+
+/**
+ * Save backward link(s) of an upgrade chain into a header.
+ * @param h		header
+ * @param *blink	backward links
+ * @return		0 always
+ */
+static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
+	/*@modifies h @*/
+{
+    static const char * chain_end = RPMTE_CHAIN_END;
+    int ac;
+    int xx;
+
+    /* Save backward links into header upgrade chain. */
+    ac = argvCount(blink->NEVRA);
+    if (ac > 0)
+	xx = headerAddEntry(h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+			argvData(blink->NEVRA), ac);
+    
+    ac = argvCount(blink->Pkgid);
+    if (ac > 0) 
+	xx = headerAddEntry(h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
+			argvData(blink->Pkgid), ac);
+    else     /* XXX Add an explicit chain terminator on 1st install. */
+	xx = headerAddEntry(h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
+			&chain_end, 1);
+    ac = argvCount(blink->Hdrid);
+    if (ac > 0)
+	xx = headerAddEntry(h, RPMTAG_BLINKHDRID, RPM_STRING_ARRAY_TYPE,
+			argvData(blink->Hdrid), ac);
+
+    return 0;
+}
+
+/**
+ * Save forward link(s) of an upgrade chain into a header.
+ * @param h		header
+ * @param *flink	forward links
+ * @return		0 always
+ */
+static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
+	/*@modifies h @*/
+{
+#ifdef	NOTYET
+    static const char * chain_end = RPMTE_CHAIN_END;
+#endif
+    int ac;
+    int xx;
+
+    /* Save backward links into header upgrade chain. */
+    ac = argvCount(flink->NEVRA);
+    if (ac > 0)
+	xx = headerAddEntry(h, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+			argvData(flink->NEVRA), ac);
+    
+    ac = argvCount(flink->Pkgid);
+    if (ac > 0) 
+	xx = headerAddEntry(h, RPMTAG_FLINKPKGID, RPM_STRING_ARRAY_TYPE,
+			argvData(flink->Pkgid), ac);
+#ifdef	NOTYET	/* XXX is an explicit flink terminator needed? */
+    else     /* XXX Add an explicit chain terminator on 1st install. */
+	xx = headerAddEntry(h, RPMTAG_FLINKPKGID, RPM_STRING_ARRAY_TYPE,
+			&chain_end, 1);
+#endif
+
+    ac = argvCount(flink->Hdrid);
+    if (ac > 0)
+	xx = headerAddEntry(h, RPMTAG_FLINKHDRID, RPM_STRING_ARRAY_TYPE,
+			argvData(flink->Hdrid), ac);
+
+    return 0;
+}
+
+/**
+ * Add per-transaction data to an install header.
  * @param ts		transaction set
  * @param te		transaction element
  * @param fi		file info set
@@ -1344,13 +1459,11 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
 	/*@modifies fi @*/
 {
-    static const char * chain_end = RPMTE_CHAIN_END;
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 tecolor = rpmteColor(te);
     int_32 installTime = (int_32) time(NULL);
     int fc = rpmfiFC(fi);
     const char * origin;
-    int ac;
     int xx;
 
 assert(fi->h);
@@ -1375,23 +1488,9 @@ assert(fi->h);
 	xx = headerAddEntry(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
 				origin, 1);
 
-    /* Add backward links to header upgrade chain. */
-    ac = argvCount(te->blink.NEVRA);
-    if (ac > 0)
-	xx = headerAddEntry(fi->h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-			argvData(te->blink.NEVRA), ac);
-    
-    ac = argvCount(te->blink.Pkgid);
-    if (ac > 0) 
-	xx = headerAddEntry(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
-			argvData(te->blink.Pkgid), ac);
-    else     /* XXX Add an explicit chain terminator on 1st install. */
-	xx = headerAddEntry(fi->h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
-			&chain_end, 1);
-    ac = argvCount(te->blink.Hdrid);
-    if (ac > 0)
-	xx = headerAddEntry(fi->h, RPMTAG_BLINKHDRID, RPM_STRING_ARRAY_TYPE,
-			argvData(te->blink.Hdrid), ac);
+    /* XXX Don't clobber forward/backward upgrade chain on rollbacks */
+    if (rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK)
+	xx = hSaveBlinks(fi->h, &te->blink);
 
     return 0;
 }
@@ -1725,7 +1824,6 @@ psm->te->h = headerLink(fi->h);
 	    /* Add remove transaction id to header. */
 	    if (psm->oh != NULL)
 	    {	int_32 tid = rpmtsGetTid(ts);
-		int ac;
 
 		xx = hae(psm->oh, RPMTAG_REMOVETID, RPM_INT32_TYPE,
 				&tid, 1);
@@ -1735,20 +1833,14 @@ psm->te->h = headerLink(fi->h);
 		    xx = hae(psm->oh, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
 				origin, 1);
 
-assert(psm->te != NULL);
-		ac = argvCount(psm->te->flink.NEVRA);
-		if (ac > 0)
-		    xx = hae(psm->oh, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->flink.NEVRA), ac);
-		ac = argvCount(psm->te->flink.Pkgid);
-		if (ac > 0)
-		    xx = hae(psm->oh, RPMTAG_FLINKPKGID, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->flink.Pkgid), ac);
-		ac = argvCount(psm->te->flink.Hdrid);
-		if (ac > 0)
-		    xx = hae(psm->oh, RPMTAG_FLINKHDRID, RPM_STRING_ARRAY_TYPE,
-				argvData(psm->te->flink.Hdrid), ac);
+		/* Copy upgrade chain link tags. */
+		xx = hCopyTag(fi->h, psm->oh, RPMTAG_INSTALLTID);
+		xx = hCopyTag(fi->h, psm->oh, RPMTAG_BLINKPKGID);
+		xx = hCopyTag(fi->h, psm->oh, RPMTAG_BLINKHDRID);
+		xx = hCopyTag(fi->h, psm->oh, RPMTAG_BLINKNEVRA);
 
+assert(psm->te != NULL);
+		xx = hSaveFlinks(psm->oh, &psm->te->flink);
 	    }
 
 	    /* Write the metadata section into the package. */
@@ -2170,25 +2262,23 @@ assert(psm->mi == NULL);
 	if (fi->h == NULL)	break;	/* XXX can't happen */
 
 	/* Add header to db, doing header check if requested */
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
-	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
-				ts, headerCheck);
-	else
-	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
-				NULL, NULL);
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
+	/* XXX rollback headers propagate the previous transaction id. */
+	{   uint_32 tid = ((rpmtsType(ts) == RPMTRANS_TYPE_ROLLBACK)
+		? hLoadTID(fi->h, RPMTAG_INSTALLTID) : rpmtsGetTid(ts));
+	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
+	    if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
+		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, ts, headerCheck);
+	    else
+		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, NULL, NULL);
+	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
+	}
 
 	if (rc != RPMRC_OK) break;
 
 assert(psm->te != NULL);
 	/* Mark non-rollback elements as installed. */
-	if (
-	    rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK &&
-	    rpmtsType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
-	{
+	if (rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK)
 	    psm->te->installed = 1;
-	}
 
 	/* Set the database instance for (possible) rollbacks. */
 	rpmteSetDBInstance(psm->te, headerGetInstance(fi->h));
