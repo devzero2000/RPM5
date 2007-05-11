@@ -666,6 +666,27 @@ assert(ip->done || ia->no_rollback_links);
 	    }
 	}
 
+	/* The rpmdb has changed, so reload installed package chains. */
+	itids = IDTXfree(itids);
+	itids = IDTXload(ts, RPMTAG_INSTALLTID, ia->rbtid);
+	if (itids != NULL) {
+	    ip = itids->idt;
+	    niids = itids->nidt;
+	} else {
+	    ip = NULL;
+	    niids = 0;
+	}
+
+	/* Re-position the iterator at the current install tid. */
+	while (ip != NULL && ip->val.u32 == thistid) {
+	    /* Go to the next header in the rpmdb */
+	    niids--;
+	    if (niids > 0)
+		ip++;
+	    else
+		ip = NULL;
+	}
+
     } while (1);
 
 exit:
