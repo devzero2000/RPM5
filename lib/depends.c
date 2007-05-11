@@ -746,6 +746,17 @@ retry:
 	goto exit;
     }
 
+    if (NSType == RPMNS_TYPE_GNUPG) {
+	static const char gnupg_pre[] = "%(%{__gpg} -qv ";
+	static const char gnupg_post[] = " 2>/dev/null; echo $?)";
+	const char * t = rpmExpand(gnupg_pre, Name, gnupg_post, NULL);
+
+	rc = (t && t[0] == '0') ? 0 : 1;
+	t = _free(t);
+	rpmdsNotify(dep, _("(gnupg probe)"), rc);
+	goto exit;
+    }
+
     /* Search system configured provides. */
     if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
 #ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */

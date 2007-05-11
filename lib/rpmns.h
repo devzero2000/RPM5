@@ -43,7 +43,8 @@ typedef enum nsType_e {
     RPMNS_TYPE_GROUP	=  (1 << 17),	/*!< group(bar) */
     RPMNS_TYPE_MOUNTED	=  (1 << 18),	/*!< mounted(/path) */
     RPMNS_TYPE_DISKSPACE=  (1 << 19),	/*!< diskspace(/path) */
-    RPMNS_TYPE_DIGEST	=  (1 << 20),	/*!< digest(md5:/path) = hex*/
+    RPMNS_TYPE_DIGEST	=  (1 << 20),	/*!< digest(md5:/path) = hex */
+    RPMNS_TYPE_GNUPG	=  (1 << 21),	/*!< gnupg(/path/file.asc) */
 } nsType;
 
 #if defined(_RPMNS_INTERNAL)

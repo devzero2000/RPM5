@@ -65,6 +65,7 @@ static struct _rpmnsProbes_s {
     { "mounted",	RPMNS_TYPE_MOUNTED },
     { "diskspace",	RPMNS_TYPE_DISKSPACE },
     { "digest",		RPMNS_TYPE_DIGEST },
+    { "gnupg",		RPMNS_TYPE_GNUPG },
     { "exists",		RPMNS_TYPE_ACCESS },
     { "executable",	RPMNS_TYPE_ACCESS },
     { "readable",	RPMNS_TYPE_ACCESS },
@@ -171,6 +172,7 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_MOUNTED:
     case RPMNS_TYPE_DISKSPACE:
     case RPMNS_TYPE_DIGEST:
+    case RPMNS_TYPE_GNUPG:
 	ns->NS = ns->str;
 	if ((t = strrchr(t, '(')) != NULL)
 	    *t++ = '\0';

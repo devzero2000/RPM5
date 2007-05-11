@@ -65,6 +65,7 @@
 	- rollback: re-add blink's and installtid's to repackaged headers.
 	- rpmns: add digest probe.
 	- rpmevr: remove lib/rpmvercmp.c, use rpmEVRcmp() instead.
+	- rpmns: add gnupg probe.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
