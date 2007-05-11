@@ -138,7 +138,7 @@ static int compare_values(const char *a, const char *b)
 	return 1;
     else if (!a && b)
 	return -1;
-    return rpmEVRcmp(a, b);
+    return rpmvercmp(a, b);
 }
 
 int rpmEVRcompare(const EVR_t a, const EVR_t b)
@@ -153,3 +153,5 @@ int rpmEVRcompare(const EVR_t a, const EVR_t b)
 	rc = compare_values(a->R, b->R);
     return rc;
 }
+
+int (*rpmvercmp) (const char *a, const char *b) = rpmEVRcmp;

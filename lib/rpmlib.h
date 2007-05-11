@@ -1055,20 +1055,9 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERPOSTUN \
   )
 
-#if !defined(SWIG)
-/** \ingroup rpmds
- * Segmented string compare.
- * @param a		1st string
- * @param b		2nd string
- * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
- */
-extern int (*rpmvercmp)(const char *a, const char *b)
-	/*@*/;
-extern int _rpmvercmp(const char *a, const char *b)
-	/*@*/;
-
 /*@}*/
 
+#if !defined(SWIG)
 /**
  * Return tag name from value.
  * @param tag		tag value

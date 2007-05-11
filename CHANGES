@@ -64,6 +64,7 @@
 	- upgrade to file-4.20 internal.
 	- rollback: re-add blink's and installtid's to repackaged headers.
 	- rpmns: add digest probe.
+	- rpmevr: remove lib/rpmvercmp.c, use rpmEVRcmp() instead.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

@@ -62,6 +62,14 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 int rpmEVRcompare(const EVR_t a, const EVR_t b)
 	/*@*/;
 
+/** \ingroup rpmds
+ * Segmented string compare vector.
+ * @param a		1st string
+ * @param b		2nd string
+ * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
+ */
+extern int (*rpmvercmp)(const char *a, const char *b)
+	/*@*/;
 #ifdef __cplusplus
 }
 #endif

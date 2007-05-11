@@ -41,7 +41,7 @@ librpm_la_SOURCES = \
 	rpmal.c rpmchecksig.c rpmdpkg.c rpmds.c rpmevr.c rpmfc.c \
 	rpmfi.c rpmgi.c rpminstall.c rpmrollback.c \
 	rpmlead.c rpmlock.c rpmns.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
-	rpmvercmp.c signature.c stringbuf.c transaction.c \
+	signature.c stringbuf.c transaction.c \
 	verify.c tar.c
 librpm_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
