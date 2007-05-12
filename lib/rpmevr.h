@@ -18,7 +18,10 @@ typedef	/*@abstract@*/ struct EVR_s * EVR_t;
 /**
  * Dependency Attributes.
  */
-typedef	enum rpmsenseFlags_e {
+typedef	enum evrFlags_e rpmsenseFlags;
+typedef	enum evrFlags_e evrFlags;
+
+enum evrFlags_e {
 #if defined(_RPMEVR_INTERNAL)
     RPMSENSE_ANY	= 0,
 /*@-enummemuse@*/
@@ -60,10 +63,11 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_PROBE	= (1 << 29),
     RPMSENSE_PACKAGE	= (1 << 30)
 #endif
-} rpmsenseFlags;
+};
 
 #define	RPMSENSE_SENSEMASK	0x0e	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */
+#define	RPMSENSE_NOTEQUAL	(RPMSENSE_EQUAL ^ RPMSENSE_SENSEMASK)
 
 #if defined(_RPMEVR_INTERNAL)
 /** \ingroup rpmds
@@ -78,6 +82,7 @@ struct EVR_s {
     const char * V;		/*!< Version */
 /*@observer@*/ /*@null@*/
     const char * R;		/*!< Release */
+    evrFlags Flags;		/*!< EVR comparison flags. */
 };
 
 #define	RPMSENSE_TRIGGER	\

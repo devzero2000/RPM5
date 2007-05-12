@@ -387,9 +387,13 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (nb)	nb++;
+	if ((ds->Flags[ds->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL)
+		nb += 2;
+	else {
 	if (ds->Flags[ds->i] & RPMSENSE_LESS)	nb++;
 	if (ds->Flags[ds->i] & RPMSENSE_GREATER) nb++;
 	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	nb++;
+    }
     }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
@@ -419,9 +423,13 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (t != tbuf)	*t++ = ' ';
+	if ((ds->Flags[ds->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL)
+		t = stpcpy(t, "!=");
+	else {
 	if (ds->Flags[ds->i] & RPMSENSE_LESS)	*t++ = '<';
 	if (ds->Flags[ds->i] & RPMSENSE_GREATER) *t++ = '>';
 	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	*t++ = '=';
+    }
     }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
@@ -3674,7 +3682,10 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
     /* Detect overlap of {A,B} range. */
     result = 0;
-    if (sense < 0 && ((A->Flags[A->i] & RPMSENSE_GREATER) || (B->Flags[B->i] & RPMSENSE_LESS))) {
+    if ((A->Flags[A->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL
+     || (B->Flags[B->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL) {
+	result = (sense != 0);
+    } else if (sense < 0 && ((A->Flags[A->i] & RPMSENSE_GREATER) || (B->Flags[B->i] & RPMSENSE_LESS))) {
 	result = 1;
     } else if (sense > 0 && ((A->Flags[A->i] & RPMSENSE_LESS) || (B->Flags[B->i] & RPMSENSE_GREATER))) {
 	result = 1;

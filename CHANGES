@@ -70,6 +70,7 @@
 	- argv: permit argvSplit() default whitespace separators.
 	- argv: use xmalloc, not alloca, in argvSplit().
 	- rpmevr: refactor logical operator parsing, hide implementation.
+	- rpmevr: add RPMSENSE_NOTEQUAL and wire up the condition tests.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

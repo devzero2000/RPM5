@@ -164,14 +164,14 @@ static struct EVRop_s {
     const char * operator;
     rpmsenseFlags sense;
 } cops[] = {
-    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
-    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
+    { "<=", RPMSENSE_LESS ^ RPMSENSE_EQUAL},
+    { "=<", RPMSENSE_LESS ^ RPMSENSE_EQUAL},
 
     { "==", RPMSENSE_EQUAL},
-    { "!=", RPMSENSE_EQUAL ^ RPMSENSE_SENSEMASK},
+    { "!=", RPMSENSE_NOTEQUAL},
     
-    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+    { ">=", RPMSENSE_GREATER ^ RPMSENSE_EQUAL},
+    { "=>", RPMSENSE_GREATER ^ RPMSENSE_EQUAL},
 
     { "<", RPMSENSE_LESS},
     { "=", RPMSENSE_EQUAL},
