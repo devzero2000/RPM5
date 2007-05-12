@@ -66,6 +66,7 @@
 	- rpmns: add digest probe.
 	- rpmevr: remove lib/rpmvercmp.c, use rpmEVRcmp() instead.
 	- rpmns: add gnupg probe.
+	- argv: add argvFgets to build argv array from stdin lines.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

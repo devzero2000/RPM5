@@ -161,6 +161,15 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 char * argvJoin(ARGV_t argv)
 	/*@*/;
 
+/**
+ * Read lines into an argv array.
+ * @retval *argvp	argv array
+ * @param fd		rpmio FD_t (NULL uses stdin)
+ * @return		0 on success
+ */
+int argvFgets(ARGV_t * argvp, void * fd)
+	/*@modifies *argvp, fd @*/;
+
 #ifdef __cplusplus
 }
 #endif

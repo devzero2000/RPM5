@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include "rpmio_internal.h"	/* XXX fdGetFILE() */
 #include <argv.h>
 
 #include "debug.h"
@@ -227,6 +228,36 @@ char * argvJoin(ARGV_t argv)
     }
     *te = '\0';
     return t;
+}
+
+int argvFgets(ARGV_t * argvp, void * fd)
+{
+    FILE * fp = (fd ? fdGetFILE(fd) : stdin);
+    ARGV_t av = NULL;
+    char buf[BUFSIZ];
+    char * b, * be;
+    int rc = 0;
+
+    if (fp == NULL)
+	return -2;
+    while (!rc && (b = fgets(buf, sizeof(buf), fp)) != NULL) {
+	buf[sizeof(buf)-1] = '\0';
+	be = b + strlen(buf) - 1;
+	while (strchr("\r\n", *be) != NULL)
+	    *be-- = '\0';
+	rc = argvAdd(&av, b);
+    }
+
+    if (!rc)
+	rc = ferror(fp);
+    if (!rc)
+	rc = (feof(fp) ? 0 : 1);
+    if (!rc && argvp)
+	*argvp = av;
+    else
+	av = argvFree(av);
+    
+    return rc;
 }
 
 /*@=bounds@*/
