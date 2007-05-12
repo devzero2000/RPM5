@@ -146,7 +146,7 @@ int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
  * Split a string into an argv array.
  * @retval *argvp	argv array
  * @param str		string arg to split
- * @param seps		separator characters (NULL is shell white space)
+ * @param seps		separator characters (NULL is C isspace() chars)
  * @return		0 always
  */
 int argvSplit(ARGV_t * argvp, const char * str, /*@null@*/ const char * seps)
