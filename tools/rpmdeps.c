@@ -247,17 +247,8 @@ char buf[BUFSIZ];
     ac = argvCount(av);
 
     if (rpmdeps_mode == RPMDEP_RPMFC && ac == 0) {
-	char * b, * be;
 	av = NULL;
-if (_rpmfc_debug)
-fprintf(stderr, "*** Reading from stdin ...\n");
-	while ((b = fgets(buf, sizeof(buf), stdin)) != NULL) {
-	    buf[sizeof(buf)-1] = '\0';
-	    be = b + strlen(buf) - 1;
-	    while (strchr("\r\n", *be) != NULL)
-		*be-- = '\0';
-	    xx = argvAdd(&av, b);
-	}
+	xx = argvFgets(&av, NULL);
 	ac = argvCount(av);
     }
 
