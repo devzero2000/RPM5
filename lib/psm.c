@@ -15,6 +15,7 @@
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "psm.h"
 
+#define	_RPMEVR_INTERNAL
 #include "rpmds.h"
 
 #define _RPMFI_INTERNAL

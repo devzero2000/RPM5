@@ -141,6 +141,7 @@ LIBRPM_0
     rpmEVR;
     rpmEVRcmp;
     rpmEVRcompare;
+    rpmEVRflags;
     rpmEVRparse;
     _rpmfc_debug;
     rpmfcApply;

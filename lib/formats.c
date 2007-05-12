@@ -8,6 +8,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
+#define	_RPMEVR_INTERNAL
 #include <rpmds.h>
 #include <rpmfi.h>
 

@@ -6,6 +6,8 @@
  *  The Spec and Package data structures used during build.
  */
 
+#include <rpmevr.h>
+
 /** \ingroup rpmbuild
  */
 typedef struct Package_s * Package;

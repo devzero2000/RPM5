@@ -2,11 +2,15 @@
 
 #include <signal.h>	/* getOutputFrom() */
 
+#define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include <argv.h>
 
 #define	_RPMFC_INTERNAL
 #include <rpmfc.h>
+
+#define	_RPMNS_INTERNAL
+#include <rpmns.h>
 
 #define	_RPMDS_INTERNAL
 #include <rpmds.h>

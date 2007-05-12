@@ -7,6 +7,8 @@
 
 #include "rpmio_internal.h"
 #include <rpmcli.h>
+#define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */
+#include <rpmevr.h>
 
 #include "rpmdb.h"
 
@@ -114,6 +116,11 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     }
     if (count < 0) {
 	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
+	goto exit;
+    }
+    if (Fflush(*tfdp) != 0) {
+	rpmError(RPMERR_FWRITE, _("%s: Fflush failed: %s\n"), *tfnp,
+	    Fstrerror(*tfdp));
 	goto exit;
     }
 

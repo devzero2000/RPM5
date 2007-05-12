@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#define	_RPMEVR_INTERNAL
 #include "rpmbuild.h"
 #include "debug.h"
 

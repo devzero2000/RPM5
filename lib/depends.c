@@ -13,6 +13,7 @@
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
 #include "rpmdb.h"
 
+#define	_RPMEVR_INTERNAL
 #include "rpmds.h"
 #include "rpmfi.h"
 

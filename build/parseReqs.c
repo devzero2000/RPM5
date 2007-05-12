@@ -5,30 +5,9 @@
 
 #include "system.h"
 
+#define	_RPMEVR_INTERNAL
 #include "rpmbuild.h"
 #include "debug.h"
-
-/**
- */
-/*@observer@*/ /*@unchecked@*/
-static struct ReqComp {
-/*@observer@*/ /*@null@*/
-    const char * token;
-    rpmsenseFlags sense;
-} ReqComparisons[] = {
-    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
-    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
-    { "<", RPMSENSE_LESS},
-
-    { "==", RPMSENSE_EQUAL},
-    { "=", RPMSENSE_EQUAL},
-    
-    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-    { ">", RPMSENSE_GREATER},
-
-    { NULL, 0 },
-};
 
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -131,28 +110,20 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 
 	/* Check for possible logical operator */
 	if (ve > v) {
-	  struct ReqComp *rc;
-
-	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
-	    if ((ve-v) != strlen(rc->token) || strncmp(v, rc->token, (ve-v)))
-		/*@innercontinue@*/ continue;
-
-	    if (r[0] == '/') {
+	    Flags = rpmEVRflags(v, &ve);
+	    if (Flags && r[0] == '/') {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
-
-	    Flags |= rc->sense;
-
-	    /* now parse EVR */
-	    v = ve;
-	    SKIPWHITE(v);
-	    ve = v;
-	    SKIPNONWHITE(ve);
-	    /*@innerbreak@*/ break;
-	  }
+	    if (Flags) {
+		/* now parse EVR */
+		v = ve;
+		SKIPWHITE(v);
+		ve = v;
+		SKIPNONWHITE(ve);
+	    }
 	}
 
 	/*@-branchstate@*/

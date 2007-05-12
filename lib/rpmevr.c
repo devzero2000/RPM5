@@ -155,3 +155,46 @@ int rpmEVRcompare(const EVR_t a, const EVR_t b)
 }
 
 int (*rpmvercmp) (const char *a, const char *b) = rpmEVRcmp;
+
+/**
+ */
+/*@unchecked@*/ /*@observer@*/
+static struct EVRop_s {
+/*@observer@*/ /*@null@*/
+    const char * operator;
+    rpmsenseFlags sense;
+} cops[] = {
+    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
+    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
+
+    { "==", RPMSENSE_EQUAL},
+    { "!=", RPMSENSE_EQUAL ^ RPMSENSE_SENSEMASK},
+    
+    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+
+    { "<", RPMSENSE_LESS},
+    { "=", RPMSENSE_EQUAL},
+    { ">", RPMSENSE_GREATER},
+
+    { NULL, 0 },
+};
+
+rpmsenseFlags rpmEVRflags(const char *op, const char **end)
+{
+    rpmsenseFlags Flags = 0;
+    struct EVRop_s *cop;
+
+    if (op == NULL || *op == '\0')
+	Flags = RPMSENSE_EQUAL;
+    else
+    for (cop = cops; cop->operator != NULL; cop++) {
+	if (strncmp(op, cop->operator, strlen(cop->operator)))
+	    continue;
+	Flags = cop->sense;
+	if (end)
+	    *end = op + strlen(cop->operator);
+	break;
+    }
+    return Flags;
+}

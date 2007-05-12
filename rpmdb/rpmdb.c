@@ -14,6 +14,9 @@
 #include <rpmmacro.h>
 #include <rpmsq.h>
 
+#define	_RPMEVR_INTERNAL	/* XXX isInstallPrereq */
+#include <rpmevr.h>
+
 #define	_RPMDB_INTERNAL
 #define	_MIRE_INTERNAL
 #include "rpmdb.h"
@@ -1021,6 +1024,8 @@ int rpmdbSync(rpmdb db)
 	int xx;
 	if (db->_dbi[dbix] == NULL)
 	    continue;
+	if (db->_dbi[dbix]->dbi_no_dbsync)
+ 	    continue;
     	xx = dbiSync(db->_dbi[dbix], 0);
 	if (xx && rc == 0) rc = xx;
     }

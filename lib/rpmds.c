@@ -1420,29 +1420,6 @@ int rpmdsRpmlib(rpmds * dsp, void * tblp)
 }
 
 /**
- */
-/*@unchecked@*/ /*@observer@*/
-static struct cmpop {
-/*@observer@*/ /*@null@*/
-    const char * operator;
-    rpmsenseFlags sense;
-} cops[] = {
-    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
-    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
-
-    { "==", RPMSENSE_EQUAL},
-    
-    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-
-    { "<", RPMSENSE_LESS},
-    { "=", RPMSENSE_EQUAL},
-    { ">", RPMSENSE_GREATER},
-
-    { NULL, 0 },
-};
-
-/**
  * Merge contents of a sysinfo tag file into sysinfo dependencies.
  * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
  * @param fn		path to file
@@ -1513,7 +1490,7 @@ assert(fn != NULL);
 
 	/* split on ' '  or comparison operator. */
 	fe = f;
-	while (*fe && !_isspace(*fe) && strchr("<=>", *fe) == NULL)
+	while (*fe && !_isspace(*fe) && strchr("!<=>", *fe) == NULL)
             fe++;
 	while (*fe && _isspace(*fe))
 	    *fe++ = '\0';
@@ -1525,25 +1502,16 @@ assert(fn != NULL);
 	/* parse for non-path, versioned dependency. */
 /*@-branchstate@*/
 	if (*f != '/' && *fe != '\0') {
-	    struct cmpop *cop;
-
 	    /* parse comparison operator */
 	    g = fe;
-	    for (cop = cops; cop->operator != NULL; cop++) {
-		if (strncmp(g, cop->operator, strlen(cop->operator)))
-		    /*@innercontinue@*/ continue;
-		*g = '\0';
-		g += strlen(cop->operator);
-		Flags = cop->sense;
-		/*@innerbreak@*/ break;
-	    }
-
+	    Flags = rpmEVRflags(fe, &g);
 	    if (Flags == 0) {
 		/* XXX No comparison operator found. */
 		fprintf(stderr, _("%s:%d No comparison operator found.\n"),
 			fn, ln);
 		continue;
 	    }
+	    *fe = '\0';
 
 	    /* ltrim on field 2. */
 	    while (*g && _isspace(*g))
@@ -3536,7 +3504,7 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 
 	/* split on ' '  or comparison operator. */
 	fe = f;
-	while (*fe && !_isspace(*fe) && strchr("<=>", *fe) == NULL)
+	while (*fe && !_isspace(*fe) && strchr("!<=>", *fe) == NULL)
 	    fe++;
 	while (*fe && _isspace(*fe))
 	    *fe++ = '\0';
@@ -3558,19 +3526,9 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 	/* parse for non-path, versioned dependency. */
 /*@-branchstate@*/
 	if (*f != '/' && *fe != '\0') {
-	    struct cmpop *cop;
-
 	    /* parse comparison operator */
 	    g = fe;
-	    for (cop = cops; cop->operator != NULL; cop++) {
-		if (strncmp(g, cop->operator, strlen(cop->operator)))
-		    /*@innercontinue@*/ continue;
-		*g = '\0';
-		g += strlen(cop->operator);
-		Flags = cop->sense;
-		/*@innerbreak@*/ break;
-	    }
-
+	    Flags = rpmEVRflags(fe, &g);
 	    if (Flags == 0) {
 		if (!cmdprinted++)
 		    fprintf(stderr, _("running \"%s\" pipe command\n"), cmd),
@@ -3579,6 +3537,7 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 			ln, g);
 		continue;
 	    }
+	    *fe = '\0';
 
 	    /* ltrim on field 2. */
 	    while (*g && _isspace(*g))
