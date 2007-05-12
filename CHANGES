@@ -68,6 +68,7 @@
 	- rpmns: add gnupg probe.
 	- argv: add argvFgets() to build argv array from stdin lines.
 	- argv: permit argvSplit() default whitespace separators.
+	- argv: use xmalloc, not alloca, in argvSplit().
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

@@ -176,7 +176,7 @@ int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 {
     static char whitespace[] = " \f\n\r\t\v";
-    char * dest = alloca(strlen(str) + 1);
+    char * dest = xmalloc(strlen(str) + 1);
     ARGV_t argv;
     int argc = 1;
     const char * s;
