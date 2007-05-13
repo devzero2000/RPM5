@@ -7,6 +7,7 @@
 #include <rpmlib.h>
 
 #include "rpmal.h"
+#define	_RPMDS_INTERNAL
 #include "rpmds.h"
 #include "rpmfi.h"
 
@@ -639,7 +640,7 @@ void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint_32 tscolor)
     if (rpmdsInit(provides) != NULL)
     while (rpmdsNext(provides) >= 0) {
 
-	if ((Name = rpmdsN(provides)) == NULL)
+	if ((Name = provides->N[provides->i]) == NULL)
 	    continue;	/* XXX can't happen */
 
 	/* Ignore colored provides not in our rainbow. */
