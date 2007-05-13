@@ -71,6 +71,8 @@ static struct _rpmnsProbes_s {
     { "diskspace",	RPMNS_TYPE_DISKSPACE },
     { "digest",		RPMNS_TYPE_DIGEST },
     { "gnupg",		RPMNS_TYPE_GNUPG },
+    { "macro",		RPMNS_TYPE_MACRO },
+    { "envvar",		RPMNS_TYPE_ENVVAR },
     { "exists",		RPMNS_TYPE_ACCESS },
     { "executable",	RPMNS_TYPE_ACCESS },
     { "readable",	RPMNS_TYPE_ACCESS },
@@ -180,6 +182,8 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_DISKSPACE:
     case RPMNS_TYPE_DIGEST:
     case RPMNS_TYPE_GNUPG:
+    case RPMNS_TYPE_MACRO:
+    case RPMNS_TYPE_ENVVAR:
 	ns->NS = ns->str;
 	if (ns->NS[0] == '!')
 	    ns->NS++;

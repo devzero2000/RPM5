@@ -758,6 +758,25 @@ retry:
 	goto exit;
     }
 
+    if (NSType == RPMNS_TYPE_MACRO) {
+	static const char macro_pre[] = "%{?";
+	static const char macro_post[] = ":0}";
+	const char * t = rpmExpand(macro_pre, Name, macro_post, NULL);
+
+	rc = (t && t[0] == '0') ? 0 : 1;
+	t = _free(t);
+	rpmdsNotify(dep, _("(macro probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_ENVVAR) {
+	const char * t = getenv(Name);
+
+	rc = (t != NULL) ? 0 : 1;
+	rpmdsNotify(dep, _("(envvar probe)"), rc);
+	goto exit;
+    }
+
     /* Search system configured provides. */
     if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
 #ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */

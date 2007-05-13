@@ -74,6 +74,7 @@
 	- rpmns: negative existence tests as Requires: !foo, take 1.
 	- rpmal: avoid rpmns allocates while iterating added provides.
 	- rpmns: finalize '!' as a dependency assertion negation operator.
+	- rpmns: add macro()/envvar() probes as existence tests.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
