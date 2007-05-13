@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-12 23:43-0400\n"
+"POT-Creation-Date: 2007-05-13 13:44-0400\n"
 "PO-Revision-Date: 2006-10-01 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -1472,21 +1472,21 @@ msgstr "(db tillhandahåller)"
 msgid "(hint skipped)"
 msgstr "(förslag överhoppat)"
 
-#: lib/depends.c:1393
+#: lib/depends.c:1396
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1521
+#: lib/depends.c:1524
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
-#: lib/depends.c:1797
+#: lib/depends.c:1800
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
-#: lib/depends.c:1918
+#: lib/depends.c:1921
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
@@ -1494,20 +1494,20 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "Ldjup, Rbredd)\n"
 
-#: lib/depends.c:2009
+#: lib/depends.c:2012
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== endast efterföljare (%d byte)\n"
 
-#: lib/depends.c:2082
+#: lib/depends.c:2085
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2113
+#: lib/depends.c:2116
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
-#: lib/depends.c:2118
+#: lib/depends.c:2121
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -2650,11 +2650,11 @@ msgstr "post %u kunde inte läsas\n"
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
 
-#: lib/rpmal.c:778
+#: lib/rpmal.c:779
 msgid "(added files)"
 msgstr "(lade till filer)"
 
-#: lib/rpmal.c:857
+#: lib/rpmal.c:858
 msgid "(added provide)"
 msgstr "(lade till tillhandahållande)"
 
@@ -2762,107 +2762,92 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:880 lib/rpmds.c:3711
+#: lib/rpmds.c:878 lib/rpmds.c:3708
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:880 lib/rpmds.c:3711
+#: lib/rpmds.c:878 lib/rpmds.c:3708
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1372
+#: lib/rpmds.c:1370
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, and Obsoletes:-beroenden stödjer versioner."
 
-#: lib/rpmds.c:1375
+#: lib/rpmds.c:1373
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "filnamn lagrade som (katNamn,basNam,katIndex)-tupel, inte som sökväg."
 
-#: lib/rpmds.c:1378
+#: lib/rpmds.c:1376
 msgid "package payload can be compressed using bzip2."
 msgstr "paketlasten kan komprimeras med bzip2."
 
-#: lib/rpmds.c:1381
+#: lib/rpmds.c:1379
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "paketlastfiler har \"./\"-prefix."
 
-#: lib/rpmds.c:1384
+#: lib/rpmds.c:1382
 msgid "package name-version-release is not implicitly provided."
 msgstr "paketets namn-version-utgåva tillhandahålls inte implicit."
 
-#: lib/rpmds.c:1387
+#: lib/rpmds.c:1385
 msgid "header tags are always sorted after being loaded."
 msgstr "huvudtaggar sorteras alltid efter att ha lästs in."
 
-#: lib/rpmds.c:1390
+#: lib/rpmds.c:1388
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "skriptinterpretatorn kan använda argument från huvudet."
 
-#: lib/rpmds.c:1393
+#: lib/rpmds.c:1391
 msgid "a hardlink file set may be installed without being complete."
 msgstr "en hårdlänkad filuppsättning får installeras utan att vara komplett."
 
-#: lib/rpmds.c:1396
+#: lib/rpmds.c:1394
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "paketskript kan komma åt rpm-databasen under installation."
 
-#: lib/rpmds.c:1400
+#: lib/rpmds.c:1398
 msgid "internal support for lua scripts."
 msgstr "internt stöd för lua-skript."
 
-#: lib/rpmds.c:1404
+#: lib/rpmds.c:1402
 msgid "header tags can be type int_64."
 msgstr "huvudtaggar kan ha typen int_64."
 
-#: lib/rpmds.c:1407
+#: lib/rpmds.c:1405
 msgid "package payload can be in ustar tar archive format."
 msgstr "paketlasten kan vara i ustar:s tar-arkivformat."
 
-#: lib/rpmds.c:1410
+#: lib/rpmds.c:1408
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "paketlasten kan komprimeras med bzip2."
 
-#: lib/rpmds.c:1413
+#: lib/rpmds.c:1411
 msgid "file digests can be other than MD5."
 msgstr "filkontrollsummor kan vara annat än MD5."
 
-#: lib/rpmds.c:1505
-#, c-format
-msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
-msgstr ""
-"%s:%d: \"%s\" måste börja alfanumeriskt, med \"_\", \"/\" eller \"%%\".\n"
+#: lib/rpmds.c:1501 lib/rpmds.c:3532
+#, fuzzy, c-format
+msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
+msgstr "%s har ogiltigt ogiltigt numeriskt värde, hoppar över\n"
 
-#: lib/rpmds.c:1529
-#, c-format
-msgid "%s:%d No comparison operator found.\n"
-msgstr "%s:%d Det finns ingen jämförelseoperator.\n"
+#: lib/rpmds.c:1525 lib/rpmds.c:3550
+#, fuzzy, c-format
+msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
+msgstr "\trad %d: \"%s\" har inte någon jämförelseoperator.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1540
-#, c-format
-msgid "%s:%d No EVR comparison value found.\n"
-msgstr "%s:%d Det finns inget EVR-jämförelsevärde.\n"
+#: lib/rpmds.c:1536 lib/rpmds.c:3565
+#, fuzzy, c-format
+msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
+msgstr "\trad %d: \"%s\" har inte någon jämförelseoperator.  Hoppar över ...\n"
 
-#: lib/rpmds.c:3533 lib/rpmds.c:3553 lib/rpmds.c:3566
+#: lib/rpmds.c:3531 lib/rpmds.c:3549 lib/rpmds.c:3561
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "kör rörkommandot \"%s\"\n"
 
-#: lib/rpmds.c:3536
-#, c-format
-msgid ""
-"\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
-"Skipping ...\n"
-msgstr ""
-"\trad %d: \"%s\" måste börja alfanumeriskt, med \"_\", \"/\" eller \"%%\". "
-"Hoppar över ...\n"
-
-#: lib/rpmds.c:3555
-#, c-format
-msgid "\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"
-msgstr "\trad %d: \"%s\" har inte någon jämförelseoperator.  Hoppar över ...\n"
-
-#: lib/rpmds.c:3568
+#: lib/rpmds.c:3563
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2871,7 +2856,7 @@ msgstr ""
 "\trad %d: Det finns inget EVR-jämförelsevärde.\n"
 " Hoppar över ..."
 
-#: lib/rpmds.c:3675
+#: lib/rpmds.c:3672
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2880,12 +2865,12 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3710
+#: lib/rpmds.c:3707
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:3734
+#: lib/rpmds.c:3731
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"
@@ -4526,6 +4511,23 @@ msgstr "skriv Requires:-beroendemängd"
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "kontrollera Requires: mot Provides: för beroendehölje"
+
+#~ msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
+#~ msgstr ""
+#~ "%s:%d: \"%s\" måste börja alfanumeriskt, med \"_\", \"/\" eller \"%%\".\n"
+
+#~ msgid "%s:%d No comparison operator found.\n"
+#~ msgstr "%s:%d Det finns ingen jämförelseoperator.\n"
+
+#~ msgid "%s:%d No EVR comparison value found.\n"
+#~ msgstr "%s:%d Det finns inget EVR-jämförelsevärde.\n"
+
+#~ msgid ""
+#~ "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
+#~ "Skipping ...\n"
+#~ msgstr ""
+#~ "\trad %d: \"%s\" måste börja alfanumeriskt, med \"_\", \"/\" eller \"%%"
+#~ "\". Hoppar över ...\n"
 
 #~ msgid "argument is not an RPM package\n"
 #~ msgstr "argumentet är inte ett RPM-paket\n"
