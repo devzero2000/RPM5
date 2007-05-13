@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-13 13:44-0400\n"
+"POT-Creation-Date: 2007-05-13 15:10-0400\n"
 "PO-Revision-Date: 2006-10-01 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -1436,57 +1436,67 @@ msgstr "(åtkomsttest)"
 msgid "(gnupg probe)"
 msgstr "(macrotest)"
 
-#: lib/depends.c:770
+#: lib/depends.c:768
+#, fuzzy
+msgid "(macro probe)"
+msgstr "(macrotest)"
+
+#: lib/depends.c:776
+#, fuzzy
+msgid "(envvar probe)"
+msgstr "(macrotest)"
+
+#: lib/depends.c:789
 msgid "(sysinfo provides)"
 msgstr "(sysinfo tillhandahåller)"
 
-#: lib/depends.c:790
+#: lib/depends.c:809
 msgid "(rpmlib provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:806
+#: lib/depends.c:825
 msgid "(cpuinfo provides)"
 msgstr "(cpuinfo tillhandahåller)"
 
-#: lib/depends.c:822
+#: lib/depends.c:841
 msgid "(getconf provides)"
 msgstr "(getconf tillhandahåller)"
 
-#: lib/depends.c:838
+#: lib/depends.c:857
 msgid "(uname provides)"
 msgstr "(uname tillhandahåller)"
 
-#: lib/depends.c:870
+#: lib/depends.c:889
 msgid "(soname provides)"
 msgstr "(soname tillhandahåller)"
 
-#: lib/depends.c:897
+#: lib/depends.c:916
 msgid "(db files)"
 msgstr "(db-filer)"
 
-#: lib/depends.c:910
+#: lib/depends.c:929
 msgid "(db provides)"
 msgstr "(db tillhandahåller)"
 
-#: lib/depends.c:940
+#: lib/depends.c:959
 msgid "(hint skipped)"
 msgstr "(förslag överhoppat)"
 
-#: lib/depends.c:1396
+#: lib/depends.c:1415
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1524
+#: lib/depends.c:1543
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
-#: lib/depends.c:1800
+#: lib/depends.c:1819
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
-#: lib/depends.c:1921
+#: lib/depends.c:1940
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
@@ -1494,20 +1504,20 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "Ldjup, Rbredd)\n"
 
-#: lib/depends.c:2012
+#: lib/depends.c:2031
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== endast efterföljare (%d byte)\n"
 
-#: lib/depends.c:2085
+#: lib/depends.c:2104
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2116
+#: lib/depends.c:2135
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
-#: lib/depends.c:2121
+#: lib/depends.c:2140
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"

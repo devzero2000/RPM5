@@ -547,6 +547,7 @@ exit 0
 * Sun May 13 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.8
 - rpmal: avoid rpmns allocates while iterating added provides.
 - rpmns: finalize '!' as a dependency assertion negation operator.
+- rpmns: add macro()/envvar() probes as existence tests.
 
 * Sat May 12 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.7
 - rollback: rewrite and simplify.

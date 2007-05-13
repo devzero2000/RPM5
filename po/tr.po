@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-13 13:44-0400\n"
+"POT-Creation-Date: 2007-05-13 15:10-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1463,65 +1463,75 @@ msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 msgid "(gnupg probe)"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:770
+#: lib/depends.c:768
+#, fuzzy
+msgid "(macro probe)"
+msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
+
+#: lib/depends.c:776
+#, fuzzy
+msgid "(envvar probe)"
+msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
+
+#: lib/depends.c:789
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:790
+#: lib/depends.c:809
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:806
+#: lib/depends.c:825
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:822
+#: lib/depends.c:841
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:838
+#: lib/depends.c:857
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s EVET (önlem eklendi)\n"
 
-#: lib/depends.c:870
+#: lib/depends.c:889
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s EVET (önlem eklendi)\n"
 
-#: lib/depends.c:897
+#: lib/depends.c:916
 #, fuzzy
 msgid "(db files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/depends.c:910
+#: lib/depends.c:929
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:940
+#: lib/depends.c:959
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1396
+#: lib/depends.c:1415
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1524
+#: lib/depends.c:1543
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
-#: lib/depends.c:1800
+#: lib/depends.c:1819
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
-#: lib/depends.c:1921
+#: lib/depends.c:1940
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1529,20 +1539,20 @@ msgid ""
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:2012
+#: lib/depends.c:2031
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:2085
+#: lib/depends.c:2104
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:2116
+#: lib/depends.c:2135
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
-#: lib/depends.c:2121
+#: lib/depends.c:2140
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""

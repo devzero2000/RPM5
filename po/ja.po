@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-13 13:44-0400\n"
+"POT-Creation-Date: 2007-05-13 15:10-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1445,62 +1445,72 @@ msgstr "(rpmrc 提供)"
 msgid "(gnupg probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:770
+#: lib/depends.c:768
+#, fuzzy
+msgid "(macro probe)"
+msgstr "(rpmrc 提供)"
+
+#: lib/depends.c:776
+#, fuzzy
+msgid "(envvar probe)"
+msgstr "(rpmrc 提供)"
+
+#: lib/depends.c:789
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:790
+#: lib/depends.c:809
 msgid "(rpmlib provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:806
+#: lib/depends.c:825
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:822
+#: lib/depends.c:841
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:838
+#: lib/depends.c:857
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(provideに追加済み)"
 
-#: lib/depends.c:870
+#: lib/depends.c:889
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(provideに追加済み)"
 
-#: lib/depends.c:897
+#: lib/depends.c:916
 msgid "(db files)"
 msgstr "(files データベース)"
 
-#: lib/depends.c:910
+#: lib/depends.c:929
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#: lib/depends.c:940
+#: lib/depends.c:959
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1396
+#: lib/depends.c:1415
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1524
+#: lib/depends.c:1543
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#: lib/depends.c:1800
+#: lib/depends.c:1819
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
-#: lib/depends.c:1921
+#: lib/depends.c:1940
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1509,20 +1519,20 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:2012
+#: lib/depends.c:2031
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:2085
+#: lib/depends.c:2104
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:2116
+#: lib/depends.c:2135
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
-#: lib/depends.c:2121
+#: lib/depends.c:2140
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
