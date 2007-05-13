@@ -162,10 +162,8 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_ARCH:
 	ns->NS = NULL;
 	ns->N = ns->str;
-	if (ns->N[0] == '!') {
+	if (ns->N[0] == '!')
 	    ns->N++;
-	    ns->Flags = RPMSENSE_SENSEMASK;
-	}
 	if ((t = strrchr(t, _rpmns_N_at_A[0])) != NULL)
 	    *t++ = '\0';
 	ns->A = t;
@@ -183,10 +181,8 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_DIGEST:
     case RPMNS_TYPE_GNUPG:
 	ns->NS = ns->str;
-	if (ns->NS[0] == '!') {
+	if (ns->NS[0] == '!')
 	    ns->NS++;
-	    ns->Flags = RPMSENSE_SENSEMASK;
-	}
 	if ((t = strchr(t, '(')) != NULL)
 	    *t++ = '\0';
 	ns->N = t;
@@ -205,10 +201,8 @@ int rpmnsParse(const char * str, rpmns ns)
     default:
 	ns->NS = NULL;
 	ns->N = ns->str;
-	if (ns->N[0] == '!') {
+	if (ns->N[0] == '!')
 	    ns->N++;
-	    ns->Flags = RPMSENSE_SENSEMASK;
-	}
 	ns->A = NULL;
 	break;
     }
