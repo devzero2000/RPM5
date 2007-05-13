@@ -157,7 +157,7 @@ extern int (*rpmvercmp)(const char *a, const char *b)
 
 /**
  * Return comparison operator sense flags.
- * @param op		operator string (NULL or '\0' uses RPMSENSE_EQUAL)
+ * @param op		operator string (NULL or "" uses RPMSENSE_EQUAL)
  * @param *end		pointer to 1st character after operator (or NULL)
  * @return		sense flags
  */

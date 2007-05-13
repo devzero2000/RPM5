@@ -400,9 +400,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	}
     }
 
-    ds->ns.Flags ^= dsFlags;
-    if (ds->ns.Flags == RPMSENSE_SENSEMASK)
-	ds->ns.Flags = 0;
+    ds->ns.Flags = dsFlags;
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
@@ -1499,16 +1497,15 @@ assert(fn != NULL);
 	while (--fe > f && _isspace(*fe))
 	    *fe = '\0';
 
-	if (!(xisalnum(f[0]) || f[0] == '_' || f[0] == '/' || f[0] == '%')) {
-	    /* XXX N must begin with alphanumeric, _, / or %. */
-	    fprintf(stderr,
-		_("%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"),
+	if (!(xisalnum(f[0]) || strchr("/_%!", f[0]) != NULL)) {
+	    fprintf(stderr, _("%s:%d \"%s\" has invalid name. Skipping ...\n"),
 		    fn, ln, f);
 	    continue;
         }
 
 	/* split on ' '  or comparison operator. */
 	fe = f;
+	if (*f == '!') fe++;
 	while (*fe && !_isspace(*fe) && strchr("!<=>", *fe) == NULL)
             fe++;
 	while (*fe && _isspace(*fe))
@@ -1525,9 +1522,8 @@ assert(fn != NULL);
 	    g = fe;
 	    Flags = rpmEVRflags(fe, (const char **)&g);
 	    if (Flags == 0) {
-		/* XXX No comparison operator found. */
-		fprintf(stderr, _("%s:%d No comparison operator found.\n"),
-			fn, ln);
+		fprintf(stderr, _("%s:%d \"%s\" has no comparison operator. Skipping ...\n"),
+			fn, ln, fe);
 		continue;
 	    }
 	    *fe = '\0';
@@ -1537,8 +1533,8 @@ assert(fn != NULL);
 		g++;
 	    if (*g == '\0') {
 		/* XXX No EVR comparison value found. */
-		fprintf(stderr, _("%s:%d No EVR comparison value found.\n"),
-			fn, ln);
+		fprintf(stderr, _("%s:%d \"%s\" has no EVR string. Skipping ...\n"),
+			fn, ln, f);
 		continue;
 	    }
 
@@ -3471,6 +3467,7 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
     char * f, * fe;
     char * g, * ge;
     FILE * fp = NULL;
+    const char * fn = "pipe";
     int rc = -1;
     int cmdprinted;
     int ln;
@@ -3523,18 +3520,17 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 
 	/* split on ' '  or comparison operator. */
 	fe = f;
+	if (*f == '!') fe++;
 	while (*fe && !_isspace(*fe) && strchr("!<=>", *fe) == NULL)
 	    fe++;
 	while (*fe && _isspace(*fe))
 	    *fe++ = '\0';
 
-	if (!(xisalnum(f[0]) || f[0] == '_' || f[0] == '/' || f[0] == '%')) {
+	if (!(xisalnum(f[0]) || strchr("/_%!", f[0]) != NULL)) {
 	    if (!cmdprinted++)
 		fprintf(stderr, _("running \"%s\" pipe command\n"), cmd);
-	    /* XXX N must begin with alphanumeric, _, / or %. */
-	    fprintf(stderr,
-		_("\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. Skipping ...\n"),
-		    ln, f);
+	    fprintf(stderr, _("%s:%d \"%s\" has invalid name. Skipping ...\n"),
+			fn, ln, f);
             continue;
 	}
 
@@ -3551,9 +3547,8 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 	    if (Flags == 0) {
 		if (!cmdprinted++)
 		    fprintf(stderr, _("running \"%s\" pipe command\n"), cmd),
-		/* XXX No comparison operator found. */
-		fprintf(stderr, _("\tline %d: \"%s\" has not a comparison operator found. Skipping ...\n"),
-			ln, g);
+		fprintf(stderr, _("%s:%d \"%s\" has no comparison operator. Skipping ...\n"),
+			fn, ln, fe);
 		continue;
 	    }
 	    *fe = '\0';
@@ -3567,6 +3562,8 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 		/* XXX No EVR comparison value found. */
 		fprintf(stderr, _("\tline %d: No EVR comparison value found.\n Skipping ..."),
 			ln);
+		fprintf(stderr, _("%s:%d \"%s\" has no EVR string. Skipping ...\n"),
+			fn, ln, f);
 		continue;
 	    }
 
@@ -3629,7 +3626,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     int_32 aFlags = A->ns.Flags;
     int_32 bFlags = B->ns.Flags;
     int (*EVRcmp) (const char *a, const char *b);
-    int result = (A->ns.str[0] != '!' && B->ns.str[0] != '!' ? 1 : 0);
+    int result = 1;
     int sense;
     int xx;
 
@@ -3749,7 +3746,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     int scareMem = 0;
     rpmds provides = NULL;
     int_32 reqFlags = req->ns.Flags;
-    int result = (req->ns.str[0] != '!' ? 1 : 0);
+    int result = 1;
 
 assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
@@ -3791,8 +3788,6 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     while (rpmdsNext(provides) >= 0)
 	if ((result = rpmdsCompare(provides, req)))
 	    break;
-    if (req->ns.str[0] == '!')
-	result = (result == 0);
 
 exit:
     provides = rpmdsFree(provides);
@@ -3809,7 +3804,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     char * t;
     int_32 reqFlags = req->ns.Flags;
     int_32 pkgFlags = RPMSENSE_EQUAL;
-    int result = (req->ns.str[0] != '!' ? 1 : 0);
+    int result = 1;
     rpmds pkg;
     size_t nb;
 
@@ -3848,4 +3843,11 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 
 exit:
     return result;
+}
+
+int rpmdsNegateRC(const rpmds ds, int rc)
+{
+    if (ds->ns.str[0] == '!')
+	rc = (rc == 0);
+    return rc;
 }

@@ -979,6 +979,9 @@ exit:
 		_cacheDependsRC = 0;
 	}
     }
+
+    rc = rpmdsNegateRC(dep, rc);
+
     return rc;
 }
 
@@ -1648,8 +1651,9 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
 /**
  * Add element to list sorting by tsi_qcnt.
  * @param p		new element
- * @retval qp		address of first element
- * @retval rp		address of last element
+ * @retval *qp		first element
+ * @retval *rp		last element
+ * @param prefcolor	preferred color
  */
 /*@-boundswrite@*/
 /*@-mustmod@*/

@@ -664,6 +664,15 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 	/*@*/;
 
+/**
+ * Negate return code for negated comparisons.
+ * @param ds		dependency set
+ * @param rc		postive return code
+ * @return		return code
+ */
+int rpmdsNegateRC(const rpmds ds, int rc)
+	/*@*/;
+
 #if !defined(SWIG)
 /**
  * Return current dependency type name.

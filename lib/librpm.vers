@@ -110,6 +110,7 @@ LIBRPM_0
     rpmdsMerge;
     rpmdsMergePRCO;
     rpmdsN;
+    rpmdsNegateRC;
     rpmdsNew;
     rpmdsNewDNEVR;
     rpmdsNewPRCO;
