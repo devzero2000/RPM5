@@ -377,6 +377,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 
     if (dspfx)	nb += strlen(dspfx) + 1;
 /*@-boundsread@*/
+    if (ds->ns.str[0] == '!')	nb++;
     if (NS)	nb += strlen(NS) + sizeof("()") - 1;
     if (N)	nb += strlen(N);
     if (A) {
@@ -408,6 +409,8 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	t = stpcpy(t, dspfx);
 	*t++ = ' ';
     }
+    if (ds->ns.str[0] == '!')
+	*t++ = '!';
     if (NS)
 	t = stpcpy( stpcpy(t, NS), "(");
     if (N)
@@ -426,10 +429,10 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	if ((ds->Flags[ds->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL)
 		t = stpcpy(t, "!=");
 	else {
-	if (ds->Flags[ds->i] & RPMSENSE_LESS)	*t++ = '<';
-	if (ds->Flags[ds->i] & RPMSENSE_GREATER) *t++ = '>';
-	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	*t++ = '=';
-    }
+	    if (ds->Flags[ds->i] & RPMSENSE_LESS)	*t++ = '<';
+	    if (ds->Flags[ds->i] & RPMSENSE_GREATER)	*t++ = '>';
+	    if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	*t++ = '=';
+	}
     }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
@@ -1512,7 +1515,7 @@ assert(fn != NULL);
 	if (*f != '/' && *fe != '\0') {
 	    /* parse comparison operator */
 	    g = fe;
-	    Flags = rpmEVRflags(fe, &g);
+	    Flags = rpmEVRflags(fe, (const char **)&g);
 	    if (Flags == 0) {
 		/* XXX No comparison operator found. */
 		fprintf(stderr, _("%s:%d No comparison operator found.\n"),
@@ -3536,7 +3539,7 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 	if (*f != '/' && *fe != '\0') {
 	    /* parse comparison operator */
 	    g = fe;
-	    Flags = rpmEVRflags(fe, &g);
+	    Flags = rpmEVRflags(fe, (const char **)&g);
 	    if (Flags == 0) {
 		if (!cmdprinted++)
 		    fprintf(stderr, _("running \"%s\" pipe command\n"), cmd),
@@ -3615,8 +3618,10 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
     EVR_t a = memset(alloca(sizeof(*a)), 0, sizeof(*a));
     EVR_t b = memset(alloca(sizeof(*a)), 0, sizeof(*a));
+    int_32 aFlags = (rpmdsFlags(A) & RPMSENSE_SENSEMASK);
+    int_32 bFlags = (rpmdsFlags(B) & RPMSENSE_SENSEMASK);
     int (*EVRcmp) (const char *a, const char *b);
-    int result;
+    int result = 1;	/* assume success */
     int sense;
     int xx;
 
@@ -3629,22 +3634,16 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 /*@-nullderef@*/
-    if (!(A->EVR && A->Flags && B->EVR && B->Flags)) {
-	result = 1;
+    if (!(A->EVR && A->Flags && B->EVR && B->Flags))
 	goto exit;
-    }
 
     /* Same name. If either A or B is an existence test, always overlap. */
-    if (!((A->Flags[A->i] & RPMSENSE_SENSEMASK) && (B->Flags[B->i] & RPMSENSE_SENSEMASK))) {
-	result = 1;
+    if (!(aFlags && bFlags))
 	goto exit;
-    }
 
     /* If either EVR is non-existent or empty, always overlap. */
-    if (!(A->EVR[A->i] && *A->EVR[A->i] && B->EVR[B->i] && *B->EVR[B->i])) {
-	result = 1;
+    if (!(A->EVR[A->i] && *A->EVR[A->i] && B->EVR[B->i] && *B->EVR[B->i]))
 	goto exit;
-    }
 
     /* Both AEVR and BEVR exist. */
 /*@-boundswrite@*/
@@ -3681,20 +3680,19 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     b->str = _free(b->str);
 
     /* Detect overlap of {A,B} range. */
-    result = 0;
-    if ((A->Flags[A->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL
-     || (B->Flags[B->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL) {
+    if (aFlags == RPMSENSE_NOTEQUAL || bFlags == RPMSENSE_NOTEQUAL) {
 	result = (sense != 0);
-    } else if (sense < 0 && ((A->Flags[A->i] & RPMSENSE_GREATER) || (B->Flags[B->i] & RPMSENSE_LESS))) {
+    } else if (sense < 0 && ((aFlags & RPMSENSE_GREATER) || (bFlags & RPMSENSE_LESS))) {
 	result = 1;
-    } else if (sense > 0 && ((A->Flags[A->i] & RPMSENSE_LESS) || (B->Flags[B->i] & RPMSENSE_GREATER))) {
+    } else if (sense > 0 && ((aFlags & RPMSENSE_LESS) || (bFlags & RPMSENSE_GREATER))) {
 	result = 1;
     } else if (sense == 0 &&
-	(((A->Flags[A->i] & RPMSENSE_EQUAL) && (B->Flags[B->i] & RPMSENSE_EQUAL)) ||
-	 ((A->Flags[A->i] & RPMSENSE_LESS) && (B->Flags[B->i] & RPMSENSE_LESS)) ||
-	 ((A->Flags[A->i] & RPMSENSE_GREATER) && (B->Flags[B->i] & RPMSENSE_GREATER)))) {
+	(((aFlags & RPMSENSE_EQUAL) && (bFlags & RPMSENSE_EQUAL)) ||
+	 ((aFlags & RPMSENSE_LESS) && (bFlags & RPMSENSE_LESS)) ||
+	 ((aFlags & RPMSENSE_GREATER) && (bFlags & RPMSENSE_GREATER)))) {
 	result = 1;
-    }
+    } else
+	result = 0;
 /*@=nullderef@*/
 
 exit:
@@ -3740,18 +3738,19 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
     int scareMem = 0;
     rpmds provides = NULL;
-    int result = 0;
+    int_32 reqFlags = (rpmdsFlags(req) & RPMSENSE_SENSEMASK);
+    int result = 1;
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (req->EVR == NULL || req->Flags == NULL)
-	return 1;
+	goto exit;
 
     switch(req->ns.Type) {
     default:
 /*@-boundsread@*/
 	/* Primary key retrieve satisfes an existence compare. */
-	if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
-	    return 1;
+	if (!reqFlags || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
+	    goto exit;
 /*@=boundsread@*/
 	/*@fallthrough@*/
     case RPMNS_TYPE_ARCH:
@@ -3760,8 +3759,10 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 
     /* Get provides information from header */
     provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem));
-    if (provides == NULL)
+    if (provides == NULL) {
+	result = 0;
 	goto exit;	/* XXX should never happen */
+    }
     if (nopromote)
 	(void) rpmdsSetNoPromote(provides, nopromote);
 
@@ -3770,10 +3771,8 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
      * If no provides version info is available, match any/all requires
      * with same name.
      */
-    if (provides->EVR == NULL) {
-	result = 1;
+    if (provides->EVR == NULL)
 	goto exit;
-    }
 
     /* If any provide matches the require, we're done. */
     result = 0;
@@ -3791,44 +3790,48 @@ exit:
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char * pkgN, * v, * r;
+    const char * pkgN, * V, * R;
     int_32 * epoch;
     const char * pkgEVR;
     char * t;
+    int_32 reqFlags = (rpmdsFlags(req) & RPMSENSE_SENSEMASK);
     int_32 pkgFlags = RPMSENSE_EQUAL;
+    int result = 1;	/* XXX assume match, names already match here */
     rpmds pkg;
-    int rc = 1;	/* XXX assume match, names already match here */
+    size_t nb;
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (req->EVR == NULL || req->Flags == NULL)
-	return rc;
+	goto exit;
 
 /*@-boundsread@*/
-    if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))
-	return rc;
+    if (!(reqFlags && req->EVR[req->i] && *req->EVR[req->i]))
+	goto exit;
 /*@=boundsread@*/
 
     /* Get package information from header */
-    (void) headerNVR(h, &pkgN, &v, &r);
+    (void) headerNVR(h, &pkgN, &V, &R);
 
+    nb = 21 + 1 + 1;
+    if (V) nb += strlen(V);
+    if (R) nb += strlen(R);
 /*@-boundswrite@*/
-    t = alloca(21 + strlen(v) + 1 + strlen(r) + 1);
-    pkgEVR = t;
+    pkgEVR = t = alloca(nb);
     *t = '\0';
     if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
 	sprintf(t, "%d:", *epoch);
-	while (*t != '\0')
-	    t++;
+	t += strlen(t);
     }
-    (void) stpcpy( stpcpy( stpcpy(t, v) , "-") , r);
+    (void) stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
 /*@=boundswrite@*/
 
     if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
 	if (nopromote)
 	    (void) rpmdsSetNoPromote(pkg, nopromote);
-	rc = rpmdsCompare(pkg, req);
+	result = rpmdsCompare(pkg, req);
 	pkg = rpmdsFree(pkg);
     }
 
-    return rc;
+exit:
+    return result;
 }
