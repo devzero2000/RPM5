@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.6
+Release: 0.7
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -544,6 +544,22 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Sat May 12 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.7
+- rollback: rewrite and simplify.
+- yaml: expose embedded syck parser in rpmio.
+- fix: don't segfault on header without RPMTAG_NAME (#239557).
+- upgrade to file-4.20 internal.
+- rollback: re-add blink's and installtid's to repackaged headers.
+- rpmns: add digest probe.
+- rpmevr: remove lib/rpmvercmp.c, use rpmEVRcmp() instead.
+- rpmns: add gnupg probe.
+- argv: add argvFgets() to build argv array from stdin lines.
+- argv: permit argvSplit() default whitespace separators.
+- argv: use xmalloc, not alloca, in argvSplit().
+- rpmevr: refactor logical operator parsing, hide implementation.
+- rpmevr: add RPMSENSE_NOTEQUAL and wire up the condition tests.
+- rpmns: negative existence tests as Requires: !foo, take 1.
+
 * Sun May  6 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.6
 - rpmns: parse namespace(...) probe markers.
 - rpmns: macro expand all dependency names.

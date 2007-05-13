@@ -46,13 +46,13 @@ lib/rpmgi.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmlock.c
+lib/rpmns.c
 lib/rpmps.c
 lib/rpmrc.c
 lib/rpmrollback.c
 lib/rpmsx.c
 lib/rpmte.c
 lib/rpmts.c
-lib/rpmvercmp.c
 lib/signature.c
 lib/stringbuf.c
 lib/tar.c

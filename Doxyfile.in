@@ -560,6 +560,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmlead.c \
                          @top_srcdir@/lib/rpmlead.h \
                          @top_srcdir@/lib/rpmlib.h \
+                         @top_srcdir@/lib/rpmns.c \
+                         @top_srcdir@/lib/rpmns.h \
                          @top_srcdir@/lib/rpmps.c \
                          @top_srcdir@/lib/rpmps.h \
                          @top_srcdir@/lib/rpmrc.c \
@@ -570,7 +572,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmte.h \
                          @top_srcdir@/lib/rpmts.c \
                          @top_srcdir@/lib/rpmts.h \
-                         @top_srcdir@/lib/rpmvercmp.c \
                          @top_srcdir@/lib/signature.c \
                          @top_srcdir@/lib/signature.h \
                          @top_srcdir@/lib/stringbuf.c \
