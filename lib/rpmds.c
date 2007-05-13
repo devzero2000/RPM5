@@ -372,6 +372,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     const char * N = rpmdsNewN(ds);
     const char * NS = ds->ns.NS;
     const char * A = ds->ns.A;
+    int_32 dsFlags = 0;
     char * tbuf, * t;
     size_t nb = 0;
 
@@ -386,16 +387,20 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	nb += strlen(A);
     }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
+    if (ds->Flags != NULL
+     && (dsFlags = (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)))
+    {
 	if (nb)	nb++;
-	if ((ds->Flags[ds->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL)
-		nb += 2;
+	if (dsFlags == RPMSENSE_NOTEQUAL)
+	    nb += 2;
 	else {
-	if (ds->Flags[ds->i] & RPMSENSE_LESS)	nb++;
-	if (ds->Flags[ds->i] & RPMSENSE_GREATER) nb++;
-	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	nb++;
+	    if (dsFlags & RPMSENSE_LESS)	nb++;
+	    if (dsFlags & RPMSENSE_GREATER)	nb++;
+	    if (dsFlags & RPMSENSE_EQUAL)	nb++;
+	}
     }
-    }
+    ds->ns.Flags = dsFlags;
+
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
 	if (nb)	nb++;
@@ -426,12 +431,12 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (t != tbuf)	*t++ = ' ';
-	if ((ds->Flags[ds->i] & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL)
-		t = stpcpy(t, "!=");
+	if (dsFlags == RPMSENSE_NOTEQUAL)
+	    t = stpcpy(t, "!=");
 	else {
-	    if (ds->Flags[ds->i] & RPMSENSE_LESS)	*t++ = '<';
-	    if (ds->Flags[ds->i] & RPMSENSE_GREATER)	*t++ = '>';
-	    if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	*t++ = '=';
+	    if (dsFlags & RPMSENSE_LESS)	*t++ = '<';
+	    if (dsFlags & RPMSENSE_GREATER)	*t++ = '>';
+	    if (dsFlags & RPMSENSE_EQUAL)	*t++ = '=';
 	}
     }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
@@ -3618,13 +3623,15 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
     EVR_t a = memset(alloca(sizeof(*a)), 0, sizeof(*a));
     EVR_t b = memset(alloca(sizeof(*a)), 0, sizeof(*a));
-    int_32 aFlags = (rpmdsFlags(A) & RPMSENSE_SENSEMASK);
-    int_32 bFlags = (rpmdsFlags(B) & RPMSENSE_SENSEMASK);
+    int_32 aFlags = A->ns.Flags;
+    int_32 bFlags = B->ns.Flags;
     int (*EVRcmp) (const char *a, const char *b);
     int result = 1;	/* assume success */
     int sense;
     int xx;
 
+assert((rpmdsFlags(A) & RPMSENSE_SENSEMASK) == A->ns.Flags);
+assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 /*@-boundsread@*/
     /* Different names (and/or name.arch's) don't overlap. */
     if (rpmdsNAcmp(A, B)) {
@@ -3738,9 +3745,10 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
     int scareMem = 0;
     rpmds provides = NULL;
-    int_32 reqFlags = (rpmdsFlags(req) & RPMSENSE_SENSEMASK);
+    int_32 reqFlags = req->ns.Flags;
     int result = 1;
 
+assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (req->EVR == NULL || req->Flags == NULL)
 	goto exit;
@@ -3794,12 +3802,13 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     int_32 * epoch;
     const char * pkgEVR;
     char * t;
-    int_32 reqFlags = (rpmdsFlags(req) & RPMSENSE_SENSEMASK);
+    int_32 reqFlags = req->ns.Flags;
     int_32 pkgFlags = RPMSENSE_EQUAL;
     int result = 1;	/* XXX assume match, names already match here */
     rpmds pkg;
     size_t nb;
 
+assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (req->EVR == NULL || req->Flags == NULL)
 	goto exit;
