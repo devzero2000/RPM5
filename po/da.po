@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-12 23:20-0400\n"
+"POT-Creation-Date: 2007-05-12 23:43-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1501,30 +1501,30 @@ msgstr ""
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
-#: lib/depends.c:1796
+#: lib/depends.c:1797
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
-#: lib/depends.c:1917
+#: lib/depends.c:1918
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:2008
+#: lib/depends.c:2009
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:2081
+#: lib/depends.c:2082
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:2112
+#: lib/depends.c:2113
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
-#: lib/depends.c:2117
+#: lib/depends.c:2118
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""

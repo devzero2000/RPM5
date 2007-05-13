@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-12 23:20-0400\n"
+"POT-Creation-Date: 2007-05-12 23:43-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1496,11 +1496,11 @@ msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#: lib/depends.c:1796
+#: lib/depends.c:1797
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
-#: lib/depends.c:1917
+#: lib/depends.c:1918
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1509,20 +1509,20 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:2008
+#: lib/depends.c:2009
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:2081
+#: lib/depends.c:2082
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:2112
+#: lib/depends.c:2113
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
-#: lib/depends.c:2117
+#: lib/depends.c:2118
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
