@@ -6,6 +6,8 @@
 #include <rpmio.h>
 #include <rpmmacro.h>
 
+#define	_RPMEVR_INTERNAL
+#include <rpmevr.h>
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
 
@@ -49,6 +51,9 @@ nsType rpmnsArch(const char * str)
     return RPMNS_TYPE_UNKNOWN;
 }
 
+/**
+ * Dependency probe table.
+ */
 /*@unchecked@*/ /*@observer@*/
 static struct _rpmnsProbes_s {
 /*@observer@*/ /*@relnull@*/
@@ -157,6 +162,10 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_ARCH:
 	ns->NS = NULL;
 	ns->N = ns->str;
+	if (ns->N[0] == '!') {
+	    ns->N++;
+	    ns->Flags = RPMSENSE_SENSEMASK;
+	}
 	if ((t = strrchr(t, _rpmns_N_at_A[0])) != NULL)
 	    *t++ = '\0';
 	ns->A = t;
@@ -174,7 +183,11 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_DIGEST:
     case RPMNS_TYPE_GNUPG:
 	ns->NS = ns->str;
-	if ((t = strrchr(t, '(')) != NULL)
+	if (ns->NS[0] == '!') {
+	    ns->NS++;
+	    ns->Flags = RPMSENSE_SENSEMASK;
+	}
+	if ((t = strchr(t, '(')) != NULL)
 	    *t++ = '\0';
 	ns->N = t;
 	t[strlen(t)-1] = '\0';
@@ -192,6 +205,10 @@ int rpmnsParse(const char * str, rpmns ns)
     default:
 	ns->NS = NULL;
 	ns->N = ns->str;
+	if (ns->N[0] == '!') {
+	    ns->N++;
+	    ns->Flags = RPMSENSE_SENSEMASK;
+	}
 	ns->A = NULL;
 	break;
     }

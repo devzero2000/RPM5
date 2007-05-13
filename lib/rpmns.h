@@ -60,6 +60,7 @@ struct rpmns_s {
     const char * N;		/*!< Name */
 /*@observer@*/ /*@null@*/
     const char * A;		/*!< Arch */
+    evrFlags Flags;		/*!< EVR comparison flags. */
 };
 #endif	/* _RPMNS_INTERNAL */
 
