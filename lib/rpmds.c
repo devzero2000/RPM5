@@ -399,7 +399,10 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	    if (dsFlags & RPMSENSE_EQUAL)	nb++;
 	}
     }
-    ds->ns.Flags = dsFlags;
+
+    ds->ns.Flags ^= dsFlags;
+    if (ds->ns.Flags == RPMSENSE_SENSEMASK)
+	ds->ns.Flags = 0;
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
@@ -3626,7 +3629,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     int_32 aFlags = A->ns.Flags;
     int_32 bFlags = B->ns.Flags;
     int (*EVRcmp) (const char *a, const char *b);
-    int result = 1;	/* assume success */
+    int result = (A->ns.str[0] != '!' && B->ns.str[0] != '!' ? 1 : 0);
     int sense;
     int xx;
 
@@ -3746,7 +3749,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     int scareMem = 0;
     rpmds provides = NULL;
     int_32 reqFlags = req->ns.Flags;
-    int result = 1;
+    int result = (req->ns.str[0] != '!' ? 1 : 0);
 
 assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
@@ -3788,6 +3791,8 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     while (rpmdsNext(provides) >= 0)
 	if ((result = rpmdsCompare(provides, req)))
 	    break;
+    if (req->ns.str[0] == '!')
+	result = (result == 0);
 
 exit:
     provides = rpmdsFree(provides);
@@ -3804,7 +3809,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     char * t;
     int_32 reqFlags = req->ns.Flags;
     int_32 pkgFlags = RPMSENSE_EQUAL;
-    int result = 1;	/* XXX assume match, names already match here */
+    int result = (req->ns.str[0] != '!' ? 1 : 0);
     rpmds pkg;
     size_t nb;
 

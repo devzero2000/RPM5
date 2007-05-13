@@ -86,6 +86,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	/* Tokens must begin with alphanumeric, _, or / */
 	nr = strlen(r);
 	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/'
+	 || (nr > 2 && r[0] == '!')
 	 || (nr > 3 && r[0] == '%' && r[1] == '{' && r[nr-1] == '}')))
 	{
 	    rpmError(RPMERR_BADSPEC,
