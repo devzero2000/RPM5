@@ -75,6 +75,7 @@
 	- rpmal: avoid rpmns allocates while iterating added provides.
 	- rpmns: finalize '!' as a dependency assertion negation operator.
 	- rpmns: add macro()/envvar() probes as existence tests.
+	- rollback: add REMOVETOID subdir to insure unbroken upgrade chain.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

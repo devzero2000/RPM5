@@ -1646,16 +1646,27 @@ psm->te->h = headerLink(fi->h);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    /* Open output package for writing. */
-	    {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
-		const char * pkgbn =
-			headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
+	    {	char tiddn[32];
+		const char * bfmt;
+		const char * pkgdn;
+		const char * pkgbn;
 
+		snprintf(tiddn, sizeof(tiddn), "%d", rpmtsGetTid(ts));
+		bfmt = rpmGetPath(tiddn, "/", "%{_repackage_name_fmt}", NULL);
+		pkgbn = headerSprintf(fi->h, bfmt,
+					rpmTagTable, rpmHeaderFormats, NULL);
 		bfmt = _free(bfmt);
 		psm->pkgURL = rpmGenPath("%{?_repackage_root}",
 					 "%{?_repackage_dir}",
 					pkgbn);
 		pkgbn = _free(pkgbn);
 		(void) urlPath(psm->pkgURL, &psm->pkgfn);
+		pkgbn = xstrdup(psm->pkgfn);
+		pkgdn = dirname(pkgbn);
+		rc = rpmMkdirPath(pkgdn, "_repackage_dir");
+		pkgbn = _free(pkgbn);
+		if (rc == RPMRC_FAIL)
+		    break;
 		psm->fd = Fopen(psm->pkgfn, "w");
 		if (psm->fd == NULL || Ferror(psm->fd)) {
 		    rc = RPMRC_FAIL;

@@ -458,7 +458,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	niids = 0;
     }
 
-    {	const char * globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
+    {	const char * globstr = rpmExpand("%{_repackage_dir}/*/*.rpm", NULL);
 	if (globstr == NULL || *globstr == '%') {
 	    globstr = _free(globstr);
 	    rc = -1;
