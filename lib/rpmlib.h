@@ -279,7 +279,7 @@ typedef enum rpmTag_e {
     RPMTAG_EXCLUDE		= 1041, /* internal - obsolete */
     RPMTAG_EXCLUSIVE		= 1042, /* internal - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_ICON			= 1043, /* x internal - obsolete */
+    RPMTAG_ICON			= 1043, /* x */
     RPMTAG_SOURCERPM		= 1044,	/* s */
     RPMTAG_FILEVERIFYFLAGS	= 1045,	/* i[] */
     RPMTAG_ARCHIVESIZE		= 1046,	/* i */
@@ -432,6 +432,14 @@ typedef enum rpmTag_e {
     RPMTAG_KEYWORDS		= 1182,	/* s[] */
     RPMTAG_BUILDPLATFORMS	= 1183,	/* s[] */
     RPMTAG_PACKAGECOLOR		= 1184, /* i */
+    RPMTAG_PACKAGEPREFCOLOR	= 1185, /* i (unimplemented) */
+    RPMTAG_XATTRSDICT		= 1186, /* s[] (unimplemented) */
+    RPMTAG_FILEXATTRSX		= 1187, /* i[] (unimplemented) */
+    RPMTAG_DEPATTRSDICT		= 1188, /* s[] (unimplemented) */
+    RPMTAG_CONFLICTATTRSX	= 1189, /* i[] (unimplemented) */
+    RPMTAG_OBSOLETEATTRSX	= 1190, /* i[] (unimplemented) */
+    RPMTAG_PROVIDEATTRSX	= 1191, /* i[] (unimplemented) */
+    RPMTAG_REQUIREATTRSX	= 1192, /* i[] (unimplemented) */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
