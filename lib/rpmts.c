@@ -1513,7 +1513,8 @@ rpmts rpmtsCreate(void)
     ts->delta = 5;
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");
-    ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}")?:2;
+    ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}");
+    if (!ts->prefcolor) ts->prefcolor = 0x2;
 
     ts->numRemovedPackages = 0;
     ts->allocedRemovedPackages = ts->delta;
