@@ -777,6 +777,31 @@ retry:
 	goto exit;
     }
 
+    if (NSType == RPMNS_TYPE_RUNNING) {
+	char *t = NULL;
+	pid_t pid = strtol(Name, &t, 10);
+
+	if (t == NULL || *t != '\0') {
+	    char * fn = rpmGetPath("%{_varrun}/", Name, ".pid", NULL);
+	    FD_t fd;
+
+	    if (fn && *fn != '%' && (fd = Fopen(fn, "r")) && !Ferror(fd)) {
+		char buf[32];
+		size_t nb = Fread(buf, sizeof(buf[0]), sizeof(buf), fd);
+
+		if (nb > 0)
+		    pid = strtol(buf, &t, 10);
+	    } else
+		pid = 0;
+	    if (fd)
+		(void) Fclose(fd);
+	    fn = _free(fn);
+	}
+	rc = (pid > 0 ? (kill(pid, 0) < 0 && errno == ESRCH) : 1);
+	rpmdsNotify(dep, _("(running probe)"), rc);
+	goto exit;
+    }
+
     /* Search system configured provides. */
     if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
 #ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */

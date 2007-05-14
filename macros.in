@@ -908,6 +908,9 @@ print (t)\
 #
 %_rpmds_perldeps_cmd	%{__find} %{_libdir}/perl5 | %{_usrlibrpm}/perl.prov
 
+#
+%_varrun		/var/run
+
 #==============================================================================
 # ---- Cache configuration macros.
 #	Macro(s) used to configure the universe of headers used to

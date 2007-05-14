@@ -47,6 +47,7 @@ typedef enum nsType_e {
     RPMNS_TYPE_GNUPG	=  (1 << 21),	/*!< gnupg(/path/file.asc) */
     RPMNS_TYPE_MACRO	=  (1 << 22),	/*!< macro(foo) */
     RPMNS_TYPE_ENVVAR	=  (1 << 23),	/*!< envvar(foo) */
+    RPMNS_TYPE_RUNNING	=  (1 << 24),	/*!< running(foo) */
 } nsType;
 
 #if defined(_RPMNS_INTERNAL)
