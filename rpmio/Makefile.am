@@ -20,7 +20,7 @@ INCLUDES = -I. \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	argv.h fts.h mire.h rpmdav.h rpmhash.h \
+	argv.h envvar.h fts.h mire.h rpmdav.h rpmhash.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	rpmsq.h rpmsw.h ugid.h
 noinst_HEADERS = \
