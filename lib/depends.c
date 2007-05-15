@@ -8,6 +8,7 @@
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
+#include <envvar.h>
 #include <ugid.h>		/* XXX user()/group() probes */
 
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
@@ -587,7 +588,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 
 	    if (rc >= 0) {
 		rpmdsNotify(dep, _("(cached)"), rc);
-		return rc;
+		return rpmdsNegateRC(dep, rc);
 	    }
 	}
     }
@@ -761,18 +762,40 @@ retry:
     if (NSType == RPMNS_TYPE_MACRO) {
 	static const char macro_pre[] = "%{?";
 	static const char macro_post[] = ":0}";
-	const char * t = rpmExpand(macro_pre, Name, macro_post, NULL);
+	const char * a = rpmExpand(macro_pre, Name, macro_post, NULL);
 
-	rc = (t && t[0] == '0') ? 0 : 1;
-	t = _free(t);
+	rc = (a && a[0] == '0') ? 0 : 1;
+	a = _free(a);
 	rpmdsNotify(dep, _("(macro probe)"), rc);
 	goto exit;
     }
 
     if (NSType == RPMNS_TYPE_ENVVAR) {
-	const char * t = getenv(Name);
+	const char * a = envGet(Name);
+	const char * b = rpmdsEVR(dep);
+	int sense;
 
-	rc = (t != NULL) ? 0 : 1;
+	/* Existence test if EVR is missing/empty. */
+	if (!(b && *b))
+	    rc = (!(a && *a));
+	else {
+	    if (!(a && *a))
+		sense = -1;
+	    else
+		sense = strcmp(a, b);
+
+	    if ((Flags & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL)
+		rc = (sense == 0);
+	    else if (sense < 0 && (Flags & RPMSENSE_LESS))
+		rc = 0;
+	    else if (sense > 0 && (Flags & RPMSENSE_GREATER))
+		rc = 0;
+	    else if (sense == 0 && (Flags & RPMSENSE_EQUAL))
+		rc = 0;
+	    else
+		rc = (sense != 0);
+	}
+
 	rpmdsNotify(dep, _("(envvar probe)"), rc);
 	goto exit;
     }
@@ -782,8 +805,8 @@ retry:
 	pid_t pid = strtol(Name, &t, 10);
 
 	if (t == NULL || *t != '\0') {
-	    char * fn = rpmGetPath("%{_varrun}/", Name, ".pid", NULL);
-	    FD_t fd;
+	    const char * fn = rpmGetPath("%{_varrun}/", Name, ".pid", NULL);
+	    FD_t fd = NULL;
 
 	    if (fn && *fn != '%' && (fd = Fopen(fn, "r")) && !Ferror(fd)) {
 		char buf[32];
@@ -1024,9 +1047,7 @@ exit:
 	}
     }
 
-    rc = rpmdsNegateRC(dep, rc);
-
-    return rc;
+    return rpmdsNegateRC(dep, rc);
 }
 
 /**
@@ -2299,6 +2320,18 @@ int rpmtsCheck(rpmts ts)
 
 	    if ((Name = rpmdsN(provides)) == NULL)
 		/*@innercontinue@*/ continue;	/* XXX can't happen */
+
+#ifdef	NOTYET
+	    if (rpmdsNSType(provides) == RPMNS_TYPE_ENVVAR) {
+		const char * EVR = rpmdsEVR(provides);
+		if (rpmdsNegateRC(provides, 0))
+		    EVR = NULL;
+		rc = envPut(Name, EVR);
+		if (!rc)
+		    /*@innercontinue@*/ continue;
+		/*@innerbreak@*/ break;
+	    }
+#endif
 
 	    /* Adding: check provides key against conflicts matches. */
 	    if (!checkDependentConflicts(ts, Name))

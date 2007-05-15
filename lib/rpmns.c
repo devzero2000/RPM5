@@ -129,6 +129,8 @@ nsType rpmnsClassify(const char * str)
     const char * s;
     nsType Type = RPMNS_TYPE_STRING;
 
+    if (*str == '!')
+	str++;
     if (*str == '/')
 	return RPMNS_TYPE_PATH;
     s = str + strlen(str);
