@@ -77,6 +77,8 @@
 	- rpmns: add macro()/envvar() probes as existence tests.
 	- rollback: add REMOVETID subdir to insure unbroken upgrade chain.
 	- rpmns: add running() probe with scwewy unexpected non-root behavior.
+	- rpmns: classify negated probes correctly.
+	- rpmns: add envvar() comparisons.
 	- solaris: rpmds.c rearrangements to build against solaris gelf API.
 	- rollback: add link terminator to all upgrade chains.
 	- rollback: assertion checks for all header additions.
