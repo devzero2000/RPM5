@@ -88,3 +88,5 @@ TEST #	TYPE	COMMENTS
 				manually rollback.
 30		RB		Test 17, but we don't fail installing broken-1-2, and just
 				manually rollback.
+31		RB		Install works-1-1 with rollback link support turned off.
+				Upgraded to works-2-0.  Now rollback to works-1-1.
