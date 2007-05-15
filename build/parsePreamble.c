@@ -706,6 +706,8 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
+    case RPMTAG_BUILDOBSOLETES:
+    case RPMTAG_BUILDPROVIDES:
     case RPMTAG_BUILDCONFLICTS:
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_OBSOLETEFLAGS:
@@ -795,7 +797,9 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_BUILDARCHS,		0, 0, "buildarchitectures"},
     {RPMTAG_BUILDARCHS,		0, 0, "buildarch"},
     {RPMTAG_BUILDCONFLICTS,	0, 0, "buildconflicts"},
+    {RPMTAG_BUILDOBSOLETES,	0, 0, "buildobsoletes"},
     {RPMTAG_BUILDPREREQ,	1, 0, "buildprereq"},
+    {RPMTAG_BUILDPROVIDES,	0, 0, "buildprovides"},
     {RPMTAG_BUILDREQUIRES,	1, 0, "buildrequires"},
     {RPMTAG_AUTOREQPROV,	0, 0, "autoreqprov"},
     {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
