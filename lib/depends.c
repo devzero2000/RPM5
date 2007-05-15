@@ -619,6 +619,8 @@ retry:
 	    xx = (uidToUname(uid) ? 0 : -1);
 	}
 	rc = (xx >= 0 ? 0 : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(user lookup)"), rc);
 	goto exit;
     }
@@ -634,6 +636,8 @@ retry:
 	    xx = (gidToGname(gid) ? 0 : -1);
 	}
 	rc = (xx >= 0 ? 0 : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(group lookup)"), rc);
 	goto exit;
     }
@@ -663,6 +667,8 @@ retry:
 		break;
 	}
 	rc = (i < nfs ? 0 : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(mtab probe)"), rc);
 	goto exit;
     }
@@ -716,6 +722,8 @@ retry:
 	    else if ((Flags & RPMSENSE_EQUAL) && xx == 0) rc = 0;
 	    else rc = 1;
 	}
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(diskspace probe)"), rc);
 	goto exit;
     }
@@ -744,6 +752,8 @@ retry:
 	    /* XXX only equality makes sense for digest compares */
 	    if ((Flags & RPMSENSE_EQUAL) && xx == 0) rc = 0;
 	}
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(digest probe)"), rc);
 	goto exit;
     }
@@ -755,6 +765,8 @@ retry:
 
 	rc = (t && t[0] == '0') ? 0 : 1;
 	t = _free(t);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(gnupg probe)"), rc);
 	goto exit;
     }
@@ -766,6 +778,8 @@ retry:
 
 	rc = (a && a[0] == '0') ? 0 : 1;
 	a = _free(a);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(macro probe)"), rc);
 	goto exit;
     }
@@ -773,16 +787,12 @@ retry:
     if (NSType == RPMNS_TYPE_ENVVAR) {
 	const char * a = envGet(Name);
 	const char * b = rpmdsEVR(dep);
-	int sense;
 
 	/* Existence test if EVR is missing/empty. */
 	if (!(b && *b))
 	    rc = (!(a && *a));
 	else {
-	    if (!(a && *a))
-		sense = -1;
-	    else
-		sense = strcmp(a, b);
+	    int sense = (a && *a) ? strcmp(a, b) : -1;
 
 	    if ((Flags & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL)
 		rc = (sense == 0);
@@ -796,6 +806,8 @@ retry:
 		rc = (sense != 0);
 	}
 
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(envvar probe)"), rc);
 	goto exit;
     }
@@ -821,6 +833,8 @@ retry:
 	    fn = _free(fn);
 	}
 	rc = (pid > 0 ? (kill(pid, 0) < 0 && errno == ESRCH) : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
 	rpmdsNotify(dep, _("(running probe)"), rc);
 	goto exit;
     }
