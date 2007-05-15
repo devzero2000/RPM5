@@ -260,6 +260,7 @@ preEraseTestPkgs() {
 		if [ $? = 0 ]
 		then
 			echo "INFO: Removing ${nvr} before test..."
+				${nvr}
 			$RPM -ev${VERBOSE} \
 				--repackage \
 				--noscripts \
@@ -783,13 +784,14 @@ run_test() {
 
 setup_test() {
 	local trandir
+	local extraRPMArgs
 
 	#
 	# Make sure there are no active locks on the test rpmdb
 	check_locks || return 1
 
 	#
-	# Blowa away any test packages so they do not interfere with
+	# Blow away any test packages so they do not interfere with
 	# our test.
 	if ! preEraseTestPkgs 
 	then
@@ -807,16 +809,29 @@ setup_test() {
 	fi
 
 	#
+	# See if we need to turn off blink creation...
+	[ "${NO_RB_LINKS_IN_SETUP}" = "1" ] && 
+		extraRPMArgs="--define '_no_rollback_links 1'"
+	#
 	# See if we need to install any rpms for upgrade testing...
 	if [ -d "${SETUP_DIR}" -a ! -z "${RPMS_SETUP}" ]
 	then
-		$RPM -Uv${VERBOSE}h \
+		echo $RPM -Uv${VERBOSE}h \
 			--repackage \
 			--force \
 			--define "${DBPATH_OPT}" \
 			--define "_repackage_dir ${RPDIR}" \
 			--define "${TMPPATH_OPT}" \
+			${extraRPMArgs} \
 			$RPMS_SETUP
+		eval "$RPM -Uv${VERBOSE}h \
+			--repackage \
+			--force \
+			--define '${DBPATH_OPT}' \
+			--define '_repackage_dir ${RPDIR}' \
+			--define '${TMPPATH_OPT}' \
+			${extraRPMArgs} \
+			${RPMS_SETUP}"
 		if [ $? != 0 ]
 		then
 			echo "ERROR: Could not install setup rpms!"
