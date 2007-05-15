@@ -1369,10 +1369,11 @@ static int hCopyTag(Header sh, Header th, int_32 tag)
     int_32 typ = 0;
     void * ptr = NULL;
     int_32 cnt = 0;
-    int xx;
+    int xx = 1;
 
     if (headerGetEntry(sh, tag, &typ, &ptr, &cnt) && cnt > 0)
 	xx = headerAddEntry(th, tag, typ, ptr, cnt);
+assert(xx);
     ptr = headerFreeData(ptr, typ);
     return 0;
 }
@@ -1388,13 +1389,16 @@ static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 {
     static const char * chain_end = RPMTE_CHAIN_END;
     int ac;
-    int xx;
+    int xx = 1;
 
-    /* Save backward links into header upgrade chain. */
     ac = argvCount(blink->NEVRA);
     if (ac > 0)
 	xx = headerAddEntry(h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
 			argvData(blink->NEVRA), ac);
+    else     /* XXX Add an explicit chain terminator on 1st install. */
+	xx = headerAddEntry(h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+			&chain_end, 1);
+assert(xx);
     
     ac = argvCount(blink->Pkgid);
     if (ac > 0) 
@@ -1403,10 +1407,16 @@ static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
     else     /* XXX Add an explicit chain terminator on 1st install. */
 	xx = headerAddEntry(h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
 			&chain_end, 1);
+assert(xx);
+
     ac = argvCount(blink->Hdrid);
     if (ac > 0)
 	xx = headerAddEntry(h, RPMTAG_BLINKHDRID, RPM_STRING_ARRAY_TYPE,
 			argvData(blink->Hdrid), ac);
+    else     /* XXX Add an explicit chain terminator on 1st install. */
+	xx = headerAddEntry(h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+			&chain_end, 1);
+assert(xx);
 
     return 0;
 }
@@ -1424,14 +1434,20 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
     static const char * chain_end = RPMTE_CHAIN_END;
 #endif
     int ac;
-    int xx;
+    int xx = 1;
 
     /* Save backward links into header upgrade chain. */
     ac = argvCount(flink->NEVRA);
     if (ac > 0)
 	xx = headerAddEntry(h, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
 			argvData(flink->NEVRA), ac);
-    
+#ifdef	NOTYET	/* XXX is an explicit flink terminator needed? */
+    else     /* XXX Add an explicit chain terminator on 1st install. */
+	xx = headerAddEntry(h, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+			&chain_end, 1);
+#endif
+assert(xx);
+
     ac = argvCount(flink->Pkgid);
     if (ac > 0) 
 	xx = headerAddEntry(h, RPMTAG_FLINKPKGID, RPM_STRING_ARRAY_TYPE,
@@ -1441,11 +1457,18 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	xx = headerAddEntry(h, RPMTAG_FLINKPKGID, RPM_STRING_ARRAY_TYPE,
 			&chain_end, 1);
 #endif
+assert(xx);
 
     ac = argvCount(flink->Hdrid);
     if (ac > 0)
 	xx = headerAddEntry(h, RPMTAG_FLINKHDRID, RPM_STRING_ARRAY_TYPE,
 			argvData(flink->Hdrid), ac);
+#ifdef	NOTYET	/* XXX is an explicit flink terminator needed? */
+    else     /* XXX Add an explicit chain terminator on 1st install. */
+	xx = headerAddEntry(h, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
+			&chain_end, 1);
+#endif
+assert(xx);
 
     return 0;
 }
@@ -1465,29 +1488,34 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
     int_32 installTime = (int_32) time(NULL);
     int fc = rpmfiFC(fi);
     const char * origin;
-    int xx;
+    int xx = 1;
 
 assert(fi->h);
     if (fi->fstates != NULL && fc > 0)
 	xx = headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
 				fi->fstates, fc);
+assert(xx);
 
     xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 			&installTime, 1);
+assert(xx);
 
     xx = headerAddEntry(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
 			&tscolor, 1);
+assert(xx);
 
     /* XXX FIXME: add preferred color at install. */
 
     xx = headerAddEntry(fi->h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE,
 				&tecolor, 1);
+assert(xx);
 
     /* Add the header's origin (i.e. URL) */
     origin = headerGetOrigin(fi->h);
     if (origin != NULL)
 	xx = headerAddEntry(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
 				origin, 1);
+assert(xx);
 
     /* XXX Don't clobber forward/backward upgrade chain on rollbacks */
     if (rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK)
@@ -1661,10 +1689,9 @@ psm->te->h = headerLink(fi->h);
 					pkgbn);
 		pkgbn = _free(pkgbn);
 		(void) urlPath(psm->pkgURL, &psm->pkgfn);
-		pkgbn = xstrdup(psm->pkgfn);
-		pkgdn = dirname(pkgbn);
+		pkgdn = dirname(xstrdup(psm->pkgfn));
 		rc = rpmMkdirPath(pkgdn, "_repackage_dir");
-		pkgbn = _free(pkgbn);
+		pkgdn = _free(pkgdn);
 		if (rc == RPMRC_FAIL)
 		    break;
 		psm->fd = Fopen(psm->pkgfn, "w");
