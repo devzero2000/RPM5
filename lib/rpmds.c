@@ -30,6 +30,47 @@
 #endif
 #endif /* HAVE_GELF_H */
 
+#if HAVE_LIBELF && !HAVE_GELF_GETVERNAUX
+/* We have gelf.h and libelf, but we don't have some of the
+ * helper functions gelf_getvernaux(), gelf_getverneed(), etc.
+ * Provide our own simple versions here.
+ */
+
+static GElf_Verdef *gelf_getverdef(Elf_Data *data, int offset,
+                   GElf_Verdef *dst)
+{
+	return (GElf_Verdef *) ((char *) data->d_buf + offset);
+}
+
+static GElf_Verdaux *gelf_getverdaux(Elf_Data *data, int offset,
+                    GElf_Verdaux *dst)
+{
+	return (GElf_Verdaux *) ((char *) data->d_buf + offset);
+}
+
+static GElf_Verneed *gelf_getverneed(Elf_Data *data, int offset,
+                    GElf_Verneed *dst)
+{
+	return (GElf_Verneed *) ((char *) data->d_buf + offset);
+}
+
+static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
+                    GElf_Vernaux *dst)
+{
+	return (GElf_Vernaux *) ((char *) data->d_buf + offset);
+}
+
+/* Most non-Linux systems won't have SHT_GNU_verdef or SHT_GNU_verneed,
+ * but they might have something mostly-equivalent.  Solaris has
+ * SHT_SUNW_{verdef,verneed}
+ */
+#if !defined(SHT_GNU_verdef) && defined(__sun) && defined(SHT_SUNW_verdef)
+# define SHT_GNU_verdef SHT_SUNW_verdef
+# define SHT_GNU_verneed SHT_SUNW_verneed
+#endif
+
+#endif /* HAVE_LIBELF && !HAVE_GELF_GETVERNAUX */
+
 #if !defined(DT_GNU_HASH)
 #define	DT_GNU_HASH	0x6ffffef5
 #endif
@@ -3188,47 +3229,6 @@ exit:
     if (fp != NULL) (void) pclose(fp);
     return rc;
 }
-
-#if HAVE_LIBELF && !HAVE_GELF_GETVERNAUX
-/* We have gelf.h and libelf, but we don't have some of the
- * helper functions gelf_getvernaux(), gelf_getverneed(), etc.
- * Provide our own simple versions here.
- */
-
-static GElf_Verdef *gelf_getverdef(Elf_Data *data, int offset,
-                   GElf_Verdef *dst)
-{
-	return (GElf_Verdef *) ((char *) data->d_buf + offset);
-}
-
-static GElf_Verdaux *gelf_getverdaux(Elf_Data *data, int offset,
-                    GElf_Verdaux *dst)
-{
-	return (GElf_Verdaux *) ((char *) data->d_buf + offset);
-}
-
-static GElf_Verneed *gelf_getverneed(Elf_Data *data, int offset,
-                    GElf_Verneed *dst)
-{
-	return (GElf_Verneed *) ((char *) data->d_buf + offset);
-}
-
-static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
-                    GElf_Vernaux *dst)
-{
-	return (GElf_Vernaux *) ((char *) data->d_buf + offset);
-}
-
-/* Most non-Linux systems won't have SHT_GNU_verdef or SHT_GNU_verneed,
- * but they might have something mostly-equivalent.  Solaris has
- * SHT_SUNW_{verdef,verneed}
- */
-#if !defined(SHT_GNU_verdef) && defined(__sun) && defined(SHT_SUNW_verdef)
-# define SHT_GNU_verdef SHT_SUNW_verdef
-# define SHT_GNU_verneed SHT_SUNW_verneed
-#endif
-
-#endif /* HAVE_LIBELF && !HAVE_GELF_GETVERNAUX */
 
 
 #if defined(__sun)

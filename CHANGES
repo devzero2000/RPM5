@@ -77,6 +77,7 @@
 	- rpmns: add macro()/envvar() probes as existence tests.
 	- rollback: add REMOVETOID subdir to insure unbroken upgrade chain.
 	- rpmns: add running() probe with scwewy unexpected non-root behavior.
+	- solaris: rpmds.c rearrangements to build against solaris gelf API.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.
