@@ -99,17 +99,7 @@ check_for_core_files() {
 
 	#
 	# Look for core, and then core.$some_pid
-	cores=$(ls core 2>/dev/null)
-	tmp=$(ls core.* 2>/dev/null)
-	if [ ! -z "${tmp}" ] 
-	then
-		if [ -z "${cores}" ] 
-		then 
-			cores="${tmp}"
-		else
-			cores="${cores} ${tmp}"
-		fi
-	fi
+	cores=$(ls $CORE_DROP_DIR/$CORE_PATTERN 2>/dev/null)
 
 	#
 	# Now lets see if we have any cores...if we don't return OK

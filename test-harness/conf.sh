@@ -67,6 +67,11 @@ VALGRIND=0
 VALGRIND_CMD=/usr/bin/valgrind
 VALGRIND_OPTS='-v --leak-check=full'
 
+#
+# Core file support:
+CORE_DROP_DIR=/var/TKLC/core
+CORE_PATTERN='core.*'
+
  
 #####################
 # Dont Change These #
