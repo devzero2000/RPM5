@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-13 15:10-0400\n"
+"POT-Creation-Date: 2007-05-15 17:58-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -737,7 +737,7 @@ msgstr "署名ヘッダの再読み込みができません。\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:744 lib/psm.c:1804
+#: build/pack.c:744 lib/psm.c:1842
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
@@ -767,7 +767,7 @@ msgstr "%s から Payload 読み込みに失敗: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:837 lib/psm.c:2079
+#: build/pack.c:837 lib/psm.c:2117
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
@@ -961,32 +961,32 @@ msgstr "%d 行目: タグはトークンを 1つしかとりません: %s\n"
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 行目: 不正な修飾子 %s : %s\n"
 
-#: build/parsePreamble.c:729
+#: build/parsePreamble.c:731
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 行目: 不正な BuildArchtecture フォーマット: %s\n"
 
-#: build/parsePreamble.c:738
+#: build/parsePreamble.c:740
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "内部エラー: にせのタグ %d\n"
 
-#: build/parsePreamble.c:840
+#: build/parsePreamble.c:844
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "旧来の構文はサポートされません: %s\n"
 
-#: build/parsePreamble.c:909
+#: build/parsePreamble.c:913
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不正なパッケージの指定: %s\n"
 
-#: build/parsePreamble.c:915
+#: build/parsePreamble.c:919
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "パッケージは既に存在しています: %s\n"
 
-#: build/parsePreamble.c:944
+#: build/parsePreamble.c:948
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 行目: 不明なタグ: %s\n"
@@ -1070,19 +1070,19 @@ msgstr "%s: 失敗: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "%d 行目: 2番目の %%prep\n"
 
-#: build/parseReqs.c:93
+#: build/parseReqs.c:101
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
-#: build/parseReqs.c:117
+#: build/parseReqs.c:125
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "%d 行目: バージョン付けされたファイル名は許可されていません: %s\n"
 
-#: build/parseReqs.c:133
+#: build/parseReqs.c:141
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "%d 行目: バージョンが必要です: %s\n"
@@ -1383,134 +1383,139 @@ msgstr "アーカイブファイルがヘッダにありません。"
 msgid " failed - "
 msgstr "失敗 - "
 
-#: lib/depends.c:297
+#: lib/depends.c:298
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "パッケージ %s は既に追加されています。%s を飛ばします。\n"
 
-#: lib/depends.c:311
+#: lib/depends.c:312
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "パッケージ %s は既に追加されています。 %s と置換します。\n"
 
-#: lib/depends.c:418
+#: lib/depends.c:419
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "%s を必要とするパッケージは存在しません。\n"
 
-#: lib/depends.c:488
+#: lib/depends.c:489
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr "  Obsoletes: %s\t\t%s を削除します\n"
 
-#: lib/depends.c:589
+#: lib/depends.c:590
 msgid "(cached)"
 msgstr "(キャッシュ済み)"
 
-#: lib/depends.c:604
+#: lib/depends.c:605
 #, fuzzy
 msgid "(function probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:621
+#: lib/depends.c:624
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:636
+#: lib/depends.c:641
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:645
+#: lib/depends.c:650
 #, fuzzy
 msgid "(access probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:665
+#: lib/depends.c:672
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:718
+#: lib/depends.c:727
 #, fuzzy
 msgid "(diskspace probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:746
+#: lib/depends.c:757
 #, fuzzy
 msgid "(digest probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:757
+#: lib/depends.c:770
 #, fuzzy
 msgid "(gnupg probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:768
+#: lib/depends.c:783
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:776
+#: lib/depends.c:811
 #, fuzzy
 msgid "(envvar probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:789
+#: lib/depends.c:838
+#, fuzzy
+msgid "(running probe)"
+msgstr "(rpmrc 提供)"
+
+#: lib/depends.c:851
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:809
+#: lib/depends.c:871
 msgid "(rpmlib provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:825
+#: lib/depends.c:887
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:841
+#: lib/depends.c:903
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:857
+#: lib/depends.c:919
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(provideに追加済み)"
 
-#: lib/depends.c:889
+#: lib/depends.c:951
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(provideに追加済み)"
 
-#: lib/depends.c:916
+#: lib/depends.c:978
 msgid "(db files)"
 msgstr "(files データベース)"
 
-#: lib/depends.c:929
+#: lib/depends.c:991
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#: lib/depends.c:959
+#: lib/depends.c:1021
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1415
+#: lib/depends.c:1475
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1543
+#: lib/depends.c:1603
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#: lib/depends.c:1819
+#: lib/depends.c:1879
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
-#: lib/depends.c:1940
+#: lib/depends.c:2000
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1519,20 +1524,20 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:2031
+#: lib/depends.c:2091
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:2104
+#: lib/depends.c:2164
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:2135
+#: lib/depends.c:2195
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
-#: lib/depends.c:2140
+#: lib/depends.c:2200
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -2548,35 +2553,35 @@ msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
 
-#: lib/psm.c:1541
+#: lib/psm.c:1569
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s は  %d ファイルを含み、テスト = %d です。\n"
 
-#: lib/psm.c:1705
+#: lib/psm.c:1743
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: スクリプト %s の実行に失敗しました (%d)。%s をスキップします。\n"
 
-#: lib/psm.c:1816
+#: lib/psm.c:1854
 msgid "Unable to reload signature header\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: lib/psm.c:1909
+#: lib/psm.c:1947
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "アーカイブの伸長に失敗%s%s: %s\n"
 
-#: lib/psm.c:1910
+#: lib/psm.c:1948
 msgid " on file "
 msgstr ": ファイル "
 
-#: lib/psm.c:2087
+#: lib/psm.c:2125
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s: ファイル %s で失敗: %s\n"
 
-#: lib/psm.c:2090
+#: lib/psm.c:2128
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
@@ -2798,85 +2803,85 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:878 lib/rpmds.c:3708
+#: lib/rpmds.c:919 lib/rpmds.c:3708
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:878 lib/rpmds.c:3708
+#: lib/rpmds.c:919 lib/rpmds.c:3708
 msgid "YES"
 msgstr "YES"
 
-#: lib/rpmds.c:1370
+#: lib/rpmds.c:1411
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
 
-#: lib/rpmds.c:1373
+#: lib/rpmds.c:1414
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
 
-#: lib/rpmds.c:1376
+#: lib/rpmds.c:1417
 msgid "package payload can be compressed using bzip2."
 msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
 
-#: lib/rpmds.c:1379
+#: lib/rpmds.c:1420
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "パッケージペイロードファイルが「./」接頭語を持っています。"
 
-#: lib/rpmds.c:1382
+#: lib/rpmds.c:1423
 msgid "package name-version-release is not implicitly provided."
 msgstr "「パッケージ名-バージョン-リリース」が暗黙で提供されません。"
 
-#: lib/rpmds.c:1385
+#: lib/rpmds.c:1426
 msgid "header tags are always sorted after being loaded."
 msgstr "ヘッダータグが読み込まれた後、常にソートされます。"
 
-#: lib/rpmds.c:1388
+#: lib/rpmds.c:1429
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "スクリプトインタプリターがヘッダから引数を使用できます。"
 
-#: lib/rpmds.c:1391
+#: lib/rpmds.c:1432
 msgid "a hardlink file set may be installed without being complete."
 msgstr "ハードリンクファイル群が完全でなくてもインストールできます。"
 
-#: lib/rpmds.c:1394
+#: lib/rpmds.c:1435
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
 
-#: lib/rpmds.c:1398
+#: lib/rpmds.c:1439
 msgid "internal support for lua scripts."
 msgstr "lua スクリプトの内部サポート。"
 
-#: lib/rpmds.c:1402
+#: lib/rpmds.c:1443
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1405
+#: lib/rpmds.c:1446
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1408
+#: lib/rpmds.c:1449
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
 
-#: lib/rpmds.c:1411
+#: lib/rpmds.c:1452
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1501 lib/rpmds.c:3532
+#: lib/rpmds.c:1542 lib/rpmds.c:3532
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s には不正な数値があります。スキップします\n"
 
-#: lib/rpmds.c:1525 lib/rpmds.c:3550
+#: lib/rpmds.c:1566 lib/rpmds.c:3550
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1536 lib/rpmds.c:3565
+#: lib/rpmds.c:1577 lib/rpmds.c:3565
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""

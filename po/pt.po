@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-13 15:10-0400\n"
+"POT-Creation-Date: 2007-05-15 17:58-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -732,7 +732,7 @@ msgstr "Não consegui reler o cabeçalho do assinatura.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Não consigo aceder ao %s: %s\n"
 
-#: build/pack.c:744 lib/psm.c:1804
+#: build/pack.c:744 lib/psm.c:1842
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Não consegui gravar o pacote: %s\n"
@@ -762,7 +762,7 @@ msgstr "Não consegui ler o conteúdo de %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Não consegui escrever o conteúdo de %s: %s\n"
 
-#: build/pack.c:837 lib/psm.c:2079
+#: build/pack.c:837 lib/psm.c:2117
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravei: %s\n"
@@ -956,32 +956,32 @@ msgstr "linha %d: Opção só recebe um parâmetro: %s\n"
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linha %d: Qualificadores %s: inválidos: %s\n"
 
-#: build/parsePreamble.c:729
+#: build/parsePreamble.c:731
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linha %d: Formato da BuildArchitecture inválido: %s\n"
 
-#: build/parsePreamble.c:738
+#: build/parsePreamble.c:740
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Erro interno: Opção esquisita %d\n"
 
-#: build/parsePreamble.c:840
+#: build/parsePreamble.c:844
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:909
+#: build/parsePreamble.c:913
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Descrição do pacote inválida: %s\n"
 
-#: build/parsePreamble.c:915
+#: build/parsePreamble.c:919
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "O pacote já existe: %s\n"
 
-#: build/parsePreamble.c:944
+#: build/parsePreamble.c:948
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linha %d: Opção desconhecida: %s\n"
@@ -1065,7 +1065,7 @@ msgstr "%s falhou: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "linha %d: segundo %%prep\n"
 
-#: build/parseReqs.c:93
+#: build/parseReqs.c:101
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1073,12 +1073,12 @@ msgstr ""
 "linha %d: Os elementos de dependências têm de começar por alfanuméricos, '_' "
 "ou '/': %s\n"
 
-#: build/parseReqs.c:117
+#: build/parseReqs.c:125
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "linha %d: Nome do ficheiro com versão não permitido: %s\n"
 
-#: build/parseReqs.c:133
+#: build/parseReqs.c:141
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "linha %d: Necessária a versão: %s\n"
@@ -1389,137 +1389,142 @@ msgstr "Ficheiro de arquivo não está no cabeçalho"
 msgid " failed - "
 msgstr " falhou - "
 
-#: lib/depends.c:297
+#: lib/depends.c:298
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "o pacote %s já está instalado"
 
-#: lib/depends.c:311
+#: lib/depends.c:312
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "o pacote %s já está instalado"
 
-#: lib/depends.c:418
+#: lib/depends.c:419
 #, fuzzy, c-format
 msgid "   upgrade erases %s\n"
 msgstr "nenhum pacote precisa do %s\n"
 
-#: lib/depends.c:488
+#: lib/depends.c:489
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:589
+#: lib/depends.c:590
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:604
+#: lib/depends.c:605
 #, fuzzy
 msgid "(function probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:621
+#: lib/depends.c:624
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:636
+#: lib/depends.c:641
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:645
+#: lib/depends.c:650
 #, fuzzy
 msgid "(access probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:665
+#: lib/depends.c:672
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:718
+#: lib/depends.c:727
 #, fuzzy
 msgid "(diskspace probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:746
+#: lib/depends.c:757
 #, fuzzy
 msgid "(digest probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:757
+#: lib/depends.c:770
 #, fuzzy
 msgid "(gnupg probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:768
+#: lib/depends.c:783
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:776
+#: lib/depends.c:811
 #, fuzzy
 msgid "(envvar probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:789
+#: lib/depends.c:838
+#, fuzzy
+msgid "(running probe)"
+msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
+
+#: lib/depends.c:851
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:809
+#: lib/depends.c:871
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:825
+#: lib/depends.c:887
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:841
+#: lib/depends.c:903
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:857
+#: lib/depends.c:919
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:889
+#: lib/depends.c:951
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:916
+#: lib/depends.c:978
 #, fuzzy
 msgid "(db files)"
 msgstr "ficheiro db inválido %s\n"
 
-#: lib/depends.c:929
+#: lib/depends.c:991
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:959
+#: lib/depends.c:1021
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1415
+#: lib/depends.c:1475
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorar relações entre o nome do pacote [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1543
+#: lib/depends.c:1603
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
-#: lib/depends.c:1819
+#: lib/depends.c:1879
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
-#: lib/depends.c:1940
+#: lib/depends.c:2000
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1527,20 +1532,20 @@ msgid ""
 msgstr ""
 "========== ordenar pacotes (order, #predecessors, #succesors, tree, depth)\n"
 
-#: lib/depends.c:2031
+#: lib/depends.c:2091
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:2104
+#: lib/depends.c:2164
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:2135
+#: lib/depends.c:2195
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
-#: lib/depends.c:2140
+#: lib/depends.c:2200
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2592,36 +2597,36 @@ msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr ""
 "a execução do 'scriptlet' %s do %s-%s-%s falhou com código de erro %d\n"
 
-#: lib/psm.c:1541
+#: lib/psm.c:1569
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s tem %d ficheiros, teste = %d\n"
 
-#: lib/psm.c:1705
+#: lib/psm.c:1743
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s script falhou (%d), a saltar %s-%s-%s\n"
 
-#: lib/psm.c:1816
+#: lib/psm.c:1854
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Não consegui reler o cabeçalho do assinatura.\n"
 
-#: lib/psm.c:1909
+#: lib/psm.c:1947
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "a abertura do pacote falhou%s%s: %s\n"
 
-#: lib/psm.c:1910
+#: lib/psm.c:1948
 msgid " on file "
 msgstr " no ficheiro "
 
-#: lib/psm.c:2087
+#: lib/psm.c:2125
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s falhou no ficheiro %s: %s\n"
 
-#: lib/psm.c:2090
+#: lib/psm.c:2128
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
@@ -2846,82 +2851,82 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:878 lib/rpmds.c:3708
+#: lib/rpmds.c:919 lib/rpmds.c:3708
 msgid "NO "
 msgstr "NÃO"
 
-#: lib/rpmds.c:878 lib/rpmds.c:3708
+#: lib/rpmds.c:919 lib/rpmds.c:3708
 msgid "YES"
 msgstr "SIM"
 
-#: lib/rpmds.c:1370
+#: lib/rpmds.c:1411
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1373
+#: lib/rpmds.c:1414
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1376
+#: lib/rpmds.c:1417
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1379
+#: lib/rpmds.c:1420
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1382
+#: lib/rpmds.c:1423
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1385
+#: lib/rpmds.c:1426
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1388
+#: lib/rpmds.c:1429
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1391
+#: lib/rpmds.c:1432
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1394
+#: lib/rpmds.c:1435
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1398
+#: lib/rpmds.c:1439
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- não suportado em cadeias de caracteres\n"
 
-#: lib/rpmds.c:1402
+#: lib/rpmds.c:1443
 msgid "header tags can be type int_64."
 msgstr ""
 
-#: lib/rpmds.c:1405
+#: lib/rpmds.c:1446
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1408
+#: lib/rpmds.c:1449
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:1411
+#: lib/rpmds.c:1452
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1501 lib/rpmds.c:3532
+#: lib/rpmds.c:1542 lib/rpmds.c:3532
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "O %s tem um valor numérico inválido, foi ignorado\n"
 
-#: lib/rpmds.c:1525 lib/rpmds.c:3550
+#: lib/rpmds.c:1566 lib/rpmds.c:3550
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1536 lib/rpmds.c:3565
+#: lib/rpmds.c:1577 lib/rpmds.c:3565
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
