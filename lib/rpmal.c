@@ -653,7 +653,9 @@ void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint_32 tscolor)
 	ai->k++;
 
 	aie->pkgKey = pkgKey;
+/*@-assignexpose@*/
 	aie->entry = Name;
+/*@=assignexpose@*/
 	aie->entryLen = strlen(Name);
 	ix = rpmdsIx(provides);
 

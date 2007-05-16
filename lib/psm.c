@@ -1342,7 +1342,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
  * @return		tag value (0 on failure)
  */
 static uint_32 hLoadTID(Header h, int_32 tag)
-	/*@modifies th @*/
+	/*@*/
 {
     uint_32 val = 0;
     int_32 typ = 0;
@@ -1387,6 +1387,7 @@ assert(xx);
 static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 	/*@modifies h @*/
 {
+    /*@observer@*/
     static const char * chain_end = RPMTE_CHAIN_END;
     int ac;
     int xx = 1;
@@ -1431,6 +1432,7 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	/*@modifies h @*/
 {
 #ifdef	NOTYET
+    /*@observer@*/
     static const char * chain_end = RPMTE_CHAIN_END;
 #endif
     int ac;
@@ -1490,7 +1492,7 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
     const char * origin;
     int xx = 1;
 
-assert(fi->h);
+assert(fi->h != NULL);
     if (fi->fstates != NULL && fc > 0)
 	xx = headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
 				fi->fstates, fc);
@@ -1679,7 +1681,7 @@ psm->te->h = headerLink(fi->h);
 		const char * pkgdn;
 		const char * pkgbn;
 
-		snprintf(tiddn, sizeof(tiddn), "%d", rpmtsGetTid(ts));
+		xx = snprintf(tiddn, sizeof(tiddn), "%d", rpmtsGetTid(ts));
 		bfmt = rpmGetPath(tiddn, "/", "%{_repackage_name_fmt}", NULL);
 		pkgbn = headerSprintf(fi->h, bfmt,
 					rpmTagTable, rpmHeaderFormats, NULL);

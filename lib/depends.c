@@ -29,6 +29,7 @@
 /*@access tsortInfo @*/
 /*@access rpmte @*/		/* XXX for install <-> erase associate. */
 /*@access rpmts @*/
+/*@access rpmDiskSpaceInfo @*/
 
 /*@access alKey @*/	/* XXX for reordering and RPMAL_NOMATCH assign */
 
@@ -610,7 +611,7 @@ retry:
     if (NSType == RPMNS_TYPE_USER) {
 	const char *s;
 	uid_t uid = 0;
-	for (s = Name; *s && xisdigit(*s); s++);
+	s = Name; while (*s && xisdigit(*s)) s++;
 
 	if (*s)
 	    xx = unameToUid(Name, &uid);
@@ -627,7 +628,7 @@ retry:
     if (NSType == RPMNS_TYPE_GROUP) {
 	const char *s;
 	gid_t gid = 0;
-	for (s = Name; *s && xisdigit(*s); s++);
+	s = Name; while (*s && xisdigit(*s)) s++;
 
 	if (*s)
 	    xx = gnameToGid(Name, &gid);
@@ -744,9 +745,9 @@ retry:
 	    size_t nb;
 
 	    while ((nb = Fread(buf, sizeof(buf[0]), nbuf, fd)) > 0)
-		rpmDigestUpdate(ctx, buf, nb);
-	    Fclose(fd);	fd = NULL;
-	    rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
+		xx = rpmDigestUpdate(ctx, buf, nb);
+	    xx = Fclose(fd);	fd = NULL;
+	    xx = rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
 
 	    xx = (EVR && *EVR && digest && *digest) ? strcmp(EVR, digest) : -1;
 	    /* XXX only equality makes sense for digest compares */
@@ -828,7 +829,7 @@ retry:
 		    pid = strtol(buf, &t, 10);
 	    } else
 		pid = 0;
-	    if (fd)
+	    if (fd != NULL)
 		(void) Fclose(fd);
 	    fn = _free(fn);
 	}

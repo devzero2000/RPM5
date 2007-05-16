@@ -102,7 +102,8 @@ nsType rpmnsClassify(const char * str)
  * @return		0 always
  */
 int rpmnsParse(const char * str, rpmns ns)
-	/*@modifies ns @*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies ns, rpmGlobalMacroContext @*/;
 
 #ifdef __cplusplus
 }

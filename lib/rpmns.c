@@ -16,11 +16,11 @@
 /*@unchecked@*/
 int _rpmns_debug = 0;
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 const char *_rpmns_N_at_A = ".";
 
 /*@-nullassign@*/
-/*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 static const char *rpmnsArches[] = {
     "i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4", "x86_64", "amd64", "ia32e",
     "alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
