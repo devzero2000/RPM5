@@ -786,6 +786,8 @@ setup_test() {
 	local trandir
 	local extraRPMArgs
 
+	echo "<<< BEGIN OF SETUP >>>"
+
 	#
 	# Make sure there are no active locks on the test rpmdb
 	check_locks || return 1
@@ -861,6 +863,7 @@ setup_test() {
 	# TIDS matching the rollback tid:
 	sleep 1
 
+	echo "<<< END OF SETUP >>>"
 	return 0
 }
 
