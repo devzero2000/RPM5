@@ -242,7 +242,6 @@ static int cmpArgvStr(rpmts ts, const char *lname, const char ** AV, int AC,
       if (!strcmp(lname, "NEVRA")) {
 	rpmps ps = rpmtsProblems(ts);
 	for (i = 0; i < AC && (A = AV[i]) != NULL; i++) {
-fprintf(stderr, "==> %s(%p) missing %s[%d]: %s\n", __FUNCTION__, ts, lname, i, A);
 	    rpmpsAppend(ps, RPMPROB_NOREPACKAGE,
 			NULL, NULL,	/* NEVRA, key */
 			lname, NULL,	/* dn, bn */
@@ -285,7 +284,6 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
     int rc = 0;
     int xx;
 
-fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, ts);
     /* Erase the previously installed packages for this transaction. 
      * Provided this transaction is not excluded from the rollback.
      */
