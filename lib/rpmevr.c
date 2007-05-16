@@ -22,7 +22,7 @@ int _rpmevr_debug = 0;
 static int _invert_digits_alphas_comparison = -1;
 
 /* XXX Punctuation characters that are not treated as alphas */
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 static const char * _rpmnotalpha = ".:-";
 
 /**
@@ -31,6 +31,7 @@ static const char * _rpmnotalpha = ".:-";
  * @return		is this an alpha character?
  */
 static inline int xisrpmalpha(int c)
+	/*@*/
 {
     int rc = xisalpha(c);
     if (!rc)
@@ -60,8 +61,8 @@ int rpmEVRcmp(const char * a, const char * b)
 	    while (b[0] == '0' && xisdigit(b[1])) b++;
 
 	    /* Find end of digit strings. */
-	    for (ae = a; xisdigit(*ae); ae++);
-	    for (be = b; xisdigit(*be); be++);
+	    ae = a; while (xisdigit(*ae)) ae++;
+	    be = b; while (xisdigit(*be)) be++;
 
 	    /* Calculate digit comparison return code. */
 	    if (a == ae || b == be)
@@ -73,8 +74,8 @@ int rpmEVRcmp(const char * a, const char * b)
 	    }
 	} else {
 	    /* Find end of alpha strings. */
-	    for (ae = a; xisrpmalpha(*ae); ae++);
-	    for (be = b; xisrpmalpha(*be); be++);
+	    ae = a; while (xisrpmalpha(*ae)) ae++;
+	    be = b; while (xisrpmalpha(*be)) be++;
 
 	    /* Calculate alpha comparison return code. */
 	    rc = strncmp(a, b, MAX((ae - a), (be - b)));
@@ -131,6 +132,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
  * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
  */
 static int compare_values(const char *a, const char *b)
+	/*@*/
 {
     if (!a && !b)
 	return 0;
