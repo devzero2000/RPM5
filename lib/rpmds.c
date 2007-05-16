@@ -88,6 +88,9 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 
 #include "debug.h"
 
+/*@access rpmns @*/
+/*@access EVR_t @*/
+
 #define	_isspace(_c)	\
 	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
 
@@ -396,7 +399,7 @@ exit:
 const char * rpmdsNewN(rpmds ds)
 {
     rpmns ns = &ds->ns;
-    const char * Name = ds->N[ds->i];;
+    const char * Name = ds->N[ds->i];
     int xx;
 
     memset(ns, 0, sizeof(*ns));

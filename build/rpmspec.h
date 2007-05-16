@@ -280,7 +280,6 @@ int addSource(Spec spec, Package pkg, const char * field, int tag)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
-		pkg->icon,
 		rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
