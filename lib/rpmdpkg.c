@@ -10,11 +10,14 @@
 
 #include "debug.h"
 
+/*@access EVR_t @*/
+
 /*@unchecked@*/
 int _rpmdpkg_debug = 0;
 
 /* assume ascii */
 static inline int dpkgEVRctype(char x)
+	/*@*/
 {
     return (
 	  x == '~' ? -1 

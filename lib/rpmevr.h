@@ -21,6 +21,7 @@ typedef	/*@abstract@*/ struct EVR_s * EVR_t;
 typedef	enum evrFlags_e rpmsenseFlags;
 typedef	enum evrFlags_e evrFlags;
 
+/*@-matchfields@*/
 enum evrFlags_e {
 #if defined(_RPMEVR_INTERNAL)
     RPMSENSE_ANY	= 0,
@@ -64,6 +65,7 @@ enum evrFlags_e {
     RPMSENSE_PACKAGE	= (1 << 30)
 #endif
 };
+/*@=matchfields@*/
 
 #define	RPMSENSE_SENSEMASK	0x0e	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */

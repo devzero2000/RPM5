@@ -21,6 +21,7 @@ int _rpmal_debug = 0;
 /*@access alKey @*/
 /*@access alNum @*/
 /*@access rpmal @*/
+/*@access rpmds @*/
 /*@access availablePackage @*/
 
 /*@access fnpyKey @*/	/* XXX suggestedKeys array */
