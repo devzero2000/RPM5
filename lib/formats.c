@@ -1375,7 +1375,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	    if (tn)	nb += strlen(tn);
 	    if (n)	nb += strlen(n);
 	    mk = alloca(nb);
-	    sprintf(mk, "%s(%s)", n, tn);
+	    sprintf(mk, "%s(%s)", (n?n:""), (tn?tn:""));
 	    msgkey = mk;
 	}
 
