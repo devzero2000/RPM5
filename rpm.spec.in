@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.2
+Release: 0.3
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -545,6 +545,12 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Fri May 25 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.3
+- solaris: add clearenv stub.
+- keys: add Getpass stub vector.
+- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
+- build against rpm5.org cvs,
+
 * Tue May 22 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.2
 - fix: avoid accessing freed memory.
 
