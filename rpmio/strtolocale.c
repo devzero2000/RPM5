@@ -3,130 +3,63 @@
  */
 
 #include "system.h"
-#include <wchar.h>
+#include <langinfo.h>
+#include <iconv.h>
 #include "debug.h"
 
-/*@access mbstate_t @*/
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @retval		NULL always
- */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
+static char *locale_encoding = NULL;
+static int locale_encoding_is_utf8 = 0;
 
 const char * xstrtolocale(const char *str)
 {
-    wchar_t *wstr, *wp;
-    const unsigned char *cp;
-    char *cc;
-    unsigned state = 0;
-    int c;
-    int ccl, cca, mb_cur_max;
-    size_t l;
-    mbstate_t ps;
-    int strisutf8 = 1;
-    int locisutf8 = 1;
+    iconv_t cd;
+    size_t src_size, dest_size;
+    char *result, *src, *dest;
 
-    if (!str)
-	return 0;
-    if (!*str)
+    if (locale_encoding == NULL) {
+	const char *encoding = nl_langinfo(CODESET);
+	locale_encoding = xmalloc(strlen(encoding) + 11);
+	sprintf(locale_encoding, "%s//TRANSLIT", encoding);
+	locale_encoding_is_utf8 = strcasecmp(encoding, "UTF-8") == 0;
+    }
+
+    if (!str || !*str || locale_encoding_is_utf8)
 	return str;
-    wstr = (wchar_t *)xmalloc((strlen(str) + 1) * sizeof(*wstr));
-    wp = wstr;
-    cp = (const unsigned char *)str;
-    while ((c = *cp++) != 0) {
-	if (state) {
-	    if ((c & 0xc0) != 0x80) {
-		/* encoding error */
-		break;
-	    }
-	    c = (c & 0x3f) | (state << 6);
-	    if (!(state & 0x40000000)) {
-	      /* check for overlong sequences */
-	        if ((c & 0x820823e0) == 0x80000000)
-		    c = 0xfdffffff;
-	        else if ((c & 0x020821f0) == 0x02000000)
-		    c = 0xfff7ffff;
-	        else if ((c & 0x000820f8) == 0x00080000)
-		    c = 0xffffd000;
-	        else if ((c & 0x0000207c) == 0x00002000)
-		    c = 0xffffff70;
-	    }
-	} else {
-	    /* new sequence */
-	    if (c >= 0xfe)
-		c = 0xfffd;
-	    else if (c >= 0xfc)
-		c = (c & 0x01) | 0xbffffffc;    /* 5 bytes to follow */
-	    else if (c >= 0xf8)
-		c = (c & 0x03) | 0xbfffff00;    /* 4 */ 
-	    else if (c >= 0xf0)
-		c = (c & 0x07) | 0xbfffc000;    /* 3 */ 
-	    else if (c >= 0xe0)
-		c = (c & 0x0f) | 0xbff00000;    /* 2 */ 
-	    else if (c >= 0xc2)
-		c = (c & 0x1f) | 0xfc000000;    /* 1 */ 
-	    else if (c >= 0xc0)
-		c = 0xfdffffff;         /* overlong */
-	    else if (c >= 0x80)
-		c = 0xfffd;
-        }
-	state = (c & 0x80000000) ? c : 0;
-	if (state)
-	    continue;
-	*wp++ = (wchar_t)c;
-    }
-/*@-branchstate@*/
-    if (state) {
-	/* encoding error, assume latin1 */
-        strisutf8 = 0;
-	cp = (const unsigned char *)str;
-	wp = wstr;
-	while ((c = *cp++) != 0) {
-	    *wp++ = (wchar_t)c;
-	}
-    }
-/*@=branchstate@*/
-    *wp = 0;
-    mb_cur_max = MB_CUR_MAX;
-    memset(&ps, 0, sizeof(ps));
-    cc = xmalloc(mb_cur_max);
-    /* test locale encoding */
-    if (wcrtomb(cc, 0x20ac, &ps) != 3 || memcmp(cc, "\342\202\254", 3))
-	locisutf8 = 0;
-    if (locisutf8 == strisutf8) {
-	wstr = _free(wstr);
-	cc = _free(cc);		/* XXX memory leak plugged. */
+
+    cd = iconv_open(locale_encoding, "UTF-8");
+    if (cd == (iconv_t)-1)
 	return str;
-    }
-    str = _free(str);
-    memset(&ps, 0, sizeof(ps));
-    ccl = cca = 0;
-    for (wp = wstr; ; wp++) {
-	l = wcrtomb(cc + ccl, *wp, &ps);
-	if (*wp == 0)
-	    break;
-	if (l == (size_t)-1) {
-	    if (*wp < (wchar_t)256 && mbsinit(&ps)) {
-		cc[ccl] = *wp;
-		l = 1;
-	    } else
-	        l = wcrtomb(cc + ccl, (wchar_t)'?', &ps);
+
+    src_size = strlen(str);
+    dest_size = src_size + 1;
+    result = xmalloc(dest_size);
+    src = (char *)str;
+    dest = result;
+    for(;;) {
+	size_t status = iconv(cd, &src, &src_size, &dest, &dest_size);
+	if (status == (size_t)-1) {
+	    size_t dest_offset;
+	    if (errno != E2BIG) {
+		free(result);
+		iconv_close(cd);
+		return str;
+	    }
+	    dest_offset = dest - result;
+	    dest_size += 16;
+	    result = xrealloc(result, dest_offset + dest_size);
+	    dest = result + dest_offset;
+	} else if (src_size == 0) {
+	    if (src == NULL) break;
+	    src = NULL;
 	}
-        if (l == 0 || l == (size_t)-1)
-	    continue;
-        ccl += l;
-        if (ccl > cca) {
-	    cca = ccl + 16;
-	    cc = xrealloc(cc, cca + mb_cur_max);
-	}
     }
-    wstr = _free(wstr);
-    return (const char *)cc;
+    iconv_close(cd);
+    free((void *)str);
+    if (dest_size == 0) {
+	size_t dest_offset = dest - result;
+	result = xrealloc(result, dest_offset + 1);
+	dest = result + dest_offset;
+    }
+    *dest = '\0';
+    return result;
 }

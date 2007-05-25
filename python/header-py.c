@@ -1285,6 +1285,10 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
 
     if (A->E == NULL)	A->E = "0";
     if (B->E == NULL)	B->E = "0";
+    if (A->V == NULL)	A->E = "";
+    if (B->V == NULL)	B->E = "";
+    if (A->R == NULL)	A->E = "";
+    if (B->R == NULL)	B->E = "";
 
     rc = rpmEVRcompare(A, B);
 

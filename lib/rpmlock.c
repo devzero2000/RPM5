@@ -39,7 +39,12 @@ static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *loc
     /* XXX oneshot to determine path for fcntl lock. */
     /* XXX rpmlock_path is set once, cannot be changed with %{_rpmlock_path}. */
     if (!oneshot) {
-	const char * t = rpmGenPath(rootdir, rpmlock_path_default, NULL);
+	const char * t = NULL;
+	char * check = rpmExpand(rpmlock_path_default, NULL);
+	if (check[0] != '\0')
+	    t = rpmGenPath(rootdir, rpmlock_path_default, NULL);
+	check = _free(check);
+
 	if (t == NULL || *t == '\0' || *t == '%')
 	    t = _free(t);
 	rpmlock_path = t;

@@ -1264,6 +1264,7 @@ static int is_pentium4(void)
 			// Pentium 4 Xeon, Pentium 4 Xeon MP,
 			// Celeron, Mobile Celron                    (0.13um)
 	    case 3:	// Pentium 4, Celeron                        (0.09um)
+	    case 4:	// Pentium 4 540J
 		return 1;
 	}
     return 0;

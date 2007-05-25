@@ -1038,12 +1038,19 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	/* XXX FIXME: this is easy to do as macro expansion */
 
 	    if (! fl->passedSpecialDoc) {
+	    	char *compress_doc;
+
 		pkg->specialDoc = newStringBuf();
 		appendStringBuf(pkg->specialDoc, "DOCDIR=\"$RPM_BUILD_ROOT\"");
 		appendLineStringBuf(pkg->specialDoc, buf);
 		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
 		appendLineStringBuf(pkg->specialDoc, "rm -rf \"$DOCDIR\"");
 		appendLineStringBuf(pkg->specialDoc, MKDIR_P " \"$DOCDIR\"");
+
+		compress_doc = rpmExpand("%{__compress_doc}", NULL);
+		if (compress_doc && *compress_doc != '%')
+	    	    appendLineStringBuf(pkg->specialDoc, compress_doc);
+		compress_doc = _free(compress_doc);
 
 		/*@-temptrans@*/
 		*fileName = buf;

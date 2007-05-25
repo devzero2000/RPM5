@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.9
+Release: 1
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
@@ -545,6 +545,13 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
+* Mon May 21 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-1
+* release rpm-4.4.9.
+
+* Fri May 18 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.10
+- fix: don't clobber dependency flags, or the comparison bits instead.
+- fix: convert python->rpmlib missing values before rpmEVRcompare().
+
 * Tue May 15 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.9
 - rollback: add REMOVETID subdir to insure unbroken upgrade chain.
 - rpmns: add running() probe with scwewy unexpected non-root behavior.

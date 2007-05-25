@@ -2807,7 +2807,7 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 	/*@modifies t @*/
 {
     *t = '\0';
-#if !defined(__alpha__) && ( !defined(__sun) && !defined(__unix) )
+#if !defined(__alpha__) && !defined(__sun)
     if (isElf64) {
 	if (s[strlen(s)-1] != ')')
 	(void) stpcpy( stpcpy(t, s), "()(64bit)");

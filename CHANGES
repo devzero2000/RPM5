@@ -82,6 +82,8 @@
 	- solaris: rpmds.c rearrangements to build against solaris gelf API.
 	- rollback: add link terminator to all upgrade chains.
 	- rollback: assertion checks for all header additions.
+	- fix: don't clobber dependency flags, or the comparison bits instead.
+	- fix: convert python->rpmlib missing values before rpmEVRcompare().
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

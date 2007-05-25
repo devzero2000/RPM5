@@ -134,12 +134,6 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 static int compare_values(const char *a, const char *b)
 	/*@*/
 {
-    if (!a && !b)
-	return 0;
-    else if (a && !b)
-	return 1;
-    else if (!a && b)
-	return -1;
     return rpmvercmp(a, b);
 }
 

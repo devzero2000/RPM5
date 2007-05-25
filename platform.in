@@ -66,6 +66,9 @@
     %{__os_install_post}\
 %{nil}
 
+# Executed after copying %doc to DOCDIR, with $DOCDIR set
+#%__compress_doc		@prefix@/lib/rpm/compress-doc%{?_noautocompressdoc: --noautocompressdoc='%{_noautocompressdoc}'}
+
 @redhat@#---------------------------------------------------------------------
 @redhat@#	Expanded at end of %prep
 @redhat@#

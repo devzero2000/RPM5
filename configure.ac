@@ -712,7 +712,7 @@ dnl AmigaOS and IXEmul have a fork() dummy
 	;;
   esac
 
-AC_CHECK_HEADER(locale.h)
+AC_CHECK_HEADERS(locale.h)
 AM_GNU_GETTEXT([external])
 dnl TVM:
 dnl horrible *temporary* hack to make sure that if we found gettext() in

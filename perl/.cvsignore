@@ -1,5 +1,6 @@
-Makefile
-RPM.bs
-RPM.c
-blib
+rpm.bs
+rpm.c
 pm_to_blib
+Makefile
+blib
+perl

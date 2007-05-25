@@ -30,6 +30,5 @@ debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
 
 rpmdeps_SOURCES =	rpmdeps.c
-rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la @WITH_NEON_LIB@
 
 $(PROGRAMS): $(LDADD)

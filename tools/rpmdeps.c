@@ -257,6 +257,9 @@ char buf[BUFSIZ];
 
     switch (rpmdeps_mode) {
     case RPMDEP_RPMFC:
+	if (ac <= 0)		/* XXX avoid rpmfcApply() segfault */
+	    break;
+
 	/* Build file class dictionary. */
 	fc = rpmfcNew();
 	xx = rpmfcClassify(fc, av, NULL);

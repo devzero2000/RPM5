@@ -119,20 +119,22 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 
 	/* Check for possible logical operator */
 	if (ve > v) {
-	    Flags = rpmEVRflags(v, &ve);
-	    if (Flags && r[0] == '/') {
+	    rpmsenseFlags F = rpmEVRflags(v, &ve);
+	    if (F && r[0] == '/') {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
-	    if (Flags) {
+	    if (F) {
 		/* now parse EVR */
 		v = ve;
 		SKIPWHITE(v);
 		ve = v;
 		SKIPNONWHITE(ve);
 	    }
+	    Flags &= ~RPMSENSE_SENSEMASK;
+	    Flags |= F;
 	}
 
 	/*@-branchstate@*/
